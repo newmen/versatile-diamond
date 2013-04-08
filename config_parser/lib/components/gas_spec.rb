@@ -1,0 +1,2 @@
+class GasSpec < Spec
+end

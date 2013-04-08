@@ -1,27 +1,25 @@
 elements do
   # atom H, valence: 1 # already exists
-  atom C, valence: 4
+  atom :C, valence: 4
 end
 
 gas do
   # spec :hydrogen # already exists
   spec :methan do
-    atoms c: C
+    atoms c: :C
   end
 
 #  spec :ethylene do
-#    atoms c1: C, c2: C
+#    atoms c1: :C, c2: :C
 #    dbond :c1, :c2
 #  end
 end
 
 surface do
-  phases do
-    lattice :d, class: Diamond
-  end
+  lattice :d, c_class: 'Diamond'
 
   spec :bridge do
-    atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
+    atoms ct: :C%d, cl: bridge(:ct), cr: bridge(:ct)
     bond :ct, :cl, face: '110'
     bond :ct, :cr, face: '110'
     position :cl, :cr, face: '100', dir: :front
@@ -60,14 +58,14 @@ surface do
  # end
 
   spec :bridge_with_dimer do
-    atoms ct: C%d, cl: bridge(:ct), cr: dimer(:cr)
+    atoms ct: :C%d, cl: bridge(:ct), cr: dimer(:cr)
     bond :ct, :cl, face: '110'
     bond :ct, :cr, face: '110'
     position :cl, :cr, face: '100', dir: :front
   end
 
   spec :two_bridges do
-    atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
+    atoms ctl: :C%d, cl: bridge(:ct), cc: bridge(:cr)
     bond :ctl, :cl, face: '110'
     bond :ctl, :cc, face: '110'
     position :cl, :cc, face: '100', dir: :front
@@ -94,7 +92,7 @@ run do
   termination H
 
   surface do
-    lattice C%d
+    lattice :C%d
     area_size 100, 100
     temperature 1000
   end

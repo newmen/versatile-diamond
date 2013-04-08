@@ -1,0 +1,65 @@
+elements
+  atom
+
+gas
+  spec
+    aliases
+    atoms
+    bond
+    dbond
+
+surface
+  phases
+    lattice
+
+  spec
+    aliases
+    atoms
+    bond
+    dbond
+    position
+
+dimensions
+  temperature
+  concentration
+  energy
+  rate
+  time
+
+run
+  total_time
+  termination
+  surface
+    lattice
+    area_size
+    temperature
+  gas
+    concentration
+    temperature
+
+reaction
+  aliases
+  entalpy
+  activation
+  forward_activation
+  reverse_activation
+  forward_rate
+  reverse_rate
+  equation
+    incoherent
+    position
+    lateral
+    lateral_like
+    refinement
+      incoherent
+      position
+      entalpy
+      activation
+      forward_activation
+      reverse_activation
+      forward_rate
+      reverse_rate
+
+shared_lateral
+  aliases
+  lateral
