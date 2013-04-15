@@ -4,13 +4,13 @@ class Lattice
       @lattices[sign.to_sym]
     end
 
-    def add(sign, c_class)
+    def add(sign, cpp_class)
       @lattices ||= {}
-      @lattices[sign] = new(c_class)
+      @lattices[sign] = new(cpp_class)
     end
   end
 
-  def initialize(c_class)
-    @c_class = c_class
+  def initialize(cpp_class)
+    @cpp_class = cpp_class
   end
 end

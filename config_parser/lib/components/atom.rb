@@ -1,7 +1,7 @@
 class Atom
   class << self
     def [](name)
-      @atoms[name.to_sym].dup
+      @atoms[name] && @atoms[name].dup
     end
 
     def add(name, valence)
@@ -14,8 +14,11 @@ class Atom
     @name, @valence = name, valence
   end
 
-  # Specification the atom
-  def %(lattice)
+  def specify(lattice)
     @lattice = lattice
+  end
+
+  def specified?
+    !!@lattice
   end
 end

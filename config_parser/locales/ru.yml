@@ -1,0 +1,20 @@
+ru:
+  common:
+    extra_space: "Лишний пробел"
+    undefined_component: "Неизвестное определение \"%{component}\""
+    wrong_arguments_ordering: "Неверная последовательность аргументов"
+    wrong_hierarchy: "Неверная иерархия"
+
+  analyzer:
+
+  elements:
+    atom_without_valence: "Атом не может быть инициализирован без значения валентности"
+
+  surface:
+    lattice:
+      need_define_class: "Необходимо задать C++ класс для определения типа решётки"
+
+  spec:
+    undefined_atom: "Неизвестный атом \"%{atom}\""
+    undefined_lattice: "Неизвестный символ решётки \"%{lattice}\""
+    incorrect_linking_unspecified_atoms: "Неверное связывание неспецифицированных атомов"

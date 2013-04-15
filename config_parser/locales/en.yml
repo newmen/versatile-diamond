@@ -1,0 +1,21 @@
+en:
+  common:
+    extra_space: "Extra space"
+    undefined_component: "Unknown definition \"%{component}\""
+    wrong_arguments_ordering: "Wrong arguments ordering"
+    wrong_hierarchy: "Wrong hierarchy"
+
+  analyzer:
+    syntax_error: "Syntax error"
+
+  elements:
+    atom_without_valence: "Atom cannot be initialized without valence parameter"
+
+  surface:
+    lattice:
+      need_define_class: "Need to define C++ class when defining new lattice"
+
+  spec:
+    undefined_atom: "Unknown atom \"%{atom}\""
+    undefined_atom: "Unknown lattice alias \"%{lattice}\""
+    incorrect_linking_unspecified_atoms: "Incorrect linking unspecified atoms"

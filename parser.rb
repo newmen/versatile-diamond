@@ -8,13 +8,14 @@ Usage:
   #{__FILE__} <path_to_config> [options]
 
 Options:
-  -h, --help     Show this screen
+  -h, --help        Show this screen
+  --lang=LANGUAGE   Setup current language [default: ru]
 HELP
 
 begin
   opt = Docopt::docopt(doc)
-  config = File.read(opt['<path_to_config>'])
-  Analizer.analize(config)
+  I18n.locale = opt['--lang']
+  Analyzer.read_config(opt['<path_to_config>'])
 
   p Spec[:bridge]
 
