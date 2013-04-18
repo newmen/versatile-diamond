@@ -1,6 +1,6 @@
-class Analyzer
-  include AnalysisTools
+using RichString
 
+class Analyzer < AnalysisTool
   class << self
     attr_reader :config_path, :line_number
 
@@ -45,8 +45,12 @@ private
   end
 
   def instance(name)
-    component = constantize(name)
-    component ? component.new : syntax_error('common.undefined_component', component: name)
+    component = name.constantize
+    if component
+      component.respond_to?(:instance) ? component.instance : component.new
+    else
+      syntax_error('common.undefined_component', component: name)
+    end
   end
 
   def next_line

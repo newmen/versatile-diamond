@@ -1,15 +1,34 @@
 elements
-  # atom H, valence: 1 # already exists
+  atom H, valence: 1
   atom C, valence: 4
 
+dimensions
+  temperature 'K'
+  concentration 'mol/cm3'
+  energy 'kcal/mol'
+  rate '1/s'
+  time 's'
+
+run
+  atom_termination H
+  total_time 1
+
 gas
-  # spec :hydrogen # already exists
+  spec :hydrogen
+    atoms h: H # the second atom specifies by run::atom_termination
+
   spec :methan
     atoms c: C
 
 #  spec :ethylene
 #    atoms c1: C, c2: C
 #    dbond :c1, :c2
+
+  concentration hydrogen(h: *), 1e-9
+  concentration methan(c: *), 1e-10
+  # concentration ethylene(c1: *, c2: *), 0
+
+  temperature 1200
 
 surface
   lattice :d, cpp_class: Diamond
@@ -65,36 +84,18 @@ surface
     position :cl, :cr, face: 100, dir: :cross
     # TODO: не полностью уточнено положение димеров друг относительно друга, для данной структуры
 
-dimensions
-  temperature 'K'
-  concentration 'mol/cm3'
-  energy 'kcal/mol'
-  rate '1/s'
-  time 's'
-
-run
-  total_time 1
-  atom_termination H
-
-  gas
-    concentration hydrogen(*), 1e-9
-    concentration methan(c: *), 1e-10
-    # concentration ethylene(c1: *, c2: *), 0
-    temperature 1200
-
-  surface
-    lattice C%d
-    area_size 100, 100
-    temperature 1000
+  size x: 100, y: 100
+  composition C%d
+  temperature 1000
 
 events
   reaction 'surface activation'
-    equation H + hydrogen(*) == * + hydrogen
+    equation H + hydrogen(h: *) == * + hydrogen
     activation 6.65
     forward_rate 5.2e13, 'cm3/(mol * s)'
 
   reaction 'surface deactivation'
-    equation * + hydrogen(*) == H
+    equation * + hydrogen(h: *) == H
     activation 0
     forward_rate 2e13, 'cm3/(mol * s)'
 
@@ -118,12 +119,12 @@ events
     activation 0
 
   reaction 'methyl activation'
-    equation metyl_on_dimer + hydrogen(*) == methyl_on_dimer(cm: *) + hydrogen
+    equation metyl_on_dimer + hydrogen(h: *) == methyl_on_dimer(cm: *) + hydrogen
     activation 37.5
     forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
 
   reaction 'methyl deactivation'
-    equation metyl_on_dimer(cm: *) + hydrogen(*) == methyl_on_dimer
+    equation metyl_on_dimer(cm: *) + hydrogen(h: *) == methyl_on_dimer
     activation 0
     forward_rate 4.5e13, 'cm3/(mol * s)'
 

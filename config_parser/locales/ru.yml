@@ -5,16 +5,42 @@ ru:
     wrong_arguments_ordering: "Неверная последовательность аргументов"
     wrong_hierarchy: "Неверная иерархия"
 
-  analyzer:
+  atom:
+    already_defined: "Атом \"%{name}\" уже определён"
+    undefined: "Неизвестный атом \"%{name}\""
+    without_valence: "Атом не может быть инициализирован без значения валентности"
 
-  elements:
-    atom_without_valence: "Атом не может быть инициализирован без значения валентности"
+  gas:
+    undefined_spec: "Неизвестный вид газовой моделулы \"%{name}\""
 
   surface:
-    lattice:
-      need_define_class: "Необходимо задать C++ класс для определения типа решётки"
+    need_pass_specified_atom: "Необходимо указывать специфицированный атом"
+    sizes_already_set: "Размеры уже установлены"
+    wrong_sizes: "Неверно заданы размеры изначальной подложки"
+
+  lattice:
+    already_defined: "Решётка уже определена"
+    need_define_class: "Необходимо задать C++ класс для определения типа решётки"
+    undefined: "Неизвестный символ решётки \"%{symbol}\""
 
   spec:
-    undefined_atom: "Неизвестный атом \"%{atom}\""
-    undefined_lattice: "Неизвестный символ решётки \"%{lattice}\""
-    incorrect_linking_unspecified_atoms: "Неверное связывание неспецифицированных атомов"
+    already_defined: "Вид структуры \"%{name}\" уже определён"
+    undefined: "Неизвестный вид структуры \"%{name}\""
+    undefined_atom_keyname: "Неизвестный псевдоним атома"
+
+  gas_spec:
+    wrong_bond: "В структурах газовой фазы, связь не может быть охарактеризована"
+
+  surface_spec:
+    incorrect_linking: "Неверное связывание неспецифицированных атомов"
+    uncomplete_position: "Необходимо охарактеризовать положение атомов друг относительно друга"
+
+  specific_spec:
+    wrong_specification: "Неверное уточнение конфигурации структуры"
+
+  dimensions:
+    is_not_set: "Единицы измерения не установлены"
+    undefined_value: "Неизвестное значение единиц измерения"
+
+  run:
+    invalid_atom_termination: "Неверное умолчальное значение для неиспользуемых связей \"%{value}\""

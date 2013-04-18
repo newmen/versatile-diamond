@@ -1,8 +1,14 @@
-class String
-  def underscore
-    scan(/[A-Z][a-z0-9]*/).map(&:downcase).join('_')
-  end
+def files_in(path)
+  Dir["#{__dir__}/#{path}"]
 end
+
+require 'i18n'
+I18n.load_path << files_in('locales/*.yml')
+
+files_in('lib/patches/*.rb').each { |filename| require filename }
+files_in('lib/modules/*.rb').each { |filename| require filename }
+
+using RichString
 
 def Object.const_missing(class_name)
   filename = class_name.to_s.underscore
@@ -12,12 +18,6 @@ def Object.const_missing(class_name)
   component
 end
 
-Dir["#{__dir__}/lib/modules/*.rb"].each do |file|
-  require_relative file
-end
-
 require_relative 'lib/analyzing_error.rb'
 require_relative 'lib/analyzer.rb'
-
-require 'i18n'
-I18n.load_path << Dir["#{__dir__}/locales/*.yml"]
+require_relative 'lib/matcher.rb'

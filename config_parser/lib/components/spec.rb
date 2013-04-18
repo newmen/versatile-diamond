@@ -1,30 +1,41 @@
-# Структура содержит атомы и связи между ними.
-# Когда одна структура включает другую - происходит копирование атомов и связей из включаемой структуры во включающую.
-# Если структура является рекурсивной, то копирования не происходит, а создаётся ссылка на используемый атом.
-
+# The class instance contains atoms and bonds between them.
+# When one spec uses an other then atoms and bonds from another spec coping to original spec.
+# If spec is recursive (i.e. uses itself) then no copy, reference to used atom creates instead.
 class Spec < Component
   class << self
-    def [](name)
-      @@common_specs[name]
+    include SyntaxChecker
+
+    def [](spec_name)
+      @@common_specs[spec_name] || syntax_error('spec.undefined', name: spec_name)
     end
 
-    def add(name)
-      spec = new(name)
-      # @local_specs ||= {} # TODO: unused variable!
-      # @local_specs[name] = spec
+    def add(spec_name)
       @@common_specs ||= {}
-      @@common_specs[name] = spec
+      syntax_error('spec.already_defined', name: spec_name) if @@common_specs[spec_name]
+      @@common_specs[spec_name] = new(spec_name)
     end
   end
 
   def initialize(name)
     @name = name
+
     @atoms, @links = {}, {}
     @aliases = {}
+
+    # @internal_bonds = 0
   end
 
+  # def external_bonds
+  #   @atoms.values.map(&:valence).inject(:+) - 2 * @internal_bonds
+  # end
+
+  # def external_bonds_for(atom_keyname)
+  #   atom = @atoms[atom_keyname]
+  #   atom.valence + @links[atom].select { |link, _| link.is_a?(Bond) }.size
+  # end
+
   def [](atom_keyname)
-    @atoms[atom_keyname]
+    @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', keyname: atom_keyname)
   end
 
   def aliases(**refs)
@@ -44,16 +55,9 @@ class Spec < Component
     end
   end
 
-  %w(bond position).each do |method_name|
-    define_method(method_name) do |first, second, **options|
-      first, second = existing_atoms(first, second)
-      unless options.empty? || first.specified? || second.specified?
-        syntax_error('spec.incorrect_linking_unspecified_atoms')
-      end
-      instance = constantize(method_name)[options]
-      @links[first] = [second, instance]
-      @links[second] = [first, instance]
-    end
+  def bond(first, second, **options)
+    link(Bond, first, second, options)
+    # @internal_bonds += 1
   end
 
   def dbond(first, second)
@@ -66,7 +70,7 @@ protected
 
   def duplicate_atoms
     atoms = @atoms.values
-    Hash[atoms.zip(atoms.map(&:dup))]
+    Hash[atoms.zip(atoms.map(&:dup))] # TODO: dup ?
   end
 
   def alias_atoms(duplicated_atoms)
@@ -76,26 +80,28 @@ protected
 private
 
   def detect_atom(atom_str)
-    atom = simple_atom(atom_str) || defined_atom(atom_str)
-    atom || syntax_error('spec.undefined_atom', atom: atom_str)
+    simple_atom(atom_str) || defined_atom(atom_str)
   end
 
   def simple_atom(atom_str)
-    Atom[atom_str] if atom_str =~ /\A[A-Z][a-z0-9]*\Z/
+    if (atom_name = Matcher.atom(atom_str))
+      Atom[atom_name]
+    end
   end
 
   def defined_atom(atom_str)
-    if atom_str =~ /\A(?<spec>[a-z][a-z0-9_]*)\(:(?<atom>[a-z][a-z0-9_]*)\)\Z/
-      spec_sym, atom_sym = $~[:spec].to_sym, $~[:atom].to_sym
-      if spec_sym == @name
-        AtomReference.new(self, atom_sym)
-      elsif (aliased_spec = @aliases[spec_sym])
-        aliased_spec[atom_sym]
+    if (match = Matcher.used_atom(atom_str))
+      spec_name, atom_keyname = match.map(&:to_sym)
+      if spec_name == @name
+        self.[](atom_keyname) # checks existing atom keyname
+        AtomReference.new(self, atom_keyname)
+      elsif (aliased_spec = @aliases[spec_name])
+        aliased_spec[atom_keyname]
       else
-        spec = Spec[spec_sym]
+        spec = Spec[spec_name]
         duplicated_atoms = spec.duplicate_atoms
         adsorb_links(spec.links, duplicated_atoms)
-        duplicated_atoms[spec[atom_sym]]
+        duplicated_atoms[spec[atom_keyname]]
       end
     end
   end
@@ -109,9 +115,14 @@ private
     end
   end
 
-  def existing_atoms(*atom_syms)
-    atom_syms.map do |atom_sym|
-      self.[](atom_sym) || syntax_error('spec.undefined_atom', atom: atom_sym)
-    end
+  def link(instance, first, second, **options)
+    first, second = existing_atoms(first, second)
+    yield(first, second) if block_given?
+    @links[first] = [second, instance]
+    @links[second] = [first, instance]
+  end
+
+  def existing_atoms(*atom_keynames)
+    atom_keynames.map { |atom_keyname| self.[](atom_keyname) }
   end
 end

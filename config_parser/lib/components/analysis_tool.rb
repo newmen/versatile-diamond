@@ -1,14 +1,12 @@
-module AnalysisTools
-  def constantize(name)
-    class_name = name.split('_').map(&:capitalize).join
-    Object.const_get(class_name)
-  end
+class AnalysisTool
+  include ArgumentsParser
+  include SyntaxChecker
 
   def interpret(line, zero_level_func)
     if !has_indent?(line)
       zero_level_func.call(line)
     else
-      (block_given? && yield) || syntax_error('common.wrong_hierarchy')
+      block_given? ? yield : syntax_error('common.wrong_hierarchy')
     end
   end
 
@@ -18,13 +16,7 @@ module AnalysisTools
 
   def pass_line_to(component, line)
 # puts "PASSING \"#{line}\" to #{component.class}"
-    component.interpret(decrease_indent(line)) if component
-  end
-
-  def syntax_error(*args)
-    message = args.shift
-    message = "#{self.class.to_s.underscore}#{message}" if message[0] == '.'
-    raise AnalyzingError.new(Analyzer.config_path, Analyzer.line_number, I18n.t(message, *args))
+    component.interpret(decrease_indent(line))
   end
 
 private

@@ -5,17 +5,42 @@ en:
     wrong_arguments_ordering: "Wrong arguments ordering"
     wrong_hierarchy: "Wrong hierarchy"
 
-  analyzer:
-    syntax_error: "Syntax error"
+  atom:
+    already_defined: "Atom already defined"
+    undefined: "Unknown atom \"%{name}\""
+    without_valence: "Atom cannot be initialized without valence parameter"
 
-  elements:
-    atom_without_valence: "Atom cannot be initialized without valence parameter"
+  gas:
+    undefined_spec: "Undefined gas spec \"%{name}\""
 
   surface:
-    lattice:
-      need_define_class: "Need to define C++ class when defining new lattice"
+    need_pass_specified_atom: "Necessary to pass specified atom"
+    sizes_already_set: "Sizes already set"
+    wrong_sizes: "Incorrect setup original substrate sizes"
+
+  lattice:
+    already_defined: "Lattice already defined"
+    need_define_class: "Necessary to define C++ class when defining new lattice"
+    undefined: "Unknown lattice symbol \"%{symbol}\""
 
   spec:
-    undefined_atom: "Unknown atom \"%{atom}\""
-    undefined_atom: "Unknown lattice alias \"%{lattice}\""
-    incorrect_linking_unspecified_atoms: "Incorrect linking unspecified atoms"
+    already_defined: "Spec \"%{name}\" already defined"
+    undefined: "Undefined spec \"%{name}\""
+    undefined_atom_keyname: "Undefined atom keyname"
+
+  gas_spec:
+    wrong_bond: "Bond cannot be characterized"
+
+  surface_spec:
+    incorrect_linking: "Incorrect linking unspecified atoms"
+    uncomplete_position: "Necessary to characterize the position of atoms relative to each other"
+
+  specific_spec:
+    wrong_specification: "Wrong spec specification"
+
+  dimensions:
+    is_not_set: "Dimension is not set"
+    undefined_value: "Undefined value of dimension"
+
+  run:
+    invalid_atom_termination: "Invalid atom termination value \"%{value}\""

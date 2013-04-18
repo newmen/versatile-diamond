@@ -1,12 +1,15 @@
 class Lattice
   class << self
-    def [](sign)
-      @lattices[sign.to_sym]
+    include SyntaxChecker
+
+    def [](symbol)
+      @lattices[symbol] || syntax_error('.undefined', symbol: symbol)
     end
 
-    def add(sign, cpp_class)
+    def add(symbol, cpp_class)
       @lattices ||= {}
-      @lattices[sign] = new(cpp_class)
+      syntax_error('.already_defined') if @lattices[symbol]
+      @lattices[symbol] = new(cpp_class)
     end
   end
 

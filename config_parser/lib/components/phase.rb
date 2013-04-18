@@ -1,9 +1,22 @@
+require 'singleton'
+
 class Phase < Component
+  include Singleton
+
   def interpret(line)
-    super { pass_line_to(@last_spec, line) }
+    if line =~ /\A\s/ && @current_spec
+      super { pass_line_to(@current_spec, line) }
+    else
+      @current_spec = nil if line !~ /\A\s/ && @current_spec
+      super
+    end
   end
 
   def spec(name)
-    @last_spec = spec_class.add(name)
+    @current_spec = spec_class.add(name)
+  end
+
+  def temperature(value)
+    @temperature = value
   end
 end
