@@ -13,7 +13,7 @@ class Atom
     end
   end
 
-  attr_reader :valence
+  attr_reader :name, :valence
 
   def initialize(name, valence)
     @name, @valence = name, valence

@@ -1,4 +1,10 @@
 class Matcher
+
+  ACTIVE_BOND = /\*/
+  ATOM_NAME = /[A-Z][a-z0-9]*/
+  SPEC_NAME = /[a-z][a-z0-9_]*/
+  OPTIONS = /[^\)]+/
+
   class << self
     class << self
     private
@@ -13,8 +19,9 @@ class Matcher
       end
     end
 
-    ATOM_NAME = /[A-Z][a-z0-9]*/
-    SPEC_NAME = /[a-z][a-z0-9_]*/
+    define_match :active_bond do
+      /\A#{ACTIVE_BOND}\Z/
+    end
 
     define_match :atom do
       /\A#{ATOM_NAME}\Z/
@@ -29,7 +36,14 @@ class Matcher
     end
 
     define_match :specified_spec, :spec, :options do
-      /\A(?<spec>#{SPEC_NAME})(?:\((?<options>[^\(]+)\))?\Z/
+      /\A(?<spec>#{SPEC_NAME})(?:\((?<options>#{OPTIONS})\))?\Z/
+    end
+
+    def equation(str)
+      term = /(#{ACTIVE_BOND}|#{ATOM_NAME}|#{SPEC_NAME}(?:\(#{OPTIONS}\))?)/
+      side = /(?:#{term}\s*\+)?\s*#{term}/
+      matches = str.split(/\s*=\s*/).map { |one_side| side.match(one_side) }.compact
+      matches.size == 2 ? matches.map(&:to_a).each(&:shift) : nil
     end
   end
 end

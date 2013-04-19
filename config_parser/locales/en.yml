@@ -10,6 +10,13 @@ en:
     undefined: "Unknown atom \"%{name}\""
     without_valence: "Atom cannot be initialized without valence parameter"
 
+  dimensions:
+    is_not_set: "Dimension is not set"
+    undefined_value: "Undefined value of dimension"
+
+  run:
+    invalid_termination: "Invalid atom termination value \"%{value}\""
+
   gas:
     undefined_spec: "Undefined gas spec \"%{name}\""
 
@@ -38,9 +45,6 @@ en:
   specific_spec:
     wrong_specification: "Wrong spec specification"
 
-  dimensions:
-    is_not_set: "Dimension is not set"
-    undefined_value: "Undefined value of dimension"
-
-  run:
-    invalid_atom_termination: "Invalid atom termination value \"%{value}\""
+  equation:
+    invalid: "Invalid reaction equation"
+    wrong_balance: "Wrong reaction balance"

@@ -13,12 +13,11 @@ class Surface < Phase
     Lattice.add(sign, cpp_class)
   end
 
-  def size(x: nil, y: nil, z: 2)
+  def size(x: nil, y: nil)
     syntax_error('.wrong_sizes') unless x && y
     syntax_error('.sizes_already_set') unless @size.empty?
     @size[:x] = x
     @size[:y] = y
-    @size[:z] = z
   end
 
   def composition(atom_str)

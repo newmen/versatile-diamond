@@ -22,17 +22,18 @@ class Spec < Component
     @atoms, @links = {}, {}
     @aliases = {}
 
-    # @internal_bonds = 0
+    @internal_bonds = 0
   end
 
-  # def external_bonds
-  #   @atoms.values.map(&:valence).inject(:+) - 2 * @internal_bonds
-  # end
+  def external_bonds
+    valences = @atoms.values.map(&:valence)
+    valences.size == 1 && valences.first == 1 ? 0 : valences.inject(:+) - 2 * @internal_bonds
+  end
 
-  # def external_bonds_for(atom_keyname)
-  #   atom = @atoms[atom_keyname]
-  #   atom.valence + @links[atom].select { |link, _| link.is_a?(Bond) }.size
-  # end
+  def external_bonds_for(atom_keyname)
+    atom = @atoms[atom_keyname]
+    atom.valence + @links[atom].select { |link, _| link.is_a?(Bond) }.size
+  end
 
   def [](atom_keyname)
     @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', keyname: atom_keyname)
@@ -57,7 +58,7 @@ class Spec < Component
 
   def bond(first, second, **options)
     link(Bond, first, second, options)
-    # @internal_bonds += 1
+    @internal_bonds += 1
   end
 
   def dbond(first, second)
