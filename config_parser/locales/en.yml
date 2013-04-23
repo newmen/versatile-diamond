@@ -25,6 +25,9 @@ en:
     sizes_already_set: "Sizes already set"
     wrong_sizes: "Incorrect setup original substrate sizes"
 
+  position:
+    uncomplete: "Necessary to characterize the position of atoms relative to each other"
+
   lattice:
     already_defined: "Lattice already defined"
     need_define_class: "Necessary to define C++ class when defining new lattice"
@@ -40,11 +43,18 @@ en:
 
   surface_spec:
     incorrect_linking: "Incorrect linking unspecified atoms"
-    uncomplete_position: "Necessary to characterize the position of atoms relative to each other"
 
   specific_spec:
     wrong_specification: "Wrong spec specification"
 
+  reaction:
+    need_define_equation: "Necessary to define equation first"
+
   equation:
+    activation_already_set: "Activation energy already set"
+    cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\""
+    entalpy_already_set: "Heat of reaction already set"
     invalid: "Invalid reaction equation"
+    rate_already_set: "Rate already set"
+    undefined_used_atom: "Undefined used atom"
     wrong_balance: "Wrong reaction balance"

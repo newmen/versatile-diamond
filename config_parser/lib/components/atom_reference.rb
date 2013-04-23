@@ -10,4 +10,8 @@ class AtomReference
   def specified?
     @spec[@atom_keyname].specified?
   end
+
+  def to_s
+    @spec[@atom_keyname].to_s
+  end
 end

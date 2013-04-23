@@ -30,11 +30,11 @@ module ArgumentsParser
   def cast_value(value)
     if value[0] == ?:
       value[1...(value.length)].to_sym
-    elsif value =~ /\A(['"])([^(?:\\\1)]*)\1\Z/
+    elsif value =~ /\A(['"])([^\1]*)\1\Z/
       $2
-    elsif value =~ /\A(\d+)\Z/
+    elsif value =~ /\A(-?\d+)\Z/
       $1.to_i
-    elsif value =~ /\A([0-9]+(?:\.[0-9]+)?(?:e-?[0-9]+))?\Z/
+    elsif value =~ /\A(-?\d+(?:\.\d+)?(?:e-?\d+)?)\Z/
       $1.to_f
     else
       value

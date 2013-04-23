@@ -1,17 +1,41 @@
+require 'forwardable'
+
 class SpecificSpec
+  extend Forwardable
   include ArgumentsParser
   include SyntaxChecker
 
-  attr_reader :spec
+  attr_reader :name
 
   def initialize(spec_str)
-    spec_name, options = name_and_options(spec_str)
-    @spec = Spec[spec_name]
-    @options = options
+    @name, @options = name_and_options(spec_str)
+    @spec = Spec[@name]
+    @options.each { |atom_keyname, _| @spec[atom_keyname] } # raise syntax error if atom_keyname undefined
   end
 
+  def initialize_copy(other)
+    @options = other.instance_variable_get('@options'.to_sym).dup
+  end
+
+  def_delegator :@spec, :[]
+
   def external_bonds
-    @spec.external_bonds == 0 ? 0 : @spec.external_bonds - @options.size
+    @spec.external_bonds - @options.size
+  end
+
+  def incoherent(atom_keyname)
+    if @spec[atom_keyname] # condition raise syntax_error if atom_keyname undefined
+      @options[atom_keyname] = :incoherent
+    end
+  end
+
+  def is_gas?
+    Gas.instance.include?(@spec)
+  end
+
+  def to_s
+    options = @options.map { |atom_keyname, v| "#{atom_keyname}: #{v}" }.join(', ')
+    "#{@spec.to_s}(#{options})"
   end
 
 private

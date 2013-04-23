@@ -26,4 +26,8 @@ class Atom
   def specified?
     !!@lattice
   end
+
+  def to_s
+    @lattice ? "#{name}%#{@lattice}" : @name
+  end
 end

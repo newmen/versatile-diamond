@@ -9,11 +9,15 @@ class Lattice
     def add(symbol, cpp_class)
       @lattices ||= {}
       syntax_error('.already_defined') if @lattices[symbol]
-      @lattices[symbol] = new(cpp_class)
+      @lattices[symbol] = new(symbol, cpp_class)
     end
   end
 
-  def initialize(cpp_class)
-    @cpp_class = cpp_class
+  def initialize(symbol, cpp_class)
+    @symbol, @cpp_class = symbol, cpp_class
+  end
+
+  def to_s
+    @symbol.to_s
   end
 end

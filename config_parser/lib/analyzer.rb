@@ -35,6 +35,7 @@ puts "LINE: #{line}"
   #   puts e.message
   rescue EOFError => e
     puts "#{@config_path}: #{e.message}"
+  # rescue Exception
   end
 
 private

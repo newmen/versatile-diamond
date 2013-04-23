@@ -26,14 +26,16 @@ require_relative 'lib/analysis_tool.rb'
 require_relative 'lib/analyzer.rb'
 require_relative 'lib/matcher.rb'
 
+AUTO_LOADING_DIRS = ['components', 'outcomes']
+
 using RichString
 
 def Object.const_missing(class_name)
   filename = class_name.to_s.underscore
-  if (path = find_file(filename, 'lib/components', 'lib/outcomes'))
+  if (path = find_file(filename, *AUTO_LOADING_DIRS.map { |dir| "lib/#{dir}" }))
     require path
     component = const_get(class_name)
     return component if component
   end
-  raise "Component \"#{class_name}\" is not found"
+  raise "#{class_name} is not found"
 end

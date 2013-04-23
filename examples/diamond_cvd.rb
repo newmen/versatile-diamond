@@ -26,7 +26,7 @@ gas
 
   concentration hydrogen(h: *), 1e-9
   concentration methan(c: *), 1e-10
-  # concentration ethylene(c1: *, c2: *), 0
+  # concentration ethylene(c1: *, c2: *), 0 # две активных связи на соседних атомах могут существовать?
 
   temperature 1200
 
@@ -107,7 +107,7 @@ events
     reverse_rate 5.3e3
 
   reaction 'methyl desorption'
-    equation metyl_on_bridge = bridge(ct: *) + methan(c: *)
+    equation methyl_on_bridge = bridge(ct: *) + methan(c: *)
       refinement 'from bridge'
         incoherent methyl_on_bridge(:cb)
         forward_rate 1.7e7
@@ -120,12 +120,12 @@ events
 
   reaction 'methyl activation'
     # TODO: должна быть уточнением реакции десорбции водорода
-    equation metyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
+    equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
     activation 37.5
     forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
 
   reaction 'methyl deactivation'
-    equation metyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
+    equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
     activation 0
     forward_rate 4.5e13, 'cm3/(mol * s)'
 
@@ -179,9 +179,10 @@ events
     reverse_rate 2e12
 
   reaction 'chain neighbour bridge-fixedbridge hydrogen migration'
-    equation bridge(cr: *) + bridge = bridge + bridge(ct: *)
-      position bridge(:cr), bridge(:ct), face: 100, dir: :front
-      incoherent bridge(:ct)
+    aliases left: bridge, right: bridge
+    equation left(cr: *) + right = left + right(ct: *)
+      position left(:cr), right(:ct), face: 100, dir: :front
+      incoherent right(:ct)
 
     activation 7
     forward_rate 6.6e10
@@ -258,8 +259,8 @@ events
     reverse_rate 2.7e11
 
   reaction 'high bridge is stand to incoherent bridge'
-    aliases source: bridge, result: bridge
-    equation high_bridge + source(ct: *) = result(cr: *)
+    aliases source: bridge, product: bridge
+    equation high_bridge + source(ct: *) = product(cr: *)
       incoherent source(:ct)
       position high_bridge(:ct), source(:ct), face: 100, dir: :front
       lateral_like :oppressive_methyl, high_bridge(:ct)
@@ -303,15 +304,15 @@ events
     reverse_rate 4.4e9
 
   reaction 'methyl to dimer'
-    aliases source: dimer, result: dimer
-    # указать какой конкретно атом начального димера становится атомом конечного димера?
-    equation methyl_on_bridge(cm: *) + source(cr: *) = result
+    aliases source: dimer, product: dimer
+    equation methyl_on_bridge(cm: *) + source(cr: *) = product
+      # TODO: видимо требуется уточнить реакцию, поскольку разыв source димера не очевиден?
       incoherent methyl_on_bridge(:cb)
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
 
       # TODO: используются атомы результата!
-      lateral_like :row_components, result(:cl), result(:cr)
+      lateral_like :row_components, product(:cl), product(:cr)
 
     # все значения выдуманы
     activation 31.3, end_row: 17.6

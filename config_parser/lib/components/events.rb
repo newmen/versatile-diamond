@@ -1,5 +1,5 @@
 class Events < ComplexComponent
   def reaction(name)
-    nested(Reaction.add(name))
+    nested(Reaction.new(name))
   end
 end

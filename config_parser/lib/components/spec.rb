@@ -2,6 +2,8 @@
 # When one spec uses an other then atoms and bonds from another spec coping to original spec.
 # If spec is recursive (i.e. uses itself) then no copy, reference to used atom creates instead.
 class Spec < Component
+  include Linker
+
   class << self
     include SyntaxChecker
 
@@ -21,18 +23,17 @@ class Spec < Component
 
     @atoms, @links = {}, {}
     @aliases = {}
-
-    @internal_bonds = 0
   end
 
   def external_bonds
-    valences = @atoms.values.map(&:valence)
-    valences.size == 1 && valences.first == 1 ? 0 : valences.inject(:+) - 2 * @internal_bonds
+    valences = @links.keys.map(&:valence)
+    internal_bonds = @links.inject(0) { |acc, ls| acc + internal_bonds_for(ls.first) }
+    valences.size == 1 && valences.first == 1 ? 2 : valences.inject(:+) - internal_bonds
   end
 
   def external_bonds_for(atom_keyname)
     atom = @atoms[atom_keyname]
-    atom.valence + @links[atom].select { |link, _| link.is_a?(Bond) }.size
+    atom.valence - internal_bonds_for(atom)
   end
 
   def [](atom_keyname)
@@ -58,11 +59,22 @@ class Spec < Component
 
   def bond(first, second, **options)
     link(Bond, first, second, options)
-    @internal_bonds += 1
   end
 
   def dbond(first, second)
     2.times { bond(first, second) }
+  end
+
+  def to_s
+    str = "#{name}("
+    str << @links.map do |atom, list|
+      links = "#{atom}["
+      links << list.map { |nb, link| "#{link}#{nb}" }.join(', ')
+      links << "]"
+      links
+    end.join(', ')
+    str << ")"
+    str
   end
 
 protected
@@ -109,21 +121,24 @@ private
 
   def adsorb_links(readsorbed_links, duplicated_atoms)
     readsorbed_links.each do |atom, links|
-      curr_links = @links[duplicated_atoms[atom]] = []
-      links.each do |another_atom, bond_instance|
-        curr_links << [duplicated_atoms[another_atom], bond_instance]
+      @links[duplicated_atoms[atom]] = links.map do |another_atom, bond_instance|
+        [duplicated_atoms[another_atom], bond_instance]
       end
     end
   end
 
-  def link(instance, first, second, **options)
-    first, second = existing_atoms(first, second)
+  def link(klass, *atom_keynames, **options)
+    first, second = existing_atoms(*atom_keynames)
     yield(first, second) if block_given?
-    @links[first] = [second, instance]
-    @links[second] = [first, instance]
+    instance = klass[options]
+    super(:@links, first, second, instance)
   end
 
   def existing_atoms(*atom_keynames)
     atom_keynames.map { |atom_keyname| self.[](atom_keyname) }
+  end
+
+  def internal_bonds_for(atom)
+    @links[atom].select { |_, link| link.is_a?(Bond) }.size
   end
 end

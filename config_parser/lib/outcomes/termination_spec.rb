@@ -1,5 +1,5 @@
 class TerminationSpec
-  def external_bonds
-    0
+  def is_gas?
+    false
   end
 end

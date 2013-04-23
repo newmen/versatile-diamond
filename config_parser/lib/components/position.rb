@@ -1,12 +1,12 @@
-class Position
-  def self.[](face, dir = nil)
-    key = face.to_s
-    key << "_#{dir}" if dir
-    @consts ||= {}
-    @consts[key] ||= new(face, dir)
+class Position < Bond
+  include SyntaxChecker
+
+  def self.[](face: nil, dir: nil)
+    syntax_error('.uncomplete') unless face && dir
+    super
   end
 
-  def initialize(face, dir)
-    @face, @dir = face, dir
+  def to_s
+    '.'
   end
 end
