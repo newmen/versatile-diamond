@@ -3,6 +3,7 @@ en:
     extra_space: "Extra space"
     undefined_component: "Unknown definition \"%{component}\""
     wrong_arguments_ordering: "Wrong arguments ordering"
+    wrong_block: "Wrong block definition"
     wrong_hierarchy: "Wrong hierarchy"
 
   atom:

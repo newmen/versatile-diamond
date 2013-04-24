@@ -27,8 +27,8 @@ class Spec < Component
 
   def external_bonds
     valences = @links.keys.map(&:valence)
-    internal_bonds = @links.inject(0) { |acc, ls| acc + internal_bonds_for(ls.first) }
-    valences.size == 1 && valences.first == 1 ? 2 : valences.inject(:+) - internal_bonds
+    internal_bonds = @links.reduce(0) { |acc, ls| acc + internal_bonds_for(ls.first) }
+    valences.size == 1 && valences.first == 1 ? 2 : valences.reduce(:+) - internal_bonds
   end
 
   def external_bonds_for(atom_keyname)
@@ -70,10 +70,10 @@ class Spec < Component
     str << @links.map do |atom, list|
       links = "#{atom}["
       links << list.map { |nb, link| "#{link}#{nb}" }.join(', ')
-      links << "]"
+      links << ']'
       links
     end.join(', ')
-    str << ")"
+    str << ')'
     str
   end
 

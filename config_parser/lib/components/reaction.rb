@@ -5,8 +5,12 @@ class Reaction < ComplexComponent
     @name = name
   end
 
+  def aliases(**refs)
+    @aliases = refs
+  end
+
   def equation(str)
-    @equation = Equation.add(str, @name)
+    @equation = Equation.add(str, @name, @aliases)
     nested(@equation)
   end
 

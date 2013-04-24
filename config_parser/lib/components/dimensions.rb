@@ -58,7 +58,7 @@ class Dimensions < Component
       _, dividend, _, divisor =
         dimension.gsub(/\(|\)/, '|').gsub(/\s/, '').scan(/\A(\|)?([^\/]+)\1?\/(\|)?(.+?)\3?\Z/).first
 
-      dividends = dividend.split('*').map do |v|
+      dividends = dividend.split('*').flat_map do |v|
         if v =~ /\A(?<units>.*?(?<symbol>m|l))(?<degree>\d+)?\Z/
           units, symbol, degree = $~[:units], $~[:symbol], $~[:degree] && $~[:degree].to_i
           if symbol == 'm' && degree % 3 == 0
@@ -68,14 +68,14 @@ class Dimensions < Component
           end
         end
         v
-      end.flatten
-      divisors = divisor.split('*').map do |v|
+      end
+      divisors = divisor.split('*').flat_map do |v|
         if v =~ /\A(?<units>.*?)(?<degree>\d+)?\Z/
           units, degree = $~[:units], $~[:degree] && $~[:degree].to_i
           next [units] * degree if degree
         end
         v
-      end.flatten
+      end
 
       vol = { 'mm3' => 1e3, 'cm3' => 1, 'dm3' => 1e-3, 'l' => 1e-3, 'm3' => 1e-6 }
       aos = { 'mol' => 1, 'kmol' => 1e3 }

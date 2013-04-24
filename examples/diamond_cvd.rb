@@ -215,12 +215,11 @@ events
       position two_atom, right(:cr), face: 100, dir: :cross
 
   reaction 'dimer formation between incoherent bridges'
-    aliases one: bridge, two: bridge
     # определение положения атомов выводится исходя из димера (результата реакции)?
     # думаю критично отличать прямую и обратную активации для этой реакции
-    equation one(ct: *) + two(ct: *) = dimer
-      incoherent one(:ct), two(:ct)
-      lateral_like :row_components, one(:ct), two(:ct)
+    equation bridge(ct: *) + bridge(ct: *) = dimer
+      incoherent bridge(:ct), bridge(:ct)
+      lateral_like :row_components, bridge(:ct), bridge(:ct)
 
     entalpy -36, end_row: -39, mid_row: -43
     activation 0.8, end_row: 0.4, mid_row: 0
@@ -239,9 +238,9 @@ events
     forward_rate 7.5e11
     reverse_rate 1.2e11
 
-  shared_lateral :oppressive_methyl do |near_atom|
+  shared_lateral :oppressive_methyl do |target_atom|
     lateral :near_methyl, 'when there is chain neighbour methyl'
-      position near_atom, methyl_on_dimer(:cr), face: 100, dir: :front
+      position target_atom, methyl_on_dimer(:cr), face: 100, dir: :front
 
   reaction 'methyl to high bridge'
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge

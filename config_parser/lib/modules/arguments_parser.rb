@@ -7,6 +7,7 @@ module ArgumentsParser
   end
 
   def scan_args(args_str)
+    # args_str, block = scan_block(args_str)
     args = args_str.split(/\s*,\s*/)
     options = {}
 
@@ -26,6 +27,17 @@ module ArgumentsParser
     options = Hash[options.to_a.reverse]
     [args, options]
   end
+
+  # def scan_block(args_str)
+  #   args_str, block_args_str = args_str.split(/\s*do\s*/)
+  #   if block_args_str
+  #     block_args_str = block_args_str.scan(/\A\|(.+?)\|\Z/).first
+  #     syntax_error('common.wrong_block') unless block_args_str
+  #     block_args = block_args_str.first.split(/\s*,\s*/)
+
+  #   end
+  #   [args_str, block]
+  # end
 
   def cast_value(value)
     if value[0] == ?:

@@ -3,6 +3,7 @@ ru:
     extra_space: "Лишний пробел"
     undefined_component: "Неизвестное определение \"%{component}\""
     wrong_arguments_ordering: "Неверная последовательность аргументов"
+    wrong_block: "Неверное определение блока"
     wrong_hierarchy: "Неверная иерархия"
 
   atom:

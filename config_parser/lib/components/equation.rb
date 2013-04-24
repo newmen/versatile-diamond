@@ -4,8 +4,8 @@ class Equation < ComplexComponent
   class << self
     include SyntaxChecker
 
-    def add(str, name)
-      register(build(str, name))
+    def add(str, name, aliases)
+      register(build(str, name, aliases))
     end
 
     def register(equation)
@@ -21,22 +21,31 @@ class Equation < ComplexComponent
 
   private
 
-    def build(str, name)
+    def build(str, name, aliases)
       sides = Matcher.equation(str)
       syntax_error('.invalid') unless sides
-      source, product = sides.map { |specs| specs.map(&method(:detect_spec)) }
+      source, product = sides.map do |specs|
+        specs.map { |spec_str| detect_spec(spec_str, aliases) }
+      end
       check_balance(source, product)
       check_compliance(source, product)
       new(source, product, name)
     end
 
-    def detect_spec(spec_str)
+    def detect_spec(spec_str, aliases)
       if Matcher.active_bond(spec_str)
         ActiveBond.instance
-      elsif (atom_name = Matcher.atom(spec_str))
+      elsif Matcher.atom(spec_str)
         AtomicSpec.new(spec_str)
       else
-        SpecificSpec.new(spec_str)
+        name, options = Matcher.specified_spec(spec_str)
+        name = name.to_sym
+        if aliases && aliases[name]
+          options = "(#{options})" if options
+          AliasSpec.new(name, "#{aliases[name]}#{options}")
+        else
+          SpecificSpec.new(spec_str)
+        end
       end
     end
 
@@ -45,7 +54,7 @@ class Equation < ComplexComponent
     end
 
     def external_bonds_sum(specs)
-      specs.map(&:external_bonds).inject(:+)
+      specs.map(&:external_bonds).reduce(:+)
     end
 
     def check_compliance(source, product, deep = 1)
@@ -155,7 +164,11 @@ private
 
   def find_spec(used_atom_str)
     spec_name, atom_keyname = define_atom(used_atom_str)
-    find_spec = -> specs { specs.find { |spec| spec.name == spec_name } }
+    find_spec = -> specs do
+      result = specs.select { |spec| spec.name == spec_name }
+      syntax_error('.cannot_be_mapped', name: spec_name) if result.size > 1
+      result.first
+    end
     specific_spec = find_spec[@source] || find_spec[@product]
     syntax_error('.undefined_used_atom') unless specific_spec
     yield specific_spec, atom_keyname

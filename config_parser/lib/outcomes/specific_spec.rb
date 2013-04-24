@@ -5,11 +5,9 @@ class SpecificSpec
   include ArgumentsParser
   include SyntaxChecker
 
-  attr_reader :name
-
   def initialize(spec_str)
-    @name, @options = name_and_options(spec_str)
-    @spec = Spec[@name]
+    name, @options = name_and_options(spec_str)
+    @spec = Spec[name]
     @options.each { |atom_keyname, _| @spec[atom_keyname] } # raise syntax error if atom_keyname undefined
   end
 
@@ -17,7 +15,7 @@ class SpecificSpec
     @options = other.instance_variable_get('@options'.to_sym).dup
   end
 
-  def_delegator :@spec, :[]
+  def_delegators :@spec, :[], :name
 
   def external_bonds
     @spec.external_bonds - @options.size
