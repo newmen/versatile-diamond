@@ -1,6 +1,7 @@
 class AtomReference
   def initialize(spec, atom_keyname)
     @spec, @atom_keyname = spec, atom_keyname
+    @atom = @spec[@atom_keyname]
   end
 
   def valence
@@ -8,10 +9,10 @@ class AtomReference
   end
 
   def specified?
-    @spec[@atom_keyname].specified?
+    @atom.specified?
   end
 
   def to_s
-    @spec[@atom_keyname].to_s
+    @atom.to_s
   end
 end

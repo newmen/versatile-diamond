@@ -12,13 +12,13 @@ Options:
   --lang=LANGUAGE   Setup current language [default: ru]
 HELP
 
+# require 'rubydeps'
 begin
   opt = Docopt::docopt(doc)
   I18n.locale = opt['--lang']
-  Analyzer.read_config(opt['<path_to_config>'])
-
-  p Spec[:bridge]
-
+  # Rubydeps.analyze do
+    Analyzer.read_config(opt['<path_to_config>'])
+  # end
 rescue Docopt::Exit => e
   puts e.message
 end

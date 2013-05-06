@@ -3,7 +3,7 @@ class Events < ComplexComponent
     nested(Reaction.new(name))
   end
 
-#   def shared_lateral(*args)
-# p args
-#   end
+  def environment(name)
+    nested(Environment.add(name))
+  end
 end

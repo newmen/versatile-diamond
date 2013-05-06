@@ -125,9 +125,9 @@ private
     # /kJ\s*\/\s*mol\Z/ => -> v { v },
     /kJ\s*\/\s*kmol\Z/ => -> v { v * 1e3 },
     /J\s*\/\s*mol\Z/ => -> v { v * 1e-3 },
-    /kcal\s*\/\s*mol\Z/ => -> v { v * 4.2 },
-    /kcal\s*\/\s*kmol\Z/ => -> v { v * 4.2e3 },
-    /cal\s*\/\s*mol\Z/ => -> v { v * 4.2e-3 }
+    /kcal\s*\/\s*mol\Z/ => -> v { v * 4.184 },
+    /kcal\s*\/\s*kmol\Z/ => -> v { v * 4.184e3 },
+    /cal\s*\/\s*mol\Z/ => -> v { v * 4.184e-3 }
   })
 
   convert_value(:time, {

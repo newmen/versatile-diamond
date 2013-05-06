@@ -24,7 +24,7 @@ module EquationProperties
   end
 
   def reverse_rate(value, dimension = nil)
-    gases_num = equation_instance.product_gases_num
+    gases_num = equation_instance.products_gases_num
     equation_instance.reverse_rate =
       Dimensions.convert_rate(eval_value_if_string(value, gases_num), gases_num, dimension)
   end

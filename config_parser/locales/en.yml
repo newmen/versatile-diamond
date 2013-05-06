@@ -29,6 +29,9 @@ en:
   position:
     uncomplete: "Necessary to characterize the position of atoms relative to each other"
 
+  linker:
+    undefined_used_atom: "Undefined used atom \"%{name}\""
+
   lattice:
     already_defined: "Lattice already defined"
     need_define_class: "Necessary to define C++ class when defining new lattice"
@@ -57,5 +60,14 @@ en:
     entalpy_already_set: "Heat of reaction already set"
     invalid: "Invalid reaction equation"
     rate_already_set: "Rate already set"
-    undefined_used_atom: "Undefined used atom"
     wrong_balance: "Wrong reaction balance"
+
+  environment:
+    targets_not_defined: "Target atoms is not defined for this environment"
+    undefined: "Undefined environment \"%{name}\""
+
+  where:
+    already_exists: "Where \"%{name}\" already exists"
+    cannot_link_targets: "Targets cannot be linked together"
+    should_links_with_target: "Position should be determined relative to one of target atoms"
+    undefined_use: "Undefined used where name"

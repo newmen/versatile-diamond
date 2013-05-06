@@ -24,12 +24,12 @@ class Equation < ComplexComponent
     def build(str, name, aliases)
       sides = Matcher.equation(str)
       syntax_error('.invalid') unless sides
-      source, product = sides.map do |specs|
+      source, products = sides.map do |specs|
         specs.map { |spec_str| detect_spec(spec_str, aliases) }
       end
-      check_balance(source, product)
-      check_compliance(source, product)
-      new(source, product, name)
+      check_balance(source, products)
+      check_compliance(source, products)
+      new(source, products, name)
     end
 
     def detect_spec(spec_str, aliases)
@@ -49,27 +49,27 @@ class Equation < ComplexComponent
       end
     end
 
-    def check_balance(source, product)
-      syntax_error('.wrong_balance') if external_bonds_sum(source) != external_bonds_sum(product)
+    def check_balance(source, products)
+      syntax_error('.wrong_balance') if external_bonds_sum(source) != external_bonds_sum(products)
     end
 
     def external_bonds_sum(specs)
       specs.map(&:external_bonds).reduce(:+)
     end
 
-    def check_compliance(source, product, deep = 1)
+    def check_compliance(source, products, deep = 1)
       source.group_by { |spec| spec.name }.each do |_, group|
-        if group.size > 1 && product.find { |spec| spec.name == group.first.name }
+        if group.size > 1 && products.find { |spec| spec.name == group.first.name }
           syntax_error('.cannot_be_mapped', name: group.first.name)
         end
       end
 
-      check_compliance(product, source, deep - 1) if deep > 0
+      check_compliance(products, source, deep - 1) if deep > 0
     end
   end
 
-  def initialize(source_specs, product_specs, name)
-    @source, @product = source_specs, product_specs
+  def initialize(source_specs, products_specs, name)
+    @source, @products = source_specs, products_specs
     @name = name
   end
 
@@ -90,11 +90,15 @@ class Equation < ComplexComponent
     first_atom, second_atom = used_atom_strs.map do |atom_str|
       find_spec(atom_str) { |specific_spec, atom_keyname| specific_spec[atom_keyname] }
     end
-    instance = Position[options]
-    link(:@positions, first_atom, second_atom, instance, define_var: true)
+    link(:@positions, first_atom, second_atom, Position[options])
   end
 
-  %w(source product).each do |specs|
+  def lateral(name, **target_refs)
+    @environments ||= []
+    @environments << Environment[name]
+  end
+
+  %w(source products).each do |specs|
     define_method("#{specs}_gases_num") do
       instance_variable_get("@#{specs}".to_sym).map(&:is_gas?).select { |v| v }.size
     end
@@ -126,7 +130,7 @@ class Equation < ComplexComponent
 
   def to_s
     specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
-    "#{specs_to_s[@source]} = #{specs_to_s[@product]}"
+    "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
   end
 
 protected
@@ -137,14 +141,14 @@ private
 
   def reverse
     return @reverse if @reverse
-    @reverse = self.class.register(self.class.new(@product, @source, "#{@name} reverse")) # TODO: duplicate ?
+    @reverse = self.class.register(self.class.new(@products, @source, "#{@name} reverse")) # TODO: duplicate ?
     @name << ' forward'
     @reverse.refinements = @refinements
     @reverse
   end
 
   def duplicate(name)
-    self.class.register(self.class.new(@source.map(&:dup), @product.map(&:dup), name))
+    self.class.register(self.class.new(@source.map(&:dup), @products.map(&:dup), name))
   end
 
   def update_attribute(attribute, value, prefix = nil)
@@ -156,20 +160,14 @@ private
     end
   end
 
-  def define_atom(used_atom_str)
-    spec_name, atom_keyname = Matcher.used_atom(used_atom_str)
-    syntax_error('.undefined_used_atom') unless spec_name && atom_keyname
-    [spec_name.to_sym, atom_keyname.to_sym]
-  end
-
   def find_spec(used_atom_str)
-    spec_name, atom_keyname = define_atom(used_atom_str)
+    spec_name, atom_keyname = match_used_atom(used_atom_str)
     find_spec = -> specs do
       result = specs.select { |spec| spec.name == spec_name }
       syntax_error('.cannot_be_mapped', name: spec_name) if result.size > 1
       result.first
     end
-    specific_spec = find_spec[@source] || find_spec[@product]
+    specific_spec = find_spec[@source] || find_spec[@products]
     syntax_error('.undefined_used_atom') unless specific_spec
     yield specific_spec, atom_keyname
   end

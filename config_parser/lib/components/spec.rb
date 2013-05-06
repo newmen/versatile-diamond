@@ -7,40 +7,24 @@ class Spec < Component
   class << self
     include SyntaxChecker
 
-    def [](spec_name)
-      @@common_specs[spec_name] || syntax_error('spec.undefined', name: spec_name)
-    end
-
     def add(spec_name)
       @@common_specs ||= {}
       syntax_error('spec.already_defined', name: spec_name) if @@common_specs[spec_name]
       @@common_specs[spec_name] = new(spec_name)
     end
+
+    def [](spec_name)
+      @@common_specs[spec_name] || syntax_error('spec.undefined', name: spec_name)
+    end
   end
 
   def initialize(name)
     @name = name
-
     @atoms, @links = {}, {}
-    @aliases = {}
-  end
-
-  def external_bonds
-    valences = @links.keys.map(&:valence)
-    internal_bonds = @links.reduce(0) { |acc, ls| acc + internal_bonds_for(ls.first) }
-    valences.size == 1 && valences.first == 1 ? 2 : valences.reduce(:+) - internal_bonds
-  end
-
-  def external_bonds_for(atom_keyname)
-    atom = @atoms[atom_keyname]
-    atom.valence - internal_bonds_for(atom)
-  end
-
-  def [](atom_keyname)
-    @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', keyname: atom_keyname)
   end
 
   def aliases(**refs)
+    @aliases ||= {}
     refs.each do |keyname, spec_name|
       spec = Spec[spec_name.to_sym]
       duplicated_atoms = spec.duplicate_atoms
@@ -63,6 +47,21 @@ class Spec < Component
 
   def dbond(first, second)
     2.times { bond(first, second) }
+  end
+
+  def external_bonds
+    valences = @links.keys.map(&:valence)
+    internal_bonds = @links.reduce(0) { |acc, ls| acc + internal_bonds_for(ls.first) }
+    valences.size == 1 && valences.first == 1 ? 2 : valences.reduce(:+) - internal_bonds
+  end
+
+  def external_bonds_for(atom_keyname)
+    atom = @atoms[atom_keyname]
+    atom.valence - internal_bonds_for(atom)
+  end
+
+  def [](atom_keyname)
+    @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', keyname: atom_keyname)
   end
 
   def to_s
@@ -93,7 +92,7 @@ protected
 private
 
   def detect_atom(atom_str)
-    simple_atom(atom_str) || defined_atom(atom_str)
+    simple_atom(atom_str) || used_atom(atom_str)
   end
 
   def simple_atom(atom_str)
@@ -102,20 +101,17 @@ private
     end
   end
 
-  def defined_atom(atom_str)
-    if (match = Matcher.used_atom(atom_str))
-      spec_name, atom_keyname = match.map(&:to_sym)
-      if spec_name == @name
-        self.[](atom_keyname) # checks existing atom keyname
-        AtomReference.new(self, atom_keyname)
-      elsif (aliased_spec = @aliases[spec_name])
-        aliased_spec[atom_keyname]
-      else
-        spec = Spec[spec_name]
-        duplicated_atoms = spec.duplicate_atoms
-        adsorb_links(spec.links, duplicated_atoms)
-        duplicated_atoms[spec[atom_keyname]]
-      end
+  def used_atom(atom_str)
+    spec_name, atom_keyname = match_used_atom(atom_str)
+    if spec_name == @name
+      AtomReference.new(self, atom_keyname)
+    elsif @aliases && (aliased_spec = @aliases[spec_name])
+      aliased_spec[atom_keyname]
+    else
+      spec = Spec[spec_name]
+      duplicated_atoms = spec.duplicate_atoms
+      adsorb_links(spec.links, duplicated_atoms)
+      duplicated_atoms[spec[atom_keyname]]
     end
   end
 
