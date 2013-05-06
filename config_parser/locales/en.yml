@@ -57,7 +57,7 @@ en:
   equation:
     activation_already_set: "Activation energy already set"
     cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\""
-    entalpy_already_set: "Heat of reaction already set"
+    enthalpy_already_set: "Heat of reaction already set"
     invalid: "Invalid reaction equation"
     rate_already_set: "Rate already set"
     wrong_balance: "Wrong reaction balance"

@@ -1,6 +1,6 @@
 module EquationProperties
-  def entalpy(value, dimension = nil)
-    equation_instance.entalpy = Dimensions.convert_energy(value, dimension)
+  def enthalpy(value, dimension = nil)
+    equation_instance.enthalpy = Dimensions.convert_energy(value, dimension)
   end
 
   def activation(value, dimension = nil)

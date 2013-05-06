@@ -104,10 +104,10 @@ class Equation < ComplexComponent
     end
   end
 
-  def entalpy=(value, reverse_too = true)
-    syntax_error('.entalpy_already_set') if @entalpy
-    update_attribute(:entalpy, value)
-    reverse.send('entalpy=', -value, false) if reverse_too
+  def enthalpy=(value, reverse_too = true)
+    syntax_error('.enthalpy_already_set') if @enthalpy
+    update_attribute(:enthalpy, value)
+    reverse.send('enthalpy=', -value, false) if reverse_too
   end
 
   def forward_activation=(value, prefix = :forward)

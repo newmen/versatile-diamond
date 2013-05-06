@@ -15,9 +15,9 @@ run
 
 gas
   spec :hydrogen
-    atoms h: H # the second atom specifies by run::atom_termination
+    atoms h: H # the second atom specifies by run::termination
 
-  spec :methan
+  spec :methane
     atoms c: C
 
 #  spec :ethylene
@@ -25,7 +25,7 @@ gas
 #    dbond :c1, :c2
 
   concentration hydrogen(h: *), 1e-9
-  concentration methan(c: *), 1e-10
+  concentration methane(c: *), 1e-10
   # concentration ethylene(c1: *, c2: *), 0 # две активных связи на соседних атомах могут существовать?
 
   temperature 1200
@@ -40,7 +40,7 @@ surface
     position :cl, :cr, face: 100, dir: :front
 
   spec :high_bridge
-    atoms ch: methan(:c), ct: bridge(:ct)
+    atoms ch: methane(:c), ct: bridge(:ct)
     dbond :ch, :ct
 
   spec :dimer
@@ -49,7 +49,7 @@ surface
 
   spec :methyl_on_bridge
     aliases basis: bridge
-    atoms cm: methan(:c), cb: basis(:ct), cl: basis(:cl), cr: basis(:cr)
+    atoms cm: methane(:c), cb: basis(:ct), cl: basis(:cl), cr: basis(:cr)
     bond :cm, :cb
 
   spec :methyl_on_dimer
@@ -78,7 +78,7 @@ surface
     position :cl, :cc, face: 100, dir: :front
 
   spec :cross_bridge_on_dimers
-    atoms ct: methan(:c), cl: dimer(:cr), cr: dimer(:cr)
+    atoms ct: methane(:c), cl: dimer(:cr), cr: dimer(:cr)
     bond :ct, :cl
     bond :ct, :cr
     position :cl, :cr, face: 100, dir: :cross
@@ -100,14 +100,14 @@ events
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
-    equation dimer(cr: *) + methan(c: *) = methyl_on_dimer
-    entalpy -73.6
+    equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
+    enthalpy -73.6
     activation 0
     forward_rate 1e13, 'cm3/(mol * s)'
     reverse_rate 5.3e3
 
   reaction 'methyl desorption'
-    equation methyl_on_bridge = bridge(ct: *) + methan(c: *)
+    equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
       refinement 'from bridge'
         incoherent methyl_on_bridge(:cb)
         forward_rate 1.7e7
@@ -131,7 +131,7 @@ events
 
   reaction 'same methyl-dimer hydrogen migration'
     equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
-  #  entalpy -10
+  #  enthalpy -10
   #  activation 29.8
   #  forward_rate 4.6e6
   #  reverse_rate 6e4
@@ -153,7 +153,7 @@ events
         forward_activation 27.4
         reverse_activation 36.6
 
-  #  entalpy -8.8
+  #  enthalpy -8.8
   #  activation 16.3
   #  forward_rate 1.8e9
   #  reverse_rate 1.3e8
@@ -222,18 +222,18 @@ events
       incoherent one(:ct), two(:ct)
 
       refinement 'not in dimers row'
-        entalpy -36
+        enthalpy -36
         activation 0.8
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:ct)
 
       there :end_row
-        entalpy -39
+        enthalpy -39
         forward_activation 0.4
         reverse_activation 1
 
       there :mid_row
-        entalpy -43
+        enthalpy -43
         forward_activation 0
         reverse_activation 1.2
 
@@ -247,18 +247,18 @@ events
       incoherent one(:ct)
 
       refinement 'not in dimers row'
-        entalpy -29.4
+        enthalpy -29.4
         activation 4
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:cr)
 
       there :mid_row
-        entalpy -13.6
+        enthalpy -13.6
         forward_activation 0.7
         reverse_activation 4.2
 
       there :end_row
-        entalpy -21.5
+        enthalpy -21.5
         forward_activation 2.7
         reverse_activation 4.1
 
@@ -315,7 +315,7 @@ events
         forward_activation 25.5
         reverse_activation 17.1
 
-    entalpy 24
+    enthalpy 24
     forward_rate 6.1e13
     reverse_rate 1.1e12
 
@@ -351,7 +351,7 @@ events
 
   reaction 'migration along row'
     equation metyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
-    entalpy 3.4
+    enthalpy 3.4
     activation 30
     # значения скоростей выдуманы
     forward_rate 2.4e8

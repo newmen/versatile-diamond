@@ -68,7 +68,7 @@ class Spec < Component
     str = "#{name}("
     str << @links.map do |atom, list|
       links = "#{atom}["
-      links << list.map { |nb, link| "#{link}#{nb}" }.join(', ')
+      links << list.map { |neighbour, link| "#{link}#{neighbour}" }.join(', ')
       links << ']'
       links
     end.join(', ')
