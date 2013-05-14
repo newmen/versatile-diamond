@@ -350,7 +350,7 @@ events
     reverse_rate 1.1e8
 
   reaction 'migration along row'
-    equation metyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
+    equation methyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
     enthalpy 3.4
     activation 30
     # значения скоростей выдуманы
@@ -376,7 +376,7 @@ events
       # все значения выдуманы
     forward_rate 3.5e8
 
-  # TODO: вмеру маленькой скорости, стоит исключить данную реакцию
+  # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
   # reaction 'single dimer to high bridge'
   #   aliases one: bridge, two: bridge
   #   equation dimer = high_bridge + one(ct: *) + two(ct: *)

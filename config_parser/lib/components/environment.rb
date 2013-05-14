@@ -32,7 +32,7 @@ class Environment < ComplexComponent
     nested(where)
   end
 
-  def there(name)
+  def use_where(name)
     @wheres[name]
   end
 

@@ -1,4 +1,5 @@
 class Equation < ComplexComponent
+  include AtomMatcher
   include Linker
 
   class << self
@@ -49,12 +50,37 @@ class Equation < ComplexComponent
       end
     end
 
-    def check_balance(source, products)
-      syntax_error('.wrong_balance') if external_bonds_sum(source) != external_bonds_sum(products)
-    end
-
     def external_bonds_sum(specs)
       specs.map(&:external_bonds).reduce(:+)
+    end
+
+    def extends_if_possible(specs, bonds_sum_limit)
+      combinations = specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
+      combinations.each do |combination|
+        bonds_sum = combination.reduce(0) do |acc, spec|
+          acc + (spec.extendable? ? spec.external_bonds_after_extend : spec.external_bonds)
+        end
+
+p "#{bonds_sum} == #{bonds_sum_limit}"
+
+        if bonds_sum == bonds_sum_limit
+          combination.each { |spec| spec.extend! if spec.extendable? }
+          return true
+        end
+      end
+      false
+    end
+
+    # TODO: potencial problem of source and products extending, because maybe case when need at the same time to extend one source spec and two products spec
+    # TODO: if checks every possible extending way for complete condition then analyzer may accept incorrect equation
+    def check_balance(source, products)
+p      ebs = external_bonds_sum(source)
+p      ebp = external_bonds_sum(products)
+      if ebs != ebp
+        unless (ebs < ebp && extends_if_possible(source, ebp)) || (ebs > ebp && extends_if_possible(products, ebs))
+          syntax_error('.wrong_balance')
+        end
+      end
     end
 
     def check_compliance(source, products, deep = 1)
@@ -74,10 +100,7 @@ class Equation < ComplexComponent
   end
 
   def refinement(name)
-    @refinements ||= []
-    ref = Refinement.new(duplicate("#{@name} #{name}"))
-    @refinements << ref
-    nested(ref)
+    nest_refinement(Refinement.new(duplicate("#{@name} #{name}")))
   end
 
   def incoherent(*used_atom_strs)
@@ -93,10 +116,37 @@ class Equation < ComplexComponent
     link(:@positions, first_atom, second_atom, Position[options])
   end
 
-  def lateral(name, **target_refs)
-    @environments ||= []
-    @environments << Environment[name]
+  def lateral(env_name, **target_refs)
+    @laterals ||= {}
+    if @laterals[env_name]
+      syntax_error('.lateral_already_connected')
+    else
+      environment = Environment[env_name]
+      resolved_target_refs = target_refs.map do |target_alias, used_atom_str|
+        syntax_error('.undefined_target_alias', name: target_alias) unless environment.is_target?(target_alias)
+        atom = find_spec(used_atom_str) { |specific_spec, atom_keyname| specific_spec[atom_keyname] }
+        [target_alias, atom]
+      end
+
+      @laterals[env_name] = Lateral.new(environment, Hash[resolved_target_refs])
+    end
   end
+
+  def there(*names)
+    concreted_wheres = names.map do |name|
+      laterals_with_where = @laterals.select { |_, lateral| lateral.has_where?(name) }.values
+
+      syntax_error('where.undefined', name: name) if laterals_with_where.size < 1
+      syntax_error('.multiple_wheres', name: name) if laterals_with_where.size > 1
+
+      laterals_with_where.first.concretize_where(name)
+    end
+
+    full_name = "#{@name} #{concreted_wheres.map(&:description).join(', ')}"
+    nest_refinement(There.new(duplicate(full_name), concreted_wheres))
+  end
+
+  # another methods
 
   %w(source products).each do |specs|
     define_method("#{specs}_gases_num") do
@@ -104,29 +154,26 @@ class Equation < ComplexComponent
     end
   end
 
-  def enthalpy=(value, reverse_too = true)
-    syntax_error('.enthalpy_already_set') if @enthalpy
-    update_attribute(:enthalpy, value)
-    reverse.send('enthalpy=', -value, false) if reverse_too
+  def enthalpy=(value)
+    self.forward_enthalpy = value
+    self.reverse_enthalpy = -value
   end
 
-  def forward_activation=(value, prefix = :forward)
-    syntax_error('.activation_already_set') if @activation
-    update_attribute(:activation, value, prefix)
+  class << self
+    def define_property_setter(property)
+      define_method("forward_#{property}=") do |value, prefix = :forward|
+        syntax_error(".#{property}_already_set") if instance_variable_get("@#{property}".to_sym)
+        update_attribute(property, value, prefix)
+      end
+
+      define_method("reverse_#{property}=") do |value|
+        reverse.send("forward_#{property}=", value, :reverse)
+      end
+    end
   end
 
-  def reverse_activation=(value)
-    reverse.send('forward_activation=', value, :reverse)
-  end
-
-  def forward_rate=(value, prefix = :forward)
-    syntax_error('.rate_already_set') if @rate
-    update_attribute(:rate, value, prefix)
-  end
-
-  def reverse_rate=(value)
-    reverse.send('forward_rate=', value, :reverse)
-  end
+  define_property_setter :activation
+  define_property_setter :rate
 
   def to_s
     specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
@@ -137,7 +184,15 @@ protected
 
   attr_writer :refinements
 
+  define_property_setter :enthalpy
+
 private
+
+  def nest_refinement(refinement)
+    @refinements ||= []
+    @refinements << refinement
+    nested(refinement)
+  end
 
   def reverse
     return @reverse if @reverse
@@ -147,8 +202,8 @@ private
     @reverse
   end
 
-  def duplicate(name)
-    self.class.register(self.class.new(@source.map(&:dup), @products.map(&:dup), name))
+  def duplicate(equation_name)
+    self.class.register(self.class.new(@source.map(&:dup), @products.map(&:dup), equation_name))
   end
 
   def update_attribute(attribute, value, prefix = nil)

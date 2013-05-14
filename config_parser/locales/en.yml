@@ -56,10 +56,13 @@ en:
 
   equation:
     activation_already_set: "Activation energy already set"
-    cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\""
+    cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\" instruction"
     enthalpy_already_set: "Heat of reaction already set"
     invalid: "Invalid reaction equation"
+    lateral_already_connected: "Lateral already connected"
+    multiple_wheres: "Used where \"%{name}\" available in several environments"
     rate_already_set: "Rate already set"
+    undefined_target_alias: "Undefined target atom alias \"%{name}\""
     wrong_balance: "Wrong reaction balance"
 
   environment:
@@ -70,4 +73,6 @@ en:
     already_exists: "Where \"%{name}\" already exists"
     cannot_link_targets: "Targets cannot be linked together"
     should_links_with_target: "Position should be determined relative to one of target atoms"
-    undefined_use: "Undefined used where name"
+    undefined: "Undefined used where name \"%{name}\""
+
+  lateral:

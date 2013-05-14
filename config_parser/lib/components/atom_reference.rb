@@ -1,4 +1,6 @@
 class AtomReference
+  attr_reader :spec, :atom
+
   def initialize(spec, atom_keyname)
     @spec, @atom_keyname = spec, atom_keyname
     @atom = @spec[@atom_keyname]

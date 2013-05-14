@@ -35,7 +35,7 @@ private
     if value.is_a?(String)
       t_str = 'T = '
       # TODO: unqualified access
-      temperature = -> klass { klass.instance.instance_variable_get('@temperature'.to_sym) }
+      temperature = -> klass { klass.instance.instance_variable_get(:@temperature) }
       t_str << (gases_num > 0 ? temperature[Gas] : temperature[Surface]).to_s
       eval("#{t_str}; #{value}")
     else

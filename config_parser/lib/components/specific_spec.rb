@@ -6,19 +6,23 @@ class SpecificSpec
   include SyntaxChecker
 
   def initialize(spec_str)
-    name, @options = name_and_options(spec_str)
-    @spec = Spec[name]
-    @options.each { |atom_keyname, _| @spec[atom_keyname] } # raise syntax error if atom_keyname undefined
+    @original_name, @options = name_and_options(spec_str)
+    @spec = Spec[@original_name]
+    @options.each { |atom_keyname, _| @spec[atom_keyname] } # raises syntax error if atom_keyname undefined
   end
 
   def initialize_copy(other)
-    @options = other.instance_variable_get('@options'.to_sym).dup
+    @options = other.instance_variable_get(:@options).dup
   end
 
-  def_delegators :@spec, :[], :name
+  def_delegators :@spec, :[]
+
+  def name
+    @original_name
+  end
 
   def external_bonds
-    @spec.external_bonds - @options.size
+    @external_bonds ||= @spec.external_bonds - @options.size
   end
 
   def incoherent(atom_keyname)
@@ -29,6 +33,21 @@ class SpecificSpec
 
   def is_gas?
     Gas.instance.include?(@spec)
+  end
+
+  def extendable?
+    # TODO: hide into spec!
+    @extendable ||= @spec.extendable?
+  end
+
+  def external_bonds_after_extend
+    return @external_bonds_after_extend if @external_bonds_after_extend
+    @extended_spec = @spec.extend_by_references
+    @external_bonds_after_extend = @extended_spec.external_bonds - @options.size
+  end
+
+  def extend!
+    @spec = @extended_spec
   end
 
   def to_s
@@ -43,7 +62,7 @@ private
     args = string_to_args(args_str)
     options = args.empty? ? {} : args.first
     unless options && options.is_a?(Hash) && options.reject { |_, option| option == '*' }.empty?
-      # TODO: checking only star here
+      # TODO: checking only stars here
       syntax_error('.wrong_specification')
     end
     [name.to_sym, options]
