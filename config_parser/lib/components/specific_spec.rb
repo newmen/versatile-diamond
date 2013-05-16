@@ -15,14 +15,14 @@ class SpecificSpec
     @options = other.instance_variable_get(:@options).dup
   end
 
-  def_delegators :@spec, :[]
+  def_delegators :@spec, :[], :extendable?
 
   def name
     @original_name
   end
 
   def external_bonds
-    @external_bonds ||= @spec.external_bonds - @options.size
+    @spec.external_bonds - @options.size
   end
 
   def incoherent(atom_keyname)
@@ -33,11 +33,6 @@ class SpecificSpec
 
   def is_gas?
     Gas.instance.include?(@spec)
-  end
-
-  def extendable?
-    # TODO: hide into spec!
-    @extendable ||= @spec.extendable?
   end
 
   def external_bonds_after_extend

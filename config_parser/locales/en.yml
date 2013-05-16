@@ -29,9 +29,6 @@ en:
   position:
     uncomplete: "Necessary to characterize the position of atoms relative to each other"
 
-  linker:
-    undefined_used_atom: "Undefined used atom \"%{name}\""
-
   lattice:
     already_defined: "Lattice already defined"
     need_define_class: "Necessary to define C++ class when defining new lattice"
@@ -40,7 +37,7 @@ en:
   spec:
     already_defined: "Spec \"%{name}\" already defined"
     undefined: "Undefined spec \"%{name}\""
-    undefined_atom_keyname: "Undefined atom keyname"
+    undefined_atom_keyname: "Undefined atom keyname \"%{atom_keyname}\" in \"%{spec_name}\""
 
   gas_spec:
     wrong_bond: "Bond cannot be characterized"
@@ -75,4 +72,5 @@ en:
     should_links_with_target: "Position should be determined relative to one of target atoms"
     undefined: "Undefined used where name \"%{name}\""
 
-  lateral:
+  matcher:
+    undefined_used_atom: "Undefined used atom \"%{name}\""

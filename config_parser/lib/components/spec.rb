@@ -69,25 +69,30 @@ class Spec < Component
   end
 
   def extendable?
-    atom_instances.any? { |atom| atom.is_a?(AtomReference) }
+    @extendable ||= atom_instances.any? { |atom| atom.is_a?(AtomReference) }
   end
 
   def extend_by_references
     extendable_spec = self.class.new("extended_#{@name}")
-    extendable_spec.adsorb_links(@links, duplicate_atoms)
+    duplicated_atoms = duplicate_atoms
+    extendable_spec.instance_variable_set(:@atoms, alias_atoms(duplicated_atoms))
+    extendable_spec.adsorb_links(@links, duplicated_atoms)
     extendable_spec.extend!
     extendable_spec
   end
 
   def [](atom_keyname)
-    @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', keyname: atom_keyname)
+    @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', atom_keyname: atom_keyname, spec_name: @name)
   end
 
   def to_s
+    atoms_to_aliases = @atoms.invert
+    name_with_alias = -> atom { (a = atoms_to_aliases[atom]) ? "#{atom}(#{a})" : "#{atom}" }
+
     str = "#{name}(\n"
     str << @links.map do |atom, list|
-      links = "  #{atom}[\n    "
-      links << list.map { |neighbour, link| "#{link}#{neighbour}" }.join(', ')
+      links = "  #{name_with_alias[atom]}[\n    "
+      links << list.map { |neighbour, link| "#{link}#{name_with_alias[neighbour]}" }.join(', ')
       links << ']'
       links
     end.join(",\n")

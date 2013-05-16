@@ -15,6 +15,6 @@ class AtomReference
   end
 
   def to_s
-    @atom.to_s
+    "&#{@atom}"
   end
 end

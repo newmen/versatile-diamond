@@ -29,9 +29,6 @@ ru:
   position:
     uncomplete: "Необходимо охарактеризовать положение атомов друг относительно друга"
 
-  linker:
-    undefined_used_atom: "Неизвестный используемый атом \"%{name}\""
-
   lattice:
     already_defined: "Решётка уже определена"
     need_define_class: "Необходимо задать C++ класс для определения типа решётки"
@@ -40,7 +37,7 @@ ru:
   spec:
     already_defined: "Вид структуры \"%{name}\" уже определён"
     undefined: "Неизвестный вид структуры \"%{name}\""
-    undefined_atom_keyname: "Неизвестный псевдоним атома"
+    undefined_atom_keyname: "Неизвестный псевдоним атома \"%{atom_keyname}\" в \"%{spec_name}\""
 
   gas_spec:
     wrong_bond: "В структурах газовой фазы, связь не может быть охарактеризована"
@@ -75,4 +72,5 @@ ru:
     should_links_with_target: "Положение должно определяться относительно целевого атома"
     undefined: "Неизвестное название используемого окружения \"%{name}\""
 
-  lateral:
+  matcher:
+    undefined_used_atom: "Неизвестный используемый атом \"%{name}\""

@@ -28,7 +28,11 @@ class Equation < ComplexComponent
       source, products = sides.map do |specs|
         specs.map { |spec_str| detect_spec(spec_str, aliases) }
       end
-      check_balance(source, products)
+
+      check_balance(source, products) do |ext_src, ext_prd|
+        source, products = ext_src, ext_prd
+      end || syntax_error('.wrong_balance')
+
       check_compliance(source, products)
       new(source, products, name)
     end
@@ -54,32 +58,47 @@ class Equation < ComplexComponent
       specs.map(&:external_bonds).reduce(:+)
     end
 
-    def extends_if_possible(specs, bonds_sum_limit)
+    def extends_if_possible(type, source, products, bonds_sum_limit, deep, &block)
+      specs = eval(type.to_s)
       combinations = specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
       combinations.each do |combination|
-        bonds_sum = combination.reduce(0) do |acc, spec|
-          acc + (spec.extendable? ? spec.external_bonds_after_extend : spec.external_bonds)
+        bonds_sum = specs.reduce(0) do |acc, spec|
+          acc + (combination.include?(spec) && spec.extendable? ?
+            spec.external_bonds_after_extend :
+            spec.external_bonds)
         end
 
-p "#{bonds_sum} == #{bonds_sum_limit}"
+        if bonds_sum >= bonds_sum_limit
+          duplicate_specs = specs.map do |spec|
+            duplicate_spec = spec.dup
+            duplicate_spec.extend! if combination.include?(spec) && spec.extendable?
+            duplicate_spec
+          end
 
-        if bonds_sum == bonds_sum_limit
-          combination.each { |spec| spec.extend! if spec.extendable? }
-          return true
+          args = type == :source ? [duplicate_specs, products] : [source, duplicate_specs]
+          result = check_balance(*args, deep - 1, &block)
+          if result then return result else next end
         end
       end
       false
     end
 
-    # TODO: potencial problem of source and products extending, because maybe case when need at the same time to extend one source spec and two products spec
     # TODO: if checks every possible extending way for complete condition then analyzer may accept incorrect equation
-    def check_balance(source, products)
-p      ebs = external_bonds_sum(source)
-p      ebp = external_bonds_sum(products)
-      if ebs != ebp
-        unless (ebs < ebp && extends_if_possible(source, ebp)) || (ebs > ebp && extends_if_possible(products, ebs))
-          syntax_error('.wrong_balance')
+    def check_balance(source, products, deep = 2, &block)
+      ebs = external_bonds_sum(source)
+      ebp = external_bonds_sum(products)
+
+      if ebs == ebp
+        block[source, products]
+        true
+      elsif deep > 0
+        if ebs < ebp
+          extends_if_possible(:source, source, products, ebp, deep, &block)
+        elsif ebs > ebp
+          extends_if_possible(:products, source, products, ebs, deep, &block)
         end
+      else
+        false
       end
     end
 
@@ -100,7 +119,7 @@ p      ebp = external_bonds_sum(products)
   end
 
   def refinement(name)
-    nest_refinement(Refinement.new(duplicate("#{@name} #{name}")))
+    nest_refinement(Refinement.new(duplicate(name)))
   end
 
   def incoherent(*used_atom_strs)
@@ -142,8 +161,8 @@ p      ebp = external_bonds_sum(products)
       laterals_with_where.first.concretize_where(name)
     end
 
-    full_name = "#{@name} #{concreted_wheres.map(&:description).join(', ')}"
-    nest_refinement(There.new(duplicate(full_name), concreted_wheres))
+    name_tail = "#{concreted_wheres.map(&:description).join(', ')}"
+    nest_refinement(There.new(duplicate(name_tail), concreted_wheres))
   end
 
   # another methods
@@ -202,8 +221,8 @@ private
     @reverse
   end
 
-  def duplicate(equation_name)
-    self.class.register(self.class.new(@source.map(&:dup), @products.map(&:dup), equation_name))
+  def duplicate(equation_name_tail)
+    self.class.register(self.class.new(@source.map(&:dup), @products.map(&:dup), "#{@name} #{equation_name_tail}"))
   end
 
   def update_attribute(attribute, value, prefix = nil)
@@ -223,7 +242,7 @@ private
       result.first
     end
     specific_spec = find_spec[@source] || find_spec[@products]
-    syntax_error('.undefined_used_atom') unless specific_spec
+    syntax_error('matcher.undefined_used_atom', name: used_atom_str) unless specific_spec
     yield specific_spec, atom_keyname
   end
 end
