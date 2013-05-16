@@ -6,7 +6,7 @@ class Reaction < ComplexComponent
   end
 
   def aliases(**refs)
-    @aliases = refs
+    @aliases = refs # checks in equation
   end
 
   def equation(str)

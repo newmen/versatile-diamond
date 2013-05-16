@@ -15,9 +15,9 @@ run
 
 gas
   spec :hydrogen
-    atoms h: H # the second atom specifies by run::atom_termination
+    atoms h: H # the second atom specifies by run::termination
 
-  spec :methan
+  spec :methane
     atoms c: C
 
 #  spec :ethylene
@@ -25,7 +25,7 @@ gas
 #    dbond :c1, :c2
 
   concentration hydrogen(h: *), 1e-9
-  concentration methan(c: *), 1e-10
+  concentration methane(c: *), 1e-10
   # concentration ethylene(c1: *, c2: *), 0 # две активных связи на соседних атомах могут существовать?
 
   temperature 1200
@@ -35,12 +35,12 @@ surface
 
   spec :bridge
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
-    bond :ct, :cl, face: 110
-    bond :ct, :cr, face: 110
+    bond :ct, :cl, face: 110, dir: :front
+    bond :ct, :cr, face: 110, dir: :front
     position :cl, :cr, face: 100, dir: :front
 
   spec :high_bridge
-    atoms ch: methan(:c), ct: bridge(:ct)
+    atoms ch: methane(:c), ct: bridge(:ct)
     dbond :ch, :ct
 
   spec :dimer
@@ -49,7 +49,7 @@ surface
 
   spec :methyl_on_bridge
     aliases basis: bridge
-    atoms cm: methan(:c), cb: basis(:ct), cl: basis(:cl), cr: basis(:cr)
+    atoms cm: methane(:c), cb: basis(:ct), cl: basis(:cl), cr: basis(:cr)
     bond :cm, :cb
 
   spec :methyl_on_dimer
@@ -67,18 +67,18 @@ surface
 
   spec :bridge_with_dimer
     atoms ct: C%d, cl: bridge(:ct), cr: dimer(:cr)
-    bond :ct, :cl, face: 110
-    bond :ct, :cr, face: 110
+    bond :ct, :cl, face: 110, dir: :front
+    bond :ct, :cr, face: 110, dir: :front
     position :cl, :cr, face: 100, dir: :front
 
   spec :two_bridges
     atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
-    bond :ctl, :cl, face: 110
-    bond :ctl, :cc, face: 110
+    bond :ctl, :cl, face: 110, dir: :front
+    bond :ctl, :cc, face: 110, dir: :front
     position :cl, :cc, face: 100, dir: :front
 
   spec :cross_bridge_on_dimers
-    atoms ct: methan(:c), cl: dimer(:cr), cr: dimer(:cr)
+    atoms ct: methane(:c), cl: dimer(:cr), cr: dimer(:cr)
     bond :ct, :cl
     bond :ct, :cr
     position :cl, :cr, face: 100, dir: :cross
@@ -100,14 +100,14 @@ events
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
-    equation dimer(cr: *) + methan(c: *) = methyl_on_dimer
-    entalpy -73.6
+    equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
+    enthalpy -73.6
     activation 0
     forward_rate 1e13, 'cm3/(mol * s)'
     reverse_rate 5.3e3
 
   reaction 'methyl desorption'
-    equation methyl_on_bridge = bridge(ct: *) + methan(c: *)
+    equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
       refinement 'from bridge'
         incoherent methyl_on_bridge(:cb)
         forward_rate 1.7e7
@@ -131,7 +131,7 @@ events
 
   reaction 'same methyl-dimer hydrogen migration'
     equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
-  #  entalpy -10
+  #  enthalpy -10
   #  activation 29.8
   #  forward_rate 4.6e6
   #  reverse_rate 6e4
@@ -153,7 +153,7 @@ events
         forward_activation 27.4
         reverse_activation 36.6
 
-  #  entalpy -8.8
+  #  enthalpy -8.8
   #  activation 16.3
   #  forward_rate 1.8e9
   #  reverse_rate 1.3e8
@@ -202,27 +202,41 @@ events
     activation 51
     forward_rate 2.3e13
 
-  shared_lateral :row_components do |one_atom, two_atom|
+  environment :dimers_row
+    targets :one_atom, :two_atom
     aliases left: dimer, right: dimer
 
-    lateral :end_row, 'at end of row'
+    where :end_row, 'at end of dimers row'
       position one_atom, left(:cl), face: 100, dir: :cross
       position two_atom, left(:cr), face: 100, dir: :cross
 
-    lateral :mid_row, 'in middle of row'
+    where :mid_row, 'in middle of dimers row'
       use :end_row
       position one_atom, right(:cl), face: 100, dir: :cross
       position two_atom, right(:cr), face: 100, dir: :cross
 
   reaction 'dimer formation between incoherent bridges'
-    # определение положения атомов выводится исходя из димера (результата реакции)?
-    # думаю критично отличать прямую и обратную активации для этой реакции
-    equation bridge(ct: *) + bridge(ct: *) = dimer
-      incoherent bridge(:ct), bridge(:ct)
-      lateral_like :row_components, bridge(:ct), bridge(:ct)
+    aliases one: bridge, two: bridge
+    # определение положения атомов выводится исходя из результата реакции?
+    equation one(ct: *) + two(ct: *) = dimer
+      incoherent one(:ct), two(:ct)
 
-    entalpy -36, end_row: -39, mid_row: -43
-    activation 0.8, end_row: 0.4, mid_row: 0
+      refinement 'not in dimers row'
+        enthalpy -36
+        activation 0.8
+
+      lateral :dimers_row, one_atom: one(:ct), two_atom: two(:ct)
+
+      there :end_row
+        enthalpy -39
+        forward_activation 0.4
+        reverse_activation 1
+
+      there :mid_row
+        enthalpy -43
+        forward_activation 0
+        reverse_activation 1.2
+
     forward_rate 8.9e11
     reverse_rate 2.2e6
 
@@ -231,30 +245,58 @@ events
     # см. коммент к предыдущей реакции
     equation one(ct: *) + two(cr: *) = dimer
       incoherent one(:ct)
-      lateral_like :row_components, one(:ct), two(:cr)
 
-    entalpy -29.4, end_row: -21.5, mid_row: -13.6
-    activation 4, end_row: 2.7, mid_row: 0.7
+      refinement 'not in dimers row'
+        enthalpy -29.4
+        activation 4
+
+      lateral :dimers_row, one_atom: one(:ct), two_atom: two(:cr)
+
+      there :mid_row
+        enthalpy -13.6
+        forward_activation 0.7
+        reverse_activation 4.2
+
+      there :end_row
+        enthalpy -21.5
+        forward_activation 2.7
+        reverse_activation 4.1
+
     forward_rate 7.5e11
     reverse_rate 1.2e11
 
-  shared_lateral :oppressive_methyl do |target_atom|
-    lateral :near_methyl, 'when there is chain neighbour methyl'
+  environment :high_neighbour
+    targets :target_atom
+
+    where :near_methyl, 'when there is chain neighbour methyl'
       position target_atom, methyl_on_dimer(:cr), face: 100, dir: :front
 
+    # TODO: этот случай используется не везде
+    where :near_high_bridge, 'when there is chain neighbour high bridge'
+      position target_atom, high_bridge(:ct), face: 100, dir: :front
+
+
   reaction 'methyl to high bridge'
+    # TODO: проверить соответствие значений направленности
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
       position bridge(:ct), high_bridge(:ct), face: 100, dir: :front
 
-      lateral_like :oppressive_methyl, methyl_on_dimer(:cr)
-      lateral :near_hb, 'when there is chain neighbour high bridge'
-        position methyl_on_dimer(:cr), high_bridge(:ct), face: 100, dir: :front
+      refinement 'without high chain neighbour'
+        forward_activation 15.3
+        reverse_activation 2.9
 
-    # TODO: проверить соответствие значений направленности
-    # TODO: энергии латеральных взаимодействий выдуманы
-    forward_activation 15.3, near_methyl: 10.4, near_hb: 12
+      lateral :high_neighbour, target_atom: methyl_on_dimer(:cr)
+
+      # TODO: энергии латеральных взаимодействий выдуманы (как, впорочем, и ранее)
+      there :near_methyl
+        forward_activation 10.4
+        reverse_activation 5.1
+
+      there :near_high_bridge
+        forward_activation 12
+        reverse_activation 4.4
+
     forward_rate 9.8e12
-    reverse_activation 2.9, near_methyl: 5.1, near_hb: 4.4
     reverse_rate 2.7e11
 
   reaction 'high bridge is stand to incoherent bridge'
@@ -262,41 +304,54 @@ events
     equation high_bridge + source(ct: *) = product(cr: *)
       incoherent source(:ct)
       position high_bridge(:ct), source(:ct), face: 100, dir: :front
-      lateral_like :oppressive_methyl, high_bridge(:ct)
 
-    # TODO: аналогично проверить значения
-    entalpy 24
-    forward_activation 36.3, near_methyl: 25.5
+      refinement 'without chain neighbour methyl'
+        forward_activation 36.3
+        reverse_activation 12.3
+
+      # TODO: аналогично проверить значения
+      lateral :high_neighbour, target_atom: high_bridge(:ct)
+      there :near_methyl
+        forward_activation 25.5
+        reverse_activation 17.1
+
+    enthalpy 24
     forward_rate 6.1e13
-    reverse_activation 12.3, near_methyl: 17.1
     reverse_rate 1.1e12
 
   reaction 'high bridge to bridge and dimer'
     # положение атомов также выводится исходя из результата реакции?
     equation high_bridge + dimer(cr: *) = bridge_with_dimer(cl: *)
       incoherent dimer(:cl)
-      lateral_like :oppressive_methyl, high_bridge(:ct)
 
-    # изначально было только одно значение энергии активации (для обоих направлений)
-    forward_activation 14.9, near_methyl: 12.7
+      refinement 'without chain neighbour methyl'
+        activation 14.9
+
+      lateral :high_neighbour, target_atom: high_bridge(:ct)
+      there :near_methyl
+        forward_activation 12.7
+        reverse_activation 16.2
+
     forward_rate 2.2e9
-    reverse_activation 14.9, near_methyl: 16.2
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
     # конечное положение активной связи может быть не очевидно!
     equation high_bridge + bridge(cr: *) = two_bridges(cl: *)
-      lateral_like :oppressive_methyl, high_bridge(:ct)
+      refinement 'without chain neighbour methyl'
+        activation 3.2
 
-    # activation 3.2
-    forward_activation 3.2, near_methyl: 0
+      lateral :high_neighbour, target_atom: high_bridge(:ct)
+      there :near_methyl
+        forward_activation 0
+        reverse_activation 5.3
+
     forward_rate 2.9e11
-    reverse_activation 3.2, near_methyl: 5.3
     reverse_rate 1.1e8
 
   reaction 'migration along row'
-    equation metyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
-    entalpy 3.4
+    equation methyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
+    enthalpy 3.4
     activation 30
     # значения скоростей выдуманы
     forward_rate 2.4e8
@@ -310,14 +365,18 @@ events
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
 
-      # TODO: используются атомы результата!
-      lateral_like :row_components, product(:cl), product(:cr)
+      refinement 'not in dimers row'
+        activation 31.3
 
-    # все значения выдуманы
-    activation 31.3, end_row: 17.6
+      # TODO: используются атомы результата!
+      lateral :dimers_row, one_atom: product(:cl), two_atom: product(:cr)
+      there :end_row
+        activation 17.6
+
+      # все значения выдуманы
     forward_rate 3.5e8
 
-  # TODO: вмеру маленькой скорости, стоит исключить данную реакцию
+  # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
   # reaction 'single dimer to high bridge'
   #   aliases one: bridge, two: bridge
   #   equation dimer = high_bridge + one(ct: *) + two(ct: *)

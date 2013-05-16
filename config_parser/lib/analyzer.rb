@@ -24,7 +24,7 @@ class Analyzer < AnalysisTool
     loop do
       line = next_line
 
-puts "LINE: #{line}"
+# puts "LINE: #{line}"
 
       interpret(line, method(:change_root)) do
         pass_line_to(@root, line)
@@ -34,7 +34,7 @@ puts "LINE: #{line}"
   # rescue AnalyzingError => e
   #   puts e.message
   rescue EOFError => e
-    puts "#{@config_path}: #{e.message}"
+    puts "#{self.class.config_path}: #{e.message}"
   # rescue Exception
   end
 

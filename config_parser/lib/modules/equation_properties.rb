@@ -1,6 +1,6 @@
 module EquationProperties
-  def entalpy(value, dimension = nil)
-    equation_instance.entalpy = Dimensions.convert_energy(value, dimension)
+  def enthalpy(value, dimension = nil)
+    equation_instance.enthalpy = Dimensions.convert_energy(value, dimension)
   end
 
   def activation(value, dimension = nil)
@@ -24,7 +24,7 @@ module EquationProperties
   end
 
   def reverse_rate(value, dimension = nil)
-    gases_num = equation_instance.product_gases_num
+    gases_num = equation_instance.products_gases_num
     equation_instance.reverse_rate =
       Dimensions.convert_rate(eval_value_if_string(value, gases_num), gases_num, dimension)
   end
@@ -35,7 +35,7 @@ private
     if value.is_a?(String)
       t_str = 'T = '
       # TODO: unqualified access
-      temperature = -> klass { klass.instance.instance_variable_get('@temperature'.to_sym) }
+      temperature = -> klass { klass.instance.instance_variable_get(:@temperature) }
       t_str << (gases_num > 0 ? temperature[Gas] : temperature[Surface]).to_s
       eval("#{t_str}; #{value}")
     else

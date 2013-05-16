@@ -26,7 +26,7 @@ require_relative 'lib/analysis_tool.rb'
 require_relative 'lib/analyzer.rb'
 require_relative 'lib/matcher.rb'
 
-AUTO_LOADING_DIRS = ['components', 'outcomes']
+AUTO_LOADING_DIRS = ['components']
 
 using RichString
 
