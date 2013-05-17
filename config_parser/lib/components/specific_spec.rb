@@ -25,9 +25,11 @@ class SpecificSpec
     @spec.external_bonds - @options.size
   end
 
-  def incoherent(atom_keyname)
-    if @spec[atom_keyname] # condition raise syntax_error if atom_keyname undefined
-      @options[atom_keyname] = :incoherent
+  %w(incoherent unfixed).each do |state|
+    define_method(state) do |atom_keyname|
+      if @spec[atom_keyname] # condition raise syntax_error if atom_keyname undefined
+        @options[atom_keyname] = state.to_sym
+      end
     end
   end
 

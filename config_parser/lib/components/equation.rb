@@ -122,9 +122,11 @@ class Equation < ComplexComponent
     nest_refinement(Refinement.new(duplicate(name)))
   end
 
-  def incoherent(*used_atom_strs)
-    used_atom_strs.each do |atom_str|
-      find_spec(atom_str) { |specific_spec, atom_keyname| specific_spec.incoherent(atom_keyname) }
+  %w(incoherent unfixed).each do |state|
+    define_method(state) do |*used_atom_strs|
+      used_atom_strs.each do |atom_str|
+        find_spec(atom_str) { |specific_spec, atom_keyname| specific_spec.send(state, atom_keyname) }
+      end
     end
   end
 

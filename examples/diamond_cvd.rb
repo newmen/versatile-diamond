@@ -39,7 +39,7 @@ surface
     bond :ct, :cr, face: 110, dir: :front
     position :cl, :cr, face: 100, dir: :front
 
-  spec :high_bridge
+  spec :high_bridge # may describe by methyl_on_bridge
     atoms ch: methane(:c), ct: bridge(:ct)
     dbond :ch, :ct
 
@@ -121,16 +121,22 @@ events
   reaction 'methyl activation'
     # TODO: должна быть уточнением реакции десорбции водорода
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
+      unfixed methyl_on_dimer(:cm)
+
     activation 37.5
     forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
 
   reaction 'methyl deactivation'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
+      unfixed methyl_on_dimer(:cm)
+
     activation 0
     forward_rate 4.5e13, 'cm3/(mol * s)'
 
   reaction 'same methyl-dimer hydrogen migration'
     equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
+      unfixed methyl_on_dimer(:cm)
+
   #  enthalpy -10
   #  activation 29.8
   #  forward_rate 4.6e6
@@ -143,6 +149,8 @@ events
 
   reaction 'methyl neighbour-dimer hydrogen migration'
     equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *) + dimer
+      unfixed methyl_on_dimer(:cm)
+
       refinement 'along chain'
         position methyl_on_dimer(:cr), dimer(:cr), face: 100, dir: :front
         forward_activation 16.3
@@ -163,6 +171,7 @@ events
 
   reaction 'chain neighbour dimermethyl-fixedbridge hydrogen migration'
     equation methyl_on_dimer + bridge(cr: *) = methyl_on_dimer(cm: *) + bridge
+      unfixed methyl_on_dimer(:cm)
       position methyl_on_dimer(:cr), bridge(:cr), face: 100, dir: :front
 
     activation 12.9
@@ -171,8 +180,9 @@ events
 
   reaction 'chain neighbour bridgemethyl-fixedbridge hydrogen migration'
     equation methyl_on_bridge + bridge(cr: *) = methyl_on_bridge(cm: *) + bridge
-      position methyl_on_bridge(:cb), bridge(:cr), face: 100, dir: :front
+      unfixed methyl_on_bridge(:cm)
       incoherent methyl_on_bridge(:cb)
+      position methyl_on_bridge(:cb), bridge(:cr), face: 100, dir: :front
 
     activation 14.1
     forward_rate 4.5e9
@@ -279,6 +289,7 @@ events
   reaction 'methyl to high bridge'
     # TODO: проверить соответствие значений направленности
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
+      # unfixed methyl_on_dimer(:cm) # TODO: должно быть определено автоматически, по соответствию в графах
       position bridge(:ct), high_bridge(:ct), face: 100, dir: :front
 
       refinement 'without high chain neighbour'
@@ -351,6 +362,8 @@ events
 
   reaction 'migration along row'
     equation methyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
+      unfixed methyl_on_dimer(:cm)
+
     enthalpy 3.4
     activation 30
     # значения скоростей выдуманы
@@ -361,6 +374,7 @@ events
     aliases source: dimer, product: dimer
     equation methyl_on_bridge(cm: *) + source(cr: *) = product
       # TODO: видимо требуется уточнить реакцию, поскольку разыв source димера не очевиден?
+      unfixed methyl_on_bridge(:cm)
       incoherent methyl_on_bridge(:cb)
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
