@@ -1,3 +1,5 @@
+require 'set'
+
 # The class instance contains atoms and bonds between them.
 # When one spec uses an other then atoms and bonds from another spec coping to original spec.
 # If spec is recursive (i.e. uses itself) then no copy, reference to used atom creates instead.
@@ -17,7 +19,13 @@ class Spec < Component
     def [](spec_name)
       @@common_specs[spec_name] || syntax_error('spec.undefined', name: spec_name)
     end
+
+    # def visit_all(visitor)
+    #   @@common_specs.each { |_, spec| spec.visit(visitor) }
+    # end
   end
+
+  attr_reader :name
 
   def initialize(name)
     @name = name
@@ -25,12 +33,14 @@ class Spec < Component
   end
 
   def aliases(**refs)
-    @aliases ||= {}
+    @aliases_to_atoms ||= {}
+    @aliases_to_specs ||= {}
     refs.each do |keyname, spec_name|
       spec = Spec[spec_name.to_sym]
       duplicated_atoms = spec.duplicate_atoms
       adsorb_links(spec.links, duplicated_atoms)
-      @aliases[keyname] = spec.alias_atoms(duplicated_atoms)
+      @aliases_to_atoms[keyname] = spec.alias_atoms(duplicated_atoms)
+      @aliases_to_specs[keyname] = spec
     end
   end
 
@@ -73,11 +83,17 @@ class Spec < Component
   end
 
   def extend_by_references
-    extendable_spec = self.class.new("extended_#{@name}")
-    duplicated_atoms = duplicate_atoms
-    extendable_spec.instance_variable_set(:@atoms, alias_atoms(duplicated_atoms))
-    extendable_spec.adsorb_links(@links, duplicated_atoms)
-    extendable_spec.extend!
+    extended_name = "extended_#{@name}"
+    begin
+      extendable_spec = Spec[extended_name]
+    rescue AnalyzingError
+      extendable_spec = self.class.add(extended_name)
+      duplicated_atoms = duplicate_atoms
+      extendable_spec.instance_variable_set(:@atoms, alias_atoms(duplicated_atoms))
+      extendable_spec.adsorb_links(@links, duplicated_atoms)
+      extendable_spec.extend!
+      extendable_spec.add_dependency(self)
+    end
     extendable_spec
   end
 
@@ -86,13 +102,13 @@ class Spec < Component
   end
 
   def to_s
-    atoms_to_aliases = @atoms.invert
-    name_with_alias = -> atom { (a = atoms_to_aliases[atom]) ? "#{atom}(#{a})" : "#{atom}" }
+    atoms_to_keynames = @atoms.invert
+    name_with_keyname = -> atom { (a = atoms_to_keynames[atom]) ? "#{atom}(#{a})" : "#{atom}" }
 
     str = "#{name}(\n"
     str << @links.map do |atom, list|
-      links = "  #{name_with_alias[atom]}[\n    "
-      links << list.map { |neighbour, link| "#{link}#{name_with_alias[neighbour]}" }.join(', ')
+      links = "  #{name_with_keyname[atom]}[\n    "
+      links << list.map { |neighbour, link| "#{link}#{name_with_keyname[neighbour]}" }.join(', ')
       links << ']'
       links
     end.join(",\n")
@@ -100,9 +116,27 @@ class Spec < Component
     str
   end
 
+  def visit(visitor)
+    visitor.accept_spec(self)
+  end
+
+  def reorganize_dependencies(used_specs, links = @links)
+    possible_children = used_specs.reject { |s| s.links.size > links.size }.sort_by { |s| s.links.size }.reverse
+
+    possible_children.each do |possible_child|
+      break if @dependent_from && @dependent_from.include?(possible_child)
+      if remainder_links = contain?(links, possible_child.links)
+        @dependent_from.clear if links == @links && @dependent_from
+        add_dependency(possible_child)
+        reorganize_dependencies(possible_children, remainder_links) if remainder_links.size > 0
+        break
+      end
+    end
+  end
+
 protected
 
-  attr_reader :name, :links
+  attr_reader :links
 
   def duplicate_atoms
     atoms = atom_instances
@@ -156,6 +190,11 @@ protected
     atom_references.each { |atom_ref| adsorb_links(atom_ref.spec.links, ref_dup_atoms[atom_ref]) }
   end
 
+  def add_dependency(parent_spec)
+    @dependent_from ||= Set.new
+    @dependent_from << parent_spec
+  end
+
 private
 
   def atom_instances
@@ -175,11 +214,14 @@ private
   def used_atom(atom_str)
     spec_name, atom_keyname = match_used_atom(atom_str)
     if spec_name == @name
+      add_dependency(self)
       AtomReference.new(self, atom_keyname)
-    elsif @aliases && (aliased_spec = @aliases[spec_name])
-      aliased_spec[atom_keyname]
+    elsif @aliases_to_atoms && (alias_to_atoms = @aliases_to_atoms[spec_name])
+      add_dependency(@aliases_to_specs[spec_name])
+      alias_to_atoms[atom_keyname]
     else
       spec = Spec[spec_name]
+      add_dependency(spec)
       duplicated_atoms = spec.duplicate_atoms
       adsorb_links(spec.links, duplicated_atoms)
       duplicated_atoms[spec[atom_keyname]]
@@ -199,5 +241,13 @@ private
 
   def internal_bonds_for(atom)
     @links[atom].select { |_, link_instance| link_instance.class == Bond }.size
+  end
+
+  def contain?(large_links, small_links)
+    s_atom, s_links_list = small_links.first
+    large_links.each do |l_atom, l_links_list|
+      if s_atom == l_atom &&
+
+    end
   end
 end

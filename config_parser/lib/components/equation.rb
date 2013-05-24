@@ -15,10 +15,9 @@ class Equation < ComplexComponent
       equation
     end
 
-    # TODO: unused method
-    # def purge
-    #   @equations.select! { |equation| equation.rate }
-    # end
+    def visit_all(visitor)
+      @equations.each { |equation| equation.visit(visitor) if equation.rate }
+    end
 
   private
 
@@ -113,6 +112,8 @@ class Equation < ComplexComponent
     end
   end
 
+  attr_reader :rate
+
   def initialize(source_specs, products_specs, name)
     @source, @products = source_specs, products_specs
     @name = name
@@ -199,6 +200,12 @@ class Equation < ComplexComponent
   def to_s
     specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
     "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
+  end
+
+  def visit(visitor)
+    @source.each { |spec| spec.visit(visitor) }
+
+    # TODO: ... equation
   end
 
 protected

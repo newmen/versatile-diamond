@@ -18,6 +18,10 @@ begin
   I18n.locale = opt['--lang']
   # Rubydeps.analyze do
     Analyzer.read_config(opt['<path_to_config>'])
+
+    graphviz = Graphviz.new('total_tree')
+    Equation.visit_all(graphviz)
+    graphviz.generate
   # end
 rescue Docopt::Exit => e
   puts e.message

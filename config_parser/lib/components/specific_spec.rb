@@ -52,6 +52,11 @@ class SpecificSpec
     "#{@spec.to_s}(#{options})"
   end
 
+  def visit(visitor)
+    @spec.visit(visitor)
+    visitor.accept_specific_spec(self)
+  end
+
 private
 
   def name_and_options(spec_str)

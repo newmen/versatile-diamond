@@ -30,4 +30,13 @@ class Atom
   def to_s
     @lattice ? "#{name}%#{@lattice}" : @name
   end
+
+  def ==(other)
+    @name == other.name && @lattice == other.lattice
+  end
+
+protected
+
+  attr_reader :lattice
+
 end

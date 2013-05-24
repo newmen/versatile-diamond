@@ -20,6 +20,7 @@ I18n.load_path << files_in('locales/*.yml')
 
 require_each 'lib/patches/*.rb'
 require_each 'lib/modules/*.rb'
+require_each 'lib/visitors/*.rb'
 
 require_relative 'lib/analyzing_error.rb'
 require_relative 'lib/analysis_tool.rb'

@@ -17,4 +17,9 @@ class AtomReference
   def to_s
     "&#{@atom}"
   end
+
+  # TODO: maybe better to use def_delegator
+  def ==(other)
+    @atom == other
+  end
 end
