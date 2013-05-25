@@ -1,12 +1,16 @@
-class Position < Bond
-  include SyntaxChecker
+module VersatileDiamond
 
-  def self.[](face: nil, dir: nil)
-    syntax_error('.uncomplete') unless face && dir
-    super
+  class Position < Bond
+    include SyntaxChecker
+
+    def self.[](face: nil, dir: nil)
+      syntax_error('.uncomplete') unless face && dir
+      super
+    end
+
+    def to_s
+      '.'
+    end
   end
 
-  def to_s
-    '.'
-  end
 end

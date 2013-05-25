@@ -17,10 +17,10 @@ begin
   opt = Docopt::docopt(doc)
   I18n.locale = opt['--lang']
   # Rubydeps.analyze do
-    Analyzer.read_config(opt['<path_to_config>'])
+    VersatileDiamond::Analyzer.read_config(opt['<path_to_config>'])
 
-    graphviz = Graphviz.new('total_tree')
-    Equation.visit_all(graphviz)
+    graphviz = VersatileDiamond::GraphVizualizer.new('total_tree')
+    VersatileDiamond::Equation.visit_all(graphviz)
     graphviz.generate
   # end
 rescue Docopt::Exit => e

@@ -1,3 +1,7 @@
+require 'forwardable'
+require 'singleton'
+require 'set'
+
 def files_in(path)
   Dir["#{__dir__}/#{path}"]
 end
@@ -29,9 +33,9 @@ require_relative 'lib/matcher.rb'
 
 AUTO_LOADING_DIRS = ['components']
 
-using RichString
+using VersatileDiamond::RichString
 
-def Object.const_missing(class_name)
+def VersatileDiamond.const_missing(class_name)
   filename = class_name.to_s.underscore
   if (path = find_file(filename, *AUTO_LOADING_DIRS.map { |dir| "lib/#{dir}" }))
     require path
@@ -39,4 +43,8 @@ def Object.const_missing(class_name)
     return component if component
   end
   raise "#{class_name} is not found"
+end
+
+def Object.const_missing(class_name)
+  VersatileDiamond.const_missing(class_name)
 end

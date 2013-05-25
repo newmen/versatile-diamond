@@ -1,17 +1,19 @@
-require 'singleton'
+module VersatileDiamond
 
-class ActiveBond < TerminationSpec
-  include Singleton
+  class ActiveBond < TerminationSpec
+    include Singleton
 
-  def name
-    '*'
+    def name
+      '*'
+    end
+
+    def external_bonds
+      0
+    end
+
+    def to_s
+      name
+    end
   end
 
-  def external_bonds
-    0
-  end
-
-  def to_s
-    name
-  end
 end

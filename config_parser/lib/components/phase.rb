@@ -1,13 +1,15 @@
-require 'singleton'
+module VersatileDiamond
 
-class Phase < ComplexComponent
-  include Singleton
+  class Phase < ComplexComponent
+    include Singleton
 
-  def spec(name)
-    nested(spec_class.add(name))
+    def spec(name)
+      nested(spec_class.add(name))
+    end
+
+    def temperature(value)
+      @temperature = value
+    end
   end
 
-  def temperature(value)
-    @temperature = value
-  end
 end
