@@ -24,14 +24,17 @@ I18n.load_path << files_in('locales/*.yml')
 
 require_each 'lib/patches/*.rb'
 require_each 'lib/modules/*.rb'
-require_each 'lib/visitors/*.rb'
 
 require_relative 'lib/analyzing_error.rb'
 require_relative 'lib/analysis_tool.rb'
 require_relative 'lib/analyzer.rb'
 require_relative 'lib/matcher.rb'
 
-AUTO_LOADING_DIRS = ['components']
+AUTO_LOADING_DIRS = [
+  'components',
+  'mcs',
+  'visitors',
+]
 
 using VersatileDiamond::RichString
 
@@ -45,6 +48,7 @@ def VersatileDiamond.const_missing(class_name)
   raise "#{class_name} is not found"
 end
 
+# TODO: i don't want this trap
 def Object.const_missing(class_name)
   VersatileDiamond.const_missing(class_name)
 end

@@ -33,7 +33,7 @@ module VersatileDiamond
       @lattice ? "#{name}%#{@lattice}" : @name
     end
 
-    def ==(other)
+    def same?(other)
       @name == other.name && @lattice == other.lattice
     end
 

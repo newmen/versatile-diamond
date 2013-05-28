@@ -25,7 +25,7 @@ module VersatileDiamond
       # end
     end
 
-    attr_reader :name
+    attr_reader :name, :dependent_from
 
     def initialize(name)
       @name = name
@@ -121,14 +121,22 @@ module VersatileDiamond
     end
 
     def reorganize_dependencies(used_specs, links = @links)
-      possible_children = used_specs.reject { |s| s.links.size > links.size }.sort_by { |s| s.links.size }.reverse
+      possible_children = used_specs.select do |s|
+        s.name != @name &&
+        (s.links.size < links.size || (s.links.size == links.size && s.external_bonds > external_bonds))
+      end.sort do |a, b|
+        if a.links.size == b.links.size
+          a.external_bonds <=> b.external_bonds
+        else
+          b.links.size <=> a.links.size
+        end
+      end
 
       possible_children.each do |possible_child|
         break if @dependent_from && @dependent_from.include?(possible_child)
-        if remainder_links = contain?(links, possible_child.links)
-          @dependent_from.clear if links == @links && @dependent_from
+        if contain?(links, possible_child.links)
+          @dependent_from.clear if @dependent_from
           add_dependency(possible_child)
-          reorganize_dependencies(possible_children, remainder_links) if remainder_links.size > 0
           break
         end
       end
@@ -244,11 +252,7 @@ module VersatileDiamond
     end
 
     def contain?(large_links, small_links)
-      s_atom, s_links_list = small_links.first
-      large_links.each do |l_atom, l_links_list|
-        # if s_atom == l_atom &&
-
-      end
+      HanserRecursiveAlgorithm.contain?(large_links, small_links)
     end
   end
 

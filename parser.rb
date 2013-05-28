@@ -12,17 +12,16 @@ Options:
   --lang=LANGUAGE   Setup current language [default: ru]
 HELP
 
-# require 'rubydeps'
 begin
   opt = Docopt::docopt(doc)
   I18n.locale = opt['--lang']
-  # Rubydeps.analyze do
-    VersatileDiamond::Analyzer.read_config(opt['<path_to_config>'])
 
-    graphviz = VersatileDiamond::GraphVizualizer.new('total_tree')
-    VersatileDiamond::Equation.visit_all(graphviz)
-    graphviz.generate
-  # end
+  VersatileDiamond::Analyzer.read_config(opt['<path_to_config>'])
+
+  graph_vizualizer = VersatileDiamond::GraphVizualizer.new('total_tree')
+  VersatileDiamond::Equation.visit_all(graph_vizualizer)
+  graph_vizualizer.generate
+
 rescue Docopt::Exit => e
   puts e.message
 end
