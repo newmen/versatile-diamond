@@ -71,9 +71,8 @@ module VersatileDiamond
 
           if bonds_sum >= bonds_sum_limit
             duplicate_specs = specs.map do |spec|
-              duplicate_spec = spec.dup
-              duplicate_spec.extend! if combination.include?(spec) && spec.extendable?
-              duplicate_spec
+              spec.extend! if combination.include?(spec) && spec.extendable?
+              spec
             end
 
             args = type == :source ? [duplicate_specs, products] : [source, duplicate_specs]
@@ -207,6 +206,7 @@ module VersatileDiamond
     def visit(visitor)
       @source.each { |spec| spec.visit(visitor) }
 
+      # TODO: ... environment specs
       # TODO: ... equation
     end
 

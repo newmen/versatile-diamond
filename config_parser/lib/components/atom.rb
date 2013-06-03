@@ -34,7 +34,11 @@ module VersatileDiamond
     end
 
     def same?(other)
-      @name == other.name && @lattice == other.lattice
+      if self.class == other.class
+        @name == other.name && @lattice == other.lattice
+      else
+        other.same?(self)
+      end
     end
 
   protected

@@ -123,8 +123,9 @@ module VersatileDiamond
     def reorganize_dependencies(used_specs, links = @links)
       possible_children = used_specs.select do |s|
         s.name != @name &&
-        (s.links.size < links.size || (s.links.size == links.size && s.external_bonds > external_bonds))
-      end.sort do |a, b|
+          (s.links.size < links.size || (s.links.size == links.size && s.external_bonds > external_bonds))
+      end
+      possible_children.sort! do |a, b|
         if a.links.size == b.links.size
           a.external_bonds <=> b.external_bonds
         else
@@ -140,6 +141,21 @@ module VersatileDiamond
           break
         end
       end
+    end
+
+    def links_with_replace_by(keynames_to_new_atoms)
+      replaced_links = Hash[@links.map { |atom, links| [atom, links.map.to_a] }] # deep dup @links
+
+      keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
+        replaced_atom = self.[](replaced_atom_keyname)
+        local_links = replaced_links.delete(replaced_atom)
+        local_links.each do |linked_atom, _|
+          replaced_links[linked_atom].map! { |atom, link| [(atom == replaced_atom ? new_atom : atom), link] }
+        end
+        replaced_links[new_atom] = local_links
+      end
+
+      replaced_links
     end
 
   protected

@@ -12,6 +12,10 @@ module VersatileDiamond
     def visit(visitor)
       visitor.accept_termination_spec(self)
     end
+
+    def same?(other)
+      to_s == other.to_s
+    end
   end
 
 end
