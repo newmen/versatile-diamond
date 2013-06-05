@@ -4,11 +4,11 @@ module VersatileDiamond
     include ArgumentsParser
     include SyntaxChecker
 
-    def interpret(line, zero_level_func)
+    def interpret(line, zero_level_func, &block)
       if !has_indent?(line)
         zero_level_func.call(line)
       else
-        block_given? ? yield : syntax_error('common.wrong_hierarchy')
+        block_given? ? block.call : syntax_error('common.wrong_hierarchy')
       end
     end
 

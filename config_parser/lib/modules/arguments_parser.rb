@@ -9,24 +9,30 @@ module VersatileDiamond
     end
 
     def scan_args(args_str)
-      args = args_str.split(/\s*,\s*/)
       options = {}
+      args = extract_hash_args(args_str) do |key, value|
+        options[key] = cast_value(value)
+      end
+
+      options = Hash[options.to_a.reverse]
+      [args, options]
+    end
+
+    def extract_hash_args(args_str, &block)
+      args = args_str.split(/\s*(?![^(]*\)),\s*/)
 
       key_value_rgx = /\A(?<key>[a-z][a-z0-9_]*):\s+(?<value>.+)\Z/
 
       loop do
         break if args.last !~ key_value_rgx
-        options[$~[:key].to_sym] = cast_value($~[:value])
+        block[$~[:key].to_sym, cast_value($~[:value])]
         args.pop
       end
 
-      args.map! do |arg|
+      args.map do |arg|
         syntax_error('common.wrong_arguments_ordering') if arg =~ key_value_rgx
         cast_value(arg)
       end
-
-      options = Hash[options.to_a.reverse]
-      [args, options]
     end
 
     def cast_value(value)

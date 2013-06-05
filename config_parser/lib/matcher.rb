@@ -10,12 +10,12 @@ module VersatileDiamond
     class << self
       class << self
       private
-        def define_match(*args)
+        def define_match(*args, &block)
           name = args.shift
           keys = args.empty? ? nil : args
 
           define_method(name) do |str|
-            m = yield.match(str)
+            m = block.call.match(str)
             m && ((!keys && m[0]) || (keys && keys.map { |key| m[key] }))
           end
         end

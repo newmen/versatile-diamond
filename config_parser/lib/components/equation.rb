@@ -111,9 +111,20 @@ module VersatileDiamond
 
         check_compliance(products, source, deep - 1) if deep > 0
       end
+
+      def define_property_setter(property)
+        define_method("forward_#{property}=") do |value, prefix = :forward|
+          syntax_error(".#{property}_already_set") if instance_variable_get("@#{property}".to_sym)
+          update_attribute(property, value, prefix)
+        end
+
+        define_method("reverse_#{property}=") do |value|
+          reverse.send("forward_#{property}=", value, :reverse)
+        end
+      end
     end
 
-    attr_reader :rate
+    attr_reader :name, :source, :rate
 
     def initialize(source_specs, products_specs, name)
       @source, @products = source_specs, products_specs
@@ -127,7 +138,9 @@ module VersatileDiamond
     %w(incoherent unfixed).each do |state|
       define_method(state) do |*used_atom_strs|
         used_atom_strs.each do |atom_str|
-          find_spec(atom_str) { |specific_spec, atom_keyname| specific_spec.send(state, atom_keyname) }
+          find_spec(atom_str, find_type: :all) do |specific_spec, atom_keyname|
+            specific_spec.send(state, atom_keyname)
+          end
         end
       end
     end
@@ -182,19 +195,6 @@ module VersatileDiamond
       self.reverse_enthalpy = -value
     end
 
-    class << self
-      def define_property_setter(property)
-        define_method("forward_#{property}=") do |value, prefix = :forward|
-          syntax_error(".#{property}_already_set") if instance_variable_get("@#{property}".to_sym)
-          update_attribute(property, value, prefix)
-        end
-
-        define_method("reverse_#{property}=") do |value|
-          reverse.send("forward_#{property}=", value, :reverse)
-        end
-      end
-    end
-
     define_property_setter :activation
     define_property_setter :rate
 
@@ -205,18 +205,18 @@ module VersatileDiamond
 
     def visit(visitor)
       @source.each { |spec| spec.visit(visitor) }
+      visitor.accept_equation(self)
 
       # TODO: ... environment specs
-      # TODO: ... equation
     end
 
   protected
 
     attr_writer :refinements
 
-    define_property_setter :enthalpy
-
   private
+
+    define_property_setter :enthalpy
 
     def nest_refinement(refinement)
       @refinements ||= []
@@ -245,16 +245,25 @@ module VersatileDiamond
       end
     end
 
-    def find_spec(used_atom_str)
+    def find_spec(used_atom_str, find_type: :any, &block)
       spec_name, atom_keyname = match_used_atom(used_atom_str)
-      find_spec = -> specs do
+      find_lambda = -> specs do
         result = specs.select { |spec| spec.name == spec_name }
         syntax_error('.cannot_be_mapped', name: spec_name) if result.size > 1
         result.first
       end
-      specific_spec = find_spec[@source] || find_spec[@products]
-      syntax_error('matcher.undefined_used_atom', name: used_atom_str) unless specific_spec
-      yield specific_spec, atom_keyname
+
+      if find_type == :any
+        specific_spec = find_lambda[@source] || find_lambda[@products]
+        syntax_error('matcher.undefined_used_atom', name: used_atom_str) unless specific_spec
+        block[specific_spec, atom_keyname]
+      elsif find_type == :all
+        specific_specs = [find_lambda[@source], find_lambda[@products]].compact
+        syntax_error('matcher.undefined_used_atom', name: used_atom_str) if specific_specs.empty?
+        specific_specs.each { |ss| block[ss, atom_keyname] }
+      else
+        raise "Undefined find type #{find_type}"
+      end
     end
   end
 

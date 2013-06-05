@@ -46,6 +46,7 @@ en:
     incorrect_linking: "Incorrect linking unspecified atoms"
 
   specific_spec:
+    atom_already_has_state: "Atom \"%{atom}\" of specific spec \"%{spec}\" already has %{state} state"
     wrong_specification: "Wrong spec specification"
 
   reaction:

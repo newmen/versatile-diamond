@@ -92,7 +92,7 @@ module VersatileDiamond
         extendable_spec.instance_variable_set(:@atoms, alias_atoms(duplicated_atoms))
         extendable_spec.adsorb_links(@links, duplicated_atoms)
         extendable_spec.extend!
-        extendable_spec.add_dependency(self)
+        extendable_spec.dependencies << self
       end
       extendable_spec
     end
@@ -121,6 +121,7 @@ module VersatileDiamond
     end
 
     def reorganize_dependencies(used_specs, links = @links)
+      # select and sort possible chilren
       possible_children = used_specs.select do |s|
         s.name != @name &&
           (s.links.size < links.size || (s.links.size == links.size && s.external_bonds > external_bonds))
@@ -133,14 +134,17 @@ module VersatileDiamond
         end
       end
 
+      # find and reorganize dependencies
       possible_children.each do |possible_child|
-        break if @dependent_from && @dependent_from.include?(possible_child)
-        if contain?(links, possible_child.links)
-          @dependent_from.clear if @dependent_from
-          add_dependency(possible_child)
+        if dependencies.include?(possible_child) || contain?(links, possible_child.links)
+          dependencies.clear
+          dependencies << possible_child
           break
         end
       end
+
+      # clear dependecies if dependent only from itself
+      dependencies.clear if dependencies.size == 1 && dependencies.include?(self)
     end
 
     def links_with_replace_by(keynames_to_new_atoms)
@@ -214,9 +218,8 @@ module VersatileDiamond
       atom_references.each { |atom_ref| adsorb_links(atom_ref.spec.links, ref_dup_atoms[atom_ref]) }
     end
 
-    def add_dependency(parent_spec)
+    def dependencies
       @dependent_from ||= Set.new
-      @dependent_from << parent_spec
     end
 
   private
@@ -238,23 +241,23 @@ module VersatileDiamond
     def used_atom(atom_str)
       spec_name, atom_keyname = match_used_atom(atom_str)
       if spec_name == @name
-        add_dependency(self)
+        dependencies << self
         AtomReference.new(self, atom_keyname)
       elsif @aliases_to_atoms && (alias_to_atoms = @aliases_to_atoms[spec_name])
-        add_dependency(@aliases_to_specs[spec_name])
+        dependencies << @aliases_to_specs[spec_name]
         alias_to_atoms[atom_keyname]
       else
         spec = Spec[spec_name]
-        add_dependency(spec)
+        dependencies << spec
         duplicated_atoms = spec.duplicate_atoms
         adsorb_links(spec.links, duplicated_atoms)
         duplicated_atoms[spec[atom_keyname]]
       end
     end
 
-    def link(klass, *atom_keynames, **options)
+    def link(klass, *atom_keynames, **options, &block)
       first, second = existing_atoms(*atom_keynames)
-      yield(first, second) if block_given?
+      block[first, second] if block_given?
       instance = klass[options]
       super(:@links, first, second, instance)
     end

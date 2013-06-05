@@ -15,12 +15,14 @@ module VersatileDiamond
     end
 
     def active!
+      # TODO: translate error (see todo above)
+      raise 'Atom cannot be activated more than own valence' if @options.select { :active }.size > @atom.valence
       @options << :active
     end
 
     def same?(other)
       if self.class == other.class
-        @atom == other.atom && @options == other.options
+        @atom == other.atom && (@options - other.options).empty? && @options.size == other.options.size
       else
         false
       end

@@ -14,7 +14,7 @@ module VersatileDiamond
     end
 
     def same?(other)
-      to_s == other.to_s
+      self.class == other.class && to_s == other.to_s
     end
   end
 

@@ -253,8 +253,7 @@ events
   reaction 'dimer formation between incoherent bridge and fixed bridge'
     aliases one: bridge, two: bridge
     # см. коммент к предыдущей реакции
-    equation one(ct: *) + two(cr: *) = dimer
-      incoherent one(:ct)
+    equation one(ct: *, ct: i) + two(cr: *) = dimer
 
       refinement 'not in dimers row'
         enthalpy -29.4
@@ -312,8 +311,7 @@ events
 
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
-    equation high_bridge + source(ct: *) = product(cr: *)
-      incoherent source(:ct)
+    equation high_bridge + source(ct: *, ct: i) = product(cr: *)
       position high_bridge(:ct), source(:ct), face: 100, dir: :front
 
       refinement 'without chain neighbour methyl'
@@ -332,8 +330,7 @@ events
 
   reaction 'high bridge to bridge and dimer'
     # положение атомов также выводится исходя из результата реакции?
-    equation high_bridge + dimer(cr: *) = bridge_with_dimer(cl: *)
-      incoherent dimer(:cl)
+    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'
         activation 14.9
@@ -361,8 +358,7 @@ events
     reverse_rate 1.1e8
 
   reaction 'migration along row'
-    equation methyl_on_dimer(cm: *) + dimer(cr: *) = cross_bridge_on_dimers
-      unfixed methyl_on_dimer(:cm)
+    equation methyl_on_dimer(cm: *, cm: u) + dimer(cr: *) = cross_bridge_on_dimers
 
     enthalpy 3.4
     activation 30
@@ -372,10 +368,8 @@ events
 
   reaction 'methyl to dimer'
     aliases source: dimer, product: dimer
-    equation methyl_on_bridge(cm: *) + source(cr: *) = product
+    equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
       # TODO: видимо требуется уточнить реакцию, поскольку разыв source димера не очевиден?
-      unfixed methyl_on_bridge(:cm)
-      incoherent methyl_on_bridge(:cb)
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
 
