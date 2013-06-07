@@ -8,11 +8,11 @@ module VersatileDiamond
       @ext = ext.to_sym
 
       @graph = GraphViz.new(:G, type: :digraph)
-      @specs_to_nodes = {}
 
       @base_specs = []
       @specific_specs = []
       @termination_specs = []
+      @wheres = []
       @equations = []
     end
 
@@ -29,6 +29,11 @@ module VersatileDiamond
       end
     end
 
+    def accept_where(where)
+      return if @wheres.include?(where)
+      @wheres << where
+    end
+
     def accept_equation(equation)
       @equations << equation
     end
@@ -41,6 +46,7 @@ module VersatileDiamond
       draw_specs
       draw_specific_specs
       draw_termination_specs
+      draw_wheres
       draw_equations
 
       @graph.output(@ext => @filename)
@@ -91,22 +97,45 @@ module VersatileDiamond
       end
     end
 
+    def draw_wheres
+      color = 'darkviolet'
+
+      @wheres_to_nodes = @wheres.each_with_object({}) do |where, hash|
+        multiline_name = multilinize(where.description, limit: 8)
+        node = @graph.add_nodes(multiline_name)
+        node.set { |n| n.color = color }
+        hash[where] = node
+      end
+
+      @wheres.each do |where|
+        node = @wheres_to_nodes[where]
+        if (parents = where.dependent_from)
+          parents.each do |parent|
+            @graph.add_edges(node, @wheres_to_nodes[parent]).set { |e| e.color = color }
+          end
+        end
+
+        where.specs.each do |spec|
+          @graph.add_edges(node, spec.name.to_s).set { |e| e.color = color }
+        end
+      end
+    end
+
     def draw_equations
       color = 'darkgreen'
-      limit = 13
 
       @equations.each do |equation|
-        name_words = equation.name.split(/\s+/)
-        splitted_name = ['']
-        while !name_words.empty?
-          splitted_name << '' if splitted_name.last.size > limit
-          splitted_name.last << ' ' if splitted_name.last.size > 0
-          splitted_name.last << name_words.shift
-        end
-        multiline_name = splitted_name.join("\n")
+        multiline_name = multilinize(equation.name)
 
         equation_node = @graph.add_nodes(multiline_name)
         equation_node.set { |n| n.color = color }
+
+        if equation.respond_to?(:wheres)
+          equation.wheres.each do |where|
+            where_node = @wheres_to_nodes[where]
+            @graph.add_edges(equation_node, where_node).set { |e| e.color = color }
+          end
+        end
 
         ref_from_ss = Set.new
         equation.source.each do |ss|
@@ -136,6 +165,17 @@ module VersatileDiamond
 
     def find_same(container, item)
       container.find { |s| s.same?(item) }
+    end
+
+    def multilinize(text, limit: 13)
+      words = text.split(/\s+/)
+      splitted_text = ['']
+      while !words.empty?
+        splitted_text << '' if splitted_text.last.size > limit
+        splitted_text.last << ' ' if splitted_text.last.size > 0
+        splitted_text.last << words.shift
+      end
+      splitted_text.join("\n")
     end
   end
 

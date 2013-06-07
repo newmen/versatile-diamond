@@ -100,6 +100,7 @@ events
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
+    # TODO: необходимо автоматически указывать для результата incoherent и unfixed атомы
     equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
     enthalpy -73.6
     activation 0
@@ -227,7 +228,7 @@ events
 
   reaction 'dimer formation between incoherent bridges'
     aliases one: bridge, two: bridge
-    # определение положения атомов выводится исходя из результата реакции?
+    # TODO: определение положения атомов выводится исходя из результата реакции?
     equation one(ct: *) + two(ct: *) = dimer
       incoherent one(:ct), two(:ct)
 
@@ -252,7 +253,8 @@ events
 
   reaction 'dimer formation between incoherent bridge and fixed bridge'
     aliases one: bridge, two: bridge
-    # см. коммент к предыдущей реакции
+    # TODO: см. коммент к предыдущей реакции
+    # TODO: автоматически указывать для результата конфигурацию соответствующего атома как incoherent
     equation one(ct: *, ct: i) + two(cr: *) = dimer
 
       refinement 'not in dimers row'
@@ -311,6 +313,7 @@ events
 
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
+    # TODO: некогерентность атома должна быть определена в продукте
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
       position high_bridge(:ct), source(:ct), face: 100, dir: :front
 
@@ -329,7 +332,7 @@ events
     reverse_rate 1.1e12
 
   reaction 'high bridge to bridge and dimer'
-    # положение атомов также выводится исходя из результата реакции?
+    # TODO: положение (и доп. конфигурация) атомов также выводится исходя из результата реакции?
     equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'
@@ -344,7 +347,7 @@ events
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
-    # конечное положение активной связи может быть не очевидно!
+    # TODO: конечное положение активной связи может быть не очевидно!
     equation high_bridge + bridge(cr: *) = two_bridges(cl: *)
       refinement 'without chain neighbour methyl'
         activation 3.2
@@ -358,6 +361,7 @@ events
     reverse_rate 1.1e8
 
   reaction 'migration along row'
+    # TODO: соответствующий атом в продукте не должен быть unfixed
     equation methyl_on_dimer(cm: *, cm: u) + dimer(cr: *) = cross_bridge_on_dimers
 
     enthalpy 3.4
@@ -368,6 +372,7 @@ events
 
   reaction 'methyl to dimer'
     aliases source: dimer, product: dimer
+
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
       # TODO: видимо требуется уточнить реакцию, поскольку разыв source димера не очевиден?
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross

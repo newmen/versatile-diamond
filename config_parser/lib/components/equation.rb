@@ -18,7 +18,7 @@ module VersatileDiamond
       end
 
       def visit_all(visitor)
-        @equations.each { |equation| equation.visit(visitor) if equation.rate }
+        @equations.each { |equation| equation.visit(visitor) }
       end
 
     private
@@ -124,7 +124,7 @@ module VersatileDiamond
       end
     end
 
-    attr_reader :name, :source, :rate
+    attr_reader :name, :source
 
     def initialize(source_specs, products_specs, name)
       @source, @products = source_specs, products_specs
@@ -132,7 +132,7 @@ module VersatileDiamond
     end
 
     def refinement(name)
-      nest_refinement(Refinement.new(duplicate(name)))
+      nest_refinement(duplicate(name))
     end
 
     %w(incoherent unfixed).each do |state|
@@ -169,7 +169,7 @@ module VersatileDiamond
     end
 
     def there(*names)
-      concreted_wheres = names.map do |name|
+      concrete_wheres = names.map do |name|
         laterals_with_where = @laterals.select { |_, lateral| lateral.has_where?(name) }.values
 
         syntax_error('where.undefined', name: name) if laterals_with_where.size < 1
@@ -178,8 +178,8 @@ module VersatileDiamond
         laterals_with_where.first.concretize_where(name)
       end
 
-      name_tail = "#{concreted_wheres.map(&:description).join(', ')}"
-      nest_refinement(There.new(duplicate(name_tail), concreted_wheres))
+      name_tail = concrete_wheres.map(&:description).join(' and ')
+      nest_refinement(lateralized_duplicate(concrete_wheres, name_tail))
     end
 
     # another methods
@@ -204,10 +204,11 @@ module VersatileDiamond
     end
 
     def visit(visitor)
-      @source.each { |spec| spec.visit(visitor) }
-      visitor.accept_equation(self)
-
-      # TODO: ... environment specs
+      if @rate
+        @source.each { |spec| spec.visit(visitor) }
+        yield if block_given?
+        visitor.accept_equation(self)
+      end
     end
 
   protected
@@ -218,22 +219,34 @@ module VersatileDiamond
 
     define_property_setter :enthalpy
 
-    def nest_refinement(refinement)
+    def nest_refinement(equation)
       @refinements ||= []
-      @refinements << refinement
+      @refinements << (refinement = Refinement.new(equation))
       nested(refinement)
+    end
+
+    def reverse_params
+      [@products, @source, "#{@name} reverse"] # TODO: duplicate products and source?
     end
 
     def reverse
       return @reverse if @reverse
-      @reverse = self.class.register(self.class.new(@products, @source, "#{@name} reverse")) # TODO: duplicate ?
+      @reverse = self.class.register(self.class.new(*reverse_params))
       @name << ' forward'
       @reverse.refinements = @refinements
       @reverse
     end
 
+    def duplication_params(equation_name_tail)
+      [@source.map(&:dup), @products.map(&:dup), "#{@name} #{equation_name_tail}"]
+    end
+
     def duplicate(equation_name_tail)
-      self.class.register(self.class.new(@source.map(&:dup), @products.map(&:dup), "#{@name} #{equation_name_tail}"))
+      self.class.register(self.class.new(*duplication_params(equation_name_tail)))
+    end
+
+    def lateralized_duplicate(concrete_wheres, equation_name_tail)
+      self.class.register(LateralizedEquation.new(concrete_wheres, *duplication_params(equation_name_tail)))
     end
 
     def update_attribute(attribute, value, prefix = nil)

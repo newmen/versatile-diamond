@@ -82,7 +82,7 @@ module VersatileDiamond
       @dependent_from = similar_specs.select do |ss|
         max_opts_size <= ss.options.size && ((active_bonds_num > 0 && ss.active_bonds_num > 0) ||
             (active_bonds_num == 0 && ss.active_bonds_num == 0)) &&
-          ss.options.reduce(true) { |acc, option| acc && @options.include?(option) } &&
+          ss.options.all? { |option| @options.include?(option) } &&
           (max_opts_size = ss.options.size)
       end
     end
