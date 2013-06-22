@@ -370,7 +370,7 @@ events
     forward_rate 2.4e8
     reverse_rate 4.4e9
 
-  reaction 'methyl to dimer'
+  reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
 
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product

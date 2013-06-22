@@ -42,7 +42,6 @@ module VersatileDiamond
       reorganize_specs_dependencies
       organize_specific_spec_dependencies
 
-      # call order is important!
       draw_specs
       draw_specific_specs
       draw_termination_specs
@@ -55,15 +54,15 @@ module VersatileDiamond
   private
 
     def draw_specs
-      names_to_nodes = @base_specs.each_with_object({}) do |spec, hash|
-        hash[spec.name] = @graph.add_nodes(spec.name.to_s)
+      @spec_to_nodes = @base_specs.each_with_object({}) do |spec, hash|
+        hash[spec] = @graph.add_nodes(spec.name.to_s)
       end
 
       @base_specs.each do |spec|
         next unless spec.dependent_from
-        node = names_to_nodes[spec.name]
+        node = @spec_to_nodes[spec]
         spec.dependent_from.each do |parent|
-          @graph.add_edges(node, names_to_nodes[parent.name])
+          @graph.add_edges(node, @spec_to_nodes[parent])
         end
       end
     end
@@ -71,7 +70,7 @@ module VersatileDiamond
     def draw_specific_specs
       setup_lambda = -> x { x.color = 'blue' }
 
-      @specs_to_nodes = @specific_specs.each_with_object({}) do |ss, hash|
+      @sp_specs_to_nodes = @specific_specs.each_with_object({}) do |ss, hash|
         ss_name = ss.to_s.sub(/\A([^(]+)(.+)\Z/, "\\1\n\\2")
         node = @graph.add_nodes(ss_name)
         node.set(&setup_lambda)
@@ -79,21 +78,25 @@ module VersatileDiamond
       end
 
       @specific_specs.each do |ss|
-        node = @specs_to_nodes[ss]
-        edge = if (parent = ss.dependent_from)
-            @graph.add_edges(node, @specs_to_nodes[parent])
-          else
-            @graph.add_edges(node, ss.spec.name.to_s)
+        node = @sp_specs_to_nodes[ss]
+        parent = ss.dependent_from
+        next unless parent || @spec_to_nodes
+
+        edge = if parent
+            @graph.add_edges(node, @sp_specs_to_nodes[parent])
+          elsif (base = @spec_to_nodes[ss.spec])
+            @graph.add_edges(node, base)
           end
         edge.set(&setup_lambda)
       end
     end
 
     def draw_termination_specs
+      @sp_specs_to_nodes ||= {}
       @termination_specs.each do |ts|
         node = @graph.add_nodes(ts.to_s)
         node.set { |e| e.color = 'chocolate' }
-        @specs_to_nodes[ts] = node
+        @sp_specs_to_nodes[ts] = node
       end
     end
 
@@ -115,8 +118,10 @@ module VersatileDiamond
           end
         end
 
+        next unless @spec_to_nodes
         where.specs.each do |spec|
-          @graph.add_edges(node, spec.name.to_s).set { |e| e.color = color }
+          spec_node = @spec_to_nodes[spec]
+          @graph.add_edges(node, spec_node).set { |e| e.color = color }
         end
       end
     end
@@ -130,7 +135,7 @@ module VersatileDiamond
         equation_node = @graph.add_nodes(multiline_name)
         equation_node.set { |n| n.color = color }
 
-        if equation.respond_to?(:wheres)
+        if @wheres_to_nodes && equation.respond_to?(:wheres)
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
             @graph.add_edges(equation_node, where_node).set { |e| e.color = color }
@@ -140,11 +145,13 @@ module VersatileDiamond
         ref_from_ss = Set.new
         equation.source.each do |ss|
           spec = find_same(@termination_specs, ss) || find_same(@specific_specs, ss)
-          next if ref_from_ss.include?(spec)
-          ref_from_ss << spec
+          next if ref_from_ss.include?(spec) # except multiple edges between two nodes
+          next unless @sp_specs_to_nodes
 
-          spec_node = @specs_to_nodes[spec]
-          @graph.add_edges(equation_node, spec_node).set { |e| e.color = color }
+          if (spec_node = @sp_specs_to_nodes[spec])
+            @graph.add_edges(equation_node, spec_node).set { |e| e.color = color }
+          end
+          ref_from_ss << spec
         end
       end
     end
@@ -156,10 +163,9 @@ module VersatileDiamond
     def organize_specific_spec_dependencies
       specs = {}
       @specific_specs.each do |ss|
-        base_spec_name = ss.spec.name
-        similar_specs = (specs[base_spec_name] ||=
-          @specific_specs.select { |s| s.spec.name == base_spec_name })
-        ss.organize_dependencies(similar_specs.reject { |s| s == ss })
+        base_spec = ss.spec
+        specs[base_spec] ||= @specific_specs.select { |s| s.spec == base_spec }
+        ss.organize_dependencies(specs[base_spec].reject { |s| s == ss })
       end
     end
 

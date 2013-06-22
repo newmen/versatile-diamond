@@ -112,6 +112,26 @@ module VersatileDiamond
         check_compliance(products, source, deep - 1) if deep > 0
       end
 
+      def atom_mapping(source, products)
+        is_full_corresponding = -> do
+          source_dup, products_dup = source.dup, products.dup
+          source_dup.reduce(true) do |acc, source_spec|
+            i = products_dup.index { |product_spec| source_spec.spec.name == product_spec.spec.name }
+            acc && i && products_dup.delete_at(i)
+          end
+        end
+
+        if source.size == products.size && is_full_corresponding.call
+          # find concrete atom for each pair of source and product specs
+          # TODO: it doing like simplification of specific specis tree
+        else
+          args = [source, products].map do |specs|
+            specs.map { |specific_spec| specific_spec.spec.links }
+          end
+          HanserRecursiveAlgorithm.atom_mapping(*args)
+        end
+      end
+
       def define_property_setter(property)
         define_method("forward_#{property}=") do |value, prefix = :forward|
           syntax_error(".#{property}_already_set") if instance_variable_get("@#{property}".to_sym)
@@ -231,7 +251,7 @@ module VersatileDiamond
 
     def reverse
       return @reverse if @reverse
-      @reverse = self.class.register(self.class.new(*reverse_params))
+      @reverse = Equation.register(self.class.new(*reverse_params))
       @name << ' forward'
       @reverse.refinements = @refinements
       @reverse
@@ -242,11 +262,11 @@ module VersatileDiamond
     end
 
     def duplicate(equation_name_tail)
-      self.class.register(self.class.new(*duplication_params(equation_name_tail)))
+      Equation.register(self.class.new(*duplication_params(equation_name_tail)))
     end
 
     def lateralized_duplicate(concrete_wheres, equation_name_tail)
-      self.class.register(LateralizedEquation.new(concrete_wheres, *duplication_params(equation_name_tail)))
+      Equation.register(LateralizedEquation.new(concrete_wheres, *duplication_params(equation_name_tail)))
     end
 
     def update_attribute(attribute, value, prefix = nil)
