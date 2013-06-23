@@ -44,6 +44,7 @@ module VersatileDiamond
         spec = Spec[spec_name.to_sym]
         duplicated_atoms = spec.duplicate_atoms
         adsorb_links(spec.links, duplicated_atoms)
+
         @aliases_to_atoms[keyname] = spec.alias_atoms(duplicated_atoms)
         @aliases_to_specs[keyname] = spec
       end
@@ -158,7 +159,7 @@ module VersatileDiamond
       replaced_links = Hash[@links.map { |atom, links| [atom, links.map.to_a] }] # deep dup @links
 
       keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
-        replaced_atom = self.[](replaced_atom_keyname)
+        replaced_atom = @atoms[replaced_atom_keyname]
         local_links = replaced_links.delete(replaced_atom)
         local_links.each do |linked_atom, _|
           replaced_links[linked_atom].map! { |atom, link| [(atom == replaced_atom ? new_atom : atom), link] }

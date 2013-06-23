@@ -47,6 +47,7 @@ ru:
 
   specific_spec:
     atom_already_has_state: "Атом \"%{atom}\" уточнённой структуры \"%{spec}\" уже имеет состояние %{state}"
+    invalid_actives_num: "У атома \"%{atom}\" структуры \"%{spec}\" активных связей может быть не больше %{nums}"
     wrong_specification: "Неверное уточнение конфигурации структуры"
 
   reaction:

@@ -27,7 +27,6 @@ module VersatileDiamond
     def change_lattice!(atom, lattice)
       new_atom = atom.dup
       new_atom.lattice = lattice
-# puts "changing lattice for #{atom.to_s} to #{new_atom.to_s}"
       exchange_atoms!(atom, new_atom)
     end
 
@@ -95,6 +94,10 @@ module VersatileDiamond
 
       @changed_vertices ||= {}
       @changed_vertices[to] = from
+
+      if @atom_alias && @atom_alias[from]
+        @atom_alias[to] = @atom_alias.delete(from)
+      end
     end
 
     def each_edge(&block)

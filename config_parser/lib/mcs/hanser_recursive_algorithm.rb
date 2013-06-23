@@ -88,7 +88,7 @@ end
               end
 
               if lattices_variants.empty?
-                algorithm.save('assoc_error') # TODO: it not necessarily
+                algorithm.save('assoc_error') # TODO: it's not necessarily
                 raise CannotMap
               else
                 new_lattices = lattices_variants.pop

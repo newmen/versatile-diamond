@@ -55,24 +55,8 @@ module VersatileDiamond
     end
 
     def save(filename, ext = 'png')
-      save_for = -> edges, prefix do
-        g = GraphViz.new(:C, type: :graph)
-        cache = EdgeCache.new
-        edges.each do |v_v, list|
-          v1, v2 = v_v
-          list.each do |w_w|
-            next if cache.has?(v_v, w_w)
-            cache.add(v_v, w_w)
-
-            w1, w2 = w_w
-            g.add_edges("#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}", "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}")
-          end
-        end
-        g.output(ext.to_sym => "#{prefix}_#{filename}.#{ext}")
-      end
-
-      save_for[@ext, 'ext']
-      # save_for[@fbn, 'fbn']
+      save_for(@ext, 'ext')
+      # save_for(@fbn, 'fbn')
     end
 
   private
@@ -92,6 +76,23 @@ module VersatileDiamond
     def each_vertex(&block)
       @ext.keys.each(&block)
     end
+
+    def save_for(edges, prefix)
+      g = GraphViz.new(:C, type: :graph)
+      cache = EdgeCache.new
+      edges.each do |v_v, list|
+        v1, v2 = v_v
+        list.each do |w_w|
+          next if cache.has?(v_v, w_w)
+          cache.add(v_v, w_w)
+
+          w1, w2 = w_w
+          g.add_edges("#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}", "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}")
+        end
+      end
+      g.output(ext.to_sym => "#{prefix}_#{filename}.#{ext}")
+    end
+
   end
 
 end

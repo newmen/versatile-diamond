@@ -10,7 +10,13 @@ module VersatileDiamond
     def initialize(spec_str)
       @original_name, @options = name_and_options(spec_str)
       @spec = Spec[@original_name]
-      @options.each { |atom_keyname, _| @spec[atom_keyname] } # raises syntax error if atom_keyname undefined
+
+      @options.group_by { |atom_keyname, _| atom_keyname }.each do |atom_keyname, opts|
+        free_bonds_num = @spec.external_bonds_for(atom_keyname)
+        if (free_bonds_num - opts.count { |_, value| value == '*' }) < 0
+          syntax_error('.invalid_actives_num', atom: atom_keyname, spec: @original_name, nums: free_bonds_num)
+        end
+      end
     end
 
     def initialize_copy(other)
@@ -71,7 +77,7 @@ module VersatileDiamond
 
     def same?(other)
       @spec == other.spec && (@options == other.options ||
-        (@options.size == other.options.size && !(@options.empty? || other.options.empty?) && correspond?(other)))
+        (!@options.empty? && @options.size == other.options.size && correspond?(other)))
     end
 
     def organize_dependencies(similar_specs)
@@ -95,18 +101,21 @@ module VersatileDiamond
 
     attr_reader :options
 
-    def links_with_concrete_atoms
-      return @links_with_concrete_atoms if @links_with_concrete_atoms
-      params = {}
-      @options.each do |atom_keyname, value|
-        specific_atom = (params[atom_keyname] ||= SpecificAtom.new(@spec[atom_keyname]))
+    def links_with_specific_atoms
+      return @links_with_specific_atoms if @links_with_specific_atoms
+
+      specific_atoms = @options.each_with_object({}) do |(atom_keyname, value), hash|
+        hash[atom_keyname] ||= SpecificAtom.new(@spec[atom_keyname])
+        specific_atom = hash[atom_keyname]
+
         case value
         when :incoherent then specific_atom.incoherent!
         when :unfixed then specific_atom.unfixed!
         when '*' then specific_atom.active!
         end
       end
-      @links_with_concrete_atoms = @spec.links_with_replace_by(params)
+
+      @links_with_specific_atoms = @spec.links_with_replace_by(specific_atoms)
     end
 
     def active_bonds_num
@@ -136,7 +145,7 @@ module VersatileDiamond
     end
 
     def correspond?(other)
-      HanserRecursiveAlgorithm.contain?(links_with_concrete_atoms, other.links_with_concrete_atoms)
+      HanserRecursiveAlgorithm.contain?(links_with_specific_atoms, other.links_with_specific_atoms)
     end
   end
 

@@ -3,6 +3,12 @@ require 'graphviz'
 module VersatileDiamond
 
   class GraphVizualizer
+    SPECIFIC_SPEC_COLOR = 'blue'
+    TERMINATION_SPEC_COLOR = 'chocolate'
+    WHERE_COLOR = 'darkviolet'
+    EQUATION_COLOR = 'darkgreen'
+    EQUATION_PRODUCT_EDGE_COLOR = 'green'
+
     def initialize(filename, ext = 'png')
       @filename = "#{filename}.#{ext}"
       @ext = ext.to_sym
@@ -69,7 +75,7 @@ module VersatileDiamond
     end
 
     def draw_specific_specs
-      setup_lambda = -> x { x.color = 'blue' }
+      setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
 
       @sp_specs_to_nodes = @specific_specs.each_with_object({}) do |ss, hash|
         ss_name = ss.to_s.sub(/\A([^(]+)(.+)\Z/, "\\1\n\\2")
@@ -96,18 +102,16 @@ module VersatileDiamond
       @sp_specs_to_nodes ||= {}
       @termination_specs.each do |ts|
         node = @graph.add_nodes(ts.to_s)
-        node.set { |e| e.color = 'chocolate' }
+        node.set { |e| e.color = TERMINATION_SPEC_COLOR }
         @sp_specs_to_nodes[ts] = node
       end
     end
 
     def draw_wheres
-      color = 'darkviolet'
-
       @wheres_to_nodes = @wheres.each_with_object({}) do |where, hash|
         multiline_name = multilinize(where.description, limit: 8)
         node = @graph.add_nodes(multiline_name)
-        node.set { |n| n.color = color }
+        node.set { |n| n.color = WHERE_COLOR }
         hash[where] = node
       end
 
@@ -115,45 +119,49 @@ module VersatileDiamond
         node = @wheres_to_nodes[where]
         if (parents = where.dependent_from)
           parents.each do |parent|
-            @graph.add_edges(node, @wheres_to_nodes[parent]).set { |e| e.color = color }
+            @graph.add_edges(node, @wheres_to_nodes[parent]).set { |e| e.color = WHERE_COLOR }
           end
         end
 
         next unless @spec_to_nodes
         where.specs.each do |spec|
           spec_node = @spec_to_nodes[spec]
-          @graph.add_edges(node, spec_node).set { |e| e.color = color }
+          @graph.add_edges(node, spec_node).set { |e| e.color = WHERE_COLOR }
         end
       end
     end
 
     def draw_equations
-      color = 'darkgreen'
-
       @equations.each do |equation|
         multiline_name = multilinize(equation.name)
 
         equation_node = @graph.add_nodes(multiline_name)
-        equation_node.set { |n| n.color = color }
+        equation_node.set { |n| n.color = EQUATION_COLOR }
 
         if @wheres_to_nodes && equation.respond_to?(:wheres)
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
-            @graph.add_edges(equation_node, where_node).set { |e| e.color = color }
+            @graph.add_edges(equation_node, where_node).set { |e| e.color = WHERE_COLOR }
           end
         end
 
-        ref_from_ss = Set.new
-        equation.source.each do |ss|
-          spec = find_same(@termination_specs, ss) || find_same(@specific_specs, ss)
-          next if ref_from_ss.include?(spec) # except multiple edges between two nodes
-          next unless @sp_specs_to_nodes
+        draw_edges_to_specific_specs(equation_node, equation.source, EQUATION_COLOR)
+        # draw_edges_to_specific_specs(equation_node, equation.products, EQUATION_PRODUCT_EDGE_COLOR)
+      end
+    end
 
-          if (spec_node = @sp_specs_to_nodes[spec])
-            @graph.add_edges(equation_node, spec_node).set { |e| e.color = color }
-          end
-          ref_from_ss << spec
+    def draw_edges_to_specific_specs(equation_node, specific_specs, color)
+      return unless @sp_specs_to_nodes
+
+      depend_from_ss = Set.new
+      specific_specs.each do |ss|
+        spec = find_same(@termination_specs, ss) || find_same(@specific_specs, ss)
+        next if depend_from_ss.include?(spec) # except multiple edges between two nodes
+
+        if (spec_node = @sp_specs_to_nodes[spec])
+          @graph.add_edges(equation_node, spec_node).set { |e| e.color = color }
         end
+        depend_from_ss << spec
       end
     end
 
@@ -162,8 +170,7 @@ module VersatileDiamond
     end
 
     def organize_specific_spec_dependencies
-      specs = {}
-      @specific_specs.each do |ss|
+      @specific_specs.each_with_object({}) do |ss, specs|
         base_spec = ss.spec
         specs[base_spec] ||= @specific_specs.select { |s| s.spec == base_spec }
         ss.organize_dependencies(specs[base_spec].reject { |s| s == ss })

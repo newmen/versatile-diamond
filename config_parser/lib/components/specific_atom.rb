@@ -6,26 +6,30 @@ module VersatileDiamond
       @options = []
     end
 
-    %w(incoherent unfixed).each do |state|
+    %w(active incoherent unfixed).each do |state|
       define_method("#{state}!") do
-        # TODO: translate error and extract it feature to solo module
-        raise "State #{state} already setted for #{@atom}" if @options.include?(state.to_sym)
         @options << state.to_sym
       end
     end
 
-    def active!
-      # TODO: translate error (see todo above)
-      raise 'Atom cannot be activated more than own valence' if @options.select { :active }.size > @atom.valence
-      @options << :active
-    end
-
     def same?(other)
       if self.class == other.class
-        @atom == other.atom && (@options - other.options).empty? && @options.size == other.options.size
+        @atom == other.atom && (@options == other.options ||
+          (@options.size == other.options.size && @options.sort == other.options.sort))
       else
         false
       end
+    end
+
+    def to_s
+      chars = @options.map do |value|
+        case value
+        when :active then '*'
+        when :incoherent then 'i'
+        when :unfixed then 'u'
+        end
+      end
+      "[#{chars.sort.join(', ')}]"
     end
 
   protected

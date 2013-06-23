@@ -36,7 +36,7 @@ module VersatileDiamond
 
         check_compliance(source, products)
 
-atom_mapping(source, products)
+# atom_mapping(source, products)
 
         new(source, products, name)
       end
@@ -161,7 +161,7 @@ atom_mapping(source, products)
       end
     end
 
-    attr_reader :name, :source
+    attr_reader :name, :source, :products
 
     def initialize(source_specs, products_specs, name)
       @source, @products = source_specs, products_specs
@@ -242,7 +242,7 @@ atom_mapping(source, products)
 
     def visit(visitor)
       if @rate
-        @source.each { |spec| spec.visit(visitor) }
+        (@source + @products).each { |spec| spec.visit(visitor) }
         yield if block_given?
         visitor.accept_equation(self)
       end
