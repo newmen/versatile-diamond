@@ -18,8 +18,8 @@ module VersatileDiamond
         end
     end
 
-    def is_termination?(atom)
-      @termination.name == atom.name
+    def is_termination?(atom_name)
+      @termination.name == atom_name
     end
   end
 

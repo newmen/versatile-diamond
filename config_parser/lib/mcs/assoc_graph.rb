@@ -1,7 +1,9 @@
+require 'graphviz'
+
 module VersatileDiamond
 
   class AssocGraph
-    def initialize(g1, g2)
+    def initialize(g1, g2, &block)
       @g1, @g2 = g1, g2
 
       # forbidden and existed edges
@@ -15,16 +17,23 @@ module VersatileDiamond
       end
 
       # setup corresponding edges
-      each_vertex do |v_w1|
-        each_vertex do |v_w2|
-          v1, w1 = v_w1
-          v2, w2 = v_w2
-          next if v1 == v2 && w1 == w2 # without loop at each associated vertex
+      cache = EdgeCache.new
+      each_vertex do |v_v|
+        each_vertex do |w_w|
+          v1, v2 = v_v
+          w1, w2 = w_w
+          next if v1 == w1 && v2 == w2 # without loop at each associated vertex
 
-          edge = [v_w1, v_w2]
-          if (large_edge = @g1.edge(v1, v2)) && large_edge == @g2.edge(w1, w2)
+          edge = [v_v, w_w]
+          next if cache.has?(*edge) # without reverse edges
+          cache.add(*edge)
+
+          e1 = @g1.edge(v1, w1)
+          e2 = @g2.edge(v2, w2)
+
+          if e1 && e2 && (e1 == e2 || (block_given? && block[[v1, w1], [v2, w2]] && e1.same?(e2)))
             add_edge(@ext, *edge)
-          elsif @g1.edge(v1, v2) || @g2.edge(w1, w2)
+          elsif e1 || e2 || v1 == w1 || v2 == w2
             add_edge(@fbn, *edge)
           end
         end
@@ -45,6 +54,27 @@ module VersatileDiamond
       end
     end
 
+    def save(filename, ext = 'png')
+      save_for = -> edges, prefix do
+        g = GraphViz.new(:C, type: :graph)
+        cache = EdgeCache.new
+        edges.each do |v_v, list|
+          v1, v2 = v_v
+          list.each do |w_w|
+            next if cache.has?(v_v, w_w)
+            cache.add(v_v, w_w)
+
+            w1, w2 = w_w
+            g.add_edges("#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}", "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}")
+          end
+        end
+        g.output(ext.to_sym => "#{prefix}_#{filename}.#{ext}")
+      end
+
+      save_for[@ext, 'ext']
+      # save_for[@fbn, 'fbn']
+    end
+
   private
 
     # Adds the couple vertices where each pair has one vertex from large_graph and second vertex from small_graph
@@ -62,7 +92,6 @@ module VersatileDiamond
     def each_vertex(&block)
       @ext.keys.each(&block)
     end
-
   end
 
 end

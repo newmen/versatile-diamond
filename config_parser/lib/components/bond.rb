@@ -12,9 +12,22 @@ module VersatileDiamond
       @face, @dir = face, dir
     end
 
-    def to_s
-      '-'
+    def same?(other)
+      self.class == other.class || other.same?(self)
     end
+
+    def to_s
+      symbol = '-'
+      str = symbol.dup
+      str << "#{@face}#{symbol}" if @face
+      str << "#{@dir}#{symbol}" if @dir
+      "#{str}#{symbol}"
+    end
+
+  protected
+
+    attr_reader :face, :dir
+
   end
 
 end

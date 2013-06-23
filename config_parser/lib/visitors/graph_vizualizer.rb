@@ -42,6 +42,7 @@ module VersatileDiamond
       reorganize_specs_dependencies
       organize_specific_spec_dependencies
 
+      # call order is important!
       draw_specs
       draw_specific_specs
       draw_termination_specs

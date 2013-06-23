@@ -35,6 +35,9 @@ module VersatileDiamond
         end || syntax_error('.wrong_balance')
 
         check_compliance(source, products)
+
+atom_mapping(source, products)
+
         new(source, products, name)
       end
 
@@ -113,22 +116,36 @@ module VersatileDiamond
       end
 
       def atom_mapping(source, products)
+        has_termination_spec = -> do
+          check = -> specific_spec { specific_spec.is_a?(TerminationSpec) || specific_spec.spec.simple? }
+          source.find(&check) || products.find(&check)
+        end
+
         is_full_corresponding = -> do
           source_dup, products_dup = source.dup, products.dup
           source_dup.reduce(true) do |acc, source_spec|
-            i = products_dup.index { |product_spec| source_spec.spec.name == product_spec.spec.name }
+            i = products_dup.index { |product_spec| source_spec.name == product_spec.name }
             acc && i && products_dup.delete_at(i)
           end
         end
 
-        if source.size == products.size && is_full_corresponding.call
+        if has_termination_spec.call
+          # ...
+        elsif source.size == products.size && is_full_corresponding.call
           # find concrete atom for each pair of source and product specs
           # TODO: it doing like simplification of specific specis tree
         else
           args = [source, products].map do |specs|
             specs.map { |specific_spec| specific_spec.spec.links }
           end
-          HanserRecursiveAlgorithm.atom_mapping(*args)
+
+          begin
+            HanserRecursiveAlgorithm.atom_mapping(*args)
+          rescue HanserRecursiveAlgorithm::CannotMap
+            syntax_error('.atom_mapping.cannot_map')
+          rescue ArgumentError
+            syntax_error('.atom_mapping.argument_error')
+          end
         end
       end
 

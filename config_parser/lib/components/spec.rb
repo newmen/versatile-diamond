@@ -26,10 +26,15 @@ module VersatileDiamond
     end
 
     attr_reader :name, :dependent_from
+    attr_reader :links
 
     def initialize(name)
       @name = name
       @atoms, @links = {}, {}
+    end
+
+    def simple?
+      @is_simple
     end
 
     def aliases(**refs)
@@ -45,6 +50,8 @@ module VersatileDiamond
     end
 
     def atoms(**refs)
+      @is_simple = true if refs.size == 1 && Run.instance.is_termination?(refs.values.first)
+
       refs.each do |keyname, atom|
         real_atom = detect_atom(atom)
         @atoms[keyname] = real_atom
@@ -163,8 +170,6 @@ module VersatileDiamond
     end
 
   protected
-
-    attr_reader :links
 
     def duplicate_atoms
       atoms = atom_instances

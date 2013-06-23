@@ -10,14 +10,10 @@ module VersatileDiamond
       @atom = @spec[@atom_keyname]
     end
 
-    def_delegators :@atom, :same?
+    def_delegators :@atom, :lattice, :same?
 
     def valence
       @spec.external_bonds_for(@atom_keyname)
-    end
-
-    def specified?
-      @atom.specified?
     end
 
     def to_s

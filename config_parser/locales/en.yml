@@ -62,6 +62,9 @@ en:
     rate_already_set: "Rate already set"
     undefined_target_alias: "Undefined target atom alias \"%{name}\""
     wrong_balance: "Wrong reaction balance"
+    atom_mapping:
+      argument_error: "At the moment, analyzer can not handle the cases of formation of several species"
+      cannot_map: "Cannot map reaction atoms"
 
   environment:
     targets_not_defined: "Target atoms is not defined for this environment"

@@ -26,8 +26,7 @@ module VersatileDiamond
       atom_name, lattice_symbol = Matcher.specified_atom(atom_str)
       syntax_error('.need_pass_specified_atom') unless atom_name && lattice_symbol
       atom = Atom[atom_name] || syntax_error('atom.undefined', name: atom_name)
-      lattice = Lattice[lattice_symbol.to_sym]
-      atom.specify(lattice)
+      atom.lattice = Lattice[lattice_symbol.to_sym]
       @composition = atom
     end
   end

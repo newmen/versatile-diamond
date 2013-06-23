@@ -16,17 +16,10 @@ module VersatileDiamond
     end
 
     attr_reader :name, :valence
+    attr_accessor :lattice
 
     def initialize(name, valence)
       @name, @valence = name, valence
-    end
-
-    def specify(lattice)
-      @lattice = lattice
-    end
-
-    def specified?
-      !!@lattice
     end
 
     def to_s
@@ -40,11 +33,6 @@ module VersatileDiamond
         other.same?(self)
       end
     end
-
-  protected
-
-    attr_reader :lattice
-
   end
 
 end
