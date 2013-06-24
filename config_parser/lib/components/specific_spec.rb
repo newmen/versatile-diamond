@@ -25,7 +25,7 @@ module VersatileDiamond
       @options = other.instance_variable_get(:@options).dup
     end
 
-    def_delegators :@spec, :[], :extendable?
+    def_delegators :@spec, :extendable?
 
     def name
       @original_name
@@ -64,6 +64,16 @@ module VersatileDiamond
 
     def extend!
       @spec = @extended_spec
+    end
+
+    def changed_atoms(other)
+      actives, other_actives = only_actives, other.only_actives
+      actives.reject! do |atom_state|
+        i = other_actives.index(atom_state)
+        i && other_actives.delete_at(i)
+      end
+
+      (actives + other_actives).map { |atom_keyname, _| @spec[atom_keyname] }
     end
 
     def to_s
@@ -133,8 +143,12 @@ module VersatileDiamond
       @links_with_specific_atoms = @spec.links_with_replace_by(specific_atoms)
     end
 
+    def only_actives
+      @options.select { |_, value| value == '*' }
+    end
+
     def active_bonds_num
-      @options.select { |_, value| value == '*' }.size
+      only_actives.size
     end
 
   private

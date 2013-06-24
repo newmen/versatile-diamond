@@ -36,7 +36,7 @@ module VersatileDiamond
 
         check_compliance(source, products)
 
-# map_atoms(source, products)
+map_atoms(source, products)
 
         new(source, products, name)
       end
@@ -145,7 +145,15 @@ module VersatileDiamond
           # ...
         elsif source.size == products.size && is_full_corresponding.call
           # find concrete atom for each pair of source and product specs
+          source.map do |source_spec|
+            product_spec = products.find { |p| p.name == source_spec.name }
+            changed_atoms = source_spec.changed_atoms(product_spec)
+            if changed_atoms.empty?
+              syntax_error('.atom_mapping.equal_specs', name: source_spec.name)
+            end
 
+            [[source_spec, product_spec], changed_atoms.zip(changed_atoms)]
+          end
         else
           args = [source, products].map do |specs|
             specs.map { |specific_spec| specific_spec.spec.links }
@@ -164,7 +172,7 @@ module VersatileDiamond
       def define_property_setter(property)
         define_method("forward_#{property}=") do |value, prefix = :forward|
           if instance_variable_get("@#{property}".to_sym)
-            syntax_error(".#{property}_already_set")
+            syntax_error("equation.#{property}_already_set")
           end
 
           update_attribute(property, value, prefix)
@@ -200,7 +208,7 @@ module VersatileDiamond
     def position(*used_atom_strs, **options)
       first_atom, second_atom = used_atom_strs.map do |atom_str|
         find_spec(atom_str) do |specific_spec, atom_keyname|
-          specific_spec[atom_keyname]
+          specific_spec.spec[atom_keyname]
         end
       end
       link(:@positions, first_atom, second_atom, Position[options])
@@ -218,7 +226,7 @@ module VersatileDiamond
           end
 
           atom = find_spec(used_atom_str) do |specific_spec, atom_keyname|
-            specific_spec[atom_keyname]
+            specific_spec.spec[atom_keyname]
           end
           [target_alias, atom]
         end

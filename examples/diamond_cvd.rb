@@ -233,6 +233,7 @@ events
       incoherent one(:ct), two(:ct)
 
       refinement 'not in dimers row'
+        enthalpy -36
         activation 0.8
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:ct)
@@ -247,7 +248,6 @@ events
         forward_activation 0
         reverse_activation 1.2
 
-    enthalpy -36
     forward_rate 8.9e11
     reverse_rate 2.2e6
 
@@ -258,6 +258,7 @@ events
     equation one(ct: *, ct: i) + two(cr: *) = dimer
 
       refinement 'not in dimers row'
+        enthalpy -29.4
         activation 4
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:cr)
@@ -272,7 +273,6 @@ events
         forward_activation 2.7
         reverse_activation 4.1
 
-    enthalpy -29.4
     forward_rate 7.5e11
     reverse_rate 1.2e11
 
