@@ -20,7 +20,9 @@ module VersatileDiamond
 
     def link(*args, **options)
       super(*args, options) do |first, second|
-        syntax_error('.incorrect_linking') unless options.empty? || first.lattice || second.lattice
+        unless options.empty? || first.lattice || second.lattice
+          syntax_error('.incorrect_linking')
+        end
       end
     end
   end

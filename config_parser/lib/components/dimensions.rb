@@ -41,9 +41,14 @@ module VersatileDiamond
       convertable_dimension && convertable_dimension.strip!
 
       current_dimension = instance_variable_get("@#{var}".to_sym)
-      syntax_error('.is_not_set') unless current_dimension || convertable_dimension
+      unless current_dimension || convertable_dimension
+        syntax_error('.is_not_set')
+      end
+
       default_dimension = self.class.const_get("DEFAULT_#{var.to_s.upcase}")
-      if (!convertable_dimension && current_dimension == default_dimension) || convertable_dimension == default_dimension
+      if (!convertable_dimension && current_dimension == default_dimension) ||
+        convertable_dimension == default_dimension
+
         return value
       end
 
@@ -56,11 +61,15 @@ module VersatileDiamond
 
       if gases_num > 0 || dimension != DEFAULT_RATE
         _, dividend, _, divisor =
-          dimension.gsub(/\(|\)/, '|').gsub(/\s/, '').scan(/\A(\|)?([^\/]+)\1?\/(\|)?(.+?)\3?\Z/).first
+          dimension.gsub(/\(|\)/, '|').gsub(/\s/, '').
+            scan(/\A(\|)?([^\/]+)\1?\/(\|)?(.+?)\3?\Z/).first
 
         dividends = dividend.split('*').flat_map do |v|
           if v =~ /\A(?<units>.*?(?<symbol>m|l))(?<degree>\d+)?\Z/
-            units, symbol, degree = $~[:units], $~[:symbol], $~[:degree] && $~[:degree].to_i
+            units = $~[:units]
+            symbol = $~[:symbol]
+            degree = $~[:degree] && $~[:degree].to_i
+
             if symbol == 'm' && degree % 3 == 0
               next ["#{units}3"] * (degree / 3)
             elsif symbol == 'l' && units == symbol && degree
@@ -77,13 +86,26 @@ module VersatileDiamond
           v
         end
 
-        vol = { 'mm3' => 1e3, 'cm3' => 1, 'dm3' => 1e-3, 'l' => 1e-3, 'm3' => 1e-6 }
         aos = { 'mol' => 1, 'kmol' => 1e3 }
+        vol = {
+          'mm3' => 1e3,
+          'cm3' => 1,
+          'dm3' => 1e-3,
+          'l' => 1e-3,
+          'm3' => 1e-6
+        }
+
         coef = 1
-        reduct = -> part, d, c { (i = part.index(d)) && part.delete_at(i) && (coef *= c) }
+        reduct = -> part, d, c do
+          (i = part.index(d)) && part.delete_at(i) && (coef *= c)
+        end
+
         gases_num.times do
-          vol.any? { |d, c| reduct[dividends, d, c] } || syntax_error('.undefined_value')
-          aos.any? { |d, c| reduct[divisors, d, c] } || syntax_error('.undefined_value')
+          aos.any? { |d, c| reduct[divisors, d, c] } ||
+            syntax_error('.undefined_value')
+
+          vol.any? { |d, c| reduct[dividends, d, c] } ||
+            syntax_error('.undefined_value')
         end
 
         dimension = ''
@@ -95,7 +117,10 @@ module VersatileDiamond
         end
         dimension = '' if dimension == '1'
 
-        syntax_error('.undefined_value') if dimension != DEFAULT_RATE.gsub(/\s/, '')
+        if dimension != DEFAULT_RATE.gsub(/\s/, '')
+          syntax_error('.undefined_value')
+        end
+
         value * coef
       else
         value

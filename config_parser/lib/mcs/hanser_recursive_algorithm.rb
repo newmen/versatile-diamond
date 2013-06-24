@@ -1,8 +1,8 @@
 module VersatileDiamond
 
   # Hanser's recursive algorithm search maximal common substructure (MCS).
-  # General description of the algorithm on russian language could be found there:
-  #   http://www.scitouch.net/downloads/mcs_article.pdf
+  # General description of the algorithm on russian language could be found
+  # there: http://www.scitouch.net/downloads/mcs_article.pdf
   class HanserRecursiveAlgorithm
 
     class CannotMap < Exception; end
@@ -20,25 +20,30 @@ module VersatileDiamond
         interset.map(&index)
       end
 
-def as_str(graph, proj)
-  "[#{proj.map { |atom| graph.atom_alias[atom] }.join(', ')}]"
-end
+      def vertices_as_str(graph, vertices)
+        "[#{vertices.map { |atom| graph.atom_alias[atom] }.join(', ')}]"
+      end
     end
 
     class << self
       def contain?(large_links, small_links)
-        large_graph, small_graph = Graph.new(large_links), Graph.new(small_links)
+        large_graph = Graph.new(large_links)
+        small_graph = Graph.new(small_links)
         intersets = new(large_graph, small_graph).intersets
         !intersets.empty? && intersets.first.size == small_graph.size
       end
 
       def atom_mapping(source_links, product_links)
-        source_graphs, product_graphs = [source_links, product_links].map do |links_list|
+        make_graphs = -> links_list do
           links_list.map { |links| Graph.new(links) }
         end
+        source_graphs = source_links.map(&make_graphs)
+        product_graphs = product_links.map(&make_graphs)
 
         reaction_type = nil
-        if product_graphs.size == 1 && source_graphs.size > product_graphs.size
+        if product_graphs.size == 1 &&
+          source_graphs.size > product_graphs.size
+
           few_graphs, big_graph = source_graphs, product_graphs.first
           reaction_type = :association
         else
@@ -46,15 +51,19 @@ end
             raise ArgumentError, 'Wrong number of products and sources'
           else
             big_graph, few_graphs = source_graphs.first, product_graphs
-            source_graphs.size < product_graphs.size ? :disassociation : :recombination
+            source_graphs.size < product_graphs.size ?
+              :disassociation :
+              :recombination
           end
         end
 
         associate = -> big, small, changed_big, changed_small do
           if reaction_type == :association
-            [[small.original_links, big.original_links], changed_small.zip(changed_big)]
+            [[small.original_links, big.original_links],
+              changed_small.zip(changed_big)]
           else
-            [[big.original_links, small.original_links], changed_big.zip(changed_small)]
+            [[big.original_links, small.original_links],
+              changed_big.zip(changed_small)]
           end
         end
 
@@ -78,12 +87,16 @@ end
             small_mapped_vertices = proj_small(interset)
 
             if interset.size < small_graph.size
-              # TODO: here may be situation when remaining atoms are not targeted
-              remaining_small_vertices ||= small_graph.remaining_vertices(small_mapped_vertices)
+              # TODO: here may be situation when remaining atoms are
+              # not targeted
+              remaining_small_vertices ||=
+                small_graph.remaining_vertices(small_mapped_vertices)
 
               unless lattices_variants
                 lattices_variants = big_graph.lattices.repeated_permutation(remaining_small_vertices.size).to_a
-                current_lattices = remaining_small_vertices.map { |atom| atom.lattice }
+                current_lattices = remaining_small_vertices.map do |atom|
+                  atom.lattice
+                end
                 lattices_variants -= [current_lattices]
               end
 
@@ -93,7 +106,7 @@ end
               else
                 new_lattices = lattices_variants.pop
                 remaining_small_vertices.zip(new_lattices).each do |atom, lattice|
-                  small_graph.change_lattice!(atom, lattice) # changes internal graph state
+                  small_graph.change_lattice!(atom, lattice)
                 end
               end
             else
@@ -103,9 +116,12 @@ end
           end
 
           if remaining_small_vertices
-            changed_small_vertices = remaining_small_vertices + small_graph.boundary_vertices(remaining_small_vertices)
+            changed_small_vertices = remaining_small_vertices +
+              small_graph.boundary_vertices(remaining_small_vertices)
             small_to_big = Hash[small_mapped_vertices.zip(big_mapped_vertices)]
-            changed_big_vertices = changed_small_vertices.map { |v| small_to_big[v] }
+            changed_big_vertices = changed_small_vertices.map do |v|
+              small_to_big[v]
+            end
           else
             changed_big_vertices = if boundary_big_vertices
                 boundary_big_vertices
@@ -115,13 +131,17 @@ end
                 big_graph.select_vertices(big_mapped_vertices)
               end
             big_to_small = Hash[big_mapped_vertices.zip(small_mapped_vertices)]
-            changed_small_vertices = changed_big_vertices.map { |v| big_to_small[v] }
+            changed_small_vertices = changed_big_vertices.map do |v|
+              big_to_small[v]
+            end
           end
 
-          boundary_big_vertices = big_graph.boundary_vertices(big_mapped_vertices)
+          boundary_big_vertices =
+            big_graph.boundary_vertices(big_mapped_vertices)
           big_graph.remove_vertices!(big_mapped_vertices)
 
-          associate[big_graph, small_graph, changed_big_vertices, changed_small_vertices]
+          associate[big_graph, small_graph,
+            changed_big_vertices, changed_small_vertices]
         end
       end
 
@@ -149,7 +169,8 @@ end
 
         # filtering incorrect results
         @intersets.select! do |interset|
-          proj_large(interset).size == @max_size && proj_small(interset).size == @max_size
+          proj_large(interset).size == @max_size &&
+            proj_small(interset).size == @max_size
         end
       end
 

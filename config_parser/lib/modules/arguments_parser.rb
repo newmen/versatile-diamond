@@ -30,7 +30,9 @@ module VersatileDiamond
       end
 
       args.map do |arg|
-        syntax_error('common.wrong_arguments_ordering') if arg =~ key_value_rgx
+        if arg =~ key_value_rgx
+          syntax_error('common.wrong_arguments_ordering')
+        end
         cast_value(arg)
       end
     end

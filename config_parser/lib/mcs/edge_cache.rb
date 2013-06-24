@@ -11,7 +11,8 @@ module VersatileDiamond
     end
 
     def has?(v, w)
-      (@cache[v] && @cache[v].include?(w)) || (@cache[w] && @cache[w].include?(v))
+      (@cache[v] && @cache[v].include?(w)) ||
+        (@cache[w] && @cache[w].include?(v))
     end
   end
 

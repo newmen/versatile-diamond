@@ -17,7 +17,8 @@ module VersatileDiamond
     end
 
     def edge(v, w)
-      @edges[v] && (edge = @edges[v].find { |vertex, _| vertex == w }) && edge.last
+      @edges[v] && (edge = @edges[v].find { |vertex, _| vertex == w }) &&
+        edge.last
     end
 
     def lattices
@@ -54,7 +55,9 @@ module VersatileDiamond
 
     def remove_edges!(vertices)
       @edges.each do |atom, links|
-        links.reject! { |another_atom, _| vertices.include?(atom) && vertices.include?(another_atom) }
+        links.reject! do |another_atom, _|
+          vertices.include?(atom) && vertices.include?(another_atom)
+        end
       end
     end
 
@@ -70,13 +73,18 @@ module VersatileDiamond
     end
 
     def atom_alias
-      @atom_alias ||= @edges.each_with_index.with_object({}) { |((atom, _), i), hash| hash[atom] = "#{atom}_#{i}" }
+      @atom_alias ||=
+        @edges.each_with_index.with_object({}) do |((atom, _), i), hash|
+          hash[atom] = "#{atom}_#{i}"
+        end
     end
 
     def to_s
       strs = @edges.map do |atom, links|
-        str = links.map { |another_atom, link| "#{link}#{atom_alias[another_atom]}" }.join(', ')
-        "  #{atom_alias[atom]} => [#{str}]"
+        str = links.map do |another_atom, link|
+          "#{link}#{atom_alias[another_atom]}"
+        end
+        "  #{atom_alias[atom]} => [#{str.join(', ')}]"
       end
       %Q|{\n#{strs.join(",\n")}\n}|
     end

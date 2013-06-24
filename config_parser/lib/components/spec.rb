@@ -1,8 +1,10 @@
 module VersatileDiamond
 
   # The class instance contains atoms and bonds between them.
-  # When one spec uses an other then atoms and bonds from another spec coping to original spec.
-  # If spec is recursive (i.e. uses itself) then no copy, reference to used atom creates instead.
+  # When one spec uses an other then atoms and bonds from another spec coping
+  # to original spec.
+  # If spec is recursive (i.e. uses itself) then no copy, reference to used
+  # atom creates instead.
   class Spec < Component
     include AtomMatcher
     include Linker
@@ -12,12 +14,16 @@ module VersatileDiamond
 
       def add(spec_name)
         @@common_specs ||= {}
-        syntax_error('spec.already_defined', name: spec_name) if @@common_specs[spec_name]
+        if @@common_specs[spec_name]
+          syntax_error('spec.already_defined', name: spec_name)
+        end
+
         @@common_specs[spec_name] = new(spec_name)
       end
 
       def [](spec_name)
-        @@common_specs[spec_name] || syntax_error('spec.undefined', name: spec_name)
+        @@common_specs[spec_name] ||
+          syntax_error('spec.undefined', name: spec_name)
       end
 
       # def visit_all(visitor)
@@ -51,7 +57,9 @@ module VersatileDiamond
     end
 
     def atoms(**refs)
-      @is_simple = true if refs.size == 1 && Run.instance.is_termination?(refs.values.first)
+      if refs.size == 1 && Run.instance.is_termination?(refs.values.first)
+        @is_simple = true
+      end
 
       refs.each do |keyname, atom|
         real_atom = detect_atom(atom)
@@ -76,7 +84,9 @@ module VersatileDiamond
       if valences.size == 1 && valences.first == 1
         2
       else
-        internal_bonds = atoms.reduce(0) { |acc, atom| acc + internal_bonds_for(atom) }
+        internal_bonds = atoms.reduce(0) do |acc, atom|
+          acc + internal_bonds_for(atom)
+        end
         valences.reduce(:+) - internal_bonds
       end
     end
@@ -97,7 +107,8 @@ module VersatileDiamond
       rescue AnalyzingError
         extendable_spec = self.class.add(extended_name)
         duplicated_atoms = duplicate_atoms
-        extendable_spec.instance_variable_set(:@atoms, alias_atoms(duplicated_atoms))
+        extendable_spec.instance_variable_set(
+          :@atoms, alias_atoms(duplicated_atoms))
         extendable_spec.adsorb_links(@links, duplicated_atoms)
         extendable_spec.extend!
         extendable_spec.dependencies << self
@@ -106,17 +117,24 @@ module VersatileDiamond
     end
 
     def [](atom_keyname)
-      @atoms[atom_keyname] || syntax_error('spec.undefined_atom_keyname', atom_keyname: atom_keyname, spec_name: @name)
+      @atoms[atom_keyname] ||
+        syntax_error('spec.undefined_atom_keyname',
+          atom_keyname: atom_keyname, spec_name: @name)
     end
 
     def to_s
       atoms_to_keynames = @atoms.invert
-      name_with_keyname = -> atom { (a = atoms_to_keynames[atom]) ? "#{atom}(#{a})" : "#{atom}" }
+      name_with_keyname = -> atom do
+        (a = atoms_to_keynames[atom]) ? "#{atom}(#{a})" : "#{atom}"
+      end
 
       str = "#{name}(\n"
       str << @links.map do |atom, list|
         links = "  #{name_with_keyname[atom]}[\n    "
-        links << list.map { |neighbour, link| "#{link}#{name_with_keyname[neighbour]}" }.join(', ')
+        link_strs << list.map do |neighbour, link|
+          "#{link}#{name_with_keyname[neighbour]}"
+        end
+        links = link_strs.join(', ')
         links << ']'
         links
       end.join(",\n")
@@ -131,8 +149,8 @@ module VersatileDiamond
     def reorganize_dependencies(used_specs, links = @links)
       # select and sort possible chilren
       possible_children = used_specs.select do |s|
-        s.name != @name &&
-          (s.links.size < links.size || (s.links.size == links.size && s.external_bonds > external_bonds))
+        s.name != @name && (s.links.size < links.size ||
+          (s.links.size == links.size && s.external_bonds > external_bonds))
       end
       possible_children.sort! do |a, b|
         if a.links.size == b.links.size
@@ -144,7 +162,9 @@ module VersatileDiamond
 
       # find and reorganize dependencies
       possible_children.each do |possible_child|
-        if dependencies.include?(possible_child) || contain?(links, possible_child.links)
+        if dependencies.include?(possible_child) ||
+          contain?(links, possible_child.links)
+
           dependencies.clear
           dependencies << possible_child
           break
@@ -152,17 +172,24 @@ module VersatileDiamond
       end
 
       # clear dependecies if dependent only from itself
-      dependencies.clear if dependencies.size == 1 && dependencies.include?(self)
+      if dependencies.size == 1 && dependencies.include?(self)
+        dependencies.clear
+      end
     end
 
     def links_with_replace_by(keynames_to_new_atoms)
-      replaced_links = Hash[@links.map { |atom, links| [atom, links.map.to_a] }] # deep dup @links
+      # deep dup @links
+      replaced_links = Hash[@links.map do |atom, links|
+        [atom, links.map.to_a]
+      end]
 
       keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
         replaced_atom = @atoms[replaced_atom_keyname]
         local_links = replaced_links.delete(replaced_atom)
         local_links.each do |linked_atom, _|
-          replaced_links[linked_atom].map! { |atom, link| [(atom == replaced_atom ? new_atom : atom), link] }
+          replaced_links[linked_atom].map! do |atom, link|
+            [(atom == replaced_atom ? new_atom : atom), link]
+          end
         end
         replaced_links[new_atom] = local_links
       end
@@ -192,8 +219,13 @@ module VersatileDiamond
     end
 
     def extend!
-      atom_references = atom_instances.select { |atom| atom.is_a?(AtomReference) }
-      ref_dup_atoms = Hash[atom_references.map { |atom_ref| [atom_ref, atom_ref.spec.duplicate_atoms] }]
+      atom_references = atom_instances.select do |atom|
+        atom.is_a?(AtomReference)
+      end
+
+      ref_dup_atoms = Hash[atom_references.map do |atom_ref|
+        [atom_ref, atom_ref.spec.duplicate_atoms]
+      end]
 
       # exchange values of @atoms if value is a AtomReference
       @atoms = Hash[@atoms.map do |atom_keyname, atom|
@@ -206,10 +238,12 @@ module VersatileDiamond
 
       # exchange @links AtomReference keys to duplicated Atom instance keys
       atom_references.each do |atom_ref|
-        @links[ref_dup_atoms[atom_ref][atom_ref.atom]] = @links.delete(atom_ref)
+        @links[ref_dup_atoms[atom_ref][atom_ref.atom]] =
+          @links.delete(atom_ref)
       end
 
-      # excange internal @links AtomReference instances to duplicated Atom inatances
+      # excange internal @links AtomReference instances to
+      # duplicated Atom inatances
       @links.values.each do |links|
         links.map! do |another_atom, link_instance|
           if another_atom.is_a?(AtomReference)
@@ -221,7 +255,9 @@ module VersatileDiamond
       end
 
       # adsorb remaining atoms and links between them
-      atom_references.each { |atom_ref| adsorb_links(atom_ref.spec.links, ref_dup_atoms[atom_ref]) }
+      atom_references.each do |atom_ref|
+        adsorb_links(atom_ref.spec.links, ref_dup_atoms[atom_ref])
+      end
     end
 
     def dependencies
@@ -249,7 +285,9 @@ module VersatileDiamond
       if spec_name == @name
         dependencies << self
         AtomReference.new(self, atom_keyname)
-      elsif @aliases_to_atoms && (alias_to_atoms = @aliases_to_atoms[spec_name])
+      elsif @aliases_to_atoms &&
+        (alias_to_atoms = @aliases_to_atoms[spec_name])
+
         dependencies << @aliases_to_specs[spec_name]
         alias_to_atoms[atom_keyname]
       else
@@ -273,7 +311,10 @@ module VersatileDiamond
     end
 
     def internal_bonds_for(atom)
-      @links[atom].select { |_, link_instance| link_instance.class == Bond }.size
+      bonds = @links[atom].select do |_, link_instance|
+        link_instance.class == Bond
+      end
+      bonds.size
     end
 
     def contain?(large_links, small_links)

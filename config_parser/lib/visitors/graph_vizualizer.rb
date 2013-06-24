@@ -6,6 +6,7 @@ module VersatileDiamond
     SPECIFIC_SPEC_COLOR = 'blue'
     TERMINATION_SPEC_COLOR = 'chocolate'
     WHERE_COLOR = 'darkviolet'
+
     EQUATION_COLOR = 'darkgreen'
     EQUATION_PRODUCT_EDGE_COLOR = 'green'
 
@@ -119,7 +120,9 @@ module VersatileDiamond
         node = @wheres_to_nodes[where]
         if (parents = where.dependent_from)
           parents.each do |parent|
-            @graph.add_edges(node, @wheres_to_nodes[parent]).set { |e| e.color = WHERE_COLOR }
+            @graph.add_edges(node, @wheres_to_nodes[parent]).set do |e|
+              e.color = WHERE_COLOR
+            end
           end
         end
 
@@ -141,12 +144,16 @@ module VersatileDiamond
         if @wheres_to_nodes && equation.respond_to?(:wheres)
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
-            @graph.add_edges(equation_node, where_node).set { |e| e.color = WHERE_COLOR }
+            @graph.add_edges(equation_node, where_node).set do |e|
+              e.color = WHERE_COLOR
+            end
           end
         end
 
-        draw_edges_to_specific_specs(equation_node, equation.source, EQUATION_COLOR)
-        # draw_edges_to_specific_specs(equation_node, equation.products, EQUATION_PRODUCT_EDGE_COLOR)
+        draw_edges_to_specific_specs(
+          equation_node, equation.source, EQUATION_COLOR)
+        # draw_edges_to_specific_specs(
+        #   equation_node, equation.products, EQUATION_PRODUCT_EDGE_COLOR)
       end
     end
 
@@ -155,11 +162,16 @@ module VersatileDiamond
 
       depend_from_ss = Set.new
       specific_specs.each do |ss|
-        spec = find_same(@termination_specs, ss) || find_same(@specific_specs, ss)
-        next if depend_from_ss.include?(spec) # except multiple edges between two nodes
+        spec = find_same(@termination_specs, ss) ||
+          find_same(@specific_specs, ss)
+
+        # except multiple edges between two nodes
+        next if depend_from_ss.include?(spec)
 
         if (spec_node = @sp_specs_to_nodes[spec])
-          @graph.add_edges(equation_node, spec_node).set { |e| e.color = color }
+          @graph.add_edges(equation_node, spec_node).set do |e|
+            e.color = color
+          end
         end
         depend_from_ss << spec
       end
@@ -172,7 +184,9 @@ module VersatileDiamond
     def organize_specific_spec_dependencies
       @specific_specs.each_with_object({}) do |ss, specs|
         base_spec = ss.spec
-        specs[base_spec] ||= @specific_specs.select { |s| s.spec == base_spec }
+        specs[base_spec] ||= @specific_specs.select do |s|
+          s.spec == base_spec
+        end
         ss.organize_dependencies(specs[base_spec].reject { |s| s == ss })
       end
     end

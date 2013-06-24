@@ -44,8 +44,14 @@ module VersatileDiamond
       def equation(str)
         term = /(#{ACTIVE_BOND}|#{ATOM_NAME}|#{SPEC_NAME}(?:\(#{OPTIONS}\))?)/
         side = /(?:#{term}\s*\+)?\s*#{term}/
-        matches = str.split(/\s*=\s*/).map { |one_side| side.match(one_side) }.compact
-        matches.size == 2 ? matches.map(&:to_a).each(&:shift).map(&:compact) : nil
+        matches = str.split(/\s*=\s*/).map do |one_side|
+          side.match(one_side)
+        end
+        matches.compact!
+
+        matches.size == 2 ?
+          matches.map(&:to_a).each(&:shift).map(&:compact) :
+          nil
       end
     end
   end

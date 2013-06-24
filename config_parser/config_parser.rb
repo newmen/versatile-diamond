@@ -40,7 +40,8 @@ using VersatileDiamond::RichString
 
 def VersatileDiamond.const_missing(class_name)
   filename = class_name.to_s.underscore
-  if (path = find_file(filename, *AUTO_LOADING_DIRS.map { |dir| "lib/#{dir}" }))
+  path = find_file(filename, *AUTO_LOADING_DIRS.map { |dir| "lib/#{dir}" })
+  if path
     require path
     component = const_get(class_name)
     return component if component

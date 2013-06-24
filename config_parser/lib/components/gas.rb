@@ -21,8 +21,12 @@ module VersatileDiamond
 
     def concentration(specified_spec_str, value, dimension = nil)
       specific_spec = SpecificSpec.new(specified_spec_str)
-      syntax_error('.undefined_spec', name: name) unless specific_spec.is_gas? # TODO: strongly connected componente!
-      @concentrations[specific_spec] = Dimensions.convert_concentration(value, dimension)
+      unless specific_spec.is_gas? # TODO: strongly connected componente!
+        syntax_error('.undefined_spec', name: name)
+      end
+
+      @concentrations[specific_spec] =
+        Dimensions.convert_concentration(value, dimension)
     end
   end
 

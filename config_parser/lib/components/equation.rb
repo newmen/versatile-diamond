@@ -36,7 +36,7 @@ module VersatileDiamond
 
         check_compliance(source, products)
 
-# atom_mapping(source, products)
+# map_atoms(source, products)
 
         new(source, products, name)
       end
@@ -64,7 +64,10 @@ module VersatileDiamond
 
       def extends_if_possible(type, source, products, bonds_sum_limit, deep, &block)
         specs = eval(type.to_s)
-        combinations = specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
+        combinations = specs.size.times.reduce([]) do |acc, i|
+          acc + specs.combination(i + 1).to_a
+        end
+
         combinations.each do |combination|
           bonds_sum = specs.reduce(0) do |acc, spec|
             acc + (combination.include?(spec) && spec.extendable? ?
@@ -78,7 +81,10 @@ module VersatileDiamond
               spec
             end
 
-            args = type == :source ? [duplicate_specs, products] : [source, duplicate_specs]
+            args = type == :source ?
+              [duplicate_specs, products] :
+              [source, duplicate_specs]
+
             result = check_balance(*args, deep - 1, &block)
             if result then return result else next end
           end
@@ -86,7 +92,8 @@ module VersatileDiamond
         false
       end
 
-      # TODO: if checks every possible extending way for complete condition then analyzer may accept incorrect equation
+      # TODO: if checks every possible extending way for complete condition
+      # then analyzer may accept incorrect equation
       def check_balance(source, products, deep = 2, &block)
         ebs = external_bonds_sum(source)
         ebp = external_bonds_sum(products)
@@ -107,7 +114,8 @@ module VersatileDiamond
 
       def check_compliance(source, products, deep = 1)
         source.group_by { |spec| spec.name }.each do |_, group|
-          if group.size > 1 && products.find { |spec| spec.name == group.first.name }
+          product = products.find { |spec| spec.name == group.first.name }
+          if group.size > 1 && product
             syntax_error('.cannot_be_mapped', name: group.first.name)
           end
         end
@@ -115,16 +123,20 @@ module VersatileDiamond
         check_compliance(products, source, deep - 1) if deep > 0
       end
 
-      def atom_mapping(source, products)
+      def map_atoms(source, products)
         has_termination_spec = -> do
-          check = -> specific_spec { specific_spec.is_a?(TerminationSpec) || specific_spec.spec.simple? }
+          check = -> specific_spec do
+            specific_spec.is_a?(TerminationSpec) || specific_spec.spec.simple?
+          end
           source.find(&check) || products.find(&check)
         end
 
         is_full_corresponding = -> do
           source_dup, products_dup = source.dup, products.dup
           source_dup.reduce(true) do |acc, source_spec|
-            i = products_dup.index { |product_spec| source_spec.name == product_spec.name }
+            i = products_dup.index do |product_spec|
+              source_spec.name == product_spec.name
+            end
             acc && i && products_dup.delete_at(i)
           end
         end
@@ -133,7 +145,7 @@ module VersatileDiamond
           # ...
         elsif source.size == products.size && is_full_corresponding.call
           # find concrete atom for each pair of source and product specs
-          # TODO: it doing like simplification of specific specis tree
+
         else
           args = [source, products].map do |specs|
             specs.map { |specific_spec| specific_spec.spec.links }
@@ -151,7 +163,10 @@ module VersatileDiamond
 
       def define_property_setter(property)
         define_method("forward_#{property}=") do |value, prefix = :forward|
-          syntax_error(".#{property}_already_set") if instance_variable_get("@#{property}".to_sym)
+          if instance_variable_get("@#{property}".to_sym)
+            syntax_error(".#{property}_already_set")
+          end
+
           update_attribute(property, value, prefix)
         end
 
@@ -184,7 +199,9 @@ module VersatileDiamond
 
     def position(*used_atom_strs, **options)
       first_atom, second_atom = used_atom_strs.map do |atom_str|
-        find_spec(atom_str) { |specific_spec, atom_keyname| specific_spec[atom_keyname] }
+        find_spec(atom_str) do |specific_spec, atom_keyname|
+          specific_spec[atom_keyname]
+        end
       end
       link(:@positions, first_atom, second_atom, Position[options])
     end
@@ -196,21 +213,33 @@ module VersatileDiamond
       else
         environment = Environment[env_name]
         resolved_target_refs = target_refs.map do |target_alias, used_atom_str|
-          syntax_error('.undefined_target_alias', name: target_alias) unless environment.is_target?(target_alias)
-          atom = find_spec(used_atom_str) { |specific_spec, atom_keyname| specific_spec[atom_keyname] }
+          unless environment.is_target?(target_alias)
+            syntax_error('.undefined_target_alias', name: target_alias)
+          end
+
+          atom = find_spec(used_atom_str) do |specific_spec, atom_keyname|
+            specific_spec[atom_keyname]
+          end
           [target_alias, atom]
         end
 
-        @laterals[env_name] = Lateral.new(environment, Hash[resolved_target_refs])
+        @laterals[env_name] = Lateral.new(
+          environment, Hash[resolved_target_refs])
       end
     end
 
     def there(*names)
       concrete_wheres = names.map do |name|
-        laterals_with_where = @laterals.select { |_, lateral| lateral.has_where?(name) }.values
+        laterals_with_where_hash = @laterals.select do |_, lateral|
+          lateral.has_where?(name)
+        end
+        laterals_with_where = laterals_with_where_hash.values
 
-        syntax_error('where.undefined', name: name) if laterals_with_where.size < 1
-        syntax_error('.multiple_wheres', name: name) if laterals_with_where.size > 1
+        if laterals_with_where.size < 1
+          syntax_error('where.undefined', name: name)
+        elsif laterals_with_where.size > 1
+          syntax_error('.multiple_wheres', name: name)
+        end
 
         laterals_with_where.first.concretize_where(name)
       end
@@ -223,7 +252,8 @@ module VersatileDiamond
 
     %w(source products).each do |specs|
       define_method("#{specs}_gases_num") do
-        instance_variable_get("@#{specs}".to_sym).map(&:is_gas?).select { |v| v }.size
+        instance_variable_get("@#{specs}".to_sym).map(&:is_gas?).
+          select { |v| v }.size
       end
     end
 
@@ -263,7 +293,8 @@ module VersatileDiamond
     end
 
     def reverse_params
-      [@products, @source, "#{@name} reverse"] # TODO: duplicate products and source?
+      # TODO: duplicate products and source?
+      [@products, @source, "#{@name} reverse"]
     end
 
     def reverse
@@ -275,21 +306,27 @@ module VersatileDiamond
     end
 
     def duplication_params(equation_name_tail)
-      [@source.map(&:dup), @products.map(&:dup), "#{@name} #{equation_name_tail}"]
+      [@source.map(&:dup), @products.map(&:dup),
+        "#{@name} #{equation_name_tail}"]
     end
 
     def duplicate(equation_name_tail)
-      Equation.register(self.class.new(*duplication_params(equation_name_tail)))
+      Equation.register(
+        self.class.new(*duplication_params(equation_name_tail)))
     end
 
     def lateralized_duplicate(concrete_wheres, equation_name_tail)
-      Equation.register(LateralizedEquation.new(concrete_wheres, *duplication_params(equation_name_tail)))
+      Equation.register(
+        LateralizedEquation.new(
+          concrete_wheres, *duplication_params(equation_name_tail)))
     end
 
     def update_attribute(attribute, value, prefix = nil)
       if @refinements
         attribute = "#{prefix}_#{attribute}" if prefix
-        @refinements.each { |ref| ref.equation_instance.send("#{attribute}=", value) }
+        @refinements.each do |ref|
+          ref.equation_instance.send("#{attribute}=", value)
+        end
       else
         instance_variable_set("@#{attribute}".to_sym, value)
       end
@@ -305,11 +342,17 @@ module VersatileDiamond
 
       if find_type == :any
         specific_spec = find_lambda[@source] || find_lambda[@products]
-        syntax_error('matcher.undefined_used_atom', name: used_atom_str) unless specific_spec
+        unless specific_spec
+          syntax_error('matcher.undefined_used_atom', name: used_atom_str)
+        end
+
         block[specific_spec, atom_keyname]
       elsif find_type == :all
         specific_specs = [find_lambda[@source], find_lambda[@products]].compact
-        syntax_error('matcher.undefined_used_atom', name: used_atom_str) if specific_specs.empty?
+        if specific_specs.empty?
+          syntax_error('matcher.undefined_used_atom', name: used_atom_str)
+        end
+
         specific_specs.each { |ss| block[ss, atom_keyname] }
       else
         raise "Undefined find type #{find_type}"

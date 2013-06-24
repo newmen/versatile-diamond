@@ -15,7 +15,8 @@ module VersatileDiamond
     def same?(other)
       if self.class == other.class
         @atom == other.atom && (@options == other.options ||
-          (@options.size == other.options.size && @options.sort == other.options.sort))
+          (@options.size == other.options.size &&
+            @options.sort == other.options.sort))
       else
         false
       end
@@ -29,7 +30,7 @@ module VersatileDiamond
         when :unfixed then 'u'
         end
       end
-      "[#{chars.sort.join(', ')}]"
+      "#{@atom}[#{chars.sort.join(', ')}]"
     end
 
   protected

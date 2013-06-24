@@ -5,7 +5,8 @@ module VersatileDiamond
       include SyntaxChecker
 
       def [](name)
-        (@atoms[name] && @atoms[name].dup) || syntax_error('.undefined', name: name)
+        (@atoms[name] && @atoms[name].dup) ||
+          syntax_error('.undefined', name: name)
       end
 
       def add(name, valence)

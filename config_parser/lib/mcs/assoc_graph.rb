@@ -22,7 +22,9 @@ module VersatileDiamond
         each_vertex do |w_w|
           v1, v2 = v_v
           w1, w2 = w_w
-          next if v1 == w1 && v2 == w2 # without loop at each associated vertex
+
+          # without loop at each associated vertex
+          next if v1 == w1 && v2 == w2
 
           edge = [v_v, w_w]
           next if cache.has?(*edge) # without reverse edges
@@ -31,7 +33,9 @@ module VersatileDiamond
           e1 = @g1.edge(v1, w1)
           e2 = @g2.edge(v2, w2)
 
-          if e1 && e2 && (e1 == e2 || (block_given? && block[[v1, w1], [v2, w2]] && e1.same?(e2)))
+          if e1 && e2 && (e1 == e2 ||
+            (block_given? && block[[v1, w1], [v2, w2]] && e1.same?(e2)))
+
             add_edge(@ext, *edge)
           elsif e1 || e2 || v1 == w1 || v2 == w2
             add_edge(@fbn, *edge)
@@ -55,13 +59,14 @@ module VersatileDiamond
     end
 
     def save(filename, ext = 'png')
-      save_for(@ext, 'ext')
-      # save_for(@fbn, 'fbn')
+      save_for(@ext, 'ext', filename, ext)
+      # save_for(@fbn, 'fbn', filename, ext)
     end
 
   private
 
-    # Adds the couple vertices where each pair has one vertex from large_graph and second vertex from small_graph
+    # Adds the couple vertices where each pair has one vertex from
+    # large_graph and second vertex from small_graph
     def add_vertex(v, w)
       vertex = [v, w]
       @fbn[vertex] ||= []
@@ -77,7 +82,7 @@ module VersatileDiamond
       @ext.keys.each(&block)
     end
 
-    def save_for(edges, prefix)
+    def save_for(edges, prefix, filename, ext)
       g = GraphViz.new(:C, type: :graph)
       cache = EdgeCache.new
       edges.each do |v_v, list|
@@ -87,7 +92,8 @@ module VersatileDiamond
           cache.add(v_v, w_w)
 
           w1, w2 = w_w
-          g.add_edges("#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}", "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}")
+          g.add_edges("#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}",
+            "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}")
         end
       end
       g.output(ext.to_sym => "#{prefix}_#{filename}.#{ext}")

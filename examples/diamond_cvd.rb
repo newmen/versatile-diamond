@@ -233,7 +233,6 @@ events
       incoherent one(:ct), two(:ct)
 
       refinement 'not in dimers row'
-        enthalpy -36
         activation 0.8
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:ct)
@@ -248,6 +247,7 @@ events
         forward_activation 0
         reverse_activation 1.2
 
+    enthalpy -36
     forward_rate 8.9e11
     reverse_rate 2.2e6
 
@@ -258,7 +258,6 @@ events
     equation one(ct: *, ct: i) + two(cr: *) = dimer
 
       refinement 'not in dimers row'
-        enthalpy -29.4
         activation 4
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:cr)
@@ -273,6 +272,7 @@ events
         forward_activation 2.7
         reverse_activation 4.1
 
+    enthalpy -29.4
     forward_rate 7.5e11
     reverse_rate 1.2e11
 
@@ -290,8 +290,8 @@ events
   reaction 'methyl to high bridge'
     # TODO: проверить соответствие значений направленности
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
-      # unfixed methyl_on_dimer(:cm) # TODO: должно быть определено автоматически, по соответствию в графах
-      position bridge(:ct), high_bridge(:ct), face: 100, dir: :front
+      unfixed methyl_on_dimer(:cm)
+      position bridge(:ct), high_bridge(:ct), face: 100, dir: :front # TODO: должно быть определено автоматически, по соответствию в графах
 
       refinement 'without high chain neighbour'
         forward_activation 15.3
@@ -374,10 +374,10 @@ events
     aliases source: dimer, product: dimer
 
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
-      # TODO: видимо требуется уточнить реакцию, поскольку разыв source димера не очевиден?
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
 
+      # все значения выдуманы
       refinement 'not in dimers row'
         activation 31.3
 
@@ -386,8 +386,8 @@ events
       there :end_row
         activation 17.6
 
-      # все значения выдуманы
     forward_rate 3.5e8
+
 
   # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
   # reaction 'single dimer to high bridge'
