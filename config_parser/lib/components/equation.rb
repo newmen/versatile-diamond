@@ -36,6 +36,7 @@ module VersatileDiamond
 
         check_compliance(source, products)
 
+puts " >--=  #{name}"
 map_atoms(source, products)
 
         new(source, products, name)
@@ -152,21 +153,38 @@ map_atoms(source, products)
               syntax_error('.atom_mapping.equal_specs', name: source_spec.name)
             end
 
-            [[source_spec, product_spec], changed_atoms.zip(changed_atoms)]
+            associate_atoms(
+              source_spec, product_spec, changed_atoms, changed_atoms)
           end
         else
-          args = [source, products].map do |specs|
-            specs.map { |specific_spec| specific_spec.spec.links }
+          links_to_specs = {}
+          links_lists = [source, products].map do |specs|
+            specs.map do |specific_spec|
+              links = specific_spec.spec.links.dup
+              links_to_specs[links.object_id] = specific_spec
+              links
+            end
           end
 
           begin
-            HanserRecursiveAlgorithm.atom_mapping(*args)
+            HanserRecursiveAlgorithm.atom_mapping(
+              *links_lists) do |source_links, product_links, source_atoms, product_atoms|
+                associate_atoms(
+                  links_to_specs[source_links.object_id],
+                  links_to_specs[product_links.object_id],
+                  source_atoms, product_atoms)
+              end
           rescue HanserRecursiveAlgorithm::CannotMap
             syntax_error('.atom_mapping.cannot_map')
           rescue ArgumentError
             syntax_error('.atom_mapping.argument_error')
           end
         end
+      end
+
+      def associate_atoms(spec1, spec2, atoms1, atoms2)
+# puts %Q|#{spec1} -> #{spec2} :: #{atoms1.zip(atoms2).map { |a1, a2| "#{a1} >> #{a2}" }.join(', ')}|
+        [[spec1, spec2], atoms1.zip(atoms2)]
       end
 
       def define_property_setter(property)

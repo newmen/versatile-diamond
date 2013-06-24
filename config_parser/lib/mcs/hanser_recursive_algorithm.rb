@@ -33,10 +33,8 @@ module VersatileDiamond
         !intersets.empty? && intersets.first.size == small_graph.size
       end
 
-      def atom_mapping(source_links, product_links)
-        make_graphs = -> links_list do
-          links_list.map { |links| Graph.new(links) }
-        end
+      def atom_mapping(source_links, product_links, &block)
+        make_graphs = -> links { Graph.new(links) }
         source_graphs = source_links.map(&make_graphs)
         product_graphs = product_links.map(&make_graphs)
 
@@ -59,11 +57,11 @@ module VersatileDiamond
 
         associate = -> big, small, changed_big, changed_small do
           if reaction_type == :association
-            [[small.original_links, big.original_links],
-              changed_small.zip(changed_big)]
+            block[small.original_links, big.original_links,
+              changed_small, changed_big]
           else
-            [[big.original_links, small.original_links],
-              changed_big.zip(changed_small)]
+            block[big.original_links, small.original_links,
+              changed_big, changed_small]
           end
         end
 
@@ -93,7 +91,9 @@ module VersatileDiamond
                 small_graph.remaining_vertices(small_mapped_vertices)
 
               unless lattices_variants
-                lattices_variants = big_graph.lattices.repeated_permutation(remaining_small_vertices.size).to_a
+                remaining_size = remaining_small_vertices.size
+                lattices_variants = big_graph.lattices.
+                  repeated_permutation(remaining_size).to_a
                 current_lattices = remaining_small_vertices.map do |atom|
                   atom.lattice
                 end
@@ -116,21 +116,46 @@ module VersatileDiamond
           end
 
           if remaining_small_vertices
+            remaining_small_vertices.map! do |v|
+              # because lattice may be changed
+              small_graph.vertex_changed_to(v) || v
+            end
+
             changed_small_vertices = remaining_small_vertices +
               small_graph.boundary_vertices(remaining_small_vertices)
             small_to_big = Hash[small_mapped_vertices.zip(big_mapped_vertices)]
+
             changed_big_vertices = changed_small_vertices.map do |v|
               small_to_big[v]
             end
+            changed_small_vertices.map! do |v|
+              # because lattice may be changed too
+              small_graph.changed_vertex(v) || v
+            end
           else
+            big_to_small = Hash[big_mapped_vertices.zip(small_mapped_vertices)]
             changed_big_vertices = if boundary_big_vertices
                 boundary_big_vertices
               else
+                vertices_with_another_edges = Set.new
+                big_mapped_vertices.each do |bv|
+                  sv = big_to_small[bv]
+                  big_mapped_vertices.each do |bw|
+                    next if bv == bw
+                    sw = big_to_small[bw]
+
+                    if big_graph.edges(bv, bw) != small_graph.edges(sv, sw)
+                      vertices_with_another_edges << bv << bw
+                    end
+                  end
+                end
+
                 big_graph.remove_edges!(big_mapped_vertices)
-                big_graph.remote_disconnected_vertices!
-                big_graph.select_vertices(big_mapped_vertices)
+                big_graph.remove_disconnected_vertices!
+
+                (big_graph.select_vertices(big_mapped_vertices) +
+                  vertices_with_another_edges.to_a).uniq
               end
-            big_to_small = Hash[big_mapped_vertices.zip(small_mapped_vertices)]
             changed_small_vertices = changed_big_vertices.map do |v|
               big_to_small[v]
             end

@@ -17,8 +17,13 @@ module VersatileDiamond
     end
 
     def edge(v, w)
-      @edges[v] && (edge = @edges[v].find { |vertex, _| vertex == w }) &&
-        edge.last
+      edges(v, w).last
+    end
+
+    def edges(v, w)
+      @edges[v] ?
+        @edges[v].select { |vertex, _| vertex == w }.map(&:last) :
+        []
     end
 
     def lattices
@@ -26,13 +31,18 @@ module VersatileDiamond
     end
 
     def change_lattice!(atom, lattice)
+      return if atom.lattice == lattice
       new_atom = atom.dup
       new_atom.lattice = lattice
       exchange_atoms!(atom, new_atom)
     end
 
     def changed_vertex(new_atom)
-      @changed_vertices[new_atom]
+      find_in_deep_hash(@changed_vertices, new_atom)
+    end
+
+    def vertex_changed_to(atom)
+      find_in_deep_hash(@changed_vertices.invert, atom)
     end
 
     def select_vertices(vertices)
@@ -68,7 +78,7 @@ module VersatileDiamond
       end
     end
 
-    def remote_disconnected_vertices!
+    def remove_disconnected_vertices!
       @edges.reject! { |_, links| links.empty? }
     end
 
@@ -121,6 +131,11 @@ module VersatileDiamond
         block[atom, another_atom, link]
         cache.add(atom, another_atom)
       end
+    end
+
+    def find_in_deep_hash(hash, key)
+      value = hash[key]
+      (value && find_in_deep_hash(hash, value)) || value
     end
   end
 
