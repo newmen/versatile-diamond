@@ -36,8 +36,11 @@ module VersatileDiamond
 
         check_compliance(source, products)
 
+        if has_termination_spec(source, products)
+        else
 puts " >--=  #{name}"
-map_atoms(source, products)
+          AtomMapper.map(source, products)
+        end
 
         new(source, products, name)
       end
@@ -124,67 +127,9 @@ map_atoms(source, products)
         check_compliance(products, source, deep - 1) if deep > 0
       end
 
-      def map_atoms(source, products)
-        has_termination_spec = -> do
-          check = -> specific_spec do
-            specific_spec.is_a?(TerminationSpec) || specific_spec.spec.simple?
-          end
-          source.find(&check) || products.find(&check)
-        end
-
-        is_full_corresponding = -> do
-          source_dup, products_dup = source.dup, products.dup
-          source_dup.reduce(true) do |acc, source_spec|
-            i = products_dup.index do |product_spec|
-              source_spec.name == product_spec.name
-            end
-            acc && i && products_dup.delete_at(i)
-          end
-        end
-
-        if has_termination_spec.call
-          # ...
-        elsif source.size == products.size && is_full_corresponding.call
-          # find concrete atom for each pair of source and product specs
-          source.map do |source_spec|
-            product_spec = products.find { |p| p.name == source_spec.name }
-            changed_atoms = source_spec.changed_atoms(product_spec)
-            if changed_atoms.empty?
-              syntax_error('.atom_mapping.equal_specs', name: source_spec.name)
-            end
-
-            associate_atoms(
-              source_spec, product_spec, changed_atoms, changed_atoms)
-          end
-        else
-          links_to_specs = {}
-          links_lists = [source, products].map do |specs|
-            specs.map do |specific_spec|
-              links = specific_spec.spec.links.dup
-              links_to_specs[links.object_id] = specific_spec
-              links
-            end
-          end
-
-          begin
-            HanserRecursiveAlgorithm.atom_mapping(
-              *links_lists) do |source_links, product_links, source_atoms, product_atoms|
-                associate_atoms(
-                  links_to_specs[source_links.object_id],
-                  links_to_specs[product_links.object_id],
-                  source_atoms, product_atoms)
-              end
-          rescue HanserRecursiveAlgorithm::CannotMap
-            syntax_error('.atom_mapping.cannot_map')
-          rescue ArgumentError
-            syntax_error('.atom_mapping.argument_error')
-          end
-        end
-      end
-
-      def associate_atoms(spec1, spec2, atoms1, atoms2)
-# puts %Q|#{spec1} -> #{spec2} :: #{atoms1.zip(atoms2).map { |a1, a2| "#{a1} >> #{a2}" }.join(', ')}|
-        [[spec1, spec2], atoms1.zip(atoms2)]
+      def has_termination_spec(source, products)
+        check = -> specific_spec { specific_spec.is_a?(TerminationSpec) }
+        source.find(&check) || products.find(&check)
       end
 
       def define_property_setter(property)
