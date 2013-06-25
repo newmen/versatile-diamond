@@ -1,6 +1,7 @@
 module VersatileDiamond
 
   class AtomMapper
+    include ListsComparer
     include SyntaxChecker
 
     class << self
@@ -21,14 +22,8 @@ module VersatileDiamond
   private
 
     def full_corresponding?
-      return false if @source.size != @products.size
-
-      source_dup, products_dup = @source.dup, @products.dup
-      source_dup.reduce(true) do |acc, source_spec|
-        i = products_dup.index do |product_spec|
-          source_spec.name == product_spec.name
-        end
-        acc && i && products_dup.delete_at(i)
+      lists_are_identical?(@source, @products) do |source_spec, product_spec|
+        source_spec.name == product_spec.name
       end
     end
 

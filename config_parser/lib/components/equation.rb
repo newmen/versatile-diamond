@@ -2,7 +2,7 @@ module VersatileDiamond
 
   class Equation < ComplexComponent
     include AtomMatcher
-    include Linker
+    include ListsComparer
 
     class << self
       include SyntaxChecker
@@ -173,7 +173,9 @@ module VersatileDiamond
           specific_spec.spec[atom_keyname]
         end
       end
-      link(:@positions, first_atom, second_atom, Position[options])
+
+      @positions ||= []
+      @positions << [first_atom, second_atom, Position[options]]
     end
 
     def lateral(env_name, **target_refs)
@@ -251,8 +253,23 @@ module VersatileDiamond
       end
     end
 
+    def same?(other)
+      is_same_positions = @positions && other.positions &&
+        lists_are_identical?(@positions, other.positions) do |pos1, pos2|
+          pos1.last == pos2.last &&
+            ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
+              (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
+        end
+
+      spec_compare = -> spec1, spec2 { spec1.same?(spec2) }
+      is_same_positions &&
+        lists_are_identical?(@source, other.source, &spec_compare) &&
+        lists_are_identical?(@products, other.products, &spec_compare)
+    end
+
   protected
 
+    attr_reader :positions
     attr_writer :refinements, :parent
 
     def reverse

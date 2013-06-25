@@ -56,6 +56,7 @@ module VersatileDiamond
       reorganize_specs_dependencies
       organize_specific_spec_dependencies
       purge_abstract_equations
+      check_equations_for_duplicates
 
       # call order is important!
       draw_specs
@@ -233,10 +234,22 @@ module VersatileDiamond
       end
     end
 
+    def check_equations_for_duplicates
+      equations = @real_equations.dup
+      until equations.empty?
+        equation = equations.pop
+        same_equation = equations.find { |eq| equation.same?(eq) }
+        if same_equation
+          # TODO: move to syntax_error
+          raise %Q|Equation #{equation.name} is a duplicate of #{same_equation.name}|
+        end
+      end
+    end
+
     def multilinize(text, limit: 13)
       words = text.split(/\s+/)
       splitted_text = ['']
-      while !words.empty?
+      until words.empty?
         splitted_text << '' if splitted_text.last.size > limit
         splitted_text.last << ' ' if splitted_text.last.size > 0
         splitted_text.last << words.shift
