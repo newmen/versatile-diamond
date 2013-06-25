@@ -38,7 +38,6 @@ module VersatileDiamond
 
         if has_termination_spec(source, products)
         else
-puts " >--=  #{name}"
           AtomMapper.map(source, products)
         end
 
@@ -147,7 +146,7 @@ puts " >--=  #{name}"
       end
     end
 
-    attr_reader :name, :source, :products
+    attr_reader :name, :source, :products, :parent
 
     def initialize(source_specs, products_specs, name)
       @source, @products = source_specs, products_specs
@@ -241,23 +240,37 @@ puts " >--=  #{name}"
       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
     end
 
-    def visit(visitor)
+    def visit(visitor, &block)
+      (@source + @products).each { |spec| spec.visit(visitor) }
+
       if @rate
-        (@source + @products).each { |spec| spec.visit(visitor) }
-        yield if block_given?
+        block.call if block_given?
         visitor.accept_equation(self)
+      else
+        visitor.accept_abstract_equation(self)
       end
     end
 
   protected
 
-    attr_writer :refinements
+    attr_writer :refinements, :parent
+
+    def reverse
+      return @reverse if @reverse
+
+      @reverse = Equation.register(self.class.new(*reverse_params))
+      @name << ' forward'
+      @reverse.refinements = @refinements
+      @reverse.parent = parent.reverse if parent
+      @reverse
+    end
 
   private
 
     define_property_setter :enthalpy
 
     def nest_refinement(equation)
+      equation.parent = self
       @refinements ||= []
       @refinements << (refinement = Refinement.new(equation))
       nested(refinement)
@@ -266,14 +279,6 @@ puts " >--=  #{name}"
     def reverse_params
       # TODO: duplicate products and source?
       [@products, @source, "#{@name} reverse"]
-    end
-
-    def reverse
-      return @reverse if @reverse
-      @reverse = Equation.register(self.class.new(*reverse_params))
-      @name << ' forward'
-      @reverse.refinements = @refinements
-      @reverse
     end
 
     def duplication_params(equation_name_tail)

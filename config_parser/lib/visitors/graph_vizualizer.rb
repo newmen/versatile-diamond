@@ -7,8 +7,9 @@ module VersatileDiamond
     TERMINATION_SPEC_COLOR = 'chocolate'
     WHERE_COLOR = 'darkviolet'
 
-    EQUATION_COLOR = 'darkgreen'
-    EQUATION_PRODUCT_EDGE_COLOR = 'green'
+    ABSTRACT_EQUATION_COLOR = 'gray'
+    REAL_EQUATION_COLOR = 'darkgreen'
+    REAL_EQUATION_PRODUCT_EDGE_COLOR = 'green'
 
     def initialize(filename, ext = 'png')
       @filename = "#{filename}.#{ext}"
@@ -20,7 +21,9 @@ module VersatileDiamond
       @specific_specs = []
       @termination_specs = []
       @wheres = []
-      @equations = []
+
+      @abstract_equations = []
+      @real_equations = []
     end
 
     def accept_spec(spec)
@@ -42,24 +45,35 @@ module VersatileDiamond
     end
 
     def accept_equation(equation)
-      @equations << equation
+      @real_equations << equation
+    end
+
+    def accept_abstract_equation(equation)
+      @abstract_equations << equation
     end
 
     def generate
       reorganize_specs_dependencies
       organize_specific_spec_dependencies
+      purge_abstract_equations
 
       # call order is important!
       draw_specs
       draw_specific_specs
       draw_termination_specs
       draw_wheres
+
+      draw_abstract_equations
       draw_equations
 
       @graph.output(@ext => @filename)
     end
 
   private
+
+    def find_same(container, item)
+      container.find { |s| s.same?(item) }
+    end
 
     def draw_specs
       @spec_to_nodes = @base_specs.each_with_object({}) do |spec, hash|
@@ -135,25 +149,47 @@ module VersatileDiamond
     end
 
     def draw_equations
-      @equations.each do |equation|
+      @real_equations.each do |equation|
         multiline_name = multilinize(equation.name)
 
         equation_node = @graph.add_nodes(multiline_name)
-        equation_node.set { |n| n.color = EQUATION_COLOR }
+        equation_node.set { |n| n.color = REAL_EQUATION_COLOR }
 
         if @wheres_to_nodes && equation.respond_to?(:wheres)
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
             @graph.add_edges(equation_node, where_node).set do |e|
-              e.color = WHERE_COLOR
+              e.color = REAL_EQUATION_COLOR
             end
           end
         end
 
+        if @abs_equations_to_nodes && (parent = equation.parent) &&
+          (parent_node = @abs_equations_to_nodes[parent])
+
+          @graph.add_edges(equation_node, parent_node).set do |e|
+            e.color = REAL_EQUATION_COLOR
+          end
+        else
+          draw_edges_to_specific_specs(
+            equation_node, equation.source, REAL_EQUATION_COLOR)
+          # draw_edges_to_specific_specs(
+          #   equation_node, equation.products, REAL_EQUATION_PRODUCT_EDGE_COLOR)
+        end
+      end
+    end
+
+    def draw_abstract_equations
+      @abs_equations_to_nodes = {}
+      @abstract_equations.each do |equation|
+        multiline_name = multilinize(equation.name)
+
+        node = @graph.add_nodes(multiline_name)
+        node.set { |n| n.color = ABSTRACT_EQUATION_COLOR }
+        @abs_equations_to_nodes[equation] = node
+
         draw_edges_to_specific_specs(
-          equation_node, equation.source, EQUATION_COLOR)
-        # draw_edges_to_specific_specs(
-        #   equation_node, equation.products, EQUATION_PRODUCT_EDGE_COLOR)
+          node, equation.source, ABSTRACT_EQUATION_COLOR)
       end
     end
 
@@ -191,8 +227,10 @@ module VersatileDiamond
       end
     end
 
-    def find_same(container, item)
-      container.find { |s| s.same?(item) }
+    def purge_abstract_equations
+      @abstract_equations.select! do |abs_equation|
+        @real_equations.find { |equation| equation.parent == abs_equation }
+      end
     end
 
     def multilinize(text, limit: 13)
