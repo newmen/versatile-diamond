@@ -10,7 +10,7 @@ module VersatileDiamond
     ABSTRACT_EQUATION_COLOR = 'gray'
     REAL_EQUATION_COLOR = 'darkgreen'
     REAL_EQUATION_PRODUCT_EDGE_COLOR = 'green'
-    UBIQUITOUS_EQUATION_DEPENDING_EDGE_COLOR = 'red'
+    EQUATION_DEPENDING_EDGE_COLOR = 'red'
 
     def initialize(filename, ext = 'png')
       @filename = "#{filename}.#{ext}"
@@ -26,6 +26,7 @@ module VersatileDiamond
       @abstract_equations = []
       @ubiquitous_equations = []
       @real_equations = []
+      @lateral_equations = []
     end
 
     def accept_spec(spec)
@@ -50,12 +51,16 @@ module VersatileDiamond
       @abstract_equations << equation
     end
 
-    def accept_equation(equation)
+    def accept_ubiquitous_equation(equation)
+      @ubiquitous_equations << equation
+    end
+
+    def accept_real_equation(equation)
       @real_equations << equation
     end
 
-    def accept_ubiquitous_equation(equation)
-      @ubiquitous_equations << equation
+    def accept_lateral_equation(equation)
+      @lateral_equations << equation
     end
 
     def generate
@@ -72,7 +77,9 @@ module VersatileDiamond
       draw_wheres
 
       draw_abstract_equations
-      draw_equations
+      draw_real_equations
+      draw_ubiquitous_equations
+      draw_lateral_equations
 
       @graph.output(@ext => @filename)
     end
@@ -156,16 +163,51 @@ module VersatileDiamond
       end
     end
 
-    def draw_equations
-      equations_to_nodes = {}
-      (@ubiquitous_equations + @real_equations).each do |equation|
+    def draw_abstract_equations
+      @abs_equations_to_nodes = {}
+      @abstract_equations.each do |equation|
         multiline_name = multilinize(equation.name)
 
         node = @graph.add_nodes(multiline_name)
-        node.set { |n| n.color = REAL_EQUATION_COLOR }
-        equations_to_nodes[equation] = node
+        node.set { |n| n.color = ABSTRACT_EQUATION_COLOR }
+        @abs_equations_to_nodes[equation] = node
 
-        if @wheres_to_nodes && equation.respond_to?(:wheres)
+        draw_edges_to_specific_specs(
+          node, equation.source, ABSTRACT_EQUATION_COLOR)
+      end
+    end
+
+    def draw_real_equations
+      @real_eqs_to_nodes = {}
+      draw_equations(@real_equations) do |equation, node|
+        @real_eqs_to_nodes[equation] = node
+      end
+    end
+
+    def draw_ubiquitous_equations
+      ubiq_eqs_to_nodes = {}
+      draw_equations(@ubiquitous_equations) do |equation, node|
+        ubiq_eqs_to_nodes[equation] = node
+      end
+
+      if @real_eqs_to_nodes
+        @ubiquitous_equations.each do |equation|
+          next if equation.dependent_from.empty?
+
+          node = ubiq_eqs_to_nodes[equation]
+          equation.dependent_from.each do |parent|
+            parent_node = @real_eqs_to_nodes[parent]
+            @graph.add_edges(node, parent_node).set do |e|
+              e.color = EQUATION_DEPENDING_EDGE_COLOR
+            end
+          end
+        end
+      end
+    end
+
+    def draw_lateral_equations
+      draw_equations(@lateral_equations) do |equation, node|
+        if @wheres_to_nodes
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
             @graph.add_edges(node, where_node).set do |e|
@@ -173,6 +215,17 @@ module VersatileDiamond
             end
           end
         end
+      end
+    end
+
+    def draw_equations(equations, &block)
+      equations.each do |equation|
+        multiline_name = multilinize(equation.name)
+
+        node = @graph.add_nodes(multiline_name)
+        node.set { |n| n.color = REAL_EQUATION_COLOR }
+
+        block[equation, node] if block_given?
 
         if @abs_equations_to_nodes && (parent = equation.parent) &&
           (parent_node = @abs_equations_to_nodes[parent])
@@ -186,42 +239,6 @@ module VersatileDiamond
           # draw_edges_to_specific_specs(
           #   node, equation.products, REAL_EQUATION_PRODUCT_EDGE_COLOR)
         end
-      end
-
-      @ubiquitous_equations.each do |equation|
-        next if equation.dependent_from.empty?
-        node = equations_to_nodes[equation]
-        equation.dependent_from.each do |parent|
-          parent_node = equations_to_nodes[parent]
-          @graph.add_edges(node, parent_node).set do |e|
-            e.color = UBIQUITOUS_EQUATION_DEPENDING_EDGE_COLOR
-          end
-        end
-      end
-
-      return unless @depending_real_equations
-      @ubiquitous_equations.each do |equation|
-        self_node = equations_to_nodes[equation]
-        @depending_real_equations.each do |dep_equation|
-          depending_node = equations_to_nodes[dep_equation]
-          @graph.add_edges(self_node, depending_node).set do |e|
-            e.color = UBIQUITOUS_EQUATION_DEPENDING_EDGE_COLOR
-          end
-        end
-      end
-    end
-
-    def draw_abstract_equations
-      @abs_equations_to_nodes = {}
-      @abstract_equations.each do |equation|
-        multiline_name = multilinize(equation.name)
-
-        node = @graph.add_nodes(multiline_name)
-        node.set { |n| n.color = ABSTRACT_EQUATION_COLOR }
-        @abs_equations_to_nodes[equation] = node
-
-        draw_edges_to_specific_specs(
-          node, equation.source, ABSTRACT_EQUATION_COLOR)
       end
     end
 

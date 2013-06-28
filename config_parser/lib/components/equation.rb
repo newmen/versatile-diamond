@@ -331,7 +331,7 @@ module VersatileDiamond
     end
 
     def accept_self(visitor)
-      visitor.accept_equation(self)
+      visitor.accept_real_equation(self)
     end
   end
 

@@ -33,7 +33,7 @@ module VersatileDiamond
 
     def accept_self(visitor)
       @concrete_wheres.each { |where| where.visit(visitor) }
-      super
+      visitor.accept_lateral_equation(self)
     end
   end
 
