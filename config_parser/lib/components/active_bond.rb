@@ -14,6 +14,10 @@ module VersatileDiamond
     def to_s
       name
     end
+
+    def cover?(specific_spec)
+      specific_spec.active?
+    end
   end
 
 end

@@ -25,7 +25,7 @@ module VersatileDiamond
       @options = other.instance_variable_get(:@options).dup
     end
 
-    def_delegators :@spec, :extendable?
+    def_delegators :@spec, :extendable?, :simple?
 
     def name
       @original_name
@@ -110,8 +110,7 @@ module VersatileDiamond
       max_opts_size = -1
       @dependent_from = similar_specs.select do |ss|
         max_opts_size <= ss.options.size &&
-          ((active_bonds_num > 0 && ss.active_bonds_num > 0) ||
-            (active_bonds_num == 0 && ss.active_bonds_num == 0)) &&
+          ((active? && ss.active?) || !(active? || ss.active?)) &&
           ss.options.all? { |option| @options.include?(option) } &&
           (max_opts_size = ss.options.size)
       end
@@ -119,6 +118,14 @@ module VersatileDiamond
 
     def dependent_from
       @dependent_from && @dependent_from.first
+    end
+
+    def active?
+      active_bonds_num > 0
+    end
+
+    def has_atom?(atom)
+      @spec.links.keys.find { |spec_atom| spec_atom.same?(atom) }
     end
 
   protected
@@ -147,10 +154,6 @@ module VersatileDiamond
       @options.select { |_, value| value == '*' }
     end
 
-    def active_bonds_num
-      only_actives.size
-    end
-
   private
 
     def name_and_options(spec_str)
@@ -171,6 +174,10 @@ module VersatileDiamond
       end
 
       [name.to_sym, opts]
+    end
+
+    def active_bonds_num
+      only_actives.size
     end
 
     def correspond?(other)

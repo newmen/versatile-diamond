@@ -28,7 +28,7 @@ module VersatileDiamond
     end
 
     def reject_simple_specs
-      context = -> specific_spec { specific_spec.spec.simple? }
+      context = -> specific_spec { specific_spec.simple? }
       @source.reject!(&context)
       @products.reject!(&context)
     end

@@ -3,7 +3,7 @@ module VersatileDiamond
   class Where < Component
     include AtomMatcher
 
-    attr_reader :description, :dependent_from
+    attr_reader :description, :dependent_from, :environment
 
     def initialize(environment, description)
       @environment = environment

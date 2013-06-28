@@ -8,6 +8,7 @@ ru:
 
   atom:
     already_defined: "Атом \"%{name}\" уже определён"
+    invalid_valence: "Валентность атома \"%{name}\" должна быть положительной"
     undefined: "Неизвестный атом \"%{name}\""
     without_valence: "Атом не может быть инициализирован без значения валентности"
 
@@ -49,6 +50,9 @@ ru:
     atom_already_has_state: "Атом \"%{atom}\" уточнённой структуры \"%{spec}\" уже имеет состояние %{state}"
     invalid_actives_num: "У атома \"%{atom}\" структуры \"%{spec}\" активных связей может быть не больше %{nums}"
     wrong_specification: "Неверное уточнение конфигурации структуры"
+
+  atomic_spec:
+    invalid_valence: "В глобальной реакции можно указывать только одновалентые атомы"
 
   reaction:
     need_define_equation: "Необходимо сначала описать уравнение"

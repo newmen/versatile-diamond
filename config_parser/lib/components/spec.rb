@@ -7,7 +7,6 @@ module VersatileDiamond
   # atom creates instead.
   class Spec < Component
     include AtomMatcher
-    include Linker
 
     class << self
       include SyntaxChecker
@@ -31,8 +30,7 @@ module VersatileDiamond
       # end
     end
 
-    attr_reader :name, :dependent_from
-    attr_reader :links
+    attr_reader :name, :links
 
     def initialize(name)
       @name = name
@@ -58,6 +56,7 @@ module VersatileDiamond
 
     def atoms(**refs)
       if refs.size == 1 && Run.instance.is_termination?(refs.values.first)
+        # TODO: may be check atom valence for 1?
         @is_simple = true
       end
 
@@ -111,7 +110,7 @@ module VersatileDiamond
           :@atoms, alias_atoms(duplicated_atoms))
         extendable_spec.adsorb_links(@links, duplicated_atoms)
         extendable_spec.extend!
-        extendable_spec.dependencies << self
+        extendable_spec.dependent_from << self
       end
       extendable_spec
     end
@@ -146,13 +145,17 @@ module VersatileDiamond
       visitor.accept_spec(self)
     end
 
+    def dependent_from
+      @dependent_from ||= Set.new
+    end
+
     def reorganize_dependencies(used_specs, links = @links)
       # select and sort possible chilren
-      possible_children = used_specs.select do |s|
+      possible_parents = used_specs.select do |s|
         s.name != @name && (s.links.size < links.size ||
           (s.links.size == links.size && s.external_bonds > external_bonds))
       end
-      possible_children.sort! do |a, b|
+      possible_parents.sort! do |a, b|
         if a.links.size == b.links.size
           a.external_bonds <=> b.external_bonds
         else
@@ -161,19 +164,19 @@ module VersatileDiamond
       end
 
       # find and reorganize dependencies
-      possible_children.each do |possible_child|
-        if dependencies.include?(possible_child) ||
-          contain?(links, possible_child.links)
+      possible_parents.each do |possible_parent|
+        if dependent_from.include?(possible_parent) ||
+          contain?(links, possible_parent.links)
 
-          dependencies.clear
-          dependencies << possible_child
+          dependent_from.clear
+          dependent_from << possible_parent
           break
         end
       end
 
       # clear dependecies if dependent only from itself
-      if dependencies.size == 1 && dependencies.include?(self)
-        dependencies.clear
+      if dependent_from.size == 1 && dependent_from.include?(self)
+        dependent_from.clear
       end
     end
 
@@ -260,10 +263,6 @@ module VersatileDiamond
       end
     end
 
-    def dependencies
-      @dependent_from ||= Set.new
-    end
-
   private
 
     def atom_instances
@@ -283,16 +282,16 @@ module VersatileDiamond
     def used_atom(atom_str)
       spec_name, atom_keyname = match_used_atom(atom_str)
       if spec_name == @name
-        dependencies << self
+        dependent_from << self
         AtomReference.new(self, atom_keyname)
       elsif @aliases_to_atoms &&
         (alias_to_atoms = @aliases_to_atoms[spec_name])
 
-        dependencies << @aliases_to_specs[spec_name]
+        dependent_from << @aliases_to_specs[spec_name]
         alias_to_atoms[atom_keyname]
       else
         spec = Spec[spec_name]
-        dependencies << spec
+        dependent_from << spec
         duplicated_atoms = spec.duplicate_atoms
         adsorb_links(spec.links, duplicated_atoms)
         duplicated_atoms[spec[atom_keyname]]
@@ -303,7 +302,12 @@ module VersatileDiamond
       first, second = existing_atoms(*atom_keynames)
       block[first, second] if block_given?
       instance = klass[options]
-      super(:@links, first, second, instance)
+
+      @links ||= {}
+      @links[first] ||= []
+      @links[first] << [second, instance]
+      @links[second] ||= []
+      @links[second] << [first, instance]
     end
 
     def existing_atoms(*atom_keynames)

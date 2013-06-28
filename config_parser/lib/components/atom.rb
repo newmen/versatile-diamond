@@ -11,6 +11,7 @@ module VersatileDiamond
 
       def add(name, valence)
         @atoms ||= {}
+        syntax_error('.invalid_valence', name: name) if valence.to_i <= 0
         syntax_error('.already_defined', name: name) if @atoms[name]
         @atoms[name] = new(name, valence)
       end

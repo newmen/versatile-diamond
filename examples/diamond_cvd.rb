@@ -10,7 +10,7 @@ dimensions
   time 's'
 
 run
-  termination H
+  termination H # TODO: remove it?
   total_time 1
 
 gas

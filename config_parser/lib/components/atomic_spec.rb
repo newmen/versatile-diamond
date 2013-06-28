@@ -1,9 +1,11 @@
 module VersatileDiamond
 
   class AtomicSpec < TerminationSpec
+    include SyntaxChecker
+
     def initialize(atom_name)
       @atom = Atom[atom_name]
-      # TODO: maybe need to check that atom valence is 1
+      syntax_error('.invalid_valence') if @atom.valence != 1
     end
 
     def name
@@ -16,6 +18,13 @@ module VersatileDiamond
 
     def to_s
       @atom.to_s
+    end
+
+    def cover?(specific_spec)
+      # i don't love it condition
+      !specific_spec.active? && ((Run.instance.is_termination?(name) &&
+        specific_spec.external_bonds > 0) ||
+          specific_spec.has_atom?(@atom))
     end
   end
 

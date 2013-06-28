@@ -10,6 +10,7 @@ module VersatileDiamond
     ABSTRACT_EQUATION_COLOR = 'gray'
     REAL_EQUATION_COLOR = 'darkgreen'
     REAL_EQUATION_PRODUCT_EDGE_COLOR = 'green'
+    UBIQUITOUS_EQUATION_DEPENDING_EDGE_COLOR = 'red'
 
     def initialize(filename, ext = 'png')
       @filename = "#{filename}.#{ext}"
@@ -23,6 +24,7 @@ module VersatileDiamond
       @wheres = []
 
       @abstract_equations = []
+      @ubiquitous_equations = []
       @real_equations = []
     end
 
@@ -44,12 +46,16 @@ module VersatileDiamond
       @wheres << where
     end
 
+    def accept_abstract_equation(equation)
+      @abstract_equations << equation
+    end
+
     def accept_equation(equation)
       @real_equations << equation
     end
 
-    def accept_abstract_equation(equation)
-      @abstract_equations << equation
+    def accept_ubiquitous_equation(equation)
+      @ubiquitous_equations << equation
     end
 
     def generate
@@ -57,6 +63,7 @@ module VersatileDiamond
       organize_specific_spec_dependencies
       purge_abstract_equations
       check_equations_for_duplicates
+      organize_equations_dependencies
 
       # call order is important!
       draw_specs
@@ -150,16 +157,18 @@ module VersatileDiamond
     end
 
     def draw_equations
-      @real_equations.each do |equation|
+      equations_to_nodes = {}
+      (@ubiquitous_equations + @real_equations).each do |equation|
         multiline_name = multilinize(equation.name)
 
-        equation_node = @graph.add_nodes(multiline_name)
-        equation_node.set { |n| n.color = REAL_EQUATION_COLOR }
+        node = @graph.add_nodes(multiline_name)
+        node.set { |n| n.color = REAL_EQUATION_COLOR }
+        equations_to_nodes[equation] = node
 
         if @wheres_to_nodes && equation.respond_to?(:wheres)
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
-            @graph.add_edges(equation_node, where_node).set do |e|
+            @graph.add_edges(node, where_node).set do |e|
               e.color = REAL_EQUATION_COLOR
             end
           end
@@ -168,14 +177,36 @@ module VersatileDiamond
         if @abs_equations_to_nodes && (parent = equation.parent) &&
           (parent_node = @abs_equations_to_nodes[parent])
 
-          @graph.add_edges(equation_node, parent_node).set do |e|
+          @graph.add_edges(node, parent_node).set do |e|
             e.color = REAL_EQUATION_COLOR
           end
         else
           draw_edges_to_specific_specs(
-            equation_node, equation.source, REAL_EQUATION_COLOR)
+            node, equation.source, REAL_EQUATION_COLOR)
           # draw_edges_to_specific_specs(
-          #   equation_node, equation.products, REAL_EQUATION_PRODUCT_EDGE_COLOR)
+          #   node, equation.products, REAL_EQUATION_PRODUCT_EDGE_COLOR)
+        end
+      end
+
+      @ubiquitous_equations.each do |equation|
+        next if equation.dependent_from.empty?
+        node = equations_to_nodes[equation]
+        equation.dependent_from.each do |parent|
+          parent_node = equations_to_nodes[parent]
+          @graph.add_edges(node, parent_node).set do |e|
+            e.color = UBIQUITOUS_EQUATION_DEPENDING_EDGE_COLOR
+          end
+        end
+      end
+
+      return unless @depending_real_equations
+      @ubiquitous_equations.each do |equation|
+        self_node = equations_to_nodes[equation]
+        @depending_real_equations.each do |dep_equation|
+          depending_node = equations_to_nodes[dep_equation]
+          @graph.add_edges(self_node, depending_node).set do |e|
+            e.color = UBIQUITOUS_EQUATION_DEPENDING_EDGE_COLOR
+          end
         end
       end
     end
@@ -241,8 +272,14 @@ module VersatileDiamond
         same_equation = equations.find { |eq| equation.same?(eq) }
         if same_equation
           # TODO: move to syntax_error
-          raise %Q|Equation #{equation.name} is a duplicate of #{same_equation.name}|
+          raise %Q|Equation "#{equation.name}" is a duplicate of "#{same_equation.name}"|
         end
+      end
+    end
+
+    def organize_equations_dependencies
+      @real_equations.each do |equation|
+        equation.organize_dependencies(@ubiquitous_equations)
       end
     end
 

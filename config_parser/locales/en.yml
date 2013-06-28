@@ -8,6 +8,7 @@ en:
 
   atom:
     already_defined: "Atom already defined"
+    invalid_valence: "Valence of atom \"%{name}\" must be positive"
     undefined: "Unknown atom \"%{name}\""
     without_valence: "Atom cannot be initialized without valence parameter"
 
@@ -49,6 +50,9 @@ en:
     atom_already_has_state: "Atom \"%{atom}\" of specific spec \"%{spec}\" already has %{state} state"
     invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" can have no more than %{nums} active bonds"
     wrong_specification: "Wrong spec specification"
+
+  atomic_spec:
+    invalid_valence: "In the global reaction can be specified only monovalent atoms"
 
   reaction:
     need_define_equation: "Necessary to define equation first"

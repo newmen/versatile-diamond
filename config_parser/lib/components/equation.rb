@@ -1,8 +1,7 @@
 module VersatileDiamond
 
-  class Equation < ComplexComponent
+  class Equation < UbiquitousEquation
     include AtomMatcher
-    include ListsComparer
 
     class << self
       include SyntaxChecker
@@ -37,11 +36,11 @@ module VersatileDiamond
         check_compliance(source, products)
 
         if has_termination_spec(source, products)
+          UbiquitousEquation.new(name, source, products)
         else
-          AtomMapper.map(source, products)
+          atoms_map = AtomMapper.map(source, products)
+          new(name, source, products, atoms_map)
         end
-
-        new(source, products, name)
       end
 
       def detect_spec(spec_str, aliases)
@@ -130,27 +129,11 @@ module VersatileDiamond
         check = -> specific_spec { specific_spec.is_a?(TerminationSpec) }
         source.find(&check) || products.find(&check)
       end
-
-      def define_property_setter(property)
-        define_method("forward_#{property}=") do |value, prefix = :forward|
-          if instance_variable_get("@#{property}".to_sym)
-            syntax_error("equation.#{property}_already_set")
-          end
-
-          update_attribute(property, value, prefix)
-        end
-
-        define_method("reverse_#{property}=") do |value|
-          reverse.send("forward_#{property}=", value, :reverse)
-        end
-      end
     end
 
-    attr_reader :name, :source, :products, :parent
-
-    def initialize(source_specs, products_specs, name)
-      @source, @products = source_specs, products_specs
-      @name = name
+    def initialize(name, source_specs, products_specs, atoms_map)
+      super(name, source_specs, products_specs)
+      @atoms_map = atoms_map
     end
 
     def refinement(name)
@@ -181,12 +164,12 @@ module VersatileDiamond
     def lateral(env_name, **target_refs)
       @laterals ||= {}
       if @laterals[env_name]
-        syntax_error('.lateral_already_connected')
+        syntax_error('equation.lateral_already_connected')
       else
         environment = Environment[env_name]
         resolved_target_refs = target_refs.map do |target_alias, used_atom_str|
           unless environment.is_target?(target_alias)
-            syntax_error('.undefined_target_alias', name: target_alias)
+            syntax_error('equation.undefined_target_alias', name: target_alias)
           end
 
           atom = find_spec(used_atom_str) do |specific_spec, atom_keyname|
@@ -210,7 +193,7 @@ module VersatileDiamond
         if laterals_with_where.size < 1
           syntax_error('where.undefined', name: name)
         elsif laterals_with_where.size > 1
-          syntax_error('.multiple_wheres', name: name)
+          syntax_error('equation.multiple_wheres', name: name)
         end
 
         laterals_with_where.first.concretize_where(name)
@@ -220,87 +203,82 @@ module VersatileDiamond
       nest_refinement(lateralized_duplicate(concrete_wheres, name_tail))
     end
 
-    # another methods
-
-    %w(source products).each do |specs|
-      define_method("#{specs}_gases_num") do
-        instance_variable_get("@#{specs}".to_sym).map(&:is_gas?).
-          select { |v| v }.size
-      end
-    end
-
-    def enthalpy=(value)
-      self.forward_enthalpy = value
-      self.reverse_enthalpy = -value
-    end
-
-    define_property_setter :activation
-    define_property_setter :rate
-
-    def to_s
-      specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
-      "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
-    end
-
-    def visit(visitor, &block)
-      (@source + @products).each { |spec| spec.visit(visitor) }
-
-      if @rate
-        block.call if block_given?
-        visitor.accept_equation(self)
-      else
-        visitor.accept_abstract_equation(self)
-      end
-    end
-
     def same?(other)
-      is_same_positions = @positions && other.positions &&
-        lists_are_identical?(@positions, other.positions) do |pos1, pos2|
-          pos1.last == pos2.last &&
-            ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
-              (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
-        end
+      is_same_positions = (!@positions && !other.positions) ||
+        (@positions && other.positions &&
+          lists_are_identical?(@positions, other.positions) do |pos1, pos2|
+            pos1.last == pos2.last &&
+              ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
+                (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
+          end)
 
-      spec_compare = -> spec1, spec2 { spec1.same?(spec2) }
-      is_same_positions &&
-        lists_are_identical?(@source, other.source, &spec_compare) &&
-        lists_are_identical?(@products, other.products, &spec_compare)
+      is_same_positions && super
+    end
+
+    def organize_dependencies(ubiquitous_equations)
+      simple_specs = @source.select { |specific_spec| specific_spec.simple? }
+      complex_specs = @source - simple_specs
+
+      ubiquitous_equations.each do |possible_child|
+        # TODO: may be need to cache termination specs and same simple specs
+        termination_specs = possible_child.source.select do |specific_spec|
+          specific_spec.is_a?(TerminationSpec)
+        end
+        possible_simple_specs = possible_child.source - termination_specs
+
+        simples_are_identical =
+          lists_are_identical?(simple_specs, possible_simple_specs) do |spec1, spec2|
+            spec1.same?(spec2)
+          end
+        next unless simples_are_identical
+
+        terminations_are_covering =
+          lists_are_identical?(complex_specs, termination_specs) do |complex, termination|
+            termination.cover?(complex)
+          end
+        next unless terminations_are_covering
+
+        possible_child.dependent_from << self
+      end
     end
 
   protected
 
-    attr_reader :positions
-    attr_writer :refinements, :parent
+    attr_accessor :positions
+    attr_writer :refinements
 
     def reverse
-      return @reverse if @reverse
-
-      @reverse = Equation.register(self.class.new(*reverse_params))
-      @name << ' forward'
-      @reverse.refinements = @refinements
-      @reverse.parent = parent.reverse if parent
-      @reverse
+      super do |r|
+        r.positions = @positions
+        r.refinements = @refinements
+      end
     end
 
   private
 
-    define_property_setter :enthalpy
-
     def nest_refinement(equation)
       equation.parent = self
+      equation.positions = @positions.dup if @positions
+
       @refinements ||= []
       @refinements << (refinement = Refinement.new(equation))
       nested(refinement)
     end
 
     def reverse_params
-      # TODO: duplicate products and source?
-      [@products, @source, "#{@name} reverse"]
+      [*super, @atoms_map]
     end
 
     def duplication_params(equation_name_tail)
-      [@source.map(&:dup), @products.map(&:dup),
-        "#{@name} #{equation_name_tail}"]
+      # TODO: костыль, because calling .reverse for parent in reverse method
+      name = @name
+      forward_regex = / forward\Z/
+      if instance_variable_get(:@reverse) && name =~ forward_regex
+        name.sub!(forward_regex, '')
+      end
+
+      ["#{name} #{equation_name_tail}",
+        @source.map(&:dup), @products.map(&:dup), @atoms_map]
     end
 
     def duplicate(equation_name_tail)
@@ -312,17 +290,6 @@ module VersatileDiamond
       Equation.register(
         LateralizedEquation.new(
           concrete_wheres, *duplication_params(equation_name_tail)))
-    end
-
-    def update_attribute(attribute, value, prefix = nil)
-      if @refinements
-        attribute = "#{prefix}_#{attribute}" if prefix
-        @refinements.each do |ref|
-          ref.equation_instance.send("#{attribute}=", value)
-        end
-      else
-        instance_variable_set("@#{attribute}".to_sym, value)
-      end
     end
 
     def find_spec(used_atom_str, find_type: :any, &block)
@@ -350,6 +317,21 @@ module VersatileDiamond
       else
         raise "Undefined find type #{find_type}"
       end
+    end
+
+    def update_attribute(attribute, value, prefix = nil)
+      if @refinements
+        attribute = "#{prefix}_#{attribute}" if prefix
+        @refinements.each do |ref|
+          ref.equation_instance.send("#{attribute}=", value)
+        end
+      else
+        super
+      end
+    end
+
+    def accept_self(visitor)
+      visitor.accept_equation(self)
     end
   end
 
