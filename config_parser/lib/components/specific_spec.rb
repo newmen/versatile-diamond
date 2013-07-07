@@ -94,10 +94,11 @@ module VersatileDiamond
     end
 
     def same?(other)
-      (self.is_a?(other.class) || other.is_a?(self.class)) &&
-        @spec == other.spec &&
-          (@options == other.options || (!@options.empty? &&
-            @options.size == other.options.size && correspond?(other)))
+      other == self ||
+        ((self.is_a?(other.class) || other.is_a?(self.class)) &&
+          @spec == other.spec &&
+            (@options == other.options || (!@options.empty? &&
+              @options.size == other.options.size && correspond?(other))))
     end
 
     def organize_dependencies(similar_specs)

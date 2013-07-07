@@ -130,14 +130,13 @@ module VersatileDiamond
       str = "#{name}(\n"
       str << @links.map do |atom, list|
         links = "  #{name_with_keyname[atom]}[\n    "
-        link_strs << list.map do |neighbour, link|
+        link_strs = list.map do |neighbour, link|
           "#{link}#{name_with_keyname[neighbour]}"
         end
-        links = link_strs.join(', ')
-        links << ']'
+        links << link_strs.join(', ') << ']'
         links
       end.join(",\n")
-      str << ')'
+      str << "\n)"
       str
     end
 

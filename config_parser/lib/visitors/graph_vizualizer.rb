@@ -66,7 +66,7 @@ module VersatileDiamond
     def generate
       reorganize_specs_dependencies
       organize_specific_spec_dependencies
-      purge_abstract_equations
+      purge_unused_entities
       check_equations_for_duplicates
       organize_equations_dependencies
 
@@ -302,9 +302,29 @@ module VersatileDiamond
       end
     end
 
-    def purge_abstract_equations
+    def purge_unused_entities
+      # purge order is important!
       @abstract_equations.select! do |abs_equation|
         @real_equations.find { |equation| equation.parent == abs_equation }
+      end
+
+      all_equations = @abstract_equations + @ubiquitous_equations +
+        @real_equations + @lateral_equations
+      @specific_specs.select! do |specific_spec|
+        @specific_specs.find { |ss| ss.dependent_from == specific_spec } ||
+          all_equations.find do |equation|
+            equation.source.find { |ss| specific_spec.same?(ss) }
+          end
+      end
+
+      @base_specs.select! do |spec|
+        dep_from_s = @base_specs.find do |s|
+          s.dependent_from.include?(spec)
+        end
+        dep_from_ss = dep_from_s || @specific_specs.find do |specific_spec|
+          specific_spec.spec == spec
+        end
+        dep_from_ss || @wheres.find { |where| where.specs.include?(spec) }
       end
     end
 

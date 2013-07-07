@@ -48,7 +48,6 @@ module VersatileDiamond
     end
 
     def visit(visitor)
-      # (@source + @products).each { |spec| spec.visit(visitor) }
       @source.each { |spec| spec.visit(visitor) }
 
       if @activation && @rate
