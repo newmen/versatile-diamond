@@ -215,31 +215,14 @@ module VersatileDiamond
       is_same_positions && super
     end
 
-    def organize_dependencies(ubiquitous_equations)
-      simple_specs = @source.select { |specific_spec| specific_spec.simple? }
-      complex_specs = @source - simple_specs
-
-      ubiquitous_equations.each do |possible_child|
-        # TODO: may be need to cache termination specs and same simple specs
-        termination_specs = possible_child.source.select do |specific_spec|
-          specific_spec.is_a?(TerminationSpec)
-        end
-        possible_simple_specs = possible_child.source - termination_specs
-
-        simples_are_identical =
-          lists_are_identical?(simple_specs, possible_simple_specs) do |spec1, spec2|
-            spec1.same?(spec2)
-          end
-        next unless simples_are_identical
-
-        terminations_are_covering =
-          lists_are_identical?(complex_specs, termination_specs) do |complex, termination|
-            termination.cover?(complex)
-          end
-        next unless terminations_are_covering
-
-        possible_child.dependent_from << self
+    def simple_source
+      @simple_source ||= @source.select do |specific_spec|
+        specific_spec.simple?
       end
+    end
+
+    def complex_source
+      @complex_source ||= @source - simple_source
     end
 
   protected

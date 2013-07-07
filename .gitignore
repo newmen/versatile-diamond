@@ -1,3 +1,6 @@
 .idea
+
+Gemfile.lock
+
 *.dump
 *.png

@@ -30,7 +30,7 @@ module VersatileDiamond
       end
 
       define_match :specified_atom, :atom, :lattice do
-        /\A(?<atom>#{ATOM_NAME})(-?%(?<lattice>\S+))\Z/
+        /\A(?<atom>#{ATOM_NAME})(?:%(?<lattice>\S+))\Z/
       end
 
       define_match :used_atom, :spec, :atom do

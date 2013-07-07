@@ -3,7 +3,7 @@ module VersatileDiamond
   class Where < Component
     include AtomMatcher
 
-    attr_reader :description, :dependent_from, :environment
+    attr_reader :description, :environment
 
     def initialize(environment, description)
       @environment = environment
@@ -41,7 +41,7 @@ module VersatileDiamond
 
         # TODO: each item duplicated??
         @raw_positions.merge!(Hash[other.raw_positions.map(&:dup)])
-        dependencies << other
+        dependent_from << other
       end
     end
 
@@ -53,15 +53,13 @@ module VersatileDiamond
       @specs.values
     end
 
+    def dependent_from
+      @dependent_from ||= Set.new
+    end
+
   protected
 
     attr_reader :raw_positions
-
-  private
-
-    def dependencies
-      @dependent_from ||= Set.new
-    end
 
   end
 

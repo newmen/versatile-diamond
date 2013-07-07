@@ -48,10 +48,11 @@ module VersatileDiamond
     end
 
     def visit(visitor)
-      (@source + @products).each { |spec| spec.visit(visitor) }
+      # (@source + @products).each { |spec| spec.visit(visitor) }
+      @source.each { |spec| spec.visit(visitor) }
 
       if @activation && @rate
-         accept_self(visitor)
+        accept_self(visitor)
       else
         visitor.accept_abstract_equation(self)
       end
@@ -65,6 +66,27 @@ module VersatileDiamond
 
     def dependent_from
       @dependent_from ||= []
+    end
+
+    def organize_dependencies(not_ubiquitous_equations)
+      termination_specs = @source.select { |spec| spec.is_a?(TerminationSpec) }
+      simple_specs = @source - termination_specs
+
+      not_ubiquitous_equations.each do |possible_parent|
+        simples_are_identical =
+          lists_are_identical?(simple_specs, possible_parent.simple_source) do |spec1, spec2|
+            spec1.same?(spec2)
+          end
+        next unless simples_are_identical
+
+        terminations_are_covering =
+          lists_are_identical?(termination_specs, possible_parent.complex_source) do |termination, complex|
+            termination.cover?(complex)
+          end
+        next unless terminations_are_covering
+
+        dependent_from << possible_parent
+      end
     end
 
   protected

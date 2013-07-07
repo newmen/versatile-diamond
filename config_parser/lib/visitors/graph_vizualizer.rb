@@ -191,22 +191,18 @@ module VersatileDiamond
       end
 
       if @real_eqs_to_nodes
-        @ubiquitous_equations.each do |equation|
-          next if equation.dependent_from.empty?
-
-          node = ubiq_eqs_to_nodes[equation]
-          equation.dependent_from.each do |parent|
-            parent_node = @real_eqs_to_nodes[parent]
-            @graph.add_edges(node, parent_node).set do |e|
-              e.color = EQUATION_DEPENDING_EDGE_COLOR
-            end
-          end
-        end
+        draw_equations_depending_edges(
+          @ubiquitous_equations, @real_eqs_to_nodes, ubiq_eqs_to_nodes)
       end
     end
 
     def draw_lateral_equations
-      draw_equations(@lateral_equations) do |equation, node|
+      lambda_next_if = -> equation { !equation.dependent_from.empty? }
+
+      lateral_eqs_to_nodes = {}
+      draw_equations(@lateral_equations, lambda_next_if) do |equation, node|
+        lateral_eqs_to_nodes[equation] = node
+
         if @wheres_to_nodes
           equation.wheres.each do |where|
             where_node = @wheres_to_nodes[where]
@@ -216,9 +212,12 @@ module VersatileDiamond
           end
         end
       end
+
+      draw_equations_depending_edges(
+        @lateral_equations, lateral_eqs_to_nodes, lateral_eqs_to_nodes)
     end
 
-    def draw_equations(equations, &block)
+    def draw_equations(equations, lambda_next_if = nil, &block)
       equations.each do |equation|
         multiline_name = multilinize(equation.name)
 
@@ -226,6 +225,8 @@ module VersatileDiamond
         node.set { |n| n.color = REAL_EQUATION_COLOR }
 
         block[equation, node] if block_given?
+
+        next if lambda_next_if && lambda_next_if[equation]
 
         if @abs_equations_to_nodes && (parent = equation.parent) &&
           (parent_node = @abs_equations_to_nodes[parent])
@@ -238,6 +239,20 @@ module VersatileDiamond
             node, equation.source, REAL_EQUATION_COLOR)
           # draw_edges_to_specific_specs(
           #   node, equation.products, REAL_EQUATION_PRODUCT_EDGE_COLOR)
+        end
+      end
+    end
+
+    def draw_equations_depending_edges(equations, parents_to_nodes, current_to_nodes)
+      equations.each do |equation|
+        next if equation.dependent_from.empty?
+
+        node = current_to_nodes[equation]
+        equation.dependent_from.each do |parent|
+          parent_node = parents_to_nodes[parent]
+          @graph.add_edges(node, parent_node).set do |e|
+            e.color = EQUATION_DEPENDING_EDGE_COLOR
+          end
         end
       end
     end
@@ -295,8 +310,15 @@ module VersatileDiamond
     end
 
     def organize_equations_dependencies
-      @real_equations.each do |equation|
-        equation.organize_dependencies(@ubiquitous_equations)
+      not_ubiquitous_equations = @real_equations + @lateral_equations
+      @ubiquitous_equations.each do |equation|
+        equation.organize_dependencies(not_ubiquitous_equations)
+      end
+      # @real_equations.each do |equation|
+      #   equation.organize_dependencies(not_ubiquitous_equations)
+      # end
+      @lateral_equations.each do |equation|
+        equation.organize_dependencies(@lateral_equations)
       end
     end
 

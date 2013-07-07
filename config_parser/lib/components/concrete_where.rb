@@ -25,6 +25,10 @@ module VersatileDiamond
       @where.environment == other.where.environment &&
         @where.description == other.where.description
     end
+
+    def cover?(other)
+      @where.dependent_from.include?(other.where)
+    end
   end
 
 end
