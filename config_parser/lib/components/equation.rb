@@ -225,6 +225,27 @@ module VersatileDiamond
       @complex_source ||= @source - simple_source
     end
 
+    def organize_dependencies(lateral_equations)
+      applicants = []
+      lateral_equations.each do |equation|
+        applicants << equation if same?(equation)
+      end
+
+      return if applicants.empty?
+
+      loop do
+        inc = applicants.select do |equation|
+          applicants.find do |uneq|
+            equation != uneq && equation.dependent_from.include?(uneq)
+          end
+        end
+        break if inc.empty?
+        applicants = inc
+      end
+
+      applicants.each { |equation| dependent_from << equation }
+    end
+
   protected
 
     attr_accessor :positions

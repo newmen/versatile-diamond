@@ -81,6 +81,8 @@ module VersatileDiamond
       draw_ubiquitous_equations
       draw_lateral_equations
 
+      draw_equations_dependencies
+
       @graph.output(@ext => @filename)
     end
 
@@ -185,23 +187,18 @@ module VersatileDiamond
     end
 
     def draw_ubiquitous_equations
-      ubiq_eqs_to_nodes = {}
+      @ubiq_eqs_to_nodes = {}
       draw_equations(@ubiquitous_equations) do |equation, node|
-        ubiq_eqs_to_nodes[equation] = node
-      end
-
-      if @real_eqs_to_nodes
-        draw_equations_depending_edges(
-          @ubiquitous_equations, @real_eqs_to_nodes, ubiq_eqs_to_nodes)
+        @ubiq_eqs_to_nodes[equation] = node
       end
     end
 
     def draw_lateral_equations
       lambda_next_if = -> equation { !equation.dependent_from.empty? }
 
-      lateral_eqs_to_nodes = {}
+      @lateral_eqs_to_nodes = {}
       draw_equations(@lateral_equations, lambda_next_if) do |equation, node|
-        lateral_eqs_to_nodes[equation] = node
+        @lateral_eqs_to_nodes[equation] = node
 
         if @wheres_to_nodes
           equation.wheres.each do |where|
@@ -212,9 +209,23 @@ module VersatileDiamond
           end
         end
       end
+    end
 
-      draw_equations_depending_edges(
-        @lateral_equations, lateral_eqs_to_nodes, lateral_eqs_to_nodes)
+    def draw_equations_dependencies
+      if @ubiq_eqs_to_nodes && @real_eqs_to_nodes
+        draw_equations_depending_edges(
+          @ubiquitous_equations, @ubiq_eqs_to_nodes, @real_eqs_to_nodes)
+      end
+
+      if @real_eqs_to_nodes && @lateral_eqs_to_nodes
+        draw_equations_depending_edges(
+          @real_equations, @real_eqs_to_nodes, @lateral_eqs_to_nodes)
+      end
+
+      if @lateral_eqs_to_nodes
+        draw_equations_depending_edges(
+          @lateral_equations, @lateral_eqs_to_nodes, @lateral_eqs_to_nodes)
+      end
     end
 
     def draw_equations(equations, lambda_next_if = nil, &block)
@@ -243,7 +254,7 @@ module VersatileDiamond
       end
     end
 
-    def draw_equations_depending_edges(equations, parents_to_nodes, current_to_nodes)
+    def draw_equations_depending_edges(equations, current_to_nodes, parents_to_nodes)
       equations.each do |equation|
         next if equation.dependent_from.empty?
 
@@ -298,26 +309,33 @@ module VersatileDiamond
     end
 
     def check_equations_for_duplicates
-      equations = @real_equations.dup
-      until equations.empty?
-        equation = equations.pop
-        same_equation = equations.find { |eq| equation.same?(eq) }
-        if same_equation
-          # TODO: move to syntax_error
-          raise %Q|Equation "#{equation.name}" is a duplicate of "#{same_equation.name}"|
+      checker = -> equations do
+        equations = equations.dup
+        until equations.empty?
+          equation = equations.pop
+          same_equation = equations.find { |eq| equation.same?(eq) }
+          if same_equation
+            # TODO: move to syntax_error
+            raise %Q|Equation "#{equation.name}" is a duplicate of "#{same_equation.name}"|
+          end
         end
       end
+
+      checker[@ubiquitous_equations]
+      checker[@real_equations]
+      checker[@lateral_equations]
     end
 
     def organize_equations_dependencies
+      # order of dependencies organization is important!
       not_ubiquitous_equations = @real_equations + @lateral_equations
       @ubiquitous_equations.each do |equation|
         equation.organize_dependencies(not_ubiquitous_equations)
       end
-      # @real_equations.each do |equation|
-      #   equation.organize_dependencies(not_ubiquitous_equations)
-      # end
       @lateral_equations.each do |equation|
+        equation.organize_dependencies(@lateral_equations)
+      end
+      @real_equations.each do |equation|
         equation.organize_dependencies(@lateral_equations)
       end
     end
