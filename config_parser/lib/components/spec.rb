@@ -55,15 +55,14 @@ module VersatileDiamond
     end
 
     def atoms(**refs)
-      if refs.size == 1 && Run.instance.is_termination?(refs.values.first)
-        # TODO: may be check atom valence for 1?
-        @is_simple = true
-      end
-
       refs.each do |keyname, atom|
         real_atom = detect_atom(atom)
         @atoms[keyname] = real_atom
         @links[real_atom] ||= []
+      end
+
+      if refs.size == 1 && @atoms.values.first.valence == 1
+        @is_simple = true
       end
     end
 

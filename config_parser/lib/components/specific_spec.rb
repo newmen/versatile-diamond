@@ -127,7 +127,8 @@ module VersatileDiamond
     end
 
     def has_atom?(atom)
-      @spec.links.keys.find { |spec_atom| spec_atom.same?(atom) }
+      (atom.name == 'H' && @spec.external_bonds > 0) ||
+        @spec.links.keys.find { |spec_atom| spec_atom.same?(atom) }
     end
 
   protected

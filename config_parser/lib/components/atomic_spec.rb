@@ -21,10 +21,7 @@ module VersatileDiamond
     end
 
     def cover?(specific_spec)
-      # i don't love it condition
-      !specific_spec.active? && ((Run.instance.is_termination?(name) &&
-        specific_spec.external_bonds > 0) ||
-          specific_spec.has_atom?(@atom))
+      !specific_spec.active? && specific_spec.has_atom?(@atom)
     end
   end
 

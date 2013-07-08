@@ -16,9 +16,6 @@ en:
     is_not_set: "Dimension is not set"
     undefined_value: "Undefined value of dimension"
 
-  run:
-    invalid_termination: "Invalid atom termination value \"%{value}\""
-
   gas:
     undefined_spec: "Undefined gas spec \"%{name}\""
 
