@@ -15,6 +15,10 @@ module VersatileDiamond
         syntax_error('.already_defined', name: name) if @atoms[name]
         @atoms[name] = new(name, valence)
       end
+
+      def is_hydrogen?(atom)
+        atom.name == 'H'
+      end
     end
 
     attr_reader :name, :valence
@@ -34,6 +38,10 @@ module VersatileDiamond
       else
         other.same?(self)
       end
+    end
+
+    def diff(other)
+      other.is_a?(SpecificAtom) ? other.diff(self) : []
     end
   end
 

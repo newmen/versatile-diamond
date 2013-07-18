@@ -127,8 +127,55 @@ module VersatileDiamond
     end
 
     def has_atom?(atom)
-      (atom.name == 'H' && @spec.external_bonds > 0) ||
+      (Atom.is_hydrogen?(atom) && @spec.external_bonds > 0) ||
         @spec.links.keys.find { |spec_atom| spec_atom.same?(atom) }
+    end
+
+    def look_around(atom_map)
+      return if is_gas?
+
+      # TODO: need to check unfixing
+
+      atom_map.each do |specs, corrs|
+        next unless specs.any? { |spec| spec == self }
+
+        source, _ = specs
+        xs = self == source ? [0, 1] : [1, 0]
+        corrs.each do |mirror|
+          atoms_with_links = specs.zip(mirror).map do |specific_spec, atom|
+            [specific_spec, specific_spec[atom], specific_spec.links_of(atom)]
+          end
+
+          _, own, incedent_bonds = atoms_with_links[xs.first]
+          other, foreign, _ = atoms_with_links[xs.last]
+
+          diff = own.diff(foreign)
+          is_osa = own.is_a?(SpecificAtom)
+          keyname = @spec.keyname(is_osa ? own.atom : own)
+          own = SpecificAtom.new(own) unless is_osa
+
+# puts "???? #{name}[#{keyname}]: #{diff.inspect}" unless diff.empty?
+
+          # TODO: if atom has not remain bonds - to clean up the incidence
+          if own.incoherent?
+            diff -= [:incoherent]
+          elsif other.is_gas?
+            diff << :incoherent
+          end
+
+          if own.unfixed? || incedent_bonds.size > 1
+            diff -= [:unfixed]
+          elsif incedent_bonds.size == 1 && !own.lattice
+            diff << :unfixed
+          end
+
+          unless diff.empty?
+# puts "++++ #{name}[#{keyname}]: #{diff.inspect}"
+            diff.each { |d| @options << [keyname, d] }
+            expire_caches!
+          end
+        end
+      end
     end
 
   protected
@@ -136,25 +183,29 @@ module VersatileDiamond
     attr_reader :options
 
     def links_with_specific_atoms
-      return @links_with_specific_atoms if @links_with_specific_atoms
-
-      specific_atoms =
-        @options.each_with_object({}) do |(atom_keyname, value), hash|
-          hash[atom_keyname] ||= SpecificAtom.new(@spec[atom_keyname])
-          specific_atom = hash[atom_keyname]
-
-          case value
-          when :incoherent then specific_atom.incoherent!
-          when :unfixed then specific_atom.unfixed!
-          when '*' then specific_atom.active!
-          end
-        end
-
-      @links_with_specific_atoms = @spec.links_with_replace_by(specific_atoms)
+      @links_with_specific_atoms ||=
+        @spec.links_with_replace_by(keynames_to_specific_atoms)
     end
 
     def only_actives
       @options.select { |_, value| value == '*' }
+    end
+
+    def [](atom)
+      unless @atoms_to_specific_atoms
+        @atoms_to_specific_atoms = {}
+        each_specific_atom do |original_atom, specific_atom|
+          @atoms_to_specific_atoms[original_atom] = specific_atom
+        end
+      end
+
+      @atoms_to_specific_atoms[atom] || atom
+    end
+
+    def links_of(atom)
+      links_with_specific_atoms[self.[](atom)].select do |_, link|
+        link.class == Bond
+      end
     end
 
   private
@@ -181,6 +232,34 @@ module VersatileDiamond
 
     def active_bonds_num
       only_actives.size
+    end
+
+    def keynames_to_specific_atoms
+      @keynames_to_specific_atoms ||=
+        @options.each_with_object({}) do |(atom_keyname, value), hash|
+          specific_atom = hash[atom_keyname] ||
+            SpecificAtom.new(@spec[atom_keyname])
+
+          case value
+          when :incoherent then specific_atom.incoherent!
+          when :unfixed then specific_atom.unfixed!
+          when '*' then specific_atom.active!
+          end
+
+          hash[atom_keyname] = specific_atom
+        end
+    end
+
+    def each_specific_atom(&block)
+      keynames_to_specific_atoms.each do |atom_keyname, specific_atom|
+        block[@spec[atom_keyname], specific_atom]
+      end
+    end
+
+    def expire_caches!
+      @atoms_to_specific_atoms = nil
+      @keynames_to_specific_atoms = nil
+      @links_with_specific_atoms = nil
     end
 
     def correspond?(other)

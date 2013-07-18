@@ -102,7 +102,7 @@ module VersatileDiamond
       extended_name = "extended_#{@name}"
       begin
         extendable_spec = Spec[extended_name]
-      rescue AnalyzingError
+      rescue AnalyzingError # TODO: strange checking
         extendable_spec = self.class.add(extended_name)
         duplicated_atoms = duplicate_atoms
         extendable_spec.instance_variable_set(
@@ -118,6 +118,10 @@ module VersatileDiamond
       @atoms[atom_keyname] ||
         syntax_error('spec.undefined_atom_keyname',
           atom_keyname: atom_keyname, spec_name: @name)
+    end
+
+    def keyname(atom)
+      @atoms.invert[atom]
     end
 
     def to_s

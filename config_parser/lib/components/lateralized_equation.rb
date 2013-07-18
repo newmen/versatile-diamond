@@ -45,6 +45,7 @@ module VersatileDiamond
     end
 
     def compare_with_other(other, &block)
+      # calling a .same? method from superclass
       self.class.superclass.instance_method(:same?).bind(self).call(other) &&
         lists_are_identical?(@concrete_wheres, other.concrete_wheres, &block)
     end

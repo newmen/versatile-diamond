@@ -16,7 +16,7 @@ module VersatileDiamond
 
     def map
       reject_simple_specs
-      full_corresponding? ? map_correspond : map_many_to_one
+      full_corresponding? ? map_many_to_many : map_many_to_one
     end
 
   private
@@ -34,7 +34,7 @@ module VersatileDiamond
     end
 
     # Find concrete atom for each pair of source and product specs
-    def map_correspond
+    def map_many_to_many
       @source.map do |source_spec|
         product_spec = @products.find { |p| p.name == source_spec.name }
         changed_atoms = source_spec.changed_atoms(product_spec)
@@ -54,10 +54,10 @@ module VersatileDiamond
             links_to_specs[product_links.object_id],
             source_atoms, product_atoms)
         end
-    # rescue StructureMapper::CannotMap
-    #   syntax_error('.cannot_map')
-    # rescue ArgumentError
-    #   syntax_error('.argument_error')
+    rescue StructureMapper::CannotMap
+      syntax_error('.cannot_map')
+    rescue ArgumentError
+      syntax_error('.argument_error')
     end
 
     %w(links_to_specs links_lists).each do |var_name|

@@ -3,6 +3,8 @@ module VersatileDiamond
   class Dimensions < Component
     include Singleton
 
+    R = 8.3144621.freeze # kJ/(mol * K)
+
     # These values are using into calculation program on C++ by default
     # On these values bases convert_value methods ​​in this class
     DEFAULT_TEMPERATURE = 'K'.freeze

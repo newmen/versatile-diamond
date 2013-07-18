@@ -12,7 +12,7 @@ module VersatileDiamond
       private
         def define_match(*args, &block)
           name = args.shift
-          keys = args.empty? ? nil : args
+          keys = !args.empty? && args
 
           define_method(name) do |str|
             m = block.call.match(str)

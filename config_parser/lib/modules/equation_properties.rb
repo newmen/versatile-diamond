@@ -1,6 +1,8 @@
 module VersatileDiamond
 
   module EquationProperties
+    include BoundaryTemperature
+
     def enthalpy(value, dimension = nil)
       equation_instance.enthalpy = Dimensions.convert_energy(value, dimension)
     end
@@ -39,16 +41,7 @@ module VersatileDiamond
 
     def eval_value_if_string(value, gases_num)
       if value.is_a?(String)
-        t_str = 'T = '
-        # TODO: unqualified access
-        temperature = -> klass do
-          klass.instance.instance_variable_get(:@temperature)
-        end
-
-        t_str << (gases_num > 0 ?
-          temperature[Gas] :
-          temperature[Surface]).to_s
-
+        t_str = "T = #{current_temperature(gases_num)}"
         eval("#{t_str}; #{value}")
       else
         value

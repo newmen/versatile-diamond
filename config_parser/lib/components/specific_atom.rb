@@ -1,14 +1,25 @@
 module VersatileDiamond
 
   class SpecificAtom
+    extend Forwardable
+
+    # attr_reader :atom
+
     def initialize(atom)
       @atom = atom
       @options = []
     end
 
+    def_delegator :@atom, :lattice
+
     %w(active incoherent unfixed).each do |state|
+      sym_state = state.to_sym
       define_method("#{state}!") do
-        @options << state.to_sym
+        @options << sym_state
+      end
+
+      define_method("#{state}?") do
+        @options.include?(sym_state)
       end
     end
 
@@ -19,6 +30,14 @@ module VersatileDiamond
             @options.sort == other.options.sort))
       else
         false
+      end
+    end
+
+    def diff(other)
+      if self.class == other.class
+        other.relevants - relevants
+      else
+        relevants
       end
     end
 
@@ -35,8 +54,12 @@ module VersatileDiamond
 
   protected
 
-    attr_reader :atom, :options
+    attr_reader :atom
+    attr_reader :options
 
+    def relevants
+      @options - [:active]
+    end
   end
 
 end

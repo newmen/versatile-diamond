@@ -64,13 +64,14 @@ module VersatileDiamond
     end
 
     def generate
+      # organization calls order is important!
       reorganize_specs_dependencies
       organize_specific_spec_dependencies
-      purge_unused_entities
       check_equations_for_duplicates
       organize_equations_dependencies
+      purge_unused_entities
 
-      # call order is important!
+      # draw calls order is important!
       draw_specs
       draw_specific_specs
       draw_termination_specs
@@ -305,26 +306,33 @@ module VersatileDiamond
     def purge_unused_entities
       # purge order is important!
       @abstract_equations.select! do |abs_equation|
-        @real_equations.find { |equation| equation.parent == abs_equation }
+        children = @real_equations.select do |equation|
+          equation.parent == abs_equation
+        end
+        children.size > 1
       end
 
       all_equations = @abstract_equations + @ubiquitous_equations +
         @real_equations + @lateral_equations
-      @specific_specs.select! do |specific_spec|
-        @specific_specs.find { |ss| ss.dependent_from == specific_spec } ||
-          all_equations.find do |equation|
-            equation.source.find { |ss| specific_spec.same?(ss) }
-          end
+      loop do
+        old_size = @specific_specs.size
+        @specific_specs.select! do |specific_spec|
+          @specific_specs.any? { |ss| ss.dependent_from == specific_spec } ||
+            all_equations.any? do |eq|
+              eq.source.any? { |ss| specific_spec.same?(ss) }
+            end
+        end
+        break if old_size == @specific_specs.size
       end
 
       @base_specs.select! do |spec|
-        dep_from_s = @base_specs.find do |s|
+        dep_from_s = @base_specs.any? do |s|
           s.dependent_from.include?(spec)
         end
-        dep_from_ss = dep_from_s || @specific_specs.find do |specific_spec|
+        dep_from_ss = dep_from_s || @specific_specs.any? do |specific_spec|
           specific_spec.spec == spec
         end
-        dep_from_ss || @wheres.find { |where| where.specs.include?(spec) }
+        dep_from_ss || @wheres.any? { |where| where.specs.include?(spec) }
       end
     end
 
@@ -357,6 +365,12 @@ module VersatileDiamond
       end
       @real_equations.each do |equation|
         equation.organize_dependencies(@lateral_equations)
+      end
+
+      # it's need because using in equation specs could be modified by
+      # look around atom mapping
+      (@ubiquitous_equations + not_ubiquitous_equations).each do |equation|
+        equation.check_and_clear_parent_if_need
       end
     end
 

@@ -65,7 +65,8 @@ surface
  #   bond :cl, :cr, face: 100, dir: :front
 
   spec :bridge_with_dimer
-    atoms ct: C%d, cl: bridge(:ct), cr: dimer(:cr)
+    aliases dmr: dimer
+    atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr), cf: dmr(:cl)
     bond :ct, :cl, face: 110, dir: :front
     bond :ct, :cr, face: 110, dir: :front
     position :cl, :cr, face: 100, dir: :front
@@ -99,7 +100,6 @@ events
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
-    # TODO: необходимо автоматически указывать для результата incoherent и unfixed атомы
     equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
     enthalpy -73.6
     activation 0
@@ -253,7 +253,6 @@ events
   reaction 'dimer formation between incoherent bridge and fixed bridge'
     aliases one: bridge, two: bridge
     # TODO: см. коммент к предыдущей реакции
-    # TODO: автоматически указывать для результата конфигурацию соответствующего атома как incoherent
     equation one(ct: *, ct: i) + two(cr: *) = dimer
 
       refinement 'not in dimers row'
@@ -312,7 +311,6 @@ events
 
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
-    # TODO: некогерентность атома должна быть определена в продукте
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
       position high_bridge(:ct), source(:ct), face: 100, dir: :front
 
@@ -332,7 +330,10 @@ events
 
   reaction 'high bridge to bridge and dimer'
     # TODO: положение (и доп. конфигурация) атомов также выводится исходя из результата реакции?
-    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
+    # TODO: приходится выставлять руками некогерентность атома в продукте, т.к.
+    # реакция межмолекулярная, и атом мэппинг для нё определяется по базовым структурам,
+    # а некогерентность - свойство специфицированной структуры.
+    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *, cf: i)
 
       refinement 'without chain neighbour methyl'
         activation 14.9
@@ -360,7 +361,6 @@ events
     reverse_rate 1.1e8
 
   reaction 'migration along row'
-    # TODO: соответствующий атом в продукте не должен быть unfixed
     equation methyl_on_dimer(cm: *, cm: u) + dimer(cr: *) = cross_bridge_on_dimers
 
     enthalpy 3.4

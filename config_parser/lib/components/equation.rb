@@ -35,7 +35,7 @@ module VersatileDiamond
 
         check_compliance(source, products)
 
-        if has_termination_spec(source, products)
+        if has_termination_spec?(source, products)
           UbiquitousEquation.new(name, source, products)
         else
           atoms_map = AtomMapper.map(source, products)
@@ -125,7 +125,7 @@ module VersatileDiamond
         check_compliance(products, source, deep - 1) if deep > 0
       end
 
-      def has_termination_spec(source, products)
+      def has_termination_spec?(source, products)
         check = -> specific_spec { specific_spec.is_a?(TerminationSpec) }
         source.find(&check) || products.find(&check)
       end
@@ -270,7 +270,10 @@ module VersatileDiamond
     end
 
     def reverse_params
-      [*super, @atoms_map]
+      reversed_atom_map = @atoms_map.map do |specs, indexes|
+        [specs.reverse, indexes.map { |pair| pair.reverse }]
+      end
+      [*super, reversed_atom_map]
     end
 
     def duplication_params(equation_name_tail)
@@ -281,8 +284,22 @@ module VersatileDiamond
         name.sub!(forward_regex, '')
       end
 
+      hash = {}
+      source_dup, products_dup = [@source, @products].map do |specs|
+        specs_dup = specs.map do |spec|
+          spec_dup = spec.dup
+          hash[spec] = spec_dup
+          spec_dup
+        end
+        specs_dup
+      end
+
+      atoms_map = @atoms_map.map do |(source, product), indexes|
+        [[hash[source], hash[product]], indexes]
+      end
+
       ["#{name} #{equation_name_tail}",
-        @source.map(&:dup), @products.map(&:dup), @atoms_map]
+        source_dup, products_dup, atoms_map]
     end
 
     def duplicate(equation_name_tail)
@@ -336,6 +353,13 @@ module VersatileDiamond
 
     def accept_self(visitor)
       visitor.accept_real_equation(self)
+    end
+
+    def analyze_and_visit_source_specs(visitor)
+      @source.each do |spec|
+        spec.look_around(@atoms_map)
+        spec.visit(visitor)
+      end
     end
   end
 

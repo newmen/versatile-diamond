@@ -1,6 +1,7 @@
 module VersatileDiamond
 
   class UbiquitousEquation < ComplexComponent
+    include BoundaryTemperature
     include ListsComparer
 
     class << self
@@ -48,13 +49,21 @@ module VersatileDiamond
     end
 
     def visit(visitor)
-      @source.each { |spec| spec.visit(visitor) }
+      analyze_and_source_specs(visitor)
 
-      if @activation && @rate
+      if rate > 0
         accept_self(visitor)
       else
         visitor.accept_abstract_equation(self)
       end
+
+# p @name
+# puts "@@ rate: %1.3e" % rate
+# return unless @atoms_map
+# @atoms_map.each do |(source, product), indexes|
+#   print "  #{source} => #{product} :: "
+#   puts indexes.map { |one, two| "#{one} -> #{two}" }.join(', ')
+# end
     end
 
     def same?(other)
@@ -88,6 +97,25 @@ module VersatileDiamond
       end
     end
 
+    def check_and_clear_parent_if_need
+      return unless @parent
+      # calling current .same? method for each child class
+      unless UbiquitousEquation.instance_method(:same?).bind(self).call(@parent)
+        @parent = nil
+      end
+    end
+
+    def rate
+      return 0 unless @rate
+      @activation ||= 0
+
+      r = @rate * Math.exp(-(@activation * 1000) /
+        (Dimensions::R * current_temperature(source_gases_num)))
+      @source.reduce(r) do |acc, spec|
+        spec.is_gas? ? acc * Gas.instance[spec] : acc
+      end
+    end
+
   protected
 
     attr_writer :parent
@@ -116,6 +144,10 @@ module VersatileDiamond
 
     def accept_self(visitor)
       visitor.accept_ubiquitous_equation(self)
+    end
+
+    def analyze_and_source_specs(visitor)
+      @source.each { |spec| spec.visit(visitor) }
     end
   end
 
