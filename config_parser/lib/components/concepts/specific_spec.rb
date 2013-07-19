@@ -143,7 +143,7 @@ module VersatileDiamond
         xs = self == source ? [0, 1] : [1, 0]
         corrs.each do |mirror|
           atoms_with_links = specs.zip(mirror).map do |specific_spec, atom|
-            [specific_spec, specific_spec[atom], specific_spec.links_of(atom)]
+            [specific_spec, specific_spec[atom], specific_spec.bonds_of(atom)]
           end
 
           _, own, incedent_bonds = atoms_with_links[xs.first]
@@ -202,7 +202,7 @@ module VersatileDiamond
       @atoms_to_specific_atoms[atom] || atom
     end
 
-    def links_of(atom)
+    def bonds_of(atom)
       links_with_specific_atoms[self.[](atom)].select do |_, link|
         link.class == Bond
       end

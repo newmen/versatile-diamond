@@ -12,23 +12,12 @@ end
 
 def find_file(filename, *pathes)
   pathes.each do |path|
-    files_in("#{path}/*.rb").each do |full_path|
+    files_in("#{path}/**/*.rb").each do |full_path|
       return full_path if File.basename(full_path) == "#{filename}.rb"
     end
   end
   nil
 end
-
-require 'i18n'
-I18n.load_path << files_in('locales/*.yml')
-
-require_each 'lib/patches/*.rb'
-require_each 'lib/modules/*.rb'
-
-require_relative 'lib/analyzing_error.rb'
-require_relative 'lib/analysis_tool.rb'
-require_relative 'lib/analyzer.rb'
-require_relative 'lib/matcher.rb'
 
 AUTO_LOADING_DIRS = [
   'components',
@@ -36,6 +25,7 @@ AUTO_LOADING_DIRS = [
   'visitors',
 ]
 
+require_each 'lib/patches/*.rb'
 using VersatileDiamond::RichString
 
 def VersatileDiamond.const_missing(class_name)
@@ -53,3 +43,12 @@ end
 def Object.const_missing(class_name)
   VersatileDiamond.const_missing(class_name)
 end
+
+require 'i18n'
+I18n.load_path << files_in('locales/*.yml')
+
+require_each 'lib/modules/*.rb'
+require_each 'lib/errors/*.rb'
+
+require_relative 'lib/matcher.rb'
+require_relative 'lib/analyzer.rb'
