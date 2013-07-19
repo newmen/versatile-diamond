@@ -20,14 +20,15 @@ def find_file(filename, *pathes)
 end
 
 AUTO_LOADING_DIRS = [
-  'components',
-  'mcs',
-  'visitors',
+  'components', # analyzer components: interpreters and concepts
+  'mcs', # algorithms for searching maximal common substructure
+  'visitors', # visitors of final components tree
 ]
 
-require_each 'lib/patches/*.rb'
+require_each 'lib/patches/*.rb' # same as monkey's patches
 using VersatileDiamond::RichString
 
+# trap for autoloading
 def VersatileDiamond.const_missing(class_name)
   filename = class_name.to_s.underscore
   path = find_file(filename, *AUTO_LOADING_DIRS.map { |dir| "lib/#{dir}" })
@@ -47,8 +48,8 @@ end
 require 'i18n'
 I18n.load_path << files_in('locales/*.yml')
 
-require_each 'lib/modules/*.rb'
-require_each 'lib/errors/*.rb'
+require_each 'lib/modules/*.rb' # common modules
+require_each 'lib/errors/*.rb' # using errors
 
-require_relative 'lib/matcher.rb'
-require_relative 'lib/analyzer.rb'
+require_relative 'lib/matcher.rb' # regexp matcher
+require_relative 'lib/analyzer.rb' # general analyzer
