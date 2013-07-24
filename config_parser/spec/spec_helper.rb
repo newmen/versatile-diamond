@@ -1,4 +1,5 @@
-require_relative '../config_parser'
+require_relative '../load_helper'
+require_relative '../versatile_diamond'
 
 RSpec.configure do |config|
 

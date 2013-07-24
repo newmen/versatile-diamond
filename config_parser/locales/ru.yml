@@ -1,4 +1,13 @@
 ru:
+  concepts:
+    atom: "Атом"
+    gas_spec: "Газовый вид"
+    surface_spec: "Структура поверхности"
+
+    errors:
+      duplication: "%{key} \"%{name}\" уже определён"
+      undefined: "Неизвестный %{key} \"%{name}\""
+
   common:
     extra_space: "Лишний пробел"
     undefined_component: "Неизвестное определение \"%{component}\""
@@ -7,10 +16,9 @@ ru:
     wrong_hierarchy: "Неверная иерархия"
 
   atom:
-    already_defined: "Атом \"%{name}\" уже определён"
+    invalid_name: "Неверное имя атома \"%{name}\""
     invalid_valence: "Валентность атома \"%{name}\" должна быть положительной"
-    undefined: "Неизвестный атом \"%{name}\""
-    without_valence: "Атом не может быть инициализирован без значения валентности"
+    without_valence: "Атом \"%{name}\" не может быть инициализирован без значения валентности"
 
   dimensions:
     is_not_set: "Единицы измерения не установлены"
@@ -33,8 +41,6 @@ ru:
     undefined: "Неизвестный символ решётки \"%{symbol}\""
 
   spec:
-    already_defined: "Вид структуры \"%{name}\" уже определён"
-    undefined: "Неизвестный вид структуры \"%{name}\""
     undefined_atom_keyname: "Неизвестный псевдоним атома \"%{atom_keyname}\" в \"%{spec_name}\""
 
   gas_spec:

@@ -1,4 +1,13 @@
 en:
+  concepts:
+    atom: "Atom"
+    gas_spec: "Gas specie"
+    surface_spec: "Surface structure"
+
+    errors:
+      duplication: "%{key} \"%{name}\" already defined"
+      undefined: "Unknown %{key} \"%{name}\""
+
   common:
     extra_space: "Extra space"
     undefined_component: "Unknown definition \"%{component}\""
@@ -7,10 +16,9 @@ en:
     wrong_hierarchy: "Wrong hierarchy"
 
   atom:
-    already_defined: "Atom already defined"
+    invalid_name: "Wrong atom name \"%{name}\""
     invalid_valence: "Valence of atom \"%{name}\" must be positive"
-    undefined: "Unknown atom \"%{name}\""
-    without_valence: "Atom cannot be initialized without valence parameter"
+    without_valence: "Atom \"%{name}\" cannot be initialized without valence parameter"
 
   dimensions:
     is_not_set: "Dimension is not set"
@@ -33,8 +41,6 @@ en:
     undefined: "Unknown lattice symbol \"%{symbol}\""
 
   spec:
-    already_defined: "Spec \"%{name}\" already defined"
-    undefined: "Undefined spec \"%{name}\""
     undefined_atom_keyname: "Undefined atom keyname \"%{atom_keyname}\" in \"%{spec_name}\""
 
   gas_spec:

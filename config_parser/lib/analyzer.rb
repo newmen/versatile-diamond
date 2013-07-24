@@ -1,67 +1,61 @@
-using VersatileDiamond::RichString
+using VersatileDiamond::Patches::RichString
 
 module VersatileDiamond
 
-  class Analyzer < AnalysisTool
+  class Analyzer < Interpreter::Base
     class << self
-      attr_reader :config_path, :line_number
-
       def read_config(config_path)
-        @config_path = config_path
-        @line_number = 0
-        new(config_path).analyze
-      end
-
-      def inc_line_number
-        @line_number += 1
+        content = File.open(config_path).readlines
+        new(content, config_path).analyze
       end
     end
 
-    def initialize(config_path)
-      @file = File.open(config_path)
+    def initialize(content, config_path = nil)
+      @content = content
+      @line_number = 0
+      @line = @content[0]
       @root = nil
+
+      @config_path = config_path
     end
 
     def analyze
       loop do
-        line = next_line
+  puts "LINE: #{@line}"
 
-  # puts "LINE: #{line}"
-
-        interpret(line, method(:change_root)) do
-          pass_line_to(@root, line)
+        interpret(@line, method(:change_root)) do
+          pass_line_to(@root, @line)
         end
+
+        next_line || break
       end
 
-    # rescue AnalyzingError => e
-    #   puts e.message
-    rescue EOFError => e
-      puts "#{self.class.config_path}: #{e.message}"
-    # rescue Exception
+    rescue Errors::SyntaxError => e
+      puts e.message(@line_number, @config_path)
     end
 
   private
 
-    def change_root(line)
-      root = head_and_tail(line).first
+    def change_root(decreased_line)
+      root = head_and_tail(decreased_line).first
       @root = instance(root)
     end
 
     def instance(name)
       component = name.constantize
       if component
-        component.respond_to?(:instance) ? component.instance : component.new
+        component.new
       else
         syntax_error('common.undefined_component', component: name)
       end
     end
 
     def next_line
-      Analyzer.inc_line_number
-      line = @file.readline
-      line.sub!(/#.+\Z/, '')
-      line.rstrip!
-      line != '' ? line : next_line
+      @line_number += 1
+      @line = @content[@line_number]
+      @line.sub!(/#.+\Z/, '') # drop comments
+      @line.rstrip!
+      (!@line || @line != '') ? @line : next_line
     end
   end
 

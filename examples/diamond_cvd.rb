@@ -14,10 +14,10 @@ run
 
 gas
   spec :hydrogen
-    atoms h: H # the second atom specifies by run::termination
+    atoms h: H # the second atom is H too by default
 
   spec :methane
-    atoms c: C
+    atoms c: C # each external bond is H atom
 
 #  spec :ethylene
 #    atoms c1: C, c2: C
@@ -25,7 +25,7 @@ gas
 
   concentration hydrogen(h: *), 1e-9
   concentration methane(c: *), 1e-10
-  # concentration ethylene(c1: *, c2: *), 0 # две активных связи на соседних атомах могут существовать?
+  # concentration ethylene(c1: *), 0
 
   temperature 1200
 
