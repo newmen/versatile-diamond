@@ -6,10 +6,9 @@ module VersatileDiamond
       # Setup total time of final calculations
       # @param [Float] value the time value
       # @param [String] dimension of time value
-      # @return nil
+      # @raise [Tools::Config::AlreadyDefined] if total time already defined
       def total_time(value, dimension = nil)
         Tools::Config.total_time(value, dimension)
-        nil
       end
     end
 

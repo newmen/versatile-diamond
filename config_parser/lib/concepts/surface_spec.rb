@@ -1,13 +1,13 @@
 module VersatileDiamond
   module Concepts
 
-    # Represents gas spec
-    class GasSpec < Spec
+    # Represents surface structure
+    class SurfaceSpec < Spec
 
-      # Returns that spec is gas
+      # Returns that spec is not gas
       # @return [Boolean] gas or not
       def is_gas?
-        true
+        false
       end
     end
 

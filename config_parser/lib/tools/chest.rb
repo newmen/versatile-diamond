@@ -5,59 +5,76 @@ module VersatileDiamond
 
     # The singleton fasade for concepts
     class Chest
-      class << self
-        # Reset the bag and using by RSpec only
-        def reset
-          @bag = {}
+
+      # Exception of some key name wrongs, which contain info about it
+      class KeyNameError < Exception
+        attr_reader :key, :name, :type
+
+        # @param [Symbol] key the underscored concept class name
+        # @param [Symbol] name the name of concept
+        # @param [Symbol] type of error
+        def initialize(key, name, type)
+          @key, @name, @type = key, name, type
         end
+      end
+
+      class << self
+        def to_s
+          @bag ? @bag.inspect : 'is empty!'
+        end
+
+        # Reset the bag and using by RSpec only
+        def reset; @bag = {} end
 
         # Adds concept to bag and check name duplication
         # @param [Concepts::Base] concept which will be stored by name
-        # @raise [Concepts::KeyNameError] when same concepts with same name
+        # @raise [KeyNameError] when same concepts with same name
         #   is exist
         # @return [ConceptChest] self
         def store(concept)
           @bag ||= {}
 
-          key = concept.class.to_s.split('::').last.underscore.to_sym
+          key = concept.class.to_s.underscore.to_sym
           name = concept.name.to_sym
+
           inst = (@bag[key] ||= {})
-          if inst[name]
-            raise key_name_error(key, name, :duplication)
-          end
+          raise Chest::KeyNameError.new(key, name, :duplication) if inst[name]
           inst[name] = concept
+
           self
+        end
+
+        # Finds atom and return duplicate of it
+        # @param [Symbol] name the name of Atom
+        # @raise [KeyNameError] if atom is not found
+        # @return [Atom] atom duplicate
+        def atom(name)
+          method_missing(:atom, name).dup
         end
 
         # Finds the spec in gas and surface specs
         # @param [Symbol] name the name of desired spec
-        # @raise [Concepts::KeyNameError] if spec is not found
+        # @raise [KeyNameError] if spec is not found
         def spec(name)
-# p "ACCESS: #{name}"
-# p @bag
+          name = name.to_sym
           (@bag && ((@bag[:gas_spec] && @bag[:gas_spec][name]) ||
               (@bag[:surface_spec] && @bag[:surface_spec][name]))) ||
-            raise(key_name_error(:spec, name, :undefined))
+            raise(Chest::KeyNameError.new(:spec, name, :undefined))
         end
 
         # Finds the key in bag and if key exist then finding by name continues
-        # @param [String] key is the type of finding concept
-        # @param [String] name is the name of finding concept
-        # @raise [Concepts::KeyNameError] if concept is not found
+        # @param [Symbol] key is the type of finding concept
+        # @param [Symbol] name is the name of finding concept
+        # @raise [KeyNameError] if concept is not found
         # @return [Concepts::Base] founded concept
         def method_missing(*args)
+# p @bag
+# p args
           super if args.size != 2
-          key, name = args.first, args.last
+          key, name = args.map(&:to_sym)
 
-          key = key.to_sym
           (@bag && @bag[key] && @bag[key][name]) ||
-            raise(key_name_error(key, name, :undefined))
-        end
-
-      private
-
-        def key_name_error(key, name, type)
-          Concepts::KeyNameError.new(key, name, type)
+            raise(Chest::KeyNameError.new(key, name, :undefined))
         end
       end
     end

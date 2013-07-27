@@ -4,23 +4,26 @@ module VersatileDiamond
   module Interpreter
 
     describe Elements do
-      let(:target) { Elements.new }
+      let(:elements) { Elements.new }
 
-      it { target.interpret('atom H, valence: 1').should be_a(Concepts::Atom) }
+      it "interpreted result should be stored in Chest" do
+        elements.interpret('atom H, valence: 1')
+        Tools::Chest.atom(:H).should be_a(Concepts::Atom)
+      end
 
       describe "incorrect atom" do
         let(:syntax_error) { Errors::SyntaxError }
         it "atom name is invalid" do
-          -> { target.interpret('atom wrong, valence: 1') }.
+          -> { elements.interpret('atom wrong, valence: 1') }.
             should raise_error syntax_error
         end
 
         it "wihtout valence" do
-          -> { target.interpret('atom H') }.should raise_error syntax_error
+          -> { elements.interpret('atom H') }.should raise_error syntax_error
         end
 
         it "incorrect valence" do
-          -> { target.interpret('atom H, valence: 0') }.
+          -> { elements.interpret('atom H, valence: 0') }.
             should raise_error syntax_error
         end
       end

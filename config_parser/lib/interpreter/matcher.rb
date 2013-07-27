@@ -1,6 +1,5 @@
 module VersatileDiamond
-
-  module Tools
+  module Interpreter
 
     # Matcher class is intended for matching special entities from analyzing file
     class Matcher
@@ -85,5 +84,4 @@ module VersatileDiamond
     end
 
   end
-
 end

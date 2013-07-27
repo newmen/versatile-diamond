@@ -1,9 +1,15 @@
 module VersatileDiamond
-
   module Concepts
 
     # General atom for base specs. Contain valence and lattice if it setted.
     class Atom < Concepts::Base
+
+      # Exception class for incorrect valence case
+      class IncorrectValence < Exception
+        attr_reader :atom
+        def initialize(atom); @atom = atom end
+      end
+
       class << self
         # Checks passed atom to hydrogen
         # @param [Atom] atom is checking atom
@@ -23,7 +29,6 @@ module VersatileDiamond
         @valence = valence
       end
 
-
       # def same?(other)
       #   if self.class == other.class
       #     @name == other.name && @lattice == other.lattice
@@ -42,5 +47,4 @@ module VersatileDiamond
     end
 
   end
-
 end

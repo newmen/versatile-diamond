@@ -1,27 +1,50 @@
 module VersatileDiamond
   module Interpreter
 
+    # Changes behavior when spec is surface structure
     class SurfaceSpec < Spec
-      def position(first, second, face: nil, dir: nil)
-        link(Position, first, second, face: face, dir: dir)
+
+      # Surface structure could'n have position with face or direction
+      # @param [Array] atoms the array of atom keynames
+      # @option [Symbol] :face the face of position
+      # @option [Symbol] :dir the direction of position
+      # @raise [Errors::SyntaxError] if position without face or direction
+      def position(*atoms, face: nil, dir: nil)
+        syntax_error('position.uncomplete') unless face && dir
+        link(*atoms, Concepts::Position[face: face, dir: dir])
       end
 
     private
 
-      def simple_atom(atom_str)
+      # Matches simple atom with case when it have lattice
+      # @param [String] atom_str the string which describe atom
+      # @return [Concepts::Atom] matched atom with setted lattice if it was
+      #   passed
+      # @override
+      def simple_atom(keyname, atom_str)
         atom_name, lattice_symbol = Matcher.specified_atom(atom_str)
         if atom_name && lattice_symbol
-          atom = Atom[atom_name]
-          atom.lattice = Lattice[lattice_symbol.to_sym]
-          atom
+          atom = Tools::Chest.atom(atom_name)
+          atom.lattice = Tools::Chest.lattice(lattice_symbol)
+          @concept.describe_atom(keyname, atom)
+          true
         else
           super
         end
       end
 
-      def link(*args, **options)
-        super(*args, options) do |first, second|
-          unless options.empty? || first.lattice || second.lattice
+      # Links atom together if link instance is not Position or both atoms has
+      #   lattice
+      #
+      # @param [Array] atoms the array of atom keynames
+      # @param [Concepts::Bond] link_instance the instance of link
+      # @raise [Errors::SyntaxError] if setup position for unlatticed atom
+      # @override
+      def link(*atoms, link_instance)
+        super(*atoms, link_instance) do |first, second|
+          if link_instance.class == Position &&
+              (!first.lattice || !second.lattice)
+
             syntax_error('.incorrect_linking')
           end
         end

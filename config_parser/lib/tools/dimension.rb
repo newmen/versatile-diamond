@@ -1,5 +1,4 @@
 module VersatileDiamond
-
   module Tools
 
     # Converts the passing values in concrete dimension to self
@@ -136,7 +135,14 @@ module VersatileDiamond
 
       private
 
-        def convert(var, value, convertable_dimension)
+        # Converts variable value to setuped dimension
+        # @param [Symbol] var the convertable variable
+        # @param [Float] value the convertable value
+        # @param [String] convertable_dimension the dimension to that will be
+        #   converting
+        # @raise [Errors::SyntaxError] if value cannot be converted
+        # @return [Float] converted value
+        def convert(var, value, convertable_dimension = nil)
           convertable_dimension && convertable_dimension.strip!
 
           current_dimension = instance_variable_get("@#{var}".to_sym)
@@ -166,6 +172,18 @@ module VersatileDiamond
               convert_value(value, dimension, cases) # described at the end
             end
           end
+        end
+
+        # Finds dimension converting lambda from passed cases
+        # @param [Float] value the convertable value
+        # @param [String] dimension the dimension from that will be converting
+        # @param [Hash] cases the hash that contain regex as keys and lamdas as
+        #   values
+        # @raise [Errors::SyntaxError] if value cannot be converted
+        # @return [Float] converted value
+        def convert_value(value, dimension, cases)
+          _, func = cases.find { |matcher, _| matcher === dimension }
+          func ? func[value] : syntax_error('.undefined_value')
         end
 
         define_convert(:temperature, {
@@ -199,14 +217,8 @@ module VersatileDiamond
           /\Am(?:in)?s?\Z/ => -> v { v * 60 },
           /\Ah(?:our)?s?\Z/ => -> v { v * 3600 }
         })
-
-        def convert_value(value, dimension, cases)
-          _, func = cases.find { |matcher, _| matcher === dimension }
-          func ? func[value] : syntax_error('.undefined_value')
-        end
       end
     end
 
   end
-
 end

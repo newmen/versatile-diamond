@@ -1,11 +1,10 @@
 module VersatileDiamond
-
   module Patches
 
     module RichString
       refine String do
         def underscore
-          scan(/[A-Z][a-z0-9]*/).map(&:downcase).join('_')
+          split('::').last.scan(/[A-Z][a-z0-9]*/).map(&:downcase).join('_')
         end
 
         def classify
@@ -19,5 +18,4 @@ module VersatileDiamond
     end
 
   end
-
 end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module VersatileDiamond
-  module Tools
+  module Interpreter
 
     describe Matcher do
       describe "#active_bond" do

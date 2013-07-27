@@ -2,6 +2,7 @@ ru:
   concepts:
     atom: "Атом"
     gas_spec: "Газовый вид"
+    lattice: "Кристаллическая решётка"
     surface_spec: "Структура поверхности"
 
     errors:
@@ -9,6 +10,7 @@ ru:
       undefined: "Неизвестный %{key} \"%{name}\""
 
   common:
+    duplicating_key: "Ключ \"%{name}\" является дубликатом"
     extra_space: "Лишний пробел"
     undefined_component: "Неизвестное определение \"%{component}\""
     wrong_arguments_ordering: "Неверная последовательность аргументов"
@@ -24,9 +26,6 @@ ru:
     is_not_set: "Единицы измерения не установлены"
     undefined_value: "Неизвестное значение единиц измерения"
 
-  gas:
-    undefined_spec: "Неизвестный вид газовой моделулы \"%{name}\""
-
   surface:
     need_pass_specified_atom: "Необходимо указывать специфицированный атом"
     sizes_already_set: "Размеры уже установлены"
@@ -36,9 +35,7 @@ ru:
     uncomplete: "Необходимо охарактеризовать положение атомов друг относительно друга"
 
   lattice:
-    already_defined: "Решётка уже определена"
     need_define_class: "Необходимо задать C++ класс для определения типа решётки"
-    undefined: "Неизвестный символ решётки \"%{symbol}\""
 
   spec:
     undefined_atom_keyname: "Неизвестный псевдоним атома \"%{atom_keyname}\" в \"%{spec_name}\""
@@ -51,8 +48,8 @@ ru:
 
   specific_spec:
     atom_already_has_state: "Атом \"%{atom}\" уточнённой структуры \"%{spec}\" уже имеет состояние %{state}"
-    invalid_actives_num: "У атома \"%{atom}\" структуры \"%{spec}\" активных связей может быть не больше %{nums}"
-    wrong_specification: "Неверное уточнение конфигурации структуры"
+    invalid_actives_num: "У атома \"%{atom}\" структуры \"%{spec}\" количество связей не может быть больше чем значение валентности"
+    wrong_specification: "Неверная спецификация атома \"%{atom}\" уточнённой структуры"
 
   atomic_spec:
     invalid_valence: "В глобальной реакции можно указывать только одновалентые атомы"

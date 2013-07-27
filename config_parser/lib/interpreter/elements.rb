@@ -14,7 +14,7 @@ module VersatileDiamond
         syntax_error('atom.invalid_name', name: name) unless Matcher.atom(name)
         syntax_error('atom.without_valence', name: name) unless valence
         syntax_error('atom.invalid_valence', name: name) if valence.to_i <= 0
-        Concepts::Atom.new(name, valence)
+        store(Concepts::Atom.new(name, valence))
       end
     end
 

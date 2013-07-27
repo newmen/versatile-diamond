@@ -21,7 +21,7 @@ module VersatileDiamond
 
     def analyze
       loop do
-  puts "LINE: #{@line}"
+  puts "LINE #{@line_number + 1}: #{@line}"
 
         interpret(@line, method(:change_root)) do
           pass_line_to(@root, @line)
@@ -31,7 +31,7 @@ module VersatileDiamond
       end
 
     rescue Errors::SyntaxError => e
-      puts e.message(@line_number, @config_path)
+      puts e.message(@line_number + 1, @config_path)
     end
 
   private

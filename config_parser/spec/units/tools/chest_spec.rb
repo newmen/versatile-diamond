@@ -8,7 +8,7 @@ module VersatileDiamond
       before(:each) { Chest.reset }
 
       let(:concept) { Concept.new(:some) }
-      let(:key_name_err) { Concepts::KeyNameError }
+      let(:key_name_err) { Chest::KeyNameError }
 
       describe "#store" do
         it { (Chest.store(concept)).should == Chest }

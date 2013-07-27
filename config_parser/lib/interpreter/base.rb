@@ -1,5 +1,4 @@
 module VersatileDiamond
-
   module Interpreter
 
     # The base interpreter class
@@ -65,5 +64,4 @@ module VersatileDiamond
     end
 
   end
-
 end

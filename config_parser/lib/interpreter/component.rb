@@ -1,5 +1,4 @@
 module VersatileDiamond
-
   module Interpreter
 
     # The base interpreter component class
@@ -30,14 +29,12 @@ module VersatileDiamond
       # @param [Concept::Base] concept which will be stored
       # @raise [Errors::SyntaxError] if concept with same name was stored
       def store(concept)
-        Chest.store(concept)
-      rescue Concepts::KeyNameError => e
-# p I18n.t("concepts.#{e.key}"), e.name
+        Tools::Chest.store(concept)
+      rescue Tools::Chest::KeyNameError => e
         syntax_error("concepts.errors.#{e.type}",
           key: I18n.t("concepts.#{e.key}"), name: e.name)
       end
     end
 
   end
-
 end

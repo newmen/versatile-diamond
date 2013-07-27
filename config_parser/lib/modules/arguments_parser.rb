@@ -1,5 +1,4 @@
 module VersatileDiamond
-
   module Modules
 
     module ArgumentsParser
@@ -13,6 +12,7 @@ module VersatileDiamond
       def scan_args(args_str)
         options = {}
         args = extract_hash_args(args_str) do |key, value|
+          syntax_error('common.duplicating_key', name: key) if options[key]
           options[key] = cast_value(value)
         end
 
@@ -55,5 +55,4 @@ module VersatileDiamond
     end
 
   end
-
 end

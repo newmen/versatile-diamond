@@ -11,6 +11,10 @@ module VersatileDiamond
       def initialize(name)
         @name = name.to_sym
       end
+
+      def to_s
+        @name.to_s
+      end
     end
 
   end
