@@ -8,7 +8,6 @@ module VersatileDiamond
       let(:spec) { Interpreter::SurfaceSpec.new(concept) }
 
       before(:each) do
-        Tools::Chest.reset
         Elements.new.interpret('atom N, valence: 3')
         Surface.new.interpret('lattice :nh4, cpp_class: Ammonia')
       end

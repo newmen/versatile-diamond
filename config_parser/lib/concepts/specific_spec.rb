@@ -1,6 +1,8 @@
 module VersatileDiamond
   module Concepts
 
+    # Instance of it class represents usual specific spec that is most commonly
+    # used in reactions
     class SpecificSpec
       extend Forwardable
 
@@ -11,33 +13,28 @@ module VersatileDiamond
       #
       # @param [Spec] spec the base spec instance
       # @param [Hash] specific_atoms references to specific atoms
-      def initialize(spec, specific_atoms)
-        @spec = spec
-        @original_name = spec.name
-
+      def initialize(spec, specific_atoms = {})
         specific_atoms.each do |atom_keyname, specific_atom|
-          atom = @spec.atom(atom_keyname)
-          if @spec.external_bonds_for(atom) - specific_atom.actives < 0
+          atom = spec.atom(atom_keyname)
+          if spec.external_bonds_for(atom) - specific_atom.actives < 0
             raise Atom::IncorrectValence.new(atom_keyname)
           end
         end
 
-        # TODO: adsorb each link with change atoms
+        @spec = spec
+        @specific_atoms = specific_atoms
+        # @original_name = spec.name
       end
 
       # def initialize_copy(other)
       #   @options = other.instance_variable_get(:@options).dup
       # end
 
-      def_delegators :@spec, :name #, :extendable?, :simple?
+      def_delegators :@spec, :name, :extendable? #, :simple?, :is_gas?
 
       # def name
       #   @original_name
       # end
-
-  #     def external_bonds
-  #       @spec.external_bonds - active_bonds_num
-  #     end
 
   #     %w(incoherent unfixed).each do |state|
   #       define_method(state) do |atom_keyname|
@@ -55,20 +52,30 @@ module VersatileDiamond
   #       end
   #     end
 
-  #     def is_gas?
-  #       Gas.instance.include?(@spec)
-  #     end
+      # Counts number of external bonds
+      # @return [Integer] the number of external bonds
+      def external_bonds
+        actives = active_bonds_num
+        (@spec.simple? && actives == 1) ? 0 : @spec.external_bonds - actives
+      end
 
-  #     def external_bonds_after_extend
-  #       return @external_bonds_after_extend if @external_bonds_after_extend
-  #       @extended_spec = @spec.extend_by_references
-  #       @external_bonds_after_extend =
-  #         @extended_spec.external_bonds - active_bonds_num
-  #     end
+      # Extends originial spec by atom-references and store it to temp variable
+      # after that count bonds for extended spec
+      #
+      # @return [Integer] the number of external bonds for extended spec
+      def external_bonds_after_extend
+        return @external_bonds_after_extend if @external_bonds_after_extend
+        @extended_spec = @spec.extend_by_references
+        @external_bonds_after_extend =
+          @extended_spec.external_bonds - active_bonds_num
+      end
 
-  #     def extend!
-  #       @spec = @extended_spec
-  #     end
+      # Exchange current base spec to extended base spec
+      def extend!
+        external_bonds_after_extend unless @extended_spec
+        @external_bonds_after_extend = nil
+        @spec = @extended_spec
+      end
 
   #     def changed_atoms(other)
   #       actives, other_actives = only_actives, other.only_actives
@@ -214,9 +221,11 @@ module VersatileDiamond
 
     private
 
-      # def active_bonds_num
-      #   only_actives.size
-      # end
+      # Counts the sum of active bonds
+      # @return [Integer] sum of active bonds
+      def active_bonds_num
+        @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+      end
 
       # def keynames_to_specific_atoms
       #   @keynames_to_specific_atoms ||=

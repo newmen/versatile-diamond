@@ -8,11 +8,6 @@ module VersatileDiamond
       let(:syntax_error) { Errors::SyntaxError }
       let(:already_defined) { Tools::Config::AlreadyDefined }
 
-      before(:each) do
-        Tools::Config.reset
-        Tools::Chest.reset
-      end
-
       describe "#spec" do
         it "interpreted spec stores in Chest" do
           surface.interpret('spec :hello').

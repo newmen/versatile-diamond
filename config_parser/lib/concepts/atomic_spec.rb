@@ -1,32 +1,22 @@
 module VersatileDiamond
-
   module Concepts
 
+    # Represents a spec which contain just one unovalence atom
     class AtomicSpec < TerminationSpec
-      include Modules::SyntaxChecker
+      extend Forwardable
 
-      def initialize(atom_name)
-        @atom = Atom[atom_name]
-        syntax_error('.invalid_valence') if @atom.valence != 1
+      # Store unovalence atom instance
+      # @param [Atom] atom the atom which behaves like spec
+      def initialize(atom)
+        @atom = atom
       end
 
-      def name
-        @atom.name
-      end
+      def_delegators :@atom, :name, :to_s
 
-      def external_bonds
-        @atom.valence
-      end
-
-      def to_s
-        @atom.to_s
-      end
-
-      def cover?(specific_spec)
-        !specific_spec.active? && specific_spec.has_atom?(@atom)
-      end
+      # def cover?(specific_spec)
+      #   !specific_spec.active? && specific_spec.has_atom?(@atom)
+      # end
     end
 
   end
-
 end

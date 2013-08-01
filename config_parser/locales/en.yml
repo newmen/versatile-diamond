@@ -51,22 +51,20 @@ en:
     invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
-  atomic_spec:
-    invalid_valence: "In the global reaction can be specified only monovalent atoms"
-
   reaction:
+    invalid: "Invalid reaction equation"
+    invalid_valence: "In the global reaction can be specified only monovalent atoms"
     need_define_equation: "Necessary to define equation first"
+    wrong_balance: "Wrong reaction balance"
 
   equation:
     activation_already_set: "Activation energy already set"
     cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\" instruction"
     enthalpy_already_set: "Heat of reaction already set"
-    invalid: "Invalid reaction equation"
     lateral_already_connected: "Lateral already connected"
     multiple_wheres: "Used where \"%{name}\" available in several environments"
     rate_already_set: "Rate already set"
     undefined_target_alias: "Undefined target atom alias \"%{name}\""
-    wrong_balance: "Wrong reaction balance"
 
   environment:
     targets_not_defined: "Target atoms is not defined for this environment"

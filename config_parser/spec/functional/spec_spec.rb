@@ -11,7 +11,6 @@ module VersatileDiamond
       let(:keyname_error) { Tools::Chest::KeyNameError }
 
       before(:each) do
-        Tools::Chest.reset
         elements.interpret('atom N, valence: 3')
       end
 

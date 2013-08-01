@@ -5,10 +5,6 @@ module VersatileDiamond
 
     describe Gas do
       let(:gas) { Gas.new }
-      before(:each) do
-        Tools::Config.reset
-        Tools::Chest.reset
-      end
 
       describe "#spec" do
         it "interpreted spec stores in chest" do

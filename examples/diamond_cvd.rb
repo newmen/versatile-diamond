@@ -109,7 +109,7 @@ events
   reaction 'methyl desorption'
     equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
       refinement 'from bridge'
-        incoherent methyl_on_bridge(:cb)
+        incoherent methyl_on_bridge(:cb) # indicates automaticaly by methane
         forward_rate 1.7e7
 
       refinement 'from face 111'
@@ -371,7 +371,6 @@ events
 
   reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
-
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross

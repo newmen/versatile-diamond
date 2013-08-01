@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Store lattice symbol as name and cpp class for generate corresponding
     # code
-    class Lattice < Base
+    class Lattice < Named
 
       # @param [Symbol] symbol is lattice symbolic name
       # @param [String] cpp_class for generating code

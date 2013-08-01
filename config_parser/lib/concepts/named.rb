@@ -1,10 +1,9 @@
 module VersatileDiamond
-
   module Concepts
 
-    # The base concept class
+    # The base concept class of instances which can be stored in Chest
     # @abstract
-    class Base
+    class Named
       attr_reader :name
 
       # Each concepts should be have name
@@ -18,5 +17,4 @@ module VersatileDiamond
     end
 
   end
-
 end

@@ -9,7 +9,6 @@ module VersatileDiamond
       let(:syntax_error) { Errors::SyntaxError }
 
       before(:each) do
-        Tools::Chest.reset
         Elements.new.interpret('atom N, valence: 3')
       end
 

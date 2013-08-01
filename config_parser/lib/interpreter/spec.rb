@@ -7,6 +7,7 @@ module VersatileDiamond
     # If spec is recursive (i.e. uses itself) then no copy, reference to used
     # atom creates instead.
     class Spec < Component
+      include Modules::KeynameGenerator
       include AtomMatcher
 
       # Stores concept spec as internal property
@@ -30,7 +31,7 @@ module VersatileDiamond
           duplicates = spec.duplicate_atoms_with_keynames
           original_to_generated = {}
           duplicates.each do |keyname, atom_dup|
-            gk = generate_keyname(keyname)
+            gk = generate_keyname(@concept, keyname)
             original_to_generated[keyname] = gk
             @concept.describe_atom(gk, atom_dup)
           end
@@ -135,30 +136,12 @@ module VersatileDiamond
           @concept.dependent_from << spec
           duplicates = spec.duplicate_atoms_with_keynames
           duplicates.each do |k, atom|
-            nk = (k == atom_keyname) ? keyname : generate_keyname(k)
+            nk = (k == atom_keyname) ? keyname : generate_keyname(@concept, k)
             @concept.describe_atom(nk, atom)
           end
           @concept.adsorb_links(spec, duplicates)
         end
       end
-
-      # Generates the new keyname by original keyname with adding a '_' symbol
-      #   before original keyname and append unique (for current concept)
-      #   number
-      #
-      # @param [Symbol] original_keyname the original keyname from which will
-      #   be generated new keyname
-      # @return [Symbol] generated unique keyname
-      def generate_keyname(original_keyname)
-        keyname = nil
-        i = 0
-        begin
-          keyname = "_#{original_keyname}#{i}"
-          i += 1
-        end while (@concept.atom(keyname))
-        keyname.to_sym
-      end
-
     end
 
   end

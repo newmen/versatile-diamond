@@ -2,7 +2,8 @@ module VersatileDiamond
   module Concepts
 
     # The class instance contains atoms and bonds between them.
-    class Spec < Base
+    class Spec < Named
+      include Modules::KeynameGenerator
 
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
       # @param [Symbol] name the name of spec
@@ -14,7 +15,7 @@ module VersatileDiamond
       end
 
       # If spec is simple (H2 or HCl for example) then true or false
-      # @return [Boolean] current spec is simple?
+      # @return [Boolean] is current spec simple?
       def simple?
         @is_simple
       end
@@ -85,7 +86,7 @@ module VersatileDiamond
         original_to_duplicates = Hash[original_to_duplicates]
 
         other_spec.links.each do |atom, links|
-          @links[original_to_duplicates[atom]] =
+          @links[original_to_duplicates[atom]] +=
             links.map do |another_atom, link_instance|
               [original_to_duplicates[another_atom], link_instance]
             end
@@ -99,66 +100,55 @@ module VersatileDiamond
         atom.valence - internal_bonds_for(atom)
       end
 
-      # def external_bonds
-      #   atoms = atom_instances
-      #   valences = atoms.map(&:valence)
-      #   if valences.size == 1 && valences.first == 1
-      #     2
-      #   else
-      #     internal_bonds = atoms.reduce(0) do |acc, atom|
-      #       acc + internal_bonds_for(atom)
-      #     end
-      #     valences.reduce(:+) - internal_bonds
-      #   end
-      # end
+      # Summarizes external bonds of all internal atoms
+      # @return [Integer] sum of external bonds
+      def external_bonds
+        if simple?
+          0
+        else
+          atoms = atom_instances
+          internal_bonds = atoms.reduce(0) do |acc, atom|
+            acc + internal_bonds_for(atom)
+          end
+          atoms.map(&:valence).reduce(:+) - internal_bonds
+        end
+      end
 
-      # def extendable?
-      #   @extendable ||= atom_instances.any? { |atom| atom.is_a?(AtomReference) }
-      # end
+      # Checks for atom-references
+      # @return [Boolean] true if atom-reference exist or false overwise
+      def extendable?
+        @extendable ||= atom_instances.any? do |atom|
+          atom.is_a?(AtomReference)
+        end
+      end
 
-      # def extend_by_references
-      #   extended_name = "extended_#{@name}"
-      #   begin
-      #     extendable_spec = Spec[extended_name]
-      #   rescue AnalyzingError # TODO: strange checking
-      #     extendable_spec = self.class.add(extended_name)
-      #     duplicated_atoms = duplicate_atoms
-      #     extendable_spec.instance_variable_set(
-      #       :@atoms, alias_atoms(duplicated_atoms))
-      #     extendable_spec.adsorb_links(@links, duplicated_atoms)
-      #     extendable_spec.extend!
-      #     extendable_spec.dependent_from << self
-      #   end
-      #   extendable_spec
-      # end
+      # Duplicates current spec and extend it duplicate by atom-references
+      # @return [Spec] extended spec
+      def extend_by_references
+        extended_name = "extended_#{@name}".to_sym
+        begin # caching
+          Tools::Chest.spec(extended_name)
+        rescue Tools::Chest::KeyNameError
+          duplicates = duplicate_atoms_with_keynames
+          extendable_spec = self.class.new(extended_name, duplicates)
+          extendable_spec.adsorb_links(self, duplicates)
+          extendable_spec.dependent_from << self
+          extendable_spec.extend!
+
+          Tools::Chest.store(extendable_spec)
+          extendable_spec
+        end
+      end
 
       # def keyname(atom)
       #   @atoms.invert[atom]
-      # end
-
-      # def to_s
-      #   atoms_to_keynames = @atoms.invert
-      #   name_with_keyname = -> atom do
-      #     (a = atoms_to_keynames[atom]) ? "#{atom}(#{a})" : "#{atom}"
-      #   end
-
-      #   str = "#{name}(\n"
-      #   str << @links.map do |atom, list|
-      #     links = "  #{name_with_keyname[atom]}[\n    "
-      #     link_strs = list.map do |neighbour, link|
-      #       "#{link}#{name_with_keyname[neighbour]}"
-      #     end
-      #     links << link_strs.join(', ') << ']'
-      #     links
-      #   end.join(",\n")
-      #   str << "\n)"
-      #   str
       # end
 
       # def visit(visitor)
       #   visitor.accept_spec(self)
       # end
 
+      # TODO: rspec and doc
       def dependent_from
         @dependent_from ||= Set.new
       end
@@ -194,71 +184,84 @@ module VersatileDiamond
       #   end
       # end
 
-      # def links_with_replace_by(keynames_to_new_atoms)
-      #   # deep dup @links
-      #   replaced_links = Hash[@links.map do |atom, links|
-      #     [atom, links.map.to_a]
-      #   end]
+      # Returns links container with replaced atoms by passed hash of atoms and
+      # their keynames
+      #
+      # @param [Hash] keynames_to_new_atoms the hash which contain keyname
+      #   Symbol of atom key and specific atom as value
+      # @return [Hash] links container with replaced atoms
+      def links_with_replace_by(keynames_to_new_atoms)
+        # deep dup @links
+        replaced_links = Hash[@links.map do |atom, links|
+          [atom, links.map.to_a]
+        end]
 
-      #   keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
-      #     replaced_atom = @atoms[replaced_atom_keyname]
-      #     local_links = replaced_links.delete(replaced_atom)
-      #     local_links.each do |linked_atom, _|
-      #       replaced_links[linked_atom].map! do |atom, link|
-      #         [(atom == replaced_atom ? new_atom : atom), link]
-      #       end
-      #     end
-      #     replaced_links[new_atom] = local_links
-      #   end
+        keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
+          replaced_atom = @atoms[replaced_atom_keyname]
+          local_links = replaced_links.delete(replaced_atom)
+          local_links.each do |linked_atom, _|
+            replaced_links[linked_atom].map! do |atom, link|
+              [(atom == replaced_atom ? new_atom : atom), link]
+            end
+          end
+          replaced_links[new_atom] = local_links
+        end
 
-      #   replaced_links
-      # end
+        replaced_links
+      end
+
+      def to_s
+        atoms_to_keynames = @atoms.invert
+        name_with_keyname = -> atom do
+          "#{atom}(#{atoms_to_keynames[atom]})"
+        end
+
+        str = "#{name}(\n"
+        str << @links.map do |atom, list|
+          links = "  #{name_with_keyname[atom]}[\n    "
+          link_strs = list.map do |neighbour, link|
+            "#{link}#{name_with_keyname[neighbour]}"
+          end
+          links << link_strs.join(', ') << ']'
+          links
+        end.join(",\n")
+        str << "\n)"
+        str
+      end
 
     protected
 
       attr_reader :atoms, :links
 
-      # def extend!
-      #   atom_references = atom_instances.select do |atom|
-      #     atom.is_a?(AtomReference)
-      #   end
+      # Extends spec by atom-references
+      def extend!
+        atom_references = @atoms.select do |_, atom|
+          atom.is_a?(AtomReference)
+        end
 
-      #   ref_dup_atoms = Hash[atom_references.map do |atom_ref|
-      #     [atom_ref, atom_ref.spec.duplicate_atoms]
-      #   end]
+        atom_references.each do |original_keyname, ref|
+          duplicates = ref.spec.duplicate_atoms_with_keynames
+          duplicates.each do |keyname, atom|
+            if keyname == ref.keyname
+              # exchange old atom (reference) to new atom
+              @atoms[original_keyname] = atom
+              links = @links.delete(ref)
+              links.each do |another_atom, link|
+                @links[another_atom].map! do |aa, al|
+                  [(aa == ref ? atom : aa), al]
+                end
+              end
+              @links[atom] = links
+            else
+              # generate keyname and adsorb new atom
+              keyname = generate_keyname(self, keyname)
+              describe_atom(keyname, atom)
+            end
+          end
 
-      #   # exchange values of @atoms if value is a AtomReference
-      #   @atoms = Hash[@atoms.map do |atom_keyname, atom|
-      #     if atom.is_a?(AtomReference)
-      #       [atom_keyname, ref_dup_atoms[atom][atom.atom]]
-      #     else
-      #       [atom_keyname, atom]
-      #     end
-      #   end]
-
-      #   # exchange @links AtomReference keys to duplicated Atom instance keys
-      #   atom_references.each do |atom_ref|
-      #     @links[ref_dup_atoms[atom_ref][atom_ref.atom]] =
-      #       @links.delete(atom_ref)
-      #   end
-
-      #   # excange internal @links AtomReference instances to
-      #   # duplicated Atom inatances
-      #   @links.values.each do |links|
-      #     links.map! do |another_atom, link_instance|
-      #       if another_atom.is_a?(AtomReference)
-      #         [ref_dup_atoms[another_atom][another_atom.atom], link_instance]
-      #       else
-      #         [another_atom, link_instance]
-      #       end
-      #     end
-      #   end
-
-      #   # adsorb remaining atoms and links between them
-      #   atom_references.each do |atom_ref|
-      #     adsorb_links(atom_ref.spec.links, ref_dup_atoms[atom_ref])
-      #   end
-      # end
+          adsorb_links(ref.spec, duplicates)
+        end
+      end
 
     private
 
@@ -272,9 +275,7 @@ module VersatileDiamond
       # @param [Atom] atom the atom for wtich need to count bonds
       # @return [Integer] number of bonds
       def internal_bonds_for(atom)
-        bonds = @links[atom].select do |_, link|
-          link.class == Bond
-        end
+        bonds = @links[atom].select { |_, link| link.class == Bond }
         bonds.size
       end
 

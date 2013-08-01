@@ -7,7 +7,7 @@ module VersatileDiamond
     class AtomReference
       extend Forwardable
 
-      # attr_reader :spec, :atom
+      attr_reader :spec, :keyname
 
       # Target setting
       # @param [Concepts::Spec] spec the spec on atom of which will be refered
@@ -15,6 +15,7 @@ module VersatileDiamond
       def initialize(spec, atom_keyname)
         @spec = spec
         @atom = @spec.atom(atom_keyname)
+        @keyname = atom_keyname
       end
 
       def_delegators :@atom, :lattice #, :same?, :diff

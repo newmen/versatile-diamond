@@ -2,7 +2,7 @@ module VersatileDiamond
   module Concepts
 
     # General atom for base specs. Contain valence and lattice if it setted.
-    class Atom < Concepts::Base
+    class Atom < Named
 
       # Exception class for incorrect valence case
       class IncorrectValence < Exception

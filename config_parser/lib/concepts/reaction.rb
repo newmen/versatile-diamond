@@ -1,13 +1,9 @@
 module VersatileDiamond
-  module Interpreter
+  module Concepts
 
+    # Also contained positions between the reactants
     # TODO: rspec
-    class Equation < ComplexComponent
-      # include AtomMatcher
-
-      def initialize(concept, names_and_specs)
-        @concept, @names_and_specs = concept, names_and_specs
-      end
+    class Reaction < UbiquitousReaction
 
       # def refinement(name)
       #   nest_refinement(duplicate(name))
@@ -76,7 +72,60 @@ module VersatileDiamond
       #   nest_refinement(lateralized_duplicate(concrete_wheres, name_tail))
       # end
 
+      # def same?(other)
+      #   is_same_positions = (!@positions && !other.positions) ||
+      #     (@positions && other.positions &&
+      #       lists_are_identical?(@positions, other.positions) do |pos1, pos2|
+      #         pos1.last == pos2.last &&
+      #           ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
+      #             (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
+      #       end)
+
+      #   is_same_positions && super
+      # end
+
+      # def simple_source
+      #   @simple_source ||= @source.select do |specific_spec|
+      #     specific_spec.simple?
+      #   end
+      # end
+
+      # def complex_source
+      #   @complex_source ||= @source - simple_source
+      # end
+
+      # def organize_dependencies(lateral_equations)
+      #   applicants = []
+      #   lateral_equations.each do |equation|
+      #     applicants << equation if same?(equation)
+      #   end
+
+      #   return if applicants.empty?
+
+      #   loop do
+      #     inc = applicants.select do |equation|
+      #       applicants.find do |uneq|
+      #         equation != uneq && equation.dependent_from.include?(uneq)
+      #       end
+      #     end
+      #     break if inc.empty?
+      #     applicants = inc
+      #   end
+
+      #   applicants.each { |equation| dependent_from << equation }
+      # end
+
     protected
+
+      # attr_accessor :positions
+      # attr_writer :refinements
+
+      # def reverse
+      #   super do |r|
+      #     r.positions = @positions
+      #     r.refinements = @refinements
+      #   end
+      # end
 
     private
 
@@ -168,6 +217,17 @@ module VersatileDiamond
       #     end
       #   else
       #     super
+      #   end
+      # end
+
+      # def accept_self(visitor)
+      #   visitor.accept_real_equation(self)
+      # end
+
+      # def analyze_and_visit_source_specs(visitor)
+      #   @source.each do |spec|
+      #     spec.look_around(@atoms_map)
+      #     spec.visit(visitor)
       #   end
       # end
     end

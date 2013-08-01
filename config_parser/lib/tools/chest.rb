@@ -27,7 +27,7 @@ module VersatileDiamond
         def reset; @bag = {} end
 
         # Adds concept to bag and check name duplication
-        # @param [Concepts::Base] concept which will be stored by name
+        # @param [Concepts::Named] concept which will be stored by name
         # @raise [KeyNameError] when same concepts with same name
         #   is exist
         # @return [ConceptChest] self
@@ -66,15 +66,16 @@ module VersatileDiamond
         # @param [Symbol] key is the type of finding concept
         # @param [Symbol] name is the name of finding concept
         # @raise [KeyNameError] if concept is not found
-        # @return [Concepts::Base] founded concept
+        # @return [Concepts::Named] founded concept
         def method_missing(*args)
-# p @bag
-# p args
-          super if args.size != 2
-          key, name = args.map(&:to_sym)
+          if args.size != 2
+            super
+          else
+            key, name = args.map(&:to_sym)
 
-          (@bag && @bag[key] && @bag[key][name]) ||
-            raise(Chest::KeyNameError.new(key, name, :undefined))
+            (@bag && @bag[key] && @bag[key][name]) ||
+              raise(Chest::KeyNameError.new(key, name, :undefined))
+          end
         end
       end
     end
