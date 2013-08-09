@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Reaction do
+    describe Reaction, type: :has_equation_properties do
       let(:elements) { Elements.new }
       let(:gas) { Gas.new }
       let(:surface) { Surface.new }
@@ -18,7 +18,7 @@ module VersatileDiamond
           should raise_error keyname_error
         end
 
-        describe "ubiquitous eqautaion" do
+        describe "ubiquitous equation" do
           let(:concept) { Tools::Chest.ubiquitous_reaction('reaction name') }
 
           before(:each) do
@@ -49,7 +49,7 @@ module VersatileDiamond
           end
         end
 
-        describe "not ubiquitous eqautaion" do
+        describe "not ubiquitous equation" do
           let(:concept) { Tools::Chest.reaction('reaction name') }
 
           before(:each) do
@@ -61,14 +61,15 @@ module VersatileDiamond
             surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)')
             surface.interpret('  bond :ct, :cl, face: 110, dir: front')
             surface.interpret('  bond :ct, :cr, face: 110, dir: front')
+            surface.interpret('  position :cr, :cl, face: 100, dir: front')
             surface.interpret('spec :methyl_on_bridge')
             surface.interpret('  atoms cb: bridge(:ct), cm: methane(:c)')
             surface.interpret('  bond :cb, :cm')
           end
 
           it "not comlience reactants" do
-            -> { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
-              should raise_error syntax_error
+            expect { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
+              to raise_error syntax_error
           end
 
           describe "simple reaction" do
@@ -86,7 +87,7 @@ module VersatileDiamond
             end
           end
 
-          describe "not balanced reaction" do
+          describe "not initialy balanced reaction" do
             before(:each) do
               surface.interpret('spec :high_bridge')
               surface.interpret('  aliases mob: methyl_on_bridge')
@@ -118,10 +119,27 @@ module VersatileDiamond
           end
 
           describe "reaction with wrong balance" do
-            it { -> { reaction.interpret('equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge') }.
-                should raise_error syntax_error }
+            it { expect { reaction.interpret('equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge') }.
+                to raise_error syntax_error }
           end
         end
+      end
+
+      it_behaves_like "equation properties" do
+        before(:each) do
+          elements.interpret('atom H, valence: 1')
+          gas.interpret('spec :hydrogen')
+          gas.interpret('  atoms h: H')
+
+          elements.interpret('atom N, valence: 3')
+          gas.interpret('spec :ammonia')
+          gas.interpret('  atoms n: N')
+
+          reaction.interpret('equation ammonia(n: *) + hydrogen(h: *) = ammonia')
+        end
+
+        let(:target) { reaction }
+        let(:reverse) { Tools::Chest.reaction('reaction name reverse') }
       end
     end
 

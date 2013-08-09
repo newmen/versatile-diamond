@@ -5,6 +5,9 @@ module VersatileDiamond
     class Spec < Named
       include Modules::KeynameGenerator
 
+      attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
+      attr_reader :links
+
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
       # @param [Symbol] name the name of spec
       # @param [Hash] atoms the associated array [Symbol]Atom
@@ -27,12 +30,6 @@ module VersatileDiamond
         @atoms[atom_keyname]
       end
 
-      # Returns hash of duplicated atoms with keys as correspond keynames
-      # @return [Hash] hash of duplicated atoms with correspond keynames
-      def duplicate_atoms_with_keynames
-        Hash[@atoms.map { |keyname, atom| [keyname, atom.dup] }]
-      end
-
       # Apends atom to spec instance
       # @param [Symbol] atom_keyname the alias of atom in spec
       # @param [Atom] atom the appending atom
@@ -40,6 +37,12 @@ module VersatileDiamond
         @atoms[atom_keyname] = atom
         @links[atom] = []
         @is_simple = (@atoms.size == 1 && atom_instances.first.valence == 1)
+      end
+
+      # Returns hash of duplicated atoms with keys as correspond keynames
+      # @return [Hash] hash of duplicated atoms with correspond keynames
+      def duplicate_atoms_with_keynames
+        Hash[@atoms.map { |keyname, atom| [keyname, atom.dup] }]
       end
 
       # Renames the atom from some keyname to some new keyname (used only in
@@ -93,6 +96,32 @@ module VersatileDiamond
         end
       end
 
+      # Returns links container with replaced atoms by passed hash of atoms and
+      # their keynames
+      #
+      # @param [Hash] keynames_to_new_atoms the hash which contain keyname
+      #   Symbol of atom key and specific atom as value
+      # @return [Hash] links container with replaced atoms
+      def links_with_replace_by(keynames_to_new_atoms)
+        # deep dup @links
+        replaced_links = Hash[@links.map do |atom, links|
+          [atom, links.map.to_a]
+        end]
+
+        keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
+          replaced_atom = @atoms[replaced_atom_keyname]
+          local_links = replaced_links.delete(replaced_atom)
+          local_links.each do |linked_atom, _|
+            replaced_links[linked_atom].map! do |atom, link|
+              [(atom == replaced_atom ? new_atom : atom), link]
+            end
+          end
+          replaced_links[new_atom] = local_links
+        end
+
+        replaced_links
+      end
+
       # Counts external bonds for atom
       # @param [Atom] atom the atom for wtich need to count bonds
       # @return [Integer] number of bonds
@@ -104,7 +133,7 @@ module VersatileDiamond
       # @return [Integer] sum of external bonds
       def external_bonds
         if simple?
-          0
+          2
         else
           atoms = atom_instances
           internal_bonds = atoms.reduce(0) do |acc, atom|
@@ -184,40 +213,14 @@ module VersatileDiamond
       #   end
       # end
 
-      # Returns links container with replaced atoms by passed hash of atoms and
-      # their keynames
-      #
-      # @param [Hash] keynames_to_new_atoms the hash which contain keyname
-      #   Symbol of atom key and specific atom as value
-      # @return [Hash] links container with replaced atoms
-      def links_with_replace_by(keynames_to_new_atoms)
-        # deep dup @links
-        replaced_links = Hash[@links.map do |atom, links|
-          [atom, links.map.to_a]
-        end]
-
-        keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
-          replaced_atom = @atoms[replaced_atom_keyname]
-          local_links = replaced_links.delete(replaced_atom)
-          local_links.each do |linked_atom, _|
-            replaced_links[linked_atom].map! do |atom, link|
-              [(atom == replaced_atom ? new_atom : atom), link]
-            end
-          end
-          replaced_links[new_atom] = local_links
-        end
-
-        replaced_links
-      end
-
-      def to_s
-        atoms_to_keynames = @atoms.invert
+      def to_s(instance_atoms = @atoms, instance_links = @links)
+        atoms_to_keynames = instance_atoms.invert
         name_with_keyname = -> atom do
           "#{atom}(#{atoms_to_keynames[atom]})"
         end
 
         str = "#{name}(\n"
-        str << @links.map do |atom, list|
+        str << instance_links.map do |atom, list|
           links = "  #{name_with_keyname[atom]}[\n    "
           link_strs = list.map do |neighbour, link|
             "#{link}#{name_with_keyname[neighbour]}"
@@ -230,8 +233,6 @@ module VersatileDiamond
       end
 
     protected
-
-      attr_reader :atoms, :links
 
       # Extends spec by atom-references
       def extend!
@@ -247,8 +248,8 @@ module VersatileDiamond
               @atoms[original_keyname] = atom
               links = @links.delete(ref)
               links.each do |another_atom, link|
-                @links[another_atom].map! do |aa, al|
-                  [(aa == ref ? atom : aa), al]
+                @links[another_atom].map! do |at, li|
+                  [(at.object_id == ref.object_id ? atom : at), li]
                 end
               end
               @links[atom] = links

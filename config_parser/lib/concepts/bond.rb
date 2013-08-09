@@ -4,17 +4,25 @@ module VersatileDiamond
     # Class for bond instance. The bond can be without face and direction.
     class Bond
 
-      # The singleton method [] caches all instnaces and returns it if face and
-      #   direction of the same.
-      #
-      # @option [Symbol] :face the face of bond
-      # @option [Symbol] :dir the direction of bond
-      # @return [Bond] cached instance
-      def self.[](face: nil, dir: nil)
-        key = face.to_s
-        key << "_#{dir}" if dir
-        @consts ||= {}
-        @consts[key] ||= new(face, dir)
+      class << self
+        # The singleton method [] caches all instnaces and returns it if face and
+        #   direction of the same.
+        #
+        # @option [Symbol] :face the face of bond
+        # @option [Symbol] :dir the direction of bond
+        # @return [Bond] cached instance
+        def [](face: nil, dir: nil)
+          key = face.to_s
+          key << "_#{dir}" if dir
+          @consts ||= {}
+  # p @consts
+          @consts[key] ||= new(face, dir)
+        end
+
+        # Resets internal cache for RSpec
+        def reset
+          @consts = nil
+        end
       end
 
       # Store the face and dir for instance
@@ -24,9 +32,14 @@ module VersatileDiamond
         @face, @dir = face, dir
       end
 
-      # def same?(other)
-      #   self.class == other.class || other.same?(self)
-      # end
+      # Approximate compares two instances. If their classes is same then
+      # instances is the same. Else deligate comparing to other instance.
+      #
+      # @param [Concepts::Bond] other an other comparing instances
+      # @return [Boolean] same or not
+      def same?(other)
+        self.class == other.class || other.same?(self)
+      end
 
       def to_s
         symbol = '-'
@@ -36,9 +49,9 @@ module VersatileDiamond
         "#{str}#{symbol}"
       end
 
-    # protected
+    protected
 
-    #   attr_reader :face, :dir
+      attr_reader :face, :dir
 
     end
 

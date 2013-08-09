@@ -5,6 +5,15 @@ module VersatileDiamond
     # TODO: rspec
     class Reaction < UbiquitousReaction
 
+      # Among super, keeps the atom map
+      # @param [Array] source see at #super.initialize same argument
+      # @param [Array] products see at #super.initialize same argument
+      # @param [Array] atoms_map the atom-mapping result
+      def initialize(name, source, products, atoms_map)
+        super(name, source, products)
+        @atoms_map = atoms_map
+      end
+
       # def refinement(name)
       #   nest_refinement(duplicate(name))
       # end
@@ -138,12 +147,16 @@ module VersatileDiamond
       #   nested(refinement)
       # end
 
-      # def reverse_params
-      #   reversed_atom_map = @atoms_map.map do |specs, indexes|
-      #     [specs.reverse, indexes.map { |pair| pair.reverse }]
-      #   end
-      #   [*super, reversed_atom_map]
-      # end
+      # Reverse params for creating reverse reaction with reversing of atom
+      # mapping result
+      #
+      # @return [Array] reversed parameters for creating reverse reaction
+      def reverse_params
+        reversed_atom_map = @atoms_map.map do |specs, indexes|
+          [specs.reverse, indexes.map { |pair| pair.reverse }]
+        end
+        [*super, reversed_atom_map]
+      end
 
       # def duplication_params(equation_name_tail)
       #   # TODO: костыль, because calling .reverse for parent in reverse method

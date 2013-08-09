@@ -17,9 +17,14 @@ module VersatileDiamond
         super(face: face, dir: dir)
       end
 
-      # def same?(other)
-      #   face == other.face && dir == other.dir
-      # end
+      # Approximate compares two instances. If their fase and direction is
+      # correspond then instances is the same.
+      #
+      # @param [Concepts::Bond] other an other comparing instances
+      # @return [Boolean] same or not
+      def same?(other)
+        face == other.face && dir == other.dir
+      end
 
       def to_s
         symbol = ':'

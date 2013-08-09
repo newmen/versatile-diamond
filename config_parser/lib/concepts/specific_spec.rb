@@ -6,7 +6,7 @@ module VersatileDiamond
     class SpecificSpec
       extend Forwardable
 
-      # attr_reader :spec
+      attr_reader :spec
 
       # Initialize specific spec instalce. Checks specified atom for correct
       #   valence value
@@ -30,7 +30,7 @@ module VersatileDiamond
       #   @options = other.instance_variable_get(:@options).dup
       # end
 
-      def_delegators :@spec, :name, :extendable? #, :simple?, :is_gas?
+      def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
 
       # def name
       #   @original_name
@@ -55,8 +55,7 @@ module VersatileDiamond
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
       def external_bonds
-        actives = active_bonds_num
-        (@spec.simple? && actives == 1) ? 0 : @spec.external_bonds - actives
+        @spec.external_bonds - active_bonds_num
       end
 
       # Extends originial spec by atom-references and store it to temp variable
@@ -77,27 +76,21 @@ module VersatileDiamond
         @spec = @extended_spec
       end
 
-  #     def changed_atoms(other)
-  #       actives, other_actives = only_actives, other.only_actives
-  #       actives.reject! do |atom_state|
-  #         i = other_actives.index(atom_state)
-  #         i && other_actives.delete_at(i)
-  #       end
+      # Selects atoms that have changed compared to the other similar spec
+      # @param [SpecificSpec] other another spec which similar as it
+      # @return [Array] the array of changed atoms
+      def changed_atoms(other_similar)
+        actives, other_actives = only_actives, other_similar.only_actives
 
-  #       (actives + other_actives).map { |atom_keyname, _| @spec[atom_keyname] }
-  #     end
+        atoms = actives.each_with_object([]) do |(keyname, atom), acc|
+          other_atom = other_actives.delete(keyname)
+          if !other_atom || atom.actives != other_atom.actives
+            acc << atom
+          end
+        end
 
-  #     def to_s
-  #       opts = @options.map do |atom_keyname, value|
-  #         v = case value
-  #           when :incoherent then 'i'
-  #           when :unfixed then 'u'
-  #           else value
-  #           end
-  #         "#{atom_keyname}: #{v}"
-  #       end
-  #       "#{@spec.name}(#{opts.join(', ')})"
-  #     end
+        atoms + other_actives.map { |keyname, _| @spec.atom(keyname) }
+      end
 
   #     def visit(visitor)
   #       @spec.visit(visitor)
@@ -189,18 +182,20 @@ module VersatileDiamond
   #       end
   #     end
 
+      def to_s
+        # @spec.to_s(@spec.atoms.merge(@specific_atoms), links)
+        @spec.to_s
+      end
+
     protected
 
       # attr_reader :options
 
-      # def links_with_specific_atoms
-      #   @links_with_specific_atoms ||=
-      #     @spec.links_with_replace_by(keynames_to_specific_atoms)
-      # end
-
-      # def only_actives
-      #   @options.select { |_, value| value == '*' }
-      # end
+      # Selects only active atoms
+      # @return [Hash] the hash where active atoms presents as values
+      def only_actives
+        @specific_atoms.select { |_, atom| atom.actives > 0 }
+      end
 
       # def [](atom)
       #   unless @atoms_to_specific_atoms
@@ -225,6 +220,14 @@ module VersatileDiamond
       # @return [Integer] sum of active bonds
       def active_bonds_num
         @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+      end
+
+      # Returns original links of base spec but exchange correspond atoms to
+      # specific atoms
+      #
+      # @return [Hash] the hash of all links between atoms
+      def links
+        @links ||= @spec.links_with_replace_by(@specific_atoms)
       end
 
       # def keynames_to_specific_atoms

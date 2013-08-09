@@ -5,12 +5,6 @@ module VersatileDiamond
     # reaction
     class TerminationSpec
 
-      # Each termination spec have 0 external_bonds
-      # @return [Integer] zero
-      def external_bonds
-        0
-      end
-
       # Termination spec cannot belong to the gas phase
       # @return [Boolean] false
       def is_gas?

@@ -9,12 +9,24 @@ module VersatileDiamond
       class AlreadyStated < Exception; end
 
       extend Forwardable
-      def_delegator :@atom, :lattice
+      def_delegators :@atom, :lattice, :lattice=
 
       # @param [Atom] atom the specified atom
       def initialize(atom)
-        @atom = atom
+        @atom = atom.dup # because atom can be changed by mapping algorithm
         @options = []
+      end
+
+      # Compares current instance with other
+      # @param [Atom | AtomReference | SpecificAtom] other the other atom with
+      #   which comparing do
+      # @return [Boolean] is the same atom or not
+      def same?(other)
+        if self.class == other.class
+          @atom.same?(other.atom) && @options.sort == other.options.sort
+        else
+          false
+        end
       end
 
       # Activates atom instance
@@ -42,16 +54,6 @@ module VersatileDiamond
         @options.select { |o| o == :active }.size
       end
 
-      # def same?(other)
-      #   if self.class == other.class
-      #     @atom == other.atom && (@options == other.options ||
-      #       (@options.size == other.options.size &&
-      #         @options.sort == other.options.sort))
-      #   else
-      #     false
-      #   end
-      # end
-
       # def diff(other)
       #   if self.class == other.class
       #     other.relevants - relevants
@@ -73,8 +75,7 @@ module VersatileDiamond
 
     protected
 
-      # attr_reader :atom
-      # attr_reader :options
+      attr_reader :atom, :options
 
       # def relevants
       #   @options - [:active]

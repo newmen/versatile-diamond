@@ -15,13 +15,13 @@ module VersatileDiamond
         let(:concept_dup) { Concept.new(:some) }
         it "duplication of concept" do
           Chest.store(concept)
-          -> { Chest.store(concept_dup) }.should raise_error key_name_err
+          expect { Chest.store(concept_dup) }.to raise_error key_name_err
         end
 
         let(:another) { Concept.new(:another) }
         it "another concept" do
           Chest.store(concept)
-          -> { Chest.store(another) }.should_not raise_error key_name_err
+          expect { Chest.store(another) }.to_not raise_error
         end
       end
 
@@ -32,12 +32,12 @@ module VersatileDiamond
         end
 
         it "wrong key of concept" do
-          -> { Chest.wrong(:not_important) }.should raise_error key_name_err
+          expect { Chest.wrong(:not_important) }.to raise_error key_name_err
         end
 
         it "wrong name of concept" do
           Chest.store(concept)
-          -> { Chest.concept(:wrong) }.should raise_error key_name_err
+          expect { Chest.concept(:wrong) }.to raise_error key_name_err
         end
       end
 

@@ -17,19 +17,18 @@ module VersatileDiamond
           spec.interpret('atoms n1: N, n2: N')
         end
 
-        it { -> { spec.interpret('bond :n1, :n2, face: 100') }.
-          should raise_error syntax_error }
+        it { expect { spec.interpret('bond :n1, :n2, face: 100') }.
+          to raise_error syntax_error }
 
-        it { -> { spec.interpret('bond :n1, :n2, dir: :front') }.
-          should raise_error syntax_error }
+        it { expect { spec.interpret('bond :n1, :n2, dir: :front') }.
+          to raise_error syntax_error }
 
-        it { -> { spec.interpret('bond :n1, :n2') }.
-          should_not raise_error syntax_error }
+        it { expect { spec.interpret('bond :n1, :n2') }.to_not raise_error }
       end
 
       describe "#simple_atom" do
-        it { -> { spec.interpret('atoms n1: N, n2: N%nh4') }.
-          should raise_error syntax_error }
+        it { expect { spec.interpret('atoms n1: N, n2: N%nh4') }.
+          to raise_error syntax_error }
       end
     end
 

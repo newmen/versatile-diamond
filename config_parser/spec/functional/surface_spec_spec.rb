@@ -20,15 +20,15 @@ module VersatileDiamond
             spec.interpret('atoms n1: N%nh4, n2: N%nh4')
           end
 
-          it { -> { spec.interpret('position :n1, :n2, face: 100') }.
-            should raise_error syntax_error }
+          it { expect { spec.interpret('position :n1, :n2, face: 100') }.
+            to raise_error syntax_error }
 
-          it { -> { spec.interpret('position :n1, :n2, dir: :front') }.
-            should raise_error syntax_error }
+          it { expect { spec.interpret('position :n1, :n2, dir: :front') }.
+            to raise_error syntax_error }
 
-          it { -> {
-            spec.interpret('position :n1, :n2, face: 100, dir: :front')
-            }.should_not raise_error syntax_error }
+          it { expect {
+              spec.interpret('position :n1, :n2, face: 100, dir: :front')
+            }.to_not raise_error }
         end
 
         describe "only one atom has lattice" do
@@ -36,9 +36,9 @@ module VersatileDiamond
             spec.interpret('atoms n1: N%nh4, n2: N')
           end
 
-          it { -> {
+          it { expect {
               spec.interpret('position :n1, :n2, face: 100, dir: :front')
-            }.should raise_error syntax_error }
+            }.to raise_error syntax_error }
         end
       end
     end

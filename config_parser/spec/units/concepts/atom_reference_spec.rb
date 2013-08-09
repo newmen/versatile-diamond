@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe AtomReference do
+    describe AtomReference, type: :latticed_ref_atom do
       let(:c1) { Atom.new('C', 4) }
       let(:c2) { c1.dup }
       let(:bond) { Bond[face: nil, dir: nil] }
@@ -13,23 +13,23 @@ module VersatileDiamond
         spec.link(c1, c2, bond)
         spec
       end
-      let(:atom_ref) { AtomReference.new(ethylene, :c1) }
+      let(:ref) { AtomReference.new(ethylene, :c1) }
 
       describe "#valence" do
-        it { atom_ref.valence.should == 2 }
+        it { ref.valence.should == 2 }
       end
 
-      describe "#lattice" do
-        it { atom_ref.lattice.should be_nil }
-
-        it "ref to latticed atom" do
-          lattice = Lattice.new(:d, cpp_class: 'Diamond')
-          c1.lattice = lattice
-          spec = Spec.new(:some, c: c1)
-          ref = AtomReference.new(spec, :c)
-          ref.lattice.should == lattice
-        end
+      describe "#same?" do
+        it { c1.same?(ref).should be_true }
+        it { ref.same?(c1).should be_true }
+        it { ref.same?(ref.dup).should be_true }
       end
+
+      it_behaves_like "#lattice" do
+        let(:target) { c1 }
+        let(:reference) { ref }
+      end
+
     end
 
   end

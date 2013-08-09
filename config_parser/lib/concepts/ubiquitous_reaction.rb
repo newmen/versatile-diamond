@@ -18,27 +18,23 @@ module VersatileDiamond
 
       class << self
       private
-        # Defines some property setter by adding assertion methods for forward
-        # and reverse directions
-        def define_property_setter(property)
-          # Defines forward direction property setter
-          # @param [Float] value the value of property
-          # @param [Symbol] prefix the prefix of direction which need for
-          #   futher processing
-          define_method("forward_#{property}=") do |value, prefix = :forward|
-            if instance_variable_get("@#{property}".to_sym)
-              raise UbiquitousReaction::AlreadySet.new("#{prefix}_#{property}")
+        # Defines some property setter by adding assertion method
+        def define_property_setter(*properties)
+          properties.each do |property|
+            # Defines forward direction property setter
+            # @param [Float] value the value of property
+            define_method("#{property}=") do |value|
+              var = "@#{property}".to_sym
+              if instance_variable_get(var)
+                raise UbiquitousReaction::AlreadySet.new(property)
+              end
+              instance_variable_set(var, value)
             end
-
-            update_attribute(property, value, prefix)
-          end
-
-          define_method("reverse_#{property}=") do |value|
-            reverse.send("forward_#{property}=", value, :reverse)
           end
         end
       end
 
+      define_property_setter :enthalpy, :activation, :rate
       attr_reader :source, :products #, :parent
 
       # Store source and product specs
@@ -49,21 +45,23 @@ module VersatileDiamond
         @source, @products = source, products
       end
 
-
-      # %w(source products).each do |specs|
-      #   define_method("#{specs}_gases_num") do
-      #     instance_variable_get("@#{specs}".to_sym).map(&:is_gas?).
-      #       select { |v| v }.size
-      #   end
-      # end
-
-      def enthalpy=(value)
-        self.forward_enthalpy = value
-        self.reverse_enthalpy = -value
+      # Makes reversed reaction instance and change current name by append
+      # "forward" word
+      #
+      # @return [UbiquitousReaction] reversed reaction
+      def reverse
+        result = self.class.new(*reverse_params)
+        @name = "#{@name} forward" # stored in Chest key-name isn't changed!
+        # yield(result) if block_given?
+        # result.parent = parent.reverse if parent
+        result
       end
 
-      define_property_setter :activation
-      define_property_setter :rate
+      # Counts gases num in source specs scope
+      # @return [Integer] number of specs that belongs to gas phase
+      def gases_num
+        @source.select { |v| v.is_gas? }.size
+      end
 
   #     def to_s
   #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
@@ -155,14 +153,9 @@ module VersatileDiamond
 
     private
 
-      define_property_setter :enthalpy
-
-    #   def reverse_params
-    #     ["#{@name} reverse", @products, @source]
-    #   end
-
-      def update_attribute(attribute, value, _prefix = nil)
-        instance_variable_set("@#{attribute}".to_sym, value)
+      # Makes params for reverse method
+      def reverse_params
+        ["#{@name} reverse", @products, @source]
       end
 
     #   def accept_self(visitor)

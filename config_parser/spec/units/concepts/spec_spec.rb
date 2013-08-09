@@ -46,7 +46,8 @@ module VersatileDiamond
       end
 
       describe "#duplicate_atoms_with_keynames" do
-        it { methane.duplicate_atoms_with_keynames.should_not == { c: c } }
+        it { methane.duplicate_atoms_with_keynames[:c].object_id.
+          should_not == c.object_id}
       end
 
       describe "#describe_atom" do
@@ -76,13 +77,12 @@ module VersatileDiamond
         end
 
         it "valid bonds number" do
-          -> { two_c_atoms.link(c, c2, position) }.
-            should_not raise_error Atom::IncorrectValence
+          expect { two_c_atoms.link(c, c2, position) }.to_not raise_error
         end
 
         it "wrong bonds number" do
-          -> { two_c_atoms.link(c, c2, undir_bond) }.
-            should raise_error Atom::IncorrectValence
+          expect { two_c_atoms.link(c, c2, undir_bond) }.
+            to raise_error Atom::IncorrectValence
         end
       end
 
@@ -109,7 +109,7 @@ module VersatileDiamond
       end
 
       describe "#external_bonds" do
-        it { hydrogen.external_bonds.should == 0 }
+        it { hydrogen.external_bonds.should == 2 }
         it { methane.external_bonds.should == 4 }
         it { ethylene.external_bonds.should == 4 }
         it { bridge.external_bonds.should == 4 }
@@ -127,9 +127,10 @@ module VersatileDiamond
 
       describe "#links_with_replace_by" do
         it "replacing to number" do
-          links = ethylene.links_with_replace_by(c2: 2)
-          links.include?(2).should be_true
-          links[c].select { |a, _| a == 2 }.size.should == 2
+          o = Atom.new('O', 2)
+          links = ethylene.links_with_replace_by(c2: o)
+          links.include?(o).should be_true
+          links[c].select { |a, _| a == o }.size.should == 2
         end
       end
     end

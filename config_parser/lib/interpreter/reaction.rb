@@ -49,23 +49,27 @@ module VersatileDiamond
         check_compliance(names_and_specs[:source], names_and_specs[:products])
 
         @concept = if has_termination_spec?(source, products)
-          check_balance(source, products) || syntax_error('.wrong_balance')
+            check_balance(source, products) || syntax_error('.wrong_balance')
 
-          Concepts::UbiquitousReaction.new(@name, source, products)
-        else
-          check_balance(source, products) do |ext_src, ext_prd|
-            # if source or products need (and can) to be extended then exchange
-            # to extended specs
-            source, products = ext_src, ext_prd
-          end || syntax_error('.wrong_balance')
+            Concepts::UbiquitousReaction.new(@name, source, products)
+          else
+            check_balance(source, products) do |ext_src, ext_prd|
+              # if source or products need (and can) to be extended then
+              # exchange to extended specs
+              source, products = ext_src, ext_prd
+            end || syntax_error('.wrong_balance')
 
-          # atoms_map = AtomMapper.map(source, products)
-          # new(name, source, products, atoms_map)
-          Concepts::Reaction.new(@name, source, products)
-        end
+            atoms_map = AtomMapper.map(source, products)
+            reaction = Concepts::Reaction.new(@name, source, products, atoms_map)
+            nested(Equation.new(reaction, names_and_specs)) # TODO: rspec it condition
+            reaction
+          end
 
         Tools::Chest.store(@concept)
-        nested(Equation.new(@concept, names_and_specs))
+      rescue AtomMapper::EqualSpecsError => e
+        syntax_error('.equal_specs', name: e.spec_name)
+      rescue StructureMapper::CannotMap
+        syntax_error('.cannot_map')
       end
 
     private
@@ -82,15 +86,16 @@ module VersatileDiamond
       # @return [Array] where first element is name of spec and second is spec
       def detect_name_and_spec(spec_str)
         if Matcher.active_bond(spec_str)
-          [:*, Concepts::ActiveBond.new]
+          ['*', Concepts::ActiveBond.new]
         elsif (atom_name = Matcher.atom(spec_str))
           atom = Tools::Chest.atom(atom_name)
           syntax_error('.invalid_valence') if atom.valence != 1
-          [atom.name, Concepts::AtomicSpec.new(atom)]
+          [atom_name, Concepts::AtomicSpec.new(atom)]
         else
           using_name = nil
           spec = match_specific_spec(spec_str) do |name|
-            using_name = name = name.to_sym
+            using_name = name
+            name = name.to_sym
             if @aliases && (original_name = @aliases[name])
               Tools::Chest.spec(original_name)
             else
@@ -128,8 +133,9 @@ module VersatileDiamond
 
       # Checks the balance of reaction. If balance is not valid then trying to
       # extend some source or product spec through atom-references. If need to
-      # extend source spec and product spec at same time then expansion is
-      # carried out by recursive calling of #extends_if_possible method.
+      # extend source spec and product spec at same time (and block is passed
+      # too) then expansion is carried out by recursive calling of
+      # #extends_if_possible method.
       #
       # @param [Array] source the array of source specs
       # @param [Array] products the array of product specs

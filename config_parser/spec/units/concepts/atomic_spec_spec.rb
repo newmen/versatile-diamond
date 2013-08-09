@@ -16,7 +16,7 @@ module VersatileDiamond
       end
 
       describe "#external_bonds" do
-        it { spec.external_bonds.should == 0 }
+        it { spec.external_bonds.should == 1 }
       end
 
       describe "#is_gas?" do

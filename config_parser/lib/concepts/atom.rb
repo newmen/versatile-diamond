@@ -29,20 +29,27 @@ module VersatileDiamond
         @valence = valence
       end
 
-      # def same?(other)
-      #   if self.class == other.class
-      #     @name == other.name && @lattice == other.lattice
-      #   else
-      #     other.same?(self)
-      #   end
-      # end
+      # Compares two atoms and if atom is instance of same class then comparing
+      # the name and the lattice. Another cases action is deligate to
+      # comparable atom.
+      #
+      # @param [Atom | AtomReference | SpecificAtom] other the other atom with
+      #   which comparing do
+      # @return [Boolean] is the same atom or not
+      def same?(other)
+        if self.class == other.class
+          name == other.name && lattice == other.lattice
+        else
+          other.same?(self)
+        end
+      end
 
       # def diff(other)
       #   other.is_a?(SpecificAtom) ? other.diff(self) : []
       # end
 
       def to_s
-        @lattice ? "#{@name}%#{@lattice}" : @name
+        @lattice ? "#{name}%#{@lattice}" : name.to_s
       end
     end
 

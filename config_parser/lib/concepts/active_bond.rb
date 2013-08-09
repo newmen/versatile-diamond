@@ -10,6 +10,12 @@ module VersatileDiamond
         :*
       end
 
+      # Each active bond have 0 external bonds
+      # @return [Integer] zero
+      def external_bonds
+        0
+      end
+
       def to_s
         name
       end
