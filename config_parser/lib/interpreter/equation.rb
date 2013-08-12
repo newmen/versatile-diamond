@@ -1,7 +1,8 @@
 module VersatileDiamond
   module Interpreter
 
-    # TODO: rspec
+    # Interprets equation block if it exists. Pass each additional property to
+    # reaction concept instance.
     class Equation < ComplexComponent
       # include AtomMatcher
 

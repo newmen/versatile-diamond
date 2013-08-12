@@ -21,12 +21,13 @@ module VersatileDiamond
 
         let(:syntax_error) { Errors::SyntaxError }
 
-        it { -> { interpret_line(" hello") }.should raise_error syntax_error }
-        it { -> { interpret_line("   hello") }.should raise_error syntax_error }
+        it { expect { interpret_line(" hello") }.to raise_error syntax_error }
+        it { expect { interpret_line("   hello") }.
+          to raise_error syntax_error }
 
         it "line with ident and havent block" do
-          -> { base.interpret("  hello", -> _ {}) }.
-            should raise_error syntax_error
+          expect { base.interpret("  hello", -> _ {}) }.
+            to raise_error syntax_error
         end
       end
 

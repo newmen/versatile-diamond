@@ -12,8 +12,8 @@ module VersatileDiamond
         end
 
         it "if no has face or dir then raise error" do
-          -> { Position[face: nil, dir: nil] }.
-            should raise_error Position::IncompleteError
+          expect { Position[face: nil, dir: nil] }.
+            to raise_error Position::IncompleteError
         end
       end
 

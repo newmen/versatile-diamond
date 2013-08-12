@@ -33,8 +33,8 @@ module VersatileDiamond
         end
 
         it "indent without nested raise syntax error" do
-          -> { complex.interpret('  foo wrong').should }.
-            should raise_error Errors::SyntaxError
+          expect { complex.interpret('  foo wrong').should }.
+            to raise_error Errors::SyntaxError
         end
       end
     end

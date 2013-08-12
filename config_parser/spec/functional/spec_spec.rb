@@ -35,11 +35,11 @@ module VersatileDiamond
           concept.atom(:n2).should be_nil
         end
 
-        it { -> { spec.interpret('atoms x: X') }.
-          should raise_error keyname_error }
+        it { expect { spec.interpret('atoms x: X') }.
+          to raise_error keyname_error }
 
-        it { -> { spec.interpret('atoms n: nitrogen(:n1)') }.
-          should raise_error keyname_error }
+        it { expect { spec.interpret('atoms n: nitrogen(:n1)') }.
+          to raise_error keyname_error }
       end
 
       describe "#aliases" do
@@ -52,8 +52,8 @@ module VersatileDiamond
           concept.duplicate_atoms_with_keynames.size.should == 2
         end
 
-        it { -> { spec.interpret('aliases ng: nitrogen') }.
-          should raise_error keyname_error }
+        it { expect { spec.interpret('aliases ng: nitrogen') }.
+          to raise_error keyname_error }
       end
 
       describe "bonds" do

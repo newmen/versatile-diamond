@@ -97,8 +97,8 @@ module VersatileDiamond
         let(:syntax_error) { Errors::SyntaxError }
 
         (Dimension::VARIABLES - %w(rate)).each do |var|
-          it { -> { Dimension.send("convert_#{var}", 1, 'wtf') }.
-            should raise_error syntax_error }
+          it { expect { Dimension.send("convert_#{var}", 1, 'wtf') }.
+            to raise_error syntax_error }
         end
 
         [
@@ -107,8 +107,8 @@ module VersatileDiamond
           'cm3/s',
           's/l',
         ].each do |value|
-          it { -> { Dimension.convert_rate(1, 0, value) }.
-            should raise_error syntax_error }
+          it { expect { Dimension.convert_rate(1, 0, value) }.
+            to raise_error syntax_error }
         end
       end
     end

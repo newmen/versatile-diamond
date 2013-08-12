@@ -14,8 +14,8 @@ module VersatileDiamond
 
       describe "#equation" do
         it "error when spec name is undefined" do
-          -> { reaction.interpret('equation * + hydrogen(h: *) = H') }.
-          should raise_error keyname_error
+          expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
+            to raise_error keyname_error
         end
 
         describe "ubiquitous equation" do
@@ -47,6 +47,11 @@ module VersatileDiamond
             concept.source.one? { |s| s.class == Concepts::AtomicSpec }.
               should be_false
           end
+
+          it "don't nest equation interpreter instance" do
+            expect { reaction.interpret('  refinement "some"') }.
+              to raise_error syntax_error
+          end
         end
 
         describe "not ubiquitous equation" do
@@ -67,7 +72,7 @@ module VersatileDiamond
             surface.interpret('  bond :cb, :cm')
           end
 
-          it "not comlience reactants" do
+          it "not complience reactants" do
             expect { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
               to raise_error syntax_error
           end
@@ -84,6 +89,11 @@ module VersatileDiamond
                 should be_true
               concept.products.all? { |s| s.class == Concepts::SpecificSpec }.
                 should be_true
+            end
+
+            it "nest equation interpreter instance" do
+              expect { reaction.interpret('  refinement "some"') }.
+                not_to raise_error
             end
           end
 
@@ -120,7 +130,7 @@ module VersatileDiamond
 
           describe "reaction with wrong balance" do
             it { expect { reaction.interpret('equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge') }.
-                to raise_error syntax_error }
+              to raise_error syntax_error }
           end
         end
       end

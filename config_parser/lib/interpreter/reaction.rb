@@ -52,6 +52,7 @@ module VersatileDiamond
             check_balance(source, products) || syntax_error('.wrong_balance')
 
             Concepts::UbiquitousReaction.new(@name, source, products)
+            # doesn't nest equation if reaction is ubiquitous
           else
             check_balance(source, products) do |ext_src, ext_prd|
               # if source or products need (and can) to be extended then

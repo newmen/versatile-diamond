@@ -8,7 +8,7 @@ module VersatileDiamond
       describe "#total_time" do
         it "duplicating" do
           Config.total_time(1, 'sec')
-          -> { Config.total_time(12, 'sec') }.should raise_error error
+          expect { Config.total_time(12, 'sec') }.to raise_error error
         end
       end
 
@@ -23,8 +23,8 @@ module VersatileDiamond
 
         it "duplicating" do
           Config.gas_concentration(methyle, 1e-3, 'mol/l')
-          -> { Config.gas_concentration(methyle, 1e-5, 'mol/l') }.
-            should raise_error error
+          expect { Config.gas_concentration(methyle, 1e-5, 'mol/l') }.
+            to raise_error error
         end
       end
 
@@ -37,7 +37,7 @@ module VersatileDiamond
 
         it "duplicating" do
           Config.surface_composition(atom)
-          -> { Config.surface_composition(atom) }.should raise_error error
+          expect { Config.surface_composition(atom) }.to raise_error error
         end
       end
 
@@ -46,7 +46,7 @@ module VersatileDiamond
         describe "##{name}" do
           it "duplicating" do
             Config.send(name, 100, 'C')
-            -> { Config.send(name, 373, 'K') }.should raise_error error
+            expect { Config.send(name, 373, 'K') }.to raise_error error
           end
         end
       end

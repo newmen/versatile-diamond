@@ -14,8 +14,8 @@ module VersatileDiamond
           "rate '1/s'",
           "time 'min'"
         ].each do |line|
-          it { -> { dimensions.interpret(line) }.
-            should_not raise_error Exception }
+          it { expect { dimensions.interpret(line) }.
+            not_to raise_error Exception }
         end
       end
 

@@ -14,17 +14,17 @@ module VersatileDiamond
       describe "incorrect atom" do
         let(:syntax_error) { Errors::SyntaxError }
         it "atom name is invalid" do
-          -> { elements.interpret('atom wrong, valence: 1') }.
-            should raise_error syntax_error
+          expect { elements.interpret('atom wrong, valence: 1') }.
+            to raise_error syntax_error
         end
 
         it "wihtout valence" do
-          -> { elements.interpret('atom H') }.should raise_error syntax_error
+          expect { elements.interpret('atom H') }.to raise_error syntax_error
         end
 
         it "incorrect valence" do
-          -> { elements.interpret('atom H, valence: 0') }.
-            should raise_error syntax_error
+          expect { elements.interpret('atom H, valence: 0') }.
+            to raise_error syntax_error
         end
       end
     end
