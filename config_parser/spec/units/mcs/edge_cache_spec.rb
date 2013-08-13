@@ -5,9 +5,6 @@ module VersatileDiamond
 
     describe EdgeCache do
       let(:cache) { described_class.new }
-      let(:c) { Concepts::Atom.new('C', 4) }
-      let(:n) { Concepts::Atom.new('N', 3) }
-      let(:o) { Concepts::Atom.new('O', 2) }
 
       describe "#add and #has?" do
         before(:each) { cache.add(c, n) }

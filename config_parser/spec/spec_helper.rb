@@ -7,11 +7,12 @@ Dir['./spec/support/**/*.rb'].each { |f| require f }
 
 RSpec.configure do |config|
 
-  config.include VersatileDiamond::Support::Interpreter::EquationProperties,
-    type: :has_equation_properties
-
-  config.include VersatileDiamond::Support::Concepts::LatticedRefAtom,
+  config.include VersatileDiamond::Concepts::Support::Handbook
+  config.include VersatileDiamond::Concepts::Support::LatticedRefAtom,
     type: :latticed_ref_atom
+
+  config.include VersatileDiamond::Interpreter::Support::EquationProperties,
+    type: :has_equation_properties
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
@@ -20,12 +21,10 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:each) do
+    VersatileDiamond::Concepts::Support::Handbook.reset
+
     VersatileDiamond::Tools::Chest.reset
     VersatileDiamond::Tools::Config.reset
-
-    # TODO: is not necessary?
-    VersatileDiamond::Concepts::Bond.reset
-    VersatileDiamond::Concepts::Position.reset
   end
 
 end

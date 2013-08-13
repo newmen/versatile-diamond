@@ -1,24 +1,20 @@
 module VersatileDiamond
-  module Support
-    module Concepts
+  module Concepts
+    module Support
 
       module LatticedRefAtom
         shared_examples_for "#lattice" do
           describe "#lattice" do
-            let(:lattice) do
-              VersatileDiamond::Concepts::Lattice.new(:d, cpp_class: 'Diamond')
-            end
-
             it { reference.lattice.should be_nil }
 
             it "reference to latticed atom" do
-              target.lattice = lattice
-              reference.lattice.should == lattice
+              target.lattice = diamond
+              reference.lattice.should == diamond
             end
 
             describe "#lattice=" do
               it "don't change original atom" do
-                reference.lattice = lattice
+                reference.lattice = diamond
                 target.lattice.should be_nil
               end
             end

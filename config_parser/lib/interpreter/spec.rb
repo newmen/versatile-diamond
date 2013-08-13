@@ -7,7 +7,6 @@ module VersatileDiamond
     # If spec is recursive (i.e. uses itself) then no copy, reference to used
     # atom creates instead.
     class Spec < Component
-      include Modules::KeynameGenerator
       include AtomMatcher
 
       # Stores concept spec as internal property
@@ -28,14 +27,12 @@ module VersatileDiamond
         @aliases_to ||= {}
         refs.each do |alias_name, spec_name|
           spec = Tools::Chest.spec(spec_name)
-          duplicates = spec.duplicate_atoms_with_keynames
+
           original_to_generated = {}
-          duplicates.each do |keyname, atom_dup|
-            gk = generate_keyname(@concept, keyname)
-            original_to_generated[keyname] = gk
-            @concept.describe_atom(gk, atom_dup)
+          @concept.adsorb(spec) do |keyname, generated_keyname, _|
+            original_to_generated[keyname] = generated_keyname
+            generated_keyname
           end
-          @concept.adsorb_links(spec, duplicates)
 
           @aliases_to[alias_name] = [spec, original_to_generated]
         end
@@ -134,12 +131,7 @@ module VersatileDiamond
           # links from them
           spec = Tools::Chest.spec(spec_name)
           @concept.dependent_from << spec
-          duplicates = spec.duplicate_atoms_with_keynames
-          duplicates.each do |k, atom|
-            nk = (k == atom_keyname) ? keyname : generate_keyname(@concept, k)
-            @concept.describe_atom(nk, atom)
-          end
-          @concept.adsorb_links(spec, duplicates)
+          @concept.adsorb(spec) { |k, gk, _| k == atom_keyname ? keyname : gk }
         end
       end
     end

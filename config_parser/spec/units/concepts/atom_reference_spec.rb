@@ -4,16 +4,7 @@ module VersatileDiamond
   module Concepts
 
     describe AtomReference, type: :latticed_ref_atom do
-      let(:c1) { Atom.new('C', 4) }
-      let(:c2) { c1.dup }
-      let(:bond) { Bond[face: nil, dir: nil] }
-      let(:ethylene) do
-        spec = Spec.new(:ethylene, c1: c1, c2: c2)
-        spec.link(c1, c2, bond)
-        spec.link(c1, c2, bond)
-        spec
-      end
-      let(:ref) { AtomReference.new(ethylene, :c1) }
+      let(:ref) { AtomReference.new(ethylene_base, :c1) }
 
       describe "#valence" do
         it { ref.valence.should == 2 }

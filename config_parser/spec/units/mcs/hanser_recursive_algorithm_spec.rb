@@ -4,61 +4,70 @@ module VersatileDiamond
   module Mcs
 
     describe HanserRecursiveAlgorithm do
-      let(:free_bond) { Concepts::Bond[face: nil, dir: nil] }
-      let(:bond_110) { Concepts::Bond[face: 110, dir: :front] }
-      let(:position_100) { Concepts::Position[face: 100, dir: :front] }
-
-      let(:lattice) { Concepts::Lattice.new(:d, 'Diamond') }
-      let(:c) { Concepts::Atom.new('C', 4) }
-      3.times do |i|
-        let(:"c#{i}") do
-          cd = c.dup
-          cd.lattice = lattice; cd
-        end
-      end
-
-      let(:bridge) do
-        s = Concepts::Spec.new(:bridge, ct: c0, cr: c1, cl: c2)
-        s.link(c0, c1, bond_110)
-        s.link(c0, c2, bond_110)
-        s.link(c1, c2, position_100)
-        s.links
-      end
-
-      let(:methyl_on_bridge) do
-        s = Concepts::Spec.new(:methyl_on_bridge,
-          cm: c, cb: c0, cr: c1, cl: c2)
-
-        s.link(c, c0, free_bond)
-        s.link(c0, c1, bond_110)
-        s.link(c0, c2, bond_110)
-        s.link(c1, c2, position_100)
-        s.links
-      end
-
+      let(:bridge_links) { bridge_base.links }
+      let(:methyl_on_bridge_links) { methyl_on_bridge_base.links }
       let(:assoc) do
-        AssocGraph.new(Graph.new(bridge), Graph.new(methyl_on_bridge))
+        AssocGraph.new(
+          Graph.new(bridge_links), Graph.new(methyl_on_bridge_links))
       end
 
       describe "#self.contain?" do
-        it { described_class.contain?(methyl_on_bridge, bridge).
-          should be_true }
 
-        it { described_class.contain?(bridge, methyl_on_bridge).
+        it { described_class.contain?(methyl_on_bridge_links, bridge_links).
+          should be_true }
+        it { described_class.contain?(bridge_links, methyl_on_bridge_links).
           should be_false }
+
+        let(:methane_links) { methane_base.links }
+
+        it { described_class.contain?(bridge_links, methane_links).
+          should be_false }
+        it { described_class.contain?(methane_links, bridge_links).
+          should be_false }
+        it { described_class.contain?(methyl_on_bridge_links, methane_links).
+          should be_true }
+        it { described_class.contain?(methane_links, methyl_on_bridge_links).
+          should be_false }
+
+        let(:methyl_on_dimer_links) { methyl_on_dimer_base.links }
+
+        it { described_class.contain?(
+          methyl_on_dimer_links, bridge_links).should be_true }
+        it { described_class.contain?(
+          bridge_links, methyl_on_dimer_links).should be_false }
+        it { described_class.contain?(
+          methyl_on_dimer_links, methyl_on_bridge_links).should be_true }
+        it { described_class.contain?(
+          methyl_on_bridge_links, methyl_on_dimer_links).should be_false }
+        it { described_class.contain?(
+          methyl_on_dimer_links, methane_links).should be_true }
+        it { described_class.contain?(
+          methane_links, methyl_on_dimer_links).should be_false }
       end
 
       describe "#self.first_interset" do
         subject { described_class.first_interset(assoc) }
         it { subject.size.should == 3 }
-        it { subject.should include([c0, c0], [c1, c1], [c2, c2]) }
+        it { subject.should include(
+            [bridge_base.atom(:ct), methyl_on_bridge_base.atom(:cb)],
+            [bridge_base.atom(:cr), methyl_on_bridge_base.atom(:cr)],
+            [bridge_base.atom(:cl), methyl_on_bridge_base.atom(:cl)]
+          ) }
       end
 
       describe "#intersets" do
         subject { described_class.new(assoc).intersets }
         it { subject.size.should == 2 }
-        it { subject.first.should include([c0, c0], [c1, c1], [c2, c2]) }
-        it { subject.last.should include([c0, c0], [c1, c2], [c2, c1]) }
+        it { subject.first.should include(
+            [bridge_base.atom(:ct), methyl_on_bridge_base.atom(:cb)],
+            [bridge_base.atom(:cr), methyl_on_bridge_base.atom(:cr)],
+            [bridge_base.atom(:cl), methyl_on_bridge_base.atom(:cl)]
+          ) }
+        it { subject.last.should include(
+            [bridge_base.atom(:ct), methyl_on_bridge_base.atom(:cb)],
+            [bridge_base.atom(:cr), methyl_on_bridge_base.atom(:cl)],
+            [bridge_base.atom(:cl), methyl_on_bridge_base.atom(:cr)]
+          ) }
       end
     end
 

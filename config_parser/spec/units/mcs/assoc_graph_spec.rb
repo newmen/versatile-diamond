@@ -4,24 +4,17 @@ module VersatileDiamond
   module Mcs
 
     describe AssocGraph do
-      let(:c1) { Concepts::Atom.new('C', 4) }
-      let(:c2) { c1.dup }
       let(:spec1) do
-        s = Concepts::Spec.new(:spec1, c1: c1, c2: c2)
-        s.link(c1, c2, Concepts::Bond[face: 100, dir: :front]); s
+        s = Concepts::Spec.new(:spec1, c1: cd1, c2: cd2)
+        s.link(cd1, cd2, bond_100); s
       end
       let(:graph1) { Graph.new(spec1.links) }
 
-      # let(:lattice) { Concepts::Lattice.new(:d, 'Diamond') }
-      let(:cf) { c1.dup }
-      let(:cs) { c1.dup }
-      # let(:cs) do
-      #   c = c1.dup
-      #   c.lattice = lattice; c
-      # end
+      let(:cf) { cd1.dup }
+      let(:cs) { cd1.dup }
       let(:spec2) do
         s = Concepts::Spec.new(:spec2, cf: cf, cs: cs)
-        s.link(cf, cs, Concepts::Position[face: 100, dir: :front]); s
+        s.link(cf, cs, position_front); s
       end
       let(:graph2) { Graph.new(spec2.links) }
 
@@ -30,7 +23,7 @@ module VersatileDiamond
         # before(:each) { assoc.save('assoc') }
 
         it { assoc.vertices.size.should == 4 }
-        it { assoc.fbn([c1, cf]).size.should == 3 }
+        it { assoc.fbn([cd1, cf]).size.should == 3 }
       end
 
       describe "approximate match" do
@@ -40,9 +33,9 @@ module VersatileDiamond
         # before(:each) { assoc.save('assoc') }
 
         it { assoc.vertices.size.should == 4 }
-        it { assoc.ext([c1, cf]).size.should == 1 }
-        it { assoc.ext([c2, cs]).size.should == 1 }
-        it { assoc.fbn([c1, cf]).size.should == 2 }
+        it { assoc.ext([cd1, cf]).size.should == 1 }
+        it { assoc.ext([cd2, cs]).size.should == 1 }
+        it { assoc.fbn([cd1, cf]).size.should == 2 }
       end
     end
 

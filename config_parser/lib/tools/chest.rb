@@ -24,7 +24,7 @@ module VersatileDiamond
         end
 
         # Reset the bag and using by RSpec only
-        def reset; @bag = {} end
+        def reset; @bag && @bag.clear end
 
         # Adds concept to bag and check name duplication
         # @param [Concepts::Named] concept which will be stored by name

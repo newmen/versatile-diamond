@@ -4,8 +4,7 @@ module VersatileDiamond
   module Concepts
 
     describe SpecificAtom, type: :latticed_ref_atom do
-      let(:atom) { Atom.new('N', 3) }
-      let(:specific_atom) { SpecificAtom.new(atom) }
+      let(:specific_atom) { SpecificAtom.new(n) }
 
       describe "#actives" do
         it { specific_atom.actives.should == 0 }
@@ -17,11 +16,11 @@ module VersatileDiamond
       end
 
       describe "#same?" do
-        it { specific_atom.same?(atom).should be_false }
-        it { atom.same?(specific_atom).should be_false }
+        it { specific_atom.same?(n).should be_false }
+        it { n.same?(specific_atom).should be_false }
 
         describe "same class instance" do
-          let(:other) { SpecificAtom.new(atom.dup) }
+          let(:other) { SpecificAtom.new(n.dup) }
 
           it "both atoms is activated" do
             specific_atom.active!
@@ -37,7 +36,7 @@ module VersatileDiamond
       end
 
       it_behaves_like "#lattice" do
-        let(:target) { atom }
+        let(:target) { n }
         let(:reference) { specific_atom }
       end
 

@@ -4,8 +4,7 @@ module VersatileDiamond
   module Concepts
 
     describe AtomicSpec do
-      let(:atom) { Atom.new('H', 1) }
-      let(:spec) { AtomicSpec.new(atom) }
+      let(:spec) { AtomicSpec.new(h) }
 
       describe "termination spec" do
         it { spec.should be_a(TerminationSpec) }

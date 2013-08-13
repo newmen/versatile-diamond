@@ -4,50 +4,18 @@ module VersatileDiamond
   module Concepts
 
     describe Spec do
-      let(:h) { Atom.new('H', 1) }
-      let(:c) { Atom.new('C', 4) }
-      let(:c2) { Atom.new('C', 4) }
-      let(:undir_bond) { Bond[face: nil, dir: nil] }
-
-      let(:hydrogen) { Spec.new(:hydrogen, h: h) }
-      let(:methane) { Spec.new(:methane, c: c) }
-
-      let(:ethylene) do
-        spec = Spec.new(:ethylene, c1: c, c2: c2)
-        spec.link(c, c2, undir_bond)
-        spec.link(c, c2, undir_bond)
-        spec
-      end
-
-      let(:bridge) do
-        c.lattice = Lattice.new(:d, 'Diamond')
-        spec = Spec.new(:bridge, ct: c)
-        cl, cr = AtomReference.new(spec, :ct), AtomReference.new(spec, :ct)
-        spec.describe_atom(:cl, cl)
-        spec.describe_atom(:cr, cr)
-        bond110 = Bond[face: 110, dir: :front]
-        spec.link(c, cl, bond110)
-        spec.link(c, cr, bond110)
-        spec
-      end
-
       describe "#simple?" do
         it { Spec.new(:not_set).simple?.should be_nil }
 
-        it { hydrogen.simple?.should be_true }
-        it { methane.simple?.should_not be_true }
-        it { ethylene.simple?.should_not be_true }
-        it { bridge.simple?.should_not be_true }
+        it { hydrogen_base.simple?.should be_true }
+        it { methane_base.simple?.should_not be_true }
+        it { ethylene_base.simple?.should_not be_true }
+        it { bridge_base.simple?.should_not be_true }
       end
 
       describe "#atom" do
-        it { methane.atom(:w).should be_nil }
-        it { methane.atom(:c).should == c }
-      end
-
-      describe "#duplicate_atoms_with_keynames" do
-        it { methane.duplicate_atoms_with_keynames[:c].object_id.
-          should_not == c.object_id}
+        it { methane_base.atom(:w).should be_nil }
+        it { methane_base.atom(:c).should == c }
       end
 
       describe "#describe_atom" do
@@ -59,79 +27,123 @@ module VersatileDiamond
       end
 
       describe "#rename_atom" do
-        it "old atom keyname changes to new keyname" do
-          methane.rename_atom(:c, :new_c)
-          methane.atom(:new_c).should == c
+        describe "old atom keyname changes to new keyname" do
+          before(:each) { methane_base.rename_atom(:c, :new_c) }
+          it { methane_base.atom(:new_c).should == c }
+        end
+
+        describe "if keyname already exist before renaming it" do
+          before(:each) { ethylene_base.rename_atom(:c1, :c2) }
+          it { ethylene_base.atom(:c1).should be_nil }
+          it { ethylene_base.atom(:c2).should == c1 }
+          it { ethylene_base.size.should == 2 }
         end
       end
 
       describe "#link" do
-        let(:position) { Position[face: 100, dir: :front] }
         let(:two_c_atoms) do
-          spec = Spec.new(:two_c_atoms, c1: c, c2: c2)
-          spec.link(c, c2, undir_bond)
-          spec.link(c, c2, undir_bond)
-          spec.link(c, c2, undir_bond)
-          spec.link(c, c2, undir_bond)
-          spec
+          s = Spec.new(:two_c_atoms, c1: c, c2: c2)
+          s.link(c, c2, free_bond)
+          s.link(c, c2, free_bond)
+          s.link(c, c2, free_bond)
+          s.link(c, c2, free_bond); s
         end
 
         it "valid bonds number" do
-          expect { two_c_atoms.link(c, c2, position) }.to_not raise_error
+          expect { two_c_atoms.link(c, c2, position_front) }.to_not raise_error
         end
 
         it "wrong bonds number" do
-          expect { two_c_atoms.link(c, c2, undir_bond) }.
+          expect { two_c_atoms.link(c, c2, free_bond) }.
             to raise_error Atom::IncorrectValence
         end
       end
 
-      describe "#adsorb_links" do
-        let(:ethane) do
-          spec = Spec.new(:ethane, c1: c, c2: c2)
-          spec.link(c, c2, undir_bond)
-          spec
-        end
-
-        it "methane adsorbs each atom and links of ethane" do
-          duplicates = ethane.duplicate_atoms_with_keynames
-          duplicates.each do |keyname, atom_dup|
-            methane.describe_atom(keyname, atom_dup)
-          end
-          methane.adsorb_links(ethane, duplicates)
-          methane.external_bonds_for(duplicates[:c1]).should == 3
+      describe "#adsorb" do
+        describe "methane adsorbs each atom and links of ethylene" do
+          subject { methane_base }
+          before(:each) { subject.adsorb(ethylene_base) }
+          it { subject.external_bonds_for(subject.atom(:c)).should == 4 }
+          it { subject.external_bonds_for(subject.atom(:c1)).should == 2 }
+          it { subject.external_bonds_for(subject.atom(:c2)).should == 2 }
         end
       end
 
       describe "#external_bonds_for" do
-        it { ethylene.external_bonds_for(ethylene.atom(:c1)).should == 2 }
-        it { ethylene.external_bonds_for(ethylene.atom(:c2)).should == 2 }
+        describe "methane" do
+          subject { methane_base }
+          it { subject.external_bonds_for(subject.atom(:c)).should == 4 }
+        end
+
+        describe "ethylene" do
+          subject { ethylene_base }
+          it { subject.external_bonds_for(subject.atom(:c1)).should == 2 }
+          it { subject.external_bonds_for(subject.atom(:c2)).should == 2 }
+        end
+
+        describe "bridge" do
+          subject { bridge_base }
+          it { subject.external_bonds_for(subject.atom(:ct)).should == 2 }
+          it { subject.external_bonds_for(subject.atom(:cl)).should == 1 }
+          it { subject.external_bonds_for(subject.atom(:cr)).should == 1 }
+        end
+
+        describe "methyl on bridge" do
+          subject { methyl_on_bridge_base }
+          it { subject.external_bonds_for(subject.atom(:cm)).should == 3 }
+          it { subject.external_bonds_for(subject.atom(:cb)).should == 1 }
+          it { subject.external_bonds_for(subject.atom(:cl)).should == 1 }
+          it { subject.external_bonds_for(subject.atom(:cr)).should == 1 }
+        end
+
+        describe "methyl on dimer" do
+          subject { methyl_on_dimer_base }
+          it { subject.external_bonds_for(subject.atom(:cm)).should == 3 }
+          it { subject.external_bonds_for(subject.atom(:cr)).should == 0 }
+          it { subject.external_bonds_for(subject.atom(:cl)).should == 1 }
+        end
       end
 
       describe "#external_bonds" do
-        it { hydrogen.external_bonds.should == 2 }
-        it { methane.external_bonds.should == 4 }
-        it { ethylene.external_bonds.should == 4 }
-        it { bridge.external_bonds.should == 4 }
+        it { hydrogen_base.external_bonds.should == 2 }
+        it { methane_base.external_bonds.should == 4 }
+        it { ethylene_base.external_bonds.should == 4 }
+        it { bridge_base.external_bonds.should == 4 }
       end
 
       describe "#extendable?" do
-        it { methane.extendable?.should be_false }
-        it { ethylene.extendable?.should be_false }
-        it { bridge.extendable?.should be_true }
+        it { methane_base.extendable?.should be_false }
+        it { ethylene_base.extendable?.should be_false }
+        it { bridge_base.extendable?.should be_true }
       end
 
       describe "#extend_by_references" do
-        it { bridge.extend_by_references.external_bonds.should == 8 }
+        it { extended_bridge_base.external_bonds.should == 8 }
+        it { methyl_on_extended_bridge_base.external_bonds.should == 10 }
+        it { methyl_on_dimer_base.extend_by_references.external_bonds.
+          should == 16 } # if take into account the crystal lattice then value
+          # should be 10
       end
 
       describe "#links_with_replace_by" do
-        it "replacing to number" do
-          o = Atom.new('O', 2)
-          links = ethylene.links_with_replace_by(c2: o)
-          links.include?(o).should be_true
-          links[c].select { |a, _| a == o }.size.should == 2
-        end
+        let(:links) { ethylene_base.links_with_replace_by(c2: o) }
+
+        it { links.include?(o).should be_true }
+        it { links[c1].select { |a, _| a == o }.size.should == 2 }
+      end
+
+      describe "#size" do
+        it { hydrogen_base.size.should == 1 }
+        it { methane_base.size.should == 1 }
+        it { ethylene_base.size.should == 2 }
+        it { bridge_base.size.should == 3 }
+        it { methyl_on_bridge_base.size.should == 4 }
+        it { methyl_on_extended_bridge_base.size.should == 8 }
+        it { high_bridge_base.size.should == 4 }
+        it { dimer_base.size.should == 6 }
+        it { extended_dimer_base.size.should == 14 } # if take into account the
+        # crystal lattice then value should be 12
+        it { methyl_on_dimer_base.size.should == 7 }
       end
     end
 

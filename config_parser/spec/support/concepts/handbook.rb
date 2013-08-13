@@ -1,0 +1,146 @@
+module VersatileDiamond
+  module Concepts
+    module Support
+
+      # Provides useful methods for RSpec
+      module Handbook
+        class << self
+          # Resets internal cache for RSpec
+          def reset
+            @handbook.clear
+          end
+
+        private
+
+          # Provides a special action for defining memoised instance methods
+          # @param [Symbol] name the name of defining method
+          # @yield the body of method
+          def set(name, &block)
+            hb = (@handbook ||= {})
+            instance = nil
+            define_method(name) do
+              hb[name] ||= self.class.new.instance_eval(&block)
+            end
+          end
+        end
+
+        # Lattices:
+        set(:diamond) { Lattice.new(:d, 'Diamond') }
+
+        # Atoms:
+        set(:h) { Atom.new('H', 1) }
+        set(:o) { Atom.new('O', 2) }
+        set(:n) { Atom.new('N', 3) }
+        set(:c) { Atom.new('C', 4) }
+        set(:cd) do
+          d = c.dup
+          d.lattice = diamond; d
+        end
+
+        3.times do |i|
+          set(:"c#{i}") { c.dup }
+          set(:"cd#{i}") { cd.dup }
+        end
+
+        # Specific atoms:
+        %w(h c cd).each do |name|
+          set(:"activated_#{name}") do
+            a = SpecificAtom.new(send(name))
+            a.active!; a
+          end
+        end
+        set(:extra_activated_cd) do
+          a = SpecificAtom.new(cd)
+          a.active!
+          a.active!; a
+        end
+
+        # Bonds and positions:
+        set(:free_bond) { Bond[face: nil, dir: nil] }
+        set(:bond_110) { Bond[face: 110, dir: :front] }
+        set(:bond_100) { Bond[face: 100, dir: :front] }
+        set(:position_front) { Position[face: 100, dir: :front] }
+        set(:position_cross) { Position[face: 100, dir: :cross] }
+
+        # Specs and specific specs:
+        set(:hydrogen_base) { GasSpec.new(:hydrogen, h: h) }
+        set(:hydrogen) { SpecificSpec.new(hydrogen_base) }
+        set(:hydrogen_ion) do
+          SpecificSpec.new(hydrogen_base, h: activated_h)
+        end
+
+        set(:methane_base) { GasSpec.new(:methane, c: c) }
+        set(:methane) { SpecificSpec.new(methane_base) }
+        set(:methyl) do
+          SpecificSpec.new(methane_base, c: activated_c)
+        end
+
+        set(:ethylene_base) do
+          s = GasSpec.new(:ethylene, c1: c1, c2: c2)
+          s.link(c1, c2, free_bond)
+          s.link(c1, c2, free_bond); s
+        end
+
+        set(:bridge_base) do
+          s = SurfaceSpec.new(:bridge_base, ct: cd)
+          cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
+          s.describe_atom(:cl, cl)
+          s.describe_atom(:cr, cr)
+          s.link(cd, cl, bond_110)
+          s.link(cd, cr, bond_110)
+          s.link(cl, cr, position_front); s
+        end
+        set(:bridge) { SpecificSpec.new(bridge_base) }
+        set(:activated_bridge) do
+          SpecificSpec.new(bridge_base, ct: activated_cd)
+        end
+        set(:extra_activated_bridge) do
+          SpecificSpec.new(bridge_base, ct: extra_activated_cd)
+        end
+        set(:extended_bridge_base) { bridge_base.extend_by_references }
+
+        set(:methyl_on_bridge_base) do
+          s = SurfaceSpec.new(:methyl_on_bridge, cm: c)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cb)
+          s.link(c, s.atom(:cb), free_bond); s
+        end
+        set(:methyl_on_bridge) { SpecificSpec.new(methyl_on_bridge_base) }
+        set(:actived_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: activated_c)
+        end
+        set(:methyl_on_actived_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
+        end
+        set(:methyl_on_extended_bridge_base) do
+          methyl_on_bridge_base.extend_by_references
+        end
+
+        set(:high_bridge_base) do
+          s = SurfaceSpec.new(:high_bridge)
+          s.adsorb(methyl_on_bridge_base)
+          s.link(s.atom(:cm), s.atom(:cb), free_bond); s
+        end
+
+        set(:dimer_base) do
+          s = SurfaceSpec.new(:dimer_base)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cr)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cl)
+          s.link(s.atom(:cr), s.atom(:cl), bond_100); s
+        end
+        set(:extended_dimer_base) { dimer_base.extend_by_references }
+
+        set(:methyl_on_dimer_base) do
+          s = SurfaceSpec.new(:methyl_on_dimer, cm: c)
+          s.adsorb(dimer_base)
+          s.link(s.atom(:cr), s.atom(:cm), free_bond); s
+        end
+        set(:methyl_on_dimer) { SpecificSpec.new(methyl_on_dimer_base) }
+
+      end
+
+    end
+  end
+end

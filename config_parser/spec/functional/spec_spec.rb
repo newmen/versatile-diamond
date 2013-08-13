@@ -27,33 +27,43 @@ module VersatileDiamond
           concept.atom(:n).name.should == :N
         end
 
-        it "atoms line with ref to another spec becomes to adsorbing" do
-          make_nitrogen
-          spec.interpret('atoms n: nitrogen(:n1)')
-          concept.external_bonds_for(concept.atom(:n)).should == 0
-          concept.atom(:n1).should be_nil
-          concept.atom(:n2).should be_nil
+        describe "atoms line with ref to another spec becomes to adsorbing" do
+          before(:each) do
+            make_nitrogen
+            spec.interpret('atoms n: nitrogen(:n1)')
+          end
+
+          it { concept.external_bonds_for(concept.atom(:n)).should == 0 }
+          it { concept.atom(:n1).should be_nil }
+          it { concept.atom(:n2).should be_nil }
         end
 
-        it { expect { spec.interpret('atoms x: X') }.
-          to raise_error keyname_error }
+        describe "undefined atoms" do
+          it { expect { spec.interpret('atoms x: X') }.
+            to raise_error keyname_error }
 
-        it { expect { spec.interpret('atoms n: nitrogen(:n1)') }.
-          to raise_error keyname_error }
+          it { expect { spec.interpret('atoms n: nitrogen(:n1)') }.
+            to raise_error keyname_error }
+        end
       end
 
       describe "#aliases" do
-        it "aliases adsrobs to concept" do
-          make_nitrogen
-          spec.interpret('aliases ng: nitrogen')
-          spec.interpret('atoms nf: ng(:n1), ns: ng(:n2)')
-          concept.external_bonds_for(concept.atom(:nf)).should == 0
-          concept.external_bonds_for(concept.atom(:ns)).should == 0
-          concept.duplicate_atoms_with_keynames.size.should == 2
+        describe "nitrogen" do
+          before(:each) do
+            make_nitrogen
+            spec.interpret('aliases ng: nitrogen')
+            spec.interpret('atoms nf: ng(:n1), ns: ng(:n2)')
+          end
+
+          it { concept.external_bonds_for(concept.atom(:nf)).should == 0 }
+          it { concept.external_bonds_for(concept.atom(:ns)).should == 0 }
+          it { concept.size.should == 2 }
         end
 
-        it { expect { spec.interpret('aliases ng: nitrogen') }.
-          to raise_error keyname_error }
+        describe "undefined spec" do
+          it { expect { spec.interpret('aliases ng: nitrogen') }.
+            to raise_error keyname_error }
+        end
       end
 
       describe "bonds" do
@@ -62,30 +72,24 @@ module VersatileDiamond
         end
 
         describe "#bond" do
-          it "setup changes value of #extended_bonds_for method" do
-            spec.interpret('bond :n1, :n2')
-            # TODO: check the bond existance
-            concept.external_bonds_for(concept.atom(:n1)).should == 2
-            concept.external_bonds_for(concept.atom(:n2)).should == 2
-          end
+          before(:each) { spec.interpret('bond :n1, :n2') }
+          # TODO: check the bond existance too
+          it { concept.external_bonds_for(concept.atom(:n1)).should == 2 }
+          it { concept.external_bonds_for(concept.atom(:n2)).should == 2 }
         end
 
         describe "#dbond" do
-          it "twise setup changes value of #extended_bonds_for method" do
-            spec.interpret('dbond :n1, :n2')
-            # TODO: check the bond existance too
-            concept.external_bonds_for(concept.atom(:n1)).should == 1
-            concept.external_bonds_for(concept.atom(:n2)).should == 1
-          end
+          before(:each) { spec.interpret('dbond :n1, :n2') }
+          # TODO: check the bond existance too
+          it { concept.external_bonds_for(concept.atom(:n1)).should == 1 }
+          it { concept.external_bonds_for(concept.atom(:n2)).should == 1 }
         end
 
         describe "#tbond" do
-          it "triple setup changes value of #extended_bonds_for method" do
-            spec.interpret('tbond :n1, :n2')
-            # TODO: check the bond existance too
-            concept.external_bonds_for(concept.atom(:n1)).should == 0
-            concept.external_bonds_for(concept.atom(:n2)).should == 0
-          end
+          before(:each) { spec.interpret('tbond :n1, :n2') }
+          it { concept.external_bonds_for(concept.atom(:n1)).should == 0 }
+          it { concept.external_bonds_for(concept.atom(:n2)).should == 0 }
+          # TODO: check the bond existance too
         end
       end
     end

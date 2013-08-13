@@ -1,6 +1,6 @@
 module VersatileDiamond
-  module Support
-    module Interpreter
+  module Interpreter
+    module Support
 
       module EquationProperties
         shared_examples_for "equation properties" do

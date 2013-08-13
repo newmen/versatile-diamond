@@ -4,13 +4,9 @@ module VersatileDiamond
   module Interpreter
 
     describe Base do
-      # subject { Base.new }
-      let(:base) { Base.new }
+      let(:base) { described_class.new }
 
       describe "#interpret" do
-        # subject :interpret_line do |line|
-        #   interpret(line, -> _ { :no_indent }) { |_| :indent }
-        # end
         def interpret_line(line)
           base.interpret(line, -> _ { :no_indent }, &-> _ { :indent })
         end
