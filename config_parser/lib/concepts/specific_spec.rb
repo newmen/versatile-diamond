@@ -26,9 +26,10 @@ module VersatileDiamond
         # @original_name = spec.name
       end
 
-      # def initialize_copy(other)
-      #   @options = other.instance_variable_get(:@options).dup
-      # end
+      def initialize_copy(other)
+        @spec = other.spec
+        @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
+      end
 
       def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
 
@@ -189,7 +190,7 @@ module VersatileDiamond
 
     protected
 
-      # attr_reader :options
+      attr_reader :specific_atoms
 
       # Selects only active atoms
       # @return [Hash] the hash where active atoms presents as values

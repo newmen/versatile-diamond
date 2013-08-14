@@ -49,7 +49,7 @@ module VersatileDiamond
       # Represents reaction concept for forward reaction direction
       # @return [Concepts::UbiquitousReaction] current concept
       def forward
-        @concept
+        @reaction
       end
 
       # Makes reaction concept for reverse reaction direction, cache it and

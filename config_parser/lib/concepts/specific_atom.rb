@@ -11,10 +11,18 @@ module VersatileDiamond
       extend Forwardable
       def_delegators :@atom, :lattice, :lattice=
 
+      # Initialize a new instance
       # @param [Atom] atom the specified atom
       def initialize(atom)
         @atom = atom.dup # because atom can be changed by mapping algorithm
         @options = []
+      end
+
+      # Makes copy of another instance
+      # @param [SpecificAtom] other an other specified atom
+      def initialize_copy(other)
+        @atom = other.atom.dup
+        @options = other.options.dup
       end
 
       # Compares current instance with other

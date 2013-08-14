@@ -50,8 +50,7 @@ module VersatileDiamond
           end
         end
         set(:extra_activated_cd) do
-          a = SpecificAtom.new(cd)
-          a.active!
+          a = activated_cd.dup
           a.active!; a
         end
 
@@ -139,6 +138,19 @@ module VersatileDiamond
         end
         set(:methyl_on_dimer) { SpecificSpec.new(methyl_on_dimer_base) }
 
+        # Active bond:
+        set(:active_bond) { ActiveBond.new }
+
+        # Atomic specs:
+        set(:adsorbed_h) { AtomicSpec.new(h) }
+
+        # Reaction:
+        set(:source) { [methyl_on_bridge] }
+        set(:products) { [methyl, activated_bridge] }
+        set(:atom_map) { Mcs::AtomMapper.map(source, products) }
+        set(:reaction) do
+          Reaction.new('methyl desorption', source, products, atom_map)
+        end
       end
 
     end

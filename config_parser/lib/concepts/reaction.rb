@@ -14,9 +14,15 @@ module VersatileDiamond
         @atoms_map = atoms_map
       end
 
-      # def refinement(name)
-      #   nest_refinement(duplicate(name))
-      # end
+      # Duplicates current instance with each source and product specs
+      # @param [String] equation_name_tail the tail of equaion name
+      # @return [Reaction] the duplicated reaction with changed name
+      def duplicate(equation_name_tail)
+        duplication = self.class.new(
+          "#{@name} #{equation_name_tail}", *duplicate_params)
+        duplication.positions = @positions.dup if @positions # TODO: rspec it
+        duplication
+      end
 
       # %w(incoherent unfixed).each do |state|
       #   define_method(state) do |*used_atom_strs|
@@ -127,6 +133,7 @@ module VersatileDiamond
     protected
 
       # attr_accessor :positions
+      attr_writer :positions
       # attr_writer :refinements
 
       # def reverse
@@ -158,41 +165,38 @@ module VersatileDiamond
         [*super, reversed_atom_map]
       end
 
-      # def duplication_params(equation_name_tail)
-      #   # TODO: костыль, because calling .reverse for parent in reverse method
-      #   name = @name
-      #   forward_regex = / forward\Z/
-      #   if instance_variable_get(:@reverse) && name =~ forward_regex
-      #     name.sub!(forward_regex, '')
-      #   end
+      # Duplicates internal properties of reaction such as specs and atom
+      # mapping result
+      #
+      # @return [Array] the array of duplicated properties
+      def duplicate_params
+        # # TODO: костыль, because calling .reverse for parent in reverse method
+        # name = @name
+        # forward_regex = / forward\Z/
+        # if instance_variable_get(:@reverse) && name =~ forward_regex
+        #   name.sub!(forward_regex, '')
+        # end
 
-      #   hash = {}
-      #   source_dup, products_dup = [@source, @products].map do |specs|
-      #     specs_dup = specs.map do |spec|
-      #       spec_dup = spec.dup
-      #       hash[spec] = spec_dup
-      #       spec_dup
-      #     end
-      #     specs_dup
-      #   end
+        hash = {}
+        source_dup, products_dup = [@source, @products].map do |specs|
+          specs.map do |spec|
+            spec_dup = spec.dup
+            hash[spec] = spec_dup
+            spec_dup
+          end
+        end
 
-      #   atoms_map = @atoms_map.map do |(source, product), indexes|
-      #     [[hash[source], hash[product]], indexes]
-      #   end
+        atoms_map = @atoms_map.map do |(source, product), indexes|
+          [[hash[source], hash[product]], indexes]
+        end
 
-      #   ["#{name} #{equation_name_tail}",
-      #     source_dup, products_dup, atoms_map]
-      # end
-
-      # def duplicate(equation_name_tail)
-      #   Equation.register(
-      #     self.class.new(*duplication_params(equation_name_tail)))
-      # end
+        [source_dup, products_dup, atoms_map]
+      end
 
       # def lateralized_duplicate(concrete_wheres, equation_name_tail)
       #   Equation.register(
       #     LateralizedEquation.new(
-      #       concrete_wheres, *duplication_params(equation_name_tail)))
+      #       concrete_wheres, *duplicate_params(equation_name_tail)))
       # end
 
       # def find_spec(used_atom_str, find_type: :any, &block)

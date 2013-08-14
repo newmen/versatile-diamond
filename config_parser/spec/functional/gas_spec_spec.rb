@@ -13,9 +13,7 @@ module VersatileDiamond
       end
 
       describe "#bond" do
-        before(:each) do
-          spec.interpret('atoms n1: N, n2: N')
-        end
+        before(:each) { spec.interpret('atoms n1: N, n2: N') }
 
         it { expect { spec.interpret('bond :n1, :n2, face: 100') }.
           to raise_error syntax_error }

@@ -4,6 +4,12 @@ module VersatileDiamond
   module Concepts
 
     describe SpecificSpec do
+      describe "#dup" do
+        it { methyl.dup.should_not == methyl }
+        it { methyl.dup.spec.should == methyl.spec }
+        it { methyl.dup.external_bonds.should == 3 }
+      end
+
       describe "#is_gas?" do
         it { hydrogen.is_gas?.should be_true }
         it { hydrogen_ion.is_gas?.should be_true }

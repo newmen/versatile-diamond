@@ -6,13 +6,21 @@ module VersatileDiamond
     class Equation < ComplexComponent
       # include AtomMatcher
 
-      def initialize(concept, names_and_specs)
-        @concept, @names_and_specs = concept, names_and_specs
+      # Initialize a new equation interpreter instance
+      # @param [Concepts::Reaction] reaction the concept of reaction
+      # @param [Hash] names_and_specs the hash with :source and :products keys
+      #   with arrays of names and specs as values
+      def initialize(reaction, names_and_specs)
+        @reaction, @names_and_specs = reaction, names_and_specs
       end
 
-      # def refinement(name)
-      #   nest_refinement(duplicate(name))
-      # end
+      # Interprets refinement line, duplicates reaction concept, pass it to
+      # refinement interpreter instance and nest it instance
+      #
+      # @param [String] tail_of_name the tail of name of reaction concept
+      def refinement(tail_of_name)
+        nest_refinement(@reaction.duplicate(tail_of_name))
+      end
 
       # %w(incoherent unfixed).each do |state|
       #   define_method(state) do |*used_atom_strs|
@@ -81,58 +89,17 @@ module VersatileDiamond
 
     private
 
-      # def nest_refinement(equation)
-      #   equation.parent = self
-      #   equation.positions = @positions.dup if @positions
+      def nest_refinement(reaction)
+        # reaction.parent = self
+        reaction.positions = @positions.dup if @positions
+        Tools::Chest.store(reaction)
 
-      #   @refinements ||= []
-      #   @refinements << (refinement = Refinement.new(equation))
-      #   nested(refinement)
-      # end
+        refinement = Refinement.new(reaction, @names_and_specs)
+        @refinements ||= []
+        @refinements << refinement
 
-      # def reverse_params
-      #   reversed_atom_map = @atoms_map.map do |specs, indexes|
-      #     [specs.reverse, indexes.map { |pair| pair.reverse }]
-      #   end
-      #   [*super, reversed_atom_map]
-      # end
-
-      # def duplication_params(equation_name_tail)
-      #   # TODO: костыль, because calling .reverse for parent in reverse method
-      #   name = @name
-      #   forward_regex = / forward\Z/
-      #   if instance_variable_get(:@reverse) && name =~ forward_regex
-      #     name.sub!(forward_regex, '')
-      #   end
-
-      #   hash = {}
-      #   source_dup, products_dup = [@source, @products].map do |specs|
-      #     specs_dup = specs.map do |spec|
-      #       spec_dup = spec.dup
-      #       hash[spec] = spec_dup
-      #       spec_dup
-      #     end
-      #     specs_dup
-      #   end
-
-      #   atoms_map = @atoms_map.map do |(source, product), indexes|
-      #     [[hash[source], hash[product]], indexes]
-      #   end
-
-      #   ["#{name} #{equation_name_tail}",
-      #     source_dup, products_dup, atoms_map]
-      # end
-
-      # def duplicate(equation_name_tail)
-      #   Equation.register(
-      #     self.class.new(*duplication_params(equation_name_tail)))
-      # end
-
-      # def lateralized_duplicate(concrete_wheres, equation_name_tail)
-      #   Equation.register(
-      #     LateralizedEquation.new(
-      #       concrete_wheres, *duplication_params(equation_name_tail)))
-      # end
+        nested(refinement)
+      end
 
       # def find_spec(used_atom_str, find_type: :any, &block)
       #   spec_name, atom_keyname = match_used_atom(used_atom_str)
@@ -161,16 +128,6 @@ module VersatileDiamond
       #   end
       # end
 
-      # def update_attribute(attribute, value, prefix = nil)
-      #   if @refinements
-      #     attribute = "#{prefix}_#{attribute}" if prefix
-      #     @refinements.each do |ref|
-      #       ref.equation_instance.send("#{attribute}=", value)
-      #     end
-      #   else
-      #     super
-      #   end
-      # end
     end
 
   end

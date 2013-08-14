@@ -5,7 +5,6 @@ module VersatileDiamond
     # all kinetic properties: enthalpy, activation energy and pre-exponential
     # factor as "raw" rate variable. Setuping it values provides trough
     # corresponding instance assertion methods.
-    # TODO: rspec
     class UbiquitousReaction < Named
       # include Modules::BoundaryTemperature
       # include Modules::ListsComparer
@@ -22,6 +21,7 @@ module VersatileDiamond
         def define_property_setter(*properties)
           properties.each do |property|
             # Defines forward direction property setter
+            # @raise [UbiquitousReaction::AlreadySet] if property already set
             # @param [Float] value the value of property
             define_method("#{property}=") do |value|
               var = "@#{property}".to_sym
@@ -51,7 +51,8 @@ module VersatileDiamond
       # @return [UbiquitousReaction] reversed reaction
       def reverse
         result = self.class.new(*reverse_params)
-        @name = "#{@name} forward" # stored in Chest key-name isn't changed!
+
+        @name = "#{@name} forward" # TODO: stored in Chest key-name isn't changed!
         # yield(result) if block_given?
         # result.parent = parent.reverse if parent
         result
@@ -140,16 +141,6 @@ module VersatileDiamond
     protected
 
       # attr_writer :parent
-
-      # def reverse
-      #   return @reverse if @reverse
-
-      #   @reverse = Equation.register(self.class.new(*reverse_params))
-      #   @name << ' forward'
-      #   yield(@reverse) if block_given?
-      #   @reverse.parent = parent.reverse if parent
-      #   @reverse
-      # end
 
     private
 

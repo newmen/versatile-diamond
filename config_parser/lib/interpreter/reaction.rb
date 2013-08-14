@@ -48,7 +48,7 @@ module VersatileDiamond
 
         check_compliance(names_and_specs[:source], names_and_specs[:products])
 
-        @concept = if has_termination_spec?(source, products)
+        @reaction = if has_termination_spec?(source, products)
             check_balance(source, products) || syntax_error('.wrong_balance')
 
             Concepts::UbiquitousReaction.new(@name, source, products)
@@ -60,13 +60,15 @@ module VersatileDiamond
               source, products = ext_src, ext_prd
             end || syntax_error('.wrong_balance')
 
-            atoms_map = AtomMapper.map(source, products)
-            reaction = Concepts::Reaction.new(@name, source, products, atoms_map)
-            nested(Equation.new(reaction, names_and_specs)) # TODO: rspec it condition
+            atoms_map = Mcs::AtomMapper.map(source, products)
+            reaction = Concepts::Reaction.new(
+              @name, source, products, atoms_map)
+
+            nested(Equation.new(reaction, names_and_specs))
             reaction
           end
 
-        Tools::Chest.store(@concept)
+        Tools::Chest.store(@reaction)
       rescue AtomMapper::EqualSpecsError => e
         syntax_error('.equal_specs', name: e.spec_name)
       rescue StructureMapper::CannotMap
