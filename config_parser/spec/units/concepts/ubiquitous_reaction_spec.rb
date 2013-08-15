@@ -7,7 +7,7 @@ module VersatileDiamond
       let(:source) { [active_bond, hydrogen_ion] }
       let(:product) { [adsorbed_h] }
       let(:reaction) do
-        described_class.new('surface deactivation', source, product)
+        described_class.new(:forward, 'surface deactivation', source, product)
       end
 
       let(:already_set) { UbiquitousReaction::AlreadySet }
@@ -23,8 +23,14 @@ module VersatileDiamond
         end
       end
 
+      describe "#name" do
+        it { reaction.name.should =~ /^forward/ }
+      end
+
       describe "#reverse" do # it's no use for ubiquitous reaction?
         subject { reaction.reverse }
+        it { subject.reverse.should == reaction }
+        it { subject.name.should =~ /^reverse/ }
 
         it { subject.source.size.should == 1 }
         it { subject.source.should include(adsorbed_h) }

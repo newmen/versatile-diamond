@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe AtomReference, type: :latticed_ref_atom do
+    describe AtomReference, latticed_ref_atom: true do
       let(:ref) { AtomReference.new(ethylene_base, :c1) }
 
       describe "#valence" do

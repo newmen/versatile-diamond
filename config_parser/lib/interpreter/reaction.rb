@@ -4,7 +4,7 @@ module VersatileDiamond
     # Interprets reaction block and all of block parameters passes to concept,
     # instance of that will be created in equation method
     class Reaction < ComplexComponent
-      include EquationProperties
+      include ReactionProperties
       include SpecificSpecMatcher
 
       # Inits reaction interpter and store concept
@@ -51,7 +51,7 @@ module VersatileDiamond
         @reaction = if has_termination_spec?(source, products)
             check_balance(source, products) || syntax_error('.wrong_balance')
 
-            Concepts::UbiquitousReaction.new(@name, source, products)
+            Concepts::UbiquitousReaction.new(:forward, @name, source, products)
             # doesn't nest equation if reaction is ubiquitous
           else
             check_balance(source, products) do |ext_src, ext_prd|
@@ -62,7 +62,7 @@ module VersatileDiamond
 
             atoms_map = Mcs::AtomMapper.map(source, products)
             reaction = Concepts::Reaction.new(
-              @name, source, products, atoms_map)
+              :forward, @name, source, products, atoms_map)
 
             nested(Equation.new(reaction, names_and_specs))
             reaction

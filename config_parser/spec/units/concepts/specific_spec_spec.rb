@@ -28,6 +28,16 @@ module VersatileDiamond
         it { extra_activated_bridge.simple?.should be_false }
       end
 
+      describe "#incoherent!" do
+        before { activated_bridge.incoherent!(:ct) }
+        it { activated_cd.incoherent?.should be_true }
+      end
+
+      describe "#unfixed!" do
+        before { activated_methyl_on_bridge.unfixed!(:cm) }
+        it { activated_c.unfixed?.should be_true }
+      end
+
       describe "#external_bonds" do
         it { hydrogen.external_bonds.should == 2 }
         it { hydrogen_ion.external_bonds.should == 1 }

@@ -47,11 +47,11 @@ en:
     incorrect_linking: "Incorrect linking unspecified atoms"
 
   specific_spec:
-    atom_already_has_state: "Atom \"%{atom}\" of specific spec \"%{spec}\" already has %{state} state"
     invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
   reaction:
+    cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
     cannot_map: "Cannot map reaction atoms"
     equal_specs: "Species \"%{name}\" in the left-hand and right-hand side of the equation are identical"
     invalid: "Invalid reaction equation"
@@ -61,7 +61,7 @@ en:
 
   equation:
     activation_already_set: "Activation energy already set"
-    cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\" instruction"
+    atom_already_has_state: "Atom already has %{state} state"
     enthalpy_already_set: "Heat of reaction already set"
     lateral_already_connected: "Lateral already connected"
     multiple_wheres: "Used where \"%{name}\" available in several environments"

@@ -2,27 +2,13 @@ module VersatileDiamond
   module Concepts
     module Support
 
-      # Provides useful methods for RSpec
+      # Provides concept instances for RSpec
       module Handbook
-        class << self
-          # Resets internal cache for RSpec
-          def reset
-            @handbook.clear
-          end
+        include Tools::Handbook
 
-        private
-
-          # Provides a special action for defining memoised instance methods
-          # @param [Symbol] name the name of defining method
-          # @yield the body of method
-          def set(name, &block)
-            hb = (@handbook ||= {})
-            instance = nil
-            define_method(name) do
-              hb[name] ||= self.class.new.instance_eval(&block)
-            end
-          end
-        end
+        # Errors:
+        set(:syntax_error) { Errors::SyntaxError }
+        set(:keyname_error) { Tools::Chest::KeyNameError }
 
         # Lattices:
         set(:diamond) { Lattice.new(:d, 'Diamond') }
@@ -43,7 +29,7 @@ module VersatileDiamond
         end
 
         # Specific atoms:
-        %w(h c cd).each do |name|
+        %w(h n c cd).each do |name|
           set(:"activated_#{name}") do
             a = SpecificAtom.new(send(name))
             a.active!; a
@@ -105,10 +91,10 @@ module VersatileDiamond
           s.link(c, s.atom(:cb), free_bond); s
         end
         set(:methyl_on_bridge) { SpecificSpec.new(methyl_on_bridge_base) }
-        set(:actived_methyl_on_bridge) do
+        set(:activated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: activated_c)
         end
-        set(:methyl_on_actived_bridge) do
+        set(:methyl_on_activated_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
         end
         set(:methyl_on_extended_bridge_base) do
@@ -129,6 +115,10 @@ module VersatileDiamond
           s.rename_atom(:ct, :cl)
           s.link(s.atom(:cr), s.atom(:cl), bond_100); s
         end
+        set(:dimer) { SpecificSpec.new(dimer_base) }
+        set(:activated_dimer) do
+          SpecificSpec.new(dimer_base, cr: activated_cd)
+        end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
 
         set(:methyl_on_dimer_base) do
@@ -137,6 +127,9 @@ module VersatileDiamond
           s.link(s.atom(:cr), s.atom(:cm), free_bond); s
         end
         set(:methyl_on_dimer) { SpecificSpec.new(methyl_on_dimer_base) }
+        set(:activated_methyl_on_dimer) do
+          SpecificSpec.new(methyl_on_dimer_base, cm: activated_c)
+        end
 
         # Active bond:
         set(:active_bond) { ActiveBond.new }
@@ -144,12 +137,29 @@ module VersatileDiamond
         # Atomic specs:
         set(:adsorbed_h) { AtomicSpec.new(h) }
 
-        # Reaction:
-        set(:source) { [methyl_on_bridge] }
-        set(:products) { [methyl, activated_bridge] }
-        set(:atom_map) { Mcs::AtomMapper.map(source, products) }
-        set(:reaction) do
-          Reaction.new('methyl desorption', source, products, atom_map)
+        # Reactions:
+        set(:md_source) { [methyl_on_bridge] }
+        set(:md_products) { [methyl, activated_bridge] }
+        set(:md_atom_map) { Mcs::AtomMapper.map(md_source, md_products) }
+        set(:md_names_to_specs) do {
+          source: [[:mob, methyl_on_bridge]],
+          products: [[:m, methyl], [:b, activated_bridge]]
+        } end
+        set(:methyl_desorption) do
+          Reaction.new(
+            :forward, 'methyl desorption', md_source, md_products, md_atom_map)
+        end
+
+        set(:hm_source) { [methyl_on_dimer, activated_dimer] }
+        set(:hm_products) { [activated_methyl_on_dimer, dimer] }
+        set(:hm_atom_map) { Mcs::AtomMapper.map(hm_source, hm_products) }
+        set(:hm_names_to_specs) do {
+          source: [[:mod, methyl_on_dimer], [:d, activated_dimer]],
+          products: [[:mod, activated_methyl_on_dimer], [:d, dimer]]
+        } end
+        set(:hydrogen_migration) do
+          Reaction.new(:forward, 'hydrogen migration',
+            hm_source, hm_products, hm_atom_map)
         end
       end
 

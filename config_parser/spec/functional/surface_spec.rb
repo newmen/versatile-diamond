@@ -3,9 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Surface do
-      let(:surface) { Surface.new }
-      let(:syntax_error) { Errors::SyntaxError }
+    describe Surface, type: :interpreter do
       let(:already_defined) { Tools::Config::AlreadyDefined }
 
       describe "#spec" do
@@ -55,7 +53,7 @@ module VersatileDiamond
 
       describe "#composition" do
         before(:each) do
-          Elements.new.interpret('atom C, valence: 4')
+          elements.interpret('atom C, valence: 4')
         end
 
         it "wrong atom" do

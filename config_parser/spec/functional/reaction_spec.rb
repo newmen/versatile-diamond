@@ -3,15 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Reaction, type: :has_equation_properties do
-      let(:elements) { Elements.new }
-      let(:gas) { Gas.new }
-      let(:surface) { Surface.new }
-      let(:reaction) { Interpreter::Reaction.new('reaction name') }
-
-      let(:syntax_error) { Errors::SyntaxError }
-      let(:keyname_error) { Tools::Chest::KeyNameError }
-
+    describe Reaction, type: :interpreter, reaction_properties: true do
       describe "#equation" do
         it "error when spec name is undefined" do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
@@ -19,7 +11,9 @@ module VersatileDiamond
         end
 
         describe "ubiquitous equation" do
-          let(:concept) { Tools::Chest.ubiquitous_reaction('reaction name') }
+          let(:concept) do
+            Tools::Chest.ubiquitous_reaction('forward reaction name')
+          end
 
           before(:each) do
             elements.interpret('atom H, valence: 1')
@@ -55,7 +49,7 @@ module VersatileDiamond
         end
 
         describe "not ubiquitous equation" do
-          let(:concept) { Tools::Chest.reaction('reaction name') }
+          let(:concept) { Tools::Chest.reaction('forward reaction name') }
 
           before(:each) do
             elements.interpret('atom C, valence: 4')
@@ -94,6 +88,13 @@ module VersatileDiamond
             it "nest equation interpreter instance" do
               expect { reaction.interpret('  refinement "some"') }.
                 not_to raise_error
+            end
+
+            describe "refinements" do
+              it { expect { reaction.interpret('  incoherent bridge(:ct)') }.
+                not_to raise_error }
+              it { expect { reaction.interpret('  unfixed methyl_on_bridge(:cb)') }.
+                not_to raise_error }
             end
           end
 
@@ -135,21 +136,9 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like "equation properties" do
-        before(:each) do
-          elements.interpret('atom H, valence: 1')
-          gas.interpret('spec :hydrogen')
-          gas.interpret('  atoms h: H')
-
-          elements.interpret('atom N, valence: 3')
-          gas.interpret('spec :ammonia')
-          gas.interpret('  atoms n: N')
-
-          reaction.interpret('equation ammonia(n: *) + hydrogen(h: *) = ammonia')
-        end
-
+      it_behaves_like "reaction properties" do
         let(:target) { reaction }
-        let(:reverse) { Tools::Chest.reaction('reaction name reverse') }
+        let(:reverse) { Tools::Chest.reaction('reverse reaction name') }
       end
     end
 

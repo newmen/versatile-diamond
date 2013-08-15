@@ -6,21 +6,28 @@ module VersatileDiamond
     class Reaction < UbiquitousReaction
 
       # Among super, keeps the atom map
+      # @param [Symbol] type see at #super.initialize same argument
       # @param [Array] source see at #super.initialize same argument
       # @param [Array] products see at #super.initialize same argument
       # @param [Array] atoms_map the atom-mapping result
-      def initialize(name, source, products, atoms_map)
-        super(name, source, products)
+      def initialize(type, name, source, products, atoms_map)
+        super(type, name, source, products)
         @atoms_map = atoms_map
       end
 
-      # Duplicates current instance with each source and product specs
-      # @param [String] equation_name_tail the tail of equaion name
+      # Duplicates current instance with each source and product specs and
+      # store it to children array
+      #
+      # @param [String] name_tail the tail of reaction name
+      # @yield [Symbol, Hash] do for each specs mirror of source and products
       # @return [Reaction] the duplicated reaction with changed name
-      def duplicate(equation_name_tail)
-        duplication = self.class.new(
-          "#{@name} #{equation_name_tail}", *duplicate_params)
+      def duplicate(name_tail, &block)
+        duplication = self.class.new(*duplicate_params(name_tail, &block))
         duplication.positions = @positions.dup if @positions # TODO: rspec it
+
+        @children ||= []
+        @children << duplication # TODO: rspec it
+
         duplication
       end
 
@@ -168,29 +175,30 @@ module VersatileDiamond
       # Duplicates internal properties of reaction such as specs and atom
       # mapping result
       #
+      # @param [String] name_tail see at #duplicate same argument
+      # @yield [Symbol, Hash] see at #duplicate same argument
       # @return [Array] the array of duplicated properties
-      def duplicate_params
-        # # TODO: костыль, because calling .reverse for parent in reverse method
-        # name = @name
-        # forward_regex = / forward\Z/
-        # if instance_variable_get(:@reverse) && name =~ forward_regex
-        #   name.sub!(forward_regex, '')
-        # end
-
-        hash = {}
-        source_dup, products_dup = [@source, @products].map do |specs|
+      def duplicate_params(name_tail, &block)
+        mirrors = {}
+        dup_and_save = -> type, specs do
+          mirror = mirrors[type] = {}
           specs.map do |spec|
             spec_dup = spec.dup
-            hash[spec] = spec_dup
+            mirror[spec] = spec_dup
             spec_dup
           end
         end
 
+        source_dup = dup_and_save[:source, @source]
+        products_dup = dup_and_save[:products, @products]
+
         atoms_map = @atoms_map.map do |(source, product), indexes|
-          [[hash[source], hash[product]], indexes]
+          [[mirrors[source], mirrors[product]], indexes]
         end
 
-        [source_dup, products_dup, atoms_map]
+        mirrors.each(&block)
+
+        [@type, "#{@name} #{name_tail}", source_dup, products_dup, atoms_map]
       end
 
       # def lateralized_duplicate(concrete_wheres, equation_name_tail)

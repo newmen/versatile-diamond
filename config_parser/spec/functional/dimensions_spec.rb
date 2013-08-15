@@ -3,9 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Dimensions do
-      let(:dimensions) { Dimensions.new }
-
+    describe Dimensions, type: :interpreter do
       describe "#temperature" do
         [
           "temperature 'C'",

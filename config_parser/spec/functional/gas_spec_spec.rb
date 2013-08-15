@@ -3,13 +3,12 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe GasSpec do
+    describe GasSpec, type: :interpreter do
       let(:concept) { Concepts::Spec.new(:spec_name) }
       let(:spec) { Interpreter::GasSpec.new(concept) }
-      let(:syntax_error) { Errors::SyntaxError }
 
       before(:each) do
-        Elements.new.interpret('atom N, valence: 3')
+        elements.interpret('atom N, valence: 3')
       end
 
       describe "#bond" do

@@ -4,7 +4,7 @@ module VersatileDiamond
     # Interprets equation block if it exists. Pass each additional property to
     # reaction concept instance.
     class Equation < ComplexComponent
-      # include AtomMatcher
+      include ReactionRefinements
 
       # Initialize a new equation interpreter instance
       # @param [Concepts::Reaction] reaction the concept of reaction
@@ -19,29 +19,15 @@ module VersatileDiamond
       #
       # @param [String] tail_of_name the tail of name of reaction concept
       def refinement(tail_of_name)
-        nest_refinement(@reaction.duplicate(tail_of_name))
+        names_and_specs = {}
+        duplicate = @reaction.duplicate(tail_of_name) do |type, mirror|
+          names_and_specs[type] = []
+          @names_and_specs[type].each do |name, spec|
+            names_and_specs[type] << [name, mirror[spec]]
+          end
+        end
+        nest_refinement(duplicate, names_and_specs)
       end
-
-      # %w(incoherent unfixed).each do |state|
-      #   define_method(state) do |*used_atom_strs|
-      #     used_atom_strs.each do |atom_str|
-      #       find_spec(atom_str, find_type: :all) do |specific_spec, atom_keyname|
-      #         specific_spec.send(state, atom_keyname)
-      #       end
-      #     end
-      #   end
-      # end
-
-      # def position(*used_atom_strs, **options)
-      #   first_atom, second_atom = used_atom_strs.map do |atom_str|
-      #     find_spec(atom_str) do |specific_spec, atom_keyname|
-      #       specific_spec.spec[atom_keyname]
-      #     end
-      #   end
-
-      #   @positions ||= []
-      #   @positions << [first_atom, second_atom, Position[options]]
-      # end
 
       # def lateral(env_name, **target_refs)
       #   @laterals ||= {}
@@ -89,45 +75,16 @@ module VersatileDiamond
 
     private
 
-      def nest_refinement(reaction)
-        # reaction.parent = self
-        reaction.positions = @positions.dup if @positions
-        Tools::Chest.store(reaction)
-
-        refinement = Refinement.new(reaction, @names_and_specs)
-        @refinements ||= []
-        @refinements << refinement
-
-        nested(refinement)
+      # Nests refinement setuped to duplicated reaction and stores it reaction
+      # to chest
+      #
+      # @param [Concepts::Reaction] reaction_dup the duplicate of current
+      #   reaction concept
+      # @param [Hash] names_and_specs remaked for duplicated specs
+      def nest_refinement(reaction_dup, names_and_specs)
+        Tools::Chest.store(reaction_dup)
+        nested(Refinement.new(reaction_dup, names_and_specs))
       end
-
-      # def find_spec(used_atom_str, find_type: :any, &block)
-      #   spec_name, atom_keyname = match_used_atom(used_atom_str)
-      #   find_lambda = -> specs do
-      #     result = specs.select { |spec| spec.name == spec_name }
-      #     syntax_error('.cannot_be_mapped', name: spec_name) if result.size > 1
-      #     result.first
-      #   end
-
-      #   if find_type == :any
-      #     specific_spec = find_lambda[@source] || find_lambda[@products]
-      #     unless specific_spec
-      #       syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-      #     end
-
-      #     block[specific_spec, atom_keyname]
-      #   elsif find_type == :all
-      #     specific_specs = [find_lambda[@source], find_lambda[@products]].compact
-      #     if specific_specs.empty?
-      #       syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-      #     end
-
-      #     specific_specs.each { |ss| block[ss, atom_keyname] }
-      #   else
-      #     raise "Undefined find type #{find_type}"
-      #   end
-      # end
-
     end
 
   end

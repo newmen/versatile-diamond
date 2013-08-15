@@ -8,19 +8,19 @@ module VersatileDiamond
         describe "many to many" do
           it { described_class.map(
               [activated_bridge, methyl_on_bridge],
-              [bridge, actived_methyl_on_bridge]
+              [bridge, activated_methyl_on_bridge]
             ).should == [
               [[activated_bridge, bridge], [[activated_cd, cd]]],
-              [[methyl_on_bridge, actived_methyl_on_bridge], [[c, activated_c]]]
+              [[methyl_on_bridge, activated_methyl_on_bridge], [[c, activated_c]]]
             ] }
         end
 
         describe "many to one" do
           it { described_class.map(
-              [activated_bridge, methyl_on_actived_bridge],
+              [activated_bridge, methyl_on_activated_bridge],
               [methyl_on_dimer]
             ).should == [
-              [[methyl_on_actived_bridge, methyl_on_dimer],
+              [[methyl_on_activated_bridge, methyl_on_dimer],
                 [[
                   methyl_on_bridge_base.atom(:cb),
                   methyl_on_dimer_base.atom(:cr)

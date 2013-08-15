@@ -181,14 +181,15 @@ module VersatileDiamond
       # def reorganize_dependencies(used_specs, links = @links)
       #   # select and sort possible chilren
       #   possible_parents = used_specs.select do |s|
-      #     s.name != @name && (s.links.size < links.size ||
-      #       (s.links.size == links.size && s.external_bonds > external_bonds))
+      # TODO: why check names eq??
+      #     s.name != @name && (s.size < size ||
+      #       (s.size == size && s.external_bonds > external_bonds))
       #   end
       #   possible_parents.sort! do |a, b|
-      #     if a.links.size == b.links.size
+      #     if a.size == b.size
       #       a.external_bonds <=> b.external_bonds
       #     else
-      #       b.links.size <=> a.links.size
+      #       b.size <=> a.size
       #     end
       #   end
 

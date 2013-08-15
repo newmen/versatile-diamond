@@ -1,9 +1,8 @@
 module VersatileDiamond
   module Interpreter
 
-    # Interprets equation properties and pass it to concept instance.
-    module EquationProperties
-      include Modules::BoundaryTemperature
+    # Interprets reaction properties and pass it to concept instance
+    module ReactionProperties
 
       # Interpret enthalpy line
       # @param [Float] value the value of enthalpy
@@ -57,10 +56,11 @@ module VersatileDiamond
       #
       # @return [Concepts::UbiquitousReaction] reverse of current concept
       def reverse
-        return @reverse if @reverse
-        @reverse = forward.reverse
-        Tools::Chest.store(@reverse)
-        @reverse
+        unless @reverse_was_stored
+          Tools::Chest.store(forward.reverse)
+          @reverse_was_stored = true
+        end
+        forward.reverse
       end
 
       # Evaluate value if it passed as formula
@@ -68,8 +68,8 @@ module VersatileDiamond
       # @param [Integer] gases_num number of gases in evaluating case
       def eval_value_if_string(value, gases_num)
         if value.is_a?(String)
-          t_str = "T = #{current_temperature(gases_num)}"
-          eval("#{t_str}; #{value}")
+          t_str = "t = #{Tools::Config.current_temperature(gases_num)}"
+          eval("#{t_str}; #{value.gsub('T', 't')}")
         else
           value
         end

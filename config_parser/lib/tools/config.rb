@@ -69,6 +69,16 @@ module VersatileDiamond
               var, Dimension.convert_temperature(value, dimension))
           end
         end
+
+        # Detects phase by number of molecules which belongs to gas phase
+        # @param [Integer] gases_num the number of molecules which belongs to
+        #   gas phase
+        # @return [Float] the current temperature at the phase boundary
+        def current_temperature(gases_num)
+          gases_num > 0 ?
+            instance_variable_get(:"@gas_temperature") :
+            instance_variable_get(:"@surface_temperature")
+        end
       end
     end
 

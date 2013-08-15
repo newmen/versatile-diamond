@@ -2,8 +2,20 @@ module VersatileDiamond
   module Interpreter
     module Support
 
-      module EquationProperties
-        shared_examples_for "equation properties" do
+      module ReactionProperties
+        shared_examples_for "reaction properties" do
+          before(:each) do
+            elements.interpret('atom H, valence: 1')
+            gas.interpret('spec :hydrogen')
+            gas.interpret('  atoms h: H')
+
+            elements.interpret('atom N, valence: 3')
+            gas.interpret('spec :ammonia')
+            gas.interpret('  atoms n: N')
+
+            reaction.interpret('equation ammonia(n: *) + hydrogen(h: *) = ammonia')
+          end
+
           def checks_reverse
             reverse.source.size.should == 1
             reverse.products.size.should == 2
@@ -34,6 +46,14 @@ module VersatileDiamond
             it "validate dimension when has two gas phase molecules" do
               expect { target.interpret('forward_rate 1e3, cm6/(mol2 * s)') }.
                 not_to raise_error
+            end
+
+            describe "evaluate value" do
+              before { Tools::Config.gas_temperature(100, 'C') }
+              it "uses gas temperature" do
+                expect { target.interpret('forward_rate 1e3 * T ** 2, cm6/(mol2 * s)') }.
+                  not_to raise_error
+              end
             end
           end
 

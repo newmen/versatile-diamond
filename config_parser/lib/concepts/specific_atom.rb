@@ -6,7 +6,10 @@ module VersatileDiamond
     class SpecificAtom
 
       # Error for case if state for atome already exsit
-      class AlreadyStated < Exception; end
+      class AlreadyStated < Exception
+        attr_reader :state
+        def initialize(state); @state = state end
+      end
 
       extend Forwardable
       def_delegators :@atom, :lattice, :lattice=
@@ -47,10 +50,12 @@ module VersatileDiamond
         # Defines methods for changing atom state
         # @raise [AlreadyStated] if atom already has setuping state
         define_method("#{state}!") do
-          raise AlreadyStated if send("#{sym_state}?")
+          raise AlreadyStated.new(state) if send("#{sym_state}?")
           @options << sym_state
         end
 
+        # Defines methods for checking atom state
+        # @return [Boolean] is atom has state or not
         define_method("#{state}?") do
           @options.include?(sym_state)
         end

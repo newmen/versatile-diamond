@@ -6,7 +6,6 @@ module VersatileDiamond
     # factor as "raw" rate variable. Setuping it values provides trough
     # corresponding instance assertion methods.
     class UbiquitousReaction < Named
-      # include Modules::BoundaryTemperature
       # include Modules::ListsComparer
 
       # Exception class for cases when property already setted
@@ -38,11 +37,20 @@ module VersatileDiamond
       attr_reader :source, :products #, :parent
 
       # Store source and product specs
+      # @param [Symbol] type the type of reaction, can be :forward or :reverse
       # @param [Array] source the array of source specs
       # @param [Array] products the array of product specs
-      def initialize(name, source, products)
+      def initialize(type, name, source, products)
         super(name)
+        @type = type
         @source, @products = source, products
+      end
+
+      # Gets a name of reaction with prepend type of reaction
+      # @return [String] the name of reaction
+      # @override
+      def name
+        "#{@type} #{super}"
       end
 
       # Makes reversed reaction instance and change current name by append
@@ -50,12 +58,13 @@ module VersatileDiamond
       #
       # @return [UbiquitousReaction] reversed reaction
       def reverse
-        result = self.class.new(*reverse_params)
+        return @reverse if @reverse
+        @reverse = self.class.new(*reverse_params)
+        @reverse.reverse = self
 
-        @name = "#{@name} forward" # TODO: stored in Chest key-name isn't changed!
-        # yield(result) if block_given?
-        # result.parent = parent.reverse if parent
-        result
+        # yield(@reverse) if block_given?
+        # @reverse.parent = parent.reverse if parent
+        @reverse
       end
 
       # Counts gases num in source specs scope
@@ -141,12 +150,13 @@ module VersatileDiamond
     protected
 
       # attr_writer :parent
+      attr_writer :reverse
 
     private
 
       # Makes params for reverse method
       def reverse_params
-        ["#{@name} reverse", @products, @source]
+        [:reverse, @name, @products, @source]
       end
 
     #   def accept_self(visitor)

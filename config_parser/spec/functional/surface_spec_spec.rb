@@ -3,18 +3,16 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe SurfaceSpec do
+    describe SurfaceSpec, type: :interpreter do
       let(:concept) { Concepts::Spec.new(:spec_name) }
       let(:spec) { Interpreter::SurfaceSpec.new(concept) }
 
       before(:each) do
-        Elements.new.interpret('atom N, valence: 3')
-        Surface.new.interpret('lattice :nh4, cpp_class: Ammonia')
+        elements.interpret('atom N, valence: 3')
+        surface.interpret('lattice :nh4, cpp_class: Ammonia')
       end
 
       describe "#position" do
-        let(:syntax_error) { Errors::SyntaxError }
-
         describe "both atoms has lattice" do
           before(:each) do
             spec.interpret('atoms n1: N%nh4, n2: N%nh4')

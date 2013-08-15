@@ -3,9 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Gas do
-      let(:gas) { Gas.new }
-
+    describe Gas, type: :interpreter do
       describe "#spec" do
         it "interpreted spec stores in chest" do
           gas.interpret('spec :hello').should be_a(Interpreter::GasSpec)
@@ -19,8 +17,6 @@ module VersatileDiamond
       end
 
       describe "#concentration" do
-        let(:dimensions) { Dimensions.new }
-        let(:elements) { Elements.new }
         let(:spec) { Spec.new(Tools::Chest.spec(:some)) }
 
         def define_spec_and_atom(valence)
@@ -37,9 +33,6 @@ module VersatileDiamond
           expect { gas.interpret('concentration some(x: **), 1') }.
             not_to raise_error Exception
         end
-
-        let(:syntax_error) { Errors::SyntaxError }
-        let(:keyname_error) { Tools::Chest::KeyNameError }
 
         it "wrong defining a activated specific spec" do
           define_spec_and_atom(1)

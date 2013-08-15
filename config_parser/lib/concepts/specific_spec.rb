@@ -37,21 +37,21 @@ module VersatileDiamond
       #   @original_name
       # end
 
-  #     %w(incoherent unfixed).each do |state|
-  #       define_method(state) do |atom_keyname|
-  #         if @spec[atom_keyname]
-  #           same_state = @options.find do |akn, st|
-  #             akn == atom_keyname && st == state.to_sym
-  #           end
-  #           if same_state
-  #             syntax_error('.atom_already_has_state',
-  #               spec: @original_name, atom: atom_keyname, state: state)
-  #           end
-
-  #           @options << [atom_keyname, state.to_sym]
-  #         end
-  #       end
-  #     end
+      %w(incoherent unfixed).each do |state|
+        # Defines #{state} method which change a state of atom selected by
+        # keyname
+        #
+        # @param [Symbol] atom_keyname the keyname of selecting atom
+        # @raise [Errors::SyntaxError] if atom already has setuping state
+        define_method("#{state}!") do |atom_keyname|
+          atom = @specific_atoms[atom_keyname]
+          unless atom
+            atom = SpecificAtom.new(@spec.atom(atom_keyname))
+            @specific_atoms[atom_keyname] = atom
+          end
+          atom.send("#{state}!")
+        end
+      end
 
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
