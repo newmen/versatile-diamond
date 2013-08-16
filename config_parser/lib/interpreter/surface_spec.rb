@@ -10,8 +10,9 @@ module VersatileDiamond
       # @option [Symbol] :dir the direction of position
       # @raise [Errors::SyntaxError] if position without face or direction
       def position(*atoms, face: nil, dir: nil)
-        syntax_error('position.uncomplete') unless face && dir
         link(*atoms, Concepts::Position[face: face, dir: dir])
+      rescue Concepts::Position::IncompleteError
+        syntax_error('position.uncomplete')
       end
 
     private

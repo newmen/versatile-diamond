@@ -51,7 +51,6 @@ ru:
     wrong_specification: "Неверная спецификация атома \"%{atom}\" уточнённой структуры"
 
   reaction:
-    cannot_compliance: "Вещества \"%{name}\" не могут быть сопоставлены, попробуйте использовать инструкцию \"aliases\""
     cannot_map: "Изменение атомов в реакции не может быть определено"
     equal_specs: "Структуры \"%{name}\" в левой и правой части уравнения идентичны"
     invalid: "Неверное описание реакции"
@@ -60,13 +59,14 @@ ru:
     wrong_balance: "Неверный баланс реакции"
 
   equation:
-    activation_already_set: "Энергия активации уже задана для этой реакции"
-    atom_already_has_state: "Атом уже имеет состояние %{state}"
-    enthalpy_already_set: "Тепловой эффект уже задан для этой реакции"
     lateral_already_connected: "Окружение уже подключено"
     multiple_wheres: "Используемое уточнение \"%{name}\" доступно в нескольких окружениях"
-    rate_already_set: "Скорость реакции уже задана"
     undefined_target_alias: "Неизвестный псевдоним целевого атома \"%{name}\""
+
+  refinement:
+    atom_already_has_state: "Атом уже имеет состояние %{state}"
+    cannot_compliance: "Вещества \"%{name}\" не могут быть сопоставлены, попробуйте использовать инструкцию \"aliases\""
+    duplicate_position: "Положение между указанными атомами уже задано"
 
   environment:
     targets_not_defined: "Для данного окружения не обозначены целевые атомы"

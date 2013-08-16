@@ -6,6 +6,11 @@ module VersatileDiamond
       module Handbook
         include Tools::Handbook
 
+        # Errors:
+        set(:syntax_error) { Errors::SyntaxError }
+        set(:keyname_error) { Tools::Chest::KeyNameError }
+
+        # Interpreters
         set(:dimensions) { Dimensions.new }
         set(:elements) { Elements.new }
         set(:gas) { Gas.new }

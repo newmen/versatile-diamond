@@ -6,10 +6,6 @@ module VersatileDiamond
       module Handbook
         include Tools::Handbook
 
-        # Errors:
-        set(:syntax_error) { Errors::SyntaxError }
-        set(:keyname_error) { Tools::Chest::KeyNameError }
-
         # Lattices:
         set(:diamond) { Lattice.new(:d, 'Diamond') }
 
@@ -160,6 +156,18 @@ module VersatileDiamond
         set(:hydrogen_migration) do
           Reaction.new(:forward, 'hydrogen migration',
             hm_source, hm_products, hm_atom_map)
+        end
+
+        set(:df_source) { [activated_bridge, activated_bridge.dup] }
+        set(:df_products) { [dimer] }
+        set(:df_atom_map) { Mcs::AtomMapper.map(df_source, df_products) }
+        set(:df_names_to_specs) do {
+          source: [[:b1, activated_bridge], [:b2, df_source.last]],
+          products: [[:d, dimer]]
+        } end
+        set(:dimer_formation) do
+          Reaction.new(:forward, 'dimer formation',
+            df_source, df_products, df_atom_map)
         end
       end
 

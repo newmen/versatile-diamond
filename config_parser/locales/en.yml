@@ -51,7 +51,6 @@ en:
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
   reaction:
-    cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
     cannot_map: "Cannot map reaction atoms"
     equal_specs: "Species \"%{name}\" in the left-hand and right-hand side of the equation are identical"
     invalid: "Invalid reaction equation"
@@ -60,13 +59,14 @@ en:
     wrong_balance: "Wrong reaction balance"
 
   equation:
-    activation_already_set: "Activation energy already set"
-    atom_already_has_state: "Atom already has %{state} state"
-    enthalpy_already_set: "Heat of reaction already set"
     lateral_already_connected: "Lateral already connected"
     multiple_wheres: "Used where \"%{name}\" available in several environments"
-    rate_already_set: "Rate already set"
     undefined_target_alias: "Undefined target atom alias \"%{name}\""
+
+  refinement:
+    atom_already_has_state: "Atom already has %{state} state"
+    cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
+    duplicate_position: "Position between these atoms is already set"
 
   environment:
     targets_not_defined: "Target atoms is not defined for this environment"

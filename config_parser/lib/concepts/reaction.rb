@@ -31,26 +31,11 @@ module VersatileDiamond
         duplication
       end
 
-      # %w(incoherent unfixed).each do |state|
-      #   define_method(state) do |*used_atom_strs|
-      #     used_atom_strs.each do |atom_str|
-      #       find_spec(atom_str, find_type: :all) do |specific_spec, atom_keyname|
-      #         specific_spec.send(state, atom_keyname)
-      #       end
-      #     end
-      #   end
-      # end
-
-      # def position(*used_atom_strs, **options)
-      #   first_atom, second_atom = used_atom_strs.map do |atom_str|
-      #     find_spec(atom_str) do |specific_spec, atom_keyname|
-      #       specific_spec.spec[atom_keyname]
-      #     end
-      #   end
-
-      #   @positions ||= []
-      #   @positions << [first_atom, second_atom, Position[options]]
-      # end
+      # Provides positions between atoms of reactntant
+      # @return [Array] the positions array
+      def positions
+        @positions ||= []
+      end
 
       # def lateral(env_name, **target_refs)
       #   @laterals ||= {}

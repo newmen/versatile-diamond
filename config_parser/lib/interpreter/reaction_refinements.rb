@@ -11,6 +11,8 @@ module VersatileDiamond
         # Setup of state provides for concrete atom by keyname
         # @param [Array] used_atom_strs the array of string where each string
         #   matched for atom used in specific spec
+        # @raise [Errors::SyntaxError] if setuped atom already has setuping
+        #   state
         define_method(state) do |*used_atom_strs|
           begin
             used_atom_strs.each do |atom_str|
@@ -19,21 +21,40 @@ module VersatileDiamond
               end
             end
           rescue Concepts::SpecificAtom::AlreadyStated => e
-            syntax_error('.atom_already_has_state', state: e.state)
+            syntax_error('refinement.atom_already_has_state', state: e.state)
           end
         end
       end
 
-      # def position(*used_atom_strs, **options)
-      #   first_atom, second_atom = used_atom_strs.map do |atom_str|
-      #     find_spec(atom_str) do |specific_spec, atom_keyname|
-      #       specific_spec.spec[atom_keyname]
-      #     end
-      #   end
+      # Sets the position of atoms relative to each other for the current
+      # reaction concept
+      #
+      # @param [Array] used_atom_strs the array of string where each string
+      #   matched for atom used in specific spec
+      # @param [Hash] options the options of position
+      # @raise [Errors::SyntaxError] if position already exists for selected
+      #   atoms
+      def position(*used_atom_strs, **options)
+        first_atom, second_atom = used_atom_strs.map do |atom_str|
+          find_spec(atom_str) do |specific_spec, atom_keyname|
+            specific_spec.spec.atom(atom_keyname) # TODO: why directly atom?
+          end
+        end
 
-      #   @positions ||= []
-      #   @positions << [first_atom, second_atom, Position[options]]
-      # end
+        pos = Concepts::Position[options]
+        if @reaction.positions &&
+          @reaction.positions.find do |f, s, p|
+            (f == first_atom && s = second_atom) ||
+              (s == first_atom && f = second_atom)
+          end
+
+          syntax_error('refinement.duplicate_position')
+        end
+
+        @reaction.positions << [first_atom, second_atom, pos]
+      rescue Concepts::Position::IncompleteError
+        syntax_error('position.uncomplete')
+      end
 
     private
 
@@ -52,7 +73,7 @@ module VersatileDiamond
             name.to_sym == spec_name
           end
           if result.size > 1
-            syntax_error('reaction.cannot_compliance', name: spec_name)
+            syntax_error('refinement.cannot_compliance', name: spec_name)
           end
           result.first && result.first.last
         end
