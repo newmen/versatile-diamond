@@ -136,11 +136,13 @@ module VersatileDiamond
         # Reactions:
         set(:md_source) { [methyl_on_bridge] }
         set(:md_products) { [methyl, activated_bridge] }
-        set(:md_atom_map) { Mcs::AtomMapper.map(md_source, md_products) }
         set(:md_names_to_specs) do {
           source: [[:mob, methyl_on_bridge]],
           products: [[:m, methyl], [:b, activated_bridge]]
         } end
+        set(:md_atom_map) do
+          Mcs::AtomMapper.map(md_source, md_products, md_names_to_specs)
+        end
         set(:methyl_desorption) do
           Reaction.new(
             :forward, 'methyl desorption', md_source, md_products, md_atom_map)
@@ -148,11 +150,13 @@ module VersatileDiamond
 
         set(:hm_source) { [methyl_on_dimer, activated_dimer] }
         set(:hm_products) { [activated_methyl_on_dimer, dimer] }
-        set(:hm_atom_map) { Mcs::AtomMapper.map(hm_source, hm_products) }
         set(:hm_names_to_specs) do {
           source: [[:mod, methyl_on_dimer], [:d, activated_dimer]],
           products: [[:mod, activated_methyl_on_dimer], [:d, dimer]]
         } end
+        set(:hm_atom_map) do
+          Mcs::AtomMapper.map(hm_source, hm_products, hm_names_to_specs)
+        end
         set(:hydrogen_migration) do
           Reaction.new(:forward, 'hydrogen migration',
             hm_source, hm_products, hm_atom_map)
@@ -160,11 +164,13 @@ module VersatileDiamond
 
         set(:df_source) { [activated_bridge, activated_bridge.dup] }
         set(:df_products) { [dimer] }
-        set(:df_atom_map) { Mcs::AtomMapper.map(df_source, df_products) }
         set(:df_names_to_specs) do {
           source: [[:b1, activated_bridge], [:b2, df_source.last]],
           products: [[:d, dimer]]
         } end
+        set(:df_atom_map) do
+          Mcs::AtomMapper.map(df_source, df_products, df_names_to_specs)
+        end
         set(:dimer_formation) do
           Reaction.new(:forward, 'dimer formation',
             df_source, df_products, df_atom_map)

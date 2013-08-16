@@ -3,7 +3,6 @@ module VersatileDiamond
 
     # Interprets refinement block and pass setting of each property to concept
     class Refinement < Component
-      # extend Forwardable
       include ReactionProperties
       include ReactionRefinements
 
@@ -14,12 +13,6 @@ module VersatileDiamond
       def initialize(reaction, names_and_specs)
         @reaction, @names_and_specs = reaction, names_and_specs
       end
-
-      # def_delegators :equation_instance, :position, :incoherent #, :unfixed
-
-      # def equation_instance
-      #   @equation
-      # end
     end
 
   end

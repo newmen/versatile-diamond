@@ -19,12 +19,14 @@ module VersatileDiamond
         # Maps together source and product structures
         # @param [Array] source the array of source specs
         # @param [Array] products the array of products specs
+        # @param [Hash] names_and_specs the hash of source and products to
+        #   arrays of names and specs
         # @raise [EqualSpecsError] if one of structres does not change during
         #   the reaction
         # raise [StructureMapper::CannotMap] when stuctures cannot be mapped
         # @return [Array] the array which contain mapping result
-        def map(source, products)
-          new(source, products).map
+        def map(source, products, names_and_specs)
+          new(source, products).map(names_and_specs)
         end
       end
 
@@ -36,12 +38,15 @@ module VersatileDiamond
       end
 
       # Detects mapping case and uses the appropriate algorithm
-      # raise [EqualSpecsError] see at #self.map
-      # raise [StructureMapper::CannotMap] see at #self.map
+      # @param [Hash] names_and_specs see at #self.map same argument
+      # @raise [EqualSpecsError] see at #self.map
+      # @raise [StructureMapper::CannotMap] see at #self.map
       # @return [Array] see at #self.map
-      def map
+      def map(names_and_specs)
         reject_simple_specs!
-        full_corresponding? ? map_many_to_many : map_many_to_one
+        full_corresponding? ?
+          map_many_to_many(names_and_specs) :
+          map_many_to_one
       end
 
     private
@@ -62,11 +67,19 @@ module VersatileDiamond
       end
 
       # Find changed atom for each pair of source and product specs
+      # @param [Hash] names_and_specs see at #self.map same argument
       # @raise [EqualSpecsError] see at #self.map
       # @return [Array] see at #self.map
-      def map_many_to_many
+      def map_many_to_many(names_and_specs)
         @source.map do |source_spec|
-          product_spec = @products.find { |p| p.name == source_spec.name }
+          source_name = names_and_specs[:source].find do |_, spec|
+            spec == source_spec
+          end.first
+
+          product_spec = names_and_specs[:products].find do |name, _|
+            name == source_name
+          end.last
+
           changed_source = source_spec.changed_atoms(product_spec)
           if changed_source.empty?
             raise EqualSpecsError.new(source_spec.name)
