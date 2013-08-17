@@ -1,55 +1,32 @@
 module VersatileDiamond
-
   module Concepts
 
-    class Environment
-      class << self
-        def add(env_name)
-          @environments ||= {}
-          @environments[env_name] = new
-        end
-
-        def [](env_name)
-          @environments[env_name] || syntax_error('.undefined', name: env_name)
-        end
-      end
-
-      def initialize
+    # Instance of class represet some environment around reactant atoms aliases
+    # of which defined by targets setup
+    # TODO: rspec
+    class Environment < Named
+      def initialize(name)
+        super
         @wheres = {}
       end
 
-      def targets(*names)
+      # Store aliased names for target atoms
+      # @param [Array] names the aliased names of target atoms
+      def targets=(names)
         @targets = names
       end
 
-      def aliases(**refs)
-        @aliases ||= {}
-        refs.each do |name, spec_name|
-          @aliases[name] = Spec[spec_name.to_sym]
-        end
-      end
-
-      def where(name, description)
-        syntax_error('where.already_exists', name: name) if @wheres[name]
-        where = Where.new(self, description)
-        @wheres[name] = where
-        nested(where)
-      end
-
-      def use_where(name)
-        @wheres[name]
-      end
-
+      # Checks passed name for current target
+      # @param [Symbol] name the name of one of targets
+      # @return [Boolean] it is target or not
       def is_target?(name)
-        syntax_error('.targets_not_defined') unless @targets
-        @targets.include?(name)
+        @targets && @targets.include?(name)
       end
 
-      def resolv_alias(name)
-        @aliases && @aliases[name]
-      end
+      # def resolv_alias(name)
+      #   @aliases && @aliases[name]
+      # end
     end
 
   end
-
 end

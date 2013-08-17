@@ -70,13 +70,11 @@ en:
 
   environment:
     targets_not_defined: "Target atoms is not defined for this environment"
-    undefined: "Undefined environment \"%{name}\""
 
   where:
-    already_exists: "Where \"%{name}\" already exists"
+    already_use: "Current where already use \"%{name}\""
     cannot_link_targets: "Targets cannot be linked together"
     should_links_with_target: "Position should be determined relative to one of target atoms"
-    undefined: "Undefined used where name \"%{name}\""
 
   matcher:
     undefined_used_atom: "Undefined used atom \"%{name}\""

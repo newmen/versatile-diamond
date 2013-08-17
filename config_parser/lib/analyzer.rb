@@ -31,6 +31,7 @@ module VersatileDiamond
       end
 
     rescue Errors::SyntaxError => e
+# p Tools::Chest.instance_variable_get(:@sac).keys
       puts e.message(@line_number + 1, @config_path)
     end
 

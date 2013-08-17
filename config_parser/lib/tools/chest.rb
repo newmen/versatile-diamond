@@ -20,26 +20,40 @@ module VersatileDiamond
 
       class << self
         def to_s
-          @bag ? @bag.inspect : 'is empty!'
+          @sac ? @sac.inspect : 'is empty!'
         end
 
-        # Reset the bag and using by RSpec only
-        def reset; @bag && @bag.clear end
+        # Reset the sac and using by RSpec only
+        def reset; @sac && @sac.clear end
 
-        # Adds concept to bag and check name duplication
-        # @param [Concepts::Named] concept which will be stored by name
+        # Adds each passed concept to sac and check name duplication. If passed
+        # many concepts then shift concepts to the last, each time nesting
+        # additional hash level. Only last concept will be stored.
+        #
+        # @param [Array] concepts array of concept which where the last will be
+        #   stored by name and each other names
         # @raise [KeyNameError] when same concepts with same name
         #   is exist
         # @return [ConceptChest] self
-        def store(concept)
-          @bag ||= {}
+        def store(*concepts)
+          @sac ||= {}
 
-          key = concept.class.to_s.underscore.to_sym
-          name = concept.name.to_sym
+          key = concepts.last.class.to_s.underscore.to_sym
+          inst = (@sac[key] ||= {})
 
-          inst = (@bag[key] ||= {})
-          raise Chest::KeyNameError.new(key, name, :duplication) if inst[name]
-          inst[name] = concept
+          begin
+            concept = concepts.shift
+            name = concept.name.to_sym
+
+            if concepts.empty?
+              if inst[name]
+                raise Chest::KeyNameError.new(key, name, :duplication)
+              end
+              inst[name] = concept
+            else
+              inst = (inst[name] ||= {})
+            end
+          end until concepts.empty?
 
           self
         end
@@ -57,25 +71,26 @@ module VersatileDiamond
         # @raise [KeyNameError] if spec is not found
         def spec(name)
           name = name.to_sym
-          (@bag && ((@bag[:gas_spec] && @bag[:gas_spec][name]) ||
-              (@bag[:surface_spec] && @bag[:surface_spec][name]))) ||
+          (@sac && ((@sac[:gas_spec] && @sac[:gas_spec][name]) ||
+              (@sac[:surface_spec] && @sac[:surface_spec][name]))) ||
             raise(Chest::KeyNameError.new(:spec, name, :undefined))
         end
 
-        # Finds the key in bag and if key exist then finding by name continues
+        # Finds the key in sac and if key exist then finding by name continues
         # @param [Symbol] key is the type of finding concept
         # @param [Symbol] name is the name of finding concept
         # @raise [KeyNameError] if concept is not found
         # @return [Concepts::Named] founded concept
-        def method_missing(*args)
-          if args.size != 2
+        def method_missing(key, *names)
+          unless @sac && @sac[key]
             super
           else
-            key, name = args.map(&:to_sym)
-
-            (@bag && @bag[key] && @bag[key][name]) ||
-              raise(Chest::KeyNameError.new(key, name, :undefined))
+            names.map!(&:to_sym)
+            names.reduce(@sac[key]) { |hash, name| hash[name] } ||
+              raise(Chest::KeyNameError.new(key, names.join('>'), :undefined))
           end
+        rescue NoMethodError => e
+          raise(Chest::KeyNameError.new(key, e.name, :undefined))
         end
       end
     end

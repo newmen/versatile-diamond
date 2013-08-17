@@ -1,31 +1,44 @@
 module VersatileDiamond
-
   module Interpreter
 
+    # Interprets environment block
     class Environment < ComplexComponent
-      def initialize(name)
-        @concept = Concepts::Environment.add(name)
+
+      # Initialize environment intepreter instance by environment concept
+      # @param [Concepts::Environment] concept the environment concept
+      def initialize(environment)
+        @env = environment
       end
 
+      # Interprets targets line and setup concept for passed atom aliases
+      # @param [Array] names the array of names aliases of target atoms
       def targets(*names)
-        @concept.targets = names
+        @env.targets = names
       end
 
+      # Interpret aliases line and store result to internal variable
+      # @param [Hash] refs the hash where each key is aliased name of spec and
+      #   value is aliased spec
+      # @raise [Tools::Chest::KeyNameError] if spec cannot be resolved
       def aliases(**refs)
-        @aliases ||= {}
-        refs.each do |name, spec_name|
-          @aliases[name] = Spec[spec_name.to_sym]
+        @names_and_specs = refs.each_with_object({}) do |(name, spec_name), h|
+          h[name] = Tools::Chest.spec(spec_name)
         end
       end
 
+      # Interprets where line, creates where concept and store it to Chest.
+      # Pass created where concept to where interpreter and nest it.
+      #
+      # @param [String] name the name of where concept
+      # @param [String] description the description of where concept
+      # @raise [Tools::Chest::KeyNameError] if where with same name in it
+      #   environment already stored
       def where(name, description)
-        syntax_error('where.already_exists', name: name) if @wheres[name]
-        where = Where.new(self, description)
-        @wheres[name] = where
-        nested(where)
+        concept = Concepts::Where.new(name, description)
+        Tools::Chest.store(@env, concept)
+        nested(Where.new(@env, concept, @names_and_specs || {}))
       end
     end
 
   end
-
 end

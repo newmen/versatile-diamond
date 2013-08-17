@@ -37,6 +37,13 @@ module VersatileDiamond
       #   @original_name
       # end
 
+      # Gets corresponding atom, because it can be specific atom
+      # @param [Symbol] keyname the atom keyname
+      # @return [Atom | SpecificAtom] the corresponding atom
+      def atom(keyname)
+        @specific_atoms[keyname] || @spec.atom(keyname)
+      end
+
       %w(incoherent unfixed).each do |state|
         # Defines #{state} method which change a state of atom selected by
         # keyname

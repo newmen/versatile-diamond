@@ -86,6 +86,13 @@ module VersatileDiamond
               it { expect { subject.interpret('position b2(:ct), b1(:ct), face: 100') }.
                 to raise_error syntax_error }
             end
+
+            describe "wrong atom keyname" do
+              it { expect { subject.interpret('position b1(:wrong), b2(:ct), face: 100, dir: front') }.
+                to raise_error syntax_error }
+              it { expect { subject.interpret('position b1(:ct), b2(:wrong), face: 100, dir: front') }.
+                to raise_error syntax_error }
+            end
           end
         end
       end

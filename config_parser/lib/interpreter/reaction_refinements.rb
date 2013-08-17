@@ -33,11 +33,11 @@ module VersatileDiamond
       #   matched for atom used in specific spec
       # @param [Hash] options the options of position
       # @raise [Errors::SyntaxError] if position already exists for selected
-      #   atoms
+      #   atoms or atom cannot be found
       def position(*used_atom_strs, **options)
         first_atom, second_atom = used_atom_strs.map do |atom_str|
           find_spec(atom_str) do |specific_spec, atom_keyname|
-            specific_spec.spec.atom(atom_keyname) # TODO: why directly atom?
+            specific_spec.atom(atom_keyname)
           end
         end
 
@@ -80,7 +80,7 @@ module VersatileDiamond
 
         if find_type == :any
           specific_spec = find_lambda[:source] || find_lambda[:products]
-          unless specific_spec && specific_spec.spec.atom(atom_keyname)
+          unless specific_spec && specific_spec.atom(atom_keyname)
             syntax_error('matcher.undefined_used_atom', name: used_atom_str)
           end
 
@@ -89,7 +89,7 @@ module VersatileDiamond
           specific_specs = [
             find_lambda[:source], find_lambda[:products]].compact
           if specific_specs.empty? ||
-            specific_specs.find { |s| !s.spec.atom(atom_keyname) }
+            specific_specs.find { |s| !s.atom(atom_keyname) }
 
             syntax_error('matcher.undefined_used_atom', name: used_atom_str)
           end

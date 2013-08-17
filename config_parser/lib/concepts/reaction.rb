@@ -2,7 +2,6 @@ module VersatileDiamond
   module Concepts
 
     # Also contained positions between the reactants
-    # TODO: rspec
     class Reaction < UbiquitousReaction
 
       # Among super, keeps the atom map
@@ -150,6 +149,7 @@ module VersatileDiamond
       # mapping result
       #
       # @return [Array] reversed parameters for creating reverse reaction
+      # @override
       def reverse_params
         reversed_atom_map = @atoms_map.map do |specs, indexes|
           [specs.reverse, indexes.map { |pair| pair.reverse }]

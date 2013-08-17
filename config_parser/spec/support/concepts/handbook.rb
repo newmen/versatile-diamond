@@ -175,6 +175,10 @@ module VersatileDiamond
           Reaction.new(:forward, 'dimer formation',
             df_source, df_products, df_atom_map)
         end
+
+        # Environments:
+        set(:dimers_row) { Environment.new(:dimers_row) }
+        set(:at_end) { Where.new(:at_end, 'at end of dimers row') }
       end
 
     end

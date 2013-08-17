@@ -10,6 +10,12 @@ module VersatileDiamond
         it { methyl.dup.external_bonds.should == 3 }
       end
 
+      describe "#atom" do
+        it { methyl.atom(:c).should == activated_c }
+        it { bridge.atom(:ct).should == cd }
+        it { activated_bridge.atom(:ct).should == activated_cd }
+      end
+
       describe "#is_gas?" do
         it { hydrogen.is_gas?.should be_true }
         it { hydrogen_ion.is_gas?.should be_true }

@@ -51,20 +51,7 @@ module VersatileDiamond
         describe "not ubiquitous equation" do
           let(:concept) { Tools::Chest.reaction('forward reaction name') }
 
-          before(:each) do
-            elements.interpret('atom C, valence: 4')
-            gas.interpret('spec :methane')
-            gas.interpret('  atoms c: C')
-            surface.interpret('lattice :d, cpp_class: Diamond')
-            surface.interpret('spec :bridge')
-            surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)')
-            surface.interpret('  bond :ct, :cl, face: 110, dir: front')
-            surface.interpret('  bond :ct, :cr, face: 110, dir: front')
-            surface.interpret('  position :cr, :cl, face: 100, dir: front')
-            surface.interpret('spec :methyl_on_bridge')
-            surface.interpret('  atoms cb: bridge(:ct), cm: methane(:c)')
-            surface.interpret('  bond :cb, :cm')
-          end
+          before(:each) { interpret_basis }
 
           it "not complience reactants" do
             expect { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
@@ -99,32 +86,30 @@ module VersatileDiamond
           end
 
           describe "not initialy balanced reaction" do
-            before(:each) do
-              surface.interpret('spec :high_bridge')
-              surface.interpret('  aliases mob: methyl_on_bridge')
-              surface.interpret('  atoms cb: mob(:cb), cm: mob(:cm)')
-              surface.interpret('  bond :cb, :cm')
+            describe "extending product" do
+              before(:each) do
+                surface.interpret('spec :high_bridge')
+                surface.interpret('  aliases mob: methyl_on_bridge')
+                surface.interpret('  atoms cb: mob(:cb), cm: mob(:cm)')
+                surface.interpret('  bond :cb, :cm')
+                reaction.interpret('aliases source: bridge, product: bridge')
+                reaction.interpret('equation high_bridge + source(ct: *) = product(cr: *)')
+              end
+
+              it { concept.source.first.external_bonds.should == 4 }
+              it { concept.source.last.external_bonds.should == 3 }
+              it { concept.products.first.external_bonds.should == 7 }
             end
 
-            it "extending product" do
-              reaction.interpret('aliases source: bridge, product: bridge')
-              reaction.interpret('equation high_bridge + source(ct: *) = product(cr: *)')
+            describe "extending first source and single product" do
+              before(:each) do
+                reaction.interpret('aliases source: dimer, product: dimer')
+                reaction.interpret('equation methyl_on_bridge(cm: *) + source(cr: *) = product')
+              end
 
-              concept.source.first.external_bonds.should == 4
-              concept.source.last.external_bonds.should == 3
-              concept.products.first.external_bonds.should == 7
-            end
-
-            it "extending first source and single product" do
-              surface.interpret('spec :dimer')
-              surface.interpret('  atoms cl: bridge(:ct), cr: bridge(:ct)')
-              surface.interpret('  bond :cl, :cr, face: 100, dir: front')
-              reaction.interpret('aliases source: dimer, product: dimer')
-              reaction.interpret('equation methyl_on_bridge(cm: *) + source(cr: *) = product')
-
-              concept.source.first.external_bonds.should == 9
-              concept.source.last.external_bonds.should == 5
-              concept.products.first.external_bonds.should == 14
+              it { concept.source.first.external_bonds.should == 9 }
+              it { concept.source.last.external_bonds.should == 5 }
+              it { concept.products.first.external_bonds.should == 14 }
             end
 
           end
