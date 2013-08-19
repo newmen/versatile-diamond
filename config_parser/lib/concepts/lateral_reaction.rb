@@ -1,15 +1,19 @@
 module VersatileDiamond
   module Concepts
 
-    class LateralizedReaction < Reaction
+    # TODO: rspec
+    class LateralReaction < Reaction
 
-      # def initialize(concrete_wheres, name, source_specs, products_specs, atoms_map)
-      #   super(name, source_specs, products_specs, atoms_map)
-      #   @concrete_wheres = concrete_wheres
-      # end
+      # Among super, keeps the atom map
+      # @param [Array] super_args the arguments of super method
+      # @param [Array] atoms_map the atom-mapping result
+      def initialize(*super_args, theres)
+        super(*super_args)
+        @theres = theres
+      end
 
       # def wheres
-      #   @concrete_wheres.map(&:where)
+      #   @theres.map(&:where)
       # end
 
       # def same?(other)
@@ -33,23 +37,23 @@ module VersatileDiamond
 
     protected
 
-      # attr_reader :concrete_wheres
+      # attr_reader :theres
 
     private
 
-      # def reverse_params
-      #   [@concrete_wheres, *super]
-      # end
+      def reverse_params
+        [*super, @theres] # TODO: rebind to another atoms
+      end
 
       # def accept_self(visitor)
-      #   @concrete_wheres.each { |where| where.visit(visitor) }
+      #   @theres.each { |where| where.visit(visitor) }
       #   visitor.accept_lateral_equation(self)
       # end
 
       # def compare_with_other(other, &block)
       #   # calling a .same? method from superclass
       #   self.class.superclass.instance_method(:same?).bind(self).call(other) &&
-      #     lists_are_identical?(@concrete_wheres, other.concrete_wheres, &block)
+      #     lists_are_identical?(@theres, other.theres, &block)
       # end
     end
 

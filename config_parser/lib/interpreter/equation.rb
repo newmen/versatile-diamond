@@ -18,60 +18,54 @@ module VersatileDiamond
       # refinement interpreter instance and nest it instance
       #
       # @param [String] tail_of_name the tail of name of reaction concept
-      def refinement(tail_of_name)
+      def refinement(tail_of_name, *dup_args, method: :duplicate)
         names_and_specs = {}
-        duplicate = @reaction.duplicate(tail_of_name) do |type, mirror|
+        dup = @reaction.send(method, tail_of_name, *dup_args) do |type, mirror|
           names_and_specs[type] = []
           @names_and_specs[type].each do |name, spec|
             names_and_specs[type] << [name, mirror[spec]]
           end
         end
-        nest_refinement(duplicate, names_and_specs)
+        nest_refinement(dup, names_and_specs)
       end
 
-      # def lateral(env_name, **target_refs)
-      #   @laterals ||= {}
-      #   if @laterals[env_name]
-      #     syntax_error('equation.lateral_already_connected')
-      #   else
-      #     environment = Environment[env_name]
-      #     resolved_target_refs = target_refs.map do |target_alias, used_atom_str|
-      #       unless environment.is_target?(target_alias)
-      #         syntax_error('equation.undefined_target_alias', name: target_alias)
-      #       end
+      # Interprets lateral line, stores used environment and setup target atoms
+      # for it as lateral object
+      #
+      # @param [Symbol] env_name the name of used environment
+      # @param [Hash] target_refs the hash of references where keys is names of
+      #   targets from equation and values is used atoms from reaction concept
+      # @rescue [Errors::SyntaxError] if wrong target setup
+      # @rescue [Tools::Chest::KeyNameError] if environment cannot be resolved,
+      #   or lateral already connected for current reaction
+      def lateral(env_name, **target_refs)
+        env = Tools::Chest.environment(env_name)
+        resolved_targets = target_refs.map do |target_name, used_atom_str|
+          unless env.is_target?(target_name)
+            syntax_error('.undefined_target', name: target_name)
+          end
 
-      #       atom = find_spec(used_atom_str) do |specific_spec, atom_keyname|
-      #         specific_spec.spec[atom_keyname]
-      #       end
-      #       [target_alias, atom]
-      #     end
+          atom = find_spec(used_atom_str) do |specific_spec, keyname|
+            specific_spec.atom(keyname)
+          end
+          [target_name, atom]
+        end
 
-      #     @laterals[env_name] = Lateral.new(
-      #       environment, Hash[resolved_target_refs])
-      #   end
-      # end
+        lateral = env.make_lateral(Hash[resolved_targets])
+        Tools::Chest.store(@reaction, lateral)
+      rescue Concepts::Environment::InvalidTarget => e
+        syntax_error('.undefined_target', name: e.target)
+      end
 
-      # def there(*names)
-      #   concrete_wheres = names.map do |name|
-      #     laterals_with_where_hash = @laterals.select do |_, lateral|
-      #       lateral.has_where?(name)
-      #     end
-      #     laterals_with_where = laterals_with_where_hash.values
-
-      #     if laterals_with_where.size < 1
-      #       syntax_error('where.undefined', name: name)
-      #     elsif laterals_with_where.size > 1
-      #       syntax_error('equation.multiple_wheres', name: name)
-      #     end
-
-      #     laterals_with_where.first.concretize_where(name)
-      #   end
-
-      #   name_tail = concrete_wheres.map(&:description).join(' and ')
-      #   nest_refinement(lateralized_duplicate(concrete_wheres, name_tail))
-      # end
-
-    protected
+      # Interprets there line and nest new refinement
+      # @param [Array] names the array of names of used wheres
+      # @raise [KeyNameError] if where cannot be found or has many wheres with
+      #   similar names for instance there object
+      def there(*names)
+        theres = names.map { |name| Tools::Chest.there(@reaction, name) }
+        name_tail = theres.map(&:description).join(' and ')
+        refinement(name_tail, theres, method: :lateral_duplicate)
+      end
 
     private
 

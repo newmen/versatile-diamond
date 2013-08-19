@@ -61,7 +61,7 @@ ru:
   equation:
     lateral_already_connected: "Окружение уже подключено"
     multiple_wheres: "Используемое уточнение \"%{name}\" доступно в нескольких окружениях"
-    undefined_target_alias: "Неизвестный псевдоним целевого атома \"%{name}\""
+    undefined_target: "Неизвестное название целевого атома \"%{name}\""
 
   refinement:
     atom_already_has_state: "Атом уже имеет состояние %{state}"

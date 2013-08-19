@@ -5,7 +5,7 @@ module VersatileDiamond
     # positions of target atoms to some atoms of around specs
     # TODO: rspec
     class Where < Named
-      # attr_reader :description, :environment
+      attr_reader :description #, :environment
 
       # Initialize an instance
       # @param [Symbol] name the name of instance
@@ -39,9 +39,18 @@ module VersatileDiamond
         # dependent_from << other
       end
 
-    #   def concretize(target_refs)
-    #     ConcreteWhere.new(self, @raw_positions, target_refs)
-    #   end
+      # Concretize current instance by creating there object
+      # @param [Hash] target_refs the hash of references from target names to
+      #   real reactant atoms
+      # @return [There] the concretized instance as there object
+      def concretize(target_refs)
+        positions = raw_positions.each_with_object({}) do |(name, link), hash|
+          atom = target_refs[name]
+          hash[atom] = link
+        end
+
+        There.new(self, positions)
+      end
 
     #   def specs
     #     @specs.values

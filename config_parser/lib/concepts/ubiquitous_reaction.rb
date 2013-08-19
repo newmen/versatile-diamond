@@ -57,12 +57,14 @@ module VersatileDiamond
       # "forward" word
       #
       # @return [UbiquitousReaction] reversed reaction
+      # @yield [Reaction] if given then creates reverse reaction and instance
+      #   passes to block
       def reverse
         return @reverse if @reverse
         @reverse = self.class.new(*reverse_params)
         @reverse.reverse = self
 
-        # yield(@reverse) if block_given?
+        yield(@reverse) if block_given?
         # @reverse.parent = parent.reverse if parent
         @reverse
       end

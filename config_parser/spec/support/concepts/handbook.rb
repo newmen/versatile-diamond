@@ -63,7 +63,7 @@ module VersatileDiamond
         end
 
         set(:bridge_base) do
-          s = SurfaceSpec.new(:bridge_base, ct: cd)
+          s = SurfaceSpec.new(:bridge, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
@@ -177,7 +177,10 @@ module VersatileDiamond
         end
 
         # Environments:
-        set(:dimers_row) { Environment.new(:dimers_row) }
+        set(:dimers_row) do
+          e = Environment.new(:dimers_row)
+          e.targets = [:one, :two]; e
+        end
         set(:at_end) { Where.new(:at_end, 'at end of dimers row') }
       end
 

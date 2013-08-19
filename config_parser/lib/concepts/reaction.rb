@@ -5,13 +5,18 @@ module VersatileDiamond
     class Reaction < UbiquitousReaction
 
       # Among super, keeps the atom map
-      # @param [Symbol] type see at #super.initialize same argument
-      # @param [Array] source see at #super.initialize same argument
-      # @param [Array] products see at #super.initialize same argument
+      # @param [Array] super_args the arguments of super method
       # @param [Array] atoms_map the atom-mapping result
-      def initialize(type, name, source, products, atoms_map)
-        super(type, name, source, products)
+      def initialize(*super_args, atoms_map)
+        super(*super_args)
         @atoms_map = atoms_map
+      end
+
+      # Also store positions for reverse reaction
+      # @return [Reaction] reversed reaction
+      # @override
+      def reverse
+        super { |r| r.positions = @positions } # TODO: need to reverse possitions too?
       end
 
       # Duplicates current instance with each source and product specs and
@@ -22,12 +27,19 @@ module VersatileDiamond
       # @return [Reaction] the duplicated reaction with changed name
       def duplicate(name_tail, &block)
         duplication = self.class.new(*duplicate_params(name_tail, &block))
-        duplication.positions = @positions.dup if @positions # TODO: rspec it
+        setup_duplication(duplication)
+      end
 
-        @children ||= []
-        @children << duplication # TODO: rspec it
-
-        duplication
+      # Duplicates current instance and creates lateral reaction instance with
+      # setted theres
+      #
+      # @param [String] name_tail see at #duplicate same argument
+      # @param [Array] theres the array of there objects
+      # @yield see at #duplicate same argument
+      def lateral_duplicate(name_tail, theres, &block)
+        duplication = LateralReaction.new(
+          *duplicate_params(name_tail, &block), theres)
+        setup_duplication(duplication)
       end
 
       # Provides positions between atoms of reactntant
@@ -35,48 +47,6 @@ module VersatileDiamond
       def positions
         @positions ||= []
       end
-
-      # def lateral(env_name, **target_refs)
-      #   @laterals ||= {}
-      #   if @laterals[env_name]
-      #     syntax_error('equation.lateral_already_connected')
-      #   else
-      #     environment = Environment[env_name]
-      #     resolved_target_refs = target_refs.map do |target_alias, used_atom_str|
-      #       unless environment.is_target?(target_alias)
-      #         syntax_error('equation.undefined_target_alias', name: target_alias)
-      #       end
-
-      #       atom = find_spec(used_atom_str) do |specific_spec, atom_keyname|
-      #         specific_spec.spec[atom_keyname]
-      #       end
-      #       [target_alias, atom]
-      #     end
-
-      #     @laterals[env_name] = Lateral.new(
-      #       environment, Hash[resolved_target_refs])
-      #   end
-      # end
-
-      # def there(*names)
-      #   concrete_wheres = names.map do |name|
-      #     laterals_with_where_hash = @laterals.select do |_, lateral|
-      #       lateral.has_where?(name)
-      #     end
-      #     laterals_with_where = laterals_with_where_hash.values
-
-      #     if laterals_with_where.size < 1
-      #       syntax_error('where.undefined', name: name)
-      #     elsif laterals_with_where.size > 1
-      #       syntax_error('equation.multiple_wheres', name: name)
-      #     end
-
-      #     laterals_with_where.first.concretize_where(name)
-      #   end
-
-      #   name_tail = concrete_wheres.map(&:description).join(' and ')
-      #   nest_refinement(lateralized_duplicate(concrete_wheres, name_tail))
-      # end
 
       # def same?(other)
       #   is_same_positions = (!@positions && !other.positions) ||
@@ -123,16 +93,7 @@ module VersatileDiamond
 
     protected
 
-      # attr_accessor :positions
       attr_writer :positions
-      # attr_writer :refinements
-
-      # def reverse
-      #   super do |r|
-      #     r.positions = @positions
-      #     r.refinements = @refinements
-      #   end
-      # end
 
     private
 
@@ -186,38 +147,17 @@ module VersatileDiamond
         [@type, "#{@name} #{name_tail}", source_dup, products_dup, atoms_map]
       end
 
-      # def lateralized_duplicate(concrete_wheres, equation_name_tail)
-      #   Equation.register(
-      #     LateralizedEquation.new(
-      #       concrete_wheres, *duplicate_params(equation_name_tail)))
-      # end
+      # Setups duplicated reaction
+      # @param [Reaction] duplication the setuping duplicated reaction
+      # @return [Reaction] setuped duplicated reaction
+      def setup_duplication(duplication)
+        duplication.positions = @positions.dup if @positions
 
-      # def find_spec(used_atom_str, find_type: :any, &block)
-      #   spec_name, atom_keyname = match_used_atom(used_atom_str)
-      #   find_lambda = -> specs do
-      #     result = specs.select { |spec| spec.name == spec_name }
-      #     syntax_error('.cannot_be_mapped', name: spec_name) if result.size > 1
-      #     result.first
-      #   end
+        @children ||= []
+        @children << duplication # TODO: rspec it
 
-      #   if find_type == :any
-      #     specific_spec = find_lambda[@source] || find_lambda[@products]
-      #     unless specific_spec
-      #       syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-      #     end
-
-      #     block[specific_spec, atom_keyname]
-      #   elsif find_type == :all
-      #     specific_specs = [find_lambda[@source], find_lambda[@products]].compact
-      #     if specific_specs.empty?
-      #       syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-      #     end
-
-      #     specific_specs.each { |ss| block[ss, atom_keyname] }
-      #   else
-      #     raise "Undefined find type #{find_type}"
-      #   end
-      # end
+        duplication
+      end
 
       # def update_attribute(attribute, value, prefix = nil)
       #   if @refinements

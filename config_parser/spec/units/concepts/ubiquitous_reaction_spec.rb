@@ -41,7 +41,7 @@ module VersatileDiamond
 
       describe "#gases_num" do
         it { reaction.gases_num.should == 1 }
-        it { reaction.reverse.gases_num.should == 0 } # it's no use
+        it { reaction.reverse.gases_num.should == 0 } # it's no use?
       end
     end
 

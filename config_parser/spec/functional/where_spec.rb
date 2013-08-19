@@ -9,8 +9,6 @@ module VersatileDiamond
       end
 
       describe "#position" do
-        before(:each) { dimers_row.targets = [:one, :two] }
-
         it { expect { where.interpret('position :one, right(:cr), face: 100, dir: :cross') }.
           not_to raise_error }
         it { expect { where.interpret('position right(:cr), :one, face: 100, dir: :cross') }.

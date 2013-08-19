@@ -61,7 +61,7 @@ en:
   equation:
     lateral_already_connected: "Lateral already connected"
     multiple_wheres: "Used where \"%{name}\" available in several environments"
-    undefined_target_alias: "Undefined target atom alias \"%{name}\""
+    undefined_target: "Undefined target atom name \"%{name}\""
 
   refinement:
     atom_already_has_state: "Atom already has %{state} state"

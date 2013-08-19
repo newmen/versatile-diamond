@@ -54,6 +54,7 @@ module VersatileDiamond
     def next_line
       @line_number += 1
       @line = @content[@line_number]
+      return unless @line
       @line.sub!(/#.+\Z/, '') # drop comments
       @line.rstrip!
       (!@line || @line != '') ? @line : next_line

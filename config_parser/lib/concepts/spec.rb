@@ -147,19 +147,14 @@ module VersatileDiamond
       # @return [Spec] extended spec
       # TODO: necessary to consider crystal lattice
       def extend_by_references
-# puts "extending by reference: #{@atoms.size}, #{@links.size}"
-
         extended_name = "extended_#{@name}".to_sym
         begin # caching
           Tools::Chest.spec(extended_name)
         rescue Tools::Chest::KeyNameError
           extendable_spec = self.class.new(extended_name)
-# puts "after create: #{extendable_spec.instance_variable_get(:@atoms).size}, #{extendable_spec.instance_variable_get(:@links).size}"
           extendable_spec.adsorb(self)
-# puts "after adsrob: #{extendable_spec.instance_variable_get(:@atoms).size}, #{extendable_spec.instance_variable_get(:@links).size}"
           extendable_spec.dependent_from << self
           extendable_spec.extend!
-# puts "after extend: #{extendable_spec.instance_variable_get(:@atoms).size}, #{extendable_spec.instance_variable_get(:@links).size}"
           Tools::Chest.store(extendable_spec)
           extendable_spec
         end

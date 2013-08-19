@@ -61,7 +61,7 @@ module VersatileDiamond
         # Finds atom and return duplicate of it
         # @param [Symbol] name the name of Atom
         # @raise [KeyNameError] if atom is not found
-        # @return [Atom] atom duplicate
+        # @return [Concepts::Atom] atom duplicate
         def atom(name)
           method_missing(:atom, name).dup
         end
@@ -69,11 +69,37 @@ module VersatileDiamond
         # Finds the spec in gas and surface specs
         # @param [Symbol] name the name of desired spec
         # @raise [KeyNameError] if spec is not found
+        # @return [Concepts::Spec] found spec
         def spec(name)
           name = name.to_sym
           (@sac && ((@sac[:gas_spec] && @sac[:gas_spec][name]) ||
               (@sac[:surface_spec] && @sac[:surface_spec][name]))) ||
             raise(Chest::KeyNameError.new(:spec, name, :undefined))
+        end
+
+        # Finds correspond variables for passed params and makes there instance
+        # @param [Concepts::Reaction] reaction the reaction for which there
+        #   will be instanced
+        # @param [Symbol] where_name the name of where which transforms to
+        #   there object
+        # @raise [KeyNameError] if parent where cannot be found or has many
+        #   similar wheres for instance there object
+        # @return [Concepts::There] found and concretized where object
+        def there(reaction, where_name)
+          laterals = @sac[:lateral][reaction.name.to_sym]
+          theres = laterals.map do |name, lateral|
+            where = @sac[:where][name][where_name]
+            where && lateral.there(where)
+          end
+
+          theres.compact!
+          if theres.size < 1
+            raise Chest::KeyNameError.new(:there, where_name, :undefined)
+          elsif theres.size > 1
+            raise Chest::KeyNameError.new(:there, where_name, :duplication)
+          end
+
+          theres.first
         end
 
         # Finds the key in sac and if key exist then finding by name continues
@@ -85,8 +111,7 @@ module VersatileDiamond
           unless @sac && @sac[key]
             super
           else
-            names.map!(&:to_sym)
-            names.reduce(@sac[key]) { |hash, name| hash[name] } ||
+            names.reduce(@sac[key]) { |hash, name| hash[name.to_sym] } ||
               raise(Chest::KeyNameError.new(key, names.join('>'), :undefined))
           end
         rescue NoMethodError => e

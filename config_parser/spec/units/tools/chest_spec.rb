@@ -42,6 +42,52 @@ module VersatileDiamond
         end
       end
 
+      describe "#atom" do
+        before { Chest.store(c) }
+        it { Chest.atom(:C).should_not == c }
+      end
+
+      describe "#spec" do
+        describe "gas spec" do
+          before { Chest.store(methane_base) }
+          it { Chest.spec(:methane).should == methane_base }
+        end
+
+        describe "surface spec" do
+          before { Chest.store(bridge_base) }
+          it { Chest.spec(:bridge).should == bridge_base }
+        end
+      end
+
+      describe "#there" do
+        let(:lateral) { dimers_row.make_lateral(one: 1, two: 2) }
+        before(:each) do
+          Chest.store(dimers_row, at_end)
+          Chest.store(dimer_formation, lateral)
+        end
+
+        it { Chest.there(dimer_formation, :at_end).
+          should be_a(Concepts::There) }
+        it { expect { Chest.there(dimer_formation, :wrong) }.
+          to raise_error keyname_error }
+
+        describe "has many wheres" do
+          let(:env) do
+            e = Concepts::Environment.new(:some)
+            e.targets = [:first, :second]; e
+          end
+          let(:another_lateral) { env.make_lateral(first: 'f', second: 's') }
+
+          before do
+            Chest.store(env, at_end)
+            Chest.store(dimer_formation, another_lateral)
+          end
+
+          it { expect { Chest.there(dimer_formation, :at_end) }.
+            to raise_error keyname_error }
+        end
+      end
+
       describe "#method_missing" do
         shared_examples_for "store and get concept" do
           before { Chest.store(*concepts) }
@@ -65,18 +111,6 @@ module VersatileDiamond
           expect { Chest.concept(:wrong) }.to raise_error keyname_error
         end
       end
-
-      # describe "#spec" do
-      #   describe "gas spec" do
-      #     before { Chest.store(methane_base) }
-      #     it { Chest.spec(:methane).should == methane_base }
-      #   end
-
-      #   describe "surface spec" do
-      #     before { Chest.store(bridge_base) }
-      #     it { Chest.spec(:bridge).should == bridge_base }
-      #   end
-      # end
     end
 
   end
