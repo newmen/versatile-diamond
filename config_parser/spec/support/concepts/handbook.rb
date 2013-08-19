@@ -178,10 +178,22 @@ module VersatileDiamond
 
         # Environments:
         set(:dimers_row) do
-          e = Environment.new(:dimers_row)
-          e.targets = [:one, :two]; e
+          Environment.new(:dimers_row, targets: [:one, :two])
         end
-        set(:at_end) { Where.new(:at_end, 'at end of dimers row') }
+        set(:at_end) do
+          Where.new(:at_end, 'at end of dimers row', specs: [dimer])
+        end
+        set(:on_end) do
+          at_end.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))
+        end
+
+        set(:near_methyl) do
+          Where.new(:near_methyl, 'chain neighbour methyl',
+            specs: [methyl_on_bridge])
+        end
+        set(:there_methyl) do
+          near_methyl.concretize(target: methyl_on_bridge.atom(:cb))
+        end
       end
 
     end

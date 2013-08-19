@@ -16,18 +16,19 @@ module VersatileDiamond
 
       class << self
       private
-        # Defines some property setter by adding assertion method
+        # Defines some property getter and setter by adding assertion methods
         def define_property_setter(*properties)
           properties.each do |property|
+            attr_reader property
+
             # Defines forward direction property setter
             # @raise [UbiquitousReaction::AlreadySet] if property already set
             # @param [Float] value the value of property
             define_method("#{property}=") do |value|
-              var = "@#{property}".to_sym
-              if instance_variable_get(var)
+              if instance_variable_get(:"@#{property}")
                 raise UbiquitousReaction::AlreadySet.new(property)
               end
-              instance_variable_set(var, value)
+              update_attribute(property, value)
             end
           end
         end
@@ -138,16 +139,10 @@ module VersatileDiamond
   #       end
   #     end
 
-  #     def rate
-  #       return 0 unless @rate
-  #       @activation ||= 0
-
-  #       r = @rate * Math.exp(-(@activation * 1000) /
-  #         (Dimensions::R * current_temperature(source_gases_num)))
-  #       @source.reduce(r) do |acc, spec|
-  #         spec.is_gas? ? acc * Gas.instance[spec] : acc
-  #       end
-  #     end
+      def full_rate
+        return 0 unless @rate && @activation
+        Tools::Config.rate(self)
+      end
 
     protected
 
@@ -155,6 +150,13 @@ module VersatileDiamond
       attr_writer :reverse
 
     private
+
+      # Updates reaction property
+      # @param [Symbol] attribute the name of instance variable
+      # @param [Float] value the variable value
+      def update_attribute(attribute, value)
+        instance_variable_set(:"@#{attribute}", value)
+      end
 
       # Makes params for reverse method
       def reverse_params

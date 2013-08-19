@@ -38,16 +38,16 @@ module VersatileDiamond
 
       describe "#convert_energy" do
         let(:method) { Dimension.method(:convert_energy) }
-        it { method[1, 'kJ/mol'].should == 1 }
-        it { method[1, 'kJ/kmol'].should == 1e3 }
-        it { method[1, 'J/mol'].should == 1e-3 }
-        it { method[1, 'kcal/mol'].should == 4.184 }
-        it { method[1, 'kcal/kmol'].should == 4.184e3 }
-        it { method[1, 'cal/mol'].should == 4.184e-3 }
+        it { method[1, 'J/mol'].should == 1 }
+        it { method[1, 'kJ/mol'].should == 1e3 }
+        it { method[1, 'kJ/kmol'].should == 1 }
+        it { method[1, 'kcal/mol'].should == 4.184e3 }
+        it { method[1, 'kcal/kmol'].should == 4.184 }
+        it { method[1, 'cal/mol'].should == 4.184 }
 
         describe "with default value" do
           before { Dimension.energy_dimension('kcal/mol') }
-          it { method[2].should == 8.368 }
+          it { method[2].should == 8368 }
         end
       end
 

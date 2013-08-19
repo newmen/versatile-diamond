@@ -15,7 +15,6 @@ module VersatileDiamond
           key = face.to_s
           key << "_#{dir}" if dir
           @consts ||= {}
-  # p @consts
           @consts[key] ||= new(face, dir)
         end
 

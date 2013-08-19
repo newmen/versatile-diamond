@@ -1,7 +1,6 @@
 module VersatileDiamond
   module Interpreter
 
-    # TODO: rspec
     # Module for matching specific spec from string
     module SpecificSpecMatcher
 
@@ -15,7 +14,7 @@ module VersatileDiamond
 
         specific_atoms = {}
         if args_str && args_str != ''
-          extract_hash_args(args_str) do |key, value|
+          remaining_args = extract_hash_args(args_str) do |key, value|
             atom = spec.atom(key)
             unless atom
               syntax_error('specific_spec.wrong_specification', atom: key)
@@ -42,6 +41,10 @@ module VersatileDiamond
             end
 
             specific_atoms[key] = specific_atom
+          end
+
+          remaining_args.each do |arg|
+            syntax_error('specific_spec.wrong_specification', atom: arg)
           end
         end
 

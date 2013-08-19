@@ -4,8 +4,8 @@ module VersatileDiamond
     # The base interpreter class
     # @abstract
     class Base
-      include Modules::ArgumentsParser
       include Modules::SyntaxChecker
+      include ArgumentsParser
 
       # Interprets the line, checking it for indent. If the indentation was
       # then call second passed function. Otherwise, perform block when passed

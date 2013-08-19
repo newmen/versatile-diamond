@@ -11,7 +11,15 @@ module VersatileDiamond
         def initialize(target); @target = target end
       end
 
-      # Store aliased names for target atoms
+      # Initialize new environment instance
+      # @param [Symbol] name see at #super same argument
+      # @option [Array] :targets the target atom aliases
+      def initialize(name, targets: [])
+        super(name)
+        @targets = targets
+      end
+
+      # Stores aliased names for target atoms
       # @param [Array] names the aliased names of target atoms
       def targets=(names)
         @targets = names
@@ -21,7 +29,7 @@ module VersatileDiamond
       # @param [Symbol] name the name of one of targets
       # @return [Boolean] it is target or not
       def is_target?(name)
-        @targets && @targets.include?(name)
+        @targets.include?(name)
       end
 
       # Checks passed target references and if they is valid then creates new

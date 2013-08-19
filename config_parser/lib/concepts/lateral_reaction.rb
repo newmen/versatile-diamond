@@ -1,7 +1,7 @@
 module VersatileDiamond
   module Concepts
 
-    # TODO: rspec
+    # Describes reaction which has a some environment expresed by there objects
     class LateralReaction < Reaction
 
       # Among super, keeps the atom map

@@ -1,17 +1,27 @@
 module VersatileDiamond
   module Errors
 
-    class SyntaxError < Exception
+    # Implements exception for raising when syntax of config file is wrong
+    class SyntaxError < ::SyntaxError
+      # Fits message to a line in the file
+      # @param [String] the path to file
+      # @param [Integer] the line number
+      # @param [Array] args the another arguments for super if exists
+      # @return [String] the message about error
       def message(*args)
-        if args.size != 2
-          super
-          return
+        case args.size
+        when 1
+          line_number = args.first
+        when 2
+          file, line_number = *args
         end
-        line_number, file = *args
 
-        tail = file ? "from #{file}:" : ''
-        tail << line_number.to_s
-        "#{super()}\n\t#{tail}"
+        tail = file ? "\n\tfrom #{file}:" : ''
+        if line_number
+          tail << ' at line ' unless file
+          tail << line_number.to_s
+        end
+        tail == '' ? super : "#{super()}#{tail}"
       end
     end
 

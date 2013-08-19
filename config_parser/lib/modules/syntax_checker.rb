@@ -1,13 +1,18 @@
 using VersatileDiamond::Patches::RichString
 
 module VersatileDiamond
-
   module Modules
 
+    # Provides method for raising syntax error
     module SyntaxChecker
-      def syntax_error(*args)
+      # Translates message by class name and raises syntax error exception
+      # @param [String] message the message path which will be passed to
+      #   translate helper
+      # @param [Array] args the argument which will be passed to translate
+      #   helper
+      # @rescue [Errors::SyntaxError] the raised syntax error exception
+      def syntax_error(message, *args)
         klass = is_a?(Class) ? self : self.class
-        message = args.shift
         if message[0] == '.'
           message = "#{klass.to_s.underscore}#{message}"
         end
@@ -17,5 +22,4 @@ module VersatileDiamond
     end
 
   end
-
 end

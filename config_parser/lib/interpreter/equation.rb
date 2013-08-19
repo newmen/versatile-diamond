@@ -17,10 +17,14 @@ module VersatileDiamond
       # Interprets refinement line, duplicates reaction concept, pass it to
       # refinement interpreter instance and nest it instance
       #
-      # @param [String] tail_of_name the tail of name of reaction concept
-      def refinement(tail_of_name, *dup_args, method: :duplicate)
+      # @param [String] the tail of name of reaction concept
+      # @param [Array] dup_args arguments which will be passed to duplicate
+      #   method
+      # @option [Symbol] :method the method which will be called for create
+      #   duplicate reaction
+      def refinement(*dup_args, method: :duplicate)
         names_and_specs = {}
-        dup = @reaction.send(method, tail_of_name, *dup_args) do |type, mirror|
+        dup = @reaction.send(method, *dup_args) do |type, mirror|
           names_and_specs[type] = []
           @names_and_specs[type].each do |name, spec|
             names_and_specs[type] << [name, mirror[spec]]

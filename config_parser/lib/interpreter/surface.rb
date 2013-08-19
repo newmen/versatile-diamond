@@ -5,7 +5,7 @@ module VersatileDiamond
     class Surface < Phase
 
       # Interprets lattice line, creates correspond lattice and store it to
-      #   Chest
+      # Chest
       #
       # @param [Symbol] sign the name of lattice
       # @option [String] :cpp_class the C++ class of described lattice

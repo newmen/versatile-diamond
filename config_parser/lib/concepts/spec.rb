@@ -9,7 +9,7 @@ module VersatileDiamond
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
       # @param [Symbol] name the name of spec
       # @param [Hash] atoms the associated array [Symbol]Atom
-      def initialize(name, atoms = {})
+      def initialize(name, **atoms)
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }

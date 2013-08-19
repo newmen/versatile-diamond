@@ -3,7 +3,6 @@ module VersatileDiamond
 
     # The instance of class stores references from target names to real atoms
     # of reactants
-    # TODO: rspec
     class Lateral < Named
 
       # Initialize an instance of class and checks target references for

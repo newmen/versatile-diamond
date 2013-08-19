@@ -6,13 +6,13 @@ module VersatileDiamond
     class Dimension
 
       # Universal gas constant
-      R = 8.3144621 # kJ/(mol * K)
+      R = 8.3144621 # J/(mol * K)
 
       # These values are using into calculation program on C++ by default
       # On these values bases convert_value methods ​​in this class
       DEFAULT_TEMPERATURE = 'K'.freeze
       DEFAULT_CONCENTRATION = 'mol/cm3'.freeze
-      DEFAULT_ENERGY = 'kJ/mol'.freeze # TODO: store as J/mol and remove 1000 from reaction rate formula
+      DEFAULT_ENERGY = 'J/mol'.freeze
       DEFAULT_RATE = '1/s'.freeze
       DEFAULT_TIME = 's'.freeze
 
@@ -151,7 +151,8 @@ module VersatileDiamond
           end
 
           default_dimension = eval("DEFAULT_#{var.to_s.upcase}")
-          if (!convertable_dimension && current_dimension == default_dimension) ||
+          if (!convertable_dimension &&
+              current_dimension == default_dimension) ||
             convertable_dimension == default_dimension
 
             return value
@@ -204,12 +205,12 @@ module VersatileDiamond
         })
 
         define_convert(:energy, {
-          /kJ\s*\/\s*mol\Z/ => -> v { v },
-          /kJ\s*\/\s*kmol\Z/ => -> v { v * 1e3 },
-          /J\s*\/\s*mol\Z/ => -> v { v * 1e-3 },
-          /kcal\s*\/\s*mol\Z/ => -> v { v * 4.184 },
-          /kcal\s*\/\s*kmol\Z/ => -> v { v * 4.184e3 },
-          /cal\s*\/\s*mol\Z/ => -> v { v * 4.184e-3 }
+          /\AJ\s*\/\s*mol\Z/ => -> v { v },
+          /\AkJ\s*\/\s*mol\Z/ => -> v { v * 1e3 },
+          /\AkJ\s*\/\s*kmol\Z/ => -> v { v },
+          /\Akcal\s*\/\s*mol\Z/ => -> v { v * 4184 },
+          /\Akcal\s*\/\s*kmol\Z/ => -> v { v * 4.184 },
+          /\Acal\s*\/\s*mol\Z/ => -> v { v * 4.184 }
         })
 
         define_convert(:time, {

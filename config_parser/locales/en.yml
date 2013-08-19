@@ -81,3 +81,6 @@ en:
 
   atom_mapper:
     argument_error: "At the moment, analyzer can not handle the cases of formation of several species"
+
+  some_checker:
+    hello: "Hello, %{name}!"

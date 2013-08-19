@@ -41,7 +41,9 @@ module VersatileDiamond
             spec_name, keyname = match_used_atom(atom_str)
             spec = @names_and_specs[spec_name] || Tools::Chest.spec(spec_name)
             atom = spec.atom(keyname)
-            unless atom
+            if atom
+              @where.specs << spec
+            else
               syntax_error('matcher.undefined_used_atom', name: atom_str)
             end
           end

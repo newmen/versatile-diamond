@@ -93,18 +93,33 @@ module VersatileDiamond
 
     protected
 
+      attr_reader :children
       attr_writer :positions
+
+      # Gets an appropriate representation of the reaction
+      # @param [Symbol] type the type of parent reaction
+      def as(type)
+        @type == type ? self : reverse
+      end
 
     private
 
-      # def nest_refinement(equation)
-      #   equation.parent = self
-      #   equation.positions = @positions.dup if @positions
-
-      #   @refinements ||= []
-      #   @refinements << (refinement = Refinement.new(equation))
-      #   nested(refinement)
-      # end
+      # Updates attribute for current instance, or setup each child if they
+      # exists
+      #
+      # @param [Symbol] attribute see at #super same argument
+      # @param [Float] value see at #super same argument
+      # @override
+      def update_attribute(attribute, value)
+        childs = @children || reverse.children
+        if childs
+          childs.each do |reaction|
+            reaction.as(@type).send(:"#{attribute}=", value)
+          end
+        else
+          super
+        end
+      end
 
       # Reverse params for creating reverse reaction with reversing of atom
       # mapping result
@@ -158,17 +173,6 @@ module VersatileDiamond
 
         duplication
       end
-
-      # def update_attribute(attribute, value, prefix = nil)
-      #   if @refinements
-      #     attribute = "#{prefix}_#{attribute}" if prefix
-      #     @refinements.each do |ref|
-      #       ref.equation_instance.send("#{attribute}=", value)
-      #     end
-      #   else
-      #     super
-      #   end
-      # end
 
       # def accept_self(visitor)
       #   visitor.accept_real_equation(self)

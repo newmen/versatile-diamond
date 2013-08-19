@@ -2,14 +2,20 @@ using VersatileDiamond::Patches::RichString
 
 module VersatileDiamond
 
+  # Class for analyzing configuration file writen on VD:DSL
   class Analyzer < Interpreter::Base
     class << self
+      # Self method for reading and analyzing configuration file
+      # @param [String] config_path the path to configuration file
       def read_config(config_path)
         content = File.open(config_path).readlines
         new(content, config_path).analyze
       end
     end
 
+    # Initialize analyzer
+    # @param [String] content the content whitch will be analyzed
+    # @param [String] config_path the path to configuration file
     def initialize(content, config_path = nil)
       @content = content
       @line_number = 0
@@ -19,9 +25,10 @@ module VersatileDiamond
       @config_path = config_path
     end
 
+    # Launches analysis cycle
     def analyze
       loop do
-  puts "LINE #{@line_number + 1}: #{@line}"
+  # puts "LINE #{@line_number + 1}: #{@line}"
 
         interpret(@line, method(:change_root)) do
           pass_line_to(@root, @line)
@@ -31,17 +38,23 @@ module VersatileDiamond
       end
 
     rescue Errors::SyntaxError => e
-# p Tools::Chest.instance_variable_get(:@sac).keys
-      puts e.message(@line_number + 1, @config_path)
+      puts e.message(@config_path, @line_number + 1)
     end
 
   private
 
+    # Changes instance root variable which will be receive next shifted lines
+    # @param [String] decreased_line the line for analyzing without forward
+    #   extra spaces
+    # @raise [Errors::SyntaxError] if instance of root cannot be instanced
     def change_root(decreased_line)
       root = head_and_tail(decreased_line).first
       @root = instance(root)
     end
 
+    # Makes an anstance of interpreter
+    # @param [String] name the underscored name of interpreter class
+    # @raise [Errors::SyntaxError] if interpreter component cannot be instanced
     def instance(name)
       component = name.constantize
       if component
@@ -51,6 +64,8 @@ module VersatileDiamond
       end
     end
 
+    # Iterate next line and cut comments
+    # @return [String] the next line of content
     def next_line
       @line_number += 1
       @line = @content[@line_number]

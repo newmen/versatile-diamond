@@ -3,20 +3,19 @@ module VersatileDiamond
 
     # Instance of class is refinement for environment which contain raw
     # positions of target atoms to some atoms of around specs
-    # TODO: rspec
     class Where < Named
-      attr_reader :description #, :environment
+      attr_reader :specs, :description #, :environment
 
       # Initialize an instance
       # @param [Symbol] name the name of instance
       # @param [String] description the description of instance which will be
       #   added to end of name of lateral reaction
-      def initialize(name, description)
+      # @option [Array] :specs the target specific specs
+      def initialize(name, description, specs: Set.new)
         super(name)
         @description = description
         @raw_positions = {}
-
-        # @specs = {}
+        @specs = specs
       end
 
       # Stores raw position between target symbol and some concrete atom.
@@ -25,6 +24,7 @@ module VersatileDiamond
       # @param [Symbol] target the name of target atom
       # @param [Atom] atom the atom of some around spec
       # @param [Position] position the position between target and atom
+      # TODO: rspec
       def raw_position(target, atom, position)
         @raw_positions[target] ||= []
         @raw_positions[target] << [atom, position]
@@ -32,6 +32,7 @@ module VersatileDiamond
 
       # Adsorbs another where by merging each raw position
       # @param [Where] other an other adsorbing where
+      # TODO: rspec
       def adsorb(other)
         other.raw_positions.each do |target, links|
           links.each { |atom, pos| raw_position(target, atom, pos) }
@@ -51,10 +52,6 @@ module VersatileDiamond
 
         There.new(self, positions)
       end
-
-    #   def specs
-    #     @specs.values
-    #   end
 
     #   def dependent_from
     #     @dependent_from ||= Set.new
