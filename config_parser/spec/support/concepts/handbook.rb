@@ -38,7 +38,11 @@ module VersatileDiamond
           a = activated_cd.dup
           a.incoherent!; a
         end
+        set(:incoherent_cd) { SpecificAtom.new(cd, options: [:incoherent]) }
         set(:unfixed_c) { SpecificAtom.new(c, options: [:unfixed]) }
+        set(:unfixed_activated_c) do
+          SpecificAtom.new(c, options: [:unfixed, :active])
+        end
 
         # Bonds and positions:
         set(:free_bond) { Bond[face: nil, dir: nil] }
@@ -97,11 +101,21 @@ module VersatileDiamond
         set(:activated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: activated_c)
         end
+        set(:methyl_on_activated_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
+        end
+        set(:methyl_on_incoherent_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cb: incoherent_cd)
+        end
+        set(:activated_methyl_on_incoherent_bridge) do
+          SpecificSpec.new(
+            methyl_on_bridge_base, cm: activated_c, cb: incoherent_cd)
+        end
         set(:unfixed_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: unfixed_c)
         end
-        set(:methyl_on_activated_bridge) do
-          SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
+        set(:unfixed_activated_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: unfixed_activated_c)
         end
         set(:methyl_on_extended_bridge_base) do
           methyl_on_bridge_base.extend_by_references

@@ -79,35 +79,21 @@ module VersatileDiamond
         it { dimer_formation.reverse.positions.should == [position] }
       end
 
-      # describe "#each_source" do
-      #   let(:collected_source) { reaction.each_source.to_a }
-      #   shared_examples_for "some reaction" do
-      #     it { collected_source.should == [spec] }
-      #     it "collect and check" do
-      #       collected_source # collect before
-      #       atom_property.should be_true
-      #     end
-      #   end
+      describe "#each_source" do
+        shared_examples_for "some reaction" do
+          it { reaction.each_source.to_a.should == [spec] }
+        end
 
-      #   it_behaves_like "some reaction" do
-      #     let(:reaction) { methyl_desorption }
-      #     let(:spec) { methyl_on_bridge }
-      #     let(:atom) { methyl_on_bridge.atom(:cm) }
-      #     let(:atom_property) { atom.unfixed? }
+        it_behaves_like "some reaction" do
+          let(:reaction) { methyl_desorption }
+          let(:spec) { methyl_on_bridge }
+        end
 
-      #     it "incoherent too because methyl is gas" do
-      #       collected_source # collect before
-      #       atom.incoherent?.should be_true
-      #     end
-      #   end
-
-      #   # TODO: need fix atom mapping result
-      #   it_behaves_like "some reaction" do
-      #     let(:reaction) { dimer_formation.reverse }
-      #     let(:spec) { dimer }
-      #     let(:atom_property) { dimer.atom(:cr).incoherent? }
-      #   end
-      # end
+        it_behaves_like "some reaction" do
+          let(:reaction) { dimer_formation.reverse }
+          let(:spec) { df_products.first }
+        end
+      end
     end
 
   end

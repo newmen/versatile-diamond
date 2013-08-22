@@ -21,7 +21,10 @@ module VersatileDiamond
         it { ref.diff(c).should == [] }
         it { ref.diff(activated_c).should == [] }
         it { ref.diff(unfixed_c).should == [:unfixed] }
+        it { ref.diff(unfixed_activated_c).should == [:unfixed] }
         it { AtomReference.new(bridge_base, :ct).diff(activated_incoherent_cd).
+          should == [:incoherent] }
+        it { AtomReference.new(bridge_base, :ct).diff(incoherent_cd).
           should == [:incoherent] }
       end
 

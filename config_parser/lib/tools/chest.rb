@@ -153,13 +153,14 @@ module VersatileDiamond
         # Organize dependencies between specific species
         def organize_specific_spec_dependencies
           collect_specific_specs
-          # @specific_specs.each_with_object({}) do |ss, specs|
-          #   base_spec = ss.spec
-          #   specs[base_spec] ||= @specific_specs.select do |s|
-          #     s.spec == base_spec
-          #   end
-          #   ss.organize_dependencies(specs[base_spec].reject { |s| s == ss })
-          # end
+          specific_specs = all(:specific_spec)
+          specific_specs.each_with_object({}) do |ss, specs|
+            base_spec = ss.spec
+            specs[base_spec] ||= specific_specs.select do |s|
+              s.spec == base_spec
+            end
+            ss.organize_dependencies(specs[base_spec])
+          end
         end
 
         # Collects specific species from all reactions and store them to
@@ -173,7 +174,6 @@ module VersatileDiamond
           end
 
           specs.values.each do |specific_spec|
-# puts " >> #{specific_spec.full_name}"
             store(specific_spec, method: :full_name)
           end
         end

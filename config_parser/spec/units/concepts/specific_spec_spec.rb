@@ -107,6 +107,100 @@ module VersatileDiamond
         it { methyl_on_bridge.atom(:cm).unfixed?.should be_true }
         it { methyl_on_bridge.atom(:cm).incoherent?.should be_true }
       end
+
+      describe "#dependet_from" do
+        # default state of dependent from variable
+        it { bridge.dependent_from.should be_nil }
+        it { activated_bridge.dependent_from.should be_nil }
+      end
+
+      describe "#organize_dependencies" do
+        shared_examples_for "organize and check" do
+          before { target.organize_dependencies(similars) }
+          it { target.dependent_from.should == parent }
+        end
+
+        describe "bridge" do
+          let(:similars) { [bridge, activated_bridge,
+            activated_incoherent_bridge, extra_activated_bridge] }
+
+          it_behaves_like "organize and check" do
+            let(:target) { bridge }
+            let(:parent) { nil }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { activated_bridge }
+            let(:parent) { bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { activated_incoherent_bridge }
+            let(:parent) { activated_bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { extra_activated_bridge }
+            let(:parent) { activated_bridge }
+          end
+        end
+
+        describe "methyl on bridge" do
+          let(:similars) { [methyl_on_bridge, activated_methyl_on_bridge,
+            methyl_on_activated_bridge, methyl_on_incoherent_bridge,
+            unfixed_methyl_on_bridge, activated_methyl_on_incoherent_bridge,
+            unfixed_activated_methyl_on_bridge] }
+
+          it_behaves_like "organize and check" do
+            let(:target) { methyl_on_bridge }
+            let(:parent) { nil }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { activated_methyl_on_bridge }
+            let(:parent) { methyl_on_bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { methyl_on_activated_bridge }
+            let(:parent) { methyl_on_bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { methyl_on_incoherent_bridge }
+            let(:parent) { methyl_on_bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { unfixed_methyl_on_bridge }
+            let(:parent) { methyl_on_bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { activated_methyl_on_incoherent_bridge }
+            let(:parent) { activated_methyl_on_bridge }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { unfixed_activated_methyl_on_bridge }
+            let(:parent) { activated_methyl_on_bridge }
+          end
+        end
+
+        describe "dimer" do
+          let(:similars) { [dimer, activated_dimer] }
+
+          it_behaves_like "organize and check" do
+            let(:target) { dimer }
+            let(:parent) { nil }
+          end
+
+          it_behaves_like "organize and check" do
+            let(:target) { activated_dimer }
+            let(:parent) { dimer }
+          end
+        end
+      end
     end
 
   end

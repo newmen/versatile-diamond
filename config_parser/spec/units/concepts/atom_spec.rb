@@ -30,6 +30,8 @@ module VersatileDiamond
       describe "#diff" do
         it { c.diff(c.dup).should == [] }
         it { c.diff(unfixed_c).should == [:unfixed] }
+        it { c.diff(unfixed_activated_c).should == [:unfixed] }
+        it { cd.diff(incoherent_cd).should == [:incoherent] }
         it { cd.diff(activated_incoherent_cd).should == [:incoherent] }
       end
     end

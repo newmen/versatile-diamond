@@ -74,14 +74,18 @@ module VersatileDiamond
 
       describe "#diff" do
         it { unfixed_c.diff(c).should == [] }
+        it { unfixed_activated_c.diff(c).should == [] }
         it { unfixed_c.diff(SpecificAtom.new(c)).should == [] }
 
+        it { incoherent_cd.diff(cd).should == [] }
         it { activated_incoherent_cd.diff(cd).should == [] }
         it { activated_incoherent_cd.diff(activated_cd).should == [] }
         it { activated_incoherent_cd.diff(bridge.atom(:cr)).should == [] }
         it { activated_cd.diff(bridge.atom(:cr)).should == [] }
 
         it { activated_c.diff(unfixed_c).should == [:unfixed] }
+        it { activated_c.diff(unfixed_activated_c).should == [:unfixed] }
+        it { activated_cd.diff(incoherent_cd).should == [:incoherent] }
         it { activated_cd.diff(activated_incoherent_cd).
           should == [:incoherent] }
       end
@@ -89,6 +93,8 @@ module VersatileDiamond
       describe "#relevants" do
         it { activated_c.relevants.should == [] }
         it { unfixed_c.relevants.should == [:unfixed] }
+        it { unfixed_activated_c.relevants.should == [:unfixed] }
+        it { incoherent_cd.relevants.should == [:incoherent] }
         it { activated_incoherent_cd.relevants.should == [:incoherent] }
       end
 

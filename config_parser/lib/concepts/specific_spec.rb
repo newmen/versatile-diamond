@@ -158,6 +158,40 @@ module VersatileDiamond
         end
       end
 
+      # Gets parent specific spec
+      # @return [SpecificSpec] the parten specific spec or nil
+      def dependent_from
+        @dependent_from
+      end
+
+      # Organize dependencies from another similar species. Dependencies set if
+      # similar spec has less specific atoms and existed specific atoms is same
+      # in both specs. Moreover, activated atoms have a greater advantage.
+      #
+      # @param [Array] similar_specs the array of specs where each spec has
+      #   same basic spec
+      def organize_dependencies(similar_specs)
+        similar_specs = similar_specs.reject do |s|
+          s == self || s.specific_atoms.size > @specific_atoms.size
+        end
+        similar_specs = similar_specs.sort do |a, b|
+          if a.specific_atoms.size == b.specific_atoms.size
+            b.active_bonds_num <=> a.active_bonds_num
+          else
+            b.specific_atoms.size <=> a.specific_atoms.size
+          end
+        end
+
+        @dependent_from = similar_specs.find do |ss|
+          ss.active_bonds_num <= active_bonds_num &&
+            ss.specific_atoms.all? do |keyname, atom|
+              a = @specific_atoms[keyname]
+              a && atom.actives <= a.actives &&
+                (atom.relevants - a.relevants).empty?
+            end
+        end
+      end
+
   #     def visit(visitor)
   #       @spec.visit(visitor)
   #       visitor.accept_specific_spec(self)
@@ -169,27 +203,6 @@ module VersatileDiamond
   #           @spec == other.spec &&
   #             (@options == other.options || (!@options.empty? &&
   #               @options.size == other.options.size && correspond?(other))))
-  #     end
-
-  #     def organize_dependencies(similar_specs)
-  #       similar_specs = similar_specs.reject do |s|
-  #         s.options.size >= @options.size
-  #       end
-  #       similar_specs = similar_specs.sort do |a, b|
-  #         b.options.size <=> a.options.size
-  #       end
-
-  #       max_opts_size = -1
-  #       @dependent_from = similar_specs.select do |ss|
-  #         max_opts_size <= ss.options.size &&
-  #           ((active? && ss.active?) || !(active? || ss.active?)) &&
-  #           ss.options.all? { |option| @options.include?(option) } &&
-  #           (max_opts_size = ss.options.size)
-  #       end
-  #     end
-
-  #     def dependent_from
-  #       @dependent_from && @dependent_from.first
   #     end
 
   #     def active?
@@ -220,6 +233,12 @@ module VersatileDiamond
         @specific_atoms.select { |_, atom| atom.actives > 0 }
       end
 
+      # Counts the sum of active bonds
+      # @return [Integer] sum of active bonds
+      def active_bonds_num
+        only_actives.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+      end
+
       # Selects bonds for passed atom
       # @param [Atom] atom the atom for which bonds will be selected
       # @return [Array] the array of bonds incedent to an atom
@@ -229,12 +248,6 @@ module VersatileDiamond
       end
 
     private
-
-      # Counts the sum of active bonds
-      # @return [Integer] sum of active bonds
-      def active_bonds_num
-        @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
-      end
 
       # Returns original links of base spec but exchange correspond atoms to
       # specific atoms

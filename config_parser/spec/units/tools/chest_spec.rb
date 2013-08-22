@@ -119,6 +119,7 @@ module VersatileDiamond
               methane_base, bridge_base, dimer_base, high_bridge_base,
               methyl_on_bridge_base, methyl_on_dimer_base
             ].each { |spec| Chest.store(spec) }
+
             Chest.organize_dependecies
           end
 
@@ -133,7 +134,7 @@ module VersatileDiamond
             should == [dimer_base] }
         end
 
-        describe "#collect_specific_specs" do
+        describe "#organize_specific_spec_dependencies" do
           before(:each) do
             Config.gas_temperature(1000, 'K')
             Config.surface_temperature(500, 'K')
@@ -155,41 +156,65 @@ module VersatileDiamond
               methyl_desorption, hydrogen_migration, dimer_formation,
               hydrogen_migration.reverse,dimer_formation.reverse
             ].each { |reaction| Chest.store(reaction) }
+
             Chest.organize_dependecies
           end
 
-          describe "methyl desorption" do
+          describe "#collect_specific_specs" do
+            describe "methyl desorption" do
+              it { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)').
+                should be_a(Concepts::SpecificSpec) }
+            end
+
+            describe "forward hydrogen migration" do
+              it { Chest.specific_spec(:'dimer(cr: *)').
+                should be_a(Concepts::SpecificSpec) }
+              it { Chest.specific_spec(:methyl_on_dimer).
+                should be_a(Concepts::SpecificSpec) }
+            end
+
+            describe "reverse hydrogen migration" do
+              it { Chest.specific_spec(:dimer).
+                should be_a(Concepts::SpecificSpec) }
+              it { Chest.specific_spec(:'methyl_on_dimer(cm: *)').
+                should be_a(Concepts::SpecificSpec) }
+            end
+
+            describe "forward dimer formation" do
+              it { Chest.specific_spec(:'bridge(ct: *)').
+                should be_a(Concepts::SpecificSpec) }
+              it { Chest.specific_spec(:'bridge(ct: *, ct: i)').
+                should be_a(Concepts::SpecificSpec) }
+            end
+
+            describe "reverse dimer formation" do
+              it { Chest.specific_spec(:'dimer(cl: i)').
+                should be_a(Concepts::SpecificSpec) }
+            end
+          end
+
+          describe "specific spec dependencies" do
+            it { Chest.specific_spec(:'bridge(ct: *)').dependent_from.
+              should be_nil }
+            it { Chest.specific_spec(:'bridge(ct: *, ct: i)').dependent_from.
+              should == Chest.specific_spec(:'bridge(ct: *)') }
+
+            it { Chest.specific_spec(:dimer).dependent_from.should be_nil }
+            it { Chest.specific_spec(:'dimer(cr: *)').dependent_from.
+              should == Chest.specific_spec(:dimer) }
+            it { Chest.specific_spec(:'dimer(cl: i)').dependent_from.
+              should == Chest.specific_spec(:dimer) }
+
             it { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)').
-              should be_a(Concepts::SpecificSpec) }
-          end
+              dependent_from.should be_nil }
 
-          describe "forward hydrogen migration" do
-            it { Chest.specific_spec(:'dimer(cr: *)').
-              should be_a(Concepts::SpecificSpec) }
-            it { Chest.specific_spec(:methyl_on_dimer).
-              should be_a(Concepts::SpecificSpec) }
-          end
-
-          describe "reverse hydrogen migration" do
-            it { Chest.specific_spec(:dimer).
-              should be_a(Concepts::SpecificSpec) }
+            it { Chest.specific_spec(:methyl_on_dimer).dependent_from.
+              should be_nil }
             it { Chest.specific_spec(:'methyl_on_dimer(cm: *)').
-              should be_a(Concepts::SpecificSpec) }
-          end
-
-          # TODO: fix atom mapping
-          describe "forward dimer formation" do
-            it { Chest.specific_spec(:'bridge(ct: *)').
-              should be_a(Concepts::SpecificSpec) }
-            it { Chest.specific_spec(:'bridge(ct: *, ct: i)').
-              should be_a(Concepts::SpecificSpec) }
-          end
-
-          describe "reverse dimer formation" do
-            it { Chest.specific_spec(:'dimer(cl: i)').
-              should be_a(Concepts::SpecificSpec) }
+              dependent_from.should == Chest.specific_spec(:methyl_on_dimer) }
           end
         end
+
       end
     end
 
