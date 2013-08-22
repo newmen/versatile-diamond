@@ -67,7 +67,7 @@ module VersatileDiamond
 
       def generate
         # organization calls order is important!
-        reorganize_specs_dependencies
+        # reorganize_specs_dependencies
         organize_specific_spec_dependencies
         check_equations_for_duplicates
         organize_equations_dependencies
@@ -288,20 +288,6 @@ module VersatileDiamond
             end
           end
           depend_from_ss << spec
-        end
-      end
-
-      def reorganize_specs_dependencies
-        @base_specs.each { |spec| spec.reorganize_dependencies(@base_specs) }
-      end
-
-      def organize_specific_spec_dependencies
-        @specific_specs.each_with_object({}) do |ss, specs|
-          base_spec = ss.spec
-          specs[base_spec] ||= @specific_specs.select do |s|
-            s.spec == base_spec
-          end
-          ss.organize_dependencies(specs[base_spec].reject { |s| s == ss })
         end
       end
 

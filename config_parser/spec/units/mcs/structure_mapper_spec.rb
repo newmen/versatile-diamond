@@ -18,10 +18,16 @@ module VersatileDiamond
             end
           end
 
-          it "map and associate" do
+          it "map and associate all" do
             m = method(:associate)
             described_class.map(
-              source_links, product_links, &m).should == result
+              source_links, product_links, &m).first.should == full
+          end
+
+          it "map and associate changed" do
+            m = method(:associate)
+            described_class.map(
+              source_links, product_links, &m).last.should == changed
           end
         end
 
@@ -30,6 +36,9 @@ module VersatileDiamond
 
         describe "simple case" do
           describe "each atom has a copy" do
+            let(:n1) { n.dup }
+            let(:o1) { o.dup }
+
             let(:spec1) do
               s = Concepts::Spec.new(:spec1, n: n, c: c)
               s.link(n, c, free_bond); s
@@ -41,7 +50,6 @@ module VersatileDiamond
             end
 
             let(:spec3) do
-              n1, o1 = n.dup, o.dup
               s = Concepts::Spec.new(:spec3, n: n1, c1: c1, c2: c2, o: o1)
               s.link(n1, c1, free_bond)
               s.link(c1, c2, free_bond)
@@ -50,8 +58,12 @@ module VersatileDiamond
 
             describe "forward" do
               # with default source and products sequence
-              let(:result) do
+              let(:changed) do
                 [[[spec1, spec3], [[c, c1]]], [[spec2, spec3], [[c0, c2]]]]
+              end
+              let(:full) do
+                [[[spec1, spec3], [[n, n1], [c, c1]]],
+                [[spec2, spec3], [[c0, c2], [o, o1]]]]
               end
 
               it_behaves_like "two to one"
@@ -61,8 +73,12 @@ module VersatileDiamond
               # override default source and products sequence
               let(:source) { [spec3] }
               let(:product) { [spec1, spec2] }
-              let(:result) do
+              let(:changed) do
                 [[[spec3, spec1], [[c1, c]]], [[spec3, spec2], [[c2, c0]]]]
+              end
+              let(:full) do
+                [[[spec3, spec1], [[n1, n], [c1, c]]],
+                [[spec3, spec2], [[c2, c0], [o1, o]]]]
               end
 
               it_behaves_like "two to one"
@@ -87,8 +103,12 @@ module VersatileDiamond
               s.link(o, c1, free_bond); s
             end
 
-            let(:result) do
+            let(:changed) do
               [[[spec1, spec3], [[c, c]]], [[spec2, spec3], [[c, c1]]]]
+            end
+            let(:full) do
+              [[[spec1, spec3], [[n, n], [c, c]]],
+              [[spec2, spec3], [[c, c1], [o, o]]]]
             end
 
             it_behaves_like "two to one"
@@ -101,10 +121,22 @@ module VersatileDiamond
             let(:spec2) { methane_base }
             let(:spec3) { methyl_on_bridge_base }
 
-            let(:result) do
+            let(:changed) do
               [
                 [[spec1, spec3], [[spec1.atom(:ct), spec3.atom(:cb)]]],
                 [[spec2, spec3], [[spec2.atom(:c), spec3.atom(:cm)]]]
+              ]
+            end
+            let(:full) do
+              [
+                [[spec1, spec3], [
+                  [spec1.atom(:ct), spec3.atom(:cb)],
+                  [spec1.atom(:cl), spec3.atom(:cl)],
+                  [spec1.atom(:cr), spec3.atom(:cr)],
+                ]],
+                [[spec2, spec3], [
+                  [spec2.atom(:c), spec3.atom(:cm)]
+                ]]
               ]
             end
 
@@ -116,10 +148,25 @@ module VersatileDiamond
             let(:spec2) { bridge_base }
             let(:spec3) { methyl_on_dimer_base }
 
-            let(:result) do
+            let(:changed) do
               [
                 [[spec1, spec3], [[spec1.atom(:cb), spec3.atom(:cr)]]],
                 [[spec2, spec3], [[spec2.atom(:ct), spec3.atom(:cl)]]]
+              ]
+            end
+            let(:full) do
+              [
+                [[spec1, spec3], [
+                  [spec1.atom(:cm), spec3.atom(:cm)],
+                  [spec1.atom(:cb), spec3.atom(:cr)],
+                  [spec1.atom(:cl), spec3.atom(:_cr0)],
+                  [spec1.atom(:cr), spec3.atom(:_cl1)]
+                ]],
+                [[spec2, spec3], [
+                  [spec2.atom(:cl), spec3.atom(:_cl0)],
+                  [spec2.atom(:cr), spec3.atom(:_cr1)],
+                  [spec2.atom(:ct), spec3.atom(:cl)]
+                ]]
               ]
             end
 
@@ -131,7 +178,7 @@ module VersatileDiamond
             let(:spec2) { bridge_base }
             let(:spec3) { extended_bridge_base }
 
-            let(:result) do
+            let(:changed) do
               [
                 # order of atoms is important
                 [[spec1, spec3], [
@@ -139,6 +186,21 @@ module VersatileDiamond
                   [spec1.atom(:cb), spec3.atom(:cl)]
                 ]],
                 [[spec2, spec3], [[spec2.atom(:ct), spec3.atom(:cr)]]]
+              ]
+            end
+            let(:full) do
+              [
+                [[spec1, spec3], [
+                  [spec1.atom(:cm), spec3.atom(:ct)],
+                  [spec1.atom(:cb), spec3.atom(:cl)],
+                  [spec1.atom(:cl), spec3.atom(:_cl0)],
+                  [spec1.atom(:cr), spec3.atom(:_cr0)],
+                ]],
+                [[spec2, spec3], [
+                  [spec2.atom(:ct), spec3.atom(:cr)],
+                  [spec2.atom(:cl), spec3.atom(:_cl1)],
+                  [spec2.atom(:cr), spec3.atom(:_cr1)]
+                ]]
               ]
             end
 
@@ -150,18 +212,37 @@ module VersatileDiamond
             let(:spec2) { dimer_base }
             let(:spec3) { extended_dimer_base }
 
-            let(:result) do
+            let(:changed) do
               [
-                # order of atoms is important because algorithm use the first
-                # interset
                 [[spec1, spec3], [
                   [spec1.atom(:cm), spec3.atom(:cr)],
                   [spec1.atom(:cb), spec3.atom(:cl)]
                 ]],
                 [[spec2, spec3], [
-                  [spec2.atom(:cl), spec3.atom(:_cl1)], # last keyname
-                  # characterized by the absorption of two consecutive bridges
+                  [spec2.atom(:cl), spec3.atom(:_cl1)],
                   [spec2.atom(:cr), spec3.atom(:_cr0)]
+                ]]
+              ]
+            end
+            let(:full) do
+              [
+                [[spec1, spec3], [
+                  [spec1.atom(:cm), spec3.atom(:cr)],
+                  [spec1.atom(:cb), spec3.atom(:cl)],
+                  [spec1.atom(:cl), spec3.atom(:_cl0)],
+                  [spec1.atom(:cr), spec3.atom(:_cr1)],
+                  [spec1.atom(:_cl0), spec3.atom(:_cl3)],
+                  [spec1.atom(:_cr0), spec3.atom(:_cr3)],
+                  [spec1.atom(:_cl1), spec3.atom(:_cl4)],
+                  [spec1.atom(:_cr1), spec3.atom(:_cr4)],
+                ]],
+                [[spec2, spec3], [
+                  [spec2.atom(:cr), spec3.atom(:_cr0)],
+                  [spec2.atom(:_cl1), spec3.atom(:_cl2)],
+                  [spec2.atom(:_cr0), spec3.atom(:_cr2)],
+                  [spec2.atom(:cl), spec3.atom(:_cl1)],
+                  [spec2.atom(:_cl0), spec3.atom(:_cl5)],
+                  [spec2.atom(:_cr1), spec3.atom(:_cr5)],
                 ]]
               ]
             end

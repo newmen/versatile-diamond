@@ -18,6 +18,11 @@ module VersatileDiamond
         it { methane_base.atom(:c).should == c }
       end
 
+      describe "#keyname" do
+        it { methane_base.keyname(c).should == :c }
+        it { bridge_base.keyname(cd).should == :ct }
+      end
+
       describe "#describe_atom" do
         it "atom stores to spec" do
           spec = Spec.new(:some)
@@ -130,6 +135,16 @@ module VersatileDiamond
 
         it { links.include?(o).should be_true }
         it { links[c1].select { |a, _| a == o }.size.should == 2 }
+      end
+
+      describe "#dependent_from" do
+        it { bridge_base.dependent_from.should == Set.new }
+      end
+
+      describe "#reorganize_dependencies" do
+        before { methyl_on_bridge_base.reorganize_dependencies([bridge_base]) }
+        it { methyl_on_bridge_base.dependent_from.to_a.
+          should == [bridge_base] }
       end
 
       describe "#size" do

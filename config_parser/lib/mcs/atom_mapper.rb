@@ -16,7 +16,9 @@ module VersatileDiamond
       end
 
       class << self
-        # Maps together source and product structures
+        # Maps together source and product structures. Changes
+        # reactants if need to set some relevant value.
+        #
         # @param [Array] source the array of source specs
         # @param [Array] products the array of products specs
         # @param [Hash] names_and_specs the hash of source and products to
@@ -28,6 +30,15 @@ module VersatileDiamond
         def map(source, products, names_and_specs)
           new(source, products).map(names_and_specs)
         end
+
+        # Reverse atom mapping result
+        # @param [Array] atoms_map the atom mapping result
+        # @return [Array] reversed atom mapping result
+        def reverse(atoms_map)
+          atoms_map.map do |specs, atoms|
+            [specs.reverse, atoms.map { |pair| pair.reverse }]
+          end
+        end
       end
 
       # Initialize a new instance and store copies of source and product specs
@@ -37,16 +48,19 @@ module VersatileDiamond
         @source, @products = source.dup, products.dup
       end
 
-      # Detects mapping case and uses the appropriate algorithm
+      # Detects mapping case and uses the appropriate algorithm. Changes
+      # reactants by looking around with atom mapping result.
+      #
       # @param [Hash] names_and_specs see at #self.map same argument
       # @raise [EqualSpecsError] see at #self.map
       # @raise [StructureMapper::CannotMap] see at #self.map
       # @return [Array] see at #self.map
       def map(names_and_specs)
         reject_simple_specs!
-        full_corresponding? ?
+        result = full_corresponding? ?
           map_many_to_many(names_and_specs) :
           map_many_to_one
+
       end
 
     private
@@ -66,12 +80,26 @@ module VersatileDiamond
         @products.reject!(&context)
       end
 
-      # Find changed atom for each pair of source and product specs
+      # Looks around for each spec from source and products by passed atom
+      # mapping result
+      #
+      # @param [Array] atom_map the atom mapping result
+      # @return [Array] the passed atom_map value
+      def look_around!(atom_map)
+        @source.each { |spec| spec.look_around!(atom_map) }
+        reverse_atom_map = self.class.reverse(atom_map)
+        @products.each { |spec| spec.look_around!(reverse_atom_map) }
+        atom_map
+      end
+
+      # Find changed atom for each pair of source and product specs and setup
+      # incoherent or unfixed state for atoms if need
+      #
       # @param [Hash] names_and_specs see at #self.map same argument
       # @raise [EqualSpecsError] see at #self.map
       # @return [Array] see at #self.map
       def map_many_to_many(names_and_specs)
-        @source.map do |source_spec|
+        result = @source.map do |source_spec|
           source_name = names_and_specs[:source].find do |_, spec|
             spec == source_spec
           end.first
@@ -89,20 +117,39 @@ module VersatileDiamond
           associate_atoms(
             source_spec, product_spec, changed_source, changed_product)
         end
+        look_around!(result)
       end
 
       # Finds changed atoms for case when many structures react to one
       # @raise [StructureMapper::CannotMap] see at #self.map
       # return [Array] see at #self.map
       def map_many_to_one
-        StructureMapper.map(*links_lists) do
+        full_map, changed_map = StructureMapper.map(*links_lists) do
           |source_links, product_links, source_atoms, product_atoms|
 
-            associate_atoms(
-              links_to_specs[source_links.object_id],
-              links_to_specs[product_links.object_id],
-              source_atoms, product_atoms)
+            source = links_to_specs[source_links.object_id]
+            source_atoms = source_atoms.map do |atom|
+              source.atom(source.spec.keyname(atom))
+            end
+
+            product = links_to_specs[product_links.object_id]
+            product_atoms = product_atoms.map do |atom|
+              product.atom(product.spec.keyname(atom))
+            end
+
+            associate_atoms(source, product, source_atoms, product_atoms)
           end
+
+        look_around!(full_map)
+        # changed_map
+        changed_map.map do |specs, atoms|
+          [specs, atoms.map do |pair|
+            specs.zip(pair).map do |spec, a|
+              keyname = spec.spec.keyname(a)
+              keyname ? spec.atom(keyname) : a
+            end
+          end]
+        end
       end
 
       # Provides access to two instance variables, with pre-initializing them

@@ -5,7 +5,7 @@ module VersatileDiamond
       module ReactionRefinements
         shared_examples_for "reaction refinemenets" do
           subject do
-            described_class.new(methyl_desorption, md_names_to_specs)
+            described_class.new(hydrogen_migration, hm_names_to_specs)
           end
 
           shared_examples_for "check state" do
@@ -33,22 +33,22 @@ module VersatileDiamond
           describe "#incoherent" do
             it_behaves_like "check state" do
               let(:state) { :incoherent }
-              let(:name) { :mob }
-              let(:atom) { :methyl_on_bridge }
-              let(:keyname) { :cb }
+              let(:name) { :mod }
+              let(:atom) { :methyl_on_dimer }
+              let(:keyname) { :cl }
             end
 
             describe "property is realy state" do
-              before { subject.interpret("incoherent b(:ct)") }
-              it { activated_cd.incoherent?.should be_true }
+              before { subject.interpret("incoherent d(:cl)") }
+              it { hm_source.last.atom(:cl).incoherent?.should be_true }
             end
           end
 
           describe "#unfixed" do
             it_behaves_like "check state" do
               let(:state) { :unfixed }
-              let(:name) { :mob }
-              let(:atom) { :methyl_on_bridge }
+              let(:name) { :mod }
+              let(:atom) { :methyl_on_dimer }
               let(:keyname) { :cm }
             end
 

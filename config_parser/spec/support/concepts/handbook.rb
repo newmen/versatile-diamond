@@ -27,14 +27,18 @@ module VersatileDiamond
         # Specific atoms:
         %w(h n c cd).each do |name|
           set(:"activated_#{name}") do
-            a = SpecificAtom.new(send(name))
-            a.active!; a
+            SpecificAtom.new(send(name), options: [:active])
           end
         end
         set(:extra_activated_cd) do
           a = activated_cd.dup
           a.active!; a
         end
+        set(:activated_incoherent_cd) do
+          a = activated_cd.dup
+          a.incoherent!; a
+        end
+        set(:unfixed_c) { SpecificAtom.new(c, options: [:unfixed]) }
 
         # Bonds and positions:
         set(:free_bond) { Bond[face: nil, dir: nil] }
@@ -75,6 +79,9 @@ module VersatileDiamond
         set(:activated_bridge) do
           SpecificSpec.new(bridge_base, ct: activated_cd)
         end
+        set(:activated_incoherent_bridge) do
+          SpecificSpec.new(bridge_base, ct: activated_incoherent_cd)
+        end
         set(:extra_activated_bridge) do
           SpecificSpec.new(bridge_base, ct: extra_activated_cd)
         end
@@ -90,6 +97,9 @@ module VersatileDiamond
         set(:activated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: activated_c)
         end
+        set(:unfixed_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: unfixed_c)
+        end
         set(:methyl_on_activated_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
         end
@@ -104,7 +114,7 @@ module VersatileDiamond
         end
 
         set(:dimer_base) do
-          s = SurfaceSpec.new(:dimer_base)
+          s = SurfaceSpec.new(:dimer)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
@@ -162,11 +172,13 @@ module VersatileDiamond
             hm_source, hm_products, hm_atom_map)
         end
 
-        set(:df_source) { [activated_bridge, activated_bridge.dup] }
-        set(:df_products) { [dimer] }
+        set(:dimer_dup_ff) { dimer.dup }
+        set(:df_source) { [activated_bridge, activated_incoherent_bridge] }
+        set(:df_products) { [dimer_dup_ff] }
         set(:df_names_to_specs) do {
-          source: [[:b1, activated_bridge], [:b2, df_source.last]],
-          products: [[:d, dimer]]
+          source: [
+            [:b1, activated_bridge], [:b2, activated_incoherent_bridge]],
+          products: [[:d, dimer_dup_ff]]
         } end
         set(:df_atom_map) do
           Mcs::AtomMapper.map(df_source, df_products, df_names_to_specs)

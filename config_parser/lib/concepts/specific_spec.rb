@@ -9,7 +9,7 @@ module VersatileDiamond
       attr_reader :spec
 
       # Initialize specific spec instalce. Checks specified atom for correct
-      #   valence value
+      # valence value
       #
       # @param [Spec] spec the base spec instance
       # @param [Hash] specific_atoms references to specific atoms
@@ -26,6 +26,8 @@ module VersatileDiamond
         # @original_name = spec.name
       end
 
+      # Makes a copy of other specific spec by dup each specific atom from it
+      # @param [SpecificSpec] other the duplicating spec
       def initialize_copy(other)
         @spec = other.spec
         @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
@@ -33,9 +35,21 @@ module VersatileDiamond
 
       def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
 
-      # def name
-      #   @original_name
-      # end
+      # Builds the full name of specific spec (with specificied atom info)
+      # @return [String] the full name of specific spec
+      def full_name
+        args = @specific_atoms.reduce([]) do |arr, (keyname, atom)|
+          arr << "#{keyname}: #{'*' * atom.actives}" if atom.actives > 0
+          unless atom.relevants.empty?
+            arr += atom.relevants.map do |state|
+              "#{keyname}: #{state.to_s[0]}"
+            end
+          end
+          arr
+        end
+        args = args.empty? ? '' : "(#{args.join(', ')})"
+        "#{name}#{args}"
+      end
 
       # Gets corresponding atom, because it can be specific atom
       # @param [Symbol] keyname the atom keyname
@@ -100,6 +114,50 @@ module VersatileDiamond
         atoms + other_actives.map { |keyname, _| @spec.atom(keyname) }
       end
 
+      # Looks around by atom mapping result and changes incoherent or unfixed
+      # property of internal atom if need
+      #
+      # @param [Array] atom_map the atom mapping result from reaction
+      def look_around!(atom_map)
+        return if is_gas?
+
+        # TODO: need to check unfixing (??)
+
+        atom_map.each do |specs, corrs|
+          next unless specs.any? { |spec| spec == self }
+
+          source, _ = specs
+          xs = self == source ? [0, 1] : [1, 0]
+          corrs.each do |mirror|
+            atoms_with_links = specs.zip(mirror).map do |specific_spec, atom|
+              [specific_spec, atom, specific_spec.bonds_of(atom).size]
+            end
+
+            _, own, incedent_bonds = atoms_with_links[xs.first]
+            other, foreign, _ = atoms_with_links[xs.last]
+
+            unless own.is_a?(SpecificAtom)
+              keyname = @spec.keyname(own) # uses if differences exists
+              own = SpecificAtom.new(own)
+            end
+            diff = own.diff(foreign)
+
+            # TODO: if atom has not remain bonds then not set incoherent status (rspec it!)
+            own.incoherent! if !own.incoherent? && (other.is_gas? ||
+              (diff.include?(:incoherent) && own.valence > incedent_bonds))
+
+            own.unfixed! if !own.unfixed? && incedent_bonds == 1 &&
+              (other.is_gas? || (diff.include?(:unfixed) && !own.lattice))
+
+            # store own specific atom if atom was a simple atom
+            if keyname && (own.actives > 0 || !own.relevants.empty?)
+              @specific_atoms[keyname] = own
+              @links = nil
+            end
+          end
+        end
+      end
+
   #     def visit(visitor)
   #       @spec.visit(visitor)
   #       visitor.accept_specific_spec(self)
@@ -143,56 +201,13 @@ module VersatileDiamond
   #         @spec.links.keys.find { |spec_atom| spec_atom.same?(atom) }
   #     end
 
-  #     def look_around(atom_map)
-  #       return if is_gas?
-
-  #       # TODO: need to check unfixing
-
-  #       atom_map.each do |specs, corrs|
-  #         next unless specs.any? { |spec| spec == self }
-
-  #         source, _ = specs
-  #         xs = self == source ? [0, 1] : [1, 0]
-  #         corrs.each do |mirror|
-  #           atoms_with_links = specs.zip(mirror).map do |specific_spec, atom|
-  #             [specific_spec, specific_spec[atom], specific_spec.bonds_of(atom)]
-  #           end
-
-  #           _, own, incedent_bonds = atoms_with_links[xs.first]
-  #           other, foreign, _ = atoms_with_links[xs.last]
-
-  #           diff = own.diff(foreign)
-  #           is_osa = own.is_a?(SpecificAtom)
-  #           keyname = @spec.keyname(is_osa ? own.atom : own)
-  #           own = SpecificAtom.new(own) unless is_osa
-
-  # # puts "???? #{name}[#{keyname}]: #{diff.inspect}" unless diff.empty?
-
-  #           # TODO: if atom has not remain bonds - to clean up the incidence
-  #           if own.incoherent?
-  #             diff -= [:incoherent]
-  #           elsif other.is_gas?
-  #             diff << :incoherent
-  #           end
-
-  #           if own.unfixed? || incedent_bonds.size > 1
-  #             diff -= [:unfixed]
-  #           elsif incedent_bonds.size == 1 && !own.lattice
-  #             diff << :unfixed
-  #           end
-
-  #           unless diff.empty?
-  # # puts "++++ #{name}[#{keyname}]: #{diff.inspect}"
-  #             diff.each { |d| @options << [keyname, d] }
-  #             expire_caches!
-  #           end
-  #         end
-  #       end
-  #     end
-
       def to_s
         # @spec.to_s(@spec.atoms.merge(@specific_atoms), links)
         @spec.to_s
+      end
+
+      def inspect
+        full_name
       end
 
     protected
@@ -205,22 +220,13 @@ module VersatileDiamond
         @specific_atoms.select { |_, atom| atom.actives > 0 }
       end
 
-      # def [](atom)
-      #   unless @atoms_to_specific_atoms
-      #     @atoms_to_specific_atoms = {}
-      #     each_specific_atom do |original_atom, specific_atom|
-      #       @atoms_to_specific_atoms[original_atom] = specific_atom
-      #     end
-      #   end
-
-      #   @atoms_to_specific_atoms[atom] || atom
-      # end
-
-      # def bonds_of(atom)
-      #   links_with_specific_atoms[self.[](atom)].select do |_, link|
-      #     link.class == Bond
-      #   end
-      # end
+      # Selects bonds for passed atom
+      # @param [Atom] atom the atom for which bonds will be selected
+      # @return [Array] the array of bonds incedent to an atom
+      def bonds_of(atom)
+        ls = links[atom] || links[atom(@spec.keyname(atom))]
+        ls.select { |_, link| link.class == Bond }.map(&:last)
+      end
 
     private
 

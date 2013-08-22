@@ -13,6 +13,7 @@ module VersatileDiamond
       def initialize(links)
         @edges = Hash[links.map { |key, list| [key, list.dup] }]
         @original_links = links
+        @changed_vertices = {}
       end
 
       def_delegator :@edges, :size

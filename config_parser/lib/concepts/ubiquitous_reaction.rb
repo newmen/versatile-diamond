@@ -76,6 +76,13 @@ module VersatileDiamond
         @source.select { |v| v.is_gas? }.size
       end
 
+      # Iterates each source spec
+      # @yield [TerminationSpec] do for each reactant
+      # @return [Enumerator] if block is not given
+      def each_source(&block)
+        block_given? ? @source.each(&block) : @source.each
+      end
+
   #     def to_s
   #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
   #       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
@@ -84,7 +91,7 @@ module VersatileDiamond
   #     def visit(visitor)
   #       analyze_and_source_specs(visitor)
 
-  #       if rate > 0
+  #       if full_rate > 0
   #         accept_self(visitor)
   #       else
   #         visitor.accept_abstract_equation(self)

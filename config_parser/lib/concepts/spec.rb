@@ -22,10 +22,17 @@ module VersatileDiamond
       end
 
       # Returns a instance of atom by passed atom keyname
-      # @param [Symbol] atom_keyname the key of atom instnance
+      # @param [Symbol] keyname the key of atom instnance
       # @return [Atom] the atom or nil
-      def atom(atom_keyname)
-        @atoms[atom_keyname]
+      def atom(keyname)
+        @atoms[keyname]
+      end
+
+      # Returns a keyname which points to passed atom
+      # @param [Atom] atom the atom for which keyname will be found
+      # @return [Symbol] the keyname of atom
+      def keyname(atom)
+        @atoms.invert[atom]
       end
 
       # Apends atom to spec instance
@@ -160,50 +167,34 @@ module VersatileDiamond
         end
       end
 
-      # def keyname(atom)
-      #   @atoms.invert[atom]
-      # end
-
-      # def visit(visitor)
-      #   visitor.accept_spec(self)
-      # end
-
-      # TODO: rspec and doc
+      # Contain all dependecies from another specs, but finaly contain just one
+      # element after reorganize dependencies
+      # @return [Set] dependencies from another specs
       def dependent_from
         @dependent_from ||= Set.new
       end
 
-      # def reorganize_dependencies(used_specs, links = @links)
-      #   # select and sort possible chilren
-      #   possible_parents = used_specs.select do |s|
-      # TODO: why check names eq??
-      #     s.name != @name && (s.size < size ||
-      #       (s.size == size && s.external_bonds > external_bonds))
-      #   end
-      #   possible_parents.sort! do |a, b|
-      #     if a.size == b.size
-      #       a.external_bonds <=> b.external_bonds
-      #     else
-      #       b.size <=> a.size
-      #     end
-      #   end
+      # Reorganize dependencies from another specs by containing check
+      # @param [Array] possible_parents the array of possible parents in
+      #   descending order
+      def reorganize_dependencies(possible_parents)
+      # def reorganize_dependencies(possible_parents, links = @links)
+        # find and reorganize dependencies
+        possible_parents.each do |possible_parent|
+          if dependent_from.include?(possible_parent) ||
+            contain?(links, possible_parent.links)
 
-      #   # find and reorganize dependencies
-      #   possible_parents.each do |possible_parent|
-      #     if dependent_from.include?(possible_parent) ||
-      #       contain?(links, possible_parent.links)
-
-      #       dependent_from.clear
-      #       dependent_from << possible_parent
-      #       break
-      #     end
-      #   end
+            dependent_from.clear
+            dependent_from << possible_parent
+            break
+          end
+        end
 
       #   # clear dependecies if dependent only from itself
       #   if dependent_from.size == 1 && dependent_from.include?(self)
       #     dependent_from.clear
       #   end
-      # end
+      end
 
       # Gets a number of atoms
       # @return size of current spec
@@ -229,6 +220,10 @@ module VersatileDiamond
         str << "\n)"
         str
       end
+
+      # def visit(visitor)
+      #   visitor.accept_spec(self)
+      # end
 
     protected
 
@@ -316,6 +311,10 @@ module VersatileDiamond
         bonds.size
       end
 
+      # The large links contains small links?
+      # @param [Hash] large_links the links from large spec
+      # @param [Hash] small_links the links from small spec
+      # @return [Boolean] contains or not
       def contain?(large_links, small_links)
         HanserRecursiveAlgorithm.contain?(large_links, small_links)
       end

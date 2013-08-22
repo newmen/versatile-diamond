@@ -29,6 +29,7 @@ module VersatileDiamond
         #   corresponding to calling this method) and two arrays of vertices
         #   that have been changed in the corresponding graphs
         # @raise [CannotMap] when algorithm cannot be applied
+        # @return [Array] the structure atom mapping result
         def map(source_links_list, product_links_list, &block)
           new(source_links_list, product_links_list).map(&block)
         end
@@ -62,28 +63,39 @@ module VersatileDiamond
       #
       # @yield [Hash, Hash, Array, Array] see at #self.map same argument
       # @raise [CannotMap] see at #self.map
+      # @return [Array] the structure atom mapping result with two elements:
+      #   the first is full mapping result and the second just changed mapping
+      #   result
       def map(&block)
         @few_graphs.sort! { |a, b| b.size <=> a.size }
 
         @boundary_big_vertices = nil
-        @few_graphs.map do |small_graph|
+        changed_map = []
+        full_map = @few_graphs.map do |small_graph|
           @small_graph = small_graph
           @remaining_small_vertices = nil
 
           big_mapped_vertices, small_mapped_vertices = find_interset
 
           changed_big, changed_small = if @remaining_small_vertices
-            select_on_remaining(big_mapped_vertices, small_mapped_vertices)
-          else
-            select_on_bondary(big_mapped_vertices, small_mapped_vertices)
-          end
+              select_on_remaining(big_mapped_vertices, small_mapped_vertices)
+            else
+              select_on_bondary(big_mapped_vertices, small_mapped_vertices)
+            end
+          changed_map << associate(changed_big, changed_small, &block)
 
           @boundary_big_vertices =
             @big_graph.boundary_vertices(big_mapped_vertices)
           @big_graph.remove_vertices!(big_mapped_vertices)
 
-          associate(changed_big, changed_small, &block)
+          # exchange to original atom for full atom mapping result
+          small_mapped_vertices.map! do |v|
+            @small_graph.changed_vertex(v) || v
+          end
+          associate(big_mapped_vertices, small_mapped_vertices, &block)
         end
+
+        [full_map, changed_map]
       end
 
     private
@@ -210,9 +222,7 @@ module VersatileDiamond
             (vertices_with_differ_edges(mapped_big, big_to_small) +
               extreme_vertices(mapped_big)).uniq
           end
-        changed_small = changed_big.map do |v|
-          big_to_small[v]
-        end
+        changed_small = changed_big.map { |v| big_to_small[v] }
 
         [changed_big, changed_small]
       end

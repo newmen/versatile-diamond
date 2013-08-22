@@ -44,9 +44,13 @@ module VersatileDiamond
         end
       end
 
-      # def diff(other)
-      #   other.is_a?(SpecificAtom) ? other.diff(self) : []
-      # end
+      # Compares with other atom
+      # @param [Atom | AtomReference | SpecificAtom] other the atom with which
+      #   compare
+      # @return [Array] the array of relevants state symbols
+      def diff(other)
+        other.is_a?(SpecificAtom) ? other.relevants : []
+      end
 
       def to_s
         @lattice ? "#{name}%#{@lattice}" : name.to_s

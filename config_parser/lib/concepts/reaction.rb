@@ -127,10 +127,7 @@ module VersatileDiamond
       # @return [Array] reversed parameters for creating reverse reaction
       # @override
       def reverse_params
-        reversed_atom_map = @atoms_map.map do |specs, indexes|
-          [specs.reverse, indexes.map { |pair| pair.reverse }]
-        end
-        [*super, reversed_atom_map]
+        [*super, Mcs::AtomMapper.reverse(@atoms_map)]
       end
 
       # Duplicates internal properties of reaction such as specs and atom

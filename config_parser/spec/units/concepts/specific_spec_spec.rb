@@ -10,6 +10,25 @@ module VersatileDiamond
         it { methyl.dup.external_bonds.should == 3 }
       end
 
+      describe "#full_name" do
+        it { methane.full_name.should == 'methane' }
+        it { methyl.full_name.should == 'methane(c: *)' }
+
+        it { bridge.full_name.should == 'bridge' }
+        it { activated_bridge.full_name.should == 'bridge(ct: *)' }
+        it { extra_activated_bridge.full_name.should == 'bridge(ct: **)' }
+        it { activated_incoherent_bridge.full_name.
+          should == 'bridge(ct: *, ct: i)' }
+
+        it { methyl_on_bridge.full_name.should == 'methyl_on_bridge' }
+        it { activated_methyl_on_bridge.full_name.
+          should == 'methyl_on_bridge(cm: *)' }
+        it { unfixed_methyl_on_bridge.full_name.
+          should == 'methyl_on_bridge(cm: u)' }
+        it { methyl_on_activated_bridge.full_name.
+          should == 'methyl_on_bridge(cb: *)' }
+      end
+
       describe "#atom" do
         it { methyl.atom(:c).should == activated_c }
         it { bridge.atom(:ct).should == cd }
@@ -80,6 +99,13 @@ module VersatileDiamond
           should == activated_cd }
         it { extra_activated_bridge.changed_atoms(activated_bridge).first.
           actives.should == 2 }
+      end
+
+      describe "#look_around!" do
+        before(:each) { methyl_on_bridge.look_around!(md_atom_map) }
+        it { methyl_on_bridge.atom(:cm).should be_a(SpecificAtom) }
+        it { methyl_on_bridge.atom(:cm).unfixed?.should be_true }
+        it { methyl_on_bridge.atom(:cm).incoherent?.should be_true }
       end
     end
 

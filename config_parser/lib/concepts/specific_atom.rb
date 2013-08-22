@@ -16,9 +16,10 @@ module VersatileDiamond
 
       # Initialize a new instance
       # @param [Atom] atom the specified atom
-      def initialize(atom)
+      # @option [Array] :options the atom configuration
+      def initialize(atom, options: [])
         @atom = atom.dup # because atom can be changed by mapping algorithm
-        @options = []
+        @options = options
       end
 
       # Makes copy of another instance
@@ -26,6 +27,12 @@ module VersatileDiamond
       def initialize_copy(other)
         @atom = other.atom.dup
         @options = other.options.dup
+      end
+
+      # Gets valence of specific atom
+      # @return [Integer] the number of valence bonds
+      def valence
+        @atom.valence - actives
       end
 
       # Compares current instance with other
@@ -67,13 +74,19 @@ module VersatileDiamond
         @options.select { |o| o == :active }.size
       end
 
-      # def diff(other)
-      #   if self.class == other.class
-      #     other.relevants - relevants
-      #   else
-      #     relevants
-      #   end
-      # end
+      # Compares with other atom
+      # @param [Atom | AtomReference | SpecificAtom] other the atom with which
+      #   compare
+      # @return [Array] the array of relevants state symbols
+      def diff(other)
+        self.class == other.class ? other.relevants - relevants : []
+      end
+
+      # Gets only relevant states
+      # @return [Array] the array of relevant states
+      def relevants
+        @options - [:active]
+      end
 
       def to_s
         chars = @options.map do |value|
@@ -90,9 +103,6 @@ module VersatileDiamond
 
       attr_reader :atom, :options
 
-      # def relevants
-      #   @options - [:active]
-      # end
     end
 
   end

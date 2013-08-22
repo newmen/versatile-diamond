@@ -54,6 +54,14 @@ module VersatileDiamond
         it { reaction.reverse.gases_num.should == 0 } # it's no use?
       end
 
+      describe "#each_source" do
+        let(:collected_source) do
+          reaction.each_source.with_object([]) { |spec, arr| arr << spec }
+        end
+        it { collected_source.size.should == 2 }
+        it { collected_source.should include(active_bond, hydrogen_ion) }
+      end
+
       describe "#full_rate" do
         before do
           Tools::Config.gas_temperature(1000, 'K')
