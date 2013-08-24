@@ -6,8 +6,6 @@ module VersatileDiamond
     class There
       extend Forwardable
 
-      # attr_reader :where
-
       # Initialize a new instance of there object
       # @param [Where] where the basic where object
       # @param [Hash] positions the hash where keys is atoms of reactants and
@@ -18,18 +16,28 @@ module VersatileDiamond
 
       def_delegators :@where, :specs, :description
 
+      # Compares two there objects
+      # @param [There] other with which comparison
+      # @return [Boolean] are their wheres equal
+      def same?(other)
+        where == other.where
+      end
+
+      # Verifies that passed there object is covered by the current
+      # @param [There] other the verifying there object
+      # @return [Boolean] is cover or not
+      def cover?(other)
+        other.where.parents.include?(@where)
+      end
+
       # def visit(visitor)
       #   visitor.accept_where(@where)
       # end
 
-      # def same?(other)
-      #   @where.environment == other.where.environment &&
-      #     @where.description == other.where.description
-      # end
+    protected
 
-      # def cover?(other)
-      #   @where.dependent_from.include?(other.where)
-      # end
+      attr_reader :where
+
     end
 
   end

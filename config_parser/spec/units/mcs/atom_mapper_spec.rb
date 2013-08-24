@@ -21,6 +21,18 @@ module VersatileDiamond
               ] }
           end
 
+          describe "methyl activation" do
+            it { ma_atom_map.should == [
+                [[ma_source.first, activated_methyl_on_bridge],
+                  [[c, activated_c]]]
+              ] }
+
+            describe "methyl on bridge isn't specified" do
+              before { ma_atom_map } # runs atom mapping
+              it { methyl_on_bridge.atom(:cm).should be_a(Concepts::Atom) }
+            end
+          end
+
           describe "dimer hydrogen migration" do
             it { hm_atom_map.should == [
                 [[methyl_on_dimer, activated_methyl_on_dimer],
@@ -52,6 +64,13 @@ module VersatileDiamond
                     activated_bridge.atom(:ct),
                     methyl_on_dimer.atom(:cl)
                   ]]]
+              ] }
+          end
+
+          describe "methyl deactivation" do
+            it { dm_atom_map.should == [
+                [[activated_methyl_on_bridge, methyl_on_bridge],
+                  [[activated_c, c]]]
               ] }
           end
 

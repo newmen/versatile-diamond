@@ -120,17 +120,14 @@ module VersatileDiamond
       def used_atom(keyname, atom_str)
         spec_name, atom_keyname = match_used_atom(atom_str)
         if spec_name == @concept.name
-          @concept.dependent_from << @concept
           atom = Concepts::AtomReference.new(@concept, atom_keyname)
           @concept.describe_atom(keyname, atom)
         elsif @aliases_to && (alias_to = @aliases_to[spec_name])
-          @concept.dependent_from << alias_to.first
           @concept.rename_atom(alias_to.last[atom_keyname], keyname)
         else
           # When atom is used in another spec then accumulate each atoms and
           # links from them
           spec = Tools::Chest.spec(spec_name)
-          @concept.dependent_from << spec
           @concept.adsorb(spec) { |k, gk, _| k == atom_keyname ? keyname : gk }
         end
       end

@@ -5,9 +5,21 @@ module VersatileDiamond
     # reaction
     class TerminationSpec
 
+      # Makes useful method for get behavior like specific spec
+      # @return [Symbol] the name of spec
+      def full_name
+        name
+      end
+
       # Termination spec cannot belong to the gas phase
       # @return [Boolean] false
       def is_gas?
+        false
+      end
+
+      # Termination spec isn't simple
+      # @return [Boolean] false
+      def simple?
         false
       end
 

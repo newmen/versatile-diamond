@@ -4,7 +4,7 @@ module VersatileDiamond
   module Concepts
 
     describe Reaction do
-      shared_examples_for "check duplicate" do
+      shared_examples_for "check duplicate property" do
         it { subject.name.should =~ /tail$/ }
         it { subject.source.should_not == df_source }
         it { subject.source.first.should_not == df_source.first }
@@ -38,14 +38,14 @@ module VersatileDiamond
       describe "#duplicate" do
         subject { dimer_formation.duplicate('tail') }
 
-        it_behaves_like "check duplicate"
+        it_behaves_like "check duplicate property"
         it { subject.should be_a(described_class) }
       end
 
       describe "#lateral_duplicate" do
         subject { dimer_formation.lateral_duplicate('tail', [on_end]) }
 
-        it_behaves_like "check duplicate"
+        it_behaves_like "check duplicate property"
         it { subject.should be_a(LateralReaction) }
       end
 
@@ -79,20 +79,69 @@ module VersatileDiamond
         it { dimer_formation.reverse.positions.should == [position] }
       end
 
-      describe "#each_source" do
-        shared_examples_for "some reaction" do
-          it { reaction.each_source.to_a.should == [spec] }
+      let(:reaction) { dimer_formation.duplicate('dup') }
+      let(:lateral) { dimer_formation.lateral_duplicate('tail', [on_end]) }
+
+      describe "#same?" do
+        def make_same(type)
+          source = [methyl_on_dimer.dup, activated_dimer.dup]
+          products = [activated_methyl_on_dimer.dup, dimer.dup]
+          names_to_specs = {
+            source: [[:f, source.first], [:s, source.last]],
+            products: [[:f, products.first], [:s, products.last]]
+          }
+          atom_map = Mcs::AtomMapper.map(source, products, names_to_specs)
+          Reaction.new(type, 'duplicate', source, products, atom_map)
         end
 
-        it_behaves_like "some reaction" do
-          let(:reaction) { methyl_desorption }
-          let(:spec) { methyl_on_bridge }
+        let(:same) { make_same(:forward) }
+        it { hydrogen_migration.same?(same).should be_true }
+        it { same.same?(hydrogen_migration).should be_true }
+
+        it { methyl_activation.same?(methyl_deactivation).should be_false }
+        it { methyl_desorption.same?(hydrogen_migration).should be_false }
+
+        describe "different types" do
+          let(:reverse) { make_same(:reverse) }
+          it { hydrogen_migration.same?(same).should be_true }
+          it { same.same?(hydrogen_migration).should be_true }
         end
 
-        it_behaves_like "some reaction" do
-          let(:reaction) { dimer_formation.reverse }
-          let(:spec) { df_products.first }
+        describe "positions are different" do
+          before(:each) do
+            hydrogen_migration.positions << [methyl_on_dimer.atom(:cb),
+              activated_dimer.atom(:cr), position_front]
+          end
+
+          it { hydrogen_migration.same?(same).should be_false }
+          it { same.same?(hydrogen_migration).should be_false }
         end
+
+        describe "lateral reaction" do
+          it { reaction.same?(lateral).should be_true }
+        end
+      end
+
+      describe "#complex_source_covered_by?" do
+        it { methyl_activation.complex_source_covered_by?(adsorbed_h).
+          should be_true }
+        it { methyl_activation.complex_source_covered_by?(active_bond).
+          should be_false }
+
+        it { methyl_deactivation.complex_source_covered_by?(active_bond).
+          should be_true }
+        it { methyl_deactivation.complex_source_covered_by?(adsorbed_h).
+          should be_true }
+      end
+
+      describe "#organize_dependencies! and #more_complex" do
+        before(:each) do
+          lateral_reactions = [lateral]
+          reaction.organize_dependencies!(lateral_reactions)
+          methyl_desorption.organize_dependencies!(lateral_reactions)
+        end
+        it { reaction.more_complex.should == [lateral] }
+        it { methyl_desorption.more_complex.should be_empty }
       end
     end
 

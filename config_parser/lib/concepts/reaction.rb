@@ -48,48 +48,51 @@ module VersatileDiamond
         @positions ||= []
       end
 
-      # def same?(other)
-      #   is_same_positions = (!@positions && !other.positions) ||
-      #     (@positions && other.positions &&
-      #       lists_are_identical?(@positions, other.positions) do |pos1, pos2|
-      #         pos1.last == pos2.last &&
-      #           ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
-      #             (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
-      #       end)
+      # Also compares positions in both reactions
+      # @param [UbiquitousReaction] see at #super same argument
+      # @override
+      def same?(other)
+        is_same_positions =
+          lists_are_identical?(positions, other.positions) do |pos1, pos2|
+            pos1.last == pos2.last &&
+              ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
+                (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
+          end
 
-      #   is_same_positions && super
-      # end
+        is_same_positions && super
+      end
 
-      # def simple_source
-      #   @simple_source ||= @source.select do |specific_spec|
-      #     specific_spec.simple?
-      #   end
-      # end
+      # Selects complex source specs and them changed atom
+      # @return [Array] cached array of complex source specs
+      def complex_source_covered_by?(termination_spec)
+        return @complex_spec_with_atom if @complex_spec_with_atom
+        specs, atoms = @atoms_map.first
+        termination_spec.cover?(specs.first, atoms.first.first)
+      end
 
-      # def complex_source
-      #   @complex_source ||= @source - simple_source
-      # end
+      # Organize dependencies from another lateral reactions
+      # @param [Array] lateral_reactions the possible children
+      # @override but another type of argument
+      def organize_dependencies!(lateral_reactions)
+        applicants = []
+        lateral_reactions.each do |reaction|
+          applicants << reaction if same?(reaction)
+        end
 
-      # def organize_dependencies(lateral_equations)
-      #   applicants = []
-      #   lateral_equations.each do |equation|
-      #     applicants << equation if same?(equation)
-      #   end
+        return if applicants.empty?
 
-      #   return if applicants.empty?
+        loop do
+          inc = applicants.select do |reaction|
+            applicants.find do |unr|
+              reaction != unr && reaction.more_complex.include?(unr)
+            end
+          end
+          break if inc.empty?
+          applicants = inc
+        end
 
-      #   loop do
-      #     inc = applicants.select do |equation|
-      #       applicants.find do |uneq|
-      #         equation != uneq && equation.dependent_from.include?(uneq)
-      #       end
-      #     end
-      #     break if inc.empty?
-      #     applicants = inc
-      #   end
-
-      #   applicants.each { |equation| dependent_from << equation }
-      # end
+        applicants.each { |reaction| more_complex << reaction }
+      end
 
     protected
 

@@ -5,6 +5,7 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       extend Forwardable
+      include BondsCounter
 
       attr_reader :spec
 
@@ -31,6 +32,7 @@ module VersatileDiamond
       def initialize_copy(other)
         @spec = other.spec
         @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
+        @links = nil
       end
 
       def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
@@ -95,6 +97,7 @@ module VersatileDiamond
       def extend!
         external_bonds_after_extend unless @extended_spec
         @external_bonds_after_extend = nil
+        @links = nil
         @spec = @extended_spec
       end
 
@@ -130,7 +133,7 @@ module VersatileDiamond
           xs = self == source ? [0, 1] : [1, 0]
           corrs.each do |mirror|
             atoms_with_links = specs.zip(mirror).map do |specific_spec, atom|
-              [specific_spec, atom, specific_spec.bonds_of(atom).size]
+              [specific_spec, atom, specific_spec.internal_bonds_for(atom)]
             end
 
             _, own, incedent_bonds = atoms_with_links[xs.first]
@@ -160,8 +163,8 @@ module VersatileDiamond
 
       # Gets parent specific spec
       # @return [SpecificSpec] the parten specific spec or nil
-      def dependent_from
-        @dependent_from
+      def parent
+        @parent
       end
 
       # Organize dependencies from another similar species. Dependencies set if
@@ -170,7 +173,7 @@ module VersatileDiamond
       #
       # @param [Array] similar_specs the array of specs where each spec has
       #   same basic spec
-      def organize_dependencies(similar_specs)
+      def organize_dependencies!(similar_specs)
         similar_specs = similar_specs.reject do |s|
           s == self || s.specific_atoms.size > @specific_atoms.size
         end
@@ -182,7 +185,7 @@ module VersatileDiamond
           end
         end
 
-        @dependent_from = similar_specs.find do |ss|
+        @parent = similar_specs.find do |ss|
           ss.active_bonds_num <= active_bonds_num &&
             ss.specific_atoms.all? do |keyname, atom|
               a = @specific_atoms[keyname]
@@ -192,26 +195,29 @@ module VersatileDiamond
         end
       end
 
+      # Compares two specific specs
+      # @param [TerminationSpec | SpecificSpec] other with which comparison
+      # @return [Boolean] the same or not
+      def same?(other)
+        self.class == other.class && @spec == other.spec && correspond?(other)
+      end
+
+      # Checks termination atom at the inner atom which belongs to current spec
+      # @param [Atom | SpecificAtom] internal_atom the atom which belongs to
+      #   current spec
+      # @param [Atom] term_atom the termination atom
+      # @return [Boolean] has termination atom or not
+      def has_termination_atom?(internal_atom, term_atom)
+        (Atom.is_hydrogen?(term_atom) &&
+          external_bonds_for(internal_atom) > 0) ||
+            links[internal_atom].find do |spec_atom, link|
+              link.class == Bond && spec_atom.same?(term_atom)
+            end
+      end
+
   #     def visit(visitor)
   #       @spec.visit(visitor)
   #       visitor.accept_specific_spec(self)
-  #     end
-
-  #     def same?(other)
-  #       other == self ||
-  #         ((self.is_a?(other.class) || other.is_a?(self.class)) &&
-  #           @spec == other.spec &&
-  #             (@options == other.options || (!@options.empty? &&
-  #               @options.size == other.options.size && correspond?(other))))
-  #     end
-
-  #     def active?
-  #       active_bonds_num > 0
-  #     end
-
-  #     def has_atom?(atom)
-  #       (Atom.is_hydrogen?(atom) && @spec.external_bonds > 0) ||
-  #         @spec.links.keys.find { |spec_atom| spec_atom.same?(atom) }
   #     end
 
       def to_s
@@ -242,53 +248,30 @@ module VersatileDiamond
       # Selects bonds for passed atom
       # @param [Atom] atom the atom for which bonds will be selected
       # @return [Array] the array of bonds incedent to an atom
-      def bonds_of(atom)
-        ls = links[atom] || links[atom(@spec.keyname(atom))]
-        ls.select { |_, link| link.class == Bond }.map(&:last)
+      # @override
+      def internal_bonds_for(atom)
+        valid_atom = links[atom] ? atom : atom(@spec.keyname(atom))
+        super(atom)
       end
-
-    private
 
       # Returns original links of base spec but exchange correspond atoms to
       # specific atoms
       #
-      # @return [Hash] the hash of all links between atoms
+      # @return [Hash] cached hash of all links between atoms
       def links
         @links ||= @spec.links_with_replace_by(@specific_atoms)
       end
 
-      # def keynames_to_specific_atoms
-      #   @keynames_to_specific_atoms ||=
-      #     @options.each_with_object({}) do |(atom_keyname, value), hash|
-      #       specific_atom = hash[atom_keyname] ||
-      #         SpecificAtom.new(@spec[atom_keyname])
+    private
 
-      #       case value
-      #       when :incoherent then specific_atom.incoherent!
-      #       when :unfixed then specific_atom.unfixed!
-      #       when '*' then specific_atom.active!
-      #       end
-
-      #       hash[atom_keyname] = specific_atom
-      #     end
-      # end
-
-      # def each_specific_atom(&block)
-      #   keynames_to_specific_atoms.each do |atom_keyname, specific_atom|
-      #     block[@spec[atom_keyname], specific_atom]
-      #   end
-      # end
-
-      # def expire_caches!
-      #   @atoms_to_specific_atoms = nil
-      #   @keynames_to_specific_atoms = nil
-      #   @links_with_specific_atoms = nil
-      # end
-
-      # def correspond?(other)
-      #   HanserRecursiveAlgorithm.contain?(
-      #     links_with_specific_atoms, other.links_with_specific_atoms)
-      # end
+      # Verifies that the passed instance is correspond to the current, by
+      # using the Hanser's algorithm
+      #
+      # @param [SpecificSpec] other see at #same? same argument
+      # @return [Boolean] the result of Hanser's algorithm
+      def correspond?(other)
+        HanserRecursiveAlgorithm.contain?(links, other.links)
+      end
     end
 
   end

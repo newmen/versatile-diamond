@@ -3,6 +3,8 @@ module VersatileDiamond
 
     # The class instance contains atoms and bonds between them.
     class Spec < Named
+      include BondsCounter
+
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
 
@@ -121,13 +123,6 @@ module VersatileDiamond
         replaced_links
       end
 
-      # Counts external bonds for atom
-      # @param [Atom] atom the atom for wtich need to count bonds
-      # @return [Integer] number of bonds
-      def external_bonds_for(atom)
-        atom.valence - internal_bonds_for(atom)
-      end
-
       # Summarizes external bonds of all internal atoms
       # @return [Integer] sum of external bonds
       def external_bonds
@@ -160,39 +155,37 @@ module VersatileDiamond
         rescue Tools::Chest::KeyNameError
           extendable_spec = self.class.new(extended_name)
           extendable_spec.adsorb(self)
-          extendable_spec.dependent_from << self
           extendable_spec.extend!
           Tools::Chest.store(extendable_spec)
           extendable_spec
         end
       end
 
-      # Contain all dependecies from another specs, but finaly contain just one
-      # element after reorganize dependencies
-      # @return [Set] dependencies from another specs
-      def dependent_from
-        @dependent_from ||= Set.new
+      # Gets parent of current spec
+      # @return [Spec] the parent
+      def parent
+        parents.first
       end
 
-      # Reorganize dependencies from another specs by containing check
+      # Organize dependencies from another specs by containing check
       # @param [Array] possible_parents the array of possible parents in
       #   descending order
-      def reorganize_dependencies(possible_parents)
+      def organize_dependencies!(possible_parents)
       # def reorganize_dependencies(possible_parents, links = @links)
         # find and reorganize dependencies
         possible_parents.each do |possible_parent|
-          if dependent_from.include?(possible_parent) ||
+          if parents.include?(possible_parent) ||
             contain?(links, possible_parent.links)
 
-            dependent_from.clear
-            dependent_from << possible_parent
+            parents.clear
+            parents << possible_parent
             break
           end
         end
 
       #   # clear dependecies if dependent only from itself
-      #   if dependent_from.size == 1 && dependent_from.include?(self)
-      #     dependent_from.clear
+      #   if parents.size == 1 && parents.include?(self)
+      #     parents.clear
       #   end
       end
 
@@ -303,12 +296,12 @@ module VersatileDiamond
         keyname.to_sym
       end
 
-      # Counts internal bonds for atom
-      # @param [Atom] atom the atom for wtich need to count bonds
-      # @return [Integer] number of bonds
-      def internal_bonds_for(atom)
-        bonds = @links[atom].select { |_, link| link.class == Bond }
-        bonds.size
+      # Contain all dependecies from another specs, but finaly contain just one
+      # element after organize dependencies
+      #
+      # @return [Set] dependencies from another specs
+      def parents
+        @parents ||= Set.new
       end
 
       # The large links contains small links?

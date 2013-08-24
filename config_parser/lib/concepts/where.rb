@@ -11,7 +11,7 @@ module VersatileDiamond
       # @param [String] description the description of instance which will be
       #   added to end of name of lateral reaction
       # @option [Array] :specs the target specific specs
-      def initialize(name, description, specs: Set.new)
+      def initialize(name, description, specs: [])
         super(name)
         @description = description
         @raw_positions = {}
@@ -37,7 +37,14 @@ module VersatileDiamond
         other.raw_positions.each do |target, links|
           links.each { |atom, pos| raw_position(target, atom, pos) }
         end
-        # dependent_from << other
+        @specs += other.specs
+        parents << other
+      end
+
+      # Gets a parents (position of which is adsorbed) of current where object
+      # @return [Array] the array of parents
+      def parents
+        @parents ||= []
       end
 
       # Concretize current instance by creating there object
@@ -52,10 +59,6 @@ module VersatileDiamond
 
         There.new(self, positions)
       end
-
-    #   def dependent_from
-    #     @dependent_from ||= Set.new
-    #   end
 
     protected
 

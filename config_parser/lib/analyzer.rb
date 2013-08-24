@@ -37,6 +37,12 @@ module VersatileDiamond
         next_line || break
       end
 
+      begin
+        Tools::Shunter.organize_dependecies!
+      rescue Tools::Shunter::ReactionDuplicate => e
+        syntax_error('.reaction_duplicate', first: e.first, second: e.second)
+      end
+
     rescue Errors::SyntaxError => e
       puts e.message(@config_path, @line_number + 1)
     end

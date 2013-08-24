@@ -120,6 +120,7 @@ events
 
   reaction 'methyl activation'
     # TODO: должна быть уточнением реакции десорбции водорода
+    # TODO: может быть следует использовать methyl_on_bridge?
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       unfixed methyl_on_dimer(:cm)
 

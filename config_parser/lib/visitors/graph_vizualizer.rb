@@ -66,13 +66,6 @@ module VersatileDiamond
       end
 
       def generate
-        # organization calls order is important!
-        # reorganize_specs_dependencies
-        organize_specific_spec_dependencies
-        check_equations_for_duplicates
-        organize_equations_dependencies
-        purge_unused_entities
-
         # draw calls order is important!
         draw_specs
         draw_specific_specs
@@ -288,77 +281,6 @@ module VersatileDiamond
             end
           end
           depend_from_ss << spec
-        end
-      end
-
-      def purge_unused_entities
-        # purge order is important!
-        @abstract_equations.select! do |abs_equation|
-          children = @real_equations.select do |equation|
-            equation.parent == abs_equation
-          end
-          children.size > 1
-        end
-
-        all_equations = @abstract_equations + @ubiquitous_equations +
-          @real_equations + @lateral_equations
-        loop do
-          old_size = @specific_specs.size
-          @specific_specs.select! do |specific_spec|
-            @specific_specs.any? { |ss| ss.dependent_from == specific_spec } ||
-              all_equations.any? do |eq|
-                eq.source.any? { |ss| specific_spec.same?(ss) }
-              end
-          end
-          break if old_size == @specific_specs.size
-        end
-
-        @base_specs.select! do |spec|
-          dep_from_s = @base_specs.any? do |s|
-            s.dependent_from.include?(spec)
-          end
-          dep_from_ss = dep_from_s || @specific_specs.any? do |specific_spec|
-            specific_spec.spec == spec
-          end
-          dep_from_ss || @wheres.any? { |where| where.specs.include?(spec) }
-        end
-      end
-
-      def check_equations_for_duplicates
-        checker = -> equations do
-          equations = equations.dup
-          until equations.empty?
-            equation = equations.pop
-            same_equation = equations.find { |eq| equation.same?(eq) }
-            if same_equation
-              # TODO: move to syntax_error
-              raise %Q|Equation "#{equation.name}" is a duplicate of "#{same_equation.name}"|
-            end
-          end
-        end
-
-        checker[@ubiquitous_equations]
-        checker[@real_equations]
-        checker[@lateral_equations]
-      end
-
-      def organize_equations_dependencies
-        # order of dependencies organization is important!
-        not_ubiquitous_equations = @real_equations + @lateral_equations
-        @ubiquitous_equations.each do |equation|
-          equation.organize_dependencies(not_ubiquitous_equations)
-        end
-        @lateral_equations.each do |equation|
-          equation.organize_dependencies(@lateral_equations)
-        end
-        @real_equations.each do |equation|
-          equation.organize_dependencies(@lateral_equations)
-        end
-
-        # it's need because using in equation specs could be modified by
-        # look around atom mapping
-        (@ubiquitous_equations + not_ubiquitous_equations).each do |equation|
-          equation.check_and_clear_parent_if_need
         end
       end
 

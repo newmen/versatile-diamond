@@ -16,13 +16,24 @@ module VersatileDiamond
         0
       end
 
+      # Compares with an other spec
+      # @param [TerminationSpec | SpecificSpec] other with which comparison
+      # @return [Boolean] is specs same or not
+      def same?(other)
+        self.class == other.class
+      end
+
+      # Verifies that passed specific spec is covered by the current
+      # @param [SpecificSpec] specific_spec the verifying spec
+      # @param [Atom | SpecificAtom] atom the verifying atom
+      # @return [Boolean] is cover or not
+      def cover?(specific_spec, atom)
+        !specific_spec.is_gas? && atom.is_a?(SpecificAtom) && atom.actives > 0
+      end
+
       def to_s
         name
       end
-
-      # def cover?(specific_spec)
-      #   specific_spec.active?
-      # end
     end
 
   end

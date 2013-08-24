@@ -10,6 +10,8 @@ RSpec.configure do |config|
   config.include VersatileDiamond::Concepts::Support::Handbook
   config.include VersatileDiamond::Concepts::Support::LatticedRefAtom,
     latticed_ref_atom: true
+  config.include VersatileDiamond::Concepts::Support::IsTerminationSpec,
+    termination_spec: true
 
   config.include VersatileDiamond::Interpreter::Support::Handbook,
     type: :interpreter

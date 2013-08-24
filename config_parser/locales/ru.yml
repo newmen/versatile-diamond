@@ -17,6 +17,9 @@ ru:
     wrong_block: "Неверное определение блока"
     wrong_hierarchy: "Неверная иерархия"
 
+  analyzer:
+    reaction_duplicate: "Реакция \"%{first}\" дублирует реакцию \"%{second}\""
+
   atom:
     invalid_name: "Неверное имя атома \"%{name}\""
     invalid_valence: "Валентность атома \"%{name}\" должна быть положительной"

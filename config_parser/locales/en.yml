@@ -17,6 +17,9 @@ en:
     wrong_block: "Wrong block definition"
     wrong_hierarchy: "Wrong hierarchy"
 
+  analyzer:
+    reaction_duplicate: "Reaction \"%{first}\" is duplicate of \"%{second}\""
+
   atom:
     invalid_name: "Wrong atom name \"%{name}\""
     invalid_valence: "Valence of atom \"%{name}\" must be positive"

@@ -63,6 +63,25 @@ module VersatileDiamond
         it { activated_c.unfixed?.should be_true }
       end
 
+      describe "#external_bonds_for" do
+        it { methane.external_bonds_for(c).should == 4 }
+        it { methyl.external_bonds_for(activated_c).should == 3 }
+        it { bridge.external_bonds_for(cd).should == 2 }
+        it { activated_bridge.external_bonds_for(activated_cd).should == 1 }
+        it { extra_activated_bridge.external_bonds_for(extra_activated_cd).
+          should == 0 }
+        it { chloride_bridge.external_bonds_for(chloride_bridge.atom(:ct)).
+          should == 1 }
+        it { methyl_on_bridge.external_bonds_for(c).should == 3 }
+        it { activated_methyl_on_bridge.external_bonds_for(activated_c).
+          should == 2 }
+        it { methyl_on_activated_bridge.external_bonds_for(c).should == 3 }
+        it { methyl_on_activated_bridge.external_bonds_for(activated_cd).
+          should == 0 }
+        it { methyl_on_dimer.external_bonds_for(methyl_on_dimer.atom(:cr)).
+          should == 0 }
+      end
+
       describe "#external_bonds" do
         it { hydrogen.external_bonds.should == 2 }
         it { hydrogen_ion.external_bonds.should == 1 }
@@ -70,6 +89,7 @@ module VersatileDiamond
         it { methyl.external_bonds.should == 3 }
         it { bridge.external_bonds.should == 4 }
         it { extra_activated_bridge.external_bonds.should == 2 }
+        it { chloride_bridge.external_bonds.should == 3 }
       end
 
       describe "#extendable?" do
@@ -110,14 +130,14 @@ module VersatileDiamond
 
       describe "#dependet_from" do
         # default state of dependent from variable
-        it { bridge.dependent_from.should be_nil }
-        it { activated_bridge.dependent_from.should be_nil }
+        it { bridge.parent.should be_nil }
+        it { activated_bridge.parent.should be_nil }
       end
 
-      describe "#organize_dependencies" do
+      describe "#organize_dependencies!" do
         shared_examples_for "organize and check" do
-          before { target.organize_dependencies(similars) }
-          it { target.dependent_from.should == parent }
+          before { target.organize_dependencies!(similars) }
+          it { target.parent.should == parent }
         end
 
         describe "bridge" do
@@ -200,6 +220,36 @@ module VersatileDiamond
             let(:parent) { dimer }
           end
         end
+      end
+
+      describe "#same?" do
+        it { methyl.same?(methyl.dup).should be_true }
+        it { bridge.same?(bridge.dup).should be_true }
+
+        it { methyl.same?(active_bond).should be_false }
+        it { methyl.same?(adsorbed_h).should be_false }
+
+        it { methyl.same?(bridge).should be_false }
+        it { bridge.same?(activated_bridge).should be_false }
+        it { activated_bridge.same?(activated_incoherent_bridge).
+          should be_false }
+        it { activated_bridge.same?(extra_activated_bridge).
+          should be_false }
+        it { extra_activated_bridge.same?(activated_incoherent_bridge).
+          should be_false }
+      end
+
+      describe "#has_termination_atom?" do
+        it { bridge.has_termination_atom?(cd, h).should be_true }
+        it { activated_bridge.has_termination_atom?(activated_cd, h).
+          should be_true }
+        it { extra_activated_bridge.has_termination_atom?(
+          extra_activated_cd, h). should be_false }
+
+        it { chloride_bridge.has_termination_atom?(
+          chloride_bridge.atom(:ct), h). should be_true }
+        it { chloride_bridge.has_termination_atom?(
+          chloride_bridge.atom(:ct), cl). should be_true }
       end
     end
 

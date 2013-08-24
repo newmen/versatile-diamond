@@ -60,7 +60,6 @@ module VersatileDiamond
         result = full_corresponding? ?
           map_many_to_many(names_and_specs) :
           map_many_to_one
-
       end
 
     private

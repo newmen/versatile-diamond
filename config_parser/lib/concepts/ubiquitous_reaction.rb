@@ -6,7 +6,7 @@ module VersatileDiamond
     # factor as "raw" rate variable. Setuping it values provides trough
     # corresponding instance assertion methods.
     class UbiquitousReaction < Named
-      # include Modules::ListsComparer
+      include Modules::ListsComparer
 
       # Exception class for cases when property already setted
       class AlreadySet < Exception
@@ -83,10 +83,67 @@ module VersatileDiamond
         block_given? ? @source.each(&block) : @source.each
       end
 
-  #     def to_s
-  #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
-  #       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
+      # Swaps source spec to another same source spec
+      # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
+      # @param [TerminationSpec | SpecificSpec] to which spec will be added
+      def swap_source(from, to)
+        @source.delete(from)
+        @source << to
+      end
+
+      # Compares two reactions and their source and products are same then
+      # reactions same too
+      #
+      # @param [UbiquitousReaction] other reaction with which comparison
+      # @return [Boolean] the result of comparing
+      def same?(other)
+        spec_compare = -> spec1, spec2 { spec1.same?(spec2) }
+        lists_are_identical?(@source, other.source, &spec_compare) &&
+          lists_are_identical?(@products, other.products, &spec_compare)
+      end
+
+      # Gets more complex reactions received after organization of dependencies
+      # @return [Array] the array of more complex reactions
+      def more_complex
+        @more_complex ||= []
+      end
+
+      # Organize dependencies from another not ubiquitous reactions
+      # @param [Array] not_ubiquitous_reactions the possible children
+      def organize_dependencies!(not_ubiquitous_reactions)
+        # number of termination specs should == 1
+        term_spec = (@source - simple_source).first
+
+        condition = -> spec1, spec2 { spec1.same?(spec2) }
+
+        not_ubiquitous_reactions.each do |possible_child|
+          simples_are_identical = lists_are_identical?(
+            simple_source, possible_child.simple_source, &condition) &&
+              lists_are_identical?(
+                simple_products, possible_child.simple_products, &condition)
+
+          next unless simples_are_identical &&
+            possible_child.complex_source_covered_by?(term_spec)
+
+          more_complex << possible_child
+        end
+      end
+
+  #     def check_and_clear_parent_if_need
+  #       return unless @parent
+  #       # calling current .same? method for each child class
+  #       unless same?(@parent)
+  #       # unless UbiquitousEquation.instance_method(:same?).bind(self).call(@parent)
+  #         @parent = nil
+  #       end
   #     end
+
+      # Calculate full rate of reaction
+      # @return [Float] the full raction rate
+      def full_rate
+        return 0 unless @rate && @activation
+        Tools::Config.rate(self)
+      end
 
   #     def visit(visitor)
   #       analyze_and_source_specs(visitor)
@@ -94,7 +151,7 @@ module VersatileDiamond
   #       if full_rate > 0
   #         accept_self(visitor)
   #       else
-  #         visitor.accept_abstract_equation(self)
+  #         visitor.accept_abstract_reaction(self)
   #       end
 
   # # p @name
@@ -106,55 +163,28 @@ module VersatileDiamond
   # # end
   #     end
 
-  #     def same?(other)
-  #       spec_compare = -> spec1, spec2 { spec1.same?(spec2) }
-  #       lists_are_identical?(@source, other.source, &spec_compare) &&
-  #         lists_are_identical?(@products, other.products, &spec_compare)
+  #     def to_s
+  #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
+  #       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
   #     end
-
-  #     def dependent_from
-  #       @dependent_from ||= []
-  #     end
-
-  #     def organize_dependencies(not_ubiquitous_equations)
-  #       termination_specs = @source.select { |spec| spec.is_a?(TerminationSpec) }
-  #       simple_specs = @source - termination_specs
-
-  #       not_ubiquitous_equations.each do |possible_parent|
-  #         simples_are_identical =
-  #           lists_are_identical?(simple_specs, possible_parent.simple_source) do |spec1, spec2|
-  #             spec1.same?(spec2)
-  #           end
-  #         next unless simples_are_identical
-
-  #         terminations_are_covering =
-  #           lists_are_identical?(termination_specs, possible_parent.complex_source) do |termination, complex|
-  #             termination.cover?(complex)
-  #           end
-  #         next unless terminations_are_covering
-
-  #         dependent_from << possible_parent
-  #       end
-  #     end
-
-  #     def check_and_clear_parent_if_need
-  #       return unless @parent
-  #       # calling current .same? method for each child class
-  #       unless same?(@parent)
-  #       # unless UbiquitousEquation.instance_method(:same?).bind(self).call(@parent)
-  #         @parent = nil
-  #       end
-  #     end
-
-      def full_rate
-        return 0 unless @rate && @activation
-        Tools::Config.rate(self)
-      end
 
     protected
 
-      # attr_writer :parent
       attr_writer :reverse
+
+      %w(source products).each do |target|
+        # Selects and caches simple specs from #{target} array
+        # @return [Array] cached array of simple #{target} specs
+        name = "simple_#{target}"
+        define_method(name) do
+          var = instance_variable_get(:"@#{name}")
+          return var if var
+
+          specs = instance_variable_get(:"@#{target}").
+            select { |specific_spec| specific_spec.simple? }
+          instance_variable_set(:"@#{name}", specs)
+        end
+      end
 
     private
 

@@ -93,6 +93,11 @@ module VersatileDiamond
           it { subject.external_bonds_for(subject.atom(:cr)).should == 1 }
         end
 
+        describe "chloride_bridge" do
+          subject { chloride_bridge_base }
+          it { subject.external_bonds_for(subject.atom(:ct)).should == 1 }
+        end
+
         describe "methyl on bridge" do
           subject { methyl_on_bridge_base }
           it { subject.external_bonds_for(subject.atom(:cm)).should == 3 }
@@ -137,14 +142,13 @@ module VersatileDiamond
         it { links[c1].select { |a, _| a == o }.size.should == 2 }
       end
 
-      describe "#dependent_from" do
-        it { bridge_base.dependent_from.should == Set.new }
+      describe "#parent" do
+        it { bridge_base.parent.should be_nil } # by default
       end
 
-      describe "#reorganize_dependencies" do
-        before { methyl_on_bridge_base.reorganize_dependencies([bridge_base]) }
-        it { methyl_on_bridge_base.dependent_from.to_a.
-          should == [bridge_base] }
+      describe "#organize_dependencies!" do
+        before { methyl_on_bridge_base.organize_dependencies!([bridge_base]) }
+        it { methyl_on_bridge_base.parent.should == bridge_base }
       end
 
       describe "#size" do
