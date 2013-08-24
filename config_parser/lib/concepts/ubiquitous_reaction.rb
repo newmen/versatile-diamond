@@ -129,15 +129,6 @@ module VersatileDiamond
         end
       end
 
-  #     def check_and_clear_parent_if_need
-  #       return unless @parent
-  #       # calling current .same? method for each child class
-  #       unless same?(@parent)
-  #       # unless UbiquitousEquation.instance_method(:same?).bind(self).call(@parent)
-  #         @parent = nil
-  #       end
-  #     end
-
       # Calculate full rate of reaction
       # @return [Float] the full raction rate
       def full_rate

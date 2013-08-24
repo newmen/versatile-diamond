@@ -2,7 +2,7 @@ module VersatileDiamond
   module Concepts
     module Support
 
-      module IsTerminationSpec
+      module IsTerminationSpecie
         shared_examples_for "termination spec" do
           it { subject.should be_a(TerminationSpec) }
 

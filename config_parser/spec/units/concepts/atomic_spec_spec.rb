@@ -46,6 +46,7 @@ module VersatileDiamond
         it { adsorbed_h.cover?(methyl_on_dimer, methyl_on_dimer.atom(:cr)).
           should be_false }
 
+        it { adsorbed_cl.cover?(bridge, bridge.atom(:ct)).should be_false }
         it { adsorbed_cl.cover?(chloride_bridge, chloride_bridge.atom(:ct)).
           should be_true }
       end

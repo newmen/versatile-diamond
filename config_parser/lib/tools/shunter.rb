@@ -4,6 +4,7 @@ module VersatileDiamond
     # Organizes the relationship between the concepts
     class Shunter
 
+      SPEC_KEYS = [:gas_spec, :surface_spec]
       REACTION_KEYS =
         [:ubiquitous_reaction, :reaction, :lateral_reaction].freeze
 
@@ -27,14 +28,14 @@ module VersatileDiamond
           # before need to update specs by organize their dependecies!
           check_reactions_for_duplicates
           organize_reactions_dependencies!
-          # purge_unused_concepts
+          purge_unused_specs!
         end
 
       private
 
         # Reorganize dependencies between base specs
         def organize_specs_dependencies!
-          specs = Chest.all(:gas_spec, :surface_spec)
+          specs = Chest.all(*SPEC_KEYS)
           specs.sort! do |a, b|
             if a.size == b.size
               b.external_bonds <=> a.external_bonds
@@ -120,46 +121,26 @@ module VersatileDiamond
           typical_reactions.each do |reaction|
             reaction.organize_dependencies!(lateral_reactions)
           end
-
-          # # it's need because using in reaction specs could be modified by
-          # # look around atom mapping
-          # each_reaction do |reaction|
-          #   reaction.check_and_clear_parent_if_need
-          # end
         end
 
-        # def purge_unused_concepts
-        #   # purge order is important!
-        #   @abstract_equations.select! do |abs_equation|
-        #     children = @real_equations.select do |equation|
-        #       equation.parent == abs_equation
-        #     end
-        #     children.size > 1
-        #   end
+        # Removes all unused base specs from Chest
+        def purge_unused_specs!
+          specs = Chest.all(*SPEC_KEYS)
+          specific_specs = Chest.all(:specific_spec)
+          lateral_reactions = Chest.all(:lateral_reaction)
 
-        #   all_equations = @abstract_equations + @ubiquitous_equations +
-        #     @real_equations + @lateral_equations
-        #   loop do
-        #     old_size = @specific_specs.size
-        #     @specific_specs.select! do |specific_spec|
-        #       @specific_specs.any? { |ss| ss.dependent_from == specific_spec } ||
-        #         all_equations.any? do |eq|
-        #           eq.source.any? { |ss| specific_spec.same?(ss) }
-        #         end
-        #     end
-        #     break if old_size == @specific_specs.size
-        #   end
+          specs.each do |spec|
+            has_parent = specs.any? { |s| s.parent == spec }
+            has_children = has_parent || specific_specs.any? do |specific_spec|
+              specific_spec.spec == spec
+            end
+            has_depend = has_children || lateral_reactions.any? do |reaction|
+              reaction.theres.any? { |there| there.specs.include?(spec) }
+            end
 
-        #   @base_specs.select! do |spec|
-        #     dep_from_s = @base_specs.any? do |s|
-        #       s.dependent_from.include?(spec)
-        #     end
-        #     dep_from_ss = dep_from_s || @specific_specs.any? do |specific_spec|
-        #       specific_spec.spec == spec
-        #     end
-        #     dep_from_ss || @wheres.any? { |where| where.specs.include?(spec) }
-        #   end
-        # end
+            Chest.purge!(spec) unless has_depend
+          end
+        end
 
         # Iterates all reactions
         # @yield [Concepts::UbiquitoursReaction] do for each reaction

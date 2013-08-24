@@ -10,6 +10,11 @@ module VersatileDiamond
       let(:other) { dimer_formation.lateral_duplicate(
         'other', [on_end, there_methyl]) }
 
+      describe "#theres" do
+        it { reaction.theres.should == [on_end] }
+        it { other.theres.should == [on_end, there_methyl] }
+      end
+
       describe "#reverse" do
         subject { reaction.reverse }
         it { should be_a(described_class) }

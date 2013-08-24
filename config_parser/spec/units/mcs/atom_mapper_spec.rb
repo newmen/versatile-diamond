@@ -75,9 +75,10 @@ module VersatileDiamond
           end
 
           describe "methyl desorption" do
+            let(:abr) { md_products.last }
             it { md_atom_map.should == [
-                [[methyl_on_bridge, activated_bridge],
-                  [[methyl_on_bridge.atom(:cb), activated_cd]]],
+                [[methyl_on_bridge, abr],
+                  [[methyl_on_bridge.atom(:cb), abr.atom(:ct)]]],
                 [[methyl_on_bridge, methyl],
                   [[methyl_on_bridge.atom(:cm), activated_c]]]
               ] }
@@ -112,9 +113,10 @@ module VersatileDiamond
             [[dimer, activated_dimer], [[dimer.atom(:cr), activated_cd]]]
           ] }
 
+        let(:abr) { md_products.last }
         it { described_class.reverse(md_atom_map).should == [
-            [[activated_bridge, methyl_on_bridge],
-              [[activated_cd, methyl_on_bridge.atom(:cb)]]],
+            [[abr, methyl_on_bridge],
+              [[abr.atom(:ct), methyl_on_bridge.atom(:cb)]]],
             [[methyl, methyl_on_bridge],
               [[activated_c, methyl_on_bridge.atom(:cm)]]]
           ] }

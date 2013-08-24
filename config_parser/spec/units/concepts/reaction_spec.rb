@@ -54,7 +54,7 @@ module VersatileDiamond
         it { should be_a(described_class) }
 
         it { subject.source.size.should == 2 }
-        it { subject.source.should include(methyl, activated_bridge) }
+        it { subject.source.should include(methyl, md_products.last) }
 
         it { subject.products.should == [methyl_on_bridge] }
       end

@@ -4,6 +4,8 @@ module VersatileDiamond
     # Describes reaction which has a some environment expresed by there objects
     class LateralReaction < Reaction
 
+      attr_reader :theres
+
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
       # @param [Array] atoms_map the atom-mapping result
@@ -11,10 +13,6 @@ module VersatileDiamond
         super(*super_args)
         @theres = theres
       end
-
-      # def wheres
-      #   @theres.map(&:where)
-      # end
 
       # Also compare there objects
       # @param [UbiqutousReaction] other see at #super same argument
@@ -41,10 +39,6 @@ module VersatileDiamond
           more_complex << reaction
         end
       end
-
-    protected
-
-      attr_reader :theres
 
     private
 

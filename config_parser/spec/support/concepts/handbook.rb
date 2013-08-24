@@ -211,7 +211,7 @@ module VersatileDiamond
         end
 
         set(:md_source) { [methyl_on_bridge] }
-        set(:md_products) { [methyl, activated_bridge] }
+        set(:md_products) { [methyl, activated_bridge.dup] }
         set(:md_names_to_specs) do {
           source: [[:mob, methyl_on_bridge]],
           products: [[:m, methyl], [:b, activated_bridge]]
