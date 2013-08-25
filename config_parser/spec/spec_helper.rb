@@ -20,6 +20,9 @@ RSpec.configure do |config|
   config.include VersatileDiamond::Interpreter::Support::ReactionRefinements,
     reaction_refinements: true
 
+  config.include VersatileDiamond::Visitors::Support::Visitable,
+    visitable: true, termination_spec: true
+
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.

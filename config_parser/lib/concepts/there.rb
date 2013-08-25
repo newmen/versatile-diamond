@@ -14,7 +14,7 @@ module VersatileDiamond
         @where, @positions = where, positions
       end
 
-      def_delegators :@where, :specs, :description
+      def_delegators :@where, :specs, :description, :visit
 
       # Compares two there objects
       # @param [There] other with which comparison
@@ -29,10 +29,6 @@ module VersatileDiamond
       def cover?(other)
         other.where.parents.include?(@where)
       end
-
-      # def visit(visitor)
-      #   visitor.accept_where(@where)
-      # end
 
     protected
 

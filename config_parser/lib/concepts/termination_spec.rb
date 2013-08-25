@@ -4,6 +4,7 @@ module VersatileDiamond
     # Represents a some "termination" spec which can be involved to ubiquitous
     # reaction
     class TerminationSpec
+      include Visitors::Visitable
 
       # Makes useful method for get behavior like specific spec
       # @return [Symbol] the name of spec

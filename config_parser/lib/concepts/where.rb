@@ -4,6 +4,8 @@ module VersatileDiamond
     # Instance of class is refinement for environment which contain raw
     # positions of target atoms to some atoms of around specs
     class Where < Named
+      include Visitors::Visitable
+
       attr_reader :specs, :description #, :environment
 
       # Initialize an instance

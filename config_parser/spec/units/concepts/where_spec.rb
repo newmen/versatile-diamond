@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Where do
+    describe Where, visitable: true do
       describe "#specs" do
         it { at_end.specs.should == [dimer_base] }
         it { at_middle.specs.should == [dimer_base, dimer_base] }
@@ -24,6 +24,10 @@ module VersatileDiamond
           should be_a(There) }
 
         # TODO: check positions
+      end
+
+      it_behaves_like "visitable" do
+        subject { at_end }
       end
     end
 

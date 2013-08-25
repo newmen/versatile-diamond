@@ -5,6 +5,8 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       extend Forwardable
+
+      include Visitors::Visitable
       include BondsCounter
 
       attr_reader :spec

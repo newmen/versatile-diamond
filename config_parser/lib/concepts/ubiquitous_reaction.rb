@@ -7,6 +7,7 @@ module VersatileDiamond
     # corresponding instance assertion methods.
     class UbiquitousReaction < Named
       include Modules::ListsComparer
+      include Visitors::Visitable
 
       # Exception class for cases when property already setted
       class AlreadySet < Exception

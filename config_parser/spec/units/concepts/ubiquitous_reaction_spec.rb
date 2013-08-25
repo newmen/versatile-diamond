@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe UbiquitousReaction do
+    describe UbiquitousReaction, visitable: true do
       let(:already_set) { UbiquitousReaction::AlreadySet }
 
       %w(enthalpy activation rate).each do |prop|
@@ -112,6 +112,10 @@ module VersatileDiamond
         end
 
         it { surface_deactivation.full_rate.round(10).should == 0.1773357811 }
+      end
+
+      it_behaves_like "visitable" do
+        subject { surface_activation }
       end
     end
 

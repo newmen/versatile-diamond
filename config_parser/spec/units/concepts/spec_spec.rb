@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Spec do
+    describe Spec, visitable: true do
       describe "#simple?" do
         it { Spec.new(:not_set).simple?.should be_nil }
 
@@ -163,6 +163,10 @@ module VersatileDiamond
         it { extended_dimer_base.size.should == 14 } # if take into account the
         # crystal lattice then value should be 12
         it { methyl_on_dimer_base.size.should == 7 }
+      end
+
+      it_behaves_like "visitable" do
+        subject { methane_base }
       end
     end
 

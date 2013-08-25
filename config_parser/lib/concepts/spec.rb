@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # The class instance contains atoms and bonds between them.
     class Spec < Named
+      include Visitors::Visitable
       include BondsCounter
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s

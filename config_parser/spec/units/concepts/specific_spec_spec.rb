@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe SpecificSpec do
+    describe SpecificSpec, visitable: true do
       describe "#dup" do
         it { methyl.dup.should_not == methyl }
         it { methyl.dup.spec.should == methyl.spec }
@@ -257,6 +257,10 @@ module VersatileDiamond
           chloride_bridge.atom(:ct), h). should be_true }
         it { chloride_bridge.has_termination_atom?(
           chloride_bridge.atom(:ct), cl). should be_true }
+      end
+
+      it_behaves_like "visitable" do
+        subject { methyl }
       end
     end
 

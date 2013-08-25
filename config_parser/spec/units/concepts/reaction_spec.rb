@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Reaction do
+    describe Reaction, visitable: true do
       shared_examples_for "check duplicate property" do
         it { subject.name.should =~ /tail$/ }
         it { subject.source.should_not == df_source }
@@ -146,6 +146,10 @@ module VersatileDiamond
         end
         it { reaction.more_complex.should == [lateral] }
         it { methyl_desorption.more_complex.should be_empty }
+      end
+
+      it_behaves_like "visitable" do
+        subject { methyl_desorption }
       end
     end
 
