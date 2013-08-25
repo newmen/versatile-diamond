@@ -4,8 +4,6 @@ module VersatileDiamond
   module Interpreter
 
     describe Surface, type: :interpreter do
-      let(:already_defined) { Tools::Config::AlreadyDefined }
-
       describe "#spec" do
         it "interpreted spec stores in Chest" do
           surface.interpret('spec :hello').
@@ -16,10 +14,10 @@ module VersatileDiamond
       end
 
       describe "#temperature" do
-        it "duplicating" do
-          surface.interpret('temperature 100, C')
-          expect { surface.interpret('temperature 200, F') }.
-            to raise_error already_defined
+        describe "duplicating" do
+          before { surface.interpret('temperature 100, C') }
+          it { expect { surface.interpret('temperature 200, F') }.
+            to raise_error syntax_error }
         end
       end
 
@@ -40,14 +38,14 @@ module VersatileDiamond
           'size 2, 2',
         ].each do |str|
           it "wrong size line: '#{str}'" do
-            expect { surface.interpret(str) }.to raise_error Exception
+            expect { surface.interpret(str) }.to raise_error
           end
         end
 
-        it "duplicating" do
-          surface.interpret('size x: 20, y: 20')
-          expect { surface.interpret('size x: 2, y: 2') }.
-            to raise_error already_defined
+        describe "duplicating" do
+          before { surface.interpret('size x: 20, y: 20') }
+          it { expect { surface.interpret('size x: 2, y: 2') }.
+            to raise_error syntax_error }
         end
       end
 
@@ -61,11 +59,13 @@ module VersatileDiamond
             to raise_error syntax_error
         end
 
-        it "duplicating" do
-          surface.interpret('lattice :d, cpp_class: Diamond')
-          surface.interpret('composition C%d')
-          expect { surface.interpret('composition C%d') }.
-            to raise_error already_defined
+        describe "duplicating" do
+          before do
+            surface.interpret('lattice :d, cpp_class: Diamond')
+            surface.interpret('composition C%d')
+          end
+          it { expect { surface.interpret('composition C%d') }.
+            to raise_error syntax_error }
         end
       end
     end

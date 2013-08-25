@@ -40,6 +40,26 @@ module VersatileDiamond
         end
       end
 
+      # Also counts sizes of there objects
+      # @return [Float] the number of used atoms
+      def size
+        super + @theres.reduce(0) { |acc, there| acc + there.size }
+      end
+
+      # Also visit there objects
+      # @param [Visitors::Visitor] visitor see at #super same argument
+      # @override
+      def visit(visitor)
+        super
+        @theres.each { |there| there.visit(visitor) }
+      end
+
+      # Collects and return all where object for visitor
+      # @return [Array] the array of where objects
+      def wheres
+        @theres.reduce([]) { |acc, there| acc << there.where }
+      end
+
     private
 
       # Also reverse there objects
@@ -47,11 +67,6 @@ module VersatileDiamond
       def reverse_params
         [*super, @theres] # TODO: rebind to another atoms
       end
-
-      # def accept_self(visitor)
-      #   @theres.each { |where| where.visit(visitor) }
-      #   visitor.accept_lateral_equation(self)
-      # end
 
       # Compares with other lateral reaction by calling the #same? method from
       # superclass and comparing theres collections

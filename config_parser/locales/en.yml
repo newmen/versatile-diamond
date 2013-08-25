@@ -29,9 +29,15 @@ en:
     is_not_set: "Dimension is not set"
     undefined_value: "Undefined value of dimension"
 
+  gas:
+    concentration_already_set: "Concentration of molecule %{name} already set"
+    temperature_already_set: "Temperature of gas phase already set"
+
   surface:
+    composition_already_set: "Surface composition already set"
     need_pass_specified_atom: "Necessary to pass specified atom"
     sizes_already_set: "Sizes already set"
+    temperature_already_set: "Temperature of surface already set"
     wrong_sizes: "Incorrect setup original substrate sizes"
 
   position:

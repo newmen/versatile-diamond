@@ -30,13 +30,11 @@ module VersatileDiamond
         false
       end
 
-      # def visit(visitor)
-      #   visitor.accept_termination_spec(self)
-      # end
-
-      # def same?(other)
-      #   self.class == other.class && to_s == other.to_s
-      # end
+      # Termination spec has size equal 1
+      # @return [Integer] 1
+      def size
+        1
+      end
     end
 
   end

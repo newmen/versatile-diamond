@@ -8,7 +8,6 @@ module VersatileDiamond
 
         # Errors:
         set(:syntax_error) { Errors::SyntaxError }
-        set(:keyname_error) { Tools::Chest::KeyNameError }
 
         # Interpreters
         set(:dimensions) { Dimensions.new }

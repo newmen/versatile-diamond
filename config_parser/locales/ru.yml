@@ -29,9 +29,15 @@ ru:
     is_not_set: "Единицы измерения не установлены"
     undefined_value: "Неизвестное значение единиц измерения"
 
+  gas:
+    concentration_already_set: "Концентрация для молекулы %{name} уже задана"
+    temperature_already_set: "Температура газовой фазы уже задана"
+
   surface:
+    composition_already_set: "Состав поверхности уже задан"
     need_pass_specified_atom: "Необходимо указывать специфицированный атом"
     sizes_already_set: "Размеры уже установлены"
+    temperature_already_set: "Температура подложки уже задана"
     wrong_sizes: "Неверно заданы размеры изначальной подложки"
 
   position:

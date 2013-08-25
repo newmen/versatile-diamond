@@ -39,11 +39,10 @@ module VersatileDiamond
       # @param [Symbol] env_name the name of used environment
       # @param [Hash] target_refs the hash of references where keys is names of
       #   targets from equation and values is used atoms from reaction concept
-      # @rescue [Errors::SyntaxError] if wrong target setup
-      # @rescue [Tools::Chest::KeyNameError] if environment cannot be resolved,
-      #   or lateral already connected for current reaction
+      # @rescue [Errors::SyntaxError] if wrong target setup or if environment
+      #   cannot be resolved, or lateral already connected for current reaction
       def lateral(env_name, **target_refs)
-        env = Tools::Chest.environment(env_name)
+        env = get(:environment, env_name)
         resolved_targets = target_refs.map do |target_name, used_atom_str|
           unless env.is_target?(target_name)
             syntax_error('.undefined_target', name: target_name)
@@ -56,7 +55,7 @@ module VersatileDiamond
         end
 
         lateral = env.make_lateral(Hash[resolved_targets])
-        Tools::Chest.store(@reaction, lateral)
+        store(@reaction, lateral)
       rescue Concepts::Environment::InvalidTarget => e
         syntax_error('.undefined_target', name: e.target)
       end
@@ -66,7 +65,7 @@ module VersatileDiamond
       # @raise [KeyNameError] if where cannot be found or has many wheres with
       #   similar names for instance there object
       def there(*names)
-        theres = names.map { |name| Tools::Chest.there(@reaction, name) }
+        theres = names.map { |name| get(:there, @reaction, name) }
         name_tail = theres.map(&:description).join(' and ')
         refinement(name_tail, theres, method: :lateral_duplicate)
       end
@@ -80,7 +79,7 @@ module VersatileDiamond
       #   reaction concept
       # @param [Hash] names_and_specs remaked for duplicated specs
       def nest_refinement(reaction_dup, names_and_specs)
-        Tools::Chest.store(reaction_dup)
+        store(reaction_dup)
         nested(Refinement.new(reaction_dup, names_and_specs))
       end
     end

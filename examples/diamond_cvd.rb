@@ -66,7 +66,7 @@ surface
 
   spec :bridge_with_dimer
     aliases dmr: dimer
-    atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr), cf: dmr(:cl)
+    atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr)
     bond :ct, :cl, face: 110, dir: :front
     bond :ct, :cr, face: 110, dir: :front
     position :cl, :cr, face: 100, dir: :front
@@ -331,10 +331,7 @@ events
 
   reaction 'high bridge to bridge and dimer'
     # TODO: положение (и доп. конфигурация) атомов также выводится исходя из результата реакции?
-    # TODO: приходится выставлять руками некогерентность атома в продукте, т.к.
-    # реакция межмолекулярная, и атом мэппинг для нё определяется по базовым структурам,
-    # а некогерентность - свойство специфицированной структуры.
-    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *, cf: i)
+    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'
         activation 14.9

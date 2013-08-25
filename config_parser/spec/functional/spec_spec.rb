@@ -36,10 +36,10 @@ module VersatileDiamond
 
         describe "undefined atoms" do
           it { expect { spec.interpret('atoms x: X') }.
-            to raise_error keyname_error }
+            to raise_error syntax_error }
 
           it { expect { spec.interpret('atoms n: nitrogen(:n1)') }.
-            to raise_error keyname_error }
+            to raise_error syntax_error }
         end
       end
 
@@ -58,7 +58,7 @@ module VersatileDiamond
 
         describe "undefined spec" do
           it { expect { spec.interpret('aliases ng: nitrogen') }.
-            to raise_error keyname_error }
+            to raise_error syntax_error }
         end
       end
 

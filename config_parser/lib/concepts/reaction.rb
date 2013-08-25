@@ -132,7 +132,7 @@ module VersatileDiamond
       # @param [Float] value see at #super same argument
       # @override
       def update_attribute(attribute, value)
-        childs = @children || reverse.children
+        childs = children || reverse.children
         if childs
           childs.each do |reaction|
             reaction.as(@type).send(:"#{attribute}=", value)
@@ -191,17 +191,6 @@ module VersatileDiamond
 
         duplication
       end
-
-      # def accept_self(visitor)
-      #   visitor.accept_real_equation(self)
-      # end
-
-      # def analyze_and_visit_source_specs(visitor)
-      #   @source.each do |spec|
-      #     spec.look_around(@atoms_map)
-      #     spec.visit(visitor)
-      #   end
-      # end
     end
 
   end

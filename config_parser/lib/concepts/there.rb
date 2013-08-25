@@ -6,6 +6,8 @@ module VersatileDiamond
     class There
       extend Forwardable
 
+      attr_reader :where # only for visitor
+
       # Initialize a new instance of there object
       # @param [Where] where the basic where object
       # @param [Hash] positions the hash where keys is atoms of reactants and
@@ -30,10 +32,11 @@ module VersatileDiamond
         other.where.parents.include?(@where)
       end
 
-    protected
-
-      attr_reader :where
-
+      # Counts number of environment used atoms
+      # @return [Integer] the number of used atoms
+      def size
+        specs.reduce(0) { |acc, spec| acc + spec.size }
+      end
     end
 
   end

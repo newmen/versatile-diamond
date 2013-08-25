@@ -62,6 +62,14 @@ module VersatileDiamond
         There.new(self, positions)
       end
 
+      # Also visit base spec that belongs to self
+      # @param [Visitors::Visitor] visitor the object that will accumulate
+      #   state of current object
+      def visit(visitor)
+        super
+        @specs.each { |spec| spec.visit(visitor) }
+      end
+
     protected
 
       attr_reader :raw_positions

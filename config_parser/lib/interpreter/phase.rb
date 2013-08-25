@@ -19,10 +19,12 @@ module VersatileDiamond
       # Setup correspond temperature by termperature expression
       # @param [Float] value the termerature of correspond phase
       # @param [String] dimension of termperature
-      # @raise [Tools::Config::AlreadyDefined] if temperature already defined
+      # @raise [Errors::SyntaxError] if temperature already defined
       def temperature(value, dimension = nil)
         Tools::Config.send(
           "#{self.class.to_s.underscore}_temperature", value, dimension)
+      rescue Tools::Config::AlreadyDefined
+        syntax_error('.temperature_already_set')
       end
     end
 

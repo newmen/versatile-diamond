@@ -51,7 +51,7 @@ module VersatileDiamond
           end
           arr
         end
-        args = args.empty? ? '' : "(#{args.join(', ')})"
+        args = "(#{args.join(', ')})"
         "#{name}#{args}"
       end
 
@@ -224,10 +224,22 @@ module VersatileDiamond
             end
       end
 
-  #     def visit(visitor)
-  #       @spec.visit(visitor)
-  #       visitor.accept_specific_spec(self)
-  #     end
+      # Gets a number of atoms with number of active bonds, but if spec is gas
+      # then their size just 0
+      #
+      # @return [Float] size of current specific spec
+      def size
+        is_gas? ? 0 : @spec.size + active_bonds_num + relevants_num * 0.34
+      end
+
+      # Also visit base spec
+      # @param [Visitors::Visitor] visitor the object which accumulate state of
+      #   current instance
+      # @override
+      def visit(visitor)
+        super
+        @spec.visit(visitor)
+      end
 
       def to_s
         # @spec.to_s(@spec.atoms.merge(@specific_atoms), links)
@@ -252,6 +264,15 @@ module VersatileDiamond
       # @return [Integer] sum of active bonds
       def active_bonds_num
         only_actives.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+      end
+
+      # Counts the sum of relevant properties of specific atoms
+      # @return [Integer] sum of relevant properties
+      def relevants_num
+        relevants = @specific_atoms.values.reduce([]) do |acc, atom|
+          acc + atom.relevants
+        end
+        relevants.size
       end
 
       # Selects bonds for passed atom

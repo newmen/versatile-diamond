@@ -86,7 +86,7 @@ module VersatileDiamond
             end
 
             describe "methyl activation" do
-              it { Chest.specific_spec(:methyl_on_bridge).
+              it { Chest.specific_spec(:'methyl_on_bridge()').
                 should be_a(Concepts::SpecificSpec) }
             end
 
@@ -107,12 +107,12 @@ module VersatileDiamond
             describe "forward hydrogen migration" do
               it { Chest.specific_spec(:'dimer(cr: *)').
                 should be_a(Concepts::SpecificSpec) }
-              it { Chest.specific_spec(:methyl_on_dimer).
+              it { Chest.specific_spec(:'methyl_on_dimer()').
                 should be_a(Concepts::SpecificSpec) }
             end
 
             describe "reverse hydrogen migration" do
-              it { Chest.specific_spec(:dimer).
+              it { Chest.specific_spec(:'dimer()').
                 should be_a(Concepts::SpecificSpec) }
               it { Chest.specific_spec(:'methyl_on_dimer(cm: *)').
                 should be_a(Concepts::SpecificSpec) }
@@ -137,20 +137,20 @@ module VersatileDiamond
             it { Chest.specific_spec(:'bridge(ct: *, ct: i)').parent.
               should == Chest.specific_spec(:'bridge(ct: *)') }
 
-            it { Chest.specific_spec(:dimer).parent.should be_nil }
+            it { Chest.specific_spec(:'dimer()').parent.should be_nil }
             it { Chest.specific_spec(:'dimer(cr: *)').parent.
-              should == Chest.specific_spec(:dimer) }
+              should == Chest.specific_spec(:'dimer()') }
             it { Chest.specific_spec(:'dimer(cl: i)').parent.
-              should == Chest.specific_spec(:dimer) }
+              should == Chest.specific_spec(:'dimer()') }
 
-            it { Chest.specific_spec(:'methyl_on_bridge').
+            it { Chest.specific_spec(:'methyl_on_bridge()').
               parent.should be_nil }
             it { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)').
-              parent.should == Chest.specific_spec(:methyl_on_bridge) }
+              parent.should == Chest.specific_spec(:'methyl_on_bridge()') }
 
-            it { Chest.specific_spec(:methyl_on_dimer).parent.should be_nil }
+            it { Chest.specific_spec(:'methyl_on_dimer()').parent.should be_nil }
             it { Chest.specific_spec(:'methyl_on_dimer(cm: *)').
-              parent.should == Chest.specific_spec(:methyl_on_dimer) }
+              parent.should == Chest.specific_spec(:'methyl_on_dimer()') }
           end
 
           describe "swapping reaction specs" do
@@ -248,14 +248,13 @@ module VersatileDiamond
             store_and_organize_reactions
           end
 
-          it { expect { Chest.spec(:ethylene) }.
-            to raise_error keyname_error }
+          it { expect { Chest.spec(:methane) }.to raise_error keyname_error }
+          it { expect { Chest.spec(:ethylene) }.to raise_error keyname_error }
           it { expect { Chest.spec(:chloride_bridge) }.
             to raise_error keyname_error }
           it { expect { Chest.spec(:high_bridge) }.
             to raise_error keyname_error }
 
-          it { expect { Chest.spec(:methane) }.not_to raise_error }
           it { expect { Chest.spec(:bridge) }.not_to raise_error }
           it { expect { Chest.spec(:methyl_on_bridge) }.not_to raise_error }
           it { expect { Chest.spec(:dimer) }.not_to raise_error }

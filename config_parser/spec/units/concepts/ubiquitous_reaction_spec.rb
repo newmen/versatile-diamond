@@ -114,6 +114,11 @@ module VersatileDiamond
         it { surface_deactivation.full_rate.round(10).should == 0.1773357811 }
       end
 
+      describe "#size" do
+        it { surface_activation.size.should == 1 }
+        it { surface_deactivation.size.should == 1 }
+      end
+
       it_behaves_like "visitable" do
         subject { surface_activation }
       end

@@ -57,7 +57,7 @@ module VersatileDiamond
       # @return [Concepts::UbiquitousReaction] reverse of current concept
       def reverse
         unless @reverse_was_stored
-          Tools::Chest.store(forward.reverse)
+          store(forward.reverse)
           @reverse_was_stored = true
         end
         forward.reverse

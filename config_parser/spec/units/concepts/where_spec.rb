@@ -14,6 +14,11 @@ module VersatileDiamond
         it { at_end.description.should == 'at end of dimers row' }
       end
 
+      describe "#adsorb" do
+        before { at_end.adsorb(near_methyl) }
+        it { at_end.specs.should include(dimer_base, methyl_on_bridge_base) }
+      end
+
       describe "#parents" do
         it { at_end.parents.should be_empty }
         it { at_middle.parents.should == [at_end] }

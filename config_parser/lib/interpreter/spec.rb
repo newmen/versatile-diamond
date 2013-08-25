@@ -20,13 +20,12 @@ module VersatileDiamond
       #
       # @param [Hash] refs the hash which contain alias name as keys and some
       #   another specs as values
-      # @raise [Errors::SyntaxError] if alias already adsorbed
-      # @raise [Tools::Chest::KeyNameError] if aliased spec cannot be found in
-      #   Chest
+      # @raise [Errors::SyntaxError] if alias already adsorbed or if aliased
+      #   spec cannot be found in Chest
       def aliases(**refs)
         @aliases_to ||= {}
         refs.each do |alias_name, spec_name|
-          spec = Tools::Chest.spec(spec_name)
+          spec = get(:spec, spec_name)
 
           original_to_generated = {}
           @concept.adsorb(spec) do |keyname, generated_keyname, _|
@@ -96,11 +95,11 @@ module VersatileDiamond
       # Detects simple atom by passed string and store to concept by keyname
       # @param [Symbol] keyname see at #detect_atom
       # @param [String] atom_str see at #detect_atom
-      # @raise [Tools::Chest::KeyNameError] if atom cannot be finded in Chest
+      # @raise [Errors::SyntaxError] if atom cannot be finded in Chest
       # @return [Boolean] detected atom or or nil overwise
       def simple_atom(keyname, atom_str)
         if (atom_name = Matcher.atom(atom_str))
-          atom = Tools::Chest.atom(atom_name)
+          atom = get(:atom, atom_name)
           @concept.describe_atom(keyname, atom)
           atom
         else
@@ -113,7 +112,7 @@ module VersatileDiamond
       #
       # @param [Symbol] keyname see at #detect_atom
       # @param [String] see at #detect_atom
-      # @raise [Tools::Chest::KeyNameError] if atom is used in another spec and
+      # @raise [Errors::SyntaxError] if atom is used in another spec and
       #   it spec cannot be finded in Chest
       # @return [Concepts::AtomReference] if detected atom is ref to same spec
       # @return [Concepts::Atom] detected atom used in another spec
@@ -127,7 +126,7 @@ module VersatileDiamond
         else
           # When atom is used in another spec then accumulate each atoms and
           # links from them
-          spec = Tools::Chest.spec(spec_name)
+          spec = get(:spec, spec_name)
           @concept.adsorb(spec) { |k, gk, _| k == atom_keyname ? keyname : gk }
         end
       end

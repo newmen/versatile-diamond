@@ -13,7 +13,7 @@ module VersatileDiamond
 
       describe "#temperature" do
         it { expect { gas.interpret('temperature 100, C') }.
-          not_to raise_error Exception }
+          not_to raise_error }
       end
 
       describe "#concentration" do
@@ -26,38 +26,38 @@ module VersatileDiamond
           spec.interpret('atoms x: Sm')
         end
 
-        it "defining a activated specific spec" do
-          define_spec_and_atom(3)
-          expect { gas.interpret('concentration some(x: **), 1, "mol/l"') }.
-            not_to raise_error Exception
-          expect { gas.interpret('concentration some(x: **), 1') }.
-            not_to raise_error Exception
+        describe "defining a activated specific spec" do
+          before(:each) { define_spec_and_atom(3) }
+          it { expect { gas.interpret('concentration some(x: **), 1, "mol/l"') }.
+            not_to raise_error }
+          it { expect { gas.interpret('concentration some(x: **), 1') }.
+            not_to raise_error }
         end
 
-        it "wrong defining a activated specific spec" do
-          define_spec_and_atom(1)
-          expect { gas.interpret('concentration some(x: **), 1') }.
-            to raise_error syntax_error
+        describe "wrong defining a activated specific spec" do
+          before(:each) { define_spec_and_atom(1) }
+          it { expect { gas.interpret('concentration some(x: **), 1') }.
+            to raise_error syntax_error }
         end
 
-        it "wrong defining a activated specific spec" do
-          define_spec_and_atom(10)
-          expect { gas.interpret('concentration some(x: 2*), 1') }.
-            to raise_error syntax_error
-          expect { gas.interpret('concentration some(x: *2), 1') }.
-            to raise_error syntax_error
+        describe "wrong defining a activated specific spec" do
+          before(:each) { define_spec_and_atom(10) }
+          it { expect { gas.interpret('concentration some(x: 2*), 1') }.
+            to raise_error syntax_error }
+          it { expect { gas.interpret('concentration some(x: *2), 1') }.
+            to raise_error syntax_error }
         end
 
-        it "wrong atom keyname" do
-          define_spec_and_atom(2)
-          expect { gas.interpret('concentration some(z: *), 1') }.
-            to raise_error syntax_error
+        describe "wrong atom keyname" do
+          before(:each) { define_spec_and_atom(2) }
+          it { expect { gas.interpret('concentration some(z: *), 1') }.
+            to raise_error syntax_error }
         end
 
-        it "wrong name of specific spec" do
-          define_spec_and_atom(2)
-          expect { gas.interpret('concentration wrong(x: *), 1') }.
-            to raise_error keyname_error
+        describe "wrong name of specific spec" do
+          before(:each) { define_spec_and_atom(2) }
+          it { expect { gas.interpret('concentration wrong(x: *), 1') }.
+            to raise_error syntax_error }
         end
       end
     end

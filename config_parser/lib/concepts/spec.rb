@@ -172,7 +172,6 @@ module VersatileDiamond
       # @param [Array] possible_parents the array of possible parents in
       #   descending order
       def organize_dependencies!(possible_parents)
-      # def reorganize_dependencies(possible_parents, links = @links)
         # find and reorganize dependencies
         possible_parents.each do |possible_parent|
           if parents.include?(possible_parent) ||
@@ -196,6 +195,14 @@ module VersatileDiamond
         atom_instances.size
       end
 
+      # Also visit a parent
+      # @param [Visitors::Visitor] visitor the accumulator of states
+      # @override
+      def visit(visitor)
+        super
+        parent.visit(visitor) if parent
+      end
+
       def to_s(instance_atoms = @atoms, instance_links = @links)
         atoms_to_keynames = instance_atoms.invert
         name_with_keyname = -> atom do
@@ -215,9 +222,9 @@ module VersatileDiamond
         str
       end
 
-      # def visit(visitor)
-      #   visitor.accept_spec(self)
-      # end
+      def inspect
+        name.to_s
+      end
 
     protected
 

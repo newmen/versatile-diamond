@@ -32,12 +32,12 @@ module VersatileDiamond
           it { Tools::Chest.lateral('forward methyl desorption', :some_env).
             should be_a(Concepts::Lateral) }
           it { expect { equation.interpret('lateral :some_env, one: b(:ct)') }.
-            to raise_error keyname_error }
+            to raise_error syntax_error }
         end
 
         describe "invalid targets" do
           it { expect { equation.interpret('lateral :wrong_env') }.
-            to raise_error keyname_error }
+            to raise_error syntax_error }
           it { expect { equation.interpret('lateral :some_env, wr: b(:ct)') }.
             to raise_error syntax_error }
           it { expect { equation.interpret('lateral :some_env, one: mob(:cb), wr: b(:ct)') }.
@@ -57,7 +57,7 @@ module VersatileDiamond
         end
 
         it { expect { equation.interpret('there :wrong') }.
-          to raise_error keyname_error}
+          to raise_error syntax_error}
 
         it "make and get" do
           equation.interpret('there :some_where')

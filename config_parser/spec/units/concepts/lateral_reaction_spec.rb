@@ -43,8 +43,20 @@ module VersatileDiamond
         it { other.more_complex.should be_empty }
       end
 
+      describe "#size" do
+        it { reaction.size.should == 14.34 }
+        it { other.size.should == 18.34 }
+      end
+
       it_behaves_like "visitable" do
         subject { reaction }
+      end
+
+      describe "#wheres" do
+        it { reaction.wheres.should == [at_end] }
+
+        it { other.wheres.size.should == 2 }
+        it { other.wheres.should include(at_end, near_methyl) }
       end
     end
 

@@ -7,7 +7,7 @@ module VersatileDiamond
       describe "#equation" do
         it "error when spec name is undefined" do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
-            to raise_error keyname_error
+            to raise_error syntax_error
         end
 
         describe "ubiquitous equation" do

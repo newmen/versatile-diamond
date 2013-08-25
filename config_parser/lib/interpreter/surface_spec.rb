@@ -25,8 +25,8 @@ module VersatileDiamond
       def simple_atom(keyname, atom_str)
         atom_name, lattice_symbol = Matcher.specified_atom(atom_str)
         if atom_name && lattice_symbol
-          atom = Tools::Chest.atom(atom_name)
-          atom.lattice = Tools::Chest.lattice(lattice_symbol)
+          atom = get(:atom, atom_name)
+          atom.lattice = get(:lattice, lattice_symbol)
           @concept.describe_atom(keyname, atom)
           true
         else

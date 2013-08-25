@@ -148,6 +148,11 @@ module VersatileDiamond
         it { methyl_desorption.more_complex.should be_empty }
       end
 
+      describe "#size" do
+        it { methyl_activation.size.should == 4 }
+        it { dimer_formation.size.should == 8.34 }
+      end
+
       it_behaves_like "visitable" do
         subject { methyl_desorption }
       end

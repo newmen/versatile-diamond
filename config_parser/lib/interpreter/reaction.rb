@@ -30,8 +30,8 @@ module VersatileDiamond
       # creates corresponding concept of reaction.
       #
       # @param [String] str the matching string with equation
-      # @raise [Tools::Chest::KeyNameError] if any spec or atom is undefined
-      # @raise [Errors::SyntaxError] if invalid string or wrong balance
+      # @raise [Errors::SyntaxError] if invalid string or wrong balance or if
+      #   any spec or atom is undefined
       def equation(str)
         sides = Matcher.equation(str)
         syntax_error('.invalid') unless sides
@@ -68,7 +68,7 @@ module VersatileDiamond
             reaction
           end
 
-        Tools::Chest.store(@reaction)
+        store(@reaction)
       rescue AtomMapper::EqualSpecsError => e
         syntax_error('.equal_specs', name: e.spec_name)
       rescue StructureMapper::CannotMap
@@ -84,14 +84,13 @@ module VersatileDiamond
       # @param [String] spec_str the matching string for detecting correspond
       #   spec
       # @raise [Errors::SyntaxError] if spec is atomic spec and atom for it has
-      #   valence more than 1
-      # @raise [Tools::Chest::KeyNameError] if atom or spec cannot be found
+      #   valence more than 1, or if atom or spec cannot be found
       # @return [Array] where first element is name of spec and second is spec
       def detect_name_and_spec(spec_str)
         if Matcher.active_bond(spec_str)
           ['*', Concepts::ActiveBond.new]
         elsif (atom_name = Matcher.atom(spec_str))
-          atom = Tools::Chest.atom(atom_name)
+          atom = get(:atom, atom_name)
           syntax_error('.invalid_valence') if atom.valence != 1
           [atom_name, Concepts::AtomicSpec.new(atom)]
         else
@@ -100,9 +99,9 @@ module VersatileDiamond
             using_name = name
             name = name.to_sym
             if @aliases && (original_name = @aliases[name])
-              Tools::Chest.spec(original_name)
+              get(:spec, original_name)
             else
-              Tools::Chest.spec(name)
+              get(:spec, name)
             end
           end
           [using_name, spec]

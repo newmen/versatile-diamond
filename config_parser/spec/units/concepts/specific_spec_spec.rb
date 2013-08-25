@@ -11,16 +11,16 @@ module VersatileDiamond
       end
 
       describe "#full_name" do
-        it { methane.full_name.should == 'methane' }
+        it { methane.full_name.should == 'methane()' }
         it { methyl.full_name.should == 'methane(c: *)' }
 
-        it { bridge.full_name.should == 'bridge' }
+        it { bridge.full_name.should == 'bridge()' }
         it { activated_bridge.full_name.should == 'bridge(ct: *)' }
         it { extra_activated_bridge.full_name.should == 'bridge(ct: **)' }
         it { activated_incoherent_bridge.full_name.
           should == 'bridge(ct: *, ct: i)' }
 
-        it { methyl_on_bridge.full_name.should == 'methyl_on_bridge' }
+        it { methyl_on_bridge.full_name.should == 'methyl_on_bridge()' }
         it { activated_methyl_on_bridge.full_name.
           should == 'methyl_on_bridge(cm: *)' }
         it { unfixed_methyl_on_bridge.full_name.
@@ -257,6 +257,14 @@ module VersatileDiamond
           chloride_bridge.atom(:ct), h). should be_true }
         it { chloride_bridge.has_termination_atom?(
           chloride_bridge.atom(:ct), cl). should be_true }
+      end
+
+      describe "#size" do
+        it { methane.size.should == 0 }
+        it { methyl.size.should == 0 }
+        it { bridge.size.should == 3 }
+        it { extra_activated_bridge.size.should == 5 }
+        it { activated_methyl_on_incoherent_bridge.size.should == 5.34 }
       end
 
       it_behaves_like "visitable" do

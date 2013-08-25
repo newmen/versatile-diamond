@@ -46,6 +46,8 @@ module VersatileDiamond
         super(name)
         @type = type
         @source, @products = source, products
+
+        @source.sort! { |a, b| b.size <=> a.size }
       end
 
       # Gets a name of reaction with prepend type of reaction
@@ -81,7 +83,8 @@ module VersatileDiamond
       # @yield [TerminationSpec] do for each reactant
       # @return [Enumerator] if block is not given
       def each_source(&block)
-        block_given? ? @source.each(&block) : @source.each
+        source = @source.dup
+        block_given? ? source.each(&block) : source.each
       end
 
       # Swaps source spec to another same source spec
@@ -137,28 +140,29 @@ module VersatileDiamond
         Tools::Config.rate(self)
       end
 
-  #     def visit(visitor)
-  #       analyze_and_source_specs(visitor)
+      # Counts size of all source specs
+      # @return [Integer] number of surface atoms used in reaction
+      def size
+        @source.reduce(0) { |acc, spec| acc + spec.size }
+      end
 
-  #       if full_rate > 0
-  #         accept_self(visitor)
-  #       else
-  #         visitor.accept_abstract_reaction(self)
-  #       end
-
-  # # p @name
-  # # puts "@@ rate: %1.3e" % rate
-  # # return unless @atoms_map
-  # # @atoms_map.each do |(source, product), indexes|
-  # #   print "  #{source} => #{product} :: "
-  # #   puts indexes.map { |one, two| "#{one} -> #{two}" }.join(', ')
-  # # end
-  #     end
+      # Also visit target source spec
+      # @param [Visitors::Visitor] visitor the object that will accumulate
+      #   state of current instance
+      # @override
+      def visit(visitor)
+        super
+        @source.each { |spec| spec.visit(visitor) }
+      end
 
   #     def to_s
   #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
   #       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
   #     end
+
+      def inspect
+        name
+      end
 
     protected
 
@@ -191,14 +195,6 @@ module VersatileDiamond
       def reverse_params
         [:reverse, @name, @products, @source]
       end
-
-    #   def accept_self(visitor)
-    #     visitor.accept_ubiquitous_equation(self)
-    #   end
-
-    #   def analyze_and_source_specs(visitor)
-    #     @source.each { |spec| spec.visit(visitor) }
-    #   end
     end
 
   end

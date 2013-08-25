@@ -4,7 +4,6 @@ module VersatileDiamond
     # Organizes the relationship between the concepts
     class Shunter
 
-      SPEC_KEYS = [:gas_spec, :surface_spec].freeze
       REACTION_KEYS =
         [:ubiquitous_reaction, :reaction, :lateral_reaction].freeze
 
@@ -20,14 +19,15 @@ module VersatileDiamond
         # Organize dependecies between concepts stored in Chest
         # @raise [ReactionDuplicate] if was defined some duplicate of reaction
         def organize_dependecies!
-          organize_specs_dependencies!
-
+          # order of organization is important!
           purge_null_rate_reactions!
           organize_specific_spec_dependencies!
 
           # before need to update specs by organize their dependecies!
           check_reactions_for_duplicates
           organize_reactions_dependencies!
+
+          organize_specs_dependencies!
           purge_unused_specs!
         end
 
@@ -35,7 +35,7 @@ module VersatileDiamond
 
         # Reorganize dependencies between base specs
         def organize_specs_dependencies!
-          specs = Chest.all(*SPEC_KEYS)
+          specs = Chest.all(:surface_spec)
           specs.sort! do |a, b|
             if a.size == b.size
               b.external_bonds <=> a.external_bonds
@@ -125,13 +125,12 @@ module VersatileDiamond
 
         # Removes all unused base specs from Chest
         def purge_unused_specs!
-          specs = Chest.all(*SPEC_KEYS)
+          specs = Chest.all(:gas_spec, :surface_spec)
           specific_specs = Chest.all(:specific_spec)
           lateral_reactions = Chest.all(:lateral_reaction)
 
           specs.each do |spec|
-            has_parent = specs.any? { |s| s.parent == spec }
-            has_children = has_parent || specific_specs.any? do |specific_spec|
+            has_children = specific_specs.any? do |specific_spec|
               specific_spec.spec == spec
             end
             has_depend = has_children || lateral_reactions.any? do |reaction|

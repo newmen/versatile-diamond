@@ -17,6 +17,10 @@ module VersatileDiamond
           describe "#extendable?" do
             it { subject.extendable?.should be_false }
           end
+
+          describe "#size" do
+            it { subject.size.should == 1 }
+          end
         end
       end
 

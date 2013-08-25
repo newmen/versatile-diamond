@@ -139,9 +139,14 @@ module VersatileDiamond
         end
 
         # Visit all stored concepts
-        # @param []
+        # @param [Visitors::Visitor] visitor the object that will accumulate
+        #   states of all stored concepts
         def visit(visitor)
-
+          # necessary to visit only reactions because they will visit all the
+          # rest
+          all(*Shunter::REACTION_KEYS).each do |reaction|
+            reaction.visit(visitor)
+          end
         end
 
         def to_s

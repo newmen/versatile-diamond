@@ -17,11 +17,11 @@ module VersatileDiamond
       # it to Chest
       #
       # @param [String] name the name of environment concept
-      # @raise [Tools::Chest::KeyNameError] if environment concept with same
-      #   name already stored
+      # @raise [Errors::SyntaxError] if environment concept with same name
+      #   already stored
       def environment(name)
         concept = Concepts::Environment.new(name)
-        Tools::Chest.store(concept)
+        store(concept)
         nested(Environment.new(concept))
       end
     end
