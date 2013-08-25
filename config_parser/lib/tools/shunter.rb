@@ -4,7 +4,7 @@ module VersatileDiamond
     # Organizes the relationship between the concepts
     class Shunter
 
-      SPEC_KEYS = [:gas_spec, :surface_spec]
+      SPEC_KEYS = [:gas_spec, :surface_spec].freeze
       REACTION_KEYS =
         [:ubiquitous_reaction, :reaction, :lateral_reaction].freeze
 

@@ -42,6 +42,24 @@ module VersatileDiamond
         setup_duplication(duplication)
       end
 
+      # Also changes atom mapping result
+      # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
+      # @param [TerminationSpec | SpecificSpec] to which spec will be added
+      # @override
+      def swap_source(from, to)
+        # TODO: move to atom mapper?
+        @atoms_map.map! do |specs, atoms|
+          spec = specs.first
+          if spec == from
+            changed_atoms = atoms.map { |f, s| [to.atom(from.keyname(f)), s] }
+            [[to, specs.last], changed_atoms]
+          else
+            [specs, atoms]
+          end
+        end
+        super
+      end
+
       # Provides positions between atoms of reactntant
       # @return [Array] the positions array
       def positions

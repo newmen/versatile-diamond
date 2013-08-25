@@ -35,6 +35,13 @@ module VersatileDiamond
         it { activated_bridge.atom(:ct).should == activated_cd }
       end
 
+      describe "#keyname" do
+        it { methyl.keyname(activated_c).should == :c }
+        it { bridge.keyname(cd).should == :ct }
+        it { activated_dimer.keyname(activated_cd).should == :cr }
+        it { activated_dimer.keyname(activated_dimer.atom(:cl)).should == :cl }
+      end
+
       describe "#is_gas?" do
         it { hydrogen.is_gas?.should be_true }
         it { hydrogen_ion.is_gas?.should be_true }

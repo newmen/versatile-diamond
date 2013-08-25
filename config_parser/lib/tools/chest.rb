@@ -138,6 +138,12 @@ module VersatileDiamond
           end
         end
 
+        # Visit all stored concepts
+        # @param []
+        def visit(visitor)
+
+        end
+
         def to_s
           @sac && @sac.keys.each_with_object({}) do |key, hash|
             hash[key] = @sac[key].map(&:first)

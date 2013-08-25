@@ -67,6 +67,10 @@ module VersatileDiamond
         it { hydrogen_migration.reverse.gases_num.should == 0 }
       end
 
+      describe "#swap_source" do
+        # TODO: checks atom mapping result
+      end
+
       describe "#positions" do
         [:one, :two].zip([:first, :last]).each do |l, m|
           let(l) { df_source.send(m).atom(:ct) }

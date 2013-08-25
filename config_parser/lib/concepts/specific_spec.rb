@@ -60,6 +60,13 @@ module VersatileDiamond
         @specific_atoms[keyname] || @spec.atom(keyname)
       end
 
+      # Returns a keyname of passed atom
+      # @param [Atom] atom the atom for which keyname will be found
+      # @return [Symbol] the keyname of atom
+      def keyname(atom)
+        @specific_atoms.invert[atom] || @spec.keyname(atom)
+      end
+
       %w(incoherent unfixed).each do |state|
         # Defines #{state} method which change a state of atom selected by
         # keyname

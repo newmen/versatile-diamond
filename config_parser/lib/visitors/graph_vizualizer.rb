@@ -1,7 +1,6 @@
 require 'graphviz'
 
 module VersatileDiamond
-
   module Visitors
 
     class GraphVizualizer
@@ -297,5 +296,4 @@ module VersatileDiamond
     end
 
   end
-
 end
