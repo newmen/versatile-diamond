@@ -20,9 +20,8 @@ begin
 
   VD::Analyzer.read_config(opt['<path_to_config>'])
 
-  graph_vizualizer = VD::Visitors::GraphVizualizer.new('total_tree')
-  VD::Tools::Chest.visit(graph_vizualizer)
-  graph_vizualizer.generate
+  graph_generator = VD::Generators::ConceptsTreeGenerator.new('total_tree')
+  graph_generator.generate
 
 rescue Docopt::Exit => e
   puts e.message

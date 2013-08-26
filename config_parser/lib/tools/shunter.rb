@@ -130,7 +130,8 @@ module VersatileDiamond
           lateral_reactions = Chest.all(:lateral_reaction)
 
           specs.each do |spec|
-            has_children = specific_specs.any? do |specific_spec|
+            has_parent = specs.any? { |s| s.parent == spec }
+            has_children = has_parent || specific_specs.any? do |specific_spec|
               specific_spec.spec == spec
             end
             has_depend = has_children || lateral_reactions.any? do |reaction|

@@ -1,9 +1,9 @@
 require 'graphviz'
 
 module VersatileDiamond
-  module Visitors
+  module Generators
 
-    class GraphVizualizer
+    class ConceptsTreeGenerator
       SPECIFIC_SPEC_COLOR = 'blue'
       TERMINATION_SPEC_COLOR = 'chocolate'
       WHERE_COLOR = 'darkviolet'
@@ -20,46 +20,16 @@ module VersatileDiamond
 
         @graph = GraphViz.new(:G, type: :digraph)
 
-        @base_specs = Set.new
-        @specific_specs = Set.new
-        @termination_specs = Set.new
-        @wheres = Set.new
-
-        @ubiquitous_reactions = []
-        @typical_reactions = []
-        @lateral_reactions = []
-      end
-
-      %w(gas surface).each do |type|
-        define_method("accept_#{type}_spec") do |spec|
-          @base_specs << spec
+        @base_specs = Tools::Chest.all(:gas_spec, :surface_spec)
+        @specific_specs = Tools::Chest.all(:specific_spec)
+        @termination_specs = Tools::Chest.all(:active_bond, :atomic_spec)
+        @wheres = Tools::Chest.all(:where).reduce([]) do |acc, hash|
+          acc + hash.values
         end
-      end
 
-      %w(active_bond atomic_spec).each do |type|
-        define_method("accept_#{type}") do |spec|
-          @termination_specs << spec
-        end
-      end
-
-      def accept_specific_spec(specific_spec)
-        @specific_specs << specific_spec
-      end
-
-      def accept_where(where)
-        @wheres << where
-      end
-
-      def accept_ubiquitous_reaction(reaction)
-        @ubiquitous_reactions << reaction
-      end
-
-      def accept_reaction(reaction)
-        @typical_reactions << reaction
-      end
-
-      def accept_lateral_reaction(reaction)
-        @lateral_reactions << reaction
+        @ubiquitous_reactions = Tools::Chest.all(:ubiquitous_reaction)
+        @typical_reactions = Tools::Chest.all(:reaction)
+        @lateral_reactions = Tools::Chest.all(:lateral_reaction)
       end
 
       def generate
