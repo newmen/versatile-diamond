@@ -1,3 +1,6 @@
+require 'coveralls'
+Coveralls.wear!
+
 require_relative '../load_helper'
 require_relative '../versatile_diamond'
 
