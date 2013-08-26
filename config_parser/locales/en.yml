@@ -1,41 +1,57 @@
 en:
+  concepts:
+    active_bond: "Active bond"
+    atom: "Atom"
+    atomic_spec: "Atomic specie"
+    environment: "Local environment"
+    gas_spec: "Gas specie"
+    lateral_reaction: "Lateral reaction"
+    lattice: "Lattice"
+    reaction: "Typical reaction"
+    specific_spec: "Specific specie"
+    surface_spec: "Surface structure"
+    ubiquitous_reaction: "Ubiquitous reaction"
+    where: "Where object"
+
+    errors:
+      duplication: "%{key} \"%{name}\" already defined"
+      undefined: "Unknown %{key} \"%{name}\""
+
   common:
+    duplicating_key: "Key \"%{name}\" was duplicated"
     extra_space: "Extra space"
     undefined_component: "Unknown definition \"%{component}\""
     wrong_arguments_ordering: "Wrong arguments ordering"
-    wrong_block: "Wrong block definition"
     wrong_hierarchy: "Wrong hierarchy"
 
-  atom:
-    already_defined: "Atom already defined"
-    invalid_valence: "Valence of atom \"%{name}\" must be positive"
-    undefined: "Unknown atom \"%{name}\""
-    without_valence: "Atom cannot be initialized without valence parameter"
+  analyzer:
+    reaction_duplicate: "Reaction \"%{first}\" is duplicate of \"%{second}\""
 
-  dimensions:
+  atom:
+    invalid_name: "Wrong atom name \"%{name}\""
+    invalid_valence: "Valence of atom \"%{name}\" must be positive"
+    without_valence: "Atom \"%{name}\" cannot be initialized without valence parameter"
+
+  dimension:
     is_not_set: "Dimension is not set"
     undefined_value: "Undefined value of dimension"
 
   gas:
-    undefined_spec: "Undefined gas spec \"%{name}\""
+    concentration_already_set: "Concentration of molecule %{name} already set"
+    temperature_already_set: "Temperature of gas phase already set"
 
   surface:
+    composition_already_set: "Surface composition already set"
     need_pass_specified_atom: "Necessary to pass specified atom"
     sizes_already_set: "Sizes already set"
+    temperature_already_set: "Temperature of surface already set"
     wrong_sizes: "Incorrect setup original substrate sizes"
 
   position:
     uncomplete: "Necessary to characterize the position of atoms relative to each other"
 
   lattice:
-    already_defined: "Lattice already defined"
     need_define_class: "Necessary to define C++ class when defining new lattice"
-    undefined: "Unknown lattice symbol \"%{symbol}\""
-
-  spec:
-    already_defined: "Spec \"%{name}\" already defined"
-    undefined: "Undefined spec \"%{name}\""
-    undefined_atom_keyname: "Undefined atom keyname \"%{atom_keyname}\" in \"%{spec_name}\""
 
   gas_spec:
     wrong_bond: "Bond cannot be characterized"
@@ -44,41 +60,32 @@ en:
     incorrect_linking: "Incorrect linking unspecified atoms"
 
   specific_spec:
-    atom_already_has_state: "Atom \"%{atom}\" of specific spec \"%{spec}\" already has %{state} state"
-    invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" can have no more than %{nums} active bonds"
-    wrong_specification: "Wrong spec specification"
-
-  atomic_spec:
-    invalid_valence: "In the global reaction can be specified only monovalent atoms"
+    invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
+    wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
   reaction:
-    need_define_equation: "Necessary to define equation first"
-
-  equation:
-    activation_already_set: "Activation energy already set"
-    cannot_be_mapped: "Specs \"%{name}\" can not be mapped, try to use \"aliases\" instruction"
-    enthalpy_already_set: "Heat of reaction already set"
+    cannot_map: "Cannot map reaction atoms"
+    equal_specs: "Species \"%{name}\" in the left-hand and right-hand side of the equation are identical"
     invalid: "Invalid reaction equation"
-    lateral_already_connected: "Lateral already connected"
-    multiple_wheres: "Used where \"%{name}\" available in several environments"
-    rate_already_set: "Rate already set"
-    undefined_target_alias: "Undefined target atom alias \"%{name}\""
+    invalid_valence: "In the global reaction can be specified only monovalent atoms"
+    need_define_equation: "Necessary to define equation first"
     wrong_balance: "Wrong reaction balance"
 
-  environment:
-    targets_not_defined: "Target atoms is not defined for this environment"
-    undefined: "Undefined environment \"%{name}\""
+  equation:
+    undefined_target: "Undefined target atom name \"%{name}\""
+
+  refinement:
+    atom_already_has_state: "Atom already has %{state} state"
+    cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
+    duplicate_position: "Position between these atoms is already set"
 
   where:
-    already_exists: "Where \"%{name}\" already exists"
+    already_use: "Current where already use \"%{name}\""
     cannot_link_targets: "Targets cannot be linked together"
     should_links_with_target: "Position should be determined relative to one of target atoms"
-    undefined: "Undefined used where name \"%{name}\""
 
   matcher:
     undefined_used_atom: "Undefined used atom \"%{name}\""
 
-  atom_mapper:
-    argument_error: "At the moment, analyzer can not handle the cases of formation of several species"
-    cannot_map: "Cannot map reaction atoms"
-    equal_specs: "Species \"%{name}\" in the left-hand and right-hand side of the equation are identical"
+  some_checker:
+    hello: "Hello, %{name}!"
