@@ -14,10 +14,10 @@ run
 
 gas
   spec :hydrogen
-    atoms h: H # the second atom specifies by run::termination
+    atoms h: H # the second atom is H too by default
 
   spec :methane
-    atoms c: C
+    atoms c: C # each external bond is H atom
 
 #  spec :ethylene
 #    atoms c1: C, c2: C
@@ -25,7 +25,7 @@ gas
 
   concentration hydrogen(h: *), 1e-9
   concentration methane(c: *), 1e-10
-  # concentration ethylene(c1: *, c2: *), 0 # две активных связи на соседних атомах могут существовать?
+  # concentration ethylene(c1: *), 0
 
   temperature 1200
 
@@ -66,7 +66,7 @@ surface
 
   spec :bridge_with_dimer
     aliases dmr: dimer
-    atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr), cf: dmr(:cl)
+    atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr)
     bond :ct, :cl, face: 110, dir: :front
     bond :ct, :cr, face: 110, dir: :front
     position :cl, :cr, face: 100, dir: :front
@@ -109,7 +109,7 @@ events
   reaction 'methyl desorption'
     equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
       refinement 'from bridge'
-        incoherent methyl_on_bridge(:cb)
+        incoherent methyl_on_bridge(:cb) # indicates automaticaly by methane
         forward_rate 1.7e7
 
       refinement 'from face 111'
@@ -120,6 +120,7 @@ events
 
   reaction 'methyl activation'
     # TODO: должна быть уточнением реакции десорбции водорода
+    # TODO: может быть следует использовать methyl_on_bridge?
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       unfixed methyl_on_dimer(:cm)
 
@@ -330,10 +331,7 @@ events
 
   reaction 'high bridge to bridge and dimer'
     # TODO: положение (и доп. конфигурация) атомов также выводится исходя из результата реакции?
-    # TODO: приходится выставлять руками некогерентность атома в продукте, т.к.
-    # реакция межмолекулярная, и атом мэппинг для нё определяется по базовым структурам,
-    # а некогерентность - свойство специфицированной структуры.
-    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *, cf: i)
+    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'
         activation 14.9
@@ -371,7 +369,6 @@ events
 
   reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
-
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
       position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
       position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross

@@ -16,11 +16,12 @@ begin
   opt = Docopt::docopt(doc)
   I18n.locale = opt['--lang']
 
-  VersatileDiamond::Analyzer.read_config(opt['<path_to_config>'])
+  VD = VersatileDiamond
 
-  graph_vizualizer = VersatileDiamond::GraphVizualizer.new('total_tree')
-  VersatileDiamond::Equation.visit_all(graph_vizualizer)
-  graph_vizualizer.generate
+  VD::Analyzer.read_config(opt['<path_to_config>'])
+
+  graph_generator = VD::Generators::ConceptsTreeGenerator.new('total_tree')
+  graph_generator.generate
 
 rescue Docopt::Exit => e
   puts e.message
