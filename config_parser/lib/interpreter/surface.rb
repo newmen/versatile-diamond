@@ -43,7 +43,7 @@ module VersatileDiamond
         atom.lattice = get(:lattice, lattice_symbol)
         Tools::Config.surface_composition(atom)
       rescue Tools::Config::AlreadyDefined
-        syntax_error('.sizes_already_set')
+        syntax_error('.composition_already_set')
       end
 
     private

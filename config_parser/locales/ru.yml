@@ -1,9 +1,17 @@
 ru:
   concepts:
+    active_bond: "Активная связь"
     atom: "Атом"
+    atomic_spec: "Одновалентный атом на поверхности"
+    environment: "Локальное окружение"
     gas_spec: "Газовый вид"
+    lateral_reaction: "Реакция учитывающая окружение"
     lattice: "Кристаллическая решётка"
+    reaction: "Реакция"
+    specific_spec: "Уточнённое вещество"
     surface_spec: "Структура поверхности"
+    ubiquitous_reaction: "Повсеместная реакция"
+    where: "Состояние окружения"
 
     errors:
       duplication: "%{key} \"%{name}\" уже определён"
@@ -14,7 +22,6 @@ ru:
     extra_space: "Лишний пробел"
     undefined_component: "Неизвестное определение \"%{component}\""
     wrong_arguments_ordering: "Неверная последовательность аргументов"
-    wrong_block: "Неверное определение блока"
     wrong_hierarchy: "Неверная иерархия"
 
   analyzer:
@@ -25,7 +32,7 @@ ru:
     invalid_valence: "Валентность атома \"%{name}\" должна быть положительной"
     without_valence: "Атом \"%{name}\" не может быть инициализирован без значения валентности"
 
-  dimensions:
+  dimension:
     is_not_set: "Единицы измерения не установлены"
     undefined_value: "Неизвестное значение единиц измерения"
 
@@ -46,9 +53,6 @@ ru:
   lattice:
     need_define_class: "Необходимо задать C++ класс для определения типа решётки"
 
-  spec:
-    undefined_atom_keyname: "Неизвестный псевдоним атома \"%{atom_keyname}\" в \"%{spec_name}\""
-
   gas_spec:
     wrong_bond: "В структурах газовой фазы, связь не может быть охарактеризована"
 
@@ -56,6 +60,7 @@ ru:
     incorrect_linking: "Неверное связывание неспецифицированных атомов"
 
   specific_spec:
+    atom_already_has_state: "Атом уже имеет состояние %{state}"
     invalid_actives_num: "У атома \"%{atom}\" структуры \"%{spec}\" количество связей не может быть больше чем значение валентности"
     wrong_specification: "Неверная спецификация атома \"%{atom}\" уточнённой структуры"
 
@@ -68,17 +73,11 @@ ru:
     wrong_balance: "Неверный баланс реакции"
 
   equation:
-    lateral_already_connected: "Окружение уже подключено"
-    multiple_wheres: "Используемое уточнение \"%{name}\" доступно в нескольких окружениях"
     undefined_target: "Неизвестное название целевого атома \"%{name}\""
 
   refinement:
-    atom_already_has_state: "Атом уже имеет состояние %{state}"
     cannot_compliance: "Вещества \"%{name}\" не могут быть сопоставлены, попробуйте использовать инструкцию \"aliases\""
     duplicate_position: "Положение между указанными атомами уже задано"
-
-  environment:
-    targets_not_defined: "Для данного окружения не обозначены целевые атомы"
 
   where:
     already_use: "Текущее уточнее уже использует другое с именем \"%{name}\""
@@ -87,6 +86,3 @@ ru:
 
   matcher:
     undefined_used_atom: "Неизвестный используемый атом \"%{name}\""
-
-  atom_mapper:
-    argument_error: "В настоящий момент анализатор не может обрабатывать случаи образования нескольких веществ"

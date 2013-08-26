@@ -21,7 +21,8 @@ module VersatileDiamond
               end
             end
           rescue Concepts::SpecificAtom::AlreadyStated => e
-            syntax_error('refinement.atom_already_has_state', state: e.state)
+            syntax_error('specific_spec.atom_already_has_state',
+              state: e.state)
           end
         end
       end
