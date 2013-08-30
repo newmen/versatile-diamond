@@ -12,10 +12,14 @@ module VersatileDiamond
       #
       # @param [Graph] g1 the first graph
       # @param [Graph] g2 the second graph
+      # @option [Proc] :comparer the comparer of vertices for creating
+      #   associated vertices, if nil then will used default comparer
       # @yield [[Concepts::Atom, Concepts::Atom], [Concepts::Atom, Concepts::Atom]]
       #   if given checks vertices for custrom comparing case
-      def initialize(g1, g2, &block)
+      def initialize(g1, g2, comparer: nil, &block)
         @g1, @g2 = g1, g2
+
+        comparer ||= -> _, _, v, w { v.same?(w) }
 
         # forbidden and existed edges
         @fbn, @ext = {}, {}
@@ -23,7 +27,7 @@ module VersatileDiamond
         # build association graph vertices
         @g1.each_vertex do |v|
           @g2.each_vertex do |w|
-            add_vertex(v, w) if v.same?(w)
+            add_vertex(v, w) if comparer[@g1, @g2, v, w]
           end
         end
 
@@ -72,10 +76,12 @@ module VersatileDiamond
 
       # Saves current graph to image file by GraphViz utility
       # @param [String] filename the name of image file
-      # @param [String] ext the extention of image file
-      def save(filename, ext = 'png')
+      # @option [String] :ext the extension of image file
+      # @option [Boolean] :fbn_too if true then graph for forbidden edges will
+      #   be saved too
+      def save(filename, ext: 'png', fbn_too: false)
         save_for(@ext, 'ext', filename, ext)
-        # save_for(@fbn, 'fbn', filename, ext)
+        save_for(@fbn, 'fbn', filename, ext) if fbn_too
       end
 
     private

@@ -2,7 +2,7 @@ module VersatileDiamond
   module Interpreter
     module Support
 
-      module ReactionRefinements
+      module ReactionRefinementsExamples
         shared_examples_for "reaction refinemenets" do
           subject do
             described_class.new(hydrogen_migration, hm_names_to_specs)

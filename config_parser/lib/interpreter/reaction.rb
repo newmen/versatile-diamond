@@ -60,18 +60,16 @@ module VersatileDiamond
               source, products = ext_src, ext_prd
             end || syntax_error('.wrong_balance')
 
-            atoms_map = Mcs::AtomMapper.map(source, products, names_and_specs)
+            mapping = Mcs::AtomMapper.map(source, products, names_and_specs)
             reaction = Concepts::Reaction.new(
-              :forward, @name, source, products, atoms_map)
+              :forward, @name, source, products, mapping)
 
             nested(Equation.new(reaction, names_and_specs))
             reaction
           end
 
         store(@reaction)
-      rescue AtomMapper::EqualSpecsError => e
-        syntax_error('.equal_specs', name: e.spec_name)
-      rescue StructureMapper::CannotMap
+      rescue AtomMapper::CannotMap
         syntax_error('.cannot_map')
       end
 

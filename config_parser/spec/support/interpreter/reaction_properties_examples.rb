@@ -2,7 +2,7 @@ module VersatileDiamond
   module Interpreter
     module Support
 
-      module ReactionProperties
+      module ReactionPropertiesExamples
         shared_examples_for "reaction properties" do
           before(:each) do
             elements.interpret('atom H, valence: 1')

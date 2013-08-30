@@ -42,6 +42,19 @@ module VersatileDiamond
         it { activated_dimer.keyname(activated_dimer.atom(:cl)).should == :cl }
       end
 
+      describe "#describe_atom" do
+        before { bridge.describe_atom(:ct, activated_cd) }
+        it { bridge.atom(:ct).should == activated_cd }
+        it { bridge.keyname(activated_cd).should == :ct }
+      end
+
+      describe "#links" do
+        it { methyl.links.should == { activated_c => [] } }
+        it { vinyl.links.should == {
+          activated_c => [[c2, free_bond], [c2, free_bond]],
+          c2 => [[activated_c, free_bond], [activated_c, free_bond]] } }
+      end
+
       describe "#is_gas?" do
         it { hydrogen.is_gas?.should be_true }
         it { hydrogen_ion.is_gas?.should be_true }
@@ -112,27 +125,18 @@ module VersatileDiamond
       end
 
       describe "#extend!" do
-        it "extends before check" do
-          bridge.extend!
-          bridge.external_bonds.should == 8
+        describe "extends before check" do
+          before { bridge.extend! }
+          it { bridge.external_bonds.should == 8 }
         end
-      end
 
-      describe "#changed_atoms" do
-        it { bridge.changed_atoms(activated_bridge).first.should == cd }
-        it { activated_bridge.changed_atoms(bridge).first.
-          should == activated_cd }
-        it { activated_bridge.changed_atoms(extra_activated_bridge).first.
-          should == activated_cd }
-        it { extra_activated_bridge.changed_atoms(activated_bridge).first.
-          actives.should == 2 }
-      end
-
-      describe "#look_around!" do
-        before(:each) { methyl_on_bridge.look_around!(md_atom_map) }
-        it { methyl_on_bridge.atom(:cm).should be_a(SpecificAtom) }
-        it { methyl_on_bridge.atom(:cm).unfixed?.should be_true }
-        it { methyl_on_bridge.atom(:cm).incoherent?.should be_true }
+        describe "exchange specific atom" do
+          subject do
+            s = SpecificSpec.new(bridge_base, cr: activated_cd)
+            s.extend!; s
+          end
+          it { subject.atom(:cr).valence.should == 3 }
+        end
       end
 
       describe "#dependet_from" do

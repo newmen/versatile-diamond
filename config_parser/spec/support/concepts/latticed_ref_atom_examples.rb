@@ -2,7 +2,7 @@ module VersatileDiamond
   module Concepts
     module Support
 
-      module LatticedRefAtom
+      module LatticedRefAtomExamples
         shared_examples_for "#lattice" do
           describe "#lattice" do
             it { reference.lattice.should be_nil }

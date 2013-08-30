@@ -6,13 +6,10 @@ module VersatileDiamond
     class Graph
       extend Forwardable
 
-      attr_reader :original_links
-
       # Initialize instance by links hash of original spec graph
       # @param [Hash] links the hash of links
       def initialize(links)
         @edges = Hash[links.map { |key, list| [key, list.dup] }]
-        @original_links = links
         @changed_vertices = {}
       end
 

@@ -34,7 +34,7 @@ module VersatileDiamond
       def initialize_copy(other)
         @spec = other.spec
         @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
-        @links = nil
+        reset_caches
       end
 
       def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
@@ -67,6 +67,36 @@ module VersatileDiamond
       # @return [Symbol] the keyname of atom
       def keyname(atom)
         @specific_atoms.invert[atom] || @spec.keyname(atom)
+      end
+
+      # Describes atom by storing it to specific atoms hash
+      # @param [Symbol] keyname the keyname of new specified atom
+      # @param [SpecificAtom] atom the specified atom which will be stored
+      # @raise [ArgumentError] when keyname is undefined, or keyname already
+      #   specified, or atom is not specified
+      def describe_atom(keyname, atom)
+        if !spec.atom(keyname)
+          raise ArgumentError, "Undefined atom #{keyname} for #{name}!"
+        end
+        if @specific_atoms[keyname]
+          raise ArgumentError,
+            "Atom #{keyname} for specific #{name} already described!"
+        end
+        if !atom.is_a?(SpecificAtom)
+          raise ArgumentError,
+            "Described atom #{keyname} for specific #{name} cannot be"
+            "unspecified"
+        end
+        @specific_atoms[keyname] = atom
+        reset_caches
+      end
+
+      # Returns original links of base spec but exchange correspond atoms to
+      # specific atoms
+      #
+      # @return [Hash] cached hash of all links between atoms
+      def links
+        @links ||= @spec.links_with_replace_by(@specific_atoms)
       end
 
       %w(incoherent unfixed).each do |state|
@@ -105,69 +135,13 @@ module VersatileDiamond
       # Exchange current base spec to extended base spec
       def extend!
         external_bonds_after_extend unless @extended_spec
-        @external_bonds_after_extend = nil
-        @links = nil
+
         @spec = @extended_spec
-      end
-
-      # Selects atoms that have changed compared to the other similar spec
-      # @param [SpecificSpec] other another spec which similar as it
-      # @return [Array] the array of changed atoms
-      def changed_atoms(other_similar)
-        actives, other_actives = only_actives, other_similar.only_actives
-
-        atoms = actives.each_with_object([]) do |(keyname, atom), acc|
-          other_atom = other_actives.delete(keyname)
-          if !other_atom || atom.actives != other_atom.actives
-            acc << atom
-          end
+        @specific_atoms.each do |keyname, old_atom|
+          @specific_atoms[keyname] =
+            SpecificAtom.new(@spec.atom(keyname), ancestor: old_atom)
         end
-
-        atoms + other_actives.map { |keyname, _| @spec.atom(keyname) }
-      end
-
-      # Looks around by atom mapping result and changes incoherent or unfixed
-      # property of internal atom if need
-      #
-      # @param [Array] atom_map the atom mapping result from reaction
-      def look_around!(atom_map)
-        return if is_gas?
-
-        # TODO: need to check unfixing (??)
-
-        atom_map.each do |specs, corrs|
-          next unless specs.any? { |spec| spec == self }
-
-          source, _ = specs
-          xs = self == source ? [0, 1] : [1, 0]
-          corrs.each do |mirror|
-            atoms_with_links = specs.zip(mirror).map do |specific_spec, atom|
-              [specific_spec, atom, specific_spec.internal_bonds_for(atom)]
-            end
-
-            _, own, incedent_bonds = atoms_with_links[xs.first]
-            other, foreign, _ = atoms_with_links[xs.last]
-
-            unless own.is_a?(SpecificAtom)
-              keyname = @spec.keyname(own) # uses if differences exists
-              own = SpecificAtom.new(own)
-            end
-            diff = own.diff(foreign)
-
-            # TODO: if atom has not remain bonds then not set incoherent status (rspec it!)
-            own.incoherent! if !own.incoherent? && (other.is_gas? ||
-              (diff.include?(:incoherent) && own.valence > incedent_bonds))
-
-            own.unfixed! if !own.unfixed? && incedent_bonds == 1 &&
-              (other.is_gas? || (diff.include?(:unfixed) && !own.lattice))
-
-            # store own specific atom if atom was a simple atom
-            if keyname && (own.actives > 0 || !own.relevants.empty?)
-              @specific_atoms[keyname] = own
-              @links = nil
-            end
-          end
-        end
+        reset_caches
       end
 
       # Gets parent specific spec
@@ -254,16 +228,10 @@ module VersatileDiamond
 
       attr_reader :specific_atoms
 
-      # Selects only active atoms
-      # @return [Hash] the hash where active atoms presents as values
-      def only_actives
-        @specific_atoms.select { |_, atom| atom.actives > 0 }
-      end
-
       # Counts the sum of active bonds
       # @return [Integer] sum of active bonds
       def active_bonds_num
-        only_actives.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+        @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
       end
 
       # Counts the sum of relevant properties of specific atoms
@@ -284,14 +252,6 @@ module VersatileDiamond
         super(atom)
       end
 
-      # Returns original links of base spec but exchange correspond atoms to
-      # specific atoms
-      #
-      # @return [Hash] cached hash of all links between atoms
-      def links
-        @links ||= @spec.links_with_replace_by(@specific_atoms)
-      end
-
     private
 
       # Verifies that the passed instance is correspond to the current, by
@@ -301,6 +261,12 @@ module VersatileDiamond
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
         HanserRecursiveAlgorithm.contain?(links, other.links)
+      end
+
+      # Resets internal caches
+      def reset_caches
+        @links = nil
+        @external_bonds_after_extend = nil
       end
     end
 

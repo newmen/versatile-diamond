@@ -6,6 +6,10 @@ module VersatileDiamond
     describe AtomReference, latticed_ref_atom: true do
       let(:ref) { AtomReference.new(ethylene_base, :c1) }
 
+      describe "#name" do
+        it { ref.name.should == :C }
+      end
+
       describe "#valence" do
         it { ref.valence.should == 2 }
       end
@@ -14,6 +18,10 @@ module VersatileDiamond
         it { c1.same?(ref).should be_true }
         it { ref.same?(c1).should be_true }
         it { ref.same?(ref.dup).should be_true }
+      end
+
+      describe "#actives" do
+        it { ref.actives.should == 0 }
       end
 
       describe "#diff" do

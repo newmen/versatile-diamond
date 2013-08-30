@@ -65,7 +65,6 @@ en:
 
   reaction:
     cannot_map: "Cannot map reaction atoms"
-    equal_specs: "Species \"%{name}\" in the left-hand and right-hand side of the equation are identical"
     invalid: "Invalid reaction equation"
     invalid_valence: "In the global reaction can be specified only monovalent atoms"
     need_define_equation: "Necessary to define equation first"

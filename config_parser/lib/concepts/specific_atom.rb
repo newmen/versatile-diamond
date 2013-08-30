@@ -12,14 +12,16 @@ module VersatileDiamond
       end
 
       extend Forwardable
-      def_delegators :@atom, :lattice, :lattice=
+      def_delegators :@atom, :name, :lattice, :lattice=
 
       # Initialize a new instance
       # @param [Atom] atom the specified atom
-      # @option [Array] :options the atom configuration
-      def initialize(atom, options: [])
+      # @option [SpecificAtom] :ancestor the ancestor of new file
+      # @option [Array] :options the atom configuration (not using if ancestor
+      #   passed)
+      def initialize(atom, ancestor: nil, options: [])
         @atom = atom.dup # because atom can be changed by mapping algorithm
-        @options = options
+        @options = ancestor ? ancestor.options : options
       end
 
       # Makes copy of another instance

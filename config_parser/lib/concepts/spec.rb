@@ -258,6 +258,8 @@ module VersatileDiamond
             end
           end
         end
+
+        reset_caches
       end
 
     private
@@ -318,6 +320,11 @@ module VersatileDiamond
       # @return [Boolean] contains or not
       def contain?(large_links, small_links)
         HanserRecursiveAlgorithm.contain?(large_links, small_links)
+      end
+
+      # Resets internal caches
+      def reset_caches
+        @keynames_to_atoms = nil
       end
     end
 

@@ -13,25 +13,18 @@ module VersatileDiamond
     # Atoms may belong (or not belong) crystal lattice, break and form of
     # communication, maintaining its relative position.
     # Finds only changed atoms.
-    class StructureMapper
+    class ManyToOneAlgorithm
       include Mcs::IntersetProjection
 
-      # Exception for cannot map case
-      class CannotMap < Exception; end
-
       class << self
-        # Maps two structures to one (or vice versa) and return result of
-        # mapping in passed block
+        # Maps two structures to one (or vice versa) and pass result of
+        # mapping to mapping result object
         #
-        # @param [Array] source_links_list the list of source graphs
-        # @param [Array] product_links_list the list of product graphs
-        # @yeild [Hash, Hash, Array, Array] receives two graphs (in the order
-        #   corresponding to calling this method) and two arrays of vertices
-        #   that have been changed in the corresponding graphs
-        # @raise [CannotMap] when algorithm cannot be applied
-        # @return [Array] the structure atom mapping result
-        def map(source_links_list, product_links_list, &block)
-          new(source_links_list, product_links_list).map(&block)
+        # @param [MappingResult] map_result the object which accumulate mapping
+        #   result
+        # @raise [AtomMapper::CannotMap] when algorithm cannot be applied
+        def map_to(map_result)
+          new(map_result.source, map_result.products).map_to(map_result)
         end
       end
 
@@ -39,12 +32,16 @@ module VersatileDiamond
       # algorithm. Detects the reaction type: assocation, dissocation or
       # recombination.
       #
-      # @param [Array] source_links_list see at #self.map same argument
-      # @param [Array] product_links_list see at #self.map same argument
-      def initialize(source_links_list, product_links_list)
-        make_graphs = -> links { Graph.new(links) }
-        source_graphs = source_links_list.map(&make_graphs)
-        product_graphs = product_links_list.map(&make_graphs)
+      # @param [Array] sources the list of source species
+      # @param [Array] products the list of products species
+      def initialize(source, products)
+        make_graphs = -> spec { Graph.new(spec.links) }
+        source_graphs = source.map(&make_graphs)
+        product_graphs = products.map(&make_graphs)
+
+        @graphs_to_specs = {}
+        @graphs_to_specs.merge!(Hash[source_graphs.zip(source)])
+        @graphs_to_specs.merge!(Hash[product_graphs.zip(products)])
 
         define_reaction_type(source_graphs, product_graphs)
       end
@@ -61,17 +58,13 @@ module VersatileDiamond
       # After the overlay a lesser structure will delete all associated atoms
       # from the larger structure.
       #
-      # @yield [Hash, Hash, Array, Array] see at #self.map same argument
-      # @raise [CannotMap] see at #self.map
-      # @return [Array] the structure atom mapping result with two elements:
-      #   the first is full mapping result and the second just changed mapping
-      #   result
-      def map(&block)
+      # @param [MappingResult] map_result see at #self.map same argument
+      # @raise [AtomMapper::CannotMap] see at #self.map
+      def map_to(mapping_result)
         @few_graphs.sort! { |a, b| b.size <=> a.size }
 
         @boundary_big_vertices = nil
-        changed_map = []
-        full_map = @few_graphs.map do |small_graph|
+        @few_graphs.each do |small_graph|
           @small_graph = small_graph
           @remaining_small_vertices = nil
 
@@ -82,7 +75,6 @@ module VersatileDiamond
             else
               select_on_bondary(big_mapped_vertices, small_mapped_vertices)
             end
-          changed_map << associate(changed_big, changed_small, &block)
 
           @boundary_big_vertices =
             @big_graph.boundary_vertices(big_mapped_vertices)
@@ -92,10 +84,12 @@ module VersatileDiamond
           small_mapped_vertices.map! do |v|
             @small_graph.changed_vertex(v) || v
           end
-          associate(big_mapped_vertices, small_mapped_vertices, &block)
-        end
 
-        [full_map, changed_map]
+          # store result
+          changes = associate(changed_big, changed_small)
+          full = associate(big_mapped_vertices, small_mapped_vertices)
+          mapping_result.add(full, changes)
+        end
       end
 
     private
@@ -105,7 +99,7 @@ module VersatileDiamond
       #
       # @param [Array] source_graphs see at #self.map source_links_list arg
       # @param [Array] product_graphs see at #self.map product_links_list arg
-      # @raise [CannotMap] see at #self.map
+      # @raise [AtomMapper::CannotMap] see at #self.map
       def define_reaction_type(source_graphs, product_graphs)
         @reaction_type = if product_graphs.size == 1 &&
           source_graphs.size > product_graphs.size
@@ -114,12 +108,10 @@ module VersatileDiamond
           :association
         else
           if source_graphs.size != 1
-            raise CannotMap, 'Wrong number of products and sources'
+            raise AtomMapper::CannotMap, 'Wrong number of products and sources'
           else
             @big_graph, @few_graphs = source_graphs.first, product_graphs
-            source_graphs.size < product_graphs.size ?
-              :disassociation :
-              :recombination
+            :disassociation
           end
         end
       end
@@ -131,7 +123,7 @@ module VersatileDiamond
       # mismatching of the structures. Permutates all the possible alteration
       # of belonging to each of the lattice atoms, which could not be mapped.
       #
-      # @raise [CannotMap] see at #self.map
+      # @raise [AtomMapper::CannotMap] see at #self.map
       # @return [Array, Array] interseted vertices of both source and product
       #   graphs
       def find_interset
@@ -139,17 +131,10 @@ module VersatileDiamond
         lattices_variants = nil
 
         loop do
-          assoc_graph = AssocGraph.new(@big_graph, @small_graph) do |(v1, w1), (v2, w2)|
-            (@boundary_big_vertices &&
-              (@boundary_big_vertices.include?(v1) ||
-                @boundary_big_vertices.include?(w1))) ||
-            (@remaining_small_vertices &&
-              (@remaining_small_vertices.include?(@small_graph.changed_vertex(v2) ||
-                @remaining_small_vertices.include?(@small_graph.changed_vertex(w2)))))
-          end
+          assoc_graph = build_assoc_graph
 
           interset = HanserRecursiveAlgorithm.first_interset(assoc_graph)
-          raise CannotMap unless interset
+          raise AtomMapper::CannotMap unless interset
 
           small_mapped_vertices = proj_small(interset)
           if interset.size < @small_graph.size
@@ -158,12 +143,15 @@ module VersatileDiamond
               @small_graph.remaining_vertices(small_mapped_vertices)
 
             lattices_variants ||= detect_lattices_variants
+
             if lattices_variants.empty?
               assoc_graph.save('assoc_error') # TODO: it's not necessarily
-              raise CannotMap
+              raise AtomMapper::CannotMap
             else
               new_lattices = lattices_variants.pop
-              @remaining_small_vertices.zip(new_lattices).each do |atom, lattice|
+              @remaining_small_vertices.zip(new_lattices).each do
+                |atom, lattice|
+
                 @small_graph.change_lattice!(atom, lattice)
               end
             end
@@ -174,6 +162,45 @@ module VersatileDiamond
         end
 
         [big_mapped_vertices, small_mapped_vertices]
+      end
+
+      # Builds associaton graph with addition condition for creates bonds of
+      # both types in association graph
+      #
+      # @return [AssocGraph] the resulted associaton graph
+      def build_assoc_graph
+        AssocGraph.new(@big_graph, @small_graph,
+          comparer: method(:vertex_comparer)) do |(v1, w1), (v2, w2)|
+
+          (@boundary_big_vertices &&
+            (@boundary_big_vertices.include?(v1) ||
+              @boundary_big_vertices.include?(w1))) ||
+          (@remaining_small_vertices &&
+            (@remaining_small_vertices.include?(@small_graph.changed_vertex(v2) ||
+              @remaining_small_vertices.include?(@small_graph.changed_vertex(w2)))))
+        end
+      end
+
+      # Compare two vertices in different graphs for creating associated vertex
+      # in associaton graph
+      #
+      # @param [Graph] g1 the first graph
+      # @param [Graph] g2 the second graph
+      # @param [Concepts::Atom | Concepts::SpecificAtom] v atom of first graph
+      # @param [Concepts::Atom | Concepts::SpecificAtom] w atom of second graph
+      # @return [Boolean] is vertices equal
+      def vertex_comparer(g1, g2, v, w)
+        # valence is not compared because could not be case when names is equal
+        # and valencies is not
+        return false unless v.name == w.name && v.lattice == w.lattice
+        return true if (@boundary_big_vertices &&
+          @boundary_big_vertices.include?(v)) || (@remaining_small_vertices &&
+            @remaining_small_vertices.include?(g2.changed_vertex(w)))
+
+        s1, s2 = @graphs_to_specs[g1], @graphs_to_specs[g2]
+        cv, cw = g1.changed_vertex(v) || v, g2.changed_vertex(w) || w
+
+        s1.external_bonds_for(cv) == s2.external_bonds_for(cw)
       end
 
       # Defines the possible variants for changing accessories to the crystal
@@ -257,16 +284,20 @@ module VersatileDiamond
         @big_graph.select_vertices(mapped_big)
       end
 
-      # Associate changed vertices with each other by passed block
-      # @yeild [Hash, Hash, Array, Array] used in #self.map, and depending from
-      #   type of reaction passes parameters to block in the correct order
-      def associate(changed_big, changed_small, &block)
+      # Associate changed vertices with each other
+      # @param [Array] changed_big the changed not specified atoms of big spec
+      # @param [Array] changed_small the changed not specified atoms of small
+      #   spec
+      # @return [Array] depending from type of reaction, return parameters in
+      #   correct order
+      def associate(changed_big, changed_small)
+        big_spec = @graphs_to_specs[@big_graph]
+        small_spec = @graphs_to_specs[@small_graph]
+
         if @reaction_type == :association
-          block[@small_graph.original_links, @big_graph.original_links,
-            changed_small, changed_big]
+          [small_spec, big_spec, changed_small, changed_big]
         else
-          block[@big_graph.original_links, @small_graph.original_links,
-            changed_big, changed_small]
+          [big_spec, small_spec, changed_big, changed_small]
         end
       end
     end

@@ -19,7 +19,8 @@ module VersatileDiamond
         # mapping algorithm
       end
 
-      def_delegators :@atom, :lattice, :lattice=, :same?, :diff
+      def_delegators :@atom, :name, :lattice, :lattice=, :same?, :actives,
+        :diff
 
       # Valence of atom with taking into account position of the atom in
       #   structure

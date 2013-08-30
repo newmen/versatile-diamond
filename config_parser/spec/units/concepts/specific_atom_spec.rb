@@ -10,12 +10,23 @@ module VersatileDiamond
         subject { described_class.new(cd, options: [:active, :incoherent]) }
         it { subject.actives.should == 1 }
         it { subject.incoherent?.should be_true }
+
+        describe "from specific atom" do
+          let(:child) { described_class.new(cd, ancestor: subject) }
+          it { child.actives.should == 1 }
+          it { child.incoherent?.should be_true }
+        end
       end
 
       describe "#dup" do
         it { subject.dup.should_not == subject }
         it { activated_c.dup.actives.should == 1 }
         it { activated_cd.dup.lattice.should == diamond }
+      end
+
+      describe "#name" do
+        it { activated_n.name.should == :N }
+        it { activated_c.name.should == :C }
       end
 
       describe "#valence" do

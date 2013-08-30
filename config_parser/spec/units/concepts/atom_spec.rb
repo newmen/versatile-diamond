@@ -27,6 +27,11 @@ module VersatileDiamond
         it { cd.same?(cd.dup).should be_true  }
       end
 
+      describe "#actives" do
+        it { h.actives.should == 0 }
+        it { c.actives.should == 0 }
+      end
+
       describe "#diff" do
         it { c.diff(c.dup).should == [] }
         it { c.diff(unfixed_c).should == [:unfixed] }

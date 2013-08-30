@@ -64,6 +64,13 @@ module VersatileDiamond
         end
       end
 
+      describe "#links" do
+        it { methane_base.links.should == { c => [] } }
+        it { ethylene_base.links.should == {
+          c1 => [[c2, free_bond], [c2, free_bond]],
+          c2 => [[c1, free_bond], [c1, free_bond]] } }
+      end
+
       describe "#adsorb" do
         describe "methane adsorbs each atom and links of ethylene" do
           subject { methane_base }

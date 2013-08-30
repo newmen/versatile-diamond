@@ -6,10 +6,10 @@ module VersatileDiamond
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
-      # @param [Array] atoms_map the atom-mapping result
-      def initialize(*super_args, atoms_map)
+      # @param [Mcs::MappingResult] mapping the atom-mapping result
+      def initialize(*super_args, mapping)
         super(*super_args)
-        @atoms_map = atoms_map
+        @mapping = mapping
       end
 
       # Also store positions for reverse reaction
@@ -47,17 +47,8 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       # @override
       def swap_source(from, to)
-        # TODO: move to atom mapper?
-        @atoms_map.map! do |specs, atoms|
-          spec = specs.first
-          if spec == from
-            changed_atoms = atoms.map { |f, s| [to.atom(from.keyname(f)), s] }
-            [[to, specs.last], changed_atoms]
-          else
-            [specs, atoms]
-          end
-        end
         super
+        @mapping.swap_source(from, to)
       end
 
       # Provides positions between atoms of reactntant
@@ -83,9 +74,8 @@ module VersatileDiamond
       # Selects complex source specs and them changed atom
       # @return [Array] cached array of complex source specs
       def complex_source_covered_by?(termination_spec)
-        return @complex_spec_with_atom if @complex_spec_with_atom
-        specs, atoms = @atoms_map.first
-        termination_spec.cover?(specs.first, atoms.first.first)
+        spec, atom = @mapping.complex_source_spec_and_atom
+        termination_spec.cover?(spec, atom)
       end
 
       # Organize dependencies from another lateral reactions
@@ -148,7 +138,7 @@ module VersatileDiamond
       # @return [Array] reversed parameters for creating reverse reaction
       # @override
       def reverse_params
-        [*super, Mcs::AtomMapper.reverse(@atoms_map)]
+        [*super, @mapping.reverse]
       end
 
       # Duplicates internal properties of reaction such as specs and atom
@@ -171,13 +161,10 @@ module VersatileDiamond
         source_dup = dup_and_save[:source, @source]
         products_dup = dup_and_save[:products, @products]
 
-        atoms_map = @atoms_map.map do |(source, product), indexes|
-          [[mirrors[source], mirrors[product]], indexes]
-        end
-
         mirrors.each(&block)
 
-        [@type, "#{@name} #{name_tail}", source_dup, products_dup, atoms_map]
+        mapping = @mapping.duplicate(mirrors)
+        [@type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
       end
 
       # Setups duplicated reaction

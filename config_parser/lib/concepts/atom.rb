@@ -44,6 +44,12 @@ module VersatileDiamond
         end
       end
 
+      # Not specified atom cannot have active bonds
+      # @return [Integer] 0 active bonds
+      def actives
+        0
+      end
+
       # Compares with other atom
       # @param [Atom | AtomReference | SpecificAtom] other the atom with which
       #   compare

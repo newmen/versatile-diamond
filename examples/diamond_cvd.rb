@@ -386,19 +386,18 @@ events
 
 
   # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
-  # reaction 'single dimer to high bridge'
-  #   aliases one: bridge, two: bridge
-  #   equation dimer = high_bridge + one(ct: *) + two(ct: *)
-  #     # определяется ли положение атомов в веществах-продуктах?
+  reaction 'single dimer to high bridge'
+    aliases one: bridge, two: bridge
+    # определяется ли положение атомов в веществах-продуктах?
+    equation dimer = high_bridge + one(ct: *) + two(ct: *)
 
-  #     lateral :end_row, 'at end of row'
-  #       # проблема с описанием "тех же атомов"
-  #     end
-  #   end
+      refinement 'not in dimers row'
+        activation 53.5
 
-  #   # значения также выдуманы
-  #   activation 53.5, end_row: :inf
-  #   forward_rate 2.8e11
-  # end
+      lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
+      there :end_row
+        # activation :inf
+        activation 500 # 1.135590e-80
 
-# Итого: 53 реакции
+    # значения также выдуманы
+    forward_rate 2.8e11

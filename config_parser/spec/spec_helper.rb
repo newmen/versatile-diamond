@@ -11,19 +11,22 @@ Dir['./spec/support/**/*.rb'].each { |f| require f }
 RSpec.configure do |config|
 
   config.include VersatileDiamond::Concepts::Support::Handbook
-  config.include VersatileDiamond::Concepts::Support::LatticedRefAtom,
+  config.include VersatileDiamond::Concepts::Support::LatticedRefAtomExamples,
     latticed_ref_atom: true
-  config.include VersatileDiamond::Concepts::Support::IsTerminationSpecie,
+  config.include VersatileDiamond::Concepts::Support::TerminationSpecExamples,
     termination_spec: true
 
   config.include VersatileDiamond::Interpreter::Support::Handbook,
     type: :interpreter
-  config.include VersatileDiamond::Interpreter::Support::ReactionProperties,
-    reaction_properties: true
-  config.include VersatileDiamond::Interpreter::Support::ReactionRefinements,
-    reaction_refinements: true
+  config.include VersatileDiamond::Interpreter::Support::
+    ReactionPropertiesExamples, reaction_properties: true
+  config.include VersatileDiamond::Interpreter::Support::
+    ReactionRefinementsExamples, reaction_refinements: true
 
-  config.include VersatileDiamond::Visitors::Support::Visitable,
+  config.include VersatileDiamond::Mcs::Support::MappingResultExamples,
+    type: :mapping_algorithm
+
+  config.include VersatileDiamond::Visitors::Support::VisitableExamples,
     visitable: true, termination_spec: true
 
   # Run specs in random order to surface order dependencies. If you find an

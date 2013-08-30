@@ -8,7 +8,7 @@ module VersatileDiamond
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
-      # @param [Array] atoms_map the atom-mapping result
+      # @param [Array] theres the array of there objects
       def initialize(*super_args, theres)
         super(*super_args)
         @theres = theres
