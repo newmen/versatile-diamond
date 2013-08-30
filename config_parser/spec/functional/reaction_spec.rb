@@ -85,6 +85,22 @@ module VersatileDiamond
             end
           end
 
+          describe "setup corresponding relevant state" do
+            before(:each) do
+              surface.interpret('spec :bridge_with_dimer')
+              surface.interpret('  aliases dm: dimer')
+              surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: dm(:cr), cf: dm(:cl)')
+              surface.interpret('  bond :ct, :cl, face: 110, dir: :front')
+              surface.interpret('  bond :ct, :cr, face: 110, dir: :front')
+              surface.interpret('  position :cl, :cr, face: 100, dir: :front')
+
+              reaction.interpret('aliases one: bridge, two: bridge')
+              reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
+            end
+
+            it { concept.products.first.atom(:cf).incoherent?.should be_true }
+          end
+
           describe "not initialy balanced reaction" do
             describe "extending product" do
               before(:each) do

@@ -298,12 +298,17 @@ module VersatileDiamond
       # @return [Symbol] generated unique keyname
       def generate_keyname(original_keyname)
         keyname = nil
-        i = 0
+        prefix, name, i =
+          original_keyname.to_s.scan(/\A(_)?(\D+)(\d+)?\Z/).first
+
+        i = i ? i.to_i : 0
+        prefix ||= '_'
+
         begin
-          keyname = "_#{original_keyname}#{i}".to_sym
+          keyname = "#{prefix}#{name}#{i}".to_sym
           i += 1
         end while (atom(keyname))
-        keyname.to_sym
+        keyname
       end
 
       # Contain all dependecies from another specs, but finaly contain just one

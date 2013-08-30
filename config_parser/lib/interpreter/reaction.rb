@@ -54,13 +54,16 @@ module VersatileDiamond
             Concepts::UbiquitousReaction.new(:forward, @name, source, products)
             # doesn't nest equation if reaction is ubiquitous
           else
+            mapping = nil
             check_balance(source, products) do |ext_src, ext_prd|
+              # there could be raised CannotMap exception which will be rescued
+              # in check balance method
+              mapping = Mcs::AtomMapper.map(ext_src, ext_prd, names_and_specs)
               # if source or products need (and can) to be extended then
               # exchange to extended specs
               source, products = ext_src, ext_prd
             end || syntax_error('.wrong_balance')
 
-            mapping = Mcs::AtomMapper.map(source, products, names_and_specs)
             reaction = Concepts::Reaction.new(
               :forward, @name, source, products, mapping)
 
@@ -149,7 +152,13 @@ module VersatileDiamond
         ebp = external_bonds_sum(products)
 
         if ebs == ebp
-          block[source, products] if block_given?
+          if block_given?
+            begin
+              block[source, products]
+            rescue AtomMapper::CannotMap
+              return false
+            end
+          end
           true
         elsif block_given? && deep > 0
           if ebs < ebp
@@ -196,14 +205,15 @@ module VersatileDiamond
           end
 
           if bonds_sum >= bonds_sum_limit
-            duplicate_specs = specs.map do |spec|
-              spec.extend! if combination.include?(spec) && spec.extendable?
-              spec
+            extended_specs = specs.map do |spec|
+              combination.include?(spec) && spec.extendable? ?
+                spec.extended :
+                spec
             end
 
             args = type == :source ?
-              [duplicate_specs, products] :
-              [source, duplicate_specs]
+              [extended_specs, products] :
+              [source, extended_specs]
 
             result = check_balance(*args, deep - 1, &block)
             if result then return result else next end

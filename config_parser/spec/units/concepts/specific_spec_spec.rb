@@ -124,17 +124,12 @@ module VersatileDiamond
         it { extra_activated_bridge.external_bonds_after_extend.should == 6 }
       end
 
-      describe "#extend!" do
-        describe "extends before check" do
-          before { bridge.extend! }
-          it { bridge.external_bonds.should == 8 }
-        end
+      describe "#extended" do
+        it { bridge.extended.external_bonds.should == 8 }
+        it { activated_bridge.extended.external_bonds.should == 7 }
 
         describe "exchange specific atom" do
-          subject do
-            s = SpecificSpec.new(bridge_base, cr: activated_cd)
-            s.extend!; s
-          end
+          subject { SpecificSpec.new(bridge_base, cr: activated_cd).extended }
           it { subject.atom(:cr).valence.should == 3 }
         end
       end

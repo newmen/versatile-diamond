@@ -79,6 +79,7 @@ events
     # TODO: должна быть уточнением реакции десорбции водорода
     # TODO: может быть следует использовать methyl_on_bridge?
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
+      incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 
     activation 37.5
@@ -86,6 +87,7 @@ events
 
   reaction 'methyl deactivation'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
+      incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 
     activation 0

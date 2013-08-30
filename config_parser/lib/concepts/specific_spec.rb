@@ -132,16 +132,17 @@ module VersatileDiamond
           @extended_spec.external_bonds - active_bonds_num
       end
 
-      # Exchange current base spec to extended base spec
-      def extend!
+      # Makes a new specific spec by extended base spec
+      # @return [SpecificSpec] the extended spec
+      def extended
         external_bonds_after_extend unless @extended_spec
 
-        @spec = @extended_spec
+        spec = self.class.new(@extended_spec)
         @specific_atoms.each do |keyname, old_atom|
-          @specific_atoms[keyname] =
-            SpecificAtom.new(@spec.atom(keyname), ancestor: old_atom)
+          spec.specific_atoms[keyname] =
+            SpecificAtom.new(@extended_spec.atom(keyname), ancestor: old_atom)
         end
-        reset_caches
+        spec
       end
 
       # Gets parent specific spec
