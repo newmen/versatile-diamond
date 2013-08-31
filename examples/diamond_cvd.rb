@@ -39,7 +39,7 @@ surface
     position :cl, :cr, face: 100, dir: :front
 
   spec :high_bridge # may describe by methyl_on_bridge
-    atoms ch: methane(:c), ct: bridge(:ct)
+    atoms ch: C, ct: bridge(:ct)
     dbond :ch, :ct
 
   spec :dimer
@@ -78,7 +78,7 @@ surface
     position :cl, :cc, face: 100, dir: :front
 
   spec :cross_bridge_on_dimers
-    atoms ct: methane(:c), cl: dimer(:cr), cr: dimer(:cr)
+    atoms ct: C, cl: dimer(:cr), cr: dimer(:cr)
     bond :ct, :cl
     bond :ct, :cr
     position :cl, :cr, face: 100, dir: :cross
@@ -345,7 +345,6 @@ events
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
-    # TODO: конечное положение активной связи может быть не очевидно!
     equation high_bridge + bridge(cr: *) = two_bridges(cl: *)
       refinement 'without chain neighbour methyl'
         activation 3.2
@@ -384,20 +383,20 @@ events
 
     forward_rate 3.5e8
 
-
   # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
-  # reaction 'single dimer to high bridge'
-  #   aliases one: bridge, two: bridge
-  #   # определяется ли положение атомов в веществах-продуктах?
-  #   equation dimer = high_bridge + one(ct: *) + two(ct: *)
+  reaction 'single dimer to high bridge'
+    aliases one: bridge, two: bridge
+    # определяется ли положение атомов в веществах-продуктах?
+    equation dimer(cr: *) = high_bridge(ch: *) + one(ct: *) + two(ct: *)
 
-  #     refinement 'not in dimers row'
-  #       activation 53.5
+      refinement 'not in dimers row'
+        activation 53.5
 
-  #     lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
-  #     there :end_row
-  #       # activation :inf
-  #       activation 500 # 1.135590e-80
+      lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
+      there :end_row
+        # activation :inf
+        activation 500 # 1.135590e-80
+        # TODO: проработать момент запрета реакций
 
-  #   # значения также выдуманы
-  #   forward_rate 2.8e11
+    # значения также выдуманы
+    forward_rate 2.8e11

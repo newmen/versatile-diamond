@@ -8,7 +8,7 @@ Modeling occur by effective Monte Carlo (multi-level) algorithm based on dynamic
 
 ## Analyzer
 
-DSL interprets by Analyzer and generates graph of concepts dependencies for example. The following shows dependency tree between base species (black), specified species (blue), as well as properties of local environment (purple).
+DSL interprets by Analyzer and generates graph of concepts dependencies (for example used [Diamond CVD](https://github.com/newmen/versatile-diamond/blob/master/examples/diamond_cvd.rb) configuration). The following shows dependency tree between base species (black), specified species (blue), as well as properties of local environment (purple).
 
 ![Classes Trees](https://github.com/newmen/versatile-diamond/raw/master/doc/without_reactions.png?raw=true)
 

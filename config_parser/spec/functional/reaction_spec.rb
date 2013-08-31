@@ -104,10 +104,6 @@ module VersatileDiamond
           describe "not initialy balanced reaction" do
             describe "extending product" do
               before(:each) do
-                surface.interpret('spec :high_bridge')
-                surface.interpret('  aliases mob: methyl_on_bridge')
-                surface.interpret('  atoms cb: mob(:cb), cm: mob(:cm)')
-                surface.interpret('  bond :cb, :cm')
                 reaction.interpret('aliases source: bridge, product: bridge')
                 reaction.interpret('equation high_bridge + source(ct: *) = product(cr: *)')
               end
@@ -127,7 +123,16 @@ module VersatileDiamond
               it { concept.source.last.external_bonds.should == 5 }
               it { concept.products.first.external_bonds.should == 14 }
             end
+          end
 
+          describe "one to three" do
+            before(:each) do
+              reaction.interpret('aliases one: bridge, two: bridge')
+            end
+
+            it { expect { reaction.interpret(
+              'equation dimer(cr: *) = high_bridge(cm: *) + one(ct: *) + two(ct: *)')
+              }.not_to raise_error }
           end
 
           describe "reaction with wrong balance" do
