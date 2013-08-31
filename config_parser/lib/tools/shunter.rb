@@ -93,16 +93,14 @@ module VersatileDiamond
         # Checks stored reactions for duplication with each other
         # @raise [ReactionDuplicate] if duplicate is found
         def check_reactions_for_duplicates
-          checker = -> reactions do
-            reactions = reactions.dup
+          REACTION_KEYS.each do |key|
+            reactions = Chest.all(key).dup
             until reactions.empty?
               reaction = reactions.pop
               same = reactions.find { |r| r != reaction && reaction.same?(r) }
               raise ReactionDuplicate.new(reaction.name, same.name) if same
             end
           end
-
-          REACTION_KEYS.each { |key| checker[Chest.all(key)] }
         end
 
         # Organize dependencies between all stored reactions

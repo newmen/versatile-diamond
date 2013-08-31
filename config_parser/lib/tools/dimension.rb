@@ -24,7 +24,8 @@ module VersatileDiamond
 
         VARIABLES.each do |var|
           # Defines setting method adjusts dimension of which to produce
-          #   convertion by default
+          # convertion by default
+          #
           # @param [String] dimension
           define_method("#{var}_dimension") do |dimension|
             # TODO: dimension value need to check by regex
@@ -34,8 +35,8 @@ module VersatileDiamond
 
         (VARIABLES - %w(rate)).each do |var|
           # Defines public convert method for all vars except rate. Each
-          #   method converts variable value from passed dimension to
-          #   self value.
+          # method converts variable value from passed dimension to
+          # self value.
           #
           # @param [Float] value which will be recalculated
           # @param [String] dimension from which will be convertation, if not
@@ -49,8 +50,8 @@ module VersatileDiamond
           end
         end
 
-        # Converts the rate and checks dimension in accordance with species of
-        #   gas phase
+        # Converts the rate and checks dimension in accordance with number of
+        # gas phase species
         #
         # @param [Float] value see as #convert_{var}
         # @param [Integer] gases_num the number of gases involved in reaction
