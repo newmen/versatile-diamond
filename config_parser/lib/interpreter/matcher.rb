@@ -5,18 +5,18 @@ module VersatileDiamond
     class Matcher
 
       # active bond always defined as star (*)
-      ACTIVE_BOND = /\*/
+      ACTIVE_BOND = /\*/.source
 
       # atom named like as in periodic table plus some number
       # (it may be valence of atom or something else)
-      ATOM_NAME = /[A-Z][a-z]{0,3}[0-9]*/
+      ATOM_NAME = /[A-Z][a-z]{0,3}[0-9]*/.source
 
       # spec name always begins with a lowercase letter and can contain
       # lowercase letters, numbers and "_" symbol
-      SPEC_NAME = /[a-z][a-z0-9_]*/
+      SPEC_NAME = /[a-z][a-z0-9_]*/.source
 
       # options it's all that in brackets
-      OPTIONS = /[^\)]+?/
+      OPTIONS = /[^\)]+?/.source
 
       class << self
         class << self
@@ -70,15 +70,13 @@ module VersatileDiamond
         # Matches equations of two types: typical and ubiquitous
         def equation(str)
           term = /(#{ACTIVE_BOND}|#{ATOM_NAME}|#{SPEC_NAME}(?:\(#{OPTIONS}\))?)/
-          side = /\A(?:#{term}\s*\+)?\s*#{term}\Z/
+          side = /\A(?:#{term}\s*\+\s*)*#{term}\Z/
           matches = str.split(/\s*=\s*/).map do |one_side|
-            side.match(one_side)
+            side.match(one_side) && one_side.scan(term).map(&:first)
           end
           matches.compact!
 
-          matches.size == 2 ?
-            matches.map(&:to_a).each(&:shift).map(&:compact) :
-            nil
+          matches.size == 2 ? matches : nil
         end
       end
     end

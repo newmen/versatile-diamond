@@ -32,17 +32,6 @@ module VersatileDiamond
         @raw_positions[target] << [atom, position]
       end
 
-      # Adsorbs another where by merging each raw position
-      # @param [Where] other an other adsorbing where
-      # TODO: rspec
-      def adsorb(other)
-        other.raw_positions.each do |target, links|
-          links.each { |atom, pos| raw_position(target, atom, pos) }
-        end
-        @specs += other.specs
-        parents << other
-      end
-
       # Gets a parents (position of which is adsorbed) of current where object
       # @return [Array] the array of parents
       def parents

@@ -63,12 +63,10 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] if using where already used or if using
       #   where cannot be resolved
       def use(*names)
-        @used ||= Set.new
         names.each do |name|
-          syntax_error('.already_use') if @used.include?(name)
-          @used << name
           other = get(:where, @env.name, name)
-          @where.adsorb(other)
+          syntax_error('.already_use') if @where.parents.include?(other)
+          @where.parents << other
         end
       end
     end

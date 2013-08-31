@@ -122,7 +122,6 @@ events
     # TODO: должна быть уточнением реакции десорбции водорода
     # TODO: может быть следует использовать methyl_on_bridge?
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
-      incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 
     activation 37.5
@@ -130,7 +129,6 @@ events
 
   reaction 'methyl deactivation'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
-      incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 
     activation 0
@@ -388,18 +386,18 @@ events
 
 
   # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
-  reaction 'single dimer to high bridge'
-    aliases one: bridge, two: bridge
-    # определяется ли положение атомов в веществах-продуктах?
-    equation dimer = high_bridge + one(ct: *) + two(ct: *)
+  # reaction 'single dimer to high bridge'
+  #   aliases one: bridge, two: bridge
+  #   # определяется ли положение атомов в веществах-продуктах?
+  #   equation dimer = high_bridge + one(ct: *) + two(ct: *)
 
-      refinement 'not in dimers row'
-        activation 53.5
+  #     refinement 'not in dimers row'
+  #       activation 53.5
 
-      lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
-      there :end_row
-        # activation :inf
-        activation 500 # 1.135590e-80
+  #     lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
+  #     there :end_row
+  #       # activation :inf
+  #       activation 500 # 1.135590e-80
 
-    # значения также выдуманы
-    forward_rate 2.8e11
+  #   # значения также выдуманы
+  #   forward_rate 2.8e11

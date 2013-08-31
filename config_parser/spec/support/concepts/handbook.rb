@@ -281,7 +281,7 @@ module VersatileDiamond
             :at_middle, 'at middle of dimers row', specs: [dimer_base])
           w.raw_position(:one, dimer_base.atom(:cl), position_cross)
           w.raw_position(:two, dimer_base.atom(:cr), position_cross)
-          w.adsorb(at_end); w
+          w.parents << at_end; w
         end
         set(:on_middle) do
           at_middle.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))

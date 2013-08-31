@@ -35,7 +35,8 @@ module VersatileDiamond
       # Counts number of environment used atoms
       # @return [Integer] the number of used atoms
       def size
-        specs.reduce(0) { |acc, spec| acc + spec.size }
+        (where.parents.map(&:specs) + specs).flatten.
+          reduce(0) { |acc, spec| acc + spec.size }
       end
     end
 
