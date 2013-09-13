@@ -88,7 +88,7 @@ module VersatileDiamond
           # store result
           changes = associate(changed_big, changed_small)
           full = associate(big_mapped_vertices, small_mapped_vertices)
-          mapping_result.add(full, changes)
+          mapping_result.add(associating_specs, full, changes)
         end
       end
 
@@ -284,6 +284,19 @@ module VersatileDiamond
         @big_graph.select_vertices(mapped_big)
       end
 
+      # Gets associaing specis in correct order
+      # @return [Array] the array of associating species
+      def associating_specs
+        big_spec = @graphs_to_specs[@big_graph]
+        small_spec = @graphs_to_specs[@small_graph]
+
+        if @reaction_type == :association
+          [small_spec, big_spec]
+        else
+          [big_spec, small_spec]
+        end
+      end
+
       # Associate changed vertices with each other
       # @param [Array] changed_big the changed not specified atoms of big spec
       # @param [Array] changed_small the changed not specified atoms of small
@@ -291,13 +304,10 @@ module VersatileDiamond
       # @return [Array] depending from type of reaction, return parameters in
       #   correct order
       def associate(changed_big, changed_small)
-        big_spec = @graphs_to_specs[@big_graph]
-        small_spec = @graphs_to_specs[@small_graph]
-
         if @reaction_type == :association
-          [small_spec, big_spec, changed_small, changed_big]
+          [changed_small, changed_big]
         else
-          [big_spec, small_spec, changed_big, changed_small]
+          [changed_big, changed_small]
         end
       end
     end

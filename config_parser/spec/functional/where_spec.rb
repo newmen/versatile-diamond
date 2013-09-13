@@ -15,15 +15,15 @@ module VersatileDiamond
         it { expect { where.interpret('position right(:cr), :one, face: 100, dir: :cross') }.
           not_to raise_error }
         it { expect { where.interpret('position :one, :two, face: 100, dir: :front') }.
-          to raise_error syntax_error }
+          to raise_error syntax_error('where.cannot_link_targets') }
         it { expect { where.interpret('position right(:cl), right(:cr), face: 100, dir: :front') }.
-          to raise_error syntax_error }
+          to raise_error syntax_error('where.should_links_with_target') }
         it { expect { where.interpret('position :one, right(:cr)') }.
-          to raise_error syntax_error }
+          to raise_error syntax_error('position.uncomplete') }
         it { expect { where.interpret('position :one, right(:wrong), face: 100, dir: :cross') }.
-          to raise_error syntax_error }
+          to raise_error syntax_error('matcher.undefined_used_atom', name: 'right(:wrong)') }
         it { expect { where.interpret('position :one, wrong(:c), face: 100, dir: :cross') }.
-          to raise_error syntax_error }
+          to raise_error keyname_error(:undefined, :spec, :wrong) }
 
         describe "spec are not twise storable" do
           before do
@@ -36,8 +36,8 @@ module VersatileDiamond
 
       describe "#use" do
         describe "unresolved" do
-          it { expect { where.interpret('use :wrong') }.
-            to raise_error syntax_error }
+          it { expect { where.interpret('use :not_important') }.
+            to raise_error keyname_error(:undefined, :where, :where) }
         end
 
         describe "resolved" do
@@ -52,7 +52,7 @@ module VersatileDiamond
           it "twise using" do
             where.interpret('use :using_where')
             expect { where.interpret('use :using_where') }.
-              to raise_error syntax_error
+              to raise_error syntax_error('where.already_use', name: :using_where)
           end
         end
 

@@ -42,16 +42,14 @@ module VersatileDiamond
           end
         end
 
-        pos = Concepts::Position[options]
-        if @reaction.positions &&
-          @reaction.positions.find do |f, s, p|
-            (f == first_atom && s = second_atom) ||
-              (s == first_atom && f = second_atom)
-          end
-
-          syntax_error('refinement.duplicate_position')
+        duplicate = @reaction.positions.find do |f, s, p|
+          (f == first_atom && s == second_atom) ||
+            (s == first_atom && f == second_atom)
         end
 
+        syntax_error('refinement.duplicate_position') if duplicate
+
+        pos = Concepts::Position[options]
         @reaction.positions << [first_atom, second_atom, pos]
       rescue Concepts::Position::IncompleteError
         syntax_error('position.uncomplete')
@@ -65,7 +63,7 @@ module VersatileDiamond
       #   :any or :all
       # @yield [Concepts::SpecificSpec, Symbol] do for each found spec
       # @raise [Errors::SyntaxError] if specific spec is not found or have
-      #   inaccurate compliance
+      #   inaccurate complience
       def find_spec(used_atom_str, find_type = :any, &block)
         spec_name, atom_keyname = match_used_atom(used_atom_str)
         spec_name = spec_name.to_sym
@@ -74,7 +72,7 @@ module VersatileDiamond
             name.to_sym == spec_name
           end
           if result.size > 1
-            syntax_error('refinement.cannot_compliance', name: spec_name)
+            syntax_error('refinement.cannot_complience', name: spec_name)
           end
           result.first && result.first.last
         end

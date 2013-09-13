@@ -7,7 +7,15 @@ module VersatileDiamond
         include Tools::Handbook
 
         # Errors:
-        set(:syntax_error) { Errors::SyntaxError }
+        def syntax_error(*args)
+          I18n.t(*args)
+        end
+
+        def keyname_error(type, key, name)
+          raise ArgumentError unless type == :duplication || type == :undefined
+          syntax_error("concepts.errors.#{type}",
+            key: I18n.t("concepts.#{key}"), name: name)
+        end
 
         # Interpreters
         set(:dimensions) { Dimensions.new }
@@ -21,7 +29,7 @@ module VersatileDiamond
           elements.interpret('atom C, valence: 4')
           gas.interpret('spec :methane')
           gas.interpret('  atoms c: C')
-          surface.interpret('lattice :d, cpp_class: Diamond')
+          surface.interpret('lattice :d, class: Diamond')
           surface.interpret('spec :bridge')
           surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)')
           surface.interpret('  bond :ct, :cl, face: 110, dir: front')

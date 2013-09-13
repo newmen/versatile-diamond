@@ -32,20 +32,20 @@ module VersatileDiamond
           it { Tools::Chest.lateral('forward methyl desorption', :some_env).
             should be_a(Concepts::Lateral) }
           it { expect { equation.interpret('lateral :some_env, one: b(:ct)') }.
-            to raise_error syntax_error }
+            to raise_error keyname_error(:duplication, :lateral, :some_env) }
         end
 
         describe "invalid targets" do
           it { expect { equation.interpret('lateral :wrong_env') }.
-            to raise_error syntax_error }
+            to raise_error keyname_error(:undefined, :environment, :wrong_env) }
           it { expect { equation.interpret('lateral :some_env, wr: b(:ct)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error('equation.undefined_target', name: 'wr') }
           it { expect { equation.interpret('lateral :some_env, one: mob(:cb), wr: b(:ct)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error('equation.undefined_target', name: 'wr') }
           it { expect { equation.interpret('lateral :some_env, one: wrong(:ct)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error('matcher.undefined_used_atom', name: 'wrong(:ct)') }
           it { expect { equation.interpret('lateral :some_env, one: b(:wr)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error('matcher.undefined_used_atom', name: 'b(:wr)') }
         end
       end
 
@@ -57,7 +57,7 @@ module VersatileDiamond
         end
 
         it { expect { equation.interpret('there :wrong') }.
-          to raise_error syntax_error}
+          to raise_error keyname_error(:undefined, :there, :wrong) }
 
         it "make and get" do
           equation.interpret('there :some_where')

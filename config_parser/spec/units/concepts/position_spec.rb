@@ -15,9 +15,20 @@ module VersatileDiamond
         end
       end
 
+      describe "#face" do
+        it { position_front.face.should == 100 }
+        it { position_cross.face.should == 100 }
+      end
+
+      describe "#dir" do
+        it { position_front.dir.should == :front }
+        it { position_cross.dir.should == :cross }
+      end
+
       describe "#same?" do
         it { position_front.same?(position_cross).should be_false }
-        it { position_front.same?(bond_100).should be_true }
+        it { position_front.same?(bond_110_front).should be_false }
+        it { position_front.same?(bond_100_front).should be_true }
       end
     end
 

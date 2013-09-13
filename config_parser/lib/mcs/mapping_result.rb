@@ -24,16 +24,19 @@ module VersatileDiamond
 
       # Gets full atom mapping result for all atoms
       # @return [Array] the array which is atom mapping result for all atoms
+      # TODO: must be private
       def full
         @result[:conformity]
       end
 
       # Adds correspond mapping result for :change and :conformity keys
-      # @param [Array] full_args arguments for conformity atom associating
-      # @param [Array] changes_args arguments for changes atom associating
-      def add(full_args, changes_args)
-        spec1, spec2, atoms1, atoms2 = full_args
-        _, _, changes1, changes2 = changes_args
+      # @param [Array] specs the associating species
+      # @param [Array] full_atoms all atoms for each associating spec
+      # @param [Array] changed_atoms only changed atoms for associating spec
+      def add(specs, full_atoms, changed_atoms)
+        spec1, spec2 = specs
+        atoms1, atoms2 = full_atoms
+        changes1, changes2 = changed_atoms
 
         # Changes specifics specs and they atoms if it need. After, the
         # relevant states of atoms must be set accordingly.
@@ -117,6 +120,20 @@ module VersatileDiamond
         [specs.first, atoms.first.first]
       end
 
+      # Finds positions between atoms of different source species
+      # @return [Array] the array of positions between reactants atoms
+      def find_positions
+        return [] if @source.size == 1 || @source.size == @products.size
+
+        positions = []
+        result_dup = full.dup
+        begin
+          first = result_dup.shift
+
+        end while result_dup.size > 1
+        positions
+      end
+
     private
 
       # Associates two specs and their atoms between each other
@@ -124,7 +141,6 @@ module VersatileDiamond
       # @param [Concepts::SpecificSpec] spec1 the first spec
       # @param [Concepts::SpecificSpec] spec2 the second spec
       # @param [Array] atoms_zip zipped arrays of atoms from both specs
-      # @return [Array] result of association
       def associate(key, spec1, spec2, atoms_zip)
         @result[key] << [[spec1, spec2], atoms_zip]
       end

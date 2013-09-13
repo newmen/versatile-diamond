@@ -8,20 +8,22 @@ en:
     lateral_reaction: "Lateral reaction"
     lattice: "Lattice"
     reaction: "Typical reaction"
+    spec: "Basic specie"
     specific_spec: "Specific specie"
     surface_spec: "Surface structure"
     ubiquitous_reaction: "Ubiquitous reaction"
     where: "Where object"
+    there: "There object"
 
     errors:
       duplication: "%{key} \"%{name}\" already defined"
-      undefined: "Unknown %{key} \"%{name}\""
+      undefined: "%{key} \"%{name}\" is undefined"
 
   common:
     duplicating_key: "Key \"%{name}\" was duplicated"
     extra_space: "Extra space"
     undefined_component: "Unknown definition \"%{component}\""
-    wrong_arguments_ordering: "Wrong arguments ordering"
+    wrong_arguments_ordering: "arguments ordering"
     wrong_hierarchy: "Wrong hierarchy"
 
   analyzer:
@@ -51,15 +53,18 @@ en:
     uncomplete: "Necessary to characterize the position of atoms relative to each other"
 
   lattice:
-    need_define_class: "Necessary to define C++ class when defining new lattice"
+    need_define_class: "Necessary to define class when defining new lattice"
 
   gas_spec:
     wrong_bond: "Bond cannot be characterized"
+    wrong_relation: "Wrong relation %{relation} between atoms of gas specie"
 
   surface_spec:
     incorrect_linking: "Incorrect linking unspecified atoms"
+    wrong_relation: "Wrong relation %{relation} between atoms of surface specie"
 
   specific_spec:
+    atom_already_has_state: "Atom already has %{state} state"
     invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
@@ -74,7 +79,6 @@ en:
     undefined_target: "Undefined target atom name \"%{name}\""
 
   refinement:
-    atom_already_has_state: "Atom already has %{state} state"
     cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
     duplicate_position: "Position between these atoms is already set"
 

@@ -107,6 +107,7 @@ module VersatileDiamond
         # @param [Symbol] name is the name of finding concept
         # @raise [KeyNameError] if concept is not found
         # @return [Concepts::Named] founded concept
+        # @override
         def method_missing(key, *names)
           unless @sac && @sac[key]
             super

@@ -6,11 +6,23 @@ module VersatileDiamond
     class Lattice < Named
 
       # @param [Symbol] symbol is lattice symbolic name
-      # @param [String] cpp_class for generating code
-      def initialize(symbol, cpp_class)
+      # @param [String] klass for generating code
+      def initialize(symbol, klass)
         super(symbol)
-        @cpp_class = cpp_class
+        @klass = Object.const_get(klass).new
       end
+
+      # Deligates calling to lattice instance
+      # @param [Lattice] other an other concept of lattice
+      # @return [Bond] the reverse relation between two concepts of lattice
+      def opposite_edge(other, edge)
+        @klass.opposite_edge(other && other.klass, edge)
+      end
+
+    protected
+
+      attr_reader :klass
+
     end
 
   end

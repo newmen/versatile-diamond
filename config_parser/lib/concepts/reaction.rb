@@ -4,12 +4,15 @@ module VersatileDiamond
     # Also contained positions between the reactants
     class Reaction < UbiquitousReaction
 
+      attr_reader :positions
+
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
       # @param [Mcs::MappingResult] mapping the atom-mapping result
       def initialize(*super_args, mapping)
         super(*super_args)
         @mapping = mapping
+        @positions = @mapping.find_positions
       end
 
       # Also store positions for reverse reaction
@@ -49,12 +52,6 @@ module VersatileDiamond
       def swap_source(from, to)
         super
         @mapping.swap_source(from, to)
-      end
-
-      # Provides positions between atoms of reactntant
-      # @return [Array] the positions array
-      def positions
-        @positions ||= []
       end
 
       # Also compares positions in both reactions

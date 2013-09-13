@@ -7,7 +7,7 @@ module VersatileDiamond
       describe "#equation" do
         it "error when spec name is undefined" do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
-            to raise_error syntax_error
+            to raise_error keyname_error(:undefined, :spec, :hydrogen)
         end
 
         describe "ubiquitous equation" do
@@ -44,7 +44,7 @@ module VersatileDiamond
 
           it "don't nest equation interpreter instance" do
             expect { reaction.interpret('  refinement "some"') }.
-              to raise_error syntax_error
+              to raise_error syntax_error('common.wrong_hierarchy')
           end
         end
 
@@ -55,7 +55,7 @@ module VersatileDiamond
 
           it "not complience reactants" do
             expect { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
-              to raise_error syntax_error
+              to raise_error syntax_error('reaction.cannot_map', name: 'bridge')
           end
 
           describe "simple reaction" do
@@ -101,6 +101,19 @@ module VersatileDiamond
             it { concept.products.first.atom(:cf).incoherent?.should be_true }
           end
 
+          describe "uncomplete bridge with dimer" do
+            before(:each) do
+              surface.interpret('spec :bridge_with_dimer')
+              surface.interpret('  atoms cr: bridge(:cr), cf: bridge(:ct)')
+              surface.interpret('  bond :cr, :cf, face: 100, dir: :front')
+
+              reaction.interpret('aliases one: bridge, two: bridge')
+              reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
+            end
+
+            it { concept.products.first.atom(:cf).incoherent?.should be_true }
+          end
+
           describe "not initialy balanced reaction" do
             describe "extending product" do
               before(:each) do
@@ -137,7 +150,7 @@ module VersatileDiamond
 
           describe "reaction with wrong balance" do
             it { expect { reaction.interpret('equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge') }.
-              to raise_error syntax_error }
+              to raise_error syntax_error('reaction.wrong_balance') }
           end
         end
       end

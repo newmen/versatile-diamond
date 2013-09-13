@@ -30,12 +30,12 @@ gas
   temperature 1200
 
 surface
-  lattice :d, cpp_class: Diamond
+  lattice :d, class: Diamond
 
   spec :bridge
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
     position :cl, :cr, face: 100, dir: :front
 
   spec :high_bridge # may describe by methyl_on_bridge
@@ -67,14 +67,14 @@ surface
   spec :bridge_with_dimer
     aliases dmr: dimer
     atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
     position :cl, :cr, face: 100, dir: :front
 
   spec :two_bridges
     atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
-    bond :ctl, :cl, face: 110, dir: :front
-    bond :ctl, :cc, face: 110, dir: :front
+    bond :ctl, :cl, face: 110, dir: :cross
+    bond :ctl, :cc, face: 110, dir: :cross
     position :cl, :cc, face: 100, dir: :front
 
   spec :cross_bridge_on_dimers

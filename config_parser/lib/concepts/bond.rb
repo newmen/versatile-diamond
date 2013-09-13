@@ -4,6 +4,8 @@ module VersatileDiamond
     # Class for bond instance. The bond can be without face and direction.
     class Bond
 
+      attr_reader :face, :dir
+
       class << self
         # The singleton method [] caches all instnaces and returns it if face and
         #   direction of the same.
@@ -28,7 +30,7 @@ module VersatileDiamond
       # @param [Symbol] face the face of bond
       # @param [Symbol] dir the direction of bond
       def initialize(face, dir)
-        @face, @dir = face, dir
+        @face, @dir = face, dir && dir.to_sym
       end
 
       # Approximate compares two instances. If their classes is same then
@@ -47,11 +49,6 @@ module VersatileDiamond
         str << "#{@dir}#{symbol}" if @dir
         "#{str}#{symbol}"
       end
-
-    protected
-
-      attr_reader :face, :dir
-
     end
 
   end

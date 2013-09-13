@@ -65,7 +65,9 @@ module VersatileDiamond
       def use(*names)
         names.each do |name|
           other = get(:where, @env.name, name)
-          syntax_error('.already_use') if @where.parents.include?(other)
+          if @where.parents.include?(other)
+            syntax_error('.already_use', name: name)
+          end
           @where.parents << other
         end
       end

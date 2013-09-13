@@ -13,23 +13,23 @@ module VersatileDiamond
             let(:o1) { o.dup }
 
             let(:spec1) do
-              s = Concepts::SurfaceSpec.new(:spec1, n: n, c: c)
-              s.link(n, c, free_bond)
-              Concepts::SpecificSpec.new(s, c: activated_c)
+              s = Concepts::SurfaceSpec.new(:spec1, n: n, c: cd)
+              s.link(n, cd, free_bond)
+              Concepts::SpecificSpec.new(s, c: activated_cd)
             end
 
             let(:spec2) do
-              s = Concepts::SurfaceSpec.new(:spec2, o: o, c: c0)
-              s.link(o, c0, free_bond)
-              Concepts::SpecificSpec.new(s, c: activated_c0)
+              s = Concepts::SurfaceSpec.new(:spec2, o: o, c: cd0)
+              s.link(o, cd0, free_bond)
+              Concepts::SpecificSpec.new(s, c: activated_cd0)
             end
 
             let(:spec3) do
               s = Concepts::SurfaceSpec.new(
-                :spec3, n: n1, c1: c1, c2: c2, o: o1)
-              s.link(n1, c1, free_bond)
-              s.link(c1, c2, free_bond)
-              s.link(o1, c2, free_bond)
+                :spec3, n: n1, c1: cd1, c2: cd2, o: o1)
+              s.link(n1, cd1, free_bond)
+              s.link(cd1, cd2, bond_100_front)
+              s.link(o1, cd2, free_bond)
               Concepts::SpecificSpec.new(s)
             end
 
@@ -37,16 +37,16 @@ module VersatileDiamond
               # with default source and products sequence
               let(:changed) do
                 [[[spec1, spec3],
-                  [[activated_c, c1]]],
+                  [[activated_cd, cd1]]],
                 [[spec2, spec3],
-                  [[activated_c0, c2]]]]
+                  [[activated_cd0, cd2]]]]
               end
               let(:full) do
                 [[[spec1, spec3], [
-                  [n, n1], [activated_c, c1]
+                  [n, n1], [activated_cd, cd1]
                 ]],
                 [[spec2, spec3], [
-                  [activated_c0, c2], [o, o1]
+                  [activated_cd0, cd2], [o, o1]
                 ]]]
               end
 
@@ -59,16 +59,16 @@ module VersatileDiamond
               let(:products) { [spec1, spec2] }
               let(:changed) do
                 [[[spec3, spec1],
-                  [[c1, activated_c]]],
+                  [[cd1, activated_cd]]],
                 [[spec3, spec2],
-                  [[c2, activated_c0]]]]
+                  [[cd2, activated_cd0]]]]
               end
               let(:full) do
                 [[[spec3, spec1], [
-                  [n1, n], [c1, activated_c]
+                  [n1, n], [cd1, activated_cd]
                 ]],
                 [[spec3, spec2], [
-                  [c2, activated_c0], [o1, o]
+                  [cd2, activated_cd0], [o1, o]
                 ]]]
               end
 
@@ -78,37 +78,37 @@ module VersatileDiamond
 
           describe "not each atom has a copy" do
             let(:spec1) do
-              s = Concepts::SurfaceSpec.new(:spec1, n: n, c: c)
-              s.link(n, c, free_bond)
-              Concepts::SpecificSpec.new(s, c: activated_c)
+              s = Concepts::SurfaceSpec.new(:spec1, n: n, c: cd)
+              s.link(n, cd, free_bond)
+              Concepts::SpecificSpec.new(s, c: activated_cd)
             end
 
             let(:spec2) do
-              s = Concepts::SurfaceSpec.new(:spec2, o: o, c: c)
-              s.link(o, c, free_bond)
-              Concepts::SpecificSpec.new(s, c: activated_c)
+              s = Concepts::SurfaceSpec.new(:spec2, o: o, c: cd)
+              s.link(o, cd, free_bond)
+              Concepts::SpecificSpec.new(s, c: activated_cd)
             end
 
             let(:spec3) do
-              s = Concepts::SurfaceSpec.new(:spec3, n: n, c1: c, c2: c1, o: o)
-              s.link(n, c, free_bond)
-              s.link(c, c1, free_bond)
-              s.link(o, c1, free_bond)
+              s = Concepts::SurfaceSpec.new(:spec3, n: n, c1: cd, c2: cd1, o: o)
+              s.link(n, cd, free_bond)
+              s.link(cd, cd1, bond_100_front)
+              s.link(o, cd1, free_bond)
               Concepts::SpecificSpec.new(s)
             end
 
             let(:changed) do
               [[[spec1, spec3],
-                [[activated_c, c]]],
+                [[activated_cd, cd]]],
               [[spec2, spec3],
-                [[activated_c, c1]]]]
+                [[activated_cd, cd1]]]]
             end
             let(:full) do
               [[[spec1, spec3], [
-                [n, n], [activated_c, c]
+                [n, n], [activated_cd, cd]
               ]],
               [[spec2, spec3], [
-                [activated_c, c1], [o, o]
+                [activated_cd, cd1], [o, o]
               ]]]
             end
 

@@ -21,12 +21,12 @@ gas
   temperature 1200
 
 surface
-  lattice :d, cpp_class: Diamond
+  lattice :d, class: Diamond
 
   spec :bridge
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
     position :cl, :cr, face: 100, dir: :front
 
   spec :methyl_on_bridge

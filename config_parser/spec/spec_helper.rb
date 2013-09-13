@@ -3,6 +3,7 @@ Coveralls.wear!
 
 require_relative '../load_helper'
 require_relative '../versatile_diamond'
+require_each '../lattices/*.rb'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.

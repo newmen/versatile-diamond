@@ -20,11 +20,6 @@ module VersatileDiamond
           d.lattice = diamond; d
         end
 
-        3.times do |i|
-          set(:"c#{i}") { c.dup }
-          set(:"cd#{i}") { cd.dup }
-        end
-
         # Specific atoms:
         %w(h n c c0 cd).each do |name|
           set(:"activated_#{name}") do
@@ -45,12 +40,24 @@ module VersatileDiamond
           SpecificAtom.new(c, options: [:unfixed, :active])
         end
 
+        # Few atoms for different cases
+        3.times do |i|
+          set(:"c#{i}") { c.dup }
+          set(:"cd#{i}") { cd.dup }
+          set(:"activated_cd#{i}") { activated_cd.dup }
+        end
+
         # Bonds and positions:
         set(:free_bond) { Bond[face: nil, dir: nil] }
-        set(:bond_110) { Bond[face: 110, dir: :front] }
-        set(:bond_100) { Bond[face: 100, dir: :front] }
+        set(:bond_110_front) { Bond[face: 110, dir: :front] }
+        set(:bond_110_cross) { Bond[face: 110, dir: :cross] }
+        set(:bond_100_front) { Bond[face: 100, dir: :front] }
+        set(:bond_100_cross) { Bond[face: 100, dir: :cross] }
         set(:position_front) { Position[face: 100, dir: :front] }
         set(:position_cross) { Position[face: 100, dir: :cross] }
+        set(:wrong_relation) do
+          VersatileDiamond::Lattices::Base::WrongRelation
+        end
 
         # Specs and specific specs:
         set(:hydrogen_base) { GasSpec.new(:hydrogen, h: h) }
@@ -77,8 +84,8 @@ module VersatileDiamond
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
-          s.link(cd, cl, bond_110)
-          s.link(cd, cr, bond_110)
+          s.link(cd, cl, bond_110_cross)
+          s.link(cd, cr, bond_110_cross)
           s.link(cl, cr, position_front); s
         end
         set(:bridge) { SpecificSpec.new(bridge_base) }
@@ -149,7 +156,7 @@ module VersatileDiamond
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cl)
-          s.link(s.atom(:cr), s.atom(:cl), bond_100); s
+          s.link(s.atom(:cr), s.atom(:cl), bond_100_front); s
         end
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) do
@@ -261,6 +268,24 @@ module VersatileDiamond
         set(:dimer_formation) do
           Reaction.new(:forward, 'dimer formation',
             df_source, df_products, df_atom_map)
+        end
+
+        set(:mi_source) do
+          [activated_methyl_on_extended_bridge, activated_dimer]
+        end
+        set(:mi_product) { [extended_dimer] }
+        set(:mi_names_to_specs) do {
+          source: [
+            [:mob, activated_methyl_on_extended_bridge],
+            [:d, activated_dimer]],
+          products: [[:ed, dimer]]
+        } end
+        set(:mi_atom_map) do
+          Mcs::AtomMapper.map(mi_source, mi_product, mi_names_to_specs)
+        end
+        set(:methyl_incorporation) do
+          Reaction.new(:forward, 'methyl incorporation',
+            mi_source, mi_product, mi_atom_map)
         end
 
         # Environments (targeted to dimer formation reverse reaction):

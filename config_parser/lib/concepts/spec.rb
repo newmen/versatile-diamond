@@ -2,6 +2,7 @@ module VersatileDiamond
   module Concepts
 
     # The class instance contains atoms and bonds between them.
+    # @abstract
     class Spec < Named
       include Visitors::Visitable
       include BondsCounter
@@ -94,8 +95,7 @@ module VersatileDiamond
           end
         end
 
-        @links[first] << [second, instance]
-        @links[second] << [first, instance]
+        link_together(*atoms, instance)
       end
 
       # Returns links container with replaced atoms by passed hash of atoms and

@@ -66,22 +66,30 @@ module VersatileDiamond
 
         describe "wrong specification" do
           it { expect { matcher.match('bridge(:wrong)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error(
+              'specific_spec.wrong_specification', atom: 'wrong') }
 
           it { expect { matcher.match('bridge(ct: w)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error(
+              'specific_spec.wrong_specification', atom: 'ct') }
 
           it { expect { matcher.match('bridge(ct: ***)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error(
+              'specific_spec.invalid_actives_num', atom: 'ct', spec: 'bridge')
+          }
 
           it { expect { matcher.match('bridge(ct: *, ct: *, ct: *)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error(
+              'specific_spec.invalid_actives_num', atom: 'ct', spec: 'bridge')
+          }
 
           it { expect { matcher.match('bridge(ct: i, ct: i)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error(
+              'specific_spec.atom_already_has_state', state: 'i') }
 
           it { expect { matcher.match('methyl_on_bridge(cm: u, cm: u)') }.
-            to raise_error syntax_error }
+            to raise_error syntax_error(
+              'specific_spec.atom_already_has_state', state: 'u') }
         end
       end
     end

@@ -127,7 +127,7 @@ module VersatileDiamond
         source.group_by { |name, _| name }.each do |_, group|
           product = products.find { |name, _| name == group.first.first }
           if group.size > 1 && product
-            syntax_error('.cannot_be_mapped', name: group.first.first)
+            syntax_error('.cannot_map', name: group.first.first)
           end
         end
 

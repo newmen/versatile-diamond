@@ -5,15 +5,15 @@ module VersatileDiamond
 
     describe AssocGraph do
       let(:spec1) do
-        s = Concepts::Spec.new(:spec1, c1: cd1, c2: cd2)
-        s.link(cd1, cd2, bond_100); s
+        s = Concepts::SurfaceSpec.new(:spec1, c1: cd1, c2: cd2)
+        s.link(cd1, cd2, bond_100_front); s
       end
       let(:graph1) { Graph.new(spec1.links) }
 
       let(:cf) { cd1.dup }
       let(:cs) { cd1.dup }
       let(:spec2) do
-        s = Concepts::Spec.new(:spec2, cf: cf, cs: cs)
+        s = Concepts::SurfaceSpec.new(:spec2, cf: cf, cs: cs)
         s.link(cf, cs, position_front); s
       end
       let(:graph2) { Graph.new(spec2.links) }

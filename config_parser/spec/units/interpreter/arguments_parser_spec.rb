@@ -13,7 +13,7 @@ module VersatileDiamond
       shared_examples_for "checks wrong ordering" do
         it "wrong arguments ordering" do
           expect { subject.send(method, 'one: 2, :three') }.
-            to raise_error syntax_error
+            to raise_error syntax_error('common.wrong_arguments_ordering')
         end
       end
 
@@ -27,7 +27,7 @@ module VersatileDiamond
 
         it "options key duplication" do
           expect { subject.string_to_args(':one, two: 3, two: 4') }.
-            to raise_error syntax_error
+            to raise_error syntax_error('common.duplicating_key', name: 'two')
         end
 
         it_behaves_like "checks wrong ordering" do
