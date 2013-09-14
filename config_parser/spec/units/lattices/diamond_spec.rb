@@ -49,4 +49,31 @@ describe Diamond do
       end
     end
   end
+
+  describe "#positions_to" do
+    describe "position 100 front" do
+      let(:links) do {
+        cd0 => [[cd1, bond_110_front]],
+        cd1 => [[cd0, bond_110_cross], [cd2, bond_110_cross]],
+        cd2 => [[cd1, bond_110_front]]
+      } end
+
+      it { diamond.positions_to(links, cd0, cd2).
+        should == [position_front, position_front] }
+    end
+
+    describe "position 100 cross" do
+      3.times do |i|
+        let(:"cd#{i + 3}") { cd.dup }
+      end
+
+      let(:links) do {
+        # cd0 => [[cd1, bond_110_front]],
+        # cd1 => [[cd0, bond_110_cross], [cd2, bond_110_cross]],
+        # cd2 => [[cd1, bond_110_front]]
+      } end
+
+      # it { diamond. }
+    end
+  end
 end

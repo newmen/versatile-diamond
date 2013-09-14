@@ -24,8 +24,7 @@ module VersatileDiamond
           raise Lattices::Base::WrongRelation.new(bond)
         end
 
-        @links[first] << [second, bond]
-        @links[second] << [first, bond]
+        link_with_each_other(first, second, bond, bond)
       end
     end
 

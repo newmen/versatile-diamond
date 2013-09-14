@@ -9,6 +9,7 @@ module VersatileDiamond
       # @option [Symbol] :face the face of position
       # @option [Symbol] :dir the direction of position
       # @raise [Errors::SyntaxError] if position without face or direction
+      # TODO: remove it method?
       def position(*atoms, face: nil, dir: nil)
         link(*atoms, Concepts::Position[face: face, dir: dir])
       rescue Concepts::Position::IncompleteError

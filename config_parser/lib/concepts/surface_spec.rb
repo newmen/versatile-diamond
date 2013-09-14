@@ -31,11 +31,27 @@ module VersatileDiamond
         index = atoms.index(&has_lattice)
         first = atoms.delete_at(index)
         second = atoms.pop
+        
         opposit_instance =
           first.lattice.opposite_edge(second.lattice, instance)
 
-        @links[first] << [second, instance]
-        @links[second] << [first, opposit_instance]
+        link_with_each_other(first, second, instance, opposit_instance)
+        find_positions
+      end
+
+      def find_positions
+        atom_instances.combination(2).each do |first, second|
+          next if related?(first, second)
+
+          positions = first.lattice.positions_to(links, first, second)
+          next unless positions
+
+          link_with_each_other(first, second, *positions)
+        end
+      end
+
+      def related?(first, second)
+        links[first].find { |atom, _| atom == second }
       end
     end
 

@@ -19,6 +19,10 @@ module VersatileDiamond
         @klass.opposite_edge(other && other.klass, edge)
       end
 
+      def positions_to(*args)
+        @klass.positions_to(*args)
+      end
+
     protected
 
       attr_reader :klass

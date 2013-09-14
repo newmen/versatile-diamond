@@ -290,6 +290,11 @@ module VersatileDiamond
         end
       end
 
+      def link_with_each_other(first, second, front, cross)
+        @links[first] << [second, front]
+        @links[second] << [first, cross]
+      end
+
       # Generates the new keyname by original keyname with adding a '_' symbol
       # before original keyname and append unique (for current spec) number
       #

@@ -26,6 +26,10 @@ module VersatileDiamond
           other_lattice(edge)
         end
       end
+
+      def positions_to(links, first, second)
+        
+      end
     end
 
   end
