@@ -37,7 +37,7 @@ module VersatileDiamond
         describe "wrong defining a activated specific spec" do
           before(:each) { define_spec_and_atom(1) }
           it { expect { gas.interpret('concentration some(x: **), 1') }.
-            to raise_error syntax_error(
+            to raise_error *syntax_error(
               'specific_spec.invalid_actives_num', atom: 'x', spec: 'some') }
         end
 
@@ -47,22 +47,22 @@ module VersatileDiamond
           end
           before(:each) { define_spec_and_atom(10) }
           it { expect { gas.interpret('concentration some(x: 2*), 1') }.
-            to raise_error wrong_specification }
+            to raise_error *wrong_specification }
           it { expect { gas.interpret('concentration some(x: *2), 1') }.
-            to raise_error wrong_specification }
+            to raise_error *wrong_specification }
         end
 
         describe "wrong atom keyname" do
           before(:each) { define_spec_and_atom(2) }
           it { expect { gas.interpret('concentration some(z: *), 1') }.
-            to raise_error syntax_error(
+            to raise_error *syntax_error(
               'specific_spec.wrong_specification', atom: 'z') }
         end
 
         describe "wrong name of specific spec" do
           before(:each) { define_spec_and_atom(2) }
           it { expect { gas.interpret('concentration wrong(x: *), 1') }.
-            to raise_error keyname_error(:undefined, :gas_spec, :wrong) }
+            to raise_error *keyname_error(:undefined, :gas_spec, :wrong) }
         end
       end
     end

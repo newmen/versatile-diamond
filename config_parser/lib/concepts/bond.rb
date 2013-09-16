@@ -33,6 +33,14 @@ module VersatileDiamond
         @face, @dir = face, dir && dir.to_sym
       end
 
+      # Checks current instances for passed options
+      # @option [Symbol] :face the face of instance
+      # @option [Symbol] :dir the direction of instance
+      # @return [Boolean] it or not
+      def it?(face: face, dir: dir)
+        @face == face && @dir == dir
+      end
+
       # Approximate compares two instances. If their classes is same then
       # instances is the same. Else deligate comparing to other instance.
       #

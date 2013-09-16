@@ -31,7 +31,13 @@ module VersatileDiamond
   # puts "LINE #{@line_number + 1}: #{@line}"
 
         interpret(@line, method(:change_root)) do
-          pass_line_to(@root, @line)
+          begin
+            pass_line_to(@root, @line)
+          rescue Errors::SyntaxWarning => e
+            puts e.message(@config_path, @line_number + 1)
+            next_line || break
+            retry
+          end
         end
 
         next_line || break

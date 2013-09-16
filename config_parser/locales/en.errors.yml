@@ -50,7 +50,7 @@ en:
     wrong_sizes: "Incorrect setup original substrate sizes"
 
   position:
-    uncomplete: "Necessary to characterize the position of atoms relative to each other"
+    incomplete: "Necessary to characterize the position of atoms relative to each other"
 
   lattice:
     need_define_class: "Necessary to define class when defining new lattice"

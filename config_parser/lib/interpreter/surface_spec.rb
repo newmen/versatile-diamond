@@ -3,17 +3,17 @@ module VersatileDiamond
 
     # Changes behavior when spec is surface structure
     class SurfaceSpec < Spec
+      include PositionErrorsCatcher
 
       # Surface structure could'n have position with face or direction
       # @param [Array] atoms the array of atom keynames
       # @option [Symbol] :face the face of position
       # @option [Symbol] :dir the direction of position
       # @raise [Errors::SyntaxError] if position without face or direction
-      # TODO: remove it method?
       def position(*atoms, face: nil, dir: nil)
-        link(*atoms, Concepts::Position[face: face, dir: dir])
-      rescue Concepts::Position::IncompleteError
-        syntax_error('position.uncomplete')
+        interpret_position_errors do
+          link(*atoms, Concepts::Position[face: face, dir: dir])
+        end
       end
 
     private

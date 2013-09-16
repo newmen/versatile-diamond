@@ -7,7 +7,7 @@ module VersatileDiamond
       describe "#equation" do
         it "error when spec name is undefined" do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
-            to raise_error keyname_error(:undefined, :spec, :hydrogen)
+            to raise_error *keyname_error(:undefined, :spec, :hydrogen)
         end
 
         describe "ubiquitous equation" do
@@ -44,7 +44,7 @@ module VersatileDiamond
 
           it "don't nest equation interpreter instance" do
             expect { reaction.interpret('  refinement "some"') }.
-              to raise_error syntax_error('common.wrong_hierarchy')
+              to raise_error *syntax_error('common.wrong_hierarchy')
           end
         end
 
@@ -55,7 +55,7 @@ module VersatileDiamond
 
           it "not complience reactants" do
             expect { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
-              to raise_error syntax_error('reaction.cannot_map', name: 'bridge')
+              to raise_error *syntax_error('reaction.cannot_map', name: 'bridge')
           end
 
           describe "simple reaction" do
@@ -90,9 +90,8 @@ module VersatileDiamond
               surface.interpret('spec :bridge_with_dimer')
               surface.interpret('  aliases dm: dimer')
               surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: dm(:cr), cf: dm(:cl)')
-              surface.interpret('  bond :ct, :cl, face: 110, dir: :front')
-              surface.interpret('  bond :ct, :cr, face: 110, dir: :front')
-              surface.interpret('  position :cl, :cr, face: 100, dir: :front')
+              surface.interpret('  bond :ct, :cl, face: 110, dir: :cross')
+              surface.interpret('  bond :ct, :cr, face: 110, dir: :cross')
 
               reaction.interpret('aliases one: bridge, two: bridge')
               reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
@@ -101,7 +100,7 @@ module VersatileDiamond
             it { concept.products.first.atom(:cf).incoherent?.should be_true }
           end
 
-          describe "uncomplete bridge with dimer" do
+          describe "incomplete bridge with dimer" do
             before(:each) do
               surface.interpret('spec :bridge_with_dimer')
               surface.interpret('  atoms cr: bridge(:cr), cf: bridge(:ct)')
@@ -150,7 +149,7 @@ module VersatileDiamond
 
           describe "reaction with wrong balance" do
             it { expect { reaction.interpret('equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge') }.
-              to raise_error syntax_error('reaction.wrong_balance') }
+              to raise_error *syntax_error('reaction.wrong_balance') }
           end
         end
       end

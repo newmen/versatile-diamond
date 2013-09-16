@@ -25,6 +25,14 @@ module VersatileDiamond
           let(:cd_and_c) { SurfaceSpec.new(:cd_and_c, c1: cd1, c2: c2) }
           it { expect { cd_and_c.link(cd1, c2, free_bond) }.
             not_to raise_error }
+
+          describe "duplicate position" do
+            [:cr, :cl].each do |keyname|
+              let(keyname) { bridge_base.atom(keyname) }
+            end
+            it { expect { bridge_base.link(cl, cr, position_front) }.
+              to raise_error position_duplicate }
+          end
         end
 
         describe "specified atoms" do

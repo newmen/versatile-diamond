@@ -16,7 +16,13 @@ module VersatileDiamond
         @where, @positions = where, positions
       end
 
-      def_delegators :@where, :specs, :description, :visit
+      def_delegators :@where, :description, :swap_source, :visit
+
+      # Provides environment species
+        # @return [Array] all species stored in used where and in their parents
+      def specs
+        @where.all_specs
+      end
 
       # Compares two there objects
       # @param [There] other with which comparison
@@ -35,8 +41,7 @@ module VersatileDiamond
       # Counts number of environment used atoms
       # @return [Integer] the number of used atoms
       def size
-        (where.parents.map(&:specs) + specs).flatten.
-          reduce(0) { |acc, spec| acc + spec.size }
+        specs.reduce(0) { |acc, spec| acc + spec.size }
       end
     end
 

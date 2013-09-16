@@ -10,13 +10,18 @@ module VersatileDiamond
       end
 
       describe "#specs" do
-        it { on_end.specs.should == [dimer_base] }
-        it { there_methyl.specs.should == [methyl_on_bridge_base] }
+        it { on_end.specs.should == [dimer] }
+        it { on_middle.specs.should == [dimer, dimer] }
+        it { there_methyl.specs.should == [methyl_on_bridge] }
       end
 
       describe "#description" do
         it { on_end.description.should == 'at end of dimers row' }
         it { there_methyl.description.should == 'chain neighbour methyl' }
+      end
+
+      it_behaves_like "#swap_source" do
+        subject { on_end }
       end
 
       describe "#same?" do

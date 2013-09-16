@@ -290,9 +290,14 @@ module VersatileDiamond
         end
       end
 
-      def link_with_each_other(first, second, front, cross)
-        @links[first] << [second, front]
-        @links[second] << [first, cross]
+      # Links two atoms in both directions
+      # @param [Atom] first the first atom
+      # @param [Atom] second the second atom
+      # @param [Bond] link the relation from first to second
+      # @param [Bond] opposite_link the relation from second to first
+      def link_with_each_other(first, second, link, opposite_link)
+        @links[first] << [second, link]
+        @links[second] << [first, opposite_link]
       end
 
       # Generates the new keyname by original keyname with adding a '_' symbol

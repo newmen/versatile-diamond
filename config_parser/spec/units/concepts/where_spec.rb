@@ -5,13 +5,17 @@ module VersatileDiamond
 
     describe Where, visitable: true do
       describe "#specs" do
-        it { at_end.specs.should == [dimer_base] }
-        it { at_middle.specs.should == [dimer_base] }
-        it { near_methyl.specs.should == [methyl_on_bridge_base] }
+        it { at_end.specs.should == [dimer] }
+        it { at_middle.specs.should == [dimer] }
+        it { near_methyl.specs.should == [methyl_on_bridge] }
       end
 
       describe "#description" do
         it { at_end.description.should == 'at end of dimers row' }
+      end
+
+      it_behaves_like "#swap_source" do
+        subject { at_end }
       end
 
       describe "#parents" do

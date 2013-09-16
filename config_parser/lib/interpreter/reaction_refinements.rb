@@ -51,8 +51,8 @@ module VersatileDiamond
 
         pos = Concepts::Position[options]
         @reaction.positions << [first_atom, second_atom, pos]
-      rescue Concepts::Position::IncompleteError
-        syntax_error('position.uncomplete')
+      rescue Concepts::Position::Incomplete
+        syntax_error('position.incomplete')
       end
 
     private

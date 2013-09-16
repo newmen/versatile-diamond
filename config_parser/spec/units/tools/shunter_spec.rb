@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+using VersatileDiamond::Patches::RichString
+
 module VersatileDiamond
   module Tools
 
@@ -7,6 +9,10 @@ module VersatileDiamond
       let(:keyname_error) { Chest::KeyNameError }
 
       describe "#organize_dependecies!" do
+        let(:lateral_dimer_formation) do
+          dimer_formation.lateral_duplicate('lateral', [on_middle])
+        end
+
         def store_and_organize_reactions
           Config.gas_concentration(hydrogen_ion, 1, 'mol/l')
           Config.gas_temperature(1000, 'K')
@@ -35,12 +41,17 @@ module VersatileDiamond
           dimer_formation.reverse.rate = 5
           dimer_formation.reverse.activation = 2e3
 
+          # lateral dimer formation crated there
+          lateral_dimer_formation.rate = 6
+          lateral_dimer_formation.activation = 0
+
           [
             surface_activation, surface_deactivation,
             methyl_activation, methyl_deactivation, methyl_desorption,
             methyl_desorption.reverse, # synthetics
             hydrogen_migration, hydrogen_migration.reverse,
-            dimer_formation, dimer_formation.reverse
+            dimer_formation, dimer_formation.reverse,
+            lateral_dimer_formation
           ].each { |reaction| Chest.store(reaction) }
 
           Shunter.organize_dependecies!
@@ -75,59 +86,68 @@ module VersatileDiamond
           end
 
           describe "#collect_specific_specs!" do
+            [
+              Concepts::AtomicSpec,
+              Concepts::ActiveBond,
+              Concepts::SpecificSpec
+            ].each do |type|
+              RSpec::Matchers.define("be_#{type.to_s.underscore}") do
+                match { |spec| spec.is_a?(type) }
+              end
+            end
+
             describe "surface activation" do
-              it { Chest.atomic_spec(:H).should be_a(Concepts::AtomicSpec) }
+              it { Chest.atomic_spec(:H).should be_atomic_spec }
               it { Chest.specific_spec(:'hydrogen(h: *)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "surface deactivation" do
-              it { Chest.active_bond(:*).should be_a(Concepts::ActiveBond) }
+              it { Chest.active_bond(:*).should be_active_bond }
             end
 
             describe "methyl activation" do
               it { Chest.specific_spec(:'methyl_on_bridge()').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "methyl deactivation" do
               it { Chest.specific_spec(:'methyl_on_bridge(cm: *)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "surface deactivation" do
-              it { Chest.active_bond(:*).should be_a(Concepts::ActiveBond) }
+              it { Chest.active_bond(:*).should be_active_bond }
             end
 
             describe "methyl desorption" do
               it { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "forward hydrogen migration" do
               it { Chest.specific_spec(:'dimer(cr: *)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
               it { Chest.specific_spec(:'methyl_on_dimer()').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "reverse hydrogen migration" do
-              it { Chest.specific_spec(:'dimer()').
-                should be_a(Concepts::SpecificSpec) }
+              it { Chest.specific_spec(:'dimer()').should be_specific_spec }
               it { Chest.specific_spec(:'methyl_on_dimer(cm: *)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "forward dimer formation" do
               it { Chest.specific_spec(:'bridge(ct: *)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
               it { Chest.specific_spec(:'bridge(ct: *, ct: i)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
 
             describe "reverse dimer formation" do
               it { Chest.specific_spec(:'dimer(cl: i)').
-                should be_a(Concepts::SpecificSpec) }
+                should be_specific_spec }
             end
           end
 
@@ -160,6 +180,12 @@ module VersatileDiamond
             it { surface_deactivation.source.should include(same) }
             it { methyl_activation.source.should include(same) }
             it { methyl_deactivation.source.should include(same) }
+
+            it { lateral_dimer_formation.theres.map(&:specs).flatten.
+              should include(Chest.specific_spec(:'dimer()')) }
+            it { lateral_dimer_formation.theres.map(&:specs).flatten.
+              select { |spec| spec == Chest.specific_spec(:'dimer()') }.size.
+              should == 2 }
           end
         end
 

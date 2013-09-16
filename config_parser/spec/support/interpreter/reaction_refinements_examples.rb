@@ -13,10 +13,10 @@ module VersatileDiamond
               not_to raise_error }
 
             it { expect { subject.interpret("#{state} wrong(:c)") }.
-              to raise_error syntax_error(
+              to raise_error *syntax_error(
                 'matcher.undefined_used_atom', name: :'wrong(:c)') }
             it { expect { subject.interpret("#{state} mob(:wrong)") }.
-              to raise_error syntax_error(
+              to raise_error *syntax_error(
                 'matcher.undefined_used_atom', name: :'mob(:wrong)') }
 
             describe "wrong names to specs" do
@@ -28,7 +28,7 @@ module VersatileDiamond
               end
 
               it { expect { subject.interpret("#{state} b(:ct)") }.
-                to raise_error syntax_error(
+                to raise_error *syntax_error(
                   'refinement.cannot_complience', name: 'b') }
             end
           end
@@ -81,20 +81,20 @@ module VersatileDiamond
 
               describe "duplication" do
                 it { expect { subject.interpret('position b2(:ct), b1(:ct), face: 100, dir: :cross') }.
-                  to raise_error syntax_error('refinement.duplicate_position') }
+                  to raise_error *syntax_error('refinement.duplicate_position') }
               end
             end
 
             describe "incomplete" do
               it { expect { subject.interpret('position b2(:ct), b1(:ct), face: 100') }.
-                to raise_error syntax_error('position.uncomplete') }
+                to raise_error *syntax_error('position.incomplete') }
             end
 
             describe "wrong atom keyname" do
               it { expect { subject.interpret('position b1(:wrong), b2(:ct), face: 100, dir: front') }.
-                to raise_error syntax_error('matcher.undefined_used_atom', name: 'b1(:wrong)') }
+                to raise_error *syntax_error('matcher.undefined_used_atom', name: 'b1(:wrong)') }
               it { expect { subject.interpret('position b1(:ct), b2(:wrong), face: 100, dir: front') }.
-                to raise_error syntax_error('matcher.undefined_used_atom', name: 'b2(:wrong)') }
+                to raise_error *syntax_error('matcher.undefined_used_atom', name: 'b2(:wrong)') }
             end
           end
         end

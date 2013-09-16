@@ -6,7 +6,7 @@ module VersatileDiamond
     class Where < Named
       include Visitors::Visitable
 
-      attr_reader :specs, :description #, :environment
+      attr_reader :description, :parents, :specs
 
       # Initialize an instance
       # @param [Symbol] name the name of instance
@@ -17,7 +17,8 @@ module VersatileDiamond
         super(name)
         @description = description
         @raw_positions = {}
-        @specs = specs
+        @specs = specs # the used specific species
+        @parents = [] # the parent where objects
       end
 
       # Stores raw position between target symbol and some concrete atom.
@@ -32,10 +33,28 @@ module VersatileDiamond
         @raw_positions[target] << [atom, position]
       end
 
-      # Gets a parents (position of which is adsorbed) of current where object
-      # @return [Array] the array of parents
-      def parents
-        @parents ||= []
+      # Swaps dependent specific spec
+      # @param [SpecificSpec] from the spec which will be replaced
+      # @param [SpecificSpec] to the spec to which swap will produce
+      def swap_source(from, to)
+        return if from == to
+        @specs.delete(from)
+        @specs << to
+
+        @raw_positions.each do |_, relation|
+          atom, _ = relation
+          if (kn = from.keyname(atom))
+            relation[0] = to.atom(kn)
+          end
+        end
+
+        @parents.each { |parent| parent.swap_source(from, to) }
+      end
+
+      # Reduce all species from current instance and from all parent instances
+      # @return [Array] the result of reduce
+      def all_specs
+        specs + parents.reduce([]) { |acc, parent| acc + parent.all_specs }
       end
 
       # Concretize current instance by creating there object

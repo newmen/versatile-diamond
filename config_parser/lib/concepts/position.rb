@@ -4,7 +4,15 @@ module VersatileDiamond
     # Class for position instance. The position cannot be without face or
     # direction.
     class Position < Bond
-      class IncompleteError < Exception; end
+
+      # When position is incomplete then raised it exception
+      class Incomplete < Exception; end
+
+      # Exception for position duplication case
+      class Duplicate < Exception
+        attr_reader :position
+        def initialize(position); @position = position end
+      end
 
       # The singleton method [] caches all instnaces and returns it if face and
       #   direction of the same.
@@ -13,7 +21,7 @@ module VersatileDiamond
       # @option [Symbol] :dir the direction of position
       # @return [Position] cached instance
       def self.[](face: nil, dir: nil)
-        raise IncompleteError unless face && dir
+        raise Incomplete unless face && dir
         super(face: face, dir: dir)
       end
 

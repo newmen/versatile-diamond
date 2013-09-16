@@ -74,18 +74,29 @@ module VersatileDiamond
         # At collecting time swaps reaction source spec with another same spec
         # (with same name) if it another spec already collected.
         def collect_specific_specs!
-          specs = each_reaction.with_object({}) do |reaction, hash|
-            reaction.each_source do |specific_spec|
+          cache = {}
+          store_lambda = -> concept do
+            -> specific_spec do
               full_name = specific_spec.full_name
-              if hash[full_name]
-                reaction.swap_source(specific_spec, hash[full_name])
+              if cache[full_name]
+                concept.swap_source(specific_spec, cache[full_name])
               else
-                hash[full_name] = specific_spec
+                cache[full_name] = specific_spec
               end
             end
           end
 
-          specs.values.each do |specific_spec|
+          each_reaction do |reaction|
+            reaction.each_source(&store_lambda[reaction])
+          end
+
+          lateral_reactions.each do |reaction|
+            reaction.theres.each do |there|
+              there.specs.each(&store_lambda[there])
+            end
+          end
+
+          cache.values.each do |specific_spec|
             Chest.store(specific_spec, method: :full_name)
           end
         end
@@ -105,8 +116,6 @@ module VersatileDiamond
 
         # Organize dependencies between all stored reactions
         def organize_reactions_dependencies!
-          typical_reactions = Chest.all(:reaction)
-          lateral_reactions = Chest.all(:lateral_reaction)
           not_ubiquitous_reactions = typical_reactions + lateral_reactions
 
           # order of dependencies organization is important!
@@ -125,18 +134,14 @@ module VersatileDiamond
         def purge_unused_specs!
           specs = Chest.all(:gas_spec, :surface_spec)
           specific_specs = Chest.all(:specific_spec)
-          lateral_reactions = Chest.all(:lateral_reaction)
 
           specs.each do |spec|
             has_parent = specs.any? { |s| s.parent == spec }
             has_children = has_parent || specific_specs.any? do |specific_spec|
               specific_spec.spec == spec
             end
-            has_depend = has_children || lateral_reactions.any? do |reaction|
-              reaction.theres.any? { |there| there.specs.include?(spec) }
-            end
 
-            Chest.purge!(spec) unless has_depend
+            Chest.purge!(spec) unless has_children
           end
         end
 
@@ -146,6 +151,18 @@ module VersatileDiamond
         def each_reaction(&block)
           reactions = Chest.all(*REACTION_KEYS)
           block_given? ? reactions.each(&block) : reactions.each
+        end
+
+        # Gets all typical reactions
+        # @param [Array] the array of typical reactions
+        def typical_reactions
+          Chest.all(:reaction)
+        end
+
+        # Gets all lateral reactions
+        # @param [Array] the array of lateral reactions
+        def lateral_reactions
+          Chest.all(:lateral_reaction)
         end
       end
     end

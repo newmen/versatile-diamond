@@ -55,6 +55,8 @@ module VersatileDiamond
         set(:bond_100_cross) { Bond[face: 100, dir: :cross] }
         set(:position_front) { Position[face: 100, dir: :front] }
         set(:position_cross) { Position[face: 100, dir: :cross] }
+
+        set(:position_duplicate) { Position::Duplicate }
         set(:wrong_relation) do
           VersatileDiamond::Lattices::Base::WrongRelation
         end
@@ -85,8 +87,7 @@ module VersatileDiamond
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
           s.link(cd, cl, bond_110_cross)
-          s.link(cd, cr, bond_110_cross)
-          s.link(cl, cr, position_front); s
+          s.link(cd, cr, bond_110_cross); s
         end
         set(:bridge) { SpecificSpec.new(bridge_base) }
         set(:activated_bridge) do
@@ -293,9 +294,9 @@ module VersatileDiamond
           Environment.new(:dimers_row, targets: [:one, :two])
         end
         set(:at_end) do
-          w = Where.new(:at_end, 'at end of dimers row', specs: [dimer_base])
-          w.raw_position(:one, dimer_base.atom(:cl), position_cross)
-          w.raw_position(:two, dimer_base.atom(:cr), position_cross); w
+          w = Where.new(:at_end, 'at end of dimers row', specs: [dimer])
+          w.raw_position(:one, dimer.atom(:cl), position_cross)
+          w.raw_position(:two, dimer.atom(:cr), position_cross); w
         end
         set(:on_end) do #
           at_end.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))
@@ -303,9 +304,9 @@ module VersatileDiamond
 
         set(:at_middle) do
           w = Where.new(
-            :at_middle, 'at middle of dimers row', specs: [dimer_base])
-          w.raw_position(:one, dimer_base.atom(:cl), position_cross)
-          w.raw_position(:two, dimer_base.atom(:cr), position_cross)
+            :at_middle, 'at middle of dimers row', specs: [dimer])
+          w.raw_position(:one, dimer.atom(:cl), position_cross)
+          w.raw_position(:two, dimer.atom(:cr), position_cross)
           w.parents << at_end; w
         end
         set(:on_middle) do
@@ -314,9 +315,9 @@ module VersatileDiamond
 
         set(:near_methyl) do
           w = Where.new(:near_methyl, 'chain neighbour methyl',
-            specs: [methyl_on_bridge_base])
+            specs: [methyl_on_bridge])
           w.raw_position(
-            :target, methyl_on_bridge_base.atom(:cb), position_front); w
+            :target, methyl_on_bridge.atom(:cb), position_front); w
         end
         set(:there_methyl) { near_methyl.concretize(target: dimer.atom(:cr)) }
       end
