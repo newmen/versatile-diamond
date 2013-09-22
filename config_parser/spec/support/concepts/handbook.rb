@@ -57,8 +57,9 @@ module VersatileDiamond
         set(:position_cross) { Position[face: 100, dir: :cross] }
 
         set(:position_duplicate) { Position::Duplicate }
-        set(:wrong_relation) do
-          VersatileDiamond::Lattices::Base::WrongRelation
+        set(:unspecified_atoms) { Position::UnspecifiedAtoms }
+        set(:undefined_relation) do
+          VersatileDiamond::Lattices::Base::UndefinedRelation
         end
 
         # Specs and specific specs:
@@ -227,11 +228,12 @@ module VersatileDiamond
             'methyl deactivation', dm_source, dm_product, dm_atom_map)
         end
 
+        set(:abridge_dup) { activated_bridge.dup }
         set(:md_source) { [methyl_on_bridge] }
-        set(:md_products) { [methyl, activated_bridge.dup] }
+        set(:md_products) { [methyl, abridge_dup] }
         set(:md_names_to_specs) do {
           source: [[:mob, methyl_on_bridge]],
-          products: [[:m, methyl], [:b, activated_bridge]]
+          products: [[:m, methyl], [:b, abridge_dup]]
         } end
         set(:md_atom_map) do
           Mcs::AtomMapper.map(md_source, md_products, md_names_to_specs)

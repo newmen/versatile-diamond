@@ -14,6 +14,8 @@ module VersatileDiamond
       rescue Concepts::Position::Duplicate => e
         pos = e.position
         syntax_warning('position.duplicate', face: pos.face, dir: pos.dir)
+      rescue Concepts::Position::UnspecifiedAtoms
+        syntax_error('position.unspecified_atoms')
       end
     end
 

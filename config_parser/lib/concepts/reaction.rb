@@ -3,8 +3,10 @@ module VersatileDiamond
 
     # Also contained positions between the reactants
     class Reaction < UbiquitousReaction
+      include Linker
+      include SurfaceLinker
 
-      attr_reader :positions
+      attr_reader :links
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
@@ -12,14 +14,42 @@ module VersatileDiamond
       def initialize(*super_args, mapping)
         super(*super_args)
         @mapping = mapping
-        @positions = @mapping.find_positions
+        @links = {} # contain positions between atoms of different reactants
+
+        @mapping.find_positions_for(self)
       end
 
-      # Also store positions for reverse reaction
-      # @return [Reaction] reversed reaction
-      # @override
-      def reverse
-        super { |r| r.positions = @positions } # TODO: need to reverse possitions too?
+      # Reduce all positions from links structure
+      # @return [Array] the array of position relations
+      def positions
+        links.reduce([]) do |acc, (atom, list)|
+          acc + list.reduce([]) do |l, (other_atom, position)|
+            l << [atom, other_atom, position]
+          end
+        end
+      end
+
+      # Store position relation between first and second atoms
+      # @param [Array] first the array with first spec and atom
+      # @param [Array] second the array with second spec and atom
+      # @param [Position] position the position relation between atoms of both
+      #   species
+      # @raise [Lattices::Base::UndefinedRelation] if used relation instance is
+      #   wrong for current lattice
+      # @raise [Position::Duplicate] if same position already exist
+      # @raise [Position::UnspecifiedAtoms] if not all atoms belongs to crystal
+      #   lattice
+      def position_between(first, second, position)
+        if @mapping.reaction_type == :dissociation
+          raise "Cannot link atoms of single structure"
+        end
+
+        link_together(first, second, position)
+        return if @mapping.reaction_type == :association
+
+        first = @mapping.other_side(*first)
+        second = @mapping.other_side(*second)
+        reverse.link_together(first, second, position)
       end
 
       # Duplicates current instance with each source and product specs and
@@ -60,9 +90,11 @@ module VersatileDiamond
       def same?(other)
         is_same_positions =
           lists_are_identical?(positions, other.positions) do |pos1, pos2|
-            pos1.last == pos2.last &&
-              ((pos1[0] == pos2[0] && pos1[1] == pos2[1]) ||
-                (pos1[0] == pos2[1] && pos1[1] == pos2[0]))
+            pos1.last == pos2.last && # compares position relation instances
+              ((pos1[0][0].same?(pos2[0][0]) && pos1[0][1].same?(pos2[0][1]) &&
+                pos1[1][0].same?(pos2[1][0]) && pos1[1][1].same?(pos2[1][1])) ||
+                (pos1[0][0].same?(pos2[0][1]) && pos1[0][1].same?(pos2[0][0]) &&
+                 pos1[1][0].same?(pos2[1][1]) && pos1[1][1].same?(pos2[1][0])))
           end
 
         is_same_positions && super
@@ -99,6 +131,13 @@ module VersatileDiamond
         applicants.each { |reaction| more_complex << reaction }
       end
 
+      # Checks that all atoms belongs to lattice
+      # @return [Array] atoms the array of checking atoms
+      # @return [Boolean] all or not
+      def all_latticed?(*atoms)
+        atoms.all?(&method(:has_lattice?))
+      end
+
     protected
 
       attr_reader :children
@@ -110,7 +149,38 @@ module VersatileDiamond
         @type == type ? self : reverse
       end
 
+      # Links together two structures by it atoms
+      # @param [Array] first see at #position_between same argument
+      # @param [Array] second see at #position_between same argument
+      # @param [Position] position see at #position_between same argument
+      # @override
+      def link_together(first, second, position)
+        unless all_latticed?(first.last, second.last)
+          raise Position::UnspecifiedAtoms
+        end
+
+        @links[first] ||= []
+        @links[second] ||= []
+
+        super
+      end
+
     private
+
+      # Gets opposite relation between first and second atoms for passed
+      # relation instance
+      #
+      # @param [Array] first see at #position_between same argument
+      # @param [Array] second see at #position_between same argument
+      # @param [Position] position see at #position_between same argument
+      # @raise [Lattices::Base::UndefinedRelation] when passed relation is
+      #   undefined
+      # @return [Position] the opposite position relation
+      def opposit_relation(first, second, relation)
+        _, first_atom = first
+        _, second_atom = second
+        first_atom.lattice.opposite_relation(second_atom.lattice, relation)
+      end
 
       # Updates attribute for current instance, or setup each child if they
       # exists

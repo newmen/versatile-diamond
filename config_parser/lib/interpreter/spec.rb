@@ -16,7 +16,7 @@ module VersatileDiamond
       end
 
       # Adsorbs atoms and links of aliases and store duplicated atoms hash to
-      #   internal variable for future renaming of adsrobed atom keynames
+      # internal variable for future renaming of adsrobed atom keynames
       #
       # @param [Hash] refs the hash which contain alias name as keys and some
       #   another specs as values
@@ -79,12 +79,14 @@ module VersatileDiamond
         first = @concept.atom(atoms[0])
         second = @concept.atom(atoms[1])
         @concept.link(first, second, link_instance)
-      rescue Lattices::Base::WrongRelation => e
-        syntax_error('.wrong_relation', relation: e.relation)
+      rescue Linker::SameAtom
+        syntax_error('linker.same_atom')
+      rescue Lattices::Base::UndefinedRelation => e
+        syntax_error('.undefined_relation', relation: e.relation)
       end
 
       # Detects atom by passed string and store it (or more another) to
-      #   concept by keyname
+      # concept by keyname
       #
       # @param [Symbol] keyname the keyname of atom in concept
       # @param [String] atom_str the string which described atom
@@ -109,7 +111,7 @@ module VersatileDiamond
       end
 
       # Detects used atom by passed string and store it (or more another) to
-      #   concept by keyname
+      # concept by keyname
       #
       # @param [Symbol] keyname see at #detect_atom
       # @param [String] see at #detect_atom

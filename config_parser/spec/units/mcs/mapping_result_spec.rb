@@ -4,12 +4,18 @@ module VersatileDiamond
   module Mcs
 
     describe MappingResult do
-      let(:abr) { md_products.last }
-
       %w(source products).each do |type|
         describe "##{type}" do
           it { md_atom_map.send(type).should == send("md_#{type}") }
         end
+      end
+
+      describe "#reaction_type" do
+        it { ma_atom_map.reaction_type.should == :exchange }
+        it { dm_atom_map.reaction_type.should == :exchange }
+        it { md_atom_map.reaction_type.should == :dissociation }
+        it { hm_atom_map.reaction_type.should == :exchange }
+        it { df_atom_map.reaction_type.should == :association }
       end
 
       describe "setup incoherent and unfixed" do
@@ -20,8 +26,8 @@ module VersatileDiamond
 
       describe "#changes" do
         it { md_atom_map.changes.should == [
-            [[methyl_on_bridge, abr],
-              [[methyl_on_bridge.atom(:cb), abr.atom(:ct)]]],
+            [[methyl_on_bridge, abridge_dup],
+              [[methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)]]],
             [[methyl_on_bridge, methyl],
               [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
           ] }
@@ -42,14 +48,36 @@ module VersatileDiamond
 
       describe "#full" do
         it { md_atom_map.full.should == [
-            [[methyl_on_bridge, abr], [
-              [methyl_on_bridge.atom(:cb), abr.atom(:ct)],
-              [methyl_on_bridge.atom(:cl), abr.atom(:cl)],
-              [methyl_on_bridge.atom(:cr), abr.atom(:cr)],
+            [[methyl_on_bridge, abridge_dup], [
+              [methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)],
+              [methyl_on_bridge.atom(:cl), abridge_dup.atom(:cl)],
+              [methyl_on_bridge.atom(:cr), abridge_dup.atom(:cr)],
             ]],
             [[methyl_on_bridge, methyl],
               [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
           ] }
+      end
+
+      describe "other_side" do
+        it { hm_atom_map.other_side(
+            methyl_on_dimer, methyl_on_dimer.atom(:cm)).
+          should == [
+            activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)
+          ] }
+
+        it { hm_atom_map.other_side(
+            activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)).
+          should == [
+            methyl_on_dimer, methyl_on_dimer.atom(:cm)
+          ] }
+
+        it { hm_atom_map.other_side(dimer, dimer.atom(:cr)).should == [
+            activated_dimer, activated_dimer.atom(:cr)
+          ] }
+
+        it { hm_atom_map.other_side(
+            activated_dimer, activated_dimer.atom(:cr)).
+          should == [dimer, dimer.atom(:cr)] }
       end
 
       describe "#add" do
@@ -79,15 +107,19 @@ module VersatileDiamond
       describe "#reverse" do
         describe "methyl desorption" do
           it { md_atom_map.reverse.full.should == [
-              [[abr, methyl_on_bridge], [
-                [abr.atom(:ct), methyl_on_bridge.atom(:cb)],
-                [abr.atom(:cl), methyl_on_bridge.atom(:cl)],
-                [abr.atom(:cr), methyl_on_bridge.atom(:cr)],
+              [[abridge_dup, methyl_on_bridge], [
+                [abridge_dup.atom(:ct), methyl_on_bridge.atom(:cb)],
+                [abridge_dup.atom(:cl), methyl_on_bridge.atom(:cl)],
+                [abridge_dup.atom(:cr), methyl_on_bridge.atom(:cr)],
               ]],
               [[methyl, methyl_on_bridge], [
                 [methyl.atom(:c), methyl_on_bridge.atom(:cm)]
               ]]
             ] }
+
+          it { hm_atom_map.reverse.reaction_type.should == :exchange }
+          it { md_atom_map.reverse.reaction_type.should == :association }
+          it { df_atom_map.reverse.reaction_type.should == :dissociation }
         end
 
         describe "hydrogen migration" do
@@ -166,17 +198,6 @@ module VersatileDiamond
 
         it { dm_atom_map.complex_source_spec_and_atom.
           should == [activated_methyl_on_bridge, activated_c] }
-      end
-
-      describe "#find_positions" do
-        it { md_atom_map.find_positions.should be_empty }
-        it { hm_atom_map.find_positions.should be_empty }
-        it { ma_atom_map.find_positions.should be_empty }
-
-        it { df_atom_map.find_positions.should == [
-          activated_bridge.atom(:ct),
-          activated_incoherent_bridge.atom(:ct),
-          position_front] }
       end
     end
 

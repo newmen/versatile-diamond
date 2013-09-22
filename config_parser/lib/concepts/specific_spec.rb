@@ -39,6 +39,17 @@ module VersatileDiamond
 
       def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
 
+      # Finds positions between atoms in base structure.
+      # Can be used only for specified *surface* spec.
+      #
+      # @param [Atom] atom1 the first atom
+      # @param [Atom] atom2 the second atom
+      # @return [Position] nil or positions between atoms in both directions
+      def position_between(atom1, atom2)
+        @spec.position_between(
+          @spec.atom(keyname(atom1)), @spec.atom(keyname(atom2)))
+      end
+
       # Builds the full name of specific spec (with specificied atom info)
       # @return [String] the full name of specific spec
       def full_name

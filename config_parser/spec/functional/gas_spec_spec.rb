@@ -75,6 +75,7 @@ module VersatileDiamond
           it { concept.external_bonds_for(concept.atom(:n2)).should == 0 }
           # TODO: check the bond existance too
         end
+
         describe "wrong syntax" do
           let(:wrong_bond) { syntax_error('gas_spec.wrong_bond') }
           it { expect { spec.interpret('bond :n1, :n2, face: 100') }.
@@ -82,6 +83,11 @@ module VersatileDiamond
 
           it { expect { spec.interpret('bond :n1, :n2, dir: :front') }.
             to raise_error *wrong_bond }
+        end
+
+        describe "same atom" do
+          it { expect { spec.interpret('bond :n1, :n1') }.
+            to raise_error *syntax_error('linker.same_atom') }
         end
       end
 

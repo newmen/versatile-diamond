@@ -18,10 +18,10 @@ module VersatileDiamond
           let(:full) do
             [
               [[spec1, spec3], [
+                [spec1.atom(:cm), spec3.atom(:cm)],
                 [spec1.atom(:cb), spec3.atom(:cb)],
                 [spec1.atom(:cl), spec3.atom(:cl)],
                 [spec1.atom(:cr), spec3.atom(:cr)],
-                [spec1.atom(:cm), spec3.atom(:cm)],
               ]],
             ]
           end
@@ -57,12 +57,12 @@ module VersatileDiamond
                 [spec1.atom(:cl), spec3.atom(:cl)],
               ]],
               [[spec2, spec4], [
+                [spec2.atom(:cr), spec4.atom(:cr)],
                 [spec2.atom(:_cl1), spec4.atom(:_cl1)],
                 [spec2.atom(:_cr0), spec4.atom(:_cr0)],
                 [spec2.atom(:cl), spec4.atom(:cl)],
                 [spec2.atom(:_cl0), spec4.atom(:_cl0)],
                 [spec2.atom(:_cr1), spec4.atom(:_cr1)],
-                [spec2.atom(:cr), spec4.atom(:cr)],
               ]],
             ]
           end

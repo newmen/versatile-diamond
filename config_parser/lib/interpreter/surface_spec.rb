@@ -34,19 +34,6 @@ module VersatileDiamond
           super
         end
       end
-
-      # Links atom together if link instance is not Position or both atoms has
-      # lattice
-      #
-      # @param [Array] atoms the array of atom keynames
-      # @param [Concepts::Bond] link_instance the instance of link
-      # @raise [Errors::SyntaxError] if setup position for unlatticed atom
-      # @override
-      def link(*atoms, link_instance)
-        super
-      rescue Concepts::SurfaceSpec::UnspecifiedAtoms
-        syntax_error('.incorrect_linking')
-      end
     end
 
   end

@@ -5,6 +5,8 @@ module VersatileDiamond
     # @abstract
     class Spec < Named
       include Visitors::Visitable
+
+      include Linker
       include BondsCounter
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
@@ -288,16 +290,6 @@ module VersatileDiamond
               [original_to_duplicates[another_atom], link_instance]
             end
         end
-      end
-
-      # Links two atoms in both directions
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @param [Bond] link the relation from first to second
-      # @param [Bond] opposite_link the relation from second to first
-      def link_with_each_other(first, second, link, opposite_link)
-        @links[first] << [second, link]
-        @links[second] << [first, opposite_link]
       end
 
       # Generates the new keyname by original keyname with adding a '_' symbol

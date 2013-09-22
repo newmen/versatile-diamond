@@ -10,6 +10,24 @@ module VersatileDiamond
         it { methyl.dup.external_bonds.should == 3 }
       end
 
+      describe "#position_between" do
+        it { activated_dimer.position_between(
+            activated_dimer.atom(:cr), activated_dimer.atom(:cl)).
+          should == position_front }
+
+        it { activated_dimer.position_between(
+            activated_dimer.atom(:cl), activated_dimer.atom(:cr)).
+          should == position_front }
+
+        it { activated_methyl_on_incoherent_bridge.position_between(
+            activated_methyl_on_incoherent_bridge.atom(:cm),
+            activated_methyl_on_incoherent_bridge.atom(:cb)).should be_nil }
+
+        it { activated_methyl_on_incoherent_bridge.position_between(
+            activated_methyl_on_incoherent_bridge.atom(:cb),
+            activated_methyl_on_incoherent_bridge.atom(:cm)).should be_nil }
+      end
+
       describe "#full_name" do
         it { methane.full_name.should == 'methane()' }
         it { methyl.full_name.should == 'methane(c: *)' }

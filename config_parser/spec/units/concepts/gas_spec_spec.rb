@@ -27,7 +27,7 @@ module VersatileDiamond
 
         describe "wrong bond" do
           it { expect { two_c_atoms.link(c1, c2, bond_100_front) }.
-            to raise_error wrong_relation }
+            to raise_error undefined_relation }
         end
       end
     end

@@ -67,6 +67,7 @@ module VersatileDiamond
             reaction = Concepts::Reaction.new(
               :forward, @name, source, products, mapping)
 
+            # nest only here
             nested(Equation.new(reaction, names_and_specs))
             reaction
           end

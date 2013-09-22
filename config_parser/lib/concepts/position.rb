@@ -14,11 +14,15 @@ module VersatileDiamond
         def initialize(position); @position = position end
       end
 
+      # Exception for case when linking atoms do not have a crystal lattice
+      class UnspecifiedAtoms < Exception; end
+
       # The singleton method [] caches all instnaces and returns it if face and
       #   direction of the same.
       #
       # @option [Symbol] :face the face of position
       # @option [Symbol] :dir the direction of position
+      # @raise [Incomplete] unless face or direction is nil
       # @return [Position] cached instance
       def self.[](face: nil, dir: nil)
         raise Incomplete unless face && dir

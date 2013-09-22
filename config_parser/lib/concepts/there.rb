@@ -19,7 +19,7 @@ module VersatileDiamond
       def_delegators :@where, :description, :swap_source, :visit
 
       # Provides environment species
-        # @return [Array] all species stored in used where and in their parents
+      # @return [Array] all species stored in used where and in their parents
       def specs
         @where.all_specs
       end

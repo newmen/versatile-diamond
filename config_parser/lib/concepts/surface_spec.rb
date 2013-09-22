@@ -3,9 +3,7 @@ module VersatileDiamond
 
     # Represents surface structure
     class SurfaceSpec < Spec
-
-      # Exception for case when linking atoms do not have a crystal lattice
-      class UnspecifiedAtoms < Exception; end
+      include SurfaceLinker
 
       # Returns that spec is not gas
       # @return [Boolean] gas or not
@@ -13,58 +11,66 @@ module VersatileDiamond
         false
       end
 
+      # Finds position relation between two atoms, where first atom is atom of
+      # largest structure (specie) and relation has direction from atom of
+      # first spec to atom of second spec
+      #
+      # @param [Atom] first the first atom
+      # @param [Atom] second the second atom
+      # @return [Position] the position relation or nil
+      def position_between(first, second)
+        relation = relation_between(first, second)
+        relation && relation.face &&
+          Position[face: relation.face, dir: relation.dir]
+      end
+
+    protected
+
+      # After linking finds position by relation rules from crystal lattice
+      # @param [Array] args the argumens of super method
+      # @raise [Position::UnspecifiedAtoms] unless at least one atom
+      #   belonging to lattice
+      # @override
+      def link_together(*atoms, instance)
+        raise Position::UnspecifiedAtoms unless at_least_one_latticed?(atoms)
+
+        super(*sort(atoms), instance)
+        find_positions
+      end
+
     private
 
-      # Links together atoms of surface spec. Surface spec must have at least
-      # one atom belonging to the lattice. Obtaining the inverse relation
-      # between linking atoms is occured by the crystal lattice.
+      # Gets opposite relation between first and second atoms for passed
+      # relation instance
       #
-      # @param [Array] atoms the array of two linking atoms
-      # @param [Bond] instance the instance of relation
-      # @raise [UnspecifiedAtoms] unless at least one atom belonging to lattice
-      # @raise [Lattices::Base::WrongRelation] if used relation instance is
-      #   wrong for current lattice
-      def link_together(*atoms, instance)
-        raise UnspecifiedAtoms unless at_least_one_lattice(atoms)
-        first, second = sort(atoms)
-
-        opposit_instance =
-          first.lattice.opposite_relation(second.lattice, instance)
-
-        raise Position::Duplicate, instance if instance.class == Position &&
-          has_positions?(first, second, instance, opposit_instance)
-
-        link_with_each_other(first, second, instance, opposit_instance)
-        find_positions
+      # @param [Atom] first the first of two linking atoms
+      # @param [Atom] second the second of two linking atoms
+      # @param [Bond] relation the instance of relation
+      # @raise [Lattices::Base::UndefinedRelation] when passed relation is
+      #   undefined
+      # @return [Bond] the opposite relation
+      def opposit_relation(first, second, relation)
+        first.lattice.opposite_relation(second.lattice, relation)
       end
 
       # Finds and store positions between transitive bonded atoms
       def find_positions
         atom_instances.combination(2).each do |atoms|
-          next if !at_least_one_lattice(atoms) || related?(*atoms)
+          next if !at_least_one_latticed?(atoms) || relation_between(*atoms)
           first, second = sort(atoms)
 
-          many_positions =
+          positions =
             first.lattice.positions_between(first, second, links)
-          next if many_positions.empty?
+          next unless positions
 
-          many_positions.each do |positions|
-            link_with_each_other(first, second, *positions)
-          end
+          link_with_other(first, second, *positions)
         end
-      end
-
-      # Checks that atom belongs to crystal lattice
-      # @param [Atom] atom the checking atom
-      # @return [Boolean] belongs or not
-      def has_lattice?(atom)
-        !!atom.lattice
       end
 
       # Checks that at least one atoms belongs to lattice
       # @param [Array] atoms the array of atoms
       # @return [Boolean] has latticed atom or not
-      def at_least_one_lattice(atoms)
+      def at_least_one_latticed?(atoms)
         atoms.any?(&method(:has_lattice?))
       end
 
@@ -82,35 +88,10 @@ module VersatileDiamond
       # @param [Atom] second the second atom
       # @return [Boolean] related or not
       # TODO: move to super?
-      def related?(first, second)
-        !!links[first].find { |atom, _| atom == second }
-      end
-
-      # If so, must have relations in both directions
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @param [Array] positions the array with two positions
-      # @return [Boolean] has or not
-      def has_positions?(first, second, *positions)
-        a = has_position?(first, second, positions[0])
-        b = has_position?(second, first, positions[1])
-
-        if a && b
-          true
-        elsif a || b
-          raise "Checking positions ERROR"
-        else
-          false
-        end
-      end
-
-      # Check availability of passed position between atoms
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @param [Bond] position the relation from first atom to second atom
-      # @return [Boolean] has or not
-      def has_position?(first, second, position)
-        !!links[first].find { |atom, link| atom == second && link == position }
+      def relation_between(first, second)
+        links[first] &&
+          (atom_with_rel = links[first].find { |atom, _| atom == second }) &&
+          ((_, rel) = atom_with_rel) && rel
       end
     end
 

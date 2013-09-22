@@ -51,17 +51,20 @@ en:
 
   position:
     incomplete: "Necessary to characterize the position of atoms relative to each other"
+    unspecified_atoms: "Incorrect linking unspecified atoms"
 
   lattice:
     need_define_class: "Necessary to define class when defining new lattice"
 
+  linker:
+    same_atom: "Cannot link atom with itself"
+
   gas_spec:
     wrong_bond: "Bond cannot be characterized"
-    wrong_relation: "Wrong relation %{relation} between atoms of gas specie"
+    undefined_relation: "Wrong relation %{relation} between atoms of gas specie"
 
   surface_spec:
-    incorrect_linking: "Incorrect linking unspecified atoms"
-    wrong_relation: "Wrong relation %{relation} between atoms of surface specie"
+    undefined_relation: "Wrong relation %{relation} between atoms of surface specie"
 
   specific_spec:
     atom_already_has_state: "Atom already has %{state} state"
@@ -80,7 +83,7 @@ en:
 
   refinement:
     cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
-    duplicate_position: "Position between these atoms is already set"
+    different_parts: "Linking species that belongs to different parts of equation"
 
   where:
     already_use: "Current where already use \"%{name}\""

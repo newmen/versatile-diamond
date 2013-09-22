@@ -54,7 +54,7 @@ module VersatileDiamond
         it { should be_a(described_class) }
 
         it { subject.source.size.should == 2 }
-        it { subject.source.should include(methyl, md_products.last) }
+        it { subject.source.should include(methyl, abridge_dup) }
 
         it { subject.products.should == [methyl_on_bridge] }
       end
@@ -71,16 +71,79 @@ module VersatileDiamond
         # TODO: checks atom mapping result
       end
 
-      describe "#positions" do
-        [:one, :two].zip([:first, :last]).each do |l, m|
-          let(l) { df_source.send(m).atom(:ct) }
+      describe "#position_between" do
+        before { hydrogen_migration.position_between(
+            [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
+            [activated_dimer, activated_dimer.atom(:cr)],
+            position_front
+          ) }
+
+        describe "opposite relation store too" do
+          it { hydrogen_migration.positions.should == [
+              [
+                [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
+                [activated_dimer, activated_dimer.atom(:cr)],
+                position_front
+              ],
+              [
+                [activated_dimer, activated_dimer.atom(:cr)],
+                [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
+                position_front
+              ],
+            ] }
         end
 
-        let(:position) { [one, two, position_front] }
-        before(:each) { dimer_formation.positions << position }
+        describe "apply to reverse" do
+          subject { hydrogen_migration.reverse }
 
-        it { dimer_formation.positions.should == [position] }
-        it { dimer_formation.reverse.positions.should == [position] }
+          it { subject.positions.should == [
+              [
+                [
+                  activated_methyl_on_dimer,
+                  activated_methyl_on_dimer.atom(:cr)
+                ],
+                [dimer, dimer.atom(:cr)],
+                position_front
+              ],
+              [
+                [dimer, dimer.atom(:cr)],
+                [
+                  activated_methyl_on_dimer,
+                  activated_methyl_on_dimer.atom(:cr)
+                ],
+                position_front
+              ],
+            ] }
+        end
+      end
+
+      describe "#positions" do
+        describe "empty" do
+          it { methyl_activation.positions.should be_empty }
+          it { methyl_desorption.positions.should be_empty }
+          it { hydrogen_migration.positions.should be_empty }
+        end
+
+        describe "dimer formation" do
+          it { dimer_formation.positions.should == [
+              [
+                [activated_bridge, activated_bridge.atom(:ct)],
+                [
+                  activated_incoherent_bridge,
+                  activated_incoherent_bridge.atom(:ct)
+                ],
+                position_front
+              ],
+              [
+                [
+                  activated_incoherent_bridge,
+                  activated_incoherent_bridge.atom(:ct)
+                ],
+                [activated_bridge, activated_bridge.atom(:ct)],
+                position_front
+              ],
+            ] }
+        end
       end
 
       let(:reaction) { dimer_formation.duplicate('dup') }
@@ -113,8 +176,11 @@ module VersatileDiamond
 
         describe "positions are different" do
           before(:each) do
-            hydrogen_migration.positions << [methyl_on_dimer.atom(:cb),
-              activated_dimer.atom(:cr), position_front]
+            hydrogen_migration.position_between(
+              [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
+              [activated_dimer, activated_dimer.atom(:cr)],
+              position_front
+            )
           end
 
           it { hydrogen_migration.same?(same).should be_false }

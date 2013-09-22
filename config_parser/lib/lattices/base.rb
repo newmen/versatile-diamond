@@ -6,7 +6,7 @@ module VersatileDiamond
     class Base
 
       # Exception class for case when used bond is incorrect
-      class WrongRelation < Exception
+      class UndefinedRelation < Exception
         attr_reader :relation
         def initialize(relation); @relation = relation end
       end
@@ -17,7 +17,7 @@ module VersatileDiamond
       # @param [Base] other the lattice of another atom
       # @param [Concepts::Bond] relation the relation between current atom and
       #   another atom
-      # @raise [WrongRelation] if relation is invalid
+      # @raise [UndefinedRelation] if relation is invalid
       # @return [Concepts::Bond] then inverse relation between atoms in lattice
       def opposite_relation(other, relation)
         if self.class == other.class
@@ -36,10 +36,10 @@ module VersatileDiamond
       # @param [Atom] second the second atom
       # @param [Hash] links the container of relations between atoms (is a
       #   sparse graph)
-      # @return [Array] array of position relations where each item is array
-      #   with positions in both directions
+      # @return [Array] the array with positions in both directions or nil
       def positions_between(first, second, links)
-        positions = relation_rules.map do |path, position|
+        # TODO: there could be several positions between two atoms
+        rule = inference_rules.find do |path, position|
           current, prevent = first, nil
           completion = path.all? do |relation|
             applicants = links[current].select do |atom, link|
@@ -51,14 +51,15 @@ module VersatileDiamond
             current = applicants.first.first
           end
 
-          completion && current == second ? position : nil
+          completion && current == second
         end
 
-        positions.compact.map do |position|
-          opposite_position =
-            first.lattice.opposite_relation(second.lattice, position)
-          [position, opposite_position]
-        end
+        return unless rule
+
+        position = rule.last
+        opposite_position =
+          first.lattice.opposite_relation(second.lattice, position)
+        [position, opposite_position]
       end
 
     private

@@ -54,8 +54,10 @@ module VersatileDiamond
           before(:each) { interpret_basis }
 
           it "not complience reactants" do
-            expect { reaction.interpret('equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
-              to raise_error *syntax_error('reaction.cannot_map', name: 'bridge')
+            expect { reaction.interpret(
+                'equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
+              to raise_error *syntax_error(
+                'reaction.cannot_map', name: 'bridge')
           end
 
           describe "simple reaction" do
@@ -80,7 +82,8 @@ module VersatileDiamond
             describe "refinements" do
               it { expect { reaction.interpret('  incoherent bridge(:ct)') }.
                 not_to raise_error }
-              it { expect { reaction.interpret('  unfixed methyl_on_bridge(:cb)') }.
+              it { expect { reaction.interpret(
+                  '  unfixed methyl_on_bridge(:cb)') }.
                 not_to raise_error }
             end
           end
@@ -89,7 +92,8 @@ module VersatileDiamond
             before(:each) do
               surface.interpret('spec :bridge_with_dimer')
               surface.interpret('  aliases dm: dimer')
-              surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: dm(:cr), cf: dm(:cl)')
+              surface.interpret(
+                '  atoms ct: C%d, cl: bridge(:ct), cr: dm(:cr), cf: dm(:cl)')
               surface.interpret('  bond :ct, :cl, face: 110, dir: :cross')
               surface.interpret('  bond :ct, :cr, face: 110, dir: :cross')
 
@@ -107,7 +111,8 @@ module VersatileDiamond
               surface.interpret('  bond :cr, :cf, face: 100, dir: :front')
 
               reaction.interpret('aliases one: bridge, two: bridge')
-              reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
+              reaction.interpret(
+                'equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
             end
 
             it { concept.products.first.atom(:cf).incoherent?.should be_true }
@@ -117,7 +122,8 @@ module VersatileDiamond
             describe "extending product" do
               before(:each) do
                 reaction.interpret('aliases source: bridge, product: bridge')
-                reaction.interpret('equation high_bridge + source(ct: *) = product(cr: *)')
+                reaction.interpret(
+                  'equation high_bridge + source(ct: *) = product(cr: *)')
               end
 
               it { concept.source.first.external_bonds.should == 4 }
@@ -128,7 +134,8 @@ module VersatileDiamond
             describe "extending first source and single product" do
               before(:each) do
                 reaction.interpret('aliases source: dimer, product: dimer')
-                reaction.interpret('equation methyl_on_bridge(cm: *) + source(cr: *) = product')
+                reaction.interpret(
+                  'equation methyl_on_bridge(cm: *) + source(cr: *) = product')
               end
 
               it { concept.source.first.external_bonds.should == 9 }
@@ -143,13 +150,14 @@ module VersatileDiamond
             end
 
             it { expect { reaction.interpret(
-              'equation dimer(cr: *) = high_bridge(cm: *) + one(ct: *) + two(ct: *)')
-              }.not_to raise_error }
+                'equation dimer(cr: *) = high_bridge(cm: *) + one(ct: *) + two(ct: *)'
+              ) }.not_to raise_error }
           end
 
           describe "reaction with wrong balance" do
-            it { expect { reaction.interpret('equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge') }.
-              to raise_error *syntax_error('reaction.wrong_balance') }
+            it { expect { reaction.interpret(
+                'equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge'
+              ) }.to raise_error *syntax_error('reaction.wrong_balance') }
           end
         end
       end

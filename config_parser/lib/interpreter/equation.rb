@@ -48,10 +48,8 @@ module VersatileDiamond
             syntax_error('.undefined_target', name: target_name)
           end
 
-          atom = find_spec(used_atom_str) do |specific_spec, keyname|
-            specific_spec.atom(keyname)
-          end
-          [target_name, atom]
+          specific_spec, keyname = find_any_spec(used_atom_str)
+          [target_name, specific_spec.atom(keyname)]
         end
 
         lateral = env.make_lateral(Hash[resolved_targets])

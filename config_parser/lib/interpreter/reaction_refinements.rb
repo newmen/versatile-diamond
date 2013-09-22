@@ -4,6 +4,7 @@ module VersatileDiamond
     # Interprets reaction refinements and pass it to concept instances
     module ReactionRefinements
       include Interpreter::AtomMatcher
+      include PositionErrorsCatcher
 
       # Defines two methods for setup an instance of specific spec which found
       # specs set by spec name
@@ -16,7 +17,7 @@ module VersatileDiamond
         define_method(state) do |*used_atom_strs|
           begin
             used_atom_strs.each do |atom_str|
-              find_spec(atom_str, :all) do |specific_spec, atom_keyname|
+              find_all_specs(atom_str) do |specific_spec, atom_keyname|
                 specific_spec.send(:"#{state}!", atom_keyname)
               end
             end
@@ -36,67 +37,96 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] if position already exists for selected
       #   atoms or atom cannot be found
       def position(*used_atom_strs, **options)
-        first_atom, second_atom = used_atom_strs.map do |atom_str|
-          find_spec(atom_str) do |specific_spec, atom_keyname|
-            specific_spec.atom(atom_keyname)
+        first_spec_atom, second_spec_atom =
+          used_atom_strs.map do |atom_str|
+            specific_spec, atom_keyname = find_any_spec(atom_str)
+            [specific_spec, specific_spec.atom(atom_keyname)]
           end
+
+        first_spec, _ = first_spec_atom
+        second_spec, _ = second_spec_atom
+
+        # TODO: it may be is not optimal, because we finds specs (and their
+        # atoms) before (at begin of method), and finds it again there
+        current =
+          if @reaction.source.include?(first_spec) &&
+            @reaction.source.include?(second_spec)
+
+            @reaction
+          elsif @reaction.products.include?(first_spec) &&
+            @reaction.products.include?(second_spec)
+
+            @reaction.reverse
+          else
+            syntax_error('refinement.different_parts')
+          end
+
+        interpret_position_errors do
+          pos = Concepts::Position[options]
+          current.position_between(first_spec_atom, second_spec_atom, pos)
         end
-
-        duplicate = @reaction.positions.find do |f, s, p|
-          (f == first_atom && s == second_atom) ||
-            (s == first_atom && f == second_atom)
-        end
-
-        syntax_error('refinement.duplicate_position') if duplicate
-
-        pos = Concepts::Position[options]
-        @reaction.positions << [first_atom, second_atom, pos]
-      rescue Concepts::Position::Incomplete
-        syntax_error('position.incomplete')
       end
 
     private
 
-      # Finds specific spec in names to specs hash
+      # Finds any specific spec in names to specs hash
       # @param [String] used_atom_str the parsing string
-      # @param [Symbol] find_type the type of search algorithm, can be
-      #   :any or :all
+      # @raise [Errors::SyntaxError] if specific spec is not found or have
+      #   inaccurate complience
+      # @return [SpecificSpec, Symbol] the array where first element is found
+      #   spec and second is used atom keyname
+      def find_any_spec(used_atom_str)
+        spec_name, atom_keyname = match_used_atom(used_atom_str)
+        spec_name = spec_name.to_sym
+
+        specific_spec = find_spec_in(:source, spec_name) ||
+          find_spec_in(:products, spec_name)
+
+        unless specific_spec && specific_spec.atom(atom_keyname)
+          syntax_error('matcher.undefined_used_atom', name: used_atom_str)
+        end
+
+        [specific_spec, atom_keyname]
+      end
+
+      # Finds all specific specs in names to specs hash and do for it passed
+      # block
+      #
+      # @param [String] used_atom_str the parsing string
       # @yield [Concepts::SpecificSpec, Symbol] do for each found spec
       # @raise [Errors::SyntaxError] if specific spec is not found or have
       #   inaccurate complience
-      def find_spec(used_atom_str, find_type = :any, &block)
+      def find_all_specs(used_atom_str, &block)
         spec_name, atom_keyname = match_used_atom(used_atom_str)
         spec_name = spec_name.to_sym
-        find_lambda = -> type do
-          result = @names_and_specs[type].select do |name, _|
-            name.to_sym == spec_name
-          end
-          if result.size > 1
-            syntax_error('refinement.cannot_complience', name: spec_name)
-          end
-          result.first && result.first.last
+
+        specific_specs = [
+          find_spec_in(:source, spec_name),
+          find_spec_in(:products, spec_name)].compact
+
+        if specific_specs.empty? ||
+          specific_specs.find { |s| !s.atom(atom_keyname) }
+
+          syntax_error('matcher.undefined_used_atom', name: used_atom_str)
         end
 
-        if find_type == :any
-          specific_spec = find_lambda[:source] || find_lambda[:products]
-          unless specific_spec && specific_spec.atom(atom_keyname)
-            syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-          end
+        specific_specs.each { |ss| block[ss, atom_keyname] }
+      end
 
-          block[specific_spec, atom_keyname]
-        elsif find_type == :all
-          specific_specs = [
-            find_lambda[:source], find_lambda[:products]].compact
-          if specific_specs.empty? ||
-            specific_specs.find { |s| !s.atom(atom_keyname) }
-
-            syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-          end
-
-          specific_specs.each { |ss| block[ss, atom_keyname] }
-        else
-          raise ArgumentError, "Undefined find type #{find_type}"
+      # Finds spec in some part of equation
+      # @param [Symbol] type the equation part
+      # @param [Symbol] spec_name the name of found spec
+      # @return [SpecificSpec] nil or found specific spec
+      def find_spec_in(type, spec_name)
+        result = @names_and_specs[type].select do |name, _|
+          name.to_sym == spec_name
         end
+        if result.size > 1
+          syntax_error('refinement.cannot_complience', name: spec_name)
+        end
+
+        # gets the spec
+        result.first && result.first.last
       end
 
     end

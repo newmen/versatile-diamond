@@ -12,7 +12,6 @@ module VersatileDiamond
       describe "#link" do
         describe "unspecified atoms" do
           let(:two_c_atoms) { SurfaceSpec.new(:two_c_atoms, c1: c1, c2: c2) }
-          let(:unspecified_atoms) { SurfaceSpec::UnspecifiedAtoms }
           it { expect { two_c_atoms.link(c1, c2, free_bond) }.
             to raise_error unspecified_atoms }
           it { expect { two_c_atoms.link(c1, c2, bond_100_front) }.
@@ -41,9 +40,50 @@ module VersatileDiamond
           end
 
           it { expect { two_cd_atoms.link(cd1, cd2, free_bond) }.
-            to raise_error wrong_relation }
+            to raise_error undefined_relation }
           it { expect { two_cd_atoms.link(cd1, cd2, bond_100_front) }.
             not_to raise_error }
+        end
+
+        describe "same atom" do
+          subject { SurfaceSpec.new(:spec, cd1: cd1, cd2: cd1) }
+          it { expect { subject.link(cd1, cd1, bond_100_front) }.
+            to raise_error Linker::SameAtom }
+        end
+      end
+
+      describe "#position_between" do
+        describe "simple specs" do
+          describe "two on 100" do
+            let(:two_on_100) { SurfaceSpec.new(:two_on_100, c1: cd1, c2: cd2) }
+            before { two_on_100.link(cd1, cd2, bond_100_front) }
+            it { two_on_100.position_between(cd1, cd2).
+              should == position_front }
+          end
+
+          describe "two on 110" do
+            let(:two_on_110) { SurfaceSpec.new(:two_on_110, c1: cd1, c2: cd2) }
+            before(:each) { two_on_110.link(cd1, cd2, bond_110_front) }
+
+            it { two_on_110.position_between(cd1, cd2).
+              should == Position[face: 110, dir: :front] }
+            it { two_on_110.position_between(cd2, cd1).
+              should == Position[face: 110, dir: :cross] }
+          end
+        end
+
+        describe "methyl_on_bridge" do
+          it { methyl_on_bridge_base.position_between(
+              methyl_on_bridge_base.atom(:cl),
+              methyl_on_bridge_base.atom(:cr)).should == position_front }
+
+          it { methyl_on_bridge_base.position_between(
+              methyl_on_bridge_base.atom(:cr),
+              methyl_on_bridge_base.atom(:cl)).should == position_front }
+
+          it { methyl_on_bridge_base.position_between(
+              methyl_on_bridge_base.atom(:cm),
+              methyl_on_bridge_base.atom(:cb)).should be_nil }
         end
       end
     end

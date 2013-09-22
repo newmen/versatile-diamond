@@ -5,7 +5,7 @@ private
 
   # Detects opposite relation on same lattice
   # @param [Concepts::Bond] the relation between atoms in lattice
-  # @raise [WrongRelation] if relation is invalid for current lattice
+  # @raise [UndefinedRelation] if relation is invalid for current lattice
   # @return [Concepts::Bond] the reverse relation
   def same_lattice(relation)
     if relation.face == 110
@@ -17,20 +17,22 @@ private
 
       relation.class[face: 100, dir: relation.dir]
     else
-      raise WrongRelation, relation
+      raise UndefinedRelation, relation
     end
   end
 
   # No have rules described relations with another lattice
-  # @raise [WrongRelation]
+  # @raise [UndefinedRelation]
   def other_lattice(relation)
-    raise WrongRelation, relation
+    raise UndefinedRelation, relation
   end
 
-  # Provides compositions rules of relations for current crystal lattice
+  # Provides compositions of inference rules for found position relations in
+  # current crystal lattice
+  #
   # @return [Hash] the keys of hash keys are lists of relations by which to
   #   search for a new relation, and values is result relationship
-  def relation_rules
+  def inference_rules
     {
       [front_110, cross_110] => position_front_100,
       [cross_110, front_110] => position_cross_100,

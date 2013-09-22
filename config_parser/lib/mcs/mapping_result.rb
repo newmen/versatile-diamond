@@ -4,15 +4,26 @@ module VersatileDiamond
     # Contains reactants and mapping result (how change each atom of stuctures)
     class MappingResult
 
-      attr_reader :source, :products, :links_and_reactants
+      attr_reader :source, :products, :reaction_type
 
       # Initialize a result by reactants and setups internal mirrors to links
       # @param [Array] source the array of source species
       # @param [Array] products the array of product species
       # @option [Hash] :result the value of result variable by default
+      # @raise [AtomMapper::CannotMap] if number of source or products is wrong
       def initialize(source, proructs, result: { change: [], conformity: [] })
         @source, @products = source, proructs
         @result = result
+
+        @reaction_type = if source.size == products.size
+          :exchange
+        elsif products.size == 1
+          :association
+        elsif source.size == 1
+          :dissociation
+        else
+          raise AtomMapper::CannotMap, 'Wrong number of products and sources'
+        end
       end
 
       # Gets atom mapping result only for changed atoms
@@ -27,6 +38,26 @@ module VersatileDiamond
       # TODO: must be private
       def full
         @result[:conformity]
+      end
+
+      # Finds other side spec and their atom that corresponds to passed args
+      # @param [SpecificSpec] spec the spec for which will be found other side
+      #   specific spec
+      # @param [Atom] atom the atom for wich will be found analog in found
+      #   specific spec
+      # @return [SpecificSpec, Atom] the array where first item is found
+      #   specific spec and second item is correspond atom
+      def other_side(spec, atom)
+        specs, atoms_zip =
+          full.find { |specs, atoms_zip| specs.include?(spec) }
+
+        is_source = (specs[0] == spec)
+        atoms = atoms_zip.find do |atom1, atom2|
+          (is_source && atom1 == atom) || (!is_source && atom2 == atom)
+        end
+
+        reverse_index = is_source ? 1 : 0
+        [specs[reverse_index], atoms[reverse_index]]
       end
 
       # Adds correspond mapping result for :change and :conformity keys
@@ -50,7 +81,8 @@ module VersatileDiamond
           pair
         end
 
-        associate(:conformity, spec1, spec2, full_zip)
+        reordered_full = changes_zip + (full_zip - changes_zip)
+        associate(:conformity, spec1, spec2, reordered_full)
         associate(:change, spec1, spec2, changes_zip)
       end
 
@@ -121,17 +153,50 @@ module VersatileDiamond
       end
 
       # Finds positions between atoms of different source species
+      # @param [Reaction] reaction the reaction for which selected position
       # @return [Array] the array of positions between reactants atoms
-      def find_positions
-        return [] if @source.size == 1 || @source.size == @products.size
+      # TODO: rspec it
+      def find_positions_for(reaction)
+        return if @source.size == 1 || @source.size == @products.size
 
-        positions = []
+        main_spec, index = @source.size == 1 ?
+          [@source.first, 0] : [@products.first, 1]
+        small_index = (index + 1) % 2
+
         result_dup = full.dup
+        # [
+        #   [[spec1, spec2], [[atom1, atom2], [...]]],
+        #   [[spec1, spec3], [[atom1, atom3], [...]]],
+        #   [...]
+        # ]
         begin
-          first = result_dup.shift
+          (specs, atoms_zip) = result_dup.shift
+          small_spec1 = specs[small_index]
+          atoms_zip.each do |f, s|
+            first_atom, small_atom1 = sort_atoms(index, f, s)
+
+            result_dup.each do |next_specs, next_atoms_zip|
+              small_spec2 = next_specs[small_index]
+              next_atoms_zip.each do |nf, ns|
+                second_atom, small_atom2 = sort_atoms(index, nf, ns)
+
+                # TODO: could be realized more effectively if use associated
+                # graph from many to one algorithm
+
+                position =
+                  main_spec.position_between(first_atom, second_atom)
+                next unless position &&
+                  reaction.all_latticed?(small_atom1, small_atom2)
+
+                reaction.position_between(
+                  [small_spec1, small_atom1],
+                  [small_spec2, small_atom2],
+                  position)
+              end
+            end
+          end
 
         end while result_dup.size > 1
-        positions
       end
 
     private
@@ -179,6 +244,15 @@ module VersatileDiamond
         else
           original_own
         end
+      end
+
+      # Sorts atoms according to index
+      # @param [Integer] index the begin index (0 or 1)
+      # @param [Atom] first the first atom
+      # @param [Atom] second the second atom
+      # @return [Atom, Atom] ordered atoms
+      def sort_atoms(index, first, second)
+        index == 0 ? [first, second] : [second, first]
       end
     end
 

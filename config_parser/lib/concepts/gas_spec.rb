@@ -18,13 +18,13 @@ module VersatileDiamond
       # @param [Atom] first the first linking atom
       # @param [Atom] second the second linking atom
       # @param [Bond] bond the used bond for linking
-      # @raise [Lattices::Base::WrongRelation] if bond isn't free
+      # @raise [Lattices::Base::UndefinedRelation] if bond isn't free
       def link_together(first, second, bond)
         unless bond.class == Bond && bond.face.nil?
-          raise Lattices::Base::WrongRelation.new(bond)
+          raise Lattices::Base::UndefinedRelation.new(bond)
         end
 
-        link_with_each_other(first, second, bond, bond)
+        link_with_other(first, second, bond, bond)
       end
     end
 

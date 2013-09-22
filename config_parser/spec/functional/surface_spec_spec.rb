@@ -38,7 +38,7 @@ module VersatileDiamond
           it { expect {
               spec.interpret('position :c1, :c2, face: 100, dir: :front')
             }.to raise_error *syntax_error(
-              'surface_spec.wrong_relation', relation: position_front) }
+              'surface_spec.undefined_relation', relation: position_front) }
         end
 
         describe "duplication" do
