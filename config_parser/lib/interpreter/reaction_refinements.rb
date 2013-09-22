@@ -4,7 +4,7 @@ module VersatileDiamond
     # Interprets reaction refinements and pass it to concept instances
     module ReactionRefinements
       include Interpreter::AtomMatcher
-      include PositionErrorsCatcher
+      include Interpreter::PositionErrorsCatcher
 
       # Defines two methods for setup an instance of specific spec which found
       # specs set by spec name
