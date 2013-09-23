@@ -38,7 +38,7 @@ module VersatileDiamond
       # @param [SpecificSpec] to the spec to which swap will produce
       def swap_source(from, to)
         return if from == to
-        @specs.delete(from)
+        return unless @specs.delete(from)
         @specs << to
 
         @raw_positions.each do |_, relation|

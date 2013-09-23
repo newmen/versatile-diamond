@@ -112,9 +112,9 @@ module VersatileDiamond
             end
           end
 
-          next unless @spec_to_nodes
+          next unless @sp_specs_to_nodes
           where.specs.each do |spec|
-            spec_node = @spec_to_nodes[spec]
+            spec_node = @sp_specs_to_nodes[spec]
             @graph.add_edges(node, spec_node).set { |e| e.color = WHERE_COLOR }
           end
         end

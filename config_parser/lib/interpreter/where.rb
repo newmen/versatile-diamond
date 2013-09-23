@@ -41,7 +41,8 @@ module VersatileDiamond
             syntax_error('.should_links_with_target') if atom
 
             spec_name, keyname = match_used_atom(atom_str)
-            spec = @names_and_specs[spec_name] || get(:spec, spec_name)
+            spec = @names_and_specs[spec_name] ||
+              Concepts::SpecificSpec.new(get(:spec, spec_name))
             atom = spec.atom(keyname)
             used_atom_str = atom_str
 

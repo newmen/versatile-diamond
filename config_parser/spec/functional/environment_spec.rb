@@ -20,6 +20,18 @@ module VersatileDiamond
 
         it { expect { environment.interpret('aliases one: wrong') }.
           to raise_error *keyname_error(:undefined, :spec, :wrong) }
+
+        describe "aliases use specific specs" do
+          before do
+            environment.interpret('targets :o')
+            environment.interpret('aliases f: dimer')
+            environment.interpret('where :some, "description"')
+            environment.interpret(
+              '  position o, f(:cr), face: 100, dir: :front')
+          end
+          let(:where) { Tools::Chest.where(:dimers_row, :some) }
+          it { where.specs.first.should be_a(Concepts::SpecificSpec) }
+        end
       end
 
       describe "#where" do
