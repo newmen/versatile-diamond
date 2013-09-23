@@ -166,6 +166,19 @@ module VersatileDiamond
         let(:target) { reaction }
         let(:reverse) { Tools::Chest.reaction('reverse reaction name') }
       end
+
+      describe "extended specs exchanges in names and specs" do
+        before do
+          interpret_basis
+          reaction.interpret('aliases source: dimer, product: dimer')
+          reaction.interpret(
+            'equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product')
+        end
+
+        it { expect { reaction.interpret(
+            '  position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross'
+          ) }.not_to raise_error }
+      end
     end
 
   end

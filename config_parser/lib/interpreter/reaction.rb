@@ -59,8 +59,12 @@ module VersatileDiamond
               # there could be raised CannotMap exception which will be rescued
               # in check balance method
               mapping = Mcs::AtomMapper.map(ext_src, ext_prd, names_and_specs)
+
               # if source or products need (and can) to be extended then
               # exchange to extended specs
+              update_specs_in(names_and_specs[:source], source.zip(ext_src))
+              update_specs_in(names_and_specs[:products], products.zip(ext_prd))
+
               source, products = ext_src, ext_prd
             end || syntax_error('.wrong_balance')
 
@@ -107,6 +111,19 @@ module VersatileDiamond
             end
           end
           [using_name, spec]
+        end
+      end
+
+      # Updates species in names and specs mirror
+      # @param [Array] names_and_specs the array where each item is array of
+      #   name and correspond spec
+      # @param [Array] specs_zip the zipped array of initial specs to extended
+      #   specs, where extended spec will exchange initial spec
+      def update_specs_in(names_and_specs, specs_zip)
+        names_and_specs.each do |name_and_spec|
+          specs_zip.each do |spec, ext_spec|
+            name_and_spec[1] = ext_spec if name_and_spec[1] == spec
+          end
         end
       end
 
