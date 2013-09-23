@@ -145,15 +145,14 @@ module VersatileDiamond
         end
       end
 
-      let(:ab_dup) { activated_bridge.dup }
       shared_examples_for "checks mob duplication" do
-        it { subject.changes.first.first.first.should == ab_dup }
+        it { subject.changes.first.first.first.should == abridge_dup }
         it { subject.changes.first.last.first.first.
-          should == ab_dup.atom(:ct) }
+          should == abridge_dup.atom(:ct) }
 
-        it { subject.full.first.first.first.should == ab_dup }
+        it { subject.full.first.first.first.should == abridge_dup }
         it { subject.full.first.last.first.first.
-          should == ab_dup.atom(:ct) }
+          should == abridge_dup.atom(:ct) }
       end
 
       describe "#duplicate" do
@@ -162,7 +161,7 @@ module VersatileDiamond
 
         subject { df_atom_map.duplicate(
             source: {
-              activated_bridge => ab_dup,
+              activated_bridge => abridge_dup,
               activated_incoherent_bridge => aib_dup,
             },
             products: {
@@ -173,7 +172,7 @@ module VersatileDiamond
         it { should be_a(MappingResult) }
         it { should_not == df_atom_map }
 
-        it { subject.source.should == [ab_dup, aib_dup] }
+        it { subject.source.should == [abridge_dup, aib_dup] }
         it { subject.products.should == [d_dup] }
 
         it { subject.changes.should_not == df_atom_map.changes }
@@ -184,12 +183,34 @@ module VersatileDiamond
 
       describe "#swap_source" do
         subject { df_atom_map }
-        before(:each) { subject.swap_source(activated_bridge, ab_dup) }
+        before(:each) { subject.swap_source(activated_bridge, abridge_dup) }
 
         it { subject.source.should_not include(activated_bridge) }
-        it { subject.source.should include(ab_dup) }
+        it { subject.source.should include(abridge_dup) }
 
         it_behaves_like "checks mob duplication"
+      end
+
+      describe "#swap_atom" do
+        let(:old_atom) { activated_bridge.atom(:ct) }
+        let(:new_atom) { old_atom.dup }
+        before(:each) do
+          df_atom_map.swap_atom(activated_bridge, old_atom, new_atom)
+        end
+
+        shared_examples_for "check atoms" do
+          subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
+          it { should include(new_atom) }
+          it { should_not include(old_atom) }
+        end
+
+        it_behaves_like "check atoms" do
+          let(:atoms) { df_atom_map.changes.map(&:last) }
+        end
+
+        it_behaves_like "check atoms" do
+          let(:atoms) { df_atom_map.full.map(&:last) }
+        end
       end
 
       describe "#complex_source_spec_and_atom" do

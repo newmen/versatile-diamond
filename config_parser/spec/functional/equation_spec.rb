@@ -37,15 +37,26 @@ module VersatileDiamond
 
         describe "invalid targets" do
           it { expect { equation.interpret('lateral :wrong_env') }.
-            to raise_error *keyname_error(:undefined, :environment, :wrong_env) }
+            to raise_error *keyname_error(
+              :undefined, :environment, :wrong_env) }
+
           it { expect { equation.interpret('lateral :some_env, wr: b(:ct)') }.
-            to raise_error *syntax_error('equation.undefined_target', name: 'wr') }
-          it { expect { equation.interpret('lateral :some_env, one: mob(:cb), wr: b(:ct)') }.
-            to raise_error *syntax_error('equation.undefined_target', name: 'wr') }
-          it { expect { equation.interpret('lateral :some_env, one: wrong(:ct)') }.
-            to raise_error *syntax_error('matcher.undefined_used_atom', name: 'wrong(:ct)') }
+            to raise_error *syntax_error(
+              'equation.undefined_target', name: 'wr') }
+
+          it { expect { equation.interpret(
+              'lateral :some_env, one: mob(:cb), wr: b(:ct)') }.
+            to raise_error *syntax_error(
+              'equation.undefined_target', name: 'wr') }
+
+          it { expect { equation.interpret(
+              'lateral :some_env, one: wrong(:ct)') }.
+            to raise_error *syntax_error(
+              'matcher.undefined_used_atom', name: 'wrong(:ct)') }
+
           it { expect { equation.interpret('lateral :some_env, one: b(:wr)') }.
-            to raise_error *syntax_error('matcher.undefined_used_atom', name: 'b(:wr)') }
+            to raise_error *syntax_error(
+              'matcher.undefined_used_atom', name: 'b(:wr)') }
         end
       end
 

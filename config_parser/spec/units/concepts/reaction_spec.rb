@@ -12,7 +12,7 @@ module VersatileDiamond
         it { subject.products.first.should_not == df_products.first }
         it { subject.products.last.should_not == df_products.last }
 
-        shared_examples_for "both directions" do
+        shared_examples_for "child changes too" do
           %w(enthalpy activation rate).each do |prop|
             describe "children setup #{prop}" do
               before(:each) do
@@ -24,12 +24,12 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like "both directions" do
+        it_behaves_like "child changes too" do
           let(:reaction) { dimer_formation }
           let(:child) { subject }
         end
 
-        it_behaves_like "both directions" do
+        it_behaves_like "child changes too" do
           let(:reaction) { dimer_formation.reverse }
           let(:child) { subject.reverse }
         end
@@ -68,7 +68,64 @@ module VersatileDiamond
       end
 
       describe "#swap_source" do
-        # TODO: checks atom mapping result
+        let(:bridge_dup) { activated_bridge.dup }
+        before(:each) do
+          dimer_formation.swap_source(activated_bridge, bridge_dup)
+        end
+
+        shared_examples_for "check specs existence" do
+          it { should include(bridge_dup) }
+          it { should_not include(activated_bridge) }
+        end
+
+        it_behaves_like "check specs existence" do
+          subject { dimer_formation.positions.map(&:first).map(&:first) }
+        end
+
+        it_behaves_like "check specs existence" do
+          subject { dimer_formation.positions.map { |p| p[1] }.map(&:first) }
+        end
+
+        it_behaves_like "check specs existence" do
+          subject { df_atom_map.changes.map(&:first).map(&:first) }
+        end
+      end
+
+      describe "#swap_atom" do
+        let(:old_atom) { methyl_on_dimer.atom(:cr) }
+        let(:new_atom) { old_atom.dup }
+
+        before(:each) do
+          # before need to set position between swapped atom and some other
+          # atom
+          hydrogen_migration.position_between(
+            [methyl_on_dimer, old_atom],
+            [activated_dimer, activated_dimer.atom(:cr)],
+            position_front
+          )
+          # and then exchange target atom
+          hydrogen_migration.swap_atom(methyl_on_dimer, old_atom, new_atom)
+        end
+
+        shared_examples_for "check atoms existence" do
+          it { should include(new_atom) }
+          it { should_not include(old_atom) }
+        end
+
+        it_behaves_like "check atoms existence" do
+          subject { hydrogen_migration.positions.map(&:first).map(&:last) }
+        end
+
+        it_behaves_like "check atoms existence" do
+          subject { hydrogen_migration.positions.map { |p| p[1] }.map(&:last) }
+        end
+
+        describe "atom mapping changes too" do
+          it_behaves_like "check atoms existence" do
+            let(:atoms) { hm_atom_map.full.map(&:last) }
+            subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
+          end
+        end
       end
 
       describe "#position_between" do
@@ -78,7 +135,7 @@ module VersatileDiamond
             position_front
           ) }
 
-        describe "opposite relation store too" do
+        describe "opposite relation stored too" do
           it { hydrogen_migration.positions.should == [
               [
                 [methyl_on_dimer, methyl_on_dimer.atom(:cr)],

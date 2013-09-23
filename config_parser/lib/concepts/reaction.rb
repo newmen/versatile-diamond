@@ -81,7 +81,30 @@ module VersatileDiamond
       # @override
       def swap_source(from, to)
         super
+
+        each_spec_atom do |spec_atom|
+          if spec_atom[0] == from
+            spec_atom[1] = to.atom(spec_atom[0].keyname(spec_atom[1]))
+            spec_atom[0] = to
+          end
+        end
+
         @mapping.swap_source(from, to)
+      end
+
+      # Swaps used specific spec atom to new atom (used only when atom was
+      # changed for some specific spec and not chaned for current reaction)
+      #
+      # @param [SpecificSpec] spec the specific spec the atom of which will be
+      #   swapped
+      # @param [Atom] from the used atom
+      # @param [Atom] to the new atom
+      def swap_atom(spec, from, to)
+        each_spec_atom do |spec_atom|
+          spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
+        end
+
+        @mapping.swap_atom(spec, from, to)
       end
 
       # Also compares positions in both reactions
@@ -244,6 +267,16 @@ module VersatileDiamond
         @children << duplication # TODO: rspec it
 
         duplication
+      end
+
+      # Do something in links container by passed block
+      # @yield [Array] the array where first item is spec and second item is
+      #   atom of it spec
+      def each_spec_atom(&block)
+        @links.each do |spec_atom1, references|
+          block[spec_atom1]
+          references.each { |spec_atom2, _| block[spec_atom2] }
+        end
       end
     end
 

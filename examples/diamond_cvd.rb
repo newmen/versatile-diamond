@@ -36,7 +36,6 @@ surface
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
-    position :cl, :cr, face: 100, dir: :front
 
   spec :high_bridge # may describe by methyl_on_bridge
     atoms ch: C, ct: bridge(:ct)
@@ -69,13 +68,11 @@ surface
     atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr)
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
-    position :cl, :cr, face: 100, dir: :front
 
   spec :two_bridges
     atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
     bond :ctl, :cl, face: 110, dir: :cross
     bond :ctl, :cc, face: 110, dir: :cross
-    position :cl, :cc, face: 100, dir: :front
 
   spec :cross_bridge_on_dimers
     atoms ct: C, cl: dimer(:cr), cr: dimer(:cr)
@@ -290,7 +287,6 @@ events
     # TODO: проверить соответствие значений направленности
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
       unfixed methyl_on_dimer(:cm)
-      position bridge(:ct), high_bridge(:ct), face: 100, dir: :front # TODO: должно быть определено автоматически, по соответствию в графах
 
       refinement 'without high chain neighbour'
         forward_activation 15.3
@@ -313,7 +309,6 @@ events
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
-      position high_bridge(:ct), source(:ct), face: 100, dir: :front
 
       refinement 'without chain neighbour methyl'
         forward_activation 36.3

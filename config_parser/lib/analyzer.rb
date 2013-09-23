@@ -50,6 +50,9 @@ module VersatileDiamond
       end
     rescue Errors::SyntaxError => e
       puts e.message(@config_path, @line_number + 1)
+    rescue Exception => e
+      puts "System error at line #{@line_number + 1}:\n\t#{@line.strip}"
+      raise
     end
 
   private

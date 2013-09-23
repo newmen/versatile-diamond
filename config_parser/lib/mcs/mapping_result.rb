@@ -142,6 +142,27 @@ module VersatileDiamond
         end
       end
 
+      # Swaps atoms in result
+      # @param [SpecificSpec] spec the specific spec atom of which will be
+      #   exchanged
+      # @param [Atom] from the old atom
+      # @param [Atom] to the new atom
+      def swap_atom(spec, from, to)
+        is_source = @source.include?(spec)
+
+        @result.each do |_, mapping|
+          mapping.each do |specs, atoms|
+            next unless spec == (is_source ? specs.first : specs.last)
+
+            atoms.each_with_index do |pair, i|
+              atom_index = is_source ? 0 : 1
+              next unless from == pair[atom_index]
+              pair[atom_index] = to
+            end
+          end
+        end
+      end
+
       # Gets single source complex spec and their changed atom
       # @return [Concepts::SpecificSpec, Concepts::SpecificAtom] the single
       #   spec and their atom

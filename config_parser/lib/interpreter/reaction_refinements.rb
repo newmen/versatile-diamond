@@ -18,7 +18,11 @@ module VersatileDiamond
           begin
             used_atom_strs.each do |atom_str|
               find_all_specs(atom_str) do |specific_spec, atom_keyname|
+                old_atom = specific_spec.atom(atom_keyname)
                 specific_spec.send(:"#{state}!", atom_keyname)
+                new_atom = specific_spec.atom(atom_keyname)
+                next if old_atom == new_atom
+                @reaction.swap_atom(specific_spec, old_atom, new_atom)
               end
             end
           rescue Concepts::SpecificAtom::AlreadyStated => e

@@ -10,8 +10,8 @@ module VersatileDiamond
             end
 
             shared_examples_for "check state" do
-              it { expect { subject.interpret("#{state} #{name}(:#{keyname})") }.
-                not_to raise_error }
+              it { expect { subject.interpret(
+                "#{state} #{name}(:#{keyname})") }.not_to raise_error }
 
               it { expect { subject.interpret("#{state} wrong(:c)") }.
                 to raise_error *syntax_error(
