@@ -15,15 +15,20 @@ module VersatileDiamond
         @source, @products = source, proructs
         @result = result
 
-        @reaction_type = if source.size == products.size
-          :exchange
-        elsif products.size == 1
-          :association
-        elsif source.size == 1
-          :dissociation
-        else
-          raise AtomMapper::CannotMap, 'Wrong number of products and sources'
-        end
+        size_wo_simple = -> specs { specs.select { |sp| !sp.simple? }.size }
+        source_size_wo_simple = size_wo_simple[source]
+        products_size_wo_simple = size_wo_simple[products]
+
+        @reaction_type =
+          if source_size_wo_simple == products_size_wo_simple
+            :exchange
+          elsif products_size_wo_simple == 1
+            :association
+          elsif source_size_wo_simple == 1
+            :dissociation
+          else
+            raise AtomMapper::CannotMap, 'Wrong number of products and sources'
+          end
       end
 
       # Gets atom mapping result only for changed atoms

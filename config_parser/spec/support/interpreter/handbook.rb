@@ -5,7 +5,6 @@ module VersatileDiamond
       # Provides interpreter instances for RSpec
       module Handbook
         include Tools::Handbook
-        include Tools::StdoutCatcher
 
         # Errors:
         def syntax_error(*args)
