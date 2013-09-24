@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe UbiquitousReaction, visitable: true do
+    describe UbiquitousReaction do
       let(:already_set) { UbiquitousReaction::AlreadySet }
 
       %w(enthalpy activation rate).each do |prop|

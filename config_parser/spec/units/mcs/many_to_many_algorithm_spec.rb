@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Mcs
 
-    describe ManyToManyAlgorithm, type: :mapping_algorithm do
+    describe ManyToManyAlgorithm do
       describe "#self.map_to" do
         describe "methyl deactivation" do
           let(:spec1) { activated_methyl_on_bridge }

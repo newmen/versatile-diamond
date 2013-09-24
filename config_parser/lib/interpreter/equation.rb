@@ -49,7 +49,7 @@ module VersatileDiamond
           end
 
           specific_spec, keyname = find_any_spec(used_atom_str)
-          [target_name, specific_spec.atom(keyname)]
+          [target_name, [specific_spec, specific_spec.atom(keyname)]]
         end
 
         lateral = env.make_lateral(Hash[resolved_targets])

@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe SpecificAtom, latticed_ref_atom: true do
+    describe SpecificAtom do
       subject { described_class.new(n) }
 
       describe "#initialize" do

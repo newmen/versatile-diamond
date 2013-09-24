@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Spec, visitable: true do
+    describe Spec do
       describe "#simple?" do
         it { Spec.new(:not_set).simple?.should be_nil }
 

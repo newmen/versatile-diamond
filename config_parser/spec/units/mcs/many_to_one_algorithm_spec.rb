@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Mcs
 
-    describe ManyToOneAlgorithm, type: :mapping_algorithm do
+    describe ManyToOneAlgorithm do
       describe "#self.map_to" do
         subject { described_class.map_to(mapping_result) }
 

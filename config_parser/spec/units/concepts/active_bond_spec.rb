@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe ActiveBond, termination_spec: true do
+    describe ActiveBond do
       describe "#name" do
         it { active_bond.name.should == :* }
       end

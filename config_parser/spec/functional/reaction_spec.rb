@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Reaction, type: :interpreter, reaction_properties: true do
+    describe Reaction, type: :interpreter do
       describe "#equation" do
         it "error when spec name is undefined" do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.

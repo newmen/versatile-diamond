@@ -25,12 +25,13 @@ module VersatileDiamond
       # Position expressed by passed position variable.
       #
       # @param [Symbol] target the name of target atom
-      # @param [Atom] atom the atom of some around spec
+      # @param [Array] spec_atom the array where first item is specific spec
+      #   and second item is atom of it specific spec
       # @param [Position] position the position between target and atom
       # TODO: rspec
-      def raw_position(target, atom, position)
+      def raw_position(target, spec_atom, position)
         @raw_positions[target] ||= []
-        @raw_positions[target] << [atom, position]
+        @raw_positions[target] << [spec_atom, position]
       end
 
       # Swaps dependent specific spec
@@ -41,10 +42,10 @@ module VersatileDiamond
         return unless @specs.delete(from)
         @specs << to
 
-        @raw_positions.each do |_, relation|
-          atom, _ = relation
-          if (kn = from.keyname(atom))
-            relation[0] = to.atom(kn)
+        @raw_positions.each do |_, (spec_atom, _)|
+          if spec_atom[0] == from
+            spec_atom[0] = to
+            spec_atom[1] = to.atom(from.keyname(spec_atom[1]))
           end
         end
 
@@ -62,7 +63,7 @@ module VersatileDiamond
       #   real reactant atoms
       # @return [There] the concretized instance as there object
       def concretize(target_refs)
-        positions = raw_positions.each_with_object({}) do |(name, link), hash|
+        positions = @raw_positions.each_with_object({}) do |(name, link), hash|
           atom = target_refs[name]
           hash[atom] = link
         end
@@ -77,11 +78,6 @@ module VersatileDiamond
         super
         @specs.each { |spec| spec.visit(visitor) }
       end
-
-    protected
-
-      attr_reader :raw_positions
-
     end
 
   end

@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe LateralReaction, visitable: true do
+    describe LateralReaction do
       let(:reaction) { dimer_formation.lateral_duplicate('tail', [on_end]) }
       let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
       let(:middle) { dimer_formation.lateral_duplicate('middle', [on_middle]) }

@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Reaction, visitable: true do
+    describe Reaction do
       shared_examples_for "check duplicate property" do
         it { subject.name.should =~ /tail$/ }
         it { subject.source.should_not == df_source }

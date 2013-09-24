@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Where, visitable: true do
+    describe Where do
       describe "#specs" do
         it { at_end.specs.should == [dimer] }
         it { at_middle.specs.should == [dimer] }
@@ -24,7 +24,7 @@ module VersatileDiamond
       end
 
       describe "#concretize" do
-        it { near_methyl.concretize(target: bridge.atom(:ct)).
+        it { near_methyl.concretize(target: [bridge, bridge.atom(:ct)]).
           should be_a(There) }
 
         # TODO: check positions

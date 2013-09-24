@@ -25,8 +25,11 @@ module VersatileDiamond
       end
 
       describe "#same?" do
-        let(:same) { at_end.concretize(two: dimer.atom(:cl),
-                                       one: dimer.atom(:cr)) }
+        let(:same) do
+          at_end.concretize(
+            two: [dimer, dimer.atom(:cl)], one: [dimer, dimer.atom(:cr)])
+        end
+
         it { on_end.same?(same).should be_true }
         it { on_end.same?(on_middle).should be_false }
         it { on_middle.same?(on_end).should be_false }

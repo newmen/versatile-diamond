@@ -36,7 +36,7 @@ module VersatileDiamond
       # lateral instance
       #
       # @param [Hash] target_refs the hash where keys is target names from
-      #   current environment and values is real atoms of reactants
+      #   current environment and values is array of real spec and their atom
       # @raise [InvalidTarget] when some of target references is wrong
       # @result [Lateral] new lateral instance
       def make_lateral(**target_refs)

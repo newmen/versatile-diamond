@@ -6,7 +6,9 @@ module VersatileDiamond
     class There
       extend Forwardable
 
-      attr_reader :where # only for visitor
+      attr_reader :where
+
+      # TODO: rspec positions everywhere!
 
       # Initialize a new instance of there object
       # @param [Where] where the basic where object
@@ -16,12 +18,12 @@ module VersatileDiamond
         @where, @positions = where, positions
       end
 
-      def_delegators :@where, :description, :swap_source, :visit
+      def_delegators :where, :description, :swap_source, :visit
 
       # Provides environment species
       # @return [Array] all species stored in used where and in their parents
       def specs
-        @where.all_specs
+        where.all_specs
       end
 
       # Compares two there objects
@@ -35,7 +37,7 @@ module VersatileDiamond
       # @param [There] other the verifying there object
       # @return [Boolean] is cover or not
       def cover?(other)
-        other.where.parents.include?(@where)
+        other.where.parents.include?(where)
       end
 
       # Counts number of environment used atoms

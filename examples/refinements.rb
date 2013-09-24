@@ -43,7 +43,6 @@ surface
 
 events
   reaction 'methyl adsorption to dimer'
-    # TODO: необходимо автоматически указывать для результата incoherent и unfixed атомы
     equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
     enthalpy -73.6
     activation 0
@@ -57,7 +56,6 @@ events
         forward_rate 1.7e7
 
       refinement 'from face 111'
-        # TODO: должно быть автоматически определено, как случай не соответствующий всем другим
         forward_rate 5.4e6
 
     activation 0

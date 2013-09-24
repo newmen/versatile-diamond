@@ -49,12 +49,12 @@ module VersatileDiamond
 
         # Bonds and positions:
         set(:free_bond) { Bond[face: nil, dir: nil] }
-        set(:bond_110_front) { Bond[face: 110, dir: :front] }
-        set(:bond_110_cross) { Bond[face: 110, dir: :cross] }
-        set(:bond_100_front) { Bond[face: 100, dir: :front] }
-        set(:bond_100_cross) { Bond[face: 100, dir: :cross] }
-        set(:position_front) { Position[face: 100, dir: :front] }
-        set(:position_cross) { Position[face: 100, dir: :cross] }
+        [:front, :cross].each do |dir|
+          [100, 110].each do |face|
+            set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }
+          end
+          set(:"position_#{dir}") { Position[face: 100, dir: dir] }
+        end
 
         set(:position_duplicate) { Position::Duplicate }
         set(:unspecified_atoms) { Position::UnspecifiedAtoms }
@@ -297,31 +297,38 @@ module VersatileDiamond
         end
         set(:at_end) do
           w = Where.new(:at_end, 'at end of dimers row', specs: [dimer])
-          w.raw_position(:one, dimer.atom(:cl), position_cross)
-          w.raw_position(:two, dimer.atom(:cr), position_cross); w
+          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_cross)
+          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_cross); w
         end
-        set(:on_end) do #
-          at_end.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))
+        set(:on_end) do
+          at_end.concretize(
+            one: [dimer, dimer.atom(:cl)], two: [dimer, dimer.atom(:cr)])
         end
 
         set(:at_middle) do
           w = Where.new(
             :at_middle, 'at middle of dimers row', specs: [dimer])
-          w.raw_position(:one, dimer.atom(:cl), position_cross)
-          w.raw_position(:two, dimer.atom(:cr), position_cross)
+          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_cross)
+          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_cross)
           w.parents << at_end; w
         end
         set(:on_middle) do
-          at_middle.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))
+          at_middle.concretize(
+            one: [dimer, dimer.atom(:cl)], two: [dimer, dimer.atom(:cr)])
         end
 
         set(:near_methyl) do
           w = Where.new(:near_methyl, 'chain neighbour methyl',
             specs: [methyl_on_bridge])
           w.raw_position(
-            :target, methyl_on_bridge.atom(:cb), position_front); w
+            :target,
+            [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
+            position_front
+          ); w
         end
-        set(:there_methyl) { near_methyl.concretize(target: dimer.atom(:cr)) }
+        set(:there_methyl) do
+          near_methyl.concretize(target: [dimer, dimer.atom(:cr)])
+        end
       end
 
     end

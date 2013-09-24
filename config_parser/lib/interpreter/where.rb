@@ -30,20 +30,21 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] if some of atoms cannot be complienced or
       #   if spec in position cannot be resolved
       def position(*atom_strs, **options)
-        target, atom, used_atom_str = nil
+        target, spec, atom, used_atom_str = nil
+
         atom_strs.each do |atom_str|
           atom_sym = atom_str.to_sym
           if @env.is_target?(atom_sym)
             syntax_error('.cannot_link_targets') if target
             target = atom_sym
           else
-            # TODO: maybe very strong validation?
             syntax_error('.should_links_with_target') if atom
 
             spec_name, keyname = match_used_atom(atom_str)
             spec = @names_and_specs[spec_name] ||
               Concepts::SpecificSpec.new(get(:spec, spec_name))
             atom = spec.atom(keyname)
+
             used_atom_str = atom_str
 
             next if @used_spec_names.include?(spec_name)
@@ -66,7 +67,7 @@ module VersatileDiamond
           end
           @used_links[target] << [used_atom_str, position]
 
-          @where.raw_position(target, atom, position)
+          @where.raw_position(target, [spec, atom], position)
         end
       end
 

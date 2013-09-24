@@ -57,14 +57,12 @@ module VersatileDiamond
 
         describe "#bond" do
           before(:each) { spec.interpret('bond :n1, :n2') }
-          # TODO: check the bond existance too
           it { concept.external_bonds_for(concept.atom(:n1)).should == 2 }
           it { concept.external_bonds_for(concept.atom(:n2)).should == 2 }
         end
 
         describe "#dbond" do
           before(:each) { spec.interpret('dbond :n1, :n2') }
-          # TODO: check the bond existance too
           it { concept.external_bonds_for(concept.atom(:n1)).should == 1 }
           it { concept.external_bonds_for(concept.atom(:n2)).should == 1 }
         end
@@ -73,7 +71,6 @@ module VersatileDiamond
           before(:each) { spec.interpret('tbond :n1, :n2') }
           it { concept.external_bonds_for(concept.atom(:n1)).should == 0 }
           it { concept.external_bonds_for(concept.atom(:n2)).should == 0 }
-          # TODO: check the bond existance too
         end
 
         describe "wrong syntax" do

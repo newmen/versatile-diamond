@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Equation, type: :interpreter, reaction_refinements: true do
+    describe Equation, type: :interpreter do
       let(:equation) do
         described_class.new(methyl_desorption, md_names_to_specs)
       end

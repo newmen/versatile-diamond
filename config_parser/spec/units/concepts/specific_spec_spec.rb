@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe SpecificSpec, visitable: true do
+    describe SpecificSpec do
       describe "#dup" do
         it { methyl.dup.should_not == methyl }
         it { methyl.dup.spec.should == methyl.spec }

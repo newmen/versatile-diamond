@@ -69,14 +69,11 @@ events
         forward_rate 1.7e7
 
       refinement 'from face 111'
-        # TODO: должно быть автоматически определено, как случай не соответствующий всем другим
         forward_rate 5.4e6
 
     activation 0
 
   reaction 'methyl activation'
-    # TODO: должна быть уточнением реакции десорбции водорода
-    # TODO: может быть следует использовать methyl_on_bridge?
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
