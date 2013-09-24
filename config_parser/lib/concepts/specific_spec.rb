@@ -26,7 +26,6 @@ module VersatileDiamond
 
         @spec = spec
         @specific_atoms = specific_atoms
-        # @original_name = spec.name
       end
 
       # Makes a copy of other specific spec by dup each specific atom from it
@@ -121,6 +120,7 @@ module VersatileDiamond
           unless atom
             atom = SpecificAtom.new(@spec.atom(atom_keyname))
             @specific_atoms[atom_keyname] = atom
+            reset_caches
           end
           atom.send("#{state}!")
         end

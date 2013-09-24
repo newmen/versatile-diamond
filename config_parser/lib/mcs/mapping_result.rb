@@ -176,7 +176,7 @@ module VersatileDiamond
       # Finds positions between atoms of different source species
       # @param [Reaction] reaction the reaction for which selected position
       # @return [Array] the array of positions between reactants atoms
-      # TODO: rspec it
+      # TODO: rspec it directly
       def find_positions_for(reaction)
         return if @source.size == 1 || @source.size == @products.size
 

@@ -264,7 +264,7 @@ module VersatileDiamond
         duplication.positions = @positions.dup if @positions
 
         @children ||= []
-        @children << duplication # TODO: rspec it
+        @children << duplication
 
         duplication
       end
