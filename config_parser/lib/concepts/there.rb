@@ -22,8 +22,14 @@ module VersatileDiamond
 
       # Provides environment species
       # @return [Array] all species stored in used where and in their parents
-      def specs
+      def env_specs
         where.all_specs
+      end
+
+      # Provides target species
+      # @return [Array] the array of target species
+      def target_specs
+        @positions.map(&:first).map(&:first)
       end
 
       # Compares two there objects
@@ -43,7 +49,7 @@ module VersatileDiamond
       # Counts number of environment used atoms
       # @return [Integer] the number of used atoms
       def size
-        specs.reduce(0) { |acc, spec| acc + spec.size }
+        env_specs.map(&:size).reduce(:+)
       end
     end
 

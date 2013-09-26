@@ -6,7 +6,8 @@ module VersatileDiamond
       include Linker
       include SurfaceLinker
 
-      attr_reader :links
+      # type of reaction is important only for not ubiquitous reaction
+      attr_reader :type, :links
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
@@ -17,6 +18,12 @@ module VersatileDiamond
         @links = {} # contain positions between atoms of different reactants
 
         @mapping.find_positions_for(self)
+      end
+
+      # Gets an appropriate representation of the reaction
+      # @param [Symbol] type the type of parent reaction
+      def as(type)
+        @type == type ? self : reverse
       end
 
       # Reduce all positions from links structure
@@ -165,12 +172,6 @@ module VersatileDiamond
 
       attr_reader :children
       attr_writer :positions
-
-      # Gets an appropriate representation of the reaction
-      # @param [Symbol] type the type of parent reaction
-      def as(type)
-        @type == type ? self : reverse
-      end
 
       # Links together two structures by it atoms
       # @param [Array] first see at #position_between same argument

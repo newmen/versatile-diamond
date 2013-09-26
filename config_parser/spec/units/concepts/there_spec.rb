@@ -9,10 +9,16 @@ module VersatileDiamond
         it { on_middle.where.should == at_middle }
       end
 
-      describe "#specs" do
-        it { on_end.specs.should == [dimer] }
-        it { on_middle.specs.should == [dimer, dimer] }
-        it { there_methyl.specs.should == [methyl_on_bridge] }
+      describe "#target_specs" do
+        it { on_end.target_specs.should == [dimer, dimer] }
+        it { on_middle.target_specs.should == [dimer, dimer] }
+        it { there_methyl.target_specs.should == [dimer] }
+      end
+
+      describe "#env_specs" do
+        it { on_end.env_specs.should == [dimer] }
+        it { on_middle.env_specs.should == [dimer, dimer] }
+        it { there_methyl.env_specs.should == [methyl_on_bridge] }
       end
 
       describe "#description" do
@@ -22,6 +28,7 @@ module VersatileDiamond
 
       it_behaves_like "#swap_source" do
         subject { on_end }
+        let(:method) { :env_specs }
       end
 
       describe "#same?" do

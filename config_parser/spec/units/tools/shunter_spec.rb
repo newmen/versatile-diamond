@@ -181,9 +181,9 @@ module VersatileDiamond
             it { methyl_activation.source.should include(same) }
             it { methyl_deactivation.source.should include(same) }
 
-            it { lateral_dimer_formation.theres.map(&:specs).flatten.
+            it { lateral_dimer_formation.theres.map(&:env_specs).flatten.
               should include(Chest.specific_spec(:'dimer()')) }
-            it { lateral_dimer_formation.theres.map(&:specs).flatten.
+            it { lateral_dimer_formation.theres.map(&:env_specs).flatten.
               select { |spec| spec == Chest.specific_spec(:'dimer()') }.size.
               should == 2 }
           end

@@ -16,6 +16,7 @@ module VersatileDiamond
 
       it_behaves_like "#swap_source" do
         subject { at_end }
+        let(:method) { :specs }
       end
 
       describe "#parents" do

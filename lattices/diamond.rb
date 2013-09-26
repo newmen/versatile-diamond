@@ -1,5 +1,6 @@
 # Provides relation rules between atom for diamond crystal lattice (Fd3m space
 # group). See example of lattice at http://en.wikipedia.org/wiki/Diamond_cubic
+# Current diamond crystal lattice is directed upwards by face 100
 class Diamond < VersatileDiamond::Lattices::Base
 private
 

@@ -16,6 +16,7 @@ module VersatileDiamond
       def initialize(environment, where, names_and_specs)
         @env, @where = environment, where
         @names_and_specs = names_and_specs
+
         @used_spec_names = Set.new
         @used_links = {}
       end

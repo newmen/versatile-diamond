@@ -86,11 +86,13 @@ module VersatileDiamond
         #   similar wheres for instance there object
         # @return [Concepts::There] found and concretized where object
         def there(reaction, where_name)
-          laterals = @sac[:lateral][reaction.name.to_sym]
-          theres = laterals.map do |name, lateral|
-            where = @sac[:where][name][where_name]
-            where && lateral.there(where)
-          end
+          laterals = @sac[:lateral] && @sac[:lateral][reaction.name.to_sym]
+          theres = !laterals ? [] :
+            laterals.map do |name, lateral|
+              @sac[:where] && @sac[:where][name] &&
+                (where = @sac[:where][name][where_name]) &&
+                where && lateral.there(where)
+            end
 
           theres.compact!
           if theres.size < 1

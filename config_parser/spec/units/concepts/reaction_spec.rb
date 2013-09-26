@@ -4,8 +4,20 @@ module VersatileDiamond
   module Concepts
 
     describe Reaction do
+
+      describe "#type" do
+        it { methyl_desorption.type.should == :forward }
+        it { hydrogen_migration.type.should == :forward }
+        it { dimer_formation.type.should == :forward }
+        it { methyl_incorporation.type.should == :forward }
+
+        it { methyl_desorption.reverse.type.should == :reverse }
+      end
+
       shared_examples_for "check duplicate property" do
         it { subject.name.should =~ /tail$/ }
+        it { subject.reverse.name.should =~ /tail$/ }
+
         it { subject.source.should_not == df_source }
         it { subject.source.first.should_not == df_source.first }
         it { subject.products.should_not == df_products }
@@ -32,6 +44,41 @@ module VersatileDiamond
         it_behaves_like "child changes too" do
           let(:reaction) { dimer_formation.reverse }
           let(:child) { subject.reverse }
+        end
+      end
+
+      describe "#as" do
+        shared_examples_for "forward and reverse" do
+          let(:name) { 'dimer formation' }
+          before(:each) do
+            subject.as(:forward).rate = 1
+            subject.as(:forward).reverse.rate = 2
+          end
+
+          it { subject.as(:forward).rate.should == 1 } # tautology
+          it { subject.as(:forward).name.should == "forward #{name}" }
+
+          it { subject.as(:reverse).rate.should == 2 }
+          it { subject.as(:reverse).name.should == "reverse #{name}" }
+        end
+
+        describe "dimer formation" do
+          it_behaves_like "forward and reverse" do
+            subject { dimer_formation }
+          end
+
+          it_behaves_like "forward and reverse" do
+            subject { dimer_formation.reverse }
+          end
+        end
+
+        describe "initialy inversed dimer formation" do
+          it_behaves_like "forward and reverse" do
+            subject do
+              Reaction.new(:reverse, 'dimer formation',
+                df_products, df_source, df_atom_map.reverse)
+            end
+          end
         end
       end
 

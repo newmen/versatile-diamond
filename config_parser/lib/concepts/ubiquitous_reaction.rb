@@ -150,10 +150,10 @@ module VersatileDiamond
         @source.each { |spec| spec.visit(visitor) }
       end
 
-  #     def to_s
-  #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
-  #       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
-  #     end
+      def to_s
+        specs_to_s = -> specs { specs.map(&:full_name).join(' + ') }
+        "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
+      end
 
       def inspect
         name
@@ -188,7 +188,8 @@ module VersatileDiamond
 
       # Makes params for reverse method
       def reverse_params
-        [:reverse, @name, @products, @source]
+        type = @type != :forward ? :forward : :reverse
+        [type, @name, @products, @source]
       end
     end
 

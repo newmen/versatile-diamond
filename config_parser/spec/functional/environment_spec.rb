@@ -30,7 +30,7 @@ module VersatileDiamond
               '  position o, f(:cr), face: 100, dir: :front')
           end
           let(:where) { Tools::Chest.where(:dimers_row, :some) }
-          it { where.specs.first.should be_a(Concepts::SpecificSpec) }
+          it { where.specs.first.name.should == :dimer }
         end
       end
 

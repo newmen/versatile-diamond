@@ -49,21 +49,7 @@ module VersatileDiamond
 
         first_spec, _ = first_spec_atom
         second_spec, _ = second_spec_atom
-
-        # TODO: it may be is not optimal, because we finds specs (and their
-        # atoms) before (at begin of method), and finds it again there
-        current =
-          if @reaction.source.include?(first_spec) &&
-            @reaction.source.include?(second_spec)
-
-            @reaction
-          elsif @reaction.products.include?(first_spec) &&
-            @reaction.products.include?(second_spec)
-
-            @reaction.reverse
-          else
-            syntax_error('refinement.different_parts')
-          end
+        current = current_reaction(first_spec, second_spec)
 
         interpret_position_errors do
           pos = Concepts::Position[options]
@@ -72,6 +58,22 @@ module VersatileDiamond
       end
 
     private
+
+      # Gets current reaction by passed species
+      # @param [Array] specs the array of species which should be the source
+      #   species for resulting reation
+      # @param [Reaction] the reaction where passed species are source species
+      def current_reaction(*specs)
+        specs = specs.uniq
+
+        if specs.all? { |spec| @reaction.source.include?(spec) }
+          @reaction
+        elsif specs.all? { |spec| @reaction.products.include?(spec) }
+          @reaction.reverse
+        else
+          syntax_error('refinement.different_parts')
+        end
+      end
 
       # Finds any specific spec in names to specs hash
       # @param [String] used_atom_str the parsing string

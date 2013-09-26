@@ -92,7 +92,7 @@ module VersatileDiamond
 
           lateral_reactions.each do |reaction|
             reaction.theres.each do |there|
-              there.specs.each(&store_lambda[there])
+              there.env_specs.each(&store_lambda[there])
             end
           end
 
