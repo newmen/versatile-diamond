@@ -75,7 +75,8 @@ module VersatileDiamond
           it "twise using" do
             where.interpret('use :using_where')
             expect { where.interpret('use :using_where') }.
-              to raise_error *syntax_error('where.already_use', name: :using_where)
+              to raise_error *syntax_error(
+                'where.already_use', name: :using_where)
           end
         end
 

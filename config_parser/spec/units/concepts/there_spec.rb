@@ -26,6 +26,35 @@ module VersatileDiamond
         it { there_methyl.description.should == 'chain neighbour methyl' }
       end
 
+      describe "#positions" do
+        it { on_end.positions.should == {
+            [dimer, dimer.atom(:cl)] => [
+              [[dimer, dimer.atom(:cl)], position_cross]
+            ],
+            [dimer, dimer.atom(:cr)] => [
+              [[dimer, dimer.atom(:cr)], position_cross]
+            ]
+          } }
+
+        it { on_middle.positions.should == {
+            [dimer, dimer.atom(:cl)] => [
+              [[dimer, dimer.atom(:cl)], position_cross],
+              [[dimer, dimer.atom(:cl)], position_cross],
+            ],
+            [dimer, dimer.atom(:cr)] => [
+              [[dimer, dimer.atom(:cr)], position_cross],
+              [[dimer, dimer.atom(:cr)], position_cross],
+            ]
+          } }
+
+        it { there_methyl.positions.should == {
+            [dimer, dimer.atom(:cr)] => [
+              [[methyl_on_bridge, methyl_on_bridge.atom(:cb)], position_front]
+            ]
+          } }
+
+      end
+
       it_behaves_like "#swap_source" do
         subject { on_end }
         let(:method) { :env_specs }

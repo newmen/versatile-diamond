@@ -160,6 +160,81 @@ module VersatileDiamond
               ) }.to raise_error *syntax_error('reaction.wrong_balance') }
           end
         end
+
+        describe "lateral reaction" do
+          before(:each) do
+            interpret_basis
+
+            events.interpret('environment :dimers_row')
+            events.interpret('  targets :one, :two')
+            events.interpret('  aliases left: dimer, right: dimer')
+            events.interpret("  where :end_row, 'at end'")
+            events.interpret(
+              '    position one, left(:cl), face: 100, dir: :cross')
+            events.interpret(
+              '    position two, left(:cr), face: 100, dir: :cross')
+            events.interpret("  where :mid_row, 'in middle'")
+            events.interpret('    use :end_row')
+            events.interpret(
+              '    position one, right(:cl), face: 100, dir: :cross')
+            events.interpret(
+              '    position two, right(:cr), face: 100, dir: :cross')
+
+            reaction.interpret('aliases one: bridge, two: bridge')
+            reaction.interpret('equation one(ct: *) + two(ct: *) = dimer')
+            reaction.interpret(
+              '  lateral :dimers_row, one: one(:ct), two: two(:ct)')
+
+            reaction.interpret("  refinement 'not in dimers row'")
+            reaction.interpret('  there :end_row')
+            reaction.interpret('  there :mid_row')
+          end
+
+          describe "not in dimers row" do
+            subject do
+              Tools::Chest.reaction('forward reaction name not in dimers row')
+            end
+
+            let(:c_bridge1) { subject.source.first }
+            let(:c_bridge2) { subject.source.last }
+
+            it { subject.positions.should == [
+                [
+                  [c_bridge1, c_bridge1.atom(:ct)],
+                  [c_bridge2, c_bridge2.atom(:ct)],
+                  position_front
+                ],
+                [
+                  [c_bridge2, c_bridge2.atom(:ct)],
+                  [c_bridge1, c_bridge1.atom(:ct)],
+                  position_front
+                ],
+              ] }
+          end
+
+          describe "at end" do
+            subject do
+              Tools::Chest.lateral_reaction('forward reaction name at end')
+            end
+            let(:there) { subject.theres.first }
+
+            let(:c_bridge1) { subject.source.first }
+            let(:c_bridge2) { subject.source.last }
+            let(:w_dimer) do
+              Tools::Chest.where(:dimers_row, :end_row).specs.first
+            end
+
+            it { subject.theres.size.should == 1 }
+            it { there.positions.should == {
+                [c_bridge1, c_bridge1.atom(:ct)] => [
+                  [[w_dimer, w_dimer.atom(:cl)], position_cross]
+                ],
+                [c_bridge2, c_bridge1.atom(:ct)] => [
+                  [[w_dimer, w_dimer.atom(:cr)], position_cross]
+                ],
+              } }
+          end
+        end
       end
 
       it_behaves_like "reaction properties" do

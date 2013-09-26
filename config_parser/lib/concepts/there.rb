@@ -1,14 +1,12 @@
 module VersatileDiamond
   module Concepts
 
-    # Implrements which know about environment specs and has info about
+    # Implementation which know about environment specs and has info about
     # positions between reactants and environment specs
     class There
       extend Forwardable
 
-      attr_reader :where
-
-      # TODO: rspec positions everywhere!
+      attr_reader :where, :positions
 
       # Initialize a new instance of there object
       # @param [Where] where the basic where object
@@ -29,7 +27,7 @@ module VersatileDiamond
       # Provides target species
       # @return [Array] the array of target species
       def target_specs
-        @positions.map(&:first).map(&:first)
+        positions.map(&:first).map(&:first)
       end
 
       # Compares two there objects

@@ -16,7 +16,7 @@ module VersatileDiamond
       def initialize(name, description, specs: [])
         super(name)
         @description = description
-        @raw_positions = {}
+        @raw_positions = []
         @specs = specs # the used specific species
         @parents = [] # the parent where objects
       end
@@ -30,8 +30,7 @@ module VersatileDiamond
       # @param [Position] position the position between target and atom
       # TODO: rspec
       def raw_position(target, spec_atom, position)
-        @raw_positions[target] ||= []
-        @raw_positions[target] << [spec_atom, position]
+        @raw_positions << [target, spec_atom, position]
       end
 
       # Swaps dependent specific spec
@@ -42,30 +41,34 @@ module VersatileDiamond
         return unless @specs.delete(from)
         @specs << to
 
-        @raw_positions.each do |_, (spec_atom, _)|
+        raw_positions.each do |_, spec_atom, _|
           if spec_atom[0] == from
             spec_atom[0] = to
             spec_atom[1] = to.atom(from.keyname(spec_atom[1]))
           end
         end
 
-        @parents.each { |parent| parent.swap_source(from, to) }
+        parents.each { |parent| parent.swap_source(from, to) }
       end
 
       # Reduce all species from current instance and from all parent instances
       # @return [Array] the result of reduce
       def all_specs
-        specs + parents.reduce([]) { |acc, parent| acc + parent.all_specs }
+        specs + parents_reduce(:all_specs)
       end
 
       # Concretize current instance by creating there object
-      # @param [Hash] target_refs the hash of references from target names to
-      #   real reactant atoms
+      # @param [Hash] target_refs the hash of references from target name to
+      #   real reactant and it atom
       # @return [There] the concretized instance as there object
       def concretize(target_refs)
-        positions = @raw_positions.each_with_object({}) do |(name, link), hash|
-          atom = target_refs[name]
-          hash[atom] = link
+        raw_positions = @raw_positions + parents_reduce(:raw_positions)
+        positions = raw_positions.each_with_object({}) do |arr, hash|
+          target, env_spec_atom, position = arr
+          target_spec_atom = target_refs[target]
+
+          hash[target_spec_atom] ||= []
+          hash[target_spec_atom] << [env_spec_atom, position]
         end
 
         There.new(self, positions)
@@ -76,8 +79,22 @@ module VersatileDiamond
       #   state of current object
       def visit(visitor)
         super
-        @specs.each { |spec| spec.visit(visitor) }
+        specs.each { |spec| spec.visit(visitor) }
       end
+
+    protected
+
+      attr_reader :raw_positions
+
+    private
+
+      # Reduces values of parents by method name
+      # @param [Symbol] method the method name
+      # @return [Array] the array with reduced values
+      def parents_reduce(method)
+        parents.reduce([]) { |acc, parent| acc + parent.send(method) }
+      end
+
     end
 
   end

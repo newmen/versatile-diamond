@@ -36,7 +36,7 @@ module VersatileDiamond
       end
 
       define_property_setter :enthalpy, :activation, :rate
-      attr_reader :source, :products #, :parent
+      attr_reader :source, :products
 
       # Store source and product specs
       # @param [Symbol] type the type of reaction, can be :forward or :reverse
@@ -71,7 +71,7 @@ module VersatileDiamond
       # Counts gases num in source specs scope
       # @return [Integer] number of specs that belongs to gas phase
       def gases_num
-        @source.select { |v| v.is_gas? }.size
+        @source.select(&:is_gas?).size
       end
 
       # Iterates each source spec
@@ -138,7 +138,7 @@ module VersatileDiamond
       # Counts size of all source specs
       # @return [Integer] number of surface atoms used in reaction
       def size
-        @source.reduce(0) { |acc, spec| acc + spec.size }
+        @source.map(&:size).reduce(:+)
       end
 
       # Also visit target source spec
@@ -156,7 +156,7 @@ module VersatileDiamond
       end
 
       def inspect
-        name
+        to_s
       end
 
     protected

@@ -115,7 +115,8 @@ module VersatileDiamond
             super
           else
             names.reduce(@sac[key]) { |hash, name| hash[name.to_sym] } ||
-              raise(Chest::KeyNameError.new(key, names.join('>'), :undefined))
+              raise(
+                Chest::KeyNameError.new(key, names.join(' -> '), :undefined))
           end
         rescue NoMethodError => e
           raise(Chest::KeyNameError.new(key, e.name, :undefined))

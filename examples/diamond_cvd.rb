@@ -225,7 +225,6 @@ events
 
   reaction 'dimer formation between incoherent bridges'
     aliases one: bridge, two: bridge
-    # TODO: определение положения атомов выводится исходя из результата реакции?
     equation one(ct: *) + two(ct: *) = dimer
       incoherent one(:ct), two(:ct)
 
@@ -250,7 +249,6 @@ events
 
   reaction 'dimer formation between incoherent bridge and fixed bridge'
     aliases one: bridge, two: bridge
-    # TODO: см. коммент к предыдущей реакции
     equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer
 
       refinement 'not in dimers row'
@@ -325,7 +323,6 @@ events
     reverse_rate 1.1e12
 
   reaction 'high bridge to bridge and dimer'
-    # TODO: положение (и доп. конфигурация) атомов также выводится исходя из результата реакции?
     equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'

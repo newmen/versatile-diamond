@@ -6,7 +6,7 @@ module VersatileDiamond
       include Linker
       include SurfaceLinker
 
-      # type of reaction is important only for not ubiquitous reaction
+      # type of reaction could be only for not ubiquitous reaction
       attr_reader :type, :links
 
       # Among super, keeps the atom map
@@ -28,6 +28,7 @@ module VersatileDiamond
 
       # Reduce all positions from links structure
       # @return [Array] the array of position relations
+      # TODO: must be protected
       def positions
         links.reduce([]) do |acc, (atom, list)|
           acc + list.reduce([]) do |l, (other_atom, position)|
@@ -66,8 +67,7 @@ module VersatileDiamond
       # @yield [Symbol, Hash] do for each specs mirror of source and products
       # @return [Reaction] the duplicated reaction with changed name
       def duplicate(name_tail, &block)
-        duplication = self.class.new(*duplicate_params(name_tail, &block))
-        setup_duplication(duplication)
+        duplicate_by(self.class, name_tail, &block)
       end
 
       # Duplicates current instance and creates lateral reaction instance with
@@ -77,9 +77,7 @@ module VersatileDiamond
       # @param [Array] theres the array of there objects
       # @yield see at #duplicate same argument
       def lateral_duplicate(name_tail, theres, &block)
-        duplication = LateralReaction.new(
-          *duplicate_params(name_tail, &block), theres)
-        setup_duplication(duplication)
+        duplicate_by(LateralReaction, name_tail, theres, &block)
       end
 
       # Also changes atom mapping result
@@ -171,7 +169,7 @@ module VersatileDiamond
     protected
 
       attr_reader :children
-      attr_writer :positions
+      attr_writer :links
 
       # Links together two structures by it atoms
       # @param [Array] first see at #position_between same argument
@@ -232,13 +230,26 @@ module VersatileDiamond
         [*super, @mapping.reverse]
       end
 
+      # Duplicates current instance
+      # @param [Class] klass the class instance of which will be returned
+      # @param [String] name_tail see at #duplicate same argument
+      # @param [Array] add_params the additional parameters of duplication
+      # @yield [Symbol, Hash] see at #duplicate same argument
+      # @return [Reaction] duplicate of current reaction
+      def duplicate_by(klass, name_tail, *add_params, &block)
+        mirrors, *params = duplicate_params(name_tail)
+        mirrors.each(&block)
+
+        duplication = klass.new(*(params + add_params))
+        setup_duplication(duplication, mirrors)
+      end
+
       # Duplicates internal properties of reaction such as specs and atom
       # mapping result
       #
       # @param [String] name_tail see at #duplicate same argument
-      # @yield [Symbol, Hash] see at #duplicate same argument
       # @return [Array] the array of duplicated properties
-      def duplicate_params(name_tail, &block)
+      def duplicate_params(name_tail)
         mirrors = {}
         dup_and_save = -> type, specs do
           mirror = mirrors[type] = {}
@@ -252,17 +263,30 @@ module VersatileDiamond
         source_dup = dup_and_save[:source, @source]
         products_dup = dup_and_save[:products, @products]
 
-        mirrors.each(&block)
-
         mapping = @mapping.duplicate(mirrors)
-        [@type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
+        [mirrors,
+          @type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
       end
 
       # Setups duplicated reaction
       # @param [Reaction] duplication the setuping duplicated reaction
+      # @param [Hash] mirrors the mirrors of currents specs to specs in
+      #   duplication
       # @return [Reaction] setuped duplicated reaction
-      def setup_duplication(duplication)
-        duplication.positions = @positions.dup if @positions
+      def setup_duplication(duplication, mirrors)
+        old_to_dup = mirrors.values.reduce(&:merge)
+        dup_spec_atom = -> old_spec, old_atom do
+          dup_spec = old_to_dup[old_spec]
+          [dup_spec, dup_spec.atom(old_spec.keyname(old_atom))]
+        end
+
+        links_dup = @links.map do |spec_atom1, links|
+          ld = links.map do |spec_atom2, link|
+            [dup_spec_atom[*spec_atom2], link]
+          end
+          [dup_spec_atom[*spec_atom1], ld]
+        end
+        duplication.links = Hash[links_dup]
 
         @children ||= []
         @children << duplication

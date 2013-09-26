@@ -43,7 +43,7 @@ module VersatileDiamond
       # Also counts sizes of there objects
       # @return [Float] the number of used atoms
       def size
-        super + @theres.reduce(0) { |acc, there| acc + there.size }
+        super + @theres.map(&:size).reduce(:+)
       end
 
       # Also visit there objects
@@ -65,7 +65,10 @@ module VersatileDiamond
       # Also reverse there objects
       # @override
       def reverse_params
-        [*super, @theres] # TODO: rebind to another atoms
+        reversed_theres = theres.map do |there|
+
+        end
+        [*super, reversed_theres]
       end
 
       # Compares with other lateral reaction by calling the #same? method from
@@ -76,7 +79,7 @@ module VersatileDiamond
       # @return [Boolean] is reaction initially similar, and the condition is
       #   met for both theres collections
       def compare_with_other(other, &block)
-        # calling a .same? method from superclass
+        # calling the .same? method from superclass
         self.class.superclass.instance_method(:same?).bind(self).call(other) &&
           lists_are_identical?(theres, other.theres, &block)
       end
