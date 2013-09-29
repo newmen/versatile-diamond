@@ -59,25 +59,49 @@ module VersatileDiamond
       end
 
       describe "other_side" do
-        it { hm_atom_map.other_side(
-            methyl_on_dimer, methyl_on_dimer.atom(:cm)).
-          should == [
-            activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)
-          ] }
+        describe "hydrogen migration" do
+          it { hm_atom_map.other_side(
+              methyl_on_dimer, methyl_on_dimer.atom(:cm)).
+            should == [
+              activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)
+            ] }
 
-        it { hm_atom_map.other_side(
-            activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)).
-          should == [
-            methyl_on_dimer, methyl_on_dimer.atom(:cm)
-          ] }
+          it { hm_atom_map.other_side(
+              activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)).
+            should == [
+              methyl_on_dimer, methyl_on_dimer.atom(:cm)
+            ] }
 
-        it { hm_atom_map.other_side(dimer, dimer.atom(:cr)).should == [
-            activated_dimer, activated_dimer.atom(:cr)
-          ] }
+          it { hm_atom_map.other_side(dimer, dimer.atom(:cr)).should == [
+              activated_dimer, activated_dimer.atom(:cr)
+            ] }
 
-        it { hm_atom_map.other_side(
-            activated_dimer, activated_dimer.atom(:cr)).
-          should == [dimer, dimer.atom(:cr)] }
+          it { hm_atom_map.other_side(
+              activated_dimer, activated_dimer.atom(:cr)).
+            should == [dimer, dimer.atom(:cr)] }
+        end
+
+        describe "dimer formation" do
+          it { df_atom_map.other_side(
+              activated_bridge, activated_bridge.atom(:ct)).
+            should == [dimer_dup_ff, dimer_dup_ff.atom(:cr)] }
+
+          it { df_atom_map.other_side(
+              activated_incoherent_bridge,
+              activated_incoherent_bridge.atom(:ct)).
+            should == [dimer_dup_ff, dimer_dup_ff.atom(:cl)] }
+
+          it { df_atom_map.other_side(
+              dimer_dup_ff, dimer_dup_ff.atom(:cr)).
+            should == [activated_bridge, activated_bridge.atom(:ct)] }
+
+          it { df_atom_map.other_side(
+              dimer_dup_ff, dimer_dup_ff.atom(:cl)).
+            should == [
+              activated_incoherent_bridge,
+              activated_incoherent_bridge.atom(:ct)
+            ] }
+        end
       end
 
       describe "#add" do

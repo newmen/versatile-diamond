@@ -5,6 +5,7 @@ module VersatileDiamond
     class Reaction < UbiquitousReaction
       include Linker
       include SurfaceLinker
+      include SpecAtomSwapper
 
       # type of reaction could be only for not ubiquitous reaction
       attr_reader :type, :links
@@ -67,7 +68,9 @@ module VersatileDiamond
       # @yield [Symbol, Hash] do for each specs mirror of source and products
       # @return [Reaction] the duplicated reaction with changed name
       def duplicate(name_tail, &block)
-        duplicate_by(self.class, name_tail, &block)
+        duplicate_by(self.class, name_tail) do |mirrors|
+          mirrors.each(&block)
+        end
       end
 
       # Duplicates current instance and creates lateral reaction instance with
@@ -77,7 +80,20 @@ module VersatileDiamond
       # @param [Array] theres the array of there objects
       # @yield see at #duplicate same argument
       def lateral_duplicate(name_tail, theres, &block)
-        duplicate_by(LateralReaction, name_tail, theres, &block)
+        theres = theres.map(&:dup) # because each there will be changed
+
+        duplicate_by(LateralReaction, name_tail, theres) do |mirrors|
+          mirrors.each(&block)
+
+          mirror = mirrors[:source]
+          # here there objects which was used for creating a duplicate, will be
+          # changed by swapping target species
+          theres.each do |there|
+            there.target_specs.each do |spec|
+              there.swap_target(spec, mirror[spec])
+            end
+          end
+        end
       end
 
       # Also changes atom mapping result
@@ -86,14 +102,7 @@ module VersatileDiamond
       # @override
       def swap_source(from, to)
         super
-
-        each_spec_atom do |spec_atom|
-          if spec_atom[0] == from
-            spec_atom[1] = to.atom(spec_atom[0].keyname(spec_atom[1]))
-            spec_atom[0] = to
-          end
-        end
-
+        each_spec_atom { |spec_atom| swap(spec_atom, from, to) }
         @mapping.swap_source(from, to)
       end
 
@@ -234,11 +243,11 @@ module VersatileDiamond
       # @param [Class] klass the class instance of which will be returned
       # @param [String] name_tail see at #duplicate same argument
       # @param [Array] add_params the additional parameters of duplication
-      # @yield [Symbol, Hash] see at #duplicate same argument
+      # @yield [Symbol, Hash] does anything with obtained mirrors
       # @return [Reaction] duplicate of current reaction
       def duplicate_by(klass, name_tail, *add_params, &block)
         mirrors, *params = duplicate_params(name_tail)
-        mirrors.each(&block)
+        block[mirrors]
 
         duplication = klass.new(*(params + add_params))
         setup_duplication(duplication, mirrors)

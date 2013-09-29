@@ -15,7 +15,7 @@ module VersatileDiamond
         @source, @products = source, proructs
         @result = result
 
-        size_wo_simple = -> specs { specs.select { |sp| !sp.simple? }.size }
+        size_wo_simple = -> specs { specs.reject { |sp| sp.simple? }.size }
         source_size_wo_simple = size_wo_simple[source]
         products_size_wo_simple = size_wo_simple[products]
 
@@ -53,12 +53,19 @@ module VersatileDiamond
       # @return [SpecificSpec, Atom] the array where first item is found
       #   specific spec and second item is correspond atom
       def other_side(spec, atom)
-        specs, atoms_zip =
-          full.find { |specs, atoms_zip| specs.include?(spec) }
+        is_source = @source.include?(spec)
 
-        is_source = (specs[0] == spec)
-        atoms = atoms_zip.find do |atom1, atom2|
-          (is_source && atom1 == atom) || (!is_source && atom2 == atom)
+        specs, atoms = nil
+        full.each do |specs_pair, atoms_zip|
+          next unless specs_pair.include?(spec)
+
+          atoms = atoms_zip.find do |atom1, atom2|
+            (is_source && atom1 == atom) || (!is_source && atom2 == atom)
+          end
+          next unless atoms
+
+          specs = specs_pair
+          break
         end
 
         reverse_index = is_source ? 1 : 0

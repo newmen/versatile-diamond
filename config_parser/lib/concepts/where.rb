@@ -5,6 +5,7 @@ module VersatileDiamond
     # positions of target atoms to some atoms of around specs
     class Where < Named
       include Visitors::Visitable
+      include SpecAtomSwapper
 
       attr_reader :description, :parents, :specs
 
@@ -42,10 +43,7 @@ module VersatileDiamond
         @specs << to
 
         raw_positions.each do |_, spec_atom, _|
-          if spec_atom[0] == from
-            spec_atom[0] = to
-            spec_atom[1] = to.atom(from.keyname(spec_atom[1]))
-          end
+          swap(spec_atom, from, to)
         end
 
         parents.each { |parent| parent.swap_source(from, to) }

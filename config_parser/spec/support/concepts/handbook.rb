@@ -302,7 +302,11 @@ module VersatileDiamond
         end
         set(:on_end) do
           at_end.concretize(
-            one: [dimer, dimer.atom(:cl)], two: [dimer, dimer.atom(:cr)])
+            one: [activated_bridge, activated_bridge.atom(:ct)],
+            two: [
+              activated_incoherent_bridge,
+              activated_incoherent_bridge.atom(:ct)
+            ])
         end
 
         set(:at_middle) do
@@ -314,7 +318,11 @@ module VersatileDiamond
         end
         set(:on_middle) do
           at_middle.concretize(
-            one: [dimer, dimer.atom(:cl)], two: [dimer, dimer.atom(:cr)])
+            one: [activated_bridge, activated_bridge.atom(:ct)],
+            two: [
+              activated_incoherent_bridge,
+              activated_incoherent_bridge.atom(:ct)
+            ])
         end
 
         set(:near_methyl) do
@@ -327,7 +335,8 @@ module VersatileDiamond
           ); w
         end
         set(:there_methyl) do
-          near_methyl.concretize(target: [dimer, dimer.atom(:cr)])
+          near_methyl.concretize(
+            target: [activated_bridge, activated_bridge.atom(:ct)])
         end
       end
 

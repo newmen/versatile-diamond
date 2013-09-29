@@ -5,12 +5,6 @@ module VersatileDiamond
     # of which defined by targets setup
     class Environment < Named
 
-      # Special exception for case when target references isn't valid
-      class InvalidTarget < Exception
-        attr_reader :target
-        def initialize(target); @target = target end
-      end
-
       # Initialize new environment instance
       # @param [Symbol] name see at #super same argument
       # @option [Array] :targets the target atom aliases
@@ -37,16 +31,9 @@ module VersatileDiamond
       #
       # @param [Hash] target_refs the hash where keys is target names from
       #   current environment and values is array of real spec and their atom
-      # @raise [InvalidTarget] when some of target references is wrong
       # @result [Lateral] new lateral instance
       def make_lateral(**target_refs)
-        validated_refs = @targets.each_with_object({}) do |name, hash|
-          atom = target_refs.delete(name)
-          raise InvalidTarget.new(name) if !atom || hash[name]
-          hash[name] = atom
-        end
-        target_refs.keys.each { |name| raise InvalidTarget.new(name) }
-        Lateral.new(name, validated_refs)
+        Lateral.new(name, target_refs)
       end
     end
 

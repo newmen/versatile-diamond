@@ -32,8 +32,11 @@ module VersatileDiamond
       #   cannot be resolved, or lateral already connected for current reaction
       def lateral(env_name, **target_refs)
         env = get(:environment, env_name)
+        targeted = {}
         resolved_targets = target_refs.map do |target_name, used_atom_str|
-          unless env.is_target?(target_name)
+          if env.is_target?(target_name) && !targeted[target_name]
+            targeted[target_name] = true
+          else
             syntax_error('.undefined_target', name: target_name)
           end
 
@@ -42,9 +45,7 @@ module VersatileDiamond
         end
 
         lateral = env.make_lateral(Hash[resolved_targets])
-        store(@reaction, lateral)
-      rescue Concepts::Environment::InvalidTarget => e
-        syntax_error('.undefined_target', name: e.target)
+        store(@reaction, lateral) # only for check duplication?
       end
 
       # Interprets there line and nest new refinement

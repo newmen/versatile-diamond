@@ -66,7 +66,10 @@ module VersatileDiamond
       # @override
       def reverse_params
         reversed_theres = theres.map do |there|
-
+          reversed_positions = there.positions.map do |spec_atom, links|
+            [@mapping.other_side(*spec_atom), links]
+          end
+          There.new(there.where, Hash[reversed_positions])
         end
         [*super, reversed_theres]
       end

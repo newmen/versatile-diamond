@@ -212,27 +212,49 @@ module VersatileDiamond
               ] }
           end
 
-          describe "at end" do
-            subject do
-              Tools::Chest.lateral_reaction('forward reaction name at end')
-            end
+          describe "lateral members" do
             let(:there) { subject.theres.first }
-
             let(:c_bridge1) { subject.source.first }
             let(:c_bridge2) { subject.source.last }
-            let(:w_dimer) do
-              Tools::Chest.where(:dimers_row, :end_row).specs.first
+
+            describe "at end" do
+              subject do
+                Tools::Chest.lateral_reaction('forward reaction name at end')
+              end
+
+              let(:w_dimer) { there.env_specs.first }
+
+              it { subject.theres.size.should == 1 }
+              it { there.positions.should == {
+                  [c_bridge1, c_bridge1.atom(:ct)] => [
+                    [[w_dimer, w_dimer.atom(:cl)], position_cross]
+                  ],
+                  [c_bridge2, c_bridge2.atom(:ct)] => [
+                    [[w_dimer, w_dimer.atom(:cr)], position_cross]
+                  ],
+                } }
             end
 
-            it { subject.theres.size.should == 1 }
-            it { there.positions.should == {
-                [c_bridge1, c_bridge1.atom(:ct)] => [
-                  [[w_dimer, w_dimer.atom(:cl)], position_cross]
-                ],
-                [c_bridge2, c_bridge1.atom(:ct)] => [
-                  [[w_dimer, w_dimer.atom(:cr)], position_cross]
-                ],
-              } }
+            describe "in middle" do
+              subject do
+                Tools::Chest.lateral_reaction('forward reaction name in middle')
+              end
+
+              let(:w_dimer1) { there.env_specs.first }
+              let(:w_dimer2) { there.env_specs.last }
+
+              it { subject.theres.size.should == 1 }
+              it { there.positions.should == {
+                  [c_bridge1, c_bridge1.atom(:ct)] => [
+                    [[w_dimer1, w_dimer1.atom(:cl)], position_cross],
+                    [[w_dimer2, w_dimer2.atom(:cl)], position_cross],
+                  ],
+                  [c_bridge2, c_bridge2.atom(:ct)] => [
+                    [[w_dimer1, w_dimer1.atom(:cr)], position_cross],
+                    [[w_dimer2, w_dimer2.atom(:cr)], position_cross],
+                  ],
+                } }
+            end
           end
         end
       end

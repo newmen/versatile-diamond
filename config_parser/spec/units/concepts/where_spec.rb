@@ -14,7 +14,7 @@ module VersatileDiamond
         it { at_end.description.should == 'at end of dimers row' }
       end
 
-      it_behaves_like "#swap_source" do
+      it_behaves_like "check specs after swap_source" do
         subject { at_end }
         let(:method) { :specs }
       end
