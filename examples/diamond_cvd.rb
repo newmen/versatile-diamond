@@ -19,13 +19,17 @@ gas
   spec :methane
     atoms c: C # each external bond is H atom
 
-#  spec :ethylene
-#    atoms c1: C, c2: C
-#    dbond :c1, :c2
+  # spec :ethylene
+  #   atoms c1: C, c2: C
+  #   dbond :c1, :c2
+
+  # spec :acetylene
+  #   atoms c1: C, c2: C
+  #   tbond :c1, :c2
 
   concentration hydrogen(h: *), 1e-9
   concentration methane(c: *), 1e-10
-  # concentration ethylene(c1: *), 0
+  # concentration ethylene(c1: *), 1e-11
 
   temperature 1200
 
@@ -37,8 +41,9 @@ surface
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
 
-  spec :high_bridge # may describe by methyl_on_bridge
-    atoms ch: C, ct: bridge(:ct)
+  spec :high_bridge
+    aliases basis: bridge
+    atoms ch: C, ct: basis(:ct), cr: basis(:cr)
     dbond :ch, :ct
 
   spec :dimer
@@ -59,13 +64,15 @@ surface
     atoms cm: C, cb: bridge(:cr)
     bond :cm, :cb
 
- # spec :vinyl_on_bridge
- #   atoms ct: ethylene(:c1), cb: bridge(:ct)
- #   bond :ct, :cb
+  # spec :vinyl_on_bridge
+  #   aliases eth: ethylene
+  #   atoms cb: bridge(:ct), c1: eth(:c1), c2: eth(:c2)
+  #   bond :cb, :c1
 
- # spec :vinyl_on_dimer
- #   atoms cl: bridge(:ct), cr: vinyl_on_bridge(:cb)
- #   bond :cl, :cr, face: 100, dir: :front
+  # spec :vinyl_on_dimer
+  #   aliases vob: vinyl_on_bridge
+  #   atoms cl: bridge(:ct), cr: vob(:cb), c1: vob(:c1)
+  #   bond :cl, :cr, face: 100, dir: :front
 
   spec :bridge_with_dimer
     aliases dmr: dimer
@@ -369,17 +376,15 @@ events
       refinement 'not in dimers row'
         activation 31.3
 
-      # TODO: используются атомы результата!
       lateral :dimers_row, one_atom: product(:cl), two_atom: product(:cr)
       there :end_row
-        activation 17.6
+        activation 17.6 # must be more less
 
     forward_rate 3.5e8
 
   # TODO: вмеру маленькой (??) скорости, стоит исключить данную реакцию
   reaction 'single dimer to high bridge'
     aliases one: bridge, two: bridge
-    # определяется ли положение атомов в веществах-продуктах?
     equation dimer(cr: *) = high_bridge(ch: *) + one(ct: *) + two(ct: *)
 
       refinement 'not in dimers row'
@@ -393,3 +398,28 @@ events
 
     # значения также выдуманы
     forward_rate 2.8e11
+
+  # reaction 'vinyl adsorption to dimer'
+  #   equation ethylene(c1: *) + dimer(cr: *) = vinyl_on_dimer
+  #   # значения про винил - фейк
+  #   activation 55
+  #   forward_rate 1, 'cm3/(mol * s)'
+  #   reverse_rate 2
+
+  # reaction 'vinyl adsorption to bridge'
+  #   equation ethylene(c1: *) + bridge(ct: *, ct: i) = vinyl_on_bridge
+  #   activation 55
+  #   forward_rate 1, 'cm3/(mol * s)'
+  #   reverse_rate 2
+
+  # reaction 'vinyl desorption'
+  #   equation vinyl_on_bridge(c1: *, c2: *) = bridge(ct: *) + acetylene(c1: *)
+  #   activation 55
+  #   forward_rate 1
+
+  # reaction 'vinyl incorporion'
+  #   # не хватает реакций миграции водорода для винила (можно использовать ту что уже есть, с метил радикалом)
+  #   equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
+  #   activation 55
+  #   forward_rate 1
+  #   reverse_rate 2
