@@ -27,7 +27,6 @@ surface
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
-    position :cl, :cr, face: 100, dir: :front
 
   spec :methyl_on_bridge
     aliases basis: bridge
@@ -46,6 +45,10 @@ surface
     aliases mb: methyl_on_bridge
     atoms cl: bridge(:ct), cr: mb(:cb), cm: mb(:cm)
     bond :cl, :cr, face: 100, dir: :front
+
+  spec :methyl_on_111
+    atoms cm: C, cb: bridge(:cr)
+    bond :cm, :cb
 
   temperature 1000
 
@@ -67,16 +70,15 @@ events
     forward_rate 1e13, 'cm3/(mol * s)'
     reverse_rate 5.3e3
 
-  reaction 'methyl desorption'
-    equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
-      refinement 'from bridge'
-        incoherent methyl_on_bridge(:cb) # indicates automaticaly by methane
-        forward_rate 1.7e7
-
-      refinement 'from face 111'
-        forward_rate 5.4e6
-
+  reaction 'methyl adsorption to bridge'
+    equation bridge(ct: *, ct: i) + methane(c: *) = methyl_on_bridge
     activation 0
+    reverse_rate 1.7e7
+
+  reaction 'methyl adsorption to face 111'
+    equation bridge(cr: *) + methane(c: *) = methyl_on_111
+    activation 0
+    reverse_rate 5.4e6
 
   reaction 'methyl activation'
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen

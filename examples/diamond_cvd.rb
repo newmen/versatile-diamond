@@ -55,6 +55,10 @@ surface
     atoms cl: bridge(:ct), cr: mb(:cb), cm: mb(:cm)
     bond :cl, :cr, face: 100, dir: :front
 
+  spec :methyl_on_111
+    atoms cm: C, cb: bridge(:cr)
+    bond :cm, :cb
+
  # spec :vinyl_on_bridge
  #   atoms ct: ethylene(:c1), cb: bridge(:ct)
  #   bond :ct, :cb
@@ -103,20 +107,17 @@ events
     forward_rate 1e13, 'cm3/(mol * s)'
     reverse_rate 5.3e3
 
-  reaction 'methyl desorption'
-    equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
-      refinement 'from bridge'
-        incoherent methyl_on_bridge(:cb) # indicates automaticaly by methane
-        forward_rate 1.7e7
-
-      refinement 'from face 111'
-        # TODO: должно быть автоматически определено, как случай не соответствующий всем другим
-        forward_rate 5.4e6
-
+  reaction 'methyl adsorption to bridge'
+    equation bridge(ct: *, ct: i) + methane(c: *) = methyl_on_bridge
     activation 0
+    reverse_rate 1.7e7
+
+  reaction 'methyl adsorption to face 111'
+    equation bridge(cr: *) + methane(c: *) = methyl_on_111
+    activation 0
+    reverse_rate 5.4e6
 
   reaction 'methyl activation'
-    # TODO: должна быть уточнением реакции десорбции водорода
     # TODO: может быть следует использовать methyl_on_bridge?
     equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       unfixed methyl_on_dimer(:cm)
