@@ -17,16 +17,25 @@ module VersatileDiamond
       # Exception for case when linking atoms do not have a crystal lattice
       class UnspecifiedAtoms < Exception; end
 
-      # The singleton method [] caches all instnaces and returns it if face and
-      #   direction of the same.
-      #
-      # @option [Symbol] :face the face of position
-      # @option [Symbol] :dir the direction of position
-      # @raise [Incomplete] unless face or direction is nil
-      # @return [Position] cached instance
-      def self.[](face: nil, dir: nil)
-        raise Incomplete unless face && dir
-        super(face: face, dir: dir)
+      class << self
+        # The singleton method [] caches all instnaces and returns it if face
+        # and direction of the same.
+        #
+        # @option [Symbol] :face the face of position
+        # @option [Symbol] :dir the direction of position
+        # @raise [Incomplete] unless face or direction is nil
+        # @return [Position] cached instance
+        def [](face: nil, dir: nil)
+          raise Incomplete unless face && dir
+          super(face: face, dir: dir)
+        end
+
+        # Makes a new position from relation
+        # @param [Bond] relation the relation from which position will be maked
+        # @return [Position] a position with same face and dir as relation
+        def make_from(relation)
+          self.[](face: relation.face, dir: relation.dir)
+        end
       end
 
       # Approximate compares two instances. If their fase and direction is

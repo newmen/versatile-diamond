@@ -42,10 +42,7 @@ module VersatileDiamond
         return unless @specs.delete(from)
         @specs << to
 
-        raw_positions.each do |_, spec_atom, _|
-          swap(spec_atom, from, to)
-        end
-
+        raw_positions.each { |_, spec_atom, _| swap(spec_atom, from, to) }
         parents.each { |parent| parent.swap_source(from, to) }
       end
 
@@ -92,7 +89,6 @@ module VersatileDiamond
       def parents_reduce(method)
         parents.reduce([]) { |acc, parent| acc + parent.send(method) }
       end
-
     end
 
   end

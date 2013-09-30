@@ -202,12 +202,12 @@ module VersatileDiamond
                 [
                   [c_bridge1, c_bridge1.atom(:ct)],
                   [c_bridge2, c_bridge2.atom(:ct)],
-                  position_front
+                  position_100_front
                 ],
                 [
                   [c_bridge2, c_bridge2.atom(:ct)],
                   [c_bridge1, c_bridge1.atom(:ct)],
-                  position_front
+                  position_100_front
                 ],
               ] }
           end
@@ -227,10 +227,10 @@ module VersatileDiamond
               it { subject.theres.size.should == 1 }
               it { there.positions.should == {
                   [c_bridge1, c_bridge1.atom(:ct)] => [
-                    [[w_dimer, w_dimer.atom(:cl)], position_cross]
+                    [[w_dimer, w_dimer.atom(:cl)], position_100_cross]
                   ],
                   [c_bridge2, c_bridge2.atom(:ct)] => [
-                    [[w_dimer, w_dimer.atom(:cr)], position_cross]
+                    [[w_dimer, w_dimer.atom(:cr)], position_100_cross]
                   ],
                 } }
             end
@@ -246,12 +246,12 @@ module VersatileDiamond
               it { subject.theres.size.should == 1 }
               it { there.positions.should == {
                   [c_bridge1, c_bridge1.atom(:ct)] => [
-                    [[w_dimer1, w_dimer1.atom(:cl)], position_cross],
-                    [[w_dimer2, w_dimer2.atom(:cl)], position_cross],
+                    [[w_dimer1, w_dimer1.atom(:cl)], position_100_cross],
+                    [[w_dimer2, w_dimer2.atom(:cl)], position_100_cross],
                   ],
                   [c_bridge2, c_bridge2.atom(:ct)] => [
-                    [[w_dimer1, w_dimer1.atom(:cr)], position_cross],
-                    [[w_dimer2, w_dimer2.atom(:cr)], position_cross],
+                    [[w_dimer1, w_dimer1.atom(:cr)], position_100_cross],
+                    [[w_dimer2, w_dimer2.atom(:cr)], position_100_cross],
                   ],
                 } }
             end

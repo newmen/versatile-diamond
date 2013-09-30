@@ -13,11 +13,11 @@ module VersatileDiamond
       describe "#position_between" do
         it { activated_dimer.position_between(
             activated_dimer.atom(:cr), activated_dimer.atom(:cl)).
-          should == position_front }
+          should == position_100_front }
 
         it { activated_dimer.position_between(
             activated_dimer.atom(:cl), activated_dimer.atom(:cr)).
-          should == position_front }
+          should == position_100_front }
 
         it { activated_methyl_on_incoherent_bridge.position_between(
             activated_methyl_on_incoherent_bridge.atom(:cm),

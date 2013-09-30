@@ -20,10 +20,10 @@ describe Diamond do
       end
 
       describe "positions" do
-        it { diamond.opposite_relation(diamond, position_front).
-          should == position_front }
-        it { diamond.opposite_relation(diamond, position_cross).
-          should == position_cross }
+        it { diamond.opposite_relation(diamond, position_100_front).
+          should == position_100_front }
+        it { diamond.opposite_relation(diamond, position_100_cross).
+          should == position_100_cross }
       end
     end
 
@@ -42,9 +42,9 @@ describe Diamond do
       end
 
       describe "positions" do
-        it { expect { diamond.opposite_relation(nil, position_front) }.
+        it { expect { diamond.opposite_relation(nil, position_100_front) }.
           to raise_error undefined_relation }
-        it { expect { diamond.opposite_relation(nil, position_cross) }.
+        it { expect { diamond.opposite_relation(nil, position_100_cross) }.
           to raise_error undefined_relation }
       end
     end
@@ -59,7 +59,7 @@ describe Diamond do
       } end
 
       it { diamond.positions_between(cd0, cd2, links).
-        should == [position_front, position_front] }
+        should == [position_100_front, position_100_front] }
     end
 
     describe "position 100 cross" do
@@ -71,7 +71,7 @@ describe Diamond do
         } end
 
         it { diamond.positions_between(cd0, cd2, links).
-          should == [position_cross, position_cross] }
+          should == [position_100_cross, position_100_cross] }
       end
 
       describe "not found positions in dimer fondation because ambiguity" do
@@ -80,12 +80,12 @@ describe Diamond do
         end
 
         let(:links) do {
-          cd0 => [[cd1, bond_110_front], [cd3, position_cross]],
+          cd0 => [[cd1, bond_110_front], [cd3, position_100_cross]],
           cd1 => [
             [cd0, bond_110_cross], [cd2, bond_110_cross], [cd4, bond_100_front]
           ],
           cd2 => [[cd1, bond_110_front]],
-          cd3 => [[cd4, bond_110_front], [cd3, position_cross]],
+          cd3 => [[cd4, bond_110_front], [cd3, position_100_cross]],
           cd4 => [
             [cd3, bond_110_cross], [cd5, bond_110_cross], [cd1, bond_100_front]
           ],

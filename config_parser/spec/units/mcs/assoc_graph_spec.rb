@@ -14,7 +14,7 @@ module VersatileDiamond
       let(:cs) { cd1.dup }
       let(:spec2) do
         s = Concepts::SurfaceSpec.new(:spec2, cf: cf, cs: cs)
-        s.link(cf, cs, position_front); s
+        s.link(cf, cs, position_100_front); s
       end
       let(:graph2) { Graph.new(spec2.links) }
 

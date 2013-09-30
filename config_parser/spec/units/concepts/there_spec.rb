@@ -46,27 +46,30 @@ module VersatileDiamond
       describe "#positions" do
         it { on_end.positions.should == {
             [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_cross]
+              [[dimer, dimer.atom(:cl)], position_100_cross]
             ],
             [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_cross]
+              [[dimer, dimer.atom(:cr)], position_100_cross]
             ]
           } }
 
         it { on_middle.positions.should == {
             [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_cross],
-              [[dimer, dimer.atom(:cl)], position_cross],
+              [[dimer, dimer.atom(:cl)], position_100_cross],
+              [[dimer, dimer.atom(:cl)], position_100_cross],
             ],
             [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_cross],
-              [[dimer, dimer.atom(:cr)], position_cross],
+              [[dimer, dimer.atom(:cr)], position_100_cross],
+              [[dimer, dimer.atom(:cr)], position_100_cross],
             ]
           } }
 
         it { there_methyl.positions.should == {
             [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[methyl_on_bridge, methyl_on_bridge.atom(:cb)], position_front]
+              [
+                [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
+                position_100_front
+              ]
             ]
           } }
 
@@ -81,10 +84,10 @@ module VersatileDiamond
         before { on_end.swap_source(dimer, dimer_dup_ff) }
         it { on_end.positions.should == {
             [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer_dup_ff, dimer_dup_ff.atom(:cl)], position_cross]
+              [[dimer_dup_ff, dimer_dup_ff.atom(:cl)], position_100_cross]
             ],
             [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer_dup_ff, dimer_dup_ff.atom(:cr)], position_cross]
+              [[dimer_dup_ff, dimer_dup_ff.atom(:cr)], position_100_cross]
             ]
           } }
       end
@@ -94,10 +97,10 @@ module VersatileDiamond
 
         it { on_end.positions.should == {
             [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_cross]
+              [[dimer, dimer.atom(:cl)], position_100_cross]
             ],
             [ai_bridge_dup, ai_bridge_dup.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_cross]
+              [[dimer, dimer.atom(:cr)], position_100_cross]
             ]
           } }
       end

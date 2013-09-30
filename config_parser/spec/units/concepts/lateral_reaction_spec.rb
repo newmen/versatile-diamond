@@ -22,17 +22,45 @@ module VersatileDiamond
 
       describe "#reverse" do
         subject { reaction.reverse }
+        let(:there) { subject.theres.first }
+
         it { should be_a(described_class) }
 
         describe "theres reversed too" do
-          let(:there) { subject.theres.first }
           let(:target_dimer) { subject.source.first }
           it { there.positions.should == {
               [target_dimer, target_dimer.atom(:cr)] => [
-                [[dimer, dimer.atom(:cl)], position_cross]
+                [[dimer, dimer.atom(:cl)], position_100_cross]
               ],
               [target_dimer, target_dimer.atom(:cl)] => [
-                [[dimer, dimer.atom(:cr)], position_cross]
+                [[dimer, dimer.atom(:cr)], position_100_cross]
+              ],
+            } }
+        end
+
+        describe "reverced atom haven't lattice" do
+          subject { original.reverse }
+          let(:curr_mid) do
+            at_middle.concretize(
+              one: [extended_dimer, extended_dimer.atom(:cl)],
+              two: [extended_dimer, extended_dimer.atom(:cr)])
+          end
+          let(:original) do
+            methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])
+          end
+          let(:moeb) { subject.source.first }
+          let(:dim) { subject.source.last }
+
+          it { there.positions.should == {
+              [moeb, moeb.atom(:cb)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+              ],
+              [dim, dim.atom(:cl)] => [
+                [[dimer, dimer.atom(:cr)], position_110_front],
+              ],
+              [dim, dim.atom(:cr)] => [
+                [[dimer, dimer.atom(:cr)], position_110_front],
               ],
             } }
         end

@@ -52,8 +52,8 @@ module VersatileDiamond
         [:front, :cross].each do |dir|
           [100, 110].each do |face|
             set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }
+            set(:"position_#{face}_#{dir}") { Position[face: face, dir: dir] }
           end
-          set(:"position_#{dir}") { Position[face: 100, dir: dir] }
         end
 
         set(:position_duplicate) { Position::Duplicate }
@@ -297,8 +297,8 @@ module VersatileDiamond
         end
         set(:at_end) do
           w = Where.new(:at_end, 'at end of dimers row', specs: [dimer])
-          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_cross)
-          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_cross); w
+          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross); w
         end
         set(:on_end) do
           at_end.concretize(
@@ -312,8 +312,8 @@ module VersatileDiamond
         set(:at_middle) do
           w = Where.new(
             :at_middle, 'at middle of dimers row', specs: [dimer])
-          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_cross)
-          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_cross)
+          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross)
           w.parents << at_end; w
         end
         set(:on_middle) do
@@ -331,7 +331,7 @@ module VersatileDiamond
           w.raw_position(
             :target,
             [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
-            position_front
+            position_100_front
           ); w
         end
         set(:there_methyl) do

@@ -148,7 +148,7 @@ module VersatileDiamond
           hydrogen_migration.position_between(
             [methyl_on_dimer, old_atom],
             [activated_dimer, activated_dimer.atom(:cr)],
-            position_front
+            position_100_front
           )
           # and then exchange target atom
           hydrogen_migration.swap_atom(methyl_on_dimer, old_atom, new_atom)
@@ -179,7 +179,7 @@ module VersatileDiamond
         before { hydrogen_migration.position_between(
             [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
             [activated_dimer, activated_dimer.atom(:cr)],
-            position_front
+            position_100_front
           ) }
 
         describe "opposite relation stored too" do
@@ -187,12 +187,12 @@ module VersatileDiamond
               [
                 [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
                 [activated_dimer, activated_dimer.atom(:cr)],
-                position_front
+                position_100_front
               ],
               [
                 [activated_dimer, activated_dimer.atom(:cr)],
                 [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
-                position_front
+                position_100_front
               ],
             ] }
         end
@@ -207,7 +207,7 @@ module VersatileDiamond
                   activated_methyl_on_dimer.atom(:cr)
                 ],
                 [dimer, dimer.atom(:cr)],
-                position_front
+                position_100_front
               ],
               [
                 [dimer, dimer.atom(:cr)],
@@ -215,7 +215,7 @@ module VersatileDiamond
                   activated_methyl_on_dimer,
                   activated_methyl_on_dimer.atom(:cr)
                 ],
-                position_front
+                position_100_front
               ],
             ] }
         end
@@ -236,7 +236,7 @@ module VersatileDiamond
                   activated_incoherent_bridge,
                   activated_incoherent_bridge.atom(:ct)
                 ],
-                position_front
+                position_100_front
               ],
               [
                 [
@@ -244,7 +244,7 @@ module VersatileDiamond
                   activated_incoherent_bridge.atom(:ct)
                 ],
                 [activated_bridge, activated_bridge.atom(:ct)],
-                position_front
+                position_100_front
               ],
             ] }
         end
@@ -283,7 +283,7 @@ module VersatileDiamond
             hydrogen_migration.position_between(
               [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
               [activated_dimer, activated_dimer.atom(:cr)],
-              position_front
+              position_100_front
             )
           end
 
