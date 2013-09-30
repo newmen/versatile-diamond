@@ -1,5 +1,11 @@
-.idea
 build-*
-*.dump
 *.user
+
+
+.idea
 *.dump
+coverage/
+
+Gemfile.lock
+
+*.png
