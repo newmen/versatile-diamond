@@ -36,7 +36,7 @@ module VersatileDiamond
       end
 
       define_property_setter :enthalpy, :activation, :rate
-      attr_reader :source, :products #, :parent
+      attr_reader :source, :products
 
       # Store source and product specs
       # @param [Symbol] type the type of reaction, can be :forward or :reverse
@@ -61,22 +61,17 @@ module VersatileDiamond
       # "forward" word
       #
       # @return [UbiquitousReaction] reversed reaction
-      # @yield [Reaction] if given then creates reverse reaction and instance
-      #   passes to block
       def reverse
         return @reverse if @reverse
         @reverse = self.class.new(*reverse_params)
         @reverse.reverse = self
-
-        yield(@reverse) if block_given?
-        # @reverse.parent = parent.reverse if parent
         @reverse
       end
 
       # Counts gases num in source specs scope
       # @return [Integer] number of specs that belongs to gas phase
       def gases_num
-        @source.select { |v| v.is_gas? }.size
+        @source.select(&:is_gas?).size
       end
 
       # Iterates each source spec
@@ -143,7 +138,7 @@ module VersatileDiamond
       # Counts size of all source specs
       # @return [Integer] number of surface atoms used in reaction
       def size
-        @source.reduce(0) { |acc, spec| acc + spec.size }
+        @source.map(&:size).reduce(:+)
       end
 
       # Also visit target source spec
@@ -155,13 +150,13 @@ module VersatileDiamond
         @source.each { |spec| spec.visit(visitor) }
       end
 
-  #     def to_s
-  #       specs_to_s = -> specs { specs.map(&:to_s).join(' + ') }
-  #       "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
-  #     end
+      def to_s
+        specs_to_s = -> specs { specs.map(&:full_name).join(' + ') }
+        "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
+      end
 
       def inspect
-        name
+        to_s
       end
 
     protected
@@ -193,7 +188,8 @@ module VersatileDiamond
 
       # Makes params for reverse method
       def reverse_params
-        [:reverse, @name, @products, @source]
+        type = @type != :forward ? :forward : :reverse
+        [type, @name, @products, @source]
       end
     end
 

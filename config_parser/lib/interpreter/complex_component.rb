@@ -15,7 +15,7 @@ module VersatileDiamond
       def interpret(line)
         @nested = nil if line !~ /\A\s/
         super do
-          syntax_error('.common.wrong_hierarchy') unless @nested
+          syntax_error('common.wrong_hierarchy') unless @nested
           pass_line_to(@nested, line)
         end
       end

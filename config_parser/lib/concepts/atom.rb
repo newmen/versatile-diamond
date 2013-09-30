@@ -45,6 +45,8 @@ module VersatileDiamond
       end
 
       # Not specified atom cannot have active bonds
+      # (property is used in Hanser's algorithm)
+      #
       # @return [Integer] 0 active bonds
       def actives
         0

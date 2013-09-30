@@ -19,7 +19,19 @@ module VersatileDiamond
           not_to raise_error }
 
         it { expect { environment.interpret('aliases one: wrong') }.
-          to raise_error syntax_error }
+          to raise_error *keyname_error(:undefined, :spec, :wrong) }
+
+        describe "aliases use specific specs" do
+          before do
+            environment.interpret('targets :o')
+            environment.interpret('aliases f: dimer')
+            environment.interpret('where :some, "description"')
+            environment.interpret(
+              '  position o, f(:cr), face: 100, dir: :front')
+          end
+          let(:where) { Tools::Chest.where(:dimers_row, :some) }
+          it { where.specs.map(&:name).should == [:dimer] }
+        end
       end
 
       describe "#where" do
@@ -31,7 +43,7 @@ module VersatileDiamond
           should be_a(Concepts::Where) }
 
         it { expect { environment.interpret('where :end_row, "some desc"') }.
-          to raise_error syntax_error }
+          to raise_error *keyname_error(:duplication, :where, :end_row) }
       end
     end
 

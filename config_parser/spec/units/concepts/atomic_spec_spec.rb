@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe AtomicSpec, termination_spec: true do
+    describe AtomicSpec do
       describe "#name" do
         it { adsorbed_h.name.should == :H }
       end

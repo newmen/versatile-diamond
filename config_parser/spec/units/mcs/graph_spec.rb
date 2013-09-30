@@ -5,7 +5,7 @@ module VersatileDiamond
 
     describe Graph do
       let(:propane) do
-        s = Concepts::Spec.new(:propane, a: c0, b: c1, c: c2)
+        s = Concepts::GasSpec.new(:propane, a: c0, b: c1, c: c2)
         s.link(c0, c1, free_bond)
         s.link(c1, c2, free_bond); s
       end

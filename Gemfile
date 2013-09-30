@@ -11,6 +11,6 @@ gem 'coveralls', require: false
 
 # support
 gem 'pry'
-gem 'pry-rescue'
-gem 'pry-stack_explorer'
 gem 'pry-byebug'
+gem 'pry-stack_explorer'
+# gem 'pry-rescue'

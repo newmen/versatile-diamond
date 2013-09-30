@@ -3,23 +3,67 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe LateralReaction, visitable: true do
+    describe LateralReaction do
       let(:reaction) { dimer_formation.lateral_duplicate('tail', [on_end]) }
       let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
       let(:middle) { dimer_formation.lateral_duplicate('middle', [on_middle]) }
-      let(:other) { dimer_formation.lateral_duplicate(
-        'other', [on_end, there_methyl]) }
+      let(:other) do
+        dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
+      end
 
       describe "#theres" do
-        it { reaction.theres.should == [on_end] }
-        it { other.theres.should == [on_end, there_methyl] }
+        it { reaction.theres.size.should == 1 }
+        it { reaction.theres.first.same?(on_end).should be_true }
+
+        it { other.theres.size.should == 2 }
+        it { other.theres.first.same?(on_end).should be_true }
+        it { other.theres.last.same?(there_methyl).should be_true }
       end
 
       describe "#reverse" do
         subject { reaction.reverse }
+        let(:there) { subject.theres.first }
+
         it { should be_a(described_class) }
 
-        # TODO: check reversed theres
+        describe "theres reversed too" do
+          let(:target_dimer) { subject.source.first }
+          it { there.positions.should == {
+              [target_dimer, target_dimer.atom(:cr)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [target_dimer, target_dimer.atom(:cl)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
+              ],
+            } }
+        end
+
+        describe "reverced atom haven't lattice" do
+          subject { original.reverse }
+          let(:curr_mid) do
+            at_middle.concretize(
+              one: [extended_dimer, extended_dimer.atom(:cl)],
+              two: [extended_dimer, extended_dimer.atom(:cr)])
+          end
+          let(:original) do
+            methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])
+          end
+          let(:moeb) { subject.source.first }
+          let(:dim) { subject.source.last }
+
+          it { there.positions.should == {
+              [moeb, moeb.atom(:cb)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+              ],
+              [dim, dim.atom(:cl)] => [
+                [[dimer, dimer.atom(:cr)], position_110_front],
+              ],
+              [dim, dim.atom(:cr)] => [
+                [[dimer, dimer.atom(:cr)], position_110_front],
+              ],
+            } }
+        end
       end
 
       describe "#same?" do

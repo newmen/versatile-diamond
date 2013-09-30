@@ -3,15 +3,20 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Where, visitable: true do
+    describe Where do
       describe "#specs" do
-        it { at_end.specs.should == [dimer_base] }
-        it { at_middle.specs.should == [dimer_base] }
-        it { near_methyl.specs.should == [methyl_on_bridge_base] }
+        it { at_end.specs.should == [dimer] }
+        it { at_middle.specs.should == [dimer] }
+        it { near_methyl.specs.should == [methyl_on_bridge] }
       end
 
       describe "#description" do
         it { at_end.description.should == 'at end of dimers row' }
+      end
+
+      it_behaves_like "check specs after swap_source" do
+        subject { at_end }
+        let(:method) { :specs }
       end
 
       describe "#parents" do
@@ -20,7 +25,7 @@ module VersatileDiamond
       end
 
       describe "#concretize" do
-        it { near_methyl.concretize(target: bridge.atom(:ct)).
+        it { near_methyl.concretize(target: [bridge, bridge.atom(:ct)]).
           should be_a(There) }
 
         # TODO: check positions

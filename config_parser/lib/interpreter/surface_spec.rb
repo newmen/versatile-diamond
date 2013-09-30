@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Changes behavior when spec is surface structure
     class SurfaceSpec < Spec
+      include PositionErrorsCatcher
 
       # Surface structure could'n have position with face or direction
       # @param [Array] atoms the array of atom keynames
@@ -10,9 +11,9 @@ module VersatileDiamond
       # @option [Symbol] :dir the direction of position
       # @raise [Errors::SyntaxError] if position without face or direction
       def position(*atoms, face: nil, dir: nil)
-        link(*atoms, Concepts::Position[face: face, dir: dir])
-      rescue Concepts::Position::IncompleteError
-        syntax_error('position.uncomplete')
+        interpret_position_errors do
+          link(*atoms, Concepts::Position[face: face, dir: dir])
+        end
       end
 
     private
@@ -31,23 +32,6 @@ module VersatileDiamond
           true
         else
           super
-        end
-      end
-
-      # Links atom together if link instance is not Position or both atoms has
-      #   lattice
-      #
-      # @param [Array] atoms the array of atom keynames
-      # @param [Concepts::Bond] link_instance the instance of link
-      # @raise [Errors::SyntaxError] if setup position for unlatticed atom
-      # @override
-      def link(*atoms, link_instance)
-        super(*atoms, link_instance) do |first, second|
-          if link_instance.class == Position &&
-              (!first.lattice || !second.lattice)
-
-            syntax_error('.incorrect_linking')
-          end
         end
       end
     end

@@ -6,7 +6,6 @@ module VersatileDiamond
     # reactants do not form a new structure, only exchanged monovalent atoms
     # or the second algorithm for case with forming the third structure.
     class AtomMapper
-      include Modules::ListsComparer
 
       # Exception for cannot map case
       class CannotMap < Exception; end
@@ -46,7 +45,7 @@ module VersatileDiamond
         reject_simple_specs!
 
         mapping_result = MappingResult.new(@source, @products)
-        full_corresponding? ?
+        mapping_result.reaction_type == :exchange ?
           ManyToManyAlgorithm.map_to(mapping_result, names_and_specs) :
           ManyToOneAlgorithm.map_to(mapping_result)
 
@@ -54,14 +53,6 @@ module VersatileDiamond
       end
 
     private
-
-      # Checks whether a full conformity of species between each other
-      # @return [Boolean] whether a full corresponding
-      def full_corresponding?
-        lists_are_identical?(@source, @products) do |source_spec, product_spec|
-          source_spec.name == product_spec.name
-        end
-      end
 
       # Rejects simple specs from each source and products containers
       def reject_simple_specs!

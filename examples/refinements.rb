@@ -17,12 +17,12 @@ gas
   temperature 1200
 
 surface
-  lattice :d, cpp_class: Diamond
+  lattice :d, class: Diamond
 
   spec :bridge
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
     position :cl, :cr, face: 100, dir: :front
 
   spec :methyl_on_bridge
@@ -43,7 +43,6 @@ surface
 
 events
   reaction 'methyl adsorption to dimer'
-    # TODO: необходимо автоматически указывать для результата incoherent и unfixed атомы
     equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
     enthalpy -73.6
     activation 0
@@ -57,7 +56,6 @@ events
         forward_rate 1.7e7
 
       refinement 'from face 111'
-        # TODO: должно быть автоматически определено, как случай не соответствующий всем другим
         forward_rate 5.4e6
 
     activation 0

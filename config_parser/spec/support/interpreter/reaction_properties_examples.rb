@@ -65,7 +65,7 @@ module VersatileDiamond
 
             it "wrong dimension when has gas phase molecule" do
               expect { target.interpret('reverse_rate 1e3, 1/s') }.
-                to raise_error syntax_error
+                to raise_error *syntax_error('dimension.undefined_value')
             end
           end
         end

@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe AtomReference, latticed_ref_atom: true do
+    describe AtomReference do
       let(:ref) { AtomReference.new(ethylene_base, :c1) }
 
       describe "#name" do

@@ -8,9 +8,10 @@ module VersatileDiamond
         include SyntaxChecker
       end
       subject { SomeChecker.new }
-      let(:syntax_error) { Errors::SyntaxError }
 
       describe "#syntax_error" do
+        let(:syntax_error) { Errors::SyntaxError }
+
         it { expect { subject.syntax_error('hello') }.
           to raise_error syntax_error }
 
@@ -19,6 +20,21 @@ module VersatileDiamond
             subject.syntax_error('.hello', name: 'World')
           rescue syntax_error => e
             e.message('/path', 0).should == "Hello, World!\n\tfrom /path:0"
+          end
+        end
+      end
+
+      describe "#syntax_warning" do
+        let(:syntax_warning) { Errors::SyntaxWarning }
+
+        it { expect { subject.syntax_warning('warning') }.
+          to raise_error syntax_warning }
+
+        it "validate message" do
+          begin
+            subject.syntax_warning('.warning', param: 'message')
+          rescue syntax_warning => e
+            e.message.should == "Warning! Test message (skipped)"
           end
         end
       end
