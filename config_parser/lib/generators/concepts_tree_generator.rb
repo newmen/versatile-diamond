@@ -3,6 +3,7 @@ require 'graphviz'
 module VersatileDiamond
   module Generators
 
+    # Implements methods for generating graph of general concepts dependencies
     class ConceptsTreeGenerator
       SPECIFIC_SPEC_COLOR = 'blue'
       TERMINATION_SPEC_COLOR = 'chocolate'
@@ -12,6 +13,11 @@ module VersatileDiamond
       TYPICAL_REACTION_SECOND_SOURCE_EDGE_COLOR = 'gray'
       REACTION_DEPENDING_EDGE_COLOR = 'red'
 
+      # Initialize a new instance of generator
+      # @param [String] filename the name of result image file
+      # @param [String] ext the extention of result image file
+      # @option [Boolean] :draw_second_source_deps if set then reaction
+      #   dependency from second source spec will show on dependencies tree
       def initialize(filename, ext = 'png', draw_second_source_deps: false)
         @filename = "#{filename}.#{ext}"
         @ext = ext.to_sym
@@ -32,6 +38,7 @@ module VersatileDiamond
         @lateral_reactions = Tools::Chest.all(:lateral_reaction)
       end
 
+      # Generates a graph image file
       def generate
         # draw calls order is important!
         draw_specs
@@ -50,6 +57,7 @@ module VersatileDiamond
 
     private
 
+      # Draws basic species and dependencies between them
       def draw_specs
         @spec_to_nodes = @base_specs.each_with_object({}) do |spec, hash|
           hash[spec] = @graph.add_nodes(spec.name.to_s)
@@ -61,6 +69,8 @@ module VersatileDiamond
         end
       end
 
+      # Draws specific species and dependencies between them, and also will
+      # draw dependencies from basic species
       def draw_specific_specs
         setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
 
@@ -85,6 +95,7 @@ module VersatileDiamond
         end
       end
 
+      # Draws termination species
       def draw_termination_specs
         @sp_specs_to_nodes ||= {}
         @termination_specs.each do |ts|
@@ -94,6 +105,8 @@ module VersatileDiamond
         end
       end
 
+      # Draws where objects and dependencies between them, and also will
+      # draw dependencies from specific species
       def draw_wheres
         @wheres_to_nodes = @wheres.each_with_object({}) do |where, hash|
           multiline_name = multilinize(where.description, limit: 8)
@@ -112,14 +125,16 @@ module VersatileDiamond
             end
           end
 
-          next unless @spec_to_nodes
+          next unless @sp_specs_to_nodes
           where.specs.each do |spec|
-            spec_node = @spec_to_nodes[spec]
+            spec_node = @sp_specs_to_nodes[spec]
             @graph.add_edges(node, spec_node).set { |e| e.color = WHERE_COLOR }
           end
         end
       end
 
+      # Draws typical reactions and dependencies between them, and also will
+      # draw dependencies from reactants
       def draw_typical_reactions
         @typical_reacts_to_nodes = {}
         draw_reactions(@typical_reactions) do |reaction, node|
@@ -128,6 +143,8 @@ module VersatileDiamond
         end
       end
 
+      # Draws ubiquitous reactions, and also will draw dependencies from
+      # reactants
       def draw_ubiquitous_reactions
         @ubiq_reacts_to_nodes = {}
         draw_reactions(@ubiquitous_reactions) do |reaction, node|
@@ -135,6 +152,8 @@ module VersatileDiamond
         end
       end
 
+      # Draws lateral reactions and dependencies between them, and also will
+      # draw dependencies from reactants
       def draw_lateral_reactions
         not_draw_spec_edges = -> reaction do
           @react_to_more_complex && @react_to_more_complex[reaction]
@@ -143,7 +162,9 @@ module VersatileDiamond
         @lateral_reactions.sort_by! { |reaction| reaction.size }
 
         @lateral_reacts_to_nodes = {}
-        draw_reactions(@lateral_reactions, not_draw_spec_edges) do |reaction, node|
+        draw_reactions(@lateral_reactions, not_draw_spec_edges) do
+          |reaction, node|
+
           @lateral_reacts_to_nodes[reaction] = node
           remember_more_complexes(reaction)
 
@@ -158,6 +179,7 @@ module VersatileDiamond
         end
       end
 
+      # Draws dependencies between reactions
       def draw_reactions_dependencies
         if @ubiq_reacts_to_nodes && @typical_reacts_to_nodes
           draw_reactions_depending_edges(@ubiquitous_reactions,
@@ -175,6 +197,11 @@ module VersatileDiamond
         end
       end
 
+      # Draws reactions and dependencies between reactants
+      # @param [Array] reactions the array of reactions that will be drawed
+      # @param [Proc] not_draw_spec_edges the lambda that return boolean value
+      #   if not necessary draw dependencies from reactants
+      # @yield [Array] do someting with reaction and their node
       def draw_reactions(reactions, not_draw_spec_edges = nil, &block)
         reactions.each do |reaction|
           multiline_name = multilinize(reaction.name)
@@ -186,11 +213,17 @@ module VersatileDiamond
 
           next if not_draw_spec_edges && not_draw_spec_edges[reaction]
 
-          draw_edges_to_specific_specs(
-            node, reaction.source, TYPICAL_REACTION_COLOR)
+          draw_edges_to_specific_specs(node, reaction.source)
         end
       end
 
+      # Draws dependencies between reactions
+      # @param [Array] reactions the reactions for which will draw dependencies
+      #   from more complex reactions
+      # @param [Hash] current_to_nodes the hash where keys is reactions for
+      #   which and dependencies will draw, and values is correspond nodes
+      # @param [Hash] child_to_nodes the hash where keys is dependend reactions
+      #   and values is correspond nodes
       def draw_reactions_depending_edges(reactions, current_to_nodes, child_to_nodes)
         reactions.each do |reaction|
           next if reaction.more_complex.empty?
@@ -205,7 +238,10 @@ module VersatileDiamond
         end
       end
 
-      def draw_edges_to_specific_specs(reaction_node, specific_specs, color)
+      # Draws dependencies of reaction from reactants
+      # @param [Node] reaction_node the node of reaction
+      # @param [Array] specific_specs the arrya of dependent specific specs
+      def draw_edges_to_specific_specs(reaction_node, specific_specs)
         return unless @sp_specs_to_nodes
 
         color = TYPICAL_REACTION_COLOR
@@ -224,6 +260,9 @@ module VersatileDiamond
         specific_specs.each(&draw_edge_to)
       end
 
+      # Remembers more complex reactions for passed reaction
+      # @param [UbiquitousReaction] reaction the reaction which is aware of
+      #   their more complex analogs
       def remember_more_complexes(reaction)
         @react_to_more_complex ||= {}
         reaction.more_complex.each do |mc|
@@ -231,6 +270,10 @@ module VersatileDiamond
         end
       end
 
+      # Multilinize passed text where each result line is not more of limit
+      # @param [String] text the text for multilinizing
+      # @option [Integer] :limit the limit of one line length
+      # @return [String] multilinized text
       def multilinize(text, limit: 13)
         words = text.split(/\s+/)
         splitted_text = ['']

@@ -17,12 +17,12 @@ gas
   temperature 1200
 
 surface
-  lattice :d, cpp_class: Diamond
+  lattice :d, class: Diamond
 
   spec :bridge
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
     position :cl, :cr, face: 100, dir: :front
 
   spec :methyl_on_bridge
@@ -61,7 +61,6 @@ events
 
   reaction 'dimer formation between incoherent bridges'
     aliases one: bridge, two: bridge
-    # TODO: определение положения атомов выводится исходя из результата реакции?
     equation one(ct: *) + two(ct: *) = dimer
       incoherent one(:ct), two(:ct)
 
@@ -90,16 +89,13 @@ events
     where :near_methyl, 'when there is chain neighbour methyl'
       position target_atom, methyl_on_dimer(:cr), face: 100, dir: :front
 
-    # TODO: этот случай используется не везде
     where :near_high_bridge, 'when there is chain neighbour high bridge'
       position target_atom, high_bridge(:ct), face: 100, dir: :front
 
 
   reaction 'methyl to high bridge'
-    # TODO: проверить соответствие значений направленности
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
       unfixed methyl_on_dimer(:cm)
-      position bridge(:ct), high_bridge(:ct), face: 100, dir: :front # TODO: должно быть определено автоматически, по соответствию в графах
 
       refinement 'without high chain neighbour'
         forward_activation 15.3
@@ -107,7 +103,6 @@ events
 
       lateral :high_neighbour, target_atom: methyl_on_dimer(:cr)
 
-      # TODO: энергии латеральных взаимодействий выдуманы (как, впорочем, и ранее)
       there :near_methyl
         forward_activation 10.4
         reverse_activation 5.1
@@ -128,7 +123,6 @@ events
         forward_activation 36.3
         reverse_activation 12.3
 
-      # TODO: аналогично проверить значения
       lateral :high_neighbour, target_atom: high_bridge(:ct)
       there :near_methyl
         forward_activation 25.5

@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe Spec, visitable: true do
+    describe Spec do
       describe "#simple?" do
         it { Spec.new(:not_set).simple?.should be_nil }
 
@@ -42,25 +42,6 @@ module VersatileDiamond
           it { ethylene_base.atom(:c1).should be_nil }
           it { ethylene_base.atom(:c2).should == c1 }
           it { ethylene_base.size.should == 2 }
-        end
-      end
-
-      describe "#link" do
-        let(:two_c_atoms) do
-          s = Spec.new(:two_c_atoms, c1: c, c2: c2)
-          s.link(c, c2, free_bond)
-          s.link(c, c2, free_bond)
-          s.link(c, c2, free_bond)
-          s.link(c, c2, free_bond); s
-        end
-
-        it "valid bonds number" do
-          expect { two_c_atoms.link(c, c2, position_front) }.to_not raise_error
-        end
-
-        it "wrong bonds number" do
-          expect { two_c_atoms.link(c, c2, free_bond) }.
-            to raise_error Atom::IncorrectValence
         end
       end
 

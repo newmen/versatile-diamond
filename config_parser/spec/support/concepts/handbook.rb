@@ -20,11 +20,6 @@ module VersatileDiamond
           d.lattice = diamond; d
         end
 
-        3.times do |i|
-          set(:"c#{i}") { c.dup }
-          set(:"cd#{i}") { cd.dup }
-        end
-
         # Specific atoms:
         %w(h n c c0 cd).each do |name|
           set(:"activated_#{name}") do
@@ -45,12 +40,27 @@ module VersatileDiamond
           SpecificAtom.new(c, options: [:unfixed, :active])
         end
 
+        # Few atoms for different cases
+        3.times do |i|
+          set(:"c#{i}") { c.dup }
+          set(:"cd#{i}") { cd.dup }
+          set(:"activated_cd#{i}") { activated_cd.dup }
+        end
+
         # Bonds and positions:
         set(:free_bond) { Bond[face: nil, dir: nil] }
-        set(:bond_110) { Bond[face: 110, dir: :front] }
-        set(:bond_100) { Bond[face: 100, dir: :front] }
-        set(:position_front) { Position[face: 100, dir: :front] }
-        set(:position_cross) { Position[face: 100, dir: :cross] }
+        [:front, :cross].each do |dir|
+          [100, 110].each do |face|
+            set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }
+            set(:"position_#{face}_#{dir}") { Position[face: face, dir: dir] }
+          end
+        end
+
+        set(:position_duplicate) { Position::Duplicate }
+        set(:unspecified_atoms) { Position::UnspecifiedAtoms }
+        set(:undefined_relation) do
+          VersatileDiamond::Lattices::Base::UndefinedRelation
+        end
 
         # Specs and specific specs:
         set(:hydrogen_base) { GasSpec.new(:hydrogen, h: h) }
@@ -77,9 +87,8 @@ module VersatileDiamond
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
-          s.link(cd, cl, bond_110)
-          s.link(cd, cr, bond_110)
-          s.link(cl, cr, position_front); s
+          s.link(cd, cl, bond_110_cross)
+          s.link(cd, cr, bond_110_cross); s
         end
         set(:bridge) { SpecificSpec.new(bridge_base) }
         set(:activated_bridge) do
@@ -149,7 +158,7 @@ module VersatileDiamond
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cl)
-          s.link(s.atom(:cr), s.atom(:cl), bond_100); s
+          s.link(s.atom(:cr), s.atom(:cl), bond_100_front); s
         end
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) do
@@ -219,11 +228,12 @@ module VersatileDiamond
             'methyl deactivation', dm_source, dm_product, dm_atom_map)
         end
 
+        set(:abridge_dup) { activated_bridge.dup }
         set(:md_source) { [methyl_on_bridge] }
-        set(:md_products) { [methyl, activated_bridge.dup] }
+        set(:md_products) { [methyl, abridge_dup] }
         set(:md_names_to_specs) do {
           source: [[:mob, methyl_on_bridge]],
-          products: [[:m, methyl], [:b, activated_bridge]]
+          products: [[:m, methyl], [:b, abridge_dup]]
         } end
         set(:md_atom_map) do
           Mcs::AtomMapper.map(md_source, md_products, md_names_to_specs)
@@ -263,37 +273,71 @@ module VersatileDiamond
             df_source, df_products, df_atom_map)
         end
 
+        set(:mi_source) do
+          [activated_methyl_on_extended_bridge, activated_dimer]
+        end
+        set(:mi_product) { [extended_dimer] }
+        set(:mi_names_to_specs) do {
+          source: [
+            [:mob, activated_methyl_on_extended_bridge],
+            [:d, activated_dimer]],
+          products: [[:ed, dimer]]
+        } end
+        set(:mi_atom_map) do
+          Mcs::AtomMapper.map(mi_source, mi_product, mi_names_to_specs)
+        end
+        set(:methyl_incorporation) do
+          Reaction.new(:forward, 'methyl incorporation',
+            mi_source, mi_product, mi_atom_map)
+        end
+
         # Environments (targeted to dimer formation reverse reaction):
         set(:dimers_row) do
           Environment.new(:dimers_row, targets: [:one, :two])
         end
         set(:at_end) do
-          w = Where.new(:at_end, 'at end of dimers row', specs: [dimer_base])
-          w.raw_position(:one, dimer_base.atom(:cl), position_cross)
-          w.raw_position(:two, dimer_base.atom(:cr), position_cross); w
+          w = Where.new(:at_end, 'at end of dimers row', specs: [dimer])
+          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross); w
         end
-        set(:on_end) do #
-          at_end.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))
+        set(:on_end) do
+          at_end.concretize(
+            one: [activated_bridge, activated_bridge.atom(:ct)],
+            two: [
+              activated_incoherent_bridge,
+              activated_incoherent_bridge.atom(:ct)
+            ])
         end
 
         set(:at_middle) do
           w = Where.new(
-            :at_middle, 'at middle of dimers row', specs: [dimer_base])
-          w.raw_position(:one, dimer_base.atom(:cl), position_cross)
-          w.raw_position(:two, dimer_base.atom(:cr), position_cross)
+            :at_middle, 'at middle of dimers row', specs: [dimer])
+          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross)
           w.parents << at_end; w
         end
         set(:on_middle) do
-          at_middle.concretize(one: dimer.atom(:cl), two: dimer.atom(:cr))
+          at_middle.concretize(
+            one: [activated_bridge, activated_bridge.atom(:ct)],
+            two: [
+              activated_incoherent_bridge,
+              activated_incoherent_bridge.atom(:ct)
+            ])
         end
 
         set(:near_methyl) do
           w = Where.new(:near_methyl, 'chain neighbour methyl',
-            specs: [methyl_on_bridge_base])
+            specs: [methyl_on_bridge])
           w.raw_position(
-            :target, methyl_on_bridge_base.atom(:cb), position_front); w
+            :target,
+            [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
+            position_100_front
+          ); w
         end
-        set(:there_methyl) { near_methyl.concretize(target: dimer.atom(:cr)) }
+        set(:there_methyl) do
+          near_methyl.concretize(
+            target: [activated_bridge, activated_bridge.atom(:ct)])
+        end
       end
 
     end

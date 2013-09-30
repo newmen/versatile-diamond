@@ -30,13 +30,12 @@ gas
   temperature 1200
 
 surface
-  lattice :d, cpp_class: Diamond
+  lattice :d, class: Diamond
 
   spec :bridge
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
-    position :cl, :cr, face: 100, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
 
   spec :high_bridge # may describe by methyl_on_bridge
     atoms ch: C, ct: bridge(:ct)
@@ -67,15 +66,13 @@ surface
   spec :bridge_with_dimer
     aliases dmr: dimer
     atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr)
-    bond :ct, :cl, face: 110, dir: :front
-    bond :ct, :cr, face: 110, dir: :front
-    position :cl, :cr, face: 100, dir: :front
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
 
   spec :two_bridges
     atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
-    bond :ctl, :cl, face: 110, dir: :front
-    bond :ctl, :cc, face: 110, dir: :front
-    position :cl, :cc, face: 100, dir: :front
+    bond :ctl, :cl, face: 110, dir: :cross
+    bond :ctl, :cc, face: 110, dir: :cross
 
   spec :cross_bridge_on_dimers
     atoms ct: C, cl: dimer(:cr), cr: dimer(:cr)
@@ -228,7 +225,6 @@ events
 
   reaction 'dimer formation between incoherent bridges'
     aliases one: bridge, two: bridge
-    # TODO: определение положения атомов выводится исходя из результата реакции?
     equation one(ct: *) + two(ct: *) = dimer
       incoherent one(:ct), two(:ct)
 
@@ -253,7 +249,6 @@ events
 
   reaction 'dimer formation between incoherent bridge and fixed bridge'
     aliases one: bridge, two: bridge
-    # TODO: см. коммент к предыдущей реакции
     equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer
 
       refinement 'not in dimers row'
@@ -290,7 +285,6 @@ events
     # TODO: проверить соответствие значений направленности
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
       unfixed methyl_on_dimer(:cm)
-      position bridge(:ct), high_bridge(:ct), face: 100, dir: :front # TODO: должно быть определено автоматически, по соответствию в графах
 
       refinement 'without high chain neighbour'
         forward_activation 15.3
@@ -313,7 +307,6 @@ events
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
-      position high_bridge(:ct), source(:ct), face: 100, dir: :front
 
       refinement 'without chain neighbour methyl'
         forward_activation 36.3
@@ -330,7 +323,6 @@ events
     reverse_rate 1.1e12
 
   reaction 'high bridge to bridge and dimer'
-    # TODO: положение (и доп. конфигурация) атомов также выводится исходя из результата реакции?
     equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'

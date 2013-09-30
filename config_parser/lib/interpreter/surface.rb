@@ -8,11 +8,11 @@ module VersatileDiamond
       # Chest
       #
       # @param [Symbol] sign the name of lattice
-      # @option [String] :cpp_class the C++ class of described lattice
-      # @raise [Errors::SyntaxError] if lattice haven't cpp_class declaration
-      def lattice(sign, cpp_class: nil)
-        raise syntax_error('lattice.need_define_class') unless cpp_class
-        store(Lattice.new(sign, cpp_class))
+      # @option [String] :class the class of described lattice
+      # @raise [Errors::SyntaxError] if lattice haven't class declaration
+      def lattice(sign, **options)
+        raise syntax_error('lattice.need_define_class') unless options[:class]
+        store(Lattice.new(sign, options[:class]))
       end
 
       # Interpret size line, checks passed values and store them to Config

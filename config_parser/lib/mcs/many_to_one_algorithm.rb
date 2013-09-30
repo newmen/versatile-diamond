@@ -24,7 +24,8 @@ module VersatileDiamond
         #   result
         # @raise [AtomMapper::CannotMap] when algorithm cannot be applied
         def map_to(map_result)
-          new(map_result.source, map_result.products).map_to(map_result)
+          new(map_result.source, map_result.products,
+            map_result.reaction_type).map_to(map_result)
         end
       end
 
@@ -34,7 +35,9 @@ module VersatileDiamond
       #
       # @param [Array] sources the list of source species
       # @param [Array] products the list of products species
-      def initialize(source, products)
+      # @param [Symbol] reaction_type the type of reaction (association or
+      #   dissociation)
+      def initialize(source, products, reaction_type)
         make_graphs = -> spec { Graph.new(spec.links) }
         source_graphs = source.map(&make_graphs)
         product_graphs = products.map(&make_graphs)
@@ -43,7 +46,12 @@ module VersatileDiamond
         @graphs_to_specs.merge!(Hash[source_graphs.zip(source)])
         @graphs_to_specs.merge!(Hash[product_graphs.zip(products)])
 
-        define_reaction_type(source_graphs, product_graphs)
+        @reaction_type = reaction_type # must be :association or :dissociation
+        # for current algorithm
+
+        @few_graphs, @big_graph = (@reaction_type == :association) ?
+          [source_graphs, product_graphs.first] :
+          [product_graphs, source_graphs.first]
       end
 
       # Maps structures from stored graphs and associate they vertices by
@@ -88,33 +96,11 @@ module VersatileDiamond
           # store result
           changes = associate(changed_big, changed_small)
           full = associate(big_mapped_vertices, small_mapped_vertices)
-          mapping_result.add(full, changes)
+          mapping_result.add(associating_specs, full, changes)
         end
       end
 
     private
-
-      # Defines and store reaction type and stores passed graph to correspond
-      # internal graphs
-      #
-      # @param [Array] source_graphs see at #self.map source_links_list arg
-      # @param [Array] product_graphs see at #self.map product_links_list arg
-      # @raise [AtomMapper::CannotMap] see at #self.map
-      def define_reaction_type(source_graphs, product_graphs)
-        @reaction_type = if product_graphs.size == 1 &&
-          source_graphs.size > product_graphs.size
-
-          @few_graphs, @big_graph = source_graphs, product_graphs.first
-          :association
-        else
-          if source_graphs.size != 1
-            raise AtomMapper::CannotMap, 'Wrong number of products and sources'
-          else
-            @big_graph, @few_graphs = source_graphs.first, product_graphs
-            :disassociation
-          end
-        end
-      end
 
       # In order to handle situations change atom accessories to crystal
       # lattice, well as the possibility change the position of the atoms
@@ -284,6 +270,19 @@ module VersatileDiamond
         @big_graph.select_vertices(mapped_big)
       end
 
+      # Gets associaing specis in correct order
+      # @return [Array] the array of associating species
+      def associating_specs
+        big_spec = @graphs_to_specs[@big_graph]
+        small_spec = @graphs_to_specs[@small_graph]
+
+        if @reaction_type == :association
+          [small_spec, big_spec]
+        else
+          [big_spec, small_spec]
+        end
+      end
+
       # Associate changed vertices with each other
       # @param [Array] changed_big the changed not specified atoms of big spec
       # @param [Array] changed_small the changed not specified atoms of small
@@ -291,13 +290,10 @@ module VersatileDiamond
       # @return [Array] depending from type of reaction, return parameters in
       #   correct order
       def associate(changed_big, changed_small)
-        big_spec = @graphs_to_specs[@big_graph]
-        small_spec = @graphs_to_specs[@small_graph]
-
         if @reaction_type == :association
-          [small_spec, big_spec, changed_small, changed_big]
+          [changed_small, changed_big]
         else
-          [big_spec, small_spec, changed_big, changed_small]
+          [changed_big, changed_small]
         end
       end
     end

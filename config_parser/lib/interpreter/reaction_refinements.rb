@@ -4,6 +4,7 @@ module VersatileDiamond
     # Interprets reaction refinements and pass it to concept instances
     module ReactionRefinements
       include Interpreter::AtomMatcher
+      include Interpreter::PositionErrorsCatcher
 
       # Defines two methods for setup an instance of specific spec which found
       # specs set by spec name
@@ -16,8 +17,12 @@ module VersatileDiamond
         define_method(state) do |*used_atom_strs|
           begin
             used_atom_strs.each do |atom_str|
-              find_spec(atom_str, :all) do |specific_spec, atom_keyname|
+              find_all_specs(atom_str) do |specific_spec, atom_keyname|
+                old_atom = specific_spec.atom(atom_keyname)
                 specific_spec.send(:"#{state}!", atom_keyname)
+                new_atom = specific_spec.atom(atom_keyname)
+                next if old_atom == new_atom
+                @reaction.swap_atom(specific_spec, old_atom, new_atom)
               end
             end
           rescue Concepts::SpecificAtom::AlreadyStated => e
@@ -36,69 +41,98 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] if position already exists for selected
       #   atoms or atom cannot be found
       def position(*used_atom_strs, **options)
-        first_atom, second_atom = used_atom_strs.map do |atom_str|
-          find_spec(atom_str) do |specific_spec, atom_keyname|
-            specific_spec.atom(atom_keyname)
-          end
-        end
-
-        pos = Concepts::Position[options]
-        if @reaction.positions &&
-          @reaction.positions.find do |f, s, p|
-            (f == first_atom && s = second_atom) ||
-              (s == first_atom && f = second_atom)
+        first_spec_atom, second_spec_atom =
+          used_atom_strs.map do |atom_str|
+            specific_spec, atom_keyname = find_any_spec(atom_str)
+            [specific_spec, specific_spec.atom(atom_keyname)]
           end
 
-          syntax_error('refinement.duplicate_position')
-        end
+        first_spec, _ = first_spec_atom
+        second_spec, _ = second_spec_atom
+        current = current_reaction(first_spec, second_spec)
 
-        @reaction.positions << [first_atom, second_atom, pos]
-      rescue Concepts::Position::IncompleteError
-        syntax_error('position.uncomplete')
+        interpret_position_errors do
+          pos = Concepts::Position[options]
+          current.position_between(first_spec_atom, second_spec_atom, pos)
+        end
       end
 
     private
 
-      # Finds specific spec in names to specs hash
+      # Gets current reaction by passed species
+      # @param [Array] specs the array of species which should be the source
+      #   species for resulting reation
+      # @param [Reaction] the reaction where passed species are source species
+      def current_reaction(*specs)
+        specs = specs.uniq
+
+        if specs.all? { |spec| @reaction.source.include?(spec) }
+          @reaction
+        elsif specs.all? { |spec| @reaction.products.include?(spec) }
+          @reaction.reverse
+        else
+          syntax_error('refinement.different_parts')
+        end
+      end
+
+      # Finds any specific spec in names to specs hash
       # @param [String] used_atom_str the parsing string
-      # @param [Symbol] find_type the type of search algorithm, can be
-      #   :any or :all
-      # @yield [Concepts::SpecificSpec, Symbol] do for each found spec
       # @raise [Errors::SyntaxError] if specific spec is not found or have
-      #   inaccurate compliance
-      def find_spec(used_atom_str, find_type = :any, &block)
+      #   inaccurate complience
+      # @return [SpecificSpec, Symbol] the array where first element is found
+      #   spec and second is used atom keyname
+      def find_any_spec(used_atom_str)
         spec_name, atom_keyname = match_used_atom(used_atom_str)
         spec_name = spec_name.to_sym
-        find_lambda = -> type do
-          result = @names_and_specs[type].select do |name, _|
-            name.to_sym == spec_name
-          end
-          if result.size > 1
-            syntax_error('refinement.cannot_compliance', name: spec_name)
-          end
-          result.first && result.first.last
+
+        specific_spec = find_spec_in(:source, spec_name) ||
+          find_spec_in(:products, spec_name)
+
+        unless specific_spec && specific_spec.atom(atom_keyname)
+          syntax_error('matcher.undefined_used_atom', name: used_atom_str)
         end
 
-        if find_type == :any
-          specific_spec = find_lambda[:source] || find_lambda[:products]
-          unless specific_spec && specific_spec.atom(atom_keyname)
-            syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-          end
+        [specific_spec, atom_keyname]
+      end
 
-          block[specific_spec, atom_keyname]
-        elsif find_type == :all
-          specific_specs = [
-            find_lambda[:source], find_lambda[:products]].compact
-          if specific_specs.empty? ||
-            specific_specs.find { |s| !s.atom(atom_keyname) }
+      # Finds all specific specs in names to specs hash and do for it passed
+      # block
+      #
+      # @param [String] used_atom_str the parsing string
+      # @yield [Concepts::SpecificSpec, Symbol] do for each found spec
+      # @raise [Errors::SyntaxError] if specific spec is not found or have
+      #   inaccurate complience
+      def find_all_specs(used_atom_str, &block)
+        spec_name, atom_keyname = match_used_atom(used_atom_str)
+        spec_name = spec_name.to_sym
 
-            syntax_error('matcher.undefined_used_atom', name: used_atom_str)
-          end
+        specific_specs = [
+          find_spec_in(:source, spec_name),
+          find_spec_in(:products, spec_name)].compact
 
-          specific_specs.each { |ss| block[ss, atom_keyname] }
-        else
-          raise ArgumentError, "Undefined find type #{find_type}"
+        if specific_specs.empty? ||
+          specific_specs.find { |s| !s.atom(atom_keyname) }
+
+          syntax_error('matcher.undefined_used_atom', name: used_atom_str)
         end
+
+        specific_specs.each { |ss| block[ss, atom_keyname] }
+      end
+
+      # Finds spec in some part of equation
+      # @param [Symbol] type the equation part
+      # @param [Symbol] spec_name the name of found spec
+      # @return [SpecificSpec] nil or found specific spec
+      def find_spec_in(type, spec_name)
+        result = @names_and_specs[type].select do |name, _|
+          name.to_sym == spec_name
+        end
+        if result.size > 1
+          syntax_error('refinement.cannot_complience', name: spec_name)
+        end
+
+        # gets the spec
+        result.first && result.first.last
       end
 
     end

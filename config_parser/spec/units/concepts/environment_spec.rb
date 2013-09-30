@@ -11,18 +11,9 @@ module VersatileDiamond
       end
 
       describe "#make_lateral" do
-        describe "valid targets" do
-          subject { dimers_row.make_lateral(one: 1, two: 2) }
-          it { should be_a(Lateral) }
-          it { subject.name.should == :dimers_row }
-        end
-
-        describe "invalid target" do
-          it { expect { dimers_row.make_lateral }.
-            to raise_error Environment::InvalidTarget }
-          it { expect { dimers_row.make_lateral(one: 1, two: 2, wrong: 3) }.
-            to raise_error Environment::InvalidTarget }
-        end
+        subject { dimers_row.make_lateral(one: 1, two: 2) }
+        it { should be_a(Lateral) }
+        it { subject.name.should == :dimers_row }
       end
     end
 

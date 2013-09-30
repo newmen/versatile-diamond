@@ -57,9 +57,9 @@ module VersatileDiamond
             product_atoms << product_atom
           end
 
-          changes = [source, product, changed_source, changed_product]
-          full = [source, product, source_atoms, product_atoms]
-          mapping_result.add(full, changes)
+          changes = [changed_source, changed_product]
+          full = [source_atoms, product_atoms]
+          mapping_result.add([source, product], full, changes)
         end
       end
     end

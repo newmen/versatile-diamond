@@ -86,11 +86,13 @@ module VersatileDiamond
         #   similar wheres for instance there object
         # @return [Concepts::There] found and concretized where object
         def there(reaction, where_name)
-          laterals = @sac[:lateral][reaction.name.to_sym]
-          theres = laterals.map do |name, lateral|
-            where = @sac[:where][name][where_name]
-            where && lateral.there(where)
-          end
+          laterals = @sac[:lateral] && @sac[:lateral][reaction.name.to_sym]
+          theres = !laterals ? [] :
+            laterals.map do |name, lateral|
+              @sac[:where] && @sac[:where][name] &&
+                (where = @sac[:where][name][where_name]) &&
+                where && lateral.there(where)
+            end
 
           theres.compact!
           if theres.size < 1
@@ -107,12 +109,14 @@ module VersatileDiamond
         # @param [Symbol] name is the name of finding concept
         # @raise [KeyNameError] if concept is not found
         # @return [Concepts::Named] founded concept
+        # @override
         def method_missing(key, *names)
           unless @sac && @sac[key]
             super
           else
             names.reduce(@sac[key]) { |hash, name| hash[name.to_sym] } ||
-              raise(Chest::KeyNameError.new(key, names.join('>'), :undefined))
+              raise(
+                Chest::KeyNameError.new(key, names.join(' -> '), :undefined))
           end
         rescue NoMethodError => e
           raise(Chest::KeyNameError.new(key, e.name, :undefined))

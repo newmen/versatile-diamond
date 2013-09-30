@@ -13,7 +13,7 @@ module VersatileDiamond
           "time 'min'"
         ].each do |line|
           it { expect { dimensions.interpret(line) }.
-            not_to raise_error Exception }
+            not_to raise_error }
         end
       end
 

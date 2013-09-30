@@ -3,8 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Interpreter
 
-    describe Refinement, type: :interpreter,
-      reaction_refinements: true, reaction_properties: true do
+    describe Refinement, type: :interpreter do
 
       it_behaves_like "reaction refinemenets"
 
