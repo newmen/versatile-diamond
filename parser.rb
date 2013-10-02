@@ -26,6 +26,7 @@ I18n.locale = opt['--lang']
 VD::Analyzer.read_config(opt['<path_to_config>'])
 
 # generator = VD::Generators::ConceptsTreeGenerator.new('total_tree')
-generator = VD::Generators::SpecsOverview.new
+generator = VD::Generators::AtomsGraphGenerator.new('composition')
+# generator = VD::Generators::SpecsOverview.new
 generator.generate
 

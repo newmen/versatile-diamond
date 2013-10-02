@@ -1,10 +1,8 @@
-require 'graphviz'
-
 module VersatileDiamond
   module Generators
 
     # Implements methods for generating graph of general concepts dependencies
-    class ConceptsTreeGenerator < Base
+    class ConceptsTreeGenerator < GraphGenerator
       SPECIFIC_SPEC_COLOR = 'blue'
       TERMINATION_SPEC_COLOR = 'chocolate'
       WHERE_COLOR = 'darkviolet'
@@ -18,13 +16,10 @@ module VersatileDiamond
       # @param [String] ext the extention of result image file
       # @option [Boolean] :draw_second_source_deps if set then reaction
       #   dependency from second source spec will show on dependencies tree
+      # @override
       def initialize(filename, ext = 'png', draw_second_source_deps: false)
-        @filename = "#{filename}.#{ext}"
-        @ext = ext.to_sym
-
+        super(filename, ext)
         @draw_second_source_deps = draw_second_source_deps
-
-        @graph = GraphViz.new(:G, type: :digraph)
       end
 
       # Generates a graph image file
@@ -41,7 +36,7 @@ module VersatileDiamond
 
         draw_reactions_dependencies
 
-        @graph.output(@ext => @filename)
+        super
       end
 
     private
@@ -64,7 +59,7 @@ module VersatileDiamond
         setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
 
         @sp_specs_to_nodes = specific_specs.each_with_object({}) do |ss, hash|
-          ss_name = ss.full_name.sub(/\A([^(]+)(.+)\Z/, "\\1\n\\2")
+          ss_name = split_specific_spec(ss.full_name)
           node = @graph.add_nodes(ss_name)
           node.set(&setup_lambda)
           hash[ss] = node
@@ -270,18 +265,6 @@ module VersatileDiamond
         @react_to_more_complex ||= {}
         reaction.more_complex.each do |mc|
           @react_to_more_complex[mc] = reaction
-        end
-      end
-
-      # Multilinize passed text where each result line is not more of limit
-      # @param [String] text the text for multilinizing
-      # @option [Integer] :limit the limit of one line length
-      # @return [String] multilinized text
-      def multilinize(text, limit: 13)
-        words = text.split(/\s+/)
-        splitted_text = ['']
-        until words.empty?
-          splitted_text << '' if splitted_text.last.size > limit
         end
       end
 

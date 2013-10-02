@@ -1,38 +1,37 @@
 module VersatileDiamond
   module Generators
 
+    # @abstract
     class Base
     private
 
-      include Tools::Handbook
-
-      set(:base_specs) do
+      def base_specs
         Tools::Chest.all(:gas_spec, :surface_spec)
       end
 
-      set(:specific_specs) do
+      def specific_specs
         Tools::Chest.all(:specific_spec)
       end
 
-      set(:termination_specs) do
+      def termination_specs
         Tools::Chest.all(:active_bond, :atomic_spec)
       end
 
-      set(:wheres) do
-        Tools::Chest.all(:where).reduce([]) do |acc, hash|
+      def wheres
+        @wheres ||= Tools::Chest.all(:where).reduce([]) do |acc, hash|
           acc + hash.values
         end
       end
 
-      set(:ubiquitous_reactions) do
+      def ubiquitous_reactions
         Tools::Chest.all(:ubiquitous_reaction)
       end
 
-      set(:typical_reactions) do
+      def typical_reactions
         Tools::Chest.all(:reaction)
       end
 
-      set(:lateral_reactions) do
+      def lateral_reactions
         Tools::Chest.all(:lateral_reaction)
       end
     end

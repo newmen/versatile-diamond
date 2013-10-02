@@ -47,7 +47,7 @@ module VersatileDiamond
       # @param [Hash] hash the hash which will be casted to string
       # @return [String] cast result
       def hash_str(hash)
-        hash.map { |kv| "%s %2d" % kv }.join(' | ')
+        hash.map { |k, v| "%3s : %7s %2d" % [k, *v] }.join(' | ')
       end
     end
 

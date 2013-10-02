@@ -12,6 +12,8 @@ module VersatileDiamond
         include Modules::ListsComparer
         include Lattices::BasicRelations
 
+        attr_accessor :smallest
+
         # Overloaded constructor that stores all properties of atom
         # @overload new(props)
         #   @param [Array] props the array of default properties
@@ -26,7 +28,7 @@ module VersatileDiamond
             spec, atom = args
             @props = [atom.name, atom.lattice, relations_for(spec, atom)]
 
-            if atom.is_a?(SpecificAtom)
+            if atom.is_a?(SpecificAtom) && !atom.relevants.empty?
               @props << atom.relevants
               @has_relevants = true
             end
@@ -48,10 +50,35 @@ module VersatileDiamond
           end
         end
 
+        def contained_in?(other)
+          return false unless props[0] == other.props[0] &&
+            props[1] == other.props[1]
+
+          oth_rels = other.props[2].dup
+          props[2].all? { |rel| remove_one(oth_rels, rel) } &&
+            (!has_relevants? || (other.has_relevants? &&
+              (oth_vns = other.props[3].dup) &&
+              props[3].all? { |vn| remove_one(oth_vns, vn) }))
+        end
+
         # Makes unrelevanted copy of self
         # @return [AtomProperties] unrelevanted atom properties
         def unrelevanted
           self.class.new(wihtout_relevants)
+        end
+
+        # Gets size of properties
+        def size
+          return @size if @size
+          _, lattice, relations, res = @props
+          @size = 1 + (lattice ? 0.5 : 0) + relations.size +
+            (res ? res.size * 0.34 : 0)
+        end
+
+        # Checks that contains relevants properties
+        # @return [Boolean] contains or not
+        def has_relevants?
+          !!@has_relevants
         end
 
         def to_s
@@ -83,7 +110,7 @@ module VersatileDiamond
           if down1 && down2
             name = "#{name}<"
           elsif down1 || down2
-            name = "#{name}\\"
+            name = "#{name}/"
           elsif remove_one(rl, :dbond)
             name = "#{name}="
           elsif remove_one(rl, undirected_bond)
@@ -95,9 +122,11 @@ module VersatileDiamond
           if up1 && up2
             name = ">#{name}"
           elsif up1 || up2
-            name = "\\#{name}"
+            name = "^#{name}"
           elsif remove_one(rl, :dbond)
             name = "=#{name}"
+          elsif remove_one(rl, bond_front_100)
+            name = "-#{name}"
           end
 
           while remove_one(rl, undirected_bond)
@@ -143,7 +172,7 @@ module VersatileDiamond
         # Drops relevants properties if it exists
         # @return [Array] properties without relevants
         def wihtout_relevants
-          @has_relevants ? props[0...(props.length - 1)] : props
+          has_relevants? ? props[0...(props.length - 1)] : props
         end
 
         # Removes one item from list
@@ -151,6 +180,7 @@ module VersatileDiamond
         # @param [Object] item some item from list
         # @yeild [Object] if passed instead of item then finds index of item
         # @return [Object] removed object
+        # TODO: very useful method
         def remove_one(list, item = nil, &block)
           index = item && !block_given? ?
             list.index(item) :
@@ -166,12 +196,19 @@ module VersatileDiamond
         @unrelevanted_props = Set.new
       end
 
+      # Provides each iterator for all properties
+      # @yield [AtomProperties] do something with each properties
+      # @return [Enumerator] if block is not given
+      def each_props(&block)
+        block_given? ? @props.each(&block) : @props.each
+      end
+
       # Analyze spec and store all uniq properties
       # @param [Spec | SpecificSpec] spec the analyzing spec
       def analyze(spec)
         spec.links.each do |atom, _|
           prop = AtomProperties.new(spec, atom)
-          next if find_prop_index(prop)
+          next if index(prop)
           @props << prop
 
           unrel_prop = prop.unrelevanted
@@ -180,18 +217,41 @@ module VersatileDiamond
         end
       end
 
+      # Organizes dependencies between properties
+      def organize_properties!
+        props = @props.sort_by(&:size)
+        until props.empty?
+          smallest = props.shift
+          props.each do |prop|
+# puts "#{smallest} ? #{prop}       += #{smallest.contained_in?(prop)}"
+            next unless smallest.contained_in?(prop)
+            prop.smallest = smallest
+            break
+          end
+        end
+      end
+
       # Classify spec and return hash where keys is order number of property
       # and values is number of atoms in spec with same properties
       #
       # @param [Spec | SpecificSpec] spec the analyzing spec
       # @return [Hash] result of classification
+      # TODO: rspec it!
       def classify(spec)
         spec.links.keys.each_with_object({}) do |atom, hash|
           prop = AtomProperties.new(spec, atom)
-          image = "%3s : %7s" % [find_prop_index(prop), prop.to_s]
-          hash[image] ||= 0
-          hash[image] += 1
+          index = index(prop)
+          image = prop.to_s
+          hash[index] ||= [image, 0]
+          hash[index][1] += 1
         end
+      end
+
+      # Finds index of passed property
+      # @param [AtomProperties] prop the property index of which will be found
+      # @return [Integer] the index of property or nil
+      def index(prop)
+        @props.index(prop)
       end
 
       # Gets number of all different properties
@@ -206,13 +266,11 @@ module VersatileDiamond
         @unrelevanted_props.size
       end
 
-    private
-
-      # Finds index of passed property
-      # @param [AtomProperties] prop the property index of which will be found
-      # @return [Integer] the index of property or nil
-      def find_prop_index(prop)
-        @props.index { |p| p == prop }
+      # Checks that properties by index has relevants
+      # @param [Integer] index the index of properties
+      # @return [Boolean] has or not
+      def has_relevants?(index)
+        @props[index].has_relevants?
       end
     end
 
