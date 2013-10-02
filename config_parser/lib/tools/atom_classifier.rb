@@ -223,10 +223,8 @@ module VersatileDiamond
         until props.empty?
           smallest = props.shift
           props.each do |prop|
-# puts "#{smallest} ? #{prop}       += #{smallest.contained_in?(prop)}"
             next unless smallest.contained_in?(prop)
             prop.smallest = smallest
-            break
           end
         end
       end
