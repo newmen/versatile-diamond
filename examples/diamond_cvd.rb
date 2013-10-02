@@ -19,17 +19,17 @@ gas
   spec :methane
     atoms c: C # each external bond is H atom
 
-  # spec :ethylene
-  #   atoms c1: C, c2: C
-  #   dbond :c1, :c2
+  spec :ethylene
+    atoms c1: C, c2: C
+    dbond :c1, :c2
 
-  # spec :acetylene
-  #   atoms c1: C, c2: C
-  #   tbond :c1, :c2
+  spec :acetylene
+    atoms c1: C, c2: C
+    tbond :c1, :c2
 
   concentration hydrogen(h: *), 1e-9
   concentration methane(c: *), 1e-10
-  # concentration ethylene(c1: *), 1e-11
+  concentration ethylene(c1: *), 1e-11
 
   temperature 1200
 
@@ -64,15 +64,15 @@ surface
     atoms cm: C, cb: bridge(:cr)
     bond :cm, :cb
 
-  # spec :vinyl_on_bridge
-  #   aliases eth: ethylene
-  #   atoms cb: bridge(:ct), c1: eth(:c1), c2: eth(:c2)
-  #   bond :cb, :c1
+  spec :vinyl_on_bridge
+    aliases eth: ethylene
+    atoms cb: bridge(:ct), c1: eth(:c1), c2: eth(:c2)
+    bond :cb, :c1
 
-  # spec :vinyl_on_dimer
-  #   aliases vob: vinyl_on_bridge
-  #   atoms cl: bridge(:ct), cr: vob(:cb), c1: vob(:c1)
-  #   bond :cl, :cr, face: 100, dir: :front
+  spec :vinyl_on_dimer
+    aliases vob: vinyl_on_bridge
+    atoms cl: bridge(:ct), cr: vob(:cb), c1: vob(:c1)
+    bond :cl, :cr, face: 100, dir: :front
 
   spec :bridge_with_dimer
     aliases dmr: dimer
@@ -399,27 +399,27 @@ events
     # значения также выдуманы
     forward_rate 2.8e11
 
-  # reaction 'vinyl adsorption to dimer'
-  #   equation ethylene(c1: *) + dimer(cr: *) = vinyl_on_dimer
-  #   # значения про винил - фейк
-  #   activation 55
-  #   forward_rate 1, 'cm3/(mol * s)'
-  #   reverse_rate 2
+  reaction 'vinyl adsorption to dimer'
+    equation ethylene(c1: *) + dimer(cr: *) = vinyl_on_dimer
+    # значения про винил - фейк
+    activation 55
+    forward_rate 1, 'cm3/(mol * s)'
+    reverse_rate 2
 
-  # reaction 'vinyl adsorption to bridge'
-  #   equation ethylene(c1: *) + bridge(ct: *, ct: i) = vinyl_on_bridge
-  #   activation 55
-  #   forward_rate 1, 'cm3/(mol * s)'
-  #   reverse_rate 2
+  reaction 'vinyl adsorption to bridge'
+    equation ethylene(c1: *) + bridge(ct: *, ct: i) = vinyl_on_bridge
+    activation 55
+    forward_rate 1, 'cm3/(mol * s)'
+    reverse_rate 2
 
-  # reaction 'vinyl desorption'
-  #   equation vinyl_on_bridge(c1: *, c2: *) = bridge(ct: *) + acetylene(c1: *)
-  #   activation 55
-  #   forward_rate 1
+  reaction 'vinyl desorption'
+    equation vinyl_on_bridge(c1: *, c2: *) = bridge(ct: *) + acetylene(c1: *)
+    activation 55
+    forward_rate 1
 
-  # reaction 'vinyl incorporion'
-  #   # не хватает реакций миграции водорода для винила (можно использовать ту что уже есть, с метил радикалом)
-  #   equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
-  #   activation 55
-  #   forward_rate 1
-  #   reverse_rate 2
+  reaction 'vinyl incorporion'
+    # не хватает реакций миграции водорода для винила (можно использовать ту что уже есть, с метил радикалом)
+    equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
+    activation 55
+    forward_rate 1
+    reverse_rate 2

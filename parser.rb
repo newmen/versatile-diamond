@@ -25,6 +25,7 @@ require_each "../#{opt['--lattices']}/*.rb"
 I18n.locale = opt['--lang']
 VD::Analyzer.read_config(opt['<path_to_config>'])
 
-graph_generator = VD::Generators::ConceptsTreeGenerator.new('total_tree')
-graph_generator.generate
+# generator = VD::Generators::ConceptsTreeGenerator.new('total_tree')
+generator = VD::Generators::SpecsOverview.new
+generator.generate
 

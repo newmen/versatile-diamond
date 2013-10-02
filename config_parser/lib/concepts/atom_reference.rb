@@ -27,12 +27,29 @@ module VersatileDiamond
       #
       # @return [Integer] the external valence of refered atom
       def valence
-        real_atom = @spec.atom(@keyname)
         @spec.external_bonds_for(real_atom)
+      end
+
+      # Finds all relation instances for current atom in passed spec and also
+      # provides relations from refered spec
+      #
+      # @param [Spec] spec the spec in which relations will be found, must
+      #   contain current atom
+      # @return [Array] the array of relations
+      def relations_in(spec)
+        spec.links[self].map(&:last) + real_atom.relations_in(@spec)
       end
 
       def to_s
         "&#{@atom}"
+      end
+
+    private
+
+      # Gets an atom to which references current instance
+      # @param [Atom] target atom of refered spec
+      def real_atom
+        @spec.atom(@keyname)
       end
     end
 

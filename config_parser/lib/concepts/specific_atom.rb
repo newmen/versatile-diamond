@@ -73,7 +73,7 @@ module VersatileDiamond
       # Counts active bonds
       # @return [Integer] the number of active bonds
       def actives
-        @options.select { |o| o == :active }.size
+        active_options.size
       end
 
       # Compares with other atom
@@ -88,6 +88,15 @@ module VersatileDiamond
       # @return [Array] the array of relevant states
       def relevants
         @options - [:active]
+      end
+
+      # Finds all relation instances for current atom in passed spec
+      # @param [SpecificSpec] specific_spec the spec in which relations will be
+      #   found, must contain current atom
+      # @return [Array] the array of relations
+      def relations_in(specific_spec)
+        real_atom(specific_spec).relations_in(specific_spec.spec) +
+          active_options
       end
 
       def to_s
@@ -105,6 +114,21 @@ module VersatileDiamond
 
       attr_reader :atom, :options
 
+    private
+
+      # Selects only :active options
+      # @return [Array] array of :active options
+      def active_options
+        @options.select { |o| o == :active }
+      end
+
+      # Gets an atom to which references current instance
+      # @param [SpecificSpec] specific_spec see at #relations_in same argument
+      # @param [Atom | AtomReference] target atom of simple spec
+      def real_atom(specific_spec)
+        keyname = specific_spec.keyname(self)
+        specific_spec.spec.atom(keyname)
+      end
     end
 
   end

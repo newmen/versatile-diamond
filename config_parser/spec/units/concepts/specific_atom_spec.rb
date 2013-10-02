@@ -113,6 +113,18 @@ module VersatileDiamond
         let(:target) { n }
         let(:reference) { subject }
       end
+
+      describe "#relations_in" do
+        it { activated_bridge.atom(:ct).relations_in(activated_bridge).
+          should == [bond_110_cross, bond_110_cross] }
+
+        it { activated_bridge.atom(:cr).relations_in(activated_bridge).size.
+          should == 4 }
+        it { activated_bridge.atom(:cr).relations_in(activated_bridge).
+          should include(
+            bond_110_cross, bond_110_cross, bond_110_front, position_100_front
+          ) }
+      end
     end
 
   end

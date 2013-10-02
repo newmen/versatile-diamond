@@ -39,6 +39,15 @@ module VersatileDiamond
         it { cd.diff(incoherent_cd).should == [:incoherent] }
         it { cd.diff(activated_incoherent_cd).should == [:incoherent] }
       end
+
+      describe "#relations_in" do
+        it { bridge.atom(:ct).relations_in(bridge).
+          should == [bond_110_cross, bond_110_cross] }
+
+        it { dimer.atom(:cr).relations_in(dimer).size.should == 3 }
+        it { dimer.atom(:cr).relations_in(dimer).
+          should include(bond_110_cross, bond_110_cross, bond_100_front) }
+      end
     end
 
   end
