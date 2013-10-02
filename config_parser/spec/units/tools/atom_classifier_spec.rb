@@ -49,6 +49,28 @@ module VersatileDiamond
         end
       end
 
+      subject { described_class.new }
+
+      describe "#analyze" do
+        before(:each) do
+          [
+            activated_bridge,
+            dimer,
+            methyl_on_incoherent_bridge,
+            high_bridge,
+          ].each do |spec|
+            subject.analyze(spec)
+          end
+        end
+
+        describe "#all_types_num" do
+          it { subject.all_types_num.should == 7 }
+        end
+
+        describe "#notrelevant_types_num" do
+          it { subject.notrelevant_types_num.should == 7 }
+        end
+      end
     end
 
   end

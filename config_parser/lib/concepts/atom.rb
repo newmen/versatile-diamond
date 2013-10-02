@@ -65,7 +65,7 @@ module VersatileDiamond
       #   contain current atom
       # @return [Array] the array of relations
       def relations_in(spec)
-        spec.links[self].map(&:last)
+        spec.links[self].dup
       end
 
       def to_s

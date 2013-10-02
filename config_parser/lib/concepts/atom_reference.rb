@@ -37,7 +37,7 @@ module VersatileDiamond
       #   contain current atom
       # @return [Array] the array of relations
       def relations_in(spec)
-        spec.links[self].map(&:last) + real_atom.relations_in(@spec)
+        spec.links[self] + real_atom.relations_in(@spec)
       end
 
       def to_s

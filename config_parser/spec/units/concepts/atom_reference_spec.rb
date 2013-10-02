@@ -38,9 +38,6 @@ module VersatileDiamond
 
       describe "#relations_in" do
         it { bridge.atom(:cr).relations_in(bridge).size.should == 4 }
-        it { bridge.atom(:cr).relations_in(bridge).should include(
-            bond_110_cross, bond_110_cross, bond_110_front, position_100_front
-          ) }
       end
 
       it_behaves_like "#lattice" do

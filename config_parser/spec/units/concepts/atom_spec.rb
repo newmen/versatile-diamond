@@ -41,12 +41,11 @@ module VersatileDiamond
       end
 
       describe "#relations_in" do
-        it { bridge.atom(:ct).relations_in(bridge).
-          should == [bond_110_cross, bond_110_cross] }
+        it { cd.relations_in(bridge).should == bridge.links[cd] }
+        it { cd.relations_in(bridge).object_id.
+          should_not == bridge.links[cd].object_id }
 
-        it { dimer.atom(:cr).relations_in(dimer).size.should == 3 }
-        it { dimer.atom(:cr).relations_in(dimer).
-          should include(bond_110_cross, bond_110_cross, bond_100_front) }
+        it { cd.relations_in(bridge).size.should == 2 }
       end
     end
 

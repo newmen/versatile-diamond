@@ -10,6 +10,7 @@ module VersatileDiamond
       # Accumulates information about atom
       class AtomProperties
         include Modules::ListsComparer
+        include Lattices::BasicRelations
 
         # Overloaded constructor that stores all properties of atom
         # @overload new(props)
@@ -23,7 +24,29 @@ module VersatileDiamond
             @props = args.first
           elsif args.size == 2
             spec, atom = args
-            @props = [atom.name, atom.lattice, atom.relations_in(spec)]
+
+            relations = []
+            links = atom.relations_in(spec)
+            until links.empty?
+              atom_rel = links.pop
+
+              if atom_rel.is_a?(Symbol)
+                relations << atom_rel
+                next
+              end
+
+              same = links.select { |ar| ar == atom_rel }
+
+              if !same.empty?
+                links.delete_at(links.index(atom_rel) || links.size)
+                relations << :dbond
+              else
+                relations << atom_rel.last
+              end
+            end
+
+            @props = [atom.name, atom.lattice, relations
+            ]
             if atom.is_a?(SpecificAtom)
               @props << atom.relevants
               @has_relevants = true
@@ -52,6 +75,59 @@ module VersatileDiamond
           self.class.new(wihtout_relevants)
         end
 
+        def to_s
+          name, lattice, relations, res = @props
+          rl = relations.dup
+
+          while remove_one(rl, :active)
+            name = "*#{name}"
+          end
+
+          while remove_one(rl) { |r| r.is_a?(Position) }
+            name = "#{name}."
+          end
+
+          if res
+            res.each do |sym|
+              suffix = case sym
+                when :incoherent then 'i'
+                when :unfixed then 'u'
+              end
+              name = "#{name}:#{suffix}"
+            end
+          end
+
+          name = "#{name}%#{lattice.name}" if lattice
+
+          down1 = remove_one(rl, bond_cross_110)
+          down2 = remove_one(rl, bond_cross_110)
+          if down1 && down2
+            name = "#{name}<"
+          elsif down1 || down2
+            name = "#{name}\\"
+          elsif remove_one(rl, :dbond)
+            name = "#{name}="
+          elsif remove_one(rl, undirected_bond)
+            name = "#{name}-"
+          end
+
+          up1 = remove_one(rl, bond_front_110)
+          up2 = remove_one(rl, bond_front_110)
+          if up1 && up2
+            name = ">#{name}"
+          elsif up1 || up2
+            name = "\\#{name}"
+          elsif remove_one(rl, :dbond)
+            name = "=#{name}"
+          end
+
+          while remove_one(rl, undirected_bond)
+            name = "-#{name}"
+          end
+
+          name
+        end
+
       protected
 
         attr_reader :props
@@ -62,6 +138,19 @@ module VersatileDiamond
         # @return [Array] properties without relevants
         def wihtout_relevants
           @has_relevants ? props[0...(props.length - 1)] : props
+        end
+
+        # Removes one item from list
+        # @param [Array] list the list of items
+        # @param [Object] item some item from list
+        # @yeild [Object] if passed instead of item then finds index of item
+        # @return [Object] removed object
+        def remove_one(list, item = nil, &block)
+          index = item && !block_given? ?
+            list.index(item) :
+            block_given? ? list.index(&block) : (raise ArgumentError)
+
+          list.delete_at(index || list.size)
         end
       end
 
@@ -92,9 +181,10 @@ module VersatileDiamond
       # @return [Hash] result of classification
       def classify(spec)
         spec.links.keys.each_with_object({}) do |atom, hash|
-          index = find_prop_index(AtomProperties.new(spec, atom))
-          hash[index] ||= 0
-          hash[index] += 1
+          prop = AtomProperties.new(spec, atom)
+          image = "%3s : %7s" % [find_prop_index(prop), prop.to_s]
+          hash[image] ||= 0
+          hash[image] += 1
         end
       end
 
