@@ -8,8 +8,6 @@ module VersatileDiamond
       ATOM_COLOR = 'darkgreen'
       RELEVANTS_ATOM_COLOR = 'chocolate'
 
-      ATOM_DEPENDENCIES_COLOR = 'red'
-
       SPEC_COLOR = 'black'
       SPECIFIC_SPEC_COLOR = 'blue'
 
@@ -61,8 +59,7 @@ module VersatileDiamond
 
         hash.each do |index, (image, _)|
           name = "#{index} :: #{image}"
-          color = @classifier.has_relevants?(index) ?
-            RELEVANTS_ATOM_COLOR : ATOM_COLOR
+          color = color_by_atom_index(index)
 
           unless @atoms_to_nodes[index]
             @atoms_to_nodes[index] = @graph.add_nodes(name)
@@ -83,9 +80,13 @@ module VersatileDiamond
           from = @atoms_to_nodes[index]
           to = @atoms_to_nodes[@classifier.index(smls)]
           @graph.add_edges(from, to).set do |e|
-            e.color = ATOM_DEPENDENCIES_COLOR
+            e.color = color_by_atom_index(index)
           end
         end
+      end
+
+      def color_by_atom_index(index)
+        @classifier.has_relevants?(index) ? RELEVANTS_ATOM_COLOR : ATOM_COLOR
       end
     end
 
