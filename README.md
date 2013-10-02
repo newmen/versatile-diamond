@@ -16,7 +16,7 @@ For the base case of diamond deposition from methyl radical used the following r
 
 ![Classes Trees](https://github.com/newmen/versatile-diamond/raw/master/doc/without_base_specs.png?raw=true)
 
-Species classified by it atoms as preset in table
+Species classified by it atoms as preset in table:
 
 ```
                                                    Name |  Size |  ExtB | Classification

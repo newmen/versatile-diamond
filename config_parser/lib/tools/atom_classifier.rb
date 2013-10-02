@@ -24,29 +24,8 @@ module VersatileDiamond
             @props = args.first
           elsif args.size == 2
             spec, atom = args
+            @props = [atom.name, atom.lattice, relations_for(spec, atom)]
 
-            relations = []
-            links = atom.relations_in(spec)
-            until links.empty?
-              atom_rel = links.pop
-
-              if atom_rel.is_a?(Symbol)
-                relations << atom_rel
-                next
-              end
-
-              same = links.select { |ar| ar == atom_rel }
-
-              if !same.empty?
-                links.delete_at(links.index(atom_rel) || links.size)
-                relations << :dbond
-              else
-                relations << atom_rel.last
-              end
-            end
-
-            @props = [atom.name, atom.lattice, relations
-            ]
             if atom.is_a?(SpecificAtom)
               @props << atom.relevants
               @has_relevants = true
@@ -133,6 +112,33 @@ module VersatileDiamond
         attr_reader :props
 
       private
+
+        # Harvest relations of atom in spec
+        # @param [Spec | SpecificSpec] spec see at #new same argument
+        # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
+        #   argument
+        def relations_for(spec, atom)
+          relations = []
+          links = atom.relations_in(spec)
+          until links.empty?
+            atom_rel = links.pop
+
+            if atom_rel.is_a?(Symbol)
+              relations << atom_rel
+              next
+            end
+
+            same = links.select { |ar| ar == atom_rel }
+
+            if !same.empty?
+              links.delete_at(links.index(atom_rel) || links.size)
+              relations << :dbond
+            else
+              relations << atom_rel.last
+            end
+          end
+          relations
+        end
 
         # Drops relevants properties if it exists
         # @return [Array] properties without relevants
