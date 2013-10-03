@@ -42,7 +42,7 @@ Base specs: [15]
                                  vinyl_on_dimer |     8 |     8 |   7 :  ~-C%d<  1 |   1 :  ^C.%d<  4 |   9 :     ~C=  1 |   3 :      C=  1 |   4 :   -C%d<  1
                            extended_high_bridge |     8 |     8 |   3 :      C=  1 |   2 :   =C%d<  1 |   1 :  ^C.%d<  6
                       extended_methyl_on_bridge |     8 |    10 |   6 :      C~  1 |   5 :   ~C%d<  1 |   1 :  ^C.%d<  6
-                              bridge_with_dimer |    10 |    10 |   4 :   -C%d<  1 |   1 :  ^C.%d<  7 |  10 :  ^C.%d<  1 |   0 :    C%d<  1
+                              bridge_with_dimer |    10 |    10 |   4 :   -C%d<  1 |   1 :  ^C.%d<  7 |  10 : -^C.%d<  1 |   0 :    C%d<  1
                          cross_bridge_on_dimers |    13 |    12 |  12 :     ~C~  1 |   4 :   -C%d<  2 |   1 :  ^C.%d<  8 |  13 : ~-C.%d<  2
                                  extended_dimer |    14 |    14 |   4 :   -C%d<  2 |   1 :  ^C.%d< 12
 
@@ -76,8 +76,8 @@ Specific specs: [34]
                     extended_high_bridge(cr: *) |   9.0 |     7 |   3 :      C=  1 |   2 :   =C%d<  1 |   1 :  ^C.%d<  5 |  20 : ^*C.%d<  1
                     extended_high_bridge(ch: *) |   9.0 |     7 |   2 :   =C%d<  1 |   1 :  ^C.%d<  6 |  29 :     *C=  1
  extended_methyl_on_bridge(cb: i, cm: *, cm: u) |  9.68 |     9 |   1 :  ^C.%d<  6 |  16 : ~C:i%d<  1 |  18 :   *C:u~  1
-                     bridge_with_dimer(_cl0: i) | 10.34 |    10 |   1 :  ^C.%d<  7 |  10 :  ^C.%d<  1 |   0 :    C%d<  1 |  24 : -C:i%d<  1
-              bridge_with_dimer(cl: *, _cl0: i) | 11.34 |     9 |   1 :  ^C.%d<  6 |  10 :  ^C.%d<  1 |   0 :    C%d<  1 |  20 : ^*C.%d<  1 |  24 : -C:i%d<  1
+                     bridge_with_dimer(_cl0: i) | 10.34 |    10 |   1 :  ^C.%d<  7 |  10 : -^C.%d<  1 |   0 :    C%d<  1 |  24 : -C:i%d<  1
+              bridge_with_dimer(cl: *, _cl0: i) | 11.34 |     9 |   1 :  ^C.%d<  6 |  10 : -^C.%d<  1 |   0 :    C%d<  1 |  20 : ^*C.%d<  1 |  24 : -C:i%d<  1
                        cross_bridge_on_dimers() |  13.0 |    12 |  12 :     ~C~  1 |   4 :   -C%d<  2 |   1 :  ^C.%d<  8 |  13 : ~-C.%d<  2
                           extended_dimer(cr: i) | 14.34 |    14 |   4 :   -C%d<  1 |   1 :  ^C.%d< 12 |  24 : -C:i%d<  1
                           extended_dimer(cr: *) |  15.0 |    13 |   4 :   -C%d<  1 |   1 :  ^C.%d< 12 |  14 :  -*C%d<  1

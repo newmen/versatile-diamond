@@ -134,7 +134,9 @@ module VersatileDiamond
             name = "^#{name}"
           elsif remove_one(rl, :dbond)
             name = "=#{name}"
-          elsif remove_one(rl, bond_front_100)
+          end
+
+          if remove_one(rl, bond_front_100)
             name = "-#{name}"
           end
 
