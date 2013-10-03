@@ -120,6 +120,8 @@ module VersatileDiamond
             name = "#{name}<"
           elsif down1 || down2
             name = "#{name}/"
+          elsif remove_one(rl, :tbond)
+            name = "#{name}≡"
           elsif remove_one(rl, :dbond)
             name = "#{name}="
           elsif remove_one(rl, undirected_bond)
@@ -171,8 +173,13 @@ module VersatileDiamond
             same = links.select { |ar| ar == atom_rel }
 
             if !same.empty?
+              if same.size == 3 && same.size != 4
+                relations << :tbond
+                links.delete_at(links.index(atom_rel) || links.size)
+              else
+                relations << :dbond
+              end
               links.delete_at(links.index(atom_rel) || links.size)
-              relations << :dbond
             else
               relations << atom_rel.last
             end

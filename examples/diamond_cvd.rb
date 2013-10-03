@@ -64,6 +64,10 @@ surface
     atoms cm: C, cb: bridge(:cr)
     bond :cm, :cb
 
+  spec :vinyl_on_111
+    atoms c1: ethylene(:c1), cb: bridge(:cr)
+    bond :c1, :cb
+
   spec :vinyl_on_bridge
     aliases eth: ethylene
     atoms cb: bridge(:ct), c1: eth(:c1), c2: eth(:c2)
@@ -401,25 +405,57 @@ events
 
   reaction 'vinyl adsorption to dimer'
     equation ethylene(c1: *) + dimer(cr: *) = vinyl_on_dimer
-    # значения про винил - фейк
-    activation 55
-    forward_rate 1, 'cm3/(mol * s)'
-    reverse_rate 2
+    activation 8.4
+    forward_rate 2.4e11, 'cm3/(mol * s)'
+    reverse_rate 1.3e2 # 1.4e7 - это значение под большим вопросом, должно быть меньше?
+
+  reaction 'vinyl adsorption to 111'
+    equation ethylene(c1: *) + bridge(cr: *) = vinyl_on_111
+    activation 22.9
+    forward_rate 6.9e7, 'cm3/(mol * s)'
+    reverse_rate 1.7e9 # тоже самое что и предыдущее?
 
   reaction 'vinyl adsorption to bridge'
     equation ethylene(c1: *) + bridge(ct: *, ct: i) = vinyl_on_bridge
-    activation 55
-    forward_rate 1, 'cm3/(mol * s)'
-    reverse_rate 2
+    activation 26
+    forward_rate 1.9e7, 'cm3/(mol * s)'
+    reverse_rate 4.1e9 # тоже самое что и предыдущее?
 
   reaction 'vinyl desorption'
     equation vinyl_on_bridge(c1: *, c2: *) = bridge(ct: *) + acetylene(c1: *)
-    activation 55
-    forward_rate 1
+    activation 0
+    forward_rate 1.3e2
+
+  reaction 'vinyl activation'
+    # есть ещё активация атома c2
+    equation vinyl_on_dimer + hydrogen(h: *) = vinyl_on_dimer(c1: *) + hydrogen
+    activation 0
+    forward_rate 0.6e13, 'cm3/(mol * s)'
+
+  reaction 'vinyl hydrogen migration'
+    equation vinyl_on_dimer(cl: *) = vinyl_on_dimer(c1: *)
+    activation 33.4
+    forward_rate 1.2e6
+    reverse_rate 1.2e5
+
+  reaction 'vinyl neighbour dimer hydrogen migration'
+    equation dimer(cr: *) + vinyl_on_dimer = vinyl_on_dimer(c1: *) + dimer
+      refinement 'in chain'
+        position dimer(:cr), vinyl_on_dimer(:cr), face: 100, dir: :front
+        activation 33.4
+        forward_rate 1.2e6
+        reverse_rate 1.2e5
+
+      refinement 'in row'
+        position dimer(:cr), vinyl_on_dimer(:cr), face: 100, dir: :cross
+        activation 20.3
+        forward_rate 2.8e8
+        reverse_rate 3e7
 
   reaction 'vinyl incorporion'
-    # не хватает реакций миграции водорода для винила (можно использовать ту что уже есть, с метил радикалом)
+    # эта реакция - шутка? есть ещё 3 реакции на эту тему, поэтапно
     equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
-    activation 55
-    forward_rate 1
-    reverse_rate 2
+    forward_activation 40.1
+    reverse_activation 7.5
+    forward_rate 9.4e13
+    reverse_rate 8.1e10

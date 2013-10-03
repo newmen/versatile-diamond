@@ -33,9 +33,6 @@ module VersatileDiamond
 
         puts
         puts "Total number of reactions: #{ubiquitous_reactions.size + nonubiquitous_reactions.size}"
-        puts "  where ubiquitous reactions: #{ubiquitous_reactions.size}"
-        puts "  where typical reactions: #{typical_reactions.size}"
-        puts "  where lateral reactions: #{lateral_reactions.size}"
       end
 
     private
@@ -64,9 +61,12 @@ module VersatileDiamond
       # @param [Array] reactions the reactions which will be printed
       def print_reactions(name, reactions)
         return if reactions.empty?
+        reactions = reactions.sort do |a, b|
+          a.size == b.size ? b.full_rate <=> a.full_rate : a.size <=> b.size
+        end
 
         puts "\n#{name}: [#{reactions.size}]"
-        reactions.sort_by(&:size).each do |reaction|
+        reactions.each do |reaction|
           puts @reactions_format % [
             reaction.to_s,
             reaction.size,
