@@ -41,7 +41,7 @@ if opt['--composition']
 end
 
 if opt['--overview']
-  generator = VD::Generators::SpecsOverview.new
+  generator = VD::Generators::Overview.new
   generator.generate
 end
 

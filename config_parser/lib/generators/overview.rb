@@ -1,17 +1,17 @@
 module VersatileDiamond
   module Generators
 
-    # Generates a table with overveiw information about surfaced species stored
+    # Generates a table with overveiw information about concepts stored
     # in Chest
-    class SpecsOverview < Base
+    class Overview < Base
       include SpecsAnalyzer
 
       # Generates a table
       def generate
         analyze_specs
 
-        @base_format = "%55s | %5s | %5s | %s"
-        puts @base_format % %w(Name Size ExtB Classification)
+        @specs_format = "%55s | %5s | %5s | %s"
+        puts @specs_format % %w(Name Size ExtB Classification)
 
         print_specs("Base specs", base_surface_specs)
         print_specs("Specific specs", specific_surface_specs,
@@ -21,6 +21,15 @@ module VersatileDiamond
         puts "Total number of specs: #{base_specs.size + specific_specs.size}"
         puts "Total number of different atom types: #{classifier.all_types_num}"
         puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
+
+        puts
+        puts
+        @reactions_format = "%100s | %5s | %1.3e | %s"
+        puts @reactions_format.sub('1.3e', '9s') % %w(Formula Size Rate Name)
+
+        print_reactions("Ubiquitous reactions", ubiquitous_reactions)
+        print_reactions("Typical reactions", typical_reactions)
+        print_reactions("Lateral reactions", lateral_reactions)
 
         puts
         puts "Total number of reactions: #{ubiquitous_reactions.size + nonubiquitous_reactions.size}"
@@ -41,11 +50,28 @@ module VersatileDiamond
 
         puts "\n#{name}: [#{specs.size}]"
         specs.sort_by(&:size).each do |spec|
-          puts @base_format % [
+          puts @specs_format % [
             spec.send(name_method),
             spec.size,
             spec.external_bonds,
             hash_str(classifier.classify(spec))
+          ]
+        end
+      end
+
+      # Prints reactions list
+      # @param [String] name the name wich will be shown before list
+      # @param [Array] reactions the reactions which will be printed
+      def print_reactions(name, reactions)
+        return if reactions.empty?
+
+        puts "\n#{name}: [#{reactions.size}]"
+        reactions.sort_by(&:size).each do |reaction|
+          puts @reactions_format % [
+            reaction.to_s,
+            reaction.size,
+            reaction.full_rate,
+            reaction.name,
           ]
         end
       end
