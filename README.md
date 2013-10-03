@@ -81,6 +81,15 @@ Specific specs: [34]
                        cross_bridge_on_dimers() |  13.0 |    12 |  12 :     ~C~  1 |   4 :   -C%d<  2 |   1 :  ^C.%d<  8 |  13 : ~-C.%d<  2
                           extended_dimer(cr: i) | 14.34 |    14 |   4 :   -C%d<  1 |   1 :  ^C.%d< 12 |  24 : -C:i%d<  1
                           extended_dimer(cr: *) |  15.0 |    13 |   4 :   -C%d<  1 |   1 :  ^C.%d< 12 |  14 :  -*C%d<  1
+
+Total number of specs: 52
+Total number of different atom types: 32
+Total number of different atom types without relevant properties: 20
+
+Total number of reactions: 65
+  where ubiquitous reactions: 2
+  where typical reactions: 44
+  where lateral reactions: 19
 ```
 
 Same as graph or table the analyzer will generate high performance code.

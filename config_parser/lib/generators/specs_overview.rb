@@ -21,6 +21,12 @@ module VersatileDiamond
         puts "Total number of specs: #{base_specs.size + specific_specs.size}"
         puts "Total number of different atom types: #{classifier.all_types_num}"
         puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
+
+        puts
+        puts "Total number of reactions: #{ubiquitous_reactions.size + nonubiquitous_reactions.size}"
+        puts "  where ubiquitous reactions: #{ubiquitous_reactions.size}"
+        puts "  where typical reactions: #{typical_reactions.size}"
+        puts "  where lateral reactions: #{lateral_reactions.size}"
       end
 
     private
