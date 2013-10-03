@@ -97,22 +97,25 @@ module VersatileDiamond
 
         describe "#each_props" do
           it { subject.each_props.should be_a(Enumerator) }
-          it { subject.each_props.size.should == 8 }
+          it { subject.each_props.size.should == 9 }
           it { subject.each_props.to_a.should include(
               ab_ct, bridge_cr, dimer_cr
             ) }
         end
 
         describe "#organize_properties!" do
+          def find(prop)
+            subject.each_props.to_a[subject.index(prop)]
+          end
+
           before(:each) { subject.organize_properties! }
 
-          it { bridge_ct.smallest.should be_nil }
-          it { bridge_cr.smallest.should be_nil }
-          it { dimer_cr.smallest.should be_nil }
-          it { ab_ct.smallest.should be_nil }
+          it { find(bridge_cr).smallests.should be_nil }
+          it { find(dimer_cr).smallests.should be_nil }
+          it { find(ab_ct).smallests.should be_nil }
 
-          it { subject.each_props.to_a[subject.index(ad_cr)].smallest.
-            should == dimer_cr }
+          it { find(ad_cr).smallests.size.should == 2 }
+          it { find(ad_cr).smallests.to_a.should include(dimer_cr, ab_ct) }
         end
 
         describe "#classify" do
@@ -133,25 +136,29 @@ module VersatileDiamond
             } }
 
           it { subject.classify(methyl_on_incoherent_bridge).should == {
-              4 => ['C-', 1],
-              5 => ['-C:i%d<', 1],
+              4 => ['C~', 1],
+              5 => ['~C:i%d<', 1],
               0 => ['^C.%d<', 2],
             } }
 
           it { subject.classify(high_bridge).should == {
-              6 => ['C=', 1],
-              7 => ['=C%d<', 1],
               0 => ['^C.%d<', 2],
+              7 => ['C=', 1],
+              8 => ['=C%d<', 1],
             } }
         end
 
         describe "#index" do
           it { subject.index(bridge_cr).should == 0 }
+          it { subject.index(bridge, bridge.atom(:cr)).should == 0 }
+
           it { subject.index(ab_ct).should == 1 }
+          it { subject.index(activated_bridge, activated_bridge.atom(:ct)).
+            should == 1 }
         end
 
         describe "#all_types_num" do
-          it { subject.all_types_num.should == 8 }
+          it { subject.all_types_num.should == 9 }
         end
 
         describe "#notrelevant_types_num" do
@@ -167,6 +174,7 @@ module VersatileDiamond
           it { subject.has_relevants?(5).should be_true }
           it { subject.has_relevants?(6).should be_false }
           it { subject.has_relevants?(7).should be_false }
+          it { subject.has_relevants?(8).should be_false }
         end
       end
     end

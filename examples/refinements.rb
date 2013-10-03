@@ -41,6 +41,16 @@ surface
   temperature 1000
 
 events
+  reaction 'chain neighbour bridge-fixedbridge hydrogen migration'
+    aliases left: bridge, right: bridge
+    equation left(cr: *) + right = left + right(ct: *)
+      position left(:cr), right(:ct), face: 100, dir: :front
+      incoherent right(:ct)
+
+    activation 7
+    forward_rate 6.6e10
+    reverse_rate 1e10
+
   reaction 'same methyl-dimer hydrogen migration'
     equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
       unfixed methyl_on_dimer(:cm)

@@ -4,20 +4,23 @@ module VersatileDiamond
     # Generates a table with overveiw information about surfaced species stored
     # in Chest
     class SpecsOverview < Base
+      include SpecsAnalyzer
 
       # Generates a table
       def generate
-        @classifier = Tools::AtomClassifier.new
+        analyze_specs
+
         @base_format = "%55s | %5s | %5s | %s"
         puts @base_format % %w(Name Size ExtB Classification)
 
-        print_specs("Base specs", base_specs)
-        print_specs("Specific specs", specific_specs, name_method: :full_name)
+        print_specs("Base specs", base_surface_specs)
+        print_specs("Specific specs", specific_surface_specs,
+          name_method: :full_name)
 
         puts
         puts "Total number of specs: #{base_specs.size + specific_specs.size}"
-        puts "Total number of different atom types: #{@classifier.all_types_num}"
-        puts "Total number of different atom types without relevant properties: #{@classifier.notrelevant_types_num}"
+        puts "Total number of different atom types: #{classifier.all_types_num}"
+        puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
       end
 
     private
@@ -28,17 +31,15 @@ module VersatileDiamond
       # @option [Symbol] :name_method the name of method which will be called
       #   for getting name of each printed spec
       def print_specs(name, specs, name_method: :name)
-        specs = specs.reject(&:is_gas?)
         return if specs.empty?
-        specs.each { |s| @classifier.analyze(s) }
 
         puts "\n#{name}: [#{specs.size}]"
-        specs.reject(&:is_gas?).sort_by { |s| s.size }.each do |spec|
+        specs.sort_by(&:size).each do |spec|
           puts @base_format % [
             spec.send(name_method),
             spec.size,
             spec.external_bonds,
-            hash_str(@classifier.classify(spec))
+            hash_str(classifier.classify(spec))
           ]
         end
       end

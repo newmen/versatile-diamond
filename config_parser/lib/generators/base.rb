@@ -6,15 +6,15 @@ module VersatileDiamond
     private
 
       def base_specs
-        Tools::Chest.all(:gas_spec, :surface_spec)
+        @base_specs ||= Tools::Chest.all(:gas_spec, :surface_spec)
       end
 
       def specific_specs
-        Tools::Chest.all(:specific_spec)
+        @specific_specs ||= Tools::Chest.all(:specific_spec)
       end
 
       def termination_specs
-        Tools::Chest.all(:active_bond, :atomic_spec)
+        @termination_specs ||= Tools::Chest.all(:active_bond, :atomic_spec)
       end
 
       def wheres
@@ -24,15 +24,19 @@ module VersatileDiamond
       end
 
       def ubiquitous_reactions
-        Tools::Chest.all(:ubiquitous_reaction)
+        @ubiquitous_reactions ||= Tools::Chest.all(:ubiquitous_reaction)
+      end
+
+      def nonubiquitous_reactions
+        @nonubiquitous_reactions ||= typical_reactions + lateral_reactions
       end
 
       def typical_reactions
-        Tools::Chest.all(:reaction)
+        @typical_reactions ||= Tools::Chest.all(:reaction)
       end
 
       def lateral_reactions
-        Tools::Chest.all(:lateral_reaction)
+        @lateral_reactions ||= Tools::Chest.all(:lateral_reaction)
       end
     end
 

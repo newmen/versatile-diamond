@@ -22,7 +22,9 @@ module VersatileDiamond
                 specific_spec.send(:"#{state}!", atom_keyname)
                 new_atom = specific_spec.atom(atom_keyname)
                 next if old_atom == new_atom
+
                 @reaction.swap_atom(specific_spec, old_atom, new_atom)
+                @reaction.reverse.swap_atom(specific_spec, old_atom, new_atom)
               end
             end
           rescue Concepts::SpecificAtom::AlreadyStated => e

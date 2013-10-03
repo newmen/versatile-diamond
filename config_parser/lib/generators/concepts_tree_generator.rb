@@ -23,6 +23,7 @@ module VersatileDiamond
       end
 
       # Generates a graph image file
+      # @override
       def generate
         # draw calls order is important!
         draw_specs
@@ -92,7 +93,7 @@ module VersatileDiamond
       # Draws where objects and dependencies between them, and also will
       # draw dependencies from specific species
       def draw_wheres
-        wheres_to_nodes = wheres.each_with_object({}) do |where, hash|
+        @wheres_to_nodes = wheres.each_with_object({}) do |where, hash|
           multiline_name = multilinize(where.description, limit: 8)
           node = @graph.add_nodes(multiline_name)
           node.set { |n| n.color = WHERE_COLOR }
@@ -100,14 +101,14 @@ module VersatileDiamond
         end
 
         wheres.each do |where|
-          node = wheres_to_nodes[where]
+          node = @wheres_to_nodes[where]
           if (parents = where.parents)
             parents.each do |parent|
-              @graph.add_edges(node, wheres_to_nodes[parent]).set do |e|
+              @graph.add_edges(node, @wheres_to_nodes[parent]).set do |e|
                 e.color = WHERE_COLOR
               end
             end
-          end < Base
+          end
 
           next unless @sp_specs_to_nodes
           where.specs.each do |spec|
@@ -143,18 +144,18 @@ module VersatileDiamond
           @react_to_more_complex && @react_to_more_complex[reaction]
         end
 
-        @lateral_reactions.sort_by! { |reaction| reaction.size }
+        lateral_reactions.sort_by!(&:size)
 
         @lateral_reacts_to_nodes = {}
-        draw_reactions(@lateral_reactions, not_draw_spec_edges) do
+        draw_reactions(lateral_reactions, not_draw_spec_edges) do
           |reaction, node|
 
           @lateral_reacts_to_nodes[reaction] = node
           remember_more_complexes(reaction)
 
-          if wheres_to_nodes
+          if @wheres_to_nodes
             reaction.wheres.each do |where|
-              where_node = wheres_to_nodes[where]
+              where_node = @wheres_to_nodes[where]
               @graph.add_edges(node, where_node).set do |e|
                 e.color = WHERE_COLOR
               end
@@ -166,17 +167,17 @@ module VersatileDiamond
       # Draws dependencies between reactions
       def draw_reactions_dependencies
         if @ubiq_reacts_to_nodes && @typical_reacts_to_nodes
-          draw_reactions_depending_edges(@ubiquitous_reactions,
+          draw_reactions_depending_edges(ubiquitous_reactions,
             @ubiq_reacts_to_nodes, @typical_reacts_to_nodes)
         end
 
         if @typical_reacts_to_nodes && @lateral_reacts_to_nodes
-          draw_reactions_depending_edges(@typical_reactions,
+          draw_reactions_depending_edges(typical_reactions,
             @typical_reacts_to_nodes, @lateral_reacts_to_nodes)
         end
 
         if @lateral_reacts_to_nodes
-          draw_reactions_depending_edges(@lateral_reactions,
+          draw_reactions_depending_edges(lateral_reactions,
             @lateral_reacts_to_nodes, @lateral_reacts_to_nodes)
         end
       end
@@ -244,20 +245,6 @@ module VersatileDiamond
         specific_specs.each(&draw_edge_to)
       end
 
-        end
-      end
-
-      # Draws lateral reactions and dependencies between them, and also will
-      # draw dependencies from reactants
-      def draw_lateral_reactions
-        not_draw_spec_edges = -> reaction do
-          @react_to_more_complex && @react_to_more_complex[reaction]
-        end
-
-        @lateral_reactions.sort_by! { |reaction| reaction.size }
-
-        @lateral_reacts_to_nodes = {}
-        draw_reactions(@lateral_reactions, not_draw_spec_edges) do
       # Remembers more complex reactions for passed reaction
       # @param [UbiquitousReaction] reaction the reaction which is aware of
       #   their more complex analogs
@@ -266,23 +253,6 @@ module VersatileDiamond
         reaction.more_complex.each do |mc|
           @react_to_more_complex[mc] = reaction
         end
-      end
-
-      # Draws lateral reactions and dependencies between them, and also will
-      # draw dependencies from reactants
-      def draw_lateral_reactions
-        not_draw_spec_edges = -> reaction do
-          @react_to_more_complex && @react_to_more_complex[reaction]
-        end
-
-        @lateral_reactions.sort_by! { |reaction| reaction.size }
-
-        @lateral_reacts_to_nodes = {}
-        draw_reactions(@lateral_reactions, not_draw_spec_edges) do
-          splitted_text.last << ' ' if splitted_text.last.size > 0
-          splitted_text.last << words.shift
-        end
-        splitted_text.join("\n")
       end
     end
 

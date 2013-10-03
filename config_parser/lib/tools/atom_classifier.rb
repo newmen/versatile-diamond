@@ -12,7 +12,7 @@ module VersatileDiamond
         include Modules::ListsComparer
         include Lattices::BasicRelations
 
-        attr_accessor :smallest
+        attr_reader :smallests
 
         # Overloaded constructor that stores all properties of atom
         # @overload new(props)
@@ -33,7 +33,7 @@ module VersatileDiamond
               @has_relevants = true
             end
           else
-            raise ArgumentsError
+            raise ArgumentError
           end
         end
 
@@ -59,6 +59,15 @@ module VersatileDiamond
             (!has_relevants? || (other.has_relevants? &&
               (oth_vns = other.props[3].dup) &&
               props[3].all? { |vn| remove_one(oth_vns, vn) }))
+        end
+
+        # Adds dependency from smallest properties
+        # @param [AtomProperties] smallest the smallest properties from which
+        #   depends current
+        def add_smallest(smallest)
+          @smallests ||= Set.new
+          @smallests -= smallest.smallests if smallest.smallests
+          @smallests << smallest
         end
 
         # Makes unrelevanted copy of self
@@ -114,7 +123,7 @@ module VersatileDiamond
           elsif remove_one(rl, :dbond)
             name = "#{name}="
           elsif remove_one(rl, undirected_bond)
-            name = "#{name}-"
+            name = "#{name}~"
           end
 
           up1 = remove_one(rl, bond_front_110)
@@ -130,7 +139,7 @@ module VersatileDiamond
           end
 
           while remove_one(rl, undirected_bond)
-            name = "-#{name}"
+            name = "~#{name}"
           end
 
           name
@@ -212,6 +221,8 @@ module VersatileDiamond
           @props << prop
 
           unrel_prop = prop.unrelevanted
+          @props << unrel_prop unless index(unrel_prop)
+
           next if @unrelevanted_props.find { |p| p == unrel_prop }
           @unrelevanted_props << unrel_prop
         end
@@ -224,7 +235,7 @@ module VersatileDiamond
           smallest = props.shift
           props.each do |prop|
             next unless smallest.contained_in?(prop)
-            prop.smallest = smallest
+            prop.add_smallest(smallest)
           end
         end
       end
@@ -246,9 +257,23 @@ module VersatileDiamond
       end
 
       # Finds index of passed property
-      # @param [AtomProperties] prop the property index of which will be found
-      # @return [Integer] the index of property or nil
-      def index(prop)
+      # @overloaded index(prop)
+      #   @param [AtomProperties] prop the property index of which will be found
+      # @overloaded index(spec, atom)
+      #   @param [Spec | SpecificSpec] spec the spec for which properties of
+      #     atom will be found
+      #   @param [Atom | AtomReference | SpecificAtom] atom the atom for which
+      #     properties will be found
+      # @return [Integer] the index of properties or nil
+      def index(*args)
+        prop =
+          if args.size == 1
+            args.first
+          elsif args.size == 2
+            AtomProperties.new(*args)
+          else
+            raise ArgumentError
+          end
         @props.index(prop)
       end
 

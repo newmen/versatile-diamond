@@ -326,6 +326,22 @@ module VersatileDiamond
       it_behaves_like "visitable" do
         subject { methyl_desorption }
       end
+
+      describe "#changes" do
+        it { dimer_formation.changes.should == [
+            [
+              [activated_bridge, activated_bridge.atom(:ct)],
+              [dimer_dup_ff, dimer_dup_ff.atom(:cr)],
+            ],
+            [
+              [
+                activated_incoherent_bridge,
+                activated_incoherent_bridge.atom(:ct)
+              ],
+              [dimer_dup_ff, dimer_dup_ff.atom(:cl)],
+            ]
+          ] }
+      end
     end
 
   end

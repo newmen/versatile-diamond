@@ -4,33 +4,39 @@ module VersatileDiamond
     # Generates a graph with overveiw information about surfaced species stored
     # in Chest
     class AtomsGraphGenerator < GraphGenerator
+      include SpecsAnalyzer
 
       ATOM_COLOR = 'darkgreen'
       RELEVANTS_ATOM_COLOR = 'chocolate'
 
+      TRANSFER_COLOR = 'green'
+
       SPEC_COLOR = 'black'
       SPECIFIC_SPEC_COLOR = 'blue'
 
-      # Generates a table
-      def generate
-        @classifier = Tools::AtomClassifier.new
+      # Generates a graph
+      # @option [Boolean] :with_specs species will be shown an graph or not
+      # @option [Boolean] :includes atom properties includes will be shown an
+      #   graph or not
+      # @option [Boolean] :transitions transitions between atoms will be shown
+      #   or not
+      # @override
+      def generate(with_specs: false, includes: true, transitions: true)
+        analyze_specs
 
-        # draw_specs(base_specs, SPEC_COLOR)
-        # draw_specs(
-        #   specific_specs, SPECIFIC_SPEC_COLOR, name_method: :full_name)
-
-        specs = (base_specs + specific_specs).reject(&:is_gas?)
-        unless specs.empty?
-          specs.each do |s|
-            @classifier.analyze(s)
-            draw_atoms(@classifier.classify(s))
-          end
+        if with_specs
+          draw_specs(base_surface_specs, SPEC_COLOR)
+          draw_specs(specific_surface_specs, SPECIFIC_SPEC_COLOR,
+            name_method: :full_name)
+        else
+          used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
+        classifier.organize_properties!
 
-        @classifier.organize_properties!
-        draw_atom_dependencies
+        draw_atom_dependencies if includes
+        draw_atom_transitions if transitions
 
-        super
+        super()
       end
 
     private
@@ -46,7 +52,7 @@ module VersatileDiamond
           node = @graph.add_nodes(name)
           node.set { |e| e.color = color }
 
-          draw_atoms(@classifier.classify(spec), node)
+          draw_atoms(classifier.classify(spec), node)
         end
       end
 
@@ -58,13 +64,7 @@ module VersatileDiamond
         @atoms_to_nodes ||= {}
 
         hash.each do |index, (image, _)|
-          name = "#{index} :: #{image}"
-          color = color_by_atom_index(index)
-
-          unless @atoms_to_nodes[index]
-            @atoms_to_nodes[index] = @graph.add_nodes(name)
-            @atoms_to_nodes[index].set { |e| e.color = color }
-          end
+          add_atom_node(index, image)
 
           next unless node
           @graph.add_edges(node, @atoms_to_nodes[index]).set do |e|
@@ -73,20 +73,77 @@ module VersatileDiamond
         end
       end
 
-      def draw_atom_dependencies
-        @classifier.each_props.with_index do |prop, index|
-          next unless (smls = prop.smallest)
+      # Adds atom properties node to graph
+      # @param [Integer] index the index of atom properties
+      # @param [String] image the pseudographic representation of atom
+      #   properties
+      def add_atom_node(index, image)
+        name = "#{index} :: #{image}"
+        color = color_by_atom_index(index)
 
-          from = @atoms_to_nodes[index]
-          to = @atoms_to_nodes[@classifier.index(smls)]
-          @graph.add_edges(from, to).set do |e|
-            e.color = color_by_atom_index(index)
+        unless @atoms_to_nodes[index]
+          @atoms_to_nodes[index] = @graph.add_nodes(name)
+          @atoms_to_nodes[index].set { |e| e.color = color }
+        end
+      end
+
+      # Draws dependencies between atom properties by including of each other
+      def draw_atom_dependencies
+        classifier.each_props.with_index do |prop, index|
+          next unless (smallests = prop.smallests)
+
+          smallests.each do |smallest|
+            from = @atoms_to_nodes[index]
+            to = @atoms_to_nodes[classifier.index(smallest)]
+
+            unless to
+              i = classifier.index(smallest)
+              add_atom_node(i, smallest.to_s)
+              to = @atoms_to_nodes[i]
+            end
+
+            @graph.add_edges(from, to).set do |e|
+              e.color = color_by_atom_index(index)
+            end
           end
         end
       end
 
+      # Draws transitions between atom properties by reactions
+      def draw_atom_transitions
+        cache = {}
+        nonubiquitous_reactions.each do |reaction|
+          reaction.changes.each do |spec_atoms|
+            next if spec_atoms.map(&:first).any?(&:is_gas?)
+
+            indexes = spec_atoms.map do |spec_atom|
+              classifier.index(*spec_atom)
+            end
+
+            cache[indexes[0]] ||= Set.new
+            next if cache[indexes[0]].include?(indexes[1])
+            cache[indexes[0]] << indexes[1]
+
+            nodes = indexes.map do |i|
+              unless @atoms_to_nodes[i]
+                prop = classifier.each_props.to_a[i]
+                add_atom_node(i, prop.to_s)
+              end
+              @atoms_to_nodes[i]
+            end
+
+            @graph.add_edges(*nodes).set do |e|
+              e.color = TRANSFER_COLOR
+            end
+          end
+        end
+      end
+
+      # Selects color by index of atom properties
+      # @param [Integer] index the index of atom properties
+      # @return [String] selected color
       def color_by_atom_index(index)
-        @classifier.has_relevants?(index) ? RELEVANTS_ATOM_COLOR : ATOM_COLOR
+        classifier.has_relevants?(index) ? RELEVANTS_ATOM_COLOR : ATOM_COLOR
       end
     end
 
