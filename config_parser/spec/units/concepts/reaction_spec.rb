@@ -342,6 +342,12 @@ module VersatileDiamond
             ]
           ] }
       end
+
+      describe "#changes_size" do
+        it { dimer_formation.changes_size.should == 2 }
+        it { hydrogen_migration.changes_size.should == 2 }
+        it { methyl_incorporation.changes_size.should == 4 }
+      end
     end
 
   end

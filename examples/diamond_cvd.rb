@@ -452,6 +452,7 @@ events
         forward_rate 2.8e8
         reverse_rate 3e7
 
+  # TODO: не определяются изменённые атомы!
   reaction 'vinyl incorporion'
     # эта реакция - шутка? есть ещё 3 реакции на эту тему, поэтапно
     equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)

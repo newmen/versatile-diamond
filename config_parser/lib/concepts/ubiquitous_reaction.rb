@@ -141,6 +141,11 @@ module VersatileDiamond
         @source.map(&:size).reduce(:+)
       end
 
+      # Gets number of changed atoms
+      # @return [Integer] 1
+      def changes_size
+        1
+      end
       # Also visit target source spec
       # @param [Visitors::Visitor] visitor the object that will accumulate
       #   state of current instance

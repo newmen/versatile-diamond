@@ -24,8 +24,8 @@ module VersatileDiamond
 
         puts
         puts
-        @reactions_format = "%100s | %5s | %1.3e | %s"
-        puts @reactions_format.sub('1.3e', '9s') % %w(Formula Size Rate Name)
+        @reactions_format = "%100s | %5s | %2s | %1.3e | %s"
+        puts @reactions_format.sub('1.3e', '9s') % %w(Formula Size Ch Rate Name)
 
         print_reactions("Ubiquitous reactions", ubiquitous_reactions)
         print_reactions("Typical reactions", typical_reactions)
@@ -70,6 +70,7 @@ module VersatileDiamond
           puts @reactions_format % [
             reaction.to_s,
             reaction.size,
+            reaction.changes_size,
             reaction.full_rate,
             reaction.name,
           ]
