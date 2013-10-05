@@ -23,21 +23,29 @@ module VersatileDiamond
       end
 
       # Generates a graph image file
+      # @option [Boolean] :no_specs if set to true then base species doesn't
+      #   shown
+      # @option [Boolean] :no_spec_specs if set to true then specific species
+      #   doesn't shown
+      # @option [Boolean] :no_reactions if set to true then reactions doesn't
+      #   shown
       # @override
-      def generate
+      def generate(no_specs: false, no_spec_specs: false, no_reactions: false)
         # draw calls order is important!
-        draw_specs
-        draw_specific_specs
+        draw_specs if !no_specs
+        draw_specific_specs if !no_spec_specs
         draw_termination_specs
         draw_wheres
 
-        draw_typical_reactions
-        draw_ubiquitous_reactions
-        draw_lateral_reactions
+        if !no_reactions
+          draw_typical_reactions
+          draw_ubiquitous_reactions
+          draw_lateral_reactions
+        end
 
         draw_reactions_dependencies
 
-        super
+        super()
       end
 
     private

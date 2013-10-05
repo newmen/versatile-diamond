@@ -15,26 +15,30 @@ module VersatileDiamond
       SPECIFIC_SPEC_COLOR = 'blue'
 
       # Generates a graph
-      # @option [Boolean] :with_specs species will be shown an graph or not
-      # @option [Boolean] :includes atom properties includes will be shown an
-      #   graph or not
-      # @option [Boolean] :transitions transitions between atoms will be shown
+      # @option [Boolean] :specs species will be shown an graph or not
+      # @option [Boolean] :spec_specs specific species will be shown an graph
       #   or not
+      # @option [Boolean] :no_includes atom properties not will be shown an
+      #   graph or not
+      # @option [Boolean] :no_transitions transitions between atoms not will be
+      #   shown or not
       # @override
-      def generate(with_specs: false, includes: true, transitions: true)
+      def generate(specs: false, spec_specs: false, no_includes: false, no_transitions: false)
         analyze_specs
 
-        if with_specs
-          draw_specs(base_surface_specs, SPEC_COLOR)
-          draw_specs(specific_surface_specs, SPECIFIC_SPEC_COLOR,
-            name_method: :full_name)
+        if specs || spec_specs
+          draw_specs(base_surface_specs, SPEC_COLOR) if specs
+          if spec_specs
+            draw_specs(specific_surface_specs, SPECIFIC_SPEC_COLOR,
+              name_method: :full_name)
+          end
         else
           used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
         classifier.organize_properties!
 
-        draw_atom_dependencies if includes
-        draw_atom_transitions if transitions
+        draw_atom_dependencies unless no_includes
+        draw_atom_transitions unless no_transitions
 
         super()
       end
@@ -52,7 +56,7 @@ module VersatileDiamond
           node = @graph.add_nodes(name)
           node.set { |e| e.color = color }
 
-          draw_atoms(classifier.classify(spec), node)
+          draw_atoms(classifier.classify(spec), node, color)
         end
       end
 
@@ -60,7 +64,7 @@ module VersatileDiamond
       # @param [Hash] hash the classified atoms hash
       # @param [Node] node the node of spec which belongs to atoms from
       #   hash
-      def draw_atoms(hash, node = nil)
+      def draw_atoms(hash, node = nil, color = nil)
         @atoms_to_nodes ||= {}
 
         hash.each do |index, (image, _)|
@@ -95,6 +99,12 @@ module VersatileDiamond
           smallests.each do |smallest|
             from = @atoms_to_nodes[index]
             to = @atoms_to_nodes[classifier.index(smallest)]
+
+            unless from
+              prop = classifier.each_props.to_a[index]
+              add_atom_node(index, prop.to_s)
+              from = @atoms_to_nodes[index]
+            end
 
             unless to
               i = classifier.index(smallest)

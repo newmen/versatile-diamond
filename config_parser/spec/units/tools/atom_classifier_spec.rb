@@ -41,7 +41,6 @@ module VersatileDiamond
           it { bridge_ct.contained_in?(dimer_cr).should be_true }
           it { bridge_ct.contained_in?(ab_ct).should be_true }
           it { bridge_ct.contained_in?(aib_ct).should be_true }
-          it { aib_ct.contained_in?(aib_ct).should be_true }
           it { dimer_cr.contained_in?(ad_cr).should be_true }
 
           it { ad_cr.contained_in?(dimer_cr).should be_false }

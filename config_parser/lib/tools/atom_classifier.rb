@@ -51,14 +51,17 @@ module VersatileDiamond
         end
 
         def contained_in?(other)
-          return false unless props[0] == other.props[0] &&
-            props[1] == other.props[1]
+          return false unless atom_name == other.atom_name &&
+            lattice == other.lattice
 
-          oth_rels = other.props[2].dup
-          props[2].all? { |rel| remove_one(oth_rels, rel) } &&
+          oth_rels = other.relations.dup
+          relations.all? { |rel| remove_one(oth_rels, rel) } &&
             (!has_relevants? || (other.has_relevants? &&
-              (oth_vns = other.props[3].dup) &&
-              props[3].all? { |vn| remove_one(oth_vns, vn) }))
+              (oth_vns = other.relevants.dup) &&
+              relevants.include?(:unfixed) &&
+              other.relevants.include?(:unfixed) &&
+              !relevants.include?(:incoherent) &&
+              !other.relevants.include?(:incoherent)))
         end
 
         # Adds dependency from smallest properties
@@ -79,9 +82,8 @@ module VersatileDiamond
         # Gets size of properties
         def size
           return @size if @size
-          _, lattice, relations, res = @props
           @size = 1 + (lattice ? 0.5 : 0) + relations.size +
-            (res ? res.size * 0.34 : 0)
+            (relevants ? relevants.size * 0.34 : 0)
         end
 
         # Checks that contains relevants properties
@@ -91,8 +93,8 @@ module VersatileDiamond
         end
 
         def to_s
-          name, lattice, relations, res = @props
           rl = relations.dup
+          name = atom_name.to_s
 
           while remove_one(rl, :active)
             name = "*#{name}"
@@ -102,8 +104,8 @@ module VersatileDiamond
             name = "#{name}."
           end
 
-          if res
-            res.each do |sym|
+          if relevants
+            relevants.each do |sym|
               suffix = case sym
                 when :incoherent then 'i'
                 when :unfixed then 'u'
@@ -152,6 +154,10 @@ module VersatileDiamond
       protected
 
         attr_reader :props
+
+        %w(atom_name lattice relations relevants).each_with_index do |name, i|
+          define_method(name) { @props[i] }
+        end
 
       private
 

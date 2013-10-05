@@ -7,32 +7,47 @@ module VersatileDiamond
       include SpecsAnalyzer
 
       # Generates a table
-      def generate
+      # @option [Boolean] :no_specs if set to true then base species doesn't
+      #   shown
+      # @option [Boolean] :no_spec_specs if set to true then specific species
+      #   doesn't shown
+      # @option [Boolean] :no_reactions if set to true then reactions doesn't
+      #   shown
+      def generate(no_specs: false, no_spec_specs: false, no_reactions: false)
         analyze_specs
 
-        @specs_format = "%55s | %5s | %5s | %s"
-        puts @specs_format % %w(Name Size ExtB Classification)
+        if !no_specs || !no_spec_specs
+          @specs_format = "%55s | %5s | %5s | %s"
+          puts @specs_format % %w(Name Size ExtB Classification)
+        end
 
-        print_specs("Base specs", base_surface_specs)
-        print_specs("Specific specs", specific_surface_specs,
-          name_method: :full_name)
+        print_specs("Base specs", base_surface_specs) if !no_specs
+        if !no_spec_specs
+          print_specs("Specific specs", specific_surface_specs,
+            name_method: :full_name)
+        end
 
-        puts
-        puts "Total number of specs: #{base_specs.size + specific_specs.size}"
-        puts "Total number of different atom types: #{classifier.all_types_num}"
-        puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
+        if !no_specs || !no_spec_specs
+          puts
+          puts "Total number of specs: #{base_specs.size + specific_specs.size}"
+          puts "Total number of different atom types: #{classifier.all_types_num}"
+          puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
+        end
 
-        puts
-        puts
-        @reactions_format = "%100s | %5s | %2s | %1.3e | %s"
-        puts @reactions_format.sub('1.3e', '9s') % %w(Formula Size Ch Rate Name)
+        if !no_reactions
+          2.times { puts } if !no_specs || !no_spec_specs
 
-        print_reactions("Ubiquitous reactions", ubiquitous_reactions)
-        print_reactions("Typical reactions", typical_reactions)
-        print_reactions("Lateral reactions", lateral_reactions)
+          @reactions_format = "%100s | %5s | %2s | %1.3e | %s"
+          puts @reactions_format.sub('1.3e', '9s') %
+            %w(Formula Size Ch Rate Name)
 
-        puts
-        puts "Total number of reactions: #{ubiquitous_reactions.size + nonubiquitous_reactions.size}"
+          print_reactions("Ubiquitous reactions", ubiquitous_reactions)
+          print_reactions("Typical reactions", typical_reactions)
+          print_reactions("Lateral reactions", lateral_reactions)
+
+          puts
+          puts "Total number of reactions: #{ubiquitous_reactions.size + nonubiquitous_reactions.size}"
+        end
       end
 
     private
