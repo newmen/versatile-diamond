@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'docopt'
-require_relative 'config_parser/config_parser'
-VD = VersatileDiamond
 
 doc = <<HELP
 Usage:
@@ -36,7 +34,9 @@ rescue Docopt::Exit => e
   puts e.message
 end
 
+require_relative 'config_parser/config_parser'
 require_each "../#{opt['--lattices']}/*.rb"
+VD = VersatileDiamond
 
 I18n.locale = opt['--lang']
 if !VD::Analyzer.read_config(opt['<path_to_config>'])
