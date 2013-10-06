@@ -175,6 +175,27 @@ module VersatileDiamond
         atoms.all?(&method(:has_lattice?))
       end
 
+      # Accumulate atom changes
+      # @return [Array, Array] the arrays of pairs spec and atom
+      def changes
+        result = []
+        @mapping.changes.each do |(spec1, spec2), atoms_zip|
+          atoms_zip.each do |atom1, atom2|
+            result << [[spec1, atom1], [spec2, atom2]]
+          end
+        end
+        result
+      end
+
+      # Gets number of changed atoms
+      # @return [Integer] the number of changed atoms
+      # @override
+      def changes_size
+        @mapping.changes.reduce(0) do |acc, (_, atoms_zip)|
+          acc + atoms_zip.size
+        end
+      end
+
     protected
 
       attr_reader :children

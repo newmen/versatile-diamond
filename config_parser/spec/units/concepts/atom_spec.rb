@@ -39,6 +39,14 @@ module VersatileDiamond
         it { cd.diff(incoherent_cd).should == [:incoherent] }
         it { cd.diff(activated_incoherent_cd).should == [:incoherent] }
       end
+
+      describe "#relations_in" do
+        it { cd.relations_in(bridge).should == bridge.links[cd] }
+        it { cd.relations_in(bridge).object_id.
+          should_not == bridge.links[cd].object_id }
+
+        it { cd.relations_in(bridge).size.should == 2 }
+      end
     end
 
   end

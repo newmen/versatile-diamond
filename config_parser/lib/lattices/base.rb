@@ -4,6 +4,7 @@ module VersatileDiamond
     # The base class for lattice instanes
     # @abstract
     class Base
+      include BasicRelations
 
       # Exception class for case when used bond is incorrect
       class UndefinedRelation < Exception
@@ -61,28 +62,6 @@ module VersatileDiamond
           first.lattice.opposite_relation(second.lattice, position)
         [position, opposite_position]
       end
-
-    private
-
-      # Basics relation options
-      [100, 110].each do |face|
-        [:front, :cross].each do |dir|
-          define_method("#{dir}_#{face}") do
-            { face: face, dir: dir }
-          end
-        end
-      end
-
-      # Basics position instances
-      [
-        [100, :front],
-        [100, :cross],
-      ].each do |face, dir|
-        define_method("position_#{dir}_#{face}") do
-          Position[face: face, dir: dir]
-        end
-      end
-
     end
 
   end

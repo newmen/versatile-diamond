@@ -60,6 +60,14 @@ module VersatileDiamond
         other.is_a?(SpecificAtom) ? other.relevants : []
       end
 
+      # Finds all relation instances for current atom in passed spec
+      # @param [Spec] spec the spec in which relations will be found, must
+      #   contain current atom
+      # @return [Array] the array of relations
+      def relations_in(spec)
+        spec.links[self].dup
+      end
+
       def to_s
         @lattice ? "#{name}%#{@lattice}" : name.to_s
       end

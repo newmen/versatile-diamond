@@ -119,6 +119,11 @@ module VersatileDiamond
         it { surface_deactivation.size.should == 1 }
       end
 
+      describe "#changes_size" do
+        it { surface_activation.changes_size.should == 1 }
+        it { surface_deactivation.changes_size.should == 1 }
+      end
+
       it_behaves_like "visitable" do
         subject { surface_activation }
       end

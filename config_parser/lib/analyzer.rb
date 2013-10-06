@@ -7,6 +7,7 @@ module VersatileDiamond
     class << self
       # Self method for reading and analyzing configuration file
       # @param [String] config_path the path to configuration file
+      # @return [Boolean] finds any errors or not
       def read_config(config_path)
         content = File.open(config_path).readlines
         new(content, config_path).analyze
@@ -26,6 +27,7 @@ module VersatileDiamond
     end
 
     # Launches analysis cycle
+    # @return [Boolean] the result of analysis
     def analyze
       loop do
   # puts "LINE #{@line_number + 1}: #{@line}"
@@ -48,8 +50,11 @@ module VersatileDiamond
       rescue Tools::Shunter::ReactionDuplicate => e
         syntax_error('.reaction_duplicate', first: e.first, second: e.second)
       end
+
+      true
     rescue Errors::SyntaxError => e
       puts e.message(@config_path, @line_number + 1)
+      false
     rescue Exception => e
       puts "System error at line #{@line_number + 1}:"
       puts "\n\t#{@line.strip}" if @line

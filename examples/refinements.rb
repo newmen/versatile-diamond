@@ -23,7 +23,6 @@ surface
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
-    position :cl, :cr, face: 100, dir: :front
 
   spec :methyl_on_bridge
     aliases basis: bridge
@@ -42,20 +41,38 @@ surface
   temperature 1000
 
 events
-  reaction 'methyl adsorption to dimer'
-    equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
-    enthalpy -73.6
-    activation 0
-    forward_rate 1e13, 'cm3/(mol * s)'
-    reverse_rate 5.3e3
+  reaction 'chain neighbour bridge-fixedbridge hydrogen migration'
+    aliases left: bridge, right: bridge
+    equation left(cr: *) + right = left + right(ct: *)
+      position left(:cr), right(:ct), face: 100, dir: :front
+      incoherent right(:ct)
 
-  reaction 'methyl desorption'
-    equation methyl_on_bridge = bridge(ct: *) + methane(c: *)
-      refinement 'from bridge'
-        incoherent methyl_on_bridge(:cb)
-        forward_rate 1.7e7
+    activation 7
+    forward_rate 6.6e10
+    reverse_rate 1e10
 
-      refinement 'from face 111'
-        forward_rate 5.4e6
+  reaction 'same methyl-dimer hydrogen migration'
+    equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
+      unfixed methyl_on_dimer(:cm)
 
-    activation 0
+    forward_activation 37.5
+    forward_rate 2.1e12
+    reverse_activation 50.5
+    reverse_rate 1.2e12
+
+  reaction 'methyl neighbour-dimer hydrogen migration'
+    equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *) + dimer
+      unfixed methyl_on_dimer(:cm)
+
+      refinement 'along chain'
+        position methyl_on_dimer(:cr), dimer(:cr), face: 100, dir: :front
+        forward_activation 16.3
+        reverse_activation 25.1
+
+      refinement 'along row'
+        position methyl_on_dimer(:cr), dimer(:cr), face: 100, dir: :cross
+        forward_activation 27.4
+        reverse_activation 36.6
+
+    forward_rate 1.7e12
+    reverse_rate 4.8e12

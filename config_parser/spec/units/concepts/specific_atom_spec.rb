@@ -113,6 +113,12 @@ module VersatileDiamond
         let(:target) { n }
         let(:reference) { subject }
       end
+
+      describe "#relations_in" do
+        it { activated_cd.relations_in(activated_bridge).size.should == 3 }
+        it { activated_bridge.atom(:cr).relations_in(activated_bridge).size.
+          should == 4 }
+      end
     end
 
   end

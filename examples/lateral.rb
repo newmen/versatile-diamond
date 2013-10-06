@@ -23,7 +23,6 @@ surface
     atoms ct: C%d, cl: bridge(:ct), cr: bridge(:ct)
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
-    position :cl, :cr, face: 100, dir: :front
 
   spec :methyl_on_bridge
     aliases basis: bridge
@@ -117,7 +116,6 @@ events
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
-      position high_bridge(:ct), source(:ct), face: 100, dir: :front
 
       refinement 'without chain neighbour methyl'
         forward_activation 36.3

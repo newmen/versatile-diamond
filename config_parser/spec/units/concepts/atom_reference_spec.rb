@@ -36,6 +36,10 @@ module VersatileDiamond
           should == [:incoherent] }
       end
 
+      describe "#relations_in" do
+        it { bridge.atom(:cr).relations_in(bridge).size.should == 4 }
+      end
+
       it_behaves_like "#lattice" do
         let(:target) { c1 }
         let(:reference) { ref }

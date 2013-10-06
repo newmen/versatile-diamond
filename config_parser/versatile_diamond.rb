@@ -1,5 +1,7 @@
 require 'pry'
 
+require 'graphviz'
+
 require 'forwardable'
 require 'singleton'
 require 'set'

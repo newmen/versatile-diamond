@@ -1,10 +1,8 @@
-require 'graphviz'
-
 module VersatileDiamond
   module Generators
 
     # Implements methods for generating graph of general concepts dependencies
-    class ConceptsTreeGenerator
+    class ConceptsTreeGenerator < GraphGenerator
       SPECIFIC_SPEC_COLOR = 'blue'
       TERMINATION_SPEC_COLOR = 'chocolate'
       WHERE_COLOR = 'darkviolet'
@@ -18,52 +16,47 @@ module VersatileDiamond
       # @param [String] ext the extention of result image file
       # @option [Boolean] :draw_second_source_deps if set then reaction
       #   dependency from second source spec will show on dependencies tree
+      # @override
       def initialize(filename, ext = 'png', draw_second_source_deps: false)
-        @filename = "#{filename}.#{ext}"
-        @ext = ext.to_sym
-
+        super(filename, ext)
         @draw_second_source_deps = draw_second_source_deps
-
-        @graph = GraphViz.new(:G, type: :digraph)
-
-        @base_specs = Tools::Chest.all(:gas_spec, :surface_spec)
-        @specific_specs = Tools::Chest.all(:specific_spec)
-        @termination_specs = Tools::Chest.all(:active_bond, :atomic_spec)
-        @wheres = Tools::Chest.all(:where).reduce([]) do |acc, hash|
-          acc + hash.values
-        end
-
-        @ubiquitous_reactions = Tools::Chest.all(:ubiquitous_reaction)
-        @typical_reactions = Tools::Chest.all(:reaction)
-        @lateral_reactions = Tools::Chest.all(:lateral_reaction)
       end
 
       # Generates a graph image file
-      def generate
+      # @option [Boolean] :no_specs if set to true then base species doesn't
+      #   shown
+      # @option [Boolean] :no_spec_specs if set to true then specific species
+      #   doesn't shown
+      # @option [Boolean] :no_reactions if set to true then reactions doesn't
+      #   shown
+      # @override
+      def generate(no_specs: false, no_spec_specs: false, no_reactions: false)
         # draw calls order is important!
-        draw_specs
-        draw_specific_specs
+        draw_specs if !no_specs
+        draw_specific_specs if !no_spec_specs
         draw_termination_specs
         draw_wheres
 
-        draw_typical_reactions
-        draw_ubiquitous_reactions
-        draw_lateral_reactions
+        if !no_reactions
+          draw_typical_reactions
+          draw_ubiquitous_reactions
+          draw_lateral_reactions
+        end
 
         draw_reactions_dependencies
 
-        @graph.output(@ext => @filename)
+        super()
       end
 
     private
 
       # Draws basic species and dependencies between them
       def draw_specs
-        @spec_to_nodes = @base_specs.each_with_object({}) do |spec, hash|
+        @spec_to_nodes = base_specs.each_with_object({}) do |spec, hash|
           hash[spec] = @graph.add_nodes(spec.name.to_s)
         end
 
-        @base_specs.each do |spec|
+        base_specs.each do |spec|
           next unless spec.parent
           @graph.add_edges(@spec_to_nodes[spec], @spec_to_nodes[spec.parent])
         end
@@ -74,14 +67,14 @@ module VersatileDiamond
       def draw_specific_specs
         setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
 
-        @sp_specs_to_nodes = @specific_specs.each_with_object({}) do |ss, hash|
-          ss_name = ss.full_name.sub(/\A([^(]+)(.+)\Z/, "\\1\n\\2")
+        @sp_specs_to_nodes = specific_specs.each_with_object({}) do |ss, hash|
+          ss_name = split_specific_spec(ss.full_name)
           node = @graph.add_nodes(ss_name)
           node.set(&setup_lambda)
           hash[ss] = node
         end
 
-        @specific_specs.each do |ss|
+        specific_specs.each do |ss|
           node = @sp_specs_to_nodes[ss]
           parent = ss.parent
           next unless parent || @spec_to_nodes
@@ -98,7 +91,7 @@ module VersatileDiamond
       # Draws termination species
       def draw_termination_specs
         @sp_specs_to_nodes ||= {}
-        @termination_specs.each do |ts|
+        termination_specs.each do |ts|
           node = @graph.add_nodes(ts.name.to_s)
           node.set { |e| e.color = TERMINATION_SPEC_COLOR }
           @sp_specs_to_nodes[ts] = node
@@ -108,14 +101,14 @@ module VersatileDiamond
       # Draws where objects and dependencies between them, and also will
       # draw dependencies from specific species
       def draw_wheres
-        @wheres_to_nodes = @wheres.each_with_object({}) do |where, hash|
+        @wheres_to_nodes = wheres.each_with_object({}) do |where, hash|
           multiline_name = multilinize(where.description, limit: 8)
           node = @graph.add_nodes(multiline_name)
           node.set { |n| n.color = WHERE_COLOR }
           hash[where] = node
         end
 
-        @wheres.each do |where|
+        wheres.each do |where|
           node = @wheres_to_nodes[where]
           if (parents = where.parents)
             parents.each do |parent|
@@ -137,7 +130,7 @@ module VersatileDiamond
       # draw dependencies from reactants
       def draw_typical_reactions
         @typical_reacts_to_nodes = {}
-        draw_reactions(@typical_reactions) do |reaction, node|
+        draw_reactions(typical_reactions) do |reaction, node|
           @typical_reacts_to_nodes[reaction] = node
           remember_more_complexes(reaction)
         end
@@ -147,7 +140,7 @@ module VersatileDiamond
       # reactants
       def draw_ubiquitous_reactions
         @ubiq_reacts_to_nodes = {}
-        draw_reactions(@ubiquitous_reactions) do |reaction, node|
+        draw_reactions(ubiquitous_reactions) do |reaction, node|
           @ubiq_reacts_to_nodes[reaction] = node
         end
       end
@@ -159,10 +152,10 @@ module VersatileDiamond
           @react_to_more_complex && @react_to_more_complex[reaction]
         end
 
-        @lateral_reactions.sort_by! { |reaction| reaction.size }
+        lateral_reactions.sort_by!(&:size)
 
         @lateral_reacts_to_nodes = {}
-        draw_reactions(@lateral_reactions, not_draw_spec_edges) do
+        draw_reactions(lateral_reactions, not_draw_spec_edges) do
           |reaction, node|
 
           @lateral_reacts_to_nodes[reaction] = node
@@ -182,17 +175,17 @@ module VersatileDiamond
       # Draws dependencies between reactions
       def draw_reactions_dependencies
         if @ubiq_reacts_to_nodes && @typical_reacts_to_nodes
-          draw_reactions_depending_edges(@ubiquitous_reactions,
+          draw_reactions_depending_edges(ubiquitous_reactions,
             @ubiq_reacts_to_nodes, @typical_reacts_to_nodes)
         end
 
         if @typical_reacts_to_nodes && @lateral_reacts_to_nodes
-          draw_reactions_depending_edges(@typical_reactions,
+          draw_reactions_depending_edges(typical_reactions,
             @typical_reacts_to_nodes, @lateral_reacts_to_nodes)
         end
 
         if @lateral_reacts_to_nodes
-          draw_reactions_depending_edges(@lateral_reactions,
+          draw_reactions_depending_edges(lateral_reactions,
             @lateral_reacts_to_nodes, @lateral_reacts_to_nodes)
         end
       end
@@ -268,21 +261,6 @@ module VersatileDiamond
         reaction.more_complex.each do |mc|
           @react_to_more_complex[mc] = reaction
         end
-      end
-
-      # Multilinize passed text where each result line is not more of limit
-      # @param [String] text the text for multilinizing
-      # @option [Integer] :limit the limit of one line length
-      # @return [String] multilinized text
-      def multilinize(text, limit: 13)
-        words = text.split(/\s+/)
-        splitted_text = ['']
-        until words.empty?
-          splitted_text << '' if splitted_text.last.size > limit
-          splitted_text.last << ' ' if splitted_text.last.size > 0
-          splitted_text.last << words.shift
-        end
-        splitted_text.join("\n")
       end
     end
 
