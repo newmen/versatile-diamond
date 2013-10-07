@@ -55,10 +55,17 @@ module VersatileDiamond
               it { expect { subject.send("#{state}!") }.
                 to raise_error SpecificAtom::AlreadyStated }
             end
+
+            describe "reset state" do
+              before { subject.send("not_#{state}!") }
+              it { subject.send("#{state}?").should be_false }
+            end
           end
 
           describe "is not set" do
             it { subject.send("#{state}?").should be_false }
+            it { expect { subject.send("not_#{state}!") }.
+              to raise_error SpecificAtom::NotStated }
           end
         end
       end

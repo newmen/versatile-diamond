@@ -260,10 +260,13 @@ module VersatileDiamond
         own = SpecificAtom.new(own) unless own.is_a?(SpecificAtom)
         diff = own.diff(foreign)
 
-        # TODO: if atom has not remain bonds then not set incoherent status (rspec it!)
-        own.incoherent! if !own.incoherent? && (other.is_gas? ||
-          (diff.include?(:incoherent) &&
-            target.external_bonds_for(original_own) > 0))
+        extb = target.external_bonds_for(original_own)
+        if extb > 0
+          own.incoherent! if !own.incoherent? &&
+            (other.is_gas? || diff.include?(:incoherent))
+        elsif extb == 0
+          own.not_incoherent! if own.incoherent?
+        end
 
         own.unfixed! if !own.unfixed? &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
