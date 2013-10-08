@@ -11,9 +11,6 @@ module VersatileDiamond
 
       TRANSFER_COLOR = 'green'
 
-      SPEC_COLOR = 'black'
-      SPECIFIC_SPEC_COLOR = 'blue'
-
       # Generates a graph
       # @option [Boolean] :specs species will be shown an graph or not
       # @option [Boolean] :spec_specs specific species will be shown an graph
@@ -27,11 +24,8 @@ module VersatileDiamond
         analyze_specs
 
         if specs || spec_specs
-          draw_specs(base_surface_specs, SPEC_COLOR) if specs
-          if spec_specs
-            draw_specs(specific_surface_specs, SPECIFIC_SPEC_COLOR,
-              name_method: :full_name)
-          end
+          draw_specs(no_includes: no_includes) if specs
+          draw_specific_specs(no_includes: no_includes) if spec_specs
         else
           used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
@@ -46,18 +40,36 @@ module VersatileDiamond
     private
 
       # Draws spec nodes and dependencies from classified atoms
-      # @param [Array] specs the species which will be shown as table
-      # @option [Symbol] :name_method the name of method which will be called
-      #   for getting name of each printed spec
-      def draw_specs(specs, color, name_method: :name)
-        specs.each do |spec|
-          name = spec.send(name_method).to_s
-          name = split_specific_spec(name) if spec.is_a?(SpecificSpec)
-          node = @graph.add_nodes(name)
-          node.set { |e| e.color = color }
-
-          draw_atoms(classifier.classify(spec), node, color)
+      # @param [Hash] params the parameters of drawing
+      # @override
+      def draw_specs(**params)
+        super(base_surface_specs, params)
+        base_surface_specs.each do |spec|
+          draw_atoms_for(@spec_to_nodes, spec, spec.parent, SPEC_COLOR)
         end
+      end
+
+      # Draws spec nodes and dependencies from classified atoms
+      # @param [Hash] params the parameters of drawing
+      # @override
+      def draw_specific_specs(**params)
+        super(specific_surface_specs, params)
+        specific_surface_specs.each do |spec|
+          draw_atoms_for(@sp_specs_to_nodes, spec,
+            spec.parent || spec.spec, SPECIFIC_SPEC_COLOR)
+        end
+      end
+
+      # Draw atoms for passed spec with edges from spec to each atom with
+      # passed color
+      #
+      # @param [Hash] nodes the mirror of nodes
+      # @param [Spec | SpecificSpec] spec the spec atoms of which will be shown
+      # @param [Spec | SpecificSpec] parent don't draw atoms same as parent
+      # @param [String] color the color of edges
+      def draw_atoms_for(nodes, spec, parent, color)
+        classification = classifier.classify(spec, without: parent)
+        draw_atoms(classification, nodes[spec], color)
       end
 
       # Draws classified atoms and their dependencies from spec

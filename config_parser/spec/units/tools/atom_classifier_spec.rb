@@ -145,6 +145,18 @@ module VersatileDiamond
               11 => ['C=', 1],
               12 => ['=C%d<', 1],
             } }
+
+          describe "without" do
+            it { subject.classify(activated_bridge, without: bridge_base).
+              should == {
+                1 => ['*C%d<', 1]
+              } }
+
+            it { subject.classify(dimer, without: bridge_base).
+              should == {
+                4 => ['-C%d<', 2]
+              } }
+          end
         end
 
         describe "#index" do

@@ -267,10 +267,25 @@ module VersatileDiamond
       # and values is number of atoms in spec with same properties
       #
       # @param [Spec | SpecificSpec] spec the analyzing spec
+      # @option [Spec | SpecificSpec] :without do not classify atoms like as
+      #   from passed spec
       # @return [Hash] result of classification
-      # TODO: rspec it!
-      def classify(spec)
-        spec.links.keys.each_with_object({}) do |atom, hash|
+      def classify(spec, without: nil)
+        atoms = spec.links.keys
+
+        if without
+          without_same = spec.class.new(spec.name)
+          parent_atoms = without.links.keys
+          atoms = atoms.select do |atom|
+            prop = AtomProperties.new(spec, atom)
+            parent_atoms.all? do |parent_atom|
+              parent_prop = AtomProperties.new(without, parent_atom)
+              prop != parent_prop
+            end
+          end
+        end
+
+        atoms.each_with_object({}) do |atom, hash|
           prop = AtomProperties.new(spec, atom)
           index = index(prop)
           image = prop.to_s
