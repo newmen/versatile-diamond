@@ -9,7 +9,9 @@ class Diamond : public Crystal
 public:
     using Crystal::Crystal;
 
-    void bondTogether();
+protected:
+    void buildAtoms();
+    void bondAllAtoms();
 };
 
 #endif // DIAMOND_H

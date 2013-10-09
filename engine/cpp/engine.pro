@@ -6,22 +6,20 @@ CONFIG -= qt
 QMAKE_CXXFLAGS += -std=c++0x
 
 SOURCES += main.cpp \
-    generation/defaultcompositionbuilder.cpp \
-    crystals/diamond.cpp \
+    generations/crystals/diamond.cpp \
     atom.cpp \
-    compositionbuilder.cpp \
     crystal.cpp \
     lattice.cpp
 
 HEADERS += \
-    generation/defaultcompositionbuilder.h \
-    crystals/diamond.h \
+    generations/crystals/diamond.h \
     atom.h \
     common.h \
     vector3d.h \
-    compositionbuilder.h \
     crystal.h \
-    lattice.h
+    lattice.h \
+    atom_builder.h \
+    generations/builders/diamond_atom_builder.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

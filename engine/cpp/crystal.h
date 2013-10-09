@@ -8,20 +8,28 @@ namespace vd
 {
 
 class Atom;
-class CompositionBuilder;
 
 class Crystal
 {
-protected:
-    vector3d<Atom *> _atoms;
-
 public:
-    Crystal(const dim3 &sizes, const CompositionBuilder *atomBuilder);
+    typedef vector3d<Atom *> AtomsContainer;
+
+    Crystal(const dim3 &sizes);
     virtual ~Crystal();
 
-    virtual void bondTogether() = 0;
+    virtual void initialize();
+
+protected:
+    virtual void buildAtoms() = 0;
+    virtual void bondAllAtoms() = 0;
+
+    void findAllSpecs();
+
+//    Atom *atom(const uint3 &coords) { return _atoms[coords]; }
+    AtomsContainer &atoms() { return _atoms; }
 
 private:
+    AtomsContainer _atoms;
 };
 
 }

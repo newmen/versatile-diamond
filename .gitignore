@@ -1,6 +1,8 @@
 build-*
 *.user
-
+*______*
+*.autosave
+*.swp
 
 .idea
 *.dump

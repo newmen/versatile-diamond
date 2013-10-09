@@ -7,25 +7,42 @@
 namespace vd
 {
 
-class Atom
+class IAtom
 {
-    char _name[3];
-    const uint _valence;
+    uint _type;
     std::unordered_multiset<Atom *> _neighbours;
     const Lattice *_lattice;
+    bool _hasLattice;
+
 
 public:
-    Atom(const char *name, uint valence, const Lattice *lattice = 0);
-    ~Atom();
+    IAtom(uint type, const Lattice *lattice = 0);
+    virtual ~IAtom();
 
-    void addNeighbour(Atom *neighbour);
-    bool isNeighbour(Atom *neighbour) const;
+    virtual void bondWith(Atom *neighbour);
+    virtual bool hasBondWith(Atom *neighbour) const;
 
-    uint activeBonds() const;
+protected:
+    std::unordered_multiset<Atom *> &neighbours() { return _neighbours; }
 
 private:
-    void escape();
 };
+
+template <int VALENCE>
+class Atom : public IAtom
+{
+public:
+    using IAtom::IAtom;
+
+    void bondWith(Atom *neighbour);
+};
+
+template <int VALENCE>
+void Atom<VALENCE>::bondWith(Atom *neighbour)
+{
+    assert(VALENCE == neighbours().size());
+    IAtom::bondWith(neighbour);
+}
 
 }
 

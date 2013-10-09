@@ -16,8 +16,13 @@ class vector3d
 public:
     vector3d(const dim3 &sizes);
 
+    const dim3 &sizes() const { return _sizes; }
+
 //    T &operator[] (const uint3 &coords) const;
-//    T &operator[] (const uint3 &coords);
+    T &operator[] (const uint3 &coords)
+    {
+        return _container[index(coords)];
+    }
 
     template <class Lambda>
     void each(const Lambda &lambda) const;
@@ -26,19 +31,16 @@ public:
     void mapIndex(const Lambda &lambda);
 
 private:
-//    uint index(const uint3 &coords) const;
+    uint index(const uint3 &coords) const
+    {
+        return coords.x * (1 + coords.y * (1 + coords.z));
+    }
 };
 
 template <typename T>
 vector3d<T>::vector3d(const dim3 &sizes) : _sizes(sizes), _container(sizes.N())
 {
 }
-
-//template <typename T>
-//T &vector3d<T>::operator [](const uint3 &coords) const
-//{
-//    return _container[index(coords)];
-//}
 
 template <typename T>
 template <class Lambda>
@@ -61,12 +63,6 @@ void vector3d<T>::mapIndex(const Lambda &lambda)
             for (uint x = 0; x < _sizes.x; ++x)
                 _container[n++] = lambda(uint3(x, y, z));
 }
-
-//template <typename T>
-//uint vector3d<T>::index(const uint3 &coords) const
-//{
-//    return coords.x * (1 + coords.y * (1 + coords.z));
-//}
 
 }
 

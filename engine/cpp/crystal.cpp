@@ -1,21 +1,35 @@
 #include "crystal.h"
 #include "atom.h"
-#include "compositionbuilder.h"
 
 namespace vd
 {
 
-Crystal::Crystal(const dim3 &sizes, const CompositionBuilder *atomBuilder) : _atoms(sizes)
+Crystal::Crystal(const dim3 &sizes) : _atoms(sizes)
 {
-    _atoms.mapIndex([this, atomBuilder](const uint3 &coords) {
-        return atomBuilder->build(this, coords);
+    atoms().mapIndex([](const uint3 &coords) {
+        return 0;
     });
 }
 
 Crystal::~Crystal()
 {
-    _atoms.each([](Atom *atom) {
+    atoms().each([](Atom *atom) {
         delete atom;
+    });
+}
+
+void Crystal::initialize()
+{
+    buildAtoms();
+    bondAllAtoms();
+
+    findAllSpecs();
+}
+
+void Crystal::findAllSpecs()
+{
+    atoms().each([](Atom *atom) {
+        atom->findSpecs();
     });
 }
 
