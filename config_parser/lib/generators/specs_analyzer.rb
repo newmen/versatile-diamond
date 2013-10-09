@@ -14,6 +14,7 @@ module VersatileDiamond
       # Analyzes all used surface species by classifier
       def analyze_specs
         used_surface_specs.each { |spec| classifier.analyze(spec) }
+        classifier.organize_properties!
       end
 
       # Gets all uniq used surface species

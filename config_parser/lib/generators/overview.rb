@@ -16,6 +16,15 @@ module VersatileDiamond
       def generate(no_specs: false, no_spec_specs: false, no_reactions: false)
         analyze_specs
 
+        @atoms_format = "%25s | %5s | %10s | %4s | %s"
+        puts @atoms_format % %w(Image Index Lattice Name Parents)
+        print_atoms("Atoms", classifier.each_props.to_a)
+        puts
+        puts "Total number of different atom types: #{classifier.all_types_num}"
+        puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
+
+        puts
+
         if !no_specs || !no_spec_specs
           @specs_format = "%55s | %5s | %5s | %s"
           puts @specs_format % %w(Name Size ExtB Classification)
@@ -30,8 +39,6 @@ module VersatileDiamond
         if !no_specs || !no_spec_specs
           puts
           puts "Total number of specs: #{base_specs.size + specific_specs.size}"
-          puts "Total number of different atom types: #{classifier.all_types_num}"
-          puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
         end
 
         if !no_reactions
@@ -51,6 +58,24 @@ module VersatileDiamond
       end
 
     private
+
+      # Prints atoms list
+      # @param [String] name the name which will be shown before list
+      # @param [Array] atoms the atom properties which will be shown as table
+      def print_atoms(name, atoms)
+        return if atoms.empty?
+
+        puts "\n#{name}:"
+        atoms.sort_by(&:size).each do |atom|
+          puts @atoms_format % [
+            atom.to_s,
+            classifier.index(atom),
+            atom.lattice && atom.lattice.klass,
+            atom.atom_name,
+            atom.smallests && atom.smallests.map(&:to_s).join(', ')
+          ]
+        end
+      end
 
       # Prints surface specs list
       # @param [String] name the name which will be shown before list

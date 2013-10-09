@@ -29,7 +29,6 @@ module VersatileDiamond
         else
           used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
-        classifier.organize_properties!
 
         draw_atom_dependencies unless no_includes
         draw_atom_transitions unless no_transitions

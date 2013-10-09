@@ -39,6 +39,11 @@ module VersatileDiamond
           end
         end
 
+        # Define human named methods for accessing to props
+        %w(atom_name lattice relations relevants).each_with_index do |name, i|
+          define_method(name) { @props[i] }
+        end
+
         # Deep compares two properties by all properties
         # @param [AtomProperties] other an other atom properties
         # @return [Boolean] equal or not
@@ -154,10 +159,6 @@ module VersatileDiamond
       protected
 
         attr_reader :props
-
-        %w(atom_name lattice relations relevants).each_with_index do |name, i|
-          define_method(name) { @props[i] }
-        end
 
       private
 
