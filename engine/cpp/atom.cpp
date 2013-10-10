@@ -1,24 +1,25 @@
 #include "atom.h"
+#include "lattice.h"
 #include <assert.h>
 
 namespace vd
 {
 
-IAtom::IAtom(uint type, const Lattice *lattice) : _type(type), _lattice(lattice), _hasLattice(lattice != 0)
+Atom::Atom(uint type, Lattice *lattice) : _type(type), _lattice(lattice), _hasLattice(lattice != 0)
 {
 }
 
-IAtom::~IAtom()
+Atom::~Atom()
 {
     delete _lattice;
 }
 
-void IAtom::bondWith(IAtom *neighbour)
+void Atom::bondWith(Atom *neighbour)
 {
     neighbours().insert(neighbour);
 }
 
-bool IAtom::hasBondWith(IAtom *neighbour) const
+bool Atom::hasBondWith(Atom *neighbour) const
 {
     return neighbours().find(neighbour) != neighbours().cend();
 }

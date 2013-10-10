@@ -1,10 +1,12 @@
 #include "diamond.h"
+#include "../builders/diamond_atom_builder.h"
 
 void Diamond::buildAtoms()
 {
-    const dim3 &sizes = atoms().sizes();
+    DiamondAtomBuilder atomBuilder;
 
-    return atomBuilder->build(this, coords);
+    makeLayer(&atomBuilder, 0, 1);
+    makeLayer(&atomBuilder, 1, 0);
 }
 
 void Diamond::bondAllAtoms()

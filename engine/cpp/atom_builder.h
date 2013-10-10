@@ -2,6 +2,7 @@
 #define ATOM_BUILDER_H
 
 #include "atom.h"
+#include "crystal.h"
 
 namespace vd
 {
@@ -9,7 +10,8 @@ namespace vd
 class AtomBuilder
 {
 public:
-    virtual Atom *build(uint type) = 0;
+    virtual Atom *buildAmorphC(uint type) = 0;
+    virtual Atom *buildCrystalC(uint type, const Crystal *crystal, const uint3 &coords) = 0;
 };
 
 }

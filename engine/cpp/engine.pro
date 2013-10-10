@@ -3,7 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++0x -DNDEBUG
 
 SOURCES += main.cpp \
     generations/crystals/diamond.cpp \
@@ -12,6 +12,7 @@ SOURCES += main.cpp \
     lattice.cpp
 
 HEADERS += \
+    generations/builders/diamond_atom_builder.h \
     generations/crystals/diamond.h \
     atom.h \
     common.h \
@@ -19,7 +20,11 @@ HEADERS += \
     crystal.h \
     lattice.h \
     atom_builder.h \
-    generations/builders/diamond_atom_builder.h
+    generations/atoms/c.h \
+    neighbours.h \
+    generations/lattices/diamond_lattice.h \
+    generations/builders/diamond_crystal_builder.h \
+    crystal_builder.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

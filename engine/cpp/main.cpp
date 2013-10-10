@@ -1,4 +1,4 @@
-#include "crystals/diamond.h"
+#include "generations/crystals/diamond.h"
 
 int main()
 {

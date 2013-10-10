@@ -2,46 +2,54 @@
 #define ATOM_H
 
 #include <unordered_set>
-#include "lattice.h"
+
+#include <assert.h>
 
 namespace vd
 {
 
-class IAtom
+class Lattice;
+
+class Atom
 {
     uint _type;
     std::unordered_multiset<Atom *> _neighbours;
-    const Lattice *_lattice;
+    Lattice *_lattice;
     bool _hasLattice;
 
-
 public:
-    IAtom(uint type, const Lattice *lattice = 0);
-    virtual ~IAtom();
+    Atom(uint type, Lattice *lattice);
+    virtual ~Atom();
+
+    virtual void findSpecs() = 0;
 
     virtual void bondWith(Atom *neighbour);
     virtual bool hasBondWith(Atom *neighbour) const;
 
+    bool hasLattice() const { return _hasLattice; }
+    Lattice *lattice() const { return _lattice; }
+
 protected:
+    const std::unordered_multiset<Atom *> &neighbours() const { return _neighbours; }
     std::unordered_multiset<Atom *> &neighbours() { return _neighbours; }
 
 private:
 };
 
 template <int VALENCE>
-class Atom : public IAtom
+class ConcreteAtom : public Atom
 {
 public:
-    using IAtom::IAtom;
+    using Atom::Atom;
 
     void bondWith(Atom *neighbour);
 };
 
 template <int VALENCE>
-void Atom<VALENCE>::bondWith(Atom *neighbour)
+void ConcreteAtom<VALENCE>::bondWith(Atom *neighbour)
 {
     assert(VALENCE == neighbours().size());
-    IAtom::bondWith(neighbour);
+    Atom::bondWith(neighbour);
 }
 
 }
