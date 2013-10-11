@@ -2,9 +2,8 @@
 #define DIAMOND_ATOM_BUILDER_H
 
 #include <vector>
-#include "../../lattice.h"
-
 #include "../atoms/c.h"
+#include "../../lattice.h"
 
 #include <assert.h>
 

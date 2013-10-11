@@ -1,5 +1,6 @@
 #include "crystal.h"
 #include "lattice.h"
+#include "atom.h"
 
 #include <assert.h>
 
@@ -53,12 +54,6 @@ void Crystal::erase(Atom *atom)
 
     atom->unsetLattice();
     *cell = 0;
-}
-
-void Crystal::remove(Atom *atom)
-{
-    erase(atom);
-    delete atom;
 }
 
 void Crystal::makeLayer(uint z, uint type)

@@ -17,6 +17,7 @@ public:
 class Diamond : public DiamondWithoutRelations<DiamondRelations>
 {
     int _defaultSurfaceHeight;
+
 public:
     Diamond(const dim3 &sizes, int defaultSurfaceHeight = 2);
 

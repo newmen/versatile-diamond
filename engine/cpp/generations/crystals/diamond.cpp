@@ -48,17 +48,17 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
 
 void Diamond::bondWithFront110(Atom *atom)
 {
-    TN neighbours = this->front_110(this->atoms(), atom->lattice()->coords());
+    TN neighbours = this->front_110(this->atoms(), atom);
     bondWithNeighbours(atom, neighbours);
 }
 
 void Diamond::bondWithCross110(Atom *atom)
 {
-    TN neighbours = this->cross_110(this->atoms(), atom->lattice()->coords());
+    TN neighbours = this->cross_110(this->atoms(), atom);
     bondWithNeighbours(atom, neighbours);
 }
 
-void Diamond::bondWithNeighbours(Atom *atom, DiamondRelations::TN &neighbours)
+void Diamond::bondWithNeighbours(Atom *atom, TN &neighbours)
 {
     assert(neighbours.all());
     atom->bondWith(neighbours[0]);

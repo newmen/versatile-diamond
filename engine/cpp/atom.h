@@ -3,14 +3,12 @@
 
 #include <unordered_set>
 #include "common.h"
+#include "lattice.h"
 
 #include <assert.h>
 
 namespace vd
 {
-
-class Crystal;
-class Lattice;
 
 class Atom
 {

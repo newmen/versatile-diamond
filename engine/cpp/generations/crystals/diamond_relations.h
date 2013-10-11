@@ -13,8 +13,11 @@ public:
     typedef Neighbours<2> TN;
 
 protected:
-    TN front_110(const Crystal::Atoms &atoms, const int3 &coords) const
+    TN front_110(const Crystal::Atoms &atoms, const Atom *atom) const
     {
+        assert(atom->lattice());
+        const int3 &coords = atom->lattice()->coords();
+
         Atom *twoAtoms[2];
         if (coords.z % 2 == 0)
         {
@@ -29,8 +32,11 @@ protected:
         return TN(twoAtoms);
     }
 
-    TN cross_110(const Crystal::Atoms &atoms, const int3 &coords) const
+    TN cross_110(const Crystal::Atoms &atoms, const Atom *atom) const
     {
+        assert(atom->lattice());
+        const int3 &coords = atom->lattice()->coords();
+
         Atom *twoAtoms[2];
 
         twoAtoms[0] = atoms[int3(coords.x, coords.y, coords.z - 1)];
@@ -46,8 +52,11 @@ protected:
         return TN(twoAtoms);
     }
 
-    TN front_100(const Crystal::Atoms &atoms, const int3 &coords) const
+    TN front_100(const Crystal::Atoms &atoms, const Atom *atom) const
     {
+        assert(atom->lattice());
+        const int3 &coords = atom->lattice()->coords();
+
         Atom *twoAtoms[2];
         if (coords.z % 2 == 0)
         {
@@ -62,8 +71,11 @@ protected:
         return TN(twoAtoms);
     }
 
-    TN cross_100(const Crystal::Atoms &atoms, const int3 &coords) const
+    TN cross_100(const Crystal::Atoms &atoms, const Atom *atom) const
     {
+        assert(atom->lattice());
+        const int3 &coords = atom->lattice()->coords();
+
         Atom *twoAtoms[2];
         if (coords.z % 2 == 0)
         {

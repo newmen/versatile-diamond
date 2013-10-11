@@ -3,23 +3,23 @@
 
 #include "common.h"
 #include "vector3d.h"
-#include "atom.h"
+#include "phase.h"
 
 namespace vd
 {
 
-class Crystal
+class Crystal : public Phase
 {
 public:
     typedef vector3d<Atom *> Atoms;
 
     Crystal(const dim3 &sizes);
-    virtual ~Crystal();
+    ~Crystal() override;
 
     void initialize();
+
     void insert(Atom *atom, const int3 &coords);
-    void erase(Atom *atom);
-    void remove(Atom *atom);
+    void erase(Atom *atom) override;
 
 //    const Atom *atom(const int3 &coords) const { return _atoms[coords]; }
 

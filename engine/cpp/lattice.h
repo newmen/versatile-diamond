@@ -1,5 +1,5 @@
-#ifndef PHASE_H
-#define PHASE_H
+#ifndef LATTICE_H
+#define LATTICE_H
 
 #include "common.h"
 #include "crystal.h"
@@ -22,4 +22,4 @@ public:
 
 }
 
-#endif // PHASE_H
+#endif // LATTICE_H
