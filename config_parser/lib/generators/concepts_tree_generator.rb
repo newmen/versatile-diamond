@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Implements methods for generating graph of general concepts dependencies
     class ConceptsTreeGenerator < GraphGenerator
-      SPECIFIC_SPEC_COLOR = 'blue'
+
       TERMINATION_SPEC_COLOR = 'chocolate'
       WHERE_COLOR = 'darkviolet'
 
@@ -49,44 +49,6 @@ module VersatileDiamond
       end
 
     private
-
-      # Draws basic species and dependencies between them
-      def draw_specs
-        @spec_to_nodes = base_specs.each_with_object({}) do |spec, hash|
-          hash[spec] = @graph.add_nodes(spec.name.to_s)
-        end
-
-        base_specs.each do |spec|
-          next unless spec.parent
-          @graph.add_edges(@spec_to_nodes[spec], @spec_to_nodes[spec.parent])
-        end
-      end
-
-      # Draws specific species and dependencies between them, and also will
-      # draw dependencies from basic species
-      def draw_specific_specs
-        setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
-
-        @sp_specs_to_nodes = specific_specs.each_with_object({}) do |ss, hash|
-          ss_name = split_specific_spec(ss.full_name)
-          node = @graph.add_nodes(ss_name)
-          node.set(&setup_lambda)
-          hash[ss] = node
-        end
-
-        specific_specs.each do |ss|
-          node = @sp_specs_to_nodes[ss]
-          parent = ss.parent
-          next unless parent || @spec_to_nodes
-
-          edge = if parent
-              @graph.add_edges(node, @sp_specs_to_nodes[parent])
-            elsif (base = @spec_to_nodes[ss.spec])
-              @graph.add_edges(node, base)
-            end
-          edge.set(&setup_lambda)
-        end
-      end
 
       # Draws termination species
       def draw_termination_specs

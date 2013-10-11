@@ -6,10 +6,13 @@ module VersatileDiamond
     class Lattice < Named
       extend Forwardable
 
+      attr_reader :klass
+
       # @param [Symbol] symbol is lattice symbolic name
       # @param [String] klass for generating code
       def initialize(symbol, klass)
         super(symbol)
+        @klass = klass
         @instance = Object.const_get(klass).new
       end
 

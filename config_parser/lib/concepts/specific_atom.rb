@@ -5,11 +5,18 @@ module VersatileDiamond
     # unfixness and activeness
     class SpecificAtom
 
-      # Error for case if state for atome already exsit
-      class AlreadyStated < Exception
+      # Error for case when something wrong with atom state
+      # @abstract
+      class Stated < Exception
         attr_reader :state
         def initialize(state); @state = state end
       end
+
+      # Error for case if state for atom already exsit
+      class AlreadyStated < Stated; end
+
+      # Error for case if state for atom doesn't exsit
+      class NotStated < Stated; end
 
       extend Forwardable
       def_delegators :@atom, :name, :lattice, :lattice=
@@ -67,6 +74,13 @@ module VersatileDiamond
         # @return [Boolean] is atom has state or not
         define_method("#{state}?") do
           @options.include?(sym_state)
+        end
+
+        # Defines methods for unsetup atom state
+        # @raise [NotStated] if atom doesn't have target state
+        define_method("not_#{state}!") do
+          raise NotStated.new(state) unless send("#{sym_state}?")
+          @options.delete(sym_state)
         end
       end
 

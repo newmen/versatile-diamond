@@ -1,6 +1,7 @@
 module VersatileDiamond
   module Patches
 
+    # Provides additional methods for string (like as ActiveSupport)
     module RichString
       refine String do
         def underscore

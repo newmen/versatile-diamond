@@ -96,7 +96,7 @@ module VersatileDiamond
 
         describe "#each_props" do
           it { subject.each_props.should be_a(Enumerator) }
-          it { subject.each_props.size.should == 9 }
+          it { subject.each_props.size.should == 14 }
           it { subject.each_props.to_a.should include(
               ab_ct, bridge_cr, dimer_cr
             ) }
@@ -124,27 +124,39 @@ module VersatileDiamond
             } }
 
           it { subject.classify(dimer).should == {
-              2 => ['-C%d<', 2],
               0 => ['^C.%d<', 4],
+              4 => ['-C%d<', 2],
             } }
 
           it { subject.classify(activated_dimer).should == {
-              3 => ['-*C%d<', 1],
-              2 => ['-C%d<', 1],
               0 => ['^C.%d<', 4],
+              4 => ['-C%d<', 1],
+              6 => ['-*C%d<', 1],
             } }
 
           it { subject.classify(methyl_on_incoherent_bridge).should == {
-              4 => ['C~', 1],
-              5 => ['~C:i%d<', 1],
               0 => ['^C.%d<', 2],
+              7 => ['C~', 1],
+              8 => ['~C:i%d<', 1],
             } }
 
           it { subject.classify(high_bridge).should == {
               0 => ['^C.%d<', 2],
-              7 => ['C=', 1],
-              8 => ['=C%d<', 1],
+              11 => ['C=', 1],
+              12 => ['=C%d<', 1],
             } }
+
+          describe "without" do
+            it { subject.classify(activated_bridge, without: bridge_base).
+              should == {
+                1 => ['*C%d<', 1]
+              } }
+
+            it { subject.classify(dimer, without: bridge_base).
+              should == {
+                4 => ['-C%d<', 2]
+              } }
+          end
         end
 
         describe "#index" do
@@ -157,7 +169,7 @@ module VersatileDiamond
         end
 
         describe "#all_types_num" do
-          it { subject.all_types_num.should == 9 }
+          it { subject.all_types_num.should == 14 }
         end
 
         describe "#notrelevant_types_num" do
@@ -167,13 +179,18 @@ module VersatileDiamond
         describe "has_relevants?" do
           it { subject.has_relevants?(0).should be_false }
           it { subject.has_relevants?(1).should be_false }
-          it { subject.has_relevants?(2).should be_false }
-          it { subject.has_relevants?(3).should be_false }
+          it { subject.has_relevants?(2).should be_true }
+          it { subject.has_relevants?(3).should be_true }
           it { subject.has_relevants?(4).should be_false }
           it { subject.has_relevants?(5).should be_true }
           it { subject.has_relevants?(6).should be_false }
           it { subject.has_relevants?(7).should be_false }
-          it { subject.has_relevants?(8).should be_false }
+          it { subject.has_relevants?(8).should be_true }
+          it { subject.has_relevants?(9).should be_false }
+          it { subject.has_relevants?(10).should be_true }
+          it { subject.has_relevants?(11).should be_false }
+          it { subject.has_relevants?(12).should be_false }
+          it { subject.has_relevants?(13).should be_true }
         end
       end
     end

@@ -1,3 +1,5 @@
+using VersatileDiamond::Patches::RichArray
+
 module VersatileDiamond
   module Tools
 
@@ -37,6 +39,11 @@ module VersatileDiamond
           end
         end
 
+        # Define human named methods for accessing to props
+        %w(atom_name lattice relations relevants).each_with_index do |name, i|
+          define_method(name) { @props[i] }
+        end
+
         # Deep compares two properties by all properties
         # @param [AtomProperties] other an other atom properties
         # @return [Boolean] equal or not
@@ -55,13 +62,11 @@ module VersatileDiamond
             lattice == other.lattice
 
           oth_rels = other.relations.dup
-          relations.all? { |rel| remove_one(oth_rels, rel) } &&
+          relations.all? { |rel| oth_rels.delete_one(rel) } &&
             (!has_relevants? || (other.has_relevants? &&
-              (oth_vns = other.relevants.dup) &&
-              relevants.include?(:unfixed) &&
-              other.relevants.include?(:unfixed) &&
               !relevants.include?(:incoherent) &&
-              !other.relevants.include?(:incoherent)))
+              (!relevants.include?(:unfixed) ||
+                other.relevants.include?(:unfixed))))
         end
 
         # Adds dependency from smallest properties
@@ -96,11 +101,11 @@ module VersatileDiamond
           rl = relations.dup
           name = atom_name.to_s
 
-          while remove_one(rl, :active)
+          while rl.delete_one(:active)
             name = "*#{name}"
           end
 
-          while remove_one(rl) { |r| r.is_a?(Position) }
+          while rl.delete_one { |r| r.is_a?(Position) }
             name = "#{name}."
           end
 
@@ -116,35 +121,35 @@ module VersatileDiamond
 
           name = "#{name}%#{lattice.name}" if lattice
 
-          down1 = remove_one(rl, bond_cross_110)
-          down2 = remove_one(rl, bond_cross_110)
+          down1 = rl.delete_one(bond_cross_110)
+          down2 = rl.delete_one(bond_cross_110)
           if down1 && down2
             name = "#{name}<"
           elsif down1 || down2
             name = "#{name}/"
-          elsif remove_one(rl, :tbond)
+          elsif rl.delete_one(:tbond)
             name = "#{name}≡"
-          elsif remove_one(rl, :dbond)
+          elsif rl.delete_one(:dbond)
             name = "#{name}="
-          elsif remove_one(rl, undirected_bond)
+          elsif rl.delete_one(undirected_bond)
             name = "#{name}~"
           end
 
-          up1 = remove_one(rl, bond_front_110)
-          up2 = remove_one(rl, bond_front_110)
+          up1 = rl.delete_one(bond_front_110)
+          up2 = rl.delete_one(bond_front_110)
           if up1 && up2
             name = ">#{name}"
           elsif up1 || up2
             name = "^#{name}"
-          elsif remove_one(rl, :dbond)
+          elsif rl.delete_one(:dbond)
             name = "=#{name}"
           end
 
-          if remove_one(rl, bond_front_100)
+          if rl.delete_one(bond_front_100)
             name = "-#{name}"
           end
 
-          while remove_one(rl, undirected_bond)
+          while rl.delete_one(undirected_bond)
             name = "~#{name}"
           end
 
@@ -154,10 +159,6 @@ module VersatileDiamond
       protected
 
         attr_reader :props
-
-        %w(atom_name lattice relations relevants).each_with_index do |name, i|
-          define_method(name) { @props[i] }
-        end
 
       private
 
@@ -181,11 +182,11 @@ module VersatileDiamond
             if !same.empty?
               if same.size == 3 && same.size != 4
                 relations << :tbond
-                links.delete_at(links.index(atom_rel) || links.size)
+                links.delete_one(atom_rel)
               else
                 relations << :dbond
               end
-              links.delete_at(links.index(atom_rel) || links.size)
+              links.delete_one(atom_rel)
             else
               relations << atom_rel.last
             end
@@ -197,20 +198,6 @@ module VersatileDiamond
         # @return [Array] properties without relevants
         def wihtout_relevants
           has_relevants? ? props[0...(props.length - 1)] : props
-        end
-
-        # Removes one item from list
-        # @param [Array] list the list of items
-        # @param [Object] item some item from list
-        # @yeild [Object] if passed instead of item then finds index of item
-        # @return [Object] removed object
-        # TODO: very useful method
-        def remove_one(list, item = nil, &block)
-          index = item && !block_given? ?
-            list.index(item) :
-            block_given? ? list.index(&block) : (raise ArgumentError)
-
-          list.delete_at(index || list.size)
         end
       end
 
@@ -241,6 +228,28 @@ module VersatileDiamond
           next if @unrelevanted_props.find { |p| p == unrel_prop }
           @unrelevanted_props << unrel_prop
         end
+
+        # if spec is specific spec then necessary to save all limit incoherent
+        # states
+        return unless spec.is_a?(SpecificSpec)
+        # before, cast all atoms to specific atoms
+        spec_dup = spec.dup
+        spec_dup.links.keys.each do |atom|
+          unless atom.is_a?(SpecificAtom)
+            spec_dup.describe_atom(
+              spec_dup.keyname(atom), SpecificAtom.new(atom))
+          end
+        end
+
+        # storing all limit incoherent states
+        spec_dup.links.each do |atom, _|
+          atom.incoherent! if !atom.incoherent? &&
+            spec_dup.external_bonds_for(atom) > 0
+
+          prop = AtomProperties.new(spec_dup, atom)
+          next if index(prop)
+          @props << prop
+        end
       end
 
       # Organizes dependencies between properties
@@ -259,10 +268,25 @@ module VersatileDiamond
       # and values is number of atoms in spec with same properties
       #
       # @param [Spec | SpecificSpec] spec the analyzing spec
+      # @option [Spec | SpecificSpec] :without do not classify atoms like as
+      #   from passed spec
       # @return [Hash] result of classification
-      # TODO: rspec it!
-      def classify(spec)
-        spec.links.keys.each_with_object({}) do |atom, hash|
+      def classify(spec, without: nil)
+        atoms = spec.links.keys
+
+        if without
+          without_same = spec.class.new(spec.name)
+          parent_atoms = without.links.keys
+          atoms = atoms.select do |atom|
+            prop = AtomProperties.new(spec, atom)
+            parent_atoms.all? do |parent_atom|
+              parent_prop = AtomProperties.new(without, parent_atom)
+              prop != parent_prop
+            end
+          end
+        end
+
+        atoms.each_with_object({}) do |atom, hash|
           prop = AtomProperties.new(spec, atom)
           index = index(prop)
           image = prop.to_s
