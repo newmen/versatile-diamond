@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
     diamond->initialize();
     assert(diamond->countAtoms() == 75);
 
-    C *c = new C(3, 0);
+    C *c = new C(3, 0, (Lattice *)0);
     diamond->insert(c, int3(3, 3, 3));
     assert(diamond->atom(int3(3, 3, 3)) == c);
     assert(c->lattice());

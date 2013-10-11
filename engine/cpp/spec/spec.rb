@@ -37,10 +37,12 @@ def check(file_name)
     `rm -f #{rn}`
     if run_result
       puts " +++ #{file_name} +++".green
+      puts
       return nil
     end
   end
   puts " --- #{file_name} ---".red
+  puts
   file_name
 end
 

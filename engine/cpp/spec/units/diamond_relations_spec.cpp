@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
     DiamondAtomBuilder builder;
     auto buildCd = [&atoms, &checker, &builder](int x, int y, int z)
     {
-        Atom *atom = builder.buildCd(0, &checker, int3(x, y, z));
+        Atom *atom = builder.buildCd(0, 0, &checker, int3(x, y, z));
         atoms.push_back(atom);
         return atom;
     };

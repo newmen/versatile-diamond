@@ -27,7 +27,7 @@ protected:
     Atom *makeAtom(uint type, const int3 &coords) override;
 
 private:
-    void bondWithFront110(Atom *atom);
+//    void bondWithFront110(Atom *atom);
     void bondWithCross110(Atom *atom);
     void bondWithNeighbours(Atom *atom, TN &neighbours);
 };

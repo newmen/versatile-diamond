@@ -23,17 +23,8 @@ void Diamond::bondAllAtoms()
         assert(atom->lattice());
 
         int z = atom->lattice()->coords().z;
-        if (z == _defaultSurfaceHeight - 1)
+        if (z > 0)
         {
-            bondWithCross110(atom);
-        }
-        else if (atom->lattice()->coords().z == 0)
-        {
-            bondWithFront110(atom);
-        }
-        else
-        {
-            bondWithFront110(atom);
             bondWithCross110(atom);
         }
 
@@ -43,14 +34,26 @@ void Diamond::bondAllAtoms()
 Atom *Diamond::makeAtom(uint type, const int3 &coords)
 {
     DiamondAtomBuilder builder;
-    return builder.buildCd(type, this, coords);
+    Atom *atom = builder.buildCd(type, 0, this, coords);
+
+    int z = coords.z;
+    if (z > 0 && z < _defaultSurfaceHeight - 1)
+    {
+        atom->activate();
+        atom->activate();
+    }
+
+    atom->activate();
+    atom->activate();
+
+    return atom;
 }
 
-void Diamond::bondWithFront110(Atom *atom)
-{
-    TN neighbours = this->front_110(this->atoms(), atom);
-    bondWithNeighbours(atom, neighbours);
-}
+//void Diamond::bondWithFront110(Atom *atom)
+//{
+//    TN neighbours = this->front_110(this->atoms(), atom);
+//    bondWithNeighbours(atom, neighbours);
+//}
 
 void Diamond::bondWithCross110(Atom *atom)
 {

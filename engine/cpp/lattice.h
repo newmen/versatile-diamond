@@ -17,7 +17,7 @@ public:
 
     bool is(const Crystal *crystal) { return _crystal == crystal; }
     const int3 &coords() const { return _coords; }
-//    void updateCoods(const int3 &coords) { _coords = coords; }
+    void updateCoords(const int3 &coords) { _coords = coords; }
 };
 
 }

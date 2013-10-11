@@ -13,16 +13,21 @@ namespace vd
 class Atom
 {
     uint _type;
-    std::unordered_multiset<Atom *> _neighbours;
+    uint _actives;
     Lattice *_lattice, *_cacheLattice;
+    std::unordered_multiset<Atom *> _neighbours;
 
 public:
-    Atom(uint type, Lattice *lattice);
+    Atom(uint type, uint actives, Lattice *lattice);
     virtual ~Atom();
+
+    void activate();
+    void deactivate();
 
     virtual void findSpecs() = 0;
 
     virtual void bondWith(Atom *neighbour, int depth = 1);
+    virtual void unbondFrom(Atom *neighbour, int depth = 1);
     virtual bool hasBondWith(Atom *neighbour) const;
 
     Lattice *lattice() const { return _lattice; }
