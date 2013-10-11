@@ -2,7 +2,10 @@
 #define VECTOR3D_H
 
 #include <vector>
+#include <omp.h>
 #include "common.h"
+
+#include <assert.h>
 
 namespace vd
 {
@@ -18,14 +21,16 @@ public:
 
     const dim3 &sizes() const { return _sizes; }
 
-//    T &operator[] (const uint3 &coords) const
-//    {
-//        return _container[index(coords)];
-//    }
-
-    T &operator[] (const uint3 &coords)
+    const T &operator[] (const int3 &coords) const
     {
-        return _container[index(coords)];
+        int3 cc = correct(coords);
+        uint i = index(cc);
+        return _container[i];
+    }
+
+    T &operator[] (const int3 &coords)
+    {
+        return _container[index(correct(coords))];
     }
 
     template <class Lambda>
@@ -37,10 +42,31 @@ public:
 //    template <class Lambda>
 //    void mapIndex(const Lambda &lambda);
 
+    template <typename R, class Lambda>
+    R reduce_plus(R initValue, const Lambda &op) const;
+
 private:
-    uint index(const uint3 &coords) const
+    uint index(const int3 &coords) const
     {
-        return coords.x * (1 + coords.y * (1 + coords.z));
+        return _sizes.x * _sizes.y * coords.z + _sizes.x * coords.y + coords.x;
+    }
+
+    int3 correct(const int3 &coords) const
+    {
+        assert(coords.z >= 0);
+        assert(coords.z < (int)_sizes.z);
+
+        int3 result = coords;
+        result.x = correctOne(coords.x, _sizes.x);
+        result.y = correctOne(coords.y, _sizes.y);
+        return result;
+    }
+
+    int correctOne(int value, uint max) const
+    {
+        if (value < 0) return (int)max + value;
+        else if (value >= (int)max) return (int)max - value;
+        return value;
     }
 };
 
@@ -53,22 +79,20 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
-    uint n = 0;
-    for (uint z = 0; z < _sizes.z; ++z)
-        for (uint y = 0; y < _sizes.y; ++y)
-            for (uint x = 0; x < _sizes.x; ++x)
-                lambda(_container[n++]);
+#pragma omp parallel for shared(lambda)
+    for (uint i = 0; i < _sizes.N(); ++i)
+    {
+        lambda(_container[i]);
+    }
 }
 
 template <typename T>
 template <class Lambda>
 void vector3d<T>::map(const Lambda &lambda)
 {
-    uint n = 0;
-    for (uint z = 0; z < _sizes.z; ++z)
-        for (uint y = 0; y < _sizes.y; ++y)
-            for (uint x = 0; x < _sizes.x; ++x)
-                _container[n++] = lambda();
+#pragma omp parallel for shared(lambda)
+    for (uint i = 0; i < _sizes.N(); ++i)
+        _container[i] = lambda();
 }
 
 //template <typename T>
@@ -76,11 +100,24 @@ void vector3d<T>::map(const Lambda &lambda)
 //void vector3d<T>::mapIndex(const Lambda &lambda)
 //{
 //    uint n = 0;
-//    for (uint z = 0; z < _sizes.z; ++z)
+//    for (uint x = 0; x < _sizes.x; ++x)
 //        for (uint y = 0; y < _sizes.y; ++y)
-//            for (uint x = 0; x < _sizes.x; ++x)
-//                _container[n++] = lambda(uint3(x, y, z));
+//            for (uint z = 0; z < _sizes.z; ++z)
+//                _container[n++] = lambda(int3(x, y, z));
 //}
+
+template <typename T>
+template <typename R, class Lambda>
+R vector3d<T>::reduce_plus(R initValue, const Lambda &op) const
+{
+    R sum = initValue;
+#pragma omp parallel for reduction(+:sum) shared(op)
+    for (uint i = 0; i < _sizes.N(); ++i)
+    {
+        sum = op(sum, _container[i]);
+    }
+    return sum;
+}
 
 }
 

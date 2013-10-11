@@ -8,6 +8,7 @@ gem 'ruby-graphviz'
 # tests
 gem 'rspec'
 gem 'coveralls', require: false
+gem 'colorize' # for c++ specs
 
 # support
 gem 'pry'

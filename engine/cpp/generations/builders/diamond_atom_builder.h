@@ -2,7 +2,6 @@
 #define DIAMOND_ATOM_BUILDER_H
 
 #include <vector>
-#include "../../atom_builder.h"
 #include "../../lattice.h"
 
 #include "../atoms/c.h"
@@ -11,18 +10,19 @@
 
 using namespace vd;
 
-class DiamondAtomBuilder : public AtomBuilder
+class DiamondAtomBuilder
 {
 public:
-    Atom *buildAmorphC(uint type)
+    Atom *buildC(uint type)
     {
-        return new C(type);
+        assert(type == 4 || type == 3 || type == 18 || type == 12 || type == 14 || type == 17 || type == 13);
+        return new C(type, 0);
     }
 
-    Atom *buildCrystalC(uint type, const Crystal *crystal, const uint3 &coords)
+    Atom *buildCd(uint type, const Crystal *crystal, const int3 &coords)
     {
-        assert(type != 0 && type != 20 && type != 6 && type != 2 && type != 5 && type != 10 && type != 15 &&
-               type != 7 && type != 9 && type != 1 && type != 11 && type != 19 && type != 8);
+        assert(type == 0 || type == 20 || type == 6 || type == 2 || type == 5 || type == 10 || type == 15 ||
+               type == 7 || type == 9 || type == 1 || type == 11 || type == 19 || type == 8);
 
         return new C(type, new Lattice(crystal, coords));
     }

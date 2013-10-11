@@ -1,6 +1,4 @@
 #include "crystal.h"
-#include "atom.h"
-#include "atom_builder.h"
 #include "lattice.h"
 
 #include <assert.h>
@@ -25,7 +23,7 @@ void Crystal::initialize()
     buildAtoms();
     bondAllAtoms();
 
-    findAllSpecs();
+//    findAllSpecs();
 }
 
 void Crystal::findAllSpecs()
@@ -35,25 +33,51 @@ void Crystal::findAllSpecs()
     });
 }
 
-void Crystal::insert(Atom *atom)
+void Crystal::insert(Atom *atom, const int3 &coords)
 {
-    assert(!atom->hasLattice());
+    assert(!atom->lattice());
 
-    Atom **cell = &_atoms[atom->lattice()->coords()];
-    assert(*cell != 0);
+    Atom **cell = &_atoms[coords];
+    assert(!*cell);
 
+    atom->setLattice(this, coords);
     *cell = atom;
 }
 
-void Crystal::makeLayer(AtomBuilder *builder, uint z, uint type)
+void Crystal::erase(Atom *atom)
+{
+    assert(atom->lattice());
+
+    Atom **cell = &_atoms[atom->lattice()->coords()];
+    assert(*cell);
+
+    atom->unsetLattice();
+    *cell = 0;
+}
+
+void Crystal::remove(Atom *atom)
+{
+    erase(atom);
+    delete atom;
+}
+
+void Crystal::makeLayer(uint z, uint type)
 {
     const dim3 &sizes = atoms().sizes();
     for (uint y = 0; y < sizes.y; ++y)
         for (uint x = 0; x < sizes.x; ++x)
         {
-            uint3 coords(x, y, z);
-            _atoms[coords] = builder->buildCrystalC(type, this, coords);
+            int3 coords(x, y, z);
+            _atoms[coords] = makeAtom(type, coords);
         }
+
+}
+
+uint Crystal::countAtoms() const
+{
+    return atoms().reduce_plus(0, [](uint acc, Atom *atom) {
+        return (atom) ? acc + 1 : acc;
+    });
 }
 
 }

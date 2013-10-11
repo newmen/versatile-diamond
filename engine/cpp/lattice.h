@@ -10,13 +10,14 @@ namespace vd
 class Lattice
 {
     const Crystal *_crystal;
-    uint3 _coords;
+    int3 _coords;
 
 public:
-    Lattice(const Crystal *crystal, const uint3 &coords);
+    Lattice(const Crystal *crystal, const int3 &coords);
 
-    const uint3 &coords() const { return _coords; }
-    void updateCoods(const uint3 &coords) { _coords = coords; }
+    bool is(const Crystal *crystal) { return _crystal == crystal; }
+    const int3 &coords() const { return _coords; }
+//    void updateCoods(const int3 &coords) { _coords = coords; }
 };
 
 }

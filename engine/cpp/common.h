@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <ostream>
+
 namespace vd
 {
 
@@ -23,6 +25,11 @@ struct uint3 : public common::dv3<uint, 0>
     using dv3::dv3;
 };
 
+struct int3 : public common::dv3<int, 0>
+{
+    using dv3::dv3;
+};
+
 struct dim3 : public common::dv3<uint, 1>
 {
     using dv3::dv3;
@@ -32,6 +39,8 @@ struct dim3 : public common::dv3<uint, 1>
         return x * y * z;
     }
 };
+
+std::ostream &operator << (std::ostream &os, const uint3 &v);
 
 }
 
