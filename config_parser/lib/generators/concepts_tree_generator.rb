@@ -4,7 +4,6 @@ module VersatileDiamond
     # Implements methods for generating graph of general concepts dependencies
     class ConceptsTreeGenerator < GraphGenerator
 
-      TERMINATION_SPEC_COLOR = 'chocolate'
       WHERE_COLOR = 'darkviolet'
 
       TYPICAL_REACTION_COLOR = 'darkgreen'

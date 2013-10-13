@@ -13,6 +13,12 @@ module VersatileDiamond
 
       def_delegator :@atom, :name
 
+      # Is hydrogen or not?
+      # @return [Boolean]
+      def is_hydrogen?
+        Atom.is_hydrogen?(@atom)
+      end
+
       # Each atomic spec have 1 external bonds
       # @return [Integer] one
       def external_bonds

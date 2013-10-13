@@ -103,6 +103,17 @@ module VersatileDiamond
           it { bridge_cr.contained_in?(ab_ct).should be_false }
         end
 
+        describe "#terminations_num" do
+          it { methyl.terminations_num(active_bond).should == 0 }
+          it { methyl.terminations_num(adsorbed_h).should == 3 }
+
+          it { bridge_cr.terminations_num(active_bond).should == 0 }
+          it { bridge_cr.terminations_num(adsorbed_h).should == 1 }
+
+          it { ad_cr.terminations_num(active_bond).should == 1 }
+          it { ad_cr.terminations_num(adsorbed_h).should == 0 }
+        end
+
         describe "#unrelevanted" do
           it { bridge_ct.unrelevanted.should == bridge_ct }
           it { bridge_ct.should == bridge_ct.unrelevanted }
@@ -162,44 +173,71 @@ module VersatileDiamond
         end
 
         describe "#classify" do
-          it { subject.classify(activated_bridge).should == {
-              0 => ['^C.%d<', 2],
-              1 => ['*C%d<', 1],
-            } }
-
-          it { subject.classify(dimer).should == {
-              0 => ['^C.%d<', 4],
-              4 => ['-C%d<', 2],
-            } }
-
-          it { subject.classify(activated_dimer).should == {
-              0 => ['^C.%d<', 4],
-              4 => ['-C%d<', 1],
-              6 => ['-*C%d<', 1],
-            } }
-
-          it { subject.classify(methyl_on_incoherent_bridge).should == {
-              0 => ['^C.%d<', 2],
-              7 => ['C~', 1],
-              8 => ['~C:i%d<', 1],
-            } }
-
-          it { subject.classify(high_bridge).should == {
-              0 => ['^C.%d<', 2],
-              11 => ['C=', 1],
-              12 => ['=C%d<', 1],
-            } }
-
-          describe "without" do
-            it { subject.classify(activated_bridge, without: bridge_base).
-              should == {
-                1 => ['*C%d<', 1]
+          describe "termination spec" do
+            it { subject.classify(active_bond).should == {
+                1 => ['*C%d<', 1],
+                2 => ['*C:i%d<', 1],
+                6 => ['-*C%d<', 1],
               } }
 
-            it { subject.classify(dimer, without: bridge_base).
-              should == {
-                4 => ['-C%d<', 2]
+            it { subject.classify(adsorbed_h).should == {
+                0 => ['^C.%d<', 1],
+                1 => ['*C%d<', 1],
+                2 => ['*C:i%d<', 1],
+                3 => ['^C.:i%d<', 1],
+                4 => ['-C%d<', 1],
+                5 => ['-C:i%d<', 1],
+                7 => ['C~', 3],
+                8 => ['~C:i%d<', 1],
+                9 => ['~C%d<', 1],
+                10 => ['C:i~', 3],
+                11 => ['C=', 2],
+                13 => ['C:i=', 2],
               } }
+
+            it { subject.classify(adsorbed_cl).should be_empty }
+          end
+
+          describe "not termination spec" do
+            it { subject.classify(activated_bridge).should == {
+                0 => ['^C.%d<', 2],
+                1 => ['*C%d<', 1],
+              } }
+
+            it { subject.classify(dimer).should == {
+                0 => ['^C.%d<', 4],
+                4 => ['-C%d<', 2],
+              } }
+
+            it { subject.classify(activated_dimer).should == {
+                0 => ['^C.%d<', 4],
+                4 => ['-C%d<', 1],
+                6 => ['-*C%d<', 1],
+              } }
+
+            it { subject.classify(methyl_on_incoherent_bridge).should == {
+                0 => ['^C.%d<', 2],
+                7 => ['C~', 1],
+                8 => ['~C:i%d<', 1],
+              } }
+
+            it { subject.classify(high_bridge).should == {
+                0 => ['^C.%d<', 2],
+                11 => ['C=', 1],
+                12 => ['=C%d<', 1],
+              } }
+
+            describe "without" do
+              it { subject.classify(activated_bridge, without: bridge_base).
+                should == {
+                  1 => ['*C%d<', 1]
+                } }
+
+              it { subject.classify(dimer, without: bridge_base).
+                should == {
+                  4 => ['-C%d<', 2]
+                } }
+            end
           end
         end
 

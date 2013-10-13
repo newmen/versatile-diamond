@@ -7,6 +7,7 @@ module VersatileDiamond
 
       SPEC_COLOR = 'black'
       SPECIFIC_SPEC_COLOR = 'blue'
+      TERMINATION_SPEC_COLOR = 'chocolate'
 
       # Default constructor of graph generator
       def initialize(filename, ext = 'png')

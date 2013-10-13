@@ -7,7 +7,7 @@ module VersatileDiamond
       include SpecsAnalyzer
 
       ATOM_COLOR = 'darkgreen'
-      RELEVANTS_ATOM_COLOR = 'chocolate'
+      RELEVANTS_ATOM_COLOR = 'lightblue'
 
       TRANSFER_COLOR = 'green'
 
@@ -20,13 +20,13 @@ module VersatileDiamond
       # @option [Boolean] :no_transitions transitions between atoms not will be
       #   shown or not
       # @override
-      def generate(specs: false, spec_specs: false, no_includes: false, no_transitions: false)
+      def generate(specs: false, spec_specs: false, term_specs: false, no_includes: false, no_transitions: false)
         analyze_specs
 
-        if specs || spec_specs
+        if specs || spec_specs || term_specs
           draw_specs(no_includes: no_includes) if specs
           draw_specific_specs(no_includes: no_includes) if spec_specs
-          draw_termination_specs
+          draw_termination_specs if term_specs
         else
           used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
@@ -60,10 +60,19 @@ module VersatileDiamond
         end
       end
 
+      # Draws termination specs and dependencies from classified atoms
+      # @override
+      def draw_termination_specs
+        super
+        termination_specs.each do |spec|
+          draw_atoms_for(@sp_specs_to_nodes, spec, nil, TERMINATION_SPEC_COLOR)
+        end
+      end
+
       # Draw atoms for passed spec with edges from spec to each atom with
       # passed color
       #
-      # @param [Hash] nodes the mirror of nodes
+      # @param [Hash] nodes the mirror of spec to nodes
       # @param [Spec | SpecificSpec] spec the spec atoms of which will be shown
       # @param [Spec | SpecificSpec] parent don't draw atoms same as parent
       # @param [String] color the color of edges
