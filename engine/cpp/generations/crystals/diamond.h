@@ -4,7 +4,6 @@
 #include "../../crystal.h"
 using namespace vd;
 
-#include "../builders/diamond_atom_builder.h"
 #include "diamond_relations.h"
 
 template <class Relations>

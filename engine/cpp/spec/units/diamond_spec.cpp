@@ -1,3 +1,4 @@
+#include <generations/atoms/c.h>
 #include <generations/crystals/diamond.h>
 
 using namespace vd;
@@ -15,6 +16,21 @@ int main(int argc, char const *argv[])
     OpenDiamond *diamond = new OpenDiamond(dim3(10, 10, 5));
     diamond->initialize();
     assert(diamond->countAtoms() == 200);
+
+    for (int x = 0; x < 10; ++x)
+        for (int y = 0; y < 10; ++y)
+            for (int z = 0; z < 5; ++z)
+            {
+                if (z > 1)
+                {
+                    assert(!diamond->atom(int3(x, y, z)));
+                }
+                else
+                {
+                    uint type = (z == 0) ? 8 : 20;
+                    assert(diamond->atom(int3(x, y, z))->type() == type);
+                }
+            }
     delete diamond;
 
     diamond = new OpenDiamond(dim3(5, 5, 5), 3);

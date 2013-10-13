@@ -1,8 +1,9 @@
 require 'colorize'
 require 'stringio'
 
+ENGINE_DIR = '../'
 CC = 'g++'
-FLAGS = '--std=c++0x -DDEBUG -fopenmp -I../'
+FLAGS = "--std=c++0x -DDEBUG -fopenmp -I#{ENGINE_DIR}"
 OBJS = Dir['obj/*.o'].reject { |file_name| file_name =~ /main.o$/ }
 
 def random_name
@@ -14,15 +15,20 @@ def compile_line(file_name, random_name)
   "#{CC} #{FLAGS} #{OBJS.join(' ')} #{file_name} -o #{random_name}"
 end
 
-def count_assert(file_name)
+def count_asserts(file_name)
+  @asserts ||= 0
+
   File.open(file_name) do |f|
-    f.readlines.join.scan(/\bassert\(/).size
+    @asserts += f.readlines.join.scan(/\bassert\(/).size
   end
 end
 
+def asserts
+  @asserts
+end
+
 def check(file_name)
-  @asserts ||= 0
-  @asserts += count_assert(file_name)
+  count_asserts(file_name)
 
   rn = random_name
   cl = compile_line(file_name, rn)
@@ -34,7 +40,6 @@ def check(file_name)
     puts output unless output.strip == ''
 
     run_result = $?.success?
-    `rm -f #{rn}`
     if run_result
       puts " +++ #{file_name} +++".green
       puts
@@ -44,10 +49,16 @@ def check(file_name)
   puts " --- #{file_name} ---".red
   puts
   file_name
+ensure
+  `rm -f #{rn}`
 end
 
-def asserts
-  @asserts
+def count_asserts_from_engine
+  files = %w(h cpp).reduce([]) do |acc, ext|
+    acc + Dir["#{ENGINE_DIR}**/*.#{ext}"]
+  end
+
+  files.each(&method(:count_asserts))
 end
 
 spec_files = Dir['**/*.cpp']
@@ -62,6 +73,7 @@ result =
       end
     end
   else
+    count_asserts_from_engine
     spec_files.shuffle.map(&method(:check))
   end
 

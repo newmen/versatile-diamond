@@ -1,4 +1,5 @@
 #include "diamond.h"
+#include "../builders/atom_builder.h"
 
 #include <assert.h>
 
@@ -33,7 +34,7 @@ void Diamond::bondAllAtoms()
 
 Atom *Diamond::makeAtom(uint type, const int3 &coords)
 {
-    DiamondAtomBuilder builder;
+    AtomBuilder builder;
     Atom *atom = builder.buildCd(type, 0, this, coords);
 
     int z = coords.z;

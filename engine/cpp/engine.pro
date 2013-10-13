@@ -16,7 +16,6 @@ SOURCES += main.cpp \
     generations/atoms/c.cpp
 
 HEADERS += \
-    generations/builders/diamond_atom_builder.h \
     generations/crystals/diamond.h \
     atom.h \
     common.h \
@@ -27,7 +26,8 @@ HEADERS += \
     neighbours.h \
     generations/crystals/diamond_relations.h \
     amorph.h \
-    phase.h
+    phase.h \
+    generations/builders/atom_builder.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

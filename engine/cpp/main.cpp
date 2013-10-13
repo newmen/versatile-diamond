@@ -6,10 +6,10 @@ using namespace std;
 
 int main()
 {
-    Crystal *crystal = new Diamond(dim3(3, 3, 5));
+    Crystal *crystal = new Diamond(dim3(3, 3, 5), 3);
     crystal->initialize();
 
-    crystal->insert(new C(0, 0, (Lattice *)0), int3(1, 1, 2));
+    crystal->insert(new C(0, 0, (Lattice *)0), int3(1, 1, 3));
 
     cout << crystal->countAtoms() << endl;
 

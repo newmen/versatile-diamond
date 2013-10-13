@@ -7,9 +7,8 @@
 namespace vd
 {
 
-Crystal::Crystal(const dim3 &sizes) : _atoms(sizes)
+Crystal::Crystal(const dim3 &sizes) : _atoms(sizes, (Atom *)0)
 {
-    atoms().map([]() { return (Atom *)0; });
 }
 
 Crystal::~Crystal()
@@ -24,18 +23,13 @@ void Crystal::initialize()
     buildAtoms();
     bondAllAtoms();
 
-//    findAllSpecs();
-}
-
-void Crystal::findAllSpecs()
-{
-    atoms().each([](Atom *atom) {
-        atom->findSpecs();
-    });
+    specifyAllAtoms();
+    findAllSpecs();
 }
 
 void Crystal::insert(Atom *atom, const int3 &coords)
 {
+    assert(atom);
     assert(!atom->lattice());
 
     Atom **cell = &_atoms[coords];
@@ -47,6 +41,7 @@ void Crystal::insert(Atom *atom, const int3 &coords)
 
 void Crystal::erase(Atom *atom)
 {
+    assert(atom);
     assert(atom->lattice());
 
     Atom **cell = &_atoms[atom->lattice()->coords()];
@@ -70,9 +65,24 @@ void Crystal::makeLayer(uint z, uint type)
 
 uint Crystal::countAtoms() const
 {
-    return atoms().reduce_plus(0, [](uint acc, Atom *atom) {
-        return (atom) ? acc + 1 : acc;
+    return atoms().reduce_plus(0, [](Atom *atom) {
+        return (atom) ? 1 : 0;
     });
 }
+
+void Crystal::specifyAllAtoms()
+{
+    atoms().each([](Atom *atom) {
+        if (atom) atom->specifyType();
+    });
+}
+
+void Crystal::findAllSpecs()
+{
+    atoms().each([](Atom *atom) {
+        if (atom) atom->findSpecs();
+    });
+}
+
 
 }

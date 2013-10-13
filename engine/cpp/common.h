@@ -40,7 +40,7 @@ struct dim3 : public common::dv3<uint, 1>
     }
 };
 
-std::ostream &operator << (std::ostream &os, const uint3 &v);
+std::ostream &operator << (std::ostream &os, const int3 &v);
 
 }
 

@@ -12,12 +12,14 @@ Amorph::Amorph()
 
 void Amorph::insert(Atom *atom)
 {
+    assert(atom);
     assert(!atom->lattice());
     _atoms.insert(atom);
 }
 
 void Amorph::erase(Atom *atom)
 {
+    assert(atom);
     assert(!atom->lattice());
     _atoms.erase(atom);
 }

@@ -17,7 +17,7 @@ class vector3d
     std::vector<T> _container;
 
 public:
-    vector3d(const dim3 &sizes);
+    vector3d(const dim3 &sizes, const T &initValue);
 
     const dim3 &sizes() const { return _sizes; }
 
@@ -36,14 +36,14 @@ public:
     template <class Lambda>
     void each(const Lambda &lambda) const;
 
-    template <class Lambda>
-    void map(const Lambda &lambda);
+//    template <class Lambda>
+//    void map(const Lambda &lambda);
 
 //    template <class Lambda>
 //    void mapIndex(const Lambda &lambda);
 
     template <typename R, class Lambda>
-    R reduce_plus(R initValue, const Lambda &op) const;
+    R reduce_plus(R initValue, const Lambda &lambda) const;
 
 private:
     uint index(const int3 &coords) const
@@ -71,7 +71,7 @@ private:
 };
 
 template <typename T>
-vector3d<T>::vector3d(const dim3 &sizes) : _sizes(sizes), _container(sizes.N())
+vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes), _container(sizes.N(), initValue)
 {
 }
 
@@ -86,14 +86,14 @@ void vector3d<T>::each(const Lambda &lambda) const
     }
 }
 
-template <typename T>
-template <class Lambda>
-void vector3d<T>::map(const Lambda &lambda)
-{
-#pragma omp parallel for shared(lambda)
-    for (uint i = 0; i < _sizes.N(); ++i)
-        _container[i] = lambda();
-}
+//template <typename T>
+//template <class Lambda>
+//void vector3d<T>::map(const Lambda &lambda)
+//{
+//#pragma omp parallel for shared(lambda)
+//    for (uint i = 0; i < _sizes.N(); ++i)
+//        _container[i] = lambda(_container[i]);
+//}
 
 //template <typename T>
 //template <class Lambda>
@@ -108,13 +108,13 @@ void vector3d<T>::map(const Lambda &lambda)
 
 template <typename T>
 template <typename R, class Lambda>
-R vector3d<T>::reduce_plus(R initValue, const Lambda &op) const
+R vector3d<T>::reduce_plus(R initValue, const Lambda &lambda) const
 {
     R sum = initValue;
-#pragma omp parallel for reduction(+:sum) shared(op)
+#pragma omp parallel for reduction(+:sum) shared(lambda)
     for (uint i = 0; i < _sizes.N(); ++i)
     {
-        sum = op(sum, _container[i]);
+        sum += lambda(_container[i]);
     }
     return sum;
 }

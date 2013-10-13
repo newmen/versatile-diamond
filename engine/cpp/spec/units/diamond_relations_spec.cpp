@@ -1,6 +1,6 @@
 #include <vector>
+#include <generations/builders/atom_builder.h>
 #include <generations/crystals/diamond.h>
-#include <generations/builders/diamond_atom_builder.h>
 using namespace vd;
 
 class Checker : public Diamond
@@ -42,7 +42,7 @@ int main(int argc, char const *argv[])
     Checker checker;
     checker.initialize();
 
-    DiamondAtomBuilder builder;
+    AtomBuilder builder;
     auto buildCd = [&atoms, &checker, &builder](int x, int y, int z)
     {
         Atom *atom = builder.buildCd(0, 0, &checker, int3(x, y, z));

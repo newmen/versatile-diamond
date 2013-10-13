@@ -16,6 +16,12 @@ Atom::~Atom()
     delete _lattice;
 }
 
+void Atom::changeType(uint newType)
+{
+    setType(newType);
+    specifyType();
+}
+
 void Atom::activate()
 {
 #pragma omp atomic
@@ -24,6 +30,8 @@ void Atom::activate()
 
 void Atom::deactivate()
 {
+    assert(_actives > 0);
+
 #pragma omp atomic
     --_actives;
 }
@@ -41,6 +49,8 @@ void Atom::bondWith(Atom *neighbour, int depth)
 
 void Atom::unbondFrom(Atom *neighbour, int depth)
 {
+    assert(hasBondWith(neighbour));
+
 #pragma omp critical
     {
         auto it = neighbours().find(neighbour);

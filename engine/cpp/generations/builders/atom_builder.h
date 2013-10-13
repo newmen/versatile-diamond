@@ -1,5 +1,5 @@
-#ifndef DIAMOND_ATOM_BUILDER_H
-#define DIAMOND_ATOM_BUILDER_H
+#ifndef ATOM_BUILDER_H
+#define ATOM_BUILDER_H
 
 #include <vector>
 #include "../atoms/c.h"
@@ -9,7 +9,7 @@
 
 using namespace vd;
 
-class DiamondAtomBuilder
+class AtomBuilder
 {
 public:
     Atom *buildC(uint type, uint actives)
@@ -29,4 +29,4 @@ public:
     }
 };
 
-#endif // DIAMOND_ATOM_BUILDER_H
+#endif // ATOM_BUILDER_H

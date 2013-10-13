@@ -28,6 +28,7 @@ public:
 protected:
     virtual void buildAtoms() = 0;
     virtual void bondAllAtoms() = 0;
+
     virtual Atom *makeAtom(uint type, const int3 &coords) = 0;
 
     void makeLayer(uint z, uint type);
@@ -38,6 +39,7 @@ protected:
     Atoms &atoms() { return _atoms; }
 
 private:
+    void specifyAllAtoms();
     void findAllSpecs();
 
 private:

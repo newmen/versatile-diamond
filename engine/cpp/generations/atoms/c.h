@@ -11,6 +11,7 @@ class C : public ConcreteAtom<VALENCE>
 public:
     using ConcreteAtom::ConcreteAtom;
 
+    void specifyType() override;
     void findSpecs() override;
 };
 
