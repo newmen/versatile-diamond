@@ -78,6 +78,7 @@ void Atom::setLattice(Crystal *crystal, const int3 &coords)
     }
     else
     {
+        delete _cacheLattice;
         _cacheLattice = _lattice = new Lattice(crystal, coords);
     }
 }

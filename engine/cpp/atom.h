@@ -21,7 +21,8 @@ public:
     Atom(uint type, uint actives, Lattice *lattice);
     virtual ~Atom();
 
-    uint type() const { return _type; }
+    virtual bool is(uint type) = 0;
+    uint type() const { return _type; } // TODO: must be protected! only for test cases
     void changeType(uint newType);
 
     virtual void activate();
