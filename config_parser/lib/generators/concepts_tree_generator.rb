@@ -50,16 +50,6 @@ module VersatileDiamond
 
     private
 
-      # Draws termination species
-      def draw_termination_specs
-        @sp_specs_to_nodes ||= {}
-        termination_specs.each do |ts|
-          node = @graph.add_nodes(ts.name.to_s)
-          node.set { |e| e.color = TERMINATION_SPEC_COLOR }
-          @sp_specs_to_nodes[ts] = node
-        end
-      end
-
       # Draws where objects and dependencies between them, and also will
       # draw dependencies from specific species
       def draw_wheres

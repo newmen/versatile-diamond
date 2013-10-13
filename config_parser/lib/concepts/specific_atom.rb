@@ -19,7 +19,7 @@ module VersatileDiamond
       class NotStated < Stated; end
 
       extend Forwardable
-      def_delegators :@atom, :name, :lattice, :lattice=
+      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence
 
       # Initialize a new instance
       # @param [Atom] atom the specified atom

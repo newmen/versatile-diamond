@@ -68,6 +68,12 @@ module VersatileDiamond
         spec.links[self].dup
       end
 
+      # Gets original valence of atom
+      # @return [Integer] the original valence of atom
+      def original_valence
+        @valence
+      end
+
       def to_s
         @lattice ? "#{name}%#{@lattice}" : name.to_s
       end

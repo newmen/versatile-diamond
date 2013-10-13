@@ -14,6 +14,10 @@ module VersatileDiamond
         it { ref.valence.should == 2 }
       end
 
+      describe "#original_valence" do
+        it { ref.original_valence.should == 4 }
+      end
+
       describe "#same?" do
         it { c1.same?(ref).should be_true }
         it { ref.same?(c1).should be_true }

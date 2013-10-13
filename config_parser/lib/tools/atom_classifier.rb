@@ -28,11 +28,15 @@ module VersatileDiamond
             @props = args.first
           elsif args.size == 2
             spec, atom = args
-            @props = [atom.name, atom.lattice, relations_for(spec, atom)]
+            @props = [
+              atom.name,
+              atom.original_valence,
+              atom.lattice,
+              relations_for(spec, atom)
+            ]
 
             if atom.is_a?(SpecificAtom) && !atom.relevants.empty?
               @props << atom.relevants
-              @has_relevants = true
             end
           else
             raise ArgumentError
@@ -40,7 +44,13 @@ module VersatileDiamond
         end
 
         # Define human named methods for accessing to props
-        %w(atom_name lattice relations relevants).each_with_index do |name, i|
+        %w(
+          atom_name
+          valence
+          lattice
+          relations
+          relevants
+        ).each_with_index do |name, i|
           define_method(name) { @props[i] }
         end
 
@@ -63,7 +73,7 @@ module VersatileDiamond
 
           oth_rels = other.relations.dup
           relations.all? { |rel| oth_rels.delete_one(rel) } &&
-            (!has_relevants? || (other.has_relevants? &&
+            (!relevants || (other.relevants &&
               !relevants.include?(:incoherent) &&
               (!relevants.include?(:unfixed) ||
                 other.relevants.include?(:unfixed))))
@@ -87,14 +97,8 @@ module VersatileDiamond
         # Gets size of properties
         def size
           return @size if @size
-          @size = 1 + (lattice ? 0.5 : 0) + relations.size +
+          @size = valence + (lattice ? 0.5 : 0) + relations.size +
             (relevants ? relevants.size * 0.34 : 0)
-        end
-
-        # Checks that contains relevants properties
-        # @return [Boolean] contains or not
-        def has_relevants?
-          !!@has_relevants
         end
 
         def to_s
@@ -197,7 +201,7 @@ module VersatileDiamond
         # Drops relevants properties if it exists
         # @return [Array] properties without relevants
         def wihtout_relevants
-          has_relevants? ? props[0...(props.length - 1)] : props
+          relevants ? props[0...(props.length - 1)] : props
         end
       end
 
@@ -332,7 +336,7 @@ module VersatileDiamond
       # @param [Integer] index the index of properties
       # @return [Boolean] has or not
       def has_relevants?(index)
-        @props[index].has_relevants?
+        !!@props[index].relevants
       end
     end
 

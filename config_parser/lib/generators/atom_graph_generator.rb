@@ -26,6 +26,7 @@ module VersatileDiamond
         if specs || spec_specs
           draw_specs(no_includes: no_includes) if specs
           draw_specific_specs(no_includes: no_includes) if spec_specs
+          draw_termination_specs
         else
           used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
