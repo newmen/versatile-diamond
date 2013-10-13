@@ -16,6 +16,10 @@ module VersatileDiamond
         it { adsorbed_h.external_bonds.should == 1 }
       end
 
+      describe "#is_hydrogen?" do
+        it { adsorbed_h.is_hydrogen? }
+      end
+
       describe "#same?" do
         it { adsorbed_h.same?(AtomicSpec.new(h.dup)).should be_true }
         it { adsorbed_h.same?(active_bond).should be_false }

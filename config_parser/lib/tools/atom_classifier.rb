@@ -1,4 +1,5 @@
 using VersatileDiamond::Patches::RichArray
+using VersatileDiamond::Patches::RichString
 
 module VersatileDiamond
   module Tools
@@ -28,11 +29,15 @@ module VersatileDiamond
             @props = args.first
           elsif args.size == 2
             spec, atom = args
-            @props = [atom.name, atom.lattice, relations_for(spec, atom)]
+            @props = [
+              atom.name,
+              atom.original_valence,
+              atom.lattice,
+              relations_for(spec, atom)
+            ]
 
             if atom.is_a?(SpecificAtom) && !atom.relevants.empty?
               @props << atom.relevants
-              @has_relevants = true
             end
           else
             raise ArgumentError
@@ -40,7 +45,13 @@ module VersatileDiamond
         end
 
         # Define human named methods for accessing to props
-        %w(atom_name lattice relations relevants).each_with_index do |name, i|
+        %w(
+          atom_name
+          valence
+          lattice
+          relations
+          relevants
+        ).each_with_index do |name, i|
           define_method(name) { @props[i] }
         end
 
@@ -57,16 +68,39 @@ module VersatileDiamond
           end
         end
 
+        # Checks that current properties contained in another properties
+        # @param [AtomProperties] other probably parent atom properties
+        # @return [Boolean] contained or not
         def contained_in?(other)
           return false unless atom_name == other.atom_name &&
             lattice == other.lattice
 
           oth_rels = other.relations.dup
           relations.all? { |rel| oth_rels.delete_one(rel) } &&
-            (!has_relevants? || (other.has_relevants? &&
+            (!relevants || (other.relevants &&
               !relevants.include?(:incoherent) &&
               (!relevants.include?(:unfixed) ||
                 other.relevants.include?(:unfixed))))
+        end
+
+        # Gives the number of how many termination specs lies in current
+        # properties
+        #
+        # @param [TerminationSpec] term_spec the verifiable termination spec
+        # @return [Boolean] have or not
+        def terminations_num(term_spec)
+          case term_spec.class.to_s.underscore
+          when 'active_bond'
+            relations.select { |r| r == :active }.size
+          when 'atomic_spec'
+            if term_spec.is_hydrogen?
+              valence - bonds_num
+            else
+              (valence == 1 && atom_name == term_spec.name) ? 1 : 0
+            end
+          else
+            raise 'Undefined termination spec type'
+          end
         end
 
         # Adds dependency from smallest properties
@@ -87,14 +121,8 @@ module VersatileDiamond
         # Gets size of properties
         def size
           return @size if @size
-          @size = 1 + (lattice ? 0.5 : 0) + relations.size +
+          @size = valence + (lattice ? 0.5 : 0) + relations.size +
             (relevants ? relevants.size * 0.34 : 0)
-        end
-
-        # Checks that contains relevants properties
-        # @return [Boolean] contains or not
-        def has_relevants?
-          !!@has_relevants
         end
 
         def to_s
@@ -197,7 +225,15 @@ module VersatileDiamond
         # Drops relevants properties if it exists
         # @return [Array] properties without relevants
         def wihtout_relevants
-          has_relevants? ? props[0...(props.length - 1)] : props
+          relevants ? props[0...(props.length - 1)] : props
+        end
+
+        # Gets number of bond relations
+        # @return [Array] the array of bond relations
+        def bonds_num
+          relations.select { |r| r.class == Bond || r == :active }.size +
+            (relations.include?(:dbond) ? 2 : 0) +
+            (relations.include?(:tbond) ? 3 : 0)
         end
       end
 
@@ -267,31 +303,44 @@ module VersatileDiamond
       # Classify spec and return hash where keys is order number of property
       # and values is number of atoms in spec with same properties
       #
-      # @param [Spec | SpecificSpec] spec the analyzing spec
+      # @param [TerminationSpec | Spec | SpecificSpec] spec the analyzing spec
       # @option [Spec | SpecificSpec] :without do not classify atoms like as
-      #   from passed spec
+      #   from passed spec (not using when spec is termination spec)
       # @return [Hash] result of classification
       def classify(spec, without: nil)
-        atoms = spec.links.keys
+        if spec.is_a?(TerminationSpec)
+          props = @props.select { |prop| prop.terminations_num(spec) > 0 }
 
-        if without
-          without_same = spec.class.new(spec.name)
-          parent_atoms = without.links.keys
-          atoms = atoms.select do |atom|
-            prop = AtomProperties.new(spec, atom)
-            parent_atoms.all? do |parent_atom|
-              parent_prop = AtomProperties.new(without, parent_atom)
-              prop != parent_prop
+          props.each_with_object({}) do |prop, hash|
+            index = index(prop)
+            image = prop.to_s
+            hash[index] = [image, prop.terminations_num(spec)]
+          end
+        else
+          atoms = spec.links.keys
+
+          if without
+            without_same = spec.class.new(spec.name)
+            parent_atoms = without.links.keys
+            atoms = atoms.select do |atom|
+              prop = AtomProperties.new(spec, atom)
+              parent_atoms.all? do |parent_atom|
+                parent_prop = AtomProperties.new(without, parent_atom)
+                prop != parent_prop
+              end
             end
           end
-        end
 
-        atoms.each_with_object({}) do |atom, hash|
-          prop = AtomProperties.new(spec, atom)
-          index = index(prop)
-          image = prop.to_s
-          hash[index] ||= [image, 0]
-          hash[index][1] += 1
+          spec_props =
+            atoms.map { |atom| [spec, AtomProperties.new(spec, atom)] }
+
+          atoms.each_with_object({}) do |atom, hash|
+            prop = AtomProperties.new(spec, atom)
+            index = index(prop)
+            image = prop.to_s
+            hash[index] ||= [image, 0]
+            hash[index][1] += 1
+          end
         end
       end
 
@@ -332,7 +381,7 @@ module VersatileDiamond
       # @param [Integer] index the index of properties
       # @return [Boolean] has or not
       def has_relevants?(index)
-        @props[index].has_relevants?
+        !!@props[index].relevants
       end
     end
 

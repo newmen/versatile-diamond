@@ -18,6 +18,7 @@ Options:
 
   --specs            Generate some info about base specs
   --spec-specs       Generate some info about specific specs
+  --term-specs       Generate some info about termination specs
   --reactions        Generate some info about reactions
   --includes         Generate some info about includes
   --transitions      Generate some info about transitions
@@ -32,6 +33,7 @@ opt = begin
   Docopt::docopt(doc)
 rescue Docopt::Exit => e
   puts e.message
+  exit
 end
 
 require_relative 'config_parser/config_parser'
@@ -43,7 +45,7 @@ if !VD::Analyzer.read_config(opt['<path_to_config>'])
   exit
 end
 
-props = %w(specs spec-specs reactions includes transitions no-specs
+props = %w(specs spec-specs term-specs reactions includes transitions no-specs
   no-spec-specs no-reactions no-includes no-transitions)
 
 props_to_ops = props.map do |prop|

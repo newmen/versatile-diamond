@@ -36,6 +36,13 @@ module VersatileDiamond
         it { SpecificAtom.new(c).valence.should == 4 }
       end
 
+      describe "#original_valence" do
+        it { activated_n.original_valence.should == 3 }
+        it { activated_c.original_valence.should == 4 }
+        it { extra_activated_cd.original_valence.should == 4 }
+        it { SpecificAtom.new(c).original_valence.should == 4 }
+      end
+
       describe "#actives" do
         it { subject.actives.should == 0 }
 

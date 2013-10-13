@@ -6,6 +6,11 @@ module VersatileDiamond
     describe AtomClassifier do
       let(:dc) { AtomClassifier::AtomProperties }
 
+      let(:methyl) do
+        dc.new(unfixed_methyl_on_bridge, unfixed_methyl_on_bridge.atom(:cm))
+      end
+      let(:c2b) { dc.new(high_bridge, high_bridge.atom(:cm)) }
+
       let(:bridge_ct) { dc.new(bridge, bridge.atom(:ct)) }
       let(:bridge_cr) { dc.new(bridge, bridge.atom(:cr)) }
       let(:dimer_cr) { dc.new(dimer, dimer.atom(:cr)) }
@@ -19,7 +24,52 @@ module VersatileDiamond
       end
 
       describe AtomClassifier::AtomProperties do
+        describe "#atom_name" do
+          it { bridge_ct.atom_name.should == :C }
+        end
+
+        describe "#valence" do
+          it { methyl.valence.should == 4 }
+          it { c2b.valence.should == 4 }
+          it { bridge_ct.valence.should == 4 }
+          it { bridge_cr.valence.should == 4 }
+          it { ab_ct.valence.should == 4 }
+        end
+
+        describe "#lattice" do
+          it { methyl.lattice.should be_nil }
+          it { bridge_ct.lattice.should == diamond }
+        end
+
+        describe "#relations" do
+          it { methyl.relations.should == [free_bond] }
+          it { c2b.relations.should == [:dbond] }
+          it { bridge_ct.relations.should == [bond_110_cross, bond_110_cross] }
+          it { bridge_cr.relations.should == [
+              bond_110_cross, bond_110_cross, position_100_front, bond_110_front
+            ] }
+
+          it { ad_cr.relations.should == [
+              :active, bond_100_front, bond_110_cross, bond_110_cross
+            ] }
+
+          it { aib_ct.relations.should == [
+              :active, bond_110_cross, bond_110_cross
+            ] }
+        end
+
+        describe "#relevants" do
+          it { methyl.relevants.should == [:unfixed] }
+          it { c2b.relevants.should be_nil }
+          it { bridge_ct.relevants.should be_nil }
+          it { ad_cr.relevants.should be_nil }
+          it { aib_ct.relevants.should == [:incoherent] }
+        end
+
         describe "#==" do
+          it { bridge_ct.should_not == methyl }
+          it { methyl.should_not == bridge_ct }
+
           it { bridge_ct.should_not == bridge_cr }
           it { bridge_cr.should_not == bridge_ct }
 
@@ -37,6 +87,9 @@ module VersatileDiamond
         end
 
         describe "#contained_in?" do
+          it { methyl.contained_in?(bridge_cr).should be_false }
+          it { bridge_cr.contained_in?(methyl).should be_false }
+
           it { bridge_ct.contained_in?(bridge_cr).should be_true }
           it { bridge_ct.contained_in?(dimer_cr).should be_true }
           it { bridge_ct.contained_in?(ab_ct).should be_true }
@@ -48,6 +101,17 @@ module VersatileDiamond
           it { dimer_cr.contained_in?(bridge_cr).should be_false }
           it { ab_ct.contained_in?(bridge_cr).should be_false }
           it { bridge_cr.contained_in?(ab_ct).should be_false }
+        end
+
+        describe "#terminations_num" do
+          it { methyl.terminations_num(active_bond).should == 0 }
+          it { methyl.terminations_num(adsorbed_h).should == 3 }
+
+          it { bridge_cr.terminations_num(active_bond).should == 0 }
+          it { bridge_cr.terminations_num(adsorbed_h).should == 1 }
+
+          it { ad_cr.terminations_num(active_bond).should == 1 }
+          it { ad_cr.terminations_num(adsorbed_h).should == 0 }
         end
 
         describe "#unrelevanted" do
@@ -62,20 +126,11 @@ module VersatileDiamond
         end
 
         describe "#size" do
-          it { bridge_ct.size.should == 3.5 }
-          it { bridge_cr.size.should == 5.5 }
-          it { dimer_cr.size.should == 4.5 }
-          it { ab_ct.size.should == 4.5 }
-          it { aib_ct.size.should == 4.84 }
-        end
-
-        describe "#has_relevants?" do
-          it { bridge_ct.has_relevants?.should be_false }
-          it { bridge_cr.has_relevants?.should be_false }
-          it { dimer_cr.has_relevants?.should be_false }
-          it { ab_ct.has_relevants?.should be_false }
-
-          it { aib_ct.has_relevants?.should be_true }
+          it { bridge_ct.size.should == 6.5 }
+          it { bridge_cr.size.should == 8.5 }
+          it { dimer_cr.size.should == 7.5 }
+          it { ab_ct.size.should == 7.5 }
+          it { aib_ct.size.should == 7.84 }
         end
       end
 
@@ -118,44 +173,71 @@ module VersatileDiamond
         end
 
         describe "#classify" do
-          it { subject.classify(activated_bridge).should == {
-              0 => ['^C.%d<', 2],
-              1 => ['*C%d<', 1],
-            } }
-
-          it { subject.classify(dimer).should == {
-              0 => ['^C.%d<', 4],
-              4 => ['-C%d<', 2],
-            } }
-
-          it { subject.classify(activated_dimer).should == {
-              0 => ['^C.%d<', 4],
-              4 => ['-C%d<', 1],
-              6 => ['-*C%d<', 1],
-            } }
-
-          it { subject.classify(methyl_on_incoherent_bridge).should == {
-              0 => ['^C.%d<', 2],
-              7 => ['C~', 1],
-              8 => ['~C:i%d<', 1],
-            } }
-
-          it { subject.classify(high_bridge).should == {
-              0 => ['^C.%d<', 2],
-              11 => ['C=', 1],
-              12 => ['=C%d<', 1],
-            } }
-
-          describe "without" do
-            it { subject.classify(activated_bridge, without: bridge_base).
-              should == {
-                1 => ['*C%d<', 1]
+          describe "termination spec" do
+            it { subject.classify(active_bond).should == {
+                1 => ['*C%d<', 1],
+                2 => ['*C:i%d<', 1],
+                6 => ['-*C%d<', 1],
               } }
 
-            it { subject.classify(dimer, without: bridge_base).
-              should == {
-                4 => ['-C%d<', 2]
+            it { subject.classify(adsorbed_h).should == {
+                0 => ['^C.%d<', 1],
+                1 => ['*C%d<', 1],
+                2 => ['*C:i%d<', 1],
+                3 => ['^C.:i%d<', 1],
+                4 => ['-C%d<', 1],
+                5 => ['-C:i%d<', 1],
+                7 => ['C~', 3],
+                8 => ['~C:i%d<', 1],
+                9 => ['~C%d<', 1],
+                10 => ['C:i~', 3],
+                11 => ['C=', 2],
+                13 => ['C:i=', 2],
               } }
+
+            it { subject.classify(adsorbed_cl).should be_empty }
+          end
+
+          describe "not termination spec" do
+            it { subject.classify(activated_bridge).should == {
+                0 => ['^C.%d<', 2],
+                1 => ['*C%d<', 1],
+              } }
+
+            it { subject.classify(dimer).should == {
+                0 => ['^C.%d<', 4],
+                4 => ['-C%d<', 2],
+              } }
+
+            it { subject.classify(activated_dimer).should == {
+                0 => ['^C.%d<', 4],
+                4 => ['-C%d<', 1],
+                6 => ['-*C%d<', 1],
+              } }
+
+            it { subject.classify(methyl_on_incoherent_bridge).should == {
+                0 => ['^C.%d<', 2],
+                7 => ['C~', 1],
+                8 => ['~C:i%d<', 1],
+              } }
+
+            it { subject.classify(high_bridge).should == {
+                0 => ['^C.%d<', 2],
+                11 => ['C=', 1],
+                12 => ['=C%d<', 1],
+              } }
+
+            describe "without" do
+              it { subject.classify(activated_bridge, without: bridge_base).
+                should == {
+                  1 => ['*C%d<', 1]
+                } }
+
+              it { subject.classify(dimer, without: bridge_base).
+                should == {
+                  4 => ['-C%d<', 2]
+                } }
+            end
           end
         end
 

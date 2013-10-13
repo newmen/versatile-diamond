@@ -4,7 +4,6 @@ module VersatileDiamond
     # Implements methods for generating graph of general concepts dependencies
     class ConceptsTreeGenerator < GraphGenerator
 
-      TERMINATION_SPEC_COLOR = 'chocolate'
       WHERE_COLOR = 'darkviolet'
 
       TYPICAL_REACTION_COLOR = 'darkgreen'
@@ -49,16 +48,6 @@ module VersatileDiamond
       end
 
     private
-
-      # Draws termination species
-      def draw_termination_specs
-        @sp_specs_to_nodes ||= {}
-        termination_specs.each do |ts|
-          node = @graph.add_nodes(ts.name.to_s)
-          node.set { |e| e.color = TERMINATION_SPEC_COLOR }
-          @sp_specs_to_nodes[ts] = node
-        end
-      end
 
       # Draws where objects and dependencies between them, and also will
       # draw dependencies from specific species

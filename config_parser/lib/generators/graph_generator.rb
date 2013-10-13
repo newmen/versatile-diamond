@@ -7,6 +7,7 @@ module VersatileDiamond
 
       SPEC_COLOR = 'black'
       SPECIFIC_SPEC_COLOR = 'blue'
+      TERMINATION_SPEC_COLOR = 'chocolate'
 
       # Default constructor of graph generator
       def initialize(filename, ext = 'png')
@@ -73,6 +74,16 @@ module VersatileDiamond
               @graph.add_edges(node, base)
             end
           edge.set(&setup_lambda)
+        end
+      end
+
+      # Draws termination species
+      def draw_termination_specs
+        @sp_specs_to_nodes ||= {}
+        termination_specs.each do |ts|
+          node = @graph.add_nodes(ts.name.to_s)
+          node.set { |e| e.color = TERMINATION_SPEC_COLOR }
+          @sp_specs_to_nodes[ts] = node
         end
       end
 

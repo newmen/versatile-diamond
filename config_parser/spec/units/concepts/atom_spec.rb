@@ -14,6 +14,11 @@ module VersatileDiamond
         it { c.valence.should == 4 }
       end
 
+      describe "#original_valence" do
+        it { h.original_valence.should == 1 }
+        it { c.original_valence.should == 4 }
+      end
+
       describe "#lattice" do
         it "set and get lattice" do
           cd.lattice.should == diamond
