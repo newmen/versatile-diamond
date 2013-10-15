@@ -1,10 +1,9 @@
-#include "generations/dictionary.h"
-#include "generations/crystals/diamond.h"
+#include <generations/dictionary.h>
+#include <generations/crystals/diamond.h>
 using namespace vd;
 
-#include "spec/support/open_diamond.h"
+#include "../support/open_diamond.h"
 
-#include <omp.h>
 #include <iostream>
 using namespace std;
 
@@ -13,7 +12,6 @@ int main(int argc, char const *argv[])
     Diamond *diamond = new OpenDiamond(2);
     diamond->initialize();
 
-cout << Dictionary::specsNum() << endl;
     assert(Dictionary::specsNum() == 100);
 
     Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
@@ -22,26 +20,25 @@ cout << Dictionary::specsNum() << endl;
 
     a->bondWith(b);
 
-//#pragma omp parallel
-//    {
-//#pragma omp sections
-//        {
-//#pragma omp section
+#pragma omp parallel
+   {
+#pragma omp sections
+       {
+#pragma omp section
             a->changeType(6);
-//#pragma omp section
+#pragma omp section
             b->changeType(6);
-//        }
+       }
 
-//#pragma omp sections
-//        {
-//#pragma omp section
+#pragma omp sections
+       {
+#pragma omp section
             a->findSpecs();
-//#pragma omp section
+#pragma omp section
             b->findSpecs();
-//        }
-//    }
+       }
+   }
 
-cout << Dictionary::specsNum() << endl;
     assert(Dictionary::specsNum() == 101);
 
     Dictionary::purge();

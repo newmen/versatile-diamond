@@ -18,6 +18,7 @@ Atom::~Atom()
 
 void Atom::changeType(uint newType)
 {
+    _prevType = _type;
     setType(newType);
     specifyType();
 }
@@ -40,7 +41,7 @@ void Atom::bondWith(Atom *neighbour, int depth)
 {
     assert(_actives > 0);
 
-#pragma omp critical
+#pragma omp critical // TODO: подумать тут! можно сделать так, чтобы при обходе не возникало ситуации, когда нужно блокировать
     neighbours().insert(neighbour);
 
     deactivate();
@@ -71,7 +72,7 @@ void Atom::setLattice(Crystal *crystal, const int3 &coords)
     assert(crystal);
     assert(!_lattice);
 
-    if (_cacheLattice && _cacheLattice->is(crystal))
+    if (_cacheLattice && _cacheLattice->crystal() == crystal)
     {
         _lattice = _cacheLattice;
         _lattice->updateCoords(coords);
@@ -90,5 +91,17 @@ void Atom::unsetLattice()
     _cacheLattice = _lattice;
     _lattice = 0;
 }
+
+//void Atom::describe(BaseSpec *spec)
+//{
+//#pragma omp critical // TODO: подумать тут! можно сделать так, чтобы при обходе не возникало ситуации, когда нужно блокировать
+//    _specs.insert(spec);
+//}
+
+//void Atom::forget(BaseSpec *spec)
+//{
+//#pragma omp critical
+//    _specs.erase(spec);
+//}
 
 }

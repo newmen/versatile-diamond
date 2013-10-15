@@ -1,19 +1,12 @@
 #include <generations/atoms/c.h>
 #include <generations/crystals/diamond.h>
-
 using namespace vd;
 
-class OpenDiamond : public Diamond
-{
-public:
-    using Diamond::Diamond;
-
-    Atom *atom(const int3 &coords) { return atoms()[coords]; }
-};
+#include "../support/open_diamond.h"
 
 int main(int argc, char const *argv[])
 {
-    OpenDiamond *diamond = new OpenDiamond(dim3(10, 10, 5));
+    OpenDiamond *diamond = new OpenDiamond(2);
     diamond->initialize();
     assert(diamond->countAtoms() == 200);
 
@@ -28,14 +21,14 @@ int main(int argc, char const *argv[])
                 else
                 {
                     uint type = (z == 0) ? 8 : 20;
-                    assert(diamond->atom(int3(x, y, z))->type() == type);
+                    assert(diamond->atom(int3(x, y, z))->is(type));
                 }
             }
     delete diamond;
 
-    diamond = new OpenDiamond(dim3(5, 5, 5), 3);
+    diamond = new OpenDiamond(3);
     diamond->initialize();
-    assert(diamond->countAtoms() == 75);
+    assert(diamond->countAtoms() == 300);
 
     C *c = new C(3, 0, (Lattice *)0);
     diamond->insert(c, int3(3, 3, 3));

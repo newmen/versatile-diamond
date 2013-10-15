@@ -1,4 +1,16 @@
 #include "c.h"
+#include "../dictionary.h"
+#include "../recipes/base_bridge_recipe.h"
+
+bool C::is(uint typeOf) const
+{
+    return Dictionary::atomIs(type(), typeOf);
+}
+
+bool C::prevIs(uint typeOf) const
+{
+    return Atom::prevType() != (uint)(-1) && Dictionary::atomIs(prevType(), typeOf);
+}
 
 void C::specifyType()
 {
@@ -31,5 +43,6 @@ void C::specifyType()
 
 void C::findSpecs()
 {
-
+    BaseBridgeRecipe bbr;
+    bbr.find(this);
 }

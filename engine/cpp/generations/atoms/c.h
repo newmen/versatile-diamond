@@ -8,14 +8,11 @@ using namespace vd;
 
 class C : public ConcreteAtom<VALENCE>
 {
-    static Atom *__accordance = {
-
-    };
-
 public:
     using ConcreteAtom::ConcreteAtom;
 
-    bool is(uint type) override;
+    bool is(uint typeOf) const override;
+    bool prevIs(uint typeOf) const override;
 
     void specifyType() override;
     void findSpecs() override;

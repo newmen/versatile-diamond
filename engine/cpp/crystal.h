@@ -21,7 +21,7 @@ public:
     void insert(Atom *atom, const int3 &coords);
     void erase(Atom *atom) override;
 
-//    const Atom *atom(const int3 &coords) const { return _atoms[coords]; }
+    Atom *atom(const int3 &coords) const { return _atoms[coords]; }
 
     uint countAtoms() const;
 
@@ -33,10 +33,10 @@ protected:
 
     void makeLayer(uint z, uint type);
 
-//    Atom *atom(const int3 &coords) { return _atoms[coords]; }
-
     const Atoms &atoms() const { return _atoms; }
     Atoms &atoms() { return _atoms; }
+
+//    Atom *atom(const int3 &coords) { return _atoms[coords]; }
 
 private:
     void specifyAllAtoms();

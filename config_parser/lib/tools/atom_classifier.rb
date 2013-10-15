@@ -383,6 +383,30 @@ module VersatileDiamond
       def has_relevants?(index)
         !!@props[index].relevants
       end
+
+      # Gets matrix of transitive clojure for atom properties dependencies
+      # @return [Matrix] the transitive clojure matrix
+      def transitive_matrix
+        size = @props.size
+        matrix = Patches::SetableMatrix.build(size) { false }
+        size.times { |i| tcR(matrix, i, i) }
+
+        matrix
+      end
+
+    private
+
+      # Transitive clojure on DFS
+      # @param [Matrix] matrix the matrix of result
+      # @param [Integer] v the v vertex
+      # @param [Integer] w the w vertex
+      def tcR(matrix, v, w)
+        matrix[v, w] = true
+        @props[w].smallests && @props[w].smallests.each do |prop|
+          t = index(prop)
+          tcR(matrix, v, t) unless matrix[v, t]
+        end
+      end
     end
 
   end

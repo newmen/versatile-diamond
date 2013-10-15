@@ -36,6 +36,9 @@ public:
     template <class Lambda>
     void each(const Lambda &lambda) const;
 
+    template <class Lambda>
+    void ip_each(const Lambda &lambda) const;
+
 //    template <class Lambda>
 //    void map(const Lambda &lambda);
 
@@ -79,8 +82,20 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
-#pragma omp parallel for shared(lambda)
-    for (uint i = 0; i < _sizes.N(); ++i)
+#pragma omp parallel for shared(lambda) schedule(dynamic, 3) // TODO: too small var!
+    for (int i = 0; i < _sizes.N(); ++i)
+    {
+        lambda(_container[i]);
+    }
+}
+
+template <typename T>
+template <class Lambda>
+void vector3d<T>::ip_each(const Lambda &lambda) const
+{
+    int i;
+#pragma omp for private(i) schedule(dynamic, 3) // TODO: too small var!
+    for (i = 0; i < _sizes.N(); ++i)
     {
         lambda(_container[i]);
     }
@@ -91,7 +106,7 @@ void vector3d<T>::each(const Lambda &lambda) const
 //void vector3d<T>::map(const Lambda &lambda)
 //{
 //#pragma omp parallel for shared(lambda)
-//    for (uint i = 0; i < _sizes.N(); ++i)
+//    for (int i = 0; i < _sizes.N(); ++i)
 //        _container[i] = lambda(_container[i]);
 //}
 
@@ -100,9 +115,9 @@ void vector3d<T>::each(const Lambda &lambda) const
 //void vector3d<T>::mapIndex(const Lambda &lambda)
 //{
 //    uint n = 0;
-//    for (uint x = 0; x < _sizes.x; ++x)
-//        for (uint y = 0; y < _sizes.y; ++y)
-//            for (uint z = 0; z < _sizes.z; ++z)
+//    for (int x = 0; x < _sizes.x; ++x)
+//        for (int y = 0; y < _sizes.y; ++y)
+//            for (int z = 0; z < _sizes.z; ++z)
 //                _container[n++] = lambda(int3(x, y, z));
 //}
 
@@ -112,7 +127,7 @@ R vector3d<T>::reduce_plus(R initValue, const Lambda &lambda) const
 {
     R sum = initValue;
 #pragma omp parallel for reduction(+:sum) shared(lambda)
-    for (uint i = 0; i < _sizes.N(); ++i)
+    for (int i = 0; i < _sizes.N(); ++i)
     {
         sum += lambda(_container[i]);
     }

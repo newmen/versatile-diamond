@@ -6,23 +6,28 @@
 #include "lattice.h"
 
 #include <assert.h>
+#include <base_spec.h>
 
 namespace vd
 {
 
+class BaseSpec;
+
 class Atom
 {
-    uint _type;
+    uint _type, _prevType = -1;
     uint _actives;
     Lattice *_lattice, *_cacheLattice;
     std::unordered_multiset<Atom *> _neighbours;
+
+//    std::unordered_set<BaseSpec *> _specs;
 
 public:
     Atom(uint type, uint actives, Lattice *lattice);
     virtual ~Atom();
 
-    virtual bool is(uint type) = 0;
-    uint type() const { return _type; } // TODO: must be protected! only for test cases
+    virtual bool is(uint typeOf) const = 0;
+    virtual bool prevIs(uint typeOf) const = 0;
     void changeType(uint newType);
 
     virtual void activate();
@@ -39,11 +44,17 @@ public:
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
 
+//    void describe(BaseSpec *spec);
+//    void forget(BaseSpec *spec);
+
 protected:
     const std::unordered_multiset<Atom *> &neighbours() const { return _neighbours; }
     std::unordered_multiset<Atom *> &neighbours() { return _neighbours; }
 
     uint actives() const { return _actives; }
+
+    uint type() const { return _type; }
+    uint prevType() const { return _prevType; }
     void setType(uint type) { _type = type; }
 
 private:

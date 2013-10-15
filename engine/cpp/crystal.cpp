@@ -1,6 +1,7 @@
 #include "crystal.h"
 #include "lattice.h"
 #include "atom.h"
+#include <omp.h>
 
 #include <assert.h>
 
@@ -79,9 +80,12 @@ void Crystal::specifyAllAtoms()
 
 void Crystal::findAllSpecs()
 {
-    atoms().each([](Atom *atom) {
-        if (atom) atom->findSpecs();
-    });
+//#pragma omp parallel
+    {
+        atoms().each([](Atom *atom) {
+            if (atom) atom->findSpecs();
+        });
+    }
 }
 
 

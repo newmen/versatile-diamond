@@ -15,6 +15,7 @@ Options:
   --total-tree       Generate total tree with reactions and used species
   --composition      Generate graph with dependencies between different atom types
   --overview         Show overal table about used surface specs and their atoms
+  --code             Generate code for engine
 
   --specs            Generate some info about base specs
   --spec-specs       Generate some info about specific specs
@@ -70,6 +71,11 @@ end
 
 if opt['--overview']
   generator = VD::Generators::Overview.new
+  doit[generator]
+end
+
+if opt['--code']
+  generator = VD::Generators::CodeGenerator.new
   doit[generator]
 end
 

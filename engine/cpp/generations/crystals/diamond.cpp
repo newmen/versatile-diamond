@@ -4,7 +4,7 @@
 #include <assert.h>
 
 Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :
-    DiamondWithoutRelations(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+    Crystal(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
 {
 }
 
@@ -58,11 +58,11 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
 
 void Diamond::bondWithCross110(Atom *atom)
 {
-    TN neighbours = this->cross_110(this->atoms(), atom);
+    auto neighbours = this->cross_110(atom);
     bondWithNeighbours(atom, neighbours);
 }
 
-void Diamond::bondWithNeighbours(Atom *atom, TN &neighbours)
+void Diamond::bondWithNeighbours(Atom *atom, DiamondRelations::TN &neighbours)
 {
     assert(neighbours.all());
     atom->bondWith(neighbours[0]);

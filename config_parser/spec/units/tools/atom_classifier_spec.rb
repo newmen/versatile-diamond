@@ -274,6 +274,12 @@ module VersatileDiamond
           it { subject.has_relevants?(12).should be_false }
           it { subject.has_relevants?(13).should be_true }
         end
+
+        # describe "transitive_matrix" do
+        #   it { subject.transitive_matrix.should == Matrix[
+        #       []
+        #     ] }
+        end
       end
     end
 
