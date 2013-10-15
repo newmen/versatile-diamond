@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     generations/recipes/base_bridge_recipe.cpp \
     generations/dictionary.cpp \
     generations/base_specs/dimer.cpp \
-    generations/recipes/base_dimer_recipe.cpp
+    generations/recipes/base_dimer_recipe.cpp \
+    mc/mc.cpp
 
 HEADERS += \
     generations/crystals/diamond.h \
@@ -40,7 +41,9 @@ HEADERS += \
     generations/recipes/base_bridge_recipe.h \
     generations/dictionary.h \
     generations/base_specs/dimer.h \
-    generations/recipes/base_dimer_recipe.h
+    generations/recipes/base_dimer_recipe.h \
+    mc/mc.h \
+    mc/events_container.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

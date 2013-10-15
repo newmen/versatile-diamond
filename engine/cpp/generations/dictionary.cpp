@@ -52,8 +52,8 @@ bool Dictionary::atomIs(uint complexType, uint typeOf)
 void Dictionary::purge()
 {
 //    clearNews();
-    ::purge(__bridges);
-    ::purge(__dimers);
+    ::purge(&__bridges);
+    ::purge(&__dimers);
 }
 
 uint Dictionary::specsNum()

@@ -11,28 +11,28 @@ using namespace vd;
 using namespace std;
 
 template <class S>
-void store(std::unordered_set<S *> &container, S *item)
+void store(std::unordered_set<S *> *container, S *item)
 {
 #pragma omp critical
-    container.insert(item);
+    container->insert(item);
 }
 
 template <class S>
-void remove(std::unordered_set<S *> &container, S *item)
+void remove(std::unordered_set<S *> *container, S *item)
 {
 #pragma omp critical
     {
-        container.erase(item);
+        container->erase(item);
         delete item;
     }
 }
 
 template <class S>
-void purge(std::unordered_set<S *> &container)
+void purge(std::unordered_set<S *> *container)
 {
 //    cout << (*container.begin())->size() << " -> " << container.size() << endl;
 
-    for (S *item : container)
+    for (S *item : *container)
     {
 //        cout << item->size() << " -> " << item->anchor()->lattice()->coords() << endl;
         delete item;
@@ -65,11 +65,11 @@ private:
     static std::unordered_set<Dimer *> __dimers;
 
 public:
-    static void storeBridge(Bridge *bridge) { store(__bridges, bridge); }
-    static void removeBridge(Bridge *bridge) { remove(__bridges, bridge); }
+    static void storeBridge(Bridge *bridge) { store(&__bridges, bridge); }
+    static void removeBridge(Bridge *bridge) { remove(&__bridges, bridge); }
 
-    static void storeDimer(Dimer *dimer) { store(__dimers, dimer); }
-    static void removeDimer(Dimer *dimer) { remove(__dimers, dimer); }
+    static void storeDimer(Dimer *dimer) { store(&__dimers, dimer); }
+    static void removeDimer(Dimer *dimer) { remove(&__dimers, dimer); }
 };
 
 #endif // DICTIONARY_H
