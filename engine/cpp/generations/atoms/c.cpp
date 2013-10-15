@@ -1,6 +1,6 @@
 #include "c.h"
 #include "../dictionary.h"
-#include "../recipes/base_bridge_recipe.h"
+#include "../recipes/base_specs/base_bridge_recipe.h"
 
 bool C::is(uint typeOf) const
 {
@@ -41,7 +41,7 @@ void C::specifyType()
     }
 }
 
-void C::findSpecs()
+void C::findChildren()
 {
     BaseBridgeRecipe bbr;
     bbr.find(this);

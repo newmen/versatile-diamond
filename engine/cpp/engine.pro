@@ -17,10 +17,10 @@ SOURCES += main.cpp \
     base_spec.cpp \
     generations/base_specs/bridge.cpp \
     generations/crystals/diamond_relations.cpp \
-    generations/recipes/base_bridge_recipe.cpp \
     generations/dictionary.cpp \
     generations/base_specs/dimer.cpp \
-    generations/recipes/base_dimer_recipe.cpp \
+    generations/recipes/base_specs/base_bridge_recipe.cpp \
+    generations/recipes/base_specs/base_dimer_recipe.cpp \
     mc/mc.cpp
 
 HEADERS += \
@@ -38,12 +38,13 @@ HEADERS += \
     generations/builders/atom_builder.h \
     base_spec.h \
     generations/base_specs/bridge.h \
-    generations/recipes/base_bridge_recipe.h \
     generations/dictionary.h \
     generations/base_specs/dimer.h \
-    generations/recipes/base_dimer_recipe.h \
+    generations/recipes/base_specs/base_bridge_recipe.h \
+    generations/recipes/base_specs/base_dimer_recipe.h \
     mc/mc.h \
-    mc/events_container.h
+    mc/events_container.h \
+    generations/recipes/base_recipe.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

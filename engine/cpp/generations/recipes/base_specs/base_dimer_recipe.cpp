@@ -1,6 +1,4 @@
 #include "base_dimer_recipe.h"
-#include "../dictionary.h"
-#include "../crystals/diamond.h"
 
 #include <omp.h>
 

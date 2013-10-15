@@ -34,7 +34,7 @@ public:
     void deactivate();
 
     virtual void specifyType() = 0;
-    virtual void findSpecs() = 0;
+    virtual void findChildren() = 0;
 
     virtual void bondWith(Atom *neighbour, int depth = 1);
     virtual void unbondFrom(Atom *neighbour, int depth = 1);

@@ -40,7 +40,7 @@ protected:
 
 private:
     void specifyAllAtoms();
-    void findAllSpecs();
+    void findAll();
 
 private:
     Atoms _atoms;

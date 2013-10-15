@@ -1,7 +1,5 @@
 #include "base_bridge_recipe.h"
 #include "base_dimer_recipe.h"
-#include "../dictionary.h"
-#include "../crystals/diamond.h"
 
 void BaseBridgeRecipe::find(Atom *anchor) const
 {

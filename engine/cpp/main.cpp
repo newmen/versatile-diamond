@@ -35,9 +35,9 @@ cout << Dictionary::specsNum() << endl;
 //#pragma omp sections
 //        {
 //#pragma omp section
-            a->findSpecs();
+            a->findChildren();
 //#pragma omp section
-            b->findSpecs();
+            b->findChildren();
 //        }
 //    }
 

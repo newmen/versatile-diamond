@@ -25,7 +25,7 @@ void Crystal::initialize()
     bondAllAtoms();
 
     specifyAllAtoms();
-    findAllSpecs();
+    findAll();
 }
 
 void Crystal::insert(Atom *atom, const int3 &coords)
@@ -78,12 +78,12 @@ void Crystal::specifyAllAtoms()
     });
 }
 
-void Crystal::findAllSpecs()
+void Crystal::findAll()
 {
 //#pragma omp parallel
     {
         atoms().each([](Atom *atom) {
-            if (atom) atom->findSpecs();
+            if (atom) atom->findChildren();
         });
     }
 }

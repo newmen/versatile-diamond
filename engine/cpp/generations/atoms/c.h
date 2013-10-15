@@ -15,7 +15,7 @@ public:
     bool prevIs(uint typeOf) const override;
 
     void specifyType() override;
-    void findSpecs() override;
+    void findChildren() override;
 };
 
 #endif // C_H
