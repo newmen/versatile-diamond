@@ -10,7 +10,7 @@ public:
     virtual void find(Atom *anchor) const = 0;
 
 protected:
-    virtual void findChildren(Atom *anchor) const = 0;
+    virtual void findChildren(Atom *) const {}
 };
 
 

@@ -13,6 +13,9 @@ class MC
 
 public:
     MC();
+    virtual ~MC() {}
+
+    double totalRate() const { return _totalRate; }
 
 protected:
     template <class R>
@@ -34,6 +37,34 @@ private:
         _totalRate += r;
     }
 };
+
+template <class R>
+void MC::add(EventsContainer<R> *ec, R *r)
+{
+    ec->add(r);
+    updateRate(r->rate());
+}
+
+template <class R>
+void MC::remove(EventsContainer<R> *ec, R *r)
+{
+    ec->add(r);
+    updateRate(r->rate());
+}
+
+template <class R>
+void MC::addUb(MultiEventsContainer<R> *ec, R *r, uint n)
+{
+    ec->add(r, n);
+    updateRate(r->rate() * n);
+}
+
+template <class R>
+void MC::removeUb(MultiEventsContainer<R> *ec, R *r, uint n)
+{
+    ec->add(r, n);
+    updateRate(-r->rate() * n);
+}
 
 }
 

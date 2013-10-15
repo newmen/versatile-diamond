@@ -3,6 +3,8 @@ module VersatileDiamond
 
     # Also contained positions between the reactants
     class Reaction < UbiquitousReaction
+      extend Forwardable
+
       include Linker
       include SurfaceLinker
       include SpecAtomSwapper
@@ -20,6 +22,8 @@ module VersatileDiamond
 
         @mapping.find_positions_for(self)
       end
+
+      def_delegator :@mapping, :complex_source_spec_and_atom
 
       # Gets an appropriate representation of the reaction
       # @param [Symbol] type the type of parent reaction
@@ -140,7 +144,7 @@ module VersatileDiamond
       # Selects complex source specs and them changed atom
       # @return [Array] cached array of complex source specs
       def complex_source_covered_by?(termination_spec)
-        spec, atom = @mapping.complex_source_spec_and_atom
+        spec, atom = complex_source_spec_and_atom
         termination_spec.cover?(spec, atom)
       end
 

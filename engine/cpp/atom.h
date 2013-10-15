@@ -26,6 +26,9 @@ public:
     Atom(uint type, uint actives, Lattice *lattice);
     virtual ~Atom();
 
+    uint type() const { return _type; }
+    uint prevType() const { return _prevType; }
+
     virtual bool is(uint typeOf) const = 0;
     virtual bool prevIs(uint typeOf) const = 0;
     void changeType(uint newType);
@@ -53,8 +56,6 @@ protected:
 
     uint actives() const { return _actives; }
 
-    uint type() const { return _type; }
-    uint prevType() const { return _prevType; }
     void setType(uint type) { _type = type; }
 
 private:

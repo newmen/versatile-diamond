@@ -125,6 +125,24 @@ module VersatileDiamond
           it { aib_ct.unrelevanted.should == ab_ct.unrelevanted }
         end
 
+        describe "#active?" do
+          it { bridge_ct.active?.should be_false }
+          it { bridge_cr.active?.should be_false }
+          it { dimer_cr.active?.should be_false }
+
+          it { ad_cr.active?.should be_true }
+          it { ab_ct.active?.should be_true }
+          it { aib_ct.active?.should be_true }
+        end
+
+        describe "activated" do
+          it { bridge_ct.activated.should == ab_ct }
+        end
+
+        describe "deactivated" do
+          it { ab_ct.deactivated.should == bridge_ct }
+        end
+
         describe "#size" do
           it { bridge_ct.size.should == 6.5 }
           it { bridge_cr.size.should == 8.5 }
@@ -258,7 +276,7 @@ module VersatileDiamond
           it { subject.notrelevant_types_num.should == 8 }
         end
 
-        describe "has_relevants?" do
+        describe "#has_relevants?" do
           it { subject.has_relevants?(0).should be_false }
           it { subject.has_relevants?(1).should be_false }
           it { subject.has_relevants?(2).should be_true }
@@ -275,10 +293,19 @@ module VersatileDiamond
           it { subject.has_relevants?(13).should be_true }
         end
 
-        # describe "transitive_matrix" do
-        #   it { subject.transitive_matrix.should == Matrix[
-        #       []
-        #     ] }
+        describe "#transitive_matrix" do
+          it { subject.transitive_matrix.to_a.size.
+            should == subject.all_types_num }
+        end
+
+        describe "#actives_to_deactives" do
+          it { subject.actives_to_deactives.size.
+            should == subject.all_types_num }
+        end
+
+        describe "#deactives_to_actives" do
+          it { subject.deactives_to_actives.size.
+            should == subject.all_types_num }
         end
       end
     end

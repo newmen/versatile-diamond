@@ -8,8 +8,29 @@
 namespace vd
 {
 
-template <class M, class V, class R>
-inline void remove(M *mirror, V *events, R *event)
+template <class R>
+class BaseEventsContainer
+{
+protected:
+    std::vector<R *> _events;
+
+public:
+    virtual ~BaseEventsContainer();
+
+protected:
+    template <class M>
+    inline void remove(M *mirror, std::vector<R *> *events, R *event);
+};
+
+template <class R>
+BaseEventsContainer<R>::~BaseEventsContainer()
+{
+    for (R *event : _events) delete event;
+}
+
+template <class R>
+template <class M>
+void BaseEventsContainer<R>::remove(M *mirror, std::vector<R *> *events, R *event)
 {
     auto curr = mirror->find(event);
     assert(curr != mirror->end());
@@ -24,7 +45,7 @@ inline void remove(M *mirror, V *events, R *event)
 }
 
 template <class R>
-class EventsContainer
+class EventsContainer : public BaseEventsContainer<R>
 {
     std::unordered_map<R *, uint> _mirror;
     std::vector<R *> _events;
@@ -50,12 +71,12 @@ void EventsContainer<R>::remove(R *event)
 {
 #pragma omp critical
     {
-        ::remove(&_mirror, &_events, event);
+         BaseEventsContainer<R>::remove(&_mirror, &_events, event);
     }
 }
 
 template <class R>
-class MultiEventsContainer
+class MultiEventsContainer : public BaseEventsContainer<R>
 {
     std::unordered_multimap<R *, uint> _mirror;
     std::vector<R *> _events;
@@ -84,7 +105,7 @@ void MultiEventsContainer<R>::remove(R *event, uint n)
 #pragma omp critical
     {
         for (int i = 0; i < n; ++i)
-            ::remove(&_mirror, &_events, event);
+             BaseEventsContainer<R>::remove(&_mirror, &_events, event);
     }
 }
 

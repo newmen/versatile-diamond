@@ -118,6 +118,30 @@ module VersatileDiamond
           self.class.new(wihtout_relevants)
         end
 
+        # Are properties contain active
+        # @return [Boolean] contain or not
+        def active?
+          relations.include?(:active)
+        end
+
+        # Gets property same as current but activated
+        # @return [AtomProperties] activated properties
+        def activated
+          props = [atom_name, valence, lattice, relations + [:active]]
+          props << relevants if relevants
+          self.class.new(props)
+        end
+
+        # Gets property same as current but deactivated
+        # @return [AtomProperties] deactivated properties
+        def deactivated
+          r = relations.dup
+          r.delete_one(:active)
+          props = [atom_name, valence, lattice, r]
+          props << relevants if relevants
+          self.class.new(props)
+        end
+
         # Gets size of properties
         def size
           return @size if @size
@@ -394,7 +418,29 @@ module VersatileDiamond
         matrix
       end
 
+      # Gets transitions array of actives atoms to notactives
+      # @return [Array] the transitions array
+      def actives_to_deactives
+        collect_trainsitions(:activated)
+      end
+
+      # Gets transitions array of notactives atoms to actives
+      # @return [Array] the transitions array
+      def deactives_to_actives
+        collect_trainsitions(:deactivated)
+      end
+
     private
+
+      # Collects transitions array by passed method name
+      # @param [Symbol] method the method name which will be called
+      # @return [Array] collected array
+      def collect_trainsitions(method, &block)
+        each_props.map.with_index do |prop, p|
+          i = index(prop.send(method))
+          i && p != i ? i : -1
+        end
+      end
 
       # Transitive clojure on DFS
       # @param [Matrix] matrix the matrix of result

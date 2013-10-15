@@ -3,9 +3,10 @@
 
 #include <omp.h>
 #include "../common.h"
+
+#include "dmc.h"
 #include "base_specs/bridge.h"
 #include "base_specs/dimer.h"
-using namespace vd;
 
 #include <iostream>
 using namespace std;
@@ -41,12 +42,32 @@ void purge(std::unordered_set<S *> *container)
 
 class Dictionary
 {
+    static DMC __mc;
+public:
+    static DMC &mc();
+
     // atoms
+private:
     static const uint __atomsNum;
     static const bool __atomsAccordance[];
 
 public:
     static bool atomIs(uint complexType, uint typeOf);
+
+    // ubiquitous reactions
+private:
+    static const ushort __activesOnAtoms[];
+    static const ushort __hOnAtoms[];
+
+    static const short __activesToH[];
+    static const short __hToActives[];
+
+public:
+    static ushort activesNum(uint type);
+    static ushort hNum(uint type);
+
+    static short activesToH(uint type);
+    static short hToActives(uint type);
 
     // specs
 //private:

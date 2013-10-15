@@ -13,10 +13,14 @@ int main(int argc, char const *argv[])
     diamond->initialize();
 
     assert(Dictionary::specsNum() == 100);
+    assert(Dictionary::mc().totalRate() == 720000);
 
     Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
-    a->activate();
-    b->activate();
+    ReactionActivation raa(a);
+    raa.doIt();
+
+    ReactionActivation rab(b);
+    rab.doIt();
 
     a->bondWith(b);
 
@@ -40,6 +44,7 @@ int main(int argc, char const *argv[])
    }
 
     assert(Dictionary::specsNum() == 101);
+    assert(Dictionary::mc().totalRate() == 712800);
 
     Dictionary::purge();
     delete diamond;

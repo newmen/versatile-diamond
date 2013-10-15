@@ -1,6 +1,7 @@
 #include "c.h"
 #include "../dictionary.h"
 #include "../recipes/base_specs/base_bridge_recipe.h"
+#include "../recipes/reactions/ubiquitous/reaction_activation_recipe.h"
 
 bool C::is(uint typeOf) const
 {
@@ -45,4 +46,7 @@ void C::findChildren()
 {
     BaseBridgeRecipe bbr;
     bbr.find(this);
+
+    ReactionActivationRecipe rar;
+    rar.find(this);
 }
