@@ -1,19 +1,19 @@
 #ifndef REACTION_ACTIVATION_H
 #define REACTION_ACTIVATION_H
 
-#include "../../../atom.h"
-#include "../../../reaction.h"
-using namespace vd;
+#include "ubiquitous_reaction.h"
 
-class ReactionActivation : public Reaction
+class ReactionActivation : public UbiquitousReaction
 {
-    Atom *_target;
-
 public:
-    ReactionActivation(Atom *target);
+    using UbiquitousReaction::UbiquitousReaction;
 
     double rate() const { return 3600; }
-    void doIt();
+
+protected:
+    short toType(uint type) const override;
+    void action() override { target()->activate(); }
+    void remove() override;
 };
 
 #endif // REACTION_ACTIVATION_H

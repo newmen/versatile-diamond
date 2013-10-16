@@ -8,9 +8,6 @@
 #include "base_specs/bridge.h"
 #include "base_specs/dimer.h"
 
-#include <iostream>
-using namespace std;
-
 template <class S>
 void store(std::unordered_set<S *> *container, S *item)
 {
@@ -31,13 +28,7 @@ void remove(std::unordered_set<S *> *container, S *item)
 template <class S>
 void purge(std::unordered_set<S *> *container)
 {
-//    cout << (*container.begin())->size() << " -> " << container.size() << endl;
-
-    for (S *item : *container)
-    {
-//        cout << item->size() << " -> " << item->anchor()->lattice()->coords() << endl;
-        delete item;
-    }
+    for (S *item : *container) delete item;
 }
 
 class Dictionary
@@ -51,23 +42,26 @@ private:
     static const uint __atomsNum;
     static const bool __atomsAccordance[];
 
+    static const ushort __atomsSpecifing[];
+
 public:
     static bool atomIs(uint complexType, uint typeOf);
+    static ushort specificate(uint type);
 
     // ubiquitous reactions
 private:
     static const ushort __activesOnAtoms[];
     static const ushort __hOnAtoms[];
 
-    static const short __activesToH[];
-    static const short __hToActives[];
+    static const ushort __activesToH[];
+    static const ushort __hToActives[];
 
 public:
     static ushort activesNum(uint type);
     static ushort hNum(uint type);
 
-    static short activesToH(uint type);
-    static short hToActives(uint type);
+    static ushort activesToH(uint type);
+    static ushort hToActives(uint type);
 
     // specs
 //private:

@@ -1,14 +1,15 @@
 #ifndef REACTION_ACTIVATION_RECIPE_H
 #define REACTION_ACTIVATION_RECIPE_H
 
-#include "../../base_recipe.h"
+#include "ubiquitous_reaction_recipe.h"
 
-class ReactionActivationRecipe : public BaseRecipe
+class ReactionActivationRecipe : public UbiquitousReactionRecipe
 {
 public:
     void find(Atom *anchor) const override;
 
-    short delta(Atom *anchor) const;
+protected:
+    uint num(uint type) const { return Dictionary::hNum(type); }
 };
 
 #endif // REACTION_ACTIVATION_RECIPE_H

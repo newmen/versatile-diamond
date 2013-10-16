@@ -4,8 +4,8 @@
 
 void BaseDimerRecipe::find(Atom *anchor) const
 {
-    if (!anchor->is(6)) return;
-    if (!anchor->prevIs(6))
+    if (!anchor->is(22)) return;
+    if (!anchor->prevIs(22))
     {
         assert(anchor->lattice());
 
@@ -13,9 +13,9 @@ void BaseDimerRecipe::find(Atom *anchor) const
         assert(diamond);
 
         auto nbrs = diamond->front_100(anchor);
-        if (nbrs[0] && nbrs[0]->is(6) && anchor->hasBondWith(nbrs[0]))
+        if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]))
         {
-            uint types[3] = { 6, 6 };
+            uint types[3] = { 22, 22 };
             Atom *atoms[3] = { anchor, nbrs[0] };
 
             auto dimer = new Dimer(types, atoms);

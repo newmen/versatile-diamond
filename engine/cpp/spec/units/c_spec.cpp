@@ -5,10 +5,13 @@
 
 using namespace vd;
 
+#include <iostream>
+using namespace std;
+
 void assertIs(C *c, std::initializer_list<uint> types)
 {
     std::set<uint> ts(types);
-    for (int i = 0; i < 21; ++i)
+    for (int i = 0; i < 32; ++i)
     {
         bool result = (ts.find(i) != ts.cend());
         assert((!c->is(i) || result) && (c->is(i) || !result));
@@ -20,41 +23,44 @@ int main(int argc, char const *argv[])
     Crystal *diamond = new Diamond(dim3(10, 10, 5));
     Lattice *lattice = new Lattice(diamond, int3(1, 1, 1));
 
-    C c16(16, 1, lattice);
-    assert(c16.lattice() == lattice);
-    assert(c16.lattice()->coords().x == 1);
-    assert(c16.lattice()->coords().y == 1);
-    assert(c16.lattice()->coords().z == 1);
-    c16.specifyType();
-    assertIs(&c16, { 15, 16, 0 });
+    C c8(8, 1, lattice);
+    assert(c8.lattice() == lattice);
+    assert(c8.lattice()->coords().x == 1);
+    assert(c8.lattice()->coords().y == 1);
+    assert(c8.lattice()->coords().z == 1);
+    c8.specifyType();
+    assert(c8.type() == 8);
+    assertIs(&c8, { 1, 3, 8, 9 });
 
-    C c3(3, 1, (Lattice *)0);
-    assert(!c3.lattice());
+    C c11(11, 1, (Lattice *)0);
+    assert(!c11.lattice());
+    c11.specifyType();
+    assert(c11.type() == 26);
+    assertIs(&c11, { 11, 14, 26, 29, 31 });
+
+    c8.bondWith(&c11);
+    assert(c8.hasBondWith(&c11));
+    assert(c11.hasBondWith(&c8));
+
+    c11.unbondFrom(&c8);
+    assert(!c8.hasBondWith(&c11));
+    assert(!c11.hasBondWith(&c8));
+
+    C c3(3, 0, new Lattice(diamond, int3(2, 2, 2)));
+    assert(!c8.hasBondWith(&c3));
+    assert(!c3.hasBondWith(&c8));
     c3.specifyType();
-    assertIs(&c3, { 12, 3 });
+    assert(c3.type() == 0);
+    assertIs(&c3, { 0, 3 });
 
-    c16.bondWith(&c3);
-    assert(c16.hasBondWith(&c3));
-    assert(c3.hasBondWith(&c16));
+    c3.unsetLattice();
+    assert(!c3.lattice());
 
-    c3.unbondFrom(&c16);
-    assert(!c16.hasBondWith(&c3));
-    assert(!c3.hasBondWith(&c16));
-
-    C c2(2, 0, new Lattice(diamond, int3(2, 2, 2)));
-    assert(!c16.hasBondWith(&c2));
-    assert(!c2.hasBondWith(&c16));
-    c2.specifyType();
-    assertIs(&c2, { 2, 0 });
-
-    c2.unsetLattice();
-    assert(!c2.lattice());
-
-    c2.setLattice(diamond, int3(3, 2, 1));
-    assert(c2.lattice());
-    assert(c2.lattice()->coords().x == 3);
-    assert(c2.lattice()->coords().y == 2);
-    assert(c2.lattice()->coords().z == 1);
+    c3.setLattice(diamond, int3(3, 2, 1));
+    assert(c3.lattice());
+    assert(c3.lattice()->coords().x == 3);
+    assert(c3.lattice()->coords().y == 2);
+    assert(c3.lattice()->coords().z == 1);
 
     delete lattice;
     delete diamond;

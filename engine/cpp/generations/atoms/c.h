@@ -1,20 +1,15 @@
 #ifndef C_H
 #define C_H
 
-#include "../../atom.h"
-using namespace vd;
+#include "specified_atom.h"
 
 #define VALENCE 4
 
-class C : public ConcreteAtom<VALENCE>
+class C : public SpecifiedAtom<VALENCE>
 {
 public:
-    using ConcreteAtom::ConcreteAtom;
+    using SpecifiedAtom::SpecifiedAtom;
 
-    bool is(uint typeOf) const override;
-    bool prevIs(uint typeOf) const override;
-
-    void specifyType() override;
     void findChildren() override;
 };
 

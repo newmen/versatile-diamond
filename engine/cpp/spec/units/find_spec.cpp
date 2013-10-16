@@ -29,9 +29,9 @@ int main(int argc, char const *argv[])
 #pragma omp sections
        {
 #pragma omp section
-            a->changeType(6);
+            a->changeType(22);
 #pragma omp section
-            b->changeType(6);
+            b->changeType(22);
        }
 
 #pragma omp sections
@@ -44,7 +44,15 @@ int main(int argc, char const *argv[])
    }
 
     assert(Dictionary::specsNum() == 101);
-    assert(Dictionary::mc().totalRate() == 712800);
+    assert(Dictionary::mc().totalRate() == 716800);
+
+    Atom *c = diamond->atom(int3(4, 2, 1));
+    ReactionActivation rac(c);
+    rac.doIt();
+    rac.doIt();
+
+    assert(Dictionary::specsNum() == 101);
+    assert(Dictionary::mc().totalRate() == 713600);
 
     Dictionary::purge();
     delete diamond;

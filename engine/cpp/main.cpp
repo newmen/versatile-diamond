@@ -8,7 +8,7 @@ using namespace vd;
 #include <iostream>
 using namespace std;
 
-int main(int argc, char const *argv[])
+int main()
 {
     Diamond *diamond = new OpenDiamond(2);
     diamond->initialize();
@@ -27,8 +27,8 @@ int main(int argc, char const *argv[])
 
     a->bondWith(b);
 
-    a->changeType(6);
-    b->changeType(6);
+    a->changeType(22);
+    b->changeType(22);
 
     a->findChildren();
     b->findChildren();
@@ -38,6 +38,10 @@ int main(int argc, char const *argv[])
 
     cout << Dictionary::mc().totalRate() << endl;
 
+    Atom *c = diamond->atom(int3(4, 2, 1));
+    ReactionActivation rac(c);
+    rac.doIt();
+    rac.doIt();
 
     Dictionary::purge();
     delete diamond;

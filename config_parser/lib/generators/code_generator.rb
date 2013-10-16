@@ -15,17 +15,18 @@ module VersatileDiamond
         result = classifier.transitive_matrix.to_a
         puts matrix_to_s(result)
 
-        term_matrix = termination_specs.map do |spec|
-          puts spec.name
+        print "Specification: "
+        puts classifier.specification.join(', ')
+
+        termination_specs.map do |spec|
+          print "#{spec.name} num: "
 
           values = Array.new(props.size) { 0 }
           classifier.classify(spec).each do |i, (_, n)|
             values[i] = n;
           end
-          values
+          puts values.join(', ')
         end
-
-        puts matrix_to_s(term_matrix)
 
         ubiquitous_reactions.each do |reaction|
           print "#{reaction.name}: "

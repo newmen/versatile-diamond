@@ -12,9 +12,9 @@ void Diamond::buildAtoms()
 {
     for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
     {
-        makeLayer(i, 8);
+        makeLayer(i, 24);
     }
-    makeLayer(_defaultSurfaceHeight - 1, 0);
+    makeLayer(_defaultSurfaceHeight - 1, 3);
 }
 
 void Diamond::bondAllAtoms()
@@ -35,7 +35,7 @@ void Diamond::bondAllAtoms()
 Atom *Diamond::makeAtom(uint type, const int3 &coords)
 {
     AtomBuilder builder;
-    Atom *atom = builder.buildCd(type, 0, this, coords);
+    Atom *atom = builder.buildCd(type, 2, this, coords);
 
     int z = coords.z;
     if (z > 0 && z < _defaultSurfaceHeight - 1)
@@ -43,9 +43,6 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
         atom->activate();
         atom->activate();
     }
-
-    atom->activate();
-    atom->activate();
 
     return atom;
 }

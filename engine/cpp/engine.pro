@@ -22,9 +22,12 @@ SOURCES += main.cpp \
     generations/recipes/base_specs/base_bridge_recipe.cpp \
     generations/recipes/base_specs/base_dimer_recipe.cpp \
     mc/mc.cpp \
-    generations/recipes/reactions/ubiquitous/reaction_activation_recipe.cpp \
     generations/dmc.cpp \
-    generations/reactions/ubiquitous/reaction_activation.cpp
+    generations/reactions/ubiquitous/reaction_activation.cpp \
+    generations/reactions/ubiquitous/reaction_deactivation.cpp \
+    generations/recipes/reactions/ubiquitous/reaction_activation_recipe.cpp \
+    generations/recipes/reactions/ubiquitous/reaction_deactivation_recipe.cpp \
+    generations/atoms/specified_atom.cpp
 
 HEADERS += \
     generations/crystals/diamond.h \
@@ -48,10 +51,15 @@ HEADERS += \
     mc/mc.h \
     mc/events_container.h \
     generations/recipes/base_recipe.h \
-    generations/recipes/reactions/ubiquitous/reaction_activation_recipe.h \
     generations/dmc.h \
+    reaction.h \
+    generations/reactions/ubiquitous/ubiquitous_reaction.h \
     generations/reactions/ubiquitous/reaction_activation.h \
-    reaction.h
+    generations/reactions/ubiquitous/reaction_deactivation.h \
+    generations/recipes/reactions/ubiquitous/ubiquitous_reaction_recipe.h \
+    generations/recipes/reactions/ubiquitous/reaction_activation_recipe.h \
+    generations/recipes/reactions/ubiquitous/reaction_deactivation_recipe.h \
+    generations/atoms/specified_atom.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

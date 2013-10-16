@@ -296,6 +296,16 @@ module VersatileDiamond
         end
       end
 
+      describe "#complex_source_spec_and_atom" do
+        it { methyl_activation.complex_source_spec_and_atom.should == [
+            ma_source.first, ma_source.first.atom(:cm)
+          ] }
+
+        it { methyl_deactivation.complex_source_spec_and_atom.should == [
+            dm_source.first, dm_source.first.atom(:cm)
+          ] }
+      end
+
       describe "#complex_source_covered_by?" do
         it { methyl_activation.complex_source_covered_by?(adsorbed_h).
           should be_true }

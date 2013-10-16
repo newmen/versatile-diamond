@@ -1,6 +1,3 @@
-using VersatileDiamond::Patches::RichArray
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
   module Tools
 
@@ -9,257 +6,6 @@ module VersatileDiamond
     # and generates optimal specs search algorithm (after some reaction has
     # been realised) for updating of real specs set
     class AtomClassifier
-
-      # Accumulates information about atom
-      class AtomProperties
-        include Modules::ListsComparer
-        include Lattices::BasicRelations
-
-        attr_reader :smallests
-
-        # Overloaded constructor that stores all properties of atom
-        # @overload new(props)
-        #   @param [Array] props the array of default properties
-        # @overload new(spec, atom)
-        #   @param [Spec | SpecificSpec] spec in which atom will find properties
-        #   @param [Atom | AtomReference | SpecificAtom] atom the atom for which
-        #     properties will be stored
-        def initialize(*args)
-          if args.size == 1
-            @props = args.first
-          elsif args.size == 2
-            spec, atom = args
-            @props = [
-              atom.name,
-              atom.original_valence,
-              atom.lattice,
-              relations_for(spec, atom)
-            ]
-
-            if atom.is_a?(SpecificAtom) && !atom.relevants.empty?
-              @props << atom.relevants
-            end
-          else
-            raise ArgumentError
-          end
-        end
-
-        # Define human named methods for accessing to props
-        %w(
-          atom_name
-          valence
-          lattice
-          relations
-          relevants
-        ).each_with_index do |name, i|
-          define_method(name) { @props[i] }
-        end
-
-        # Deep compares two properties by all properties
-        # @param [AtomProperties] other an other atom properties
-        # @return [Boolean] equal or not
-        def == (other)
-          lists_are_identical?(props, other.props) do |v, w|
-            if v.is_a?(Array) && w.is_a?(Array)
-              lists_are_identical?(v, w) { |a, b| a == b }
-            else
-              v == w
-            end
-          end
-        end
-
-        # Checks that current properties contained in another properties
-        # @param [AtomProperties] other probably parent atom properties
-        # @return [Boolean] contained or not
-        def contained_in?(other)
-          return false unless atom_name == other.atom_name &&
-            lattice == other.lattice
-
-          oth_rels = other.relations.dup
-          relations.all? { |rel| oth_rels.delete_one(rel) } &&
-            (!relevants || (other.relevants &&
-              !relevants.include?(:incoherent) &&
-              (!relevants.include?(:unfixed) ||
-                other.relevants.include?(:unfixed))))
-        end
-
-        # Gives the number of how many termination specs lies in current
-        # properties
-        #
-        # @param [TerminationSpec] term_spec the verifiable termination spec
-        # @return [Boolean] have or not
-        def terminations_num(term_spec)
-          case term_spec.class.to_s.underscore
-          when 'active_bond'
-            relations.select { |r| r == :active }.size
-          when 'atomic_spec'
-            if term_spec.is_hydrogen?
-              valence - bonds_num
-            else
-              (valence == 1 && atom_name == term_spec.name) ? 1 : 0
-            end
-          else
-            raise 'Undefined termination spec type'
-          end
-        end
-
-        # Adds dependency from smallest properties
-        # @param [AtomProperties] smallest the smallest properties from which
-        #   depends current
-        def add_smallest(smallest)
-          @smallests ||= Set.new
-          @smallests -= smallest.smallests if smallest.smallests
-          @smallests << smallest
-        end
-
-        # Makes unrelevanted copy of self
-        # @return [AtomProperties] unrelevanted atom properties
-        def unrelevanted
-          self.class.new(wihtout_relevants)
-        end
-
-        # Are properties contain active
-        # @return [Boolean] contain or not
-        def active?
-          relations.include?(:active)
-        end
-
-        # Gets property same as current but activated
-        # @return [AtomProperties] activated properties
-        def activated
-          props = [atom_name, valence, lattice, relations + [:active]]
-          props << relevants if relevants
-          self.class.new(props)
-        end
-
-        # Gets property same as current but deactivated
-        # @return [AtomProperties] deactivated properties
-        def deactivated
-          r = relations.dup
-          r.delete_one(:active)
-          props = [atom_name, valence, lattice, r]
-          props << relevants if relevants
-          self.class.new(props)
-        end
-
-        # Gets size of properties
-        def size
-          return @size if @size
-          @size = valence + (lattice ? 0.5 : 0) + relations.size +
-            (relevants ? relevants.size * 0.34 : 0)
-        end
-
-        def to_s
-          rl = relations.dup
-          name = atom_name.to_s
-
-          while rl.delete_one(:active)
-            name = "*#{name}"
-          end
-
-          while rl.delete_one { |r| r.is_a?(Position) }
-            name = "#{name}."
-          end
-
-          if relevants
-            relevants.each do |sym|
-              suffix = case sym
-                when :incoherent then 'i'
-                when :unfixed then 'u'
-              end
-              name = "#{name}:#{suffix}"
-            end
-          end
-
-          name = "#{name}%#{lattice.name}" if lattice
-
-          down1 = rl.delete_one(bond_cross_110)
-          down2 = rl.delete_one(bond_cross_110)
-          if down1 && down2
-            name = "#{name}<"
-          elsif down1 || down2
-            name = "#{name}/"
-          elsif rl.delete_one(:tbond)
-            name = "#{name}≡"
-          elsif rl.delete_one(:dbond)
-            name = "#{name}="
-          elsif rl.delete_one(undirected_bond)
-            name = "#{name}~"
-          end
-
-          up1 = rl.delete_one(bond_front_110)
-          up2 = rl.delete_one(bond_front_110)
-          if up1 && up2
-            name = ">#{name}"
-          elsif up1 || up2
-            name = "^#{name}"
-          elsif rl.delete_one(:dbond)
-            name = "=#{name}"
-          end
-
-          if rl.delete_one(bond_front_100)
-            name = "-#{name}"
-          end
-
-          while rl.delete_one(undirected_bond)
-            name = "~#{name}"
-          end
-
-          name
-        end
-
-      protected
-
-        attr_reader :props
-
-      private
-
-        # Harvest relations of atom in spec
-        # @param [Spec | SpecificSpec] spec see at #new same argument
-        # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
-        #   argument
-        def relations_for(spec, atom)
-          relations = []
-          links = atom.relations_in(spec)
-          until links.empty?
-            atom_rel = links.pop
-
-            if atom_rel.is_a?(Symbol)
-              relations << atom_rel
-              next
-            end
-
-            same = links.select { |ar| ar == atom_rel }
-
-            if !same.empty?
-              if same.size == 3 && same.size != 4
-                relations << :tbond
-                links.delete_one(atom_rel)
-              else
-                relations << :dbond
-              end
-              links.delete_one(atom_rel)
-            else
-              relations << atom_rel.last
-            end
-          end
-          relations
-        end
-
-        # Drops relevants properties if it exists
-        # @return [Array] properties without relevants
-        def wihtout_relevants
-          relevants ? props[0...(props.length - 1)] : props
-        end
-
-        # Gets number of bond relations
-        # @return [Array] the array of bond relations
-        def bonds_num
-          relations.select { |r| r.class == Bond || r == :active }.size +
-            (relations.include?(:dbond) ? 2 : 0) +
-            (relations.include?(:tbond) ? 3 : 0)
-        end
-      end
 
       # Initialize a classifier by set of properties
       def initialize
@@ -277,38 +23,24 @@ module VersatileDiamond
       # Analyze spec and store all uniq properties
       # @param [Spec | SpecificSpec] spec the analyzing spec
       def analyze(spec)
-        spec.links.each do |atom, _|
-          prop = AtomProperties.new(spec, atom)
+        props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
+
+        props.each do |prop|
           next if index(prop)
-          @props << prop
+          store_prop(prop, check: false)
 
-          unrel_prop = prop.unrelevanted
-          @props << unrel_prop unless index(unrel_prop)
-
-          next if @unrelevanted_props.find { |p| p == unrel_prop }
-          @unrelevanted_props << unrel_prop
-        end
-
-        # if spec is specific spec then necessary to save all limit incoherent
-        # states
-        return unless spec.is_a?(SpecificSpec)
-        # before, cast all atoms to specific atoms
-        spec_dup = spec.dup
-        spec_dup.links.keys.each do |atom|
-          unless atom.is_a?(SpecificAtom)
-            spec_dup.describe_atom(
-              spec_dup.keyname(atom), SpecificAtom.new(atom))
+          activated_prop = prop
+          while activated_prop = activated_prop.activated
+            store_prop(activated_prop)
           end
-        end
 
-        # storing all limit incoherent states
-        spec_dup.links.each do |atom, _|
-          atom.incoherent! if !atom.incoherent? &&
-            spec_dup.external_bonds_for(atom) > 0
+          deactivated_prop = prop
+          while deactivated_prop = deactivated_prop.deactivated
+            store_prop(deactivated_prop)
+          end
 
-          prop = AtomProperties.new(spec_dup, atom)
-          next if index(prop)
-          @props << prop
+          incoherent_prop = prop.incoherent
+          store_prop(incoherent_prop) if incoherent_prop
         end
       end
 
@@ -411,11 +143,52 @@ module VersatileDiamond
       # Gets matrix of transitive clojure for atom properties dependencies
       # @return [Matrix] the transitive clojure matrix
       def transitive_matrix
-        size = @props.size
-        matrix = Patches::SetableMatrix.build(size) { false }
-        size.times { |i| tcR(matrix, i, i) }
+        return @_tmatrix if @_tmatrix
 
-        matrix
+        size = @props.size
+        @_tmatrix = Patches::SetableMatrix.build(size) { false }
+        size.times { |i| tcR(@_tmatrix, i, i) }
+
+        @_tmatrix
+      end
+
+      # Gets array where each element is index of result specifieng of each
+      # atom properties
+      #
+      # @return [Array] the specification array
+      def specification
+        source_cols = transitive_matrix.column_vectors.map(&:to_a).
+          map.with_index do |col, i|
+            children_num = col.map { |t| t ? 1 : 0 }.reduce(:+)
+            [children_num == 1, i]
+          end
+
+        source_props_indexes = source_cols.select(&:first).map(&:last)
+        source_props_indexes.select! do |i|
+          @props[i].relevants && @props[i].relevants.include?(:incoherent)
+        end
+        source_props_indexes = source_props_indexes.to_set
+
+        each_props.map.with_index do |prop, i|
+          curr_srs =
+            transitive_matrix.column(i).map.with_index do |b, j|
+              [b && source_props_indexes.include?(j), j]
+            end
+
+          curr_source_indexes = curr_srs.select(&:first).map(&:last)
+
+          if curr_source_indexes.empty?
+            i
+          elsif curr_source_indexes.size == 1
+            curr_source_indexes.first
+          else
+            lengths = curr_source_indexes.map do |j|
+              [path_length(@props[j], prop), j]
+            end
+
+            lengths.min_by(&:first).last
+          end
+        end
       end
 
       # Gets transitions array of actives atoms to notactives
@@ -432,13 +205,27 @@ module VersatileDiamond
 
     private
 
+      # Stores passed prop and it unrelevanted analog
+      # @param [AtomProperties] prop the storing properties
+      # @option [Boolean] :check before storing checks or not index of
+      #   properties
+      def store_prop(prop, check: true)
+        @props << prop unless check && index(prop)
+
+        unrel_prop = prop.unrelevanted
+        @props << unrel_prop unless index(unrel_prop)
+
+        return if @unrelevanted_props.find { |p| p == unrel_prop }
+        @unrelevanted_props << unrel_prop
+      end
+
       # Collects transitions array by passed method name
       # @param [Symbol] method the method name which will be called
       # @return [Array] collected array
       def collect_trainsitions(method, &block)
         each_props.map.with_index do |prop, p|
-          i = index(prop.send(method))
-          i && p != i ? i : -1
+          other = prop.send(method)
+          other && (i = index(other)) && p != i ? i : p
         end
       end
 
@@ -452,6 +239,36 @@ module VersatileDiamond
           t = index(prop)
           tcR(matrix, v, t) unless matrix[v, t]
         end
+      end
+
+      # Calculating length of path from first argument prop to second argument
+      # prop by BFS algorithm
+      #
+      # @param [AtomProperties] from the first argument prop
+      # @param [AtomProperties] to the second argument prop
+      # @return [Integer] the length of path
+      def path_length(from, to)
+        visited = Hash[@props.map { |prop| [prop, false] }]
+        visited[from] = true
+        queue = [from]
+
+        n = 0
+        until queue.empty?
+          curr = queue.shift
+          if curr == to
+            return n
+          end
+
+          break unless curr.smallests
+
+          n += 1
+          curr.smallests.each do |small|
+            next if visited[small]
+            queue << small
+            visited[small] = true
+          end
+        end
+        raise 'Cannot rich :('
       end
     end
 

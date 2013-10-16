@@ -2,22 +2,15 @@
 #include "../../dictionary.h"
 #include "../../recipes/reactions/ubiquitous/reaction_activation_recipe.h"
 
-ReactionActivation::ReactionActivation(Atom *target) : _target(target)
+short ReactionActivation::toType(uint type) const
 {
+    return Dictionary::hToActives(type);
 }
 
-void ReactionActivation::doIt()
+void ReactionActivation::remove()
 {
-    short toType = Dictionary::hToActives(_target->type());
-    assert(toType != -1);
-
-    _target->activate();
-    _target->changeType(toType);
-
     ReactionActivationRecipe rar;
-    short dn = rar.delta(_target);
+    short dn = rar.delta(target());
     assert(dn < 0);
     Dictionary::mc().removeActivations(this, -dn);
-
-    _target->findChildren();
 }
