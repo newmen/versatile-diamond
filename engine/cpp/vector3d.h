@@ -82,7 +82,7 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
-#pragma omp parallel for shared(lambda) schedule(dynamic, 3) // TODO: too small var!
+#pragma omp parallel for shared(lambda) schedule(dynamic) // TODO: too small var!
     for (int i = 0; i < _sizes.N(); ++i)
     {
         lambda(_container[i]);
@@ -93,9 +93,9 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::ip_each(const Lambda &lambda) const
 {
-    int i;
-#pragma omp for private(i) schedule(dynamic, 3) // TODO: too small var!
-    for (i = 0; i < _sizes.N(); ++i)
+
+#pragma omp for schedule(dynamic) // TODO: too small var!
+    for (int i = 0; i < _sizes.N(); ++i)
     {
         lambda(_container[i]);
     }

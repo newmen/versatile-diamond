@@ -4,9 +4,10 @@
 #include <unordered_set>
 #include "common.h"
 #include "lattice.h"
+#include <base_spec.h>
 
 #include <assert.h>
-#include <base_spec.h>
+#include <iostream>
 
 namespace vd
 {
@@ -82,6 +83,8 @@ template <int VALENCE>
 void ConcreteAtom<VALENCE>::bondWith(Atom *neighbour, int depth)
 {
     assert(VALENCE > neighbours().size());
+//    if (VALENCE < neighbours().size() + actives())
+//        std::cout << (unsigned long long)this << std::hex << " -> " << neighbours().size() << " : " << actives() << std::endl;
     assert(VALENCE >= neighbours().size() + actives());
     Atom::bondWith(neighbour, depth);
 }

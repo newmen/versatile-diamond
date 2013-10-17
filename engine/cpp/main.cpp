@@ -10,38 +10,39 @@ using namespace std;
 
 int main()
 {
-    Diamond *diamond = new OpenDiamond(2);
+//    Diamond *diamond = new OpenDiamond(2);
+    Diamond *diamond = new Diamond(dim3(400, 400, 30), 10);
     diamond->initialize();
 
     cout << Dictionary::specsNum() << endl;
-    assert(Dictionary::specsNum() == 100);
+//    assert(Dictionary::specsNum() == 100);
 
     cout << Dictionary::mc().totalRate() << endl;
 
-    Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
-    ReactionActivation raa(a);
-    raa.doIt();
+//    Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
+//    ReactionActivation raa(a);
+//    raa.doIt();
 
-    ReactionActivation rab(b);
-    rab.doIt();
+//    ReactionActivation rab(b);
+//    rab.doIt();
 
-    a->bondWith(b);
+//    a->bondWith(b);
 
-    a->changeType(22);
-    b->changeType(22);
+//    a->changeType(22);
+//    b->changeType(22);
 
-    a->findChildren();
-    b->findChildren();
+//    a->findChildren();
+//    b->findChildren();
 
-    cout << Dictionary::specsNum() << endl;
-    assert(Dictionary::specsNum() == 101);
+//    cout << Dictionary::specsNum() << endl;
+//    assert(Dictionary::specsNum() == 101);
 
     cout << Dictionary::mc().totalRate() << endl;
 
-    Atom *c = diamond->atom(int3(4, 2, 1));
-    ReactionActivation rac(c);
-    rac.doIt();
-    rac.doIt();
+//    Atom *c = diamond->atom(int3(4, 2, 1));
+//    ReactionActivation rac(c);
+//    rac.doIt();
+//    rac.doIt();
 
     Dictionary::purge();
     delete diamond;

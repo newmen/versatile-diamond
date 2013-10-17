@@ -1,5 +1,6 @@
 #include "atom.h"
 #include "lattice.h"
+#include "locks.h"
 
 #include <assert.h>
 
@@ -25,7 +26,7 @@ void Atom::changeType(uint newType)
 
 void Atom::activate()
 {
-#pragma omp atomic
+//#pragma omp atomic
     ++_actives;
 }
 
@@ -33,7 +34,7 @@ void Atom::deactivate()
 {
     assert(_actives > 0);
 
-#pragma omp atomic
+//#pragma omp atomic
     --_actives;
 }
 
@@ -41,10 +42,14 @@ void Atom::bondWith(Atom *neighbour, int depth)
 {
     assert(_actives > 0);
 
-#pragma omp critical // TODO: подумать тут! можно сделать так, чтобы при обходе не возникало ситуации, когда нужно блокировать
-    neighbours().insert(neighbour);
+#pragma omp critical
+    {
+//    Locks::instance()->lock(this, [this, &neighbour]() {
+        neighbours().insert(neighbour);
+        deactivate();
+//    });
+    }
 
-    deactivate();
     if (depth > 0) neighbour->bondWith(this, 0);
 }
 
@@ -54,11 +59,13 @@ void Atom::unbondFrom(Atom *neighbour, int depth)
 
 #pragma omp critical
     {
+//    Locks::instance()->lock(this, [this, &neighbour]() {
         auto it = neighbours().find(neighbour);
         neighbours().erase(it);
+        activate();
+//    });
     }
 
-    activate();
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
 

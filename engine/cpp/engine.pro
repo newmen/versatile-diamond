@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     generations/recipes/reactions/ubiquitous/reaction_deactivation_recipe.cpp \
     generations/atoms/specified_atom.cpp \
     generations/specific_specs/bridge_cts.cpp \
-    generations/recipes/specific_specs/bridge_cts_recipe.cpp
+    generations/recipes/specific_specs/bridge_cts_recipe.cpp \
+    locks.cpp
 
 HEADERS += \
     generations/crystals/diamond.h \
@@ -63,7 +64,8 @@ HEADERS += \
     generations/atoms/specified_atom.h \
     generations/specific_specs/bridge_cts.h \
     generations/recipes/specific_specs/bridge_cts_recipe.h \
-    generations/recipes/atomic_recipe.h
+    generations/recipes/atomic_recipe.h \
+    locks.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

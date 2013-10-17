@@ -15,8 +15,8 @@ void BaseDimerRecipe::find(Atom *anchor) const
         auto nbrs = diamond->front_100(anchor);
         if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]))
         {
-            uint types[3] = { 22, 22 };
-            Atom *atoms[3] = { anchor, nbrs[0] };
+            uint types[2] = { 22, 22 };
+            Atom *atoms[2] = { anchor, nbrs[0] };
 
             auto dimer = new Dimer(types, atoms);
             Dictionary::storeDimer(dimer);

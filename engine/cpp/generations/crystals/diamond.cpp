@@ -44,6 +44,7 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
         atom->activate();
     }
 
+
     return atom;
 }
 
