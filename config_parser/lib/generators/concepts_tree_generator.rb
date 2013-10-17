@@ -197,6 +197,7 @@ module VersatileDiamond
           end
         end
 
+        specific_specs = specific_specs.sort { |a, b| b.size <=> a.size }
         draw_edge_to[specific_specs.shift]
 
         return unless @draw_second_source_deps

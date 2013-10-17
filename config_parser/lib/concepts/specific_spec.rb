@@ -215,7 +215,8 @@ module VersatileDiamond
       #
       # @return [Float] size of current specific spec
       def size
-        is_gas? ? 0 : @spec.size + active_bonds_num + relevants_num * 0.34
+        is_gas? ?
+          0 : @spec.size + active_bonds_num * 0.89 + relevants_num * 0.34
       end
 
       # Also visit base spec

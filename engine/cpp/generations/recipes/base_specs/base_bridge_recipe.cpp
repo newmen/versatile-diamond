@@ -30,17 +30,17 @@ void BaseBridgeRecipe::find(Atom *anchor) const
 
 void BaseBridgeRecipe::findChildren(Atom *anchor) const
 {
-//#pragma omp parallel sections
-//    {
-//#pragma omp section
-//        {
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
             BaseDimerRecipe bdr;
             bdr.find(anchor);
-//        }
-//#pragma omp section
-//        {
+        }
+#pragma omp section
+        {
 
-//        }
-//    }
+        }
+    }
 }
 

@@ -1,9 +1,9 @@
 #ifndef UBIQUITOUS_REACTION_RECIPE_H
 #define UBIQUITOUS_REACTION_RECIPE_H
 
-#include "../../base_recipe.h"
+#include "../../atomic_recipe.h"
 
-class UbiquitousReactionRecipe : public BaseRecipe
+class UbiquitousReactionRecipe : public AtomicRecipe
 {
 public:
     short delta(Atom *anchor) const
