@@ -1,5 +1,5 @@
 #include "c.h"
-#include "../recipes/base_specs/base_bridge_recipe.h"
+#include "../base_specs/bridge.h"
 
 void C::findChildren()
 {
@@ -7,8 +7,7 @@ void C::findChildren()
     {
 #pragma omp section
         {
-            BaseBridgeRecipe bbr;
-            bbr.find(this);
+            Bridge::find(this);
         }
 #pragma omp section
         {

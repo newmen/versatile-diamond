@@ -5,8 +5,6 @@
 using namespace vd;
 
 #include "../handbook.h"
-#include "../recipes/reactions/ubiquitous/reaction_activation_recipe.h"
-#include "../recipes/reactions/ubiquitous/reaction_deactivation_recipe.h"
 
 template <ushort VALENCE>
 class SpecifiedAtom : public ConcreteAtom<VALENCE>
@@ -42,11 +40,8 @@ void SpecifiedAtom<VALENCE>::specifyType()
 template <ushort VALENCE>
 void SpecifiedAtom<VALENCE>::findChildren()
 {
-    ReactionActivationRecipe rar;
-    rar.find(this);
-
-    ReactionDeactivationRecipe rdr;
-    rdr.find(this);
+    ReactionActivation::find(this);
+    ReactionDeactivation::find(this);
 }
 
 #endif // SPECIFIED_ATOM_H

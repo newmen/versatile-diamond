@@ -22,9 +22,11 @@ int main()
     Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
     ReactionActivation raa(a);
     raa.doIt();
+    assert(Handbook::specsNum() == 101);
 
     ReactionActivation rab(b);
     rab.doIt();
+    assert(Handbook::specsNum() == 102);
 
     a->bondWith(b);
 
@@ -35,7 +37,7 @@ int main()
     b->findChildren();
 
     cout << Handbook::specsNum() << endl;
-    assert(Handbook::specsNum() == 101);
+    assert(Handbook::specsNum() == 103);
 
     cout << Handbook::mc().totalRate() << endl;
 
@@ -43,6 +45,9 @@ int main()
     ReactionActivation rac(c);
     rac.doIt();
     rac.doIt();
+
+    cout << Handbook::specsNum() << endl;
+    assert(Handbook::specsNum() == 104);
 
     Handbook::purge();
     delete diamond;

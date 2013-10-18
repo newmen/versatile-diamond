@@ -2,8 +2,12 @@
 #define NAMES_H
 
 enum NAMES : ushort {
+// base specs
     BRIDGE,
-    DIMER
+    DIMER,
+
+// specific specs
+    BRIDGE_CTs
 };
 
 #endif // NAMES_H

@@ -5,13 +5,18 @@
 
 class ReactionDeactivation : public UbiquitousReaction
 {
+    static const ushort __activesOnAtoms[];
+    static const ushort __activesToH[];
+
 public:
+    static void find(Atom *anchor);
+
     using UbiquitousReaction::UbiquitousReaction;
 
     double rate() const { return 2000; }
 
 protected:
-    short toType(uint type) const override;
+    short toType(ushort type) const override;
     void action() override { target()->deactivate(); }
     void remove() override;
 };

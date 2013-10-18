@@ -25,9 +25,24 @@ public:
     }
 
 protected:
+    static short delta(Atom *anchor, const ushort *typeToNum)
+    {
+        ushort currNum = typeToNum[anchor->type()];
+        ushort prevNum;
+        if (anchor->prevType() == (ushort)(-1))
+        {
+            prevNum = 0;
+        }
+        else
+        {
+            prevNum = typeToNum[anchor->prevType()];
+        }
+        return currNum - prevNum;
+    }
+
     Atom *target() { return _target; }
 
-    virtual short toType(uint type) const = 0;
+    virtual short toType(ushort type) const = 0;
     virtual void action() = 0;
     virtual void remove() = 0;
 };

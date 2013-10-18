@@ -7,9 +7,12 @@ using namespace vd;
 class Dimer : public ConcreteBaseSpec<2>
 {
 public:
+    static void find(Atom *anchor);
+
     using ConcreteBaseSpec::ConcreteBaseSpec;
 
-//    void findChildren() override;
+private:
+    static void findChildren(Atom *anchor);
 };
 
 #endif // DIMER_H

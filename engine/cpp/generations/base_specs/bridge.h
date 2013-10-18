@@ -7,9 +7,12 @@ using namespace vd;
 class Bridge : public ConcreteBaseSpec<3>
 {
 public:
+    static void find(Atom *anchor);
+
     using ConcreteBaseSpec::ConcreteBaseSpec;
 
-//    void findChildren() override;
+private:
+    static void findChildren(Atom *anchor);
 };
 
 #endif // BRIDGE_H
