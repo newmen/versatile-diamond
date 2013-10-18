@@ -7,6 +7,6 @@ void ReactionActivationRecipe::find(Atom *anchor) const
     short dn = delta(anchor);
     if (dn > 0)
     {
-        Dictionary::mc().addActivations(new ReactionActivation(anchor), dn);
+        Handbook::mc().addActivations(new ReactionActivation(anchor), dn);
     }
 }

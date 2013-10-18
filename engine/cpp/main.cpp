@@ -1,4 +1,4 @@
-#include "generations/dictionary.h"
+#include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 using namespace vd;
 
@@ -10,41 +10,41 @@ using namespace std;
 
 int main()
 {
-//    Diamond *diamond = new OpenDiamond(2);
-    Diamond *diamond = new Diamond(dim3(400, 400, 30), 10);
+    Diamond *diamond = new OpenDiamond(2);
+//    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
     diamond->initialize();
 
-    cout << Dictionary::specsNum() << endl;
-//    assert(Dictionary::specsNum() == 100);
+    cout << Handbook::specsNum() << endl;
+    assert(Handbook::specsNum() == 100);
 
-    cout << Dictionary::mc().totalRate() << endl;
+    cout << Handbook::mc().totalRate() << endl;
 
-//    Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
-//    ReactionActivation raa(a);
-//    raa.doIt();
+    Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
+    ReactionActivation raa(a);
+    raa.doIt();
 
-//    ReactionActivation rab(b);
-//    rab.doIt();
+    ReactionActivation rab(b);
+    rab.doIt();
 
-//    a->bondWith(b);
+    a->bondWith(b);
 
-//    a->changeType(22);
-//    b->changeType(22);
+    a->changeType(22);
+    b->changeType(22);
 
-//    a->findChildren();
-//    b->findChildren();
+    a->findChildren();
+    b->findChildren();
 
-//    cout << Dictionary::specsNum() << endl;
-//    assert(Dictionary::specsNum() == 101);
+    cout << Handbook::specsNum() << endl;
+    assert(Handbook::specsNum() == 101);
 
-    cout << Dictionary::mc().totalRate() << endl;
+    cout << Handbook::mc().totalRate() << endl;
 
-//    Atom *c = diamond->atom(int3(4, 2, 1));
-//    ReactionActivation rac(c);
-//    rac.doIt();
-//    rac.doIt();
+    Atom *c = diamond->atom(int3(4, 2, 1));
+    ReactionActivation rac(c);
+    rac.doIt();
+    rac.doIt();
 
-    Dictionary::purge();
+    Handbook::purge();
     delete diamond;
     return 0;
 }

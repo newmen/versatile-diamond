@@ -17,7 +17,6 @@ SOURCES += main.cpp \
     base_spec.cpp \
     generations/base_specs/bridge.cpp \
     generations/crystals/diamond_relations.cpp \
-    generations/dictionary.cpp \
     generations/base_specs/dimer.cpp \
     generations/recipes/base_specs/base_bridge_recipe.cpp \
     generations/recipes/base_specs/base_dimer_recipe.cpp \
@@ -30,7 +29,9 @@ SOURCES += main.cpp \
     generations/atoms/specified_atom.cpp \
     generations/specific_specs/bridge_cts.cpp \
     generations/recipes/specific_specs/bridge_cts_recipe.cpp \
-    locks.cpp
+    locks.cpp \
+    lockable.cpp \
+    generations/handbook.cpp
 
 HEADERS += \
     generations/crystals/diamond.h \
@@ -47,7 +48,6 @@ HEADERS += \
     generations/builders/atom_builder.h \
     base_spec.h \
     generations/base_specs/bridge.h \
-    generations/dictionary.h \
     generations/base_specs/dimer.h \
     generations/recipes/base_specs/base_bridge_recipe.h \
     generations/recipes/base_specs/base_dimer_recipe.h \
@@ -65,7 +65,10 @@ HEADERS += \
     generations/specific_specs/bridge_cts.h \
     generations/recipes/specific_specs/bridge_cts_recipe.h \
     generations/recipes/atomic_recipe.h \
-    locks.h
+    locks.h \
+    lockable.h \
+    generations/names.h \
+    generations/handbook.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

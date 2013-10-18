@@ -7,6 +7,7 @@ void BridgeCtsRecipe::find(Atom *anchor) const
     {
         assert(anchor->lattice());
 
+        auto bridgeCts = new BridgeCts(types, atoms);
 //        const Diamond *diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
 //        assert(diamond);
 

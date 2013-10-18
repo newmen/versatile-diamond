@@ -1,10 +1,11 @@
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef HANDBOOK_H
+#define HANDBOOK_H
 
 #include <omp.h>
 #include "../common.h"
 
 #include "dmc.h"
+#include "names.h"
 #include "base_specs/bridge.h"
 #include "base_specs/dimer.h"
 
@@ -31,7 +32,7 @@ void purge(std::unordered_set<S *> *container)
     for (S *item : *container) delete item;
 }
 
-class Dictionary
+class Handbook
 {
     static DMC __mc;
 public:
@@ -39,14 +40,14 @@ public:
 
     // atoms
 private:
-    static const uint __atomsNum;
+    static const ushort __atomsNum;
     static const bool __atomsAccordance[];
 
     static const ushort __atomsSpecifing[];
 
 public:
-    static bool atomIs(uint complexType, uint typeOf);
-    static ushort specificate(uint type);
+    static bool atomIs(ushort complexType, ushort typeOf);
+    static ushort specificate(ushort type);
 
     // ubiquitous reactions
 private:
@@ -57,7 +58,7 @@ private:
     static const ushort __hToActives[];
 
 public:
-    static ushort activesNum(uint type);
+    static ushort activesNum(ushort type);
     static ushort hNum(uint type);
 
     static ushort activesToH(uint type);
@@ -87,4 +88,4 @@ public:
     static void removeDimer(Dimer *dimer) { remove(&__dimers, dimer); }
 };
 
-#endif // DICTIONARY_H
+#endif // HANDBOOK_H

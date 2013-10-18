@@ -1,7 +1,7 @@
 #ifndef ATOMIC_RECIPE_H
 #define ATOMIC_RECIPE_H
 
-#include "../dictionary.h"
+#include "../handbook.h"
 #include "../crystals/diamond.h"
 
 class AtomicRecipe

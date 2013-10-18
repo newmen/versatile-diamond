@@ -14,36 +14,44 @@ class BaseSpec
 public:
     virtual ~BaseSpec() {}
 
-    virtual Atom *anchor() const = 0; // TODO: временный метод для тест-спеков
-    virtual uint size() const = 0;
+    virtual ushort type() const = 0;
+
+    virtual Atom *anchor() const = 0; // TODO: временный метод для тест-спеков?
+    virtual ushort size() const = 0;
 
 //    virtual void findChildren() = 0;
 };
 
-template <uint ATOMS_NUM>
+template <ushort ATOMS_NUM>
 class ConcreteBaseSpec : public BaseSpec
 {
-    uint _types[ATOMS_NUM];
+    ushort _type;
+    ushort _types[ATOMS_NUM];
     Atom *_atoms[ATOMS_NUM];
 
 public:
-    ConcreteBaseSpec(uint *types, Atom **atoms)
-    {
-//#pragma omp parallel for
-        for (int i = 0; i < ATOMS_NUM; ++i)
-        {
-            _types[i] = types[i];
-            _atoms[i] = atoms[i];
-//            _atoms[i]->describe(this);
-        }
-    }
+    ConcreteBaseSpec(ushort type, ushort *types, Atom **atoms);
 
-    Atom *anchor() const { return atom(0); } // TODO: временный метод для тест-спеков
-    uint size() const { return ATOMS_NUM; }
+    ushort type() const { return _type; }
+
+    Atom *anchor() const { return atom(0); } // TODO: временный метод для тест-спеков?
+    ushort size() const { return ATOMS_NUM; }
 
 protected:
-    Atom *atom(uint i) const { return _atoms[i]; }
+    Atom *atom(ushort i) const { return _atoms[i]; }
 };
+
+template <ushort ATOMS_NUM>
+ConcreteBaseSpec<ATOMS_NUM>::ConcreteBaseSpec(ushort type, ushort *types, vd::Atom **atoms) : _type(type)
+{
+//#pragma omp parallel for
+    for (int i = 0; i < ATOMS_NUM; ++i)
+    {
+        _types[i] = types[i];
+        _atoms[i] = atoms[i];
+        _atoms[i]->describe(types[i], this);
+    }
+}
 
 }
 

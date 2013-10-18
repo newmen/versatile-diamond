@@ -9,6 +9,7 @@
 namespace vd
 {
 
+// TODO: very slow solution. not even used everywhere :)
 class Locks
 {
     std::unordered_map<void *, ushort> _ns;

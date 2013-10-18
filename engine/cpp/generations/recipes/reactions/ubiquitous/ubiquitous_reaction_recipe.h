@@ -8,9 +8,9 @@ class UbiquitousReactionRecipe : public AtomicRecipe
 public:
     short delta(Atom *anchor) const
     {
-        uint currNum = num(anchor->type());
-        uint prevNum;
-        if (anchor->prevType() == (uint)(-1))
+        ushort currNum = num(anchor->type());
+        ushort prevNum;
+        if (anchor->prevType() == (ushort)(-1))
         {
             prevNum = 0;
         }
@@ -22,7 +22,7 @@ public:
     }
 
 protected:
-    virtual uint num(uint type) const = 0;
+    virtual ushort num(ushort type) const = 0;
 };
 
 #endif // UBIQUITOUS_REACTION_RECIPE_H

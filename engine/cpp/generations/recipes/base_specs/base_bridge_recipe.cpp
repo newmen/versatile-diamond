@@ -16,11 +16,13 @@ void BaseBridgeRecipe::find(Atom *anchor) const
         if (nbrs.all() && nbrs[0]->is(6) && nbrs[1]->is(6) &&
                 anchor->hasBondWith(nbrs[0]) && anchor->hasBondWith(nbrs[1]))
         {
-            uint types[3] = { 3, 6, 6 };
+            ushort types[3] = { 3, 6, 6 };
             Atom *atoms[3] = { anchor, nbrs[0], nbrs[1] };
 
-            auto bridge = new Bridge(types, atoms);
-            Dictionary::storeBridge(bridge);
+            auto bridge = new Bridge(BRIDGE, types, atoms);
+            Handbook::storeBridge(bridge);
+
+#pragma omp barrier
         }
         else return;
     }

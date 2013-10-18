@@ -9,7 +9,7 @@ public:
     void find(Atom *anchor) const override;
 
 protected:
-    uint num(uint type) const { return Dictionary::hNum(type); }
+    ushort num(ushort type) const { return Handbook::hNum(type); }
 };
 
 #endif // REACTION_ACTIVATION_RECIPE_H

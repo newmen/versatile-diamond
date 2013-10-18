@@ -13,13 +13,13 @@ void BaseDimerRecipe::find(Atom *anchor) const
         assert(diamond);
 
         auto nbrs = diamond->front_100(anchor);
-        if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]))
+        if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]) && nbrs[0]->hasRole(3, BRIDGE))
         {
-            uint types[2] = { 22, 22 };
+            ushort types[2] = { 22, 22 };
             Atom *atoms[2] = { anchor, nbrs[0] };
 
-            auto dimer = new Dimer(types, atoms);
-            Dictionary::storeDimer(dimer);
+            auto dimer = new Dimer(DIMER, types, atoms);
+            Handbook::storeDimer(dimer);
         }
         else return;
     }

@@ -6,7 +6,6 @@
 class BridgeCtsRecipe : public AtomicRecipe
 {
 public:
-    void find(Atom *anchor) const override;
 };
 
 #endif // BRIDGE_CTS_RECIPE_H

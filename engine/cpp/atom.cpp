@@ -1,13 +1,14 @@
 #include "atom.h"
 #include "lattice.h"
-#include "locks.h"
+
+//#include "locks.h"
 
 #include <assert.h>
 
 namespace vd
 {
 
-Atom::Atom(uint type, uint actives, Lattice *lattice) :
+Atom::Atom(ushort type, ushort actives, Lattice *lattice) :
     _type(type), _actives(actives), _lattice(lattice), _cacheLattice(lattice)
 {
 }
@@ -17,7 +18,7 @@ Atom::~Atom()
     delete _lattice;
 }
 
-void Atom::changeType(uint newType)
+void Atom::changeType(ushort newType)
 {
     _prevType = _type;
     setType(newType);
@@ -26,7 +27,7 @@ void Atom::changeType(uint newType)
 
 void Atom::activate()
 {
-//#pragma omp atomic
+#pragma omp atomic
     ++_actives;
 }
 
@@ -34,37 +35,39 @@ void Atom::deactivate()
 {
     assert(_actives > 0);
 
-//#pragma omp atomic
+#pragma omp atomic
     --_actives;
 }
 
 void Atom::bondWith(Atom *neighbour, int depth)
 {
-    assert(_actives > 0);
+//#pragma omp critical
+//    {
+    set([this, &neighbour]() {
+        assert(_actives > 0);
 
-#pragma omp critical
-    {
 //    Locks::instance()->lock(this, [this, &neighbour]() {
         neighbours().insert(neighbour);
         deactivate();
-//    });
-    }
+    });
+//    }
 
     if (depth > 0) neighbour->bondWith(this, 0);
 }
 
 void Atom::unbondFrom(Atom *neighbour, int depth)
 {
-    assert(hasBondWith(neighbour));
+//#pragma omp critical
+//    {
+    set([this, &neighbour]() {
+        assert(hasBondWith(neighbour));
 
-#pragma omp critical
-    {
 //    Locks::instance()->lock(this, [this, &neighbour]() {
         auto it = neighbours().find(neighbour);
         neighbours().erase(it);
         activate();
-//    });
-    }
+    });
+//    }
 
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
@@ -99,11 +102,19 @@ void Atom::unsetLattice()
     _lattice = 0;
 }
 
-//void Atom::describe(BaseSpec *spec)
-//{
-//#pragma omp critical // TODO: подумать тут! можно сделать так, чтобы при обходе не возникало ситуации, когда нужно блокировать
-//    _specs.insert(spec);
-//}
+void Atom::describe(ushort rType, BaseSpec *spec)
+{
+    set([this, rType, spec]() {
+        _roles[rType].insert(spec->type());
+        _specs.insert(std::pair<ushort, BaseSpec *>(spec->type(), spec));
+    });
+}
+
+bool Atom::hasRole(ushort atomType, ushort specType) const
+{
+    auto specTypes = _roles.find(atomType);
+    return specTypes != _roles.cend() && specTypes->second.find(specType) != specTypes->second.cend();
+}
 
 //void Atom::forget(BaseSpec *spec)
 //{

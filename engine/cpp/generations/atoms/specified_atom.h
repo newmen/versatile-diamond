@@ -4,42 +4,42 @@
 #include "../../atom.h"
 using namespace vd;
 
-#include "../dictionary.h"
+#include "../handbook.h"
 #include "../recipes/reactions/ubiquitous/reaction_activation_recipe.h"
 #include "../recipes/reactions/ubiquitous/reaction_deactivation_recipe.h"
 
-template <uint VALENCE>
+template <ushort VALENCE>
 class SpecifiedAtom : public ConcreteAtom<VALENCE>
 {
 public:
     using ConcreteAtom<VALENCE>::ConcreteAtom;
 
-    bool is(uint typeOf) const override;
-    bool prevIs(uint typeOf) const override;
+    bool is(ushort typeOf) const override;
+    bool prevIs(ushort typeOf) const override;
 
     void specifyType() override;
     void findChildren() override;
 };
 
-template <uint VALENCE>
-bool SpecifiedAtom<VALENCE>::is(uint typeOf) const
+template <ushort VALENCE>
+bool SpecifiedAtom<VALENCE>::is(ushort typeOf) const
 {
-    return Dictionary::atomIs(Atom::type(), typeOf);
+    return Handbook::atomIs(Atom::type(), typeOf);
 }
 
-template <uint VALENCE>
-bool SpecifiedAtom<VALENCE>::prevIs(uint typeOf) const
+template <ushort VALENCE>
+bool SpecifiedAtom<VALENCE>::prevIs(ushort typeOf) const
 {
-    return Atom::prevType() != (uint)(-1) && Dictionary::atomIs(Atom::prevType(), typeOf);
+    return Atom::prevType() != (ushort)(-1) && Handbook::atomIs(Atom::prevType(), typeOf);
 }
 
-template <uint VALENCE>
+template <ushort VALENCE>
 void SpecifiedAtom<VALENCE>::specifyType()
 {
-    Atom::setType(Dictionary::specificate(Atom::type()));
+    Atom::setType(Handbook::specificate(Atom::type()));
 }
 
-template <uint VALENCE>
+template <ushort VALENCE>
 void SpecifiedAtom<VALENCE>::findChildren()
 {
     ReactionActivationRecipe rar;

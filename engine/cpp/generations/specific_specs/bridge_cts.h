@@ -6,6 +6,8 @@ using namespace vd;
 
 class BridgeCts : public ConcreteBaseSpec<3>
 {
+    static void find(Atom *anchor);
+
 public:
     using ConcreteBaseSpec::ConcreteBaseSpec;
 };

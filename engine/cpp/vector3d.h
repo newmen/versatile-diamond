@@ -14,10 +14,11 @@ template <typename T>
 class vector3d
 {
     dim3 _sizes;
-    std::vector<T> _container;
+    T *_container;
 
 public:
     vector3d(const dim3 &sizes, const T &initValue);
+    ~vector3d();
 
     const dim3 &sizes() const { return _sizes; }
 
@@ -74,8 +75,17 @@ private:
 };
 
 template <typename T>
-vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes), _container(sizes.N(), initValue)
+vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes)
 {
+    _container = new T[_sizes.N()];
+#pragma omp parallel for
+    for (int i = 0; i < _sizes.N(); ++i) _container[i] = initValue;
+}
+
+template <typename T>
+vector3d<T>::~vector3d()
+{
+    delete [] _container;
 }
 
 template <typename T>

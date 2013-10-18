@@ -8,6 +8,6 @@ void ReactionDeactivationRecipe::find(Atom *anchor) const
     short dn = delta(anchor);
     if (dn > 0)
     {
-        Dictionary::mc().addDeactivations(new ReactionDeactivation(anchor), dn);
+        Handbook::mc().addDeactivations(new ReactionDeactivation(anchor), dn);
     }
 }
