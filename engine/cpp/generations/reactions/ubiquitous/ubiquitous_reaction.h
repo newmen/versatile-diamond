@@ -1,7 +1,6 @@
 #ifndef UBIQUITOUS_REACTION_H
 #define UBIQUITOUS_REACTION_H
 
-#include "../../../atom.h"
 #include "../../../reaction.h"
 using namespace vd;
 

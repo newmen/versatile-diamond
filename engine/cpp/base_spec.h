@@ -17,7 +17,9 @@ public:
     virtual ushort type() const = 0;
     virtual void setupAtomTypes(ushort *types) = 0;
 
-    virtual Atom *anchor() const = 0;
+//    virtual Atom *anchor() const = 0;
+    virtual Atom *atom(ushort index) = 0;
+
     virtual ushort size() const = 0; // TODO: временный метод для тест-спеков
 
 //    virtual void findChildren() = 0;
@@ -35,11 +37,10 @@ public:
     ushort type() const { return _type; }
     void setupAtomTypes(ushort *types);
 
-    Atom *anchor() const { return atom(0); }
-    ushort size() const { return ATOMS_NUM; } // TODO: временный метод для тест-спеков
+//    Atom *anchor() const { return atom(0); }
+    Atom *atom(ushort index);
 
-protected:
-    Atom *atom(ushort i) const { return _atoms[i]; }
+    ushort size() const { return ATOMS_NUM; } // TODO: временный метод для тест-спеков
 };
 
 template <ushort ATOMS_NUM>
@@ -58,6 +59,13 @@ void ConcreteBaseSpec<ATOMS_NUM>::setupAtomTypes(ushort *types)
     {
         _atoms[i]->describe(types[i], this);
     }
+}
+
+template <ushort ATOMS_NUM>
+Atom *ConcreteBaseSpec<ATOMS_NUM>::atom(ushort index)
+{
+    assert(ATOMS_NUM > index);
+    return _atoms[index];
 }
 
 }

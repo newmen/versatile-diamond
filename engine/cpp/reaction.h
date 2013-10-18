@@ -1,6 +1,8 @@
 #ifndef REACTION_H
 #define REACTION_H
 
+#include "atom.h"
+
 class Reaction
 {
 public:

@@ -40,7 +40,7 @@ void Bridge::findChildren(Atom *anchor)
         }
 #pragma omp section
         {
-            BridgeCts::find(anchor);
+//            BridgeCts::find(anchor);
         }
     }
 }

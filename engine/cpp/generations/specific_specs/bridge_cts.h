@@ -1,15 +1,18 @@
 #ifndef BRIDGE_CTS_H
 #define BRIDGE_CTS_H
 
-#include "../../base_spec.h"
+#include "../../specific_spec.h"
 using namespace vd;
 
-class BridgeCts : public ConcreteBaseSpec<1>
+class BridgeCts : public SpecificSpec<1>
 {
 public:
-    static void find(Atom *anchor);
+    static void find(BaseSpec *parent);
 
-    using ConcreteBaseSpec::ConcreteBaseSpec;
+    using SpecificSpec::SpecificSpec;
+
+//private:
+//    static void findChildren(Atom *anchor);
 };
 
 #endif // BRIDGE_CTS_H

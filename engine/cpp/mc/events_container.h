@@ -5,6 +5,8 @@
 #include <vector>
 #include <omp.h>
 
+#include <assert.h>
+
 namespace vd
 {
 

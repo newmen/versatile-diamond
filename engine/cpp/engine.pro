@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     generations/specific_specs/bridge_cts.cpp \
     locks.cpp \
     lockable.cpp \
-    generations/handbook.cpp
+    generations/handbook.cpp \
+    generations/reactions/typical/dimer_formation.cpp
 
 HEADERS += \
     generations/crystals/diamond.h \
@@ -56,7 +57,10 @@ HEADERS += \
     locks.h \
     lockable.h \
     generations/names.h \
-    generations/handbook.h
+    generations/handbook.h \
+    generations/reactions/typical/dimer_formation.h \
+    generations/reactions/typical/typical_reaction.h \
+    specific_spec.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

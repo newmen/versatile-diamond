@@ -1,19 +1,23 @@
 #include "bridge_cts.h"
 #include "../handbook.h"
 
-void BridgeCts::find(Atom *anchor)
+void BridgeCts::find(BaseSpec *parent)
 {
-    if (!anchor->is(1)) return;
-    if (!anchor->prevIs(1))
+    if (!parent->atom(0)->is(1)) return;
+    if (!parent->atom(0)->prevIs(1))
     {
-        assert(anchor->lattice());
         ushort types[1] = { 1 };
-        Atom *atoms[1] = { anchor };
+        Atom *atoms[1] = { parent->atom(0) };
 
         auto bridgeCts = new BridgeCts(BRIDGE_CTs, atoms);
         bridgeCts->setupAtomTypes(types);
         Handbook::storeBridgeCts(bridgeCts);
     }
 
-//    findChildren(anchor);
+//    findChildren(parent);
 }
+
+//void BridgeCts::findChildren(Atom *anchor)
+//{
+//    DimerFormation::find()
+//}
