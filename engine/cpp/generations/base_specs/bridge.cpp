@@ -22,25 +22,29 @@ void Bridge::find(Atom *anchor)
             auto bridge = new Bridge(BRIDGE, atoms);
             bridge->setupAtomTypes(types);
 #pragma omp barrier // only for bridge, because dimer belongs to two bridges
+            bridge->findChildren();
+
             Handbook::storeBridge(bridge);
         }
         else return;
     }
-
-    findChildren(anchor);
+    else
+    {
+        anchor->specByRole(3, BRIDGE)->findChildren();
+    }
 }
 
-void Bridge::findChildren(Atom *anchor)
+void Bridge::findChildren()
 {
 #pragma omp parallel sections
     {
 #pragma omp section
         {
-            Dimer::find(anchor);
+            Dimer::find(this);
         }
 #pragma omp section
         {
-//            BridgeCts::find(anchor);
+            BridgeCts::find(this);
         }
     }
 }

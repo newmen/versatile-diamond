@@ -22,17 +22,17 @@ public:
 
     virtual ushort size() const = 0; // TODO: временный метод для тест-спеков
 
-//    virtual void findChildren() = 0;
+    virtual void findChildren() = 0;
 };
 
 template <ushort ATOMS_NUM>
-class ConcreteBaseSpec : public BaseSpec
+class SourceBaseSpec : public BaseSpec
 {
     ushort _type;
     Atom *_atoms[ATOMS_NUM];
 
 public:
-    ConcreteBaseSpec(ushort type, Atom **atoms);
+    SourceBaseSpec(ushort type, Atom **atoms);
 
     ushort type() const { return _type; }
     void setupAtomTypes(ushort *types);
@@ -44,7 +44,7 @@ public:
 };
 
 template <ushort ATOMS_NUM>
-ConcreteBaseSpec<ATOMS_NUM>::ConcreteBaseSpec(ushort type, Atom **atoms) : _type(type)
+SourceBaseSpec<ATOMS_NUM>::SourceBaseSpec(ushort type, Atom **atoms) : _type(type)
 {
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
@@ -53,7 +53,7 @@ ConcreteBaseSpec<ATOMS_NUM>::ConcreteBaseSpec(ushort type, Atom **atoms) : _type
 }
 
 template <ushort ATOMS_NUM>
-void ConcreteBaseSpec<ATOMS_NUM>::setupAtomTypes(ushort *types)
+void SourceBaseSpec<ATOMS_NUM>::setupAtomTypes(ushort *types)
 {
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
@@ -62,7 +62,7 @@ void ConcreteBaseSpec<ATOMS_NUM>::setupAtomTypes(ushort *types)
 }
 
 template <ushort ATOMS_NUM>
-Atom *ConcreteBaseSpec<ATOMS_NUM>::atom(ushort index)
+Atom *SourceBaseSpec<ATOMS_NUM>::atom(ushort index)
 {
     assert(ATOMS_NUM > index);
     return _atoms[index];

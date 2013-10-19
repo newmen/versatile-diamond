@@ -4,15 +4,14 @@
 #include "../../base_spec.h"
 using namespace vd;
 
-class Bridge : public ConcreteBaseSpec<3>
+class Bridge : public SourceBaseSpec<3>
 {
 public:
     static void find(Atom *anchor);
 
-    using ConcreteBaseSpec::ConcreteBaseSpec;
+    using SourceBaseSpec::SourceBaseSpec;
 
-private:
-    static void findChildren(Atom *anchor);
+    void findChildren();
 };
 
 #endif // BRIDGE_H

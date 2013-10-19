@@ -3,14 +3,17 @@
 
 void BridgeCts::find(BaseSpec *parent)
 {
-    if (!parent->atom(0)->is(1)) return;
-    if (!parent->atom(0)->prevIs(1))
+    Atom *atom = parent->atom(0);
+    if (!atom->is(1)) return;
+    if (!atom->prevIs(1))
     {
+        BaseSpec *parents[1] = { parent };
+        Atom *atoms[1] = { atom };
         ushort types[1] = { 1 };
-        Atom *atoms[1] = { parent->atom(0) };
 
-        auto bridgeCts = new BridgeCts(BRIDGE_CTs, atoms);
+        auto bridgeCts = new BridgeCts(BRIDGE_CTs, parents, atoms);
         bridgeCts->setupAtomTypes(types);
+
         Handbook::storeBridgeCts(bridgeCts);
     }
 

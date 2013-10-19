@@ -60,7 +60,8 @@ HEADERS += \
     generations/handbook.h \
     generations/reactions/typical/dimer_formation.h \
     generations/reactions/typical/typical_reaction.h \
-    specific_spec.h
+    dependent_spec.h \
+    role.h
 
 unix:!macx: LIBS += -L/home/newmen/gcc/4.8.0/lib64/ -lstdc++
 

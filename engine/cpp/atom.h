@@ -6,6 +6,7 @@
 #include "common.h"
 #include "lattice.h"
 #include "base_spec.h"
+#include "role.h"
 
 #include "lockable.h"
 
@@ -25,7 +26,7 @@ class Atom : public Lockable
     std::unordered_multiset<Atom *> _neighbours;
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
-    std::unordered_multimap<ushort, BaseSpec *> _specs;
+    std::unordered_multimap<uint, BaseSpec *> _specs;
 
 public:
     Atom(ushort type, ushort actives, Lattice *lattice);
@@ -53,7 +54,8 @@ public:
     void unsetLattice();
 
     void describe(ushort rType, BaseSpec *spec);
-    bool hasRole(ushort atomType, ushort specType) const;
+    bool hasRole(ushort rType, ushort specType);
+    BaseSpec *specByRole(ushort rType, ushort specType);
 //    void forget(BaseSpec *spec);
 
 protected:
@@ -65,6 +67,11 @@ protected:
     void setType(ushort type) { _type = type; }
 
 private:
+    uint hash(ushort first, ushort second) const
+    {
+        uint at = first;
+        return (at << 16) ^ second;
+    }
 };
 
 template <int VALENCE>

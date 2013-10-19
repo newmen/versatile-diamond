@@ -3,8 +3,15 @@
 
 #include <omp.h>
 
-void Dimer::find(Atom *anchor)
+#include <assert.h>
+
+void Dimer::find(BaseSpec *parent)
 {
+    assert(parent);
+
+    Atom *anchor = parent->atom(0);
+    assert(anchor);
+
     if (!anchor->is(22)) return;
     if (!anchor->prevIs(22))
     {
@@ -18,18 +25,19 @@ void Dimer::find(Atom *anchor)
         {
             ushort types[2] = { 22, 22 };
             Atom *atoms[2] = { anchor, nbrs[0] };
+            BaseSpec *parents[2] = { parent, nbrs[0]->specByRole(3, BRIDGE) };
 
-            auto dimer = new Dimer(DIMER, atoms);
+            auto dimer = new Dimer(DIMER, parents, atoms);
             dimer->setupAtomTypes(types);
+            dimer->findChildren();
+
             Handbook::storeDimer(dimer);
         }
         else return;
     }
-
-    findChildren(anchor);
 }
 
-void Dimer::findChildren(Atom *anchor)
+void Dimer::findChildren()
 {
 
 }

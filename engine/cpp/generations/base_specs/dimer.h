@@ -1,18 +1,17 @@
 #ifndef DIMER_H
 #define DIMER_H
 
-#include "../../base_spec.h"
+#include "../../dependent_spec.h"
 using namespace vd;
 
-class Dimer : public ConcreteBaseSpec<2>
+class Dimer : public DependentSpec<2>
 {
 public:
-    static void find(Atom *anchor);
+    static void find(BaseSpec *parent);
 
-    using ConcreteBaseSpec::ConcreteBaseSpec;
+    using DependentSpec::DependentSpec;
 
-private:
-    static void findChildren(Atom *anchor);
+    void findChildren();
 };
 
 #endif // DIMER_H

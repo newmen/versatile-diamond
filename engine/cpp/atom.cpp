@@ -43,7 +43,7 @@ void Atom::bondWith(Atom *neighbour, int depth)
 {
 //#pragma omp critical
 //    {
-    set([this, &neighbour]() {
+    lock([this, &neighbour]() {
         assert(_actives > 0);
 
 //    Locks::instance()->lock(this, [this, &neighbour]() {
@@ -59,7 +59,7 @@ void Atom::unbondFrom(Atom *neighbour, int depth)
 {
 //#pragma omp critical
 //    {
-    set([this, &neighbour]() {
+    lock([this, &neighbour]() {
         assert(hasBondWith(neighbour));
 
 //    Locks::instance()->lock(this, [this, &neighbour]() {
@@ -104,16 +104,34 @@ void Atom::unsetLattice()
 
 void Atom::describe(ushort rType, BaseSpec *spec)
 {
-    set([this, rType, spec]() {
+    lock([this, rType, spec]() {
         _roles[rType].insert(spec->type());
-        _specs.insert(std::pair<ushort, BaseSpec *>(spec->type(), spec));
+
+        const uint key = hash(rType, spec->type());
+        _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
     });
 }
 
-bool Atom::hasRole(ushort atomType, ushort specType) const
+bool Atom::hasRole(ushort rType, ushort specType)
 {
-    auto specTypes = _roles.find(atomType);
-    return specTypes != _roles.cend() && specTypes->second.find(specType) != specTypes->second.cend();
+    bool result;
+    const uint key = hash(rType, specType);
+    lock([this, &result, key]() {
+        result = _specs.find(key) != _specs.end();
+    });
+    return result;
+}
+
+BaseSpec *Atom::specByRole(ushort rType, ushort specType)
+{
+    BaseSpec *result;
+    const uint key = hash(rType, specType);
+    lock([this, &result, key]() {
+        auto its = _specs.equal_range(key);
+        assert(std::distance(its.first, its.second) == 1);
+        result = its.first->second;
+    });
+    return result;
 }
 
 //void Atom::forget(BaseSpec *spec)

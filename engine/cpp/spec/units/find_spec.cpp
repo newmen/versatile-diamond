@@ -1,4 +1,4 @@
-#include <generations/dictionary.h>
+#include <generations/handbook.h>
 #include <generations/crystals/diamond.h>
 using namespace vd;
 
@@ -12,15 +12,17 @@ int main(int argc, char const *argv[])
     Diamond *diamond = new OpenDiamond(2);
     diamond->initialize();
 
-    assert(Dictionary::specsNum() == 100);
-    assert(Dictionary::mc().totalRate() == 720000);
+    assert(Handbook::specsNum() == 100);
+    assert(Handbook::mc().totalRate() == 720000);
 
     Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
     ReactionActivation raa(a);
     raa.doIt();
+    assert(Handbook::specsNum() == 101);
 
     ReactionActivation rab(b);
     rab.doIt();
+    assert(Handbook::specsNum() == 102);
 
     a->bondWith(b);
 
@@ -43,18 +45,18 @@ int main(int argc, char const *argv[])
        }
    }
 
-    assert(Dictionary::specsNum() == 101);
-    assert(Dictionary::mc().totalRate() == 716800);
+    assert(Handbook::specsNum() == 103);
+    assert(Handbook::mc().totalRate() == 716800);
 
     Atom *c = diamond->atom(int3(4, 2, 1));
     ReactionActivation rac(c);
     rac.doIt();
     rac.doIt();
 
-    assert(Dictionary::specsNum() == 101);
-    assert(Dictionary::mc().totalRate() == 713600);
+    assert(Handbook::specsNum() == 104);
+    assert(Handbook::mc().totalRate() == 713600);
 
-    Dictionary::purge();
+    Handbook::purge();
     delete diamond;
     return 0;
 }

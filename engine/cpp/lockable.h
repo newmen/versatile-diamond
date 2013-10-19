@@ -16,11 +16,11 @@ public:
 
 protected:
     template <class L>
-    void set(const L &lambda);
+    void lock(const L &lambda);
 };
 
 template <class L>
-void Lockable::set(const L &lambda)
+void Lockable::lock(const L &lambda)
 {
     omp_set_lock(&_lock);
     lambda();
