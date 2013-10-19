@@ -11,33 +11,10 @@ class UbiquitousReaction : public Reaction
 public:
     UbiquitousReaction(Atom *target) : _target(target) {}
 
-    void doIt()
-    {
-        uint type = toType(_target->type());
-        assert(type != _target->type());
-
-        action();
-        _target->changeType(type);
-
-        remove();
-        _target->findChildren();
-    }
+    void doIt();
 
 protected:
-    static short delta(Atom *anchor, const ushort *typeToNum)
-    {
-        ushort currNum = typeToNum[anchor->type()];
-        ushort prevNum;
-        if (anchor->prevType() == (ushort)(-1))
-        {
-            prevNum = 0;
-        }
-        else
-        {
-            prevNum = typeToNum[anchor->prevType()];
-        }
-        return currNum - prevNum;
-    }
+    static short delta(Atom *anchor, const ushort *typeToNum);
 
     Atom *target() { return _target; }
 

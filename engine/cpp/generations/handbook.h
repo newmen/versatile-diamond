@@ -3,8 +3,8 @@
 
 #include <omp.h>
 #include "../common.h"
+#include "../mc/mc.h"
 
-#include "dmc.h"
 #include "names.h"
 #include "crystals/diamond.h"
 #include "base_specs/bridge.h"
@@ -13,6 +13,8 @@
 
 class Handbook
 {
+    typedef MC<14, 2> DMC;
+
     static DMC __mc;
 public:
     static DMC &mc();

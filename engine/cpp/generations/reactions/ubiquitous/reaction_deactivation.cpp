@@ -18,7 +18,7 @@ void ReactionDeactivation::find(Atom *anchor)
     short dn = delta(anchor, __activesOnAtoms);
     if (dn > 0)
     {
-        Handbook::mc().addDeactivations(new ReactionDeactivation(anchor), dn);
+        Handbook::mc().addMul<SURFACE_DEACTIVATION>(new ReactionDeactivation(anchor), dn);
     }
 }
 
@@ -31,5 +31,5 @@ void ReactionDeactivation::remove()
 {
     short dn = delta(target(), __activesOnAtoms);
     assert(dn < 0);
-    Handbook::mc().removeDeactivations(this, -dn);
+    Handbook::mc().removeMul<SURFACE_DEACTIVATION>(this, -dn);
 }

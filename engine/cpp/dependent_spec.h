@@ -6,28 +6,63 @@
 namespace vd
 {
 
-template <ushort ATOMS_NUM>
-class DependentSpec : public SourceBaseSpec<ATOMS_NUM>
+template <ushort PARENTS_NUM>
+class DependentSpec : public BaseSpec
 {
-    BaseSpec *_parents[ATOMS_NUM];
+    BaseSpec *_parents[PARENTS_NUM];
 
 protected:
-    DependentSpec(ushort type, BaseSpec **parents, Atom **atoms);
+    DependentSpec(ushort type, BaseSpec **parents);
+
+    Atom *atom(ushort index);
+    ushort size() const;
 
     BaseSpec *parent(ushort index = 0);
+    const BaseSpec *parent(ushort index = 0) const;
 };
 
-template <ushort ATOMS_NUM>
-DependentSpec<ATOMS_NUM>::DependentSpec(ushort type, BaseSpec **parents, Atom **atoms) : SourceBaseSpec<ATOMS_NUM>(type, atoms)
+template <ushort PARENTS_NUM>
+DependentSpec<PARENTS_NUM>::DependentSpec(ushort type, BaseSpec **parents) : BaseSpec(type)
 {
-    for (int i = 0; i < ATOMS_NUM; ++i)
+    for (int i = 0; i < PARENTS_NUM; ++i)
     {
         _parents[i] = parents[i];
     }
 }
 
-template <ushort ATOMS_NUM>
-BaseSpec *DependentSpec<ATOMS_NUM>::parent(ushort index)
+template <ushort PARENTS_NUM>
+Atom *DependentSpec<PARENTS_NUM>::atom(ushort index)
+{
+    assert(index < size());
+
+    int i = 0;
+    while (index > parent(i)->size())
+    {
+        index -= parent(i)->size();
+        ++i;
+    }
+    return parent(i)->atom(index);
+}
+
+template <ushort PARENTS_NUM>
+ushort DependentSpec<PARENTS_NUM>::size() const
+{
+    ushort sum = 0;
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        sum += parent(i)->size();
+    }
+    return sum;
+}
+
+template <ushort PARENTS_NUM>
+BaseSpec *DependentSpec<PARENTS_NUM>::parent(ushort index)
+{
+    return _parents[index];
+}
+
+template <ushort PARENTS_NUM>
+const BaseSpec *DependentSpec<PARENTS_NUM>::parent(ushort index) const
 {
     return _parents[index];
 }

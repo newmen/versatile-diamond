@@ -1,69 +1,152 @@
 #ifndef MC_H
 #define MC_H
 
+#include <cstdlib>
+#include <chrono>
+#include <random>
 #include <omp.h>
 #include "events_container.h"
+#include "multi_events_container.h"
+
+// for #compareContainers()
+#define MULTI_EVENTS_SHIFT 1000
 
 namespace vd
 {
 
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 class MC
 {
+    typedef std::chrono::high_resolution_clock McClock;
+    std::mt19937 _randomGenerator;
+
     double _totalRate = 0;
+
+    EventsContainer _events[EVENTS_NUM];
+    MultiEventsContainer _multiEvents[MULTI_EVENTS_NUM];
+    uint _order[EVENTS_NUM + MULTI_EVENTS_NUM];
 
 public:
     MC();
-    virtual ~MC() {}
 
+    void sort();
+
+    void doRandom();
     double totalRate() const { return _totalRate; }
 
-protected:
-    template <class R>
-    void add(EventsContainer<R> *ec, R *r);
+    template <ushort RT> void add(Reaction *reaction);
+    template <ushort RT> void remove(Reaction *reaction);
 
-    template <class R>
-    void remove(EventsContainer<R> *ec, R *r);
-
-    template <class R>
-    void addUb(MultiEventsContainer<R> *ec, R *r, uint n);
-
-    template <class R>
-    void removeUb(MultiEventsContainer<R> *ec, R *r, uint n);
+    template <ushort RT> void addMul(Reaction *reaction, uint n);
+    template <ushort RT> void removeMul(Reaction *reaction, uint n);
 
 private:
     void updateRate(double r)
     {
-#pragma omp atomic
+//#pragma omp atomic
         _totalRate += r;
     }
+
+    int compareContainers(const void *a, const void *b);
+    BaseEventsContainer *events(uint orderIndex) const;
 };
 
-template <class R>
-void MC::add(EventsContainer<R> *ec, R *r)
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC()
 {
-    ec->add(r);
-    updateRate(r->rate());
+    static_assert(EVENTS_NUM < MULTI_EVENTS_SHIFT, "MULTI_EVENTS_SHIFT too small, need to increase it value");
+
+    McClock::duration d = McClock::now().time_since_epoch();
+    _randomGenerator.seed(d.count());
+
+    for (int i = 0; i < EVENTS_NUM; ++i) _order[i] = i;
+    for (int i = 0; i < MULTI_EVENTS_NUM; ++i) _order[i] = i + MULTI_EVENTS_SHIFT;
+
 }
 
-template <class R>
-void MC::remove(EventsContainer<R> *ec, R *r)
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
 {
-    ec->add(r);
-    updateRate(r->rate());
+    std::uniform_real_distribution<double> distribution(0.0, totalRate());
+    double r = distribution(_randomGenerator);
+
+
 }
 
-template <class R>
-void MC::addUb(MultiEventsContainer<R> *ec, R *r, uint n)
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 {
-    ec->add(r, n);
-    updateRate(r->rate() * n);
+    qsort(_order, EVENTS_NUM, sizeof(uint), compareContainers);
 }
 
-template <class R>
-void MC::removeUb(MultiEventsContainer<R> *ec, R *r, uint n)
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+int MC<EVENTS_NUM, MULTI_EVENTS_NUM>::compareContainers(const void *a, const void *b)
 {
-    ec->add(r, n);
-    updateRate(-r->rate() * n);
+    const BaseEventsContainer &ae = events(*(uint *)a);
+    const BaseEventsContainer &be = events(*(uint *)b);
+
+    if (ae.commonRate() < be.commonRate()) return -1;
+    else if (ae.commonRate() > be.commonRate()) return 1;
+    else return 0;
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint orderIndex) const
+{
+    if (orderIndex < MULTI_EVENTS_SHIFT) return _events[orderIndex];
+    else _multiEvents[orderIndex - MULTI_EVENTS_SHIFT];
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(Reaction *reaction)
+{
+    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+
+#pragma omp critical
+    {
+        _events[RT].add(reaction);
+        updateRate(reaction->rate());
+    }
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(Reaction *reaction)
+{
+    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+
+#pragma omp critical
+    {
+        updateRate(-reaction->rate());
+        _events[RT].remove(reaction);
+    }
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(Reaction *reaction, uint n)
+{
+    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+
+#pragma omp critical
+    {
+        _multiEvents[RT].add(reaction, n);
+        updateRate(reaction->rate() * n);
+    }
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(Reaction *reaction, uint n)
+{
+    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+
+#pragma omp critical
+    {
+        _multiEvents[RT].remove(reaction, n);
+        updateRate(-reaction->rate() * n);
+    }
 }
 
 }

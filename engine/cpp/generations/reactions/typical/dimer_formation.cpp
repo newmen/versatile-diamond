@@ -1,9 +1,9 @@
 #include "dimer_formation.h"
 
-void DimerFormation::find(Atom *anchor)
+void DimerFormation::find(BaseSpec *anchor)
 {
-    assert(anchor->is(1));
-    if (!anchor->prevIs(1))
+    assert(anchor->atom(0)->is(1));
+    if (!anchor->atom(0)->prevIs(1))
     {
 
     }

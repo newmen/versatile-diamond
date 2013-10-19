@@ -5,6 +5,8 @@
 using namespace vd;
 
 #include "../handbook.h"
+#include "../reactions/ubiquitous/reaction_activation.h"
+#include "../reactions/ubiquitous/reaction_deactivation.h"
 
 template <ushort VALENCE>
 class SpecifiedAtom : public ConcreteAtom<VALENCE>

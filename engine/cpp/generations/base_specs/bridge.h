@@ -1,7 +1,7 @@
 #ifndef BRIDGE_H
 #define BRIDGE_H
 
-#include "../../base_spec.h"
+#include "../../source_base_spec.h"
 using namespace vd;
 
 class Bridge : public SourceBaseSpec<3>

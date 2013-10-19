@@ -23,15 +23,13 @@ void Dimer::find(BaseSpec *parent)
         auto nbrs = diamond->front_100(anchor);
         if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]) && nbrs[0]->hasRole(3, BRIDGE))
         {
-            ushort types[2] = { 22, 22 };
-            Atom *atoms[2] = { anchor, nbrs[0] };
             BaseSpec *parents[2] = { parent, nbrs[0]->specByRole(3, BRIDGE) };
+            auto dimer = std::shared_ptr<BaseSpec>(new Dimer(DIMER, parents));
 
-            auto dimer = std::shared_ptr<BaseSpec>(new Dimer(DIMER, parents, atoms));
-            dimer->setupAtomTypes(dimer, types);
+            anchor->describe(22, dimer);
+            nbrs[0]->describe(22, dimer);
+
             dimer->findChildren();
-
-//            Handbook::storeDimer(dimer);
         }
         else return;
     }

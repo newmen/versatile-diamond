@@ -16,15 +16,15 @@ void Bridge::find(Atom *anchor)
         if (nbrs.all() && nbrs[0]->is(6) && nbrs[1]->is(6) &&
                 anchor->hasBondWith(nbrs[0]) && anchor->hasBondWith(nbrs[1]))
         {
-            ushort types[] = { 3, 6, 6 };
             Atom *atoms[] = { anchor, nbrs[0], nbrs[1] };
-
             auto bridge = std::shared_ptr<BaseSpec>(new Bridge(BRIDGE, atoms));
-            bridge->setupAtomTypes(bridge, types);
-#pragma omp barrier // only for bridge, because dimer belongs to two bridges
-            bridge->findChildren();
 
-//            Handbook::storeBridge(bridge);
+            anchor->describe(3, bridge);
+#pragma omp barrier // only for bridge, because dimer belongs to two bridges
+            nbrs[0]->describe(6, bridge);
+            nbrs[1]->describe(6, bridge);
+
+            bridge->findChildren();
         }
         else return;
     }

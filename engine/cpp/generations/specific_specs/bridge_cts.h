@@ -11,7 +11,7 @@ public:
 
     using DependentSpec::DependentSpec;
 
-    void findChildren() {}
+    void findChildren();
 };
 
 #endif // BRIDGE_CTS_H

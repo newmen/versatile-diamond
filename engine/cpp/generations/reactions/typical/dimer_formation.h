@@ -6,11 +6,11 @@
 class DimerFormation : TypicalReaction<2>
 {
 public:
-    static void find(Atom *anchor);
+    static void find(BaseSpec *anchor);
 
     using TypicalReaction::TypicalReaction;
 
-    double rate() const { return 8.9e11; }
+    double rate() const { return 1e5; }
 };
 
 #endif // DIMERFORMATION_H

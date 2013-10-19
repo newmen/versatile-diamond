@@ -18,7 +18,7 @@ void ReactionActivation::find(Atom *anchor)
     short dn = delta(anchor, __hOnAtoms);
     if (dn > 0)
     {
-        Handbook::mc().addActivations(new ReactionActivation(anchor), dn);
+        Handbook::mc().addMul<SURFACE_ACTIVATION>(new ReactionActivation(anchor), dn);
     }
 }
 
@@ -31,5 +31,5 @@ void ReactionActivation::remove()
 {
     short dn = delta(target(), __hOnAtoms);
     assert(dn < 0);
-    Handbook::mc().removeActivations(this, -dn);
+    Handbook::mc().removeMul<SURFACE_ACTIVATION>(this, -dn);
 }

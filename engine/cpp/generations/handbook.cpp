@@ -44,8 +44,8 @@ const ushort Handbook::__atomsSpecifing[] =
       0, 28, 2, 0, 4, 5, 4, 7, 8, 7, 10, 26, 27, 13, 10, 15, 16, 17, 15, 19, 20, 21, 20, 23, 24, 25, 26, 27, 28, 26, 27, 25
 };
 
-DMC Handbook::__mc;
-DMC &Handbook::mc()
+Handbook::DMC Handbook::__mc;
+Handbook::DMC &Handbook::mc()
 {
     return __mc;
 }

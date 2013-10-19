@@ -2,6 +2,7 @@
 #define TYPICAL_REACTION_H
 
 #include "../../../reaction.h"
+#include "../../../base_spec.h"
 using namespace vd;
 
 template <ushort TARGETS_NUM>
