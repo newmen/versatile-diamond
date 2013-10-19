@@ -27,11 +27,11 @@ void Dimer::find(BaseSpec *parent)
             Atom *atoms[2] = { anchor, nbrs[0] };
             BaseSpec *parents[2] = { parent, nbrs[0]->specByRole(3, BRIDGE) };
 
-            auto dimer = new Dimer(DIMER, parents, atoms);
-            dimer->setupAtomTypes(types);
+            auto dimer = std::shared_ptr<BaseSpec>(new Dimer(DIMER, parents, atoms));
+            dimer->setupAtomTypes(dimer, types);
             dimer->findChildren();
 
-            Handbook::storeDimer(dimer);
+//            Handbook::storeDimer(dimer);
         }
         else return;
     }

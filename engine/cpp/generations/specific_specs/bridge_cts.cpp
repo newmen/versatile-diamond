@@ -11,10 +11,10 @@ void BridgeCts::find(BaseSpec *parent)
         Atom *atoms[1] = { atom };
         ushort types[1] = { 1 };
 
-        auto bridgeCts = new BridgeCts(BRIDGE_CTs, parents, atoms);
-        bridgeCts->setupAtomTypes(types);
+        auto bridgeCts = std::shared_ptr<BaseSpec>(new BridgeCts(BRIDGE_CTs, parents, atoms));
+        bridgeCts->setupAtomTypes(bridgeCts, types);
 
-        Handbook::storeBridgeCts(bridgeCts);
+//        Handbook::storeBridgeCts(bridgeCts);
     }
 
 //    findChildren(parent);

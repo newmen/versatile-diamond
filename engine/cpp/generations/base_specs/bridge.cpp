@@ -19,12 +19,12 @@ void Bridge::find(Atom *anchor)
             ushort types[] = { 3, 6, 6 };
             Atom *atoms[] = { anchor, nbrs[0], nbrs[1] };
 
-            auto bridge = new Bridge(BRIDGE, atoms);
-            bridge->setupAtomTypes(types);
+            auto bridge = std::shared_ptr<BaseSpec>(new Bridge(BRIDGE, atoms));
+            bridge->setupAtomTypes(bridge, types);
 #pragma omp barrier // only for bridge, because dimer belongs to two bridges
             bridge->findChildren();
 
-            Handbook::storeBridge(bridge);
+//            Handbook::storeBridge(bridge);
         }
         else return;
     }

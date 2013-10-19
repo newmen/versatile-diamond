@@ -14,19 +14,18 @@ int main()
 //    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
     diamond->initialize();
 
-    cout << Handbook::specsNum() << endl;
-    assert(Handbook::specsNum() == 100);
-
     cout << Handbook::mc().totalRate() << endl;
 
     Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
     ReactionActivation raa(a);
     raa.doIt();
-    assert(Handbook::specsNum() == 101);
+
+    cout << Handbook::mc().totalRate() << endl;
 
     ReactionActivation rab(b);
     rab.doIt();
-    assert(Handbook::specsNum() == 102);
+
+    cout << Handbook::mc().totalRate() << endl;
 
     a->bondWith(b);
 
@@ -36,9 +35,6 @@ int main()
     a->findChildren();
     b->findChildren();
 
-    cout << Handbook::specsNum() << endl;
-    assert(Handbook::specsNum() == 103);
-
     cout << Handbook::mc().totalRate() << endl;
 
     Atom *c = diamond->atom(int3(4, 2, 1));
@@ -46,10 +42,8 @@ int main()
     rac.doIt();
     rac.doIt();
 
-    cout << Handbook::specsNum() << endl;
-    assert(Handbook::specsNum() == 104);
+    cout << Handbook::mc().totalRate() << endl;
 
-    Handbook::purge();
     delete diamond;
     return 0;
 }

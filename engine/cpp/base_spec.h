@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_set>
-#include <omp.h>
+#include <memory>
 #include "atom.h"
 
 namespace vd
@@ -15,7 +15,7 @@ public:
     virtual ~BaseSpec() {}
 
     virtual ushort type() const = 0;
-    virtual void setupAtomTypes(ushort *types) = 0;
+    virtual void setupAtomTypes(std::shared_ptr<BaseSpec> &spec, ushort *types) = 0;
 
 //    virtual Atom *anchor() const = 0;
     virtual Atom *atom(ushort index) = 0;
@@ -24,6 +24,8 @@ public:
 
     virtual void findChildren() = 0;
 };
+
+
 
 template <ushort ATOMS_NUM>
 class SourceBaseSpec : public BaseSpec
@@ -35,7 +37,7 @@ public:
     SourceBaseSpec(ushort type, Atom **atoms);
 
     ushort type() const { return _type; }
-    void setupAtomTypes(ushort *types);
+    void setupAtomTypes(std::shared_ptr<BaseSpec> &spec, ushort *types);
 
 //    Atom *anchor() const { return atom(0); }
     Atom *atom(ushort index);
@@ -53,11 +55,11 @@ SourceBaseSpec<ATOMS_NUM>::SourceBaseSpec(ushort type, Atom **atoms) : _type(typ
 }
 
 template <ushort ATOMS_NUM>
-void SourceBaseSpec<ATOMS_NUM>::setupAtomTypes(ushort *types)
+void SourceBaseSpec<ATOMS_NUM>::setupAtomTypes(std::shared_ptr<BaseSpec> &spec, ushort *types)
 {
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
-        _atoms[i]->describe(types[i], this);
+        _atoms[i]->describe(types[i], spec);
     }
 }
 

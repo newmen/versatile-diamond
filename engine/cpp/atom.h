@@ -3,6 +3,7 @@
 
 #include <unordered_set>
 #include <unordered_map>
+#include <memory>
 #include "common.h"
 #include "lattice.h"
 #include "base_spec.h"
@@ -26,7 +27,7 @@ class Atom : public Lockable
     std::unordered_multiset<Atom *> _neighbours;
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
-    std::unordered_multimap<uint, BaseSpec *> _specs;
+    std::unordered_multimap<uint, std::shared_ptr<BaseSpec>> _specs;
 
 public:
     Atom(ushort type, ushort actives, Lattice *lattice);
@@ -53,7 +54,7 @@ public:
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
 
-    void describe(ushort rType, BaseSpec *spec);
+    void describe(ushort rType, std::shared_ptr<BaseSpec> &spec);
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
 //    void forget(BaseSpec *spec);

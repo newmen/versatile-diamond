@@ -76,20 +76,3 @@ ushort Handbook::specificate(ushort type)
 //    if (__newSpecs.max_size() > 100) __newSpecs.resize(10);
 //}
 
-void Handbook::purge()
-{
-//    clearNews();
-    ::purge(&__bridges);
-    ::purge(&__dimers);
-    ::purge(&__bridgeCtss);
-}
-
-uint Handbook::specsNum()
-{
-    return __bridges.size() + __dimers.size() + __bridgeCtss.size();
-}
-
-std::unordered_set<Bridge *> Handbook::__bridges;
-std::unordered_set<Dimer *> Handbook::__dimers;
-
-std::unordered_set<BridgeCts *> Handbook::__bridgeCtss;
