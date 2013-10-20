@@ -9,7 +9,7 @@
 #include "multi_events_container.h"
 
 // for #compareContainers()
-#define MULTI_EVENTS_SHIFT 1000
+#define MULTI_EVENTS_INDEX_SHIFT 1000
 
 namespace vd
 {
@@ -54,13 +54,13 @@ private:
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC()
 {
-    static_assert(EVENTS_NUM < MULTI_EVENTS_SHIFT, "MULTI_EVENTS_SHIFT too small, need to increase it value");
+    static_assert(EVENTS_NUM < MULTI_EVENTS_INDEX_SHIFT, "MULTI_EVENTS_INDEX_SHIFT too small, need to increase it value");
 
     McClock::duration d = McClock::now().time_since_epoch();
     _randomGenerator.seed(d.count());
 
     for (int i = 0; i < EVENTS_NUM; ++i) _order[i] = i;
-    for (int i = 0; i < MULTI_EVENTS_NUM; ++i) _order[i] = i + MULTI_EVENTS_SHIFT;
+    for (int i = 0; i < MULTI_EVENTS_NUM; ++i) _order[i] = i + MULTI_EVENTS_INDEX_SHIFT;
 
 }
 
@@ -93,8 +93,8 @@ int MC<EVENTS_NUM, MULTI_EVENTS_NUM>::compareContainers(const void *a, const voi
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint orderIndex) const
 {
-    if (orderIndex < MULTI_EVENTS_SHIFT) return _events[orderIndex];
-    else _multiEvents[orderIndex - MULTI_EVENTS_SHIFT];
+    if (orderIndex < MULTI_EVENTS_INDEX_SHIFT) return _events[orderIndex];
+    else _multiEvents[orderIndex - MULTI_EVENTS_INDEX_SHIFT];
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>

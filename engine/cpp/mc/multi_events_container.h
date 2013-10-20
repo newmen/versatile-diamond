@@ -13,6 +13,8 @@ class MultiEventsContainer : public BaseEventsContainer
     std::unordered_multimap<Reaction *, uint> _positions;
 
 public:
+    ~MultiEventsContainer();
+
     void add(Reaction *event, uint n);
     void remove(Reaction *event, uint n);
 };

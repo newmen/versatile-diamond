@@ -22,7 +22,6 @@ SOURCES += main.cpp \
     generations/reactions/ubiquitous/reaction_deactivation.cpp \
     generations/atoms/specified_atom.cpp \
     generations/specific_specs/bridge_cts.cpp \
-    locks.cpp \
     lockable.cpp \
     generations/handbook.cpp \
     generations/reactions/typical/dimer_formation.cpp \
@@ -55,7 +54,6 @@ HEADERS += \
     generations/reactions/ubiquitous/reaction_deactivation.h \
     generations/atoms/specified_atom.h \
     generations/specific_specs/bridge_cts.h \
-    locks.h \
     lockable.h \
     generations/names.h \
     generations/handbook.h \

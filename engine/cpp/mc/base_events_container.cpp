@@ -1,20 +1,13 @@
 #include "base_events_container.h"
 
-#include <iostream>
-
 namespace vd
 {
 
 BaseEventsContainer::~BaseEventsContainer()
 {
-    std::cout << _events.size() << std::endl;
-//    for (Reaction *event : _events)
-    for (uint i = 0; i < _events.size(); ++i)
+    for (Reaction *event : _events)
     {
-//        std::cout << i << " " << _events[i]->rate() << std::endl;
-//        std::cout << event->rate() << std::endl;
-//        delete event;
-//        delete _events[i];
+        delete event;
     }
 }
 
@@ -23,6 +16,27 @@ double BaseEventsContainer::commonRate() const
     return (_events.size() > 0) ?
                 _events.front()->rate() * _events.size() :
                 0.0;
+}
+
+Reaction *BaseEventsContainer::removeAndGetLast(uint index)
+{
+    assert(index < _events.size());
+
+    Reaction *last = _events.back();
+    _events.pop_back();
+
+    auto it = _events.begin() + index;
+    if (it == _events.end())
+    {
+        delete last;
+        return 0;
+    }
+    else
+    {
+        delete *it;
+        *it = last;
+        return last;
+    }
 }
 
 }

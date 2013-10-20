@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-    omp_set_num_threads(1);
+//    omp_set_num_threads(1);
 
     Diamond *diamond = new OpenDiamond(2);
 //    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);

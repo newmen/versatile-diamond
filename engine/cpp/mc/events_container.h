@@ -5,8 +5,6 @@
 #include <omp.h>
 #include "base_events_container.h"
 
-#include <assert.h>
-
 namespace vd
 {
 
@@ -15,6 +13,8 @@ class EventsContainer : public BaseEventsContainer
     std::unordered_map<Reaction *, uint> _positions;
 
 public:
+    ~EventsContainer();
+
     void add(Reaction *event);
     void remove(Reaction *event);
 };
