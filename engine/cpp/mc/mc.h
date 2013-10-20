@@ -41,6 +41,7 @@ public:
     template <ushort RT> void removeMul(Reaction *reaction, uint n);
 
 private:
+    void recountTotalRate();
     void updateRate(double r)
     {
 //#pragma omp atomic
@@ -48,7 +49,7 @@ private:
     }
 
     int compareContainers(const void *a, const void *b);
-    BaseEventsContainer *events(uint orderIndex) const;
+    BaseEventsContainer *events(uint orderIndex);
 };
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -70,7 +71,40 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
     std::uniform_real_distribution<double> distribution(0.0, totalRate());
     double r = distribution(_randomGenerator);
 
+    double passRate = 0;
+    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+    {
+        BaseEventsContainer *currentEvents = events(_order[i]);
+        double cr = currentEvents->commonRate();
+        if (r < cr + passRate)
+        {
+            currentEvents->doEvent(r - passRate);
+            return;
+        }
+        else
+        {
+            passRate += cr;
+        }
+    }
 
+    // if event was not found
+    recountTotalRate();
+    BaseEventsContainer *currentEvents = events(_order[EVENTS_NUM + MULTI_EVENTS_NUM - 1]);
+    currentEvents->doEvent(totalRate());
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
+{
+    _totalRate = 0;
+    for (uint i = 0; i < EVENTS_NUM; ++i)
+    {
+        _totalRate += _events[i].commonRate();
+    }
+    for (uint i = 0; i < MULTI_EVENTS_NUM; ++i)
+    {
+        _totalRate += _multiEvents[i].commonRate();
+    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -91,10 +125,10 @@ int MC<EVENTS_NUM, MULTI_EVENTS_NUM>::compareContainers(const void *a, const voi
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint orderIndex) const
+BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint orderIndex)
 {
-    if (orderIndex < MULTI_EVENTS_INDEX_SHIFT) return _events[orderIndex];
-    else _multiEvents[orderIndex - MULTI_EVENTS_INDEX_SHIFT];
+    if (orderIndex < MULTI_EVENTS_INDEX_SHIFT) return &_events[orderIndex];
+    else return &_multiEvents[orderIndex - MULTI_EVENTS_INDEX_SHIFT];
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -144,8 +178,8 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(Reaction *reaction, uint n)
 
 #pragma omp critical
     {
-        _multiEvents[RT].remove(reaction, n);
         updateRate(-reaction->rate() * n);
+        _multiEvents[RT].remove(reaction, n);
     }
 }
 

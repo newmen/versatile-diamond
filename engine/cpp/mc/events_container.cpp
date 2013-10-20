@@ -5,10 +5,6 @@
 namespace vd
 {
 
-EventsContainer::~EventsContainer()
-{
-}
-
 void EventsContainer::add(Reaction *event)
 {
     assert(_positions.find(event) == _positions.end());
@@ -19,13 +15,18 @@ void EventsContainer::add(Reaction *event)
 
 void EventsContainer::remove(Reaction *event)
 {
+    assert(event);
+
     auto curr = _positions.find(event);
     assert(curr != _positions.end());
 
-    Reaction *last = removeAndGetLast(curr->second);
+    Reaction *last = exchangeToLast(curr->second);
     if (last) _positions[last] = curr->second;
 
     _positions.erase(curr);
+    delete event;
+
+    assert(_events.size() == _positions.size());
 }
 
 }

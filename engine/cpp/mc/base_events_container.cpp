@@ -1,5 +1,8 @@
 #include "base_events_container.h"
 
+#include <iostream>
+using namespace std;
+
 namespace vd
 {
 
@@ -11,6 +14,18 @@ BaseEventsContainer::~BaseEventsContainer()
     }
 }
 
+void BaseEventsContainer::doEvent(double r)
+{
+    assert(_events.size() > 0);
+
+    uint index = (uint)(r / _events.front()->rate());
+    assert(index < _events.size());
+
+    cout << "SELECTED: " << index << endl;
+
+    _events[index]->doIt();
+}
+
 double BaseEventsContainer::commonRate() const
 {
     return (_events.size() > 0) ?
@@ -18,22 +33,21 @@ double BaseEventsContainer::commonRate() const
                 0.0;
 }
 
-Reaction *BaseEventsContainer::removeAndGetLast(uint index)
+Reaction *BaseEventsContainer::exchangeToLast(uint index)
 {
     assert(index < _events.size());
 
     Reaction *last = _events.back();
+    assert(last);
     _events.pop_back();
 
     auto it = _events.begin() + index;
     if (it == _events.end())
     {
-        delete last;
         return 0;
     }
     else
     {
-        delete *it;
         *it = last;
         return last;
     }

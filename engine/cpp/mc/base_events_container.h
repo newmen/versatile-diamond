@@ -12,10 +12,11 @@ class BaseEventsContainer
 public:
     virtual ~BaseEventsContainer();
 
+    void doEvent(double r);
     double commonRate() const;
 
 protected:
-    Reaction *removeAndGetLast(uint index);
+    Reaction *exchangeToLast(uint index);
 
     std::vector<Reaction *> _events;
 };

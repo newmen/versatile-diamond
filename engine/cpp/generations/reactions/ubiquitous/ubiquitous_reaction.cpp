@@ -23,6 +23,8 @@ void UbiquitousReaction::doIt()
     action();
     _target->changeType(type);
 
+    Atom *changedAtom = _target;
     remove();
-    _target->findChildren();
+
+    changedAtom->findChildren();
 }
