@@ -13,7 +13,7 @@ const ushort ReactionActivation::__hOnAtoms[] =
 
 void ReactionActivation::find(Atom *anchor)
 {
-    if (anchor->is(25)) return;
+    if (anchor->is(25)) return; // except dependent reaction
 
     short dn = delta(anchor, __hOnAtoms);
     if (dn > 0)
@@ -27,9 +27,7 @@ short ReactionActivation::toType(ushort type) const
     return __hToActives[type];
 }
 
-void ReactionActivation::remove()
+const ushort *ReactionActivation::onAtoms() const
 {
-    short dn = delta(target(), __hOnAtoms);
-    assert(dn < 0);
-    Handbook::mc().removeMul<SURFACE_ACTIVATION>(this, -dn);
+    return __hOnAtoms;
 }

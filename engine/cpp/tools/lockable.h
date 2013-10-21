@@ -12,7 +12,7 @@ class Lockable
 
 public:
     Lockable();
-    ~Lockable();
+    virtual ~Lockable();
 
 protected:
     template <class L>

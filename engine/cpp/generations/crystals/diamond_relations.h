@@ -1,7 +1,7 @@
 #ifndef DIAMOND_RELATIONS_H
 #define DIAMOND_RELATIONS_H
 
-#include "neighbours.h"
+#include "../../atoms/neighbours.h"
 
 using namespace vd;
 

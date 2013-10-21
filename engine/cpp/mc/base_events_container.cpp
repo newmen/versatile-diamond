@@ -8,10 +8,6 @@ namespace vd
 
 BaseEventsContainer::~BaseEventsContainer()
 {
-    for (Reaction *event : _events)
-    {
-        delete event;
-    }
 }
 
 void BaseEventsContainer::doEvent(double r)
@@ -38,7 +34,6 @@ Reaction *BaseEventsContainer::exchangeToLast(uint index)
     assert(index < _events.size());
 
     Reaction *last = _events.back();
-    assert(last);
     _events.pop_back();
 
     auto it = _events.begin() + index;

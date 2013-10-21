@@ -17,7 +17,7 @@ void Dimer::find(BaseSpec *parent)
     {
         assert(anchor->lattice());
 
-        const Diamond *diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
+        auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
         assert(diamond);
 
         auto nbrs = diamond->front_100(anchor);

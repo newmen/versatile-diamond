@@ -27,9 +27,7 @@ short ReactionDeactivation::toType(ushort type) const
     return __activesToH[type];
 }
 
-void ReactionDeactivation::remove()
+const ushort *ReactionDeactivation::onAtoms() const
 {
-    short dn = delta(target(), __activesOnAtoms);
-    assert(dn < 0);
-    Handbook::mc().removeMul<SURFACE_DEACTIVATION>(this, -dn);
+    return __activesOnAtoms;
 }

@@ -1,4 +1,6 @@
 #include "bridge.h"
+#include "dimer.h"
+#include "../specific_specs/bridge_cts.h"
 #include "../handbook.h"
 
 void Bridge::find(Atom *anchor)
@@ -9,7 +11,7 @@ void Bridge::find(Atom *anchor)
         assert(anchor->lattice());
         if (anchor->lattice()->coords().z == 0) return;
 
-        const Diamond *diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
+        auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
         assert(diamond);
 
         auto nbrs = diamond->cross_110(anchor);

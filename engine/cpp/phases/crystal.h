@@ -1,8 +1,8 @@
 #ifndef CRYSTAL_H
 #define CRYSTAL_H
 
-#include "common.h"
-#include "vector3d.h"
+#include "../tools/common.h"
+#include "../tools/vector3d.h"
 #include "phase.h"
 
 namespace vd

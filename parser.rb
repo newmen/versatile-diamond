@@ -60,7 +60,7 @@ doit = -> generator do
 end
 
 if opt['--total-tree']
-  generator = VD::Generators::ConceptsTreeGenerator.new('total_tree')
+  generator = VD::Generators::ConceptsTreeGenerator.new('total_tree', draw_second_source_deps: true)
   doit[generator]
 end
 

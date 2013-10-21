@@ -1,7 +1,7 @@
 #ifndef SPECIFIED_ATOM_H
 #define SPECIFIED_ATOM_H
 
-#include "../../atom.h"
+#include "../../atoms/concrete_atom.h"
 using namespace vd;
 
 #include "../handbook.h"
@@ -42,8 +42,8 @@ void SpecifiedAtom<VALENCE>::specifyType()
 template <ushort VALENCE>
 void SpecifiedAtom<VALENCE>::findChildren()
 {
-    ReactionActivation::find(this);
-    ReactionDeactivation::find(this);
+//    ReactionActivation::find(this);
+//    ReactionDeactivation::find(this);
 }
 
 #endif // SPECIFIED_ATOM_H

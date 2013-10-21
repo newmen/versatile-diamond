@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_set>
 #include <memory>
-#include "atom.h"
+#include "../atoms/atom.h"
 
 namespace vd
 {

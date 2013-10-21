@@ -1,7 +1,7 @@
 #ifndef DIAMOND_H
 #define DIAMOND_H
 
-#include "../../crystal.h"
+#include "../../phases/crystal.h"
 using namespace vd;
 
 #include "diamond_relations.h"

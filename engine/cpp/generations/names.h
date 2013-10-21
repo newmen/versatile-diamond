@@ -1,17 +1,27 @@
 #ifndef NAMES_H
 #define NAMES_H
 
-enum SPEC_NAMES : ushort
+#include "../tools/common.h"
+
+enum BaseSpecNames : ushort
 {
     BRIDGE,
-    DIMER,
+    DIMER
+};
+
+enum SpecificSpecNames : ushort
+{
     BRIDGE_CTs
 };
 
-enum REACTION_NAMES : ushort
+enum UBIQUITOUS_REACTION_NAMES : ushort
 {
     SURFACE_ACTIVATION,
-    SURFACE_DEACTIVATION,
+    SURFACE_DEACTIVATION
+};
+
+enum TYPICAL_REACTION_NAMES : ushort
+{
     DIMER_FORMATION
 };
 

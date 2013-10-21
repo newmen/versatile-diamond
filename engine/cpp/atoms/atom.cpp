@@ -1,7 +1,7 @@
 #include "atom.h"
 #include "lattice.h"
-
-//#include "locks.h"
+#include "../specs/base_spec.h"
+//#include "../tools/locks.h"
 
 #include <assert.h>
 

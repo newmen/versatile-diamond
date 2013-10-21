@@ -4,15 +4,12 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <memory>
-#include "common.h"
+
+#include "../tools/common.h"
+#include "../tools/lockable.h"
+
 #include "lattice.h"
-#include "base_spec.h"
 #include "role.h"
-
-#include "lockable.h"
-
-#include <assert.h>
-//#include <iostream>
 
 namespace vd
 {
@@ -46,9 +43,9 @@ public:
     virtual void specifyType() = 0;
     virtual void findChildren() = 0;
 
-    virtual void bondWith(Atom *neighbour, int depth = 1);
-    virtual void unbondFrom(Atom *neighbour, int depth = 1);
-    virtual bool hasBondWith(Atom *neighbour) const;
+    void bondWith(Atom *neighbour, int depth = 1);
+    void unbondFrom(Atom *neighbour, int depth = 1);
+    bool hasBondWith(Atom *neighbour) const;
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
@@ -74,33 +71,6 @@ private:
         return (at << 16) ^ second;
     }
 };
-
-template <int VALENCE>
-class ConcreteAtom : public Atom
-{
-public:
-    using Atom::Atom;
-
-//    void activate() override;
-//    void bondWith(Atom *neighbour, int depth = 1) override;
-};
-
-//template <int VALENCE>
-//void ConcreteAtom<VALENCE>::activate()
-//{
-//    assert(VALENCE > neighbours().size() + actives());
-//    Atom::activate();
-//}
-
-//template <int VALENCE>
-//void ConcreteAtom<VALENCE>::bondWith(Atom *neighbour, int depth)
-//{
-//    assert(VALENCE > neighbours().size());
-////    if (VALENCE < neighbours().size() + actives())
-////        std::cout << (unsigned long long)this << std::hex << " -> " << neighbours().size() << " : " << actives() << std::endl;
-//    assert(VALENCE >= neighbours().size() + actives());
-//    Atom::bondWith(neighbour, depth);
-//}
 
 }
 

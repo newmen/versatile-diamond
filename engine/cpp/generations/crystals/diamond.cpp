@@ -14,7 +14,7 @@ void Diamond::buildAtoms()
     {
         makeLayer(i, 24);
     }
-    makeLayer(_defaultSurfaceHeight - 1, 3);
+    makeLayer(_defaultSurfaceHeight - 1, 1);
 }
 
 void Diamond::bondAllAtoms()
@@ -42,8 +42,10 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
     {
         atom->activate();
         atom->activate();
+    } else if (z == _defaultSurfaceHeight - 1)
+    {
+        atom->activate();
     }
-
 
     return atom;
 }

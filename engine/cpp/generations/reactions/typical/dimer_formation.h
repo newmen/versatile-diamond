@@ -1,16 +1,17 @@
 #ifndef DIMERFORMATION_H
 #define DIMERFORMATION_H
 
-#include "typical_reaction.h"
+#include "../../../reactions/typical_reaction.h"
 
-class DimerFormation : TypicalReaction<2>
+class DimerFormation : public TypicalReaction<DIMER_FORMATION, 2>
 {
 public:
-    static void find(BaseSpec *anchor);
+    static void find(BaseSpec *parent);
 
     using TypicalReaction::TypicalReaction;
 
     double rate() const { return 1e5; }
+    void doIt();
 };
 
 #endif // DIMERFORMATION_H

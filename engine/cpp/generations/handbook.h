@@ -2,14 +2,11 @@
 #define HANDBOOK_H
 
 #include <omp.h>
-#include "../common.h"
+#include "../tools/common.h"
 #include "../mc/mc.h"
 
 #include "names.h"
 #include "crystals/diamond.h"
-#include "base_specs/bridge.h"
-#include "base_specs/dimer.h"
-#include "specific_specs/bridge_cts.h"
 
 class Handbook
 {

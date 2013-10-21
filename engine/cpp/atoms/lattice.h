@@ -1,8 +1,8 @@
 #ifndef LATTICE_H
 #define LATTICE_H
 
-#include "common.h"
-#include "crystal.h"
+#include "../tools/common.h"
+#include "../phases/crystal.h"
 
 namespace vd
 {

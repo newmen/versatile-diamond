@@ -1,7 +1,7 @@
 #ifndef MC_H
 #define MC_H
 
-#include <cstdlib>
+//#include <cstdlib>
 #include <chrono>
 #include <random>
 #include <omp.h>

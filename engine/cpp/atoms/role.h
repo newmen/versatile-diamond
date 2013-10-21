@@ -2,7 +2,7 @@
 #define ROLE_H
 
 #include <functional>
-#include "common.h"
+#include "../tools/common.h"
 
 //namespace vd
 //{

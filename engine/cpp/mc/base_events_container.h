@@ -2,7 +2,7 @@
 #define BASE_EVENTS_CONTAINER_H
 
 #include <vector>
-#include "../reaction.h"
+#include "../reactions/reaction.h"
 
 namespace vd
 {

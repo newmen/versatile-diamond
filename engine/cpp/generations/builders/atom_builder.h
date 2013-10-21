@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "../atoms/c.h"
-#include "../../lattice.h"
+#include "../../atoms/lattice.h"
 
 #include <assert.h>
 

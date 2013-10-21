@@ -1,6 +1,6 @@
 #include "crystal.h"
-#include "lattice.h"
-#include "atom.h"
+#include "../atoms/atom.h"
+#include "../atoms/lattice.h"
 #include <omp.h>
 
 #include <assert.h>

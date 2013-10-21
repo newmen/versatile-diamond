@@ -1,7 +1,7 @@
 #ifndef DIMER_H
 #define DIMER_H
 
-#include "../../dependent_spec.h"
+#include "../../specs/dependent_spec.h"
 using namespace vd;
 
 class Dimer : public DependentSpec<2>

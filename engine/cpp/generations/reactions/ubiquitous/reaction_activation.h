@@ -1,9 +1,9 @@
 #ifndef REACTION_ACTIVATION_H
 #define REACTION_ACTIVATION_H
 
-#include "ubiquitous_reaction.h"
+#include "../../../reactions/ubiquitous_reaction.h"
 
-class ReactionActivation : public UbiquitousReaction
+class ReactionActivation : public UbiquitousReaction<SURFACE_ACTIVATION>
 {
     static const ushort __hToActives[];
     static const ushort __hOnAtoms[];
@@ -17,8 +17,9 @@ public:
 
 protected:
     short toType(ushort type) const override;
+    const ushort *onAtoms() const override;
+
     void action() override { target()->activate(); }
-    void remove() override;
 };
 
 #endif // REACTION_ACTIVATION_H

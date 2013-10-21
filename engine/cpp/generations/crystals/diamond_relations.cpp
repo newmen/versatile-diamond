@@ -1,6 +1,6 @@
 #include "diamond_relations.h"
 #include "diamond.h"
-#include "common.h"
+#include "../../tools/common.h"
 
 DiamondRelations::TN DiamondRelations::front_110(const Diamond *diamond, const Atom *atom)
 {

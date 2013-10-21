@@ -1,7 +1,7 @@
 #include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 
-#include "spec/support/open_diamond.h"
+#include "tests/support/open_diamond.h"
 
 #include <omp.h>
 #include <iostream>
@@ -11,15 +11,18 @@ int main()
 {
     omp_set_num_threads(1);
 
-//    Diamond *diamond = new OpenDiamond(2);
+    Diamond *diamond = new OpenDiamond(2);
 //    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
-    Diamond *diamond = new Diamond(dim3(2, 2, 3));
     diamond->initialize();
 
     cout << Handbook::mc().totalRate() << endl;
 
-    Handbook::mc().doRandom();
-    cout << Handbook::mc().totalRate() << endl;
+    for (int i = 0; i < 1; ++i)
+    {
+        cout << i << ". ";
+        Handbook::mc().doRandom();
+        cout << Handbook::mc().totalRate() << endl;
+    }
 
 //    Atom *a = diamond->atom(int3(2, 2, 1)), *b = diamond->atom(int3(2, 3, 1));
 //    ReactionActivation raa(a);

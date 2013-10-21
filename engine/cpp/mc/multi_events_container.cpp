@@ -1,27 +1,32 @@
 #include "multi_events_container.h"
 
-#include <iostream>
-using namespace std;
+//#include <iostream>
+//using namespace std;
 
 namespace vd
 {
 
 MultiEventsContainer::~MultiEventsContainer()
 {
-    cout << _positions.size() << endl;
+//    cout << _positions.size() << endl;
 
     Reaction *prev = 0;
     for (auto &pr : _positions)
     {
-        cout << pr.second << " -> " << pr.first;
+//        cout << pr.second << " -> " << pr.first;
         if (pr.first == prev)
         {
             _events[pr.second] = 0;
-            cout << " :: zerofied";
+//            cout << " :: zerofied";
         }
-        cout << endl;
+//        cout << endl;
 
         prev = pr.first;
+    }
+
+    for (Reaction *event : _events)
+    {
+        delete event;
     }
 }
 
