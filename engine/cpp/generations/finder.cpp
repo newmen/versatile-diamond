@@ -33,8 +33,8 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
             {
 #pragma omp section
                 {
-                    Bridge::find(atom);
                     // finds bridge and all their children with mono (+ gas) reactions with it
+                    Bridge::find(atom);
                 }
 #pragma omp section
                 {
@@ -57,8 +57,8 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
             {
 #pragma omp section
                 {
-                    Dimer::find(atom);
                     // finds dimer and all their children with mono (+ gas) reactions with it
+                    Dimer::find(atom);
                 }
 //#pragma omp section
 //                {

@@ -6,6 +6,8 @@
 #include "../../../species/reactions_mixin.h"
 #include "../../handbook.h"
 
+#include <assert.h>
+
 #include <iostream>
 
 namespace vd
@@ -14,13 +16,13 @@ namespace vd
 template <ushort RT, ushort TARGETS_NUM>
 class TypicalReaction : public Reaction
 {
-    BaseSpec *_targets[TARGETS_NUM];
+    ReactionsMixin *_targets[TARGETS_NUM];
 
 public:
-    TypicalReaction(BaseSpec **targets);
+    TypicalReaction(ReactionsMixin **targets);
 
     void remove() override;
-//    void removeExcept(ReactionsMixin *spec) override;
+    void removeExcept(ReactionsMixin *spec) override;
 
     void info() override;
 
@@ -29,10 +31,11 @@ protected:
 };
 
 template <ushort RT, ushort TARGETS_NUM>
-TypicalReaction<RT, TARGETS_NUM>::TypicalReaction(BaseSpec **targets)
+TypicalReaction<RT, TARGETS_NUM>::TypicalReaction(ReactionsMixin **targets)
 {
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
+        assert(targets[i]);
         _targets[i] = targets[i];
     }
 }
@@ -40,31 +43,20 @@ TypicalReaction<RT, TARGETS_NUM>::TypicalReaction(BaseSpec **targets)
 template <ushort RT, ushort TARGETS_NUM>
 void TypicalReaction<RT, TARGETS_NUM>::remove()
 {
+    removeExcept(0);
+}
+
+template <ushort RT, ushort TARGETS_NUM>
+void TypicalReaction<RT, TARGETS_NUM>::removeExcept(ReactionsMixin *spec)
+{
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
-        auto trg = dynamic_cast<ReactionsMixin *>(_targets[i]);
-        assert(trg);
-        trg->unbindFrom(this);
+        if (_targets[i] == spec) continue;
+        _targets[i]->unbindFrom(this);
     }
 
     Handbook::mc().remove<RT>(this);
-//    removeExcept(0);
 }
-
-//template <ushort RT, ushort TARGETS_NUM>
-//void TypicalReaction<RT, TARGETS_NUM>::removeExcept(ReactionsMixin *spec)
-//{
-//    for (int i = 0; i < TARGETS_NUM; ++i)
-//    {
-//        if (_targets[i] == spec) continue;
-
-//        auto trg = dynamic_cast<ReactionsMixin *>(_targets[i]);
-//        assert(trg);
-//        trg->unbindFrom(this);
-//    }
-
-//    Handbook::mc().remove<RT>(this);
-//}
 
 template <ushort RT, ushort TARGETS_NUM>
 void TypicalReaction<RT, TARGETS_NUM>::info()
@@ -81,7 +73,9 @@ template <ushort RT, ushort TARGETS_NUM>
 BaseSpec *TypicalReaction<RT, TARGETS_NUM>::target(uint index)
 {
     assert(index < TARGETS_NUM);
-    return _targets[index];
+    auto spec = dynamic_cast<BaseSpec *>(_targets[index]);
+    assert(spec);
+    return spec;
 }
 
 }

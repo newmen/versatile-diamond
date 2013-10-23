@@ -21,10 +21,10 @@ void ReactionsMixin::unbindFrom(Reaction *reaction)
 
 void ReactionsMixin::removeReactions()
 {
-//    for (auto &pr : _reactions)
-//    {
-//        pr.first->removeExcept(this);
-//    }
+    for (auto &pr : _reactions)
+    {
+        pr.first->removeExcept(this);
+    }
 }
 
 }
