@@ -1,5 +1,5 @@
 #include "amorph.h"
-#include "atom.h"
+#include "../atoms/atom.h"
 
 #include <assert.h>
 

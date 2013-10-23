@@ -5,17 +5,6 @@
 namespace vd
 {
 
-ReactionsMixin::~ReactionsMixin()
-{
-//#pragma omp critical (remove_dependent_reactions)
-//    {
-//        for (auto reaction : _reactions)
-//        {
-//            reaction->remove();
-//        }
-//    }
-}
-
 void ReactionsMixin::usedIn(std::shared_ptr<Reaction> &reaction)
 {
     lock([this, reaction]() {
@@ -28,6 +17,14 @@ void ReactionsMixin::unbindFrom(Reaction *reaction)
     lock([this, reaction]() {
         _reactions.erase(reaction);
     });
+}
+
+void ReactionsMixin::removeReactions()
+{
+//    for (auto &pr : _reactions)
+//    {
+//        pr.first->removeExcept(this);
+//    }
 }
 
 }

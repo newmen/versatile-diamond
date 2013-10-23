@@ -1,7 +1,7 @@
 #include <set>
+#include <atoms/lattice.h>
 #include <generations/atoms/c.h>
 #include <generations/crystals/diamond.h>
-#include <lattice.h>
 
 using namespace vd;
 

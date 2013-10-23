@@ -1,7 +1,7 @@
 #ifndef BRIDGE_CTS_H
 #define BRIDGE_CTS_H
 
-#include "../../specs/specific_spec.h"
+#include "../../species/specific_spec.h"
 using namespace vd;
 
 class BridgeCts : public SpecificSpec<1>

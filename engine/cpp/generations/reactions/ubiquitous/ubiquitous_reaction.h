@@ -1,8 +1,10 @@
 #ifndef CONCRETE_UBIQUITOUS_REACTION_H
 #define CONCRETE_UBIQUITOUS_REACTION_H
 
-#include "../generations/handbook.h" // TODO: need to except it
-#include "reaction.h"
+#include "../../../reactions/reaction.h"
+#include "../../handbook.h"
+
+#include <iostream>
 
 namespace vd
 {
@@ -17,6 +19,8 @@ public:
 
     void doIt() override;
     void remove() override;
+
+    void info() override;
 
 protected:
     static short delta(Atom *anchor, const ushort *typeToNum);
@@ -45,14 +49,6 @@ short UbiquitousReaction<RT>::delta(Atom *anchor, const ushort *typeToNum)
 }
 
 template <ushort RT>
-void UbiquitousReaction<RT>::remove()
-{
-    short dn = delta(_target, onAtoms());
-    assert(dn < 0);
-    Handbook::mc().removeMul<RT>(this, -dn);
-}
-
-template <ushort RT>
 void UbiquitousReaction<RT>::doIt()
 {
     uint type = toType(_target->type());
@@ -65,7 +61,21 @@ void UbiquitousReaction<RT>::doIt()
     remove();
 
     // Warning! Current object already deallocate self memory, therefore used changedAtom variable.
-    changedAtom->findChildren();
+    Finder::findAll(&changedAtom, 1);
+}
+
+template <ushort RT>
+void UbiquitousReaction<RT>::remove()
+{
+    short dn = delta(_target, onAtoms());
+    assert(dn < 0);
+    Handbook::mc().removeMul<RT>(this, -dn);
+}
+
+template <ushort RT>
+void UbiquitousReaction<RT>::info()
+{
+    std::cout << "Reaction " << RT << " [" << this << "]: " << target()->lattice()->coords() << std::endl;
 }
 
 }

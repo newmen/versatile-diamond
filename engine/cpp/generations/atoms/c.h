@@ -10,7 +10,7 @@ class C : public SpecifiedAtom<VALENCE>
 public:
     using SpecifiedAtom::SpecifiedAtom;
 
-    void findChildren() override;
+//    void findChildren() override;
 };
 
 #endif // C_H

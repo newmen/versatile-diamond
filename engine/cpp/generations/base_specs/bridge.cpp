@@ -1,7 +1,8 @@
 #include "bridge.h"
-#include "dimer.h"
-#include "../specific_specs/bridge_cts.h"
 #include "../handbook.h"
+#include "../specific_specs/bridge_cts.h"
+
+#include <omp.h>
 
 void Bridge::find(Atom *anchor)
 {
@@ -15,14 +16,14 @@ void Bridge::find(Atom *anchor)
         assert(diamond);
 
         auto nbrs = diamond->cross_110(anchor);
-        if (nbrs.all() && nbrs[0]->is(6) && nbrs[1]->is(6) &&
-                anchor->hasBondWith(nbrs[0]) && anchor->hasBondWith(nbrs[1]))
+        if (nbrs.all() &&
+                nbrs[0]->is(6) && anchor->hasBondWith(nbrs[0]) &&
+                nbrs[1]->is(6) && anchor->hasBondWith(nbrs[1]))
         {
             Atom *atoms[] = { anchor, nbrs[0], nbrs[1] };
             auto bridge = std::shared_ptr<BaseSpec>(new Bridge(BRIDGE, atoms));
 
             anchor->describe(3, bridge);
-#pragma omp barrier // only for bridge, because dimer belongs to two bridges
             nbrs[0]->describe(6, bridge);
             nbrs[1]->describe(6, bridge);
 
@@ -42,12 +43,11 @@ void Bridge::findChildren()
     {
 #pragma omp section
         {
-            Dimer::find(this);
-        }
-#pragma omp section
-        {
             BridgeCts::find(this);
         }
+//#pragma omp section
+//        {
+//        }
     }
 }
 

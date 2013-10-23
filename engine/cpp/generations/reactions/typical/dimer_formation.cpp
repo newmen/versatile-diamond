@@ -37,30 +37,18 @@ void DimerFormation::find(BaseSpec *parent)
 
 void DimerFormation::doIt()
 {
-    Atom *a = target(0)->atom(0),
-         *b = target(1)->atom(0);
+    Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
+    Atom *a = atoms[0], *b = atoms[1];
+
+//    remove();
 
     assert(a->is(28));
     assert(b->is(28));
 
     a->bondWith(b);
 
-#pragma omp parallel
-   {
-#pragma omp sections
-       {
-#pragma omp section
-            a->changeType(22);
-#pragma omp section
-            b->changeType(22);
-       }
+    a->changeType(22);
+    b->changeType(22);
 
-#pragma omp sections
-       {
-#pragma omp section
-            a->findChildren();
-#pragma omp section
-            b->findChildren();
-       }
-   }
+    Finder::findAll(atoms, 2);
 }

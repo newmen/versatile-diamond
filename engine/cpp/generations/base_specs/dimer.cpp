@@ -5,15 +5,12 @@
 
 #include <assert.h>
 
-void Dimer::find(BaseSpec *parent)
+void Dimer::find(Atom *anchor)
 {
-    assert(parent);
-
-    Atom *anchor = parent->atom(0);
     assert(anchor);
 
-    if (!anchor->is(22)) return;
-    if (!anchor->prevIs(22))
+    if (!anchor->is(22) && anchor->hasRole(3, BRIDGE)) return;
+    if (!anchor->prevIs(22)) // TODO: здесь нужно подумать, поскольку роль не проверяется
     {
         assert(anchor->lattice());
 
@@ -23,7 +20,10 @@ void Dimer::find(BaseSpec *parent)
         auto nbrs = diamond->front_100(anchor);
         if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]) && nbrs[0]->hasRole(3, BRIDGE))
         {
-            BaseSpec *parents[2] = { parent, nbrs[0]->specByRole(3, BRIDGE) };
+            BaseSpec *parents[2] = {
+                anchor->specByRole(3, BRIDGE),
+                nbrs[0]->specByRole(3, BRIDGE)
+            };
             auto dimer = std::shared_ptr<BaseSpec>(new Dimer(DIMER, parents));
 
             anchor->describe(22, dimer);

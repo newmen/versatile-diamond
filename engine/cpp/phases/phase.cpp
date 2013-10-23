@@ -1,5 +1,5 @@
 #include "phase.h"
-#include "atom.h"
+#include "../atoms/atom.h"
 
 namespace vd
 {

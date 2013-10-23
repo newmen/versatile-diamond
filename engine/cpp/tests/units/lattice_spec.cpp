@@ -1,4 +1,4 @@
-#include <lattice.h>
+#include <atoms/lattice.h>
 #include <generations/crystals/diamond.h>
 
 using namespace vd;

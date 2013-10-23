@@ -1,7 +1,7 @@
 #ifndef REACTION_DEACTIVATION_H
 #define REACTION_DEACTIVATION_H
 
-#include "../../../reactions/ubiquitous_reaction.h"
+#include "ubiquitous_reaction.h"
 
 class ReactionDeactivation : public UbiquitousReaction<SURFACE_DEACTIVATION>
 {

@@ -14,6 +14,7 @@ SOURCES += main.cpp \
     generations/base_specs/dimer.cpp \
     generations/crystals/diamond.cpp \
     generations/crystals/diamond_relations.cpp \
+    generations/finder.cpp \
     generations/handbook.cpp \
     generations/reactions/typical/dimer_formation.cpp \
     generations/reactions/ubiquitous/reaction_activation.cpp \
@@ -25,13 +26,14 @@ SOURCES += main.cpp \
     phases/amorph.cpp \
     phases/crystal.cpp \
     phases/phase.cpp \
-    specs/base_spec.cpp \
+    species/base_spec.cpp \
+    species/reactions_mixin.cpp \
     tools/common.cpp \
-    tools/lockable.cpp \
-    specs/reactions_mixin.cpp
+    tools/lockable.cpp
 
 HEADERS += \
     atoms/atom.h \
+    atoms/concrete_atom.h \
     atoms/lattice.h \
     atoms/neighbours.h \
     atoms/role.h \
@@ -42,11 +44,14 @@ HEADERS += \
     generations/builders/atom_builder.h \
     generations/crystals/diamond.h \
     generations/crystals/diamond_relations.h \
+    generations/finder.h \
     generations/handbook.h \
     generations/names.h \
     generations/reactions/typical/dimer_formation.h \
+    generations/reactions/typical/typical_reaction.h \
     generations/reactions/ubiquitous/reaction_activation.h \
     generations/reactions/ubiquitous/reaction_deactivation.h \
+    generations/reactions/ubiquitous/ubiquitous_reaction.h \
     generations/specific_specs/bridge_cts.h \
     mc/base_events_container.h \
     mc/events_container.h \
@@ -56,14 +61,12 @@ HEADERS += \
     phases/crystal.h \
     phases/phase.h \
     reactions/reaction.h \
-    reactions/typical_reaction.h \
-    specs/base_spec.h \
-    specs/dependent_spec.h \
-    specs/source_base_spec.h \
-    specs/specific_spec.h \
+    species/base_spec.h \
+    species/dependent_spec.h \
+    species/keeper.h \
+    species/reactions_mixin.h \
+    species/source_base_spec.h \
+    species/specific_spec.h \
     tools/common.h \
     tools/lockable.h \
-    tools/vector3d.h \
-    atoms/concrete_atom.h \
-    specs/reactions_mixin.h \
-    reactions/ubiquitous_reaction.h
+    tools/vector3d.h

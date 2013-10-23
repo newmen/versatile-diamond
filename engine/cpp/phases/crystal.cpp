@@ -24,7 +24,6 @@ void Crystal::initialize()
     buildAtoms();
     bondAllAtoms();
 
-    specifyAllAtoms();
     findAll();
 }
 
@@ -70,23 +69,5 @@ uint Crystal::countAtoms() const
         return (atom) ? 1 : 0;
     });
 }
-
-void Crystal::specifyAllAtoms()
-{
-    atoms().each([](Atom *atom) {
-        if (atom) atom->specifyType();
-    });
-}
-
-void Crystal::findAll()
-{
-//#pragma omp parallel
-    {
-        atoms().each([](Atom *atom) {
-            if (atom) atom->findChildren();
-        });
-    }
-}
-
 
 }

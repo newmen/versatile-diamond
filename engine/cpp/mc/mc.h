@@ -8,6 +8,8 @@
 #include "events_container.h"
 #include "multi_events_container.h"
 
+#include <iostream>
+
 // for #compareContainers()
 #define MULTI_EVENTS_INDEX_SHIFT 1000
 
@@ -36,9 +38,11 @@ public:
 
     template <ushort RT> void add(Reaction *reaction);
     template <ushort RT> void remove(Reaction *reaction);
+    template <ushort RT> void doOneOfOne();
 
     template <ushort RT> void addMul(Reaction *reaction, uint n);
     template <ushort RT> void removeMul(Reaction *reaction, uint n);
+    template <ushort RT> void doOneOfMul();
 
 private:
     void recountTotalRate();
@@ -135,10 +139,12 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(Reaction *reaction)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
 #pragma omp critical
     {
+        std::cout << "Add ";
+        reaction->info();
         _events[RT].add(reaction);
         updateRate(reaction->rate());
     }
@@ -148,10 +154,12 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(Reaction *reaction)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
 #pragma omp critical
     {
+        std::cout << "Remove ";
+        reaction->info();
         updateRate(-reaction->rate());
         _events[RT].remove(reaction);
     }
@@ -161,10 +169,12 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(Reaction *reaction, uint n)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
 #pragma omp critical
     {
+        std::cout << "Add multi ";
+        reaction->info();
         _multiEvents[RT].add(reaction, n);
         updateRate(reaction->rate() * n);
     }
@@ -174,13 +184,31 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(Reaction *reaction, uint n)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction type");
+    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
 #pragma omp critical
     {
+        std::cout << "Remove multi ";
+        reaction->info();
         updateRate(-reaction->rate() * n);
         _multiEvents[RT].remove(reaction, n);
     }
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne()
+{
+    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
+    _events[RT].doEvent(0);
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul()
+{
+    static_assert(RT < MULTI_EVENTS_NUM, "Wrong reaction ID");
+    _multiEvents[RT].doEvent(0);
 }
 
 }

@@ -14,31 +14,33 @@ template <typename T>
 class vector3d
 {
     dim3 _sizes;
-    T *_container;
+    T *_data;
 
 public:
     vector3d(const dim3 &sizes, const T &initValue);
     ~vector3d();
 
+    T *data() { return _data; }
+    uint size() const { return _sizes.N(); }
     const dim3 &sizes() const { return _sizes; }
 
     const T &operator[] (const int3 &coords) const
     {
         int3 cc = correct(coords);
         uint i = index(cc);
-        return _container[i];
+        return _data[i];
     }
 
     T &operator[] (const int3 &coords)
     {
-        return _container[index(correct(coords))];
+        return _data[index(correct(coords))];
     }
 
     template <class Lambda>
     void each(const Lambda &lambda) const;
 
-    template <class Lambda>
-    void ip_each(const Lambda &lambda) const;
+//    template <class Lambda>
+//    void each_in_parallel(const Lambda &lambda) const;
 
 //    template <class Lambda>
 //    void map(const Lambda &lambda);
@@ -77,39 +79,39 @@ private:
 template <typename T>
 vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes)
 {
-    _container = new T[_sizes.N()];
+    _data = new T[_sizes.N()];
 #pragma omp parallel for
-    for (int i = 0; i < _sizes.N(); ++i) _container[i] = initValue;
+    for (int i = 0; i < _sizes.N(); ++i) _data[i] = initValue;
 }
 
 template <typename T>
 vector3d<T>::~vector3d()
 {
-    delete [] _container;
+    delete [] _data;
 }
 
 template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
-#pragma omp parallel for shared(lambda) schedule(dynamic) // TODO: too small var!
+#pragma omp parallel for shared(lambda) schedule(dynamic)
     for (int i = 0; i < _sizes.N(); ++i)
     {
-        lambda(_container[i]);
+        lambda(_data[i]);
     }
 }
 
-template <typename T>
-template <class Lambda>
-void vector3d<T>::ip_each(const Lambda &lambda) const
-{
+//template <typename T>
+//template <class Lambda>
+//void vector3d<T>::each_in_parallel(const Lambda &lambda) const
+//{
 
-#pragma omp for schedule(dynamic) // TODO: too small var!
-    for (int i = 0; i < _sizes.N(); ++i)
-    {
-        lambda(_container[i]);
-    }
-}
+//#pragma omp for schedule(dynamic)
+//    for (int i = 0; i < _sizes.N(); ++i)
+//    {
+//        lambda(_container[i]);
+//    }
+//}
 
 //template <typename T>
 //template <class Lambda>
@@ -139,7 +141,7 @@ R vector3d<T>::reduce_plus(R initValue, const Lambda &lambda) const
 #pragma omp parallel for reduction(+:sum) shared(lambda)
     for (int i = 0; i < _sizes.N(); ++i)
     {
-        sum += lambda(_container[i]);
+        sum += lambda(_data[i]);
     }
     return sum;
 }

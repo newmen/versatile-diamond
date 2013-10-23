@@ -20,8 +20,10 @@ public:
 
 protected:
     void buildAtoms() override;
-    void bondAllAtoms() override;
     Atom *makeAtom(uint type, const int3 &coords) override;
+    void bondAllAtoms() override;
+
+    void findAll() override;
 
 private:
 //    void bondWithFront110(Atom *atom);

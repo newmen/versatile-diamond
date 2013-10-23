@@ -1,7 +1,7 @@
 #ifndef REACTION_ACTIVATION_H
 #define REACTION_ACTIVATION_H
 
-#include "../../../reactions/ubiquitous_reaction.h"
+#include "ubiquitous_reaction.h"
 
 class ReactionActivation : public UbiquitousReaction<SURFACE_ACTIVATION>
 {

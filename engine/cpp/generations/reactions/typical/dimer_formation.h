@@ -1,7 +1,7 @@
 #ifndef DIMERFORMATION_H
 #define DIMERFORMATION_H
 
-#include "../../../reactions/typical_reaction.h"
+#include "typical_reaction.h"
 
 class DimerFormation : public TypicalReaction<DIMER_FORMATION, 2>
 {

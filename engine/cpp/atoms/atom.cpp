@@ -1,6 +1,6 @@
 #include "atom.h"
 #include "lattice.h"
-#include "../specs/base_spec.h"
+#include "../species/base_spec.h"
 //#include "../tools/locks.h"
 
 #include <assert.h>
@@ -134,10 +134,13 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     return result;
 }
 
-//void Atom::forget(BaseSpec *spec)
-//{
-//#pragma omp critical
-//    _specs.erase(spec);
-//}
+void Atom::forget(ushort rType, ushort specType)
+{
+    const uint key = hash(rType, specType);
+    lock([this, rType, key]() {
+        _roles.erase(rType);
+        _specs.erase(key);
+    });
+}
 
 }

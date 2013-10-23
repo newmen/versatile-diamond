@@ -41,7 +41,7 @@ public:
     void deactivate();
 
     virtual void specifyType() = 0;
-    virtual void findChildren() = 0;
+//    virtual void findChildren() = 0;
 
     void bondWith(Atom *neighbour, int depth = 1);
     void unbondFrom(Atom *neighbour, int depth = 1);
@@ -54,7 +54,7 @@ public:
     void describe(ushort rType, std::shared_ptr<BaseSpec> &spec);
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
-//    void forget(BaseSpec *spec);
+    void forget(ushort rType, ushort specType);
 
 protected:
     const std::unordered_multiset<Atom *> &neighbours() const { return _neighbours; }

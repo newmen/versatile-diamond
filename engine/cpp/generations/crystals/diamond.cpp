@@ -1,5 +1,6 @@
 #include "diamond.h"
 #include "../builders/atom_builder.h"
+#include "../finder.h"
 
 #include <assert.h>
 
@@ -48,6 +49,11 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
     }
 
     return atom;
+}
+
+void Diamond::findAll()
+{
+    Finder::findAll(atoms().data(), atoms().size());
 }
 
 //void Diamond::bondWithFront110(Atom *atom)

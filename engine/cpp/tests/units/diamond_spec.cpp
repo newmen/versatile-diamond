@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
                 }
                 else
                 {
-                    uint type = (z == 0) ? 24 : 0;
+                    uint type = (z == 0) ? 24 : 1;
                     assert(diamond->atom(int3(x, y, z))->is(type));
                 }
             }

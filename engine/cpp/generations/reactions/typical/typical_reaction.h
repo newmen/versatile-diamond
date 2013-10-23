@@ -1,10 +1,12 @@
 #ifndef TYPICAL_REACTION_H
 #define TYPICAL_REACTION_H
 
-#include "reaction.h"
-#include "../specs/base_spec.h"
-#include "../specs/reactions_mixin.h"
-#include "../generations/handbook.h" // TODO: need to except it
+#include "../../../reactions/reaction.h"
+#include "../../../species/base_spec.h"
+#include "../../../species/reactions_mixin.h"
+#include "../../handbook.h"
+
+#include <iostream>
 
 namespace vd
 {
@@ -17,8 +19,10 @@ class TypicalReaction : public Reaction
 public:
     TypicalReaction(BaseSpec **targets);
 
-//    void removeExcept(ReactionsMixin *rm) override;
     void remove() override;
+//    void removeExcept(ReactionsMixin *spec) override;
+
+    void info() override;
 
 protected:
     BaseSpec *target(uint index = 0);
@@ -33,21 +37,6 @@ TypicalReaction<RT, TARGETS_NUM>::TypicalReaction(BaseSpec **targets)
     }
 }
 
-//template <ushort RT, ushort TARGETS_NUM>
-//void ConcreteTypicalReaction<RT, TARGETS_NUM>::removeExcept(ReactionsMixin *rm)
-//{
-//    for (int i = 0; i < TARGETS_NUM; ++i)
-//    {
-//        if ((void *)_targets[i] == (void *)rm) continue; // TODO: different pointer types of comparing variables
-
-//        auto trg = dynamic_cast<ReactionsMixin *>(_targets[i]);
-//        assert(trg);
-//        trg->unbindFrom(this);
-//    }
-
-//    remove();
-//}
-
 template <ushort RT, ushort TARGETS_NUM>
 void TypicalReaction<RT, TARGETS_NUM>::remove()
 {
@@ -59,6 +48,33 @@ void TypicalReaction<RT, TARGETS_NUM>::remove()
     }
 
     Handbook::mc().remove<RT>(this);
+//    removeExcept(0);
+}
+
+//template <ushort RT, ushort TARGETS_NUM>
+//void TypicalReaction<RT, TARGETS_NUM>::removeExcept(ReactionsMixin *spec)
+//{
+//    for (int i = 0; i < TARGETS_NUM; ++i)
+//    {
+//        if (_targets[i] == spec) continue;
+
+//        auto trg = dynamic_cast<ReactionsMixin *>(_targets[i]);
+//        assert(trg);
+//        trg->unbindFrom(this);
+//    }
+
+//    Handbook::mc().remove<RT>(this);
+//}
+
+template <ushort RT, ushort TARGETS_NUM>
+void TypicalReaction<RT, TARGETS_NUM>::info()
+{
+    std::cout << "Reaction " << RT << " [" << this << "]:";
+    for (int i = 0; i < TARGETS_NUM; ++i)
+    {
+        std::cout << " " << target(i)->atom(0)->lattice()->coords();
+    }
+    std::cout << std::endl;
 }
 
 template <ushort RT, ushort TARGETS_NUM>

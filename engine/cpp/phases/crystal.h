@@ -28,6 +28,7 @@ public:
 protected:
     virtual void buildAtoms() = 0;
     virtual void bondAllAtoms() = 0;
+    virtual void findAll() = 0;
 
     virtual Atom *makeAtom(uint type, const int3 &coords) = 0;
 
@@ -37,10 +38,6 @@ protected:
     Atoms &atoms() { return _atoms; }
 
 //    Atom *atom(const int3 &coords) { return _atoms[coords]; }
-
-private:
-    void specifyAllAtoms();
-    void findAll();
 
 private:
     Atoms _atoms;

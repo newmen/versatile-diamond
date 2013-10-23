@@ -13,10 +13,10 @@ class ReactionsMixin : public Lockable
     std::unordered_map<Reaction *, std::shared_ptr<Reaction>> _reactions;
 
 public:
-    ~ReactionsMixin();
-
     void usedIn(std::shared_ptr<Reaction> &reaction);
     void unbindFrom(Reaction *reaction);
+
+    void removeReactions();
 };
 
 }
