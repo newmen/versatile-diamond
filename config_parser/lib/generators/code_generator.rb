@@ -12,7 +12,7 @@ module VersatileDiamond
         props = classifier.each_props.to_a
         puts props.size
 
-        result = classifier.transitive_matrix.to_a
+        result = classifier.general_transitive_matrix.to_a
         puts matrix_to_s(result)
 
         print "Specification: "

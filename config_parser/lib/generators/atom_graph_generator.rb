@@ -8,6 +8,7 @@ module VersatileDiamond
 
       ATOM_COLOR = 'darkgreen'
       RELEVANTS_ATOM_COLOR = 'lightblue'
+      SAME_INCOHERENT_COLOR = 'gold'
 
       TRANSFER_COLOR = 'green'
 
@@ -103,25 +104,20 @@ module VersatileDiamond
         classifier.each_props.with_index do |prop, index|
           next unless (smallests = prop.smallests)
 
-          smallests.each do |smallest|
+          from = @atoms_to_nodes[index]
+          unless from
+            prop = classifier.each_props.to_a[index]
+            add_atom_node(index, prop.to_s)
             from = @atoms_to_nodes[index]
-            to = @atoms_to_nodes[classifier.index(smallest)]
+          end
 
-            unless from
-              prop = classifier.each_props.to_a[index]
-              add_atom_node(index, prop.to_s)
-              from = @atoms_to_nodes[index]
-            end
+          smallests.each do |smallest|
+            draw_atom_dependency(from, smallest, color_by_atom_index(index))
+          end
 
-            unless to
-              i = classifier.index(smallest)
-              add_atom_node(i, smallest.to_s)
-              to = @atoms_to_nodes[i]
-            end
-
-            @graph.add_edges(from, to).set do |e|
-              e.color = color_by_atom_index(index)
-            end
+          next unless (sames = prop.sames)
+          sames.each do |same|
+            draw_atom_dependency(from, same, SAME_INCOHERENT_COLOR)
           end
         end
       end
@@ -172,6 +168,25 @@ module VersatileDiamond
         unless @atoms_to_nodes[index]
           @atoms_to_nodes[index] = @graph.add_nodes(name)
           @atoms_to_nodes[index].set { |e| e.color = color }
+        end
+      end
+
+      # Draw dependency between two atoms
+      # @param [Node] from the node from which dependency will be drawn
+      # @param [AtomProperties] other the another atom properties to which
+      #   dependency will be drawn
+      # @param [String] edge_color the color of edge between vertices
+      def draw_atom_dependency(from, other, edge_color)
+        to = @atoms_to_nodes[classifier.index(other)]
+
+        unless to
+          i = classifier.index(other)
+          add_atom_node(i, other.to_s)
+          to = @atoms_to_nodes[i]
+        end
+
+        @graph.add_edges(from, to).set do |e|
+          e.color = edge_color
         end
       end
 

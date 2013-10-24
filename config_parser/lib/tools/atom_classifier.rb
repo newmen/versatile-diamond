@@ -54,6 +54,13 @@ module VersatileDiamond
             prop.add_smallest(smallest)
           end
         end
+
+        @props.each do |prop1|
+          @props.each do |prop2|
+            next if prop1 == prop2
+            prop1.add_same(prop2) if prop1.same_incoherent?(prop2)
+          end
+        end
       end
 
       # Classify spec and return hash where keys is order number of property
@@ -141,23 +148,25 @@ module VersatileDiamond
       end
 
       # Gets matrix of transitive clojure for atom properties dependencies
-      # @return [Matrix] the transitive clojure matrix
-      def transitive_matrix
+      # @return [Matrix] the general transitive clojure matrix
+      def general_transitive_matrix
         return @_tmatrix if @_tmatrix
 
-        size = @props.size
-        @_tmatrix = Patches::SetableMatrix.build(size) { false }
-        size.times { |i| tcR(@_tmatrix, i, i) }
+        @_tmatrix = Marshal.load(Marshal.dump(smallests_transitive_matrix))
+        @props.each_with_index do |prop, i|
+          next unless prop.sames
+          prop.sames.each { |sp| @_tmatrix[i, index(sp)] = true }
+        end
 
         @_tmatrix
       end
 
-      # Gets array where each element is index of result specifieng of each
-      # atom properties
+      # Gets array where each element is index of result specifieng of atom
+      # properties
       #
       # @return [Array] the specification array
       def specification
-        source_cols = transitive_matrix.column_vectors.map(&:to_a).
+        source_cols = smallests_transitive_matrix.column_vectors.map(&:to_a).
           map.with_index do |col, i|
             children_num = col.map { |t| t ? 1 : 0 }.reduce(:+)
             [children_num == 1, i]
@@ -171,7 +180,7 @@ module VersatileDiamond
 
         each_props.map.with_index do |prop, i|
           curr_srs =
-            transitive_matrix.column(i).map.with_index do |b, j|
+            smallests_transitive_matrix.column(i).map.with_index do |b, j|
               [b && source_props_indexes.include?(j), j]
             end
 
@@ -194,13 +203,13 @@ module VersatileDiamond
       # Gets transitions array of actives atoms to notactives
       # @return [Array] the transitions array
       def actives_to_deactives
-        collect_trainsitions(:activated)
+        collect_trainsitions(:deactivated)
       end
 
       # Gets transitions array of notactives atoms to actives
       # @return [Array] the transitions array
       def deactives_to_actives
-        collect_trainsitions(:deactivated)
+        collect_trainsitions(:activated)
       end
 
     private
@@ -227,6 +236,21 @@ module VersatileDiamond
           other = prop.send(method)
           other && (i = index(other)) && p != i ? i : p
         end
+      end
+
+      # Gets matrix of transitive clojure for smallests atom properties
+      # dependencies
+      #
+      # @return [Matrix] the transitive clojure matrix of smallests
+      #   dependencies
+      def smallests_transitive_matrix
+        return @_st_matrix if @_st_matrix
+
+        size = @props.size
+        @_st_matrix = Patches::SetableMatrix.build(size) { false }
+        size.times { |i| tcR(@_st_matrix, i, i) }
+
+        @_st_matrix
       end
 
       # Transitive clojure on DFS

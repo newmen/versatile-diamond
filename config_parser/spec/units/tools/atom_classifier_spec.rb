@@ -22,6 +22,9 @@ module VersatileDiamond
         aib = activated_incoherent_bridge
         dc.new(aib, aib.atom(:ct))
       end
+      let(:eab_ct) do
+        dc.new(extra_activated_bridge, extra_activated_bridge.atom(:ct))
+      end
 
       describe AtomProperties do
         describe "#atom_name" do
@@ -34,6 +37,7 @@ module VersatileDiamond
           it { bridge_ct.valence.should == 4 }
           it { bridge_cr.valence.should == 4 }
           it { ab_ct.valence.should == 4 }
+          it { eab_ct.valence.should == 4 }
         end
 
         describe "#lattice" do
@@ -56,6 +60,10 @@ module VersatileDiamond
           it { aib_ct.relations.should == [
               :active, bond_110_cross, bond_110_cross
             ] }
+
+          it { eab_ct.relations.should == [
+              :active, :active, bond_110_cross, bond_110_cross
+            ] }
         end
 
         describe "#relevants" do
@@ -64,9 +72,13 @@ module VersatileDiamond
           it { bridge_ct.relevants.should be_nil }
           it { ad_cr.relevants.should be_nil }
           it { aib_ct.relevants.should == [:incoherent] }
+          it { eab_ct.relevants.should be_nil }
         end
 
         describe "#==" do
+          it { methyl.should_not == c2b }
+          it { c2b.should_not == methyl }
+
           it { bridge_ct.should_not == methyl }
           it { methyl.should_not == bridge_ct }
 
@@ -84,9 +96,18 @@ module VersatileDiamond
 
           it { ab_ct.should_not == aib_ct }
           it { aib_ct.should_not == ab_ct }
+
+          it { ab_ct.should_not == eab_ct }
+          it { eab_ct.should_not == ab_ct }
+
+          it { aib_ct.should_not == eab_ct }
+          it { eab_ct.should_not == aib_ct }
         end
 
         describe "#contained_in?" do
+          it { methyl.contained_in?(c2b).should be_false }
+          it { c2b.contained_in?(methyl).should be_false }
+
           it { methyl.contained_in?(bridge_cr).should be_false }
           it { bridge_cr.contained_in?(methyl).should be_false }
 
@@ -94,13 +115,30 @@ module VersatileDiamond
           it { bridge_ct.contained_in?(dimer_cr).should be_true }
           it { bridge_ct.contained_in?(ab_ct).should be_true }
           it { bridge_ct.contained_in?(aib_ct).should be_true }
-          it { dimer_cr.contained_in?(ad_cr).should be_true }
 
+          it { dimer_cr.contained_in?(ad_cr).should be_true }
           it { ad_cr.contained_in?(dimer_cr).should be_false }
+
+          it { ab_ct.contained_in?(ad_cr).should be_true }
+          it { ad_cr.contained_in?(ab_ct).should be_false }
+
+          it { ab_ct.contained_in?(eab_ct).should be_true }
+          it { eab_ct.contained_in?(ab_ct).should be_false }
+
           it { dimer_cr.contained_in?(bridge_ct).should be_false }
           it { dimer_cr.contained_in?(bridge_cr).should be_false }
           it { ab_ct.contained_in?(bridge_cr).should be_false }
           it { bridge_cr.contained_in?(ab_ct).should be_false }
+        end
+
+        describe "#same_incoherent?" do
+          it { ab_ct.same_incoherent?(ad_cr).should be_false }
+          it { ad_cr.same_incoherent?(ab_ct).should be_false }
+          it { ab_ct.same_incoherent?(eab_ct).should be_false }
+          it { aib_ct.same_incoherent?(eab_ct).should be_false }
+          it { eab_ct.same_incoherent?(ab_ct).should be_false }
+
+          it { eab_ct.same_incoherent?(aib_ct).should be_true }
         end
 
         describe "#terminations_num" do
@@ -112,6 +150,9 @@ module VersatileDiamond
 
           it { ad_cr.terminations_num(active_bond).should == 1 }
           it { ad_cr.terminations_num(adsorbed_h).should == 0 }
+
+          it { eab_ct.terminations_num(active_bond).should == 2 }
+          it { eab_ct.terminations_num(adsorbed_h).should == 0 }
         end
 
         describe "#unrelevanted" do
@@ -159,6 +200,28 @@ module VersatileDiamond
           it { ab_ct.deactivated.deactivated.should be_nil }
         end
 
+        describe "#smallests" do
+          it { bridge_ct.smallests.should be_nil }
+          it { ab_ct.smallests.should be_nil }
+
+          describe "#add_smallest" do
+            before(:each) { ab_ct.add_smallest(bridge_ct) }
+            it { bridge_ct.smallests.should be_nil }
+            it { ab_ct.smallests.to_a.should == [bridge_ct] }
+          end
+        end
+
+        describe "#sames" do
+          it { aib_ct.sames.should be_nil }
+          it { eab_ct.sames.should be_nil }
+
+          describe "#add_same" do
+            before(:each) { eab_ct.add_same(aib_ct) }
+            it { aib_ct.sames.should be_nil }
+            it { eab_ct.sames.to_a.should == [aib_ct] }
+          end
+        end
+
         describe "#size" do
           it { bridge_ct.size.should == 6.5 }
           it { bridge_cr.size.should == 8.5 }
@@ -198,17 +261,27 @@ module VersatileDiamond
 
           before(:each) { subject.organize_properties! }
 
-          it { find(bridge_cr).smallests.size.should == 1 }
-          it { find(bridge_cr).smallests.first.should == find(bridge_ct) }
+          describe "#smallests" do
+            it { find(bridge_ct).smallests.should be_nil }
 
-          it { find(dimer_cr).smallests.size.should == 1 }
-          it { find(dimer_cr).smallests.first.should == find(bridge_ct) }
+            it { find(bridge_cr).smallests.to_a.should == [find(bridge_ct)] }
+            it { find(dimer_cr).smallests.to_a.should == [find(bridge_ct)] }
+            it { find(ab_ct).smallests.to_a.should == [find(bridge_ct)] }
+            it { find(aib_ct).smallests.to_a.should == [find(ab_ct)] }
 
-          it { find(ab_ct).smallests.size.should == 1 }
-          it { find(ab_ct).smallests.first.should == find(bridge_ct) }
+            it { find(ad_cr).smallests.size.should == 2 }
+            it { find(ad_cr).smallests.to_a.should include(dimer_cr, ab_ct) }
+          end
 
-          it { find(ad_cr).smallests.size.should == 2 }
-          it { find(ad_cr).smallests.to_a.should include(dimer_cr, ab_ct) }
+          describe "#sames" do
+            it { find(bridge_ct).sames.should be_nil }
+            it { find(bridge_cr).sames.should be_nil }
+            it { find(dimer_cr).sames.should be_nil }
+            it { find(ab_ct).sames.should be_nil }
+            it { find(aib_ct).sames.should be_nil }
+
+            it { find(ad_cr).sames.size.should == 1 }
+          end
         end
 
         describe "#classify" do

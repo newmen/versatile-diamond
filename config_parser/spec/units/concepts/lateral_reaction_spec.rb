@@ -88,8 +88,8 @@ module VersatileDiamond
       end
 
       describe "#size" do
-        it { reaction.size.should == 14.34 }
-        it { other.size.should == 18.34 }
+        it { reaction.size.should == 14.1 }
+        it { other.size.should == 18.1 }
       end
 
       it_behaves_like "visitable" do

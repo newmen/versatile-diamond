@@ -9,7 +9,7 @@ module VersatileDiamond
       include Modules::ListsComparer
       include Lattices::BasicRelations
 
-      attr_reader :smallests
+      attr_reader :smallests, :sames
 
       # Overloaded constructor that stores all properties of atom
       # @overload new(props)
@@ -66,8 +66,7 @@ module VersatileDiamond
       # @param [AtomProperties] other probably parent atom properties
       # @return [Boolean] contained or not
       def contained_in?(other)
-        return false unless atom_name == other.atom_name &&
-          lattice == other.lattice
+        return false unless same_basic_values?(other)
 
         oth_rels = other.relations.dup
         relations.all? { |rel| oth_rels.delete_one(rel) } &&
@@ -75,6 +74,22 @@ module VersatileDiamond
             !relevants.include?(:incoherent) &&
             (!relevants.include?(:unfixed) ||
               other.relevants.include?(:unfixed))))
+      end
+
+      # Checks that other properties has same incoherent state
+      # @param [AtomProperties] other probably same properties by incoherent
+      #   state
+      # @return [Boolean] same or not
+      def same_incoherent?(other)
+        return false unless same_basic_values?(other) && active? &&
+          other.relevants && other.relevants.include?(:incoherent) &&
+          !contained_in?(other)
+
+        lists_are_identical?(
+          relations_wo_actives, other.relations_wo_actives) { |a, b| a == b } &&
+          actives_num > other.actives_num &&
+          (bonds_num == valence || (relevants &&
+            lists_are_identical?(relevants, other.relevants) { |a, b| a == b }))
       end
 
       # Gives the number of how many termination specs lies in current
@@ -85,7 +100,7 @@ module VersatileDiamond
       def terminations_num(term_spec)
         case term_spec.class.to_s.underscore
         when 'active_bond'
-          relations.select { |r| r == :active }.size
+          actives_num
         when 'atomic_spec'
           if term_spec.is_hydrogen?
             valence - bonds_num
@@ -104,6 +119,14 @@ module VersatileDiamond
         @smallests ||= Set.new
         @smallests -= smallest.smallests if smallest.smallests
         @smallests << smallest
+      end
+
+      # Adds dependency from same properties by incoherent state
+      # @param [AtomProperties] same the same properties from which depends
+      #   current properties
+      def add_same(same)
+        @sames ||= Set.new
+        @sames << same
       end
 
       # Makes unrelevanted copy of self
@@ -230,7 +253,26 @@ module VersatileDiamond
 
       attr_reader :props
 
+      # Gets relations array without active bonds
+      # @return [Array] the array of relations without active bonds
+      def relations_wo_actives
+        relations.reject { |r| r == :active }
+      end
+
+      # Gets number of active bonds
+      # @return [Integer] number of active bonds
+      def actives_num
+        relations.select { |r| r == :active }.size
+      end
+
     private
+
+      # Compares basic values of two properties
+      # @peram [AtomProperties] other the comparing properties
+      # @return [Boolean] same or not
+      def same_basic_values?(other)
+        atom_name == other.atom_name && lattice == other.lattice
+      end
 
       # Harvest relations of atom in spec
       # @param [Spec | SpecificSpec] spec see at #new same argument
