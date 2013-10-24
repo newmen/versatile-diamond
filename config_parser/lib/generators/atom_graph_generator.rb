@@ -98,20 +98,6 @@ module VersatileDiamond
         end
       end
 
-      # Adds atom properties node to graph
-      # @param [Integer] index the index of atom properties
-      # @param [String] image the pseudographic representation of atom
-      #   properties
-      def add_atom_node(index, image)
-        name = "#{index} :: #{image}"
-        color = color_by_atom_index(index)
-
-        unless @atoms_to_nodes[index]
-          @atoms_to_nodes[index] = @graph.add_nodes(name)
-          @atoms_to_nodes[index].set { |e| e.color = color }
-        end
-      end
-
       # Draws dependencies between atom properties by including of each other
       def draw_atom_dependencies
         classifier.each_props.with_index do |prop, index|
@@ -155,19 +141,15 @@ module VersatileDiamond
             next if cache[indexes[0]].include?(indexes[1])
             cache[indexes[0]] << indexes[1]
 
-            nodes = indexes.map do |i|
-              unless @atoms_to_nodes[i]
-                prop = classifier.each_props.to_a[i]
-                add_atom_node(i, prop.to_s)
-              end
-              @atoms_to_nodes[i]
-            end
-
+            nodes = indexes.map { |i| get_atom_node(i) }
             @graph.add_edges(*nodes).set do |e|
               e.color = TRANSFER_COLOR
             end
           end
         end
+
+        transitions_between_in(classifier.actives_to_deactives)
+        transitions_between_in(classifier.deactives_to_actives)
       end
 
       # Selects color by index of atom properties
@@ -175,6 +157,45 @@ module VersatileDiamond
       # @return [String] selected color
       def color_by_atom_index(index)
         classifier.has_relevants?(index) ? RELEVANTS_ATOM_COLOR : ATOM_COLOR
+      end
+
+    private
+
+      # Adds atom properties node to graph
+      # @param [Integer] index the index of atom properties
+      # @param [String] image the pseudographic representation of atom
+      #   properties
+      def add_atom_node(index, image)
+        name = "#{index} :: #{image}"
+        color = color_by_atom_index(index)
+
+        unless @atoms_to_nodes[index]
+          @atoms_to_nodes[index] = @graph.add_nodes(name)
+          @atoms_to_nodes[index].set { |e| e.color = color }
+        end
+      end
+
+      # Gets atom properties by index from classifier
+      # @param [Integer] index the index of atom properties
+      # @return [Node] the correspond node
+      def get_atom_node(index)
+        unless @atoms_to_nodes[index]
+          prop = classifier.each_props.to_a[index]
+          add_atom_node(index, prop.to_s)
+        end
+        @atoms_to_nodes[index]
+      end
+
+      def transitions_between_in(one_face_of_mirror)
+        one_face_of_mirror.each_with_index do |to, from|
+          next if to == from
+          to_node = get_atom_node(to)
+          from_node = get_atom_node(from)
+
+          @graph.add_edges(from_node, to_node).set do |e|
+            e.color = TRANSFER_COLOR
+          end
+        end
       end
     end
 
