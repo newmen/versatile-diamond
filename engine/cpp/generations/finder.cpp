@@ -12,15 +12,22 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
 {
 #pragma omp parallel
     {
+#ifdef DEBUG
 #pragma omp for schedule(dynamic)
         for (int i = 0; i < n; ++i)
         {
             Atom *atom = atoms[i];
-#ifdef DEBUG
             if (checkNull && !atom) assert(true);
-#endif // DEBUG
             if (!atom) continue;
-            if (atom) atom->specifyType();
+        }
+#endif // DEBUG
+
+#pragma omp for schedule(dynamic)
+        for (int i = 0; i < n; ++i)
+        {
+            Atom *atom = atoms[i];
+            if (!atom) continue;
+            atom->setUnvisited();
         }
 
 #pragma omp for schedule(dynamic)
@@ -68,6 +75,14 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
         }
 
         Handbook::keeper().findAll();
+
+#pragma omp for schedule(dynamic)
+        for (int i = 0; i < n; ++i)
+        {
+            Atom *atom = atoms[i];
+            if (!atom) continue;
+            atom->setVisited();
+        }
     }
 
     Handbook::keeper().clear();

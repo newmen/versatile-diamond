@@ -3,18 +3,18 @@
 
 #include <unordered_map>
 #include "../tools/lockable.h"
-#include "../reactions/reaction.h"
+#include "../reactions/single_reaction.h"
 
 namespace vd
 {
 
 class ReactionsMixin : public Lockable
 {
-    std::unordered_map<Reaction *, std::shared_ptr<Reaction>> _reactions;
+    std::unordered_map<SingleReaction *, std::shared_ptr<SingleReaction>> _reactions;
 
 public:
-    void usedIn(std::shared_ptr<Reaction> &reaction);
-    void unbindFrom(Reaction *reaction);
+    void usedIn(std::shared_ptr<SingleReaction> &reaction);
+    void unbindFrom(SingleReaction *reaction);
 
     void removeReactions();
 };

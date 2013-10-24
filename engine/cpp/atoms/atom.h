@@ -18,10 +18,12 @@ class BaseSpec;
 
 class Atom : public Lockable
 {
+    bool _visited = false;
+
     ushort _type, _prevType = -1;
     ushort _actives;
     Lattice *_lattice, *_cacheLattice;
-    std::unordered_multiset<Atom *> _neighbours;
+    std::unordered_multiset<Atom *> _relatives; // atoms bonded with current
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
     std::unordered_multimap<uint, std::shared_ptr<BaseSpec>> _specs;
@@ -29,6 +31,10 @@ class Atom : public Lockable
 public:
     Atom(ushort type, ushort actives, Lattice *lattice);
     virtual ~Atom();
+
+    void setVisited() { _visited = true; }
+    void setUnvisited() { _visited = false; }
+    bool isVisited() { return _visited; }
 
     ushort type() const { return _type; }
     ushort prevType() const { return _prevType; }
@@ -57,8 +63,8 @@ public:
     void forget(ushort rType, ushort specType);
 
 protected:
-    const std::unordered_multiset<Atom *> &neighbours() const { return _neighbours; }
-    std::unordered_multiset<Atom *> &neighbours() { return _neighbours; }
+    const std::unordered_multiset<Atom *> &neighbours() const { return _relatives; }
+    std::unordered_multiset<Atom *> &neighbours() { return _relatives; }
 
     ushort actives() const { return _actives; }
 

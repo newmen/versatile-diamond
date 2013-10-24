@@ -6,8 +6,6 @@
 namespace vd
 {
 
-class ReactionsMixin;
-
 class Reaction
 {
 public:
@@ -15,9 +13,6 @@ public:
 
     virtual double rate() const = 0;
     virtual void doIt() = 0;
-
-    virtual void remove() = 0;
-    virtual void removeExcept(ReactionsMixin *) {}
 
     virtual void info() = 0;
 protected:

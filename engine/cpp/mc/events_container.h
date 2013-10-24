@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <omp.h>
+#include "../reactions/single_reaction.h"
 #include "base_events_container.h"
 
 namespace vd
@@ -10,11 +11,11 @@ namespace vd
 
 class EventsContainer : public BaseEventsContainer
 {
-    std::unordered_map<Reaction *, uint> _positions;
+    std::unordered_map<SingleReaction *, uint> _positions;
 
 public:
-    void add(Reaction *event);
-    void remove(Reaction *event);
+    void add(SingleReaction *event);
+    void remove(SingleReaction *event);
 };
 
 }

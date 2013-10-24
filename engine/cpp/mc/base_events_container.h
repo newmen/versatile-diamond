@@ -2,6 +2,7 @@
 #define BASE_EVENTS_CONTAINER_H
 
 #include <vector>
+#include <unordered_map>
 #include "../reactions/reaction.h"
 
 namespace vd

@@ -20,14 +20,14 @@ void ReactionDeactivation::find(Atom *anchor)
     {
         Handbook::mc().addMul<SURFACE_DEACTIVATION>(new ReactionDeactivation(anchor), dn);
     }
+    else if (dn < 0)
+    {
+        ReactionDeactivation removableTemplate(anchor);
+        Handbook::mc().removeMul<SURFACE_DEACTIVATION>(&removableTemplate, -dn);
+    }
 }
 
 short ReactionDeactivation::toType(ushort type) const
 {
     return __activesToH[type];
-}
-
-const ushort *ReactionDeactivation::onAtoms() const
-{
-    return __activesOnAtoms;
 }

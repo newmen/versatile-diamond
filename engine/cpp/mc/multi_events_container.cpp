@@ -10,7 +10,7 @@ MultiEventsContainer::~MultiEventsContainer()
 {
 //    cout << _positions.size() << endl;
 
-    Reaction *prev = 0;
+    Atom *prev = 0;
     for (auto &pr : _positions)
     {
 //        cout << pr.second << " -> " << pr.first;
@@ -30,27 +30,31 @@ MultiEventsContainer::~MultiEventsContainer()
     }
 }
 
-void MultiEventsContainer::add(Reaction *event, uint n)
+void MultiEventsContainer::add(MultiReaction *event, uint n)
 {
     for (uint i = 0; i < n; ++i)
     {
-        _positions.insert(std::pair<Reaction *, uint>(event, _events.size()));
+        _positions.insert(std::pair<Atom *, uint>(event->target(), _events.size()));
         _events.push_back(event);
     }
 }
 
-void MultiEventsContainer::remove(Reaction *event, uint n)
+void MultiEventsContainer::remove(MultiReaction *event, uint n)
 {
+    Atom *anchor = event->target();
+
     for (uint i = 0; i < n; ++i)
     {
-        auto curr = _positions.find(event);
+        auto curr = _positions.find(anchor);
         assert(curr != _positions.end());
 
-        Reaction *last = exchangeToLast(curr->second);
+        Reaction *current = *(_events.begin() + curr->second);
+
+        MultiReaction *last = static_cast<MultiReaction *>(exchangeToLast(curr->second));
         if (last)
         {
             uint lastIndex = _events.size();
-            auto range = _positions.equal_range(last);
+            auto range = _positions.equal_range(last->target());
 
 #ifdef DEBUG
             bool found = false;
@@ -72,10 +76,10 @@ void MultiEventsContainer::remove(Reaction *event, uint n)
 
         _positions.erase(curr);
 
-        curr = _positions.find(event);
+        curr = _positions.find(anchor);
         if (curr == _positions.end())
         {
-            delete event;
+            delete current;
         }
     }
 

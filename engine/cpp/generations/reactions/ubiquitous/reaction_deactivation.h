@@ -17,8 +17,6 @@ public:
 
 protected:
     short toType(ushort type) const override;
-    const ushort *onAtoms() const override;
-
     void action() override { target()->deactivate(); }
 };
 

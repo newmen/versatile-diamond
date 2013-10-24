@@ -12,14 +12,21 @@ using namespace vd;
 class AtomBuilder
 {
 public:
-    Atom *buildC(uint type, uint actives)
+    Atom *buildC(uint type, uint actives) const
     {
-        return new C(type, actives, (Lattice *)0);
+        return specify(new C(type, actives, (Lattice *)0));
     }
 
-    Atom *buildCd(uint type, uint actives, const Crystal *crystal, const int3 &coords)
+    Atom *buildCd(uint type, uint actives, const Crystal *crystal, const int3 &coords) const
     {
-        return new C(type, actives, new Lattice(crystal, coords));
+        return specify(new C(type, actives, new Lattice(crystal, coords)));
+    }
+
+private:
+    Atom *specify(Atom *atom) const
+    {
+        atom->specifyType();
+        return atom;
     }
 };
 

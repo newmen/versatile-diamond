@@ -3,6 +3,7 @@
 
 #include <map>
 #include <omp.h>
+#include "../reactions/multi_reaction.h"
 #include "base_events_container.h"
 
 namespace vd
@@ -10,13 +11,13 @@ namespace vd
 
 class MultiEventsContainer : public BaseEventsContainer
 {
-    std::multimap<Reaction *, uint> _positions;
+    std::multimap<Atom *, uint> _positions;
 
 public:
     ~MultiEventsContainer();
 
-    void add(Reaction *event, uint n);
-    void remove(Reaction *event, uint n);
+    void add(MultiReaction *event, uint n);
+    void remove(MultiReaction *event, uint n);
 };
 
 }

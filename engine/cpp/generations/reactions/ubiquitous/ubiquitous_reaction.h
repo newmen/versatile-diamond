@@ -1,7 +1,7 @@
 #ifndef CONCRETE_UBIQUITOUS_REACTION_H
 #define CONCRETE_UBIQUITOUS_REACTION_H
 
-#include "../../../reactions/reaction.h"
+#include "../../../reactions/multi_reaction.h"
 #include "../../handbook.h"
 
 #include <iostream>
@@ -10,25 +10,22 @@ namespace vd
 {
 
 template <ushort RT>
-class UbiquitousReaction : public Reaction
+class UbiquitousReaction : public MultiReaction
 {
     Atom *_target;
 
 public:
     UbiquitousReaction(Atom *target) : _target(target) {}
 
+    Atom *target() { return _target; }
     void doIt() override;
-    void remove() override;
 
     void info() override;
 
 protected:
     static short delta(Atom *anchor, const ushort *typeToNum);
 
-    Atom *target() { return _target; }
-
     virtual short toType(ushort type) const = 0;
-    virtual const ushort *onAtoms() const = 0;
     virtual void action() = 0;
 };
 
@@ -57,19 +54,7 @@ void UbiquitousReaction<RT>::doIt()
     action();
     _target->changeType(type);
 
-    Atom *changedAtom = _target;
-    remove();
-
-    // Warning! Current object already deallocate self memory, therefore used changedAtom variable.
-    Finder::findAll(&changedAtom, 1);
-}
-
-template <ushort RT>
-void UbiquitousReaction<RT>::remove()
-{
-    short dn = delta(_target, onAtoms());
-    assert(dn < 0);
-    Handbook::mc().removeMul<RT>(this, -dn);
+    Finder::findAll(&_target, 1);
 }
 
 template <ushort RT>

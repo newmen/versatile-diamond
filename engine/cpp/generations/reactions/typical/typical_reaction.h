@@ -1,7 +1,7 @@
 #ifndef TYPICAL_REACTION_H
 #define TYPICAL_REACTION_H
 
-#include "../../../reactions/reaction.h"
+#include "../../../reactions/single_reaction.h"
 #include "../../../species/base_spec.h"
 #include "../../../species/reactions_mixin.h"
 #include "../../handbook.h"
@@ -14,14 +14,15 @@ namespace vd
 {
 
 template <ushort RT, ushort TARGETS_NUM>
-class TypicalReaction : public Reaction
+class TypicalReaction : public SingleReaction
 {
     ReactionsMixin *_targets[TARGETS_NUM];
 
 public:
     TypicalReaction(ReactionsMixin **targets);
 
-    void remove() override;
+    ullong hash() const;
+
     void removeExcept(ReactionsMixin *spec) override;
 
     void info() override;
@@ -41,9 +42,15 @@ TypicalReaction<RT, TARGETS_NUM>::TypicalReaction(ReactionsMixin **targets)
 }
 
 template <ushort RT, ushort TARGETS_NUM>
-void TypicalReaction<RT, TARGETS_NUM>::remove()
+ullong TypicalReaction<RT, TARGETS_NUM>::hash() const
 {
-    removeExcept(0);
+    // TODO: can do that if targets.size > 2 and type is unsigned long long?
+    ullong result = 0;
+    for (int i = 0; i < TARGETS_NUM; ++i)
+    {
+        result = (result << 16) ^ (ullong)_targets[i];
+    }
+    return result;
 }
 
 template <ushort RT, ushort TARGETS_NUM>
@@ -55,7 +62,7 @@ void TypicalReaction<RT, TARGETS_NUM>::removeExcept(ReactionsMixin *spec)
         _targets[i]->unbindFrom(this);
     }
 
-    Handbook::mc().remove<RT>(this);
+    Handbook::mc().remove<RT>(this); // must be after unbind from another species
 }
 
 template <ushort RT, ushort TARGETS_NUM>

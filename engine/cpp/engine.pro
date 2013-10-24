@@ -69,4 +69,6 @@ HEADERS += \
     species/specific_spec.h \
     tools/common.h \
     tools/lockable.h \
-    tools/vector3d.h
+    tools/vector3d.h \
+    reactions/multi_reaction.h \
+    reactions/single_reaction.h

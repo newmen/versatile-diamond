@@ -22,7 +22,7 @@ void BridgeCts::find(BaseSpec *parent)
         if (anchor->hasRole(28, BRIDGE_CTs))
         {
             auto bridgeCts = dynamic_cast<ReactionsMixin *>(anchor->specByRole(28, BRIDGE_CTs));
-            bridgeCts->removeReactions();
+            bridgeCts->removeReactions(); // TODO: potencial race condition
             anchor->forget(28, BRIDGE_CTs);
         }
     }
