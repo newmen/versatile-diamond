@@ -48,7 +48,7 @@ void MultiEventsContainer::remove(MultiReaction *event, uint n)
         auto curr = _positions.find(anchor);
         assert(curr != _positions.end());
 
-        Reaction *current = *(_events.begin() + curr->second);
+        Reaction *current = _events[curr->second];
 
         MultiReaction *last = static_cast<MultiReaction *>(exchangeToLast(curr->second));
         if (last)
@@ -76,11 +76,18 @@ void MultiEventsContainer::remove(MultiReaction *event, uint n)
 
         _positions.erase(curr);
 
-        curr = _positions.find(anchor);
-        if (curr == _positions.end())
+        auto range = _positions.equal_range(anchor);
+        bool haveSame = false;
+        for (auto it = range.first; it != range.second; it++)
         {
-            delete current;
+            if (_events[it->second] == current)
+            {
+                haveSame = true;
+                break;
+            }
         }
+
+        if (!haveSame) delete current;
     }
 
     assert(_events.size() == _positions.size());

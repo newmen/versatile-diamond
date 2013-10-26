@@ -23,6 +23,10 @@ public:
     virtual ushort size() const = 0;
 
     virtual void findChildren() = 0;
+
+#ifdef PRINT
+    virtual void info() = 0;
+#endif // PRINT
 };
 
 }

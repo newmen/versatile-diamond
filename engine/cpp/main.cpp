@@ -18,21 +18,21 @@ int main()
 
     cout << Handbook::mc().totalRate() << endl;
 
-//    for (int i = 0; i < 1; ++i)
-//    {
-//        cout << i << ". ";
-//        Handbook::mc().doRandom();
-//        cout << Handbook::mc().totalRate() << endl;
-//    }
+    for (int i = 0; i < 100; ++i)
+    {
+        cout << i << ". ";
+        Handbook::mc().doRandom();
+        cout << Handbook::mc().totalRate() << endl;
+    }
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>();
-    cout << Handbook::mc().totalRate() << endl;
+//    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>();
+//    cout << Handbook::mc().totalRate() << endl;
 
-    Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>();
-    cout << Handbook::mc().totalRate() << endl;
+//    Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>();
+//    cout << Handbook::mc().totalRate() << endl;
 
-    Handbook::mc().doOneOfOne<DIMER_FORMATION>();
-    cout << Handbook::mc().totalRate() << endl;
+//    Handbook::mc().doOneOfOne<DIMER_FORMATION>();
+//    cout << Handbook::mc().totalRate() << endl;
 
     delete diamond;
     return 0;

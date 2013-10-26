@@ -5,10 +5,10 @@
 namespace vd
 {
 
-void ReactionsMixin::usedIn(std::shared_ptr<SingleReaction> &reaction)
+void ReactionsMixin::usedIn(SingleReaction *reaction)
 {
     lock([this, reaction]() {
-        _reactions.insert(std::pair<SingleReaction *, std::shared_ptr<SingleReaction>>(reaction.get(), reaction));
+        _reactions.insert(reaction);
     });
 }
 
@@ -19,14 +19,26 @@ void ReactionsMixin::unbindFrom(SingleReaction *reaction)
     });
 }
 
-// Removes reactions only from MC, but not deletes they from memory. Memory deallocation occure when base specie forgets
-// specific specie with correspond reactions mixin.
 void ReactionsMixin::removeReactions()
 {
-    for (auto &pr : _reactions)
+    SingleReaction **reactionsDup;
+    int n = 0;
+    lock([this, &reactionsDup, &n] {
+        reactionsDup = new SingleReaction *[_reactions.size()];
+        for (SingleReaction *reaction : _reactions)
+        {
+            reactionsDup[n++] = reaction;
+        }
+    });
+
+    for (int i = 0; i < n; ++i)
     {
-        pr.first->removeExcept(this);
+        SingleReaction *reaction = reactionsDup[i];
+//        reaction->removeExcept(this);
+        reaction->removeFrom(this);
     }
+
+    delete [] reactionsDup;
 }
 
 }

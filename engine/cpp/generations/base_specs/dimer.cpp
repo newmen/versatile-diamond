@@ -5,6 +5,10 @@
 
 #include <assert.h>
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 void Dimer::find(Atom *anchor)
 {
     assert(anchor);
@@ -20,6 +24,8 @@ void Dimer::find(Atom *anchor)
         auto nbrs = diamond->front_100(anchor);
         if (nbrs[0] && nbrs[0]->is(22) && anchor->hasBondWith(nbrs[0]) && nbrs[0]->hasRole(3, BRIDGE))
         {
+            assert(nbrs[0]->lattice());
+
             BaseSpec *parents[2] = {
                 anchor->specByRole(3, BRIDGE),
                 nbrs[0]->specByRole(3, BRIDGE)
@@ -29,9 +35,17 @@ void Dimer::find(Atom *anchor)
             anchor->describe(22, dimer);
             nbrs[0]->describe(22, dimer);
 
+#ifdef PRINT
+#pragma omp critical
+            {
+                std::cout << "Dimer at ";
+                dimer->info();
+                std::cout << " was found" << std::endl;
+            }
+#endif // PRINT
+
             dimer->findChildren();
         }
-        else return;
     }
 }
 

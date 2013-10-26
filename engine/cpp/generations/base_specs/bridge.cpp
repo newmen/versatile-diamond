@@ -4,9 +4,13 @@
 
 #include <omp.h>
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 void Bridge::find(Atom *anchor)
 {
-    if (!anchor->is(3)) return;
+    if (!anchor->is(3)) return; // TODO: remove all children?
     if (!anchor->prevIs(3))
     {
         assert(anchor->lattice());
@@ -27,9 +31,17 @@ void Bridge::find(Atom *anchor)
             nbrs[0]->describe(6, bridge);
             nbrs[1]->describe(6, bridge);
 
+#ifdef PRINT
+#pragma omp critical
+            {
+                std::cout << "Bridge at ";
+                bridge->info();
+                std::cout<< " was found" << std::endl;
+            }
+#endif // PRINT
+
             bridge->findChildren();
         }
-        else return;
     }
     else
     {
@@ -43,7 +55,7 @@ void Bridge::findChildren()
     {
 #pragma omp section
         {
-            BridgeCts::find(this);
+            BridgeCTs::find(this);
         }
 //#pragma omp section
 //        {

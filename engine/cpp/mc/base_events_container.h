@@ -14,6 +14,7 @@ public:
     virtual ~BaseEventsContainer();
 
     void doEvent(double r);
+
     double commonRate() const;
 
 protected:

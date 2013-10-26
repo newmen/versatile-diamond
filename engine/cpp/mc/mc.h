@@ -8,7 +8,9 @@
 #include "events_container.h"
 #include "multi_events_container.h"
 
+#ifdef PRINT
 #include <iostream>
+#endif // PRINT
 
 // for #compareContainers()
 #define MULTI_EVENTS_INDEX_SHIFT 1000
@@ -82,6 +84,9 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
         double cr = currentEvents->commonRate();
         if (r < cr + passRate)
         {
+#ifdef PRINT
+            std::cout << "Event " << i << " => ";
+#endif // PRINT
             currentEvents->doEvent(r - passRate);
             return;
         }
@@ -143,8 +148,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SingleReaction *reaction)
 
 #pragma omp critical
     {
+#ifdef PRINT
         std::cout << "Add ";
         reaction->info();
+#endif // PRINT
         _events[RT].add(reaction);
     }
 
@@ -159,12 +166,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SingleReaction *reaction)
 
     updateRate(-reaction->rate());
 
-#pragma omp critical
-    {
+//#pragma omp critical
+//    {
+#ifdef PRINT
         std::cout << "Remove ";
         reaction->info();
+#endif // PRINT
         _events[RT].remove(reaction);
-    }
+//    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -175,8 +184,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(MultiReaction *reaction, uint n)
 
 #pragma omp critical
     {
+#ifdef PRINT
         std::cout << "Add multi ";
         reaction->info();
+#endif // PRINT
         _multiEvents[RT].add(reaction, n);
     }
 
@@ -193,8 +204,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(MultiReaction *reaction, uint n
 
 #pragma omp critical
     {
+#ifdef PRINT
         std::cout << "Remove multi ";
         reaction->info();
+#endif // PRINT
         _multiEvents[RT].remove(reaction, n);
     }
 }

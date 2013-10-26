@@ -24,6 +24,7 @@ void EventsContainer::remove(SingleReaction *event)
     if (last) _positions[last] = curr->second;
 
     _positions.erase(curr);
+    delete event;
 
     assert(_events.size() == _positions.size());
 }

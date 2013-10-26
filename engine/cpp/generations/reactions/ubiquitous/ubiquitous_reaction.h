@@ -4,7 +4,9 @@
 #include "../../../reactions/multi_reaction.h"
 #include "../../handbook.h"
 
+#ifdef PRINT
 #include <iostream>
+#endif // PRINT
 
 namespace vd
 {
@@ -20,7 +22,9 @@ public:
     Atom *target() { return _target; }
     void doIt() override;
 
+#ifdef PRINT
     void info() override;
+#endif // PRINT
 
 protected:
     static short delta(Atom *anchor, const ushort *typeToNum);
@@ -57,11 +61,13 @@ void UbiquitousReaction<RT>::doIt()
     Finder::findAll(&_target, 1);
 }
 
+#ifdef PRINT
 template <ushort RT>
 void UbiquitousReaction<RT>::info()
 {
     std::cout << "Reaction " << RT << " [" << this << "]: " << target()->lattice()->coords() << std::endl;
 }
+#endif // PRINT
 
 }
 

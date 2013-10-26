@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS += -g -std=c++0x -DDEBUG -fopenmp
+QMAKE_CXXFLAGS += -g -std=c++0x -fopenmp -DDEBUG -DPRINT
 LIBS += -fopenmp -lstdc++
 
 SOURCES += main.cpp \

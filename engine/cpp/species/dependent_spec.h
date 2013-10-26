@@ -3,6 +3,10 @@
 
 #include "base_spec.h"
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -16,6 +20,10 @@ protected:
 
     Atom *atom(ushort index);
     ushort size() const;
+
+#ifdef PRINT
+    void info();
+#endif // PRINT
 
     BaseSpec *parent(ushort index = 0);
     const BaseSpec *parent(ushort index = 0) const;
@@ -54,6 +62,20 @@ ushort DependentSpec<PARENTS_NUM>::size() const
     }
     return sum;
 }
+
+#ifdef PRINT
+template <ushort PARENTS_NUM>
+void DependentSpec<PARENTS_NUM>::info()
+{
+    std::cout << "[" << this << "]";
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        std::cout << " -> (";
+        _parents[i]->info();
+        std::cout << ")";
+    }
+}
+#endif // PRINT
 
 template <ushort PARENTS_NUM>
 BaseSpec *DependentSpec<PARENTS_NUM>::parent(ushort index)

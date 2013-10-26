@@ -14,7 +14,10 @@ public:
     virtual double rate() const = 0;
     virtual void doIt() = 0;
 
+#ifdef PRINT
     virtual void info() = 0;
+#endif // PRINT
+
 protected:
 };
 

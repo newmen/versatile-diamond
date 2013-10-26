@@ -1,7 +1,8 @@
 #include "base_events_container.h"
 
+#ifdef PRINT
 #include <iostream>
-using namespace std;
+#endif // PRINT
 
 namespace vd
 {
@@ -17,7 +18,9 @@ void BaseEventsContainer::doEvent(double r)
     uint index = (uint)(r / _events.front()->rate());
     assert(index < _events.size());
 
-    cout << "SELECTED: " << index << endl;
+#ifdef PRINT
+    std::cout << "SELECTED: " << index << std::endl;
+#endif // PRINT
 
     _events[index]->doIt();
 }

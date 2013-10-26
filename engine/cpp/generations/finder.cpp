@@ -43,14 +43,14 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
                     // finds bridge and all their children with mono (+ gas) reactions with it
                     Bridge::find(atom);
                 }
-#pragma omp section
-                {
-                    ReactionActivation::find(atom);
-                }
-#pragma omp section
-                {
-                    ReactionDeactivation::find(atom);
-                }
+//#pragma omp section
+//                {
+//                    ReactionActivation::find(atom);
+//                }
+//#pragma omp section
+//                {
+//                    ReactionDeactivation::find(atom);
+//                }
             }
         }
 

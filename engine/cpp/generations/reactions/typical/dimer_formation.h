@@ -12,6 +12,7 @@ public:
 
     double rate() const { return 1e5; }
     void doIt();
+    void removeFrom(ReactionsMixin *target);
 
 private:
     static void checkAndAdd(BaseSpec *parent, Atom *neighbour);

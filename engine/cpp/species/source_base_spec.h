@@ -3,6 +3,10 @@
 
 #include "base_spec.h"
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -16,6 +20,10 @@ public:
 
     Atom *atom(ushort index);
     ushort size() const { return ATOMS_NUM; }
+
+#ifdef PRINT
+    void info();
+#endif // PRINT
 };
 
 template <ushort ATOMS_NUM>
@@ -33,6 +41,21 @@ Atom *SourceBaseSpec<ATOMS_NUM>::atom(ushort index)
     assert(ATOMS_NUM > index);
     return _atoms[index];
 }
+
+#ifdef PRINT
+template <ushort ATOMS_NUM>
+void SourceBaseSpec<ATOMS_NUM>::info()
+{
+    std::cout << "[" << this << "]";
+    for (int i = 0; i < ATOMS_NUM; ++i)
+    {
+        std::cout << " ";
+        auto lattice = _atoms[i]->lattice();
+        if (lattice) std::cout << lattice->coords();
+        else std::cout << "amorph";
+    }
+}
+#endif // PRINT
 
 }
 
