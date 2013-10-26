@@ -5,7 +5,7 @@
 namespace vd
 {
 
-void EventsContainer::add(SingleReaction *event)
+void EventsContainer::add(SpecReaction *event)
 {
     assert(_positions.find(event) == _positions.end());
 
@@ -13,18 +13,18 @@ void EventsContainer::add(SingleReaction *event)
     _events.push_back(event);
 }
 
-void EventsContainer::remove(SingleReaction *event)
+void EventsContainer::remove(SpecReaction *event, bool clearMemory)
 {
     assert(event);
 
     auto curr = _positions.find(event);
     assert(curr != _positions.end());
 
-    SingleReaction *last = static_cast<SingleReaction *>(exchangeToLast(curr->second));
+    SpecReaction *last = static_cast<SpecReaction *>(exchangeToLast(curr->second));
     if (last) _positions[last] = curr->second;
 
     _positions.erase(curr);
-    delete event;
+    if (clearMemory) delete event;
 
     assert(_events.size() == _positions.size());
 }

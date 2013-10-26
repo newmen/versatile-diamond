@@ -50,6 +50,12 @@ Handbook::DKeeper &Handbook::keeper()
     return __keeper;
 }
 
+Handbook::DScavenger Handbook::__scavenger;
+Handbook::DScavenger &Handbook::scavenger()
+{
+    return __scavenger;
+}
+
 Handbook::DMC Handbook::__mc;
 Handbook::DMC &Handbook::mc()
 {
@@ -68,17 +74,3 @@ ushort Handbook::specificate(ushort type)
     assert(__atomsNum > type);
     return __atomsSpecifing[type];
 }
-
-//std::vector<BaseSpec *> Dictionary::__newSpecs;
-//void Dictionary::addNew(BaseSpec *spec)
-//{
-//#pragma omp critical
-//    __newSpecs.push_back(spec);
-//}
-
-//void Dictionary::clearNews()
-//{
-//    __newSpecs.clear();
-//    if (__newSpecs.max_size() > 100) __newSpecs.resize(10);
-//}
-

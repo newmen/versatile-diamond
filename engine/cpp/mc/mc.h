@@ -38,12 +38,12 @@ public:
     void doRandom();
     double totalRate() const { return _totalRate; }
 
-    template <ushort RT> void add(SingleReaction *reaction);
-    template <ushort RT> void remove(SingleReaction *reaction);
+    template <ushort RT> void add(SpecReaction *reaction);
+    template <ushort RT> void remove(SpecReaction *reaction, bool clearMemory = true);
     template <ushort RT> void doOneOfOne(); // for tests
 
-    template <ushort RT> void addMul(MultiReaction *reaction, uint n);
-    template <ushort RT> void removeMul(MultiReaction *reaction, uint n);
+    template <ushort RT> void addMul(UbiquitousReaction *reaction, uint n);
+    template <ushort RT> void removeMul(UbiquitousReaction *reaction, uint n);
     template <ushort RT> void doOneOfMul(); // for tests
 
 private:
@@ -142,7 +142,7 @@ BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint orderIndex)
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SingleReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
@@ -160,25 +160,24 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SingleReaction *reaction)
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SingleReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction, bool clearMemory)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
     updateRate(-reaction->rate());
 
-//#pragma omp critical
-//    {
+#pragma omp critical
+    {
 #ifdef PRINT
-        std::cout << "Remove ";
-        reaction->info();
+        std::cout << "Remove reaction " << RT << " [" << reaction << "]" << std::endl;
 #endif // PRINT
-        _events[RT].remove(reaction);
-//    }
+        _events[RT].remove(reaction, clearMemory);
+    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(MultiReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint n)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
@@ -196,7 +195,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(MultiReaction *reaction, uint n)
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(MultiReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, uint n)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 

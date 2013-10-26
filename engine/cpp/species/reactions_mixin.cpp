@@ -5,14 +5,14 @@
 namespace vd
 {
 
-void ReactionsMixin::usedIn(SingleReaction *reaction)
+void ReactionsMixin::usedIn(SpecReaction *reaction)
 {
     lock([this, reaction]() {
         _reactions.insert(reaction);
     });
 }
 
-void ReactionsMixin::unbindFrom(SingleReaction *reaction)
+void ReactionsMixin::unbindFrom(SpecReaction *reaction)
 {
     lock([this, reaction]() {
         _reactions.erase(reaction);
@@ -21,11 +21,11 @@ void ReactionsMixin::unbindFrom(SingleReaction *reaction)
 
 void ReactionsMixin::removeReactions()
 {
-    SingleReaction **reactionsDup;
+    SpecReaction **reactionsDup;
     int n = 0;
     lock([this, &reactionsDup, &n] {
-        reactionsDup = new SingleReaction *[_reactions.size()];
-        for (SingleReaction *reaction : _reactions)
+        reactionsDup = new SpecReaction *[_reactions.size()];
+        for (SpecReaction *reaction : _reactions)
         {
             reactionsDup[n++] = reaction;
         }
@@ -33,8 +33,7 @@ void ReactionsMixin::removeReactions()
 
     for (int i = 0; i < n; ++i)
     {
-        SingleReaction *reaction = reactionsDup[i];
-//        reaction->removeExcept(this);
+        SpecReaction *reaction = reactionsDup[i];
         reaction->removeFrom(this);
     }
 

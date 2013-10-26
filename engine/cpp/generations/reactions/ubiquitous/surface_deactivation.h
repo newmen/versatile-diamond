@@ -1,9 +1,10 @@
-#ifndef REACTION_DEACTIVATION_H
-#define REACTION_DEACTIVATION_H
+#ifndef SURFACE_DEACTIVATION_H
+#define SURFACE_DEACTIVATION_H
 
-#include "ubiquitous_reaction.h"
+#include "../../../reactions/ubiquitous_reaction.h"
+using namespace vd;
 
-class ReactionDeactivation : public UbiquitousReaction<SURFACE_DEACTIVATION>
+class SurfaceDeactivation : public UbiquitousReaction
 {
     static const ushort __activesOnAtoms[];
     static const ushort __activesToH[];
@@ -15,9 +16,13 @@ public:
 
     double rate() const { return 2000; }
 
+#ifdef PRINT
+    std::string name() const { return "surface deactivation"; }
+#endif // PRINT
+
 protected:
     short toType(ushort type) const override;
     void action() override { target()->deactivate(); }
 };
 
-#endif // REACTION_DEACTIVATION_H
+#endif // SURFACE_DEACTIVATION_H

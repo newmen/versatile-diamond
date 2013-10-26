@@ -30,7 +30,7 @@ MultiEventsContainer::~MultiEventsContainer()
     }
 }
 
-void MultiEventsContainer::add(MultiReaction *event, uint n)
+void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
 {
     for (uint i = 0; i < n; ++i)
     {
@@ -39,7 +39,7 @@ void MultiEventsContainer::add(MultiReaction *event, uint n)
     }
 }
 
-void MultiEventsContainer::remove(MultiReaction *event, uint n)
+void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
 {
     Atom *anchor = event->target();
 
@@ -50,7 +50,7 @@ void MultiEventsContainer::remove(MultiReaction *event, uint n)
 
         Reaction *current = _events[curr->second];
 
-        MultiReaction *last = static_cast<MultiReaction *>(exchangeToLast(curr->second));
+        UbiquitousReaction *last = static_cast<UbiquitousReaction *>(exchangeToLast(curr->second));
         if (last)
         {
             uint lastIndex = _events.size();

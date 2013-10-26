@@ -12,8 +12,8 @@ int main()
 //    omp_set_num_threads(1);
 
 //    Diamond *diamond = new OpenDiamond(2);
-//    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
-    Diamond *diamond = new Diamond(dim3(4, 4, 4), 2);
+    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
+//    Diamond *diamond = new Diamond(dim3(4, 4, 4), 2);
     diamond->initialize();
 
     cout << Handbook::mc().totalRate() << endl;

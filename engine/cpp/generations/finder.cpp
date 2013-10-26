@@ -3,8 +3,8 @@
 
 #include "base_specs/bridge.h"
 #include "base_specs/dimer.h"
-#include "reactions/ubiquitous/reaction_activation.h"
-#include "reactions/ubiquitous/reaction_deactivation.h"
+#include "reactions/ubiquitous/surface_activation.h"
+#include "reactions/ubiquitous/surface_deactivation.h"
 
 #include <omp.h>
 
@@ -85,5 +85,15 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
         }
     }
 
-    Handbook::keeper().clear();
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+            Handbook::keeper().clear();
+        }
+#pragma omp section
+        {
+            Handbook::scavenger().clear();
+        }
+    }
 }

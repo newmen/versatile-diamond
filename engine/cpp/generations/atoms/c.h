@@ -3,14 +3,10 @@
 
 #include "specified_atom.h"
 
-#define VALENCE 4
-
-class C : public SpecifiedAtom<VALENCE>
+class C : public SpecifiedAtom<4>
 {
 public:
     using SpecifiedAtom::SpecifiedAtom;
-
-//    void findChildren() override;
 };
 
 #endif // C_H

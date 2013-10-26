@@ -5,6 +5,10 @@
 
 #include <assert.h>
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -41,33 +45,25 @@ void Atom::deactivate()
 
 void Atom::bondWith(Atom *neighbour, int depth)
 {
-//#pragma omp critical
-//    {
     lock([this, &neighbour]() {
         assert(_actives > 0);
 
-//    Locks::instance()->lock(this, [this, &neighbour]() {
         neighbours().insert(neighbour);
         deactivate();
     });
-//    }
 
     if (depth > 0) neighbour->bondWith(this, 0);
 }
 
 void Atom::unbondFrom(Atom *neighbour, int depth)
 {
-//#pragma omp critical
-//    {
     lock([this, &neighbour]() {
         assert(hasBondWith(neighbour));
 
-//    Locks::instance()->lock(this, [this, &neighbour]() {
         auto it = neighbours().find(neighbour);
         neighbours().erase(it);
         activate();
     });
-//    }
 
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
@@ -142,5 +138,14 @@ void Atom::forget(ushort rType, ushort specType)
         _specs.erase(key);
     });
 }
+
+#ifdef PRINT
+void Atom::info()
+{
+    if (lattice()) std::cout << lattice()->coords();
+    else std::cout << "amorph";
+}
+#endif // PRINT
+
 
 }

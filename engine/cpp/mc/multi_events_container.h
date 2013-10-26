@@ -3,7 +3,7 @@
 
 #include <map>
 #include <omp.h>
-#include "../reactions/multi_reaction.h"
+#include "../reactions/ubiquitous_reaction.h"
 #include "base_events_container.h"
 
 namespace vd
@@ -16,8 +16,8 @@ class MultiEventsContainer : public BaseEventsContainer
 public:
     ~MultiEventsContainer();
 
-    void add(MultiReaction *event, uint n);
-    void remove(MultiReaction *event, uint n);
+    void add(UbiquitousReaction *event, uint n);
+    void remove(UbiquitousReaction *event, uint n);
 };
 
 }

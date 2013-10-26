@@ -9,7 +9,6 @@
 #include "../tools/lockable.h"
 
 #include "lattice.h"
-#include "role.h"
 
 namespace vd
 {
@@ -41,13 +40,11 @@ public:
 
     virtual bool is(ushort typeOf) const = 0;
     virtual bool prevIs(ushort typeOf) const = 0;
+    virtual void specifyType() = 0;
     void changeType(ushort newType);
 
     virtual void activate();
     void deactivate();
-
-    virtual void specifyType() = 0;
-//    virtual void findChildren() = 0;
 
     void bondWith(Atom *neighbour, int depth = 1);
     void unbondFrom(Atom *neighbour, int depth = 1);
@@ -61,6 +58,10 @@ public:
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
     void forget(ushort rType, ushort specType);
+
+#ifdef PRINT
+    void info();
+#endif // PRINT
 
 protected:
     const std::unordered_multiset<Atom *> &neighbours() const { return _relatives; }

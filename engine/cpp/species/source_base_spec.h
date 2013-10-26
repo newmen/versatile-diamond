@@ -50,9 +50,7 @@ void SourceBaseSpec<ATOMS_NUM>::info()
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
         std::cout << " ";
-        auto lattice = _atoms[i]->lattice();
-        if (lattice) std::cout << lattice->coords();
-        else std::cout << "amorph";
+        _atoms[i]->info();
     }
 }
 #endif // PRINT

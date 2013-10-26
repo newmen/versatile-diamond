@@ -3,6 +3,10 @@
 
 #include "../atoms/atom.h"
 
+#ifdef PRINT
+#include <string>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -16,6 +20,7 @@ public:
 
 #ifdef PRINT
     virtual void info() = 0;
+    virtual std::string name() const = 0;
 #endif // PRINT
 
 protected:

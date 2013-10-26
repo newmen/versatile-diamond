@@ -2,7 +2,7 @@
 #define KEEPER_H
 
 #include <vector>
-#include "../tools/common.h"
+#include "../tools/collector.h"
 #include "base_spec.h"
 
 #include <omp.h>
@@ -11,56 +11,24 @@ namespace vd
 {
 
 template <ushort SPECIFIC_SPECS_NUM>
-class Keeper
+class Keeper : public Collector<BaseSpec, SPECIFIC_SPECS_NUM>
 {
-    std::vector<BaseSpec *> _newSpecs[SPECIFIC_SPECS_NUM];
-
 public:
-//    Keeper();
-
-    template <ushort SST>
-    void store(BaseSpec *specificSpec);
-
     void findAll();
-    void clear();
 };
-
-template <ushort SPECIFIC_SPECS_NUM>
-template <ushort SST>
-void Keeper<SPECIFIC_SPECS_NUM>::store(vd::BaseSpec *specificSpec)
-{
-    static_assert(SST < SPECIFIC_SPECS_NUM, "Wrong specific spec ID");
-
-#pragma omp critical
-    {
-        _newSpecs[SST].push_back(specificSpec);
-    }
-}
-
-template <ushort SPECIFIC_SPECS_NUM>
-void Keeper<SPECIFIC_SPECS_NUM>::clear()
-{
-    for (int i = 0; i < SPECIFIC_SPECS_NUM; ++i)
-    {
-        std::vector<BaseSpec *>().swap(_newSpecs[i]); // with clear capacity of vector
-    }
-}
 
 // Must be used in omp parallel block of Finder
 template <ushort SPECIFIC_SPECS_NUM>
 void Keeper<SPECIFIC_SPECS_NUM>::findAll()
 {
-#pragma omp for
-    for (int i = 0; i < SPECIFIC_SPECS_NUM; ++i)
-    {
+    Collector<BaseSpec, SPECIFIC_SPECS_NUM>::ompEach([](std::vector<BaseSpec *> &specs) {
 //#pragma omp parallel for
-        for (int j = 0; j < _newSpecs[i].size(); ++j)
-//        for (BaseSpec *spec : _newSpecs[i])
+        for (int i = 0; i < specs.size(); ++i)
         {
-            BaseSpec *spec = _newSpecs[i][j];
+            BaseSpec *spec = specs[i];
             spec->findChildren();
         }
-    }
+    });
 }
 
 }

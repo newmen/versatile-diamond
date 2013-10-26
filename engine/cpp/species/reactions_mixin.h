@@ -3,34 +3,21 @@
 
 #include <unordered_set>
 #include "../tools/lockable.h"
-#include "../reactions/single_reaction.h"
+#include "../reactions/spec_reaction.h"
 
 namespace vd
 {
 
 class ReactionsMixin : public Lockable
 {
-    std::unordered_set<SingleReaction *> _reactions;
+    std::unordered_set<SpecReaction *> _reactions;
 
 public:
-    void usedIn(SingleReaction *reaction);
-    void unbindFrom(SingleReaction *reaction);
+    void usedIn(SpecReaction *reaction);
+    void unbindFrom(SpecReaction *reaction);
 
     void removeReactions();
-//    template <class L>
-//    void eachReaction(const L &lambda);
 };
-
-//template <class L>
-//void ReactionsMixin::eachReaction(const L &lambda)
-//{
-//    lock([this, &lambda] {
-//        for (SingleReaction *reaction : _reactions)
-//        {
-//            lambda(reaction);
-//        }
-//    });
-//}
 
 }
 
