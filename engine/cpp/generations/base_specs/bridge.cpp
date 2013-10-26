@@ -2,7 +2,9 @@
 #include "../handbook.h"
 #include "../specific_specs/bridge_cts.h"
 
+#ifdef PARALLEL
 #include <omp.h>
+#endif // PARALLEL
 
 #ifdef PRINT
 #include <iostream>
@@ -32,12 +34,16 @@ void Bridge::find(Atom *anchor)
             nbrs[1]->describe(6, bridge);
 
 #ifdef PRINT
+#ifdef PARALLEL
 #pragma omp critical
             {
+#endif // PARALLEL
                 std::cout << "Bridge at ";
                 bridge->info();
                 std::cout<< " was found" << std::endl;
+#ifdef PARALLEL
             }
+#endif // PARALLEL
 #endif // PRINT
 
             bridge->findChildren();
@@ -51,16 +57,20 @@ void Bridge::find(Atom *anchor)
 
 void Bridge::findChildren()
 {
+#ifdef PARALLEL
 #pragma omp parallel sections
     {
 #pragma omp section
         {
+#endif // PARALLEL
             BridgeCTs::find(this);
+#ifdef PARALLEL
         }
 //#pragma omp section
 //        {
 //        }
     }
+#endif // PARALLEL
 }
 
 

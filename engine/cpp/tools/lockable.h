@@ -1,6 +1,7 @@
 #ifndef LOCK_H
 #define LOCK_H
 
+#ifdef PARALLEL
 #include <omp.h>
 
 namespace vd
@@ -28,5 +29,6 @@ void Lockable::lock(const L &lambda)
 }
 
 }
+#endif // PARALLEL
 
 #endif // LOCK_H

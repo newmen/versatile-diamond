@@ -14,7 +14,12 @@ namespace vd
 {
 
 template <ushort TARGETS_NUM>
+#ifdef PARALLEL
 class FewSpecsReaction : public SpecReaction, public Lockable
+#endif // PARALLEL
+#ifndef PARALLEL
+class FewSpecsReaction : public SpecReaction
+#endif // PARALLEL
 {
     ReactionsMixin *_targets[TARGETS_NUM];
 
@@ -46,7 +51,9 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(ReactionsMixin *target)
 {
     uint index;
     BaseSpec *another;
+#ifdef PARALLEL
     lock([this, &index, &another, target] {
+#endif // PARALLEL
         // TODO: now works only for two parents case
         index = (_targets[0] == target) ? 0 : 1;
         another = dynamic_cast<BaseSpec *>(_targets[1 - index]);
@@ -55,7 +62,9 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(ReactionsMixin *target)
         {
             _targets[index] = 0;
         }
+#ifdef PARALLEL
     });
+#endif // PARALLEL
 
     if (_targets[index] != 0)
     {
@@ -94,6 +103,7 @@ template <ushort TARGETS_NUM>
 BaseSpec *FewSpecsReaction<TARGETS_NUM>::target(uint index)
 {
     assert(index < TARGETS_NUM);
+    assert(_targets[index]);
     BaseSpec *spec = dynamic_cast<BaseSpec *>(_targets[index]);
     assert(spec);
     return spec;

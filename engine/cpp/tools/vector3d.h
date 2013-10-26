@@ -2,8 +2,11 @@
 #define VECTOR3D_H
 
 #include <vector>
-#include <omp.h>
 #include "common.h"
+
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
 
 #include <assert.h>
 
@@ -80,7 +83,9 @@ template <typename T>
 vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes)
 {
     _data = new T[_sizes.N()];
+#ifdef PARALLEL
 #pragma omp parallel for
+#endif // PARALLEL
     for (int i = 0; i < _sizes.N(); ++i) _data[i] = initValue;
 }
 
@@ -94,7 +99,9 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
+#ifdef PARALLEL
 #pragma omp parallel for shared(lambda) schedule(dynamic)
+#endif // PARALLEL
     for (int i = 0; i < _sizes.N(); ++i)
     {
         lambda(_data[i]);
@@ -106,7 +113,9 @@ void vector3d<T>::each(const Lambda &lambda) const
 //void vector3d<T>::each_in_parallel(const Lambda &lambda) const
 //{
 
+//#ifdef PARALLEL
 //#pragma omp for schedule(dynamic)
+//#endif // PARALLEL
 //    for (int i = 0; i < _sizes.N(); ++i)
 //    {
 //        lambda(_container[i]);
@@ -117,7 +126,9 @@ void vector3d<T>::each(const Lambda &lambda) const
 //template <class Lambda>
 //void vector3d<T>::map(const Lambda &lambda)
 //{
+//#ifdef PARALLEL
 //#pragma omp parallel for shared(lambda)
+//#endif // PARALLEL
 //    for (int i = 0; i < _sizes.N(); ++i)
 //        _container[i] = lambda(_container[i]);
 //}
@@ -138,7 +149,9 @@ template <typename R, class Lambda>
 R vector3d<T>::reduce_plus(R initValue, const Lambda &lambda) const
 {
     R sum = initValue;
+#ifdef PARALLEL
 #pragma omp parallel for reduction(+:sum) shared(lambda)
+#endif // PARALLEL
     for (int i = 0; i < _sizes.N(); ++i)
     {
         sum += lambda(_data[i]);

@@ -1,5 +1,6 @@
 #include "lockable.h"
 
+#ifdef PARALLEL
 namespace vd
 {
 
@@ -14,3 +15,4 @@ Lockable::~Lockable()
 }
 
 }
+#endif // PARALLEL

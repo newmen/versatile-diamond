@@ -2,7 +2,10 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS += -g -std=c++0x -fopenmp -DDEBUG -DPRINT
+QMAKE_CXXFLAGS += -g -std=c++0x -DDEBUG
+#QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
+QMAKE_CXXFLAGS += -DPRINT
+QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
 LIBS += -fopenmp -lstdc++
 
 SOURCES += main.cpp \

@@ -1,11 +1,12 @@
 #include "dimer.h"
 #include "../handbook.h"
 
-#include <omp.h>
-
 #include <assert.h>
 
 #ifdef PRINT
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
 #include <iostream>
 #endif // PRINT
 
@@ -36,12 +37,16 @@ void Dimer::find(Atom *anchor)
             nbrs[0]->describe(22, dimer);
 
 #ifdef PRINT
+#ifdef PARALLEL
 #pragma omp critical
             {
+#endif // PARALLEL
                 std::cout << "Dimer at ";
                 dimer->info();
                 std::cout << " was found" << std::endl;
+#ifdef PARALLEL
             }
+#endif // PARALLEL
 #endif // PRINT
 
             dimer->findChildren();

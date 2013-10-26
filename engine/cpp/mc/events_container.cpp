@@ -24,7 +24,10 @@ void EventsContainer::remove(SpecReaction *event, bool clearMemory)
     if (last) _positions[last] = curr->second;
 
     _positions.erase(curr);
-    if (clearMemory) delete event;
+    if (clearMemory)
+    {
+        delete event;
+    }
 
     assert(_events.size() == _positions.size());
 }

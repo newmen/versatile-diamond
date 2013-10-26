@@ -39,14 +39,13 @@ Reaction *BaseEventsContainer::exchangeToLast(uint index)
     Reaction *last = _events.back();
     _events.pop_back();
 
-    auto it = _events.begin() + index;
-    if (it == _events.end())
+    if (_events.begin() + index == _events.end())
     {
         return 0;
     }
     else
     {
-        *it = last;
+        _events[index] = last;
         return last;
     }
 }

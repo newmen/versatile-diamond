@@ -4,9 +4,12 @@
 //#include <cstdlib>
 #include <chrono>
 #include <random>
-#include <omp.h>
 #include "events_container.h"
 #include "multi_events_container.h"
+
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
 
 #ifdef PRINT
 #include <iostream>
@@ -50,7 +53,9 @@ private:
     void recountTotalRate();
     void updateRate(double r)
     {
+#ifdef PARALLEL
 #pragma omp atomic
+#endif // PARALLEL
         _totalRate += r;
     }
 
@@ -146,14 +151,18 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
+#ifdef PARALLEL
 #pragma omp critical
     {
+#endif // PARALLEL
 #ifdef PRINT
         std::cout << "Add ";
         reaction->info();
 #endif // PRINT
         _events[RT].add(reaction);
+#ifdef PARALLEL
     }
+#endif // PARALLEL
 
     updateRate(reaction->rate());
 }
@@ -166,13 +175,17 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction, bool clear
 
     updateRate(-reaction->rate());
 
+#ifdef PARALLEL
 #pragma omp critical
     {
+#endif // PARALLEL
 #ifdef PRINT
-        std::cout << "Remove reaction " << RT << " [" << reaction << "]" << std::endl;
+        std::cout << "Remove reaction " << reaction->name() << "(" << RT << ") [" << reaction << "]" << std::endl;
 #endif // PRINT
         _events[RT].remove(reaction, clearMemory);
+#ifdef PARALLEL
     }
+#endif // PARALLEL
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -181,14 +194,18 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
+#ifdef PARALLEL
 #pragma omp critical
     {
+#endif // PARALLEL
 #ifdef PRINT
         std::cout << "Add multi ";
         reaction->info();
 #endif // PRINT
         _multiEvents[RT].add(reaction, n);
+#ifdef PARALLEL
     }
+#endif // PARALLEL
 
     updateRate(reaction->rate() * n);
 }
@@ -201,14 +218,18 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
 
     updateRate(-reaction->rate() * n);
 
+#ifdef PARALLEL
 #pragma omp critical
     {
+#endif // PARALLEL
 #ifdef PRINT
         std::cout << "Remove multi ";
         reaction->info();
 #endif // PRINT
         _multiEvents[RT].remove(reaction, n);
+#ifdef PARALLEL
     }
+#endif // PARALLEL
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>

@@ -4,6 +4,10 @@
 #include <vector>
 #include "common.h"
 
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
+
 namespace vd
 {
 
@@ -28,10 +32,14 @@ void Collector<T, NUM>::store(T *item)
 {
     static_assert(ITN < NUM, "Wrong ID");
 
+#ifdef PARALLEL
 #pragma omp critical
     {
+#endif // PARALLEL
         _collects[ITN].push_back(item);
+#ifdef PARALLEL
     }
+#endif // PARALLEL
 }
 
 template <class T, ushort NUM>
@@ -57,7 +65,9 @@ template <class T, ushort NUM>
 template <class L>
 void Collector<T, NUM>::ompEach(const L &lambda)
 {
+#ifdef PARALLEL
 #pragma omp for
+#endif // PARALLEL
     for (int i = 0; i < NUM; ++i)
     {
         lambda(_collects[i]);

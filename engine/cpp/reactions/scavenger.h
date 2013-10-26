@@ -18,7 +18,9 @@ template <ushort TYPICAL_REACTIONS_NUM>
 void Scavenger<TYPICAL_REACTIONS_NUM>::clear()
 {
     Collector<SpecReaction, TYPICAL_REACTIONS_NUM>::each([](std::vector<SpecReaction *> &reactions) {
+#ifdef PARALLEL
 //#pragma omp parallel for
+#endif // PARALLEL
         for (int i = 0; i < reactions.size(); ++i)
         {
             delete reactions[i];

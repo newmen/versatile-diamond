@@ -1,8 +1,5 @@
 #include "multi_events_container.h"
 
-//#include <iostream>
-//using namespace std;
-
 namespace vd
 {
 
@@ -45,12 +42,12 @@ void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
 
     for (uint i = 0; i < n; ++i)
     {
-        auto curr = _positions.find(anchor);
-        assert(curr != _positions.end());
+        auto currIt = _positions.find(anchor);
+        assert(currIt != _positions.end());
 
-        Reaction *current = _events[curr->second];
+        Reaction *current = _events[currIt->second];
 
-        UbiquitousReaction *last = static_cast<UbiquitousReaction *>(exchangeToLast(curr->second));
+        UbiquitousReaction *last = static_cast<UbiquitousReaction *>(exchangeToLast(currIt->second));
         if (last)
         {
             uint lastIndex = _events.size();
@@ -63,7 +60,7 @@ void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
             {
                 if (it->second == lastIndex)
                 {
-                    it->second = curr->second;
+                    it->second = currIt->second;
 #ifdef DEBUG
                     found = true;
 #endif // DEBUG
@@ -74,7 +71,7 @@ void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
             assert(found);
         }
 
-        _positions.erase(curr);
+        _positions.erase(currIt);
 
         auto range = _positions.equal_range(anchor);
         bool haveSame = false;
@@ -87,7 +84,10 @@ void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
             }
         }
 
-        if (!haveSame) delete current;
+        if (!haveSame)
+        {
+            delete current;
+        }
     }
 
     assert(_events.size() == _positions.size());

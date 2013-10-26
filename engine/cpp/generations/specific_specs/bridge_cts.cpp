@@ -3,7 +3,9 @@
 #include "../reactions/typical/dimer_formation.h"
 
 #ifdef PRINT
+#ifdef PARALLEL
 #include <omp.h>
+#endif // PARALLEL
 #include <iostream>
 #endif // PRINT
 
@@ -20,12 +22,16 @@ void BridgeCTs::find(BaseSpec *parent)
             anchor->describe(28, bridgeCts);
 
 #ifdef PRINT
+#ifdef PARALLEL
 #pragma omp critical
             {
+#endif // PARALLEL
                 std::cout << "BridgeCTs at ";
                 bridgeCts->info();
                 std::cout << " was found" << std::endl;
+#ifdef PARALLEL
             }
+#endif // PARALLEL
 #endif // PRINT
 
             Handbook::keeper().store<BRIDGE_CTs>(bridgeCts.get());
@@ -47,12 +53,16 @@ void BridgeCTs::find(BaseSpec *parent)
 //            });
 
 #ifdef PRINT
+#ifdef PARALLEL
 #pragma omp critical
             {
+#endif // PARALLEL
                 std::cout << "BridgeCTs at ";
                 spec->info();
                 std::cout << " was forgotten" << std::endl;
+#ifdef PARALLEL
             }
+#endif // PARALLEL
 #endif // PRINT
             anchor->forget(28, BRIDGE_CTs);
         }

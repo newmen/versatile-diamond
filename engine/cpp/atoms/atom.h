@@ -6,7 +6,10 @@
 #include <memory>
 
 #include "../tools/common.h"
+
+#ifdef PARALLEL
 #include "../tools/lockable.h"
+#endif // PARALLEL
 
 #include "lattice.h"
 
@@ -15,7 +18,12 @@ namespace vd
 
 class BaseSpec;
 
+#ifdef PARALLEL
 class Atom : public Lockable
+#endif // PARALLEL
+#ifndef PARALLEL
+class Atom
+#endif // PARALLEL
 {
     bool _visited = false;
 
