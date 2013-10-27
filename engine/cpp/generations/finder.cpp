@@ -80,22 +80,22 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
             Atom *atom = atoms[i];
             if (!atom) continue;
 
-#ifdef PARALLEL
-#pragma omp parallel sections
-            {
-#pragma omp section
-                {
-#endif // PARALLEL
-                    // finds dimer and all their children with mono (+ gas) reactions with it
-                    Dimer::find(atom);
-#ifdef PARALLEL
-                }
+//#ifdef PARALLEL
+//#pragma omp parallel sections
+//            {
 //#pragma omp section
 //                {
-//                    TwoBridges::find(atom);
+//#endif // PARALLEL
+                    // finds dimer and all their children with mono (+ gas) reactions with it
+                    Dimer::find(atom);
+//#ifdef PARALLEL
 //                }
-            }
-#endif // PARALLEL
+////#pragma omp section
+////                {
+////                    TwoBridges::find(atom);
+////                }
+//            }
+//#endif // PARALLEL
         }
 
         Handbook::keeper().findAll();
