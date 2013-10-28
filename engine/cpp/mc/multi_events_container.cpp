@@ -68,7 +68,9 @@ void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
                 }
             }
 
+#ifdef DEBUG
             assert(found);
+#endif // DEBUG
         }
 
         _positions.erase(currIt);

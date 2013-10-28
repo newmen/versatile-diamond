@@ -67,32 +67,32 @@ int main(int argc, char const *argv[])
     // border atoms
     Atom *c001 = buildCd(0, 0, 1);
     Atom *c002 = buildCd(0, 0, 2);
-    Atom *c991 = buildCd(9, 9, 1);
-    Atom *c992 = buildCd(9, 9, 2);
+    Atom *c991 = buildCd(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 1);
+    Atom *c992 = buildCd(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 2);
 
     nbrs = diamond.neighbours110(c001);
-    assert(diamond.isBonded(int3(0, 0, 1), int3(0, 9, 2)));
+    assert(diamond.isBonded(int3(0, 0, 1), int3(0, OpenDiamond::SIZES.y - 1, 2)));
     assert(diamond.isBonded(int3(0, 0, 1), int3(0, 0, 2)));
     assert(diamond.isBonded(int3(0, 0, 1), int3(0, 0, 0)));
     assert(diamond.isBonded(int3(0, 0, 1), int3(1, 0, 0)));
 
     nbrs = diamond.neighbours110(c002);
-    assert(diamond.isBonded(int3(0, 0, 2), int3(9, 0, 3)));
+    assert(diamond.isBonded(int3(0, 0, 2), int3(OpenDiamond::SIZES.x - 1, 0, 3)));
     assert(diamond.isBonded(int3(0, 0, 2), int3(0, 0, 3)));
     assert(diamond.isBonded(int3(0, 0, 2), int3(0, 0, 1)));
     assert(diamond.isBonded(int3(0, 0, 2), int3(0, 1, 1)));
 
     nbrs = diamond.neighbours110(c991);
-    assert(diamond.isBonded(int3(9, 9, 1), int3(9, 8, 2)));
-    assert(diamond.isBonded(int3(9, 9, 1), int3(9, 9, 2)));
-    assert(diamond.isBonded(int3(9, 9, 1), int3(9, 9, 0)));
-    assert(diamond.isBonded(int3(9, 9, 1), int3(0, 9, 0)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 1), int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 2, 2)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 1), int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 2)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 1), int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 0)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 1), int3(0, OpenDiamond::SIZES.y - 1, 0)));
 
     nbrs = diamond.neighbours110(c992);
-    assert(diamond.isBonded(int3(9, 9, 2), int3(8, 9, 3)));
-    assert(diamond.isBonded(int3(9, 9, 2), int3(9, 9, 3)));
-    assert(diamond.isBonded(int3(9, 9, 2), int3(9, 9, 1)));
-    assert(diamond.isBonded(int3(9, 9, 2), int3(9, 0, 1)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 2), int3(OpenDiamond::SIZES.x - 2, OpenDiamond::SIZES.y - 1, 3)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 2), int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 3)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 2), int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 1)));
+    assert(diamond.isBonded(int3(OpenDiamond::SIZES.x - 1, OpenDiamond::SIZES.y - 1, 2), int3(OpenDiamond::SIZES.x - 1, 0, 1)));
 
     for (Atom *atom : atoms) delete atom;
 

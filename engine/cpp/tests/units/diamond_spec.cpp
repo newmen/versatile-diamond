@@ -8,11 +8,11 @@ int main(int argc, char const *argv[])
 {
     OpenDiamond *diamond = new OpenDiamond(2);
     diamond->initialize();
-    assert(diamond->countAtoms() == 200);
+    assert(diamond->countAtoms() == OpenDiamond::SIZES.x * OpenDiamond::SIZES.y * 2);
 
-    for (int x = 0; x < 10; ++x)
-        for (int y = 0; y < 10; ++y)
-            for (int z = 0; z < 5; ++z)
+    for (int x = 0; x < OpenDiamond::SIZES.x; ++x)
+        for (int y = 0; y < OpenDiamond::SIZES.y; ++y)
+            for (int z = 0; z < OpenDiamond::SIZES.z; ++z)
             {
                 if (z > 1)
                 {
@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
 
     diamond = new OpenDiamond(3);
     diamond->initialize();
-    assert(diamond->countAtoms() == 300);
+    assert(diamond->countAtoms() == OpenDiamond::SIZES.x * OpenDiamond::SIZES.y * 3);
 
     C *c = new C(3, 0, (Lattice *)0);
     diamond->insert(c, int3(3, 3, 3));

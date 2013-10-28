@@ -58,18 +58,18 @@ void Bridge::find(Atom *anchor)
 void Bridge::findChildren()
 {
 #ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
+//#pragma omp parallel sections
+//    {
+//#pragma omp section
+//        {
+//#endif // PARALLEL
             BridgeCTs::find(this);
-#ifdef PARALLEL
-        }
+//#ifdef PARALLEL
+//        }
 //#pragma omp section
 //        {
 //        }
-    }
+//    }
 #endif // PARALLEL
 }
 

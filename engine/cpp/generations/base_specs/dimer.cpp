@@ -14,6 +14,15 @@ void Dimer::find(Atom *anchor)
 {
     assert(anchor);
 
+#ifdef PRINT
+    std::cout << "dm find: [" << anchor << "] -> ";
+    std::cout << anchor->type() << " at " << anchor->lattice()->coords();
+    std::cout.flush();
+    std::cout << " is 22? " << anchor->is(22);
+    if (anchor->is(22)) std::cout << ". and hasRole 3.bridge? " << anchor->hasRole(3, BRIDGE);
+    std::cout << std::endl;
+#endif // PRINT
+
     if (!anchor->is(22) && anchor->hasRole(3, BRIDGE)) return;
     if (!anchor->prevIs(22)) // TODO: здесь нужно подумать, поскольку роль не проверяется
     {

@@ -1,9 +1,13 @@
+#include "../../generations/atoms/c.h"
+#include "../../generations/crystals/diamond.h"
+
 class OpenDiamond : public Diamond
 {
 public:
     typedef Neighbours<4> FN;
 
-    OpenDiamond(uint height = 4) : Diamond(dim3(10, 10, 10), height) {}
+    static const dim3 SIZES;
+    OpenDiamond(uint height = 4) : Diamond(SIZES, height) {}
 
     Atom *atom(const int3 &coords) { return atoms()[coords]; }
 
@@ -28,4 +32,11 @@ public:
         Atom *aa = atom(a), *bb = atom(b);
         return aa->hasBondWith(bb) && bb->hasBondWith(aa);
     }
+};
+
+
+class OpenC : public C
+{
+public:
+    uint activesNum() const { return C::actives(); }
 };

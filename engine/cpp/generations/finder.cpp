@@ -10,8 +10,68 @@
 #include <omp.h>
 #endif // PARALLEL
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
+#include <iostream>
+
 void Finder::findAll(Atom **atoms, int n, bool checkNull)
 {
+    if (n == 1) findByOne(*atoms, checkNull);
+    else findByMany(atoms, n, checkNull);
+}
+
+void Finder::findByOne(Atom *atom, bool checkNull)
+{
+#ifdef PRINT
+    std::cout << "Find by one atom [" << atom << "]" << std::endl;
+#endif // PRINT
+
+    if (checkNull && !atom) assert(true);
+
+    atom->setUnvisited();
+
+#ifdef PARALLEL
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+#endif // PARALLEL
+            // finds bridge and all their children with mono (+ gas) reactions with it
+            Bridge::find(atom);
+#ifdef PARALLEL
+        }
+#pragma omp section
+    {
+#endif // PARALLEL
+        SurfaceActivation::find(atom);
+        SurfaceDeactivation::find(atom);
+#ifdef PARALLEL
+        }
+    }
+#endif // PARALLEL
+
+    Dimer::find(atom);
+    Handbook::keeper().findAll();
+
+    atom->setVisited();
+
+    Handbook::keeper().clear();
+    Handbook::scavenger().clear();
+}
+
+void Finder::findByMany(Atom **atoms, int n, bool checkNull)
+{
+#ifdef PRINT
+    std::cout << "Find by many atoms";
+    for (int i = 0; i < n; ++i)
+    {
+        std::cout << " [" << atoms[i] << "]";
+    }
+    std::cout << std::endl;
+#endif // PRINT
+
 #ifdef PARALLEL
 #pragma omp parallel
     {
@@ -60,11 +120,6 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
                 {
 #endif // PARALLEL
                     SurfaceActivation::find(atom);
-#ifdef PARALLEL
-                }
-#pragma omp section
-                {
-#endif // PARALLEL
                     SurfaceDeactivation::find(atom);
 #ifdef PARALLEL
                 }
@@ -90,10 +145,12 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
                     Dimer::find(atom);
 //#ifdef PARALLEL
 //                }
-////#pragma omp section
-////                {
-////                    TwoBridges::find(atom);
-////                }
+//#pragma omp section
+//                {
+//#endif // PARALLEL
+//                    TwoBridges::find(atom);
+//#ifdef PARALLEL
+//                }
 //            }
 //#endif // PARALLEL
         }
@@ -109,6 +166,7 @@ void Finder::findAll(Atom **atoms, int n, bool checkNull)
             if (!atom) continue;
             atom->setVisited();
         }
+
 #ifdef PARALLEL
     }
 #endif // PARALLEL

@@ -61,7 +61,7 @@ def count_asserts_from_engine
   files.each(&method(:count_asserts))
 end
 
-spec_files = Dir['**/*.cpp']
+spec_files = Dir['**/*.cpp'] - Dir['support/*.cpp']
 result =
   if ARGV.size > 0
     ARGV.map do |spec_file_name|

@@ -1,11 +1,12 @@
 #include <atoms/lattice.h>
 #include <generations/crystals/diamond.h>
-
 using namespace vd;
+
+#include "../support/open_diamond.h"
 
 int main(int argc, char const *argv[])
 {
-    Crystal *diamond = new Diamond(dim3(10, 10, 5));
+    Crystal *diamond = new OpenDiamond(2);
     Lattice lattice(diamond, int3(1, 2, 3));
     assert(lattice.crystal() == diamond);
     assert(lattice.coords().x == 1);

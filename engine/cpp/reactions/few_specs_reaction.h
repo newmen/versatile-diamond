@@ -51,6 +51,7 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(ReactionsMixin *target)
 {
     uint index;
     BaseSpec *another;
+
 #ifdef PARALLEL
     lock([this, &index, &another, target] {
 #endif // PARALLEL
@@ -73,7 +74,6 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(ReactionsMixin *target)
             dynamic_cast<ReactionsMixin *>(another)->unbindFrom(this);
         }
 
-        target->unbindFrom(this); // TODO: target will be removed anyway, but why unbind?
         remove();
     }
 }

@@ -43,14 +43,7 @@ void BridgeCTs::find(BaseSpec *parent)
         {
             auto spec = anchor->specByRole(28, BRIDGE_CTs);
             auto bridgeCts = dynamic_cast<ReactionsMixin *>(spec);
-            bridgeCts->removeReactions(); // TODO: race condition!!
-
-//            bridgeCts->eachReaction([bridgeCts](SingleReaction *reaction) {
-//                ReactionsMixin *other = *reaction->anotherTargets(bridgeCts);
-//                auto baseOther = dynamic_cast<BaseSpec *>(other);
-//                Atom *anotherAnchor = baseOther->atom(0);
-//                if (anotherAnchor->isVisited())
-//            });
+            bridgeCts->removeReactions();
 
 #ifdef PRINT
 #ifdef PARALLEL
@@ -64,6 +57,7 @@ void BridgeCTs::find(BaseSpec *parent)
             }
 #endif // PARALLEL
 #endif // PRINT
+
             anchor->forget(28, BRIDGE_CTs);
         }
     }

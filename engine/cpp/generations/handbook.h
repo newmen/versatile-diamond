@@ -29,11 +29,10 @@ public:
     static DMC &mc();
 
     // atoms
-private:
-
     static const ushort __atomsNum;
-    static const bool __atomsAccordance[];
 
+private:
+    static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
 
 public:

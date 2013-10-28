@@ -1,7 +1,8 @@
 #include <set>
-#include <atoms/lattice.h>
+// #include <atoms/lattice.h>
+#include <generations/handbook.h>
 #include <generations/atoms/c.h>
-#include <generations/crystals/diamond.h>
+// #include <generations/crystals/diamond.h>
 
 using namespace vd;
 
@@ -11,7 +12,7 @@ using namespace std;
 void assertIs(C *c, std::initializer_list<uint> types)
 {
     std::set<uint> ts(types);
-    for (int i = 0; i < 32; ++i)
+    for (int i = 0; i < Handbook::__atomsNum; ++i)
     {
         bool result = (ts.find(i) != ts.cend());
         assert((!c->is(i) || result) && (c->is(i) || !result));
@@ -30,13 +31,13 @@ int main(int argc, char const *argv[])
     assert(c8.lattice()->coords().y == 1);
     assert(c8.lattice()->coords().z == 1);
     assert(c8.type() == 8);
-    assertIs(&c8, { 1, 3, 8, 9 });
+    assertIs(&c8, { 1, 3, 7, 8, 9 });
 
     C c11(11, 1, (Lattice *)0);
     c11.specifyType();
     assert(!c11.lattice());
     assert(c11.type() == 26);
-    assertIs(&c11, { 11, 14, 26, 29, 31 });
+    assertIs(&c11, { 11, 14, 25, 26, 29, 31 });
 
     c8.bondWith(&c11);
     assert(c8.hasBondWith(&c11));

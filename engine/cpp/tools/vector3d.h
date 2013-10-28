@@ -17,7 +17,7 @@ template <typename T>
 class vector3d
 {
     dim3 _sizes;
-    T *_data;
+    T *_data = 0;
 
 public:
     vector3d(const dim3 &sizes, const T &initValue);

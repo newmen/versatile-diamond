@@ -2,7 +2,8 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS += -g -std=c++0x -DDEBUG
+QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -g -DDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 #QMAKE_CXXFLAGS += -DPRINT
 QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
@@ -31,6 +32,7 @@ SOURCES += main.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \
     species/reactions_mixin.cpp \
+    tests/support/open_diamond.cpp \
     tools/common.cpp \
     tools/lockable.cpp
 
@@ -72,6 +74,7 @@ HEADERS += \
     species/reactions_mixin.h \
     species/source_base_spec.h \
     species/specific_spec.h \
+    tests/support/open_diamond.h \
     tools/collector.h \
     tools/common.h \
     tools/lockable.h \
