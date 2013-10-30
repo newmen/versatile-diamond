@@ -47,6 +47,8 @@ module VersatileDiamond
       # Organizes dependencies between properties
       def organize_properties!
         props = @props.sort_by(&:size)
+        props_sd = props.dup
+
         until props.empty?
           smallest = props.shift
           props.each do |prop|
@@ -55,10 +57,14 @@ module VersatileDiamond
           end
         end
 
-        @props.each do |prop1|
-          @props.each do |prop2|
-            next if prop1 == prop2
-            prop1.add_same(prop2) if prop1.same_incoherent?(prop2)
+        # TODO: need refactoring internal method :same_incoherent for use above
+        # code block again
+        until props_sd.empty?
+          prop1 = props_sd.shift
+          props_sd.each do |prop2|
+            next unless prop2.same_incoherent?(prop1)
+            prop2.add_same(prop1)
+            break
           end
         end
       end
@@ -153,10 +159,12 @@ module VersatileDiamond
         return @_tmatrix if @_tmatrix
 
         @_tmatrix = Marshal.load(Marshal.dump(smallests_transitive_matrix))
-        @props.each_with_index do |prop, i|
-          next unless prop.sames
-          prop.sames.each { |sp| @_tmatrix[i, index(sp)] = true }
-        end
+        @props.size.times { |i| tcR(@_tmatrix, i, i, :sames) }
+
+        # @props.each_with_index do |prop, i|
+        #   next unless prop.sames
+        #   prop.sames.each { |sp| @_tmatrix[i, index(sp)] = true }
+        # end
 
         @_tmatrix
       end
@@ -248,7 +256,7 @@ module VersatileDiamond
 
         size = @props.size
         @_st_matrix = Patches::SetableMatrix.build(size) { false }
-        size.times { |i| tcR(@_st_matrix, i, i) }
+        size.times { |i| tcR(@_st_matrix, i, i, :smallests) }
 
         @_st_matrix
       end
@@ -257,11 +265,12 @@ module VersatileDiamond
       # @param [Matrix] matrix the matrix of result
       # @param [Integer] v the v vertex
       # @param [Integer] w the w vertex
-      def tcR(matrix, v, w)
+      # @param [Symbol] method the method wich will be called for get children
+      def tcR(matrix, v, w, method)
         matrix[v, w] = true
-        @props[w].smallests && @props[w].smallests.each do |prop|
+        @props[w].send(method) && @props[w].send(method).each do |prop|
           t = index(prop)
-          tcR(matrix, v, t) unless matrix[v, t]
+          tcR(matrix, v, t, method) unless matrix[v, t]
         end
       end
 

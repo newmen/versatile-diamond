@@ -11,7 +11,11 @@ public:
 
     using SourceBaseSpec::SourceBaseSpec;
 
-    void findChildren();
+#ifdef PRINT
+    std::string name() const override { return "bridge"; }
+#endif // PRINT
+
+    void findChildren() override;
 };
 
 #endif // BRIDGE_H

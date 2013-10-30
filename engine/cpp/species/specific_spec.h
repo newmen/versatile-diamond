@@ -1,17 +1,33 @@
 #ifndef SPECIFIC_SPEC_H
 #define SPECIFIC_SPEC_H
 
+#include <unordered_set>
 #include "dependent_spec.h"
-#include "reactions_mixin.h"
+#include "../reactions/spec_reaction.h"
+
+#ifdef PARALLEL
+#include "../tools/lockable.h"
+#endif // PARALLEL
 
 namespace vd
 {
 
-template <ushort PARENTS_NUM>
-class SpecificSpec : public DependentSpec<PARENTS_NUM>, public ReactionsMixin
+#ifdef PARALLEL
+class SpecificSpec : public DependentSpec<1>, public Lockable
+#endif // PARALLEL
+#ifndef PARALLEL
+class SpecificSpec : public DependentSpec<1>
+#endif // PARALLEL
 {
+    std::unordered_set<SpecReaction *> _reactions;
+
 public:
-    using DependentSpec<PARENTS_NUM>::DependentSpec;
+    SpecificSpec(ushort type, BaseSpec *parent);
+
+    void usedIn(SpecReaction *reaction);
+    void unbindFrom(SpecReaction *reaction);
+
+    void removeReactions();
 };
 
 }

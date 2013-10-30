@@ -6,6 +6,11 @@
 #include <memory>
 #include "../atoms/atom.h"
 
+#ifdef PRINT
+#include <functional>
+#include <string>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -25,7 +30,13 @@ public:
     virtual void findChildren() = 0;
 
 #ifdef PRINT
+    virtual std::string name() const = 0;
     virtual void info() = 0;
+
+    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
+
+    void wasFound();
+    void wasForgotten();
 #endif // PRINT
 };
 

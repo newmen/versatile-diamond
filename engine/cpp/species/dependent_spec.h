@@ -18,13 +18,16 @@ class DependentSpec : public BaseSpec
 protected:
     DependentSpec(ushort type, BaseSpec **parents);
 
+public:
     Atom *atom(ushort index);
     ushort size() const;
 
 #ifdef PRINT
     void info();
+    void eachAtom(const std::function<void (Atom *)> &lambda);
 #endif // PRINT
 
+protected:
     BaseSpec *parent(ushort index = 0);
     const BaseSpec *parent(ushort index = 0) const;
 };
@@ -44,7 +47,7 @@ Atom *DependentSpec<PARENTS_NUM>::atom(ushort index)
     assert(index < size());
 
     int i = 0;
-    while (index > parent(i)->size())
+    while (index >= parent(i)->size())
     {
         index -= parent(i)->size();
         ++i;
@@ -67,12 +70,21 @@ ushort DependentSpec<PARENTS_NUM>::size() const
 template <ushort PARENTS_NUM>
 void DependentSpec<PARENTS_NUM>::info()
 {
-    std::cout << "[" << this << "]";
+    std::cout << name() << " at [" << this << "]";
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
         std::cout << " -> (";
         _parents[i]->info();
         std::cout << ")";
+    }
+}
+
+template <ushort PARENTS_NUM>
+void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
+{
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        _parents[i]->eachAtom(lambda);
     }
 }
 #endif // PRINT

@@ -3,8 +3,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_CXXFLAGS += -g -DDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
+QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
 LIBS += -fopenmp -lstdc++
@@ -21,7 +21,6 @@ SOURCES += main.cpp \
     generations/reactions/typical/dimer_formation.cpp \
     generations/reactions/ubiquitous/surface_activation.cpp \
     generations/reactions/ubiquitous/surface_deactivation.cpp \
-    generations/specific_specs/bridge_cts.cpp \
     mc/base_events_container.cpp \
     mc/events_container.cpp \
     mc/multi_events_container.cpp \
@@ -31,10 +30,13 @@ SOURCES += main.cpp \
     reactions/mono_spec_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \
-    species/reactions_mixin.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
-    tools/lockable.cpp
+    tools/lockable.cpp \
+    generations/reactions/typical/dimer_drop.cpp \
+    generations/specific_specs/dimer_cri_cli.cpp \
+    species/specific_spec.cpp \
+    generations/specific_specs/bridge_ctsi.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -54,7 +56,6 @@ HEADERS += \
     generations/reactions/typical/dimer_formation.h \
     generations/reactions/ubiquitous/surface_activation.h \
     generations/reactions/ubiquitous/surface_deactivation.h \
-    generations/specific_specs/bridge_cts.h \
     mc/base_events_container.h \
     mc/events_container.h \
     mc/mc.h \
@@ -71,11 +72,13 @@ HEADERS += \
     species/base_spec.h \
     species/dependent_spec.h \
     species/keeper.h \
-    species/reactions_mixin.h \
     species/source_base_spec.h \
     species/specific_spec.h \
     tests/support/open_diamond.h \
     tools/collector.h \
     tools/common.h \
     tools/lockable.h \
-    tools/vector3d.h
+    tools/vector3d.h \
+    generations/reactions/typical/dimer_drop.h \
+    generations/specific_specs/dimer_cri_cli.h \
+    generations/specific_specs/bridge_ctsi.h

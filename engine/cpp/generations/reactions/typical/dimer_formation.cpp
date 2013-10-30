@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-void DimerFormation::find(BaseSpec *parent)
+void DimerFormation::find(SpecificSpec *parent)
 {
     Atom *anchor = parent->atom(0);
 
@@ -28,13 +28,10 @@ void DimerFormation::doIt()
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
     Atom *a = atoms[0], *b = atoms[1];
 
-    assert(a->is(28));
-    assert(b->is(28));
-
     a->bondWith(b);
 
-    a->changeType(22);
-    b->changeType(22);
+    changeAtom(a);
+    changeAtom(b);
 
     Finder::findAll(atoms, 2);
 }
@@ -45,14 +42,14 @@ void DimerFormation::remove()
     Handbook::scavenger().store<DIMER_FORMATION>(this);
 }
 
-void DimerFormation::checkAndAdd(BaseSpec *parent, Atom *neighbour)
+void DimerFormation::checkAndAdd(SpecificSpec *parent, Atom *neighbour)
 {
     // TODO: maybe do not need check existing role?
-    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour) && neighbour->hasRole(28, BRIDGE_CTs))
+    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour) && neighbour->hasRole(28, BRIDGE_CTsi))
     {
-        ReactionsMixin *targets[2] = {
-            dynamic_cast<ReactionsMixin *>(parent),
-            dynamic_cast<ReactionsMixin *>(neighbour->specByRole(28, BRIDGE_CTs))
+        SpecificSpec *targets[2] = {
+            parent,
+            dynamic_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
         };
 
         SpecReaction *reaction = new DimerFormation(targets);
@@ -63,4 +60,13 @@ void DimerFormation::checkAndAdd(BaseSpec *parent, Atom *neighbour)
             targets[i]->usedIn(reaction);
         }
     }
+}
+
+void DimerFormation::changeAtom(Atom *atom) const
+{
+    assert(atom->is(28));
+
+    if (atom->type() == 28) atom->changeType(20);
+    else if (atom->type() == 2) atom->changeType(21);
+    else assert(true);
 }

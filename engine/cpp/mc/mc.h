@@ -1,9 +1,11 @@
 #ifndef MC_H
 #define MC_H
 
-//#include <cstdlib>
+//#include <parallel/algorithm> // __gnu_parallel::sort
+#include <algorithm> // std::sort
 #include <chrono>
 #include <random>
+#include <vector>
 #include "events_container.h"
 #include "multi_events_container.h"
 
@@ -31,7 +33,7 @@ class MC
 
     EventsContainer _events[EVENTS_NUM];
     MultiEventsContainer _multiEvents[MULTI_EVENTS_NUM];
-    uint _order[EVENTS_NUM + MULTI_EVENTS_NUM];
+    std::vector<uint> _order;
 
 public:
     MC();
@@ -59,33 +61,51 @@ private:
         _totalRate += r;
     }
 
-    int compareContainers(const void *a, const void *b);
     BaseEventsContainer *events(uint orderIndex);
 };
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC()
+MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
 {
     static_assert(EVENTS_NUM < MULTI_EVENTS_INDEX_SHIFT, "MULTI_EVENTS_INDEX_SHIFT too small, need to increase it value");
 
     McClock::duration d = McClock::now().time_since_epoch();
     _randomGenerator.seed(d.count());
 
-    for (int i = 0; i < EVENTS_NUM; ++i) _order[i] = i;
-    for (int i = 0; i < MULTI_EVENTS_NUM; ++i) _order[i] = i + MULTI_EVENTS_INDEX_SHIFT;
+    int i = 0;
+    for (; i < EVENTS_NUM; ++i) _order[i] = i;
+    for (int j = 0; j < MULTI_EVENTS_NUM; ++j) _order[i + j] = j + MULTI_EVENTS_INDEX_SHIFT;
 
+#ifdef PRINT
+    std::cout << "Inited order: " << std::endl;
+    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+    {
+        std::cout << i << "-" << _order[i] << std::endl;
+    }
+#endif // PRINT
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
 {
+#ifdef PRINT
+    std::cout << "Current sizes: " << std::endl;
+    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+    {
+        std::cout << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
+    }
+#endif // PRINT
+
     std::uniform_real_distribution<double> distribution(0.0, totalRate());
     double r = distribution(_randomGenerator);
+#ifdef PRINT
+    std::cout << "Random number: " << r << "\n" << std::endl;
+#endif // PRINT
 
     double passRate = 0;
     for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
     {
-        BaseEventsContainer *currentEvents = events(_order[i]);
+        BaseEventsContainer *currentEvents = events(i);
         double cr = currentEvents->commonRate();
         if (r < cr + passRate)
         {
@@ -103,6 +123,12 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
 
     // if event was not found
     recountTotalRate();
+    sort();
+
+#ifdef PRINT
+    std::cout << "Event not found! Resort and using " << _order[EVENTS_NUM + MULTI_EVENTS_NUM - 1] << std::endl;
+#endif // PRINT
+
     BaseEventsContainer *currentEvents = events(_order[EVENTS_NUM + MULTI_EVENTS_NUM - 1]);
     currentEvents->doEvent(totalRate());
 }
@@ -124,23 +150,23 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 {
-    qsort(_order, EVENTS_NUM, sizeof(uint), compareContainers);
+    auto compare = [this](uint a, uint b) {
+        BaseEventsContainer *ae = events(a);
+        BaseEventsContainer *be = events(b);
+
+//        std::cout << this << "] " << a << ":" << ae->commonRate() << " <=> " << b << ":" << be->commonRate() << std::endl;
+
+        return ae->commonRate() > be->commonRate();
+    };
+
+    std::sort(_order.begin(), _order.end(), compare);
+//    __gnu_parallel::sort(_order.begin(), _order.end(), compare);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-int MC<EVENTS_NUM, MULTI_EVENTS_NUM>::compareContainers(const void *a, const void *b)
+BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint index)
 {
-    const BaseEventsContainer &ae = events(*(uint *)a);
-    const BaseEventsContainer &be = events(*(uint *)b);
-
-    if (ae.commonRate() < be.commonRate()) return -1;
-    else if (ae.commonRate() > be.commonRate()) return 1;
-    else return 0;
-}
-
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint orderIndex)
-{
+    uint orderIndex = _order[index];
     if (orderIndex < MULTI_EVENTS_INDEX_SHIFT) return &_events[orderIndex];
     else return &_multiEvents[orderIndex - MULTI_EVENTS_INDEX_SHIFT];
 }

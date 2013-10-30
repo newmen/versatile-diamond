@@ -6,12 +6,12 @@
 namespace vd
 {
 
-class ReactionsMixin; //
+class SpecificSpec; //
 
 class SpecReaction : public Reaction
 {
 public:
-    virtual void removeFrom(ReactionsMixin *target) = 0;
+    virtual void removeFrom(SpecificSpec *target) = 0;
 
 protected:
     virtual void remove() = 0;

@@ -1,8 +1,7 @@
 #ifndef MONO_SPEC_REACTION_H
 #define MONO_SPEC_REACTION_H
 
-#include "../species/base_spec.h"
-#include "../species/reactions_mixin.h"
+#include "../species/specific_spec.h"
 #include "spec_reaction.h"
 
 namespace vd
@@ -10,15 +9,15 @@ namespace vd
 
 class MonoSpecReaction : public SpecReaction
 {
-    ReactionsMixin *_target;
+    SpecificSpec *_target;
 
 public:
-    void removeFrom(ReactionsMixin *target) override;
+    void removeFrom(SpecificSpec *target) override;
 
 protected:
-    MonoSpecReaction(ReactionsMixin *target) : _target(target) {}
+    MonoSpecReaction(SpecificSpec *target) : _target(target) {}
 
-    BaseSpec *target() { return dynamic_cast<BaseSpec *>(_target); }
+    SpecificSpec *target() { return _target; }
 
 #ifdef PRINT
     void info();

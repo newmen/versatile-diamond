@@ -16,10 +16,10 @@
 
 #include <iostream>
 
-void Finder::findAll(Atom **atoms, int n, bool checkNull)
+void Finder::findAll(Atom **atoms, int n, bool isInit)
 {
-    if (n == 1) findByOne(*atoms, checkNull);
-    else findByMany(atoms, n, checkNull);
+    if (n == 1) findByOne(*atoms, isInit);
+    else findByMany(atoms, n, isInit);
 }
 
 void Finder::findByOne(Atom *atom, bool checkNull)
@@ -43,10 +43,10 @@ void Finder::findByOne(Atom *atom, bool checkNull)
 #ifdef PARALLEL
         }
 #pragma omp section
-    {
+        {
 #endif // PARALLEL
-        SurfaceActivation::find(atom);
-        SurfaceDeactivation::find(atom);
+            SurfaceActivation::find(atom);
+            SurfaceDeactivation::find(atom);
 #ifdef PARALLEL
         }
     }
@@ -57,19 +57,21 @@ void Finder::findByOne(Atom *atom, bool checkNull)
 
     atom->setVisited();
 
-    Handbook::keeper().clear();
-    Handbook::scavenger().clear();
+    finalize();
 }
 
-void Finder::findByMany(Atom **atoms, int n, bool checkNull)
+void Finder::findByMany(Atom **atoms, int n, bool isInit)
 {
 #ifdef PRINT
-    std::cout << "Find by many atoms";
-    for (int i = 0; i < n; ++i)
+    if (isInit)
     {
-        std::cout << " [" << atoms[i] << "]";
+        std::cout << "Find by many atoms";
+        for (int i = 0; i < n; ++i)
+        {
+            std::cout << " [" << atoms[i] << "]";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 #endif // PRINT
 
 #ifdef PARALLEL
@@ -83,7 +85,7 @@ void Finder::findByMany(Atom **atoms, int n, bool checkNull)
         for (int i = 0; i < n; ++i)
         {
             Atom *atom = atoms[i];
-            if (checkNull && !atom) assert(true);
+            if (isInit && !atom) assert(true);
             if (!atom) continue;
         }
 #endif // DEBUG
@@ -171,6 +173,16 @@ void Finder::findByMany(Atom **atoms, int n, bool checkNull)
     }
 #endif // PARALLEL
 
+    finalize();
+
+    if (isInit)
+    {
+        Handbook::mc().sort();
+    }
+}
+
+void Finder::finalize()
+{
 #ifdef PARALLEL
 #pragma omp parallel sections
     {

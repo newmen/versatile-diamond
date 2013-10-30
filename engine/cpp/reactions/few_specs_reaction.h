@@ -2,13 +2,14 @@
 #define FEW_SPECS_REACTION_H
 
 #include "../tools/lockable.h"
-#include "../species/base_spec.h"
-#include "../species/reactions_mixin.h"
+#include "../species/specific_spec.h"
 #include "spec_reaction.h"
 
-#ifdef PRINT
+//#ifdef PRINT
 #include <iostream>
-#endif // PRINT
+//#endif // PRINT
+
+#include <omp.h>
 
 namespace vd
 {
@@ -21,23 +22,23 @@ class FewSpecsReaction : public SpecReaction, public Lockable
 class FewSpecsReaction : public SpecReaction
 #endif // PARALLEL
 {
-    ReactionsMixin *_targets[TARGETS_NUM];
+    SpecificSpec *_targets[TARGETS_NUM];
 
 public:
-    FewSpecsReaction(ReactionsMixin **targets);
+    FewSpecsReaction(SpecificSpec **targets);
 
-    void removeFrom(ReactionsMixin *target) override;
+    void removeFrom(SpecificSpec *target) override;
 
 #ifdef PRINT
     void info() override;
 #endif // PRINT
 
 protected:
-    BaseSpec *target(uint index = 0);
+    SpecificSpec *target(uint index = 0);
 };
 
 template <ushort TARGETS_NUM>
-FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(ReactionsMixin **targets)
+FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(SpecificSpec **targets)
 {
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
@@ -47,17 +48,33 @@ FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(ReactionsMixin **targets)
 }
 
 template <ushort TARGETS_NUM>
-void FewSpecsReaction<TARGETS_NUM>::removeFrom(ReactionsMixin *target)
+void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
 {
     uint index;
-    BaseSpec *another;
+    SpecificSpec *another;
 
 #ifdef PARALLEL
     lock([this, &index, &another, target] {
 #endif // PARALLEL
         // TODO: now works only for two parents case
         index = (_targets[0] == target) ? 0 : 1;
-        another = dynamic_cast<BaseSpec *>(_targets[1 - index]);
+        another = _targets[1 - index];
+
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
+        {
+            std::cout << omp_get_thread_num() << " $ ";
+            std::cout << index << ", ";
+            std::cout.flush();
+            std::cout << another << ": ";
+            std::cout.flush();
+            if (another)
+                std::cout << another->atom(0)->isVisited();
+            else
+                std::cout << "zero";
+            std::cout<< std::endl;
+        }
 
         if (index != 0 && !(another && another->atom(0)->isVisited()))
         {
@@ -71,7 +88,7 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(ReactionsMixin *target)
     {
         if (another)
         {
-            dynamic_cast<ReactionsMixin *>(another)->unbindFrom(this);
+            another->unbindFrom(this);
         }
 
         remove();
@@ -100,13 +117,11 @@ void FewSpecsReaction<TARGETS_NUM>::info()
 #endif // PRINT
 
 template <ushort TARGETS_NUM>
-BaseSpec *FewSpecsReaction<TARGETS_NUM>::target(uint index)
+SpecificSpec *FewSpecsReaction<TARGETS_NUM>::target(uint index)
 {
     assert(index < TARGETS_NUM);
     assert(_targets[index]);
-    BaseSpec *spec = dynamic_cast<BaseSpec *>(_targets[index]);
-    assert(spec);
-    return spec;
+    return _targets[index];
 }
 
 }

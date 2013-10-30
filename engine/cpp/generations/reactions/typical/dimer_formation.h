@@ -7,7 +7,7 @@ using namespace vd;
 class DimerFormation : public FewSpecsReaction<2>
 {
 public:
-    static void find(BaseSpec *parent);
+    static void find(SpecificSpec *parent);
 
     using FewSpecsReaction::FewSpecsReaction;
 
@@ -15,14 +15,16 @@ public:
     void doIt();
 
 #ifdef PRINT
-    std::string name() const { return "dimer formation"; }
+    std::string name() const override { return "dimer formation"; }
 #endif // PRINT
 
 protected:
     void remove() override;
 
 private:
-    static void checkAndAdd(BaseSpec *parent, Atom *neighbour);
+    static void checkAndAdd(SpecificSpec *parent, Atom *neighbour);
+
+    void changeAtom(Atom *atom) const;
 };
 
 #endif // DIMERFORMATION_H

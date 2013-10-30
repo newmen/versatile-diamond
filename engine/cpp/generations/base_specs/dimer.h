@@ -11,7 +11,15 @@ public:
 
     using DependentSpec::DependentSpec;
 
-    void findChildren();
+#ifdef PRINT
+    std::string name() const override { return "dimer"; }
+#endif // PRINT
+
+    void findChildren() override;
+
+private:
+    static void checkAndAdd(Atom *anchor, Atom *neighbour);
+    static Atom *checkAndFind(Atom *anchor);
 };
 
 #endif // DIMER_H

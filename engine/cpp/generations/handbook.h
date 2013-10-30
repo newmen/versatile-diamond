@@ -14,13 +14,13 @@
 class Handbook
 {
     // TODO: to be need to store number of species that need for start finding of association reactions
-    typedef Keeper<10> DKeeper;
+    typedef Keeper<2> DKeeper;
     static DKeeper __keeper;
 
-    typedef Scavenger<14> DScavenger;
+    typedef Scavenger<1> DScavenger;
     static DScavenger __scavenger;
 
-    typedef MC<14, 2> DMC;
+    typedef MC<2, 2> DMC;
     static DMC __mc;
 
 public:

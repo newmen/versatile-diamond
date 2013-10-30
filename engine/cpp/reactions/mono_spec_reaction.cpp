@@ -1,5 +1,4 @@
 #include "mono_spec_reaction.h"
-#include "../species/reactions_mixin.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -8,7 +7,7 @@
 namespace vd
 {
 
-void MonoSpecReaction::removeFrom(ReactionsMixin *target)
+void MonoSpecReaction::removeFrom(SpecificSpec *target)
 {
     assert(_target == target);
 

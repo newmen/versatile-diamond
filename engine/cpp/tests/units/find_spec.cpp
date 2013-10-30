@@ -20,7 +20,11 @@ int main(int argc, char const *argv[])
     assert(Handbook::mc().totalRate() == 1056000000);
 
     Handbook::mc().doOneOfOne<DIMER_FORMATION>();
-    assert(Handbook::mc().totalRate() == 1055696000);
+    cout << Handbook::mc().totalRate() << endl;
+    assert(Handbook::mc().totalRate() == 1055746000);
+
+    Handbook::mc().doOneOfOne<DIMER_DROP>();
+    assert(Handbook::mc().totalRate() == 1056000000);
 
     delete diamond;
     return 0;

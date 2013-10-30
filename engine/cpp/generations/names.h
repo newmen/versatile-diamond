@@ -6,23 +6,26 @@
 enum BaseSpecNames : ushort
 {
     BRIDGE,
-    DIMER
+    DIMER,
+    BRIDGE_CTsi,
+    DIMER_CRi_CLi
 };
 
-enum SpecificSpecNames : ushort
+enum KeeperSpecNames : ushort
 {
-    BRIDGE_CTs
+    KEE_BRIDGE_CTsi
 };
 
-enum UBIQUITOUS_REACTION_NAMES : ushort
+enum UbiquitousReactionNames : ushort
 {
     SURFACE_ACTIVATION,
     SURFACE_DEACTIVATION
 };
 
-enum TYPICAL_REACTION_NAMES : ushort
+enum TypicalReactionNames : ushort
 {
-    DIMER_FORMATION
+    DIMER_FORMATION,
+    DIMER_DROP
 };
 
 #endif // NAMES_H

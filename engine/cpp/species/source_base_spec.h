@@ -23,6 +23,7 @@ public:
 
 #ifdef PRINT
     void info();
+    void eachAtom(const std::function<void (Atom *)> &lambda);
 #endif // PRINT
 };
 
@@ -46,12 +47,22 @@ Atom *SourceBaseSpec<ATOMS_NUM>::atom(ushort index)
 template <ushort ATOMS_NUM>
 void SourceBaseSpec<ATOMS_NUM>::info()
 {
-    std::cout << "[" << this << "]";
+    std::cout << name() << " at [" << this << "]";
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
         std::cout << " ";
         _atoms[i]->info();
     }
+}
+
+template <ushort ATOMS_NUM>
+void SourceBaseSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
+{
+    for (int i = 0; i < ATOMS_NUM; ++i)
+    {
+        lambda(_atoms[i]);
+    }
+
 }
 #endif // PRINT
 

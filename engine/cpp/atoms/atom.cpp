@@ -1,7 +1,6 @@
 #include "atom.h"
 #include "lattice.h"
-#include "../species/base_spec.h"
-//#include "../tools/locks.h"
+#include "../species/specific_spec.h"
 
 #include <assert.h>
 
@@ -112,12 +111,20 @@ void Atom::unsetLattice()
 
 void Atom::describe(ushort rType, std::shared_ptr<BaseSpec> &spec)
 {
+    const uint key = hash(rType, spec->type());
+
+//#ifdef PRINT
+//#ifdef PARALLEL
+//#pragma omp critical (print)
+//#endif // PARALLEL
+//        std::cout << "describe " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+//                  << ". spec type: " << spec->type() << ". key: " << key << std::endl;
+//#endif // PRINT
+
 #ifdef PARALLEL
-    lock([this, rType, spec]() {
+    lock([this, rType, spec, key]() {
 #endif // PARALLEL
         _roles[rType].insert(spec->type());
-
-        const uint key = hash(rType, spec->type());
         _specs.insert(std::pair<uint, std::shared_ptr<BaseSpec>>(key, spec));
 #ifdef PARALLEL
     });
@@ -145,6 +152,20 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     BaseSpec *result;
     const uint key = hash(rType, specType);
 
+//#ifdef PRINT
+//#ifdef PARALLEL
+//#pragma omp critical (print)
+//    {
+//#endif // PARALLEL
+//        std::cout << "specByRole " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+//                  << ". spec type: " << specType << ". key: " << key;
+//        auto er = _specs.equal_range(key);
+//        std::cout << " -> distance: " << std::distance(er.first, er.second) << std::endl;
+//#ifdef PARALLEL
+//    }
+//#endif // PARALLEL
+//#endif // PRINT
+
 #ifdef PARALLEL
     lock([this, &result, key]() {
 #endif // PARALLEL
@@ -162,6 +183,14 @@ void Atom::forget(ushort rType, ushort specType)
 {
     const uint key = hash(rType, specType);
 
+//#ifdef PRINT
+//#ifdef PARALLEL
+//#pragma omp critical (print)
+//#endif // PARALLEL
+//    std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+//              << ". spec type: " << specType << ". key: " << key << std::endl;
+//#endif // PRINT
+
 #ifdef PARALLEL
     lock([this, rType, key]() {
 #endif // PARALLEL
@@ -170,13 +199,32 @@ void Atom::forget(ushort rType, ushort specType)
 #ifdef PARALLEL
     });
 #endif // PARALLEL
+
 }
 
 #ifdef PRINT
 void Atom::info()
 {
-    if (lattice()) std::cout << lattice()->coords();
-    else std::cout << "amorph";
+//#pragma omp critical (print)
+    {
+        std::cout << type() << " -> ";
+        if (lattice()) std::cout << lattice()->coords();
+        else std::cout << "amorph";
+
+        std::cout << " %% roles: ";
+        for (const auto &pr : _roles)
+        {
+            std::cout << pr.first << "";
+            for (ushort st : pr.second) std::cout << " , " << st << " => " << hash(pr.first, st);
+            std::cout << " | ";
+        }
+
+        std::cout << " %% specs: ";
+        for (const auto &pr : _specs)
+        {
+            std::cout << pr.first << " -> " << pr.second.get() << " # ";
+        }
+    }
 }
 #endif // PRINT
 
