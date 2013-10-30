@@ -17,26 +17,26 @@ class Collector
     std::vector<T *> _collects[NUM];
 
 public:
-    template <ushort ITN> void store(T *item);
+    template <ushort ID> void store(T *item);
 
     void clear();
 
 protected:
-    template <class L> void each(const L &lambda);
-    template <class L> void ompEach(const L &lambda);
+    template <class L> inline void each(const L &lambda);
+    template <class L> inline void ompEach(const L &lambda);
 };
 
 template <class T, ushort NUM>
-template <ushort ITN>
+template <ushort ID>
 void Collector<T, NUM>::store(T *item)
 {
-    static_assert(ITN < NUM, "Wrong ID");
+    static_assert(ID < NUM, "Wrong ID");
 
 #ifdef PARALLEL
 #pragma omp critical
     {
 #endif // PARALLEL
-        _collects[ITN].push_back(item);
+        _collects[ID].push_back(item);
 #ifdef PARALLEL
     }
 #endif // PARALLEL

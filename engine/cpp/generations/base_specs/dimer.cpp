@@ -40,8 +40,10 @@ void Dimer::find(Atom *anchor)
             std::cout << "  try forgotten DIMER " << " at [" << anchor << "]" << std::endl;
 #endif // PRINT
 
+            auto spec = anchor->specByRole(22, DIMER);
             anchor->forget(22, DIMER);
             another->forget(22, DIMER);
+            Handbook::scavenger().storeSpec<DIMER>(spec);
         }
     }
 }
@@ -61,7 +63,7 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
             anchor->specByRole(3, BRIDGE),
             neighbour->specByRole(3, BRIDGE)
         };
-        auto spec = std::shared_ptr<BaseSpec>(new Dimer(DIMER, parents));
+        auto spec = new Dimer(DIMER, parents);
 
 #ifdef PRINT
         spec->wasFound();

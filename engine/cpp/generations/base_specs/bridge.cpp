@@ -24,7 +24,7 @@ void Bridge::find(Atom *anchor)
                     nbrs[1]->is(6) && anchor->hasBondWith(nbrs[1]))
             {
                 Atom *atoms[] = { anchor, nbrs[0], nbrs[1] };
-                auto spec = std::shared_ptr<BaseSpec>(new Bridge(BRIDGE, atoms));
+                auto spec = new Bridge(BRIDGE, atoms);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -44,8 +44,10 @@ void Bridge::find(Atom *anchor)
     }
     else if (anchor->hasRole(3, BRIDGE))
     {
-        anchor->specByRole(3, BRIDGE)->findChildren();
+        auto spec = anchor->specByRole(3, BRIDGE);
+        spec->findChildren();
         anchor->forget(3, BRIDGE);
+        Handbook::scavenger().storeSpec<BRIDGE>(spec);
     }
 }
 

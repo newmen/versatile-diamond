@@ -10,7 +10,7 @@ void BridgeCTsi::find(BaseSpec *parent)
     {
         if (!anchor->prevIs(28))
         {
-            auto spec = std::shared_ptr<BaseSpec>(new BridgeCTsi(BRIDGE_CTsi, parent));
+            auto spec = new BridgeCTsi(BRIDGE_CTsi, parent);
 
 #ifdef PRINT
             spec->wasFound();
@@ -18,7 +18,7 @@ void BridgeCTsi::find(BaseSpec *parent)
 
             anchor->describe(28, spec);
 
-            Handbook::keeper().store<KEE_BRIDGE_CTsi>(spec.get());
+            Handbook::keeper().store<KEE_BRIDGE_CTsi>(spec);
         }
     }
     else
@@ -39,6 +39,7 @@ void BridgeCTsi::find(BaseSpec *parent)
 #endif // PRINT
 
             anchor->forget(28, BRIDGE_CTsi);
+            Handbook::scavenger().storeSpec<BRIDGE_CTsi>(spec);
         }
     }
 }

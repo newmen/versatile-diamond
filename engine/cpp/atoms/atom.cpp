@@ -109,7 +109,7 @@ void Atom::unsetLattice()
     _lattice = 0;
 }
 
-void Atom::describe(ushort rType, std::shared_ptr<BaseSpec> &spec)
+void Atom::describe(ushort rType, BaseSpec *spec)
 {
     const uint key = hash(rType, spec->type());
 
@@ -125,7 +125,7 @@ void Atom::describe(ushort rType, std::shared_ptr<BaseSpec> &spec)
     lock([this, rType, spec, key]() {
 #endif // PARALLEL
         _roles[rType].insert(spec->type());
-        _specs.insert(std::pair<uint, std::shared_ptr<BaseSpec>>(key, spec));
+        _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
 #ifdef PARALLEL
     });
 #endif // PARALLEL
@@ -171,7 +171,7 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
 #endif // PARALLEL
         auto its = _specs.equal_range(key);
         assert(std::distance(its.first, its.second) == 1);
-        result = its.first->second.get();
+        result = its.first->second;
 #ifdef PARALLEL
     });
 #endif // PARALLEL

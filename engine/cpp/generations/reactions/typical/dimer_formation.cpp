@@ -39,7 +39,7 @@ void DimerFormation::doIt()
 void DimerFormation::remove()
 {
     Handbook::mc().remove<DIMER_FORMATION>(this, false);
-    Handbook::scavenger().store<DIMER_FORMATION>(this);
+    Handbook::scavenger().storeReaction<SCA_DIMER_FORMATION>(this);
 }
 
 void DimerFormation::checkAndAdd(SpecificSpec *parent, Atom *neighbour)

@@ -52,9 +52,10 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
 {
     uint index;
     SpecificSpec *another;
+    bool needToRemove = false;
 
 #ifdef PARALLEL
-    lock([this, &index, &another, target] {
+    lock([this, &index, &another, &needToRemove, target] {
 #endif // PARALLEL
         // TODO: now works only for two parents case
         index = (_targets[0] == target) ? 0 : 1;
@@ -66,25 +67,34 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
         {
             std::cout << omp_get_thread_num() << " $ ";
             std::cout << index << ", ";
-            std::cout.flush();
-            std::cout << another << ": ";
-            std::cout.flush();
             if (another)
+            {
+                std::cout << another << ": ";
                 std::cout << another->atom(0)->isVisited();
+            }
             else
+            {
                 std::cout << "zero";
+            }
             std::cout<< std::endl;
         }
 
-        if (index != 0 && !(another && another->atom(0)->isVisited()))
+        if (index == 0 || (another && another->atom(0)->isVisited()))
         {
-            _targets[index] = 0;
+            needToRemove = true;
         }
+        _targets[index] = 0;
+
+//        if (index != 0 && !(another && another->atom(0)->isVisited()))
+//        {
+//            _targets[index] = 0;
+//        }
 #ifdef PARALLEL
     });
 #endif // PARALLEL
 
-    if (_targets[index] != 0)
+//    if (_targets[index] != 0)
+    if (needToRemove)
     {
         if (another)
         {

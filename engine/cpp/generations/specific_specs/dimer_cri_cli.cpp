@@ -12,7 +12,7 @@ void DimerCRiCLi::find(BaseSpec *parent)
     {
         if (!anchors[0]->prevIs(20) && !anchors[1]->prevIs(20))
         {
-            auto spec = std::shared_ptr<BaseSpec>(new DimerCRiCLi(DIMER_CRi_CLi, parent));
+            auto spec = new DimerCRiCLi(DIMER_CRi_CLi, parent);
 
 #ifdef PRINT
             spec->wasFound();
@@ -38,6 +38,7 @@ void DimerCRiCLi::find(BaseSpec *parent)
 
             anchors[0]->forget(20, DIMER_CRi_CLi);
             anchors[1]->forget(20, DIMER_CRi_CLi);
+            Handbook::scavenger().storeSpec<DIMER_CRi_CLi>(spec);
         }
     }
 }
