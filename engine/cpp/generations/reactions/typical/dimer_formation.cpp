@@ -12,9 +12,7 @@ void DimerFormation::find(SpecificSpec *parent)
     if (!anchor->prevIs(28))
     {
         assert(anchor->lattice());
-
-        auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
-        assert(diamond);
+        auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
 
         auto nbrs = diamond->front_100(anchor);
         // TODO: maybe need to parallel it?
@@ -49,7 +47,7 @@ void DimerFormation::checkAndAdd(SpecificSpec *parent, Atom *neighbour)
     {
         SpecificSpec *targets[2] = {
             parent,
-            dynamic_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
+            static_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
         };
 
         SpecReaction *reaction = new DimerFormation(targets);

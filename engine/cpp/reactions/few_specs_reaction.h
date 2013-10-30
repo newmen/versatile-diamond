@@ -50,50 +50,25 @@ FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(SpecificSpec **targets)
 template <ushort TARGETS_NUM>
 void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
 {
-    uint index;
     SpecificSpec *another;
     bool needToRemove = false;
 
 #ifdef PARALLEL
-    lock([this, &index, &another, &needToRemove, target] {
+    lock([this, &another, &needToRemove, target] {
 #endif // PARALLEL
         // TODO: now works only for two parents case
-        index = (_targets[0] == target) ? 0 : 1;
+        uint index = (_targets[0] == target) ? 0 : 1;
+        _targets[index] = 0;
+
         another = _targets[1 - index];
-
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-        {
-            std::cout << omp_get_thread_num() << " $ ";
-            std::cout << index << ", ";
-            if (another)
-            {
-                std::cout << another << ": ";
-                std::cout << another->atom(0)->isVisited();
-            }
-            else
-            {
-                std::cout << "zero";
-            }
-            std::cout<< std::endl;
-        }
-
         if (index == 0 || (another && another->atom(0)->isVisited()))
         {
             needToRemove = true;
         }
-        _targets[index] = 0;
-
-//        if (index != 0 && !(another && another->atom(0)->isVisited()))
-//        {
-//            _targets[index] = 0;
-//        }
 #ifdef PARALLEL
     });
 #endif // PARALLEL
 
-//    if (_targets[index] != 0)
     if (needToRemove)
     {
         if (another)

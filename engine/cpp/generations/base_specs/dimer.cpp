@@ -4,22 +4,16 @@
 
 #include <assert.h>
 
-#ifdef PRINT
-#include <iostream>
-#endif // PRINT
-
 void Dimer::find(Atom *anchor)
 {
     assert(anchor);
 
     if (anchor->is(22))
     {
-        if (!anchor->prevIs(22) && anchor->hasRole(3, BRIDGE))
+        if (!anchor->prevIs(22))
         {
             assert(anchor->lattice());
-
-            auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
-            assert(diamond);
+            auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
 
             auto nbrs = diamond->front_100(anchor);
             if (nbrs[0]) checkAndAdd(anchor, nbrs[0]);
@@ -35,11 +29,6 @@ void Dimer::find(Atom *anchor)
         Atom *another = checkAndFind(anchor);
         if (another)
         {
-#ifdef PRINT
-#pragma omp critical (print)
-            std::cout << "  try forgotten DIMER " << " at [" << anchor << "]" << std::endl;
-#endif // PRINT
-
             auto spec = anchor->specByRole(22, DIMER);
             anchor->forget(22, DIMER);
             another->forget(22, DIMER);
@@ -80,18 +69,12 @@ Atom *Dimer::checkAndFind(Atom *anchor)
 {
     if (anchor->hasRole(22, DIMER))
     {
-        auto spec = dynamic_cast<Dimer *>(anchor->specByRole(22, DIMER));
+        auto spec = static_cast<SpecificSpec *>(anchor->specByRole(22, DIMER));
         uint ai = (spec->atom(0) == anchor) ? 3 : 0;
         Atom *another = spec->atom(ai);
 
         if (ai != 0 || another->isVisited())
         {
-#ifdef PRINT
-#pragma omp critical (print)
-            std::cout << " << Found " << spec->name() << " ( " << anchor << " -- " << another << " ) with another index: "
-                      << ai << " => '" << another->isVisited() << "'" << std::endl;
-#endif // PRINT
-
             anchor->specByRole(22, DIMER)->findChildren();
             return another;
         }

@@ -15,9 +15,7 @@ void Bridge::find(Atom *anchor)
             assert(anchor->lattice());
             if (anchor->lattice()->coords().z == 0) return;
 
-            auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
-            assert(diamond);
-
+            auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
             auto nbrs = diamond->cross_110(anchor);
             if (nbrs.all() &&
                     nbrs[0]->is(6) && anchor->hasBondWith(nbrs[0]) &&
