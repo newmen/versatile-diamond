@@ -46,6 +46,10 @@ void Dimer::find(Atom *anchor)
     }
 }
 
+Dimer::Dimer(ushort type, BaseSpec **parents) : DependentSpec<2>(type, parents)
+{
+}
+
 void Dimer::findChildren()
 {
     DimerCRiCLi::find(this);

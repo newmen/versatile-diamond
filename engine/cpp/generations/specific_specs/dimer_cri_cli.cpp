@@ -42,6 +42,10 @@ void DimerCRiCLi::find(BaseSpec *parent)
     }
 }
 
+DimerCRiCLi::DimerCRiCLi(ushort type, BaseSpec *parent) : SpecificSpec(type, parent)
+{
+}
+
 void DimerCRiCLi::findChildren()
 {
     DimerDrop::find(this);

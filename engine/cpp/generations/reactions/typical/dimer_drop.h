@@ -9,7 +9,8 @@ class DimerDrop : public MonoSpecReaction
 public:
     static void find(SpecificSpec *parent);
 
-    using MonoSpecReaction::MonoSpecReaction;
+//    using MonoSpecReaction::MonoSpecReaction;
+    DimerDrop(SpecificSpec *target) : MonoSpecReaction(target) {}
 
     double rate() const { return 5e4; }
     void doIt();

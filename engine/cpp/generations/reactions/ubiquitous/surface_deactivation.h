@@ -12,7 +12,8 @@ class SurfaceDeactivation : public UbiquitousReaction
 public:
     static void find(Atom *anchor);
 
-    using UbiquitousReaction::UbiquitousReaction;
+//    using UbiquitousReaction::UbiquitousReaction;
+    SurfaceDeactivation(Atom *target) : UbiquitousReaction(target) {}
 
     double rate() const { return 2000; }
 

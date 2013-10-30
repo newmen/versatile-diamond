@@ -9,7 +9,8 @@ class Bridge : public SourceBaseSpec<3>
 public:
     static void find(Atom *anchor);
 
-    using SourceBaseSpec::SourceBaseSpec;
+//    using SourceBaseSpec::SourceBaseSpec;
+    Bridge(ushort type, Atom **atoms) : SourceBaseSpec<3>(type, atoms) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge"; }

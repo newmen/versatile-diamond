@@ -14,14 +14,16 @@ using namespace std;
 
 int main()
 {
+//#ifdef PARALLEL
+//    omp_set_num_threads(4);
+//#endif // PARALLEL
+
 #ifdef PRINT
 #ifdef PARALLEL
-//    omp_set_num_threads(1);
     cout << "Start as PARALLEL mode" << endl;
 #endif // PARALLEL
 
 #ifndef PARALLEL
-//    omp_set_num_threads(1);
     cout << "Start as SINGLE THREAD mode" << endl;
 #endif // PARALLEL
 #endif // PRINT
@@ -35,8 +37,8 @@ int main()
     cout << Handbook::mc().totalRate() << endl;
 #endif // PRINT
 
-    for (int i = 0; i < 8000; ++i)
-//    for (int i = 0; i < 100000; ++i)
+//    for (int i = 0; i < 8000; ++i)
+    for (int i = 0; i < 100000; ++i)
     {
         Handbook::mc().doRandom();
 

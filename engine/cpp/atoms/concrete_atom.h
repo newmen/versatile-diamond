@@ -13,7 +13,8 @@ template <int VALENCE>
 class ConcreteAtom : public Atom
 {
 public:
-    using Atom::Atom;
+//    using Atom::Atom;
+    ConcreteAtom(ushort type, ushort actives, Lattice *lattice) : Atom(type, actives, lattice) {}
 
 //    void activate() override;
 //    void bondWith(Atom *neighbour, int depth = 1) override;

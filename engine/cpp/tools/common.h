@@ -24,17 +24,20 @@ typedef unsigned long long ullong;
 
 struct uint3 : public common::dv3<uint, 0>
 {
-    using dv3::dv3;
+    uint3(uint x, uint y, uint z) : dv3(x, y, z) {}
+//    using dv3::dv3;
 };
 
 struct int3 : public common::dv3<int, 0>
 {
-    using dv3::dv3;
+//    using dv3::dv3;
+    int3(int x, int y, int z) : dv3(x, y, z) {}
 };
 
 struct dim3 : public common::dv3<uint, 1>
 {
-    using dv3::dv3;
+//    using dv3::dv3;
+    dim3(uint x, uint y, uint z) : dv3(x, y, z) {}
 
     uint N() const
     {

@@ -12,7 +12,8 @@ template <ushort VALENCE>
 class SpecifiedAtom : public ConcreteAtom<VALENCE>
 {
 public:
-    using ConcreteAtom<VALENCE>::ConcreteAtom;
+//    using ConcreteAtom<VALENCE>::ConcreteAtom;
+    SpecifiedAtom(ushort type, ushort actives, Lattice *lattice);
 
     bool is(ushort typeOf) const override;
     bool prevIs(ushort typeOf) const override;
@@ -20,6 +21,11 @@ public:
     void specifyType() override;
 //    void findChildren() override;
 };
+
+template <ushort VALENCE>
+SpecifiedAtom<VALENCE>::SpecifiedAtom(ushort type, ushort actives, Lattice *lattice) : ConcreteAtom<VALENCE>(type, actives, lattice)
+{
+}
 
 template <ushort VALENCE>
 bool SpecifiedAtom<VALENCE>::is(ushort typeOf) const

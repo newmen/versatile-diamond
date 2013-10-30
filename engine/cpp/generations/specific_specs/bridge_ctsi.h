@@ -9,7 +9,8 @@ class BridgeCTsi : public SpecificSpec
 public:
     static void find(BaseSpec *parent);
 
-    using SpecificSpec::SpecificSpec;
+//    using SpecificSpec::SpecificSpec;
+    BridgeCTsi(ushort type, BaseSpec *parent) : SpecificSpec(type, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge(ct: *, ct: i)"; }

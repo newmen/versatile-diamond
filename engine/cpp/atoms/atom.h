@@ -27,7 +27,7 @@ class Atom
 {
     bool _visited = false;
 
-    ushort _type, _prevType = -1;
+    ushort _type, _prevType = (ushort)(-1);
     ushort _actives;
     Lattice *_lattice, *_cacheLattice;
     std::unordered_multiset<Atom *> _relatives; // atoms bonded with current

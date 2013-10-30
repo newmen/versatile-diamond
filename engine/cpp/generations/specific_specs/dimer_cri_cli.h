@@ -9,7 +9,8 @@ class DimerCRiCLi : public SpecificSpec
 public:
     static void find(BaseSpec *parent);
 
-    using SpecificSpec::SpecificSpec;
+//    using SpecificSpec::SpecificSpec;
+    DimerCRiCLi(ushort type, BaseSpec *parent);
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: i, cl: i)"; }

@@ -9,7 +9,8 @@ class DimerFormation : public FewSpecsReaction<2>
 public:
     static void find(SpecificSpec *parent);
 
-    using FewSpecsReaction::FewSpecsReaction;
+//    using FewSpecsReaction::FewSpecsReaction;
+    DimerFormation(SpecificSpec **targets) : FewSpecsReaction<2>(targets) {}
 
     double rate() const { return 1e5; }
     void doIt();
