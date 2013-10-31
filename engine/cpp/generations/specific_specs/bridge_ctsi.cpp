@@ -2,7 +2,7 @@
 #include "../handbook.h"
 #include "../reactions/typical/dimer_formation.h"
 
-void BridgeCTsi::find(BaseSpec *parent)
+void BridgeCTsi::find(Bridge *parent)
 {
     Atom *anchor = parent->atom(0);
 
@@ -18,7 +18,7 @@ void BridgeCTsi::find(BaseSpec *parent)
 
             anchor->describe(28, spec);
 
-            Handbook::keeper().store<KEE_BRIDGE_CTsi>(spec);
+            Handbook::keeper.store<KEE_BRIDGE_CTsi>(spec);
         }
     }
     else
@@ -36,7 +36,7 @@ void BridgeCTsi::find(BaseSpec *parent)
 #endif // PRINT
 
                 anchor->forget(28, spec);
-                Handbook::scavenger().storeSpec<BRIDGE_CTsi>(spec);
+                Handbook::scavenger.markSpec<BRIDGE_CTsi>(spec);
             }
         }
     }

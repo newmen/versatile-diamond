@@ -34,15 +34,15 @@ int main()
     diamond->initialize();
 
 #ifdef PRINT
-    cout << Handbook::mc().totalRate() << endl;
+    cout << Handbook::mc.totalRate() << endl;
 #endif // PRINT
 
-    for (int i = 0; i < 10000; ++i)
+    for (int i = 0; i < 100000; ++i)
     {
-        Handbook::mc().doRandom();
+        Handbook::mc.doRandom();
 
 #ifdef PRINT
-        cout << i << ". " << Handbook::mc().totalRate() << "\n\n\n" << endl;
+        cout << i << ". " << Handbook::mc.totalRate() << "\n\n\n" << endl;
 #endif // PRINT
     }
 

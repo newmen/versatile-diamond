@@ -4,10 +4,12 @@
 #include "../../../reactions/mono_spec_reaction.h"
 using namespace vd;
 
+#include "../../specific_specs/dimer_cri_cli.h"
+
 class DimerDrop : public MonoSpecReaction
 {
 public:
-    static void find(SpecificSpec *parent);
+    static void find(DimerCRiCLi *target);
 
 //    using MonoSpecReaction::MonoSpecReaction;
     DimerDrop(SpecificSpec *target) : MonoSpecReaction(target) {}

@@ -4,10 +4,12 @@
 #include "../../../reactions/few_specs_reaction.h"
 using namespace vd;
 
+#include "../../specific_specs/bridge_ctsi.h"
+
 class DimerFormation : public FewSpecsReaction<2>
 {
 public:
-    static void find(SpecificSpec *parent);
+    static void find(BridgeCTsi *target);
 
 //    using FewSpecsReaction::FewSpecsReaction;
     DimerFormation(SpecificSpec **targets) : FewSpecsReaction<2>(targets) {}
@@ -23,7 +25,7 @@ protected:
     void remove() override;
 
 private:
-    static void checkAndAdd(SpecificSpec *parent, Atom *neighbour);
+    static void checkAndAdd(BridgeCTsi *target, Atom *neighbour);
 
     void changeAtom(Atom *atom) const;
 };

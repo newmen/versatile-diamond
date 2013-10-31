@@ -4,9 +4,9 @@
 
 #include <assert.h>
 
-void DimerFormation::find(SpecificSpec *parent)
+void DimerFormation::find(BridgeCTsi *target)
 {
-    Atom *anchor = parent->atom(0);
+    Atom *anchor = target->atom(0);
 
     assert(anchor->is(28));
     if (!anchor->prevIs(28))
@@ -16,8 +16,8 @@ void DimerFormation::find(SpecificSpec *parent)
 
         auto nbrs = diamond->front_100(anchor);
         // TODO: maybe need to parallel it?
-        if (nbrs[0]) checkAndAdd(parent, nbrs[0]);
-        if (nbrs[1] && nbrs[1]->isVisited()) checkAndAdd(parent, nbrs[1]);
+        if (nbrs[0]) checkAndAdd(target, nbrs[0]);
+        if (nbrs[1] && nbrs[1]->isVisited()) checkAndAdd(target, nbrs[1]);
     }
 }
 
@@ -36,23 +36,23 @@ void DimerFormation::doIt()
 
 void DimerFormation::remove()
 {
-    Handbook::mc().remove<DIMER_FORMATION>(this, false);
-    Handbook::scavenger().storeReaction<SCA_DIMER_FORMATION>(this);
+    Handbook::mc.remove<DIMER_FORMATION>(this, false);
+    Handbook::scavenger.markReaction<SCA_DIMER_FORMATION>(this);
 }
 
-void DimerFormation::checkAndAdd(SpecificSpec *parent, Atom *neighbour)
+void DimerFormation::checkAndAdd(BridgeCTsi *target, Atom *neighbour)
 {
-    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour))
+    if (neighbour->is(28) && !target->atom(0)->hasBondWith(neighbour))
     {
         assert(neighbour->hasRole(28, BRIDGE_CTsi)); // maybe need move it to if condition
 
         SpecificSpec *targets[2] = {
-            parent,
+            target,
             static_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
         };
 
         SpecReaction *reaction = new DimerFormation(targets);
-        Handbook::mc().add<DIMER_FORMATION>(reaction);
+        Handbook::mc.add<DIMER_FORMATION>(reaction);
 
         for (int i = 0; i < 2; ++i)
         {

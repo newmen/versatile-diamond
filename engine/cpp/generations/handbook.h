@@ -4,6 +4,7 @@
 #include <omp.h>
 #include "../tools/common.h"
 #include "../tools/scavenger.h"
+#include "../phases/amorph.h"
 #include "../species/keeper.h"
 #include "../mc/mc.h"
 
@@ -13,23 +14,20 @@
 
 class Handbook
 {
-    // TODO: to be need to store number of species that need for start finding of association reactions
+private:
     typedef Keeper<KeeperSpecNums> DKeeper;
-    static DKeeper __keeper;
-
     typedef Scavenger<BaseSpecNums, ScavengerReactionNums> DScavenger;
-    static DScavenger __scavenger;
-
     typedef MC<TypicalReactionNums, UbiquitousReactionNums> DMC;
-    static DMC __mc;
 
 public:
-    static DKeeper &keeper();
-    static DScavenger &scavenger();
-    static DMC &mc();
+    static Amorph amorph;
+
+    static DKeeper keeper;
+    static DScavenger scavenger;
+    static DMC mc;
 
     // atoms
-    static const ushort __atomsNum;
+    static const ushort atomsNum;
 
 private:
     static const bool __atomsAccordance[];

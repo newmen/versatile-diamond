@@ -1,7 +1,7 @@
 #ifndef SCAVENGER_H
 #define SCAVENGER_H
 
-#include "../species/specific_spec.h"
+#include "../species/base_spec.h"
 #include "../reactions/spec_reaction.h"
 #include "collector.h"
 
@@ -16,8 +16,8 @@ class Scavenger
 public:
     ~Scavenger();
 
-    template <ushort ID> void storeReaction(SpecReaction *reaction);
-    template <ushort ID> void storeSpec(BaseSpec *spec);
+    template <ushort ID> void markReaction(SpecReaction *reaction);
+    template <ushort ID> void markSpec(BaseSpec *spec);
 
     void clear();
 
@@ -27,14 +27,14 @@ private:
 
 template <ushort SPECS_NUM, ushort DUAL_TYPICAL_REACTIONS_NUM>
 template <ushort ID>
-void Scavenger<SPECS_NUM, DUAL_TYPICAL_REACTIONS_NUM>::storeReaction(SpecReaction *reaction)
+void Scavenger<SPECS_NUM, DUAL_TYPICAL_REACTIONS_NUM>::markReaction(SpecReaction *reaction)
 {
     Collector<SpecReaction, DUAL_TYPICAL_REACTIONS_NUM>::template store<ID>(reaction);
 }
 
 template <ushort SPECS_NUM, ushort DUAL_TYPICAL_REACTIONS_NUM>
 template <ushort ID>
-void Scavenger<SPECS_NUM, DUAL_TYPICAL_REACTIONS_NUM>::storeSpec(BaseSpec *spec)
+void Scavenger<SPECS_NUM, DUAL_TYPICAL_REACTIONS_NUM>::markSpec(BaseSpec *spec)
 {
     Collector<BaseSpec, SPECS_NUM>::template store<ID>(spec);
 }

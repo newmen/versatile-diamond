@@ -72,7 +72,7 @@ void Finder::findByOne(Atom *atom, bool checkNull)
 #endif // PARALLEL
 
     Dimer::find(atom);
-    Handbook::keeper().findAll();
+    Handbook::keeper.findAll();
 
     atom->setVisited(); // TODO: do not used?
 
@@ -176,7 +176,7 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
 //#endif // PARALLEL
         }
 
-        Handbook::keeper().findAll();
+        Handbook::keeper.findAll();
 
 #ifdef PARALLEL
 #pragma omp for schedule(dynamic)
@@ -196,7 +196,7 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
 
     if (isInit)
     {
-        Handbook::mc().sort();
+        Handbook::mc.sort();
     }
 }
 
@@ -208,13 +208,13 @@ void Finder::finalize()
 #pragma omp section
         {
 #endif // PARALLEL
-            Handbook::keeper().clear();
+            Handbook::keeper.clear();
 #ifdef PARALLEL
         }
 #pragma omp section
         {
 #endif // PARALLEL
-            Handbook::scavenger().clear();
+            Handbook::scavenger.clear();
 #ifdef PARALLEL
         }
     }

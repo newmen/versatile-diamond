@@ -1,20 +1,21 @@
 #include "dimer_crs.h"
 #include "../handbook.h"
+#include "../reactions/typical/methyl_to_dimer.h"
 
-void DimerCRs::find(BaseSpec *parent)
+void DimerCRs::find(Dimer *parent)
 {
-    Atom *anchors[2] = { parent->atom(0), parent->atom(3) };
+    uint indexes[2] = { 0, 3 };
 
     for (int i = 0; i < 2; ++i)
     {
-        Atom *anchor = anchors[i];
+        Atom *anchor = parent->atom(indexes[i]);
         if (anchor->isVisited()) continue;
 
         if (anchor->is(21))
         {
             if (!anchor->prevIs(21))
             {
-                auto spec = new DimerCRs(DIMER_CRs, parent);
+                auto spec = new DimerCRs(DIMER_CRs, parent, indexes[i]);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -36,16 +37,20 @@ void DimerCRs::find(BaseSpec *parent)
 #endif // PRINT
 
                 anchor->forget(21, spec);
-                Handbook::scavenger().storeSpec<DIMER_CRs>(spec);
+                Handbook::scavenger.markSpec<DIMER_CRs>(spec);
             }
         }
     }
 }
 
-DimerCRs::DimerCRs(ushort type, BaseSpec *parent) : SpecificSpec(type, parent)
+Atom *DimerCRs::atom(ushort index)
 {
+    ushort shiftedIndex = index + _atomsShift;
+    if (shiftedIndex >= size()) shiftedIndex -= size();
+    return SpecificSpec::atom(shiftedIndex);
 }
 
 void DimerCRs::findChildren()
 {
+    MethylToDimer::find(this);
 }

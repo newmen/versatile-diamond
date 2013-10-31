@@ -3,17 +3,17 @@
 
 #include <assert.h>
 
-void DimerDrop::find(SpecificSpec *parent)
+void DimerDrop::find(DimerCRiCLi *target)
 {
-    Atom *anchors[2] = { parent->atom(0), parent->atom(3) };
+    Atom *anchors[2] = { target->atom(0), target->atom(3) };
 
     assert(anchors[0]->is(20) && anchors[1]->is(20));
     if (!anchors[0]->prevIs(20) || !anchors[1]->prevIs(20))
     {
-        SpecReaction *reaction = new DimerDrop(parent);
-        Handbook::mc().add<DIMER_DROP>(reaction);
+        SpecReaction *reaction = new DimerDrop(target);
+        Handbook::mc.add<DIMER_DROP>(reaction);
 
-        parent->usedIn(reaction);
+        target->usedIn(reaction);
     }
 }
 
@@ -32,7 +32,7 @@ void DimerDrop::doIt()
 
 void DimerDrop::remove()
 {
-    Handbook::mc().remove<DIMER_DROP>(this);
+    Handbook::mc.remove<DIMER_DROP>(this);
 }
 
 void DimerDrop::changeAtom(Atom *atom) const

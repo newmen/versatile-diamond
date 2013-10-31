@@ -2,7 +2,7 @@
 #include "../handbook.h"
 #include "../reactions/typical/dimer_drop.h"
 
-void DimerCRiCLi::find(BaseSpec *parent)
+void DimerCRiCLi::find(Dimer *parent)
 {
     Atom *anchors[2] = { parent->atom(0), parent->atom(3) };
 
@@ -24,8 +24,8 @@ void DimerCRiCLi::find(BaseSpec *parent)
     }
     else
     {
-//        if (anchors[0]->hasRole(20, DIMER_CRi_CLi) && anchors[1]->hasRole(20, DIMER_CRi_CLi))
-        if (anchors[0]->prevIs(20) && anchors[1]->prevIs(20))
+        if (anchors[0]->hasRole(20, DIMER_CRi_CLi) && anchors[1]->hasRole(20, DIMER_CRi_CLi))
+//        if ((anchors[0]->is(20) && anchors[1]->prevIs(20)) || (anchors[0]->prevIs(20) && anchors[1]->is(20)))
         {
             auto spec = anchors[0]->specificSpecByRole(20, DIMER_CRi_CLi);
             spec->removeReactions();
@@ -36,13 +36,9 @@ void DimerCRiCLi::find(BaseSpec *parent)
 
             anchors[0]->forget(20, spec);
             anchors[1]->forget(20, spec);
-            Handbook::scavenger().storeSpec<DIMER_CRi_CLi>(spec);
+            Handbook::scavenger.markSpec<DIMER_CRi_CLi>(spec);
         }
     }
-}
-
-DimerCRiCLi::DimerCRiCLi(ushort type, BaseSpec *parent) : SpecificSpec(type, parent)
-{
 }
 
 void DimerCRiCLi::findChildren()

@@ -6,8 +6,12 @@
 namespace vd
 {
 
-Amorph::Amorph()
+Amorph::~Amorph()
 {
+    for (Atom *atom : _atoms)
+    {
+        delete atom;
+    }
 }
 
 void Amorph::insert(Atom *atom)

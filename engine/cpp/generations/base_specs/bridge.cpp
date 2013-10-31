@@ -54,7 +54,7 @@ void Bridge::find(Atom *anchor)
                 spec->atom(1)->forget(3, spec);
                 spec->atom(2)->forget(3, spec);
 
-                Handbook::scavenger().storeSpec<BRIDGE>(spec);
+                Handbook::scavenger.markSpec<BRIDGE>(spec);
             }
         }
     }

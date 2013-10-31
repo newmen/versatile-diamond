@@ -4,13 +4,15 @@
 #include "../../species/specific_spec.h"
 using namespace vd;
 
+#include "../base_specs/dimer.h"
+
 class DimerCRiCLi : public SpecificSpec
 {
 public:
-    static void find(BaseSpec *parent);
+    static void find(Dimer *parent);
 
 //    using SpecificSpec::SpecificSpec;
-    DimerCRiCLi(ushort type, BaseSpec *parent);
+    DimerCRiCLi(ushort type, BaseSpec *parent) : SpecificSpec(type, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: i, cl: i)"; }

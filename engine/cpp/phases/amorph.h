@@ -9,16 +9,13 @@ namespace vd
 
 class Amorph : public Phase
 {
-public:
-    typedef std::unordered_set<Atom *> Atoms;
+    std::unordered_set<Atom *> _atoms;
 
-    Amorph();
+public:
+    ~Amorph();
 
     void insert(Atom *atom);
     void erase(Atom *atom) override;
-
-private:
-    Atoms _atoms;
 };
 
 }

@@ -26,11 +26,12 @@ enum UbiquitousReactionNames : ushort
     SURFACE_DEACTIVATION
 };
 
-const ushort TypicalReactionNums = 2;
+const ushort TypicalReactionNums = 3;
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
-    DIMER_DROP
+    DIMER_DROP,
+    METHYL_TO_DIMER
 };
 
 const ushort ScavengerReactionNums = 1;

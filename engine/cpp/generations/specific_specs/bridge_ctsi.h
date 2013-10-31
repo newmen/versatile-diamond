@@ -4,10 +4,12 @@
 #include "../../species/specific_spec.h"
 using namespace vd;
 
+#include "../base_specs/bridge.h"
+
 class BridgeCTsi : public SpecificSpec
 {
 public:
-    static void find(BaseSpec *parent);
+    static void find(Bridge *parent);
 
 //    using SpecificSpec::SpecificSpec;
     BridgeCTsi(ushort type, BaseSpec *parent) : SpecificSpec(type, parent) {}

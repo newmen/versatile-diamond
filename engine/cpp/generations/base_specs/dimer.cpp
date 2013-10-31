@@ -41,7 +41,7 @@ void Dimer::find(Atom *anchor)
                 auto spec = anchor->specByRole(22, DIMER);
                 anchor->forget(22, spec);
                 spec->atom(anotherIndex(spec, anchor))->forget(22, spec);
-                Handbook::scavenger().storeSpec<DIMER>(spec);
+                Handbook::scavenger.markSpec<DIMER>(spec);
             }
         }
     }
