@@ -42,9 +42,10 @@ void DimerFormation::remove()
 
 void DimerFormation::checkAndAdd(SpecificSpec *parent, Atom *neighbour)
 {
-    // TODO: maybe do not need check existing role?
-    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour) && neighbour->hasRole(28, BRIDGE_CTsi))
+    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour))
     {
+        assert(neighbour->hasRole(28, BRIDGE_CTsi)); // maybe need move it to if condition
+
         SpecificSpec *targets[2] = {
             parent,
             static_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))

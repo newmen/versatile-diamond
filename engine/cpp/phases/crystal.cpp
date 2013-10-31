@@ -8,7 +8,7 @@
 namespace vd
 {
 
-Crystal::Crystal(const dim3 &sizes) : _atoms(sizes, (Atom *)0)
+Crystal::Crystal(const dim3 &sizes) : _atoms(sizes, (Atom *)nullptr)
 {
 }
 
@@ -48,7 +48,7 @@ void Crystal::erase(Atom *atom)
     assert(*cell);
 
     atom->unsetLattice();
-    *cell = 0;
+    *cell = nullptr;
 }
 
 void Crystal::makeLayer(uint z, uint type)

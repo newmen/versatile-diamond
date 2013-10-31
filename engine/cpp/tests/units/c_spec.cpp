@@ -33,7 +33,7 @@ int main(int argc, char const *argv[])
     assert(c8.type() == 8);
     assertIs(&c8, { 1, 3, 7, 8, 9 });
 
-    C c11(11, 1, (Lattice *)0);
+    C c11(11, 1, (Lattice *)nullptr);
     c11.specifyType();
     assert(!c11.lattice());
     assert(c11.type() == 26);

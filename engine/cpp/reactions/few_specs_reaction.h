@@ -58,7 +58,7 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
 #endif // PARALLEL
         // TODO: now works only for two parents case
         uint index = (_targets[0] == target) ? 0 : 1;
-        _targets[index] = 0;
+        _targets[index] = nullptr;
 
         another = _targets[1 - index];
         if (index == 0 || (another && another->atom(0)->isVisited()))

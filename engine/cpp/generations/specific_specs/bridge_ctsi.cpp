@@ -23,7 +23,8 @@ void BridgeCTsi::find(BaseSpec *parent)
     }
     else
     {
-        if (anchor->hasRole(28, BRIDGE_CTsi))
+//        if (anchor->hasRole(28, BRIDGE_CTsi))
+        if (anchor->prevIs(28))
         {
             auto spec = static_cast<SpecificSpec *>(anchor->specByRole(28, BRIDGE_CTsi));
             spec->removeReactions();

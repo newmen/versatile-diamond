@@ -4,12 +4,15 @@
 
 #include <assert.h>
 
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
+
 void Dimer::find(Atom *anchor)
 {
-    assert(anchor);
-
     if (anchor->is(22))
     {
+        assert(anchor->hasRole(3, BRIDGE));
         if (!anchor->prevIs(22))
         {
             assert(anchor->lattice());
@@ -21,18 +24,24 @@ void Dimer::find(Atom *anchor)
         }
         else
         {
-            checkAndFind(anchor);
+            auto spec = specFromAtom(anchor);
+            if (spec) spec->findChildren();
         }
     }
     else
     {
-        Atom *another = checkAndFind(anchor);
-        if (another)
+        if (anchor->prevIs(22))
         {
-            auto spec = anchor->specByRole(22, DIMER);
-            anchor->forget(22, DIMER);
-            another->forget(22, DIMER);
-            Handbook::scavenger().storeSpec<DIMER>(spec);
+            auto spec = specFromAtom(anchor);
+            if (spec)
+            {
+                spec->findChildren();
+
+                auto spec = anchor->specByRole(22, DIMER);
+                anchor->forget(22, DIMER);
+                spec->atom(anotherIndex(spec, anchor))->forget(22, DIMER);
+                Handbook::scavenger().storeSpec<DIMER>(spec);
+            }
         }
     }
 }
@@ -44,8 +53,9 @@ void Dimer::findChildren()
 
 void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
 {
-    if (neighbour->is(22) && anchor->hasBondWith(neighbour) && neighbour->hasRole(3, BRIDGE))
+    if (neighbour->is(22) && anchor->hasBondWith(neighbour))
     {
+        assert(neighbour->hasRole(3, BRIDGE)); // may be need move to if condition
         assert(neighbour->lattice());
 
         BaseSpec *parents[2] = {
@@ -65,20 +75,16 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
     }
 }
 
-Atom *Dimer::checkAndFind(Atom *anchor)
+BaseSpec *Dimer::specFromAtom(Atom *anchor)
 {
-    if (anchor->hasRole(22, DIMER))
-    {
-        auto spec = static_cast<SpecificSpec *>(anchor->specByRole(22, DIMER));
-        uint ai = (spec->atom(0) == anchor) ? 3 : 0;
-        Atom *another = spec->atom(ai);
+    auto spec = anchor->specByRole(22, DIMER);
+    uint ai = anotherIndex(spec, anchor);
+    Atom *another = spec->atom(ai);
 
-        if (ai != 0 || another->isVisited())
-        {
-            anchor->specByRole(22, DIMER)->findChildren();
-            return another;
-        }
-    }
-    return 0;
+    return (ai != 0 || another->isVisited()) ? spec : nullptr;
 }
 
+uint Dimer::anotherIndex(BaseSpec *spec, Atom *anchor)
+{
+    return (spec->atom(0) == anchor) ? 3 : 0;
+}

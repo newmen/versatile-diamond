@@ -30,7 +30,7 @@ int main(int argc, char const *argv[])
     diamond->initialize();
     assert(diamond->countAtoms() == OpenDiamond::SIZES.x * OpenDiamond::SIZES.y * 3);
 
-    C *c = new C(3, 0, (Lattice *)0);
+    C *c = new C(3, 0, (Lattice *)nullptr);
     diamond->insert(c, int3(3, 3, 3));
     assert(diamond->atom(int3(3, 3, 3)) == c);
     assert(c->lattice());

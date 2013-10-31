@@ -26,7 +26,8 @@ void DimerCRiCLi::find(BaseSpec *parent)
     }
     else
     {
-        if (anchors[0]->hasRole(20, DIMER_CRi_CLi) && anchors[1]->hasRole(20, DIMER_CRi_CLi))
+//        if (anchors[0]->hasRole(20, DIMER_CRi_CLi) && anchors[1]->hasRole(20, DIMER_CRi_CLi))
+        if (anchors[0]->prevIs(20) && anchors[1]->prevIs(20))
         {
             auto spec = static_cast<SpecificSpec *>(anchors[0]->specByRole(20, DIMER_CRi_CLi));
             spec->removeReactions();
