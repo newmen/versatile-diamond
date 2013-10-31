@@ -3,13 +3,14 @@
 
 #include "../tools/common.h"
 
-const ushort BaseSpecNums = 4;
+const ushort BaseSpecNums = 5;
 enum BaseSpecNames : ushort
 {
     BRIDGE,
     DIMER,
     BRIDGE_CTsi,
-    DIMER_CRi_CLi
+    DIMER_CRi_CLi,
+    DIMER_CRs
 };
 
 const ushort KeeperSpecNums = 1;

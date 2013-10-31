@@ -2,8 +2,6 @@
 #include "../handbook.h"
 #include "../reactions/typical/dimer_drop.h"
 
-#include <iostream>
-
 void DimerCRiCLi::find(BaseSpec *parent)
 {
     Atom *anchors[2] = { parent->atom(0), parent->atom(3) };

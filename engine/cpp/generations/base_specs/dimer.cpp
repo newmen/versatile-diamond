@@ -1,6 +1,7 @@
 #include "dimer.h"
 #include "../handbook.h"
 #include "../specific_specs/dimer_cri_cli.h"
+#include "../specific_specs/dimer_crs.h"
 
 #include <assert.h>
 
@@ -52,7 +53,23 @@ Dimer::Dimer(ushort type, BaseSpec **parents) : DependentSpec<2>(type, parents)
 
 void Dimer::findChildren()
 {
-    DimerCRiCLi::find(this);
+#ifdef PARALLEL
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+#endif // PARALLEL
+            DimerCRiCLi::find(this);
+#ifdef PARALLEL
+        }
+#pragma omp section
+        {
+#endif // PARALLEL
+            DimerCRs::find(this);
+#ifdef PARALLEL
+        }
+    }
+#endif // PARALLEL
 }
 
 void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)

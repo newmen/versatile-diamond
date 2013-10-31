@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     generations/reactions/typical/dimer_drop.cpp \
     generations/specific_specs/dimer_cri_cli.cpp \
     species/specific_spec.cpp \
-    generations/specific_specs/bridge_ctsi.cpp
+    generations/specific_specs/bridge_ctsi.cpp \
+    generations/specific_specs/dimer_crs.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -81,4 +82,5 @@ HEADERS += \
     tools/vector3d.h \
     generations/reactions/typical/dimer_drop.h \
     generations/specific_specs/dimer_cri_cli.h \
-    generations/specific_specs/bridge_ctsi.h
+    generations/specific_specs/bridge_ctsi.h \
+    generations/specific_specs/dimer_crs.h
