@@ -2,9 +2,10 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
+QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 QMAKE_CXXFLAGS += -DDEBUG
-QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -DPRINT
 QMAKE_CXXFLAGS += -DPARALLEL -openmp
 LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 

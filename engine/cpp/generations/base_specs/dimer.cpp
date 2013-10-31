@@ -30,7 +30,7 @@ void Dimer::find(Atom *anchor)
     }
     else
     {
-        if (anchor->prevIs(22))
+        if (anchor->prevIs(22) && anchor->hasRole(22, DIMER)) // checking role is important!
         {
             auto spec = specFromAtom(anchor);
             if (spec)

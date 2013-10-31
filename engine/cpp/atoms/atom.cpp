@@ -113,13 +113,13 @@ void Atom::describe(ushort rType, BaseSpec *spec)
 {
     const uint key = hash(rType, spec->type());
 
-//#ifdef PRINT
-//#ifdef PARALLEL
-//#pragma omp critical (print)
-//#endif // PARALLEL
-//        std::cout << "describe " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
-//                  << ". spec type: " << spec->type() << ". key: " << key << std::endl;
-//#endif // PRINT
+#ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
+        std::cout << "describe " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+                  << ". spec type: " << spec->type() << ". key: " << key << std::endl;
+#endif // PRINT
 
 #ifdef PARALLEL
     lock([this, rType, spec, key]() {
@@ -152,19 +152,19 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     BaseSpec *result;
     const uint key = hash(rType, specType);
 
-//#ifdef PRINT
-//#ifdef PARALLEL
-//#pragma omp critical (print)
-//    {
-//#endif // PARALLEL
-//        std::cout << "specByRole " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
-//                  << ". spec type: " << specType << ". key: " << key;
-//        auto er = _specs.equal_range(key);
-//        std::cout << " -> distance: " << std::distance(er.first, er.second) << std::endl;
-//#ifdef PARALLEL
-//    }
-//#endif // PARALLEL
-//#endif // PRINT
+#ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+    {
+#endif // PARALLEL
+        std::cout << "specByRole " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+                  << ". spec type: " << specType << ". key: " << key;
+        auto er = _specs.equal_range(key);
+        std::cout << " -> distance: " << std::distance(er.first, er.second) << std::endl;
+#ifdef PARALLEL
+    }
+#endif // PARALLEL
+#endif // PRINT
 
 #ifdef PARALLEL
     lock([this, &result, key]() {
@@ -172,6 +172,7 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
         auto its = _specs.equal_range(key);
         assert(std::distance(its.first, its.second) == 1);
         result = its.first->second;
+
 //        assert(its.second != _specs.end());
 //        result = its.second->second;
 #ifdef PARALLEL
@@ -185,13 +186,13 @@ void Atom::forget(ushort rType, ushort specType)
 {
     const uint key = hash(rType, specType);
 
-//#ifdef PRINT
-//#ifdef PARALLEL
-//#pragma omp critical (print)
-//#endif // PARALLEL
-//    std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
-//              << ". spec type: " << specType << ". key: " << key << std::endl;
-//#endif // PRINT
+#ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
+    std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+              << ". spec type: " << specType << ". key: " << key << std::endl;
+#endif // PRINT
 
 #ifdef PARALLEL
     lock([this, rType, key]() {
@@ -224,7 +225,7 @@ void Atom::info()
         std::cout << " %% specs: ";
         for (const auto &pr : _specs)
         {
-            std::cout << pr.first << " -> " << pr.second.get() << " # ";
+            std::cout << pr.first << " -> " << pr.second << " # ";
         }
     }
 }
