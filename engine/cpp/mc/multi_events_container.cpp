@@ -5,18 +5,13 @@ namespace vd
 
 MultiEventsContainer::~MultiEventsContainer()
 {
-//    cout << _positions.size() << endl;
-
-    Atom *prev = 0;
+    Atom *prev = nullptr;
     for (auto &pr : _positions)
     {
-//        cout << pr.second << " -> " << pr.first;
         if (pr.first == prev)
         {
-            _events[pr.second] = 0;
-//            cout << " :: zerofied";
+            _events[pr.second] = nullptr;
         }
-//        cout << endl;
 
         prev = pr.first;
     }

@@ -20,7 +20,9 @@ public:
 
 private:
     static void checkAndAdd(Atom *anchor, Atom *neighbour);
-    static Atom *checkAndFind(Atom *anchor);
+
+    static inline BaseSpec *specFromAtom(Atom *anchor);
+    static inline uint anotherIndex(BaseSpec *spec, Atom *anchor);
 };
 
 #endif // DIMER_H

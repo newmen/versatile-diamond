@@ -65,7 +65,6 @@ HEADERS += \
     reactions/few_specs_reaction.h \
     reactions/mono_spec_reaction.h \
     reactions/reaction.h \
-    reactions/scavenger.h \
     reactions/spec_reaction.h \
     reactions/ubiquitous_reaction.h \
     species/base_spec.h \
@@ -77,6 +76,7 @@ HEADERS += \
     tools/collector.h \
     tools/common.h \
     tools/lockable.h \
+    tools/scavenger.h \
     tools/vector3d.h \
     generations/reactions/typical/dimer_drop.h \
     generations/specific_specs/dimer_cri_cli.h \

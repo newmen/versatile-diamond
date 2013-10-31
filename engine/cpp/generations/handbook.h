@@ -3,8 +3,8 @@
 
 #include <omp.h>
 #include "../tools/common.h"
+#include "../tools/scavenger.h"
 #include "../species/keeper.h"
-#include "../reactions/scavenger.h"
 #include "../mc/mc.h"
 
 #include "finder.h"
@@ -14,13 +14,13 @@
 class Handbook
 {
     // TODO: to be need to store number of species that need for start finding of association reactions
-    typedef Keeper<2> DKeeper;
+    typedef Keeper<KeeperSpecNums> DKeeper;
     static DKeeper __keeper;
 
-    typedef Scavenger<1> DScavenger;
+    typedef Scavenger<BaseSpecNums, ScavengerReactionNums> DScavenger;
     static DScavenger __scavenger;
 
-    typedef MC<2, 2> DMC;
+    typedef MC<TypicalReactionNums, UbiquitousReactionNums> DMC;
     static DMC __mc;
 
 public:

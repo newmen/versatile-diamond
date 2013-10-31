@@ -14,7 +14,7 @@ class AtomBuilder
 public:
     Atom *buildC(uint type, uint actives) const
     {
-        return specify(new C(type, actives, (Lattice *)0));
+        return specify(new C(type, actives, (Lattice *)nullptr));
     }
 
     Atom *buildCd(uint type, uint actives, const Crystal *crystal, const int3 &coords) const

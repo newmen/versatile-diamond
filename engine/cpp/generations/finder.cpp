@@ -28,9 +28,11 @@ void Finder::findByOne(Atom *atom, bool checkNull)
     std::cout << "Find by one atom [" << atom << "]" << std::endl;
 #endif // PRINT
 
+#ifdef DEBUG
     if (checkNull && !atom) assert(true);
+#endif // DEBUG
 
-    atom->setUnvisited();
+    atom->setUnvisited(); // TODO: do not used?
 
 #ifdef PARALLEL
 #pragma omp parallel sections
@@ -55,7 +57,7 @@ void Finder::findByOne(Atom *atom, bool checkNull)
     Dimer::find(atom);
     Handbook::keeper().findAll();
 
-    atom->setVisited();
+    atom->setVisited(); // TODO: do not used?
 
     finalize();
 }
@@ -78,6 +80,7 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
 #pragma omp parallel
     {
 #endif // PARALLEL
+
 #ifdef DEBUG
 #ifdef PARALLEL
 #pragma omp for schedule(dynamic) nowait
@@ -86,7 +89,6 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
         {
             Atom *atom = atoms[i];
             if (isInit && !atom) assert(true);
-            if (!atom) continue;
         }
 #endif // DEBUG
 

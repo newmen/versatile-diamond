@@ -15,16 +15,14 @@ void Bridge::find(Atom *anchor)
             assert(anchor->lattice());
             if (anchor->lattice()->coords().z == 0) return;
 
-            auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
-            assert(diamond);
-
+            auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
             auto nbrs = diamond->cross_110(anchor);
             if (nbrs.all() &&
                     nbrs[0]->is(6) && anchor->hasBondWith(nbrs[0]) &&
                     nbrs[1]->is(6) && anchor->hasBondWith(nbrs[1]))
             {
                 Atom *atoms[] = { anchor, nbrs[0], nbrs[1] };
-                auto spec = std::shared_ptr<BaseSpec>(new Bridge(BRIDGE, atoms));
+                auto spec = new Bridge(BRIDGE, atoms);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -37,15 +35,21 @@ void Bridge::find(Atom *anchor)
                 spec->findChildren();
             }
         }
-        else if (anchor->hasRole(3, BRIDGE))
+        else
         {
+            assert(anchor->hasRole(3, BRIDGE));
             anchor->specByRole(3, BRIDGE)->findChildren();
         }
     }
-    else if (anchor->hasRole(3, BRIDGE))
+    else
     {
-        anchor->specByRole(3, BRIDGE)->findChildren();
-        anchor->forget(3, BRIDGE);
+        if (anchor->prevIs(3))
+        {
+            auto spec = anchor->specByRole(3, BRIDGE);
+            spec->findChildren();
+            anchor->forget(3, BRIDGE);
+            Handbook::scavenger().storeSpec<BRIDGE>(spec);
+        }
     }
 }
 

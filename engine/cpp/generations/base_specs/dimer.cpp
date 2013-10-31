@@ -4,22 +4,19 @@
 
 #include <assert.h>
 
-#ifdef PRINT
-#include <iostream>
-#endif // PRINT
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
 
 void Dimer::find(Atom *anchor)
 {
-    assert(anchor);
-
     if (anchor->is(22))
     {
-        if (!anchor->prevIs(22) && anchor->hasRole(3, BRIDGE))
+        assert(anchor->hasRole(3, BRIDGE));
+        if (!anchor->prevIs(22))
         {
             assert(anchor->lattice());
-
-            auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
-            assert(diamond);
+            auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
 
             auto nbrs = diamond->front_100(anchor);
             if (nbrs[0]) checkAndAdd(anchor, nbrs[0]);
@@ -27,21 +24,24 @@ void Dimer::find(Atom *anchor)
         }
         else
         {
-            checkAndFind(anchor);
+            auto spec = specFromAtom(anchor);
+            if (spec) spec->findChildren();
         }
     }
     else
     {
-        Atom *another = checkAndFind(anchor);
-        if (another)
+        if (anchor->prevIs(22))
         {
-#ifdef PRINT
-#pragma omp critical (print)
-            std::cout << "  try forgotten DIMER " << " at [" << anchor << "]" << std::endl;
-#endif // PRINT
+            auto spec = specFromAtom(anchor);
+            if (spec)
+            {
+                spec->findChildren();
 
-            anchor->forget(22, DIMER);
-            another->forget(22, DIMER);
+                auto spec = anchor->specByRole(22, DIMER);
+                anchor->forget(22, DIMER);
+                spec->atom(anotherIndex(spec, anchor))->forget(22, DIMER);
+                Handbook::scavenger().storeSpec<DIMER>(spec);
+            }
         }
     }
 }
@@ -57,15 +57,16 @@ void Dimer::findChildren()
 
 void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
 {
-    if (neighbour->is(22) && anchor->hasBondWith(neighbour) && neighbour->hasRole(3, BRIDGE))
+    if (neighbour->is(22) && anchor->hasBondWith(neighbour))
     {
+        assert(neighbour->hasRole(3, BRIDGE)); // may be need move to if condition
         assert(neighbour->lattice());
 
         BaseSpec *parents[2] = {
             anchor->specByRole(3, BRIDGE),
             neighbour->specByRole(3, BRIDGE)
         };
-        auto spec = std::shared_ptr<BaseSpec>(new Dimer(DIMER, parents));
+        auto spec = new Dimer(DIMER, parents);
 
 #ifdef PRINT
         spec->wasFound();
@@ -78,26 +79,16 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
     }
 }
 
-Atom *Dimer::checkAndFind(Atom *anchor)
+BaseSpec *Dimer::specFromAtom(Atom *anchor)
 {
-    if (anchor->hasRole(22, DIMER))
-    {
-        auto spec = dynamic_cast<Dimer *>(anchor->specByRole(22, DIMER));
-        uint ai = (spec->atom(0) == anchor) ? 3 : 0;
-        Atom *another = spec->atom(ai);
+    auto spec = anchor->specByRole(22, DIMER);
+    uint ai = anotherIndex(spec, anchor);
+    Atom *another = spec->atom(ai);
 
-        if (ai != 0 || another->isVisited())
-        {
-#ifdef PRINT
-#pragma omp critical (print)
-            std::cout << " << Found " << spec->name() << " ( " << anchor << " -- " << another << " ) with another index: "
-                      << ai << " => '" << another->isVisited() << "'" << std::endl;
-#endif // PRINT
-
-            anchor->specByRole(22, DIMER)->findChildren();
-            return another;
-        }
-    }
-    return 0;
+    return (ai != 0 || another->isVisited()) ? spec : nullptr;
 }
 
+uint Dimer::anotherIndex(BaseSpec *spec, Atom *anchor)
+{
+    return (spec->atom(0) == anchor) ? 3 : 0;
+}

@@ -29,8 +29,8 @@ int main()
 #endif // PRINT
 
 //    Diamond *diamond = new OpenDiamond(2);
-//    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
-    Diamond *diamond = new Diamond(dim3(3, 3, 3), 2);
+    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
+//    Diamond *diamond = new Diamond(dim3(3, 3, 3), 2);
     diamond->initialize();
 
 #ifdef PRINT
@@ -38,7 +38,7 @@ int main()
 #endif // PRINT
 
 //    for (int i = 0; i < 8000; ++i)
-    for (int i = 0; i < 100000; ++i)
+    for (int i = 0; i < 10000; ++i)
     {
         Handbook::mc().doRandom();
 

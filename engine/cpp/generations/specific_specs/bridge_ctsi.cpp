@@ -10,7 +10,7 @@ void BridgeCTsi::find(BaseSpec *parent)
     {
         if (!anchor->prevIs(28))
         {
-            auto spec = std::shared_ptr<BaseSpec>(new BridgeCTsi(BRIDGE_CTsi, parent));
+            auto spec = new BridgeCTsi(BRIDGE_CTsi, parent);
 
 #ifdef PRINT
             spec->wasFound();
@@ -18,27 +18,23 @@ void BridgeCTsi::find(BaseSpec *parent)
 
             anchor->describe(28, spec);
 
-            Handbook::keeper().store<KEE_BRIDGE_CTsi>(spec.get());
+            Handbook::keeper().store<KEE_BRIDGE_CTsi>(spec);
         }
     }
     else
     {
-        if (anchor->hasRole(28, BRIDGE_CTsi))
+//        if (anchor->hasRole(28, BRIDGE_CTsi))
+        if (anchor->prevIs(28))
         {
-            auto spec = dynamic_cast<SpecificSpec *>(anchor->specByRole(28, BRIDGE_CTsi));
-            assert(spec);
+            auto spec = static_cast<SpecificSpec *>(anchor->specByRole(28, BRIDGE_CTsi));
             spec->removeReactions();
-
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-            std::cout << omp_get_thread_num() << " $ " << "bridgeCTsi " << spec << " was forgotten" << std::endl;
 
 #ifdef PRINT
             spec->wasForgotten();
 #endif // PRINT
 
             anchor->forget(28, BRIDGE_CTsi);
+            Handbook::scavenger().storeSpec<BRIDGE_CTsi>(spec);
         }
     }
 }

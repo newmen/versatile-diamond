@@ -12,9 +12,7 @@ void DimerFormation::find(SpecificSpec *parent)
     if (!anchor->prevIs(28))
     {
         assert(anchor->lattice());
-
-        auto diamond = dynamic_cast<const Diamond *>(anchor->lattice()->crystal());
-        assert(diamond);
+        auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
 
         auto nbrs = diamond->front_100(anchor);
         // TODO: maybe need to parallel it?
@@ -39,17 +37,18 @@ void DimerFormation::doIt()
 void DimerFormation::remove()
 {
     Handbook::mc().remove<DIMER_FORMATION>(this, false);
-    Handbook::scavenger().store<DIMER_FORMATION>(this);
+    Handbook::scavenger().storeReaction<SCA_DIMER_FORMATION>(this);
 }
 
 void DimerFormation::checkAndAdd(SpecificSpec *parent, Atom *neighbour)
 {
-    // TODO: maybe do not need check existing role?
-    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour) && neighbour->hasRole(28, BRIDGE_CTsi))
+    if (neighbour->is(28) && !parent->atom(0)->hasBondWith(neighbour))
     {
+        assert(neighbour->hasRole(28, BRIDGE_CTsi)); // maybe need move it to if condition
+
         SpecificSpec *targets[2] = {
             parent,
-            dynamic_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
+            static_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
         };
 
         SpecReaction *reaction = new DimerFormation(targets);

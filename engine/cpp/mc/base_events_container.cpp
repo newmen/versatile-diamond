@@ -41,7 +41,7 @@ Reaction *BaseEventsContainer::exchangeToLast(uint index)
 
     if (_events.begin() + index == _events.end())
     {
-        return 0;
+        return nullptr;
     }
     else
     {
