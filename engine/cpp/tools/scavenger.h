@@ -14,6 +14,8 @@ class Scavenger
         , protected Collector<SpecReaction, DUAL_TYPICAL_REACTIONS_NUM>
 {
 public:
+    ~Scavenger();
+
     template <ushort ID> void storeReaction(SpecReaction *reaction);
     template <ushort ID> void storeSpec(BaseSpec *spec);
 
@@ -35,6 +37,12 @@ template <ushort ID>
 void Scavenger<SPECS_NUM, DUAL_TYPICAL_REACTIONS_NUM>::storeSpec(BaseSpec *spec)
 {
     Collector<BaseSpec, SPECS_NUM>::template store<ID>(spec);
+}
+
+template <ushort SPECS_NUM, ushort DUAL_TYPICAL_REACTIONS_NUM>
+Scavenger<SPECS_NUM, DUAL_TYPICAL_REACTIONS_NUM>::~Scavenger()
+{
+    clear();
 }
 
 template <ushort SPECS_NUM, ushort DUAL_TYPICAL_REACTIONS_NUM>

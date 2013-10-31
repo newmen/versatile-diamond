@@ -5,8 +5,6 @@
 using namespace vd;
 
 #include "../handbook.h"
-//#include "../reactions/ubiquitous/reaction_activation.h"
-//#include "../reactions/ubiquitous/reaction_deactivation.h"
 
 template <ushort VALENCE>
 class SpecifiedAtom : public ConcreteAtom<VALENCE>
@@ -30,13 +28,13 @@ SpecifiedAtom<VALENCE>::SpecifiedAtom(ushort type, ushort actives, Lattice *latt
 template <ushort VALENCE>
 bool SpecifiedAtom<VALENCE>::is(ushort typeOf) const
 {
-    return Handbook::atomIs(Atom::type(), typeOf);
+    return Atom::type() != NO_VALUE && Handbook::atomIs(Atom::type(), typeOf);
 }
 
 template <ushort VALENCE>
 bool SpecifiedAtom<VALENCE>::prevIs(ushort typeOf) const
 {
-    return Atom::prevType() != (ushort)(-1) && Handbook::atomIs(Atom::prevType(), typeOf);
+    return Atom::prevType() != NO_VALUE && Handbook::atomIs(Atom::prevType(), typeOf);
 }
 
 template <ushort VALENCE>

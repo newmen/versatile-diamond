@@ -10,9 +10,10 @@ namespace vd
 
 class Crystal : public Phase
 {
-public:
     typedef vector3d<Atom *> Atoms;
+    Atoms _atoms;
 
+public:
     Crystal(const dim3 &sizes);
     ~Crystal() override;
 
@@ -38,9 +39,6 @@ protected:
     Atoms &atoms() { return _atoms; }
 
 //    Atom *atom(const int3 &coords) { return _atoms[coords]; }
-
-private:
-    Atoms _atoms;
 };
 
 }

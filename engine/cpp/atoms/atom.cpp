@@ -149,7 +149,7 @@ bool Atom::hasRole(ushort rType, ushort specType)
 
 BaseSpec *Atom::specByRole(ushort rType, ushort specType)
 {
-    BaseSpec *result;
+    BaseSpec *result = nullptr;
     const uint key = hash(rType, specType);
 
 #ifdef PRINT
@@ -170,11 +170,12 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     lock([this, &result, key]() {
 #endif // PARALLEL
         auto its = _specs.equal_range(key);
-        assert(std::distance(its.first, its.second) == 1);
-        result = its.first->second;
-
-//        assert(its.second != _specs.end());
-//        result = its.second->second;
+        uint distance = std::distance(its.first, its.second);
+        if (distance > 0)
+        {
+            assert(distance == 1);
+            result = its.first->second;
+        }
 #ifdef PARALLEL
     });
 #endif // PARALLEL
@@ -182,27 +183,48 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     return result;
 }
 
-void Atom::forget(ushort rType, ushort specType)
+SpecificSpec *Atom::specificSpecByRole(ushort rType, ushort specType)
 {
-    const uint key = hash(rType, specType);
+    return static_cast<SpecificSpec *>(specByRole(rType, specType));
+}
+
+void Atom::forget(ushort rType, BaseSpec *spec)
+{
+    const uint key = hash(rType, spec->type());
 
 #ifdef PRINT
 #ifdef PARALLEL
 #pragma omp critical (print)
 #endif // PARALLEL
     std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
-              << ". spec type: " << specType << ". key: " << key << std::endl;
+              << ". spec type: " << spec->type() << ". key: " << key << std::endl;
 #endif // PRINT
 
 #ifdef PARALLEL
-    lock([this, rType, key]() {
+    lock([this, rType, spec, key]() {
 #endif // PARALLEL
-        _roles.erase(rType);
-        _specs.erase(key);
+        auto its = _specs.equal_range(key);
+        if (std::distance(its.first, its.second) == 1) _roles.erase(rType);
+
+        for (auto p = its.first; p != its.second; ++p)
+        {
+            if (p->second == spec)
+            {
+                _specs.erase(key);
+                break;
+            }
+        }
+
 #ifdef PARALLEL
     });
 #endif // PARALLEL
 
+}
+
+void Atom::prepareToRemove()
+{
+    _prevType = _type;
+    setType(NO_VALUE);
 }
 
 #ifdef PRINT

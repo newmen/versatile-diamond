@@ -13,7 +13,10 @@
 namespace vd
 {
 
+const ushort NO_VALUE = (ushort)(-1);
+
 class BaseSpec;
+class SpecificSpec;
 
 #ifdef PARALLEL
 class Atom : public Lockable
@@ -24,7 +27,7 @@ class Atom
 {
     bool _visited = false;
 
-    ushort _type, _prevType = (ushort)(-1);
+    ushort _type, _prevType = NO_VALUE;
     ushort _actives;
     Lattice *_lattice, *_cacheLattice;
     std::unordered_multiset<Atom *> _relatives; // atoms bonded with current
@@ -62,7 +65,10 @@ public:
     void describe(ushort rType, BaseSpec *spec);
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
-    void forget(ushort rType, ushort specType);
+    SpecificSpec *specificSpecByRole(ushort rType, ushort specType);
+    void forget(ushort rType, BaseSpec *spec);
+
+    void prepareToRemove();
 
 #ifdef PRINT
     void info();

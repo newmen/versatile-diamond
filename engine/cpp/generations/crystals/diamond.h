@@ -12,6 +12,7 @@ class Diamond : public Crystal
 
 public:
     Diamond(const dim3 &sizes, int defaultSurfaceHeight = 2);
+    ~Diamond();
 
     DiamondRelations::TN front_110(const Atom *atom) const { return DiamondRelations::front_110(this, atom); }
     DiamondRelations::TN cross_110(const Atom *atom) const { return DiamondRelations::cross_110(this, atom); }

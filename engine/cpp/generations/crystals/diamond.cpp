@@ -9,6 +9,11 @@ Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :
 {
 }
 
+Diamond::~Diamond()
+{
+    Finder::removeAll(atoms().data(), atoms().size());
+}
+
 void Diamond::buildAtoms()
 {
     for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
@@ -20,7 +25,7 @@ void Diamond::buildAtoms()
 
 void Diamond::bondAllAtoms()
 {
-    atoms().each([this](Atom *atom) {
+    atoms().ompParallelEach([this](Atom *atom) {
         if (!atom) return;
         assert(atom->lattice());
 

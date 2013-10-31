@@ -3,10 +3,6 @@
 
 #include "reaction.h"
 
-#ifdef PRINT
-#include <iostream>
-#endif // PRINT
-
 namespace vd
 {
 

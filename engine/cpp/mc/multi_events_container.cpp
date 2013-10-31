@@ -31,13 +31,11 @@ void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
     }
 }
 
-void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
+void MultiEventsContainer::remove(Atom *target, uint n)
 {
-    Atom *anchor = event->target();
-
     for (uint i = 0; i < n; ++i)
     {
-        auto currIt = _positions.find(anchor);
+        auto currIt = _positions.find(target);
         assert(currIt != _positions.end());
 
         Reaction *current = _events[currIt->second];
@@ -70,7 +68,7 @@ void MultiEventsContainer::remove(UbiquitousReaction *event, uint n)
 
         _positions.erase(currIt);
 
-        auto range = _positions.equal_range(anchor);
+        auto range = _positions.equal_range(target);
         bool haveSame = false;
         for (auto it = range.first; it != range.second; it++)
         {

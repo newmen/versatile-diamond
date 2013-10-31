@@ -1,21 +1,34 @@
 #include "ubiquitous_reaction.h"
 #include "../generations/finder.h" // wow wow
 
+//#ifdef PRINT
+#include <iostream>
+//#endif // PRINT
+
 namespace vd
 {
 
 short UbiquitousReaction::delta(Atom *anchor, const ushort *typeToNum)
 {
-    ushort currNum = typeToNum[anchor->type()];
-    ushort prevNum;
-    if (anchor->prevType() == (ushort)(-1))
+    ushort currNum = 0, prevNum = 0;
+    ushort at = anchor->type();
+
+    if (at == NO_VALUE)
     {
-        prevNum = 0;
+        if (anchor->prevType() != NO_VALUE)
+        {
+            currNum = -typeToNum[anchor->prevType()];
+        }
     }
     else
     {
-        prevNum = typeToNum[anchor->prevType()];
+        currNum = typeToNum[at];
+        if (anchor->prevType() != NO_VALUE)
+        {
+            prevNum = typeToNum[anchor->prevType()];
+        }
     }
+
     return currNum - prevNum;
 }
 
@@ -33,7 +46,8 @@ void UbiquitousReaction::doIt()
 #ifdef PRINT
 void UbiquitousReaction::info()
 {
-    std::cout << "Reaction " << name() << " [" << this << "]: ";
+    std::cout << "Reaction " << name() << " [" << this << "] ";
+    std::cout << " as <" << target()->type() << ", " << target()->prevType() << ">: ";
     if (target()->lattice()) std::cout << target()->lattice()->coords();
     else std::cout << "amorph";
     std::cout << std::endl;

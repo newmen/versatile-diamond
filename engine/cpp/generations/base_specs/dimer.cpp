@@ -30,7 +30,7 @@ void Dimer::find(Atom *anchor)
     }
     else
     {
-        if (anchor->prevIs(22) && anchor->hasRole(22, DIMER)) // checking role is important!
+        if (anchor->prevIs(22))
         {
             auto spec = specFromAtom(anchor);
             if (spec)
@@ -38,8 +38,8 @@ void Dimer::find(Atom *anchor)
                 spec->findChildren();
 
                 auto spec = anchor->specByRole(22, DIMER);
-                anchor->forget(22, DIMER);
-                spec->atom(anotherIndex(spec, anchor))->forget(22, DIMER);
+                anchor->forget(22, spec);
+                spec->atom(anotherIndex(spec, anchor))->forget(22, spec);
                 Handbook::scavenger().storeSpec<DIMER>(spec);
             }
         }
@@ -82,6 +82,8 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
 BaseSpec *Dimer::specFromAtom(Atom *anchor)
 {
     auto spec = anchor->specByRole(22, DIMER);
+    if (!spec) return nullptr;
+
     uint ai = anotherIndex(spec, anchor);
     Atom *another = spec->atom(ai);
 

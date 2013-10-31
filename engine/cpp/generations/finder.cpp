@@ -22,6 +22,23 @@ void Finder::findAll(Atom **atoms, int n, bool isInit)
     else findByMany(atoms, n, isInit);
 }
 
+void Finder::removeAll(Atom **atoms, int n)
+{
+#ifdef PARALLEL
+#pragma omp parallel for schedule(dynamic)
+#endif // PARALLEL
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (atom)
+        {
+            atom->prepareToRemove();
+        }
+    }
+
+    findByMany(atoms, n, false);
+}
+
 void Finder::findByOne(Atom *atom, bool checkNull)
 {
 #ifdef PRINT

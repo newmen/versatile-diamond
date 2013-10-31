@@ -3,6 +3,8 @@ build-*
 *______*
 *.autosave
 *.swp
+Makefile
+obj/
 
 .idea
 *.dump

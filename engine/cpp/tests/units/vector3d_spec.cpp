@@ -10,12 +10,16 @@ int main(int argc, char const *argv[])
         assert(n == 2);
     });
 
+    v3.ompParallelEach([](int n) {
+        assert(n == 2);
+    });
+
     // v3.map([](int n) { return n + 4; });
     // v3.each([](int n) {
     //     assert(n == 5);
     // });
 
-    int sum = v3.reduce_plus(0, [](int n) {
+    int sum = v3.ompParallelReducePlus(0, [](int n) {
         return n;
     });
     // assert(sum == 135);

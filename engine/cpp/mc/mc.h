@@ -13,9 +13,9 @@
 #include <omp.h>
 #endif // PARALLEL
 
-#ifdef PRINT
+//#ifdef PRINT
 #include <iostream>
-#endif // PRINT
+//#endif // PRINT
 
 // for #compareContainers()
 #define MULTI_EVENTS_INDEX_SHIFT 1000
@@ -125,9 +125,9 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
     recountTotalRate();
     sort();
 
-#ifdef PRINT
+//#ifdef PRINT
     std::cout << "Event not found! Resort and using " << _order[EVENTS_NUM + MULTI_EVENTS_NUM - 1] << std::endl;
-#endif // PRINT
+//#endif // PRINT
 
     BaseEventsContainer *currentEvents = events(_order[EVENTS_NUM + MULTI_EVENTS_NUM - 1]);
     currentEvents->doEvent(totalRate());
@@ -252,7 +252,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
         std::cout << "Remove multi ";
         reaction->info();
 #endif // PRINT
-        _multiEvents[RT].remove(reaction, n);
+        _multiEvents[RT].remove(reaction->target(), n);
 #ifdef PARALLEL
     }
 #endif // PARALLEL

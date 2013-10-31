@@ -1,0 +1,31 @@
+CXX		:= <%= compiler %>
+CXXFLAGS	:= <%= flags %>
+
+NAME	:= vd_engine
+
+SOURCE_SUBDIRS	:= <%= source_dirs %>
+
+SRC_DIR := <%= src_dir %>
+OBJ_DIR := <%= obj_dir %>
+
+SOURCE_DIRS			:= $(addprefix $(SRC_DIR)/, $(SOURCE_SUBDIRS))
+OBJECTS_DIRS		:= $(addprefix $(OBJ_DIR)/, $(SOURCE_SUBDIRS))
+
+HEADER_FILES		:= $(wildcard $(addsuffix /*.h, $(SOURCE_DIRS)))
+SOURCE_FILES		:= $(wildcard $(addsuffix /*.cpp, $(SOURCE_DIRS)))
+SOURCE_OBJECTS	:= $(SOURCE_FILES:%.cpp=%.o)
+
+all:	$(NAME)
+$(NAME): obj_dirs $(SOURCE_OBJECTS)
+
+obj_dirs:
+	mkdir -p $(OBJECTS_DIRS)
+
+.h.o:
+	$(CXX) $(CXXFLAGS) -o $(patsubst $(SRC_DIR)/%, $(OBJ_DIR)/%, $@) -c $<
+
+.cpp.o: $(HEADER_FILES)
+	$(CXX) $(CXXFLAGS) -o $(patsubst $(SRC_DIR)/%, $(OBJ_DIR)/%, $@) -c $<
+
+clean:
+	rm -rf obj

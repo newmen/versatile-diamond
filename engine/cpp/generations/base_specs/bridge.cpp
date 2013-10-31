@@ -46,9 +46,16 @@ void Bridge::find(Atom *anchor)
         if (anchor->prevIs(3))
         {
             auto spec = anchor->specByRole(3, BRIDGE);
-            spec->findChildren();
-            anchor->forget(3, BRIDGE);
-            Handbook::scavenger().storeSpec<BRIDGE>(spec);
+            if (spec)
+            {
+                spec->findChildren();
+
+                anchor->forget(3, spec);
+                spec->atom(1)->forget(3, spec);
+                spec->atom(2)->forget(3, spec);
+
+                Handbook::scavenger().storeSpec<BRIDGE>(spec);
+            }
         }
     }
 }

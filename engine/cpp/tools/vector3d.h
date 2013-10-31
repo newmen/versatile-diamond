@@ -39,11 +39,8 @@ public:
         return _data[index(correct(coords))];
     }
 
-    template <class Lambda>
-    void each(const Lambda &lambda) const;
-
-//    template <class Lambda>
-//    void each_in_parallel(const Lambda &lambda) const;
+    template <class Lambda> void each(const Lambda &lambda) const;
+    template <class Lambda> void ompParallelEach(const Lambda &lambda) const;
 
 //    template <class Lambda>
 //    void map(const Lambda &lambda);
@@ -52,7 +49,7 @@ public:
 //    void mapIndex(const Lambda &lambda);
 
     template <typename R, class Lambda>
-    R reduce_plus(R initValue, const Lambda &lambda) const;
+    R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
 
 private:
     uint index(const int3 &coords) const
@@ -83,9 +80,6 @@ template <typename T>
 vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes)
 {
     _data = new T[_sizes.N()];
-#ifdef PARALLEL
-#pragma omp parallel for
-#endif // PARALLEL
     for (int i = 0; i < _sizes.N(); ++i) _data[i] = initValue;
 }
 
@@ -99,6 +93,16 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
+    for (int i = 0; i < _sizes.N(); ++i)
+    {
+        lambda(_data[i]);
+    }
+}
+
+template <typename T>
+template <class Lambda>
+void vector3d<T>::ompParallelEach(const Lambda &lambda) const
+{
 #ifdef PARALLEL
 #pragma omp parallel for shared(lambda) schedule(dynamic)
 #endif // PARALLEL
@@ -107,20 +111,6 @@ void vector3d<T>::each(const Lambda &lambda) const
         lambda(_data[i]);
     }
 }
-
-//template <typename T>
-//template <class Lambda>
-//void vector3d<T>::each_in_parallel(const Lambda &lambda) const
-//{
-
-//#ifdef PARALLEL
-//#pragma omp for schedule(dynamic)
-//#endif // PARALLEL
-//    for (int i = 0; i < _sizes.N(); ++i)
-//    {
-//        lambda(_container[i]);
-//    }
-//}
 
 //template <typename T>
 //template <class Lambda>
@@ -146,7 +136,7 @@ void vector3d<T>::each(const Lambda &lambda) const
 
 template <typename T>
 template <typename R, class Lambda>
-R vector3d<T>::reduce_plus(R initValue, const Lambda &lambda) const
+R vector3d<T>::ompParallelReducePlus(R initValue, const Lambda &lambda) const
 {
     R sum = initValue;
 #ifdef PARALLEL

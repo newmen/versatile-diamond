@@ -65,7 +65,7 @@ void Crystal::makeLayer(uint z, uint type)
 
 uint Crystal::countAtoms() const
 {
-    return atoms().reduce_plus(0, [](Atom *atom) {
+    return atoms().ompParallelReducePlus(0, [](Atom *atom) {
         return (atom) ? 1 : 0;
     });
 }
