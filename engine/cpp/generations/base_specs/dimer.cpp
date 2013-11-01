@@ -1,5 +1,6 @@
 #include "dimer.h"
 #include "../handbook.h"
+#include "../base_specs/methyl_on_dimer.h"
 #include "../specific_specs/dimer_cri_cli.h"
 #include "../specific_specs/dimer_crs.h"
 
@@ -55,6 +56,12 @@ void Dimer::findChildren()
 #ifdef PARALLEL
 #pragma omp parallel sections
     {
+#pragma omp section
+        {
+#endif // PARALLEL
+            MethylOnDimer::find(this);
+#ifdef PARALLEL
+        }
 #pragma omp section
         {
 #endif // PARALLEL

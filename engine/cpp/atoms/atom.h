@@ -32,8 +32,8 @@ class Atom
     Lattice *_lattice, *_cacheLattice;
 
     // atoms bonded with current
-    std::unordered_multiset<Atom *> _crystalRelatives;
-    std::unordered_multiset<Atom *> _amorphRelatives;
+    std::unordered_set<Atom *> _crystalRelatives;
+    std::unordered_set<Atom *> _amorphRelatives;
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
     std::unordered_multimap<uint, BaseSpec *> _specs;
@@ -60,6 +60,8 @@ public:
     void bondWith(Atom *neighbour, int depth = 1);
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
+
+    Atom *amorphNeighbour();
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);

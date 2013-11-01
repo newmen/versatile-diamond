@@ -23,8 +23,8 @@ public:
     ushort size() const;
 
 #ifdef PRINT
-    void info();
-    void eachAtom(const std::function<void (Atom *)> &lambda);
+    void info() override;
+    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 
 protected:

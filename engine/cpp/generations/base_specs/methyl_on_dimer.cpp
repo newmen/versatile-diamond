@@ -14,15 +14,17 @@ void MethylOnDimer::find(BaseSpec *target)
         {
             if (!anchor->prevIs(23))
             {
-                auto spec = new MethylOnDimer(METHYL_ON_DIMER, &target, indexes[i]);
+                Atom *methyl = anchor->amorphNeighbour();
+                auto spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &target);
 
 #ifdef PRINT
                 spec->wasFound();
 #endif // PRINT
 
                 anchor->describe(23, spec);
+                methyl->describe(25, spec);
                 spec->findChildren();
-            }
+            }п
             else
             {
                 auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
@@ -43,6 +45,7 @@ void MethylOnDimer::find(BaseSpec *target)
 #endif // PRINT
 
                     anchor->forget(23, spec);
+                    spec->atom(0)->forget(25, spec);
                     Handbook::scavenger.markSpec<METHYL_ON_DIMER>(spec);
                 }
             }

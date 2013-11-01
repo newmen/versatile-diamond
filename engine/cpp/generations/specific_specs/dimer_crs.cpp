@@ -15,7 +15,7 @@ void DimerCRs::find(Dimer *target)
         {
             if (!anchor->prevIs(21))
             {
-                auto spec = new DimerCRs(DIMER_CRs, target, indexes[i]);
+                auto spec = new DimerCRs(indexes[i], DIMER_CRs, target);
 
 #ifdef PRINT
                 spec->wasFound();

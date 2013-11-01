@@ -13,8 +13,8 @@ public:
     static void find(Dimer *target);
 
 //    using AtomShifterWrapper<SpecificSpec>::AtomShifterWrapper;
-    DimerCRs(ushort type, BaseSpec *parent, ushort atomsShift) :
-        AtomShifterWrapper<SpecificSpec>(type, parent, atomsShift) {}
+    DimerCRs(ushort atomsShift, ushort type, BaseSpec *parent) :
+        AtomShifterWrapper<SpecificSpec>(atomsShift, type, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: *)"; }

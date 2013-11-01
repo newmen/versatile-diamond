@@ -22,8 +22,8 @@ public:
     ushort size() const { return ATOMS_NUM; }
 
 #ifdef PRINT
-    void info();
-    void eachAtom(const std::function<void (Atom *)> &lambda);
+    void info() override;
+    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
 

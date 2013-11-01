@@ -89,6 +89,22 @@ bool Atom::hasBondWith(Atom *neighbour) const
             _amorphRelatives.find(neighbour) != _amorphRelatives.cend();
 }
 
+Atom *Atom::amorphNeighbour()
+{
+    Atom *result = nullptr;
+
+#ifdef PARALLEL
+    lock([this, &result]() {
+#endif // PARALLEL
+        assert(_amorphRelatives.size() == 1);
+        result = *_amorphRelatives.begin();
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
+
+    return result;
+}
+
 void Atom::setLattice(Crystal *crystal, const int3 &coords)
 {
     assert(crystal);
@@ -211,9 +227,9 @@ void Atom::forget(ushort rType, BaseSpec *spec)
         auto its = _specs.equal_range(key);
         if (std::distance(its.first, its.second) == 1) _roles.erase(rType);
 
-        for (auto p = its.first; p != its.second; ++p)
+        while (its.first != its.second)
         {
-            if (p->second == spec)
+            if ((its.first++)->second == spec)
             {
                 _specs.erase(key);
                 break;

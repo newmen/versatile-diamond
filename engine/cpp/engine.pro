@@ -93,4 +93,5 @@ HEADERS += \
     generations/specific_specs/dimer_crs.h \
     generations/reactions/typical/ads_methyl_to_dimer.h \
     generations/base_specs/methyl_on_dimer.h \
-    species/atom_shifter_wrapper.h
+    species/atom_shifter_wrapper.h \
+    species/additional_atoms_wrapper.h

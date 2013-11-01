@@ -3,7 +3,6 @@
 
 #include "../tools/common.h"
 #include "../atoms/atom.h"
-#include "base_spec.h"
 
 namespace vd
 {
@@ -14,9 +13,8 @@ class AtomShifterWrapper : public B
     ushort _atomsShift;
 
 public:
-//    using B::B;
-    template <class T>
-    AtomShifterWrapper(ushort type, T *parent, ushort atomsShift) : B(type, parent), _atomsShift(atomsShift) {}
+    template <class... Ts>
+    AtomShifterWrapper(ushort atomsShift, Ts... args) : B(args...), _atomsShift(atomsShift) {}
 
     Atom *atom(ushort index) override;
 };
