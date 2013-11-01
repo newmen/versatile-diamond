@@ -43,8 +43,8 @@ SOURCES += main.cpp \
     species/specific_spec.cpp \
     generations/specific_specs/bridge_ctsi.cpp \
     generations/specific_specs/dimer_crs.cpp \
-    generations/reactions/typical/methyl_to_dimer.cpp \
-    generations/atoms/specified_atom.cpp
+    generations/atoms/specified_atom.cpp \
+    generations/reactions/typical/ads_methyl_to_dimer.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -90,4 +90,4 @@ HEADERS += \
     generations/specific_specs/dimer_cri_cli.h \
     generations/specific_specs/bridge_ctsi.h \
     generations/specific_specs/dimer_crs.h \
-    generations/reactions/typical/methyl_to_dimer.h
+    generations/reactions/typical/ads_methyl_to_dimer.h

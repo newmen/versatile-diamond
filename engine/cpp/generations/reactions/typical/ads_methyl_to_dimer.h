@@ -1,18 +1,18 @@
-#ifndef METHYL_TO_DIMER_H
-#define METHYL_TO_DIMER_H
+#ifndef ADS_METHYL_TO_DIMER_H
+#define ADS_METHYL_TO_DIMER_H
 
 #include "../../../reactions/mono_spec_reaction.h"
 using namespace vd;
 
 #include "../../specific_specs/dimer_crs.h"
 
-class MethylToDimer : public MonoSpecReaction
+class AdsMethylToDimer : public MonoSpecReaction
 {
 public:
     static void find(DimerCRs *target);
 
 //    using MonoSpecReaction::MonoSpecReaction;
-    MethylToDimer(SpecificSpec *target) : MonoSpecReaction(target) {}
+    AdsMethylToDimer(SpecificSpec *target) : MonoSpecReaction(target) {}
 
     double rate() const { return 1e7; }
     void doIt();
@@ -25,4 +25,4 @@ protected:
     void remove() override;
 };
 
-#endif // METHYL_TO_DIMER_H
+#endif // ADS_METHYL_TO_DIMER_H

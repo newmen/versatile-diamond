@@ -1,6 +1,6 @@
 #include "dimer_crs.h"
 #include "../handbook.h"
-#include "../reactions/typical/methyl_to_dimer.h"
+#include "../reactions/typical/ads_methyl_to_dimer.h"
 
 void DimerCRs::find(Dimer *parent)
 {
@@ -52,5 +52,5 @@ Atom *DimerCRs::atom(ushort index)
 
 void DimerCRs::findChildren()
 {
-    MethylToDimer::find(this);
+    AdsMethylToDimer::find(this);
 }

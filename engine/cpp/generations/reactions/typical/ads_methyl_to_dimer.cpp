@@ -1,22 +1,22 @@
-#include "methyl_to_dimer.h"
+#include "ads_methyl_to_dimer.h"
 #include "../../handbook.h"
 #include "../../builders/atom_builder.h"
 
-void MethylToDimer::find(DimerCRs *target)
+void AdsMethylToDimer::find(DimerCRs *target)
 {
     Atom *anchor = target->atom(0);
 
     assert(anchor->is(21));
     if (!anchor->prevIs(21))
     {
-        SpecReaction *reaction = new MethylToDimer(target);
+        SpecReaction *reaction = new AdsMethylToDimer(target);
         Handbook::mc.add<METHYL_TO_DIMER>(reaction);
 
         target->usedIn(reaction);
     }
 }
 
-void MethylToDimer::doIt()
+void AdsMethylToDimer::doIt()
 {
     Atom *a = target()->atom(0);
     assert(a->is(21));
@@ -31,7 +31,7 @@ void MethylToDimer::doIt()
     Finder::findAll(&a, 1);
 }
 
-void MethylToDimer::remove()
+void AdsMethylToDimer::remove()
 {
     Handbook::mc.remove<METHYL_TO_DIMER>(this);
 }
