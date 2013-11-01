@@ -18,7 +18,7 @@ Atom::Atom(ushort type, ushort actives, Lattice *lattice) :
 
 Atom::~Atom()
 {
-    delete _lattice;
+    delete _cacheLattice;
 }
 
 void Atom::changeType(ushort newType)
@@ -48,12 +48,14 @@ void Atom::deactivate()
 
 void Atom::bondWith(Atom *neighbour, int depth)
 {
+    auto &currRelatives = neighbour->lattice() ? _crystalRelatives : _amorphRelatives;
+
 #ifdef PARALLEL
-    lock([this, &neighbour]() {
+    lock([this, &currRelatives, neighbour]() {
 #endif // PARALLEL
         assert(_actives > 0);
 
-        neighbours().insert(neighbour);
+        currRelatives.insert(neighbour);
         deactivate();
 #ifdef PARALLEL
     });
@@ -64,13 +66,15 @@ void Atom::bondWith(Atom *neighbour, int depth)
 
 void Atom::unbondFrom(Atom *neighbour, int depth)
 {
-#ifdef PARALLEL
-    lock([this, &neighbour]() {
-#endif // PARALLEL
-        assert(hasBondWith(neighbour));
+    auto &currRelatives = neighbour->lattice() ? _crystalRelatives : _amorphRelatives;
 
-        auto it = neighbours().find(neighbour);
-        neighbours().erase(it);
+#ifdef PARALLEL
+    lock([this, &currRelatives, neighbour]() {
+#endif // PARALLEL
+        auto it = currRelatives.find(neighbour);
+        assert(it != currRelatives.end());
+
+        currRelatives.erase(it);
         activate();
 #ifdef PARALLEL
     });
@@ -81,7 +85,8 @@ void Atom::unbondFrom(Atom *neighbour, int depth)
 
 bool Atom::hasBondWith(Atom *neighbour) const
 {
-    return neighbours().find(neighbour) != neighbours().cend();
+    return _crystalRelatives.find(neighbour) != _crystalRelatives.cend() ||
+            _amorphRelatives.find(neighbour) != _amorphRelatives.cend();
 }
 
 void Atom::setLattice(Crystal *crystal, const int3 &coords)

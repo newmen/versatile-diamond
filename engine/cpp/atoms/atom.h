@@ -30,7 +30,10 @@ class Atom
     ushort _type, _prevType = NO_VALUE;
     ushort _actives;
     Lattice *_lattice, *_cacheLattice;
-    std::unordered_multiset<Atom *> _relatives; // atoms bonded with current
+
+    // atoms bonded with current
+    std::unordered_multiset<Atom *> _crystalRelatives;
+    std::unordered_multiset<Atom *> _amorphRelatives;
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
     std::unordered_multimap<uint, BaseSpec *> _specs;
@@ -51,10 +54,10 @@ public:
     virtual void specifyType() = 0;
     void changeType(ushort newType);
 
-    virtual void activate();
+    void activate();
     void deactivate();
 
-    virtual void bondWith(Atom *neighbour, int depth = 1);
+    void bondWith(Atom *neighbour, int depth = 1);
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
 
@@ -75,12 +78,11 @@ public:
 #endif // PRINT
 
 protected:
-    const std::unordered_multiset<Atom *> &neighbours() const { return _relatives; }
-    std::unordered_multiset<Atom *> &neighbours() { return _relatives; }
-
-    ushort actives() const { return _actives; }
-
     void setType(ushort type) { _type = type; }
+
+#ifdef DEBUG
+    ushort actives() const { return _actives; }
+#endif // DEBUG
 
 private:
     uint hash(ushort first, ushort second) const
