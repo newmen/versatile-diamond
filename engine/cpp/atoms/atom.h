@@ -54,7 +54,7 @@ public:
     virtual void activate();
     void deactivate();
 
-    void bondWith(Atom *neighbour, int depth = 1);
+    virtual void bondWith(Atom *neighbour, int depth = 1);
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
 

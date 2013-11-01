@@ -43,11 +43,11 @@ SOURCES += main.cpp \
     species/specific_spec.cpp \
     generations/specific_specs/bridge_ctsi.cpp \
     generations/specific_specs/dimer_crs.cpp \
-    generations/reactions/typical/methyl_to_dimer.cpp
+    generations/reactions/typical/methyl_to_dimer.cpp \
+    generations/atoms/specified_atom.cpp
 
 HEADERS += \
     atoms/atom.h \
-    atoms/concrete_atom.h \
     atoms/lattice.h \
     atoms/neighbours.h \
     generations/atoms/c.h \
