@@ -12,7 +12,7 @@ using namespace std;
 void assertIs(C *c, std::initializer_list<uint> types)
 {
     std::set<uint> ts(types);
-    for (int i = 0; i < Handbook::__atomsNum; ++i)
+    for (int i = 0; i < Handbook::atomsNum; ++i)
     {
         bool result = (ts.find(i) != ts.cend());
         assert((!c->is(i) || result) && (c->is(i) || !result));

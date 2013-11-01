@@ -38,7 +38,7 @@ def make
 end
 
 def compile_test(file_name, random_name)
-  if !@maked
+  if !@maked && ARGV.size == 0
     make
     @maked = true
   end
