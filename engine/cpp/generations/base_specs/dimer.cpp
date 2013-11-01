@@ -38,17 +38,16 @@ void Dimer::find(Atom *anchor)
             {
                 spec->findChildren();
 
-                auto spec = anchor->specByRole(22, DIMER);
+#ifdef PRINT
+                    spec->wasForgotten();
+#endif // PRINT
+
                 anchor->forget(22, spec);
                 spec->atom(anotherIndex(spec, anchor))->forget(22, spec);
                 Handbook::scavenger.markSpec<DIMER>(spec);
             }
         }
     }
-}
-
-Dimer::Dimer(ushort type, BaseSpec **parents) : DependentSpec<2>(type, parents)
-{
 }
 
 void Dimer::findChildren()

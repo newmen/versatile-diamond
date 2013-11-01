@@ -2,22 +2,19 @@
 #define DIMER_CRS_H
 
 #include "../../species/specific_spec.h"
+#include "../../species/atom_shifter_wrapper.h"
 using namespace vd;
 
 #include "../base_specs/dimer.h"
 
-// TODO: maybe need shifted spec?
-class DimerCRs : public SpecificSpec
+class DimerCRs : public AtomShifterWrapper<SpecificSpec>
 {
-    ushort _atomsShift;
-
 public:
-    static void find(Dimer *parent);
+    static void find(Dimer *target);
 
-//    using SpecificSpec::SpecificSpec;
-    DimerCRs(ushort type, BaseSpec *parent, ushort atomsShift) : SpecificSpec(type, parent), _atomsShift(atomsShift) {}
-
-    Atom *atom(ushort index);
+//    using AtomShifterWrapper<SpecificSpec>::AtomShifterWrapper;
+    DimerCRs(ushort type, BaseSpec *parent, ushort atomsShift) :
+        AtomShifterWrapper<SpecificSpec>(type, parent, atomsShift) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: *)"; }

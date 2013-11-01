@@ -10,7 +10,7 @@ public:
     static void find(Atom *anchor);
 
 //    using DependentSpec::DependentSpec;
-    Dimer(ushort type, BaseSpec **parents);
+    Dimer(ushort type, BaseSpec **parents) : DependentSpec<2>(type, parents) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer"; }
