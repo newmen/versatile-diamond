@@ -3,7 +3,7 @@
 
 #include "../tools/common.h"
 
-const ushort BaseSpecNums = 6;
+const ushort BaseSpecNums = 8;
 enum BaseSpecNames : ushort
 {
     BRIDGE,
@@ -12,7 +12,9 @@ enum BaseSpecNames : ushort
 
     BRIDGE_CTsi,
     DIMER_CRi_CLi,
-    DIMER_CRs
+    DIMER_CRs,
+    METHYL_ON_DIMER_CLs,
+    METHYL_ON_DIMER_CMs
 };
 
 const ushort KeeperSpecNums = 1;
@@ -28,12 +30,14 @@ enum UbiquitousReactionNames : ushort
     SURFACE_DEACTIVATION
 };
 
-const ushort TypicalReactionNums = 3;
+const ushort TypicalReactionNums = 5;
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
     DIMER_DROP,
-    METHYL_TO_DIMER
+    ADS_METHYL_TO_DIMER,
+    METHYL_ON_DIMER_HYDROGEN_MIGRATION,
+    METHYL_TO_HIGH_BRIDGE
 };
 
 const ushort ScavengerReactionNums = 1;

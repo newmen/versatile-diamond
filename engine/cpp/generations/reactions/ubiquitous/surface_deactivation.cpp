@@ -20,7 +20,7 @@ void SurfaceDeactivation::find(Atom *anchor)
     {
         Handbook::mc.addMul<SURFACE_DEACTIVATION>(new SurfaceDeactivation(anchor), dn);
     }
-    else if (dn < 0)
+    else if (dn < 0 && !anchor->prevIs(26))
     {
         SurfaceDeactivation removableTemplate(anchor);
         Handbook::mc.removeMul<SURFACE_DEACTIVATION>(&removableTemplate, -dn);

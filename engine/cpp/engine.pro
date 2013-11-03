@@ -4,10 +4,10 @@ CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 QMAKE_CXXFLAGS += -DDEBUG
-#QMAKE_CXXFLAGS += -DPRINT
+QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
+#QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
 LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -std=c++11
@@ -45,7 +45,11 @@ SOURCES += main.cpp \
     generations/specific_specs/dimer_crs.cpp \
     generations/atoms/specified_atom.cpp \
     generations/reactions/typical/ads_methyl_to_dimer.cpp \
-    generations/base_specs/methyl_on_dimer.cpp
+    generations/base_specs/methyl_on_dimer.cpp \
+    generations/reactions/typical/methyl_to_high_bridge.cpp \
+    generations/specific_specs/methyl_on_dimer_cms.cpp \
+    generations/specific_specs/methyl_on_dimer_cls.cpp \
+    generations/reactions/typical/methyl_on_dimer_hydrogen_migration.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -94,4 +98,8 @@ HEADERS += \
     generations/reactions/typical/ads_methyl_to_dimer.h \
     generations/base_specs/methyl_on_dimer.h \
     species/atom_shifter_wrapper.h \
-    species/additional_atoms_wrapper.h
+    species/additional_atoms_wrapper.h \
+    generations/reactions/typical/methyl_to_high_bridge.h \
+    generations/specific_specs/methyl_on_dimer_cms.h \
+    generations/specific_specs/methyl_on_dimer_cls.h \
+    generations/reactions/typical/methyl_on_dimer_hydrogen_migration.h

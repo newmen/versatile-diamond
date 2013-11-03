@@ -1,8 +1,6 @@
 #include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 
-#include "tests/support/open_diamond.h"
-
 #ifdef PARALLEL
 #include <omp.h>
 #endif // PARALLEL
@@ -14,10 +12,6 @@ using namespace std;
 
 int main()
 {
-//#ifdef PARALLEL
-//    omp_set_num_threads(4);
-//#endif // PARALLEL
-
 #ifdef PRINT
 #ifdef PARALLEL
     cout << "Start as PARALLEL mode" << endl;
@@ -28,9 +22,8 @@ int main()
 #endif // PARALLEL
 #endif // PRINT
 
-//    Diamond *diamond = new OpenDiamond(2);
-    Diamond *diamond = new Diamond(dim3(100, 100, 20), 10);
-//    Diamond *diamond = new Diamond(dim3(3, 3, 3), 2);
+    Diamond *diamond = new Diamond(dim3(100, 100, 10));
+//    Diamond *diamond = new Diamond(dim3(5, 5, 4), 2);
     diamond->initialize();
 
 #ifdef PRINT

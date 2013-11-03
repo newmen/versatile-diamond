@@ -7,7 +7,10 @@ void DimerDrop::find(DimerCRiCLi *target)
 {
     Atom *anchors[2] = { target->atom(0), target->atom(3) };
 
-    assert(anchors[0]->is(20) && anchors[1]->is(20));
+    assert(anchors[0]->is(20));
+    assert(anchors[1]->is(20));
+
+    // TODO: не уверен по поводу ||, может быть надо &&
     if (!anchors[0]->prevIs(20) || !anchors[1]->prevIs(20))
     {
         SpecReaction *reaction = new DimerDrop(target);

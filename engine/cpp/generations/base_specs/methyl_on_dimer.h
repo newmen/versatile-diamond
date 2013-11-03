@@ -10,7 +10,7 @@ using namespace vd;
 class MethylOnDimer : public AdditionalAtomsWrapper<AtomShifterWrapper<DependentSpec<1>>, 1>
 {
 public:
-    static void find(BaseSpec *target);
+    static void find(Dimer *target);
 
 //    using AdditionalAtomsWrapper<AtomShifterWrapper<DependentSpec<1>>, 1>::AdditionalAtomsWrapper;
     MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, ushort type, BaseSpec **parents) :

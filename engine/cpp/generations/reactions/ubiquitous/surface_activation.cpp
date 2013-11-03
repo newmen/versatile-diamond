@@ -20,7 +20,7 @@ void SurfaceActivation::find(Atom *anchor)
     {
         Handbook::mc.addMul<SURFACE_ACTIVATION>(new SurfaceActivation(anchor), dn);
     }
-    else if (dn < 0)
+    else if (dn < 0 && !anchor->prevIs(25))
     {
         SurfaceActivation removableTemplate(anchor);
         Handbook::mc.removeMul<SURFACE_ACTIVATION>(&removableTemplate, -dn);

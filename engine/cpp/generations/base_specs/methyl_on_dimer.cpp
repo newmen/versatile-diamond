@@ -1,21 +1,26 @@
 #include "methyl_on_dimer.h"
 #include "../handbook.h"
+#include "../specific_specs/methyl_on_dimer_cls.h"
+#include "../specific_specs/methyl_on_dimer_cms.h"
 
-void MethylOnDimer::find(BaseSpec *target)
+#include <omp.h>
+
+void MethylOnDimer::find(Dimer *target)
 {
     uint indexes[2] = { 0, 3 };
 
     for (int i = 0; i < 2; ++i)
     {
         Atom *anchor = target->atom(indexes[i]);
-        if (anchor->isVisited()) continue;
+//        if (anchor->isVisited()) continue;
 
         if (anchor->is(23))
         {
-            if (!anchor->prevIs(23))
+            if (!anchor->isVisited() && !anchor->prevIs(23))
             {
                 Atom *methyl = anchor->amorphNeighbour();
-                auto spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &target);
+                BaseSpec *parent = target;
+                auto spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &parent);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -23,8 +28,9 @@ void MethylOnDimer::find(BaseSpec *target)
 
                 anchor->describe(23, spec);
                 methyl->describe(25, spec);
+
                 spec->findChildren();
-            }п
+            }
             else
             {
                 auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
@@ -46,6 +52,7 @@ void MethylOnDimer::find(BaseSpec *target)
 
                     anchor->forget(23, spec);
                     spec->atom(0)->forget(25, spec);
+
                     Handbook::scavenger.markSpec<METHYL_ON_DIMER>(spec);
                 }
             }
@@ -55,4 +62,21 @@ void MethylOnDimer::find(BaseSpec *target)
 
 void MethylOnDimer::findChildren()
 {
+#ifdef PARALLEL
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+#endif // PARALLEL
+            MethylOnDimerCLs::find(this);
+#ifdef PARALLEL
+        }
+#pragma omp section
+        {
+#endif // PARALLEL
+            MethylOnDimerCMs::find(this);
+#ifdef PARALLEL
+        }
+    }
+#endif // PARALLEL
 }

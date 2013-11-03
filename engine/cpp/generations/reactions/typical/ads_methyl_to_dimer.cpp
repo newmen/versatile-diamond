@@ -10,7 +10,7 @@ void AdsMethylToDimer::find(DimerCRs *target)
     if (!anchor->prevIs(21))
     {
         SpecReaction *reaction = new AdsMethylToDimer(target);
-        Handbook::mc.add<METHYL_TO_DIMER>(reaction);
+        Handbook::mc.add<ADS_METHYL_TO_DIMER>(reaction);
 
         target->usedIn(reaction);
     }
@@ -18,20 +18,20 @@ void AdsMethylToDimer::find(DimerCRs *target)
 
 void AdsMethylToDimer::doIt()
 {
-    Atom *a = target()->atom(0);
-    assert(a->is(21));
-
     AtomBuilder builder;
-    Atom *b = builder.buildC(25, 1);
+    Atom *atoms[2] = { target()->atom(0), builder.buildC(25, 1) };
+    Atom *a = atoms[0], *b = atoms[1];
+    Handbook::amorph.insert(b);
 
     a->bondWith(b);
+
+    assert(a->is(21));
     a->changeType(23);
 
-    Handbook::amorph.insert(b);
-    Finder::findAll(&a, 1);
+    Finder::findAll(atoms, 2);
 }
 
 void AdsMethylToDimer::remove()
 {
-    Handbook::mc.remove<METHYL_TO_DIMER>(this);
+    Handbook::mc.remove<ADS_METHYL_TO_DIMER>(this);
 }
