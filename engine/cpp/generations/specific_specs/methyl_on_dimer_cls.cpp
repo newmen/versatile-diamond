@@ -8,7 +8,7 @@ void MethylOnDimerCLs::find(MethylOnDimer *parent)
 
     if (anchors[0]->is(25) && !anchors[0]->is(13) && anchors[1]->is(21))
     {
-        if (!anchors[0]->prevIs(25) && !anchors[1]->prevIs(21))
+        if (!anchors[0]->hasRole(25, METHYL_ON_DIMER_CLs) && !anchors[1]->hasRole(21, METHYL_ON_DIMER_CLs))
         {
             auto spec = new MethylOnDimerCLs(METHYL_ON_DIMER_CLs, parent);
 

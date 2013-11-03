@@ -13,7 +13,7 @@ void DimerCRs::find(Dimer *target)
 
         if (anchor->is(21))
         {
-            if (!anchor->prevIs(21))
+            if (!anchor->hasRole(21, DIMER_CRs))
             {
                 auto spec = new DimerCRs(indexes[i], DIMER_CRs, target);
 
@@ -27,7 +27,7 @@ void DimerCRs::find(Dimer *target)
         }
         else
         {
-            if (anchor->prevIs(21))
+            if (anchor->hasRole(21, DIMER_CRs))
             {
                 auto spec = anchor->specificSpecByRole(21, DIMER_CRs);
                 spec->removeReactions();

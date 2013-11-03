@@ -16,7 +16,7 @@ void MethylOnDimer::find(Dimer *target)
 
         if (anchor->is(23))
         {
-            if (!anchor->isVisited() && !anchor->prevIs(23))
+            if (!anchor->isVisited() && !anchor->hasRole(23, METHYL_ON_DIMER))
             {
                 Atom *methyl = anchor->amorphNeighbour();
                 BaseSpec *parent = target;
@@ -39,7 +39,7 @@ void MethylOnDimer::find(Dimer *target)
         }
         else
         {
-            if (anchor->prevIs(23))
+            if (anchor->hasRole(23, METHYL_ON_DIMER))
             {
                 auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
                 if (spec)

@@ -10,7 +10,7 @@ void Bridge::find(Atom *anchor)
 {
     if (anchor->is(3))
     {
-        if (!anchor->prevIs(3))
+        if (!anchor->hasRole(3, BRIDGE))
         {
             assert(anchor->lattice());
             if (anchor->lattice()->coords().z == 0) return;
@@ -37,13 +37,12 @@ void Bridge::find(Atom *anchor)
         }
         else
         {
-            assert(anchor->hasRole(3, BRIDGE));
             anchor->specByRole(3, BRIDGE)->findChildren();
         }
     }
     else
     {
-        if (anchor->prevIs(3))
+        if (anchor->hasRole(3, BRIDGE))
         {
             auto spec = anchor->specByRole(3, BRIDGE);
             if (spec)

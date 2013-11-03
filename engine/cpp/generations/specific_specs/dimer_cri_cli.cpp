@@ -8,7 +8,7 @@ void DimerCRiCLi::find(Dimer *parent)
 
     if (anchors[0]->is(20) && anchors[1]->is(20))
     {
-        if (!anchors[0]->prevIs(20) && !anchors[1]->prevIs(20))
+        if (!anchors[0]->hasRole(20, DIMER_CRi_CLi) && !anchors[1]->hasRole(20, DIMER_CRi_CLi))
         {
             auto spec = new DimerCRiCLi(DIMER_CRi_CLi, parent);
 
@@ -25,7 +25,6 @@ void DimerCRiCLi::find(Dimer *parent)
     else
     {
         if (anchors[0]->hasRole(20, DIMER_CRi_CLi) && anchors[1]->hasRole(20, DIMER_CRi_CLi))
-//        if ((anchors[0]->is(20) && anchors[1]->prevIs(20)) || (anchors[0]->prevIs(20) && anchors[1]->is(20)))
         {
             auto spec = anchors[0]->specificSpecByRole(20, DIMER_CRi_CLi);
             spec->removeReactions();

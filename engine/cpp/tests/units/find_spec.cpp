@@ -67,7 +67,7 @@ int main(int argc, char const *argv[])
     Handbook::mc.doOneOfOne<METHYL_TO_HIGH_BRIDGE>();
     cout.precision(20);
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == allActivesValue - 3e5 + 3 * 3600 - 3 * 2000);
+    assert(Handbook::mc.totalRate() == allActivesValue - 2e5 + 3 * 3600 - 3 * 2000);
 
     delete diamond;
     return 0;

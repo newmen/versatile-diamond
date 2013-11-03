@@ -8,7 +8,7 @@ void MethylOnDimerCMs::find(MethylOnDimer *parent)
 
     if (anchor->is(26))
     {
-        if (!anchor->prevIs(26))
+        if (!anchor->hasRole(26, METHYL_ON_DIMER_CMs))
         {
             auto spec = new MethylOnDimerCMs(METHYL_ON_DIMER_CMs, parent);
 
@@ -22,7 +22,7 @@ void MethylOnDimerCMs::find(MethylOnDimer *parent)
     }
     else
     {
-        if (anchor->prevIs(26))
+        if (anchor->hasRole(26, METHYL_ON_DIMER_CMs))
         {
             auto spec = anchor->specificSpecByRole(26, METHYL_ON_DIMER_CMs);
             spec->removeReactions();

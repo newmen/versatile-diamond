@@ -8,7 +8,7 @@ void BridgeCTsi::find(Bridge *parent)
 
     if (anchor->is(28))
     {
-        if (!anchor->prevIs(28))
+        if (!anchor->hasRole(28, BRIDGE_CTsi))
         {
             auto spec = new BridgeCTsi(BRIDGE_CTsi, parent);
 
@@ -23,8 +23,7 @@ void BridgeCTsi::find(Bridge *parent)
     }
     else
     {
-//        if (anchor->hasRole(28, BRIDGE_CTsi))
-        if (anchor->prevIs(28))
+        if (anchor->hasRole(28, BRIDGE_CTsi))
         {
             auto spec = anchor->specificSpecByRole(28, BRIDGE_CTsi);
             if (spec)

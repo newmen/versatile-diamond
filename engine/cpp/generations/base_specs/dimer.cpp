@@ -15,7 +15,7 @@ void Dimer::find(Atom *anchor)
     if (anchor->is(22))
     {
         assert(anchor->hasRole(3, BRIDGE));
-        if (!anchor->prevIs(22))
+        if (!anchor->hasRole(22, DIMER))
         {
             assert(anchor->lattice());
             auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
@@ -32,7 +32,7 @@ void Dimer::find(Atom *anchor)
     }
     else
     {
-        if (anchor->prevIs(22))
+        if (anchor->hasRole(22, DIMER))
         {
             auto spec = specFromAtom(anchor);
             if (spec)
