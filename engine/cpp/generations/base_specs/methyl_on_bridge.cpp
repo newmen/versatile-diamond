@@ -1,5 +1,6 @@
 #include "methyl_on_bridge.h"
 #include "../handbook.h"
+#include "../specific_specs/methyl_on_bridge_cbi_cmu.h"
 
 void MethylOnBridge::find(Bridge *target)
 {
@@ -16,7 +17,7 @@ void MethylOnBridge::find(Bridge *target)
         {
             Atom *methyl = anchor->amorphNeighbour();
 
-            if (methyl->is(25))
+            if (methyl->is(14))
             {
                 BaseSpec *parent = target;
                 spec = new MethylOnBridge(&methyl, METHYL_ON_BRIDGE, &parent);
@@ -26,7 +27,7 @@ void MethylOnBridge::find(Bridge *target)
 #endif // PRINT
 
                 anchor->describe(9, spec);
-                methyl->describe(25, spec);
+                methyl->describe(14, spec);
 
                 spec->findChildren();
             }
@@ -43,7 +44,7 @@ void MethylOnBridge::find(Bridge *target)
 #endif // PRINT
 
             anchor->forget(9, spec);
-            spec->atom(0)->forget(25, spec);
+            spec->atom(0)->forget(14, spec);
 
             Handbook::scavenger.markSpec<METHYL_ON_BRIDGE>(spec);
         }
@@ -52,4 +53,5 @@ void MethylOnBridge::find(Bridge *target)
 
 void MethylOnBridge::findChildren()
 {
+    MethylOnBridgeCBiCMu::find(this);
 }

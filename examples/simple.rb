@@ -138,3 +138,18 @@ events
     activation 3.2
     forward_rate 2.9e11
     reverse_rate 1.1e8
+
+  # additional reactions for check engine recipes
+  reaction 'methyl adsorption to bridge'
+    equation bridge(ct: *, ct: i) + methane(c: *) = methyl_on_bridge
+    activation 0
+    reverse_rate 1.7e7
+
+  reaction 'same methyl-dimer hydrogen migration'
+    equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
+      unfixed methyl_on_dimer(:cm)
+
+    forward_activation 37.5
+    forward_rate 2.1e12
+    reverse_activation 50.5
+    reverse_rate 1.2e12

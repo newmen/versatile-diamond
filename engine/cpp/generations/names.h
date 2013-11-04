@@ -3,7 +3,7 @@
 
 #include "../tools/common.h"
 
-const ushort BaseSpecNums = 10;
+const ushort BaseSpecNums = 11;
 enum BaseSpecNames : ushort
 {
     BRIDGE,
@@ -16,7 +16,8 @@ enum BaseSpecNames : ushort
     DIMER_CRs,
     METHYL_ON_DIMER_CMu,
     METHYL_ON_DIMER_CMsu,
-    METHYL_ON_DIMER_CLs_CMu
+    METHYL_ON_DIMER_CLs_CMu,
+    METHYL_ON_BRIDGE_CBi_CMu
 };
 
 const ushort KeeperSpecNums = 1;

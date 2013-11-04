@@ -23,7 +23,7 @@ void MethylOnDimer::find(Dimer *target)
             {
                 Atom *methyl = anchor->amorphNeighbour();
 
-                if (methyl->is(25))
+                if (methyl->is(14))
                 {
                     BaseSpec *parent = target;
                     spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &parent);
@@ -33,7 +33,7 @@ void MethylOnDimer::find(Dimer *target)
 #endif // PRINT
 
                     anchor->describe(23, spec);
-                    methyl->describe(25, spec);
+                    methyl->describe(14, spec);
 
                     spec->findChildren();
                 }
@@ -50,7 +50,7 @@ void MethylOnDimer::find(Dimer *target)
 #endif // PRINT
 
                 anchor->forget(23, spec);
-                spec->atom(0)->forget(25, spec);
+                spec->atom(0)->forget(14, spec);
 
                 Handbook::scavenger.markSpec<METHYL_ON_DIMER>(spec);
             }
