@@ -50,7 +50,8 @@ SOURCES += main.cpp \
     generations/reactions/typical/methyl_on_dimer_hydrogen_migration.cpp \
     generations/specific_specs/methyl_on_dimer_cls_cmu.cpp \
     generations/specific_specs/methyl_on_dimer_cmsu.cpp \
-    generations/specific_specs/methyl_on_dimer_cmu.cpp
+    generations/specific_specs/methyl_on_dimer_cmu.cpp \
+    generations/base_specs/methyl_on_bridge.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -104,4 +105,5 @@ HEADERS += \
     generations/reactions/typical/methyl_on_dimer_hydrogen_migration.h \
     generations/specific_specs/methyl_on_dimer_cls_cmu.h \
     generations/specific_specs/methyl_on_dimer_cmsu.h \
-    generations/specific_specs/methyl_on_dimer_cmu.h
+    generations/specific_specs/methyl_on_dimer_cmu.h \
+    generations/base_specs/methyl_on_bridge.h

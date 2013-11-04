@@ -22,17 +22,21 @@ void MethylOnDimer::find(Dimer *target)
             else if (!anchor->isVisited())
             {
                 Atom *methyl = anchor->amorphNeighbour();
-                BaseSpec *parent = target;
-                spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &parent);
+
+                if (methyl->is(25))
+                {
+                    BaseSpec *parent = target;
+                    spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &parent);
 
 #ifdef PRINT
-                spec->wasFound();
+                    spec->wasFound();
 #endif // PRINT
 
-                anchor->describe(23, spec);
-                methyl->describe(25, spec);
+                    anchor->describe(23, spec);
+                    methyl->describe(25, spec);
 
-                spec->findChildren();
+                    spec->findChildren();
+                }
             }
         }
         else

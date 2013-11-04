@@ -1,6 +1,7 @@
 #include "bridge.h"
 #include "../handbook.h"
 #include "../specific_specs/bridge_ctsi.h"
+#include "methyl_on_bridge.h"
 
 #ifdef PARALLEL
 #include <omp.h>
@@ -60,18 +61,21 @@ void Bridge::find(Atom *anchor)
 void Bridge::findChildren()
 {
 #ifdef PARALLEL
-//#pragma omp parallel sections
-//    {
-//#pragma omp section
-//        {
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+#endif // PARALLEL
+            MethylOnBridge::find(this);
+#ifdef PARALLEL
+        }
+#pragma omp section
+        {
 #endif // PARALLEL
             BridgeCTsi::find(this);
 #ifdef PARALLEL
-//        }
-//#pragma omp section
-//        {
-//        }
-//    }
+        }
+    }
 #endif // PARALLEL
 }
 
