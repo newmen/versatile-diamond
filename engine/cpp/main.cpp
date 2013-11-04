@@ -1,10 +1,6 @@
 #include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 #ifdef PRINT
 #include <iostream>
 using namespace std;
@@ -30,7 +26,7 @@ int main()
     cout << Handbook::mc.totalRate() << endl;
 #endif // PRINT
 
-    for (int i = 0; i < 100000; ++i)
+    for (int i = 0; i < 10000; ++i)
     {
         Handbook::mc.doRandom();
 

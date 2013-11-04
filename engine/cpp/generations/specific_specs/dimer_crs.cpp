@@ -9,7 +9,7 @@ void DimerCRs::find(Dimer *target)
     for (int i = 0; i < 2; ++i)
     {
         Atom *anchor = target->atom(indexes[i]);
-        if (anchor->isVisited()) continue;
+        if (anchor->isVisited()) continue; // т.к. нет детей - выходим тут
 
         if (anchor->is(21))
         {
