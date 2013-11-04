@@ -6,12 +6,17 @@
 void MethylOnDimerCMu::find(MethylOnDimer *parent)
 {
     Atom *anchor = parent->atom(0);
+    auto spec = anchor->specificSpecByRole(31, METHYL_ON_DIMER_CMu);
 
     if (anchor->is(31) && !anchor->is(13))
     {
-        if (!anchor->hasRole(31, METHYL_ON_DIMER_CMu))
+        if (spec)
         {
-            auto spec = new MethylOnDimerCMu(METHYL_ON_DIMER_CMu, parent);
+            spec->findChildren();
+        }
+        else
+        {
+            spec = new MethylOnDimerCMu(METHYL_ON_DIMER_CMu, parent);
 
 #ifdef PRINT
             spec->wasFound();
@@ -20,17 +25,11 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
             anchor->describe(31, spec);
             spec->findChildren();
         }
-        else
-        {
-            auto spec = anchor->specificSpecByRole(31, METHYL_ON_DIMER_CMu);
-            if (spec) spec->findChildren();
-        }
     }
     else
     {
-        if (anchor->hasRole(31, METHYL_ON_DIMER_CMu))
+        if (spec)
         {
-            auto spec = anchor->specificSpecByRole(31, METHYL_ON_DIMER_CMu);
             spec->findChildren();
             spec->removeReactions();
 

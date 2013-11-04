@@ -11,14 +11,19 @@ void MethylOnDimer::find(Dimer *target)
     for (int i = 0; i < 2; ++i)
     {
         Atom *anchor = target->atom(indexes[i]);
+        auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
 
         if (anchor->is(23))
         {
-            if (!anchor->isVisited() && !anchor->hasRole(23, METHYL_ON_DIMER))
+            if (spec)
+            {
+                spec->findChildren();
+            }
+            else if (!anchor->isVisited())
             {
                 Atom *methyl = anchor->amorphNeighbour();
                 BaseSpec *parent = target;
-                auto spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &parent);
+                spec = new MethylOnDimer(&methyl, indexes[i], METHYL_ON_DIMER, &parent);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -29,30 +34,21 @@ void MethylOnDimer::find(Dimer *target)
 
                 spec->findChildren();
             }
-            else
-            {
-                auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
-                if (spec) spec->findChildren();
-            }
         }
         else
         {
-            if (anchor->hasRole(23, METHYL_ON_DIMER))
+            if (spec)
             {
-                auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
-                if (spec)
-                {
-                    spec->findChildren();
+                spec->findChildren();
 
 #ifdef PRINT
-                    spec->wasForgotten();
+                spec->wasForgotten();
 #endif // PRINT
 
-                    anchor->forget(23, spec);
-                    spec->atom(0)->forget(25, spec);
+                anchor->forget(23, spec);
+                spec->atom(0)->forget(25, spec);
 
-                    Handbook::scavenger.markSpec<METHYL_ON_DIMER>(spec);
-                }
+                Handbook::scavenger.markSpec<METHYL_ON_DIMER>(spec);
             }
         }
     }

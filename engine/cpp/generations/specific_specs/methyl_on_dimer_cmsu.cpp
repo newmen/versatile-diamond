@@ -22,10 +22,9 @@ void MethylOnDimerCMsu::find(MethylOnDimerCMu *parent)
     }
     else
     {
-        // TODO: везде где проверяем только одну роль - вынести выше получение спека
-        if (anchor->hasRole(29, METHYL_ON_DIMER_CMsu))
+        auto spec = anchor->specificSpecByRole(29, METHYL_ON_DIMER_CMsu);
+        if (spec)
         {
-            auto spec = anchor->specificSpecByRole(29, METHYL_ON_DIMER_CMsu);
             spec->removeReactions();
 
 #ifdef PRINT

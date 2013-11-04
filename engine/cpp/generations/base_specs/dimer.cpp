@@ -12,10 +12,15 @@
 
 void Dimer::find(Atom *anchor)
 {
+    auto spec = specFromAtom(anchor);
+
     if (anchor->is(22))
     {
-        assert(anchor->hasRole(3, BRIDGE));
-        if (!anchor->hasRole(22, DIMER))
+        if (spec)
+        {
+            spec->findChildren();
+        }
+        else
         {
             assert(anchor->lattice());
             auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
@@ -24,29 +29,20 @@ void Dimer::find(Atom *anchor)
             if (nbrs[0]) checkAndAdd(anchor, nbrs[0]);
             if (nbrs[1] && nbrs[1]->isVisited()) checkAndAdd(anchor, nbrs[1]);
         }
-        else
-        {
-            auto spec = specFromAtom(anchor);
-            if (spec) spec->findChildren();
-        }
     }
     else
     {
-        if (anchor->hasRole(22, DIMER))
+        if (spec)
         {
-            auto spec = specFromAtom(anchor);
-            if (spec)
-            {
-                spec->findChildren();
+            spec->findChildren();
 
 #ifdef PRINT
-                    spec->wasForgotten();
+            spec->wasForgotten();
 #endif // PRINT
 
-                anchor->forget(22, spec);
-                spec->atom(anotherIndex(spec, anchor))->forget(22, spec);
-                Handbook::scavenger.markSpec<DIMER>(spec);
-            }
+            anchor->forget(22, spec);
+            spec->atom(anotherIndex(spec, anchor))->forget(22, spec);
+            Handbook::scavenger.markSpec<DIMER>(spec);
         }
     }
 }

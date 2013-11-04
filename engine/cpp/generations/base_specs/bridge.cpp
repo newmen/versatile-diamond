@@ -8,9 +8,15 @@
 
 void Bridge::find(Atom *anchor)
 {
+    auto spec = anchor->specByRole(3, BRIDGE);
+
     if (anchor->is(3))
     {
-        if (!anchor->hasRole(3, BRIDGE))
+        if (spec)
+        {
+            spec->findChildren();
+        }
+        else
         {
             assert(anchor->lattice());
             if (anchor->lattice()->coords().z == 0) return;
@@ -22,7 +28,7 @@ void Bridge::find(Atom *anchor)
                     nbrs[1]->is(6) && anchor->hasBondWith(nbrs[1]))
             {
                 Atom *atoms[] = { anchor, nbrs[0], nbrs[1] };
-                auto spec = new Bridge(BRIDGE, atoms);
+                spec = new Bridge(BRIDGE, atoms);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -35,26 +41,18 @@ void Bridge::find(Atom *anchor)
                 spec->findChildren();
             }
         }
-        else
-        {
-            anchor->specByRole(3, BRIDGE)->findChildren();
-        }
     }
     else
     {
-        if (anchor->hasRole(3, BRIDGE))
+        if (spec)
         {
-            auto spec = anchor->specByRole(3, BRIDGE);
-            if (spec)
-            {
-                spec->findChildren();
+            spec->findChildren();
 
-                anchor->forget(3, spec);
-                spec->atom(1)->forget(3, spec);
-                spec->atom(2)->forget(3, spec);
+            anchor->forget(3, spec);
+            spec->atom(1)->forget(3, spec);
+            spec->atom(2)->forget(3, spec);
 
-                Handbook::scavenger.markSpec<BRIDGE>(spec);
-            }
+            Handbook::scavenger.markSpec<BRIDGE>(spec);
         }
     }
 }

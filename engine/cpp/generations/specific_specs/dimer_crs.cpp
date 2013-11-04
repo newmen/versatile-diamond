@@ -27,9 +27,9 @@ void DimerCRs::find(Dimer *target)
         }
         else
         {
-            if (anchor->hasRole(21, DIMER_CRs))
+            auto spec = anchor->specificSpecByRole(21, DIMER_CRs);
+            if (spec)
             {
-                auto spec = anchor->specificSpecByRole(21, DIMER_CRs);
                 spec->removeReactions();
 
 #ifdef PRINT

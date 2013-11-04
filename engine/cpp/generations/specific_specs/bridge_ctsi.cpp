@@ -23,20 +23,17 @@ void BridgeCTsi::find(Bridge *parent)
     }
     else
     {
-        if (anchor->hasRole(28, BRIDGE_CTsi))
+        auto spec = anchor->specificSpecByRole(28, BRIDGE_CTsi);
+        if (spec)
         {
-            auto spec = anchor->specificSpecByRole(28, BRIDGE_CTsi);
-            if (spec)
-            {
-                spec->removeReactions();
+            spec->removeReactions();
 
 #ifdef PRINT
-                spec->wasForgotten();
+            spec->wasForgotten();
 #endif // PRINT
 
-                anchor->forget(28, spec);
-                Handbook::scavenger.markSpec<BRIDGE_CTsi>(spec);
-            }
+            anchor->forget(28, spec);
+            Handbook::scavenger.markSpec<BRIDGE_CTsi>(spec);
         }
     }
 }
