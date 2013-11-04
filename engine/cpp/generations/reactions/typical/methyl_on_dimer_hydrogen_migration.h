@@ -4,12 +4,12 @@
 #include "../../../reactions/mono_spec_reaction.h"
 using namespace vd;
 
-#include "../../specific_specs/methyl_on_dimer_cls.h"
+#include "../../specific_specs/methyl_on_dimer_cls_cmu.h"
 
 class MethylOnDimerHydrogenMigration : public MonoSpecReaction
 {
 public:
-    static void find(MethylOnDimerCLs *target);
+    static void find(MethylOnDimerCLsCMu *target);
 
 //    using MonoSpecReaction::MonoSpecReaction;
     MethylOnDimerHydrogenMigration(SpecificSpec *target) : MonoSpecReaction(target) {}

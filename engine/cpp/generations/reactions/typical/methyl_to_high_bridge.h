@@ -4,12 +4,12 @@
 #include "../../../reactions/mono_spec_reaction.h"
 using namespace vd;
 
-#include "../../specific_specs/methyl_on_dimer_cms.h"
+#include "../../specific_specs/methyl_on_dimer_cmsu.h"
 
 class MethylToHighBridge : public MonoSpecReaction
 {
 public:
-    static void find(MethylOnDimerCMs *target);
+    static void find(MethylOnDimerCMsu *target);
 
 //    using MonoSpecReaction::MonoSpecReaction;
     MethylToHighBridge(SpecificSpec *target) : MonoSpecReaction(target) {}

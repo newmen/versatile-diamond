@@ -1,7 +1,6 @@
 #include "methyl_on_dimer.h"
 #include "../handbook.h"
-#include "../specific_specs/methyl_on_dimer_cls.h"
-#include "../specific_specs/methyl_on_dimer_cms.h"
+#include "../specific_specs/methyl_on_dimer_cmu.h"
 
 #include <omp.h>
 
@@ -12,7 +11,6 @@ void MethylOnDimer::find(Dimer *target)
     for (int i = 0; i < 2; ++i)
     {
         Atom *anchor = target->atom(indexes[i]);
-//        if (anchor->isVisited()) continue;
 
         if (anchor->is(23))
         {
@@ -62,21 +60,5 @@ void MethylOnDimer::find(Dimer *target)
 
 void MethylOnDimer::findChildren()
 {
-#ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
-            MethylOnDimerCLs::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            MethylOnDimerCMs::find(this);
-#ifdef PARALLEL
-        }
-    }
-#endif // PARALLEL
+    MethylOnDimerCMu::find(this);
 }

@@ -3,12 +3,12 @@
 
 #include <assert.h>
 
-void MethylToHighBridge::find(MethylOnDimerCMs *target)
+void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
     Atom *anchor = target->atom(0);
 
-    assert(anchor->is(26));
-    if (!anchor->prevIs(26))
+    assert(anchor->is(29));
+    if (!anchor->prevIs(29))
     {
         SpecReaction *reaction = new MethylToHighBridge(target);
         Handbook::mc.add<METHYL_TO_HIGH_BRIDGE>(reaction);
@@ -25,10 +25,10 @@ void MethylToHighBridge::doIt()
     b->unbondFrom(c);
     b->bondWith(a);
 
-    assert(a->is(26));
+    assert(a->is(29));
     if (a->is(13)) a->changeType(17);
-    else if (a->is(12)) a->changeType(16);
-    else if (a->is(11)) a->changeType(18);
+    else if (a->is(30)) a->changeType(16);
+    else if (a->is(29)) a->changeType(18);
     else assert(true);
 
     assert(b->type() == 23);
