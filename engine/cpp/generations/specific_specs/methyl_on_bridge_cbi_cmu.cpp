@@ -1,5 +1,6 @@
 #include "methyl_on_bridge_cbi_cmu.h"
 #include "../handbook.h"
+#include "../reactions/typical/des_methyl_from_bridge.h"
 
 void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
 {
@@ -41,4 +42,5 @@ void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
 
 void MethylOnBridgeCBiCMu::findChildren()
 {
+    DesMethylFromBridge::find(this);
 }

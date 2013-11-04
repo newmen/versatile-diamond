@@ -64,8 +64,6 @@ void DimerFormation::checkAndAdd(BridgeCTsi *target, Atom *neighbour)
 void DimerFormation::changeAtom(Atom *atom) const
 {
     assert(atom->is(28));
-
-    if (atom->type() == 28) atom->changeType(20);
-    else if (atom->type() == 2) atom->changeType(21);
-    else assert(true);
+    if (atom->is(2)) atom->changeType(21);
+    else atom->changeType(20);
 }

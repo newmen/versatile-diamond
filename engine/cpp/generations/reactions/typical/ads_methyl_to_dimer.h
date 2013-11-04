@@ -18,7 +18,7 @@ public:
     void doIt();
 
 #ifdef PRINT
-    std::string name() const override { return "methyl to dimer"; }
+    std::string name() const override { return "adsorption methyl to dimer"; }
 #endif // PRINT
 
 protected:

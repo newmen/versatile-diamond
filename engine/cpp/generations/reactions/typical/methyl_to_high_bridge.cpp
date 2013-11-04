@@ -28,17 +28,15 @@ void MethylToHighBridge::doIt()
     assert(a->is(29));
     if (a->is(13)) a->changeType(17);
     else if (a->is(30)) a->changeType(16);
-    else if (a->is(29)) a->changeType(18);
-    else assert(true);
+    else a->changeType(18);
 
-    assert(b->type() == 23);
+    assert(b->is(23));
     b->changeType(19);
 
     assert(c->is(22));
     if (c->is(21)) c->changeType(2);
     else if (c->is(23)) c->changeType(8);
-    else if (c->is(22)) c->changeType(1);
-    else assert(true);
+    else c->changeType(1);
 
     Finder::findAll(atoms, 3);
 }

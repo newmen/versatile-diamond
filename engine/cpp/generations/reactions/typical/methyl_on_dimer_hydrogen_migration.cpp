@@ -33,8 +33,7 @@ void MethylOnDimerHydrogenMigration::doIt()
     assert(!a->is(13));
     if (a->is(30)) a->changeType(13);
     else if (a->is(29)) a->changeType(30);
-    else if (a->is(31)) a->changeType(29);
-    else assert(true);
+    else a->changeType(29);
 
     assert(b->is(21));
     b->changeType(20);

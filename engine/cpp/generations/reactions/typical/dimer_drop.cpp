@@ -41,8 +41,6 @@ void DimerDrop::remove()
 void DimerDrop::changeAtom(Atom *atom) const
 {
     assert(atom->is(20));
-
-    if (atom->type() == 20) atom->changeType(28);
-    else if (atom->type() == 21) atom->changeType(2);
-    else assert(true);
+    if (atom->is(21)) atom->changeType(2);
+    else atom->changeType(28);
 }

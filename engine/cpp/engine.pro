@@ -52,7 +52,8 @@ SOURCES += main.cpp \
     generations/specific_specs/methyl_on_dimer_cmsu.cpp \
     generations/specific_specs/methyl_on_dimer_cmu.cpp \
     generations/base_specs/methyl_on_bridge.cpp \
-    generations/specific_specs/methyl_on_bridge_cbi_cmu.cpp
+    generations/specific_specs/methyl_on_bridge_cbi_cmu.cpp \
+    generations/reactions/typical/des_methyl_from_bridge.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -108,4 +109,5 @@ HEADERS += \
     generations/specific_specs/methyl_on_dimer_cmsu.h \
     generations/specific_specs/methyl_on_dimer_cmu.h \
     generations/base_specs/methyl_on_bridge.h \
-    generations/specific_specs/methyl_on_bridge_cbi_cmu.h
+    generations/specific_specs/methyl_on_bridge_cbi_cmu.h \
+    generations/reactions/typical/des_methyl_from_bridge.h

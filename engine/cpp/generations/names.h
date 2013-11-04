@@ -33,14 +33,15 @@ enum UbiquitousReactionNames : ushort
     SURFACE_DEACTIVATION
 };
 
-const ushort TypicalReactionNums = 5;
+const ushort TypicalReactionNums = 6;
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
     DIMER_DROP,
     ADS_METHYL_TO_DIMER,
     METHYL_ON_DIMER_HYDROGEN_MIGRATION,
-    METHYL_TO_HIGH_BRIDGE
+    METHYL_TO_HIGH_BRIDGE,
+    DES_METHYL_FROM_BRIDGE
 };
 
 const ushort ScavengerReactionNums = 1;
