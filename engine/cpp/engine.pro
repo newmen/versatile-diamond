@@ -31,7 +31,6 @@ SOURCES += main.cpp \
     mc/multi_events_container.cpp \
     phases/amorph.cpp \
     phases/crystal.cpp \
-    phases/phase.cpp \
     reactions/mono_spec_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \

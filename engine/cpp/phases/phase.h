@@ -11,8 +11,6 @@ class Phase
 public:
     virtual ~Phase() {}
     virtual void erase(Atom *atom) = 0;
-
-    void remove(Atom *atom);
 };
 
 }

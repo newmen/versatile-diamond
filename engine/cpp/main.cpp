@@ -26,7 +26,7 @@ int main()
     cout << Handbook::mc.totalRate() << endl;
 #endif // PRINT
 
-    for (int i = 0; i < 10000; ++i)
+    for (int i = 0; i < 1000000; ++i)
     {
         Handbook::mc.doRandom();
 

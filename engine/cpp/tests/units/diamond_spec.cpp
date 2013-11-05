@@ -46,11 +46,10 @@ int main(int argc, char const *argv[])
     assert(diamond->atom(int3(1, 2, 3)) == c);
     assert(c->lattice());
 
-    diamond->remove(c);
+    diamond->erase(c);
     assert(!diamond->atom(int3(1, 2, 3)));
     assert(!c->lattice());
 
     delete diamond;
-
     return 0;
 }

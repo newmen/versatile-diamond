@@ -19,17 +19,20 @@ void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 
 void DesMethylFromBridge::doIt()
 {
-    Atom *atoms[2] = { target()->atom(0), target()->atom(1) };
-    Atom *a = atoms[0], *b = atoms[1];
+    Atom *atoms[2] = { target()->atom(1) };
+    Atom *a = atoms[0], *b = target()->atom(0);
 
     a->unbondFrom(b);
 
-    assert(b->is(7));
-    if (b->is(8)) b->changeType(2);
-    else b->changeType(28);
+    assert(a->is(7));
+    if (a->is(8)) a->changeType(2);
+    else a->changeType(28);
 
-    Handbook::amorph.remove(a);
-    Finder::findAll(atoms, 2);
+    b->prepareToRemove();
+    Handbook::amorph.erase(b);
+    Handbook::scavenger.markAtom(b);
+
+    Finder::findAll(atoms, 1);
 }
 
 void DesMethylFromBridge::remove()
