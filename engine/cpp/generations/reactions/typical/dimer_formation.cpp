@@ -42,13 +42,13 @@ void DimerFormation::remove()
 
 void DimerFormation::checkAndAdd(BridgeCTsi *target, Atom *neighbour)
 {
-    if (neighbour->is(28) && !target->atom(0)->hasBondWith(neighbour))
+    if (neighbour->is(28))
     {
-        assert(neighbour->hasRole(28, BRIDGE_CTsi)); // maybe need move it to if condition
+        assert(neighbour->hasRole(28, BRIDGE_CTsi));
 
         SpecificSpec *targets[2] = {
             target,
-            static_cast<SpecificSpec *>(neighbour->specByRole(28, BRIDGE_CTsi))
+            neighbour->specificSpecByRole(28, BRIDGE_CTsi)
         };
 
         SpecReaction *reaction = new DimerFormation(targets);

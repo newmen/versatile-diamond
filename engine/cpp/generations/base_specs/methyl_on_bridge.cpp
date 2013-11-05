@@ -13,7 +13,7 @@ void MethylOnBridge::find(Bridge *target)
         {
             spec->findChildren();
         }
-        else if (!anchor->isVisited())
+        else
         {
             Atom *methyl = anchor->amorphNeighbour();
 

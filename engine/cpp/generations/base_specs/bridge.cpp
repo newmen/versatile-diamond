@@ -1,6 +1,7 @@
 #include "bridge.h"
 #include "../handbook.h"
 #include "../specific_specs/bridge_ctsi.h"
+#include "../specific_specs/high_bridge.h"
 #include "methyl_on_bridge.h"
 
 #ifdef PARALLEL
@@ -67,6 +68,12 @@ void Bridge::findChildren()
         {
 #endif // PARALLEL
             MethylOnBridge::find(this);
+#ifdef PARALLEL
+        }
+#pragma omp section
+        {
+#endif // PARALLEL
+            HighBridge::find(this);
 #ifdef PARALLEL
         }
 #pragma omp section

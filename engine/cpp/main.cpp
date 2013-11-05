@@ -1,9 +1,9 @@
 #include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 
-#ifdef PRINT
 #include <iostream>
 using namespace std;
+#ifdef PRINT
 #endif // PRINT
 
 int main()
@@ -22,6 +22,7 @@ int main()
 //    Diamond *diamond = new Diamond(dim3(5, 5, 4), 2);
     diamond->initialize();
 
+    cout << "Atoms num: " << diamond->countAtoms() << endl;
 #ifdef PRINT
     cout << Handbook::mc.totalRate() << endl;
 #endif // PRINT
@@ -34,6 +35,10 @@ int main()
         cout << i << ". " << Handbook::mc.totalRate() << "\n\n\n" << endl;
 #endif // PRINT
     }
+
+#ifdef PRINT
+#endif // PRINT
+    cout << "Atoms num: " << diamond->countAtoms() << endl;
 
     delete diamond;
     return 0;

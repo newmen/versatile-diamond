@@ -153,3 +153,12 @@ events
     forward_rate 2.1e12
     reverse_activation 50.5
     reverse_rate 1.2e12
+
+  reaction 'high bridge is stand to incoherent bridge'
+    aliases source: bridge, product: bridge
+    equation high_bridge + source(ct: *, ct: i) = product(cr: *)
+
+    enthalpy 24
+    activation 14.9
+    forward_rate 6.1e13
+    reverse_rate 1.1e12

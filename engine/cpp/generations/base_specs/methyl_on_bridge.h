@@ -2,7 +2,6 @@
 #define METHYL_ON_BRIDGE_H
 
 #include "../../species/dependent_spec.h"
-#include "../../species/atom_shifter_wrapper.h"
 #include "../../species/additional_atoms_wrapper.h"
 using namespace vd;
 
