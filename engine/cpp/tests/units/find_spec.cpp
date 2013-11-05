@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 
     Handbook::mc.doOneOfOne<DIMER_FORMATION>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == initValue - 3e5 + 5e4 - 2 * 2000);
+    assert(Handbook::mc.totalRate() == initValue - 3 * 1e5 + 5e4 - 2 * 2000);
 
     Handbook::mc.doOneOfOne<DIMER_DROP>();
     cout << Handbook::mc.totalRate() << endl;
@@ -47,43 +47,33 @@ int main(int argc, char const *argv[])
     cout << Handbook::mc.totalRate() << endl;
     assert(Handbook::mc.totalRate() == allActivesValue);
 
-    const double formActiveDimerDelta = 2e7 - 3e5 + 5e4 - 2 * 2000;
-
-    // forms one dimer for adsorb two methyls
     Handbook::mc.doOneOfOne<DIMER_FORMATION>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == allActivesValue + formActiveDimerDelta);
-
-    const double adsorbFirstMethylDelta = 1e7 + 1e6 - 3e5 - 3 * 2000;
-
-    // first methyl
-    Handbook::mc.doOneOfOne<ADS_METHYL_TO_DIMER>();
-    cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == allActivesValue + adsorbFirstMethylDelta);
-
-    const double afterTwoMethylsValue = allActivesValue - 3e5 - 4 * 2000;
-
-    // second methyl
-    Handbook::mc.doOneOfOne<ADS_METHYL_TO_DIMER>();
-    cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == afterTwoMethylsValue);
-
-    // forms another dimer for adsorb another methyl
-    Handbook::mc.doOneOfOne<DIMER_FORMATION>();
-    cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == afterTwoMethylsValue + formActiveDimerDelta);
+    assert(Handbook::mc.totalRate() == allActivesValue + 2 * 1e7 - 3 * 1e5 + 5e4 - 2 * 2000);
 
     Handbook::mc.doOneOfOne<ADS_METHYL_TO_DIMER>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == afterTwoMethylsValue + adsorbFirstMethylDelta);
+    assert(Handbook::mc.totalRate() == allActivesValue + 1e7 + 1e6 - 3 * 1e5 - 3 * 2000);
 
     Handbook::mc.doOneOfOne<METHYL_ON_DIMER_HYDROGEN_MIGRATION>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == afterTwoMethylsValue + 5e5 - 3e5 + 3600 - 4 * 2000);
+    assert(Handbook::mc.totalRate() == allActivesValue + 5e5 - 3 * 1e5 + 3600 - 4 * 2000);
+
+    Handbook::mc.doOneOfMul<SURFACE_ACTIVATION>();
+    cout << Handbook::mc.totalRate() << endl;
+    assert(Handbook::mc.totalRate() == allActivesValue + 1e7 + 1e6 + 5e5 - 3 * 1e5 - 3 * 2000);
+
+    Handbook::mc.doOneOfOne<ADS_METHYL_TO_DIMER>();
+    cout << Handbook::mc.totalRate() << endl;
+    assert(Handbook::mc.totalRate() == allActivesValue + 5e5 - 3 * 1e5 - 4 * 2000);
 
     Handbook::mc.doOneOfOne<METHYL_TO_HIGH_BRIDGE>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == afterTwoMethylsValue - 2e5 + 3 * 3600 - 3 * 2000);
+    assert(Handbook::mc.totalRate() == allActivesValue - 3 * 1e5 + 1e4 + 2 * 3600 - 3 * 2000);
+
+    Handbook::mc.doOneOfOne<DES_METHYL_FROM_BRIDGE>();
+    cout << Handbook::mc.totalRate() << endl;
+    assert(Handbook::mc.totalRate() == allActivesValue - 2 * 1e5 + 2 * 3600 - 2 * 2000);
 
     delete diamond;
     return 0;
