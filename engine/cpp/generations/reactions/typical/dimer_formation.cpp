@@ -1,24 +1,14 @@
 #include "dimer_formation.h"
-#include "../../handbook.h"
 #include <omp.h>
 
 #include <assert.h>
 
 void DimerFormation::find(BridgeCTsi *target)
 {
-    Atom *anchor = target->atom(0);
+    const ushort indexes[1] = { 0 };
+    const ushort types[1] = { 28 };
 
-    assert(anchor->is(28));
-    if (!anchor->prevIs(28))
-    {
-        assert(anchor->lattice());
-        auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
-
-        auto nbrs = diamond->front_100(anchor);
-        // TODO: maybe need to parallel it?
-        if (nbrs[0]) checkAndAdd(target, nbrs[0]);
-        if (nbrs[1] && nbrs[1]->isVisited()) checkAndAdd(target, nbrs[1]);
-    }
+    ManyTypical::find<DimerFormation, 1, 28, BRIDGE_CTsi>(target, indexes, types, ManyTypical::front100Lambda);
 }
 
 void DimerFormation::doIt()
@@ -32,33 +22,6 @@ void DimerFormation::doIt()
     changeAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-void DimerFormation::remove()
-{
-    Handbook::mc.remove<DIMER_FORMATION>(this, false);
-    Handbook::scavenger.markReaction<SCA_DIMER_FORMATION>(this);
-}
-
-void DimerFormation::checkAndAdd(BridgeCTsi *target, Atom *neighbour)
-{
-    if (neighbour->is(28))
-    {
-        assert(neighbour->hasRole(28, BRIDGE_CTsi));
-
-        SpecificSpec *targets[2] = {
-            target,
-            neighbour->specificSpecByRole(28, BRIDGE_CTsi)
-        };
-
-        SpecReaction *reaction = new DimerFormation(targets);
-        Handbook::mc.add<DIMER_FORMATION>(reaction);
-
-        for (int i = 0; i < 2; ++i)
-        {
-            targets[i]->usedIn(reaction);
-        }
-    }
 }
 
 void DimerFormation::changeAtom(Atom *atom) const

@@ -1,23 +1,13 @@
 #include "dimer_drop.h"
-#include "../../handbook.h"
 
 #include <assert.h>
 
 void DimerDrop::find(DimerCRiCLi *target)
 {
-    Atom *anchors[2] = { target->atom(0), target->atom(3) };
+    const ushort indexes[2] = { 0, 3 };
+    const ushort types[2] = { 20, 20 };
 
-    assert(anchors[0]->is(20));
-    assert(anchors[1]->is(20));
-
-    // TODO: не уверен по поводу ||, может быть надо &&
-    if (!anchors[0]->prevIs(20) || !anchors[1]->prevIs(20))
-    {
-        SpecReaction *reaction = new DimerDrop(target);
-        Handbook::mc.add<DIMER_DROP>(reaction);
-
-        target->usedIn(reaction);
-    }
+    MonoTypical::find<DimerDrop, 2>(target, indexes, types);
 }
 
 void DimerDrop::doIt()
@@ -31,11 +21,6 @@ void DimerDrop::doIt()
     changeAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-void DimerDrop::remove()
-{
-    Handbook::mc.remove<DIMER_DROP>(this);
 }
 
 void DimerDrop::changeAtom(Atom *atom) const

@@ -113,4 +113,6 @@ HEADERS += \
     generations/specific_specs/methyl_on_bridge_cbi_cmu.h \
     generations/reactions/typical/des_methyl_from_bridge.h \
     generations/reactions/typical/high_bridge_stand_to_one_bridge.h \
-    generations/specific_specs/high_bridge.h
+    generations/specific_specs/high_bridge.h \
+    generations/reactions/mono_typical.h \
+    generations/reactions/many_typical.h

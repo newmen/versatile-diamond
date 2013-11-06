@@ -14,6 +14,7 @@ int main(int argc, char const *argv[])
     const dim3 &s = OpenDiamond::SIZES;
 
     const double initValue = s.x * s.y * (1e5 + 3600 + 2000);
+    cout << "Initial rate: " << initValue << endl;
 
     Diamond *diamond = new OpenDiamond(2);
     diamond->initialize();
@@ -69,11 +70,15 @@ int main(int argc, char const *argv[])
 
     Handbook::mc.doOneOfOne<METHYL_TO_HIGH_BRIDGE>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == allActivesValue - 3 * 1e5 + 1e4 + 2 * 3600 - 3 * 2000);
+    assert(Handbook::mc.totalRate() == allActivesValue + 5e6 - 3 * 1e5 + 1e4 + 2 * 3600 - 3 * 2000);
 
     Handbook::mc.doOneOfOne<DES_METHYL_FROM_BRIDGE>();
     cout << Handbook::mc.totalRate() << endl;
-    assert(Handbook::mc.totalRate() == allActivesValue - 2 * 1e5 + 2 * 3600 - 2 * 2000);
+    assert(Handbook::mc.totalRate() == allActivesValue + 2 * 5e6 - 2 * 1e5 + 2 * 3600 - 2 * 2000);
+
+    Handbook::mc.doOneOfOne<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>();
+    cout << Handbook::mc.totalRate() << endl;
+    assert(Handbook::mc.totalRate() == allActivesValue - 3 * 1e5 + 2 * 3600 - 2 * 2000);
 
     delete diamond;
     return 0;

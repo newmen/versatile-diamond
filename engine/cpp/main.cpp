@@ -1,6 +1,8 @@
 #include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 
+#include "tests/support/open_diamond.h"
+
 #include <iostream>
 using namespace std;
 #ifdef PRINT

@@ -1,4 +1,5 @@
 #include "mono_spec_reaction.h"
+#include "../species/specific_spec.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -6,6 +7,11 @@
 
 namespace vd
 {
+
+MonoSpecReaction::MonoSpecReaction(SpecificSpec *target) : _target(target)
+{
+    _target->usedIn(this);
+}
 
 void MonoSpecReaction::removeFrom(SpecificSpec *target)
 {

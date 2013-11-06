@@ -1,26 +1,42 @@
 #include "high_bridge_stand_to_one_bridge.h"
-#include "../../handbook.h"
+
+#include <assert.h>
 
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
-    Atom *anchor = target->atom(1);
+    const ushort indexes[1] = { 1 };
+    const ushort types[1] = { 19 };
 
-    assert(anchor->is(19));
-    if (!anchor->prevIs(19))
-    {
-        assert(anchor->lattice());
-        auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
+    ManyTypical::find<HighBridgeStandToOneBridge, 1, 28, BRIDGE_CTsi>(target, indexes, types, ManyTypical::front100Lambda);
+}
 
-        auto nbrs = diamond->front_100(anchor);
-        // TODO: maybe need to parallel it?
-        if (nbrs[0]) checkAndAdd(target, nbrs[0]);
-        if (nbrs[1] && nbrs[1]->isVisited()) checkAndAdd(target, nbrs[1]);
-    }
+void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
+{
+    const ushort indexes[1] = { 0 };
+    const ushort types[1] = { 28 };
+
+    ManyTypical::find<HighBridgeStandToOneBridge, 1, 19, HIGH_BRIDGE>(target, indexes, types, ManyTypical::front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::doIt()
 {
-    Atom *atoms[3] = { target(0)->atom(0), target(0)->atom(1), target(1)->atom(0) };
+    SpecificSpec *highBridge;
+    SpecificSpec *bridgeCTsi;
+    if (target(0)->type() == HIGH_BRIDGE)
+    {
+        assert(target(1)->type() == BRIDGE_CTsi);
+        highBridge = target(0);
+        bridgeCTsi = target(1);
+    }
+    else
+    {
+        assert(target(0)->type() == BRIDGE_CTsi);
+        assert(target(1)->type() == HIGH_BRIDGE);
+        highBridge = target(1);
+        bridgeCTsi = target(0);
+    }
+
+    Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), bridgeCTsi->atom(0) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     a->unbondFrom(b);
@@ -45,31 +61,4 @@ void HighBridgeStandToOneBridge::doIt()
     else c->changeType(4);
 
     Finder::findAll(atoms, 3);
-}
-
-void HighBridgeStandToOneBridge::remove()
-{
-    Handbook::mc.remove<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>(this, false);
-    Handbook::scavenger.markReaction<SCA_HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>(this);
-}
-
-void HighBridgeStandToOneBridge::checkAndAdd(HighBridge *target, Atom *neighbour)
-{
-    if (neighbour->is(28))
-    {
-        assert(neighbour->hasRole(28, BRIDGE_CTsi));
-
-        SpecificSpec *targets[2] = {
-            target,
-            neighbour->specificSpecByRole(28, BRIDGE_CTsi)
-        };
-
-        SpecReaction *reaction = new HighBridgeStandToOneBridge(targets);
-        Handbook::mc.add<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>(reaction);
-
-        for (int i = 0; i < 2; ++i)
-        {
-            targets[i]->usedIn(reaction);
-        }
-    }
 }

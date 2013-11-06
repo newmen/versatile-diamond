@@ -11,12 +11,13 @@ class MonoSpecReaction : public SpecReaction
 {
     SpecificSpec *_target;
 
+protected:
+    MonoSpecReaction(SpecificSpec *target);
+
 public:
     void removeFrom(SpecificSpec *target) override;
 
 protected:
-    MonoSpecReaction(SpecificSpec *target) : _target(target) {}
-
     SpecificSpec *target() { return _target; }
 
 #ifdef PRINT

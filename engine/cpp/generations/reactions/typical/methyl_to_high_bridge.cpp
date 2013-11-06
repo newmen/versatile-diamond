@@ -1,20 +1,13 @@
 #include "methyl_to_high_bridge.h"
-#include "../../handbook.h"
 
 #include <assert.h>
 
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
-    Atom *anchor = target->atom(0);
+    const ushort indexes[1] = { 0 };
+    const ushort types[1] = { 29 };
 
-    assert(anchor->is(29));
-    if (!anchor->prevIs(29))
-    {
-        SpecReaction *reaction = new MethylToHighBridge(target);
-        Handbook::mc.add<METHYL_TO_HIGH_BRIDGE>(reaction);
-
-        target->usedIn(reaction);
-    }
+    MonoTypical::find<MethylToHighBridge, 1>(target, indexes, types);
 }
 
 void MethylToHighBridge::doIt()
@@ -39,9 +32,4 @@ void MethylToHighBridge::doIt()
     else c->changeType(1);
 
     Finder::findAll(atoms, 3);
-}
-
-void MethylToHighBridge::remove()
-{
-    Handbook::mc.remove<METHYL_TO_HIGH_BRIDGE>(this);
 }

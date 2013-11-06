@@ -1,6 +1,7 @@
 #include "bridge_ctsi.h"
 #include "../handbook.h"
 #include "../reactions/typical/dimer_formation.h"
+#include "../reactions/typical/high_bridge_stand_to_one_bridge.h"
 
 void BridgeCTsi::find(Bridge *parent)
 {
@@ -40,5 +41,22 @@ void BridgeCTsi::find(Bridge *parent)
 
 void BridgeCTsi::findChildren()
 {
-    DimerFormation::find(this);
+#ifdef PARALLEL
+#pragma omp parallel sections
+    {
+#pragma omp section
+        {
+#endif // PARALLEL
+            DimerFormation::find(this);
+#ifdef PARALLEL
+        }
+#pragma omp section
+        {
+#endif // PARALLEL
+            HighBridgeStandToOneBridge::find(this);
+#ifdef PARALLEL
+        }
+    }
+#endif // PARALLEL
+
 }

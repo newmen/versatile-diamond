@@ -5,20 +5,10 @@
 
 void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
 {
-    Atom *anchors[2] = { target->atom(0), target->atom(4) };
+    const ushort indexes[2] = { 0, 4 };
+    const ushort types[2] = { 31, 21 };
 
-    assert(anchors[0]->is(31));
-    assert(!anchors[0]->is(13));
-    assert(anchors[1]->is(21));
-
-    // TODO: не уверен по поводу ||, может быть надо &&
-    if (!anchors[0]->prevIs(31) || !anchors[1]->prevIs(21))
-    {
-        SpecReaction *reaction = new MethylOnDimerHydrogenMigration(target);
-        Handbook::mc.add<METHYL_ON_DIMER_HYDROGEN_MIGRATION>(reaction);
-
-        target->usedIn(reaction);
-    }
+    MonoTypical::find<MethylOnDimerHydrogenMigration, 2>(target, indexes, types);
 }
 
 void MethylOnDimerHydrogenMigration::doIt()
@@ -39,9 +29,4 @@ void MethylOnDimerHydrogenMigration::doIt()
     b->changeType(20);
 
     Finder::findAll(atoms, 2);
-}
-
-void MethylOnDimerHydrogenMigration::remove()
-{
-    Handbook::mc.remove<METHYL_ON_DIMER_HYDROGEN_MIGRATION>(this);
 }

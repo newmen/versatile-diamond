@@ -1,20 +1,13 @@
 #include "des_methyl_from_bridge.h"
-#include "../../handbook.h"
+
+#include <assert.h>
 
 void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 {
-    Atom *anchors[2] = { target->atom(0), target->atom(1) };
+    const ushort indexes[2] = { 0, 1 };
+    const ushort types[2] = { 25, 7 };
 
-    assert(anchors[0]->is(25));
-    assert(anchors[1]->is(7));
-
-    if (!anchors[0]->prevIs(25) || !anchors[1]->prevIs(7))
-    {
-        SpecReaction *reaction = new DesMethylFromBridge(target);
-        Handbook::mc.add<DES_METHYL_FROM_BRIDGE>(reaction);
-
-        target->usedIn(reaction); // TODO: move to reaction constructor?
-    }
+    MonoTypical::find<DesMethylFromBridge, 2>(target, indexes, types);
 }
 
 void DesMethylFromBridge::doIt()
@@ -33,9 +26,4 @@ void DesMethylFromBridge::doIt()
     Handbook::scavenger.markAtom(b);
 
     Finder::findAll(atoms, 1);
-}
-
-void DesMethylFromBridge::remove()
-{
-    Handbook::mc.remove<DES_METHYL_FROM_BRIDGE>(this);
 }

@@ -1,19 +1,14 @@
 #include "ads_methyl_to_dimer.h"
-#include "../../handbook.h"
 #include "../../builders/atom_builder.h"
+
+#include <assert.h>
 
 void AdsMethylToDimer::find(DimerCRs *target)
 {
-    Atom *anchor = target->atom(0);
+    const ushort indexes[1] = { 0 };
+    const ushort types[1] = { 21 };
 
-    assert(anchor->is(21));
-    if (!anchor->prevIs(21))
-    {
-        SpecReaction *reaction = new AdsMethylToDimer(target);
-        Handbook::mc.add<ADS_METHYL_TO_DIMER>(reaction);
-
-        target->usedIn(reaction);
-    }
+    MonoTypical::find<AdsMethylToDimer, 1>(target, indexes, types);
 }
 
 void AdsMethylToDimer::doIt()
@@ -29,9 +24,4 @@ void AdsMethylToDimer::doIt()
 
     Handbook::amorph.insert(b);
     Finder::findAll(atoms, 2);
-}
-
-void AdsMethylToDimer::remove()
-{
-    Handbook::mc.remove<ADS_METHYL_TO_DIMER>(this);
 }

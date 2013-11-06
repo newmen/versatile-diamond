@@ -51,8 +51,8 @@ void SpecificSpec::removeReactions()
 #pragma omp critical (print)
     {
 #endif // PARALLEL
+        std::cout << "Removing reactions for " << name() << " with atoms of: " << std::endl;
         std::cout << std::dec;
-        std::cout << "Atoms of " << name() << ": " << std::endl;
         eachAtom([](Atom *atom) {
             atom->info();
             std::cout << std::endl;

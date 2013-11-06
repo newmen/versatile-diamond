@@ -11,6 +11,7 @@ class SpecificSpec; //
 class SpecReaction : public Reaction
 {
 public:
+    virtual void store() = 0;
     virtual void removeFrom(SpecificSpec *target) = 0;
 
 protected:

@@ -9,8 +9,6 @@
 #include <iostream>
 //#endif // PRINT
 
-#include <omp.h>
-
 namespace vd
 {
 
@@ -24,9 +22,10 @@ class FewSpecsReaction : public SpecReaction
 {
     SpecificSpec *_targets[TARGETS_NUM];
 
-public:
+protected:
     FewSpecsReaction(SpecificSpec **targets);
 
+public:
     void removeFrom(SpecificSpec *target) override;
 
 #ifdef PRINT
@@ -34,6 +33,9 @@ public:
 #endif // PRINT
 
 protected:
+    template <class R>
+    static void addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType);
+
     SpecificSpec *target(uint index = 0);
 };
 
@@ -44,6 +46,7 @@ FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(SpecificSpec **targets)
     {
         assert(targets[i]);
         _targets[i] = targets[i];
+        _targets[i]->usedIn(this);
     }
 }
 
@@ -77,6 +80,24 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
         }
 
         remove();
+    }
+}
+
+template <>
+template <class R>
+void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType)
+{
+    if (neighbour->is(atomType))
+    {
+        assert(neighbour->hasRole(atomType, specType));
+
+        SpecificSpec *targets[2] = {
+            target,
+            neighbour->specificSpecByRole(atomType, specType)
+        };
+
+        SpecReaction *reaction = new R(targets);
+        reaction->store();
     }
 }
 
