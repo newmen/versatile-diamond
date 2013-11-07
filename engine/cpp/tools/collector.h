@@ -23,7 +23,6 @@ public:
 
 protected:
     template <class L> inline void each(const L &lambda);
-    template <class L> inline void ompEach(const L &lambda);
 };
 
 template <class T, ushort NUM>
@@ -31,15 +30,7 @@ template <ushort ID>
 void Collector<T, NUM>::store(T *item)
 {
     static_assert(ID < NUM, "Wrong ID");
-
-#ifdef PARALLEL
-#pragma omp critical
-    {
-#endif // PARALLEL
-        _collects[ID].push_back(item);
-#ifdef PARALLEL
-    }
-#endif // PARALLEL
+    _collects[ID].push_back(item);
 }
 
 template <class T, ushort NUM>
@@ -62,19 +53,6 @@ template <class T, ushort NUM>
 template <class L>
 void Collector<T, NUM>::each(const L &lambda)
 {
-    for (int i = 0; i < NUM; ++i)
-    {
-        lambda(_collects[i]);
-    }
-}
-
-template <class T, ushort NUM>
-template <class L>
-void Collector<T, NUM>::ompEach(const L &lambda)
-{
-#ifdef PARALLEL
-#pragma omp for
-#endif // PARALLEL
     for (int i = 0; i < NUM; ++i)
     {
         lambda(_collects[i]);

@@ -12,12 +12,7 @@
 namespace vd
 {
 
-#ifdef PARALLEL
-class SpecificSpec : public DependentSpec<1>, public Lockable
-#endif // PARALLEL
-#ifndef PARALLEL
 class SpecificSpec : public DependentSpec<1>
-#endif // PARALLEL
 {
     std::unordered_set<SpecReaction *> _reactions;
 

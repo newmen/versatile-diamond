@@ -30,7 +30,6 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
     {
         if (spec)
         {
-            spec->findChildren();
             spec->removeReactions();
 
 #ifdef PRINT
@@ -39,6 +38,8 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
 
             anchor->forget(31, spec);
             Handbook::scavenger.markSpec<METHYL_ON_DIMER_CMu>(spec);
+
+            spec->findChildren();
         }
     }
 }

@@ -6,13 +6,13 @@ CONFIG -= qt
 QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
-QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
-LIBS += -fopenmp -lstdc++
+#QMAKE_CXXFLAGS += -std=c++0x
+#QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
+#LIBS += -fopenmp -lstdc++
 
-#QMAKE_CXXFLAGS += -std=c++11
-#QMAKE_CXXFLAGS += -DPARALLEL -openmp
-#LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -DPARALLEL -openmp
+LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += main.cpp \
     atoms/atom.cpp \

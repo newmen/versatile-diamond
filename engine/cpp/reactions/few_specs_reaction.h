@@ -13,12 +13,7 @@ namespace vd
 {
 
 template <ushort TARGETS_NUM>
-#ifdef PARALLEL
-class FewSpecsReaction : public SpecReaction, public Lockable
-#endif // PARALLEL
-#ifndef PARALLEL
 class FewSpecsReaction : public SpecReaction
-#endif // PARALLEL
 {
     SpecificSpec *_targets[TARGETS_NUM];
 
@@ -54,25 +49,13 @@ template <ushort TARGETS_NUM>
 void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
 {
     SpecificSpec *another;
-    bool needToRemove = false;
 
-#ifdef PARALLEL
-    lock([this, &another, &needToRemove, target] {
-#endif // PARALLEL
-        // TODO: now works only for two parents case
-        uint index = (_targets[0] == target) ? 0 : 1;
-        _targets[index] = nullptr;
+    // TODO: now works only for two parents case
+    uint index = (_targets[0] == target) ? 0 : 1;
+    _targets[index] = nullptr;
 
-        another = _targets[1 - index];
-        if (index == 0 || (another && another->atom(0)->isVisited()))
-        {
-            needToRemove = true;
-        }
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
-    if (needToRemove)
+    another = _targets[1 - index];
+    if (index == 0 || (another && another->atom(0)->isVisited()))
     {
         if (another)
         {
