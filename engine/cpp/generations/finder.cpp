@@ -51,25 +51,13 @@ void Finder::findByOne(Atom *atom, bool checkNull)
 
     atom->setUnvisited(); // TODO: do not used?
 
-#ifdef PARALLEL
-#pragma omp parallel sections
+    // finds bridge and all their children with mono (+ gas) reactions with it
+    Bridge::find(atom);
+
     {
-#pragma omp section
-        {
-#endif // PARALLEL
-            // finds bridge and all their children with mono (+ gas) reactions with it
-            Bridge::find(atom);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            SurfaceActivation::find(atom);
-            SurfaceDeactivation::find(atom);
-#ifdef PARALLEL
-        }
+        SurfaceActivation::find(atom);
+        SurfaceDeactivation::find(atom);
     }
-#endif // PARALLEL
 
     Dimer::find(atom);
     Handbook::keeper.findAll();
@@ -93,104 +81,49 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
     }
 #endif // PRINT
 
-#ifdef PARALLEL
-#pragma omp parallel
-    {
-#endif // PARALLEL
 
 #ifdef DEBUG
-#ifdef PARALLEL
-#pragma omp for schedule(dynamic) nowait
-#endif // PARALLEL
-        for (int i = 0; i < n; ++i)
-        {
-            Atom *atom = atoms[i];
-            if (isInit && !atom) assert(true);
-        }
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (isInit && !atom) assert(true);
+    }
 #endif // DEBUG
 
-#ifdef PARALLEL
-#pragma omp for schedule(dynamic)
-#endif // PARALLEL
-        for (int i = 0; i < n; ++i)
-        {
-            Atom *atom = atoms[i];
-            if (!atom) continue;
-            atom->setUnvisited();
-        }
-
-#ifdef PARALLEL
-#pragma omp for schedule(dynamic)
-#endif // PARALLEL
-        for (int i = 0; i < n; ++i)
-        {
-            Atom *atom = atoms[i];
-            if (!atom) continue;
-
-#ifdef PARALLEL
-#pragma omp parallel sections
-            {
-#pragma omp section
-                {
-#endif // PARALLEL
-                    // finds bridge and all their children with mono (+ gas) reactions with it
-                    Bridge::find(atom);
-#ifdef PARALLEL
-                }
-#pragma omp section
-                {
-#endif // PARALLEL
-                    SurfaceActivation::find(atom);
-                    SurfaceDeactivation::find(atom);
-#ifdef PARALLEL
-                }
-            }
-#endif // PARALLEL
-        }
-
-#ifdef PARALLEL
-#pragma omp for schedule(dynamic)
-#endif // PARALLEL
-        for (int i = 0; i < n; ++i)
-        {
-            Atom *atom = atoms[i];
-            if (!atom) continue;
-
-//#ifdef PARALLEL
-//#pragma omp parallel sections
-//            {
-//#pragma omp section
-//                {
-//#endif // PARALLEL
-                    // finds dimer and all their children with mono (+ gas) reactions with it
-                    Dimer::find(atom);
-//#ifdef PARALLEL
-//                }
-//#pragma omp section
-//                {
-//#endif // PARALLEL
-//                    TwoBridges::find(atom);
-//#ifdef PARALLEL
-//                }
-//            }
-//#endif // PARALLEL
-        }
-
-        Handbook::keeper.findAll();
-
-#ifdef PARALLEL
-#pragma omp for schedule(dynamic)
-#endif // PARALLEL
-        for (int i = 0; i < n; ++i)
-        {
-            Atom *atom = atoms[i];
-            if (!atom) continue;
-            atom->setVisited();
-        }
-
-#ifdef PARALLEL
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+        atom->setUnvisited();
     }
-#endif // PARALLEL
+
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+
+        Bridge::find(atom);
+
+        SurfaceActivation::find(atom);
+        SurfaceDeactivation::find(atom);
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+
+        Dimer::find(atom);
+    }
+
+    Handbook::keeper.findAll();
+
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+        atom->setVisited();
+    }
 
     finalize();
 
@@ -202,21 +135,6 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
 
 void Finder::finalize()
 {
-#ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
-            Handbook::keeper.clear();
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            Handbook::scavenger.clear();
-#ifdef PARALLEL
-        }
-    }
-#endif // PARALLEL
+    Handbook::keeper.clear();
+    Handbook::scavenger.clear();
 }

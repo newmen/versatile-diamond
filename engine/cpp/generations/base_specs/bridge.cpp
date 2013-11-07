@@ -61,29 +61,9 @@ void Bridge::find(Atom *anchor)
 
 void Bridge::findChildren()
 {
-#ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
-            MethylOnBridge::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            HighBridge::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            BridgeCTsi::find(this);
-#ifdef PARALLEL
-        }
-    }
-#endif // PARALLEL
+    MethylOnBridge::find(this);
+    HighBridge::find(this);
+    BridgeCTsi::find(this);
 }
 
 

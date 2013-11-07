@@ -45,21 +45,6 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
 
 void MethylOnDimerCMu::findChildren()
 {
-#ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
-            MethylOnDimerCLsCMu::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            MethylOnDimerCMsu::find(this);
-#ifdef PARALLEL
-        }
-    }
-#endif // PARALLEL
+    MethylOnDimerCLsCMu::find(this);
+    MethylOnDimerCMsu::find(this);
 }

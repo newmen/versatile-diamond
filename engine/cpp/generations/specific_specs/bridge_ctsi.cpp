@@ -41,22 +41,6 @@ void BridgeCTsi::find(Bridge *parent)
 
 void BridgeCTsi::findChildren()
 {
-#ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
-            DimerFormation::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            HighBridgeStandToOneBridge::find(this);
-#ifdef PARALLEL
-        }
-    }
-#endif // PARALLEL
-
+    DimerFormation::find(this);
+    HighBridgeStandToOneBridge::find(this);
 }

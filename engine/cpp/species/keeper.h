@@ -23,10 +23,7 @@ public:
 template <ushort SPECIFIC_SPECS_NUM>
 void Keeper<SPECIFIC_SPECS_NUM>::findAll()
 {
-    Collector<BaseSpec, SPECIFIC_SPECS_NUM>::ompEach([](std::vector<BaseSpec *> &specs) {
-#ifdef PARALLEL
-//#pragma omp parallel for
-#endif // PARALLEL
+    Collector<BaseSpec, SPECIFIC_SPECS_NUM>::each([](std::vector<BaseSpec *> &specs) {
         for (int i = 0; i < specs.size(); ++i)
         {
             BaseSpec *spec = specs[i];

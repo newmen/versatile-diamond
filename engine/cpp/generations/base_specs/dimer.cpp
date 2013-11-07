@@ -49,29 +49,9 @@ void Dimer::find(Atom *anchor)
 
 void Dimer::findChildren()
 {
-#ifdef PARALLEL
-#pragma omp parallel sections
-    {
-#pragma omp section
-        {
-#endif // PARALLEL
-            MethylOnDimer::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            DimerCRiCLi::find(this);
-#ifdef PARALLEL
-        }
-#pragma omp section
-        {
-#endif // PARALLEL
-            DimerCRs::find(this);
-#ifdef PARALLEL
-        }
-    }
-#endif // PARALLEL
+    MethylOnDimer::find(this);
+    DimerCRiCLi::find(this);
+    DimerCRs::find(this);
 }
 
 void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
