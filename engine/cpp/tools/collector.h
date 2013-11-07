@@ -47,7 +47,14 @@ void Collector<T, NUM>::clear()
 {
     for (int i = 0; i < NUM; ++i)
     {
-        std::vector<T *>().swap(_collects[i]); // with clear capacity of vector
+        if (_collects[i].size() < 5)
+        {
+            _collects[i].clear();
+        }
+        else
+        {
+            std::vector<T *>().swap(_collects[i]); // with clear capacity of vector
+        }
     }
 }
 
