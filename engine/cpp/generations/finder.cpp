@@ -53,13 +53,13 @@ void Finder::findByOne(Atom *atom, bool checkNull)
 
     // finds bridge and all their children with mono (+ gas) reactions with it
     Bridge::find(atom);
+    Dimer::find(atom);
 
     {
         SurfaceActivation::find(atom);
         SurfaceDeactivation::find(atom);
     }
 
-    Dimer::find(atom);
     Handbook::keeper.findAll();
 
     atom->setVisited(); // TODO: do not used?
@@ -103,9 +103,6 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
         if (!atom) continue;
 
         Bridge::find(atom);
-
-        SurfaceActivation::find(atom);
-        SurfaceDeactivation::find(atom);
     }
 
     for (int i = 0; i < n; ++i)
@@ -114,6 +111,15 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
         if (!atom) continue;
 
         Dimer::find(atom);
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+
+        SurfaceActivation::find(atom);
+        SurfaceDeactivation::find(atom);
     }
 
     Handbook::keeper.findAll();
