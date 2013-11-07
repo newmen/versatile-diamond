@@ -25,7 +25,7 @@ void Finder::findAll(Atom **atoms, int n, bool isInit)
 void Finder::removeAll(Atom **atoms, int n)
 {
 #ifdef PARALLEL
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for
 #endif // PARALLEL
     for (int i = 0; i < n; ++i)
     {

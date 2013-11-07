@@ -20,7 +20,7 @@ int main()
 #endif // PARALLEL
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 100, 10));
+    Diamond *diamond = new Diamond(dim3(100, 10, 10));
 //    Diamond *diamond = new Diamond(dim3(5, 5, 4), 2);
     diamond->initialize();
 
@@ -29,7 +29,7 @@ int main()
     cout << Handbook::mc.totalRate() << endl;
 #endif // PRINT
 
-    for (int i = 0; i < 1000000; ++i)
+    for (int i = 0; i < 50000; ++i)
     {
         Handbook::mc.doRandom();
 

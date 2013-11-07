@@ -104,7 +104,7 @@ template <class Lambda>
 void vector3d<T>::ompParallelEach(const Lambda &lambda) const
 {
 #ifdef PARALLEL
-#pragma omp parallel for shared(lambda) schedule(dynamic)
+#pragma omp parallel for shared(lambda)
 #endif // PARALLEL
     for (int i = 0; i < _sizes.N(); ++i)
     {
