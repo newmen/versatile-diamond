@@ -61,14 +61,14 @@ void ManyTypical<RT, SCA_RT, TARGETS_NUM>::find(SpecificSpec *target, const usho
 template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
 void ManyTypical<RT, SCA_RT, TARGETS_NUM>::store()
 {
-    Handbook::mc.add<RT>(this);
+    Handbook::mc().add<RT>(this);
 }
 
 template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
 void ManyTypical<RT, SCA_RT, TARGETS_NUM>::remove()
 {
-    Handbook::mc.remove<RT>(this, false);
-    Handbook::scavenger.markReaction<SCA_RT>(this);
+    Handbook::mc().remove<RT>(this, false);
+    Handbook::scavenger().markReaction<SCA_RT>(this);
 }
 
 template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>

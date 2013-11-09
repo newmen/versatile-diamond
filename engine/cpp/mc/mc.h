@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 #include <vector>
+#include "common_mc_data.h"
 #include "events_container.h"
 #include "multi_events_container.h"
 
@@ -40,7 +41,7 @@ public:
 
     void sort();
 
-    void doRandom();
+    void doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
 
     template <ushort RT> void add(SpecReaction *reaction);
@@ -61,7 +62,8 @@ private:
         _totalRate += r;
     }
 
-    BaseEventsContainer *events(uint orderIndex);
+    inline BaseEventsContainer *events(uint orderIndex);
+    inline BaseEventsContainer *correspondEvents(uint orderValue);
 };
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -86,19 +88,46 @@ MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
 #ifdef PRINT
-    std::cout << "Current sizes: " << std::endl;
-    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+#ifdef PARALLEL
+#pragma omp master
+#pragma omp critical (print)
+#endif // PARALLEL
+    std::cout << " > " << totalRate() << std::endl;
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
+#endif // PRINT
+
+#ifdef PRINT
+#ifdef PARALLEL
+#pragma omp master
+#pragma omp critical (print)
+#endif // PARALLEL
     {
-        std::cout << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
+        std::cout << "Current sizes: " << std::endl;
+        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+        {
+            std::cout << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
+        }
     }
 #endif // PRINT
 
     std::uniform_real_distribution<double> distribution(0.0, totalRate());
-    double r = distribution(_randomGenerator);
+    Reaction *event = nullptr;
+
+    double r = 0;
+#ifdef PARALLEL
+#pragma omp critical
+#endif // PARALLEL
+    r = distribution(_randomGenerator);
+
 #ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
     std::cout << "Random number: " << r << "\n" << std::endl;
 #endif // PRINT
 
@@ -110,10 +139,15 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
         if (r < cr + passRate)
         {
 #ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
             std::cout << "Event " << i << " => ";
 #endif // PRINT
-            currentEvents->doEvent(r - passRate);
-            return;
+
+            event = currentEvents->selectEvent(r - passRate);
+            data->checkSame(event);
+            break;
         }
         else
         {
@@ -121,16 +155,65 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom()
         }
     }
 
-    // if event was not found
-    recountTotalRate();
-    sort();
+#ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
+    {
+#ifdef PARALLEL
+        std::cout << omp_get_thread_num() << " selects ";
+#endif // PARALLEL
+        if (!event) std::cout << "null";
+        else
+        {
+            if (!event->anchor()->lattice()) std::cout << "amorph";
+            else std::cout << event->anchor()->lattice()->coords();
 
-//#ifdef PRINT
-    std::cout << "Event not found! Resort and using " << _order[EVENTS_NUM + MULTI_EVENTS_NUM - 1] << std::endl;
-//#endif // PRINT
+            std::cout << " which is";
+            if (!data->isSame()) std::cout << " not";
+            std::cout << " same";
+        }
+        std::cout << std::endl;
+    }
+#endif // PRINT
 
-    BaseEventsContainer *currentEvents = events(_order[EVENTS_NUM + MULTI_EVENTS_NUM - 1]);
-    currentEvents->doEvent(totalRate());
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
+
+    if (!event)
+    {
+        data->noEvent();
+    }
+    else if (!data->isSame())
+    {
+        event->doIt();
+    }
+
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
+
+#ifdef PARALLEL
+#pragma omp master
+#endif // PARALLEL
+    {
+        if (data->wasntFound())
+        {
+#ifdef PRINT
+            std::cout << "Event not found! Recount && Resort" << std::endl;
+#endif // PRINT
+
+            recountTotalRate();
+        }
+
+        if (data->wasntFound() || data->hasSameSite())
+        {
+            sort();
+        }
+
+        data->reset();
+    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -151,10 +234,8 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 {
     auto compare = [this](uint a, uint b) {
-        BaseEventsContainer *ae = events(a);
-        BaseEventsContainer *be = events(b);
-
-//        std::cout << this << "] " << a << ":" << ae->commonRate() << " <=> " << b << ":" << be->commonRate() << std::endl;
+        BaseEventsContainer *ae = correspondEvents(a);
+        BaseEventsContainer *be = correspondEvents(b);
 
         return ae->commonRate() > be->commonRate();
     };
@@ -166,9 +247,21 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint index)
 {
-    uint orderIndex = _order[index];
-    if (orderIndex < MULTI_EVENTS_INDEX_SHIFT) return &_events[orderIndex];
-    else return &_multiEvents[orderIndex - MULTI_EVENTS_INDEX_SHIFT];
+    uint orderValue = _order[index];
+    return correspondEvents(orderValue);
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint orderValue)
+{
+    if (orderValue < MULTI_EVENTS_INDEX_SHIFT)
+    {
+        return &_events[orderValue];
+    }
+    else
+    {
+        return &_multiEvents[orderValue - MULTI_EVENTS_INDEX_SHIFT];
+    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -179,16 +272,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 
 #ifdef PARALLEL
 #pragma omp critical
-    {
 #endif // PARALLEL
+    {
 #ifdef PRINT
         std::cout << "Add ";
         reaction->info();
 #endif // PRINT
         _events[RT].add(reaction);
-#ifdef PARALLEL
     }
-#endif // PARALLEL
 
     updateRate(reaction->rate());
 }
@@ -203,15 +294,13 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction, bool clear
 
 #ifdef PARALLEL
 #pragma omp critical
-    {
 #endif // PARALLEL
+    {
 #ifdef PRINT
         std::cout << "Remove reaction " << reaction->name() << "(" << RT << ") [" << reaction << "]" << std::endl;
 #endif // PRINT
         _events[RT].remove(reaction, clearMemory);
-#ifdef PARALLEL
     }
-#endif // PARALLEL
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -222,16 +311,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint
 
 #ifdef PARALLEL
 #pragma omp critical
-    {
 #endif // PARALLEL
+    {
 #ifdef PRINT
         std::cout << "Add multi ";
         reaction->info();
 #endif // PRINT
         _multiEvents[RT].add(reaction, n);
-#ifdef PARALLEL
     }
-#endif // PARALLEL
 
     updateRate(reaction->rate() * n);
 }
@@ -246,16 +333,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
 
 #ifdef PARALLEL
 #pragma omp critical
-    {
 #endif // PARALLEL
+    {
 #ifdef PRINT
         std::cout << "Remove multi ";
         reaction->info();
 #endif // PRINT
         _multiEvents[RT].remove(reaction->target(), n);
-#ifdef PARALLEL
     }
-#endif // PARALLEL
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -263,7 +348,7 @@ template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne()
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
-    _events[RT].doEvent(0);
+    _events[RT].selectEvent(0)->doIt();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -271,7 +356,7 @@ template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul()
 {
     static_assert(RT < MULTI_EVENTS_NUM, "Wrong reaction ID");
-    _multiEvents[RT].doEvent(0);
+    _multiEvents[RT].selectEvent(0)->doIt();
 }
 
 }

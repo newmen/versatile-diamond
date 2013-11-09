@@ -22,8 +22,9 @@ void DesMethylFromBridge::doIt()
     else a->changeType(28);
 
     b->prepareToRemove();
-    Handbook::amorph.erase(b);
-    Handbook::scavenger.markAtom(b);
+
+    Handbook::amorph().erase(b);
+    Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 1);
 }

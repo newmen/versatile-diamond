@@ -21,6 +21,7 @@ protected:
     FewSpecsReaction(SpecificSpec **targets);
 
 public:
+    Atom *anchor() const override;
     void removeFrom(SpecificSpec *target) override;
 
 #ifdef PRINT
@@ -43,6 +44,21 @@ FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(SpecificSpec **targets)
         _targets[i] = targets[i];
         _targets[i]->usedIn(this);
     }
+}
+
+template <ushort TARGETS_NUM>
+Atom *FewSpecsReaction<TARGETS_NUM>::anchor() const
+{
+    Atom *result = nullptr;
+    _targets[0]->eachAtom([&result](Atom *atom) {
+        if (atom->lattice())
+        {
+            result = atom;
+            return;
+        }
+    });
+
+    return result;
 }
 
 template <ushort TARGETS_NUM>

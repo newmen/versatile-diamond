@@ -24,16 +24,15 @@ public:
 
     ushort type() const { return _type; }
 
-    virtual Atom *atom(ushort index) = 0;
     virtual ushort size() const = 0;
+    virtual Atom *atom(ushort index) = 0;
+    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
     virtual void findChildren() = 0;
 
 #ifdef PRINT
     virtual std::string name() const = 0;
     virtual void info() = 0;
-
-    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
     void wasFound();
     void wasForgotten();

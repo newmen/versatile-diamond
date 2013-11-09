@@ -19,12 +19,12 @@ protected:
     DependentSpec(ushort type, BaseSpec **parents);
 
 public:
-    Atom *atom(ushort index);
     ushort size() const;
+    Atom *atom(ushort index);
+    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 
 #ifdef PRINT
     void info() override;
-    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 
 protected:
@@ -78,6 +78,7 @@ void DependentSpec<PARENTS_NUM>::info()
         std::cout << ")";
     }
 }
+#endif // PRINT
 
 template <ushort PARENTS_NUM>
 void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
@@ -87,7 +88,6 @@ void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &la
         _parents[i]->eachAtom(lambda);
     }
 }
-#endif // PRINT
 
 template <ushort PARENTS_NUM>
 BaseSpec *DependentSpec<PARENTS_NUM>::parent(ushort index)

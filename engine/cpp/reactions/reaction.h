@@ -15,6 +15,7 @@ class Reaction
 public:
     virtual ~Reaction() {}
 
+    virtual Atom *anchor() const = 0;
     virtual double rate() const = 0;
     virtual void doIt() = 0;
 

@@ -1,5 +1,4 @@
 #include "handbook.h"
-#include <omp.h>
 
 #include <assert.h>
 
@@ -44,11 +43,38 @@ const ushort Handbook::__atomsSpecifing[] =
       0, 28, 2, 0, 4, 5, 4, 7, 8, 7, 10, 26, 27, 13, 10, 15, 16, 17, 15, 19, 20, 21, 20, 23, 24, 25, 26, 27, 28, 26, 27, 25
 };
 
-Amorph Handbook::amorph;
+Amorph Handbook::__amorph;
+Handbook::DKeeper Handbook::__keepers[THREADS_NUM];
+Handbook::DScavenger Handbook::__scavengers[THREADS_NUM];
+Handbook::DMC Handbook::__mc;
 
-Handbook::DKeeper Handbook::keeper;
-Handbook::DScavenger Handbook::scavenger;
-Handbook::DMC Handbook::mc;
+Amorph &Handbook::amorph()
+{
+    return __amorph;
+}
+
+Handbook::DKeeper &Handbook::keeper()
+{
+#ifdef PARALLEL
+    return __keepers[omp_get_thread_num()];
+#else
+    return __keepers[0];
+#endif // PARALLEL
+}
+
+Handbook::DScavenger &Handbook::scavenger()
+{
+#ifdef PARALLEL
+    return __scavengers[omp_get_thread_num()];
+#else
+    return __scavengers[0];
+#endif // PARALLEL
+}
+
+Handbook::DMC &Handbook::mc()
+{
+    return __mc;
+}
 
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
 {

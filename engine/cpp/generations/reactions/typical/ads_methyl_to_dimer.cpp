@@ -22,6 +22,7 @@ void AdsMethylToDimer::doIt()
     assert(a->is(21));
     a->changeType(23);
 
-    Handbook::amorph.insert(b);
+    Handbook::amorph().insert(b);
+
     Finder::findAll(atoms, 2);
 }

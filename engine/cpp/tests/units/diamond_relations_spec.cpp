@@ -7,7 +7,7 @@ using namespace vd;
 
 #include <iostream>
 
-int main(int argc, char const *argv[])
+int main()
 {
     std::vector<Atom *> atoms;
     AtomBuilder builder;

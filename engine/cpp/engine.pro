@@ -6,13 +6,14 @@ CONFIG -= qt
 QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
-#QMAKE_CXXFLAGS += -std=c++0x
-#QMAKE_CXXFLAGS += -DPARALLEL -fopenmp
-#LIBS += -fopenmp -lstdc++
+QMAKE_CXXFLAGS += -std=c++0x
+#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
+LIBS += -fopenmp -lstdc++
 
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS += -DPARALLEL -openmp
-LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
+#QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
+#LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += main.cpp \
     atoms/atom.cpp \
@@ -54,7 +55,8 @@ SOURCES += main.cpp \
     generations/specific_specs/methyl_on_bridge_cbi_cmu.cpp \
     generations/reactions/typical/des_methyl_from_bridge.cpp \
     generations/reactions/typical/high_bridge_stand_to_one_bridge.cpp \
-    generations/specific_specs/high_bridge.cpp
+    generations/specific_specs/high_bridge.cpp \
+    mc/common_mc_data.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -115,4 +117,5 @@ HEADERS += \
     generations/reactions/typical/high_bridge_stand_to_one_bridge.h \
     generations/specific_specs/high_bridge.h \
     generations/reactions/mono_typical.h \
-    generations/reactions/many_typical.h
+    generations/reactions/many_typical.h \
+    mc/common_mc_data.h

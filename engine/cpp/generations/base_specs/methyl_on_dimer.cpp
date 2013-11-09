@@ -52,7 +52,7 @@ void MethylOnDimer::find(Dimer *target)
                 anchor->forget(23, spec);
                 spec->atom(0)->forget(14, spec);
 
-                Handbook::scavenger.markSpec<METHYL_ON_DIMER>(spec);
+                Handbook::scavenger().markSpec<METHYL_ON_DIMER>(spec);
             }
         }
     }

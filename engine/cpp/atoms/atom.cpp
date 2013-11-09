@@ -56,10 +56,11 @@ void Atom::bondWith(Atom *neighbour, int depth)
         assert(_actives > 0);
 
         currRelatives.insert(neighbour);
-        deactivate();
 #ifdef PARALLEL
     });
 #endif // PARALLEL
+
+    deactivate();
 
     if (depth > 0) neighbour->bondWith(this, 0);
 }
@@ -75,10 +76,11 @@ void Atom::unbondFrom(Atom *neighbour, int depth)
         assert(it != currRelatives.end());
 
         currRelatives.erase(it);
-        activate();
 #ifdef PARALLEL
     });
 #endif // PARALLEL
+
+    activate();
 
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
@@ -98,6 +100,24 @@ Atom *Atom::amorphNeighbour()
 #endif // PARALLEL
         assert(_amorphRelatives.size() == 1);
         result = *_amorphRelatives.begin();
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
+
+    return result;
+}
+
+Atom *Atom::crystalNeighbour()
+{
+    Atom *result = nullptr;
+
+#ifdef PARALLEL
+    lock([this, &result]() {
+#endif // PARALLEL
+        if (!_crystalRelatives.empty())
+        {
+            result = *_crystalRelatives.begin();
+        }
 #ifdef PARALLEL
     });
 #endif // PARALLEL
@@ -176,15 +196,13 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
 #ifdef PRINT
 #ifdef PARALLEL
 #pragma omp critical (print)
-    {
 #endif // PARALLEL
+    {
         std::cout << "specByRole " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
                   << ". spec type: " << specType << ". key: " << key;
         auto er = _specs.equal_range(key);
         std::cout << " -> distance: " << std::distance(er.first, er.second) << std::endl;
-#ifdef PARALLEL
     }
-#endif // PARALLEL
 #endif // PRINT
 
 #ifdef PARALLEL

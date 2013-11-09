@@ -25,6 +25,7 @@ public:
     Atom *atom(const int3 &coords) const { return _atoms[coords]; }
 
     uint countAtoms() const;
+    const dim3 &sizes() const { return _atoms.sizes(); }
 
 protected:
     virtual void buildAtoms() = 0;

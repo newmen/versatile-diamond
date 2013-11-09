@@ -18,12 +18,12 @@ class SourceBaseSpec : public BaseSpec
 public:
     SourceBaseSpec(ushort type, Atom **atoms);
 
-    Atom *atom(ushort index);
     ushort size() const { return ATOMS_NUM; }
+    void eachAtom(const std::function<void (Atom *)> &lambda) override;
+    Atom *atom(ushort index);
 
 #ifdef PRINT
     void info() override;
-    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
 
@@ -54,6 +54,7 @@ void SourceBaseSpec<ATOMS_NUM>::info()
         _atoms[i]->info();
     }
 }
+#endif // PRINT
 
 template <ushort ATOMS_NUM>
 void SourceBaseSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
@@ -64,7 +65,6 @@ void SourceBaseSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lam
     }
 
 }
-#endif // PRINT
 
 }
 

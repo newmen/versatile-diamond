@@ -19,12 +19,16 @@ private:
     typedef Scavenger<BaseSpecNums, ScavengerReactionNums> DScavenger;
     typedef MC<TypicalReactionNums, UbiquitousReactionNums> DMC;
 
-public:
-    static Amorph amorph;
+    static Amorph __amorph;
+    static DKeeper __keepers[THREADS_NUM];
+    static DScavenger __scavengers[THREADS_NUM];
+    static DMC __mc;
 
-    static DKeeper keeper;
-    static DScavenger scavenger;
-    static DMC mc;
+public:
+    static Amorph &amorph();
+    static DKeeper &keeper();
+    static DScavenger &scavenger();
+    static DMC &mc();
 
     // atoms
     static const ushort atomsNum;

@@ -20,8 +20,7 @@ class SpecificSpec;
 
 #ifdef PARALLEL
 class Atom : public Lockable
-#endif // PARALLEL
-#ifndef PARALLEL
+#else
 class Atom
 #endif // PARALLEL
 {
@@ -62,6 +61,7 @@ public:
     bool hasBondWith(Atom *neighbour) const;
 
     Atom *amorphNeighbour();
+    Atom *crystalNeighbour();
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);

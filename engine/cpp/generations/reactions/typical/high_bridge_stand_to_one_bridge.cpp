@@ -42,7 +42,7 @@ void HighBridgeStandToOneBridge::doIt()
     a->unbondFrom(b);
     a->bondWith(c);
 
-    Handbook::amorph.erase(a);
+    Handbook::amorph().erase(a);
 
     assert(b->lattice()->crystal() == c->lattice()->crystal());
     auto diamond = static_cast<Diamond *>(b->lattice()->crystal());

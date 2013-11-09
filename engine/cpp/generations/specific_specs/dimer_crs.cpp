@@ -37,7 +37,7 @@ void DimerCRs::find(Dimer *target)
 #endif // PRINT
 
                 anchor->forget(21, spec);
-                Handbook::scavenger.markSpec<DIMER_CRs>(spec);
+                Handbook::scavenger().markSpec<DIMER_CRs>(spec);
             }
         }
     }

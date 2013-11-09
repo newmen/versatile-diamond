@@ -1,3 +1,4 @@
+#include "mc/common_mc_data.h"
 #include "generations/handbook.h"
 #include "generations/crystals/diamond.h"
 
@@ -10,18 +11,20 @@ using namespace std;
 
 int main()
 {
+#ifdef PARALLEL
+    omp_set_num_threads(THREADS_NUM);
+#endif // PARALLEL
+
 #ifdef PRINT
 #ifdef PARALLEL
     cout << "Start as PARALLEL mode" << endl;
-#endif // PARALLEL
-
-#ifndef PARALLEL
+#else
     cout << "Start as SINGLE THREAD mode" << endl;
 #endif // PARALLEL
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 10, 10));
-//    Diamond *diamond = new Diamond(dim3(5, 5, 4), 2);
+//    Diamond *diamond = new Diamond(dim3(100, 100, 10));
+    Diamond *diamond = new Diamond(dim3(20, 20, 10));
     diamond->initialize();
 
     cout << "Atoms num: " << diamond->countAtoms() << endl;
@@ -29,9 +32,13 @@ int main()
     cout << Handbook::mc.totalRate() << endl;
 #endif // PRINT
 
-    for (int i = 0; i < 50000; ++i)
+    CommonMCData mcData;
+#ifdef PARALLEL
+#pragma omp parallel
+#endif // PARALLEL
+    for (int i = 0; i < 100000 / THREADS_NUM; ++i)
     {
-        Handbook::mc.doRandom();
+        Handbook::mc().doRandom(&mcData);
 
 #ifdef PRINT
         cout << i << ". " << Handbook::mc.totalRate() << "\n\n\n" << endl;

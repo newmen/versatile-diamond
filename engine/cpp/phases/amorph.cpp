@@ -18,6 +18,8 @@ void Amorph::insert(Atom *atom)
 {
     assert(atom);
     assert(!atom->lattice());
+
+#pragma omp critical
     _atoms.insert(atom);
 }
 
@@ -25,6 +27,8 @@ void Amorph::erase(Atom *atom)
 {
     assert(atom);
     assert(!atom->lattice());
+
+#pragma omp critical
     _atoms.erase(atom);
 }
 

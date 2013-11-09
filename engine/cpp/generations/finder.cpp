@@ -60,7 +60,7 @@ void Finder::findByOne(Atom *atom, bool checkNull)
         SurfaceDeactivation::find(atom);
     }
 
-    Handbook::keeper.findAll();
+    Handbook::keeper().findAll();
 
     atom->setVisited(); // TODO: do not used?
 
@@ -122,7 +122,7 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
         SurfaceDeactivation::find(atom);
     }
 
-    Handbook::keeper.findAll();
+    Handbook::keeper().findAll();
 
     for (int i = 0; i < n; ++i)
     {
@@ -135,12 +135,12 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
 
     if (isInit)
     {
-        Handbook::mc.sort();
+        Handbook::mc().sort();
     }
 }
 
 void Finder::finalize()
 {
-    Handbook::keeper.clear();
-    Handbook::scavenger.clear();
+    Handbook::keeper().clear();
+    Handbook::scavenger().clear();
 }

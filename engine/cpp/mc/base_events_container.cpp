@@ -11,7 +11,7 @@ BaseEventsContainer::~BaseEventsContainer()
 {
 }
 
-void BaseEventsContainer::doEvent(double r)
+Reaction *BaseEventsContainer::selectEvent(double r)
 {
     assert(_events.size() > 0);
 
@@ -22,14 +22,14 @@ void BaseEventsContainer::doEvent(double r)
     std::cout << "SELECTED: " << index << std::endl;
 #endif // PRINT
 
-    _events[index]->doIt();
+    return _events[index];
 }
 
 double BaseEventsContainer::commonRate() const
 {
-    return (_events.size() > 0) ?
-                _events.front()->rate() * _events.size() :
-                0.0;
+    return (_events.empty()) ?
+                0.0 :
+                _events.front()->rate() * _events.size();
 }
 
 Reaction *BaseEventsContainer::exchangeToLast(uint index)

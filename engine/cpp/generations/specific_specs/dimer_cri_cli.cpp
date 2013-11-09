@@ -35,7 +35,8 @@ void DimerCRiCLi::find(Dimer *parent)
 
             anchors[0]->forget(20, spec);
             anchors[1]->forget(20, spec);
-            Handbook::scavenger.markSpec<DIMER_CRi_CLi>(spec);
+            
+            Handbook::scavenger().markSpec<DIMER_CRi_CLi>(spec);
         }
     }
 }

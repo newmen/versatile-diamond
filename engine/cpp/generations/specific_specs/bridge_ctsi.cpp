@@ -19,7 +19,7 @@ void BridgeCTsi::find(Bridge *parent)
 
             anchor->describe(28, spec);
 
-            Handbook::keeper.store<KEE_BRIDGE_CTsi>(spec);
+            Handbook::keeper().store<KEE_BRIDGE_CTsi>(spec);
         }
     }
     else
@@ -34,7 +34,7 @@ void BridgeCTsi::find(Bridge *parent)
 #endif // PRINT
 
             anchor->forget(28, spec);
-            Handbook::scavenger.markSpec<BRIDGE_CTsi>(spec);
+            Handbook::scavenger().markSpec<BRIDGE_CTsi>(spec);
         }
     }
 }

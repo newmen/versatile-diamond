@@ -32,7 +32,8 @@ void MethylOnDimerCMsu::find(MethylOnDimerCMu *parent)
 #endif // PRINT
 
             anchor->forget(29, spec);
-            Handbook::scavenger.markSpec<METHYL_ON_DIMER_CMsu>(spec);
+
+            Handbook::scavenger().markSpec<METHYL_ON_DIMER_CMsu>(spec);
         }
     }
 }

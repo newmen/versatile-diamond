@@ -46,7 +46,7 @@ void MethylOnBridge::find(Bridge *target)
             anchor->forget(9, spec);
             spec->atom(0)->forget(14, spec);
 
-            Handbook::scavenger.markSpec<METHYL_ON_BRIDGE>(spec);
+            Handbook::scavenger().markSpec<METHYL_ON_BRIDGE>(spec);
         }
     }
 }

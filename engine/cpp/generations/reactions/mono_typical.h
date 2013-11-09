@@ -45,13 +45,13 @@ void MonoTypical<RT>::find(SpecificSpec *target, const ushort *indexes, const us
 template <ushort RT>
 void MonoTypical<RT>::store()
 {
-    Handbook::mc.add<RT>(this);
+    Handbook::mc().add<RT>(this);
 }
 
 template <ushort RT>
 void MonoTypical<RT>::remove()
 {
-    Handbook::mc.remove<RT>(this);
+    Handbook::mc().remove<RT>(this);
 }
 
 #endif // MONO_TYPICAL_H

@@ -23,7 +23,7 @@ void HighBridge::find(Bridge *target)
                 anchor->describe(19, spec);
                 amorph->describe(18, spec);
 
-                Handbook::keeper.store<KEE_HIGH_BRIDGE>(spec);
+                Handbook::keeper().store<KEE_HIGH_BRIDGE>(spec);
             }
         }
     }
@@ -41,7 +41,7 @@ void HighBridge::find(Bridge *target)
             anchor->forget(19, spec);
             spec->atom(0)->forget(18, spec);
 
-            Handbook::scavenger.markSpec<HIGH_BRIDGE>(spec);
+            Handbook::scavenger().markSpec<HIGH_BRIDGE>(spec);
         }
     }
 }

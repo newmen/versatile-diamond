@@ -35,7 +35,8 @@ void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
 
             anchors[0]->forget(25, spec);
             anchors[1]->forget(7, spec);
-            Handbook::scavenger.markSpec<METHYL_ON_DIMER_CLs_CMu>(spec);
+
+            Handbook::scavenger().markSpec<METHYL_ON_DIMER_CLs_CMu>(spec);
         }
     }
 }

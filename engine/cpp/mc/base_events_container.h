@@ -13,7 +13,7 @@ class BaseEventsContainer
 public:
     virtual ~BaseEventsContainer();
 
-    void doEvent(double r);
+    Reaction *selectEvent(double r);
     double commonRate() const;
 
 #ifdef PRINT

@@ -32,6 +32,11 @@ short UbiquitousReaction::delta(Atom *anchor, const ushort *typeToNum)
     return currNum - prevNum;
 }
 
+Atom *UbiquitousReaction::anchor() const
+{
+    return _target->lattice() ? _target : _target->crystalNeighbour();
+}
+
 void UbiquitousReaction::doIt()
 {
     uint type = toType(_target->type());

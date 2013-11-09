@@ -15,6 +15,7 @@ protected:
     MonoSpecReaction(SpecificSpec *target);
 
 public:
+    Atom *anchor() const override;
     void removeFrom(SpecificSpec *target) override;
 
 protected:

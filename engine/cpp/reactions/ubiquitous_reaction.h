@@ -15,6 +15,7 @@ public:
 
     Atom *target() { return _target; }
 
+    Atom *anchor() const override;
     void doIt() override;
 
 #ifdef PRINT
