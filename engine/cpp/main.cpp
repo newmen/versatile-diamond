@@ -23,7 +23,7 @@ int main()
 #endif // PARALLEL
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(500, 100, 10));
+    Diamond *diamond = new Diamond(dim3(100, 100, 10));
 //    Diamond *diamond = new Diamond(dim3(20, 20, 10));
     diamond->initialize();
 
@@ -36,7 +36,7 @@ int main()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-    for (int i = 0; i < 1000000 / THREADS_NUM; ++i)
+    while (Handbook::mc().totalTime() < 1.0)
     {
         Handbook::mc().doRandom(&mcData);
 

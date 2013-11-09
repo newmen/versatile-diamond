@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 #include <vector>
+#include <cmath>
 #include "common_mc_data.h"
 #include "events_container.h"
 #include "multi_events_container.h"
@@ -31,6 +32,7 @@ class MC
     std::mt19937 _randomGenerator;
 
     double _totalRate = 0;
+    double _totalTime = 0;
 
     EventsContainer _events[EVENTS_NUM];
     MultiEventsContainer _multiEvents[MULTI_EVENTS_NUM];
@@ -43,6 +45,7 @@ public:
 
     void doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
+    double totalTime() const { return _totalTime; }
 
     template <ushort RT> void add(SpecReaction *reaction);
     template <ushort RT> void remove(SpecReaction *reaction, bool clearMemory = true);
@@ -53,6 +56,7 @@ public:
     template <ushort RT> void doOneOfMul(); // for tests
 
 private:
+    void increaseTime();
     void recountTotalRate();
     void updateRate(double r)
     {
@@ -90,19 +94,17 @@ MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
-#ifdef PRINT
-#ifdef PARALLEL
-#pragma omp master
-#pragma omp critical (print)
-#endif // PARALLEL
-    std::cout << " > " << totalRate() << std::endl;
-#endif // PRINT
-
 #ifdef PARALLEL
 #pragma omp barrier
 #endif // PARALLEL
 
 #ifdef PRINT
+#ifdef PARALLEL
+#pragma omp master
+#pragma omp critical (print)
+#endif // PARALLEL
+    std::cout << " > rate: " << totalRate() << " % time: " << totalTime() << std::endl;
+
 #ifdef PARALLEL
 #pragma omp master
 #pragma omp critical (print)
@@ -129,7 +131,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #ifdef PARALLEL
 #pragma omp critical (print)
 #endif // PARALLEL
-    std::cout << "Random number: " << r << "\n" << std::endl;
+    std::cout << "Random number at " << omp_get_thread_num() << ": " << r << "\n" << std::endl;
 #endif // PRINT
 
     double passRate = 0;
@@ -188,6 +190,15 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
     }
     else if (!data->isSame())
     {
+        increaseTime();
+    }
+
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
+
+    if (event && !data->isSame())
+    {
         event->doIt();
     }
 
@@ -215,6 +226,19 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
         data->reset();
     }
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime()
+{
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    double r = distribution(_randomGenerator);
+    double dt = -log(r) / totalRate();
+
+#ifdef PARALLEL
+#pragma omp atomic
+#endif // PARALLEL
+    _totalTime += dt;
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
