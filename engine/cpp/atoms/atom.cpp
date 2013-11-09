@@ -30,19 +30,12 @@ void Atom::changeType(ushort newType)
 
 void Atom::activate()
 {
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
     ++_actives;
 }
 
 void Atom::deactivate()
 {
     assert(_actives > 0);
-
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
     --_actives;
 }
 
@@ -50,18 +43,10 @@ void Atom::bondWith(Atom *neighbour, int depth)
 {
     auto &currRelatives = neighbour->lattice() ? _crystalRelatives : _amorphRelatives;
 
-#ifdef PARALLEL
-    lock([this, &currRelatives, neighbour]() {
-#endif // PARALLEL
-        assert(_actives > 0);
+    assert(_actives > 0);
 
-        currRelatives.insert(neighbour);
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
+    currRelatives.insert(neighbour);
     deactivate();
-
     if (depth > 0) neighbour->bondWith(this, 0);
 }
 
@@ -69,19 +54,11 @@ void Atom::unbondFrom(Atom *neighbour, int depth)
 {
     auto &currRelatives = neighbour->lattice() ? _crystalRelatives : _amorphRelatives;
 
-#ifdef PARALLEL
-    lock([this, &currRelatives, neighbour]() {
-#endif // PARALLEL
-        auto it = currRelatives.find(neighbour);
-        assert(it != currRelatives.end());
+    auto it = currRelatives.find(neighbour);
+    assert(it != currRelatives.end());
 
-        currRelatives.erase(it);
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
+    currRelatives.erase(it);
     activate();
-
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
 
@@ -93,36 +70,20 @@ bool Atom::hasBondWith(Atom *neighbour) const
 
 Atom *Atom::amorphNeighbour()
 {
-    Atom *result = nullptr;
-
-#ifdef PARALLEL
-    lock([this, &result]() {
-#endif // PARALLEL
-        assert(_amorphRelatives.size() == 1);
-        result = *_amorphRelatives.begin();
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
-    return result;
+    assert(_amorphRelatives.size() == 1);
+    return *_amorphRelatives.begin();
 }
 
 Atom *Atom::crystalNeighbour()
 {
-    Atom *result = nullptr;
-
-#ifdef PARALLEL
-    lock([this, &result]() {
-#endif // PARALLEL
-        if (!_crystalRelatives.empty())
-        {
-            result = *_crystalRelatives.begin();
-        }
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
-    return result;
+    if (!_crystalRelatives.empty())
+    {
+        return *_crystalRelatives.begin();
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 
 void Atom::setLattice(Crystal *crystal, const int3 &coords)
@@ -162,30 +123,14 @@ void Atom::describe(ushort rType, BaseSpec *spec)
                   << ". spec type: " << spec->type() << ". key: " << key << std::endl;
 #endif // PRINT
 
-#ifdef PARALLEL
-    lock([this, rType, spec, key]() {
-#endif // PARALLEL
-        _roles[rType].insert(spec->type());
-        _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
+    _roles[rType].insert(spec->type());
+    _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
 }
 
 bool Atom::hasRole(ushort rType, ushort specType)
 {
-    bool result;
     const uint key = hash(rType, specType);
-
-#ifdef PARALLEL
-    lock([this, &result, key]() {
-#endif // PARALLEL
-        result = _specs.find(key) != _specs.end();
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
-    return result;
+    return _specs.find(key) != _specs.end();
 }
 
 BaseSpec *Atom::specByRole(ushort rType, ushort specType)
@@ -205,19 +150,13 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     }
 #endif // PRINT
 
-#ifdef PARALLEL
-    lock([this, &result, key]() {
-#endif // PARALLEL
-        auto its = _specs.equal_range(key);
-        uint distance = std::distance(its.first, its.second);
-        if (distance > 0)
-        {
-            assert(distance == 1);
-            result = its.first->second;
-        }
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
+    auto its = _specs.equal_range(key);
+    uint distance = std::distance(its.first, its.second);
+    if (distance > 0)
+    {
+        assert(distance == 1);
+        result = its.first->second;
+    }
 
     return result;
 }
@@ -239,25 +178,17 @@ void Atom::forget(ushort rType, BaseSpec *spec)
               << ". spec type: " << spec->type() << ". key: " << key << std::endl;
 #endif // PRINT
 
-#ifdef PARALLEL
-    lock([this, rType, spec, key]() {
-#endif // PARALLEL
-        auto its = _specs.equal_range(key);
-        if (std::distance(its.first, its.second) == 1) _roles.erase(rType);
+    auto its = _specs.equal_range(key);
+    if (std::distance(its.first, its.second) == 1) _roles.erase(rType);
 
-        while (its.first != its.second)
+    while (its.first != its.second)
+    {
+        if ((its.first++)->second == spec)
         {
-            if ((its.first++)->second == spec)
-            {
-                _specs.erase(key);
-                break;
-            }
+            _specs.erase(key);
+            break;
         }
-
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
+    }
 }
 
 void Atom::prepareToRemove()

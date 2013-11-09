@@ -6,10 +6,6 @@
 #include "../tools/common.h"
 #include "lattice.h"
 
-#ifdef PARALLEL
-#include "../tools/lockable.h"
-#endif // PARALLEL
-
 namespace vd
 {
 
@@ -18,11 +14,7 @@ const ushort NO_VALUE = (ushort)(-1);
 class BaseSpec;
 class SpecificSpec;
 
-#ifdef PARALLEL
-class Atom : public Lockable
-#else
 class Atom
-#endif // PARALLEL
 {
     bool _visited = false;
 

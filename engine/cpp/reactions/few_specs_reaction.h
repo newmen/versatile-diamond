@@ -1,13 +1,12 @@
 #ifndef FEW_SPECS_REACTION_H
 #define FEW_SPECS_REACTION_H
 
-#include "../tools/lockable.h"
 #include "../species/specific_spec.h"
 #include "spec_reaction.h"
 
-//#ifdef PRINT
+#ifdef PRINT
 #include <iostream>
-//#endif // PRINT
+#endif // PRINT
 
 namespace vd
 {

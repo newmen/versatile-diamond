@@ -96,10 +96,11 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #pragma omp critical (print)
 #endif // PARALLEL
     std::cout << " > " << totalRate() << std::endl;
+#endif // PRINT
+
 #ifdef PARALLEL
 #pragma omp barrier
 #endif // PARALLEL
-#endif // PRINT
 
 #ifdef PRINT
 #ifdef PARALLEL

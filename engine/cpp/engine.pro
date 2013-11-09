@@ -3,7 +3,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-QMAKE_CXXFLAGS += -DDEBUG
+#QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
@@ -37,7 +37,6 @@ SOURCES += main.cpp \
     species/base_spec.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
-    tools/lockable.cpp \
     generations/reactions/typical/dimer_drop.cpp \
     generations/specific_specs/dimer_cri_cli.cpp \
     species/specific_spec.cpp \
@@ -95,7 +94,6 @@ HEADERS += \
     tests/support/open_diamond.h \
     tools/collector.h \
     tools/common.h \
-    tools/lockable.h \
     tools/scavenger.h \
     tools/vector3d.h \
     generations/reactions/typical/dimer_drop.h \

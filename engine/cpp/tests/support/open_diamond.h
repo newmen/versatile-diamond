@@ -1,6 +1,8 @@
 #include "../../generations/atoms/c.h"
 #include "../../generations/crystals/diamond.h"
 
+#ifdef DEBUG
+
 class OpenDiamond : public Diamond
 {
 public:
@@ -40,3 +42,5 @@ class OpenC : public C
 public:
     uint activesNum() const { return C::actives(); }
 };
+
+#endif // DEBUG

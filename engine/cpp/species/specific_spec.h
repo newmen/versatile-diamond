@@ -5,10 +5,6 @@
 #include "dependent_spec.h"
 #include "../reactions/spec_reaction.h"
 
-#ifdef PARALLEL
-#include "../tools/lockable.h"
-#endif // PARALLEL
-
 namespace vd
 {
 
