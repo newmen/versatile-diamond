@@ -1,10 +1,11 @@
 #include "high_bridge.h"
 #include "../handbook.h"
 #include "../reactions/typical/high_bridge_stand_to_one_bridge.h"
+#include "../reactions/typical/high_bridge_to_two_bridges.h"
 
-void HighBridge::find(Bridge *target)
+void HighBridge::find(Bridge *parent)
 {
-    Atom *anchor = target->atom(0);
+    Atom *anchor = parent->atom(0);
 
     if (anchor->is(19))
     {
@@ -14,7 +15,7 @@ void HighBridge::find(Bridge *target)
 
             if (amorph->is(18))
             {
-                auto spec = new HighBridge(&amorph, HIGH_BRIDGE, target);
+                auto spec = new HighBridge(&amorph, HIGH_BRIDGE, parent);
 
 #ifdef PRINT
                 spec->wasFound();
@@ -49,4 +50,5 @@ void HighBridge::find(Bridge *target)
 void HighBridge::findChildren()
 {
     HighBridgeStandToOneBridge::find(this);
+    HighBridgeToTwoBridges::find(this);
 }

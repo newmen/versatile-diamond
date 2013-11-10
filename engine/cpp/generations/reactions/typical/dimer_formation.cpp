@@ -8,7 +8,7 @@ void DimerFormation::find(BridgeCTsi *target)
     const ushort indexes[1] = { 0 };
     const ushort types[1] = { 28 };
 
-    ManyTypical::find<DimerFormation, 1, 28, BRIDGE_CTsi>(target, indexes, types, ManyTypical::front100Lambda);
+    ManyTypical::find<DimerFormation, 1>(target, indexes, types, 28, BRIDGE_CTsi, ManyTypical::front100Lambda);
 }
 
 void DimerFormation::doIt()

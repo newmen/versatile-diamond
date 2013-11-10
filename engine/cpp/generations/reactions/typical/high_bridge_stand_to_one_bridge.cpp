@@ -7,7 +7,7 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
     const ushort indexes[1] = { 1 };
     const ushort types[1] = { 19 };
 
-    ManyTypical::find<HighBridgeStandToOneBridge, 1, 28, BRIDGE_CTsi>(target, indexes, types, ManyTypical::front100Lambda);
+    ManyTypical::find<HighBridgeStandToOneBridge, 1>(target, indexes, types, 28, BRIDGE_CTsi, ManyTypical::front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
@@ -15,7 +15,7 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
     const ushort indexes[1] = { 0 };
     const ushort types[1] = { 28 };
 
-    ManyTypical::find<HighBridgeStandToOneBridge, 1, 19, HIGH_BRIDGE>(target, indexes, types, ManyTypical::front100Lambda);
+    ManyTypical::find<HighBridgeStandToOneBridge, 1>(target, indexes, types, 19, HIGH_BRIDGE, ManyTypical::front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::doIt()
@@ -39,6 +39,10 @@ void HighBridgeStandToOneBridge::doIt()
     Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), bridgeCTsi->atom(0) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
+    assert(a->is(18));
+    assert(b->is(19));
+    assert(c->is(28));
+
     a->unbondFrom(b);
     a->bondWith(c);
 
@@ -48,15 +52,12 @@ void HighBridgeStandToOneBridge::doIt()
     auto diamond = static_cast<Diamond *>(b->lattice()->crystal());
     diamond->insert(a, DiamondRelations::front_110(b, c));
 
-    assert(a->is(18));
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);
     else a->changeType(3);
 
-    assert(b->is(19));
     b->changeType(5);
 
-    assert(c->is(28));
     if (c->is(2)) c->changeType(5);
     else c->changeType(4);
 

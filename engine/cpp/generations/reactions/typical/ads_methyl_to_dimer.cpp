@@ -17,9 +17,9 @@ void AdsMethylToDimer::doIt()
     Atom *atoms[2] = { target()->atom(0), builder.buildC(25, 1) };
     Atom *a = atoms[0], *b = atoms[1];
 
-    a->bondWith(b);
-
     assert(a->is(21));
+
+    a->bondWith(b);
     a->changeType(23);
 
     Handbook::amorph().insert(b);

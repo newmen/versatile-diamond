@@ -1,6 +1,7 @@
 #include "bridge.h"
 #include "../handbook.h"
 #include "../specific_specs/bridge_ctsi.h"
+#include "../specific_specs/bridge_crs.h"
 #include "../specific_specs/high_bridge.h"
 #include "methyl_on_bridge.h"
 
@@ -51,8 +52,8 @@ void Bridge::find(Atom *anchor)
             spec->findChildren();
 
             anchor->forget(3, spec);
-            spec->atom(1)->forget(3, spec);
-            spec->atom(2)->forget(3, spec);
+            spec->atom(1)->forget(6, spec);
+            spec->atom(2)->forget(6, spec);
 
             Handbook::scavenger().markSpec<BRIDGE>(spec);
         }
@@ -64,6 +65,7 @@ void Bridge::findChildren()
     MethylOnBridge::find(this);
     HighBridge::find(this);
     BridgeCTsi::find(this);
+    BridgeCRs::find(this);
 }
 
 

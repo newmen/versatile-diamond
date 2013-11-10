@@ -16,16 +16,17 @@ void MethylOnDimerHydrogenMigration::doIt()
     Atom *atoms[3] = { target()->atom(0), target()->atom(4) };
     Atom *a = atoms[0], *b = atoms[1];
 
+    assert(a->is(31));
+    assert(!a->is(13));
+    assert(b->is(21));
+
     a->activate();
     b->deactivate();
 
-    assert(a->is(31));
-    assert(!a->is(13));
     if (a->is(30)) a->changeType(13);
     else if (a->is(29)) a->changeType(30);
     else a->changeType(29);
 
-    assert(b->is(21));
     b->changeType(20);
 
     Finder::findAll(atoms, 2);

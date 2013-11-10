@@ -29,7 +29,8 @@ int main()
 
     cout << "Atoms num: " << diamond->countAtoms() << endl;
 #ifdef PRINT
-    cout << Handbook::mc.totalRate() << endl;
+    cout << Handbook::mc().totalRate() << endl;
+    int i = 0;
 #endif // PRINT
 
     CommonMCData mcData;
@@ -41,7 +42,10 @@ int main()
         Handbook::mc().doRandom(&mcData);
 
 #ifdef PRINT
-        cout << i << ". " << Handbook::mc.totalRate() << "\n\n\n" << endl;
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
+        cout << (++i) << ". " << Handbook::mc().totalRate() << "\n\n\n" << endl;
 #endif // PRINT
     }
 

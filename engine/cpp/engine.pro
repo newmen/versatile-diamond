@@ -7,9 +7,9 @@ QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
-#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
-QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
-LIBS += -fopenmp -lstdc++
+QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+#QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
+#LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
@@ -55,7 +55,10 @@ SOURCES += main.cpp \
     generations/reactions/typical/des_methyl_from_bridge.cpp \
     generations/reactions/typical/high_bridge_stand_to_one_bridge.cpp \
     generations/specific_specs/high_bridge.cpp \
-    mc/common_mc_data.cpp
+    mc/common_mc_data.cpp \
+    generations/specific_specs/bridge_crs.cpp \
+    generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
+    generations/reactions/typical/high_bridge_to_two_bridges.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -102,7 +105,6 @@ HEADERS += \
     generations/specific_specs/dimer_crs.h \
     generations/reactions/typical/ads_methyl_to_dimer.h \
     generations/base_specs/methyl_on_dimer.h \
-    species/atom_shifter_wrapper.h \
     species/additional_atoms_wrapper.h \
     generations/reactions/typical/methyl_to_high_bridge.h \
     generations/reactions/typical/methyl_on_dimer_hydrogen_migration.h \
@@ -116,4 +118,9 @@ HEADERS += \
     generations/specific_specs/high_bridge.h \
     generations/reactions/mono_typical.h \
     generations/reactions/many_typical.h \
-    mc/common_mc_data.h
+    mc/common_mc_data.h \
+    generations/specific_specs/bridge_crs.h \
+    species/atom_shift_wrapper.h \
+    species/atoms_swap_wrapper.h \
+    generations/reactions/typical/next_level_bridge_to_high_bridge.h \
+    generations/reactions/typical/high_bridge_to_two_bridges.h

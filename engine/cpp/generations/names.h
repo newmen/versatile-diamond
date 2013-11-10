@@ -3,7 +3,7 @@
 
 #include "../tools/common.h"
 
-const ushort BaseSpecNums = 12;
+const ushort BaseSpecNums = 13;
 enum BaseSpecNames : ushort
 {
     BRIDGE,
@@ -12,6 +12,7 @@ enum BaseSpecNames : ushort
     METHYL_ON_BRIDGE,
 
     BRIDGE_CTsi,
+    BRIDGE_CRs,
     DIMER_CRi_CLi,
     DIMER_CRs,
     METHYL_ON_DIMER_CMu,
@@ -21,10 +22,11 @@ enum BaseSpecNames : ushort
     HIGH_BRIDGE
 };
 
-const ushort KeeperSpecNums = 2;
+const ushort KeeperSpecNums = 3;
 enum KeeperSpecNames : ushort
 {
     KEE_BRIDGE_CTsi,
+    KEE_BRIDGE_CRs,
     KEE_HIGH_BRIDGE
 };
 
@@ -35,7 +37,7 @@ enum UbiquitousReactionNames : ushort
     SURFACE_DEACTIVATION
 };
 
-const ushort TypicalReactionNums = 7;
+const ushort TypicalReactionNums = 9;
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
@@ -44,14 +46,17 @@ enum TypicalReactionNames : ushort
     METHYL_ON_DIMER_HYDROGEN_MIGRATION,
     METHYL_TO_HIGH_BRIDGE,
     HIGH_BRIDGE_STAND_TO_ONE_BRIDGE,
-    DES_METHYL_FROM_BRIDGE
+    DES_METHYL_FROM_BRIDGE,
+    NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE,
+    HIGH_BRIDGE_STAND_TO_TWO_BRIDGES
 };
 
-const ushort ScavengerReactionNums = 2;
+const ushort ScavengerReactionNums = 3;
 enum ScavengerReactionNames : ushort
 {
     SCA_DIMER_FORMATION,
-    SCA_HIGH_BRIDGE_STAND_TO_ONE_BRIDGE
+    SCA_HIGH_BRIDGE_STAND_TO_ONE_BRIDGE,
+    SCA_HIGH_BRIDGE_STAND_TO_TWO_BRIDGES
 };
 
 #endif // NAMES_H

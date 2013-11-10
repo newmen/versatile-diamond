@@ -107,9 +107,16 @@ void FewSpecsReaction<TARGETS_NUM>::info()
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
         std::cout << " ";
-        if (_targets[i])
+        if (target(i))
         {
-            std::cout << target(i)->atom(0)->lattice()->coords();
+            if (target(i)->atom(0)->lattice())
+            {
+                std::cout << target(i)->atom(0)->lattice()->coords();
+            }
+            else
+            {
+                std::cout << "amorph";
+            }
         }
         else
         {

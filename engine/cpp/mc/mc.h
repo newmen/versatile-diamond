@@ -49,11 +49,14 @@ public:
 
     template <ushort RT> void add(SpecReaction *reaction);
     template <ushort RT> void remove(SpecReaction *reaction, bool clearMemory = true);
-    template <ushort RT> void doOneOfOne(); // for tests
 
     template <ushort RT> void addMul(UbiquitousReaction *reaction, uint n);
     template <ushort RT> void removeMul(UbiquitousReaction *reaction, uint n);
-    template <ushort RT> void doOneOfMul(); // for tests
+
+#ifdef DEBUG
+    template <ushort RT> void doOneOfOne();
+    template <ushort RT> void doOneOfMul();
+#endif // DEBUG
 
 private:
     void increaseTime();
@@ -130,8 +133,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #ifdef PRINT
 #ifdef PARALLEL
 #pragma omp critical (print)
-#endif // PARALLEL
     std::cout << "Random number at " << omp_get_thread_num() << ": " << r << "\n" << std::endl;
+#else
+    std::cout << "Random number: " << r << "\n" << std::endl;
+#endif // PARALLEL
 #endif // PRINT
 
     double passRate = 0;
@@ -368,6 +373,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
     }
 }
 
+#ifdef DEBUG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne()
@@ -383,6 +389,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul()
     static_assert(RT < MULTI_EVENTS_NUM, "Wrong reaction ID");
     _multiEvents[RT].selectEvent(0)->doIt();
 }
+#endif // DEBUG
 
 }
 

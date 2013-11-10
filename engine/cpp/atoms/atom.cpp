@@ -70,8 +70,9 @@ bool Atom::hasBondWith(Atom *neighbour) const
 
 Atom *Atom::amorphNeighbour()
 {
-    assert(_amorphRelatives.size() == 1);
-    return *_amorphRelatives.begin();
+    Atom *nbr = *_amorphRelatives.begin();
+    assert(_amorphRelatives.count(nbr) == _amorphRelatives.size());
+    return nbr;
 }
 
 Atom *Atom::crystalNeighbour()

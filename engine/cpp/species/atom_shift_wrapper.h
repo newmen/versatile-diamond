@@ -1,5 +1,5 @@
-#ifndef ATOM_SHIFTER_WRAPPER_H
-#define ATOM_SHIFTER_WRAPPER_H
+#ifndef ATOM_SHIFT_WRAPPER_H
+#define ATOM_SHIFT_WRAPPER_H
 
 #include "../tools/common.h"
 #include "../atoms/atom.h"
@@ -8,19 +8,19 @@ namespace vd
 {
 
 template <class B>
-class AtomShifterWrapper : public B
+class AtomShiftWrapper : public B
 {
     ushort _atomsShift;
 
 public:
     template <class... Ts>
-    AtomShifterWrapper(ushort atomsShift, Ts... args) : B(args...), _atomsShift(atomsShift) {}
+    AtomShiftWrapper(ushort atomsShift, Ts... args) : B(args...), _atomsShift(atomsShift) {}
 
     Atom *atom(ushort index) override;
 };
 
 template <class B>
-Atom *AtomShifterWrapper<B>::atom(ushort index)
+Atom *AtomShiftWrapper<B>::atom(ushort index)
 {
     ushort shiftedIndex = index + _atomsShift;
     if (shiftedIndex >= this->size()) shiftedIndex -= this->size();
@@ -29,4 +29,4 @@ Atom *AtomShifterWrapper<B>::atom(ushort index)
 
 }
 
-#endif // ATOM_SHIFTER_WRAPPER_H
+#endif // ATOM_SHIFT_WRAPPER_H

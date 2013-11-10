@@ -11,7 +11,7 @@ using namespace vd;
 class HighBridge : public AdditionalAtomsWrapper<SpecificSpec, 1>
 {
 public:
-    static void find(Bridge *target);
+    static void find(Bridge *parent);
 
 //    using AdditionalAtomsWrapper<SpecificSpec, 1>::AdditionalAtomsWrapper;
     HighBridge(Atom **additionalAtoms, ushort type, BaseSpec *parent) :
