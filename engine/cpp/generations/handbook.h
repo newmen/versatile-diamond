@@ -15,8 +15,8 @@
 class Handbook
 {
 private:
-    typedef Keeper<KeeperSpecNums> DKeeper;
-    typedef Scavenger<BaseSpecNums, ScavengerReactionNums> DScavenger;
+    typedef Keeper<SpecificSpecNums> DKeeper;
+    typedef Scavenger<(BaseSpecNums + SpecificSpecNums), TypicalReactionNums> DScavenger;
     typedef MC<TypicalReactionNums, UbiquitousReactionNums> DMC;
 
     static Amorph __amorph;

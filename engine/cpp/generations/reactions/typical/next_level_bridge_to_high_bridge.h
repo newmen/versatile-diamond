@@ -1,7 +1,7 @@
 #ifndef NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE_H
 #define NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE_H
 
-#include "../../specific_specs/bridge_crs.h"
+#include "../../species/specific/bridge_crs.h"
 #include "../mono_typical.h"
 
 class NextLevelBridgeToHighBridge : public MonoTypical<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>

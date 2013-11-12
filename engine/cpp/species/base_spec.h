@@ -16,19 +16,24 @@ namespace vd
 
 class BaseSpec
 {
-    ushort _type;
+    std::unordered_set<BaseSpec *> _children;
 
 public:
-    BaseSpec(ushort type) : _type(type) {}
     virtual ~BaseSpec() {}
 
-    ushort type() const { return _type; }
+    virtual ushort type() const = 0;
 
     virtual ushort size() const = 0;
     virtual Atom *atom(ushort index) = 0;
+    // TODO: maybe need to change it to method without lambda, which will returns only first latticed atom
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
     virtual void findChildren() = 0;
+    void addChild(BaseSpec *child);
+    void removeChild(BaseSpec *child);
+
+    virtual void store() = 0;
+    virtual void remove();
 
 #ifdef PRINT
     virtual std::string name() const = 0;

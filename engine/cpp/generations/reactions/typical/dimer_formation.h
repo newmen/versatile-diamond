@@ -1,11 +1,10 @@
 #ifndef DIMERFORMATION_H
 #define DIMERFORMATION_H
 
-#include "../../specific_specs/bridge_ctsi.h"
+#include "../../species/specific/bridge_ctsi.h"
 #include "../many_typical.h"
 
-class DimerFormation :
-        public ManyTypical<DIMER_FORMATION, SCA_DIMER_FORMATION, 2>
+class DimerFormation : public ManyTypical<DIMER_FORMATION, 2>
 {
 public:
     static void find(BridgeCTsi *target);

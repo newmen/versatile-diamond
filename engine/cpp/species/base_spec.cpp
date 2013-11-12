@@ -1,13 +1,32 @@
 #include "base_spec.h"
 
 #ifdef PRINT
-
 #include <omp.h>
 #include <iostream>
+#endif // PRINT
 
 namespace vd
 {
 
+void BaseSpec::addChild(BaseSpec *child)
+{
+    _children.insert(child);
+}
+
+void BaseSpec::removeChild(BaseSpec *child)
+{
+    _children.erase(child);
+}
+
+void BaseSpec::remove()
+{
+    for (BaseSpec *child : _children)
+    {
+        child->remove();
+    }
+}
+
+#ifdef PRINT
 void BaseSpec::wasFound()
 {
 #ifdef PARALLEL
@@ -29,7 +48,6 @@ void BaseSpec::wasForgotten()
         std::cout << " was forgotten" << std::endl;
     }
 }
+#endif // PRINT
 
 }
-
-#endif // PRINT

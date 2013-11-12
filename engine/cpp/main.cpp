@@ -23,8 +23,8 @@ int main()
 #endif // PARALLEL
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 100, 10));
-//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+//    Diamond *diamond = new Diamond(dim3(100, 100, 10));
+    Diamond *diamond = new Diamond(dim3(20, 20, 10));
     diamond->initialize();
 
     cout << "Atoms num: " << diamond->countAtoms() << endl;

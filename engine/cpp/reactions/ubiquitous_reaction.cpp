@@ -1,9 +1,9 @@
 #include "ubiquitous_reaction.h"
 #include "../generations/finder.h" // wow wow
 
-//#ifdef PRINT
+#ifdef PRINT
 #include <iostream>
-//#endif // PRINT
+#endif // PRINT
 
 namespace vd
 {

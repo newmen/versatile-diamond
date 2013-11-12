@@ -13,7 +13,7 @@ void EventsContainer::add(SpecReaction *event)
     _events.push_back(event);
 }
 
-void EventsContainer::remove(SpecReaction *event, bool clearMemory)
+void EventsContainer::remove(SpecReaction *event)
 {
     assert(event);
 
@@ -24,10 +24,6 @@ void EventsContainer::remove(SpecReaction *event, bool clearMemory)
     if (last) _positions[last] = curr->second;
 
     _positions.erase(curr);
-    if (clearMemory)
-    {
-        delete event;
-    }
 
     assert(_events.size() == _positions.size());
 }

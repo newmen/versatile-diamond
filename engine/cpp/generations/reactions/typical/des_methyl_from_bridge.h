@@ -1,7 +1,7 @@
 #ifndef DES_METHYL_FROM_BRIDGE_H
 #define DES_METHYL_FROM_BRIDGE_H
 
-#include "../../specific_specs/methyl_on_bridge_cbi_cmu.h"
+#include "../../species/specific/methyl_on_bridge_cbi_cmu.h"
 #include "../mono_typical.h"
 
 class DesMethylFromBridge : public MonoTypical<DES_METHYL_FROM_BRIDGE>

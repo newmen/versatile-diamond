@@ -1,7 +1,7 @@
 #ifndef METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 #define METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 
-#include "../../specific_specs/methyl_on_dimer_cls_cmu.h"
+#include "../../species/specific/methyl_on_dimer_cls_cmu.h"
 #include "../mono_typical.h"
 
 class MethylOnDimerHydrogenMigration : public MonoTypical<METHYL_ON_DIMER_HYDROGEN_MIGRATION>

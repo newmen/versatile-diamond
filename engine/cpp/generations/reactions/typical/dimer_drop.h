@@ -1,7 +1,7 @@
 #ifndef DIMER_DROP_H
 #define DIMER_DROP_H
 
-#include "../../specific_specs/dimer_cri_cli.h"
+#include "../../species/specific/dimer_cri_cli.h"
 #include "../mono_typical.h"
 
 class DimerDrop : public MonoTypical<DIMER_DROP>

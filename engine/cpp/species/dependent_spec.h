@@ -16,24 +16,24 @@ class DependentSpec : public BaseSpec
     BaseSpec *_parents[PARENTS_NUM];
 
 protected:
-    DependentSpec(ushort type, BaseSpec **parents);
+    DependentSpec(BaseSpec **parents);
 
 public:
     ushort size() const;
     Atom *atom(ushort index);
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 
+    void store() override;
+    void remove() override;
+
 #ifdef PRINT
     void info() override;
 #endif // PRINT
 
-protected:
-    BaseSpec *parent(ushort index = 0);
-    const BaseSpec *parent(ushort index = 0) const;
 };
 
 template <ushort PARENTS_NUM>
-DependentSpec<PARENTS_NUM>::DependentSpec(ushort type, BaseSpec **parents) : BaseSpec(type)
+DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
 {
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
@@ -47,12 +47,12 @@ Atom *DependentSpec<PARENTS_NUM>::atom(ushort index)
     assert(index < size());
 
     int i = 0;
-    while (index >= parent(i)->size())
+    while (index >= _parents[i]->size())
     {
-        index -= parent(i)->size();
+        index -= _parents[i]->size();
         ++i;
     }
-    return parent(i)->atom(index);
+    return _parents[i]->atom(index);
 }
 
 template <ushort PARENTS_NUM>
@@ -61,7 +61,7 @@ ushort DependentSpec<PARENTS_NUM>::size() const
     ushort sum = 0;
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
-        sum += parent(i)->size();
+        sum += _parents[i]->size();
     }
     return sum;
 }
@@ -90,15 +90,23 @@ void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &la
 }
 
 template <ushort PARENTS_NUM>
-BaseSpec *DependentSpec<PARENTS_NUM>::parent(ushort index)
+void DependentSpec<PARENTS_NUM>::store()
 {
-    return _parents[index];
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        _parents[i]->addChild(this);
+    }
 }
 
 template <ushort PARENTS_NUM>
-const BaseSpec *DependentSpec<PARENTS_NUM>::parent(ushort index) const
+void DependentSpec<PARENTS_NUM>::remove()
 {
-    return _parents[index];
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        _parents[i]->removeChild(this);
+    }
+
+    BaseSpec::remove();
 }
 
 }

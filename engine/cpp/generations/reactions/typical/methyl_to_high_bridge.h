@@ -1,7 +1,7 @@
 #ifndef METHYL_TO_HIGH_BRIDGE_H
 #define METHYL_TO_HIGH_BRIDGE_H
 
-#include "../../specific_specs/methyl_on_dimer_cmsu.h"
+#include "../../species/specific/methyl_on_dimer_cmsu.h"
 #include "../mono_typical.h"
 
 class MethylToHighBridge : public MonoTypical<METHYL_TO_HIGH_BRIDGE>

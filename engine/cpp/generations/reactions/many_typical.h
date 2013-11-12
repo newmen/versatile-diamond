@@ -5,10 +5,10 @@
 #include "../../reactions/few_specs_reaction.h"
 using namespace vd;
 
-#include "../handbook.h"
+#include "typical.h"
 
-template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
-class ManyTypical : public FewSpecsReaction<TARGETS_NUM>
+template <ushort RT, ushort TARGETS_NUM>
+class ManyTypical : public Typical<FewSpecsReaction<TARGETS_NUM>, RT>
 {
     typedef DiamondRelations::TN (*RelationFunc)(const Diamond *, const Atom *);
 
@@ -17,21 +17,17 @@ public:
     static void find(SpecificSpec *target, const ushort *indexes, const ushort *types,
                      ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda);
 
-//    using FewSpecsReaction::FewSpecsReaction;
-    ManyTypical(SpecificSpec **targets) : FewSpecsReaction<TARGETS_NUM>(targets) {}
-
-    void store() override;
-
 protected:
-    void remove() override;
+//    using Typical<FewSpecsReaction<TARGETS_NUM>, RT>::Typical;
+    ManyTypical(SpecificSpec **targets) : Typical<FewSpecsReaction<TARGETS_NUM>, RT>(targets) {}
 
     static DiamondRelations::TN front100Lambda(const Diamond *diamond, const Atom *anchor);
 };
 
-template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
+template <ushort RT, ushort TARGETS_NUM>
 template <class R, ushort ATOMS_NUM>
-void ManyTypical<RT, SCA_RT, TARGETS_NUM>::find(SpecificSpec *target, const ushort *indexes, const ushort *types,
-                                                ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda)
+void ManyTypical<RT, TARGETS_NUM>::find(SpecificSpec *target, const ushort *indexes, const ushort *types,
+                                        ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda)
 {
     Atom *firstAnchor = target->atom(indexes[0]);
 
@@ -60,21 +56,8 @@ void ManyTypical<RT, SCA_RT, TARGETS_NUM>::find(SpecificSpec *target, const usho
     }
 }
 
-template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
-void ManyTypical<RT, SCA_RT, TARGETS_NUM>::store()
-{
-    Handbook::mc().add<RT>(this);
-}
-
-template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
-void ManyTypical<RT, SCA_RT, TARGETS_NUM>::remove()
-{
-    Handbook::mc().remove<RT>(this, false);
-    Handbook::scavenger().markReaction<SCA_RT>(this);
-}
-
-template <ushort RT, ushort SCA_RT, ushort TARGETS_NUM>
-DiamondRelations::TN ManyTypical<RT, SCA_RT, TARGETS_NUM>::front100Lambda(
+template <ushort RT, ushort TARGETS_NUM>
+DiamondRelations::TN ManyTypical<RT, TARGETS_NUM>::front100Lambda(
         const Diamond *diamond, const Atom *anchor)
 {
     return diamond->front_100(anchor);

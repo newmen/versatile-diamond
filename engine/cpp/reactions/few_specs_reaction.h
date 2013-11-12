@@ -63,13 +63,11 @@ Atom *FewSpecsReaction<TARGETS_NUM>::anchor() const
 template <ushort TARGETS_NUM>
 void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
 {
-    SpecificSpec *another;
-
     // TODO: now works only for two parents case
     uint index = (_targets[0] == target) ? 0 : 1;
     _targets[index] = nullptr;
 
-    another = _targets[1 - index];
+    SpecificSpec *another = _targets[1 - index];
     if (index == 0 || (another && another->atom(0)->isVisited()))
     {
         if (another)
@@ -91,7 +89,7 @@ void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbou
 
         SpecificSpec *targets[2] = {
             target,
-            neighbour->specificSpecByRole(atomType, specType)
+            static_cast<SpecificSpec *>(neighbour->specByRole(atomType, specType))
         };
 
         SpecReaction *reaction = new R(targets);

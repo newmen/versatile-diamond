@@ -15,9 +15,9 @@
 #include <omp.h>
 #endif // PARALLEL
 
-//#ifdef PRINT
+#ifdef PRINT
 #include <iostream>
-//#endif // PRINT
+#endif // PRINT
 
 // for #compareContainers()
 #define MULTI_EVENTS_INDEX_SHIFT 1000
@@ -48,7 +48,7 @@ public:
     double totalTime() const { return _totalTime; }
 
     template <ushort RT> void add(SpecReaction *reaction);
-    template <ushort RT> void remove(SpecReaction *reaction, bool clearMemory = true);
+    template <ushort RT> void remove(SpecReaction *reaction);
 
     template <ushort RT> void addMul(UbiquitousReaction *reaction, uint n);
     template <ushort RT> void removeMul(UbiquitousReaction *reaction, uint n);
@@ -316,7 +316,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction, bool clearMemory)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
@@ -329,7 +329,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction, bool clear
 #ifdef PRINT
         std::cout << "Remove reaction " << reaction->name() << "(" << RT << ") [" << reaction << "]" << std::endl;
 #endif // PRINT
-        _events[RT].remove(reaction, clearMemory);
+        _events[RT].remove(reaction);
     }
 }
 

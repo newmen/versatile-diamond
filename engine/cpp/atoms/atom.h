@@ -62,8 +62,8 @@ public:
     void describe(ushort rType, BaseSpec *spec);
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
-    SpecificSpec *specificSpecByRole(ushort rType, ushort specType);
     void forget(ushort rType, BaseSpec *spec);
+    void removeUnsupportedSpecies();
 
     void prepareToRemove();
 

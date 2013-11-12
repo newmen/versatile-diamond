@@ -1,12 +1,11 @@
 #ifndef HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H
 #define HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H
 
-#include "../../specific_specs/high_bridge.h"
-#include "../../specific_specs/bridge_ctsi.h"
+#include "../../species/specific/high_bridge.h"
+#include "../../species/specific/bridge_ctsi.h"
 #include "../many_typical.h"
 
-class HighBridgeStandToOneBridge :
-        public ManyTypical<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, SCA_HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, 2>
+class HighBridgeStandToOneBridge : public ManyTypical<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, 2>
 {
 public:
     static void find(HighBridge *target);

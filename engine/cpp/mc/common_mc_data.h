@@ -5,7 +5,7 @@
 #include "../reactions/reaction.h"
 
 #ifndef MIN_DISTANCE
-#define MIN_DISTANCE 5
+#define MIN_DISTANCE 7
 #endif // MIN_DISTANCE
 
 namespace vd

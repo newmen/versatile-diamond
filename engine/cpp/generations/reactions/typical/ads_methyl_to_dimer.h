@@ -1,7 +1,7 @@
 #ifndef ADS_METHYL_TO_DIMER_H
 #define ADS_METHYL_TO_DIMER_H
 
-#include "../../specific_specs/dimer_crs.h"
+#include "../../species/specific/dimer_crs.h"
 #include "../mono_typical.h"
 
 class AdsMethylToDimer : public MonoTypical<ADS_METHYL_TO_DIMER>

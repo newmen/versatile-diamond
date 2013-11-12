@@ -162,24 +162,13 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     return result;
 }
 
-SpecificSpec *Atom::specificSpecByRole(ushort rType, ushort specType)
-{
-    return static_cast<SpecificSpec *>(specByRole(rType, specType));
-}
-
 void Atom::forget(ushort rType, BaseSpec *spec)
 {
     const uint key = hash(rType, spec->type());
 
-#ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
-              << ". spec type: " << spec->type() << ". key: " << key << std::endl;
-#endif // PRINT
-
     auto its = _specs.equal_range(key);
+    assert(std::distance(its.first, its.second) > 0);
+
     if (std::distance(its.first, its.second) == 1) _roles.erase(rType);
 
     while (its.first != its.second)
@@ -190,6 +179,53 @@ void Atom::forget(ushort rType, BaseSpec *spec)
             break;
         }
     }
+
+#ifdef PRINT
+#ifdef PARALLEL
+#pragma omp critical (print)
+#endif // PARALLEL
+    std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+              << ". spec type: " << spec->type() << ". key: " << key << std::endl;
+#endif // PRINT
+}
+
+void Atom::removeUnsupportedSpecies()
+{
+    if (_type == NO_VALUE) return;
+
+    // TODO: so many malloc/free operations :(
+    uint size = _roles.size();
+    uint sr = 0;
+    uint *rolesAndSizes = new uint[size * 2];
+    ushort **types = new ushort*[size];
+
+    for (auto &pr : _roles)
+    {
+        if (is(pr.first)) continue;
+
+        rolesAndSizes[sr] = pr.first;
+
+        rolesAndSizes[sr + size] = 0;
+        types[sr] = new ushort[pr.second.size()];
+        for (ushort st : pr.second)
+        {
+            types[sr][rolesAndSizes[sr + size]++] = st;
+        }
+
+        ++sr;
+    }
+
+    for (uint r = 0; r < sr; ++r)
+    {
+        for (uint s = 0; s < rolesAndSizes[r + size]; ++s)
+        {
+            specByRole(rolesAndSizes[r], types[r][s])->remove();
+        }
+
+        delete [] types[r];
+    }
+
+    delete [] rolesAndSizes;
 }
 
 void Atom::prepareToRemove()

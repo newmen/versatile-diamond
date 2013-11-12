@@ -1,8 +1,8 @@
 #include "finder.h"
 #include "handbook.h"
 
-#include "base_specs/bridge.h"
-#include "base_specs/dimer.h"
+#include "species/base/bridge.h"
+#include "species/base/dimer.h"
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
 
@@ -18,61 +18,10 @@
 
 void Finder::findAll(Atom **atoms, int n, bool isInit)
 {
-    if (n == 1) findByOne(*atoms, isInit);
-    else findByMany(atoms, n, isInit);
-}
-
-void Finder::removeAll(Atom **atoms, int n)
-{
-#ifdef PARALLEL
-#pragma omp parallel for
-#endif // PARALLEL
-    for (int i = 0; i < n; ++i)
-    {
-        Atom *atom = atoms[i];
-        if (atom)
-        {
-            atom->prepareToRemove();
-        }
-    }
-
-    findByMany(atoms, n, false);
-}
-
-void Finder::findByOne(Atom *atom, bool checkNull)
-{
 #ifdef PRINT
-    std::cout << "Find by one atom [" << atom << "]" << std::endl;
-#endif // PRINT
-
-#ifdef DEBUG
-    if (checkNull && !atom) assert(true);
-#endif // DEBUG
-
-    atom->setUnvisited(); // TODO: do not used?
-
-    // finds bridge and all their children with mono (+ gas) reactions with it
-    Bridge::find(atom);
-    Dimer::find(atom);
-
+    if (!isInit)
     {
-        SurfaceActivation::find(atom);
-        SurfaceDeactivation::find(atom);
-    }
-
-    Handbook::keeper().findAll();
-
-    atom->setVisited(); // TODO: do not used?
-
-    finalize();
-}
-
-void Finder::findByMany(Atom **atoms, int n, bool isInit)
-{
-#ifdef PRINT
-    if (isInit)
-    {
-        std::cout << "Find by many atoms";
+        std::cout << "Find by " << n << " atoms";
         for (int i = 0; i < n; ++i)
         {
             std::cout << " [" << atoms[i] << "]";
@@ -86,7 +35,7 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
     for (int i = 0; i < n; ++i)
     {
         Atom *atom = atoms[i];
-        if (isInit && !atom) assert(true);
+        if (!isInit && !atom) assert(true);
     }
 #endif // DEBUG
 
@@ -95,6 +44,13 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
         Atom *atom = atoms[i];
         if (!atom) continue;
         atom->setUnvisited();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+        atom->removeUnsupportedSpecies();
     }
 
     for (int i = 0; i < n; ++i)
@@ -131,7 +87,8 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
         atom->setVisited();
     }
 
-    finalize();
+    Handbook::keeper().clear();
+    Handbook::scavenger().clear();
 
     if (isInit)
     {
@@ -139,8 +96,19 @@ void Finder::findByMany(Atom **atoms, int n, bool isInit)
     }
 }
 
-void Finder::finalize()
+void Finder::removeAll(Atom **atoms, int n)
 {
-    Handbook::keeper().clear();
-    Handbook::scavenger().clear();
+#ifdef PARALLEL
+#pragma omp parallel for
+#endif // PARALLEL
+    for (int i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (atom)
+        {
+            atom->prepareToRemove();
+        }
+    }
+
+    findAll(atoms, n, false);
 }

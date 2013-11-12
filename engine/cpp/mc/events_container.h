@@ -15,7 +15,7 @@ class EventsContainer : public BaseEventsContainer
 
 public:
     void add(SpecReaction *event);
-    void remove(SpecReaction *event, bool clearMemory);
+    void remove(SpecReaction *event);
 };
 
 }

@@ -4,22 +4,18 @@
 #include "../../reactions/mono_spec_reaction.h"
 using namespace vd;
 
-#include "../handbook.h"
+#include "typical.h"
 
 template <ushort RT>
-class MonoTypical : public MonoSpecReaction
+class MonoTypical : public Typical<MonoSpecReaction, RT>
 {
 public:
     template <class R, ushort ATOMS_NUM>
     static void find(SpecificSpec *target, const ushort *indexes, const ushort *types);
 
-//    using MonoSpecReaction::FewSpecsReaction;
-    MonoTypical(SpecificSpec *target) : MonoSpecReaction(target) {}
-
-    void store() override;
-
 protected:
-    void remove() override;
+//    using Typical<MonoSpecReaction, RT>::Typical;
+    MonoTypical(SpecificSpec *target) : Typical<MonoSpecReaction, RT>(target) {}
 };
 
 template <ushort RT>
@@ -33,6 +29,10 @@ void MonoTypical<RT>::find(SpecificSpec *target, const ushort *indexes, const us
         assert(anchor->is(types[i]));
 
         result = result || !anchor->prevIs(types[i]);
+
+#ifndef DEBUG
+        if (result) break;
+#endif // DEBUG
     }
 
     if (result)
@@ -40,18 +40,6 @@ void MonoTypical<RT>::find(SpecificSpec *target, const ushort *indexes, const us
         SpecReaction *reaction = new R(target);
         reaction->store();
     }
-}
-
-template <ushort RT>
-void MonoTypical<RT>::store()
-{
-    Handbook::mc().add<RT>(this);
-}
-
-template <ushort RT>
-void MonoTypical<RT>::remove()
-{
-    Handbook::mc().remove<RT>(this);
 }
 
 #endif // MONO_TYPICAL_H

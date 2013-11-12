@@ -12,13 +12,14 @@ class SpecificSpec : public DependentSpec<1>
 {
     std::unordered_set<SpecReaction *> _reactions;
 
-public:
-    SpecificSpec(ushort type, BaseSpec *parent);
+protected:
+    SpecificSpec(BaseSpec *parent) : DependentSpec<1>(&parent) {}
 
+public:
     void usedIn(SpecReaction *reaction);
     void unbindFrom(SpecReaction *reaction);
 
-    void removeReactions();
+    void remove();
 };
 
 }
