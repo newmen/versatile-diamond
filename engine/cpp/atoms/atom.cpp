@@ -75,7 +75,7 @@ Atom *Atom::amorphNeighbour()
     return nbr;
 }
 
-Atom *Atom::crystalNeighbour()
+Atom *Atom::firstCrystalNeighbour()
 {
     if (!_crystalRelatives.empty())
     {
@@ -191,8 +191,6 @@ void Atom::forget(ushort rType, BaseSpec *spec)
 
 void Atom::removeUnsupportedSpecies()
 {
-    if (_type == NO_VALUE) return;
-
     // TODO: so many malloc/free operations :(
     uint size = _roles.size();
     uint sr = 0;
@@ -219,12 +217,18 @@ void Atom::removeUnsupportedSpecies()
     {
         for (uint s = 0; s < rolesAndSizes[r + size]; ++s)
         {
-            specByRole(rolesAndSizes[r], types[r][s])->remove();
+            const uint key = hash(rolesAndSizes[r], types[r][s]);
+            auto its = _specs.equal_range(key);
+            while (its.first != its.second)
+            {
+                (its.first++)->second->remove();
+            }
         }
 
         delete [] types[r];
     }
 
+    delete [] types;
     delete [] rolesAndSizes;
 }
 

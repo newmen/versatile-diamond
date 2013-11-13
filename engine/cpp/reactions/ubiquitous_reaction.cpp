@@ -34,9 +34,9 @@ short UbiquitousReaction::delta(Atom *anchor, const ushort *typeToNum)
 
 Atom *UbiquitousReaction::anchor() const
 {
-    return !_target->lattice() && !_target->crystalNeighbour() ?
+    return !_target->lattice() && !_target->firstCrystalNeighbour() ?
                 _target :
-                _target->crystalNeighbour();
+                _target->firstCrystalNeighbour();
 }
 
 void UbiquitousReaction::doIt()
