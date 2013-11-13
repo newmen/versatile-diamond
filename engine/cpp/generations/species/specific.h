@@ -14,7 +14,7 @@ protected:
     template <class... Args>
     Specific(Args... args) : Typed<B, SST, USED_ATOMS_NUM>(args...) {}
 
-    void correspondFindChildren() final;
+    void correspondFindChildren() override;
 };
 
 template <ushort SST, ushort USED_ATOMS_NUM, class B>

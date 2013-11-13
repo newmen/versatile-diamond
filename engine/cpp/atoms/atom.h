@@ -53,7 +53,7 @@ public:
     bool hasBondWith(Atom *neighbour) const;
 
     Atom *amorphNeighbour();
-    Atom *crystalNeighbour();
+    Atom *firstCrystalNeighbour();
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
