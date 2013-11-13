@@ -188,10 +188,13 @@ module VersatileDiamond
       def draw_edges_to_specific_specs(reaction_node, specific_specs)
         return unless @sp_specs_to_nodes
 
-        color = TYPICAL_REACTION_COLOR
         draw_edge_to = -> spec do
         if (spec_node = @sp_specs_to_nodes[spec])
             @graph.add_edges(reaction_node, spec_node).set do |e|
+              color = spec.is_gas? ?
+                TYPICAL_REACTION_SECOND_SOURCE_EDGE_COLOR :
+                TYPICAL_REACTION_COLOR
+
               e.color = color
             end
           end
@@ -201,7 +204,6 @@ module VersatileDiamond
         draw_edge_to[specific_specs.shift]
 
         return unless @draw_second_source_deps
-        color = TYPICAL_REACTION_SECOND_SOURCE_EDGE_COLOR
         specific_specs.each(&draw_edge_to)
       end
 
