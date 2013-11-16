@@ -385,8 +385,8 @@ module VersatileDiamond
         # describe "#has_relevants?" do
         # end
 
-        describe "#transitive_matrix" do
-          it { subject.transitive_matrix.to_a.size.
+        describe "#general_transitive_matrix" do
+          it { subject.general_transitive_matrix.to_a.size.
             should == subject.all_types_num }
         end
 
