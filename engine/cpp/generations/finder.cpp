@@ -6,10 +6,6 @@
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 #ifdef PRINT
 #include <iostream>
 #endif // PRINT
@@ -98,9 +94,6 @@ void Finder::findAll(Atom **atoms, int n, bool isInit)
 
 void Finder::removeAll(Atom **atoms, int n)
 {
-#ifdef PARALLEL
-#pragma omp parallel for
-#endif // PARALLEL
     for (int i = 0; i < n; ++i)
     {
         Atom *atom = atoms[i];

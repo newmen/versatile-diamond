@@ -58,6 +58,10 @@ void Typed<B, ST, USED_ATOMS_NUM>::store()
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Typed<B, ST, USED_ATOMS_NUM>::remove()
 {
+#ifdef PRINT
+    this->wasForgotten();
+#endif // PRINT
+
     B::remove();
 
     ushort *idxs = indexes();
@@ -67,10 +71,6 @@ void Typed<B, ST, USED_ATOMS_NUM>::remove()
     {
         this->atom(idxs[i])->forget(rls[i], this);
     }
-
-#ifdef PRINT
-    this->wasForgotten();
-#endif // PRINT
 
     Handbook::scavenger().markSpec<ST>(this);
 }

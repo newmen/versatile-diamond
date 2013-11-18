@@ -12,12 +12,11 @@ class ManyTypical : public Typical<FewSpecsReaction<TARGETS_NUM>, RT>
 {
     typedef DiamondRelations::TN (*RelationFunc)(const Diamond *, const Atom *);
 
-public:
-    template <class R, ushort ATOMS_NUM>
-    static void find(SpecificSpec *target, const ushort *indexes, const ushort *types,
+protected:
+    template <class R>
+    static void find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum,
                      ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda);
 
-protected:
 //    using Typical<FewSpecsReaction<TARGETS_NUM>, RT>::Typical;
     ManyTypical(SpecificSpec **targets) : Typical<FewSpecsReaction<TARGETS_NUM>, RT>(targets) {}
 
@@ -25,32 +24,23 @@ protected:
 };
 
 template <ushort RT, ushort TARGETS_NUM>
-template <class R, ushort ATOMS_NUM>
-void ManyTypical<RT, TARGETS_NUM>::find(SpecificSpec *target, const ushort *indexes, const ushort *types,
+template <class R>
+void ManyTypical<RT, TARGETS_NUM>::find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum,
                                         ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda)
 {
+    bool targetIsValid = Typical<FewSpecsReaction<TARGETS_NUM>, RT>::find(target, indexes, types, atomsNum);
     Atom *firstAnchor = target->atom(indexes[0]);
-
-    bool result = false;
-    for (int i = 0; i < ATOMS_NUM; ++i)
-    {
-        Atom *anchor = target->atom(indexes[i]);
-        assert(anchor->is(types[i]));
-
-        result = result || !anchor->prevIs(types[i]);
-    }
 
     assert(firstAnchor->lattice());
     auto diamond = static_cast<const Diamond *>(firstAnchor->lattice()->crystal());
 
     auto nbrs = nLambda(diamond, firstAnchor);
-    // TODO: maybe need to parallel it?
-    if ((result && nbrs[0]) || (nbrs[0] && !nbrs[0]->prevIs(otherAtomType)))
+    if ((targetIsValid && nbrs[0]) || (nbrs[0] && !nbrs[0]->prevIs(otherAtomType)))
     {
         FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(target, nbrs[0], otherAtomType, otherSpecType);
     }
     bool hasAnother = nbrs[1] && nbrs[1]->isVisited();
-    if ((result && hasAnother) || (hasAnother && !nbrs[1]->prevIs(otherAtomType)))
+    if ((targetIsValid && hasAnother) || (hasAnother && !nbrs[1]->prevIs(otherAtomType)))
     {
         FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(target, nbrs[1], otherAtomType, otherSpecType);
     }

@@ -64,7 +64,6 @@ void SourceSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
     {
         lambda(_atoms[i]);
     }
-
 }
 
 }

@@ -25,6 +25,7 @@ int main()
 
 //    Diamond *diamond = new Diamond(dim3(100, 100, 10));
     Diamond *diamond = new Diamond(dim3(20, 20, 10));
+//    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 
     cout << "Atoms num: " << diamond->countAtoms() << endl;
@@ -37,6 +38,7 @@ int main()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
+//    for (int i = 0; i < 5; ++i)
     while (Handbook::mc().totalTime() < 1.0)
     {
         Handbook::mc().doRandom(&mcData);

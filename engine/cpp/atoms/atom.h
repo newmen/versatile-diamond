@@ -69,6 +69,7 @@ public:
 
 #ifdef PRINT
     void info();
+    void pos();
 #endif // PRINT
 
 protected:

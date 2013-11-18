@@ -6,7 +6,7 @@ void NextLevelBridgeToHighBridge::find(BridgeCRs *target)
     const ushort indexes[3] = { 0, 1, 2 };
     const ushort types[3] = { 0, 5, 4 };
 
-    MonoTypical::find<NextLevelBridgeToHighBridge, 3>(target, indexes, types);
+    MonoTypical::find<NextLevelBridgeToHighBridge>(target, indexes, types, 3);
 }
 
 void NextLevelBridgeToHighBridge::doIt()

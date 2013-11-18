@@ -120,7 +120,9 @@ void Atom::describe(ushort rType, BaseSpec *spec)
 #ifdef PARALLEL
 #pragma omp critical (print)
 #endif // PARALLEL
-        std::cout << "describe " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+        std::cout << "describe " << this << std::dec;
+        pos();
+        std::cout << " |" << type() << ", " << _prevType << "| role type: " << rType
                   << ". spec type: " << spec->type() << ". key: " << key << std::endl;
 #endif // PRINT
 
@@ -144,7 +146,9 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
 #pragma omp critical (print)
 #endif // PARALLEL
     {
-        std::cout << "specByRole " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+        std::cout << "specByRole " << this << std::dec;
+        pos();
+        std::cout << " |" << type() << ", " << _prevType << "| role type: " << rType
                   << ". spec type: " << specType << ". key: " << key;
         auto er = _specs.equal_range(key);
         std::cout << " -> distance: " << std::distance(er.first, er.second) << std::endl;
@@ -169,67 +173,58 @@ void Atom::forget(ushort rType, BaseSpec *spec)
     auto its = _specs.equal_range(key);
     assert(std::distance(its.first, its.second) > 0);
 
-    if (std::distance(its.first, its.second) == 1) _roles.erase(rType);
+    if (std::distance(its.first, its.second) == 1)
+    {
+        _roles.erase(rType);
+    }
 
     while (its.first != its.second)
     {
-        if ((its.first++)->second == spec)
+        if (its.first->second == spec)
         {
-            _specs.erase(key);
+            _specs.erase(its.first);
             break;
         }
+        ++its.first;
     }
 
 #ifdef PRINT
 #ifdef PARALLEL
 #pragma omp critical (print)
 #endif // PARALLEL
-    std::cout << "forget " << this << std::dec << " |" << type() << ", " << _prevType << "| role type: " << rType
+    std::cout << "forget " << this << std::dec;
+    pos();
+    std::cout << " |" << type() << ", " << _prevType << "| role type: " << rType
               << ". spec type: " << spec->type() << ". key: " << key << std::endl;
 #endif // PRINT
 }
 
 void Atom::removeUnsupportedSpecies()
 {
-    // TODO: so many malloc/free operations :(
-    uint size = _roles.size();
-    uint sr = 0;
-    uint *rolesAndSizes = new uint[size * 2];
-    ushort **types = new ushort*[size];
+    BaseSpec **specs = new BaseSpec*[_specs.size()]; // max possible size
+    uint n = 0;
 
     for (auto &pr : _roles)
     {
         if (is(pr.first)) continue;
 
-        rolesAndSizes[sr] = pr.first;
-
-        rolesAndSizes[sr + size] = 0;
-        types[sr] = new ushort[pr.second.size()];
         for (ushort st : pr.second)
         {
-            types[sr][rolesAndSizes[sr + size]++] = st;
-        }
-
-        ++sr;
-    }
-
-    for (uint r = 0; r < sr; ++r)
-    {
-        for (uint s = 0; s < rolesAndSizes[r + size]; ++s)
-        {
-            const uint key = hash(rolesAndSizes[r], types[r][s]);
+            const uint key = hash(pr.first, st);
             auto its = _specs.equal_range(key);
             while (its.first != its.second)
             {
-                (its.first++)->second->remove();
+                specs[n++] = (its.first++)->second;
             }
         }
-
-        delete [] types[r];
     }
 
-    delete [] types;
-    delete [] rolesAndSizes;
+    for (uint i = 0; i < n; ++i)
+    {
+        specs[i]->remove();
+    }
+
+    delete [] specs;
 }
 
 void Atom::prepareToRemove()
@@ -244,8 +239,7 @@ void Atom::info()
 //#pragma omp critical (print)
     {
         std::cout << type() << " -> ";
-        if (lattice()) std::cout << lattice()->coords();
-        else std::cout << "amorph";
+        pos();
 
         std::cout << " %% roles: ";
         for (const auto &pr : _roles)
@@ -262,6 +256,13 @@ void Atom::info()
         }
     }
 }
+
+void Atom::pos()
+{
+    if (lattice()) std::cout << lattice()->coords();
+    else std::cout << "amorph";
+}
+
 #endif // PRINT
 
 

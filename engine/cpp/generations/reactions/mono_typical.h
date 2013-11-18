@@ -9,33 +9,19 @@ using namespace vd;
 template <ushort RT>
 class MonoTypical : public Typical<MonoSpecReaction, RT>
 {
-public:
-    template <class R, ushort ATOMS_NUM>
-    static void find(SpecificSpec *target, const ushort *indexes, const ushort *types);
-
 protected:
+    template <class R>
+    static void find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum);
+
 //    using Typical<MonoSpecReaction, RT>::Typical;
     MonoTypical(SpecificSpec *target) : Typical<MonoSpecReaction, RT>(target) {}
 };
 
 template <ushort RT>
-template <class R, ushort ATOMS_NUM>
-void MonoTypical<RT>::find(SpecificSpec *target, const ushort *indexes, const ushort *types)
+template <class R>
+void MonoTypical<RT>::find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum)
 {
-    bool result = false;
-    for (int i = 0; i < ATOMS_NUM; ++i)
-    {
-        Atom *anchor = target->atom(indexes[i]);
-        assert(anchor->is(types[i]));
-
-        result = result || !anchor->prevIs(types[i]);
-
-#ifndef DEBUG
-        if (result) break;
-#endif // DEBUG
-    }
-
-    if (result)
+    if (Typical<MonoSpecReaction, RT>::find(target, indexes, types, atomsNum))
     {
         SpecReaction *reaction = new R(target);
         reaction->store();

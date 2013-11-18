@@ -8,7 +8,7 @@ void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
     const ushort indexes[2] = { 0, 4 };
     const ushort types[2] = { 31, 21 };
 
-    MonoTypical::find<MethylOnDimerHydrogenMigration, 2>(target, indexes, types);
+    MonoTypical::find<MethylOnDimerHydrogenMigration>(target, indexes, types, 2);
 }
 
 void MethylOnDimerHydrogenMigration::doIt()

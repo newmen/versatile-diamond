@@ -20,10 +20,20 @@ void BaseSpec::removeChild(BaseSpec *child)
 
 void BaseSpec::remove()
 {
+    BaseSpec **children = new BaseSpec *[_children.size()];
+    uint n = 0;
+
     for (BaseSpec *child : _children)
     {
-        child->remove();
+        children[n++] = child;
     }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        children[i]->remove();
+    }
+
+    delete [] children;
 }
 
 #ifdef PRINT

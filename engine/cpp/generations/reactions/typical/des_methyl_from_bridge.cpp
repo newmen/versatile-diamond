@@ -7,7 +7,7 @@ void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
     const ushort indexes[2] = { 0, 1 };
     const ushort types[2] = { 25, 7 };
 
-    MonoTypical::find<DesMethylFromBridge, 2>(target, indexes, types);
+    MonoTypical::find<DesMethylFromBridge>(target, indexes, types, 2);
 }
 
 void DesMethylFromBridge::doIt()
