@@ -1,13 +1,8 @@
 #include "next_level_bridge_to_high_bridge.h"
 
-// TODO: must be used BridgeCRsCTi
 void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
 {
-    const ushort indexes[3] = { 0, 1, 2 };
-    const ushort types[3] = { 0, 5, 4 };
-
-    TargetAtoms ta(target, 3, indexes, types);
-    MonoTypical::find<NextLevelBridgeToHighBridge>(ta);
+    MonoTypical::find<NextLevelBridgeToHighBridge>(target);
 }
 
 void NextLevelBridgeToHighBridge::doIt()

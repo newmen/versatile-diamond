@@ -61,7 +61,6 @@ SOURCES += main.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
     reactions/spec_reaction.cpp \
-    reactions/target_atoms.cpp \
     generations/species/specific/bridge_crs_cti_cli.cpp \
     mc/counter.cpp
 
@@ -135,7 +134,6 @@ HEADERS += \
     generations/species/dependent.h \
     generations/species/specific.h \
     generations/species/typed.h \
-    reactions/target_atoms.h \
     generations/species/specific/bridge_crs_cti_cli.h \
     mc/counter.h \
     generations/reactions/ubiquitous.h

@@ -2,20 +2,12 @@
 
 void HighBridgeToTwoBridges::find(HighBridge *target)
 {
-    const ushort indexes[1] = { 1 };
-    const ushort types[1] = { 19 };
-
-    TargetAtoms ta(target, 1, indexes, types);
-    ManyTypical::find<HighBridgeToTwoBridges>(ta, 5, BRIDGE_CRs, front100Lambda);
+    ManyTypical::find<HighBridgeToTwoBridges>(target, target->atom(1), 5, BRIDGE_CRs, front100Lambda);
 }
 
 void HighBridgeToTwoBridges::find(BridgeCRs *target)
 {
-    const ushort indexes[1] = { 1 };
-    const ushort types[1] = { 5 };
-
-    TargetAtoms ta(target, 1, indexes, types);
-    ManyTypical::find<HighBridgeToTwoBridges>(ta, 19, HIGH_BRIDGE, front100Lambda);
+    ManyTypical::find<HighBridgeToTwoBridges>(target, target->atom(1), 19, HIGH_BRIDGE, front100Lambda);
 }
 
 void HighBridgeToTwoBridges::doIt()

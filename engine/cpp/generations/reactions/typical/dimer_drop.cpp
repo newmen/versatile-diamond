@@ -4,11 +4,7 @@
 
 void DimerDrop::find(DimerCRiCLi *target)
 {
-    const ushort indexes[2] = { 0, 3 };
-    const ushort types[2] = { 20, 20 };
-
-    TargetAtoms ta(target, 2, indexes, types);
-    MonoTypical::find<DimerDrop>(ta);
+    MonoTypical::find<DimerDrop>(target);
 }
 
 void DimerDrop::doIt()

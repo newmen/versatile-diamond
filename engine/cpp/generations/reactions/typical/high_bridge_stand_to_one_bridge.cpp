@@ -4,20 +4,12 @@
 
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
-    const ushort indexes[1] = { 1 };
-    const ushort types[1] = { 19 };
-
-    TargetAtoms ta(target, 1, indexes, types);
-    ManyTypical::find<HighBridgeStandToOneBridge>(ta, 28, BRIDGE_CTsi, front100Lambda);
+    ManyTypical::find<HighBridgeStandToOneBridge>(target, target->atom(1), 28, BRIDGE_CTsi, front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
 {
-    const ushort indexes[1] = { 0 };
-    const ushort types[1] = { 28 };
-
-    TargetAtoms ta(target, 1, indexes, types);
-    ManyTypical::find<HighBridgeStandToOneBridge>(ta, 19, HIGH_BRIDGE, front100Lambda);
+    ManyTypical::find<HighBridgeStandToOneBridge>(target, target->atom(0), 19, HIGH_BRIDGE, front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::doIt()

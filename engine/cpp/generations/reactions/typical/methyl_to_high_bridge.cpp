@@ -4,11 +4,7 @@
 
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
-    const ushort indexes[1] = { 0 };
-    const ushort types[1] = { 29 };
-
-    TargetAtoms ta(target, 1, indexes, types);
-    MonoTypical::find<MethylToHighBridge>(ta);
+    MonoTypical::find<MethylToHighBridge>(target);
 }
 
 void MethylToHighBridge::doIt()
