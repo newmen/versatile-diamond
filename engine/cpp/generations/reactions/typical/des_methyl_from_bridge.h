@@ -15,9 +15,7 @@ public:
     double rate() const { return 1e4; }
     void doIt();
 
-#ifdef PRINT
     std::string name() const override { return "desorption methyl from bridge"; }
-#endif // PRINT
 };
 
 #endif // DES_METHYL_FROM_BRIDGE_H

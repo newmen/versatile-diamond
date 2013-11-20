@@ -17,9 +17,7 @@ public:
     double rate() const { return 7.7e6; }
     void doIt();
 
-#ifdef PRINT
     std::string name() const override { return "high bridge incorporates in crystal lattice near another bridge"; }
-#endif // PRINT
 };
 
 #endif // HIGH_BRIDGE_TO_TWO_BRIDGES_H

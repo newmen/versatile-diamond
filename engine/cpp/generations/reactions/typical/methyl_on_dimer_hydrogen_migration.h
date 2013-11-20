@@ -15,9 +15,7 @@ public:
     double rate() const { return 1e6; }
     void doIt();
 
-#ifdef PRINT
     std::string name() const override { return "methyl on dimer hydrogen migration"; }
-#endif // PRINT
 };
 
 #endif // METHYL_ON_DIMER_HYDROGEN_MIGRATION_H

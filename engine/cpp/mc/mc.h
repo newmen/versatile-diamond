@@ -205,8 +205,11 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #pragma omp barrier
 #endif // PARALLEL
 
+
+
     if (event && !data->isSame())
     {
+        data->counter()->inc(event);
         event->doIt();
     }
 

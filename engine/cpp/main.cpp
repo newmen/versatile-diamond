@@ -44,8 +44,8 @@ int main()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-//    for (int i = 0; i < 5; ++i)
-    while (Handbook::mc().totalTime() < 0.5)
+    for (int i = 0; i < 500000; ++i)
+//    while (Handbook::mc().totalTime() < 0.5)
     {
         Handbook::mc().doRandom(&mcData);
 
@@ -60,6 +60,8 @@ int main()
 #ifdef PRINT
 #endif // PRINT
     cout << "Atoms num: " << diamond->countAtoms() << endl;
+
+    mcData.counter()->printStats();
 
     delete diamond;
     return 0;

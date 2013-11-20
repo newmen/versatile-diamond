@@ -15,9 +15,7 @@ public:
     double rate() const { return 5e4; }
     void doIt();
 
-#ifdef PRINT
     std::string name() const override { return "dimer drop"; }
-#endif // PRINT
 
 private:
     void changeAtom(Atom *atom) const;

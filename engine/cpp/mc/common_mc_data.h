@@ -3,6 +3,7 @@
 
 #include "../atoms/atom.h"
 #include "../reactions/reaction.h"
+#include "counter.h"
 
 #ifndef MIN_DISTANCE
 #define MIN_DISTANCE 7
@@ -17,8 +18,12 @@ class CommonMCData
     bool _sames[THREADS_NUM];
     Reaction *_reactions[THREADS_NUM];
 
+    Counter _counter;
+
 public:
     CommonMCData();
+
+    Counter *counter() { return &_counter; }
 
     void noEvent() { _wasntFound = true; }
     bool wasntFound() const { return _wasntFound; }

@@ -1,5 +1,4 @@
 #include "surface_activation.h"
-#include "../../handbook.h"
 
 const ushort SurfaceActivation::__hToActives[] =
 {
@@ -23,15 +22,7 @@ const ushort SurfaceActivation::__hOnAtoms[] =
 void SurfaceActivation::find(Atom *anchor)
 {
     short dn = delta(anchor, __hOnAtoms);
-    if (dn > 0)
-    {
-        Handbook::mc().addMul<SURFACE_ACTIVATION>(new SurfaceActivation(anchor), dn);
-    }
-    else if (dn < 0)
-    {
-        SurfaceActivation removableTemplate(anchor);
-        Handbook::mc().removeMul<SURFACE_ACTIVATION>(&removableTemplate, -dn);
-    }
+    Ubiquitous::find<SurfaceActivation>(anchor, dn);
 }
 
 short SurfaceActivation::toType(ushort type) const

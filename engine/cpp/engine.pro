@@ -134,4 +134,6 @@ HEADERS += \
     generations/species/specific.h \
     generations/species/typed.h \
     reactions/target_atoms.h \
-    generations/species/specific/bridge_crs_cti_cli.h
+    generations/species/specific/bridge_crs_cti_cli.h \
+    mc/counter.h \
+    generations/reactions/ubiquitous.h

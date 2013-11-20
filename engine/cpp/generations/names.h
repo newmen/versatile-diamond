@@ -3,7 +3,7 @@
 
 #include "../tools/common.h"
 
-const ushort BaseSpecNums = 4;
+const ushort BaseSpecsNum = 4;
 enum BaseSpecNames : ushort
 {
     BRIDGE,
@@ -12,10 +12,10 @@ enum BaseSpecNames : ushort
     METHYL_ON_BRIDGE
 };
 
-const ushort SpecificSpecNums = 10;
+const ushort SpecificSpecsNum = 10;
 enum SpecificSpecNames : ushort
 {
-    BRIDGE_CTsi = BaseSpecNums,
+    BRIDGE_CTsi = BaseSpecsNum,
     BRIDGE_CRs,
     BRIDGE_CRs_CTi_CLi,
     DIMER_CRi_CLi,
@@ -27,14 +27,7 @@ enum SpecificSpecNames : ushort
     HIGH_BRIDGE
 };
 
-const ushort UbiquitousReactionNums = 2;
-enum UbiquitousReactionNames : ushort
-{
-    SURFACE_ACTIVATION,
-    SURFACE_DEACTIVATION
-};
-
-const ushort TypicalReactionNums = 9;
+const ushort TypicalReactionsNum = 9;
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
@@ -46,6 +39,13 @@ enum TypicalReactionNames : ushort
     DES_METHYL_FROM_BRIDGE,
     NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE,
     HIGH_BRIDGE_STAND_TO_TWO_BRIDGES
+};
+
+const ushort UbiquitousReactionsNum = 2;
+enum UbiquitousReactionNames : ushort
+{
+    SURFACE_ACTIVATION = TypicalReactionsNum,
+    SURFACE_DEACTIVATION
 };
 
 #endif // NAMES_H

@@ -1,10 +1,9 @@
 #ifndef SURFACE_ACTIVATION_H
 #define SURFACE_ACTIVATION_H
 
-#include "../../../reactions/ubiquitous_reaction.h"
-using namespace vd;
+#include "../ubiquitous.h"
 
-class SurfaceActivation : public UbiquitousReaction
+class SurfaceActivation : public Ubiquitous<SURFACE_ACTIVATION>
 {
     static const ushort __hToActives[];
     static const ushort __hOnAtoms[];
@@ -12,14 +11,12 @@ class SurfaceActivation : public UbiquitousReaction
 public:
     static void find(Atom *anchor);
 
-//    using UbiquitousReaction::UbiquitousReaction;
-    SurfaceActivation(Atom *target) : UbiquitousReaction(target) {}
+//    using Ubiquitous<SURFACE_ACTIVATION>::Ubiquitous;
+    SurfaceActivation(Atom *target) : Ubiquitous(target) {}
 
     double rate() const { return 3600; }
 
-#ifdef PRINT
     std::string name() const { return "surface activation"; }
-#endif // PRINT
 
 protected:
     short toType(ushort type) const override;

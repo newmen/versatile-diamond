@@ -11,6 +11,7 @@ public:
     template <class... Args>
     Typical(Args... args) : B(args...) {}
 
+    ushort type() const override { return RT; }
     void store() override;
 
 protected:
