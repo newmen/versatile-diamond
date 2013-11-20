@@ -14,6 +14,8 @@ void BridgeCRsCTi::find(BridgeCRs *parent)
 
     if (anchors[0]->is(0))
     {
+        // TODO: there || statement must be used because anchors[0] could have current role in another specie
+        // the || statement can be defined through simetry of specie: if has central atom then || (else &&, if atoms num is even)
         if (!anchors[0]->hasRole(0, BRIDGE_CRs_CTi) || !anchors[1]->hasRole(5, BRIDGE_CRs_CTi))
         {
             auto spec = new BridgeCRsCTi(parent);

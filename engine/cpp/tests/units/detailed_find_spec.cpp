@@ -101,9 +101,9 @@ int main()
     cout << Handbook::mc().totalRate() << endl;
     assert(Handbook::mc().totalRate() == 9 * 3600 + 3 * 2000 + 2 * 3.5e6);
 
-    // Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>(0, 0, 1);
-    // cout << Handbook::mc().totalRate() << endl;
-    // assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e6);
+    Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>(0, 0, 1);
+    cout << Handbook::mc().totalRate() << endl;
+    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e6);
 
     delete diamond;
     return 0;

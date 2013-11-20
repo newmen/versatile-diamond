@@ -4,7 +4,7 @@
 #include "../specific.h"
 #include "bridge_crs.h"
 
-class BridgeCRsCTi : public Specific<BRIDGE_CRs_CTi, 1>
+class BridgeCRsCTi : public Specific<BRIDGE_CRs_CTi, 2>
 {
 public:
     static void find(BridgeCRs *parent);
