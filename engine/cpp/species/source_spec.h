@@ -20,11 +20,13 @@ protected:
 
 public:
     ushort size() const { return ATOMS_NUM; }
-    void eachAtom(const std::function<void (Atom *)> &lambda) override;
     Atom *atom(ushort index) const;
+
+    Atom *firstLatticedAtomIfExist() override;
 
 #ifdef PRINT
     void info() override;
+    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
 
@@ -44,6 +46,20 @@ Atom *SourceSpec<ATOMS_NUM>::atom(ushort index) const
     return _atoms[index];
 }
 
+template <ushort ATOMS_NUM>
+Atom *SourceSpec<ATOMS_NUM>::firstLatticedAtomIfExist()
+{
+    Atom *first = _atoms[0];
+    if (first->lattice()) return first;
+
+    for (int i = 1; i < ATOMS_NUM; ++i)
+    {
+        if (_atoms[i]->lattice()) return _atoms[i];
+    }
+
+    return first;
+}
+
 #ifdef PRINT
 template <ushort ATOMS_NUM>
 void SourceSpec<ATOMS_NUM>::info()
@@ -55,7 +71,6 @@ void SourceSpec<ATOMS_NUM>::info()
         _atoms[i]->info();
     }
 }
-#endif // PRINT
 
 template <ushort ATOMS_NUM>
 void SourceSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
@@ -65,6 +80,7 @@ void SourceSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
         lambda(_atoms[i]);
     }
 }
+#endif // PRINT
 
 }
 

@@ -16,46 +16,23 @@ class DependentSpec : public BaseSpec
     BaseSpec *_parents[PARENTS_NUM];
 
 protected:
-//    static BaseSpec *checkAndFind(Atom *anchor, ushort rType, ushort sType);
-
     DependentSpec(BaseSpec **parents);
 
 public:
     ushort size() const;
     Atom *atom(ushort index) const;
-    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 
     void store() override;
     void remove() override;
 
+    Atom *firstLatticedAtomIfExist() override;
+
 #ifdef PRINT
     void info() override;
+    void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 
 };
-
-//template <ushort PARENTS_NUM>
-//BaseSpec *DependentSpec<PARENTS_NUM>::checkAndFind(Atom *anchor, ushort rType, ushort sType)
-//{
-//    if (PARENTS_NUM == 1)
-//    {
-//        return BaseSpec::checkAndFind(anchor, rType, sType);
-//    }
-//    else
-//    {
-//        auto spec = anchor->specByRole(rType, sType);
-//        if (spec)
-//        {
-//            if (!spec->isVisited() && spec->anchor() == anchor)
-////            if (!spec->isVisited())
-//            {
-//                spec->callFindChildren();
-//            }
-//        }
-
-//        return spec;
-//    }
-//}
 
 template <ushort PARENTS_NUM>
 DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
@@ -103,7 +80,6 @@ void DependentSpec<PARENTS_NUM>::info()
         std::cout << ")";
     }
 }
-#endif // PRINT
 
 template <ushort PARENTS_NUM>
 void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
@@ -113,6 +89,7 @@ void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &la
         _parents[i]->eachAtom(lambda);
     }
 }
+#endif // PRINT
 
 template <ushort PARENTS_NUM>
 void DependentSpec<PARENTS_NUM>::store()
@@ -132,6 +109,21 @@ void DependentSpec<PARENTS_NUM>::remove()
     }
 
     BaseSpec::remove();
+}
+
+template <ushort PARENTS_NUM>
+Atom *DependentSpec<PARENTS_NUM>::firstLatticedAtomIfExist()
+{
+    Atom *first = _parents[0]->firstLatticedAtomIfExist();
+    if (first->lattice()) return first;
+
+    for (int i = 1; i < PARENTS_NUM; ++i)
+    {
+        Atom *atom = _parents[i]->firstLatticedAtomIfExist();
+        if (atom->lattice()) return atom;
+    }
+
+    return first;
 }
 
 }

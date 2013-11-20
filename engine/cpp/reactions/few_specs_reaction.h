@@ -48,16 +48,16 @@ FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(SpecificSpec **targets)
 template <ushort TARGETS_NUM>
 Atom *FewSpecsReaction<TARGETS_NUM>::anchor() const
 {
-    Atom *result = nullptr;
-    _targets[0]->eachAtom([&result](Atom *atom) {
-        if (atom->lattice())
-        {
-            result = atom;
-            return;
-        }
-    });
+    Atom *first = _targets[0]->firstLatticedAtomIfExist();
+    if (first) return first;
 
-    return result;
+    for (int i = 1; i < TARGETS_NUM; ++i)
+    {
+        Atom *atom = _targets[i]->firstLatticedAtomIfExist();
+        if (atom->lattice()) return atom;
+    }
+
+    return first;
 }
 
 template <ushort TARGETS_NUM>

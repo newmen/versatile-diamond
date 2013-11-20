@@ -32,8 +32,8 @@ public:
 
     virtual ushort size() const = 0;
     virtual Atom *atom(ushort index) const = 0;
-    // TODO: maybe need to change it to method without lambda, which will returns only first latticed atom
-    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
+
+    virtual Atom *firstLatticedAtomIfExist() = 0;
 
     virtual void findChildren();
     virtual void findAllChildren() = 0;
@@ -45,6 +45,8 @@ public:
     virtual void remove();
 
 #ifdef PRINT
+    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
+
     virtual std::string name() const = 0;
     virtual void info() = 0;
 
