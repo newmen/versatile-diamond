@@ -44,7 +44,7 @@ void SpecificSpec::remove()
     }
 
     delete [] reactionsDup;
-    BaseSpec::remove();
+    DependentSpec::remove();
 }
 
 void SpecificSpec::findReactions()

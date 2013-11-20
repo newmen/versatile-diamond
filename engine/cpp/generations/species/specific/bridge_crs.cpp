@@ -1,5 +1,5 @@
 #include "bridge_crs.h"
-#include "bridge_crs_cti.h"
+#include "bridge_crs_cti_cli.h"
 #include "../../reactions/typical/high_bridge_to_two_bridges.h"
 
 ushort BridgeCRs::__indexes[1] = { 1 };
@@ -25,7 +25,7 @@ void BridgeCRs::find(Bridge *parent)
 
 void BridgeCRs::findAllChildren()
 {
-    BridgeCRsCTi::find(this);
+    BridgeCRsCTiCLi::find(this);
 }
 
 void BridgeCRs::findAllReactions()

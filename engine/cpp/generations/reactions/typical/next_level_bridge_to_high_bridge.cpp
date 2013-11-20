@@ -1,7 +1,7 @@
 #include "next_level_bridge_to_high_bridge.h"
 
 // TODO: must be used BridgeCRsCTi
-void NextLevelBridgeToHighBridge::find(BridgeCRsCTi *target)
+void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
 {
     const ushort indexes[3] = { 0, 1, 2 };
     const ushort types[3] = { 0, 5, 4 };

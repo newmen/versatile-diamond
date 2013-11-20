@@ -17,7 +17,7 @@ enum SpecificSpecNames : ushort
 {
     BRIDGE_CTsi = BaseSpecNums,
     BRIDGE_CRs,
-    BRIDGE_CRs_CTi,
+    BRIDGE_CRs_CTi_CLi,
     DIMER_CRi_CLi,
     DIMER_CRs,
     METHYL_ON_DIMER_CMu,

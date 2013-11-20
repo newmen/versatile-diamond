@@ -15,6 +15,9 @@ protected:
     Specific(Args... args) : Typed<B, SST, USED_ATOMS_NUM>(args...) {}
 
     void findChildren() override;
+
+public:
+    void store() override;
 };
 
 template <ushort SST, ushort USED_ATOMS_NUM, class B>
@@ -22,6 +25,13 @@ void Specific<SST, USED_ATOMS_NUM, B>::findChildren()
 {
     Handbook::keeper().store<SST - BaseSpecNums>(this);
     B::findChildren();
+}
+
+template <ushort SST, ushort USED_ATOMS_NUM, class B>
+void Specific<SST, USED_ATOMS_NUM, B>::store()
+{
+    B::store();
+    Typed<B, SST, USED_ATOMS_NUM>::store();
 }
 
 #endif // SPECIFIC_H

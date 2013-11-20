@@ -3,8 +3,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-QMAKE_CXXFLAGS += -DDEBUG
-QMAKE_CXXFLAGS += -DPRINT
+#QMAKE_CXXFLAGS += -DDEBUG
+#QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS += -DTHREADS_NUM=1
@@ -61,7 +61,7 @@ SOURCES += main.cpp \
     tools/common.cpp \
     reactions/spec_reaction.cpp \
     reactions/target_atoms.cpp \
-    generations/species/specific/bridge_crs_cti.cpp
+    generations/species/specific/bridge_crs_cti_cli.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -134,4 +134,4 @@ HEADERS += \
     generations/species/specific.h \
     generations/species/typed.h \
     reactions/target_atoms.h \
-    generations/species/specific/bridge_crs_cti.h
+    generations/species/specific/bridge_crs_cti_cli.h

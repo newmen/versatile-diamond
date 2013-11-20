@@ -1,5 +1,6 @@
 #include "mc/common_mc_data.h"
 #include "generations/handbook.h"
+#include <generations/builders/atom_builder.h>
 #include "generations/crystals/diamond.h"
 
 #include "tests/support/open_diamond.h"
@@ -7,6 +8,11 @@
 #include <iostream>
 using namespace std;
 #ifdef PRINT
+
+void printSeparator()
+{
+    cout << Handbook::mc().totalRate() << endl;
+}
 #endif // PRINT
 
 int main()
@@ -30,7 +36,7 @@ int main()
 
     cout << "Atoms num: " << diamond->countAtoms() << endl;
 #ifdef PRINT
-    cout << Handbook::mc().totalRate() << endl;
+    printSeparator();
     int i = 0;
 #endif // PRINT
 

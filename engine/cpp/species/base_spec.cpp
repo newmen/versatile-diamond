@@ -37,6 +37,8 @@ void BaseSpec::removeChild(BaseSpec *child)
 
 void BaseSpec::remove()
 {
+    if (_children.size() == 0) return;
+
     BaseSpec **children = new BaseSpec *[_children.size()];
     uint n = 0;
 
