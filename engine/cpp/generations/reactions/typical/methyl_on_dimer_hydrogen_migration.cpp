@@ -8,7 +8,8 @@ void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
     const ushort indexes[2] = { 0, 4 };
     const ushort types[2] = { 31, 21 };
 
-    MonoTypical::find<MethylOnDimerHydrogenMigration>(target, indexes, types, 2);
+    TargetAtoms ta(target, 2, indexes, types);
+    MonoTypical::find<MethylOnDimerHydrogenMigration>(ta);
 }
 
 void MethylOnDimerHydrogenMigration::doIt()

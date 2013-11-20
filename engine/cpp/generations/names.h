@@ -12,11 +12,12 @@ enum BaseSpecNames : ushort
     METHYL_ON_BRIDGE
 };
 
-const ushort SpecificSpecNums = 9;
+const ushort SpecificSpecNums = 10;
 enum SpecificSpecNames : ushort
 {
     BRIDGE_CTsi = BaseSpecNums,
     BRIDGE_CRs,
+    BRIDGE_CRs_CTi,
     DIMER_CRi_CLi,
     DIMER_CRs,
     METHYL_ON_DIMER_CMu,

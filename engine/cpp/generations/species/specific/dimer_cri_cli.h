@@ -16,7 +16,7 @@ public:
     std::string name() const override { return "dimer(cr: i, cl: i)"; }
 #endif // PRINT
 
-    void findChildren() override;
+    void findAllReactions() override;
 
 protected:
     ushort *indexes() const override { return __indexes; }

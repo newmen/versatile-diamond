@@ -16,7 +16,7 @@ public:
     std::string name() const override { return "methyl_on_dimer(cl: *, cm: u)"; }
 #endif // PRINT
 
-    void findChildren() override;
+    void findAllReactions() override;
 
 protected:
     ushort *indexes() const override { return __indexes; }

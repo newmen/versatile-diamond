@@ -16,11 +16,13 @@ class DependentSpec : public BaseSpec
     BaseSpec *_parents[PARENTS_NUM];
 
 protected:
+//    static BaseSpec *checkAndFind(Atom *anchor, ushort rType, ushort sType);
+
     DependentSpec(BaseSpec **parents);
 
 public:
     ushort size() const;
-    Atom *atom(ushort index);
+    Atom *atom(ushort index) const;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 
     void store() override;
@@ -32,6 +34,29 @@ public:
 
 };
 
+//template <ushort PARENTS_NUM>
+//BaseSpec *DependentSpec<PARENTS_NUM>::checkAndFind(Atom *anchor, ushort rType, ushort sType)
+//{
+//    if (PARENTS_NUM == 1)
+//    {
+//        return BaseSpec::checkAndFind(anchor, rType, sType);
+//    }
+//    else
+//    {
+//        auto spec = anchor->specByRole(rType, sType);
+//        if (spec)
+//        {
+//            if (!spec->isVisited() && spec->anchor() == anchor)
+////            if (!spec->isVisited())
+//            {
+//                spec->callFindChildren();
+//            }
+//        }
+
+//        return spec;
+//    }
+//}
+
 template <ushort PARENTS_NUM>
 DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
 {
@@ -42,7 +67,7 @@ DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
 }
 
 template <ushort PARENTS_NUM>
-Atom *DependentSpec<PARENTS_NUM>::atom(ushort index)
+Atom *DependentSpec<PARENTS_NUM>::atom(ushort index) const
 {
     assert(index < size());
 

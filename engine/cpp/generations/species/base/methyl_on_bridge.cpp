@@ -10,26 +10,21 @@ void MethylOnBridge::find(Bridge *target)
 
     if (anchor->is(9))
     {
-        auto spec = anchor->specByRole(9, METHYL_ON_BRIDGE);
-        if (spec)
-        {
-            static_cast<MethylOnBridge *>(spec)->correspondFindChildren();
-        }
-        else
+        if (!checkAndFind(anchor, 9, METHYL_ON_BRIDGE))
         {
             Atom *methyl = anchor->amorphNeighbour();
 
             if (methyl->is(14))
             {
                 BaseSpec *parent = target;
-                spec = new MethylOnBridge(&methyl, &parent);
+                auto spec = new MethylOnBridge(&methyl, &parent);
                 spec->store();
             }
         }
     }
 }
 
-void MethylOnBridge::findChildren()
+void MethylOnBridge::findAllChildren()
 {
     MethylOnBridgeCBiCMu::find(this);
 }

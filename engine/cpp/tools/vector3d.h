@@ -42,12 +42,6 @@ public:
     template <class Lambda> void each(const Lambda &lambda) const;
     template <class Lambda> void ompParallelEach(const Lambda &lambda) const;
 
-//    template <class Lambda>
-//    void map(const Lambda &lambda);
-
-//    template <class Lambda>
-//    void mapIndex(const Lambda &lambda);
-
     template <typename R, class Lambda>
     R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
 
@@ -111,28 +105,6 @@ void vector3d<T>::ompParallelEach(const Lambda &lambda) const
         lambda(_data[i]);
     }
 }
-
-//template <typename T>
-//template <class Lambda>
-//void vector3d<T>::map(const Lambda &lambda)
-//{
-//#ifdef PARALLEL
-//#pragma omp parallel for shared(lambda)
-//#endif // PARALLEL
-//    for (int i = 0; i < _sizes.N(); ++i)
-//        _container[i] = lambda(_container[i]);
-//}
-
-//template <typename T>
-//template <class Lambda>
-//void vector3d<T>::mapIndex(const Lambda &lambda)
-//{
-//    uint n = 0;
-//    for (int x = 0; x < _sizes.x; ++x)
-//        for (int y = 0; y < _sizes.y; ++y)
-//            for (int z = 0; z < _sizes.z; ++z)
-//                _container[n++] = lambda(int3(x, y, z));
-//}
 
 template <typename T>
 template <typename R, class Lambda>

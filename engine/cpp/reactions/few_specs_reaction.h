@@ -85,15 +85,17 @@ void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbou
 {
     if (neighbour->is(atomType))
     {
-        assert(neighbour->hasRole(atomType, specType));
+        auto neighbourSpec = static_cast<SpecificSpec *>(neighbour->specByRole(atomType, specType));
+        if (neighbourSpec)
+        {
+            SpecificSpec *targets[2] = {
+                target,
+                neighbourSpec
+            };
 
-        SpecificSpec *targets[2] = {
-            target,
-            static_cast<SpecificSpec *>(neighbour->specByRole(atomType, specType))
-        };
-
-        SpecReaction *reaction = new R(targets);
-        reaction->store();
+            SpecReaction *reaction = new R(targets);
+            reaction->store();
+        }
     }
 }
 

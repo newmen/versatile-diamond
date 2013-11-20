@@ -19,7 +19,7 @@ void BridgeCTsi::find(Bridge *parent)
     }
 }
 
-void BridgeCTsi::findChildren()
+void BridgeCTsi::findAllReactions()
 {
     DimerFormation::find(this);
     HighBridgeStandToOneBridge::find(this);

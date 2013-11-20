@@ -18,7 +18,7 @@ void MethylOnDimerCLsCMu::find(MethylOnDimerCMu *parent)
     }
 }
 
-void MethylOnDimerCLsCMu::findChildren()
+void MethylOnDimerCLsCMu::findAllReactions()
 {
     MethylOnDimerHydrogenMigration::find(this);
 }

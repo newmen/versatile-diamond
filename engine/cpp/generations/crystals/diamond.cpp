@@ -58,7 +58,7 @@ Atom *Diamond::makeAtom(uint type, const int3 &coords)
 
 void Diamond::findAll()
 {
-    Finder::findAll(atoms().data(), atoms().size(), true);
+    Finder::initFind(atoms().data(), atoms().size());
 }
 
 //void Diamond::bondWithFront110(Atom *atom)

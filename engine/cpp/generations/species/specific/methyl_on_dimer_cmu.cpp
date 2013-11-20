@@ -11,20 +11,15 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
 
     if (anchor->is(31) && !anchor->is(13))
     {
-        auto spec = anchor->specByRole(31, METHYL_ON_DIMER_CMu);
-        if (spec)
+        if (!checkAndFind(anchor, 31, METHYL_ON_DIMER_CMu))
         {
-            static_cast<MethylOnDimerCMu *>(spec)->correspondFindChildren();
-        }
-        else
-        {
-            spec = new MethylOnDimerCMu(parent);
+            auto spec = new MethylOnDimerCMu(parent);
             spec->store();
         }
     }
 }
 
-void MethylOnDimerCMu::findChildren()
+void MethylOnDimerCMu::findAllChildren()
 {
     MethylOnDimerCLsCMu::find(this);
     MethylOnDimerCMsu::find(this);

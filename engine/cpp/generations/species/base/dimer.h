@@ -15,7 +15,7 @@ public:
     std::string name() const override { return "dimer"; }
 #endif // PRINT
 
-    void findChildren() override;
+    void findAllChildren() override;
 
 protected:
     ushort *indexes() const override { return __indexes; }
@@ -26,9 +26,6 @@ private:
     static ushort __roles[2];
 
     static void checkAndAdd(Atom *anchor, Atom *neighbour);
-
-    static inline BaseSpec *specFromAtom(Atom *anchor);
-    static inline uint anotherIndex(BaseSpec *spec, Atom *anchor);
 };
 
 #endif // DIMER_H

@@ -11,6 +11,22 @@ BaseEventsContainer::~BaseEventsContainer()
 {
 }
 
+#ifdef DEBUG
+Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
+{
+    for (Reaction *event : _events)
+    {
+        if (event->anchor()->lattice() && event->anchor()->lattice()->coords() == crd)
+        {
+            return event;
+        }
+    }
+
+    assert(true); // multi event by crd was not found
+    return nullptr;
+}
+#endif // DEBUG
+
 Reaction *BaseEventsContainer::selectEvent(double r)
 {
     assert(_events.size() > 0);

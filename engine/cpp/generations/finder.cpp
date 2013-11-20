@@ -10,30 +10,9 @@
 #include <iostream>
 #endif // PRINT
 
-#include <iostream>
-
-void Finder::findAll(Atom **atoms, int n, bool isInit)
+void Finder::initFind(Atom **atoms, int n)
 {
-#ifdef PRINT
-    if (!isInit)
-    {
-        std::cout << "Find by " << n << " atoms";
-        for (int i = 0; i < n; ++i)
-        {
-            std::cout << " [" << atoms[i] << "]";
-        }
-        std::cout << std::endl;
-    }
-#endif // PRINT
-
-
-#ifdef DEBUG
-    for (int i = 0; i < n; ++i)
-    {
-        Atom *atom = atoms[i];
-        if (!isInit && !atom) assert(true);
-    }
-#endif // DEBUG
+    // TODO: refactor it? for get only instanced atoms
 
     for (int i = 0; i < n; ++i)
     {
@@ -74,7 +53,7 @@ void Finder::findAll(Atom **atoms, int n, bool isInit)
         SurfaceDeactivation::find(atom);
     }
 
-    Handbook::keeper().findAll();
+    Handbook::keeper().findReactions();
 
     for (int i = 0; i < n; ++i)
     {
@@ -83,13 +62,73 @@ void Finder::findAll(Atom **atoms, int n, bool isInit)
         atom->setVisited();
     }
 
-    Handbook::keeper().clear();
-    Handbook::scavenger().clear();
+    finalize();
 
-    if (isInit)
+    Handbook::mc().sort();
+}
+
+void Finder::findAll(Atom **atoms, int n)
+{
+#ifdef PRINT
+    std::cout << "Find by " << n << " atoms";
+    for (int i = 0; i < n; ++i)
     {
-        Handbook::mc().sort();
+        std::cout << " [" << atoms[i] << "]";
     }
+    std::cout << std::endl;
+#endif // PRINT
+
+#ifdef DEBUG
+    for (int i = 0; i < n; ++i)
+    {
+        assert(atoms[i]);
+    }
+#endif // DEBUG
+
+    for (int i = 0; i < n; ++i)
+    {
+        atoms[i]->setUnvisited();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        atoms[i]->removeUnsupportedSpecies();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        atoms[i]->setSpecsUnvisited();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        Bridge::find(atoms[i]);
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        Dimer::find(atoms[i]);
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        atoms[i]->findUnvisitedChildren();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        SurfaceActivation::find(atoms[i]);
+        SurfaceDeactivation::find(atoms[i]);
+    }
+
+    Handbook::keeper().findReactions();
+
+    for (int i = 0; i < n; ++i)
+    {
+        atoms[i]->setVisited();
+    }
+
+    finalize();
 }
 
 void Finder::removeAll(Atom **atoms, int n)
@@ -97,11 +136,15 @@ void Finder::removeAll(Atom **atoms, int n)
     for (int i = 0; i < n; ++i)
     {
         Atom *atom = atoms[i];
-        if (atom)
-        {
-            atom->prepareToRemove();
-        }
+        if (!atom) continue;
+        atom->prepareToRemove();
     }
 
-    findAll(atoms, n, false);
+    initFind(atoms, n);
+}
+
+void Finder::finalize()
+{
+    Handbook::keeper().clear();
+    Handbook::scavenger().clear();
 }

@@ -6,8 +6,8 @@ ENGINE_DIR = '..'
 OBJS_DIR = 'obj'
 
 CC = 'g++'
-# FLAGS = "--std=c++0x -DDEBUG -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
-FLAGS = "--std=c++0x -DDEBUG -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
+FLAGS = "--std=c++0x -DDEBUG -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
+# FLAGS = "--std=c++0x -DDEBUG -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
 
 def compile_line(file_in, file_out, additional_args = '')
   "#{CC} #{FLAGS} #{additional_args} #{file_in} -o #{file_out}"
@@ -35,8 +35,8 @@ def make
     f.write(makefile.result(binding))
   end
 
-  # `make clean; make`
-  `make`
+  `make clean; make`
+  # `make`
 end
 
 def compile_test(file_name, random_name)

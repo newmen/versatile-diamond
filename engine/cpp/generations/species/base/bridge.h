@@ -15,7 +15,7 @@ public:
     std::string name() const override { return "bridge"; }
 #endif // PRINT
 
-    void findChildren() override;
+    void findAllChildren() override;
 
 protected:
     ushort *indexes() const override { return __indexes; }

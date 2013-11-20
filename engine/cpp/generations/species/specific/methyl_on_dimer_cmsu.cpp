@@ -18,7 +18,7 @@ void MethylOnDimerCMsu::find(MethylOnDimerCMu *parent)
     }
 }
 
-void MethylOnDimerCMsu::findChildren()
+void MethylOnDimerCMsu::findAllReactions()
 {
     MethylToHighBridge::find(this);
 }

@@ -2,6 +2,7 @@
 #define MONO_TYPICAL_H
 
 #include "../../reactions/mono_spec_reaction.h"
+#include "../../reactions/target_atoms.h"
 using namespace vd;
 
 #include "typical.h"
@@ -11,7 +12,7 @@ class MonoTypical : public Typical<MonoSpecReaction, RT>
 {
 protected:
     template <class R>
-    static void find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum);
+    static void find(const TargetAtoms &ta);
 
 //    using Typical<MonoSpecReaction, RT>::Typical;
     MonoTypical(SpecificSpec *target) : Typical<MonoSpecReaction, RT>(target) {}
@@ -19,13 +20,12 @@ protected:
 
 template <ushort RT>
 template <class R>
-void MonoTypical<RT>::find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum)
+void MonoTypical<RT>::find(const TargetAtoms &ta)
 {
-    if (Typical<MonoSpecReaction, RT>::find(target, indexes, types, atomsNum))
-    {
-        SpecReaction *reaction = new R(target);
-        reaction->store();
-    }
+//    if (ta.isUpdated()) return;
+
+    SpecReaction *reaction = new R(ta.target());
+    reaction->store();
 }
 
 #endif // MONO_TYPICAL_H

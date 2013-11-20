@@ -16,10 +16,8 @@ protected:
     template <class... Args>
     Typed(Args... args) : B(args...) {}
 
-    virtual ushort *indexes() const = 0;
-    virtual ushort *roles() const = 0;
-
-    virtual void correspondFindChildren() = 0;
+//    virtual ushort *indexes() const = 0;
+//    virtual ushort *roles() const = 0;
 
 public:
     static const Diamond *diamondBy(Atom *atom);
@@ -44,15 +42,15 @@ void Typed<B, ST, USED_ATOMS_NUM>::store()
     this->wasFound();
 #endif // PRINT
 
-    ushort *idxs = indexes();
-    ushort *rls = roles();
+    ushort *idxs = this->indexes();
+    ushort *rls = this->roles();
 
     for (uint i = 0; i < USED_ATOMS_NUM; ++i)
     {
         this->atom(idxs[i])->describe(rls[i], this);
     }
 
-    correspondFindChildren();
+    this->findChildren();
 }
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
@@ -64,8 +62,8 @@ void Typed<B, ST, USED_ATOMS_NUM>::remove()
 
     B::remove();
 
-    ushort *idxs = indexes();
-    ushort *rls = roles();
+    ushort *idxs = this->indexes();
+    ushort *rls = this->roles();
 
     for (uint i = 0; i < USED_ATOMS_NUM; ++i)
     {

@@ -12,12 +12,7 @@ void Dimer::find(Atom *anchor)
 {
     if (anchor->is(22))
     {
-        auto spec = specFromAtom(anchor);
-        if (spec)
-        {
-            static_cast<Dimer *>(spec)->correspondFindChildren();
-        }
-        else
+        if (!checkAndFind(anchor, 22, DIMER))
         {
             auto nbrs = diamondBy(anchor)->front_100(anchor);
             if (nbrs[0]) checkAndAdd(anchor, nbrs[0]);
@@ -26,7 +21,7 @@ void Dimer::find(Atom *anchor)
     }
 }
 
-void Dimer::findChildren()
+void Dimer::findAllChildren()
 {
     MethylOnDimer::find(this);
     DimerCRiCLi::find(this);
@@ -37,7 +32,7 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
 {
     if (neighbour->is(22) && anchor->hasBondWith(neighbour))
     {
-        assert(neighbour->hasRole(3, BRIDGE)); // may be need move to if condition
+        assert(neighbour->hasRole(3, BRIDGE)); // TODO: may be need move to if condition
         assert(neighbour->lattice());
 
         BaseSpec *parents[2] = {
@@ -47,20 +42,4 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
         auto spec = new Dimer(parents);
         spec->store();
     }
-}
-
-BaseSpec *Dimer::specFromAtom(Atom *anchor)
-{
-    auto spec = anchor->specByRole(22, DIMER);
-    if (!spec) return nullptr;
-
-    uint ai = anotherIndex(spec, anchor);
-    Atom *another = spec->atom(ai);
-
-    return (ai != 0 || another->isVisited()) ? spec : nullptr;
-}
-
-uint Dimer::anotherIndex(BaseSpec *spec, Atom *anchor)
-{
-    return (spec->atom(0) == anchor) ? 3 : 0;
 }

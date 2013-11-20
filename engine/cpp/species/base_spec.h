@@ -17,18 +17,27 @@ namespace vd
 class BaseSpec
 {
     std::unordered_set<BaseSpec *> _children;
+    bool _visited = false;
+
+protected:
+    static BaseSpec *checkAndFind(Atom *anchor, ushort rType, ushort sType);
 
 public:
     virtual ~BaseSpec() {}
 
+    void setUnvisited() { _visited = false; }
+    bool isVisited() { return _visited; }
+
     virtual ushort type() const = 0;
 
     virtual ushort size() const = 0;
-    virtual Atom *atom(ushort index) = 0;
+    virtual Atom *atom(ushort index) const = 0;
     // TODO: maybe need to change it to method without lambda, which will returns only first latticed atom
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
-    virtual void findChildren() = 0;
+    virtual void findChildren();
+    virtual void findAllChildren() = 0;
+
     void addChild(BaseSpec *child);
     void removeChild(BaseSpec *child);
 
@@ -42,6 +51,12 @@ public:
     void wasFound();
     void wasForgotten();
 #endif // PRINT
+
+    Atom *anchor() const { return atom(indexes()[0]); }
+
+protected:
+    virtual ushort *indexes() const = 0;
+    virtual ushort *roles() const = 0;
 };
 
 }

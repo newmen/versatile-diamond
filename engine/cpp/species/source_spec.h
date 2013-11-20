@@ -21,7 +21,7 @@ protected:
 public:
     ushort size() const { return ATOMS_NUM; }
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
-    Atom *atom(ushort index);
+    Atom *atom(ushort index) const;
 
 #ifdef PRINT
     void info() override;
@@ -38,7 +38,7 @@ SourceSpec<ATOMS_NUM>::SourceSpec(Atom **atoms)
 }
 
 template <ushort ATOMS_NUM>
-Atom *SourceSpec<ATOMS_NUM>::atom(ushort index)
+Atom *SourceSpec<ATOMS_NUM>::atom(ushort index) const
 {
     assert(ATOMS_NUM > index);
     return _atoms[index];

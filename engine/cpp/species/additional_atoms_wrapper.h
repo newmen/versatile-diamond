@@ -21,7 +21,7 @@ public:
     template <class... Ts>
     AdditionalAtomsWrapper(Atom **additionalAtoms, Ts... args);
 
-    Atom *atom(ushort index) override;
+    Atom *atom(ushort index) const override;
 
 #ifdef PRINT
     void info() override;
@@ -40,7 +40,7 @@ AdditionalAtomsWrapper<B, ATOMS_NUM>::AdditionalAtomsWrapper(Atom **additionalAt
 }
 
 template <class B, ushort ATOMS_NUM>
-Atom *AdditionalAtomsWrapper<B, ATOMS_NUM>::atom(ushort index)
+Atom *AdditionalAtomsWrapper<B, ATOMS_NUM>::atom(ushort index) const
 {
     return (index < ATOMS_NUM) ? _additionalAtoms[index] : B::atom(index - ATOMS_NUM);
 }

@@ -47,4 +47,12 @@ void SpecificSpec::remove()
     BaseSpec::remove();
 }
 
+void SpecificSpec::findReactions()
+{
+    if (!_isNew) return;
+
+    findAllReactions();
+    _isNew = false;
+}
+
 }

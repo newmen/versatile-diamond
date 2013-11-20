@@ -18,7 +18,7 @@ void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
     }
 }
 
-void MethylOnBridgeCBiCMu::findChildren()
+void MethylOnBridgeCBiCMu::findAllReactions()
 {
     DesMethylFromBridge::find(this);
 }

@@ -199,6 +199,14 @@ void Atom::forget(ushort rType, BaseSpec *spec)
 #endif // PRINT
 }
 
+void Atom::setSpecsUnvisited()
+{
+    for (auto &pr : _specs)
+    {
+        pr.second->setUnvisited();
+    }
+}
+
 void Atom::removeUnsupportedSpecies()
 {
     BaseSpec **specs = new BaseSpec*[_specs.size()]; // max possible size
@@ -225,6 +233,18 @@ void Atom::removeUnsupportedSpecies()
     }
 
     delete [] specs;
+}
+
+void Atom::findUnvisitedChildren()
+{
+    for (auto &pr : _specs)
+    {
+        BaseSpec *spec = pr.second;
+        if (!spec->isVisited())
+        {
+            spec->findChildren();
+        }
+    }
 }
 
 void Atom::prepareToRemove()

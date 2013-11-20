@@ -8,6 +8,23 @@
 namespace vd
 {
 
+BaseSpec *BaseSpec::checkAndFind(Atom *anchor, ushort rType, ushort sType)
+{
+    auto spec = anchor->specByRole(rType, sType);
+    if (spec)
+    {
+        spec->findChildren();
+    }
+
+    return spec;
+}
+
+void BaseSpec::findChildren()
+{
+    findAllChildren();
+    _visited = true;
+}
+
 void BaseSpec::addChild(BaseSpec *child)
 {
     _children.insert(child);

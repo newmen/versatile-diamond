@@ -18,7 +18,7 @@ void DimerCRiCLi::find(Dimer *parent)
     }
 }
 
-void DimerCRiCLi::findChildren()
+void DimerCRiCLi::findAllReactions()
 {
     DimerDrop::find(this);
 }

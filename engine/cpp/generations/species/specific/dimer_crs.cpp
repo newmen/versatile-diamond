@@ -24,7 +24,7 @@ void DimerCRs::find(Dimer *parent)
     }
 }
 
-void DimerCRs::findChildren()
+void DimerCRs::findAllReactions()
 {
     AdsMethylToDimer::find(this);
 }

@@ -23,7 +23,7 @@ void HighBridge::find(Bridge *parent)
     }
 }
 
-void HighBridge::findChildren()
+void HighBridge::findAllReactions()
 {
     HighBridgeStandToOneBridge::find(this);
     HighBridgeToTwoBridges::find(this);

@@ -19,7 +19,7 @@ public:
     std::string name() const override { return "methyl on dimer"; }
 #endif // PRINT
 
-    void findChildren() override;
+    void findAllChildren() override;
 
 protected:
     ushort *indexes() const override { return __indexes; }

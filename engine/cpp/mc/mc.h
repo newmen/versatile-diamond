@@ -55,7 +55,10 @@ public:
 
 #ifdef DEBUG
     template <ushort RT> void doOneOfOne();
+//    template <ushort RT> void doOneOfOne();
+
     template <ushort RT> void doOneOfMul();
+    template <ushort RT> void doOneOfMul(int x, int y, int z);
 #endif // DEBUG
 
 private:
@@ -389,6 +392,15 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul()
     static_assert(RT < MULTI_EVENTS_NUM, "Wrong reaction ID");
     _multiEvents[RT].selectEvent(0)->doIt();
 }
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <ushort RT>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(int x, int y, int z)
+{
+    auto crd = int3(x, y, z);
+    _multiEvents[RT].selectEvent(crd)->doIt();
+}
+
 #endif // DEBUG
 
 }

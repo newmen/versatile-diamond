@@ -11,6 +11,7 @@ namespace vd
 class SpecificSpec : public DependentSpec<1>
 {
     std::unordered_set<SpecReaction *> _reactions;
+    bool _isNew = true;
 
 protected:
     SpecificSpec(BaseSpec *parent) : DependentSpec<1>(&parent) {}
@@ -20,6 +21,11 @@ public:
     void unbindFrom(SpecReaction *reaction);
 
     void remove();
+
+    void findReactions();
+    virtual void findAllReactions() = 0;
+
+    void findAllChildren() override {}
 };
 
 }

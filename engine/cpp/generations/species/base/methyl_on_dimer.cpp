@@ -14,19 +14,14 @@ void MethylOnDimer::find(Dimer *target)
 
         if (anchor->is(23))
         {
-            auto spec = anchor->specByRole(23, METHYL_ON_DIMER);
-            if (spec)
-            {
-                static_cast<MethylOnDimer *>(spec)->correspondFindChildren();
-            }
-            else if (!anchor->isVisited())
+            if (!checkAndFind(anchor, 23, METHYL_ON_DIMER) && !anchor->isVisited())
             {
                 Atom *methyl = anchor->amorphNeighbour();
 
                 if (methyl->is(14))
                 {
                     BaseSpec *parent = target;
-                    spec = new MethylOnDimer(&methyl, checkingIndexes[i], &parent);
+                    auto spec = new MethylOnDimer(&methyl, checkingIndexes[i], &parent);
                     spec->store();
                 }
             }
@@ -34,7 +29,7 @@ void MethylOnDimer::find(Dimer *target)
     }
 }
 
-void MethylOnDimer::findChildren()
+void MethylOnDimer::findAllChildren()
 {
     MethylOnDimerCMu::find(this);
 }

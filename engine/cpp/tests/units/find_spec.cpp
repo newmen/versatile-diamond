@@ -30,9 +30,9 @@ int main()
     assert(Handbook::mc().totalRate() == initValue);
 
     // activates all surface carbons
-    int n = 0;
-    for (int x = 0; x < s.x; ++x)
-        for (int y = 0; y < s.y; ++y)
+    uint n = 0;
+    for (uint x = 0; x < s.x; ++x)
+        for (uint y = 0; y < s.y; ++y)
         {
             Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>();
             assert(Handbook::mc().totalRate() == initValue - (++n) * (3600 - 2000));

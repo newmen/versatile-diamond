@@ -13,6 +13,9 @@ class BaseEventsContainer
 public:
     virtual ~BaseEventsContainer();
 
+#ifdef DEBUG
+    Reaction *selectEvent(const int3 &crd);
+#endif // DEBUG
     Reaction *selectEvent(double r);
     double commonRate() const;
 

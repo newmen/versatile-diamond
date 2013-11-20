@@ -11,12 +11,7 @@ void Bridge::find(Atom *anchor)
 {
     if (anchor->is(3))
     {
-        auto spec = anchor->specByRole(3, BRIDGE);
-        if (spec)
-        {
-            static_cast<Bridge *>(spec)->correspondFindChildren();
-        }
-        else
+        if (!checkAndFind(anchor, 3, BRIDGE))
         {
             auto diamond = diamondBy(anchor);
             if (anchor->lattice()->coords().z == 0) return;
@@ -27,14 +22,14 @@ void Bridge::find(Atom *anchor)
                     nbrs[1]->is(6) && anchor->hasBondWith(nbrs[1]))
             {
                 Atom *atoms[3] = { anchor, nbrs[0], nbrs[1] };
-                spec = new Bridge(atoms);
+                auto spec = new Bridge(atoms);
                 spec->store();
             }
         }
     }
 }
 
-void Bridge::findChildren()
+void Bridge::findAllChildren()
 {
     MethylOnBridge::find(this);
     HighBridge::find(this);

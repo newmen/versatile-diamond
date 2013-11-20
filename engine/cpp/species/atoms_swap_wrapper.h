@@ -16,11 +16,11 @@ public:
     template <class... Ts>
     AtomsSwapWrapper(ushort from, ushort to, Ts... args) : B(args...), _from(from), _to(to) {}
 
-    Atom *atom(ushort index) override;
+    Atom *atom(ushort index) const override;
 };
 
 template <class B>
-Atom *AtomsSwapWrapper<B>::atom(ushort index)
+Atom *AtomsSwapWrapper<B>::atom(ushort index) const
 {
     if (index == _from)
     {

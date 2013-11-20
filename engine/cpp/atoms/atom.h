@@ -63,6 +63,9 @@ public:
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
     void forget(ushort rType, BaseSpec *spec);
+
+    void setSpecsUnvisited();
+    void findUnvisitedChildren();
     void removeUnsupportedSpecies();
 
     void prepareToRemove();

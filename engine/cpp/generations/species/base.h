@@ -10,14 +10,6 @@ protected:
 //    using Typed::Typed;
     template <class... Args>
     Base(Args... args) : Typed<B, ST, USED_ATOMS_NUM>(args...) {}
-
-    void correspondFindChildren() override;
 };
-
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-void Base<B, ST, USED_ATOMS_NUM>::correspondFindChildren()
-{
-    this->findChildren();
-}
 
 #endif // BASE_H

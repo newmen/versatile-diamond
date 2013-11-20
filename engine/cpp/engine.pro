@@ -4,7 +4,7 @@ CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 QMAKE_CXXFLAGS += -DDEBUG
-#QMAKE_CXXFLAGS += -DPRINT
+QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS += -DTHREADS_NUM=1
@@ -59,7 +59,9 @@ SOURCES += main.cpp \
     species/specific_spec.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
-    reactions/spec_reaction.cpp
+    reactions/spec_reaction.cpp \
+    reactions/target_atoms.cpp \
+    generations/species/specific/bridge_crs_cti.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -130,4 +132,6 @@ HEADERS += \
     generations/species/source.h \
     generations/species/dependent.h \
     generations/species/specific.h \
-    generations/species/typed.h
+    generations/species/typed.h \
+    reactions/target_atoms.h \
+    generations/species/specific/bridge_crs_cti.h

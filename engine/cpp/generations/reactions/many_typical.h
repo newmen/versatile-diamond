@@ -3,6 +3,7 @@
 
 #include <functional>
 #include "../../reactions/few_specs_reaction.h"
+#include "../../reactions/target_atoms.h"
 using namespace vd;
 
 #include "typical.h"
@@ -14,7 +15,7 @@ class ManyTypical : public Typical<FewSpecsReaction<TARGETS_NUM>, RT>
 
 protected:
     template <class R>
-    static void find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum,
+    static void find(const TargetAtoms &ta,
                      ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda);
 
 //    using Typical<FewSpecsReaction<TARGETS_NUM>, RT>::Typical;
@@ -25,24 +26,23 @@ protected:
 
 template <ushort RT, ushort TARGETS_NUM>
 template <class R>
-void ManyTypical<RT, TARGETS_NUM>::find(SpecificSpec *target, const ushort *indexes, const ushort *types, ushort atomsNum,
+void ManyTypical<RT, TARGETS_NUM>::find(const TargetAtoms &ta,
                                         ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda)
 {
-    bool targetIsValid = Typical<FewSpecsReaction<TARGETS_NUM>, RT>::find(target, indexes, types, atomsNum);
-    Atom *firstAnchor = target->atom(indexes[0]);
+//    if (ta.isUpdated()) return;
+    Atom *firstAnchor = ta.firstAnchor();
 
     assert(firstAnchor->lattice());
     auto diamond = static_cast<const Diamond *>(firstAnchor->lattice()->crystal());
 
     auto nbrs = nLambda(diamond, firstAnchor);
-    if ((targetIsValid && nbrs[0]) || (nbrs[0] && !nbrs[0]->prevIs(otherAtomType)))
+    if (nbrs[0]) //  && !nbrs[0]->prevIs(otherAtomType)
     {
-        FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(target, nbrs[0], otherAtomType, otherSpecType);
+        FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(ta.target(), nbrs[0], otherAtomType, otherSpecType);
     }
-    bool hasAnother = nbrs[1] && nbrs[1]->isVisited();
-    if ((targetIsValid && hasAnother) || (hasAnother && !nbrs[1]->prevIs(otherAtomType)))
+    if (nbrs[1] && nbrs[1]->isVisited())
     {
-        FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(target, nbrs[1], otherAtomType, otherSpecType);
+        FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(ta.target(), nbrs[1], otherAtomType, otherSpecType);
     }
 }
 

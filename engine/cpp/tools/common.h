@@ -16,7 +16,7 @@ struct dv3
     dv3(T x = DEFAULT_VALUE, T y = DEFAULT_VALUE, T z = DEFAULT_VALUE) : x(x), y(y), z(z) {}
 
 #ifdef DEBUG
-    bool operator == (const dv3<T, DEFAULT_VALUE> &another)
+    bool operator == (const dv3<T, DEFAULT_VALUE> &another) const
     {
         return x == another.x && y == another.y && z == another.z;
     }

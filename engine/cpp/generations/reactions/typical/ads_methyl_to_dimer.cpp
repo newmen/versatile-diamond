@@ -8,7 +8,8 @@ void AdsMethylToDimer::find(DimerCRs *target)
     const ushort indexes[1] = { 0 };
     const ushort types[1] = { 21 };
 
-    MonoTypical::find<AdsMethylToDimer>(target, indexes, types, 1);
+    TargetAtoms ta(target, 1, indexes, types);
+    MonoTypical::find<AdsMethylToDimer>(ta);
 }
 
 void AdsMethylToDimer::doIt()
