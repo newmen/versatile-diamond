@@ -6,7 +6,8 @@ ENGINE_DIR = '..'
 OBJS_DIR = 'obj'
 
 CC = 'g++'
-FLAGS = "--std=c++0x -DDEBUG -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
+# FLAGS = "--std=c++0x -DDEBUG -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
+FLAGS = "--std=c++0x -DDEBUG -DTHREADS_NUM=1 -fopenmp -I#{ENGINE_DIR}/"
 # FLAGS = "--std=c++0x -DDEBUG -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
 
 def compile_line(file_in, file_out, additional_args = '')

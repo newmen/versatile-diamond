@@ -1,6 +1,7 @@
 #include "bridge_crs.h"
 #include "bridge_crs_cti_cli.h"
 #include "../../reactions/typical/high_bridge_to_two_bridges.h"
+#include "../../reactions/typical/dimer_formation_near_bridge.h"
 
 ushort BridgeCRs::__indexes[1] = { 1 };
 ushort BridgeCRs::__roles[1] = { 5 };
@@ -30,5 +31,6 @@ void BridgeCRs::findAllChildren()
 
 void BridgeCRs::findAllReactions()
 {
+    DimerFormationNearBridge::find(this);
     HighBridgeToTwoBridges::find(this);
 }

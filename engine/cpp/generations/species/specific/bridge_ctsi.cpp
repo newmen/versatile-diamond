@@ -1,5 +1,6 @@
 #include "bridge_ctsi.h"
 #include "../../reactions/typical/dimer_formation.h"
+#include "../../reactions/typical/dimer_formation_near_bridge.h"
 #include "../../reactions/typical/high_bridge_stand_to_one_bridge.h"
 
 ushort BridgeCTsi::__indexes[1] = { 0 };
@@ -22,5 +23,6 @@ void BridgeCTsi::find(Bridge *parent)
 void BridgeCTsi::findAllReactions()
 {
     DimerFormation::find(this);
+    DimerFormationNearBridge::find(this);
     HighBridgeStandToOneBridge::find(this);
 }

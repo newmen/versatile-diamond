@@ -34,17 +34,17 @@ int main()
     for (uint x = 0; x < s.x; ++x)
         for (uint y = 0; y < s.y; ++y)
         {
-            Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>();
+            Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>();
             assert(Handbook::mc().totalRate() == initValue - (++n) * (3600 - 2000));
         }
 
     const double allActivesValue = s.x * s.y * (1e5 + 2 * 2000);
 
-    Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>();
+    Handbook::mc().doOneOfMul<CORR_SURFACE_DEACTIVATION>();
     cout << Handbook::mc().totalRate() << endl;
     assert(Handbook::mc().totalRate() == allActivesValue + (3600 - 2000));
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>();
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>();
     cout << Handbook::mc().totalRate() << endl;
     assert(Handbook::mc().totalRate() == allActivesValue);
 
@@ -60,7 +60,7 @@ int main()
     cout << Handbook::mc().totalRate() << endl;
     assert(Handbook::mc().totalRate() == allActivesValue + 5e5 - 3 * 1e5 + 3600 - 4 * 2000);
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>();
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>();
     cout << Handbook::mc().totalRate() << endl;
     assert(Handbook::mc().totalRate() == allActivesValue + 1e7 + 1e6 + 5e5 - 3 * 1e5 - 3 * 2000);
 
@@ -78,7 +78,7 @@ int main()
 
     Handbook::mc().doOneOfOne<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>();
     cout << Handbook::mc().totalRate() << endl;
-    assert(Handbook::mc().totalRate() == allActivesValue + 2 * 3.5e3 - 3 * 1e5 + 2 * 3600 - 2 * 2000);
+    assert(Handbook::mc().totalRate() == allActivesValue + 2 * 3.5e3 + 2 * 2.1e5 - 3 * 1e5 + 2 * 3600 - 2 * 2000);
 
     Handbook::mc().doOneOfOne<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>();
     cout << Handbook::mc().totalRate() << endl;

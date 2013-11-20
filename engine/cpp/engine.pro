@@ -62,7 +62,8 @@ SOURCES += main.cpp \
     tools/common.cpp \
     reactions/spec_reaction.cpp \
     generations/species/specific/bridge_crs_cti_cli.cpp \
-    mc/counter.cpp
+    mc/counter.cpp \
+    generations/reactions/typical/dimer_formation_near_bridge.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -136,4 +137,5 @@ HEADERS += \
     generations/species/typed.h \
     generations/species/specific/bridge_crs_cti_cli.h \
     mc/counter.h \
-    generations/reactions/ubiquitous.h
+    generations/reactions/ubiquitous.h \
+    generations/reactions/typical/dimer_formation_near_bridge.h

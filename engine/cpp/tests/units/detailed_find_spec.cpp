@@ -57,7 +57,7 @@ int main()
     printSeparator();
     assert(Handbook::mc().totalRate() == 4 * 3600);
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 0, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 0, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 3 * 3600 + 2000);
 
@@ -65,12 +65,12 @@ int main()
     printSeparator();
     assert(Handbook::mc().totalRate() == 7 * 3600 + 2000);
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 1, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 1, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 6 * 3600 + 2 * 2000 + 1e5);
 
     buildBridge(0, s.y - 1, 1);
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, s.y - 1, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, s.y - 1, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 9 * 3600 + 3 * 2000 + 2 * 1e5);
 
@@ -78,7 +78,7 @@ int main()
     printSeparator();
     assert(Handbook::mc().totalRate() == 9 * 3600 + 2000 + 5e4);
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 0, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 0, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 8 * 3600 + 2 * 2000 + 5e4 + 1e7);
 
@@ -86,7 +86,7 @@ int main()
     printSeparator();
     assert(Handbook::mc().totalRate() == 8 * 3600 + 2000);
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 1, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 1, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 7 * 3600 + 2 * 2000 + 1e7 + 1e6);
 
@@ -100,13 +100,13 @@ int main()
 
     Handbook::mc().doOneOfOne<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>();
     printSeparator();
-    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e3);
+    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e3 + 2.1e5);
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 1, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 1, 1);
     printSeparator();
-    assert(Handbook::mc().totalRate() == 9 * 3600 + 3 * 2000 + 2 * 3.5e3);
+    assert(Handbook::mc().totalRate() == 9 * 3600 + 3 * 2000 + 2 * 3.5e3 + 2.1e5);
 
-    Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>(0, 0, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_DEACTIVATION>(0, 0, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e3);
 
@@ -115,14 +115,14 @@ int main()
     assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 5e6 + 1e5);
 
     Handbook::mc().doOneOfOne<DIMER_FORMATION>();
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 0, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 0, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 9 * 3600 + 2000 + 5e4 + 1e7);
 
     Handbook::mc().doOneOfOne<ADS_METHYL_TO_DIMER>();
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, s.y - 1, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, s.y - 1, 1);
     Handbook::mc().doOneOfOne<METHYL_ON_DIMER_HYDROGEN_MIGRATION>();
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, s.y - 1, 1);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, s.y - 1, 1);
     printSeparator();
     assert(Handbook::mc().totalRate() == 8 * 3600 + 2000 + 5e5 + 1e7 + 1e6);
 
@@ -146,8 +146,8 @@ int main()
     printSeparator();
     assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000); // + 2 * 3.5e3
 
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, s.y - 1, 2);
-    Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 0, 2);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, s.y - 1, 2);
+    Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 0, 2);
     printSeparator();
     assert(Handbook::mc().totalRate() == 8 * 3600 + 4 * 2000); // + 2 * 3.5e3
 

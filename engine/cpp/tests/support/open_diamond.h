@@ -1,5 +1,6 @@
 #include "../../generations/atoms/c.h"
 #include "../../generations/crystals/diamond.h"
+#include "../support/corrected_types.h"
 
 #ifdef DEBUG
 

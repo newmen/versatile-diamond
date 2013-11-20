@@ -27,10 +27,11 @@ enum SpecificSpecNames : ushort
     HIGH_BRIDGE
 };
 
-const ushort TypicalReactionsNum = 9;
+const ushort TypicalReactionsNum = 10;
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
+    DIMER_FORMATION_NEAR_BRIDGE,
     DIMER_DROP,
     ADS_METHYL_TO_DIMER,
     METHYL_ON_DIMER_HYDROGEN_MIGRATION,

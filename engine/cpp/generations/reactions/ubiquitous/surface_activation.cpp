@@ -7,7 +7,7 @@ const ushort SurfaceActivation::__hToActives[] =
     28, 2, 2, 1, 5, 5, 5, 8, 8, 8,
     10, 11, 12, 13, 14, 16, 17, 17, 16, 19,
     21, 21, 21, 23, 24, 25, 26, 27, 2, 29,
-    30, 31
+    30, 31, 32
 };
 
 const ushort SurfaceActivation::__hOnAtoms[] =
@@ -16,7 +16,7 @@ const ushort SurfaceActivation::__hOnAtoms[] =
     2, 1, 0, 2, 1, 0, 1, 1, 0, 1,
     0, 0, 0, 0, 0, 2, 1, 0, 2, 0,
     1, 0, 1, 0, 0, 0, 0, 0, 1, 0,
-    0, 0
+    0, 0, 0
 };
 
 void SurfaceActivation::find(Atom *anchor)
