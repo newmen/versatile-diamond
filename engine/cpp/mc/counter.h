@@ -1,9 +1,8 @@
 #ifndef COUNTER_H
 #define COUNTER_H
 
-#include <iostream>
 #include <string>
-#include <unordered_map>
+#include <vector>
 #include "../reactions/reaction.h"
 
 namespace vd
@@ -11,45 +10,30 @@ namespace vd
 
 class Counter
 {
-    std::unordered_map<uint, std::string> _names;
-    std::unordered_map<uint, uint> _counter;
+    struct Record
+    {
+        uint counter = 0;
+
+        std::string name;
+        double rate = 0;
+
+        Record(const std::string &name, double rate) : name(name), rate(rate) {}
+        void inc() { ++counter; }
+    };
+
+    std::vector<Record *> _records;
     uint _total = 0;
 
 public:
-    void inc(Reaction *event)
-    {
-        uint key = event->type();
+    Counter(uint reactionsNum);
+    ~Counter();
 
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-        {
-            if (_counter.find(key) == _counter.cend())
-            {
-                _counter[key] = 0;
-                _names[key] = event->name();
-            }
+    void inc(Reaction *event);
 
-            ++_counter[key];
-            ++_total;
-        }
-    }
+    void printStats();
 
-    void printStats()
-    {
-        std::cout << "Total events: " << _total << "\n";
-        for (auto &pr : _counter)
-        {
-            std::cout.width(74);
-            std::cout << _names[pr.first] << " :: ";
-
-            double rate = (double)pr.second / _total;
-            std::cout.width(11);
-            std::cout << pr.second << " :: ";
-            std::cout.precision(2);
-            std::cout << rate << " %" << std::endl;
-        }
-    }
+private:
+    void sort();
 };
 
 }

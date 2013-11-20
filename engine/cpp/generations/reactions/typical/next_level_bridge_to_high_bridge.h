@@ -12,7 +12,7 @@ public:
 //    using MonoTypical::MonoTypical;
     NextLevelBridgeToHighBridge(SpecificSpec *target) : MonoTypical(target) {}
 
-    double rate() const { return 3.5e6; }
+    double rate() const { return 3.5e3; }
     void doIt();
 
     std::string name() const override { return "next layer bridge to high bridge"; }

@@ -3,7 +3,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-#QMAKE_CXXFLAGS += -DDEBUG
+QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
@@ -12,8 +12,9 @@ QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 #LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -std=c++11
-#QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
-#LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
+#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+##QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
+##LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += main.cpp \
     atoms/atom.cpp \
@@ -61,7 +62,8 @@ SOURCES += main.cpp \
     tools/common.cpp \
     reactions/spec_reaction.cpp \
     reactions/target_atoms.cpp \
-    generations/species/specific/bridge_crs_cti_cli.cpp
+    generations/species/specific/bridge_crs_cti_cli.cpp \
+    mc/counter.cpp
 
 HEADERS += \
     atoms/atom.h \

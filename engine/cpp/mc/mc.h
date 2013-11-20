@@ -41,6 +41,8 @@ class MC
 public:
     MC();
 
+    void initCounter(CommonMCData *data) const;
+
     void sort();
 
     void doRandom(CommonMCData *data);
@@ -95,6 +97,12 @@ MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
         std::cout << i << "-" << _order[i] << std::endl;
     }
 #endif // PRINT
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
+{
+    data->makeCounter(EVENTS_NUM + MULTI_EVENTS_NUM);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>

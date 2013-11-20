@@ -78,7 +78,7 @@ int main()
 
     Handbook::mc().doOneOfOne<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>();
     cout << Handbook::mc().totalRate() << endl;
-    assert(Handbook::mc().totalRate() == allActivesValue + 2 * 3.5e6 - 3 * 1e5 + 2 * 3600 - 2 * 2000);
+    assert(Handbook::mc().totalRate() == allActivesValue + 2 * 3.5e3 - 3 * 1e5 + 2 * 3600 - 2 * 2000);
 
     Handbook::mc().doOneOfOne<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>();
     cout << Handbook::mc().totalRate() << endl;

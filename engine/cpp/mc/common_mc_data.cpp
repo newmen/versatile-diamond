@@ -15,6 +15,16 @@ CommonMCData::CommonMCData()
     reset();
 }
 
+CommonMCData::~CommonMCData()
+{
+    delete _counter;
+}
+
+void CommonMCData::makeCounter(uint reactionsNum)
+{
+    _counter = new Counter(reactionsNum);
+}
+
 bool CommonMCData::isSame()
 {
 #ifdef PARALLEL

@@ -100,15 +100,15 @@ int main()
 
     Handbook::mc().doOneOfOne<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>();
     printSeparator();
-    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e6);
+    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e3);
 
     Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 1, 1);
     printSeparator();
-    assert(Handbook::mc().totalRate() == 9 * 3600 + 3 * 2000 + 2 * 3.5e6);
+    assert(Handbook::mc().totalRate() == 9 * 3600 + 3 * 2000 + 2 * 3.5e3);
 
     Handbook::mc().doOneOfMul<SURFACE_DEACTIVATION>(0, 0, 1);
     printSeparator();
-    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e6);
+    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 3.5e3);
 
     Handbook::mc().doOneOfOne<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>();
     printSeparator();
@@ -140,16 +140,16 @@ int main()
 
     Handbook::mc().doOneOfOne<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE>();
     printSeparator();
-    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 2 * 3.5e6 + 7.7e6);
+    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000 + 2 * 3.5e3 + 7.7e6);
 
     Handbook::mc().doOneOfOne<HIGH_BRIDGE_STAND_TO_TWO_BRIDGES>();
     printSeparator();
-    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000); // + 2 * 3.5e6
+    assert(Handbook::mc().totalRate() == 10 * 3600 + 2 * 2000); // + 2 * 3.5e3
 
     Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, s.y - 1, 2);
     Handbook::mc().doOneOfMul<SURFACE_ACTIVATION>(0, 0, 2);
     printSeparator();
-    assert(Handbook::mc().totalRate() == 8 * 3600 + 4 * 2000); // + 2 * 3.5e6
+    assert(Handbook::mc().totalRate() == 8 * 3600 + 4 * 2000); // + 2 * 3.5e3
 
     delete diamond;
     return 0;

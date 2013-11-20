@@ -18,12 +18,14 @@ class CommonMCData
     bool _sames[THREADS_NUM];
     Reaction *_reactions[THREADS_NUM];
 
-    Counter _counter;
+    Counter *_counter;
 
 public:
     CommonMCData();
+    ~CommonMCData();
 
-    Counter *counter() { return &_counter; }
+    void makeCounter(uint reactionsNum);
+    Counter *counter() { return _counter; }
 
     void noEvent() { _wasntFound = true; }
     bool wasntFound() const { return _wasntFound; }

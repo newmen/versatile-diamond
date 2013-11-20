@@ -37,10 +37,11 @@ int main()
     cout << "Atoms num: " << diamond->countAtoms() << endl;
 #ifdef PRINT
     printSeparator();
-    int i = 0;
 #endif // PRINT
 
     CommonMCData mcData;
+    Handbook::mc().initCounter(&mcData);
+
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
