@@ -12,8 +12,7 @@ void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
     {
         if (!anchors[0]->hasRole(25, METHYL_ON_BRIDGE_CBi_CMu) && !anchors[1]->hasRole(7, METHYL_ON_BRIDGE_CBi_CMu))
         {
-            auto spec = new MethylOnBridgeCBiCMu(parent);
-            spec->store();
+            createBy<MethylOnBridgeCBiCMu>(parent);
         }
     }
 }

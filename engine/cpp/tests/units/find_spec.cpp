@@ -23,7 +23,7 @@ int main()
 
     Handbook::mc().doOneOfOne<DIMER_FORMATION>();
     cout << Handbook::mc().totalRate() << endl;
-    assert(Handbook::mc().totalRate() == initValue - 3 * 1e5 + 5e4 - 2 * 2000);
+    assert(Handbook::mc().totalRate() == initValue - 3 * 1e5 + 5e3 - 2 * 2000);
 
     Handbook::mc().doOneOfOne<DIMER_DROP>();
     cout << Handbook::mc().totalRate() << endl;
@@ -50,7 +50,7 @@ int main()
 
     Handbook::mc().doOneOfOne<DIMER_FORMATION>();
     cout << Handbook::mc().totalRate() << endl;
-    assert(Handbook::mc().totalRate() == allActivesValue + 2 * 1e7 - 3 * 1e5 + 5e4 - 2 * 2000);
+    assert(Handbook::mc().totalRate() == allActivesValue + 2 * 1e7 - 3 * 1e5 + 5e3 - 2 * 2000);
 
     Handbook::mc().doOneOfOne<ADS_METHYL_TO_DIMER>();
     cout << Handbook::mc().totalRate() << endl;

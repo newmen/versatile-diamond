@@ -12,8 +12,7 @@ void MethylOnDimerCMsu::find(MethylOnDimerCMu *parent)
     {
         if (!anchor->hasRole(29, METHYL_ON_DIMER_CMsu))
         {
-            auto spec = new MethylOnDimerCMsu(parent);
-            spec->store();
+            createBy<MethylOnDimerCMsu>(parent);
         }
     }
 }

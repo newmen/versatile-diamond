@@ -12,8 +12,7 @@ void DimerCRiCLi::find(Dimer *parent)
     {
         if (!anchors[0]->hasRole(20, DIMER_CRi_CLi) && !anchors[1]->hasRole(20, DIMER_CRi_CLi))
         {
-            auto spec = new DimerCRiCLi(parent);
-            spec->store();
+            createBy<DimerCRiCLi>(parent);
         }
     }
 }

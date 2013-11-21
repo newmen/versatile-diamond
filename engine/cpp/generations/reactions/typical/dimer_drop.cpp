@@ -4,7 +4,7 @@
 
 void DimerDrop::find(DimerCRiCLi *target)
 {
-    MonoTypical::find<DimerDrop>(target);
+    createBy<DimerDrop>(target);
 }
 
 void DimerDrop::doIt()

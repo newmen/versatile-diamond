@@ -5,7 +5,7 @@
 
 void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
 {
-    MonoTypical::find<MethylOnDimerHydrogenMigration>(target);
+    createBy<MethylOnDimerHydrogenMigration>(target);
 }
 
 void MethylOnDimerHydrogenMigration::doIt()

@@ -39,7 +39,7 @@ void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
             anchor->specByRole(3, BRIDGE),
             neighbour->specByRole(3, BRIDGE)
         };
-        auto spec = new Dimer(parents);
-        spec->store();
+
+        createBy<Dimer>(parents);
     }
 }

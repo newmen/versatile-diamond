@@ -4,7 +4,7 @@
 
 void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 {
-    MonoTypical::find<DesMethylFromBridge>(target);
+    createBy<DesMethylFromBridge>(target);
 }
 
 void DesMethylFromBridge::doIt()

@@ -55,9 +55,9 @@ void Counter::printStats()
         std::cout.width(11);
         std::cout << record->counter << " :: ";
 
-        double rate = (double)record->counter / _total;
+        double rate = 100 * (double)record->counter / _total;
         std::cout.width(11);
-        std::cout.precision(2);
+        std::cout.precision(3);
         std::cout << rate << " % :: ";
         std::cout << record->rate << std::endl;
     }

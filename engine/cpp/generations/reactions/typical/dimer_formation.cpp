@@ -5,7 +5,7 @@
 
 void DimerFormation::find(BridgeCTsi *target)
 {
-    ManyTypical::find<DimerFormation>(target, target->atom(0), 28, BRIDGE_CTsi, ManyTypical::front100Lambda);
+    ManyTypical::find<DimerFormation>(target, 28, BRIDGE_CTsi, front100Lambda);
 }
 
 void DimerFormation::doIt()

@@ -76,11 +76,11 @@ int main()
 
     Handbook::mc().doOneOfOne<DIMER_FORMATION>();
     printSeparator();
-    assert(Handbook::mc().totalRate() == 9 * 3600 + 2000 + 5e4);
+    assert(Handbook::mc().totalRate() == 9 * 3600 + 2000 + 5e3);
 
     Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 0, 1);
     printSeparator();
-    assert(Handbook::mc().totalRate() == 8 * 3600 + 2 * 2000 + 5e4 + 1e7);
+    assert(Handbook::mc().totalRate() == 8 * 3600 + 2 * 2000 + 5e3 + 1e7);
 
     Handbook::mc().doOneOfOne<ADS_METHYL_TO_DIMER>();
     printSeparator();
@@ -117,7 +117,7 @@ int main()
     Handbook::mc().doOneOfOne<DIMER_FORMATION>();
     Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, 0, 1);
     printSeparator();
-    assert(Handbook::mc().totalRate() == 9 * 3600 + 2000 + 5e4 + 1e7);
+    assert(Handbook::mc().totalRate() == 9 * 3600 + 2000 + 5e3 + 1e7);
 
     Handbook::mc().doOneOfOne<ADS_METHYL_TO_DIMER>();
     Handbook::mc().doOneOfMul<CORR_SURFACE_ACTIVATION>(0, s.y - 1, 1);

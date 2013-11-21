@@ -13,8 +13,7 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
     {
         if (!checkAndFind(anchor, 31, METHYL_ON_DIMER_CMu))
         {
-            auto spec = new MethylOnDimerCMu(parent);
-            spec->store();
+            createBy<MethylOnDimerCMu>(parent);
         }
     }
 }

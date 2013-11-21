@@ -2,12 +2,12 @@
 
 void HighBridgeToTwoBridges::find(HighBridge *target)
 {
-    ManyTypical::find<HighBridgeToTwoBridges>(target, target->atom(1), 5, BRIDGE_CRs, front100Lambda);
+    ManyTypical::find<HighBridgeToTwoBridges>(target, 5, BRIDGE_CRs, front100Lambda);
 }
 
 void HighBridgeToTwoBridges::find(BridgeCRs *target)
 {
-    ManyTypical::find<HighBridgeToTwoBridges>(target, target->atom(1), 19, HIGH_BRIDGE, front100Lambda);
+    ManyTypical::find<HighBridgeToTwoBridges>(target, 19, HIGH_BRIDGE, front100Lambda);
 }
 
 void HighBridgeToTwoBridges::doIt()

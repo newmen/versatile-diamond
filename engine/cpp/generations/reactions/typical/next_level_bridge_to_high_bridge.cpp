@@ -2,7 +2,7 @@
 
 void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
 {
-    MonoTypical::find<NextLevelBridgeToHighBridge>(target);
+    createBy<NextLevelBridgeToHighBridge>(target);
 }
 
 void NextLevelBridgeToHighBridge::doIt()

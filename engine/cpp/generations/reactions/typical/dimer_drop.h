@@ -12,7 +12,7 @@ public:
 //    using MonoTypical::MonoTypical;
     DimerDrop(SpecificSpec *target) : MonoTypical(target) {}
 
-    double rate() const { return 5e4; }
+    double rate() const { return 5e3; }
     void doIt();
 
     std::string name() const override { return "dimer drop"; }

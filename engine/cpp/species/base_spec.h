@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <memory>
 #include "../atoms/atom.h"
+#include "../tools/creator.h"
 
 #ifdef PRINT
 #include <functional>
@@ -14,7 +15,7 @@
 namespace vd
 {
 
-class BaseSpec
+class BaseSpec : public Creator
 {
     std::unordered_set<BaseSpec *> _children;
     bool _visited = false;

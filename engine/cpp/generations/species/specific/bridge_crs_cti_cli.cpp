@@ -19,8 +19,7 @@ void BridgeCRsCTiCLi::find(BridgeCRs *parent)
         if (!anchors[0]->hasRole(0, BRIDGE_CRs_CTi_CLi) || !anchors[1]->hasRole(5, BRIDGE_CRs_CTi_CLi) ||
                 !anchors[2]->hasRole(4, BRIDGE_CRs_CTi_CLi))
         {
-            auto spec = new BridgeCRsCTiCLi(parent);
-            spec->store();
+            createBy<BridgeCRsCTiCLi>(parent);
         }
     }
 }

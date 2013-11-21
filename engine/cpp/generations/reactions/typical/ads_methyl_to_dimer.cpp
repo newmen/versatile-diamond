@@ -5,7 +5,7 @@
 
 void AdsMethylToDimer::find(DimerCRs *target)
 {
-    MonoTypical::find<AdsMethylToDimer>(target);
+    createBy<AdsMethylToDimer>(target);
 }
 
 void AdsMethylToDimer::doIt()

@@ -17,8 +17,7 @@ void MethylOnBridge::find(Bridge *target)
             if (methyl->is(14))
             {
                 BaseSpec *parent = target;
-                auto spec = new MethylOnBridge(&methyl, &parent);
-                spec->store();
+                createBy<MethylOnBridge>(&methyl, &parent);
             }
         }
     }

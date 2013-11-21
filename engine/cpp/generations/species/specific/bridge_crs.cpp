@@ -17,8 +17,7 @@ void BridgeCRs::find(Bridge *parent)
         {
             if (!checkAndFind(anchor, 5, BRIDGE_CRs))
             {
-                auto spec = new BridgeCRs(checkingIndexes[i], 1, parent);
-                spec->store();
+                createBy<BridgeCRs>(checkingIndexes[i], 1, parent);
             }
         }
     }

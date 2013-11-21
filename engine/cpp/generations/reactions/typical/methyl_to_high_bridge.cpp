@@ -4,7 +4,7 @@
 
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
-    MonoTypical::find<MethylToHighBridge>(target);
+    createBy<MethylToHighBridge>(target);
 }
 
 void MethylToHighBridge::doIt()

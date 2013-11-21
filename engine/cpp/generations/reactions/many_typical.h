@@ -14,8 +14,7 @@ class ManyTypical : public Typical<FewSpecsReaction<TARGETS_NUM>, RT>
 
 protected:
     template <class R>
-    static void find(SpecificSpec *target, Atom *anchor,
-                     ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda);
+    static void find(SpecificSpec *target, ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda);
 
 //    using Typical<FewSpecsReaction<TARGETS_NUM>, RT>::Typical;
     ManyTypical(SpecificSpec **targets) : Typical<FewSpecsReaction<TARGETS_NUM>, RT>(targets) {}
@@ -25,21 +24,15 @@ protected:
 
 template <ushort RT, ushort TARGETS_NUM>
 template <class R>
-void ManyTypical<RT, TARGETS_NUM>::find(SpecificSpec *target, Atom *anchor,
+void ManyTypical<RT, TARGETS_NUM>::find(SpecificSpec *target,
                                         ushort otherAtomType, ushort otherSpecType, RelationFunc nLambda)
 {
+    Atom *anchor = target->anchor();
     assert(anchor->lattice());
     auto diamond = static_cast<const Diamond *>(anchor->lattice()->crystal());
 
     auto nbrs = nLambda(diamond, anchor);
-    if (nbrs[0]) //  && !nbrs[0]->prevIs(otherAtomType)
-    {
-        FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(target, nbrs[0], otherAtomType, otherSpecType);
-    }
-    if (nbrs[1] && nbrs[1]->isVisited())
-    {
-        FewSpecsReaction<TARGETS_NUM>::template addIfHasNeighbour<R>(target, nbrs[1], otherAtomType, otherSpecType);
-    }
+    FewSpecsReaction<TARGETS_NUM>::template find<R, 2>(target, nbrs, otherAtomType, otherSpecType);
 }
 
 template <ushort RT, ushort TARGETS_NUM>

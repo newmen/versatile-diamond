@@ -14,8 +14,7 @@ void BridgeCTsi::find(Bridge *parent)
     {
         if (!anchor->hasRole(28, BRIDGE_CTsi))
         {
-            auto spec = new BridgeCTsi(parent);
-            spec->store();
+            createBy<BridgeCTsi>(parent);
         }
     }
 }

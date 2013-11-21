@@ -45,8 +45,8 @@ int main()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-    for (int i = 0; i < 500000; ++i)
-//    while (Handbook::mc().totalTime() < 0.5)
+//    for (int i = 0; i < 500000; ++i)
+    while (Handbook::mc().totalTime() < 0.5)
     {
         Handbook::mc().doRandom(&mcData);
 

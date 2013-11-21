@@ -1,6 +1,7 @@
 #ifndef FEW_SPECS_REACTION_H
 #define FEW_SPECS_REACTION_H
 
+#include "../atoms/neighbours.h"
 #include "../species/specific_spec.h"
 #include "spec_reaction.h"
 
@@ -28,6 +29,10 @@ public:
 #endif // PRINT
 
 protected:
+    template <class R, ushort NEIGHBOURS_NUM>
+    static void find(SpecificSpec *target, Neighbours<NEIGHBOURS_NUM> &nbrs,
+                     ushort otherAtomType, ushort otherSpecType);
+
     template <class R>
     static void addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType);
 
@@ -79,6 +84,20 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
     }
 }
 
+template <ushort TARGETS_NUM>
+template <class R, ushort NEIGHBOURS_NUM>
+void FewSpecsReaction<TARGETS_NUM>::find(SpecificSpec *target, Neighbours<NEIGHBOURS_NUM> &nbrs,
+                                         ushort otherAtomType, ushort otherSpecType)
+{
+    for (int i = 0; i < NEIGHBOURS_NUM; ++i)
+    {
+        if (nbrs[i] && (i == 0 || nbrs[i]->isVisited()))
+        {
+            addIfHasNeighbour<R>(target, nbrs[i], otherAtomType, otherSpecType);
+        }
+    }
+}
+
 template <>
 template <class R>
 void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType)
@@ -93,8 +112,7 @@ void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbou
                 neighbourSpec
             };
 
-            SpecReaction *reaction = new R(targets);
-            reaction->store();
+            createBy<R>(targets);
         }
     }
 }

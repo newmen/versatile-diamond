@@ -4,12 +4,12 @@
 
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
-    ManyTypical::find<HighBridgeStandToOneBridge>(target, target->atom(1), 28, BRIDGE_CTsi, front100Lambda);
+    ManyTypical::find<HighBridgeStandToOneBridge>(target, 28, BRIDGE_CTsi, front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
 {
-    ManyTypical::find<HighBridgeStandToOneBridge>(target, target->atom(0), 19, HIGH_BRIDGE, front100Lambda);
+    ManyTypical::find<HighBridgeStandToOneBridge>(target, 19, HIGH_BRIDGE, front100Lambda);
 }
 
 void HighBridgeStandToOneBridge::doIt()

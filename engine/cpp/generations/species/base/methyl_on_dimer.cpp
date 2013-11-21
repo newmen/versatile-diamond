@@ -21,8 +21,7 @@ void MethylOnDimer::find(Dimer *target)
                 if (methyl->is(14))
                 {
                     BaseSpec *parent = target;
-                    auto spec = new MethylOnDimer(&methyl, checkingIndexes[i], &parent);
-                    spec->store();
+                    createBy<MethylOnDimer>(&methyl, checkingIndexes[i], &parent);
                 }
             }
         }

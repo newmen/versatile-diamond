@@ -2,12 +2,12 @@
 
 void DimerFormationNearBridge::find(BridgeCTsi *target)
 {
-    ManyTypical::find<DimerFormationNearBridge>(target, target->atom(0), 5, BRIDGE_CRs, front100Lambda);
+    ManyTypical::find<DimerFormationNearBridge>(target, 5, BRIDGE_CRs, front100Lambda);
 }
 
 void DimerFormationNearBridge::find(BridgeCRs *target)
 {
-    ManyTypical::find<DimerFormationNearBridge>(target, target->atom(1), 28, BRIDGE_CTsi, front100Lambda);
+    ManyTypical::find<DimerFormationNearBridge>(target, 28, BRIDGE_CTsi, front100Lambda);
 }
 
 void DimerFormationNearBridge::doIt()

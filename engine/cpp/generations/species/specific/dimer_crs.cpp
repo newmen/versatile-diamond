@@ -17,8 +17,7 @@ void DimerCRs::find(Dimer *parent)
         {
             if (!anchor->hasRole(21, DIMER_CRs))
             {
-                auto spec = new DimerCRs(indexes[i], parent);
-                spec->store();
+                createBy<DimerCRs>(indexes[i], parent);
             }
         }
     }
