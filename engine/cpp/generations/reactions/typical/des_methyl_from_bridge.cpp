@@ -9,8 +9,8 @@ void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 
 void DesMethylFromBridge::doIt()
 {
-    Atom *atoms[2] = { target()->atom(1) };
-    Atom *a = atoms[0], *b = target()->atom(0);
+    Atom *atoms[2] = { target()->atom(1), target()->atom(0) };
+    Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(7));
 
@@ -23,5 +23,5 @@ void DesMethylFromBridge::doIt()
     Handbook::amorph().erase(b);
     Handbook::scavenger().markAtom(b);
 
-    Finder::findAll(atoms, 1);
+    Finder::findAll(atoms, 2);
 }
