@@ -5,6 +5,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -72,13 +73,15 @@ ushort DependentSpec<PARENTS_NUM>::size() const
 template <ushort PARENTS_NUM>
 void DependentSpec<PARENTS_NUM>::info()
 {
-    std::cout << name() << " at [" << this << "]";
-    for (int i = 0; i < PARENTS_NUM; ++i)
-    {
-        std::cout << " -> (";
-        _parents[i]->info();
-        std::cout << ")";
-    }
+    debugPrintWoLock([&](std::ostream &os) {
+        os << name() << " at [" << this << "]";
+        for (int i = 0; i < PARENTS_NUM; ++i)
+        {
+            os << " -> (";
+            _parents[i]->info();
+            os << ")";
+        }
+    }, false);
 }
 
 template <ushort PARENTS_NUM>

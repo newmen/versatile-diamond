@@ -2,7 +2,6 @@
 #define EVENTS_CONTAINER_H
 
 #include <unordered_map>
-#include <omp.h>
 #include "../reactions/spec_reaction.h"
 #include "base_events_container.h"
 

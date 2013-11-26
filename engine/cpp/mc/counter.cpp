@@ -2,10 +2,6 @@
 #include <iostream>
 #include <algorithm>
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 namespace vd
 {
 

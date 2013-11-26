@@ -16,6 +16,8 @@ class SpecificSpec : public DependentSpec<1>
 protected:
     SpecificSpec(BaseSpec *parent) : DependentSpec<1>(&parent) {}
 
+    bool isNew() const { return _isNew; }
+
 public:
     void usedIn(SpecReaction *reaction);
     void unbindFrom(SpecReaction *reaction);

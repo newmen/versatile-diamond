@@ -5,6 +5,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -64,12 +65,14 @@ Atom *SourceSpec<ATOMS_NUM>::firstLatticedAtomIfExist()
 template <ushort ATOMS_NUM>
 void SourceSpec<ATOMS_NUM>::info()
 {
-    std::cout << name() << " at [" << this << "]";
-    for (int i = 0; i < ATOMS_NUM; ++i)
-    {
-        std::cout << " ";
-        _atoms[i]->info();
-    }
+    debugPrintWoLock([&](std::ostream &os) {
+        os << name() << " at [" << this << "]";
+        for (int i = 0; i < ATOMS_NUM; ++i)
+        {
+            os << " ";
+            _atoms[i]->info();
+        }
+    }, false);
 }
 
 template <ushort ATOMS_NUM>

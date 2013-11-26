@@ -2,6 +2,6 @@
 
 #ifdef DEBUG
 
-const dim3 OpenDiamond::SIZES = dim3(10, 10, 10);
+const dim3 OpenDiamond::SIZES = dim3(100, 100, 10);
 
 #endif // DEBUG

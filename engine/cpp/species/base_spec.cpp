@@ -1,8 +1,8 @@
 #include "base_spec.h"
 
 #ifdef PRINT
-#include <omp.h>
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -58,24 +58,18 @@ void BaseSpec::remove()
 #ifdef PRINT
 void BaseSpec::wasFound()
 {
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    {
+    debugPrint([&](std::ostream &os) {
         info();
-        std::cout << " was found" << std::endl;
-    }
+        os << " was found";
+    });
 }
 
 void BaseSpec::wasForgotten()
 {
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    {
+    debugPrint([&](std::ostream &os) {
         info();
-        std::cout << " was forgotten" << std::endl;
-    }
+        os << " was forgotten";
+    });
 }
 #endif // PRINT
 

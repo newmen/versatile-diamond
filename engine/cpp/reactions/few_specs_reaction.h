@@ -7,6 +7,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -121,27 +122,28 @@ void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbou
 template <ushort TARGETS_NUM>
 void FewSpecsReaction<TARGETS_NUM>::info()
 {
-    std::cout << "Reaction " << name() << " [" << this << "]:";
-    for (int i = 0; i < TARGETS_NUM; ++i)
-    {
-        std::cout << " ";
-        if (target(i))
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "Reaction " << name() << " [" << this << "]:";
+        for (int i = 0; i < TARGETS_NUM; ++i)
         {
-            if (target(i)->atom(0)->lattice())
+            os << " ";
+            if (target(i))
             {
-                std::cout << target(i)->atom(0)->lattice()->coords();
+                if (target(i)->atom(0)->lattice())
+                {
+                    os << target(i)->atom(0)->lattice()->coords();
+                }
+                else
+                {
+                    os << "amorph";
+                }
             }
             else
             {
-                std::cout << "amorph";
+                os << "zerofied";
             }
         }
-        else
-        {
-            std::cout << "zerofied";
-        }
-    }
-    std::cout << std::endl;
+    }, false);
 }
 #endif // PRINT
 

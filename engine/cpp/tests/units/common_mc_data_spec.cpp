@@ -92,7 +92,7 @@ int main()
     Atom *c111 = buildCd(1, 1, 1, 1, 1);
     Atom *c211 = buildCd(1, 1, 2, 1, 1);
     Atom *c121 = buildCd(1, 1, 1, 2, 1);
-    Atom *c991 = buildCd(1, 1, 9, 9, 1);
+    Atom *c991 = buildCd(1, 1, 49, 49, 1);
     Atom *cxy1 = buildCd(1, 1, s.x - 1, s.y - 1, 1);
 
     SurfaceActivation sa111(c111), sa211(c211), sa991(c991);
@@ -109,11 +109,11 @@ int main()
     checkSame(&mcData, &sa211, &sd121);
     mcData.reset();
 
-    // checkSame(&mcData, &sa111, &sdxy1);
-    // mcData.reset();
+    checkSame(&mcData, &sa111, &sdxy1);
+    mcData.reset();
 
-    // checkNotSame(&mcData, &sa111, &sa991);
-    // mcData.reset();
+    checkNotSame(&mcData, &sa111, &sa991);
+    mcData.reset();
 
     for (Atom *atom : atoms) delete atom;
     return 0;

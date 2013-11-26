@@ -1,5 +1,4 @@
 #include "dimer_formation.h"
-#include <omp.h>
 
 #include <assert.h>
 

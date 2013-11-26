@@ -7,9 +7,9 @@ QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_CXXFLAGS += -DTHREADS_NUM=1
-#QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
-#LIBS += -fopenmp -lstdc++
+#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
+LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -DTHREADS_NUM=1
@@ -139,4 +139,5 @@ HEADERS += \
     mc/counter.h \
     generations/reactions/ubiquitous.h \
     generations/reactions/typical/dimer_formation_near_bridge.h \
-    tools/creator.h
+    tools/creator.h \
+    tools/debug_print.h

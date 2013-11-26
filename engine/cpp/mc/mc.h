@@ -11,12 +11,9 @@
 #include "events_container.h"
 #include "multi_events_container.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 // for #compareContainers()
@@ -91,11 +88,13 @@ MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
     for (int j = 0; j < MULTI_EVENTS_NUM; ++j) _order[i + j] = j + MULTI_EVENTS_INDEX_SHIFT;
 
 #ifdef PRINT
-    std::cout << "Inited order: " << std::endl;
-    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
-    {
-        std::cout << i << "-" << _order[i] << std::endl;
-    }
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "Inited order: " << std::endl;
+        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+        {
+            os << i << "-" << _order[i] << std::endl;
+        }
+    });
 #endif // PRINT
 }
 
@@ -115,21 +114,21 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #ifdef PRINT
 #ifdef PARALLEL
 #pragma omp master
-#pragma omp critical (print)
 #endif // PARALLEL
-    std::cout << " > rate: " << totalRate() << " % time: " << totalTime() << std::endl;
+    debugPrint([&](std::ostream &os) {
+        os << " > rate: " << totalRate() << " % time: " << totalTime();
+    });
 
 #ifdef PARALLEL
 #pragma omp master
-#pragma omp critical (print)
 #endif // PARALLEL
-    {
-        std::cout << "Current sizes: " << std::endl;
+    debugPrint([&](std::ostream &os) {
+        os << "Current sizes: " << std::endl;
         for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
         {
-            std::cout << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
+            os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
         }
-    }
+    });
 #endif // PRINT
 
     std::uniform_real_distribution<double> distribution(0.0, totalRate());
@@ -142,12 +141,9 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
     r = distribution(_randomGenerator);
 
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-    std::cout << "Random number at " << omp_get_thread_num() << ": " << r << "\n" << std::endl;
-#else
-    std::cout << "Random number: " << r << "\n" << std::endl;
-#endif // PARALLEL
+    debugPrint([&](std::ostream &os) {
+        os << "Random number: " << r << "\n";
+    });
 #endif // PRINT
 
     double passRate = 0;
@@ -158,14 +154,13 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         if (r < cr + passRate)
         {
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-            std::cout << "Event " << i << " => ";
+            debugPrint([&](std::ostream &os) {
+                os << "event " << i;
+            });
 #endif // PRINT
 
             event = currentEvents->selectEvent(r - passRate);
-            data->checkSame(event);
+            data->store(event);
             break;
         }
         else
@@ -174,49 +169,41 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         }
     }
 
-#ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    {
-#ifdef PARALLEL
-        std::cout << omp_get_thread_num() << " selects ";
-#endif // PARALLEL
-        if (!event) std::cout << "null";
-        else
-        {
-            if (!event->anchor()->lattice()) std::cout << "amorph";
-            else std::cout << event->anchor()->lattice()->coords();
-
-            std::cout << " which is";
-            if (!data->isSame()) std::cout << " not";
-            std::cout << " same";
-        }
-        std::cout << std::endl;
-    }
-#endif // PRINT
-
 #ifdef PARALLEL
 #pragma omp barrier
 #endif // PARALLEL
 
     if (!event)
     {
-        data->noEvent();
+        data->setEventNotFound();
     }
-    else if (!data->isSame())
+    else
     {
-        increaseTime();
+        data->checkSame();
     }
+
+#ifdef PRINT
+    debugPrint([&](std::ostream &os) {
+        if (!event) os << "null";
+        else
+        {
+            if (!event->anchor()->lattice()) os << "amorph";
+            else os << event->anchor()->lattice()->coords();
+
+            os << " which is";
+            if (!data->isSame()) os << " not";
+            os << " same";
+        }
+    });
+#endif // PRINT
 
 #ifdef PARALLEL
 #pragma omp barrier
 #endif // PARALLEL
 
-
-
     if (event && !data->isSame())
     {
+        increaseTime();
         data->counter()->inc(event);
         event->doIt();
     }
@@ -229,17 +216,24 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #pragma omp master
 #endif // PARALLEL
     {
-        if (data->wasntFound())
+        if (data->eventWasntFound())
         {
 #ifdef PRINT
-            std::cout << "Event not found! Recount && Resort" << std::endl;
+            debugPrintWoLock([&](std::ostream &os) {
+                os << "Event not found! Recount";
+            });
 #endif // PRINT
 
             recountTotalRate();
         }
 
-        if (data->wasntFound() || data->hasSameSite())
+        if (data->eventWasntFound() || data->hasSameSite())
         {
+#ifdef PRINT
+            debugPrintWoLock([&](std::ostream &os) {
+                os << " -> sort!";
+            });
+#endif // PRINT
             sort();
         }
 
@@ -319,8 +313,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 #endif // PARALLEL
     {
 #ifdef PRINT
-        std::cout << "Add ";
-        reaction->info();
+        debugPrintWoLock([&](std::ostream &os) {
+            os << "Add ";
+            reaction->info();
+        });
 #endif // PRINT
         _events[RT].add(reaction);
     }
@@ -341,7 +337,9 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction)
 #endif // PARALLEL
     {
 #ifdef PRINT
-        std::cout << "Remove reaction " << reaction->name() << "(" << RT << ") [" << reaction << "]" << std::endl;
+        debugPrintWoLock([&](std::ostream &os) {
+            os << "Remove reaction " << reaction->name() << "(" << RT << ") [" << reaction << "]";
+        });
 #endif // PRINT
         _events[RT].remove(reaction);
     }
@@ -358,8 +356,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint
 #endif // PARALLEL
     {
 #ifdef PRINT
-        std::cout << "Add multi ";
-        reaction->info();
+        debugPrintWoLock([&](std::ostream &os) {
+            os << "Add multi ";
+            reaction->info();
+        });
 #endif // PRINT
         _multiEvents[RT].add(reaction, n);
     }
@@ -380,8 +380,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
 #endif // PARALLEL
     {
 #ifdef PRINT
-        std::cout << "Remove multi ";
-        reaction->info();
+        debugPrintWoLock([&](std::ostream &os) {
+            os << "Remove multi ";
+            reaction->info();
+        });
 #endif // PRINT
         _multiEvents[RT].remove(reaction->target(), n);
     }

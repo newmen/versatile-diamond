@@ -4,10 +4,6 @@
 #include <vector>
 #include "common.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 namespace vd
 {
 

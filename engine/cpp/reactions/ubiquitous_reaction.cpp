@@ -3,6 +3,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -60,11 +61,12 @@ void UbiquitousReaction::doIt()
 #ifdef PRINT
 void UbiquitousReaction::info()
 {
-    std::cout << "Reaction " << name() << " [" << this << "] ";
-    std::cout << " as <" << target()->type() << ", " << target()->prevType() << ">: ";
-    if (target()->lattice()) std::cout << target()->lattice()->coords();
-    else std::cout << "amorph";
-    std::cout << std::endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "Reaction " << name() << " [" << this << "] ";
+        os << " as <" << target()->type() << ", " << target()->prevType() << ">: ";
+        if (target()->lattice()) os << target()->lattice()->coords();
+        else os << "amorph";
+    }, false);
 }
 #endif // PRINT
 

@@ -5,10 +5,6 @@
 #include "../tools/collector.h"
 #include "specific_spec.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 namespace vd
 {
 

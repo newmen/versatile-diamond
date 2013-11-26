@@ -1,17 +1,19 @@
 #include "mc/common_mc_data.h"
 #include "generations/handbook.h"
-#include <generations/builders/atom_builder.h>
+#include "generations/builders/atom_builder.h"
 #include "generations/crystals/diamond.h"
 
 #include "tests/support/open_diamond.h"
-
 #include <iostream>
-using namespace std;
+
 #ifdef PRINT
+#include "tools/debug_print.h"
 
 void printSeparator()
 {
-    cout << Handbook::mc().totalRate() << endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << Handbook::mc().totalRate();
+    });
 }
 #endif // PRINT
 
@@ -23,20 +25,26 @@ int main()
 
 #ifdef PRINT
 #ifdef PARALLEL
-    cout << "Start as PARALLEL mode" << endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "Start as PARALLEL mode";
+    });
 #else
-    cout << "Start as SINGLE THREAD mode" << endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "Start as SINGLE THREAD mode";
+    });
 #endif // PARALLEL
 #endif // PRINT
 
-//    Diamond *diamond = new Diamond(dim3(100, 100, 10));
-    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+    Diamond *diamond = new Diamond(dim3(100, 100, 10));
+//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
 //    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 
-    cout << "Atoms num: " << diamond->countAtoms() << endl;
+    std::cout << "Atoms num: " << diamond->countAtoms() << std::endl;
+
 #ifdef PRINT
     printSeparator();
+    int i = 0;
 #endif // PRINT
 
     CommonMCData mcData;
@@ -51,17 +59,13 @@ int main()
         Handbook::mc().doRandom(&mcData);
 
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-        cout << (++i) << ". " << Handbook::mc().totalRate() << "\n\n\n" << endl;
+        debugPrint([&](std::ostream &os) {
+            os << (++i) << ". " << Handbook::mc().totalRate() << "\n\n\n";
+        });
 #endif // PRINT
     }
 
-#ifdef PRINT
-#endif // PRINT
-    cout << "Atoms num: " << diamond->countAtoms() << endl;
-
+    std::cout << "Atoms num: " << diamond->countAtoms() << "\n" << std::endl;
     mcData.counter()->printStats();
 
     delete diamond;

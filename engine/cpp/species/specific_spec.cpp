@@ -24,18 +24,14 @@ void SpecificSpec::remove()
     }
 
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    {
-        std::cout << "Removing reactions for " << name() << " with atoms of: " << std::endl;
-        std::cout << std::dec;
-        eachAtom([](Atom *atom) {
+    debugPrint([&](std::ostream &os) {
+        os << "Removing reactions for " << name() << " with atoms of: " << std::endl;
+        os << std::dec;
+        eachAtom([&os](Atom *atom) {
             atom->info();
-            std::cout << std::endl;
+            os << std::endl;
         });
-        std::cout << std::endl;
-    }
+    });
 #endif // PRINT
 
     for (uint i = 0; i < n; ++i)
@@ -49,8 +45,6 @@ void SpecificSpec::remove()
 
 void SpecificSpec::findReactions()
 {
-    if (!_isNew) return;
-
     findAllReactions();
     _isNew = false;
 }

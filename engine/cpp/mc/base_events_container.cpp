@@ -2,6 +2,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -35,7 +36,9 @@ Reaction *BaseEventsContainer::selectEvent(double r)
     assert(index < _events.size());
 
 #ifdef PRINT
-    std::cout << "SELECTED: " << index << std::endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "SELECTED: " << index;
+    });
 #endif // PRINT
 
     return _events[index];

@@ -6,6 +6,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -117,13 +118,12 @@ void Atom::describe(ushort rType, BaseSpec *spec)
     const uint key = hash(rType, spec->type());
 
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-        std::cout << "describe " << this << std::dec;
+    debugPrint([&](std::ostream &os) {
+        os << "describe " << this << std::dec;
         pos();
-        std::cout << " |" << type() << ", " << _prevType << "| role type: " << rType
-                  << ". spec type: " << spec->type() << ". key: " << key << std::endl;
+        os << " |" << type() << ", " << _prevType << "| role type: " << rType
+           << ". spec type: " << spec->type() << ". key: " << key;
+    });
 #endif // PRINT
 
     _roles[rType].insert(spec->type());
@@ -142,17 +142,14 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     const uint key = hash(rType, specType);
 
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    {
-        std::cout << "specByRole " << this << std::dec;
+    debugPrint([&](std::ostream &os) {
+        os << "specByRole " << this << std::dec;
         pos();
-        std::cout << " |" << type() << ", " << _prevType << "| role type: " << rType
-                  << ". spec type: " << specType << ". key: " << key;
+        os << " |" << type() << ", " << _prevType << "| role type: " << rType
+           << ". spec type: " << specType << ". key: " << key;
         auto er = _specs.equal_range(key);
-        std::cout << " -> distance: " << std::distance(er.first, er.second) << std::endl;
-    }
+        os << " -> distance: " << std::distance(er.first, er.second);
+    });
 #endif // PRINT
 
     auto its = _specs.equal_range(key);
@@ -189,13 +186,12 @@ void Atom::forget(ushort rType, BaseSpec *spec)
     }
 
 #ifdef PRINT
-#ifdef PARALLEL
-#pragma omp critical (print)
-#endif // PARALLEL
-    std::cout << "forget " << this << std::dec;
-    pos();
-    std::cout << " |" << type() << ", " << _prevType << "| role type: " << rType
-              << ". spec type: " << spec->type() << ". key: " << key << std::endl;
+    debugPrint([&](std::ostream &os) {
+        os << "forget " << this << std::dec;
+        pos();
+        os << " |" << type() << ", " << _prevType << "| role type: " << rType
+                  << ". spec type: " << spec->type() << ". key: " << key;
+    });
 #endif // PRINT
 }
 
@@ -256,31 +252,32 @@ void Atom::prepareToRemove()
 #ifdef PRINT
 void Atom::info()
 {
-//#pragma omp critical (print)
-    {
-        std::cout << type() << " -> ";
+    debugPrintWoLock([&](std::ostream &os) {
+        os << type() << " -> ";
         pos();
 
-        std::cout << " %% roles: ";
+        os << " %% roles: ";
         for (const auto &pr : _roles)
         {
-            std::cout << pr.first << "";
-            for (ushort st : pr.second) std::cout << " , " << st << " => " << hash(pr.first, st);
-            std::cout << " | ";
+            os << pr.first << "";
+            for (ushort st : pr.second) os << " , " << st << " => " << hash(pr.first, st);
+            os << " | ";
         }
 
-        std::cout << " %% specs: ";
+        os << " %% specs: ";
         for (const auto &pr : _specs)
         {
-            std::cout << pr.first << " -> " << pr.second << " # ";
+            os << pr.first << " -> " << pr.second << " # ";
         }
-    }
+    }, false);
 }
 
 void Atom::pos()
 {
-    if (lattice()) std::cout << lattice()->coords();
-    else std::cout << "amorph";
+    debugPrintWoLock([&](std::ostream &os) {
+        if (lattice()) os << lattice()->coords();
+        else os << "amorph";
+    }, false);
 }
 
 #endif // PRINT

@@ -23,7 +23,11 @@ public:
 template <ushort SST, ushort USED_ATOMS_NUM, class B>
 void Specific<SST, USED_ATOMS_NUM, B>::findChildren()
 {
-    Handbook::keeper().store<SST - BaseSpecsNum>(this);
+    if (this->isNew())
+    {
+        Handbook::keeper().store<SST - BaseSpecsNum>(this);
+    }
+
     B::findChildren();
 }
 

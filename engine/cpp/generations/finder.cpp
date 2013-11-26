@@ -8,6 +8,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 void Finder::initFind(Atom **atoms, int n)
@@ -70,12 +71,13 @@ void Finder::initFind(Atom **atoms, int n)
 void Finder::findAll(Atom **atoms, int n)
 {
 #ifdef PRINT
-    std::cout << "Find by " << n << " atoms";
-    for (int i = 0; i < n; ++i)
-    {
-        std::cout << " [" << atoms[i] << "]";
-    }
-    std::cout << std::endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "Find by " << n << " atoms";
+        for (int i = 0; i < n; ++i)
+        {
+            os << " [" << atoms[i] << "]";
+        }
+    });
 #endif // PRINT
 
 #ifdef DEBUG

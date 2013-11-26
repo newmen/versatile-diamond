@@ -3,6 +3,7 @@
 
 #ifdef PRINT
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -29,9 +30,10 @@ void MonoSpecReaction::removeFrom(SpecificSpec *target)
 #ifdef PRINT
 void MonoSpecReaction::info()
 {
-    std::cout << "MonoSpecReaction " << name() << " [" << this << "]: ";
-    target()->atom(0)->info();
-    std::cout << std::endl;
+    debugPrintWoLock([&](std::ostream &os) {
+        os << "MonoSpecReaction " << name() << " [" << this << "]: ";
+        target()->atom(0)->info();
+    }, false);
 }
 #endif // PRINT
 

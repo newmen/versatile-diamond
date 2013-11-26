@@ -7,6 +7,7 @@
 #ifdef PRINT
 #include <functional>
 #include <iostream>
+#include "../tools/debug_print.h"
 #endif // PRINT
 
 namespace vd
@@ -50,12 +51,14 @@ template <class B, ushort ATOMS_NUM>
 void AdditionalAtomsWrapper<B, ATOMS_NUM>::info()
 {
     B::info();
-    std::cout << " && additional: ";
-    for (int i = 0; i < ATOMS_NUM; ++i)
-    {
-        std::cout << " ";
-        _additionalAtoms[i]->info();
-    }
+    debugPrintWoLock([&](std::ostream &os) {
+        os << " && additional: ";
+        for (int i = 0; i < ATOMS_NUM; ++i)
+        {
+            os << " ";
+            _additionalAtoms[i]->info();
+        }
+    }, false);
 }
 
 template <class B, ushort ATOMS_NUM>

@@ -1,7 +1,6 @@
 #ifndef HANDBOOK_H
 #define HANDBOOK_H
 
-#include <omp.h>
 #include "../tools/common.h"
 #include "../tools/scavenger.h"
 #include "../phases/amorph.h"

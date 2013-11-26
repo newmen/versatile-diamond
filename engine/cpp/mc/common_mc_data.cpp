@@ -27,31 +27,23 @@ void CommonMCData::makeCounter(uint reactionsNum)
 
 bool CommonMCData::isSame()
 {
-#ifdef PARALLEL
-    int ct = omp_get_thread_num();
-#else
-    int ct = 0;
-#endif // PARALLEL
-
+    int ct = currThreadNum();
     if (_sames[ct]) _sameSite = true;
     return _sames[ct];
 }
 
-void CommonMCData::checkSame(Reaction *reaction)
+void CommonMCData::store(Reaction *reaction)
 {
-#ifdef PARALLEL
-    int ct = omp_get_thread_num();
-#else
-    int ct = 0;
-#endif // PARALLEL
-
+    int ct = currThreadNum();
     _reactions[ct] = reaction;
+}
 
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
-
+void CommonMCData::checkSame()
+{
+    int ct = currThreadNum();
+    Reaction *reaction = _reactions[ct];
     Atom *anchor = reaction->anchor();
+
     for (int i = 0; i < THREADS_NUM; ++i)
     {
         if (i == ct || !_reactions[i]) continue;
@@ -79,11 +71,24 @@ void CommonMCData::reset()
     }
 }
 
+int CommonMCData::currThreadNum() const
+{
+#ifdef PARALLEL
+    return omp_get_thread_num();
+#else
+    return 0;
+#endif // PARALLEL
+}
+
 void CommonMCData::updateSame(int currentThread, int anotherThread)
 {
-    if (currentThread > anotherThread)
+    if (_reactions[currentThread]->rate() < _reactions[anotherThread]->rate())
     {
         _sames[currentThread] = true;
+    }
+    else
+    {
+        _sames[anotherThread] = true;
     }
 }
 
