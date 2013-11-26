@@ -108,6 +108,12 @@ void Atom::setLattice(Crystal *crystal, const int3 &coords)
 void Atom::unsetLattice()
 {
     assert(_lattice);
+    assert(_cacheLattice);
+
+    if (_lattice != _cacheLattice)
+    {
+        delete _cacheLattice;
+    }
 
     _cacheLattice = _lattice;
     _lattice = nullptr;
@@ -259,8 +265,11 @@ void Atom::info()
         os << " %% roles: ";
         for (const auto &pr : _roles)
         {
-            os << pr.first << "";
-            for (ushort st : pr.second) os << " , " << st << " => " << hash(pr.first, st);
+            os << pr.first;
+            for (ushort st : pr.second)
+            {
+                os << " , " << st << " => " << hash(pr.first, st);
+            }
             os << " | ";
         }
 
