@@ -3,10 +3,8 @@
 
 //#include <parallel/algorithm> // __gnu_parallel::sort
 #include <algorithm> // std::sort
-#include <chrono>
-#include <random>
-#include <vector>
 #include <cmath>
+#include <vector>
 #include "common_mc_data.h"
 #include "events_container.h"
 #include "multi_events_container.h"
@@ -25,9 +23,6 @@ namespace vd
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 class MC
 {
-    typedef std::chrono::high_resolution_clock McClock;
-    std::mt19937 _randomGenerator;
-
     double _totalRate = 0;
     double _totalTime = 0;
 
@@ -61,7 +56,7 @@ public:
 #endif // DEBUG
 
 private:
-    void increaseTime();
+    void increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)
     {
@@ -79,9 +74,6 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
 {
     static_assert(EVENTS_NUM < MULTI_EVENTS_INDEX_SHIFT, "MULTI_EVENTS_INDEX_SHIFT too small, need to increase it value");
-
-    McClock::duration d = McClock::now().time_since_epoch();
-    _randomGenerator.seed(d.count());
 
     int i = 0;
     for (; i < EVENTS_NUM; ++i) _order[i] = i;
@@ -107,10 +99,6 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
-
 #ifdef PRINT
 #ifdef PARALLEL
 #pragma omp master
@@ -131,14 +119,8 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
     });
 #endif // PRINT
 
-    std::uniform_real_distribution<double> distribution(0.0, totalRate());
     Reaction *event = nullptr;
-
-    double r = 0;
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-    r = distribution(_randomGenerator);
+    double r = data->rand(totalRate());
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
@@ -203,7 +185,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
     if (event && !data->isSame())
     {
-        increaseTime();
+        increaseTime(data);
         data->counter()->inc(event);
         event->doIt();
     }
@@ -239,13 +221,16 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
         data->reset();
     }
+
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime()
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
 {
-    std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    double r = distribution(_randomGenerator);
+    double r = data->rand(1.0);
     double dt = -log(r) / totalRate();
 
 #ifdef PARALLEL

@@ -1,11 +1,10 @@
 #include "common_mc_data.h"
 #include <algorithm>
+#include <iostream>
 
 #ifdef PARALLEL
 #include <omp.h>
 #endif // PARALLEL
-
-#include <iostream>
 
 namespace vd
 {
@@ -20,6 +19,11 @@ CommonMCData::~CommonMCData()
     delete _counter;
 }
 
+double CommonMCData::rand(double maxValue)
+{
+    return _generators[currThreadNum()].rand(maxValue);
+}
+
 void CommonMCData::makeCounter(uint reactionsNum)
 {
     _counter = new Counter(reactionsNum);
@@ -28,7 +32,13 @@ void CommonMCData::makeCounter(uint reactionsNum)
 bool CommonMCData::isSame()
 {
     int ct = currThreadNum();
-    if (_sames[ct]) _sameSite = true;
+    if (_sames[ct])
+    {
+#ifdef PARALLEL
+#pragma omp critical
+#endif // PARALLEL
+        _sameSite = true;
+    }
     return _sames[ct];
 }
 
@@ -84,12 +94,20 @@ void CommonMCData::updateSame(int currentThread, int anotherThread)
 {
     if (_reactions[currentThread]->rate() < _reactions[anotherThread]->rate())
     {
-        _sames[currentThread] = true;
+        setSame(currentThread);
     }
     else
     {
-        _sames[anotherThread] = true;
+        setSame(anotherThread);
     }
+}
+
+void CommonMCData::setSame(uint threadId)
+{
+#ifdef PARALLEL
+#pragma omp critical
+#endif // PARALLEL
+    _sames[threadId] = true;
 }
 
 bool CommonMCData::isNear(Atom *a, Atom *b) const

@@ -1,6 +1,9 @@
 #include "handbook.h"
-
 #include <assert.h>
+
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
 
 const ushort Handbook::atomsNum = 33;
 const bool Handbook::__atomsAccordance[] = {

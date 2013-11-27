@@ -4,6 +4,7 @@
 #include "../atoms/atom.h"
 #include "../reactions/reaction.h"
 #include "counter.h"
+#include "random_generator.h"
 
 #ifndef MIN_DISTANCE
 #define MIN_DISTANCE 10
@@ -14,6 +15,8 @@ namespace vd
 
 class CommonMCData
 {
+    RandomGenerator _generators[THREADS_NUM];
+
     bool _wasntFound, _sameSite;
     bool _sames[THREADS_NUM];
     Reaction *_reactions[THREADS_NUM];
@@ -23,6 +26,8 @@ class CommonMCData
 public:
     CommonMCData();
     ~CommonMCData();
+
+    double rand(double maxValue);
 
     void makeCounter(uint reactionsNum);
     Counter *counter() { return _counter; }
@@ -40,6 +45,7 @@ public:
 private:
     inline int currThreadNum() const;
     inline void updateSame(int currentThread, int anotherThread);
+    inline void setSame(uint threadId);
 
     bool isNear(Atom *a, Atom *b) const;
     inline bool isNearByOneAxis(uint max, int v, int w) const;
