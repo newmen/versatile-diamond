@@ -36,7 +36,7 @@ Reaction *BaseEventsContainer::selectEvent(double r)
     assert(index < _events.size());
 
 #ifdef PRINT
-    debugPrintWoLock([&](std::ostream &os) {
+    debugPrint([&](std::ostream &os) {
         os << "SELECTED: " << index;
     });
 #endif // PRINT

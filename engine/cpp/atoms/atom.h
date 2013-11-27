@@ -6,6 +6,10 @@
 #include "../tools/common.h"
 #include "lattice.h"
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -71,8 +75,8 @@ public:
     void prepareToRemove();
 
 #ifdef PRINT
-    void info();
-    void pos();
+    void info(std::ostream &os);
+    void pos(std::ostream &os);
 #endif // PRINT
 
 protected:

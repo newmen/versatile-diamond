@@ -2,7 +2,6 @@
 #include "../generations/finder.h" // wow wow
 
 #ifdef PRINT
-#include <iostream>
 #include "../tools/debug_print.h"
 #endif // PRINT
 
@@ -55,18 +54,16 @@ void UbiquitousReaction::doIt()
     action();
     _target->changeType(type);
 
-    Finder::findAll(&_target, 1);
+    Finder::findAll(&_target, 1); // TODO: move to generation
 }
 
 #ifdef PRINT
-void UbiquitousReaction::info()
+void UbiquitousReaction::info(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        os << "Reaction " << name() << " [" << this << "] ";
-        os << " as <" << target()->type() << ", " << target()->prevType() << ">: ";
-        if (target()->lattice()) os << target()->lattice()->coords();
-        else os << "amorph";
-    }, false);
+    os << "Reaction " << name() << " [" << this << "] ";
+    os << " as <" << target()->type() << ", " << target()->prevType() << ">: ";
+    if (target()->lattice()) os << target()->lattice()->coords();
+    else os << "amorph";
 }
 #endif // PRINT
 

@@ -1,9 +1,12 @@
 #ifndef REACTION_H
 #define REACTION_H
 
+#include <string>
 #include "../atoms/atom.h"
 
-#include <string>
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
 
 namespace vd
 {
@@ -20,7 +23,7 @@ public:
     virtual void doIt() = 0;
 
 #ifdef PRINT
-    virtual void info() = 0;
+    virtual void info(std::ostream &os) = 0;
 #endif // PRINT
 
     virtual std::string name() const = 0;

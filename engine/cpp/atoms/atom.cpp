@@ -1,11 +1,9 @@
 #include "atom.h"
-#include "lattice.h"
-#include "../species/specific_spec.h"
-
 #include <assert.h>
+#include "../species/specific_spec.h"
+#include "lattice.h"
 
 #ifdef PRINT
-#include <iostream>
 #include "../tools/debug_print.h"
 #endif // PRINT
 
@@ -126,7 +124,7 @@ void Atom::describe(ushort rType, BaseSpec *spec)
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
         os << "describe " << this << std::dec;
-        pos();
+        pos(os);
         os << " |" << type() << ", " << _prevType << "| role type: " << rType
            << ". spec type: " << spec->type() << ". key: " << key;
     });
@@ -150,7 +148,7 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
         os << "specByRole " << this << std::dec;
-        pos();
+        pos(os);
         os << " |" << type() << ", " << _prevType << "| role type: " << rType
            << ". spec type: " << specType << ". key: " << key;
         auto er = _specs.equal_range(key);
@@ -194,7 +192,7 @@ void Atom::forget(ushort rType, BaseSpec *spec)
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
         os << "forget " << this << std::dec;
-        pos();
+        pos(os);
         os << " |" << type() << ", " << _prevType << "| role type: " << rType
                   << ". spec type: " << spec->type() << ". key: " << key;
     });
@@ -256,37 +254,33 @@ void Atom::prepareToRemove()
 }
 
 #ifdef PRINT
-void Atom::info()
+void Atom::info(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        os << type() << " -> ";
-        pos();
+    os << type() << " -> ";
+    pos(os);
 
-        os << " %% roles: ";
-        for (const auto &pr : _roles)
+    os << " %% roles: ";
+    for (const auto &pr : _roles)
+    {
+        os << pr.first;
+        for (ushort st : pr.second)
         {
-            os << pr.first;
-            for (ushort st : pr.second)
-            {
-                os << " , " << st << " => " << hash(pr.first, st);
-            }
-            os << " | ";
+            os << " , " << st << " => " << hash(pr.first, st);
         }
+        os << " | ";
+    }
 
-        os << " %% specs: ";
-        for (const auto &pr : _specs)
-        {
-            os << pr.first << " -> " << pr.second << " # ";
-        }
-    }, false);
+    os << " %% specs: ";
+    for (const auto &pr : _specs)
+    {
+        os << pr.first << " -> " << pr.second << " # ";
+    }
 }
 
-void Atom::pos()
+void Atom::pos(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        if (lattice()) os << lattice()->coords();
-        else os << "amorph";
-    }, false);
+    if (lattice()) os << lattice()->coords();
+    else os << "amorph";
 }
 
 #endif // PRINT

@@ -2,7 +2,6 @@
 #include "../species/specific_spec.h"
 
 #ifdef PRINT
-#include <iostream>
 #include "../tools/debug_print.h"
 #endif // PRINT
 
@@ -28,12 +27,10 @@ void MonoSpecReaction::removeFrom(SpecificSpec *target)
 }
 
 #ifdef PRINT
-void MonoSpecReaction::info()
+void MonoSpecReaction::info(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        os << "MonoSpecReaction " << name() << " [" << this << "]: ";
-        target()->atom(0)->info();
-    }, false);
+    os << "MonoSpecReaction " << name() << " [" << this << "]: ";
+    target()->atom(0)->info(os);
 }
 #endif // PRINT
 

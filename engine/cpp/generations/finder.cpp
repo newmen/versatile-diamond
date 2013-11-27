@@ -71,7 +71,7 @@ void Finder::initFind(Atom **atoms, int n)
 void Finder::findAll(Atom **atoms, int n)
 {
 #ifdef PRINT
-    debugPrintWoLock([&](std::ostream &os) {
+    debugPrint([&](std::ostream &os) {
         os << "Find by " << n << " atoms";
         for (int i = 0; i < n; ++i)
         {

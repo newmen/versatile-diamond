@@ -80,7 +80,7 @@ MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
     for (int j = 0; j < MULTI_EVENTS_NUM; ++j) _order[i + j] = j + MULTI_EVENTS_INDEX_SHIFT;
 
 #ifdef PRINT
-    debugPrintWoLock([&](std::ostream &os) {
+    debugPrint([&](std::ostream &os) {
         os << "Inited order: " << std::endl;
         for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
         {
@@ -201,7 +201,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         if (data->eventWasntFound())
         {
 #ifdef PRINT
-            debugPrintWoLock([&](std::ostream &os) {
+            debugPrint([&](std::ostream &os) {
                 os << "Event not found! Recount";
             });
 #endif // PRINT
@@ -212,7 +212,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         if (data->eventWasntFound() || data->hasSameSite())
         {
 #ifdef PRINT
-            debugPrintWoLock([&](std::ostream &os) {
+            debugPrint([&](std::ostream &os) {
                 os << " -> sort!";
             });
 #endif // PRINT
@@ -300,7 +300,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 #ifdef PRINT
         debugPrintWoLock([&](std::ostream &os) {
             os << "Add ";
-            reaction->info();
+            reaction->info(os);
         });
 #endif // PRINT
         _events[RT].add(reaction);
@@ -343,7 +343,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint
 #ifdef PRINT
         debugPrintWoLock([&](std::ostream &os) {
             os << "Add multi ";
-            reaction->info();
+            reaction->info(os);
         });
 #endif // PRINT
         _multiEvents[RT].add(reaction, n);
@@ -367,7 +367,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
 #ifdef PRINT
         debugPrintWoLock([&](std::ostream &os) {
             os << "Remove multi ";
-            reaction->info();
+            reaction->info(os);
         });
 #endif // PRINT
         _multiEvents[RT].remove(reaction->target(), n);

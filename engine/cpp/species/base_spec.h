@@ -9,6 +9,7 @@
 
 #ifdef PRINT
 #include <functional>
+#include <iostream>
 #include <string>
 #endif // PRINT
 
@@ -49,7 +50,7 @@ public:
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
     virtual std::string name() const = 0;
-    virtual void info() = 0;
+    virtual void info(std::ostream &os) = 0;
 
     void wasFound();
     void wasForgotten();

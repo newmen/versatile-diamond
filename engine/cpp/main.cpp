@@ -1,17 +1,19 @@
+#include <omp.h>
+#include <iostream>
+
 #include "mc/common_mc_data.h"
 #include "generations/handbook.h"
 #include "generations/builders/atom_builder.h"
 #include "generations/crystals/diamond.h"
 
 #include "tests/support/open_diamond.h"
-#include <iostream>
 
 #ifdef PRINT
 #include "tools/debug_print.h"
 
 void printSeparator()
 {
-    debugPrintWoLock([&](std::ostream &os) {
+    debugPrint([&](std::ostream &os) {
         os << Handbook::mc().totalRate();
     });
 }
@@ -25,18 +27,18 @@ int main()
 
 #ifdef PRINT
 #ifdef PARALLEL
-    debugPrintWoLock([&](std::ostream &os) {
+    debugPrint([&](std::ostream &os) {
         os << "Start as PARALLEL mode";
     });
 #else
-    debugPrintWoLock([&](std::ostream &os) {
+    debugPrint([&](std::ostream &os) {
         os << "Start as SINGLE THREAD mode";
     });
 #endif // PARALLEL
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 100, 10));
-//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+//    Diamond *diamond = new Diamond(dim3(100, 100, 10));
+    Diamond *diamond = new Diamond(dim3(20, 20, 10));
 //    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 
@@ -47,6 +49,7 @@ int main()
     int i = 0;
 #endif // PRINT
 
+    RandomGenerator::init(); // it must be called just one time (before init CommonMCData)
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
 

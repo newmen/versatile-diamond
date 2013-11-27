@@ -28,7 +28,7 @@ void SpecificSpec::remove()
         os << "Removing reactions for " << name() << " with atoms of: " << std::endl;
         os << std::dec;
         eachAtom([&os](Atom *atom) {
-            atom->info();
+            atom->info(os);
             os << std::endl;
         });
     });

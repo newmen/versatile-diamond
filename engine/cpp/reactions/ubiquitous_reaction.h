@@ -3,6 +3,10 @@
 
 #include "reaction.h"
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -19,7 +23,7 @@ public:
     void doIt() override;
 
 #ifdef PRINT
-    void info() override;
+    void info(std::ostream &os) override;
 #endif // PRINT
 
 protected:

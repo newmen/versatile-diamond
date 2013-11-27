@@ -26,7 +26,7 @@ public:
     void removeFrom(SpecificSpec *target) override;
 
 #ifdef PRINT
-    void info() override;
+    void info(std::ostream &os) override;
 #endif // PRINT
 
 protected:
@@ -120,30 +120,28 @@ void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbou
 
 #ifdef PRINT
 template <ushort TARGETS_NUM>
-void FewSpecsReaction<TARGETS_NUM>::info()
+void FewSpecsReaction<TARGETS_NUM>::info(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        os << "Reaction " << name() << " [" << this << "]:";
-        for (int i = 0; i < TARGETS_NUM; ++i)
+    os << "Reaction " << name() << " [" << this << "]:";
+    for (int i = 0; i < TARGETS_NUM; ++i)
+    {
+        os << " ";
+        if (target(i))
         {
-            os << " ";
-            if (target(i))
+            if (target(i)->atom(0)->lattice())
             {
-                if (target(i)->atom(0)->lattice())
-                {
-                    os << target(i)->atom(0)->lattice()->coords();
-                }
-                else
-                {
-                    os << "amorph";
-                }
+                os << target(i)->atom(0)->lattice()->coords();
             }
             else
             {
-                os << "zerofied";
+                os << "amorph";
             }
         }
-    }, false);
+        else
+        {
+            os << "zerofied";
+        }
+    }
 }
 #endif // PRINT
 

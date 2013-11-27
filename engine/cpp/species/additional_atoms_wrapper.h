@@ -25,7 +25,7 @@ public:
     Atom *atom(ushort index) const override;
 
 #ifdef PRINT
-    void info() override;
+    void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
@@ -48,17 +48,15 @@ Atom *AdditionalAtomsWrapper<B, ATOMS_NUM>::atom(ushort index) const
 
 #ifdef PRINT
 template <class B, ushort ATOMS_NUM>
-void AdditionalAtomsWrapper<B, ATOMS_NUM>::info()
+void AdditionalAtomsWrapper<B, ATOMS_NUM>::info(std::ostream &os)
 {
-    B::info();
-    debugPrintWoLock([&](std::ostream &os) {
-        os << " && additional: ";
-        for (int i = 0; i < ATOMS_NUM; ++i)
-        {
-            os << " ";
-            _additionalAtoms[i]->info();
-        }
-    }, false);
+    B::info(os);
+    os << " && additional: ";
+    for (int i = 0; i < ATOMS_NUM; ++i)
+    {
+        os << " ";
+        _additionalAtoms[i]->info(os);
+    }
 }
 
 template <class B, ushort ATOMS_NUM>

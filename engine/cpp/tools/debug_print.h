@@ -4,6 +4,7 @@
 #ifdef PRINT
 
 #include <iostream>
+#include <sstream>
 
 #ifdef PARALLEL
 #include <omp.h>
@@ -15,24 +16,28 @@ namespace vd
 template <class L>
 void debugPrintWoLock(const L &lambda, bool putsNewLine = true)
 {
+    std::stringstream ss;
+
 #ifdef PARALLEL
-    std::cout << "№" << omp_get_thread_num() << ": ";
+    ss << "№" << omp_get_thread_num() << ": ";
 #endif // PARALLEL
 
-    lambda(std::cout);
+    lambda(ss);
     if (putsNewLine)
     {
-        std::cout << std::endl;
+        ss << "\n";
     }
+
+    std::cout << ss.str();
 }
 
 template <class L>
 void debugPrint(const L &lambda, bool putsNewLine = true)
 {
-    {
 #ifdef PARALLEL
 #pragma omp critical (print)
 #endif // PARALLEL
+    {
         debugPrintWoLock(lambda, putsNewLine);
     }
 }

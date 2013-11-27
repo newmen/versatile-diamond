@@ -29,7 +29,7 @@ public:
     Atom *firstLatticedAtomIfExist() override;
 
 #ifdef PRINT
-    void info() override;
+    void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 
@@ -71,17 +71,15 @@ ushort DependentSpec<PARENTS_NUM>::size() const
 
 #ifdef PRINT
 template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::info()
+void DependentSpec<PARENTS_NUM>::info(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        os << name() << " at [" << this << "]";
-        for (int i = 0; i < PARENTS_NUM; ++i)
-        {
-            os << " -> (";
-            _parents[i]->info();
-            os << ")";
-        }
-    }, false);
+    os << name() << " at [" << this << "]";
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        os << " -> (";
+        _parents[i]->info(os);
+        os << ")";
+    }
 }
 
 template <ushort PARENTS_NUM>

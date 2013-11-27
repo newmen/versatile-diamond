@@ -26,7 +26,7 @@ public:
     Atom *firstLatticedAtomIfExist() override;
 
 #ifdef PRINT
-    void info() override;
+    void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
@@ -63,16 +63,14 @@ Atom *SourceSpec<ATOMS_NUM>::firstLatticedAtomIfExist()
 
 #ifdef PRINT
 template <ushort ATOMS_NUM>
-void SourceSpec<ATOMS_NUM>::info()
+void SourceSpec<ATOMS_NUM>::info(std::ostream &os)
 {
-    debugPrintWoLock([&](std::ostream &os) {
-        os << name() << " at [" << this << "]";
-        for (int i = 0; i < ATOMS_NUM; ++i)
-        {
-            os << " ";
-            _atoms[i]->info();
-        }
-    }, false);
+    os << name() << " at [" << this << "]";
+    for (int i = 0; i < ATOMS_NUM; ++i)
+    {
+        os << " ";
+        _atoms[i]->info(os);
+    }
 }
 
 template <ushort ATOMS_NUM>

@@ -4,6 +4,10 @@
 #include "../species/specific_spec.h"
 #include "spec_reaction.h"
 
+#ifdef PRINT
+#include <iostream>
+#endif // PRINT
+
 namespace vd
 {
 
@@ -22,7 +26,7 @@ protected:
     SpecificSpec *target() { return _target; }
 
 #ifdef PRINT
-    void info();
+    void info(std::ostream &os);
 #endif // PRINT
 };
 

@@ -1,7 +1,6 @@
 #include "base_spec.h"
 
 #ifdef PRINT
-#include <iostream>
 #include "../tools/debug_print.h"
 #endif // PRINT
 
@@ -59,7 +58,7 @@ void BaseSpec::remove()
 void BaseSpec::wasFound()
 {
     debugPrint([&](std::ostream &os) {
-        info();
+        info(os);
         os << " was found";
     });
 }
@@ -67,7 +66,7 @@ void BaseSpec::wasFound()
 void BaseSpec::wasForgotten()
 {
     debugPrint([&](std::ostream &os) {
-        info();
+        info(os);
         os << " was forgotten";
     });
 }
