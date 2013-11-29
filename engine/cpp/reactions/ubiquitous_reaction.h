@@ -18,7 +18,6 @@ public:
     UbiquitousReaction(Atom *target) : _target(target) {}
 
     Atom *target() { return _target; }
-
     Atom *anchor() const override;
     void doIt() override;
 

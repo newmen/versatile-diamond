@@ -1,5 +1,4 @@
 #include "ubiquitous_reaction.h"
-#include "../generations/finder.h" // wow wow
 
 #ifdef PRINT
 #include "../tools/debug_print.h"
@@ -48,13 +47,11 @@ Atom *UbiquitousReaction::anchor() const
 
 void UbiquitousReaction::doIt()
 {
-    uint type = toType(_target->type());
-    assert(type != _target->type());
+    uint type = toType(target()->type());
+    assert(type != target()->type());
 
     action();
-    _target->changeType(type);
-
-    Finder::findAll(&_target, 1); // TODO: move to generation
+    target()->changeType(type);
 }
 
 #ifdef PRINT

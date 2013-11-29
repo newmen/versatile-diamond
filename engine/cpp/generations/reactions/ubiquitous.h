@@ -4,6 +4,7 @@
 #include "../../reactions/ubiquitous_reaction.h"
 using namespace vd;
 
+#include "../finder.h"
 #include "../handbook.h"
 
 template <ushort RT>
@@ -14,6 +15,8 @@ public:
     Ubiquitous(Atom *target) : UbiquitousReaction(target) {}
 
     ushort type() const override { return RT; } // same as in Typical
+
+    void doIt() override;
 
 protected:
     template <class R>
@@ -54,6 +57,16 @@ void Ubiquitous<RT>::remove(Atom *anchor, short delta)
 {
     R removableTemplate(anchor);
     Handbook::mc().removeMul<RT - TypicalReactionsNum>(&removableTemplate, -delta);
+}
+
+
+template <ushort RT>
+void Ubiquitous<RT>::doIt()
+{
+    UbiquitousReaction::doIt();
+
+    Atom *atoms[1] = { target() };
+    Finder::findAll(atoms, 1);
 }
 
 #endif // UBIQUITOUS_H

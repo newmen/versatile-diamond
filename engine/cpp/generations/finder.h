@@ -9,9 +9,9 @@ namespace vd
 class Finder
 {
 public:
-    static void initFind(Atom **atoms, int n);
-    static void findAll(Atom **atoms, int n);
-    static void removeAll(Atom **atoms, int n);
+    static void initFind(Atom **atoms, uint n);
+    static void findAll(Atom **atoms, uint n);
+    static void removeAll(Atom **atoms, uint n);
 
 private:
     static void finalize();

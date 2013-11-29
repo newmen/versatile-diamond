@@ -15,17 +15,29 @@ void store(CommonMCData *mcData, Reaction *a, Reaction *b)
 {
     if (omp_get_thread_num() == 0)
     {
-        mcData->checkSame(a);
+        mcData->store(a);
     }
     else if (omp_get_thread_num() == 1)
     {
-        mcData->checkSame(b);
+        mcData->store(b);
+    }
+
+#pragma omp barrier
+
+
+    if (omp_get_thread_num() == 0)
+    {
+        mcData->checkSame();
+    }
+    else if (omp_get_thread_num() == 1)
+    {
+        mcData->checkSame();
     }
 
 #pragma omp barrier
 }
 
-void checkSame(CommonMCData *mcData, Reaction *a, Reaction *b)
+void checkSame(CommonMCData *mcData, Reaction *a, Reaction *b, bool forOne = true, bool forTwo = false)
 {
 #pragma omp parallel
     {
@@ -33,11 +45,11 @@ void checkSame(CommonMCData *mcData, Reaction *a, Reaction *b)
 
         if (omp_get_thread_num() == 0)
         {
-            assert(!mcData->isSame());
+            assert(mcData->isSame() == forOne);
         }
         else if (omp_get_thread_num() == 1)
         {
-            assert(mcData->isSame());
+            assert(mcData->isSame() == forTwo);
         }
 
 #pragma omp barrier
@@ -103,13 +115,16 @@ int main()
     checkSame(&mcData, &sa111, &sa111);
     mcData.reset();
 
-    checkSame(&mcData, &sa111, &sd111);
+    checkSame(&mcData, &sd111, &sa111);
     mcData.reset();
 
-    checkSame(&mcData, &sa211, &sd121);
+    checkSame(&mcData, &sd121, &sa211);
     mcData.reset();
 
-    checkSame(&mcData, &sa111, &sdxy1);
+    checkSame(&mcData, &sa211, &sd121, false, true);
+    mcData.reset();
+
+    checkSame(&mcData, &sdxy1, &sa111);
     mcData.reset();
 
     checkNotSame(&mcData, &sa111, &sa991);

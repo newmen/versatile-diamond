@@ -68,6 +68,10 @@ private:
 
     inline BaseEventsContainer *events(uint orderIndex);
     inline BaseEventsContainer *correspondEvents(uint orderValue);
+
+#ifdef PRINT
+    void printReaction(const ushort RT, Reaction *reaction, std::string message);
+#endif // PRINT
 };
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -99,26 +103,6 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
-#ifdef PRINT
-#ifdef PARALLEL
-#pragma omp master
-#endif // PARALLEL
-    debugPrint([&](std::ostream &os) {
-        os << " > rate: " << totalRate() << " % time: " << totalTime();
-    });
-
-#ifdef PARALLEL
-#pragma omp master
-#endif // PARALLEL
-    debugPrint([&](std::ostream &os) {
-        os << "Current sizes: " << std::endl;
-        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
-        {
-            os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
-        }
-    });
-#endif // PRINT
-
     Reaction *event = nullptr;
     double r = data->rand(totalRate());
 
@@ -155,18 +139,18 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #pragma omp barrier
 #endif // PARALLEL
 
-    if (!event)
+    if (event)
     {
-        data->setEventNotFound();
+        data->checkSame();
     }
     else
     {
-        data->checkSame();
+        data->setEventNotFound();
     }
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        if (!event) os << "null";
+        if (!event) os << "realy null";
         else
         {
             if (!event->anchor()->lattice()) os << "amorph";
@@ -185,7 +169,15 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
     if (event && !data->isSame())
     {
-        increaseTime(data);
+        increaseTime(data); // here little hack, because total rate of all events is similar for each process
+    }
+
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
+
+    if (event && !data->isSame())
+    {
         data->counter()->inc(event);
         event->doIt();
     }
@@ -218,6 +210,17 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #endif // PRINT
             sort();
         }
+
+#ifdef PRINT
+        debugPrint([&](std::ostream &os) {
+            os << "After rate: " << totalRate() << " % time: " << totalTime() << "\n";
+            os << "Current sizes: " << std::endl;
+            for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+            {
+                os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
+            }
+        });
+#endif // PRINT
 
         data->reset();
     }
@@ -293,16 +296,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
+#ifdef PRINT
+    printReaction(RT, reaction, "Add one");
+#endif // PRINT
+
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
     {
-#ifdef PRINT
-        debugPrintWoLock([&](std::ostream &os) {
-            os << "Add ";
-            reaction->info(os);
-        });
-#endif // PRINT
         _events[RT].add(reaction);
     }
 
@@ -317,15 +318,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction)
 
     updateRate(-reaction->rate());
 
+#ifdef PRINT
+    printReaction(RT, reaction, "Remove one");
+#endif // PRINT
+
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
     {
-#ifdef PRINT
-        debugPrintWoLock([&](std::ostream &os) {
-            os << "Remove reaction " << reaction->name() << "(" << RT << ") [" << reaction << "]";
-        });
-#endif // PRINT
         _events[RT].remove(reaction);
     }
 }
@@ -336,16 +336,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
 
+#ifdef PRINT
+    printReaction(RT, reaction, "Add multi");
+#endif // PRINT
+
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
     {
-#ifdef PRINT
-        debugPrintWoLock([&](std::ostream &os) {
-            os << "Add multi ";
-            reaction->info(os);
-        });
-#endif // PRINT
         _multiEvents[RT].add(reaction, n);
     }
 
@@ -360,16 +358,14 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
 
     updateRate(-reaction->rate() * n);
 
+#ifdef PRINT
+    printReaction(RT, reaction, "Remove multi");
+#endif // PRINT
+
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
     {
-#ifdef PRINT
-        debugPrintWoLock([&](std::ostream &os) {
-            os << "Remove multi ";
-            reaction->info(os);
-        });
-#endif // PRINT
         _multiEvents[RT].remove(reaction->target(), n);
     }
 }
@@ -398,8 +394,18 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(int x, int y, int z)
     auto crd = int3(x, y, z);
     _multiEvents[RT].selectEvent(crd)->doIt();
 }
-
 #endif // DEBUG
+
+#ifdef PRINT
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(const ushort RT, Reaction *reaction, std::string message)
+{
+    debugPrint([&](std::ostream &os) {
+        os << message << " (" << RT << ") ";
+        reaction->info(os);
+    });
+}
+#endif // PRINT
 
 }
 

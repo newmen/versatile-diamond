@@ -126,7 +126,7 @@ void FewSpecsReaction<TARGETS_NUM>::info(std::ostream &os)
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
         os << " ";
-        if (target(i))
+        if (_targets[i])
         {
             if (target(i)->atom(0)->lattice())
             {

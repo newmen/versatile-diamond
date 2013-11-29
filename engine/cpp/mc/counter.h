@@ -29,6 +29,7 @@ public:
     ~Counter();
 
     void inc(Reaction *event);
+    uint total() const { return _total; }
 
     void printStats();
 

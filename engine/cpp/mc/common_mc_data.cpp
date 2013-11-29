@@ -32,20 +32,26 @@ void CommonMCData::makeCounter(uint reactionsNum)
 bool CommonMCData::isSame()
 {
     int ct = currThreadNum();
-    if (_sames[ct])
+    bool currentSame = false;
+
+#ifdef PARALLEL
+#pragma omp critical (use_sames)
+#endif // PARALLEL
+    currentSame = _sames[ct];
+
+    if (currentSame)
     {
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
         _sameSite = true;
     }
-    return _sames[ct];
+    return currentSame;
 }
 
 void CommonMCData::store(Reaction *reaction)
 {
-    int ct = currThreadNum();
-    _reactions[ct] = reaction;
+    _reactions[currThreadNum()] = reaction;
 }
 
 void CommonMCData::checkSame()
@@ -92,7 +98,8 @@ int CommonMCData::currThreadNum() const
 
 void CommonMCData::updateSame(int currentThread, int anotherThread)
 {
-    if (_reactions[currentThread]->rate() < _reactions[anotherThread]->rate())
+    if ((_reactions[currentThread]->rate() == _reactions[anotherThread]->rate() && currentThread < anotherThread) ||
+        _reactions[currentThread]->rate() < _reactions[anotherThread]->rate())
     {
         setSame(currentThread);
     }
@@ -105,7 +112,7 @@ void CommonMCData::updateSame(int currentThread, int anotherThread)
 void CommonMCData::setSame(uint threadId)
 {
 #ifdef PARALLEL
-#pragma omp critical
+#pragma omp critical (use_sames)
 #endif // PARALLEL
     _sames[threadId] = true;
 }

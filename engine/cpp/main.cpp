@@ -38,7 +38,7 @@ int main()
 #endif // PRINT
 
 //    Diamond *diamond = new Diamond(dim3(100, 100, 10));
-    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+    Diamond *diamond = new Diamond(dim3(40, 40, 10));
 //    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 
@@ -46,9 +46,9 @@ int main()
 
 #ifdef PRINT
     printSeparator();
-    int i = 0;
 #endif // PRINT
 
+    uint i = 0;
     RandomGenerator::init(); // it must be called just one time (before init CommonMCData)
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
@@ -63,12 +63,19 @@ int main()
 
 #ifdef PRINT
         debugPrint([&](std::ostream &os) {
-            os << (++i) << ". " << Handbook::mc().totalRate() << "\n\n\n";
+            os << i << ". " << Handbook::mc().totalRate() << "\n";
         });
 #endif // PRINT
+
+#ifdef PARALLEL
+#pragma omp atomic
+#endif // PARALLEL
+        ++i;
     }
 
-    std::cout << "Atoms num: " << diamond->countAtoms() << "\n" << std::endl;
+    std::cout << "Atoms num: " << diamond->countAtoms() << "\n"
+              << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / i) << " %\n"
+              << std::endl;
     mcData.counter()->printStats();
 
     delete diamond;
