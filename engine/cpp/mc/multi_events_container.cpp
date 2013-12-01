@@ -24,68 +24,84 @@ MultiEventsContainer::~MultiEventsContainer()
 
 void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
 {
-    for (uint i = 0; i < n; ++i)
-    {
-        _positions.insert(std::pair<Atom *, uint>(event->target(), _events.size()));
-        _events.push_back(event);
-    }
+#ifdef PARALLEL
+    lock([this, event, n]() {
+#endif // PARALLEL
+
+        for (uint i = 0; i < n; ++i)
+        {
+            _positions.insert(std::pair<Atom *, uint>(event->target(), _events.size()));
+            _events.push_back(event);
+        }
+
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
 }
 
 void MultiEventsContainer::remove(Atom *target, uint n)
 {
-    for (uint i = 0; i < n; ++i)
-    {
-        auto currIt = _positions.find(target);
-        assert(currIt != _positions.end());
+#ifdef PARALLEL
+    lock([this, target, n]() {
+#endif // PARALLEL
 
-        Reaction *current = _events[currIt->second];
-
-        UbiquitousReaction *last = static_cast<UbiquitousReaction *>(exchangeToLast(currIt->second));
-        if (last)
+        for (uint i = 0; i < n; ++i)
         {
-            uint lastIndex = _events.size();
-            auto range = _positions.equal_range(last->target());
+            auto currIt = _positions.find(target);
+            assert(currIt != _positions.cend());
 
-#ifdef DEBUG
-            bool found = false;
-#endif // DEBUG
+            Reaction *current = _events[currIt->second];
+
+            UbiquitousReaction *last = static_cast<UbiquitousReaction *>(exchangeToLast(currIt->second));
+            if (last)
+            {
+                uint lastIndex = _events.size();
+                auto range = _positions.equal_range(last->target());
+
+    #ifdef DEBUG
+                bool found = false;
+    #endif // DEBUG
+                for (auto it = range.first; it != range.second; it++)
+                {
+                    if (it->second == lastIndex)
+                    {
+                        it->second = currIt->second;
+    #ifdef DEBUG
+                        found = true;
+    #endif // DEBUG
+                        break;
+                    }
+                }
+
+    #ifdef DEBUG
+                assert(found);
+    #endif // DEBUG
+            }
+
+            _positions.erase(currIt);
+
+            auto range = _positions.equal_range(target);
+            bool haveSame = false;
             for (auto it = range.first; it != range.second; it++)
             {
-                if (it->second == lastIndex)
+                if (_events[it->second] == current)
                 {
-                    it->second = currIt->second;
-#ifdef DEBUG
-                    found = true;
-#endif // DEBUG
+                    haveSame = true;
                     break;
                 }
             }
 
-#ifdef DEBUG
-            assert(found);
-#endif // DEBUG
-        }
-
-        _positions.erase(currIt);
-
-        auto range = _positions.equal_range(target);
-        bool haveSame = false;
-        for (auto it = range.first; it != range.second; it++)
-        {
-            if (_events[it->second] == current)
+            if (!haveSame)
             {
-                haveSame = true;
-                break;
+                delete current;
             }
         }
 
-        if (!haveSame)
-        {
-            delete current;
-        }
-    }
+        assert(_events.size() == _positions.size());
 
-    assert(_events.size() == _positions.size());
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
 }
 
 }

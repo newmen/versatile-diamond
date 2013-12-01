@@ -58,7 +58,7 @@ Reaction *BaseEventsContainer::exchangeToLast(uint index)
     Reaction *last = _events.back();
     _events.pop_back();
 
-    if (_events.begin() + index == _events.end())
+    if (_events.cbegin() + index == _events.cend())
     {
         return nullptr;
     }

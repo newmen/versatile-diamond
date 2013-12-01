@@ -15,10 +15,16 @@ class Counter
         uint counter = 0;
 
         std::string name;
-        double rate = 0;
+        double rate;
 
         Record(const std::string &name, double rate) : name(name), rate(rate) {}
-        void inc() { ++counter; }
+        void inc()
+        {
+#ifdef PARALLEL
+#pragma omp atomic
+#endif // PARALLEL
+            ++counter;
+        }
     };
 
     std::vector<Record *> _records;

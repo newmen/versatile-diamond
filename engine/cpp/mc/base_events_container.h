@@ -3,12 +3,17 @@
 
 #include <vector>
 #include <unordered_map>
+#include "../tools/lockable.h"
 #include "../reactions/reaction.h"
 
 namespace vd
 {
 
+#ifdef PARALLEL
+class BaseEventsContainer : public Lockable
+#else
 class BaseEventsContainer
+#endif // PARALLEL
 {
 public:
     virtual ~BaseEventsContainer();

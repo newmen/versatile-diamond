@@ -27,7 +27,8 @@ void MethylToHighBridge::doIt()
 
     if (c->is(21)) c->changeType(2);
     else if (c->is(23)) c->changeType(8);
-    else c->changeType(1);
+    else if (c->is(32)) c->changeType(5);
+    else c->changeType(28);
 
     Finder::findAll(atoms, 3);
 }

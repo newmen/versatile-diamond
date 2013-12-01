@@ -7,25 +7,41 @@ namespace vd
 
 void EventsContainer::add(SpecReaction *event)
 {
-    assert(_positions.find(event) == _positions.end());
+#ifdef PARALLEL
+    lock([this, event]() {
+#endif // PARALLEL
 
-    _positions[event] = _events.size();
-    _events.push_back(event);
+        assert(_positions.find(event) == _positions.cend());
+
+        _positions[event] = _events.size();
+        _events.push_back(event);
+
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
 }
 
 void EventsContainer::remove(SpecReaction *event)
 {
     assert(event);
 
-    auto curr = _positions.find(event);
-    assert(curr != _positions.end());
+#ifdef PARALLEL
+    lock([this, event]() {
+#endif // PARALLEL
 
-    SpecReaction *last = static_cast<SpecReaction *>(exchangeToLast(curr->second));
-    if (last) _positions[last] = curr->second;
+        auto curr = _positions.find(event);
+        assert(curr != _positions.cend());
 
-    _positions.erase(curr);
+        SpecReaction *last = static_cast<SpecReaction *>(exchangeToLast(curr->second));
+        if (last) _positions[last] = curr->second;
 
-    assert(_events.size() == _positions.size());
+        _positions.erase(curr);
+
+        assert(_events.size() == _positions.size());
+
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
 }
 
 }

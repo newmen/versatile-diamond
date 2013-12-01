@@ -14,7 +14,10 @@ void NextLevelBridgeToHighBridge::doIt()
     assert(b->is(5));
     assert(c->is(4));
 
+    // erase from crystal should be before bond-unbond atoms
     a->lattice()->crystal()->erase(a);
+    Handbook::amorph().insert(a);
+
     a->unbondFrom(c);
     a->bondWith(b);
 

@@ -31,15 +31,21 @@ void Counter::inc(Reaction *event)
             _records[index] = new Record(event->name(), event->rate());
         }
 
-        _records[index]->inc();
-        ++_total;
     }
+
+    _records[index]->inc();
+
+#ifdef PARALLEL
+#pragma omp atomic
+#endif // PARALLEL
+    ++_total;
 }
 
 void Counter::printStats()
 {
     sort();
 
+    std::cout.precision(3);
     std::cout << "Total events: " << _total << "\n";
     for (Record *record : _records)
     {
@@ -53,7 +59,6 @@ void Counter::printStats()
 
         double rate = 100 * (double)record->counter / _total;
         std::cout.width(11);
-        std::cout.precision(3);
         std::cout << rate << " % :: ";
         std::cout << record->rate << std::endl;
     }
@@ -61,11 +66,9 @@ void Counter::printStats()
 
 void Counter::sort()
 {
-    auto compare = [](Record *a, Record *b) {
+    std::sort(_records.begin(), _records.end(), [](Record *a, Record *b) {
         return !a || !b || a->counter > b->counter;
-    };
-
-    std::sort(_records.begin(), _records.end(), compare);
+    });
 }
 
 }

@@ -9,15 +9,13 @@ namespace vd
 
 short UbiquitousReaction::delta(Atom *anchor, const ushort *typeToNum)
 {
-    ushort currNum = 0, prevNum = 0;
+    short currNum = 0, prevNum = 0;
     ushort at = anchor->type();
 
     if (at == NO_VALUE)
     {
-        if (anchor->prevType() != NO_VALUE)
-        {
-            currNum = -typeToNum[anchor->prevType()];
-        }
+        assert (anchor->prevType() != NO_VALUE);
+        currNum = -typeToNum[anchor->prevType()];
     }
     else
     {

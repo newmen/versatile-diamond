@@ -1,8 +1,9 @@
 #include "crystal.h"
+#include <assert.h>
 #include "../atoms/atom.h"
 #include "../atoms/lattice.h"
 
-#include <assert.h>
+//#include <iostream>
 
 namespace vd
 {
@@ -28,6 +29,13 @@ void Crystal::initialize()
 
 void Crystal::insert(Atom *atom, const int3 &coords)
 {
+//    static int maxHeight = 0;
+//    if (coords.z > maxHeight)
+//    {
+//        maxHeight = coords.z;
+//        std::cout << maxHeight << std::endl;
+//    }
+
     assert(atom);
     assert(!atom->lattice());
 

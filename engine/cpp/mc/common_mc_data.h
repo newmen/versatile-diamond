@@ -17,7 +17,7 @@ class CommonMCData
 {
     RandomGenerator _generators[THREADS_NUM];
 
-    bool _wasntFound, _sameSite;
+    uint _wasntFound, _sameSites;
     bool _sames[THREADS_NUM];
     Reaction *_reactions[THREADS_NUM];
 
@@ -32,9 +32,9 @@ public:
     void makeCounter(uint reactionsNum);
     Counter *counter() { return _counter; }
 
-    void setEventNotFound() { _wasntFound = true; }
-    bool eventWasntFound() const { return _wasntFound; }
-    bool hasSameSite() const { return _sameSite; }
+    void setEventNotFound();
+    bool eventWasntFound() const { return _wasntFound > 0; }
+    bool hasSameSite() const { return _sameSites > 0; }
 
     void store(Reaction *reaction);
     void checkSame();

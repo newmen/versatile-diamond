@@ -40,45 +40,68 @@ void Atom::deactivate()
 
 void Atom::bondWith(Atom *neighbour, int depth)
 {
-    auto &currRelatives = neighbour->lattice() ? _crystalRelatives : _amorphRelatives;
-
     assert(_actives > 0);
+    assert(_relatives.size() + _actives <= valence());
 
-    currRelatives.insert(neighbour);
+#ifdef DEBUG
+    // latticed atom cannot be bonded twise with another latticed atom
+    if (lattice() && neighbour->lattice())
+    {
+        assert(_relatives.find(neighbour) == _relatives.cend());
+    }
+#endif // DEBUG
+
+    _relatives.insert(neighbour);
     deactivate();
     if (depth > 0) neighbour->bondWith(this, 0);
 }
 
 void Atom::unbondFrom(Atom *neighbour, int depth)
 {
-    auto &currRelatives = neighbour->lattice() ? _crystalRelatives : _amorphRelatives;
+    auto it = _relatives.find(neighbour);
+    assert(it != _relatives.cend());
 
-    auto it = currRelatives.find(neighbour);
-    assert(it != currRelatives.end());
-
-    currRelatives.erase(it);
+    _relatives.erase(it);
     activate();
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
 
 bool Atom::hasBondWith(Atom *neighbour) const
 {
-    return _crystalRelatives.find(neighbour) != _crystalRelatives.cend() ||
-            _amorphRelatives.find(neighbour) != _amorphRelatives.cend();
+    return _relatives.find(neighbour) != _relatives.cend();
 }
 
 Atom *Atom::amorphNeighbour()
 {
-    Atom *nbr = *_amorphRelatives.begin();
-    assert(_amorphRelatives.count(nbr) == _amorphRelatives.size());
-    return nbr;
+    Atom *neighbour = nullptr;
+    for (Atom *relative : _relatives)
+    {
+        if (!relative->lattice())
+        {
+            neighbour = relative;
+            break;
+        }
+    }
+
+    assert(neighbour);
+#ifdef DEBUG
+    for (Atom *relative : _relatives)
+    {
+        if (!relative->lattice() && relative != neighbour)
+        {
+            assert(true); // if has many unlatticed atoms
+        }
+    }
+#endif // DEBUG
+
+    return neighbour;
 }
 
 Atom *Atom::firstCrystalNeighbour()
 {
-    if (!_crystalRelatives.empty())
+    if (!_relatives.empty())
     {
-        return *_crystalRelatives.begin();
+        return *_relatives.begin();
     }
     else
     {
@@ -137,7 +160,7 @@ void Atom::describe(ushort rType, BaseSpec *spec)
 bool Atom::hasRole(ushort rType, ushort specType)
 {
     const uint key = hash(rType, specType);
-    return _specs.find(key) != _specs.end();
+    return _specs.find(key) != _specs.cend();
 }
 
 BaseSpec *Atom::specByRole(ushort rType, ushort specType)
@@ -176,7 +199,17 @@ void Atom::forget(ushort rType, BaseSpec *spec)
 
     if (std::distance(its.first, its.second) == 1)
     {
-        _roles.erase(rType);
+        auto role = _roles.find(rType);
+        assert(role->second.size() > 0);
+
+        if (role->second.size() == 1)
+        {
+            _roles.erase(role);
+        }
+        else
+        {
+            role->second.erase(spec->type());
+        }
     }
 
     while (its.first != its.second)
@@ -284,6 +317,5 @@ void Atom::pos(std::ostream &os)
 }
 
 #endif // PRINT
-
 
 }

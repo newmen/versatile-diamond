@@ -5,6 +5,7 @@
 #include <omp.h>
 #endif // PARALLEL
 
+// 32 :: -^C%d<
 const ushort Handbook::atomsNum = 33;
 const bool Handbook::__atomsAccordance[] = {
     true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
@@ -39,7 +40,7 @@ const bool Handbook::__atomsAccordance[] = {
     false, false, false, false, false, false, false, false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false,
     false, false, false, false, false, false, false, false, false, false, false, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false,
     false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false,
-    false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false
+    false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true
 };
 
 const ushort Handbook::__atomsSpecifing[] =
@@ -47,12 +48,12 @@ const ushort Handbook::__atomsSpecifing[] =
       0, 28, 2, 0, 4, 5, 4, 7, 8, 7, 10, 26, 27, 13, 10, 15, 16, 17, 15, 19, 20, 21, 20, 23, 24, 25, 26, 27, 28, 26, 27, 25, 32
 };
 
-Amorph Handbook::__amorph;
+PhaseBoundary Handbook::__amorph;
 Handbook::DKeeper Handbook::__keepers[THREADS_NUM];
 Handbook::DScavenger Handbook::__scavengers[THREADS_NUM];
 Handbook::DMC Handbook::__mc;
 
-Amorph &Handbook::amorph()
+PhaseBoundary &Handbook::amorph()
 {
     return __amorph;
 }

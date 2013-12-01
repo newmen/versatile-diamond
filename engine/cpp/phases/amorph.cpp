@@ -20,7 +20,7 @@ void Amorph::insert(Atom *atom)
     assert(!atom->lattice());
 
 #ifdef PARALLEL
-#pragma omp critical
+#pragma omp critical (amorph_atoms)
 #endif // PARALLEL
     _atoms.insert(atom);
 }
@@ -31,7 +31,7 @@ void Amorph::erase(Atom *atom)
     assert(!atom->lattice());
 
 #ifdef PARALLEL
-#pragma omp critical
+#pragma omp critical (amorph_atoms)
 #endif // PARALLEL
     _atoms.erase(atom);
 }

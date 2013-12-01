@@ -8,12 +8,11 @@ QMAKE_CXXFLAGS += -DDEBUG
 
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS += -DTHREADS_NUM=1
-QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=2
+
+QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
 LIBS += -fopenmp -lstdc++
 
-#QMAKE_CXXFLAGS += -std=c++11
-##QMAKE_CXXFLAGS += -DTHREADS_NUM=1
-#QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=2
+#QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += main.cpp \
@@ -64,7 +63,10 @@ SOURCES += main.cpp \
     generations/species/specific/bridge_crs_cti_cli.cpp \
     mc/counter.cpp \
     generations/reactions/typical/dimer_formation_near_bridge.cpp \
-    mc/random_generator.cpp
+    mc/random_generator.cpp \
+    generations/reactions/ubiquitous.cpp \
+    generations/crystals/phase_boundary.cpp \
+    tools/lockable.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -142,4 +144,6 @@ HEADERS += \
     generations/reactions/typical/dimer_formation_near_bridge.h \
     tools/creator.h \
     tools/debug_print.h \
-    mc/random_generator.h
+    mc/random_generator.h \
+    generations/crystals/phase_boundary.h \
+    tools/lockable.h

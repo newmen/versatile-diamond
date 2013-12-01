@@ -26,9 +26,7 @@ class Atom
     ushort _actives;
     Lattice *_lattice, *_cacheLattice;
 
-    // atoms bonded with current
-    std::unordered_multiset<Atom *> _crystalRelatives;
-    std::unordered_multiset<Atom *> _amorphRelatives;
+    std::unordered_multiset<Atom *> _relatives;
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
     std::unordered_multimap<uint, BaseSpec *> _specs;
@@ -78,6 +76,10 @@ public:
     void info(std::ostream &os);
     void pos(std::ostream &os);
 #endif // PRINT
+
+#ifdef DEBUG
+    virtual ushort valence() const = 0;
+#endif // DEBUG
 
 protected:
     void setType(ushort type) { _type = type; }

@@ -30,9 +30,9 @@ void Dimer::findAllChildren()
 
 void Dimer::checkAndAdd(Atom *anchor, Atom *neighbour)
 {
-    if (neighbour->is(22) && anchor->hasBondWith(neighbour))
+    if (anchor->hasBondWith(neighbour) && neighbour->hasRole(3, BRIDGE))
     {
-        assert(neighbour->hasRole(3, BRIDGE)); // TODO: may be need move to if condition
+        assert(neighbour->is(22));
         assert(neighbour->lattice());
 
         BaseSpec *parents[2] = {

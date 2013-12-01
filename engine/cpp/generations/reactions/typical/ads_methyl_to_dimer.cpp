@@ -13,13 +13,13 @@ void AdsMethylToDimer::doIt()
     AtomBuilder builder;
     Atom *atoms[2] = { target()->atom(0), builder.buildC(25, 1) };
     Atom *a = atoms[0], *b = atoms[1];
+    Handbook::amorph().insert(b);
 
     assert(a->is(21));
 
     a->bondWith(b);
-    a->changeType(23);
 
-    Handbook::amorph().insert(b);
+    a->changeType(23);
 
     Finder::findAll(atoms, 2);
 }

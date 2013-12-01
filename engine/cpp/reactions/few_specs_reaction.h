@@ -103,6 +103,7 @@ template <>
 template <class R>
 void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType)
 {
+    // TODO: вставить проверку, что соседний атом не принадлжет той же структуре по которой проверяем
     if (neighbour->is(atomType))
     {
         auto neighbourSpec = static_cast<SpecificSpec *>(neighbour->specByRole(atomType, specType));
@@ -128,9 +129,9 @@ void FewSpecsReaction<TARGETS_NUM>::info(std::ostream &os)
         os << " ";
         if (_targets[i])
         {
-            if (target(i)->atom(0)->lattice())
+            if (_targets[i]->anchor()->lattice())
             {
-                os << target(i)->atom(0)->lattice()->coords();
+                os << _targets[i]->anchor()->lattice()->coords();
             }
             else
             {

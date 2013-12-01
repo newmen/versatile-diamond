@@ -15,11 +15,11 @@ void DesMethylFromBridge::doIt()
     assert(a->is(7));
 
     a->unbondFrom(b);
+
     if (a->is(8)) a->changeType(2);
     else a->changeType(28);
 
     b->prepareToRemove();
-
     Handbook::amorph().erase(b);
     Handbook::scavenger().markAtom(b);
 

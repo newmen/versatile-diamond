@@ -3,7 +3,7 @@
 
 #include "specified_atom.h"
 
-class C : public SpecifiedAtom
+class C : public SpecifiedAtom<4>
 {
 public:
 //    using SpecifiedAtom::SpecifiedAtom;

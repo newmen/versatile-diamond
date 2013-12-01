@@ -4,6 +4,7 @@
 //#include <parallel/algorithm> // __gnu_parallel::sort
 #include <algorithm> // std::sort
 #include <cmath>
+#include <functional>
 #include <vector>
 #include "common_mc_data.h"
 #include "events_container.h"
@@ -217,7 +218,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
             os << "Current sizes: " << std::endl;
             for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
             {
-                os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << std::endl;
+                os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << "\n";
             }
         });
 #endif // PRINT
@@ -300,12 +301,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
     printReaction(RT, reaction, "Add one");
 #endif // PRINT
 
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-    {
-        _events[RT].add(reaction);
-    }
+    _events[RT].add(reaction);
 
     updateRate(reaction->rate());
 }
@@ -322,12 +318,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction)
     printReaction(RT, reaction, "Remove one");
 #endif // PRINT
 
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-    {
-        _events[RT].remove(reaction);
-    }
+    _events[RT].remove(reaction);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -335,17 +326,13 @@ template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint n)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
+    assert(n < reaction->target()->valence());
 
 #ifdef PRINT
     printReaction(RT, reaction, "Add multi");
 #endif // PRINT
 
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-    {
-        _multiEvents[RT].add(reaction, n);
-    }
+    _multiEvents[RT].add(reaction, n);
 
     updateRate(reaction->rate() * n);
 }
@@ -355,6 +342,7 @@ template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, uint n)
 {
     static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
+    assert(n < reaction->target()->valence());
 
     updateRate(-reaction->rate() * n);
 
@@ -362,12 +350,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, u
     printReaction(RT, reaction, "Remove multi");
 #endif // PRINT
 
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-    {
-        _multiEvents[RT].remove(reaction->target(), n);
-    }
+    _multiEvents[RT].remove(reaction->target(), n);
 }
 
 #ifdef DEBUG

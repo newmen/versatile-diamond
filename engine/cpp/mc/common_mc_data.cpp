@@ -29,6 +29,14 @@ void CommonMCData::makeCounter(uint reactionsNum)
     _counter = new Counter(reactionsNum);
 }
 
+void CommonMCData::setEventNotFound()
+{
+#ifdef PARALLEL
+#pragma omp atomic
+#endif // PARALLEL
+    ++_wasntFound;
+}
+
 bool CommonMCData::isSame()
 {
     int ct = currThreadNum();
@@ -42,9 +50,9 @@ bool CommonMCData::isSame()
     if (currentSame)
     {
 #ifdef PARALLEL
-#pragma omp critical
+#pragma omp atomic
 #endif // PARALLEL
-        _sameSite = true;
+        ++_sameSites;
     }
     return currentSame;
 }
@@ -78,8 +86,7 @@ void CommonMCData::checkSame()
 
 void CommonMCData::reset()
 {
-    _wasntFound = false;
-    _sameSite = false;
+    _wasntFound = _sameSites = 0;
     for (int i = 0; i < THREADS_NUM; ++i)
     {
         _reactions[i] = nullptr;
