@@ -10,7 +10,8 @@ namespace vd
 {
 
 #ifdef PARALLEL
-class BaseEventsContainer : public Lockable
+class BaseEventsContainer :
+        public Lockable // for children classes
 #else
 class BaseEventsContainer
 #endif // PARALLEL

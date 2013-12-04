@@ -12,6 +12,7 @@ public:
     Typical(Args... args) : B(args...) {}
 
     ushort type() const override { return RT; }
+
     void store() override;
 
 protected:
@@ -21,13 +22,13 @@ protected:
 template <class B, ushort RT>
 void Typical<B, RT>::store()
 {
-    Handbook::mc().add<RT>(this);
+    Handbook::mc().add(this);
 }
 
 template <class B, ushort RT>
 void Typical<B, RT>::remove()
 {
-    Handbook::mc().remove<RT>(this);
+    Handbook::mc().remove(this);
     Handbook::scavenger().markReaction<RT>(this);
 }
 

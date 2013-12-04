@@ -58,24 +58,24 @@ void MultiEventsContainer::remove(Atom *target, uint n)
                 uint lastIndex = _events.size();
                 auto range = _positions.equal_range(last->target());
 
-    #ifdef DEBUG
+#ifdef DEBUG
                 bool found = false;
-    #endif // DEBUG
+#endif // DEBUG
                 for (auto it = range.first; it != range.second; it++)
                 {
                     if (it->second == lastIndex)
                     {
                         it->second = currIt->second;
-    #ifdef DEBUG
+#ifdef DEBUG
                         found = true;
-    #endif // DEBUG
+#endif // DEBUG
                         break;
                     }
                 }
 
-    #ifdef DEBUG
+#ifdef DEBUG
                 assert(found);
-    #endif // DEBUG
+#endif // DEBUG
             }
 
             _positions.erase(currIt);

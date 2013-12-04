@@ -56,7 +56,7 @@ public:
     void wasForgotten();
 #endif // PRINT
 
-    Atom *anchor() const { return atom(indexes()[0]); }
+    Atom *anchor() const { return atom(indexes()[0]); } // TODO: wtf?? firstLatticedAtom ?
 
 protected:
     virtual ushort *indexes() const = 0;

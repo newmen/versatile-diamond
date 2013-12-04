@@ -42,21 +42,22 @@ public:
     double totalRate() const { return _totalRate; }
     double totalTime() const { return _totalTime; }
 
-    template <ushort RT> void add(SpecReaction *reaction);
-    template <ushort RT> void remove(SpecReaction *reaction);
+    void add(SpecReaction *reaction);
+    void remove(SpecReaction *reaction);
 
-    template <ushort RT> void addMul(UbiquitousReaction *reaction, uint n);
-    template <ushort RT> void removeMul(UbiquitousReaction *reaction, uint n);
+    void add(UbiquitousReaction *reaction, uint n);
+    void remove(UbiquitousReaction *reaction, uint n);
 
 #ifdef DEBUG
-    template <ushort RT> void doOneOfOne();
-//    template <ushort RT> void doOneOfOne();
-
-    template <ushort RT> void doOneOfMul();
-    template <ushort RT> void doOneOfMul(int x, int y, int z);
+    void doOneOfOne(ushort rt);
+    void doOneOfMul(ushort rt);
+    void doOneOfMul(ushort rt, int x, int y, int z);
 #endif // DEBUG
 
 private:
+    ushort getReactionType(SpecReaction *reaction) const;
+    ushort getReactionType(UbiquitousReaction *reaction, ushort n) const;
+
     void increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)
@@ -292,99 +293,103 @@ BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint ord
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
-
 #ifdef PRINT
-    printReaction(RT, reaction, "Add one");
+    printReaction(reaction, "Add one");
 #endif // PRINT
 
-    _events[RT].add(reaction);
-
+    ushort rt = getReactionType(reaction);
+    _events[rt].add(reaction);
     updateRate(reaction->rate());
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
-
-    updateRate(-reaction->rate());
-
 #ifdef PRINT
-    printReaction(RT, reaction, "Remove one");
+    printReaction(reaction, "Remove one");
 #endif // PRINT
 
-    _events[RT].remove(reaction);
+    ushort rt = getReactionType(reaction);
+    updateRate(-reaction->rate());
+    _events[rt].remove(reaction);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::addMul(UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(UbiquitousReaction *reaction, uint n)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
-    assert(n < reaction->target()->valence());
-
 #ifdef PRINT
-    printReaction(RT, reaction, "Add multi");
+    printReaction(reaction, "Add multi");
 #endif // PRINT
 
-    _multiEvents[RT].add(reaction, n);
-
+    ushort rt = getReactionType(reaction, n);
+    _multiEvents[rt].add(reaction, n);
     updateRate(reaction->rate() * n);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeMul(UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(UbiquitousReaction *reaction, uint n)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
-    assert(n < reaction->target()->valence());
-
-    updateRate(-reaction->rate() * n);
-
 #ifdef PRINT
-    printReaction(RT, reaction, "Remove multi");
+    printReaction(reaction, "Remove multi");
 #endif // PRINT
 
-    _multiEvents[RT].remove(reaction->target(), n);
+    ushort rt = getReactionType(reaction, n);
+    updateRate(-reaction->rate() * n);
+    _multiEvents[rt].remove(reaction->target(), n);
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+ushort MC<EVENTS_NUM, MULTI_EVENTS_NUM>::getReactionType(SpecReaction *reaction) const
+{
+    ushort rt = reaction->type();
+    assert(rt < EVENTS_NUM);
+    return rt;
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+ushort MC<EVENTS_NUM, MULTI_EVENTS_NUM>::getReactionType(UbiquitousReaction *reaction, ushort n) const
+{
+    ushort rt = reaction->type();
+    assert(rt < MULTI_EVENTS_NUM);
+    assert(n < reaction->target()->valence());
+    return rt;
 }
 
 #ifdef DEBUG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne()
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
 {
-    static_assert(RT < EVENTS_NUM, "Wrong reaction ID");
-    _events[RT].selectEvent(0)->doIt();
+    assert(rt < EVENTS_NUM);
+    _events[rt].selectEvent(0)->doIt();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul()
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
 {
-    static_assert(RT < MULTI_EVENTS_NUM, "Wrong reaction ID");
-    _multiEvents[RT].selectEvent(0)->doIt();
+    assert(rt < MULTI_EVENTS_NUM);
+    _multiEvents[rt].selectEvent(0)->doIt();
 }
+#ifdef PRINT
+    printReaction(reaction, "Remove multi");
+#endif // PRINT
+
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-template <ushort RT>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(int x, int y, int z)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)
 {
     auto crd = int3(x, y, z);
-    _multiEvents[RT].selectEvent(crd)->doIt();
+    _multiEvents[rt].selectEvent(crd)->doIt();
 }
 #endif // DEBUG
 
 #ifdef PRINT
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(const ushort RT, Reaction *reaction, std::string message)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string message)
 {
     debugPrint([&](std::ostream &os) {
-        os << message << " (" << RT << ") ";
+        os << message << " (" << reaction->type() << ") ";
         reaction->info(os);
     });
 }

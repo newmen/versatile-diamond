@@ -13,8 +13,6 @@
 
 void Finder::initFind(Atom **atoms, uint n)
 {
-    // TODO: refactor it? for get only instanced atoms
-
     uint index = 0;
     Atom **dup = new Atom *[n];
     for (uint i = 0; i < n; ++i)

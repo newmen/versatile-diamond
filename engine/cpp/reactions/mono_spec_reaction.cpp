@@ -22,7 +22,7 @@ void MonoSpecReaction::removeFrom(SpecificSpec *target)
 {
     assert(_target == target);
 
-    target->unbindFrom(this);
+    target->unbindFrom(this); // this can not perform because target will also be deleted (calling only from SpecificSpec::remove)
     remove();
 }
 

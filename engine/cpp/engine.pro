@@ -133,11 +133,9 @@ HEADERS += \
     tools/vector3d.h \
     generations/reactions/typical.h \
     species/source_spec.h \
-    generations/species/base.h \
     generations/species/source.h \
     generations/species/dependent.h \
     generations/species/specific.h \
-    generations/species/typed.h \
     generations/species/specific/bridge_crs_cti_cli.h \
     mc/counter.h \
     generations/reactions/ubiquitous.h \
@@ -146,4 +144,5 @@ HEADERS += \
     tools/debug_print.h \
     mc/random_generator.h \
     generations/crystals/phase_boundary.h \
-    tools/lockable.h
+    tools/lockable.h \
+    generations/species/base.h

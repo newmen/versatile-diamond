@@ -13,7 +13,6 @@ void MethylOnBridge::find(Bridge *target)
         if (!checkAndFind(anchor, 9, METHYL_ON_BRIDGE))
         {
             Atom *methyl = anchor->amorphNeighbour();
-
             if (methyl->is(14))
             {
                 BaseSpec *parent = target;

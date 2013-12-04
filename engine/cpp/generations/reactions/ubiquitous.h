@@ -14,7 +14,7 @@ public:
 //    using UbiquitousReaction::UbiquitousReaction;
     Ubiquitous(Atom *target) : UbiquitousReaction(target) {}
 
-    ushort type() const override { return RT; } // same as in Typical
+    ushort type() const override { return RT - TypicalReactionsNum; }
 
     void doIt() override;
 
@@ -48,7 +48,7 @@ template <ushort RT>
 template <class R>
 void Ubiquitous<RT>::store(Atom *anchor, short delta)
 {
-    Handbook::mc().addMul<RT - TypicalReactionsNum>(new R(anchor), delta);
+    Handbook::mc().add(new R(anchor), delta);
 }
 
 template <ushort RT>
@@ -56,7 +56,7 @@ template <class R>
 void Ubiquitous<RT>::remove(Atom *anchor, short delta)
 {
     R removableTemplate(anchor);
-    Handbook::mc().removeMul<RT - TypicalReactionsNum>(&removableTemplate, -delta);
+    Handbook::mc().remove(&removableTemplate, -delta);
 }
 
 

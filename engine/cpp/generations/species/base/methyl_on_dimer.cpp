@@ -17,7 +17,6 @@ void MethylOnDimer::find(Dimer *target)
             if (!checkAndFind(anchor, 23, METHYL_ON_DIMER) && !anchor->isVisited())
             {
                 Atom *methyl = anchor->amorphNeighbour();
-
                 if (methyl->is(14))
                 {
                     BaseSpec *parent = target;
