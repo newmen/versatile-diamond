@@ -1,10 +1,26 @@
 #include "dimer_formation.h"
-
 #include <assert.h>
 
 void DimerFormation::find(BridgeCTsi *target)
 {
-    ManyTypical::find<DimerFormation>(target, 28, BRIDGE_CTsi, front100Lambda);
+    Atom *anchor = target->anchor();
+    auto diamond = crystalBy<Diamond>(anchor);
+    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+        // TODO: add checking that neighbour atom has not belongs to target spec?
+        if (neighbour->is(28))
+        {
+            auto neighbourSpec = neighbour->specificSpecByRole(28, BRIDGE_CTsi);
+            if (neighbourSpec)
+            {
+                SpecificSpec *targets[2] = {
+                    target,
+                    neighbourSpec
+                };
+
+                createBy<DimerFormation>(targets);
+            }
+        }
+    });
 }
 
 void DimerFormation::doIt()

@@ -1,31 +1,41 @@
 #ifndef NEIGHBOURS_H
 #define NEIGHBOURS_H
 
+#include "../tools/common.h"
 #include "atom.h"
 
 namespace vd
 {
 
-template <int NUM>
+template <ushort NUM>
 class Neighbours
 {
-    Atom *atoms[NUM];
+    Atom *_atoms[NUM];
 
 public:
+    enum : ushort { QUANTITY = NUM };
+
     Neighbours(Atom *atoms[NUM])
     {
         for (int i = 0; i < NUM; ++i)
-            this->atoms[i] = atoms[i];
+        {
+            _atoms[i] = atoms[i];
+        }
     }
 
     Atom *operator [] (uint i)
     {
-        return atoms[i];
+        return _atoms[i];
     }
 
     bool all()
     {
-        return atoms[0] && atoms[1];
+        bool result = true;
+        for (int i = 0; i < NUM; ++i)
+        {
+            result = result && (_atoms[i] != 0);
+        }
+        return result;
     }
 };
 

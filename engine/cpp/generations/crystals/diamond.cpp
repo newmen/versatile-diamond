@@ -5,7 +5,7 @@
 #include <assert.h>
 
 Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :
-    Crystal(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+    DiamondRelations<Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
 {
 }
 

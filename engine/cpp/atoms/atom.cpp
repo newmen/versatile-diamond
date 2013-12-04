@@ -190,6 +190,11 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
     return result;
 }
 
+SpecificSpec *Atom::specificSpecByRole(ushort rType, ushort specType)
+{
+    return static_cast<SpecificSpec *>(specByRole(rType, specType));
+}
+
 void Atom::forget(ushort rType, BaseSpec *spec)
 {
     const uint key = hash(rType, spec->type());

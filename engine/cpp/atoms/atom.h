@@ -62,9 +62,10 @@ public:
     void unsetLattice();
 
     void describe(ushort rType, BaseSpec *spec);
+    void forget(ushort rType, BaseSpec *spec);
     bool hasRole(ushort rType, ushort specType);
     BaseSpec *specByRole(ushort rType, ushort specType);
-    void forget(ushort rType, BaseSpec *spec);
+    SpecificSpec *specificSpecByRole(ushort rType, ushort specType);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();

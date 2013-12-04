@@ -2,31 +2,55 @@
 
 void DimerFormationNearBridge::find(BridgeCTsi *target)
 {
-    ManyTypical::find<DimerFormationNearBridge>(target, 5, BRIDGE_CRs, front100Lambda);
+    Atom *anchor = target->anchor();
+    auto diamond = crystalBy<Diamond>(anchor);
+    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+        // TODO: add checking that neighbour atom has not belongs to target spec?
+        if (neighbour->is(5))
+        {
+            auto neighbourSpec = neighbour->specificSpecByRole(5, BRIDGE_CRs);
+            if (neighbourSpec)
+            {
+                SpecificSpec *targets[2] = {
+                    target,
+                    neighbourSpec
+                };
+
+                createBy<DimerFormationNearBridge>(targets);
+            }
+        }
+    });
 }
 
 void DimerFormationNearBridge::find(BridgeCRs *target)
 {
-    ManyTypical::find<DimerFormationNearBridge>(target, 28, BRIDGE_CTsi, front100Lambda);
+    Atom *anchor = target->anchor();
+    auto diamond = crystalBy<Diamond>(anchor);
+    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+        // TODO: add checking that neighbour atom has not belongs to target spec?
+        if (neighbour->is(28))
+        {
+            auto neighbourSpec = neighbour->specificSpecByRole(28, BRIDGE_CTsi);
+            if (neighbourSpec)
+            {
+                SpecificSpec *targets[2] = {
+                    neighbourSpec,
+                    target
+                };
+
+                createBy<DimerFormationNearBridge>(targets);
+            }
+        }
+    });
 }
 
 void DimerFormationNearBridge::doIt()
 {
-    SpecificSpec *bridgeCTsi;
-    SpecificSpec *bridgeCRs;
-    if (target(0)->type() == BRIDGE_CRs)
-    {
-        assert(target(1)->type() == BRIDGE_CTsi);
-        bridgeCRs = target(0);
-        bridgeCTsi = target(1);
-    }
-    else
-    {
-        assert(target(0)->type() == BRIDGE_CTsi);
-        assert(target(1)->type() == BRIDGE_CRs);
-        bridgeCRs = target(1);
-        bridgeCTsi = target(0);
-    }
+    assert(target(0)->type() == BRIDGE_CTsi);
+    assert(target(1)->type() == BRIDGE_CRs);
+
+    SpecificSpec *bridgeCTsi = target(0);
+    SpecificSpec *bridgeCRs = target(1);
 
     Atom *atoms[2] = { bridgeCTsi->atom(0), bridgeCRs->atom(1) };
     Atom *a = atoms[0], *b = atoms[1];

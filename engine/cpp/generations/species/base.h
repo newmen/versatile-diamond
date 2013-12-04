@@ -3,12 +3,13 @@
 
 #include <assert.h>
 #include "../../tools/common.h"
+#include "../../atoms/atoms_iterator.h"
 using namespace vd;
 
 #include "../handbook.h"
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Base : public B
+class Base : public B, public AtomsIterator
 {
 protected:
 //    using B::B;
@@ -18,21 +19,12 @@ protected:
 //    virtual ushort *indexes() const = 0;
 //    virtual ushort *roles() const = 0;
 
-    static const Diamond *diamondBy(Atom *atom);
-
 public:
     ushort type() const override { return ST; }
 
     void store() override;
     void remove() override;
 };
-
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-const Diamond *Base<B, ST, USED_ATOMS_NUM>::diamondBy(Atom *atom)
-{
-    assert(atom->lattice());
-    return static_cast<const Diamond *>(atom->lattice()->crystal());
-}
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::store()

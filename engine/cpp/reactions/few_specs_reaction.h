@@ -18,9 +18,6 @@ class FewSpecsReaction : public SpecReaction
 {
     SpecificSpec *_targets[TARGETS_NUM];
 
-protected:
-    FewSpecsReaction(SpecificSpec **targets);
-
 public:
     Atom *anchor() const override;
     void removeFrom(SpecificSpec *target) override;
@@ -30,12 +27,7 @@ public:
 #endif // PRINT
 
 protected:
-    template <class R, ushort NEIGHBOURS_NUM>
-    static void find(SpecificSpec *target, Neighbours<NEIGHBOURS_NUM> &nbrs,
-                     ushort otherAtomType, ushort otherSpecType);
-
-    template <class R>
-    static void addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType);
+    FewSpecsReaction(SpecificSpec **targets);
 
     SpecificSpec *target(uint index = 0);
 };
@@ -82,40 +74,6 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
         }
 
         remove();
-    }
-}
-
-template <ushort TARGETS_NUM>
-template <class R, ushort NEIGHBOURS_NUM>
-void FewSpecsReaction<TARGETS_NUM>::find(SpecificSpec *target, Neighbours<NEIGHBOURS_NUM> &nbrs,
-                                         ushort otherAtomType, ushort otherSpecType)
-{
-    for (int i = 0; i < NEIGHBOURS_NUM; ++i)
-    {
-        if (nbrs[i] && (i == 0 || nbrs[i]->isVisited()))
-        {
-            addIfHasNeighbour<R>(target, nbrs[i], otherAtomType, otherSpecType);
-        }
-    }
-}
-
-template <>
-template <class R>
-void FewSpecsReaction<2>::addIfHasNeighbour(SpecificSpec *target, Atom *neighbour, ushort atomType, ushort specType)
-{
-    // TODO: вставить проверку, что соседний атом не принадлжет той же структуре по которой проверяем
-    if (neighbour->is(atomType))
-    {
-        auto neighbourSpec = static_cast<SpecificSpec *>(neighbour->specByRole(atomType, specType));
-        if (neighbourSpec)
-        {
-            SpecificSpec *targets[2] = {
-                target,
-                neighbourSpec
-            };
-
-            createBy<R>(targets);
-        }
     }
 }
 

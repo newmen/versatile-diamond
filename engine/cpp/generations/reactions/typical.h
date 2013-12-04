@@ -1,10 +1,13 @@
 #ifndef TYPICAL_H
 #define TYPICAL_H
 
+#include "../../atoms/atoms_iterator.h"
+using namespace vd;
+
 #include "../handbook.h"
 
 template <class B, ushort RT>
-class Typical : public B
+class Typical : public B, public AtomsIterator
 {
 public:
 //    using B::B;

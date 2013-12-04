@@ -24,8 +24,6 @@ protected:
 private:
     static ushort __indexes[2];
     static ushort __roles[2];
-
-    static void checkAndAdd(Atom *anchor, Atom *neighbour);
 };
 
 #endif // DIMER_H
