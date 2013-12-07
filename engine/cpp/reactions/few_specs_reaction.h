@@ -50,9 +50,8 @@ Atom *FewSpecsReaction<TARGETS_NUM>::anchor() const
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
         atom = _targets[i]->anchor();
-        if (atom->lattice()) return atom;
+        if (atom->lattice()) break;
     }
-
     return atom;
 }
 

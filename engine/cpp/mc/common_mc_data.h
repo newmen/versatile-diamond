@@ -48,6 +48,7 @@ private:
     inline void setSame(uint threadId);
 
     bool isNear(Atom *a, Atom *b) const;
+    bool isNearByCrystal(Atom *a, Atom *b) const;
     inline bool isNearByOneAxis(uint max, int v, int w) const;
 };
 

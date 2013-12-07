@@ -3,7 +3,7 @@
 
 #include <assert.h>
 #include "../../tools/common.h"
-#include "../../atoms/atoms_iterator.h"
+#include "../../atoms/crystal_atoms_iterator.h"
 using namespace vd;
 
 #include "../handbook.h"

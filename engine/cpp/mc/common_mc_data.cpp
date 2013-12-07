@@ -126,7 +126,25 @@ void CommonMCData::setSame(uint threadId)
 
 bool CommonMCData::isNear(Atom *a, Atom *b) const
 {
-    if (!(a->lattice() && b->lattice() && a->lattice()->crystal() == b->lattice()->crystal())) return false;
+    // TODO: need to check amorph atoms coordinates (which is not stored in atom now)
+
+    if (!a->lattice())
+    {
+        return isNear(a->firstCrystalNeighbour(), b);
+    }
+    else if (!b->lattice())
+    {
+        return isNear(a, b->firstCrystalNeighbour());
+    }
+    else
+    {
+        return isNearByCrystal(a, b);
+    }
+}
+
+bool CommonMCData::isNearByCrystal(Atom *a, Atom *b) const
+{
+    if (a->lattice()->crystal() != b->lattice()->crystal()) return false;
 
     const dim3 &sizes = a->lattice()->crystal()->sizes();
     const int3 &ac = a->lattice()->coords();
