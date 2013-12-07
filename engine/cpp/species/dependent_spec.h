@@ -26,8 +26,6 @@ public:
     void store() override;
     void remove() override;
 
-    Atom *firstLatticedAtomIfExist() override;
-
 #ifdef PRINT
     void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
@@ -110,21 +108,6 @@ void DependentSpec<PARENTS_NUM>::remove()
     }
 
     BaseSpec::remove();
-}
-
-template <ushort PARENTS_NUM>
-Atom *DependentSpec<PARENTS_NUM>::firstLatticedAtomIfExist()
-{
-    Atom *first = _parents[0]->firstLatticedAtomIfExist();
-    if (first->lattice()) return first;
-
-    for (int i = 1; i < PARENTS_NUM; ++i)
-    {
-        Atom *atom = _parents[i]->firstLatticedAtomIfExist();
-        if (atom->lattice()) return atom;
-    }
-
-    return first;
 }
 
 }

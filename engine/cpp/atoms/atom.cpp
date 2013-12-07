@@ -174,17 +174,17 @@ BaseSpec *Atom::specByRole(ushort rType, ushort specType)
         pos(os);
         os << " |" << type() << ", " << _prevType << "| role type: " << rType
            << ". spec type: " << specType << ". key: " << key;
-        auto er = _specs.equal_range(key);
-        os << " -> distance: " << std::distance(er.first, er.second);
+        auto range = _specs.equal_range(key);
+        os << " -> distance: " << std::distance(range.first, range.second);
     });
 #endif // PRINT
 
-    auto its = _specs.equal_range(key);
-    uint distance = std::distance(its.first, its.second);
+    auto range = _specs.equal_range(key);
+    uint distance = std::distance(range.first, range.second);
     if (distance > 0)
     {
         assert(distance == 1);
-        result = its.first->second;
+        result = range.first->second;
     }
 
     return result;
@@ -199,10 +199,10 @@ void Atom::forget(ushort rType, BaseSpec *spec)
 {
     const uint key = hash(rType, spec->type());
 
-    auto its = _specs.equal_range(key);
-    assert(std::distance(its.first, its.second) > 0);
+    auto range = _specs.equal_range(key);
+    assert(std::distance(range.first, range.second) > 0);
 
-    if (std::distance(its.first, its.second) == 1)
+    if (std::distance(range.first, range.second) == 1)
     {
         auto role = _roles.find(rType);
         assert(role->second.size() > 0);
@@ -217,14 +217,14 @@ void Atom::forget(ushort rType, BaseSpec *spec)
         }
     }
 
-    while (its.first != its.second)
+    while (range.first != range.second)
     {
-        if (its.first->second == spec)
+        if (range.first->second == spec)
         {
-            _specs.erase(its.first);
+            _specs.erase(range.first);
             break;
         }
-        ++its.first;
+        ++range.first;
     }
 
 #ifdef PRINT
@@ -257,10 +257,10 @@ void Atom::removeUnsupportedSpecies()
         for (ushort st : pr.second)
         {
             const uint key = hash(pr.first, st);
-            auto its = _specs.equal_range(key);
-            while (its.first != its.second)
+            auto range = _specs.equal_range(key);
+            while (range.first != range.second)
             {
-                specs[n++] = (its.first++)->second;
+                specs[n++] = (range.first++)->second;
             }
         }
     }

@@ -6,7 +6,6 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
     Atom *anchor = target->anchor();
     auto diamond = crystalBy<Diamond>(anchor);
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
-        // TODO: add checking that neighbour atom has not belongs to target spec?
         if (neighbour->is(28))
         {
             auto neighbourSpec = neighbour->specificSpecByRole(28, BRIDGE_CTsi);
@@ -28,7 +27,6 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
     Atom *anchor = target->anchor();
     auto diamond = crystalBy<Diamond>(anchor);
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
-        // TODO: add checking that neighbour atom has not belongs to target spec?
         if (neighbour->is(19))
         {
             auto neighbourSpec = neighbour->specificSpecByRole(19, HIGH_BRIDGE);

@@ -15,7 +15,7 @@ MonoSpecReaction::MonoSpecReaction(SpecificSpec *target) : _target(target)
 
 Atom *MonoSpecReaction::anchor() const
 {
-    return _target->firstLatticedAtomIfExist();
+    return _target->anchor();
 }
 
 void MonoSpecReaction::removeFrom(SpecificSpec *target)

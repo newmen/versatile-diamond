@@ -33,7 +33,7 @@ public:
         bool result = true;
         for (int i = 0; i < NUM; ++i)
         {
-            result = result && (_atoms[i] != 0);
+            result = result && (_atoms[i] != nullptr);
         }
         return result;
     }

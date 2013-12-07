@@ -35,7 +35,7 @@ public:
     virtual ushort size() const = 0;
     virtual Atom *atom(ushort index) const = 0;
 
-    virtual Atom *firstLatticedAtomIfExist() = 0;
+    Atom *anchor() const { return atom(indexes()[0]); }
 
     virtual void findChildren();
     virtual void findAllChildren() = 0;
@@ -55,8 +55,6 @@ public:
     void wasFound();
     void wasForgotten();
 #endif // PRINT
-
-    Atom *anchor() const { return atom(indexes()[0]); } // TODO: wtf?? firstLatticedAtom ?
 
 protected:
     virtual ushort *indexes() const = 0;
