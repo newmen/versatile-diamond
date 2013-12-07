@@ -9,7 +9,7 @@ using namespace vd;
 #include "../handbook.h"
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Base : public B, public AtomsIterator
+class Base : public B, public CrystalAtomsIterator
 {
 protected:
 //    using B::B;

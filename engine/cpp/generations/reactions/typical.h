@@ -7,7 +7,7 @@ using namespace vd;
 #include "../handbook.h"
 
 template <class B, ushort RT>
-class Typical : public B, public AtomsIterator
+class Typical : public B, public CrystalAtomsIterator
 {
 public:
 //    using B::B;
