@@ -52,7 +52,7 @@ void CrystalAtomsIterator::eachNeighbours(Atom **anchors, C *crystal, const RL &
         bool allVisited = true;
         for (ushort k = 0; k < NEIGHBOURS_NUM; ++k)
         {
-            Atom *neighbour = arrOfNeighbours[i][k];
+            Atom *neighbour = arrOfNeighbours[k][i];
             neighbours[k] = neighbour;
 
             if (!neighbour)

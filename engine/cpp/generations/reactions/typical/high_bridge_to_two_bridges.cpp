@@ -17,6 +17,10 @@ void HighBridgeToTwoBridges::find(HighBridge *target)
 
                 createBy<HighBridgeToTwoBridges>(targets);
             }
+            else
+            {
+                assert(false);
+            }
         }
     });
 }
@@ -37,6 +41,10 @@ void HighBridgeToTwoBridges::find(BridgeCRs *target)
                 };
 
                 createBy<HighBridgeToTwoBridges>(targets);
+            }
+            else
+            {
+                assert(false);
             }
         }
     });

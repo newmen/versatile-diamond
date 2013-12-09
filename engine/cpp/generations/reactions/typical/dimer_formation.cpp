@@ -34,11 +34,14 @@ void DimerFormation::find(BridgeCTsi *target)
 
                         if (neighbourSpecs[0] && neighbourSpecs[0] == neighbourSpecs[1])
                         {
-                            assert(false);
 //                            reaction = reaction->concretize(neighbourSpecs[0]);
                         }
                     }
                 });
+            }
+            else
+            {
+                assert(false);
             }
         }
     });

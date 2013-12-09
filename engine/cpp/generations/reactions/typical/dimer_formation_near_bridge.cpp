@@ -17,6 +17,10 @@ void DimerFormationNearBridge::find(BridgeCTsi *target)
 
                 createBy<DimerFormationNearBridge>(targets);
             }
+            else
+            {
+                assert(false);
+            }
         }
     });
 }
@@ -37,6 +41,10 @@ void DimerFormationNearBridge::find(BridgeCRs *target)
                 };
 
                 createBy<DimerFormationNearBridge>(targets);
+            }
+            else
+            {
+                assert(false);
             }
         }
     });

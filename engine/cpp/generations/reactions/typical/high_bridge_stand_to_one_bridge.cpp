@@ -18,6 +18,10 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
 
                 createBy<HighBridgeStandToOneBridge>(targets);
             }
+            else
+            {
+                assert(false);
+            }
         }
     });
 }
@@ -38,6 +42,10 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
                 };
 
                 createBy<HighBridgeStandToOneBridge>(targets);
+            }
+            else
+            {
+                assert(false);
             }
         }
     });
