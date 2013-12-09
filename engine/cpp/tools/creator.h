@@ -6,6 +6,8 @@ class Creator
 protected:
     template <class T, class... Args>
     static T *createBy(Args... args);
+
+    ~Creator() {}
 };
 
 template <class T, class... Args>

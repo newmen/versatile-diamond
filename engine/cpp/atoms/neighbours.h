@@ -15,6 +15,14 @@ class Neighbours
 public:
     enum : ushort { QUANTITY = NUM };
 
+    Neighbours()
+    {
+        for (int i = 0; i < NUM; ++i)
+        {
+            _atoms[i] = nullptr;
+        }
+    }
+
     Neighbours(Atom *atoms[NUM])
     {
         for (int i = 0; i < NUM; ++i)

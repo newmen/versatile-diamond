@@ -14,12 +14,10 @@ public:
     static C *crystalBy(Atom *atom);
 
     template <class C, class RL, class AL>
-    static void eachNeighbour(Atom *anchor, C *crystal,
-                              const RL &relationsLambda, const AL &actionLambda);
+    static void eachNeighbour(Atom *anchor, C *crystal, const RL &relationsMethod, const AL &actionLambda);
 
-    template <class C, class RL, class AL>
-    static void eachNeighbours(Atom **anchors, ushort n, C *crystal,
-                               const RL &relationsLambda, const AL &actionLambda);
+    template <ushort NEIGHBOURS_NUM, class C, class RL, class AL>
+    static void eachNeighbours(Atom **anchors, C *crystal, const RL &relationsMethod, const AL &actionLambda);
 };
 
 template <class C>
@@ -30,55 +28,48 @@ C *CrystalAtomsIterator::crystalBy(Atom *atom)
 }
 
 template <class C, class RL, class AL>
-void CrystalAtomsIterator::eachNeighbour(Atom *anchor, C *crystal,
-                                  const RL &relationsLambda, const AL &actionLambda)
+void CrystalAtomsIterator::eachNeighbour(Atom *anchor, C *crystal, const RL &relationsMethod, const AL &actionLambda)
 {
-    auto neighbours = (crystal->*relationsLambda)(anchor);
-    for (ushort i = 0; i < neighbours.QUANTITY; ++i)
-    {
-        Atom *neighbour = neighbours[i];
-        if (neighbour && (i == 0 || neighbour->isVisited()))
-        {
-            actionLambda(neighbour);
-        }
-    }
+    eachNeighbours<1>(&anchor, crystal, relationsMethod, [&actionLambda](Atom **neighbours) {
+        actionLambda(neighbours[0]);
+    });
 }
 
-template <class C, class RL, class AL>
-void CrystalAtomsIterator::eachNeighbours(Atom **anchors, ushort n, C *crystal,
-                                   const RL &relationsLambda, const AL &actionLambda)
+template <ushort NEIGHBOURS_NUM, class C, class RL, class AL>
+void CrystalAtomsIterator::eachNeighbours(Atom **anchors, C *crystal, const RL &relationsMethod, const AL &actionLambda)
 {
-    // TODO: so many heap memory allocations...
-    // maybe need to pass the "n" as template argument for allocating memory in stack
+    typedef decltype((crystal->*relationsMethod)(nullptr)) NeighboursType;
 
-    auto arrOfNeighbours = new decltype((crystal->*relationsLambda)(nullptr))[n];
-    for (ushort k = 0; k < n; ++k)
+    NeighboursType arrOfNeighbours[NEIGHBOURS_NUM];
+    for (ushort k = 0; k < NEIGHBOURS_NUM; ++k)
     {
-        arrOfNeighbours[k] = std::move((crystal->*relationsLambda)(anchors[k]));
+        arrOfNeighbours[k] = (crystal->*relationsMethod)(anchors[k]);
     }
 
-    Atom **neighbours = new Atom *[n];
-    for (ushort i = 0; i < arrOfNeighbours[0].QUANTITY; ++i)
+    Atom *neighbours[NEIGHBOURS_NUM];
+    for (ushort i = 0; i < NeighboursType::QUANTITY; ++i)
     {
-        bool allInstanced = true;
         bool allVisited = true;
-        for (ushort k = 0; k < n; ++k)
+        for (ushort k = 0; k < NEIGHBOURS_NUM; ++k)
         {
             Atom *neighbour = arrOfNeighbours[i][k];
             neighbours[k] = neighbour;
 
-            allInstanced = allInstanced && (neighbour != nullptr);
-            allVisited = allVisited && neighbour->isVisited();
+            if (!neighbour)
+            {
+                goto next_main_iteration;
+            }
+
+            allVisited &= neighbour->isVisited();
         }
 
-        if (allInstanced && (i == 0 || allVisited))
+        if (i == 0 || allVisited)
         {
             actionLambda(neighbours);
         }
-    }
 
-    delete [] neighbours;
-    delete [] arrOfNeighbours;
+        next_main_iteration :;
+    }
 }
 
 }

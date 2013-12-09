@@ -66,7 +66,8 @@ SOURCES += main.cpp \
     mc/random_generator.cpp \
     generations/reactions/ubiquitous.cpp \
     generations/crystals/phase_boundary.cpp \
-    tools/lockable.cpp
+    tools/lockable.cpp \
+    reactions/lateral_reaction.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -146,4 +147,5 @@ HEADERS += \
     generations/crystals/phase_boundary.h \
     tools/lockable.h \
     generations/species/base.h \
-    atoms/crystal_atoms_iterator.h
+    atoms/crystal_atoms_iterator.h \
+    reactions/lateral_reaction.h
