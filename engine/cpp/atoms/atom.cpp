@@ -89,7 +89,7 @@ Atom *Atom::amorphNeighbour()
     {
         if (!relative->lattice() && relative != neighbour)
         {
-            assert(true); // if has many unlatticed atoms
+            assert(false); // if has many unlatticed atoms
         }
     }
 #endif // DEBUG

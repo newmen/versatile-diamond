@@ -19,7 +19,7 @@ Counter::~Counter()
 
 void Counter::inc(Reaction *event)
 {
-    uint index = event->type();
+    uint index = event->counterIndex();
     assert(_records.size() > index);
 
 #ifdef PARALLEL

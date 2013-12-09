@@ -32,9 +32,9 @@ void DimerFormation::find(BridgeCTsi *target)
                             neighbours[1]->specByRole(22, DIMER)
                         };
 
-                        if (neighbourSpecs[0] == neighbourSpecs[1])
+                        if (neighbourSpecs[0] && neighbourSpecs[0] == neighbourSpecs[1])
                         {
-                            assert(true);
+                            assert(false);
 //                            reaction = reaction->concretize(neighbourSpecs[0]);
                         }
                     }

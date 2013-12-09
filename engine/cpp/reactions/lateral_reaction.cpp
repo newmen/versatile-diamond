@@ -28,7 +28,7 @@ void LateralReaction::removeFrom(SpecificSpec *target)
     }
     else
     {
-        assert(true);
+        assert(false);
         _mainReaction->removeFrom(target);
     }
 

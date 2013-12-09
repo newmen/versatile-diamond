@@ -14,6 +14,7 @@ public:
 //    using UbiquitousReaction::UbiquitousReaction;
     Ubiquitous(Atom *target) : UbiquitousReaction(target) {}
 
+    ushort counterIndex() const override { return RT; }
     ushort type() const override { return RT - TypicalReactionsNum; }
 
     void doIt() override;

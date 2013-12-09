@@ -23,7 +23,7 @@ Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
         }
     }
 
-    assert(true); // multi event by crd was not found
+    assert(false); // multi event by crd was not found
     return nullptr;
 }
 #endif // DEBUG
