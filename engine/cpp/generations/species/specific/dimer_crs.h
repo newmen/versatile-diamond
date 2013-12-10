@@ -10,16 +10,16 @@ class DimerCRs : public Specific<DIMER_CRs, 1, AtomShiftWrapper<SpecificSpec>>
 public:
     static void find(Dimer *parent);
 
-//    using Specific<DIMER_CRs, 1, AtomShiftWrapper<SpecificSpec>>::Specific;
+//    using Specific::Specific;
     DimerCRs(ushort atomsShift, BaseSpec *parent) : Specific(atomsShift, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: *)"; }
 #endif // PRINT
 
+protected:
     void findAllReactions() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

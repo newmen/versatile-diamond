@@ -10,17 +10,17 @@ class BridgeCRs : public Specific<BRIDGE_CRs, 1, AtomsSwapWrapper<SpecificSpec>>
 public:
     static void find(Bridge *parent);
 
-//    using Specific<BRIDGE_CRs, 1, AtomsSwapWrapper<SpecificSpec>>::Specific;
+//    using Specific::Specific;
     BridgeCRs(ushort fromIndex, ushort toIndex, BaseSpec *parent) : Specific(fromIndex, toIndex, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge(cr: *)"; }
 #endif // PRINT
 
+protected:
     void findAllChildren() override;
     void findAllReactions() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

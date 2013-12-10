@@ -1,8 +1,9 @@
 #include "dimer.h"
 #include <assert.h>
-#include "methyl_on_dimer.h"
+#include "../../../species/lateral_reactant.h"
 #include "../specific/dimer_cri_cli.h"
 #include "../specific/dimer_crs.h"
+#include "methyl_on_dimer.h"
 
 ushort Dimer::__indexes[2] = { 0, 3 };
 ushort Dimer::__roles[2] = { 22, 22 };
@@ -22,11 +23,11 @@ void Dimer::find(Atom *anchor)
                     assert(neighbour->lattice());
 
                     BaseSpec *parents[2] = {
-                        anchor->specByRole(3, BRIDGE),
-                        neighbour->specByRole(3, BRIDGE)
+                        anchor->specByRole<BaseSpec>(3, BRIDGE),
+                        neighbour->specByRole<BaseSpec>(3, BRIDGE)
                     };
 
-                    createBy<Dimer>(parents);
+                    createBy<LateralReactant>(new Dimer(parents));
                 }
             });
         }

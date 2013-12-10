@@ -7,7 +7,7 @@
 namespace vd
 {
 
-class SpecificSpec; //
+class SpecificSpec;
 
 class SpecReaction : public Reaction, public Creator
 {

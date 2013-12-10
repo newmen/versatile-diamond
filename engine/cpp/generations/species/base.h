@@ -2,26 +2,21 @@
 #define BASE_H
 
 #include <assert.h>
-#include "../../tools/common.h"
+#include "../../tools/typed.h"
 #include "../../atoms/crystal_atoms_iterator.h"
 using namespace vd;
 
 #include "../handbook.h"
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Base : public B, public CrystalAtomsIterator
+class Base : public Typed<B, ST>, public CrystalAtomsIterator
 {
 protected:
-//    using B::B;
+//    using Typed<B, ST>::Typed;
     template <class... Args>
-    Base(Args... args) : B(args...) {}
-
-//    virtual ushort *indexes() const = 0;
-//    virtual ushort *roles() const = 0;
+    Base(Args... args) : Typed<B, ST>(args...) {}
 
 public:
-    ushort type() const override { return ST; }
-
     void store() override;
     void remove() override;
 };

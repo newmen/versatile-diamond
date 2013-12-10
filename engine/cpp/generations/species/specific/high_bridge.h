@@ -11,16 +11,16 @@ class HighBridge : public Specific<HIGH_BRIDGE, 2, AdditionalAtomsWrapper<Specif
 public:
     static void find(Bridge *parent);
 
-//    using Specific<HIGH_BRIDGE, 2, AdditionalAtomsWrapper<SpecificSpec, 1>>::Specific;
+//    using Specific::Specific;
     HighBridge(Atom **additionalAtoms, BaseSpec *parent) : Specific(additionalAtoms, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "high bridge"; }
 #endif // PRINT
 
+protected:
     void findAllReactions() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

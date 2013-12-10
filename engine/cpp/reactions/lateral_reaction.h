@@ -1,7 +1,6 @@
 #ifndef LATERAL_REACTION_H
 #define LATERAL_REACTION_H
 
-#include "../species/specific_spec.h"
 #include "spec_reaction.h"
 
 #ifdef PRINT
@@ -12,22 +11,25 @@
 namespace vd
 {
 
+class LateralSpec;
+
 class LateralReaction : public SpecReaction
 {
-    SpecReaction *_mainReaction;
-    SpecificSpec *_lateral;
+    SpecReaction *_parent;
 
 public:
     void doIt() override;
     Atom *anchor() const override;
-    void removeFrom(SpecificSpec *target) override;
+
+    void removeFrom(SpecificSpec *spec) override;
+    virtual void removeFrom(LateralSpec *spec) = 0;
 
 #ifdef PRINT
     void info(std::ostream &os) override;
 #endif // PRINT
 
 protected:
-    LateralReaction(SpecReaction *mainReaction, SpecificSpec *lateralSpec);
+    LateralReaction(SpecReaction *parent);
 };
 
 }

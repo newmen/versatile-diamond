@@ -15,19 +15,18 @@ class MonoSpecReaction : public SpecReaction
 {
     SpecificSpec *_target;
 
-protected:
-    MonoSpecReaction(SpecificSpec *target);
-
 public:
     Atom *anchor() const override;
     void removeFrom(SpecificSpec *target) override;
 
-protected:
     SpecificSpec *target() { return _target; }
 
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT
+
+protected:
+    MonoSpecReaction(SpecificSpec *target);
 };
 
 }

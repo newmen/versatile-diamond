@@ -5,44 +5,19 @@ void DimerFormation::find(BridgeCTsi *target)
 {
     Atom *anchor = target->anchor();
     auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target, diamond](Atom *neighbour) {
+    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         // TODO: add checking that neighbour atom has not belongs to target spec?
         if (neighbour->is(28))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(28, BRIDGE_CTsi);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    target,
-                    neighbourSpec
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(28, BRIDGE_CTsi);
+            assert(neighbourSpec);
 
-                auto reaction = createBy<DimerFormation>(targets); // !!! store
+            SpecificSpec *targets[2] = {
+                target,
+                neighbourSpec
+            };
 
-                Atom *atoms[2] = {
-                    target->atom(0),
-                    neighbourSpec->atom(0)
-                };
-
-                eachNeighbours<2>(atoms, diamond, &Diamond::cross_100, [reaction](Atom **neighbours) {
-                    if (neighbours[0]->is(22) && neighbours[1]->is(22))
-                    {
-                        BaseSpec *neighbourSpecs[2] = {
-                            neighbours[0]->specByRole(22, DIMER),
-                            neighbours[1]->specByRole(22, DIMER)
-                        };
-
-                        if (neighbourSpecs[0] && neighbourSpecs[0] == neighbourSpecs[1])
-                        {
-//                            reaction = reaction->concretize(neighbourSpecs[0]);
-                        }
-                    }
-                });
-            }
-            else
-            {
-                assert(false);
-            }
+            createBy<DimerFormation>(targets);
         }
     });
 }

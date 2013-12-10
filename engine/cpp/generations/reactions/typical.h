@@ -2,23 +2,23 @@
 #define TYPICAL_H
 
 #include "../../atoms/crystal_atoms_iterator.h"
+#include "../../reactions/counterable.h"
+#include "../../tools/typed.h"
 using namespace vd;
 
 #include "../handbook.h"
 
 template <class B, ushort RT>
-class Typical : public B, public CrystalAtomsIterator
+class Typical : public Counterable<Typed<B, RT>, RT>, public CrystalAtomsIterator
 {
 public:
-//    using B::B;
-    template <class... Args>
-    Typical(Args... args) : B(args...) {}
-
-    ushort type() const override { return RT; }
-
     void store() override;
 
 protected:
+//    using Counterable<Typed<B, RT>, RT>, RT>::Counterable;
+    template <class... Args>
+    Typical(Args... args) : Counterable<Typed<B, RT>, RT>(args...) {}
+
     void remove() override;
 };
 

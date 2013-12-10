@@ -8,16 +8,17 @@ class Dimer : public Dependent<DIMER, 2>
 public:
     static void find(Atom *anchor);
 
-//    using Dependent<DIMER, 2>::Dependent;
+//    using Dependent::Dependent;
     Dimer(BaseSpec **parents) : Dependent(parents) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer"; }
 #endif // PRINT
 
-    void findAllChildren() override;
-
 protected:
+    void findAllChildren() override;
+//    void findAllReactions() override;
+
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

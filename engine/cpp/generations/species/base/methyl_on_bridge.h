@@ -10,16 +10,16 @@ class MethylOnBridge : public Dependent<METHYL_ON_BRIDGE, 2, AdditionalAtomsWrap
 public:
     static void find(Bridge *target);
 
-//    using Dependent<METHYL_ON_BRIDGE, 2, AdditionalAtomsWrapper<DependentSpec<1>, 1>>::Dependent;
-    MethylOnBridge(Atom **additionalAtoms, BaseSpec **parents) : Dependent(additionalAtoms, parents) {}
+//    using Dependent::Dependent;
+    MethylOnBridge(Atom **additionalAtoms, BaseSpec *parent) : Dependent(additionalAtoms, &parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl on bridge"; }
 #endif // PRINT
 
+protected:
     void findAllChildren() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

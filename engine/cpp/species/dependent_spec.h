@@ -1,7 +1,7 @@
 #ifndef DEPENDENT_SPEC_H
 #define DEPENDENT_SPEC_H
 
-#include "base_spec.h"
+#include "parent_spec.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -12,7 +12,7 @@ namespace vd
 {
 
 template <ushort PARENTS_NUM>
-class DependentSpec : public BaseSpec
+class DependentSpec : public ParentSpec
 {
     BaseSpec *_parents[PARENTS_NUM];
 
@@ -30,7 +30,6 @@ public:
     void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
-
 };
 
 template <ushort PARENTS_NUM>
@@ -40,6 +39,17 @@ DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
     {
         _parents[i] = parents[i];
     }
+}
+
+template <ushort PARENTS_NUM>
+ushort DependentSpec<PARENTS_NUM>::size() const
+{
+    ushort sum = 0;
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        sum += _parents[i]->size();
+    }
+    return sum;
 }
 
 template <ushort PARENTS_NUM>
@@ -57,14 +67,23 @@ Atom *DependentSpec<PARENTS_NUM>::atom(ushort index) const
 }
 
 template <ushort PARENTS_NUM>
-ushort DependentSpec<PARENTS_NUM>::size() const
+void DependentSpec<PARENTS_NUM>::store()
 {
-    ushort sum = 0;
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
-        sum += _parents[i]->size();
+        _parents[i]->addChild(this);
     }
-    return sum;
+}
+
+template <ushort PARENTS_NUM>
+void DependentSpec<PARENTS_NUM>::remove()
+{
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        _parents[i]->removeChild(this);
+    }
+
+    ParentSpec::remove();
 }
 
 #ifdef PRINT
@@ -89,26 +108,6 @@ void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &la
     }
 }
 #endif // PRINT
-
-template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::store()
-{
-    for (int i = 0; i < PARENTS_NUM; ++i)
-    {
-        _parents[i]->addChild(this);
-    }
-}
-
-template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::remove()
-{
-    for (int i = 0; i < PARENTS_NUM; ++i)
-    {
-        _parents[i]->removeChild(this);
-    }
-
-    BaseSpec::remove();
-}
 
 }
 

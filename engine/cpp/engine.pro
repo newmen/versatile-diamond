@@ -7,13 +7,13 @@ QMAKE_CXXFLAGS += -DDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
-#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 
 #QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -fopenmp -lstdc++
 
-QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
-LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
+#QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
+#LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += main.cpp \
     atoms/atom.cpp \
@@ -21,17 +21,21 @@ SOURCES += main.cpp \
     generations/atoms/specified_atom.cpp \
     generations/crystals/diamond.cpp \
     generations/crystals/diamond_relations.cpp \
+    generations/crystals/phase_boundary.cpp \
     generations/finder.cpp \
     generations/handbook.cpp \
+    generations/reactions/lateral/finders/dimer_formation_finder.cpp \
     generations/reactions/typical/ads_methyl_to_dimer.cpp \
     generations/reactions/typical/des_methyl_from_bridge.cpp \
     generations/reactions/typical/dimer_drop.cpp \
     generations/reactions/typical/dimer_formation.cpp \
+    generations/reactions/typical/dimer_formation_near_bridge.cpp \
     generations/reactions/typical/high_bridge_stand_to_one_bridge.cpp \
     generations/reactions/typical/high_bridge_to_two_bridges.cpp \
     generations/reactions/typical/methyl_on_dimer_hydrogen_migration.cpp \
     generations/reactions/typical/methyl_to_high_bridge.cpp \
     generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
+    generations/reactions/ubiquitous.cpp \
     generations/reactions/ubiquitous/surface_activation.cpp \
     generations/reactions/ubiquitous/surface_deactivation.cpp \
     generations/species/base/bridge.cpp \
@@ -39,6 +43,7 @@ SOURCES += main.cpp \
     generations/species/base/methyl_on_bridge.cpp \
     generations/species/base/methyl_on_dimer.cpp \
     generations/species/specific/bridge_crs.cpp \
+    generations/species/specific/bridge_crs_cti_cli.cpp \
     generations/species/specific/bridge_ctsi.cpp \
     generations/species/specific/dimer_cri_cli.cpp \
     generations/species/specific/dimer_crs.cpp \
@@ -49,28 +54,27 @@ SOURCES += main.cpp \
     generations/species/specific/methyl_on_dimer_cmu.cpp \
     mc/base_events_container.cpp \
     mc/common_mc_data.cpp \
+    mc/counter.cpp \
     mc/events_container.cpp \
     mc/multi_events_container.cpp \
+    mc/random_generator.cpp \
     phases/amorph.cpp \
     phases/crystal.cpp \
     reactions/mono_spec_reaction.cpp \
+    reactions/spec_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
-    species/base_spec.cpp \
     species/specific_spec.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
-    reactions/spec_reaction.cpp \
-    generations/species/specific/bridge_crs_cti_cli.cpp \
-    mc/counter.cpp \
-    generations/reactions/typical/dimer_formation_near_bridge.cpp \
-    mc/random_generator.cpp \
-    generations/reactions/ubiquitous.cpp \
-    generations/crystals/phase_boundary.cpp \
     tools/lockable.cpp \
-    reactions/lateral_reaction.cpp
+    species/parent_spec.cpp \
+    reactions/lateral_reaction.cpp \
+    species/specific_reactant.cpp \
+    species/base_spec.cpp
 
 HEADERS += \
     atoms/atom.h \
+    atoms/crystal_atoms_iterator.h \
     atoms/lattice.h \
     atoms/neighbours.h \
     generations/atoms/c.h \
@@ -78,27 +82,40 @@ HEADERS += \
     generations/builders/atom_builder.h \
     generations/crystals/diamond.h \
     generations/crystals/diamond_relations.h \
+    generations/crystals/phase_boundary.h \
     generations/finder.h \
     generations/handbook.h \
     generations/names.h \
+    generations/reactions/lateral.h \
+    generations/reactions/lateral/dimer_formation_at_end.h \
+    generations/reactions/lateral/dimer_formation_in_middle.h \
+    generations/reactions/lateral/finders/dimer_formation_finder.h \
     generations/reactions/many_typical.h \
     generations/reactions/mono_typical.h \
+    generations/reactions/typical.h \
     generations/reactions/typical/ads_methyl_to_dimer.h \
     generations/reactions/typical/des_methyl_from_bridge.h \
     generations/reactions/typical/dimer_drop.h \
     generations/reactions/typical/dimer_formation.h \
+    generations/reactions/typical/dimer_formation_near_bridge.h \
     generations/reactions/typical/high_bridge_stand_to_one_bridge.h \
     generations/reactions/typical/high_bridge_to_two_bridges.h \
     generations/reactions/typical/methyl_on_dimer_hydrogen_migration.h \
     generations/reactions/typical/methyl_to_high_bridge.h \
     generations/reactions/typical/next_level_bridge_to_high_bridge.h \
+    generations/reactions/ubiquitous.h \
     generations/reactions/ubiquitous/surface_activation.h \
     generations/reactions/ubiquitous/surface_deactivation.h \
+    generations/species/base.h \
     generations/species/base/bridge.h \
     generations/species/base/dimer.h \
     generations/species/base/methyl_on_bridge.h \
     generations/species/base/methyl_on_dimer.h \
+    generations/species/dependent.h \
+    generations/species/source.h \
+    generations/species/specific.h \
     generations/species/specific/bridge_crs.h \
+    generations/species/specific/bridge_crs_cti_cli.h \
     generations/species/specific/bridge_ctsi.h \
     generations/species/specific/dimer_cri_cli.h \
     generations/species/specific/dimer_crs.h \
@@ -109,43 +126,43 @@ HEADERS += \
     generations/species/specific/methyl_on_dimer_cmu.h \
     mc/base_events_container.h \
     mc/common_mc_data.h \
+    mc/counter.h \
     mc/events_container.h \
     mc/mc.h \
     mc/multi_events_container.h \
+    mc/random_generator.h \
     phases/amorph.h \
     phases/crystal.h \
     phases/phase.h \
+    reactions/counterable.h \
     reactions/few_specs_reaction.h \
+    reactions/lateral_reaction.h \
     reactions/mono_spec_reaction.h \
     reactions/reaction.h \
+    reactions/reaction_clarifier.h \
     reactions/spec_reaction.h \
     reactions/ubiquitous_reaction.h \
     species/additional_atoms_wrapper.h \
     species/atom_shift_wrapper.h \
     species/atoms_swap_wrapper.h \
-    species/base_spec.h \
     species/dependent_spec.h \
     species/keeper.h \
+    species/reactant.h \
+    species/source_spec.h \
     species/specific_spec.h \
     tests/support/open_diamond.h \
     tools/collector.h \
     tools/common.h \
-    tools/scavenger.h \
-    tools/vector3d.h \
-    generations/reactions/typical.h \
-    species/source_spec.h \
-    generations/species/source.h \
-    generations/species/dependent.h \
-    generations/species/specific.h \
-    generations/species/specific/bridge_crs_cti_cli.h \
-    mc/counter.h \
-    generations/reactions/ubiquitous.h \
-    generations/reactions/typical/dimer_formation_near_bridge.h \
     tools/creator.h \
     tools/debug_print.h \
-    mc/random_generator.h \
-    generations/crystals/phase_boundary.h \
     tools/lockable.h \
-    generations/species/base.h \
-    atoms/crystal_atoms_iterator.h \
-    reactions/lateral_reaction.h
+    tools/scavenger.h \
+    tools/typed.h \
+    tools/vector3d.h \
+    species/parent_spec.h \
+    species/base_spec.h \
+    species/specific_reactant.h \
+    species/lateral_spec.h \
+    species/lateral_reactant.h \
+    reactions/concrete_lateral_reaction.h \
+    species/removable_reactant.h

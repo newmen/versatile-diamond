@@ -1,6 +1,7 @@
 #ifndef UBIQUITOUS_H
 #define UBIQUITOUS_H
 
+#include "../../reactions/counterable.h"
 #include "../../reactions/ubiquitous_reaction.h"
 using namespace vd;
 
@@ -8,18 +9,17 @@ using namespace vd;
 #include "../handbook.h"
 
 template <ushort RT>
-class Ubiquitous : public UbiquitousReaction
+class Ubiquitous : public Counterable<UbiquitousReaction, RT>
 {
 public:
-//    using UbiquitousReaction::UbiquitousReaction;
-    Ubiquitous(Atom *target) : UbiquitousReaction(target) {}
-
-    ushort counterIndex() const override { return RT; }
-    ushort type() const override { return RT - TypicalReactionsNum; }
+    ushort type() const override { return RT - ALL_SPEC_REACTIONS_NUM; }
 
     void doIt() override;
 
 protected:
+//    using Counterable<UbiquitousReaction, RT>::Counterable;
+    Ubiquitous(Atom *target) : Counterable<UbiquitousReaction, RT>(target) {}
+
     template <class R>
     static void find(Atom *anchor, short delta);
 
@@ -66,7 +66,7 @@ void Ubiquitous<RT>::doIt()
 {
     UbiquitousReaction::doIt();
 
-    Atom *atoms[1] = { target() };
+    Atom *atoms[1] = { this->target() };
     Finder::findAll(atoms, 1);
 }
 

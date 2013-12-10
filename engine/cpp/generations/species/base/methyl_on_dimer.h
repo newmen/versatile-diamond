@@ -11,17 +11,17 @@ class MethylOnDimer : public Dependent<METHYL_ON_DIMER, 2, AdditionalAtomsWrappe
 public:
     static void find(Dimer *target);
 
-//    using Dependent<METHYL_ON_DIMER, 2, AdditionalAtomsWrapper<AtomShiftWrapper<DependentSpec<1>>, 1>>::Dependent;
-    MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, BaseSpec **parents) :
-        Dependent(additionalAtoms, atomsShift, parents) {}
+//    using Dependent::Dependent;
+    MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, BaseSpec *parent) :
+        Dependent(additionalAtoms, atomsShift, &parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl on dimer"; }
 #endif // PRINT
 
+protected:
     void findAllChildren() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

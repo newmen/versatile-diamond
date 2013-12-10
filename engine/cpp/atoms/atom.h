@@ -64,8 +64,9 @@ public:
     void describe(ushort rType, BaseSpec *spec);
     void forget(ushort rType, BaseSpec *spec);
     bool hasRole(ushort rType, ushort specType);
-    BaseSpec *specByRole(ushort rType, ushort specType);
-    SpecificSpec *specificSpecByRole(ushort rType, ushort specType);
+
+    template <class S>
+    S *specByRole(ushort rType, ushort specType);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -96,6 +97,44 @@ private:
         return (at << 16) ^ second;
     }
 };
+
+template <class S>
+S *Atom::specByRole(ushort rType, ushort specType)
+{
+    BaseSpec *result = nullptr;
+    const uint key = hash(rType, specType);
+
+#ifdef PRINT
+    debugPrint([&](std::ostream &os) {
+        os << "specByRole " << this << std::dec;
+        pos(os);
+        os << " |" << type() << ", " << _prevType << "| role type: " << rType
+           << ". spec type: " << specType << ". key: " << key;
+        auto range = _specs.equal_range(key);
+        os << " -> distance: " << std::distance(range.first, range.second);
+    });
+#endif // PRINT
+
+    auto range = _specs.equal_range(key);
+    uint distance = std::distance(range.first, range.second);
+    if (distance > 0)
+    {
+        assert(distance == 1);
+        result = range.first->second;
+    }
+
+#ifdef DEBUG
+    S *dynamicResult = nullptr;
+    if (result)
+    {
+        dynamicResult = dynamic_cast<S *>(result);
+        assert(dynamicResult);
+    }
+    return dynamicResult;
+#else
+    return static_cast<S *>(result);
+#endif // DEBUG
+}
 
 }
 

@@ -19,8 +19,7 @@ void MethylOnDimer::find(Dimer *target)
                 Atom *methyl = anchor->amorphNeighbour();
                 if (methyl->is(14))
                 {
-                    BaseSpec *parent = target;
-                    createBy<MethylOnDimer>(&methyl, checkingIndexes[i], &parent);
+                    createBy<MethylOnDimer>(&methyl, checkingIndexes[i], target);
                 }
             }
         }

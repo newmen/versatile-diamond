@@ -7,20 +7,15 @@ void DimerFormationNearBridge::find(BridgeCTsi *target)
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(5))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(5, BRIDGE_CRs);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    target,
-                    neighbourSpec
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(5, BRIDGE_CRs);
+            assert(neighbourSpec);
 
-                createBy<DimerFormationNearBridge>(targets);
-            }
-            else
-            {
-                assert(false);
-            }
+            SpecificSpec *targets[2] = {
+                target,
+                neighbourSpec
+            };
+
+            createBy<DimerFormationNearBridge>(targets);
         }
     });
 }
@@ -32,20 +27,15 @@ void DimerFormationNearBridge::find(BridgeCRs *target)
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(28))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(28, BRIDGE_CTsi);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    neighbourSpec,
-                    target
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(28, BRIDGE_CTsi);
+            assert(neighbourSpec);
 
-                createBy<DimerFormationNearBridge>(targets);
-            }
-            else
-            {
-                assert(false);
-            }
+            SpecificSpec *targets[2] = {
+                neighbourSpec,
+                target
+            };
+
+            createBy<DimerFormationNearBridge>(targets);
         }
     });
 }

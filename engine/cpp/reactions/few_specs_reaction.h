@@ -26,10 +26,10 @@ public:
     void info(std::ostream &os) override;
 #endif // PRINT
 
+    SpecificSpec *target(uint index = 0);
+
 protected:
     FewSpecsReaction(SpecificSpec **targets);
-
-    SpecificSpec *target(uint index = 0);
 };
 
 template <ushort TARGETS_NUM>
@@ -63,7 +63,7 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
     _targets[index] = nullptr;
 
     SpecificSpec *another = _targets[1 - index];
-    if (index == 0 || (another && another->atom(0)->isVisited()))
+    if (index == 0 || (another && another->anchor()->isVisited()))
     {
         if (another)
         {

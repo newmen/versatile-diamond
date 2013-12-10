@@ -3,45 +3,32 @@
 namespace vd
 {
 
-LateralReaction::LateralReaction(SpecReaction *mainReaction, SpecificSpec *lateralSpec) :
-    _mainReaction(mainReaction), _lateral(lateralSpec)
+LateralReaction::LateralReaction(SpecReaction *parent) : _parent(parent)
 {
-
-    _lateral->usedIn(this);
 }
 
 void LateralReaction::doIt()
 {
-    _mainReaction->doIt();
+    return _parent->doIt();
 }
 
 Atom *LateralReaction::anchor() const
 {
-    return _mainReaction->anchor();
+    return _parent->anchor();
 }
 
-void LateralReaction::removeFrom(SpecificSpec *target)
+void LateralReaction::removeFrom(SpecificSpec *spec)
 {
-    if (target == _lateral)
-    {
-        _lateral->unbindFrom(this);
-    }
-    else
-    {
-        assert(false);
-        _mainReaction->removeFrom(target);
-    }
-
+    assert(false);
+    _parent->removeFrom(spec);
     remove();
 }
 
 #ifdef PRINT
-void LateralSpecReaction::info(std::ostream &os)
+void LateralReaction::info(std::ostream &os)
 {
-    os << "LateralSpecReaction -> ";
-    _mainReaction->info(os);
-    os << " +++>>> ";
-    _lateral->info(os);
+    os << "LateralReaction -> ";
+    _parent->info(os);
 }
 #endif // PRINT
 

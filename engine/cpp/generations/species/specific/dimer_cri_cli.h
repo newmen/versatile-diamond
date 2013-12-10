@@ -9,16 +9,16 @@ class DimerCRiCLi : public Specific<DIMER_CRi_CLi, 2>
 public:
     static void find(Dimer *parent);
 
-//    using Specific<DIMER_CRi_CLi, 2>::Specific;
+//    using Specific::Specific;
     DimerCRiCLi(BaseSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: i, cl: i)"; }
 #endif // PRINT
 
+protected:
     void findAllReactions() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

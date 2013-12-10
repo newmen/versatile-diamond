@@ -8,20 +8,15 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(28))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(28, BRIDGE_CTsi);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    target,
-                    neighbourSpec
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(28, BRIDGE_CTsi);
+            assert(neighbourSpec);
 
-                createBy<HighBridgeStandToOneBridge>(targets);
-            }
-            else
-            {
-                assert(false);
-            }
+            SpecificSpec *targets[2] = {
+                target,
+                neighbourSpec
+            };
+
+            createBy<HighBridgeStandToOneBridge>(targets);
         }
     });
 }
@@ -33,20 +28,15 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(19))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(19, HIGH_BRIDGE);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    neighbourSpec,
-                    target
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(19, HIGH_BRIDGE);
+            assert(neighbourSpec);
 
-                createBy<HighBridgeStandToOneBridge>(targets);
-            }
-            else
-            {
-                assert(false);
-            }
+            SpecificSpec *targets[2] = {
+                neighbourSpec,
+                target
+            };
+
+            createBy<HighBridgeStandToOneBridge>(targets);
         }
     });
 }

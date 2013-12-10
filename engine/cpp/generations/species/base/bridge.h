@@ -8,16 +8,16 @@ class Bridge : public Source<BRIDGE, 3>
 public:
     static void find(Atom *anchor);
 
-//    using Source<BRIDGE, 3>::Source;
+//    using Source::Source;
     Bridge(Atom **atoms) : Source(atoms) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge"; }
 #endif // PRINT
 
+protected:
     void findAllChildren() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

@@ -7,20 +7,15 @@ void HighBridgeToTwoBridges::find(HighBridge *target)
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(5))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(5, BRIDGE_CRs);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    target,
-                    neighbourSpec
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(5, BRIDGE_CRs);
+            assert(neighbourSpec);
 
-                createBy<HighBridgeToTwoBridges>(targets);
-            }
-            else
-            {
-                assert(false);
-            }
+            SpecificSpec *targets[2] = {
+                target,
+                neighbourSpec
+            };
+
+            createBy<HighBridgeToTwoBridges>(targets);
         }
     });
 }
@@ -32,20 +27,15 @@ void HighBridgeToTwoBridges::find(BridgeCRs *target)
     eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(19))
         {
-            auto neighbourSpec = neighbour->specificSpecByRole(19, HIGH_BRIDGE);
-            if (neighbourSpec)
-            {
-                SpecificSpec *targets[2] = {
-                    neighbourSpec,
-                    target
-                };
+            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(19, HIGH_BRIDGE);
+            assert(neighbourSpec);
 
-                createBy<HighBridgeToTwoBridges>(targets);
-            }
-            else
-            {
-                assert(false);
-            }
+            SpecificSpec *targets[2] = {
+                neighbourSpec,
+                target
+            };
+
+            createBy<HighBridgeToTwoBridges>(targets);
         }
     });
 }

@@ -1,7 +1,7 @@
 #ifndef SOURCE_SPEC_H
 #define SOURCE_SPEC_H
 
-#include "base_spec.h"
+#include "parent_spec.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -12,7 +12,7 @@ namespace vd
 {
 
 template <ushort ATOMS_NUM>
-class SourceSpec : public BaseSpec
+class SourceSpec : public ParentSpec
 {
     Atom *_atoms[ATOMS_NUM];
 

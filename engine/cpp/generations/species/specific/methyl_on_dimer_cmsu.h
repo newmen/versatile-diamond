@@ -9,16 +9,16 @@ class MethylOnDimerCMsu : public Specific<METHYL_ON_DIMER_CMsu, 1>
 public:
     static void find(MethylOnDimerCMu *parent);
 
-//    using Specific<METHYL_ON_DIMER_CMsu, 1>::Specific;
+//    using Specific::Specific;
     MethylOnDimerCMsu(BaseSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl_on_dimer(cm: *, cm: u)"; }
 #endif // PRINT
 
+protected:
     void findAllReactions() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

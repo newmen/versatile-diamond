@@ -163,38 +163,6 @@ bool Atom::hasRole(ushort rType, ushort specType)
     return _specs.find(key) != _specs.cend();
 }
 
-BaseSpec *Atom::specByRole(ushort rType, ushort specType)
-{
-    BaseSpec *result = nullptr;
-    const uint key = hash(rType, specType);
-
-#ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "specByRole " << this << std::dec;
-        pos(os);
-        os << " |" << type() << ", " << _prevType << "| role type: " << rType
-           << ". spec type: " << specType << ". key: " << key;
-        auto range = _specs.equal_range(key);
-        os << " -> distance: " << std::distance(range.first, range.second);
-    });
-#endif // PRINT
-
-    auto range = _specs.equal_range(key);
-    uint distance = std::distance(range.first, range.second);
-    if (distance > 0)
-    {
-        assert(distance == 1);
-        result = range.first->second;
-    }
-
-    return result;
-}
-
-SpecificSpec *Atom::specificSpecByRole(ushort rType, ushort specType)
-{
-    return static_cast<SpecificSpec *>(specByRole(rType, specType));
-}
-
 void Atom::forget(ushort rType, BaseSpec *spec)
 {
     const uint key = hash(rType, spec->type());

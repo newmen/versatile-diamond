@@ -1,33 +1,18 @@
 #ifndef SPECIFIC_SPEC_H
 #define SPECIFIC_SPEC_H
 
-#include <unordered_set>
-#include "dependent_spec.h"
 #include "../reactions/spec_reaction.h"
+#include "dependent_spec.h"
+#include "reactant.h"
 
 namespace vd
 {
 
-class SpecificSpec : public DependentSpec<1>
+class SpecificSpec : public Reactant<DependentSpec<1>, SpecReaction>
 {
-    std::unordered_set<SpecReaction *> _reactions;
-    bool _isNew = true;
-
 protected:
-    SpecificSpec(BaseSpec *parent) : DependentSpec<1>(&parent) {}
-
-    bool isNew() const { return _isNew; }
-
-public:
-    void usedIn(SpecReaction *reaction);
-    void unbindFrom(SpecReaction *reaction);
-
-    void remove();
-
-    void findReactions();
-    virtual void findAllReactions() = 0;
-
-    void findAllChildren() override {}
+//    using Reactant::Reactant;
+    SpecificSpec(BaseSpec *parent) : Reactant(&parent) {}
 };
 
 }

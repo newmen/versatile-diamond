@@ -9,16 +9,16 @@ class MethylOnBridgeCBiCMu : public Specific<METHYL_ON_BRIDGE_CBi_CMu, 2>
 public:
     static void find(MethylOnBridge *parent);
 
-//    using Specific<METHYL_ON_BRIDGE_CBi_CMu, 2>::Specific;
+//    using Specific::Specific;
     MethylOnBridgeCBiCMu(BaseSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl_on_bridge(cb: i, cm: u)"; }
 #endif // PRINT
 
+protected:
     void findAllReactions() override;
 
-protected:
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
 

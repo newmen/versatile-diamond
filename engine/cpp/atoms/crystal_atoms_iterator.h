@@ -23,8 +23,13 @@ public:
 template <class C>
 C *CrystalAtomsIterator::crystalBy(Atom *atom)
 {
+#ifdef DEBUG
     assert(atom->lattice());
+    auto dynamicResult = dynamic_cast<C *>(atom->lattice()->crystal());
+    return dynamicResult;
+#else
     return static_cast<C *>(atom->lattice()->crystal());
+#endif // DEBUG
 }
 
 template <class C, class RL, class AL>
@@ -41,19 +46,20 @@ void CrystalAtomsIterator::eachNeighbours(Atom **anchors, C *crystal, const RL &
     typedef decltype((crystal->*relationsMethod)(nullptr)) NeighboursType;
 
     NeighboursType arrOfNeighbours[NEIGHBOURS_NUM];
-    for (ushort k = 0; k < NEIGHBOURS_NUM; ++k)
+    for (ushort n = 0; n < NEIGHBOURS_NUM; ++n)
     {
-        arrOfNeighbours[k] = (crystal->*relationsMethod)(anchors[k]);
+        // TODO: need to separately use each anchor and correspond crystal?
+        arrOfNeighbours[n] = (crystal->*relationsMethod)(anchors[n]);
     }
 
     Atom *neighbours[NEIGHBOURS_NUM];
     for (ushort i = 0; i < NeighboursType::QUANTITY; ++i)
     {
         bool allVisited = true;
-        for (ushort k = 0; k < NEIGHBOURS_NUM; ++k)
+        for (ushort n = 0; n < NEIGHBOURS_NUM; ++n)
         {
-            Atom *neighbour = arrOfNeighbours[k][i];
-            neighbours[k] = neighbour;
+            Atom *neighbour = arrOfNeighbours[n][i];
+            neighbours[n] = neighbour;
 
             if (!neighbour)
             {

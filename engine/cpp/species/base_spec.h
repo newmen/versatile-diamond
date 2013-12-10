@@ -1,9 +1,6 @@
 #ifndef BASE_SPEC_H
 #define BASE_SPEC_H
 
-#include <vector>
-#include <unordered_set>
-#include <memory>
 #include "../atoms/atom.h"
 #include "../tools/creator.h"
 
@@ -18,33 +15,25 @@ namespace vd
 
 class BaseSpec : public Creator
 {
-    std::unordered_set<BaseSpec *> _children;
-    bool _visited = false;
-
-protected:
-    static BaseSpec *checkAndFind(Atom *anchor, ushort rType, ushort sType);
-
 public:
     virtual ~BaseSpec() {}
 
-    void setUnvisited() { _visited = false; }
-    bool isVisited() { return _visited; }
+    virtual void setUnvisited() = 0;
+    virtual bool isVisited() const = 0;
 
     virtual ushort type() const = 0;
 
     virtual ushort size() const = 0;
     virtual Atom *atom(ushort index) const = 0;
 
-    Atom *anchor() const { return atom(indexes()[0]); }
+    virtual Atom *anchor() = 0;
 
     virtual void findChildren();
-    virtual void findAllChildren() = 0;
-
-    void addChild(BaseSpec *child);
-    void removeChild(BaseSpec *child);
+    virtual void addChild(BaseSpec *child) = 0;
+    virtual void removeChild(BaseSpec *child) = 0;
 
     virtual void store() = 0;
-    virtual void remove();
+    virtual void remove() = 0;
 
 #ifdef PRINT
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
@@ -57,6 +46,9 @@ public:
 #endif // PRINT
 
 protected:
+    virtual void setVisited() = 0;
+    virtual void findAllChildren() = 0;
+
     virtual ushort *indexes() const = 0;
     virtual ushort *roles() const = 0;
 };

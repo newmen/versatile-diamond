@@ -14,8 +14,7 @@ void MethylOnBridge::find(Bridge *target)
             Atom *methyl = anchor->amorphNeighbour();
             if (methyl->is(14))
             {
-                BaseSpec *parent = target;
-                createBy<MethylOnBridge>(&methyl, &parent);
+                createBy<MethylOnBridge>(&methyl, target);
             }
         }
     }

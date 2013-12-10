@@ -13,10 +13,9 @@
 
 class Handbook
 {
-private:
-    typedef Keeper<SpecificSpecsNum> DKeeper;
-    typedef Scavenger<(BaseSpecsNum + SpecificSpecsNum), TypicalReactionsNum> DScavenger;
-    typedef MC<TypicalReactionsNum, UbiquitousReactionsNum> DMC;
+    typedef Keeper<SPECIFIC_SPECS_NUM> DKeeper;
+    typedef Scavenger<ALL_SPECS_NUM, ALL_SPEC_REACTIONS_NUM> DScavenger;
+    typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
     static PhaseBoundary __amorph;
     static DKeeper __keepers[THREADS_NUM];
