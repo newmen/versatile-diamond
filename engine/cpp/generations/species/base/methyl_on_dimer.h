@@ -3,15 +3,14 @@
 
 #include "../../../species/atom_shift_wrapper.h"
 #include "../../../species/additional_atoms_wrapper.h"
+#include "../lateral/dimer.h"
 #include "../dependent.h"
-#include "dimer.h"
 
 class MethylOnDimer : public Dependent<METHYL_ON_DIMER, 2, AdditionalAtomsWrapper<AtomShiftWrapper<DependentSpec<1>>, 1>>
 {
 public:
     static void find(Dimer *target);
 
-//    using Dependent::Dependent;
     MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, BaseSpec *parent) :
         Dependent(additionalAtoms, atomsShift, &parent) {}
 
@@ -19,11 +18,11 @@ public:
     std::string name() const override { return "methyl on dimer"; }
 #endif // PRINT
 
-protected:
-    void findAllChildren() override;
-
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
+
+protected:
+    void findAllChildren() override;
 
 private:
     static ushort __indexes[2];

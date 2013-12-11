@@ -9,9 +9,10 @@ using namespace vd;
 template <ushort RT>
 class MonoTypical : public Typical<MonoSpecReaction, RT>
 {
+    typedef Typical<MonoSpecReaction, RT> ParentType;
+
 protected:
-//    using Typical<MonoSpecReaction, RT>::Typical;
-    MonoTypical(SpecificSpec *target) : Typical<MonoSpecReaction, RT>(target) {}
+    MonoTypical(SpecificSpec *target) : ParentType(target) {}
 };
 
 #endif // MONO_TYPICAL_H

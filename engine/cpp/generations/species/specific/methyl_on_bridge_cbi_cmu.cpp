@@ -7,10 +7,9 @@ ushort MethylOnBridgeCBiCMu::__roles[2] = { 7, 25 };
 void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
 {
     Atom *anchors[2] = { parent->atom(0), parent->atom(1) };
-
     if (anchors[0]->is(25) && anchors[1]->is(7))
     {
-        if (!anchors[0]->hasRole(25, METHYL_ON_BRIDGE_CBi_CMu) && !anchors[1]->hasRole(7, METHYL_ON_BRIDGE_CBi_CMu))
+        if (!anchors[0]->hasRole<MethylOnBridgeCBiCMu>(25) && !anchors[1]->hasRole<MethylOnBridgeCBiCMu>(7))
         {
             createBy<MethylOnBridgeCBiCMu>(parent);
         }

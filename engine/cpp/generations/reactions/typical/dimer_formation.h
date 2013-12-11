@@ -13,7 +13,6 @@ class DimerFormation : public ReactionClarifier<ManyTypical<DIMER_FORMATION, 2>,
 public:
     static void find(BridgeCTsi *target);
 
-//    using ReactionClarifier::ReactionClarifier;
     DimerFormation(SpecificSpec **targets) : ReactionClarifier(targets) {}
 
     double rate() const { return 1e5; }

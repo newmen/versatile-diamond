@@ -7,10 +7,9 @@ ushort MethylOnDimerCLsCMu::__roles[1] = { 21 };
 void MethylOnDimerCLsCMu::find(MethylOnDimerCMu *parent)
 {
     Atom *anchor = parent->atom(4);
-
     if (anchor->is(21))
     {
-        if (!anchor->hasRole(21, METHYL_ON_DIMER_CLs_CMu))
+        if (!anchor->hasRole<MethylOnDimerCLsCMu>(21))
         {
             createBy<MethylOnDimerCLsCMu>(parent);
         }

@@ -140,48 +140,42 @@ void Atom::unsetLattice()
     _lattice = nullptr;
 }
 
-void Atom::describe(ushort rType, BaseSpec *spec)
+void Atom::describe(ushort role, BaseSpec *spec)
 {
-    const uint key = hash(rType, spec->type());
+    const uint key = hash(role, spec->type());
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
         os << "describe " << this << std::dec;
         pos(os);
-        os << " |" << type() << ", " << _prevType << "| role type: " << rType
+        os << " |" << type() << ", " << _prevType << "| role type: " << role
            << ". spec type: " << spec->type() << ". key: " << key;
     });
 #endif // PRINT
 
-    _roles[rType].insert(spec->type());
+    _roles[role].insert(spec->type());
     _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
 }
 
-bool Atom::hasRole(ushort rType, ushort specType)
+void Atom::forget(ushort role, BaseSpec *spec)
 {
-    const uint key = hash(rType, specType);
-    return _specs.find(key) != _specs.cend();
-}
-
-void Atom::forget(ushort rType, BaseSpec *spec)
-{
-    const uint key = hash(rType, spec->type());
+    const uint key = hash(role, spec->type());
 
     auto range = _specs.equal_range(key);
     assert(std::distance(range.first, range.second) > 0);
 
     if (std::distance(range.first, range.second) == 1)
     {
-        auto role = _roles.find(rType);
-        assert(role->second.size() > 0);
+        auto pr = _roles.find(role);
+        assert(pr->second.size() > 0);
 
-        if (role->second.size() == 1)
+        if (pr->second.size() == 1)
         {
-            _roles.erase(role);
+            _roles.erase(pr);
         }
         else
         {
-            role->second.erase(spec->type());
+            pr->second.erase(spec->type());
         }
     }
 
@@ -199,7 +193,7 @@ void Atom::forget(ushort rType, BaseSpec *spec)
     debugPrint([&](std::ostream &os) {
         os << "forget " << this << std::dec;
         pos(os);
-        os << " |" << type() << ", " << _prevType << "| role type: " << rType
+        os << " |" << type() << ", " << _prevType << "| role type: " << role
                   << ". spec type: " << spec->type() << ". key: " << key;
     });
 #endif // PRINT
@@ -215,6 +209,8 @@ void Atom::setSpecsUnvisited()
 
 void Atom::removeUnsupportedSpecies()
 {
+    if (_specs.size() == 0) return;
+
     BaseSpec **specs = new BaseSpec*[_specs.size()]; // max possible size
     uint n = 0;
 

@@ -3,11 +3,10 @@
 void HighBridgeToTwoBridges::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(5))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(5, BRIDGE_CRs);
+            auto neighbourSpec = neighbour->specByRole<BridgeCRs>(5);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -23,11 +22,10 @@ void HighBridgeToTwoBridges::find(HighBridge *target)
 void HighBridgeToTwoBridges::find(BridgeCRs *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(19))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(19, HIGH_BRIDGE);
+            auto neighbourSpec = neighbour->specByRole<HighBridge>(19);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -42,11 +40,11 @@ void HighBridgeToTwoBridges::find(BridgeCRs *target)
 
 void HighBridgeToTwoBridges::doIt()
 {
-    assert(target(0)->type() == HIGH_BRIDGE);
-    assert(target(1)->type() == BRIDGE_CRs);
-
     SpecificSpec *highBridge = target(0);
     SpecificSpec *bridgeCRs = target(1);
+
+    assert(highBridge->type() == HighBridge::ID);
+    assert(bridgeCRs->type() == BridgeCRs::ID);
 
     Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), bridgeCRs->atom(1) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
@@ -60,7 +58,7 @@ void HighBridgeToTwoBridges::doIt()
 
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy<Diamond>(b)->insert(a, Diamond::front_110(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

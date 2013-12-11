@@ -2,7 +2,7 @@
 #include "handbook.h"
 
 #include "species/base/bridge.h"
-#include "species/base/dimer.h"
+#include "species/lateral/dimer.h"
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
 
@@ -87,7 +87,9 @@ void Finder::findAll(Atom **atoms, uint n)
         SurfaceDeactivation::find(atoms[i]);
     }
 
-    Handbook::keeper().findReactions();
+    // order is important
+    Handbook::specificKeeper().findReactions();
+    Handbook::lateralKeeper().findReactions();
 
     for (uint i = 0; i < n; ++i)
     {
@@ -111,6 +113,8 @@ void Finder::removeAll(Atom **atoms, uint n)
 
 void Finder::finalize()
 {
-    Handbook::keeper().clear();
+    Handbook::specificKeeper().clear();
+    Handbook::lateralKeeper().clear();
+
     Handbook::scavenger().clear();
 }

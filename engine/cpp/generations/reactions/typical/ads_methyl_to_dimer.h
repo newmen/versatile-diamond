@@ -9,7 +9,6 @@ class AdsMethylToDimer : public MonoTypical<ADS_METHYL_TO_DIMER>
 public:
     static void find(DimerCRs *target);
 
-//    using MonoTypical::MonoTypical;
     AdsMethylToDimer(SpecificSpec *target) : MonoTypical(target) {}
 
     double rate() const { return 1e7; }

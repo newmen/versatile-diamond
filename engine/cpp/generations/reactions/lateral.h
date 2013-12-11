@@ -9,10 +9,21 @@ using namespace vd;
 template <ushort RT, ushort LATERALS_NUM>
 class Lateral : public Typical<ConcreteLateralReaction<LATERALS_NUM>, RT>
 {
+    typedef ConcreteLateralReaction<LATERALS_NUM> LateralType;
+    typedef Typical<ConcreteLateralReaction<LATERALS_NUM>, RT> ParentType;
+
 protected:
-//    using Typical<ConcreteLateralReaction<LATERALS_NUM>, RT>::Typical;
     template <class... Args>
-    Lateral(Args... args) : Typical<ConcreteLateralReaction<LATERALS_NUM>, RT>(args...) {}
+    Lateral(Args... args) : ParentType(args...) {}
+
+    void remove() override;
 };
+
+template <ushort RT, ushort LATERALS_NUM>
+void Lateral<RT, LATERALS_NUM>::remove()
+{
+    LateralType::remove();
+    ParentType::remove();
+}
 
 #endif // LATERAL_H

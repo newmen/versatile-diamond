@@ -7,51 +7,51 @@
 namespace vd
 {
 
-template <class T, ushort NUM>
+template <class T, uint MAX_CAPACITY = 50>
 class Collector
 {
-    std::vector<T *> _collects[NUM];
+    std::vector<T *> _collect;
 
 public:
-    template <ushort ID> void store(T *item);
-
+    void store(T *item);
     void clear();
 
 protected:
-    template <class L> inline void each(const L &lambda);
+    template <class L>
+    inline void each(const L &lambda);
 };
 
-template <class T, ushort NUM>
-template <ushort ID>
-void Collector<T, NUM>::store(T *item)
+template <class T, uint MAX_CAPACITY>
+void Collector<T, MAX_CAPACITY>::store(T *item)
 {
-    static_assert(ID < NUM, "Wrong ID");
-    _collects[ID].push_back(item);
+    _collect.push_back(item);
 }
 
-template <class T, ushort NUM>
-void Collector<T, NUM>::clear()
+template <class T, uint MAX_CAPACITY>
+void Collector<T, MAX_CAPACITY>::clear()
 {
-    for (int i = 0; i < NUM; ++i)
+    uint size = _collect.size();
+    if (size == 0)
     {
-        if (_collects[i].size() < 5)
-        {
-            _collects[i].clear();
-        }
-        else
-        {
-            std::vector<T *>().swap(_collects[i]); // with clear capacity of vector
-        }
+        return;
+    }
+    else if (size < MAX_CAPACITY)
+    {
+        _collect.clear();
+    }
+    else
+    {
+        std::vector<T *>().swap(_collect); // with clear capacity of vector
     }
 }
 
-template <class T, ushort NUM>
+template <class T, uint MAX_CAPACITY>
 template <class L>
-void Collector<T, NUM>::each(const L &lambda)
+void Collector<T, MAX_CAPACITY>::each(const L &lambda)
 {
-    for (int i = 0; i < NUM; ++i)
+    for (auto item : _collect)
     {
-        lambda(_collects[i]);
+        lambda(item);
     }
 }
 

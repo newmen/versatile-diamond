@@ -11,7 +11,6 @@ namespace vd
 class SpecificSpec : public Reactant<DependentSpec<1>, SpecReaction>
 {
 protected:
-//    using Reactant::Reactant;
     SpecificSpec(BaseSpec *parent) : Reactant(&parent) {}
 };
 

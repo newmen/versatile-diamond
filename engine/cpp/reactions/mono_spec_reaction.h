@@ -2,7 +2,7 @@
 #define MONO_SPEC_REACTION_H
 
 #include "../species/specific_spec.h"
-#include "spec_reaction.h"
+#include "wrappable_reaction.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -11,22 +11,24 @@
 namespace vd
 {
 
-class MonoSpecReaction : public SpecReaction
+class MonoSpecReaction : public WrappableReaction
 {
-    SpecificSpec *_target;
+    SpecificSpec *_target = nullptr;
 
 public:
     Atom *anchor() const override;
-    void removeFrom(SpecificSpec *target) override;
 
-    SpecificSpec *target() { return _target; }
+    void storeAs(SpecReaction *reaction) override;
+    bool removeAsFrom(SpecReaction *reaction, SpecificSpec *target) override;
 
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT
 
+    SpecificSpec *target() { return _target; }
+
 protected:
-    MonoSpecReaction(SpecificSpec *target);
+    MonoSpecReaction(SpecificSpec *target) : _target(target) {}
 };
 
 }

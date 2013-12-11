@@ -10,9 +10,10 @@ using namespace vd;
 template <ushort RT, ushort TARGETS_NUM>
 class ManyTypical : public Typical<FewSpecsReaction<TARGETS_NUM>, RT>
 {
+    typedef Typical<FewSpecsReaction<TARGETS_NUM>, RT> ParentType;
+
 protected:
-//    using Typical<FewSpecsReaction<TARGETS_NUM>, RT>::Typical;
-    ManyTypical(SpecificSpec **targets) : Typical<FewSpecsReaction<TARGETS_NUM>, RT>(targets) {}
+    ManyTypical(SpecificSpec **targets) : ParentType(targets) {}
 };
 
 #endif // MANY_TYPICAL_H

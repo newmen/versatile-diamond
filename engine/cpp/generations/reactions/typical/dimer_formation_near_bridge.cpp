@@ -3,11 +3,10 @@
 void DimerFormationNearBridge::find(BridgeCTsi *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(5))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(5, BRIDGE_CRs);
+            auto neighbourSpec = neighbour->specByRole<BridgeCRs>(5);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -23,11 +22,10 @@ void DimerFormationNearBridge::find(BridgeCTsi *target)
 void DimerFormationNearBridge::find(BridgeCRs *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(28))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(28, BRIDGE_CTsi);
+            auto neighbourSpec = neighbour->specByRole<BridgeCTsi>(28);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -42,11 +40,11 @@ void DimerFormationNearBridge::find(BridgeCRs *target)
 
 void DimerFormationNearBridge::doIt()
 {
-    assert(target(0)->type() == BRIDGE_CTsi);
-    assert(target(1)->type() == BRIDGE_CRs);
-
     SpecificSpec *bridgeCTsi = target(0);
     SpecificSpec *bridgeCRs = target(1);
+
+    assert(bridgeCTsi->type() == BridgeCTsi::ID);
+    assert(bridgeCRs->type() == BridgeCRs::ID);
 
     Atom *atoms[2] = { bridgeCTsi->atom(0), bridgeCRs->atom(1) };
     Atom *a = atoms[0], *b = atoms[1];

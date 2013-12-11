@@ -15,11 +15,11 @@ public:
     std::string name() const override { return "bridge"; }
 #endif // PRINT
 
-protected:
-    void findAllChildren() override;
-
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
+
+protected:
+    void findAllChildren() override;
 
 private:
     static ushort __indexes[3];

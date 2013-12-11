@@ -11,14 +11,15 @@ using namespace vd;
 template <ushort RT>
 class Ubiquitous : public Counterable<UbiquitousReaction, RT>
 {
+    typedef Counterable<UbiquitousReaction, RT> ParentType;
+
 public:
-    ushort type() const override { return RT - ALL_SPEC_REACTIONS_NUM; }
+    ushort type() const override { return RT - SURFACE_ACTIVATION; } // must used first ID of ubiquitous reactions names
 
     void doIt() override;
 
 protected:
-//    using Counterable<UbiquitousReaction, RT>::Counterable;
-    Ubiquitous(Atom *target) : Counterable<UbiquitousReaction, RT>(target) {}
+    Ubiquitous(Atom *target) : ParentType(target) {}
 
     template <class R>
     static void find(Atom *anchor, short delta);
@@ -59,7 +60,6 @@ void Ubiquitous<RT>::remove(Atom *anchor, short delta)
     R removableTemplate(anchor);
     Handbook::mc().remove(&removableTemplate, -delta);
 }
-
 
 template <ushort RT>
 void Ubiquitous<RT>::doIt()

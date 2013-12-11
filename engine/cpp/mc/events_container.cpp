@@ -32,7 +32,7 @@ void EventsContainer::remove(SpecReaction *event)
         auto curr = _positions.find(event);
         assert(curr != _positions.cend());
 
-        SpecReaction *last = static_cast<SpecReaction *>(exchangeToLast(curr->second));
+        SpecReaction *last = exchangeToLast<SpecReaction>(curr->second);
         if (last) _positions[last] = curr->second;
 
         _positions.erase(curr);

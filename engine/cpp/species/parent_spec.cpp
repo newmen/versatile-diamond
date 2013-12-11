@@ -3,23 +3,15 @@
 namespace vd
 {
 
-BaseSpec *ParentSpec::checkAndFind(Atom *anchor, ushort rType, ushort sType)
-{
-    auto spec = anchor->specByRole<BaseSpec>(rType, sType);
-    if (spec)
-    {
-        spec->findChildren();
-    }
-    return spec;
-}
-
 void ParentSpec::addChild(BaseSpec *child)
 {
+    assert(_children.find(child) == _children.cend());
     _children.insert(child);
 }
 
 void ParentSpec::removeChild(BaseSpec *child)
 {
+    assert(_children.find(child) != _children.cend());
     _children.erase(child);
 }
 

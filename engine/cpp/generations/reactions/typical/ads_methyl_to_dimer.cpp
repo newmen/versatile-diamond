@@ -9,6 +9,8 @@ void AdsMethylToDimer::find(DimerCRs *target)
 
 void AdsMethylToDimer::doIt()
 {
+    assert(target()->type() == DimerCRs::ID);
+
     AtomBuilder builder;
     Atom *atoms[2] = { target()->atom(0), builder.buildC(25, 1) };
     Atom *a = atoms[0], *b = atoms[1];

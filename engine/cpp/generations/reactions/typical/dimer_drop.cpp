@@ -9,6 +9,8 @@ void DimerDrop::find(DimerCRiCLi *target)
 
 void DimerDrop::doIt()
 {
+    assert(target()->type() == DimerCRiCLi::ID);
+
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };
     Atom *a = atoms[0], *b = atoms[1];
 

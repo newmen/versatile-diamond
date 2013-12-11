@@ -6,14 +6,14 @@
 namespace vd
 {
 
-template <class B, ushort ID>
+template <class B, ushort BT>
 class Typed : public B
 {
 public:
-    ushort type() const override { return ID; }
+    enum : ushort { ID = BT };
+    ushort type() const override { return BT; }
 
 protected:
-//    using B::B;
     template <class... Args>
     Typed(Args... args) : B(args...) {}
 };

@@ -51,22 +51,4 @@ double BaseEventsContainer::commonRate() const
                 _events.front()->rate() * _events.size();
 }
 
-Reaction *BaseEventsContainer::exchangeToLast(uint index)
-{
-    assert(index < _events.size());
-
-    Reaction *last = _events.back();
-    _events.pop_back();
-
-    if (_events.cbegin() + index == _events.cend())
-    {
-        return nullptr;
-    }
-    else
-    {
-        _events[index] = last;
-        return last;
-    }
-}
-
 }

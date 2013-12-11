@@ -4,11 +4,10 @@
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(28))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(28, BRIDGE_CTsi);
+            auto neighbourSpec = neighbour->specByRole<BridgeCTsi>(28);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -24,11 +23,10 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
 void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(19))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(19, HIGH_BRIDGE);
+            auto neighbourSpec = neighbour->specByRole<HighBridge>(19);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -43,11 +41,11 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
 
 void HighBridgeStandToOneBridge::doIt()
 {
-    assert(target(0)->type() == HIGH_BRIDGE);
-    assert(target(1)->type() == BRIDGE_CTsi);
-
     SpecificSpec *highBridge = target(0);
     SpecificSpec *bridgeCTsi = target(1);
+
+    assert(highBridge->type() == HighBridge::ID);
+    assert(bridgeCTsi->type() == BridgeCTsi::ID);
 
     Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), bridgeCTsi->atom(0) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
@@ -61,7 +59,7 @@ void HighBridgeStandToOneBridge::doIt()
 
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy<Diamond>(b)->insert(a, Diamond::front_110(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

@@ -48,37 +48,37 @@ const ushort Handbook::__atomsSpecifing[] =
       0, 28, 2, 0, 4, 5, 4, 7, 8, 7, 10, 26, 27, 13, 10, 15, 16, 17, 15, 19, 20, 21, 20, 23, 24, 25, 26, 27, 28, 26, 27, 25, 32
 };
 
-PhaseBoundary Handbook::__amorph;
-Handbook::DKeeper Handbook::__keepers[THREADS_NUM];
-Handbook::DScavenger Handbook::__scavengers[THREADS_NUM];
 Handbook::DMC Handbook::__mc;
+
+PhaseBoundary Handbook::__amorph;
+
+Handbook::SDKeeper Handbook::__specificKeepers[THREADS_NUM];
+Handbook::LDKeeper Handbook::__lateralKeepers[THREADS_NUM];
+Scavenger Handbook::__scavengers[THREADS_NUM];
+
+Handbook::DMC &Handbook::mc()
+{
+    return __mc;
+}
 
 PhaseBoundary &Handbook::amorph()
 {
     return __amorph;
 }
 
-Handbook::DKeeper &Handbook::keeper()
+Handbook::SDKeeper &Handbook::specificKeeper()
 {
-#ifdef PARALLEL
-    return __keepers[omp_get_thread_num()];
-#else
-    return __keepers[0];
-#endif // PARALLEL
+    return selectForThread(__specificKeepers);
 }
 
-Handbook::DScavenger &Handbook::scavenger()
+Handbook::LDKeeper &Handbook::lateralKeeper()
 {
-#ifdef PARALLEL
-    return __scavengers[omp_get_thread_num()];
-#else
-    return __scavengers[0];
-#endif // PARALLEL
+    return selectForThread(__lateralKeepers);
 }
 
-Handbook::DMC &Handbook::mc()
+Scavenger &Handbook::scavenger()
 {
-    return __mc;
+    return selectForThread(__scavengers);
 }
 
 bool Handbook::atomIs(ushort complexType, ushort typeOf)

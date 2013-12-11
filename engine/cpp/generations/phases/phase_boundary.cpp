@@ -5,6 +5,7 @@ PhaseBoundary::~PhaseBoundary()
 {
 }
 
+// TODO: need to move it method to Amorph class?
 void PhaseBoundary::clear()
 {
     Atom **removingAtoms = new Atom *[atoms().size()];

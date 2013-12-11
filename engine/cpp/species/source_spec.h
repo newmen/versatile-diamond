@@ -20,6 +20,8 @@ protected:
     SourceSpec(Atom **atoms);
 
 public:
+    enum : ushort { UsedAtomsNum = ATOMS_NUM };
+
     ushort size() const { return ATOMS_NUM; }
     Atom *atom(ushort index) const;
 
@@ -27,6 +29,9 @@ public:
     void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
+
+    template <class L>
+    void eachParent(const L &) {}
 };
 
 template <ushort ATOMS_NUM>

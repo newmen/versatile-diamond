@@ -16,12 +16,12 @@ public:
     std::string name() const override { return "methyl_on_dimer(cm: u)"; }
 #endif // PRINT
 
+    ushort *indexes() const override { return __indexes; }
+    ushort *roles() const override { return __roles; }
+
 protected:
     void findAllChildren() override;
     void findAllReactions() override {}
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 private:
     static ushort __indexes[1];

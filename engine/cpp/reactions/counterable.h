@@ -6,19 +6,17 @@
 namespace vd
 {
 
-template <class B, ushort ID>
+template <class B, ushort BT>
 class Counterable : public B
 {
 public:
-    ushort counterIndex() const override { return ID; }
+    ushort counterIndex() const override { return BT; }
 
 protected:
-//    using B::B;
     template <class... Args>
     Counterable(Args... args) : B(args...) {}
 };
 
 }
-
 
 #endif // COUNTERABLE_H

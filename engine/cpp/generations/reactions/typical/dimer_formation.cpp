@@ -4,12 +4,13 @@
 void DimerFormation::find(BridgeCTsi *target)
 {
     Atom *anchor = target->anchor();
-    auto diamond = crystalBy<Diamond>(anchor);
-    eachNeighbour(anchor, diamond, &Diamond::front_100, [target](Atom *neighbour) {
+    assert(anchor->is(28));
+
+    eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         // TODO: add checking that neighbour atom has not belongs to target spec?
         if (neighbour->is(28))
         {
-            auto neighbourSpec = neighbour->specByRole<SpecificSpec>(28, BRIDGE_CTsi);
+            auto neighbourSpec = neighbour->specByRole<BridgeCTsi>(28);
             assert(neighbourSpec);
 
             SpecificSpec *targets[2] = {
@@ -24,6 +25,9 @@ void DimerFormation::find(BridgeCTsi *target)
 
 void DimerFormation::doIt()
 {
+    assert(target(0)->type() == BridgeCTsi::ID);
+    assert(target(1)->type() == BridgeCTsi::ID);
+
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
     Atom *a = atoms[0], *b = atoms[1];
 

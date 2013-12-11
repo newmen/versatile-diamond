@@ -10,6 +10,8 @@ void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
 
 void MethylOnDimerHydrogenMigration::doIt()
 {
+    assert(target()->type() == MethylOnDimerCLsCMu::ID);
+
     Atom *atoms[3] = { target()->atom(0), target()->atom(4) };
     Atom *a = atoms[0], *b = atoms[1];
 

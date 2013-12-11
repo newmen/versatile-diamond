@@ -4,25 +4,26 @@
 #include "../../species/dependent_spec.h"
 using namespace vd;
 
-#include "base.h"
+#include "parent.h"
 
-template <ushort ST, ushort USED_ATOMS_NUM, class B = DependentSpec<USED_ATOMS_NUM>>
-class Dependent : public Base<B, ST, USED_ATOMS_NUM>
+template <ushort ST, ushort PARENTS_NUM, class B = DependentSpec<PARENTS_NUM>>
+class Dependent : public Parent<B, ST, PARENTS_NUM>
 {
+    typedef Parent<B, ST, PARENTS_NUM> ParentType;
+
 protected:
-//    using Base<B, ST, USED_ATOMS_NUM>::Base;
     template <class... Args>
-    Dependent(Args... args) : Base<B, ST, USED_ATOMS_NUM>(args...) {}
+    Dependent(Args... args) : ParentType(args...) {}
 
 public:
     void store() override;
 };
 
-template <ushort ST, ushort USED_ATOMS_NUM, class B>
-void Dependent<ST, USED_ATOMS_NUM, B>::store()
+template <ushort ST, ushort PARENTS_NUM, class B>
+void Dependent<ST, PARENTS_NUM, B>::store()
 {
     B::store();
-    Base<B, ST, USED_ATOMS_NUM>::store();
+    ParentType::store();
 }
 
 #endif // DEPENDENT_H

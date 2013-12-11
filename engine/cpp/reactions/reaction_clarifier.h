@@ -10,7 +10,6 @@ template <class B, class F>
 class ReactionClarifier : public B
 {
 public:
-//    using B::B;
     template <class... Args>
     ReactionClarifier(Args... args) : B(args...) {}
 
@@ -37,7 +36,7 @@ bool ReactionClarifier<B, F>::findConcretes()
     {
         lateralReaction->store();
     }
-    return lateralReaction;
+    return lateralReaction != nullptr;
 }
 
 }

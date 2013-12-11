@@ -1,20 +1,25 @@
 #ifndef SPECIFIC_H
 #define SPECIFIC_H
 
-#include "../../species/specific_reactant.h"
+#include "../../species/removable_reactant.h"
+#include "../../species/specific_spec.h"
 using namespace vd;
 
-#include "base.h"
+#include "parent.h"
 
-template <ushort SST, ushort USED_ATOMS_NUM, class B = SpecificReactant>
-class Specific : public Base<B, SST, USED_ATOMS_NUM>
+template <ushort SST, ushort USED_ATOMS_NUM, class B = SpecificSpec>
+class Specific : public Parent<RemovableReactant<B>, SST, USED_ATOMS_NUM>
 {
+    typedef RemovableReactant<B> WrappingType;
+    typedef Parent<WrappingType, SST, USED_ATOMS_NUM> ParentType;
+
 protected:
-//    using Base<B, SST, USED_ATOMS_NUM>::Base;
     template <class... Args>
-    Specific(Args... args) : Base<B, SST, USED_ATOMS_NUM>(args...) {}
+    Specific(Args... args) : ParentType(args...) {}
 
 public:
+    enum : ushort { UsedAtomsNum = USED_ATOMS_NUM };
+
     void store() override;
     void findChildren() override;
 };
@@ -24,7 +29,7 @@ void Specific<SST, USED_ATOMS_NUM, B>::findChildren()
 {
     if (this->isNew())
     {
-        Handbook::keeper().store<SST - BASE_SPECS_NUM>(this);
+        Handbook::specificKeeper().store(this);
     }
 
     B::findChildren();
@@ -33,8 +38,8 @@ void Specific<SST, USED_ATOMS_NUM, B>::findChildren()
 template <ushort SST, ushort USED_ATOMS_NUM, class B>
 void Specific<SST, USED_ATOMS_NUM, B>::store()
 {
-    B::store();
-    Base<B, SST, USED_ATOMS_NUM>::store();
+    WrappingType::store();
+    ParentType::store();
 }
 
 #endif // SPECIFIC_H

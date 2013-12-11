@@ -52,7 +52,7 @@ void MultiEventsContainer::remove(Atom *target, uint n)
 
             Reaction *current = _events[currIt->second];
 
-            UbiquitousReaction *last = static_cast<UbiquitousReaction *>(exchangeToLast(currIt->second));
+            UbiquitousReaction *last = exchangeToLast<UbiquitousReaction>(currIt->second);
             if (last)
             {
                 uint lastIndex = _events.size();

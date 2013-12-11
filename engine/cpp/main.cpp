@@ -4,7 +4,7 @@
 #include "mc/common_mc_data.h"
 #include "generations/handbook.h"
 #include "generations/builders/atom_builder.h"
-#include "generations/crystals/diamond.h"
+#include "generations/phases/diamond.h"
 
 #include "reactions/ubiquitous_reaction.h"
 
@@ -39,8 +39,8 @@ int main()
     });
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+//    Diamond *diamond = new Diamond(dim3(100, 100, 50));
+    Diamond *diamond = new Diamond(dim3(20, 20, 10));
 //    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 

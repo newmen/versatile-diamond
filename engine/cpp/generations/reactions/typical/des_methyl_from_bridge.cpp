@@ -9,6 +9,8 @@ void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 
 void DesMethylFromBridge::doIt()
 {
+    assert(target()->type() == MethylOnBridgeCBiCMu::ID);
+
     Atom *atoms[2] = { target()->atom(1), target()->atom(0) };
     Atom *a = atoms[0], *b = atoms[1];
 

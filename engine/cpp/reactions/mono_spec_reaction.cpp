@@ -8,31 +8,31 @@
 namespace vd
 {
 
-MonoSpecReaction::MonoSpecReaction(SpecificSpec *target) : _target(target)
-{
-    _target->usedIn(this);
-}
-
 Atom *MonoSpecReaction::anchor() const
 {
     return _target->anchor();
 }
 
-void MonoSpecReaction::removeFrom(SpecificSpec *target)
+void MonoSpecReaction::storeAs(SpecReaction *reaction)
+{
+    _target->usedIn(reaction);
+}
+
+bool MonoSpecReaction::removeFrom(SpecReaction * /* reaction */, SpecificSpec *target)
 {
     assert(_target == target);
 
     // this can not perform because target will also be deleted (calling only from SpecificSpec::remove)
-    // target->unbindFrom(this);
+    // target->unbindFrom(reaction);
 
-    remove();
+    return true;
 }
 
 #ifdef PRINT
 void MonoSpecReaction::info(std::ostream &os)
 {
     os << "MonoSpecReaction " << name() << " [" << this << "]: ";
-    target()->atom(0)->info(os);
+    target()->anchor()->info(os);
 }
 #endif // PRINT
 

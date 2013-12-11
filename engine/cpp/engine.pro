@@ -19,11 +19,11 @@ SOURCES += main.cpp \
     atoms/atom.cpp \
     atoms/lattice.cpp \
     generations/atoms/specified_atom.cpp \
-    generations/crystals/diamond.cpp \
-    generations/crystals/diamond_relations.cpp \
-    generations/crystals/phase_boundary.cpp \
     generations/finder.cpp \
     generations/handbook.cpp \
+    generations/phases/diamond.cpp \
+    generations/phases/diamond_relations.cpp \
+    generations/phases/phase_boundary.cpp \
     generations/reactions/lateral/finders/dimer_formation_finder.cpp \
     generations/reactions/typical/ads_methyl_to_dimer.cpp \
     generations/reactions/typical/des_methyl_from_bridge.cpp \
@@ -35,13 +35,13 @@ SOURCES += main.cpp \
     generations/reactions/typical/methyl_on_dimer_hydrogen_migration.cpp \
     generations/reactions/typical/methyl_to_high_bridge.cpp \
     generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
-    generations/reactions/ubiquitous.cpp \
     generations/reactions/ubiquitous/surface_activation.cpp \
     generations/reactions/ubiquitous/surface_deactivation.cpp \
     generations/species/base/bridge.cpp \
-    generations/species/base/dimer.cpp \
     generations/species/base/methyl_on_bridge.cpp \
     generations/species/base/methyl_on_dimer.cpp \
+    generations/species/base/unwrapped_dimer.cpp \
+    generations/species/lateral/dimer.cpp \
     generations/species/specific/bridge_crs.cpp \
     generations/species/specific/bridge_crs_cti_cli.cpp \
     generations/species/specific/bridge_ctsi.cpp \
@@ -60,32 +60,33 @@ SOURCES += main.cpp \
     mc/random_generator.cpp \
     phases/amorph.cpp \
     phases/crystal.cpp \
+    reactions/lateral_reaction.cpp \
     reactions/mono_spec_reaction.cpp \
-    reactions/spec_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
+    species/base_spec.cpp \
+    species/lateral_spec.cpp \
+    species/parent_spec.cpp \
     species/specific_spec.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
     tools/lockable.cpp \
-    species/parent_spec.cpp \
-    reactions/lateral_reaction.cpp \
-    species/specific_reactant.cpp \
-    species/base_spec.cpp
+    tools/scavenger.cpp \
+    reactions/wrappable_reaction.cpp
 
 HEADERS += \
     atoms/atom.h \
-    atoms/crystal_atoms_iterator.h \
     atoms/lattice.h \
     atoms/neighbours.h \
     generations/atoms/c.h \
     generations/atoms/specified_atom.h \
     generations/builders/atom_builder.h \
-    generations/crystals/diamond.h \
-    generations/crystals/diamond_relations.h \
-    generations/crystals/phase_boundary.h \
     generations/finder.h \
     generations/handbook.h \
     generations/names.h \
+    generations/phases/diamond.h \
+    generations/phases/diamond_atoms_iterator.h \
+    generations/phases/diamond_relations.h \
+    generations/phases/phase_boundary.h \
     generations/reactions/lateral.h \
     generations/reactions/lateral/dimer_formation_at_end.h \
     generations/reactions/lateral/dimer_formation_in_middle.h \
@@ -108,10 +109,13 @@ HEADERS += \
     generations/reactions/ubiquitous/surface_deactivation.h \
     generations/species/base.h \
     generations/species/base/bridge.h \
-    generations/species/base/dimer.h \
     generations/species/base/methyl_on_bridge.h \
     generations/species/base/methyl_on_dimer.h \
+    generations/species/base/unwrapped_dimer.h \
     generations/species/dependent.h \
+    generations/species/lateral/dimer.h \
+    generations/species/parent.h \
+    generations/species/sidepiece.h \
     generations/species/source.h \
     generations/species/specific.h \
     generations/species/specific/bridge_crs.h \
@@ -133,7 +137,9 @@ HEADERS += \
     mc/random_generator.h \
     phases/amorph.h \
     phases/crystal.h \
+    phases/crystal_atoms_iterator.h \
     phases/phase.h \
+    reactions/concrete_lateral_reaction.h \
     reactions/counterable.h \
     reactions/few_specs_reaction.h \
     reactions/lateral_reaction.h \
@@ -145,9 +151,14 @@ HEADERS += \
     species/additional_atoms_wrapper.h \
     species/atom_shift_wrapper.h \
     species/atoms_swap_wrapper.h \
+    species/base_spec.h \
+    species/concrete_lateral_spec.h \
     species/dependent_spec.h \
     species/keeper.h \
+    species/lateral_spec.h \
+    species/parent_spec.h \
     species/reactant.h \
+    species/removable_reactant.h \
     species/source_spec.h \
     species/specific_spec.h \
     tests/support/open_diamond.h \
@@ -159,10 +170,4 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    species/parent_spec.h \
-    species/base_spec.h \
-    species/specific_reactant.h \
-    species/lateral_spec.h \
-    species/lateral_reactant.h \
-    reactions/concrete_lateral_reaction.h \
-    species/removable_reactant.h
+    reactions/wrappable_reaction.h

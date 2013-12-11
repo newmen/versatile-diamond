@@ -12,7 +12,6 @@ class DiamondRelations : public B
 public:
     typedef Neighbours<2> TN;
 
-//    using B::B;
     template <class... Args>
     DiamondRelations(Args... args) : B(args...) {}
 

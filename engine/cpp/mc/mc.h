@@ -72,7 +72,7 @@ private:
     inline BaseEventsContainer *correspondEvents(uint orderValue);
 
 #ifdef PRINT
-    void printReaction(const ushort RT, Reaction *reaction, std::string message);
+    void printReaction(Reaction *reaction, std::string message);
 #endif // PRINT
 };
 
@@ -371,10 +371,6 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
     assert(rt < MULTI_EVENTS_NUM);
     _multiEvents[rt].selectEvent(0)->doIt();
 }
-#ifdef PRINT
-    printReaction(reaction, "Remove multi");
-#endif // PRINT
-
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)

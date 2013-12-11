@@ -5,8 +5,17 @@
 
 enum : ushort
 {
-    BASE_SPECS_NUM = 4
+    BASE_SPECS_NUM = 4,
+    SPECIFIC_SPECS_NUM = 10,
+
+    UBIQUITOUS_REACTIONS_NUM = 2,
+    TYPICAL_REACTIONS_NUM = 10,
+    LATERAL_REACTIONS_NUM = 2,
+
+//    ALL_SPECS_NUM = BASE_SPECS_NUM + SPECIFIC_SPECS_NUM,
+    ALL_SPEC_REACTIONS_NUM = TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM
 };
+
 enum BaseSpecNames : ushort
 {
     BRIDGE,
@@ -15,10 +24,6 @@ enum BaseSpecNames : ushort
     METHYL_ON_BRIDGE
 };
 
-enum : ushort
-{
-    SPECIFIC_SPECS_NUM = 10
-};
 enum SpecificSpecNames : ushort
 {
     BRIDGE_CTsi = BASE_SPECS_NUM,
@@ -33,10 +38,6 @@ enum SpecificSpecNames : ushort
     HIGH_BRIDGE
 };
 
-enum : ushort
-{
-    TYPICAL_REACTIONS_NUM = 10
-};
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
@@ -51,33 +52,16 @@ enum TypicalReactionNames : ushort
     HIGH_BRIDGE_STAND_TO_TWO_BRIDGES
 };
 
-enum : ushort
-{
-    LATERAL_REACTIONS_NUM = 2
-};
 enum LateralReactionNames : ushort
 {
     DIMER_FORMATION_AT_END = TYPICAL_REACTIONS_NUM,
     DIMER_FORMATION_IN_MIDDLE
 };
 
-enum : ushort
-{
-    UBIQUITOUS_REACTIONS_NUM = 2
-};
 enum UbiquitousReactionNames : ushort
 {
-    SURFACE_ACTIVATION = TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM,
+    SURFACE_ACTIVATION = ALL_SPEC_REACTIONS_NUM,
     SURFACE_DEACTIVATION
-};
-
-enum : ushort
-{
-    ALL_SPECS_NUM = BASE_SPECS_NUM + SPECIFIC_SPECS_NUM
-};
-enum : ushort
-{
-    ALL_SPEC_REACTIONS_NUM = TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM
 };
 
 #endif // NAMES_H

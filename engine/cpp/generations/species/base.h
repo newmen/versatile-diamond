@@ -1,28 +1,26 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include <assert.h>
 #include "../../tools/typed.h"
-#include "../../atoms/crystal_atoms_iterator.h"
 using namespace vd;
 
+#include "../phases/diamond_atoms_iterator.h"
 #include "../handbook.h"
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Base : public Typed<B, ST>, public CrystalAtomsIterator
+template <class B, ushort USED_ATOMS_NUM = B::UsedAtomsNum>
+class Base : public B, public DiamondAtomsIterator
 {
 protected:
-//    using Typed<B, ST>::Typed;
     template <class... Args>
-    Base(Args... args) : Typed<B, ST>(args...) {}
+    Base(Args... args) : B(args...) {}
 
 public:
     void store() override;
     void remove() override;
 };
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-void Base<B, ST, USED_ATOMS_NUM>::store()
+template <class B, ushort USED_ATOMS_NUM>
+void Base<B, USED_ATOMS_NUM>::store()
 {
 #ifdef PRINT
     this->wasFound();
@@ -39,8 +37,8 @@ void Base<B, ST, USED_ATOMS_NUM>::store()
     this->findChildren();
 }
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-void Base<B, ST, USED_ATOMS_NUM>::remove()
+template <class B, ushort USED_ATOMS_NUM>
+void Base<B, USED_ATOMS_NUM>::remove()
 {
 #ifdef PRINT
     this->wasForgotten();
@@ -56,7 +54,7 @@ void Base<B, ST, USED_ATOMS_NUM>::remove()
         this->atom(idxs[i])->forget(rls[i], this);
     }
 
-    Handbook::scavenger().markSpec<ST>(this);
+    Handbook::scavenger().markSpec(this);
 }
 
 #endif // BASE_H

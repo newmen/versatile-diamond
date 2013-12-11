@@ -20,11 +20,16 @@ protected:
     DependentSpec(BaseSpec **parents);
 
 public:
+    enum : ushort { UsedAtomsNum = PARENTS_NUM };
+
     ushort size() const;
     Atom *atom(ushort index) const;
 
     void store() override;
     void remove() override;
+
+    template <class L>
+    void eachParent(const L &lambda);
 
 #ifdef PRINT
     void info(std::ostream &os) override;
@@ -37,6 +42,7 @@ DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
 {
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
+        assert(parents[i]);
         _parents[i] = parents[i];
     }
 }
@@ -84,6 +90,16 @@ void DependentSpec<PARENTS_NUM>::remove()
     }
 
     ParentSpec::remove();
+}
+
+template <ushort PARENTS_NUM>
+template <class L>
+void DependentSpec<PARENTS_NUM>::eachParent(const L &lambda)
+{
+    for (int i = 0; i < PARENTS_NUM; ++i)
+    {
+        lambda(_parents[i]);
+    }
 }
 
 #ifdef PRINT

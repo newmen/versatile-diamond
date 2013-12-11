@@ -12,7 +12,7 @@ void BridgeCTsi::find(Bridge *parent)
 
     if (anchor->is(28))
     {
-        if (!anchor->hasRole(28, BRIDGE_CTsi))
+        if (!anchor->hasRole<BridgeCTsi>(28))
         {
             createBy<BridgeCTsi>(parent);
         }

@@ -7,6 +7,8 @@ void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
 
 void NextLevelBridgeToHighBridge::doIt()
 {
+    assert(target()->type() == BridgeCRsCTiCLi::ID);
+
     Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(2) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 

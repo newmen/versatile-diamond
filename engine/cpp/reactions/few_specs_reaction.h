@@ -3,7 +3,7 @@
 
 #include "../atoms/neighbours.h"
 #include "../species/specific_spec.h"
-#include "spec_reaction.h"
+#include "wrappable_reaction.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -14,13 +14,15 @@ namespace vd
 {
 
 template <ushort TARGETS_NUM>
-class FewSpecsReaction : public SpecReaction
+class FewSpecsReaction : public WrappableReaction
 {
     SpecificSpec *_targets[TARGETS_NUM];
 
 public:
     Atom *anchor() const override;
-    void removeFrom(SpecificSpec *target) override;
+
+    void storeAs(SpecReaction *reaction) override;
+    bool removeAsFrom(SpecReaction *reaction, SpecificSpec *target) override;
 
 #ifdef PRINT
     void info(std::ostream &os) override;
@@ -39,7 +41,6 @@ FewSpecsReaction<TARGETS_NUM>::FewSpecsReaction(SpecificSpec **targets)
     {
         assert(targets[i]);
         _targets[i] = targets[i];
-        _targets[i]->usedIn(this);
     }
 }
 
@@ -56,7 +57,16 @@ Atom *FewSpecsReaction<TARGETS_NUM>::anchor() const
 }
 
 template <ushort TARGETS_NUM>
-void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
+void FewSpecsReaction<TARGETS_NUM>::storeAs(SpecReaction *reaction)
+{
+    for (int i = 0; i < TARGETS_NUM; ++i)
+    {
+        _targets[i]->usedIn(reaction);
+    }
+}
+
+template <ushort TARGETS_NUM>
+bool FewSpecsReaction<TARGETS_NUM>::removeAsFrom(SpecReaction *reaction, SpecificSpec *target)
 {
     // TODO: now works only for two parents case
     uint index = (_targets[0] == target) ? 0 : 1;
@@ -67,11 +77,13 @@ void FewSpecsReaction<TARGETS_NUM>::removeFrom(SpecificSpec *target)
     {
         if (another)
         {
-            another->unbindFrom(this);
+            another->unbindFrom(reaction);
         }
 
-        remove();
+        return true;
     }
+
+    return false;
 }
 
 #ifdef PRINT

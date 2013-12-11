@@ -10,7 +10,7 @@ void DimerCRiCLi::find(Dimer *parent)
 
     if (anchors[0]->is(20) && anchors[1]->is(20))
     {
-        if (!anchors[0]->hasRole(20, DIMER_CRi_CLi) && !anchors[1]->hasRole(20, DIMER_CRi_CLi))
+        if (!anchors[0]->hasRole<DimerCRiCLi>(20) && !anchors[1]->hasRole<DimerCRiCLi>(20))
         {
             createBy<DimerCRiCLi>(parent);
         }

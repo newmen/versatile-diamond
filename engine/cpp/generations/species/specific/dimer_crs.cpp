@@ -15,7 +15,7 @@ void DimerCRs::find(Dimer *parent)
 
         if (anchor->is(21))
         {
-            if (!anchor->hasRole(21, DIMER_CRs))
+            if (!anchor->hasRole<DimerCRs>(21))
             {
                 createBy<DimerCRs>(indexes[i], parent);
             }

@@ -19,6 +19,7 @@ public:
     virtual ~BaseSpec() {}
 
     virtual void setUnvisited() = 0;
+    virtual void setVisited() = 0;
     virtual bool isVisited() const = 0;
 
     virtual ushort type() const = 0;
@@ -45,13 +46,26 @@ public:
     void wasForgotten();
 #endif // PRINT
 
-protected:
-    virtual void setVisited() = 0;
-    virtual void findAllChildren() = 0;
-
     virtual ushort *indexes() const = 0;
     virtual ushort *roles() const = 0;
+
+protected:
+    template <class S>
+    static S *checkAndFind(Atom *anchor, ushort rType);
+
+    virtual void findAllChildren() = 0;
 };
+
+template <class S>
+S *BaseSpec::checkAndFind(Atom *anchor, ushort rType)
+{
+    auto spec = anchor->specByRole<S>(rType);
+    if (spec)
+    {
+        spec->findChildren();
+    }
+    return spec;
+}
 
 }
 

@@ -30,10 +30,30 @@ public:
 #endif // PRINT
 
 protected:
-    Reaction *exchangeToLast(uint index);
+    template <class R>
+    R *exchangeToLast(uint index);
 
     std::vector<Reaction *> _events;
 };
+
+template <class R>
+R *BaseEventsContainer::exchangeToLast(uint index)
+{
+    assert(index < _events.size());
+
+    Reaction *last = _events.back();
+    _events.pop_back();
+
+    if (_events.cbegin() + index == _events.cend())
+    {
+        return nullptr;
+    }
+    else
+    {
+        _events[index] = last;
+        return static_cast<R *>(last);
+    }
+}
 
 }
 

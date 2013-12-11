@@ -61,12 +61,14 @@ public:
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
 
-    void describe(ushort rType, BaseSpec *spec);
-    void forget(ushort rType, BaseSpec *spec);
-    bool hasRole(ushort rType, ushort specType);
+    void describe(ushort role, BaseSpec *spec);
+    void forget(ushort role, BaseSpec *spec);
 
     template <class S>
-    S *specByRole(ushort rType, ushort specType);
+    bool hasRole(ushort role);
+
+    template <class S>
+    S *specByRole(ushort role);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -99,17 +101,24 @@ private:
 };
 
 template <class S>
-S *Atom::specByRole(ushort rType, ushort specType)
+bool Atom::hasRole(ushort role)
+{
+    const uint key = hash(role, S::ID);
+    return _specs.find(key) != _specs.cend();
+}
+
+template <class S>
+S *Atom::specByRole(ushort role)
 {
     BaseSpec *result = nullptr;
-    const uint key = hash(rType, specType);
+    const uint key = hash(role, S::ID);
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
         os << "specByRole " << this << std::dec;
         pos(os);
-        os << " |" << type() << ", " << _prevType << "| role type: " << rType
-           << ". spec type: " << specType << ". key: " << key;
+        os << " |" << type() << ", " << _prevType << "| role type: " << role
+           << ". spec type: " << S::ID << ". key: " << key;
         auto range = _specs.equal_range(key);
         os << " -> distance: " << std::distance(range.first, range.second);
     });

@@ -14,6 +14,7 @@ class ParentSpec : public BaseSpec
 
 public:
     void setUnvisited() override { _visited = false; }
+    void setVisited() override { _visited = true; }
     bool isVisited() const override { return _visited; }
 
     Atom *anchor() override { return atom(indexes()[0]); }
@@ -22,12 +23,6 @@ public:
     void removeChild(BaseSpec *child) override;
 
     void remove() override;
-
-protected:
-    static BaseSpec *checkAndFind(Atom *anchor, ushort rType, ushort sType);
-
-    friend class LateralSpec;
-    void setVisited() override { _visited = true; }
 };
 
 }

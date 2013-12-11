@@ -2,7 +2,7 @@
 #define DIMER_CRI_CLI_H
 
 #include "../specific.h"
-#include "../base/dimer.h"
+#include "../lateral/dimer.h"
 
 class DimerCRiCLi : public Specific<DIMER_CRi_CLi, 2>
 {
@@ -16,11 +16,11 @@ public:
     std::string name() const override { return "dimer(cr: i, cl: i)"; }
 #endif // PRINT
 
-protected:
-    void findAllReactions() override;
-
     ushort *indexes() const override { return __indexes; }
     ushort *roles() const override { return __roles; }
+
+protected:
+    void findAllReactions() override;
 
 private:
     static ushort __indexes[2];
