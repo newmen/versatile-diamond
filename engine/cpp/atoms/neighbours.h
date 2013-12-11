@@ -31,7 +31,7 @@ public:
         }
     }
 
-    Atom *operator [] (uint i)
+    Atom *operator[](uint i)
     {
         return _atoms[i];
     }

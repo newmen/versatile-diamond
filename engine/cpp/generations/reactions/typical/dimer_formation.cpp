@@ -1,5 +1,9 @@
 #include "dimer_formation.h"
 #include <assert.h>
+#include "../../species/lateral/dimer.h"
+#include "../typical/dimer_formation.h"
+#include "../lateral/dimer_formation_at_end.h"
+#include "../lateral/dimer_formation_in_middle.h"
 
 void DimerFormation::find(BridgeCTsi *target)
 {
@@ -37,6 +41,40 @@ void DimerFormation::doIt()
     changeAtom(b);
 
     Finder::findAll(atoms, 2);
+}
+
+LateralReaction *DimerFormation::findLateral()
+{
+    Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
+    LateralSpec *neighbourSpecs[2] = { nullptr, nullptr };
+    LateralReaction *concreted = nullptr;
+
+    eachNeighbours<2>(atoms, &Diamond::cross_100, [this, &neighbourSpecs, &concreted](Atom **neighbours) {
+        if (neighbours[0]->is(22) && neighbours[1]->is(22))
+        {
+            LateralSpec *specInNeighbour[2] = {
+                neighbours[0]->specByRole<Dimer>(22),
+                neighbours[1]->specByRole<Dimer>(22)
+            };
+
+            auto sidepiece = specInNeighbour[0];
+            if (sidepiece && specInNeighbour[0] == specInNeighbour[1])
+            {
+                if (neighbourSpecs[0])
+                {
+                    neighbourSpecs[1] = sidepiece;
+                    concreted = new DimerFormationInMiddle(this, neighbourSpecs);
+                }
+                else
+                {
+                    concreted = new DimerFormationAtEnd(this, sidepiece);
+                    neighbourSpecs[0] = sidepiece;
+                }
+            }
+        }
+    });
+
+    return concreted;
 }
 
 void DimerFormation::changeAtom(Atom *atom) const

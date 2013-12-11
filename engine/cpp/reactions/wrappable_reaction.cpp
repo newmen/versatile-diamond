@@ -10,7 +10,7 @@ void WrappableReaction::store()
 
 void WrappableReaction::removeFrom(SpecificSpec *target)
 {
-    if (removeFrom(this, target))
+    if (removeAsFrom(this, target))
     {
         remove();
     }

@@ -18,7 +18,7 @@ void MonoSpecReaction::storeAs(SpecReaction *reaction)
     _target->usedIn(reaction);
 }
 
-bool MonoSpecReaction::removeFrom(SpecReaction * /* reaction */, SpecificSpec *target)
+bool MonoSpecReaction::removeAsFrom(SpecReaction * /* reaction */, SpecificSpec *target)
 {
     assert(_target == target);
 

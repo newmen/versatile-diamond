@@ -2,11 +2,12 @@
 #define REACTION_CLARIFIER_H
 
 #include "../species/specific_spec.h"
+#include "lateral_reaction.h"
 
 namespace vd
 {
 
-template <class B, class F>
+template <class B>
 class ReactionClarifier : public B
 {
 public:
@@ -15,28 +16,22 @@ public:
 
     void store() override;
 
-private:
-    bool findConcretes();
+protected:
+    virtual LateralReaction *findLateral() = 0;
 };
 
-template <class B, class F>
-void ReactionClarifier<B, F>::store()
+template <class B>
+void ReactionClarifier<B>::store()
 {
-    if (!findConcretes())
-    {
-        B::store();
-    }
-}
-
-template <class B, class F>
-bool ReactionClarifier<B, F>::findConcretes()
-{
-    auto lateralReaction = F::find(this);
+    auto lateralReaction = findLateral();
     if (lateralReaction)
     {
         lateralReaction->store();
     }
-    return lateralReaction != nullptr;
+    else
+    {
+        B::store();
+    }
 }
 
 }

@@ -24,7 +24,6 @@ SOURCES += main.cpp \
     generations/phases/diamond.cpp \
     generations/phases/diamond_relations.cpp \
     generations/phases/phase_boundary.cpp \
-    generations/reactions/lateral/finders/dimer_formation_finder.cpp \
     generations/reactions/typical/ads_methyl_to_dimer.cpp \
     generations/reactions/typical/des_methyl_from_bridge.cpp \
     generations/reactions/typical/dimer_drop.cpp \
@@ -90,7 +89,6 @@ HEADERS += \
     generations/reactions/lateral.h \
     generations/reactions/lateral/dimer_formation_at_end.h \
     generations/reactions/lateral/dimer_formation_in_middle.h \
-    generations/reactions/lateral/finders/dimer_formation_finder.h \
     generations/reactions/many_typical.h \
     generations/reactions/mono_typical.h \
     generations/reactions/typical.h \

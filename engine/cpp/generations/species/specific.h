@@ -18,8 +18,6 @@ protected:
     Specific(Args... args) : ParentType(args...) {}
 
 public:
-    enum : ushort { UsedAtomsNum = USED_ATOMS_NUM };
-
     void store() override;
     void findChildren() override;
 };

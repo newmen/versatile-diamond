@@ -5,10 +5,9 @@
 using namespace vd;
 
 #include "../../species/specific/bridge_ctsi.h"
-#include "../lateral/finders/dimer_formation_finder.h"
 #include "../many_typical.h"
 
-class DimerFormation : public ReactionClarifier<ManyTypical<DIMER_FORMATION, 2>, DimerFormationFinder>
+class DimerFormation : public ReactionClarifier<ManyTypical<DIMER_FORMATION, 2>>
 {
 public:
     static void find(BridgeCTsi *target);
@@ -19,6 +18,9 @@ public:
     void doIt();
 
     std::string name() const override { return "dimer formation"; }
+
+protected:
+    LateralReaction *findLateral() override;
 
 private:
     inline void changeAtom(Atom *atom) const;
