@@ -14,10 +14,10 @@ class SpecReaction : public Reaction, public Creator
 public:
     virtual void store() = 0;
     virtual void removeFrom(SpecificSpec *target) = 0;
-    virtual void removeFromAll() = 0;
 
 protected:
     virtual void remove() = 0;
+    virtual void removeFromAll() = 0;
 };
 
 }

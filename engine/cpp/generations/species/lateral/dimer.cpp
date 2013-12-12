@@ -49,29 +49,29 @@ void Dimer::findAllReactions()
     eachNeighbours<2>(atoms, &Diamond::cross_100, [this](Atom **neighbours) {
         if (neighbours[0]->is(28) && neighbours[1]->is(28))
         {
-            SpecificSpec *specInNeighbour[2] = {
+            SpecificSpec *specsInNeighbour[2] = {
                 neighbours[0]->specByRole<BridgeCTsi>(28),
                 neighbours[1]->specByRole<BridgeCTsi>(28)
             };
 
-            if (specInNeighbour[0] && specInNeighbour[1])
+            if (specsInNeighbour[0] && specsInNeighbour[1])
             {
                 {
-                    auto reaction = specInNeighbour[0]->reactionWith<DimerFormationAtEnd>(specInNeighbour[1]);
-                    if (reaction)
+                    auto neighbourReaction = specsInNeighbour[0]->reactionWith<DimerFormationAtEnd>(specsInNeighbour[1]);
+                    if (neighbourReaction)
                     {
-                        if (reaction->haveLateral(this))
+                        if (neighbourReaction->haveLateral(this))
                         {
-                            reaction->concretize<DimerFormationInMiddle>(this);
+                            neighbourReaction->concretize<DimerFormationInMiddle>(this);
                         }
                         return;
                     }
                 }
                 {
-                    auto reaction = specInNeighbour[0]->reactionWith<DimerFormation>(specInNeighbour[1]);
-                    if (reaction)
+                    auto neighbourReaction = specsInNeighbour[0]->reactionWith<DimerFormation>(specsInNeighbour[1]);
+                    if (neighbourReaction)
                     {
-                        reaction->concretize<DimerFormationAtEnd>(this);
+                        neighbourReaction->concretize<DimerFormationAtEnd>(this);
                         return;
                     }
                 }

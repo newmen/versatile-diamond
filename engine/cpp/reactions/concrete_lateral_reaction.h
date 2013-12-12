@@ -28,7 +28,6 @@ public:
     void store() override;
     void removeFrom(SpecificSpec *spec) override;
     void removeFrom(LateralSpec *spec) override;
-    void removeFromAll() override;
 
     bool haveLateral(LateralSpec *spec) const;
 
@@ -44,6 +43,7 @@ protected:
     WrappableReaction *parent() { return _parent; }
 
     void remove() override;
+    void removeFromAll() override;
 };
 
 template <ushort LATERALS_NUM>

@@ -2,15 +2,15 @@
 #define DIMER_H
 
 #include "../base/unwrapped_dimer.h"
-#include "../sidepiece.h"
+#include "../lateral.h"
 
-class Dimer : public Sidepiece<UnwrappedDimer>
+class Dimer : public Lateral<UnwrappedDimer>
 {
 public:
     static void find(Atom *anchor);
 
     template <class... Args>
-    Dimer(Args... args) : Sidepiece(args...) {}
+    Dimer(Args... args) : Lateral(args...) {}
 
 protected:
     void findAllChildren() override;

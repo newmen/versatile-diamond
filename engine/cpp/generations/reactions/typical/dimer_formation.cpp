@@ -52,23 +52,23 @@ LateralReaction *DimerFormation::findLateral()
     eachNeighbours<2>(atoms, &Diamond::cross_100, [this, &neighbourSpecs, &concreted](Atom **neighbours) {
         if (neighbours[0]->is(22) && neighbours[1]->is(22))
         {
-            LateralSpec *specInNeighbour[2] = {
+            LateralSpec *specsInNeighbour[2] = {
                 neighbours[0]->specByRole<Dimer>(22),
                 neighbours[1]->specByRole<Dimer>(22)
             };
 
-            auto sidepiece = specInNeighbour[0];
-            if (sidepiece && specInNeighbour[0] == specInNeighbour[1])
+            auto lateralSpec = specsInNeighbour[0];
+            if (lateralSpec && specsInNeighbour[0] == specsInNeighbour[1])
             {
                 if (neighbourSpecs[0])
                 {
-                    neighbourSpecs[1] = sidepiece;
+                    neighbourSpecs[1] = lateralSpec;
                     concreted = new DimerFormationInMiddle(this, neighbourSpecs);
                 }
                 else
                 {
-                    concreted = new DimerFormationAtEnd(this, sidepiece);
-                    neighbourSpecs[0] = sidepiece;
+                    concreted = new DimerFormationAtEnd(this, lateralSpec);
+                    neighbourSpecs[0] = lateralSpec;
                 }
             }
         }

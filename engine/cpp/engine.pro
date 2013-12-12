@@ -112,7 +112,6 @@ HEADERS += \
     generations/species/dependent.h \
     generations/species/lateral/dimer.h \
     generations/species/parent.h \
-    generations/species/sidepiece.h \
     generations/species/source.h \
     generations/species/specific.h \
     generations/species/specific/bridge_crs.h \
@@ -169,4 +168,5 @@ HEADERS += \
     reactions/wrappable_reaction.h \
     generations/reactions/laterable.h \
     generations/reactions/concretizable.h \
-    generations/reactions/lateral_typical.h
+    generations/reactions/lateral_typical.h \
+    generations/species/lateral.h

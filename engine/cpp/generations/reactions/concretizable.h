@@ -10,7 +10,7 @@ class Concretizable : public B
 {
 public:
     template <class R>
-    R *concretize(LateralSpec *spec);
+    void concretize(LateralSpec *spec);
 
 protected:
     template <class... Args>
@@ -19,12 +19,12 @@ protected:
 
 template <class B>
 template <class R>
-R *Concretizable<B>::concretize(LateralSpec *spec)
+void Concretizable<B>::concretize(LateralSpec *spec)
 {
     this->removeFromAll();
     Handbook::mc().remove(this);
 
-    return Creator::createBy<R>(this, spec);
+    Creator::createBy<R>(this, spec);
 }
 
 #endif // CONCRETIZABLE_H

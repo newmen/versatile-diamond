@@ -16,7 +16,6 @@ namespace vd
 const ushort NO_VALUE = (ushort)(-1);
 
 class BaseSpec;
-class SpecificSpec;
 
 class Atom
 {

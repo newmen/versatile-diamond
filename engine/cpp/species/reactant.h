@@ -17,7 +17,7 @@ public:
     void usedIn(R *reaction);
     void unbindFrom(R *reaction);
 
-    template <class CR> CR *reaction();
+    template <class CR> CR *reaction(); // TODO: is never used now?
     template <class CR, class S> CR *reactionWith(S *spec);
 
     void findReactions();
