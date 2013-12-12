@@ -132,17 +132,18 @@ S *Atom::specByRole(ushort role)
         result = range.first->second;
     }
 
-#ifdef DEBUG
-    S *dynamicResult = nullptr;
     if (result)
     {
-        dynamicResult = dynamic_cast<S *>(result);
+#ifdef DEBUG
+        S *dynamicResult = dynamic_cast<S *>(result);
         assert(dynamicResult);
-    }
-    return dynamicResult;
+        return dynamicResult;
 #else
-    return static_cast<S *>(result);
+        return static_cast<S *>(result);
 #endif // DEBUG
+    }
+
+    return nullptr;
 }
 
 }

@@ -23,15 +23,16 @@ public:
 
     void storeAs(SpecReaction *reaction) override;
     bool removeAsFrom(SpecReaction *reaction, SpecificSpec *target) override;
+    void removeAsFromAll(SpecReaction *reaction) override;
 
 #ifdef PRINT
     void info(std::ostream &os) override;
 #endif // PRINT
 
-    SpecificSpec *target(uint index = 0);
-
 protected:
     FewSpecsReaction(SpecificSpec **targets);
+
+    SpecificSpec *target(uint index);
 };
 
 template <ushort TARGETS_NUM>
@@ -84,6 +85,15 @@ bool FewSpecsReaction<TARGETS_NUM>::removeAsFrom(SpecReaction *reaction, Specifi
     }
 
     return false;
+}
+
+template <ushort TARGETS_NUM>
+void FewSpecsReaction<TARGETS_NUM>::removeAsFromAll(SpecReaction *reaction)
+{
+    for (int i = 0; i < TARGETS_NUM; ++i)
+    {
+        _targets[i]->unbindFrom(reaction);
+    }
 }
 
 #ifdef PRINT

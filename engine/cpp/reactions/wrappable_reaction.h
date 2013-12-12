@@ -14,6 +14,9 @@ public:
 
     virtual void removeFrom(SpecificSpec *target) override;
     virtual bool removeAsFrom(SpecReaction *reaction, SpecificSpec *target) = 0;
+
+    virtual void removeFromAll();
+    virtual void removeAsFromAll(SpecReaction *reaction) = 0;
 };
 
 }

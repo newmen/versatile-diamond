@@ -86,7 +86,6 @@ HEADERS += \
     generations/phases/diamond_atoms_iterator.h \
     generations/phases/diamond_relations.h \
     generations/phases/phase_boundary.h \
-    generations/reactions/lateral.h \
     generations/reactions/lateral/dimer_formation_at_end.h \
     generations/reactions/lateral/dimer_formation_in_middle.h \
     generations/reactions/many_typical.h \
@@ -143,7 +142,6 @@ HEADERS += \
     reactions/lateral_reaction.h \
     reactions/mono_spec_reaction.h \
     reactions/reaction.h \
-    reactions/reaction_clarifier.h \
     reactions/spec_reaction.h \
     reactions/ubiquitous_reaction.h \
     species/additional_atoms_wrapper.h \
@@ -168,4 +166,7 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    reactions/wrappable_reaction.h
+    reactions/wrappable_reaction.h \
+    generations/reactions/laterable.h \
+    generations/reactions/concretizable.h \
+    generations/reactions/lateral_typical.h

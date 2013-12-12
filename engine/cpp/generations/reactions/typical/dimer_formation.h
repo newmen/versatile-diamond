@@ -1,18 +1,16 @@
 #ifndef DIMERFORMATION_H
 #define DIMERFORMATION_H
 
-#include "../../../reactions/reaction_clarifier.h"
-using namespace vd;
-
 #include "../../species/specific/bridge_ctsi.h"
+#include "../laterable.h"
 #include "../many_typical.h"
 
-class DimerFormation : public ReactionClarifier<ManyTypical<DIMER_FORMATION, 2>>
+class DimerFormation : public Laterable<ManyTypical<DIMER_FORMATION, 2>>
 {
 public:
     static void find(BridgeCTsi *target);
 
-    DimerFormation(SpecificSpec **targets) : ReactionClarifier(targets) {}
+    DimerFormation(SpecificSpec **targets) : Laterable(targets) {}
 
     double rate() const { return 1e5; }
     void doIt();

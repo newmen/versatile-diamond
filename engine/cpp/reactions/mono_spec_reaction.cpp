@@ -23,9 +23,14 @@ bool MonoSpecReaction::removeAsFrom(SpecReaction * /* reaction */, SpecificSpec 
     assert(_target == target);
 
     // this can not perform because target will also be deleted (calling only from SpecificSpec::remove)
-    // target->unbindFrom(reaction);
+    // _target->unbindFrom(reaction);
 
     return true;
+}
+
+void MonoSpecReaction::removeAsFromAll(SpecReaction *reaction)
+{
+    _target->unbindFrom(reaction);
 }
 
 #ifdef PRINT

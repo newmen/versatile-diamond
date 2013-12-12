@@ -20,15 +20,16 @@ public:
 
     void storeAs(SpecReaction *reaction) override;
     bool removeAsFrom(SpecReaction *reaction, SpecificSpec *target) override;
+    void removeAsFromAll(SpecReaction *reaction) override;
 
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT
 
-    SpecificSpec *target() { return _target; }
-
 protected:
     MonoSpecReaction(SpecificSpec *target) : _target(target) {}
+
+    SpecificSpec *target() { return _target; }
 };
 
 }

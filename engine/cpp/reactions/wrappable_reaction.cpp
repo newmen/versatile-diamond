@@ -16,4 +16,9 @@ void WrappableReaction::removeFrom(SpecificSpec *target)
     }
 }
 
+void WrappableReaction::removeFromAll()
+{
+    removeAsFromAll(this);
+}
+
 }
