@@ -18,7 +18,6 @@ protected:
     Specific(Args... args) : ParentType(args...) {}
 
 public:
-    void store() override;
     void findChildren() override;
 };
 
@@ -31,13 +30,6 @@ void Specific<SST, USED_ATOMS_NUM, B>::findChildren()
     }
 
     B::findChildren();
-}
-
-template <ushort SST, ushort USED_ATOMS_NUM, class B>
-void Specific<SST, USED_ATOMS_NUM, B>::store()
-{
-    WrappingType::store();
-    ParentType::store();
 }
 
 #endif // SPECIFIC_H

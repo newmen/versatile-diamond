@@ -33,7 +33,7 @@ public:
     virtual void addChild(BaseSpec *child) = 0;
     virtual void removeChild(BaseSpec *child) = 0;
 
-    virtual void store() = 0;
+    virtual void store();
     virtual void remove() = 0;
 
 #ifdef PRINT

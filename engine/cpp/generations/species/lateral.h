@@ -17,7 +17,6 @@ public:
     template <class... Args>
     Lateral(Args... args) : ParentType(args...) {}
 
-    void store() override;
     void findChildren() override;
 };
 
@@ -30,13 +29,6 @@ void Lateral<B>::findChildren()
     }
 
     ParentType::findChildren();
-}
-
-template <class B>
-void Lateral<B>::store()
-{
-    WrappingType::store();
-    ParentType::store();
 }
 
 #endif // LATERAL_H

@@ -59,6 +59,8 @@ void ConcreteLateralSpec<S>::store()
     _parent->eachParent([this](BaseSpec *parent) {
         parent->addChild(this);
     });
+
+    LateralSpec::store();
 }
 
 template <class S>

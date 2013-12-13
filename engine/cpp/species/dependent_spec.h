@@ -79,6 +79,7 @@ void DependentSpec<PARENTS_NUM>::store()
     {
         _parents[i]->addChild(this);
     }
+    ParentSpec::store();
 }
 
 template <ushort PARENTS_NUM>

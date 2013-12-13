@@ -34,7 +34,7 @@ void Base<B, USED_ATOMS_NUM>::store()
         this->atom(idxs[i])->describe(rls[i], this);
     }
 
-    this->findChildren();
+    B::store();
 }
 
 template <class B, ushort USED_ATOMS_NUM>

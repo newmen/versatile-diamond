@@ -13,6 +13,11 @@ void BaseSpec::findChildren()
     setVisited();
 }
 
+void BaseSpec::store()
+{
+    findChildren();
+}
+
 #ifdef PRINT
 void BaseSpec::wasFound()
 {

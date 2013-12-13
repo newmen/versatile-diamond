@@ -14,16 +14,6 @@ class Dependent : public Parent<B, ST, PARENTS_NUM>
 protected:
     template <class... Args>
     Dependent(Args... args) : ParentType(args...) {}
-
-public:
-    void store() override;
 };
-
-template <ushort ST, ushort PARENTS_NUM, class B>
-void Dependent<ST, PARENTS_NUM, B>::store()
-{
-    B::store();
-    ParentType::store();
-}
 
 #endif // DEPENDENT_H
