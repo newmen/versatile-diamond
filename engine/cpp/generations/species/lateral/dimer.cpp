@@ -41,7 +41,6 @@ void Dimer::findAllChildren()
     DimerCRs::find(this);
 }
 
-
 void Dimer::findAllReactions()
 {
     Atom *atoms[2] = { atom(0), atom(3) };

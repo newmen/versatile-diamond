@@ -15,6 +15,7 @@ void BaseSpec::findChildren()
 
 void BaseSpec::store()
 {
+    assert(!isVisited());
     findChildren();
 }
 
