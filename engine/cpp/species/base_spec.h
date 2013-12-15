@@ -4,12 +4,6 @@
 #include "../atoms/atom.h"
 #include "../tools/creator.h"
 
-#ifdef PRINT
-#include <functional>
-#include <iostream>
-#include <string>
-#endif // PRINT
-
 namespace vd
 {
 

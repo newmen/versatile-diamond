@@ -1,9 +1,5 @@
 #include "base_spec.h"
 
-#ifdef PRINT
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 namespace vd
 {
 

@@ -3,10 +3,6 @@
 #include "../species/specific_spec.h"
 #include "lattice.h"
 
-#ifdef PRINT
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 namespace vd
 {
 

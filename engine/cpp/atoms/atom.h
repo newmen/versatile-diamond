@@ -6,10 +6,6 @@
 #include "../tools/common.h"
 #include "lattice.h"
 
-#ifdef PRINT
-#include <iostream>
-#endif // PRINT
-
 namespace vd
 {
 

@@ -6,11 +6,6 @@
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
 
-#ifdef PRINT
-#include <iostream>
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 void Finder::initFind(Atom **atoms, uint n)
 {
     uint index = 0;

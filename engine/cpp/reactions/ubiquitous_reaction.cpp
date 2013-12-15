@@ -1,13 +1,9 @@
 #include "ubiquitous_reaction.h"
 
-#ifdef PRINT
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 namespace vd
 {
 
-short UbiquitousReaction::delta(Atom *anchor, const ushort *typeToNum)
+short UbiquitousReaction::delta(const Atom *anchor, const ushort *typeToNum)
 {
     short currNum = 0, prevNum = 0;
     ushort at = anchor->type();

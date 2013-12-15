@@ -3,11 +3,6 @@
 
 #include "multi_inheritance_dispatcher.h"
 
-#ifdef PRINT
-#include <iostream>
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 namespace vd
 {
 

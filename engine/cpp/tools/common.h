@@ -2,7 +2,13 @@
 #define COMMON_H
 
 #include <ostream>
-#include "caster.h" // not used here, but can be used everywhere where used it
+
+// below includes is not used there, but they very useful everywhere where used it
+#include "caster.h"
+
+#ifdef PRINT
+#include "../tools/debug_print.h"
+#endif // PRINT
 
 namespace vd
 {

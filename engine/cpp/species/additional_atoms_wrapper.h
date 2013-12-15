@@ -4,12 +4,6 @@
 #include "../tools/common.h"
 #include "../atoms/atom.h"
 
-#ifdef PRINT
-#include <functional>
-#include <iostream>
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 namespace vd
 {
 

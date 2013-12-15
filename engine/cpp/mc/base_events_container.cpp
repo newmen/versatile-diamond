@@ -1,16 +1,7 @@
 #include "base_events_container.h"
 
-#ifdef PRINT
-#include <iostream>
-#include "../tools/debug_print.h"
-#endif // PRINT
-
 namespace vd
 {
-
-BaseEventsContainer::~BaseEventsContainer()
-{
-}
 
 #ifdef DEBUG
 Reaction *BaseEventsContainer::selectEvent(const int3 &crd)

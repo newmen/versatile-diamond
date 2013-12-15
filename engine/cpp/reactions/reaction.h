@@ -4,10 +4,6 @@
 #include <string>
 #include "../atoms/atom.h"
 
-#ifdef PRINT
-#include <iostream>
-#endif // PRINT
-
 namespace vd
 {
 

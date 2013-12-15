@@ -3,10 +3,6 @@
 
 #include "reaction.h"
 
-#ifdef PRINT
-#include <iostream>
-#endif // PRINT
-
 namespace vd
 {
 
@@ -27,7 +23,7 @@ public:
 #endif // PRINT
 
 protected:
-    static short delta(Atom *anchor, const ushort *typeToNum);
+    static short delta(const Atom *anchor, const ushort *typeToNum);
 
     virtual short toType(ushort type) const = 0;
     virtual void action() = 0;

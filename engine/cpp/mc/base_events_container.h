@@ -17,7 +17,7 @@ class BaseEventsContainer
 #endif // PARALLEL
 {
 public:
-    virtual ~BaseEventsContainer();
+    virtual ~BaseEventsContainer() {}
 
 #ifdef DEBUG
     Reaction *selectEvent(const int3 &crd);
