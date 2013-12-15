@@ -1,5 +1,4 @@
 #include "handbook.h"
-#include <assert.h>
 
 #ifdef PARALLEL
 #include <omp.h>

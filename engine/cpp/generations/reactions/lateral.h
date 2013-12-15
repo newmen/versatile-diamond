@@ -45,13 +45,7 @@ void Lateral<RT, LATERALS_NUM>::restoreParent()
     // except LaterableRole::store()
 
     typedef typename R::RegistratorType RegistratorType;
-#ifdef DEBUG
-    auto dynamicParent = dynamic_cast<RegistratorType *>(this->parent());
-    assert(dynamicParent);
-    dynamicParent->RegistratorType::store();
-#else
-    static_cast<RegistratorType *>(parent())->RegistratorType::store();
-#endif // DEBUG
+    cast_to<R *>(this->parent())->RegistratorType::store();
 }
 
 #endif // LATERAL_H

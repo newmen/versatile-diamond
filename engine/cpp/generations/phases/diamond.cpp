@@ -2,8 +2,6 @@
 #include "../builders/atom_builder.h"
 #include "../finder.h"
 
-#include <assert.h>
-
 Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :
     DiamondRelations<Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
 {

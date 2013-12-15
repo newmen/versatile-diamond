@@ -1,8 +1,6 @@
 #include "methyl_on_dimer_hydrogen_migration.h"
 #include "../../handbook.h"
 
-#include <assert.h>
-
 void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
 {
     createBy<MethylOnDimerHydrogenMigration>(target);

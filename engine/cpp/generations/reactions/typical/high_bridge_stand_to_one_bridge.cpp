@@ -1,5 +1,4 @@
 #include "high_bridge_stand_to_one_bridge.h"
-#include <assert.h>
 
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {

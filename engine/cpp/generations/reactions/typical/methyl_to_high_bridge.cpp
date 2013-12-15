@@ -1,7 +1,5 @@
 #include "methyl_to_high_bridge.h"
 
-#include <assert.h>
-
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
     createBy<MethylToHighBridge>(target);

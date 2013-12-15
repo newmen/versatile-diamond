@@ -76,18 +76,7 @@ CR *Reactant<R>::checkoutReaction()
 #endif // DEBUG
 
     auto pr = _reactions.find(CR::ID);
-    if (pr != _reactions.cend())
-    {
-#ifdef DEBUG
-        auto dynamicResult = dynamic_cast<CR *>(pr->second);
-        assert(dynamicResult);
-        return dynamicResult;
-#else
-        return static_cast<CR *>(pr->second);
-#endif // DEBUG
-    }
-
-    return nullptr;
+    return (pr != _reactions.cend()) ? cast_to<CR *>(pr->second) : nullptr;
 }
 
 template <class R>
@@ -98,37 +87,24 @@ CR *Reactant<R>::checkoutReactionWith(S *spec)
     auto anotherRange = spec->_reactions.equal_range(CR::ID);
 
     R *result = nullptr;
-    while (currentRange.first != currentRange.second)
+    for (; currentRange.first != currentRange.second; ++currentRange.first)
     {
         auto currentReaction = currentRange.first->second;
         auto anotherRangeBegin = anotherRange.first;
 
-        while (anotherRangeBegin != anotherRange.second)
+        for (; anotherRangeBegin != anotherRange.second; ++anotherRangeBegin)
         {
             if (currentReaction == anotherRangeBegin->second)
             {
                 result = currentReaction;
-                goto break_two_times;
+                goto break_both_loops;
             }
-            ++anotherRangeBegin;
         }
-        ++currentRange.first;
     }
 
-    break_two_times :;
+    break_both_loops :;
 
-    if (result)
-    {
-#ifdef DEBUG
-        auto dynamicResult = dynamic_cast<CR *>(result);
-        assert(dynamicResult);
-        return dynamicResult;
-#else
-        return static_cast<CR *>(result);
-#endif // DEBUG
-    }
-
-    return nullptr;
+    return cast_to<CR *>(result);
 }
 
 template <class R>
@@ -187,13 +163,12 @@ template <class R>
 typename Reactant<R>::Reactions::const_iterator Reactant<R>::find(R *reaction) const
 {
     auto range = _reactions.equal_range(reaction->type());
-    while (range.first != range.second)
+    for (; range.first != range.second; ++range.first)
     {
         if (range.first->second == reaction)
         {
             return range.first;
         }
-        ++range.first;
     }
 
     return _reactions.cend();

@@ -179,14 +179,13 @@ void Atom::forget(ushort role, BaseSpec *spec)
         }
     }
 
-    while (range.first != range.second)
+    for (; range.first != range.second; ++range.first)
     {
         if (range.first->second == spec)
         {
             _specs.erase(range.first);
             break;
         }
-        ++range.first;
     }
 
 #ifdef PRINT

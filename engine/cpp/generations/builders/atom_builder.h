@@ -2,12 +2,10 @@
 #define ATOM_BUILDER_H
 
 #include <vector>
-#include "../atoms/c.h"
 #include "../../atoms/lattice.h"
-
-#include <assert.h>
-
 using namespace vd;
+
+#include "../atoms/c.h"
 
 class AtomBuilder
 {

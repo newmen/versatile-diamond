@@ -1,7 +1,5 @@
 #include "des_methyl_from_bridge.h"
 
-#include <assert.h>
-
 void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 {
     createBy<DesMethylFromBridge>(target);

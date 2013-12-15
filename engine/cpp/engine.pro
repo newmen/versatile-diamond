@@ -162,4 +162,5 @@ HEADERS += \
     reactions/targets.h \
     generations/reactions/registrator.h \
     generations/species/sidepiece.h \
-    generations/reactions/lateral.h
+    generations/reactions/lateral.h \
+    tools/caster.h

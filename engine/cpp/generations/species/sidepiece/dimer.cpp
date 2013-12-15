@@ -1,5 +1,4 @@
 #include "dimer.h"
-#include <assert.h>
 #include "../../reactions/typical/dimer_formation.h"
 #include "../../reactions/lateral/dimer_formation_at_end.h"
 #include "../../reactions/lateral/dimer_formation_in_middle.h"

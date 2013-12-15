@@ -20,17 +20,13 @@ public:
     static void eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda);
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class C>
 C *CrystalAtomsIterator<C>::crystalBy(Atom *atom)
 {
-#ifdef DEBUG
     assert(atom->lattice());
-    auto dynamicResult = dynamic_cast<C *>(atom->lattice()->crystal());
-    assert(dynamicResult);
-    return dynamicResult;
-#else
-    return static_cast<C *>(atom->lattice()->crystal());
-#endif // DEBUG
+    return cast_to<C *>(atom->lattice()->crystal());
 }
 
 template <class C>

@@ -44,15 +44,12 @@ R *BaseEventsContainer::exchangeToLast(uint index)
     Reaction *last = _events.back();
     _events.pop_back();
 
-    if (_events.cbegin() + index == _events.cend())
-    {
-        return nullptr;
-    }
-    else
+    if (_events.cbegin() + index != _events.cend())
     {
         _events[index] = last;
-        return static_cast<R *>(last);
+        return cast_to<R *>(last);
     }
+    return nullptr;
 }
 
 }

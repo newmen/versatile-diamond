@@ -45,6 +45,9 @@ void MultiEventsContainer::remove(Atom *target, uint n)
     lock([this, target, n]() {
 #endif // PARALLEL
 
+        auto range = _positions.equal_range(target);
+        assert(std::distance(range.first, range.second) >= n);
+
         for (uint i = 0; i < n; ++i)
         {
             auto currIt = _positions.find(target);

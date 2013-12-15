@@ -1,5 +1,4 @@
 #include "ads_methyl_to_dimer.h"
-#include <assert.h>
 #include "../../builders/atom_builder.h"
 
 void AdsMethylToDimer::find(DimerCRs *target)

@@ -1,7 +1,5 @@
 #include "dimer_drop.h"
 
-#include <assert.h>
-
 void DimerDrop::find(DimerCRiCLi *target)
 {
     createBy<DimerDrop>(target);

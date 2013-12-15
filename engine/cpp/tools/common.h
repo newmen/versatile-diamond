@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <ostream>
+#include "caster.h" // not used here, but can be used everywhere where used it
 
 namespace vd
 {
