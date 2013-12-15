@@ -22,6 +22,8 @@ protected:
     void restoreParent();
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <ushort RT, ushort LATERALS_NUM>
 void Lateral<RT, LATERALS_NUM>::remove()
 {
@@ -40,6 +42,8 @@ template <ushort RT, ushort LATERALS_NUM>
 template <class R>
 void Lateral<RT, LATERALS_NUM>::restoreParent()
 {
+    // except LaterableRole::store()
+
     typedef typename R::RegistratorType RegistratorType;
 #ifdef DEBUG
     auto dynamicParent = dynamic_cast<RegistratorType *>(this->parent());

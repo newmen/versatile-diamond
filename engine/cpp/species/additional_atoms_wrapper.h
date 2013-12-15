@@ -30,6 +30,8 @@ public:
 #endif // PRINT
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class B, ushort ATOMS_NUM>
 template <class... Ts>
 AdditionalAtomsWrapper<B, ATOMS_NUM>::AdditionalAtomsWrapper(Atom **additionalAtoms, Ts... args) : B(args...)

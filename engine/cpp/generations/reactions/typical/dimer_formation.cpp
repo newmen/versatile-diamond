@@ -63,6 +63,8 @@ LateralReaction *DimerFormation::findAllLateral()
                 if (neighbourSpecs[0])
                 {
                     neighbourSpecs[1] = lateralSpec;
+                    assert(concreted);
+                    delete concreted;
                     concreted = new DimerFormationInMiddle(this, neighbourSpecs);
                 }
                 else

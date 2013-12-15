@@ -58,8 +58,8 @@ int main()
 #pragma omp parallel
 #endif // PARALLEL
 //    for (uint i = 0; i < 50000 / THREADS_NUM; ++i)
-//    while (Handbook::mc().totalTime() < 1e-4)
-    while (Handbook::mc().totalTime() < 2e-2)
+    while (Handbook::mc().totalTime() < 1e-4)
+//    while (Handbook::mc().totalTime() < 2e-2)
     {
         Handbook::mc().doRandom(&mcData);
 

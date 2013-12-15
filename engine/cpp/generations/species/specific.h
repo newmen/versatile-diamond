@@ -16,6 +16,8 @@ protected:
     void keepFirstTime() override;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Specific<B, ST, USED_ATOMS_NUM>::keepFirstTime()
 {

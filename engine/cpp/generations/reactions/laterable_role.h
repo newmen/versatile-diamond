@@ -20,6 +20,8 @@ protected:
     virtual LateralReaction *findAllLateral() = 0;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <ushort RT, ushort TARGETS_NUM>
 void LaterableRole<Typical, RT, TARGETS_NUM>::store()
 {

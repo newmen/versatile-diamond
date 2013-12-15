@@ -32,6 +32,8 @@ private:
     static void remove(Atom *anchor, short delta);
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <ushort RT>
 template <class R>
 void Ubiquitous<RT>::find(Atom *anchor, short delta)
