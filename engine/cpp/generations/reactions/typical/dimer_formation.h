@@ -5,7 +5,7 @@
 #include "../laterable_role.h"
 #include "../typical.h"
 
-class DimerFormation : public LaterableRole<Typical<DIMER_FORMATION, 2>>
+class DimerFormation : public LaterableRole<Typical, DIMER_FORMATION, 2>
 {
 public:
     static void find(BridgeCTsi *target);
@@ -18,7 +18,7 @@ public:
     std::string name() const override { return "dimer formation"; }
 
 protected:
-    LateralReaction *findLateral() override;
+    LateralReaction *findAllLateral() override;
 
 private:
     inline void changeAtom(Atom *atom) const;

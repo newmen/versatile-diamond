@@ -21,17 +21,15 @@ public:
     void doIt() { _parent->doIt(); }
 
     void store() override { _parent->insertToTargets(this); }
-    void remove() override
-    {
-        _parent->eraseFromTargets(this);
-        delete _parent;
-    }
+    void remove() override { _parent->eraseFromTargets(this); }
 
     virtual void unconcretizeBy(LateralSpec *spec) = 0;
 
 protected:
     virtual void insertToTargets(LateralReaction *reaction) = 0;
     virtual void eraseFromTargets(LateralReaction *reaction) = 0;
+
+    TypicalReaction *parent() { return _parent; }
 };
 
 }

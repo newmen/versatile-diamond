@@ -12,7 +12,7 @@ public:
     double rate() const { return 3.1e5; }
     std::string name() const { return "dimer formation in middle of dimers row"; }
 
-    void unconcretizeBy(LateralSpec *);
+    void createUnconcreted(LateralSpec *removableSpec) override;
 };
 
 #endif // DIMER_FORMATION_IN_MIDDLE_H

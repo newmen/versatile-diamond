@@ -1,29 +1,56 @@
 #ifndef CONCRETIZABLE_ROLE_H
 #define CONCRETIZABLE_ROLE_H
 
-#include "../../species/lateral_spec.h"
-using namespace vd;
+#include "typical.h"
+#include "lateral.h"
 
-#include "../handbook.h"
+template<template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM = 1> class ConcretizableRole;
 
-template <class B>
-class ConcretizableRole : public B
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <ushort RT, ushort TARGETS_NUM>
+class ConcretizableRole<Typical, RT, TARGETS_NUM> : public Typical<RT, TARGETS_NUM>
 {
 public:
-    template <class R>
-    void concretize(LateralSpec *spec);
+    template <class R> void
+    concretize(LateralSpec *spec);
 
 protected:
     template <class... Args>
-    ConcretizableRole(Args... args) : B(args...) {}
+    ConcretizableRole(Args... args) : Typical<RT, TARGETS_NUM>(args...) {}
 };
 
-template <class B>
+template <ushort RT, ushort TARGETS_NUM>
 template <class R>
-void ConcretizableRole<B>::concretize(LateralSpec *spec)
+void ConcretizableRole<Typical, RT, TARGETS_NUM>::concretize(LateralSpec *spec)
 {
-    Handbook::mc().remove(B::ID, this);
+    Handbook::mc().remove(RT, this);
     this->eraseFromTargets(this);
+
+    Creator::createBy<R>(this, spec);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <ushort RT, ushort LATERALS_NUM>
+class ConcretizableRole<Lateral, RT, LATERALS_NUM> : public Lateral<RT, LATERALS_NUM>
+{
+public:
+    template <class R> void
+    concretize(LateralSpec *spec);
+
+protected:
+    template <class... Args>
+    ConcretizableRole(Args... args) : Lateral<RT, LATERALS_NUM>(args...) {}
+};
+
+template <ushort RT, ushort LATERALS_NUM>
+template <class R>
+void ConcretizableRole<Lateral, RT, LATERALS_NUM>::concretize(LateralSpec *spec)
+{
+    Handbook::mc().remove(RT, this);
+    this->eraseFromTargets(this);
+    Handbook::scavenger().markReaction(this);
 
     Creator::createBy<R>(this, spec);
 }

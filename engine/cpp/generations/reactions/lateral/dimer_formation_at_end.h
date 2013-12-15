@@ -4,7 +4,7 @@
 #include "../concretizable_role.h"
 #include "../lateral.h"
 
-class DimerFormationAtEnd : public ConcretizableRole<Lateral<DIMER_FORMATION_AT_END, 1>>
+class DimerFormationAtEnd : public ConcretizableRole<Lateral, DIMER_FORMATION_AT_END>
 {
 public:
     template <class... Args>
@@ -13,7 +13,7 @@ public:
     double rate() const { return 2.6e5; }
     std::string name() const { return "dimer formation at end of dimers row"; }
 
-    void unconcretizeBy(LateralSpec *);
+    void createUnconcreted(LateralSpec *removableSpec) override;
 };
 
 #endif // DIMER_FORMATION_AT_END_H

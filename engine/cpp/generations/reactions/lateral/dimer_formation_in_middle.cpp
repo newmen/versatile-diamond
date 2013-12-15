@@ -1,6 +1,9 @@
 #include "dimer_formation_in_middle.h"
+#include "dimer_formation_at_end.h"
+#include "../../species/sidepiece/dimer.h"
 
-void DimerFormationInMiddle::unconcretizeBy(LateralSpec *)
+void DimerFormationInMiddle::createUnconcreted(LateralSpec *removableSpec)
 {
-    assert(false);
+    assert(removableSpec->type() == Dimer::ID);
+    createBy<DimerFormationAtEnd>(this, removableSpec);
 }

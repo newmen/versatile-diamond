@@ -39,8 +39,8 @@ int main()
     });
 #endif // PRINT
 
-//    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+    Diamond *diamond = new Diamond(dim3(100, 100, 50));
+//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
 //    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 

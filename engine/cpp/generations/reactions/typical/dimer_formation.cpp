@@ -43,7 +43,7 @@ void DimerFormation::doIt()
     Finder::findAll(atoms, 2);
 }
 
-LateralReaction *DimerFormation::findLateral()
+LateralReaction *DimerFormation::findAllLateral()
 {
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
     LateralSpec *neighbourSpecs[2] = { nullptr, nullptr };

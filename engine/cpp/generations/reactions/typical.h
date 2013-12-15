@@ -6,11 +6,12 @@
 template <ushort RT, ushort TARGETS_NUM = 1>
 class Typical : public Registrator<ConcreteTypicalReaction<TARGETS_NUM>, RT>
 {
-    typedef Registrator<ConcreteTypicalReaction<TARGETS_NUM>, RT> ParentType;
+public:
+    typedef Registrator<ConcreteTypicalReaction<TARGETS_NUM>, RT> RegistratorType;
 
 protected:
     template <class... Args>
-    Typical(Args... args) : ParentType(args...) {}
+    Typical(Args... args) : RegistratorType(args...) {}
 };
 
 #endif // TYPICAL_H

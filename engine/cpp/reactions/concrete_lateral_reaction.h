@@ -27,6 +27,7 @@ protected:
     ConcreteLateralReaction(TypicalReaction *parent, LateralSpec *sidepiece);
     ConcreteLateralReaction(TypicalReaction *parent, LateralSpec **sidepieces);
     ConcreteLateralReaction(ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *sidepiece);
+    ConcreteLateralReaction(ConcreteLateralReaction<LATERALS_NUM + 1> *lateralParent, LateralSpec *sidepiece);
 
     void insertToTargets(LateralReaction *reaction) override { this->insert(reaction); }
     void eraseFromTargets(LateralReaction *reaction) override { this->erase(reaction); }
@@ -50,6 +51,13 @@ ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(TypicalReaction *
 template <ushort LATERALS_NUM>
 ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(
         ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *sidepiece) :
+    LateralReaction(lateralParent), TargetsType(lateralParent, sidepiece)
+{
+}
+
+template <ushort LATERALS_NUM>
+ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(
+        ConcreteLateralReaction<LATERALS_NUM + 1> *lateralParent, LateralSpec *sidepiece) :
     LateralReaction(lateralParent), TargetsType(lateralParent, sidepiece)
 {
 }

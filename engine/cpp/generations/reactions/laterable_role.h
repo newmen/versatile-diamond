@@ -1,46 +1,36 @@
 #ifndef LATERABLE_ROLE_H
 #define LATERABLE_ROLE_H
 
-#include "../../species/specific_spec.h"
-#include "../../reactions/lateral_reaction.h"
-using namespace vd;
-
 #include "concretizable_role.h"
 
-// TODO: move to kernel classes, but dependent from concretizable role
-template <class B>
-class LaterableRole : public ConcretizableRole<B>
+template <template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM> class LaterableRole;
+
+template <ushort RT, ushort TARGETS_NUM>
+class LaterableRole<Typical, RT, TARGETS_NUM> : public ConcretizableRole<Typical, RT, TARGETS_NUM>
 {
-    typedef ConcretizableRole<B> ParentType;
+    typedef ConcretizableRole<Typical, RT, TARGETS_NUM> ParentType;
 
 public:
     void store() override;
 
 protected:
     template <class... Args>
-    LaterableRole(Args... args);
+    LaterableRole(Args... args)  : ParentType(args...) {}
 
-    virtual LateralReaction *findLateral() = 0;
+    virtual LateralReaction *findAllLateral() = 0;
 };
 
-template <class B>
-template <class... Args>
-LaterableRole<B>::LaterableRole(Args... args) : ParentType(args...)
+template <ushort RT, ushort TARGETS_NUM>
+void LaterableRole<Typical, RT, TARGETS_NUM>::store()
 {
-    static_assert(!std::is_base_of<LateralReaction, B>::value, "Template argument should not derive LateralReaction");
-}
-
-template <class B>
-void LaterableRole<B>::store()
-{
-    auto lateralReaction = findLateral();
+    auto lateralReaction = findAllLateral();
     if (lateralReaction)
     {
         lateralReaction->store();
     }
     else
     {
-        B::store();
+        ParentType::store();
     }
 }
 

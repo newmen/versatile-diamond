@@ -33,8 +33,8 @@ void Registrator<B, RT>::store()
 template <class B, ushort RT>
 void Registrator<B, RT>::remove()
 {
-    ParentType::remove();
     Handbook::mc().remove(ParentType::ID, this);
+    ParentType::remove();
     Handbook::scavenger().markReaction(this);
 }
 
