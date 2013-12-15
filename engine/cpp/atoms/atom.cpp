@@ -1,5 +1,4 @@
 #include "atom.h"
-#include <assert.h>
 #include "../species/specific_spec.h"
 #include "lattice.h"
 

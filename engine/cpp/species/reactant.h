@@ -1,7 +1,6 @@
 #ifndef REACTANT_H
 #define REACTANT_H
 
-#include <assert.h>
 #include <unordered_map>
 #include "base_spec.h"
 

@@ -1,7 +1,5 @@
 #include "events_container.h"
 
-#include <assert.h>
-
 namespace vd
 {
 

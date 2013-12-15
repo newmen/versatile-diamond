@@ -4,8 +4,6 @@
 #include <vector>
 #include "common.h"
 
-#include <assert.h>
-
 namespace vd
 {
 

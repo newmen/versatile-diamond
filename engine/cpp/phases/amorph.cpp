@@ -1,8 +1,6 @@
 #include "amorph.h"
 #include "../atoms/atom.h"
 
-#include <assert.h>
-
 namespace vd
 {
 
