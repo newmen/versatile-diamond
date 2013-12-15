@@ -16,7 +16,6 @@ class Reaction
 public:
     virtual ~Reaction() {}
 
-    virtual ushort counterIndex() const = 0;
     virtual ushort type() const = 0;
 
     virtual Atom *anchor() const = 0;

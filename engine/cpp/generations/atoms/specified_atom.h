@@ -10,7 +10,6 @@ template <ushort VALENCE>
 class SpecifiedAtom : public Atom
 {
 public:
-//    using Atom::Atom;
     SpecifiedAtom(ushort type, ushort actives, Lattice *lattice) : Atom(type, actives, lattice) {}
 
     bool is(ushort typeOf) const override;

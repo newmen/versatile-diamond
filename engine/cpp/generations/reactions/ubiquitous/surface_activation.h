@@ -11,7 +11,6 @@ class SurfaceActivation : public Ubiquitous<SURFACE_ACTIVATION>
 public:
     static void find(Atom *anchor);
 
-//    using Ubiquitous<SURFACE_ACTIVATION>::Ubiquitous;
     SurfaceActivation(Atom *target) : Ubiquitous(target) {}
 
     double rate() const { return 3600; }

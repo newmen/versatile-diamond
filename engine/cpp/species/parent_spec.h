@@ -7,22 +7,19 @@
 namespace vd
 {
 
-class ParentSpec : public BaseSpec
+class ParentSpec : virtual public BaseSpec
 {
     std::unordered_set<BaseSpec *> _children;
-    bool _visited = false;
 
 public:
-    void setUnvisited() override { _visited = false; }
-    void setVisited() override { _visited = true; }
-    bool isVisited() const override { return _visited; }
+    void insertChild(BaseSpec *child);
+    void eraseChild(BaseSpec *child);
 
-    Atom *anchor() override { return atom(indexes()[0]); }
-
-    void addChild(BaseSpec *child) override;
-    void removeChild(BaseSpec *child) override;
-
+    void findChildren() override;
     void remove() override;
+
+protected:
+    virtual void findAllChildren() = 0;
 };
 
 }

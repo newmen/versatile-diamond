@@ -1,16 +1,15 @@
 #ifndef DIMER_CRI_CLI_H
 #define DIMER_CRI_CLI_H
 
+#include "../sidepiece/dimer.h"
 #include "../specific.h"
-#include "../lateral/dimer.h"
 
-class DimerCRiCLi : public Specific<DIMER_CRi_CLi, 2>
+class DimerCRiCLi : public Specific<DependentSpec<BaseSpec>, DIMER_CRi_CLi, 2>
 {
 public:
     static void find(Dimer *parent);
 
-//    using Specific::Specific;
-    DimerCRiCLi(BaseSpec *parent) : Specific(parent) {}
+    DimerCRiCLi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: i, cl: i)"; }

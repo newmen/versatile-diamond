@@ -3,182 +3,77 @@
 
 #include "../species/lateral_spec.h"
 #include "lateral_reaction.h"
-#include "wrappable_reaction.h"
-
-#ifdef PRINT
-#include <iostream>
-#include "../tools/debug_print.h"
-#endif // PRINT
+#include "targets.h"
 
 namespace vd
 {
 
 template <ushort LATERALS_NUM>
-class ConcreteLateralReaction : public LateralReaction
+class ConcreteLateralReaction : public LateralReaction, public Targets<LateralSpec, LATERALS_NUM>
 {
-    friend class ConcreteLateralReaction<LATERALS_NUM + 1>;
-
-    WrappableReaction *_parent = nullptr;
-    LateralSpec *_laterals[LATERALS_NUM];
+    typedef Targets<LateralSpec, LATERALS_NUM> TargetsType;
 
 public:
-    void doIt() override { _parent->doIt(); }
-    Atom *anchor() const override { return _parent->anchor(); }
+    Atom *anchor() const { return LateralReaction::anchor(); /* || TargetsType::anchor(); */ }
 
     void store() override;
-    void removeFrom(SpecificSpec *spec) override;
-    void removeFrom(LateralSpec *spec) override;
-
-    bool haveLateral(LateralSpec *spec) const;
+    void remove() override;
 
 #ifdef PRINT
-    void info(std::ostream &os) override;
+    void info(std::ostream &os);
 #endif // PRINT
 
 protected:
-    ConcreteLateralReaction(WrappableReaction *parent, LateralSpec *lateralSpec);
-    ConcreteLateralReaction(WrappableReaction *parent, LateralSpec **lateralSpecs);
-    ConcreteLateralReaction(ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *lateralSpec);
+    ConcreteLateralReaction(TypicalReaction *parent, LateralSpec *sidepiece);
+    ConcreteLateralReaction(TypicalReaction *parent, LateralSpec **sidepieces);
+    ConcreteLateralReaction(ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *sidepiece);
 
-    WrappableReaction *parent() { return _parent; }
-
-    void remove() override;
-    void removeFromAll() override;
+    void insertToTargets(LateralReaction *reaction) override { this->insert(reaction); }
+    void eraseFromTargets(LateralReaction *reaction) override { this->erase(reaction); }
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <ushort LATERALS_NUM>
-ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(WrappableReaction *parent, LateralSpec *lateralSpec) :
-    ConcreteLateralReaction<LATERALS_NUM>(parent, &lateralSpec)
+ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(TypicalReaction *parent, LateralSpec *sidepiece) :
+     ConcreteLateralReaction<LATERALS_NUM>(parent, &sidepiece)
 {
-    static_assert(LATERALS_NUM == 1, "Wrong constructor for LateralReaction with one LateralSpec");
+    static_assert(LATERALS_NUM == 1, "Wrong number of lateral reaction sidepieces");
 }
 
 template <ushort LATERALS_NUM>
-ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(WrappableReaction *parent, LateralSpec **lateralSpecs) :
-    _parent(parent)
+ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(TypicalReaction *parent, LateralSpec **sidepieces) :
+     LateralReaction(parent), TargetsType(sidepieces)
 {
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        assert(lateralSpecs[i]);
-        _laterals[i] = lateralSpecs[i];
-    }
 }
 
 template <ushort LATERALS_NUM>
 ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(
-        ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *lateralSpec) :
-    _parent(lateralParent->_parent)
+        ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *sidepiece) :
+    LateralReaction(lateralParent), TargetsType(lateralParent, sidepiece)
 {
-    for (uint i = 0; i < LATERALS_NUM - 1; ++i)
-    {
-        _laterals[i] = lateralParent->_laterals[i];
-    }
-    _laterals[LATERALS_NUM - 1] = lateralSpec;
-
-    delete lateralParent;
 }
 
 template <ushort LATERALS_NUM>
 void ConcreteLateralReaction<LATERALS_NUM>::store()
 {
-    _parent->storeAs(this);
-
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        _laterals[i]->usedIn(this);
-    }
-}
-
-template <ushort LATERALS_NUM>
-void ConcreteLateralReaction<LATERALS_NUM>::removeFrom(SpecificSpec *spec)
-{
-    if (_parent->removeAsFrom(this, spec))
-    {
-        remove();
-    }
-}
-
-template <ushort LATERALS_NUM>
-void ConcreteLateralReaction<LATERALS_NUM>::removeFrom(LateralSpec *spec)
-{
-#ifdef DEBUG
-    bool isFound = false;
-#endif // DEBUG
-
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        if (spec == _laterals[i])
-        {
-#ifdef DEBUG
-            isFound = true;
-#endif // DEBUG
-
-            _laterals[i]->unbindFrom(this);
-            _laterals[i] = nullptr;
-
-            break;
-        }
-    }
-
-    assert(isFound);
-}
-
-template <ushort LATERALS_NUM>
-void ConcreteLateralReaction<LATERALS_NUM>::removeFromAll()
-{
-    _parent->removeAsFromAll(this);
-
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        _laterals[i]->unbindFrom(this);
-    }
-}
-
-template <ushort LATERALS_NUM>
-bool ConcreteLateralReaction<LATERALS_NUM>::haveLateral(LateralSpec *spec) const
-{
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        if (spec == _laterals[i])
-        {
-            return true;
-        }
-    }
-    return false;
+    LateralReaction::store();
+    insertToTargets(this);
 }
 
 template <ushort LATERALS_NUM>
 void ConcreteLateralReaction<LATERALS_NUM>::remove()
 {
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        if (_laterals[i])
-        {
-            _laterals[i]->unbindFrom(this);
-        }
-    }
+    eraseFromTargets(this);
+    LateralReaction::remove();
 }
 
 #ifdef PRINT
 template <ushort LATERALS_NUM>
 void ConcreteLateralReaction<LATERALS_NUM>::info(std::ostream &os)
 {
-    os << "LateralReaction -> ";
-    _parent->info(os);
-
-    os << "     +++>>>     ";
-    for (uint i = 0; i < LATERALS_NUM; ++i)
-    {
-        if (_laterals[i])
-        {
-            _laterals[i]->info(os);
-        }
-        else
-        {
-            os << "zerofied";
-        }
-        os << " /// ";
-    }
+    os << "Lateral reaction " << this->name() << " [" << this << "]:";
+    TargetsType::info(os);
 }
 #endif // PRINT
 

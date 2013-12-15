@@ -1,16 +1,15 @@
 #ifndef METHYL_ON_DIMER_CMU_H
 #define METHYL_ON_DIMER_CMU_H
 
-#include "../specific.h"
 #include "../base/methyl_on_dimer.h"
+#include "../base.h"
 
-class MethylOnDimerCMu : public Specific<METHYL_ON_DIMER_CMu, 1>
+class MethylOnDimerCMu : public Base<DependentSpec<ParentSpec>, METHYL_ON_DIMER_CMu, 1>
 {
 public:
     static void find(MethylOnDimer *parent);
 
-//    using Specific::Specific;
-    MethylOnDimerCMu(BaseSpec *parent) : Specific(parent) {}
+    MethylOnDimerCMu(ParentSpec *parent) : Base(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl_on_dimer(cm: u)"; }
@@ -21,7 +20,6 @@ public:
 
 protected:
     void findAllChildren() override;
-    void findAllReactions() override {}
 
 private:
     static ushort __indexes[1];

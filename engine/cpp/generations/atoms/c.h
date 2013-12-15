@@ -6,7 +6,6 @@
 class C : public SpecifiedAtom<4>
 {
 public:
-//    using SpecifiedAtom::SpecifiedAtom;
     C(ushort type, ushort actives, Lattice *lattice) : SpecifiedAtom(type, actives, lattice) {}
 };
 

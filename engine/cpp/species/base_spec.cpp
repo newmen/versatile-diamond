@@ -7,16 +7,31 @@
 namespace vd
 {
 
-void BaseSpec::findChildren()
+void BaseSpec::store()
 {
-    findAllChildren();
+#ifdef PRINT
+    this->wasFound();
+#endif // PRINT
+
+    assert(!isVisited());
+    findChildren();
     setVisited();
 }
 
-void BaseSpec::store()
+void BaseSpec::remove()
 {
-    assert(!isVisited());
-    findChildren();
+#ifdef PRINT
+    wasForgotten();
+
+    debugPrint([&](std::ostream &os) {
+        os << "Removing reactions for " << this->name() << " with atoms of: " << std::endl;
+        os << std::dec;
+        this->eachAtom([&os](Atom *atom) {
+            atom->info(os);
+            os << std::endl;
+        });
+    });
+#endif // PRINT
 }
 
 #ifdef PRINT

@@ -1,17 +1,16 @@
 #ifndef BRIDGE_CRS_H
 #define BRIDGE_CRS_H
 
-#include "../../../species/atoms_swap_wrapper.h"
-#include "../specific.h"
 #include "../base/bridge.h"
+#include "../specific.h"
 
-class BridgeCRs : public Specific<BRIDGE_CRs, 1, AtomsSwapWrapper<SpecificSpec>>
+class BridgeCRs :
+        public Specific<AtomsSwapWrapper<DependentSpec<ParentSpec>>, BRIDGE_CRs, 1>
 {
 public:
     static void find(Bridge *parent);
 
-//    using Specific::Specific;
-    BridgeCRs(ushort fromIndex, ushort toIndex, BaseSpec *parent) : Specific(fromIndex, toIndex, parent) {}
+    BridgeCRs(ushort fromIndex, ushort toIndex, ParentSpec *parent) : Specific(fromIndex, toIndex, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge(cr: *)"; }

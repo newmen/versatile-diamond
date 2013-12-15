@@ -2,15 +2,14 @@
 #define NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE_H
 
 #include "../../species/specific/bridge_crs_cti_cli.h"
-#include "../mono_typical.h"
+#include "../typical.h"
 
-class NextLevelBridgeToHighBridge : public MonoTypical<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>
+class NextLevelBridgeToHighBridge : public Typical<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>
 {
 public:
     static void find(BridgeCRsCTiCLi *target);
 
-//    using MonoTypical::MonoTypical;
-    NextLevelBridgeToHighBridge(SpecificSpec *target) : MonoTypical(target) {}
+    NextLevelBridgeToHighBridge(SpecificSpec *target) : Typical(target) {}
 
     double rate() const { return 3.5e3; }
     void doIt();

@@ -1,7 +1,13 @@
 #include "specific_spec.h"
-#include "reactant.h"
 
 namespace vd
 {
+
+void SpecificSpec::remove()
+{
+    eachDupReaction([](SpecReaction *reaction) {
+        reaction->remove();
+    });
+}
 
 }

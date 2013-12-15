@@ -4,13 +4,12 @@
 #include "../specific.h"
 #include "methyl_on_dimer_cmu.h"
 
-class MethylOnDimerCMsu : public Specific<METHYL_ON_DIMER_CMsu, 1>
+class MethylOnDimerCMsu : public Specific<DependentSpec<BaseSpec>, METHYL_ON_DIMER_CMsu, 1>
 {
 public:
     static void find(MethylOnDimerCMu *parent);
 
-//    using Specific::Specific;
-    MethylOnDimerCMsu(BaseSpec *parent) : Specific(parent) {}
+    MethylOnDimerCMsu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl_on_dimer(cm: *, cm: u)"; }

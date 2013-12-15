@@ -1,15 +1,14 @@
 #ifndef BRIDGE_H
 #define BRIDGE_H
 
-#include "../source.h"
+#include "../base.h"
 
-class Bridge : public Source<BRIDGE, 3>
+class Bridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>
 {
 public:
     static void find(Atom *anchor);
 
-//    using Source::Source;
-    Bridge(Atom **atoms) : Source(atoms) {}
+    Bridge(Atom **atoms) : Base(atoms) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge"; }

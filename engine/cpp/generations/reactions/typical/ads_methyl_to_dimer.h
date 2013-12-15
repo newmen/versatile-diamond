@@ -2,14 +2,14 @@
 #define ADS_METHYL_TO_DIMER_H
 
 #include "../../species/specific/dimer_crs.h"
-#include "../mono_typical.h"
+#include "../typical.h"
 
-class AdsMethylToDimer : public MonoTypical<ADS_METHYL_TO_DIMER>
+class AdsMethylToDimer : public Typical<ADS_METHYL_TO_DIMER>
 {
 public:
     static void find(DimerCRs *target);
 
-    AdsMethylToDimer(SpecificSpec *target) : MonoTypical(target) {}
+    AdsMethylToDimer(SpecificSpec *target) : Typical(target) {}
 
     double rate() const { return 1e7; }
     void doIt();

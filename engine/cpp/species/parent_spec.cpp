@@ -3,16 +3,21 @@
 namespace vd
 {
 
-void ParentSpec::addChild(BaseSpec *child)
+void ParentSpec::insertChild(BaseSpec *child)
 {
     assert(_children.find(child) == _children.cend());
     _children.insert(child);
 }
 
-void ParentSpec::removeChild(BaseSpec *child)
+void ParentSpec::eraseChild(BaseSpec *child)
 {
     assert(_children.find(child) != _children.cend());
     _children.erase(child);
+}
+
+void ParentSpec::findChildren()
+{
+    findAllChildren();
 }
 
 void ParentSpec::remove()

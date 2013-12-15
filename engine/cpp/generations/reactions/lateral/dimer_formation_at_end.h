@@ -1,17 +1,19 @@
 #ifndef DIMER_FORMATION_AT_END_H
 #define DIMER_FORMATION_AT_END_H
 
-#include "../concretizable.h"
-#include "../lateral_typical.h"
+#include "../concretizable_role.h"
+#include "../lateral.h"
 
-class DimerFormationAtEnd : public Concretizable<LateralTypical<DIMER_FORMATION_AT_END, 1>>
+class DimerFormationAtEnd : public ConcretizableRole<Lateral<DIMER_FORMATION_AT_END, 1>>
 {
 public:
     template <class... Args>
-    DimerFormationAtEnd(Args... args) : Concretizable(args...) {}
+    DimerFormationAtEnd(Args... args) : ConcretizableRole(args...) {}
 
     double rate() const { return 2.6e5; }
     std::string name() const { return "dimer formation at end of dimers row"; }
+
+    void unconcretizeBy(LateralSpec *);
 };
 
 #endif // DIMER_FORMATION_AT_END_H

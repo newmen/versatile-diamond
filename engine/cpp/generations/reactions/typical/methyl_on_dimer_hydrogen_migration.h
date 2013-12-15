@@ -2,15 +2,14 @@
 #define METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 
 #include "../../species/specific/methyl_on_dimer_cls_cmu.h"
-#include "../mono_typical.h"
+#include "../typical.h"
 
-class MethylOnDimerHydrogenMigration : public MonoTypical<METHYL_ON_DIMER_HYDROGEN_MIGRATION>
+class MethylOnDimerHydrogenMigration : public Typical<METHYL_ON_DIMER_HYDROGEN_MIGRATION>
 {
 public:
     static void find(MethylOnDimerCLsCMu *target);
 
-//    using MonoTypical::MonoTypical;
-    MethylOnDimerHydrogenMigration(SpecificSpec *target) : MonoTypical(target) {}
+    MethylOnDimerHydrogenMigration(SpecificSpec *target) : Typical(target) {}
 
     double rate() const { return 1e6; }
     void doIt();

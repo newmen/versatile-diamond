@@ -1,6 +1,7 @@
 #ifndef DEPENDENT_SPEC_H
 #define DEPENDENT_SPEC_H
 
+#include "multi_inheritance_dispatcher.h"
 #include "parent_spec.h"
 
 #ifdef PRINT
@@ -11,25 +12,21 @@
 namespace vd
 {
 
-template <ushort PARENTS_NUM>
-class DependentSpec : public ParentSpec
+template <class B, ushort PARENTS_NUM = 1>
+class DependentSpec : public MultiInheritanceDispatcher<B>
 {
-    BaseSpec *_parents[PARENTS_NUM];
+    ParentSpec *_parents[PARENTS_NUM];
 
 protected:
-    DependentSpec(BaseSpec **parents);
+    DependentSpec(ParentSpec *parent);
+    DependentSpec(ParentSpec **parents);
 
 public:
-    enum : ushort { UsedAtomsNum = PARENTS_NUM };
-
     ushort size() const;
     Atom *atom(ushort index) const;
 
     void store() override;
     void remove() override;
-
-    template <class L>
-    void eachParent(const L &lambda);
 
 #ifdef PRINT
     void info(std::ostream &os) override;
@@ -37,8 +34,16 @@ public:
 #endif // PRINT
 };
 
-template <ushort PARENTS_NUM>
-DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class B, ushort PARENTS_NUM>
+DependentSpec<B, PARENTS_NUM>::DependentSpec(ParentSpec *parent) : DependentSpec<B, PARENTS_NUM>(&parent)
+{
+    static_assert(PARENTS_NUM == 1, "Wrong initializing of DependentSpec with many parents by just one");
+}
+
+template <class B, ushort PARENTS_NUM>
+DependentSpec<B, PARENTS_NUM>::DependentSpec(ParentSpec **parents)
 {
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
@@ -47,8 +52,8 @@ DependentSpec<PARENTS_NUM>::DependentSpec(BaseSpec **parents)
     }
 }
 
-template <ushort PARENTS_NUM>
-ushort DependentSpec<PARENTS_NUM>::size() const
+template <class B, ushort PARENTS_NUM>
+ushort DependentSpec<B, PARENTS_NUM>::size() const
 {
     ushort sum = 0;
     for (int i = 0; i < PARENTS_NUM; ++i)
@@ -58,8 +63,8 @@ ushort DependentSpec<PARENTS_NUM>::size() const
     return sum;
 }
 
-template <ushort PARENTS_NUM>
-Atom *DependentSpec<PARENTS_NUM>::atom(ushort index) const
+template <class B, ushort PARENTS_NUM>
+Atom *DependentSpec<B, PARENTS_NUM>::atom(ushort index) const
 {
     assert(index < size());
 
@@ -72,42 +77,33 @@ Atom *DependentSpec<PARENTS_NUM>::atom(ushort index) const
     return _parents[i]->atom(index);
 }
 
-template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::store()
+template <class B, ushort PARENTS_NUM>
+void DependentSpec<B, PARENTS_NUM>::store()
 {
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
-        _parents[i]->addChild(this);
+        _parents[i]->insertChild(this);
     }
-    ParentSpec::store();
+
+    B::store();
 }
 
-template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::remove()
+template <class B, ushort PARENTS_NUM>
+void DependentSpec<B, PARENTS_NUM>::remove()
 {
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
-        _parents[i]->removeChild(this);
+        _parents[i]->eraseChild(this);
     }
 
-    ParentSpec::remove();
-}
-
-template <ushort PARENTS_NUM>
-template <class L>
-void DependentSpec<PARENTS_NUM>::eachParent(const L &lambda)
-{
-    for (int i = 0; i < PARENTS_NUM; ++i)
-    {
-        lambda(_parents[i]);
-    }
+    B::remove();
 }
 
 #ifdef PRINT
-template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::info(std::ostream &os)
+template <class B, ushort PARENTS_NUM>
+void DependentSpec<B, PARENTS_NUM>::info(std::ostream &os)
 {
-    os << name() << " at [" << this << "]";
+    os << this->name() << " at [" << this << "]";
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
         os << " -> (";
@@ -116,8 +112,8 @@ void DependentSpec<PARENTS_NUM>::info(std::ostream &os)
     }
 }
 
-template <ushort PARENTS_NUM>
-void DependentSpec<PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
+template <class B, ushort PARENTS_NUM>
+void DependentSpec<B, PARENTS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
 {
     for (int i = 0; i < PARENTS_NUM; ++i)
     {

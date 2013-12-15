@@ -1,6 +1,6 @@
 #include "dimer_formation.h"
 #include <assert.h>
-#include "../../species/lateral/dimer.h"
+#include "../../species/sidepiece/dimer.h"
 #include "../typical/dimer_formation.h"
 #include "../lateral/dimer_formation_at_end.h"
 #include "../lateral/dimer_formation_in_middle.h"

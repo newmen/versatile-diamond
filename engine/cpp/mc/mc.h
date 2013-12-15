@@ -42,11 +42,11 @@ public:
     double totalRate() const { return _totalRate; }
     double totalTime() const { return _totalTime; }
 
-    void add(SpecReaction *reaction);
-    void remove(SpecReaction *reaction);
+    void add(uint index, SpecReaction *reaction);
+    void remove(uint index, SpecReaction *reaction);
 
-    void add(UbiquitousReaction *reaction, uint n);
-    void remove(UbiquitousReaction *reaction, uint n);
+    void add(uint index, UbiquitousReaction *reaction, uint n);
+    void remove(uint index, UbiquitousReaction *reaction, uint n);
 
 #ifdef DEBUG
     void doOneOfOne(ushort rt);
@@ -55,9 +55,6 @@ public:
 #endif // DEBUG
 
 private:
-    ushort getReactionType(SpecReaction *reaction) const;
-    ushort getReactionType(UbiquitousReaction *reaction, ushort n) const;
-
     void increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)
@@ -75,6 +72,8 @@ private:
     void printReaction(Reaction *reaction, std::string message);
 #endif // PRINT
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
@@ -293,68 +292,57 @@ BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint ord
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(SpecReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, SpecReaction *reaction)
 {
 #ifdef PRINT
     printReaction(reaction, "Add one");
 #endif // PRINT
 
-    ushort rt = getReactionType(reaction);
-    _events[rt].add(reaction);
+    assert(index < EVENTS_NUM);
+
+    _events[index].add(reaction);
     updateRate(reaction->rate());
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(SpecReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, SpecReaction *reaction)
 {
 #ifdef PRINT
     printReaction(reaction, "Remove one");
 #endif // PRINT
 
-    ushort rt = getReactionType(reaction);
+    assert(index < EVENTS_NUM);
+
     updateRate(-reaction->rate());
-    _events[rt].remove(reaction);
+    _events[index].remove(reaction);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *reaction, uint n)
 {
 #ifdef PRINT
     printReaction(reaction, "Add multi");
 #endif // PRINT
 
-    ushort rt = getReactionType(reaction, n);
-    _multiEvents[rt].add(reaction, n);
+    assert(index < MULTI_EVENTS_NUM);
+    assert(n < reaction->target()->valence());
+
+    _multiEvents[index].add(reaction, n);
     updateRate(reaction->rate() * n);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *reaction, uint n)
 {
 #ifdef PRINT
     printReaction(reaction, "Remove multi");
 #endif // PRINT
 
-    ushort rt = getReactionType(reaction, n);
-    updateRate(-reaction->rate() * n);
-    _multiEvents[rt].remove(reaction->target(), n);
-}
-
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-ushort MC<EVENTS_NUM, MULTI_EVENTS_NUM>::getReactionType(SpecReaction *reaction) const
-{
-    ushort rt = reaction->type();
-    assert(rt < EVENTS_NUM);
-    return rt;
-}
-
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-ushort MC<EVENTS_NUM, MULTI_EVENTS_NUM>::getReactionType(UbiquitousReaction *reaction, ushort n) const
-{
-    ushort rt = reaction->type();
-    assert(rt < MULTI_EVENTS_NUM);
+    assert(index < MULTI_EVENTS_NUM);
     assert(n < reaction->target()->valence());
-    return rt;
+
+    updateRate(-reaction->rate() * n);
+    _multiEvents[index].remove(reaction->target(), n);
 }
 
 #ifdef DEBUG

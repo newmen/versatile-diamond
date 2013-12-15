@@ -1,7 +1,7 @@
 #ifndef SOURCE_SPEC_H
 #define SOURCE_SPEC_H
 
-#include "parent_spec.h"
+#include "multi_inheritance_dispatcher.h"
 
 #ifdef PRINT
 #include <iostream>
@@ -11,8 +11,8 @@
 namespace vd
 {
 
-template <ushort ATOMS_NUM>
-class SourceSpec : public ParentSpec
+template <class B, ushort ATOMS_NUM>
+class SourceSpec : public MultiInheritanceDispatcher<B>
 {
     Atom *_atoms[ATOMS_NUM];
 
@@ -20,8 +20,6 @@ protected:
     SourceSpec(Atom **atoms);
 
 public:
-    enum : ushort { UsedAtomsNum = ATOMS_NUM };
-
     ushort size() const { return ATOMS_NUM; }
     Atom *atom(ushort index) const;
 
@@ -29,13 +27,12 @@ public:
     void info(std::ostream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
-
-    template <class L>
-    void eachParent(const L &) {}
 };
 
-template <ushort ATOMS_NUM>
-SourceSpec<ATOMS_NUM>::SourceSpec(Atom **atoms)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class B, ushort ATOMS_NUM>
+SourceSpec<B, ATOMS_NUM>::SourceSpec(Atom **atoms)
 {
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
@@ -43,18 +40,18 @@ SourceSpec<ATOMS_NUM>::SourceSpec(Atom **atoms)
     }
 }
 
-template <ushort ATOMS_NUM>
-Atom *SourceSpec<ATOMS_NUM>::atom(ushort index) const
+template <class B, ushort ATOMS_NUM>
+Atom *SourceSpec<B, ATOMS_NUM>::atom(ushort index) const
 {
     assert(ATOMS_NUM > index);
     return _atoms[index];
 }
 
 #ifdef PRINT
-template <ushort ATOMS_NUM>
-void SourceSpec<ATOMS_NUM>::info(std::ostream &os)
+template <class B, ushort ATOMS_NUM>
+void SourceSpec<B, ATOMS_NUM>::info(std::ostream &os)
 {
-    os << name() << " at [" << this << "]";
+    os << this->name() << " at [" << this << "]";
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
         os << " ";
@@ -62,8 +59,8 @@ void SourceSpec<ATOMS_NUM>::info(std::ostream &os)
     }
 }
 
-template <ushort ATOMS_NUM>
-void SourceSpec<ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
+template <class B, ushort ATOMS_NUM>
+void SourceSpec<B, ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lambda)
 {
     for (int i = 0; i < ATOMS_NUM; ++i)
     {

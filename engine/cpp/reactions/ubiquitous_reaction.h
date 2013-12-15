@@ -14,9 +14,10 @@ class UbiquitousReaction : public Reaction
 {
     Atom *_target;
 
-public:
+protected:
     UbiquitousReaction(Atom *target) : _target(target) {}
 
+public:
     Atom *target() { return _target; }
     Atom *anchor() const override;
     void doIt() override;

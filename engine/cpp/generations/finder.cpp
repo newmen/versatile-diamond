@@ -2,7 +2,7 @@
 #include "handbook.h"
 
 #include "species/base/bridge.h"
-#include "species/lateral/dimer.h"
+#include "species/sidepiece/dimer.h"
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
 

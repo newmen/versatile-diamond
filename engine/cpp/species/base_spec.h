@@ -15,26 +15,27 @@ namespace vd
 
 class BaseSpec : public Creator
 {
+    bool _visited = false;
+
 public:
     virtual ~BaseSpec() {}
 
-    virtual void setUnvisited() = 0;
-    virtual void setVisited() = 0;
-    virtual bool isVisited() const = 0;
+    void setUnvisited() { _visited = false; }
+    bool isVisited() const { return _visited; }
 
     virtual ushort type() const = 0;
 
     virtual ushort size() const = 0;
     virtual Atom *atom(ushort index) const = 0;
 
-    virtual Atom *anchor() = 0;
-
-    virtual void findChildren();
-    virtual void addChild(BaseSpec *child) = 0;
-    virtual void removeChild(BaseSpec *child) = 0;
+    virtual Atom *anchor() { return atom(indexes()[0]); }
+    virtual void findChildren() {}
 
     virtual void store();
-    virtual void remove() = 0;
+    virtual void remove();
+
+    virtual ushort *indexes() const = 0;
+    virtual ushort *roles() const = 0;
 
 #ifdef PRINT
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
@@ -42,29 +43,31 @@ public:
     virtual std::string name() const = 0;
     virtual void info(std::ostream &os) = 0;
 
+private:
     void wasFound();
     void wasForgotten();
 #endif // PRINT
 
-    virtual ushort *indexes() const = 0;
-    virtual ushort *roles() const = 0;
-
 protected:
     template <class S>
-    static S *checkAndFind(Atom *anchor, ushort rType);
+    static bool checkAndFind(Atom *anchor, ushort rType);
 
-    virtual void findAllChildren() = 0;
+private:
+    void setVisited() { _visited = true; }
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class S>
-S *BaseSpec::checkAndFind(Atom *anchor, ushort rType)
+bool BaseSpec::checkAndFind(Atom *anchor, ushort rType)
 {
     auto spec = anchor->specByRole<S>(rType);
     if (spec)
     {
         spec->findChildren();
     }
-    return spec;
+
+    return spec != nullptr;
 }
 
 }

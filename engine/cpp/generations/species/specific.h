@@ -1,35 +1,25 @@
 #ifndef SPECIFIC_H
 #define SPECIFIC_H
 
-#include "../../species/removable_reactant.h"
-#include "../../species/specific_spec.h"
-using namespace vd;
+#include "base.h"
 
-#include "parent.h"
-
-template <ushort SST, ushort USED_ATOMS_NUM, class B = SpecificSpec>
-class Specific : public Parent<RemovableReactant<B>, SST, USED_ATOMS_NUM>
+template <class B, ushort ST, ushort USED_ATOMS_NUM>
+class Specific : public Base<SpecClassBuilder<B, SpecificSpec>, ST, USED_ATOMS_NUM>
 {
-    typedef RemovableReactant<B> WrappingType;
-    typedef Parent<WrappingType, SST, USED_ATOMS_NUM> ParentType;
+    typedef Base<SpecClassBuilder<B, SpecificSpec>, ST, USED_ATOMS_NUM> ParentType;
 
-protected:
+public:
     template <class... Args>
     Specific(Args... args) : ParentType(args...) {}
 
-public:
-    void findChildren() override;
+protected:
+    void keepFirstTime() override;
 };
 
-template <ushort SST, ushort USED_ATOMS_NUM, class B>
-void Specific<SST, USED_ATOMS_NUM, B>::findChildren()
+template <class B, ushort ST, ushort USED_ATOMS_NUM>
+void Specific<B, ST, USED_ATOMS_NUM>::keepFirstTime()
 {
-    if (this->isNew())
-    {
-        Handbook::specificKeeper().store(this);
-    }
-
-    B::findChildren();
+    Handbook::specificKeeper().store(this);
 }
 
 #endif // SPECIFIC_H

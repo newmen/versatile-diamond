@@ -1,36 +1,37 @@
-#ifndef LATERABLE_H
-#define LATERABLE_H
+#ifndef LATERABLE_ROLE_H
+#define LATERABLE_ROLE_H
 
 #include "../../species/specific_spec.h"
 #include "../../reactions/lateral_reaction.h"
 using namespace vd;
 
-#include "concretizable.h"
+#include "concretizable_role.h"
 
+// TODO: move to kernel classes, but dependent from concretizable role
 template <class B>
-class Laterable : public Concretizable<B>
+class LaterableRole : public ConcretizableRole<B>
 {
-    typedef Concretizable<B> ParentType;
+    typedef ConcretizableRole<B> ParentType;
 
 public:
     void store() override;
 
 protected:
     template <class... Args>
-    Laterable(Args... args);
+    LaterableRole(Args... args);
 
     virtual LateralReaction *findLateral() = 0;
 };
 
 template <class B>
 template <class... Args>
-Laterable<B>::Laterable(Args... args) : ParentType(args...)
+LaterableRole<B>::LaterableRole(Args... args) : ParentType(args...)
 {
     static_assert(!std::is_base_of<LateralReaction, B>::value, "Template argument should not derive LateralReaction");
 }
 
 template <class B>
-void Laterable<B>::store()
+void LaterableRole<B>::store()
 {
     auto lateralReaction = findLateral();
     if (lateralReaction)
@@ -43,4 +44,4 @@ void Laterable<B>::store()
     }
 }
 
-#endif // LATERABLE_H
+#endif // LATERABLE_ROLE_H

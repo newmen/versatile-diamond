@@ -2,15 +2,14 @@
 #define METHYL_TO_HIGH_BRIDGE_H
 
 #include "../../species/specific/methyl_on_dimer_cmsu.h"
-#include "../mono_typical.h"
+#include "../typical.h"
 
-class MethylToHighBridge : public MonoTypical<METHYL_TO_HIGH_BRIDGE>
+class MethylToHighBridge : public Typical<METHYL_TO_HIGH_BRIDGE>
 {
 public:
     static void find(MethylOnDimerCMsu *target);
 
-//    using MonoTypical::MonoTypical;
-    MethylToHighBridge(SpecificSpec *target) : MonoTypical(target) {}
+    MethylToHighBridge(SpecificSpec *target) : Typical(target) {}
 
     double rate() const { return 5e5; }
     void doIt();

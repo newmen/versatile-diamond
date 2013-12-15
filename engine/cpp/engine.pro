@@ -39,8 +39,7 @@ SOURCES += main.cpp \
     generations/species/base/bridge.cpp \
     generations/species/base/methyl_on_bridge.cpp \
     generations/species/base/methyl_on_dimer.cpp \
-    generations/species/base/unwrapped_dimer.cpp \
-    generations/species/lateral/dimer.cpp \
+    generations/species/sidepiece/dimer.cpp \
     generations/species/specific/bridge_crs.cpp \
     generations/species/specific/bridge_crs_cti_cli.cpp \
     generations/species/specific/bridge_ctsi.cpp \
@@ -59,8 +58,6 @@ SOURCES += main.cpp \
     mc/random_generator.cpp \
     phases/amorph.cpp \
     phases/crystal.cpp \
-    reactions/lateral_reaction.cpp \
-    reactions/mono_spec_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \
     species/lateral_spec.cpp \
@@ -70,7 +67,9 @@ SOURCES += main.cpp \
     tools/common.cpp \
     tools/lockable.cpp \
     tools/scavenger.cpp \
-    reactions/wrappable_reaction.cpp
+    reactions/lateral_reaction.cpp \
+    generations/reactions/lateral/dimer_formation_at_end.cpp \
+    generations/reactions/lateral/dimer_formation_in_middle.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -88,9 +87,6 @@ HEADERS += \
     generations/phases/phase_boundary.h \
     generations/reactions/lateral/dimer_formation_at_end.h \
     generations/reactions/lateral/dimer_formation_in_middle.h \
-    generations/reactions/many_typical.h \
-    generations/reactions/mono_typical.h \
-    generations/reactions/typical.h \
     generations/reactions/typical/ads_methyl_to_dimer.h \
     generations/reactions/typical/des_methyl_from_bridge.h \
     generations/reactions/typical/dimer_drop.h \
@@ -108,11 +104,7 @@ HEADERS += \
     generations/species/base/bridge.h \
     generations/species/base/methyl_on_bridge.h \
     generations/species/base/methyl_on_dimer.h \
-    generations/species/base/unwrapped_dimer.h \
-    generations/species/dependent.h \
-    generations/species/lateral/dimer.h \
-    generations/species/parent.h \
-    generations/species/source.h \
+    generations/species/sidepiece/dimer.h \
     generations/species/specific.h \
     generations/species/specific/bridge_crs.h \
     generations/species/specific/bridge_crs_cti_cli.h \
@@ -135,11 +127,7 @@ HEADERS += \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
     phases/phase.h \
-    reactions/concrete_lateral_reaction.h \
-    reactions/counterable.h \
-    reactions/few_specs_reaction.h \
     reactions/lateral_reaction.h \
-    reactions/mono_spec_reaction.h \
     reactions/reaction.h \
     reactions/spec_reaction.h \
     reactions/ubiquitous_reaction.h \
@@ -147,14 +135,14 @@ HEADERS += \
     species/atom_shift_wrapper.h \
     species/atoms_swap_wrapper.h \
     species/base_spec.h \
-    species/concrete_lateral_spec.h \
     species/dependent_spec.h \
     species/keeper.h \
     species/lateral_spec.h \
+    species/multi_inheritance_dispatcher.h \
     species/parent_spec.h \
     species/reactant.h \
-    species/removable_reactant.h \
     species/source_spec.h \
+    species/spec_class_builder.h \
     species/specific_spec.h \
     tests/support/open_diamond.h \
     tools/collector.h \
@@ -165,8 +153,13 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    reactions/wrappable_reaction.h \
-    generations/reactions/laterable.h \
-    generations/reactions/concretizable.h \
-    generations/reactions/lateral_typical.h \
-    generations/species/lateral.h
+    reactions/typical_reaction.h \
+    generations/reactions/typical.h \
+    generations/reactions/laterable_role.h \
+    generations/reactions/concretizable_role.h \
+    reactions/concrete_typical_reaction.h \
+    reactions/concrete_lateral_reaction.h \
+    reactions/targets.h \
+    generations/reactions/registrator.h \
+    generations/species/sidepiece.h \
+    generations/reactions/lateral.h

@@ -2,15 +2,14 @@
 #define DIMER_DROP_H
 
 #include "../../species/specific/dimer_cri_cli.h"
-#include "../mono_typical.h"
+#include "../typical.h"
 
-class DimerDrop : public MonoTypical<DIMER_DROP>
+class DimerDrop : public Typical<DIMER_DROP>
 {
 public:
     static void find(DimerCRiCLi *target);
 
-//    using MonoTypical::MonoTypical;
-    DimerDrop(SpecificSpec *target) : MonoTypical(target) {}
+    DimerDrop(SpecificSpec *target) : Typical(target) {}
 
     double rate() const { return 5e3; }
     void doIt();

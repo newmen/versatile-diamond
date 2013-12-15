@@ -1,16 +1,15 @@
 #ifndef DIMER_CRS_H
 #define DIMER_CRS_H
 
-#include "../../../species/atom_shift_wrapper.h"
+#include "../sidepiece/dimer.h"
 #include "../specific.h"
-#include "../lateral/dimer.h"
 
-class DimerCRs : public Specific<DIMER_CRs, 1, AtomShiftWrapper<SpecificSpec>>
+class DimerCRs : public Specific<AtomShiftWrapper<DependentSpec<BaseSpec>>, DIMER_CRs, 1>
 {
 public:
     static void find(Dimer *parent);
 
-    DimerCRs(ushort atomsShift, BaseSpec *parent) : Specific(atomsShift, parent) {}
+    DimerCRs(ushort atomsShift, ParentSpec *parent) : Specific(atomsShift, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: *)"; }

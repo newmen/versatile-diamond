@@ -1,15 +1,15 @@
 #ifndef BRIDGE_CTSI_H
 #define BRIDGE_CTSI_H
 
-#include "../specific.h"
 #include "../base/bridge.h"
+#include "../specific.h"
 
-class BridgeCTsi : public Specific<BRIDGE_CTsi, 1>
+class BridgeCTsi : public Specific<DependentSpec<BaseSpec>, BRIDGE_CTsi, 1>
 {
 public:
     static void find(Bridge *parent);
 
-    BridgeCTsi(BaseSpec *parent) : Specific(parent) {}
+    BridgeCTsi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge(ct: *, ct: i)"; }

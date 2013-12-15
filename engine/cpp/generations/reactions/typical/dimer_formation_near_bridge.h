@@ -3,16 +3,15 @@
 
 #include "../../species/specific/bridge_ctsi.h"
 #include "../../species/specific/bridge_crs.h"
-#include "../many_typical.h"
+#include "../typical.h"
 
-class DimerFormationNearBridge : public ManyTypical<DIMER_FORMATION_NEAR_BRIDGE, 2>
+class DimerFormationNearBridge : public Typical<DIMER_FORMATION_NEAR_BRIDGE, 2>
 {
 public:
     static void find(BridgeCTsi *target);
     static void find(BridgeCRs *target);
 
-//    using ManyTypical::ManyTypical;
-    DimerFormationNearBridge(SpecificSpec **targets) : ManyTypical(targets) {}
+    DimerFormationNearBridge(SpecificSpec **targets) : Typical(targets) {}
 
     double rate() const { return 2.1e5; }
     void doIt();

@@ -1,16 +1,15 @@
 #ifndef METHYL_ON_BRIDGE_CBI_CMU_H
 #define METHYL_ON_BRIDGE_CBI_CMU_H
 
-#include "../specific.h"
 #include "../base/methyl_on_bridge.h"
+#include "../specific.h"
 
-class MethylOnBridgeCBiCMu : public Specific<METHYL_ON_BRIDGE_CBi_CMu, 2>
+class MethylOnBridgeCBiCMu : public Specific<DependentSpec<BaseSpec>, METHYL_ON_BRIDGE_CBi_CMu, 2>
 {
 public:
     static void find(MethylOnBridge *parent);
 
-//    using Specific::Specific;
-    MethylOnBridgeCBiCMu(BaseSpec *parent) : Specific(parent) {}
+    MethylOnBridgeCBiCMu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl_on_bridge(cb: i, cm: u)"; }
