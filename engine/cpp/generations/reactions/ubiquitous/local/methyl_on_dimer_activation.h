@@ -11,7 +11,7 @@ class MethylOnDimerActivation :
 public:
     MethylOnDimerActivation(Atom *target) : Local(target) {}
 
-    double rate() const { return 3895; }
+    double rate() const { return 38950; }
     std::string name() const { return "methyl on dimer activation"; }
 };
 

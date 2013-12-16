@@ -167,4 +167,5 @@ HEADERS += \
     tools/lockable.h \
     tools/scavenger.h \
     tools/typed.h \
-    tools/vector3d.h
+    tools/vector3d.h \
+    generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h
