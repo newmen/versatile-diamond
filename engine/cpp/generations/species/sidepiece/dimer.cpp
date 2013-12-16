@@ -1,7 +1,10 @@
 #include "dimer.h"
-#include "../../reactions/typical/dimer_formation.h"
+#include "../../reactions/lateral/dimer_drop_at_end.h"
+#include "../../reactions/lateral/dimer_drop_in_middle.h"
 #include "../../reactions/lateral/dimer_formation_at_end.h"
 #include "../../reactions/lateral/dimer_formation_in_middle.h"
+#include "../../reactions/typical/dimer_drop.h"
+#include "../../reactions/typical/dimer_formation.h"
 #include "../base/bridge.h"
 #include "../base/methyl_on_dimer.h"
 #include "../specific/bridge_ctsi.h"
@@ -75,6 +78,39 @@ void Dimer::findAllReactions()
                     if (neighbourReaction)
                     {
                         neighbourReaction->concretize<DimerFormationAtEnd>(this);
+                        return;
+                    }
+                }
+            }
+        }
+        // TODO: no else there in common case
+        else if (neighbours[0]->is(20) && neighbours[1]->is(20))
+        {
+            SpecificSpec *specsInNeighbour[2] = {
+                neighbours[0]->specByRole<DimerCRiCLi>(20),
+                neighbours[1]->specByRole<DimerCRiCLi>(20)
+            };
+
+            if (specsInNeighbour[0] && specsInNeighbour[1])
+            {
+                {
+                    auto neighbourReaction =
+                            specsInNeighbour[0]->checkoutReactionWith<DimerDropAtEnd>(specsInNeighbour[1]);
+                    if (neighbourReaction)
+                    {
+                        if (haveReaction(neighbourReaction))
+                        {
+                            neighbourReaction->concretize<DimerDropInMiddle>(this);
+                        }
+                        return;
+                    }
+                }
+                {
+                    auto neighbourReaction =
+                            specsInNeighbour[0]->checkoutReactionWith<DimerDrop>(specsInNeighbour[1]);
+                    if (neighbourReaction)
+                    {
+                        neighbourReaction->concretize<DimerDropAtEnd>(this);
                         return;
                     }
                 }

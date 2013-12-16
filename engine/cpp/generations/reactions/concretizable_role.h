@@ -4,7 +4,7 @@
 #include "typical.h"
 #include "lateral.h"
 
-template<template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM = 1> class ConcretizableRole;
+template<template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM> class ConcretizableRole;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

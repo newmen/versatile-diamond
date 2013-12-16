@@ -1,5 +1,5 @@
-#ifndef DIMERFORMATION_H
-#define DIMERFORMATION_H
+#ifndef DIMER_FORMATION_H
+#define DIMER_FORMATION_H
 
 #include "../../species/specific/bridge_ctsi.h"
 #include "../laterable_role.h"
@@ -24,4 +24,4 @@ private:
     inline void changeAtom(Atom *atom) const;
 };
 
-#endif // DIMERFORMATION_H
+#endif // DIMER_FORMATION_H

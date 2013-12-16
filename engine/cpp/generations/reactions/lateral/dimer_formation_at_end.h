@@ -4,7 +4,7 @@
 #include "../concretizable_role.h"
 #include "../lateral.h"
 
-class DimerFormationAtEnd : public ConcretizableRole<Lateral, DIMER_FORMATION_AT_END>
+class DimerFormationAtEnd : public ConcretizableRole<Lateral, DIMER_FORMATION_AT_END, 1>
 {
 public:
     template <class... Args>

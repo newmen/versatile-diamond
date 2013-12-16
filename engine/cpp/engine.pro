@@ -69,7 +69,9 @@ SOURCES += main.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
     tools/lockable.cpp \
-    tools/scavenger.cpp
+    tools/scavenger.cpp \
+    generations/reactions/lateral/dimer_drop_at_end.cpp \
+    generations/reactions/lateral/dimer_drop_in_middle.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -168,4 +170,6 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h
+    generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
+    generations/reactions/lateral/dimer_drop_at_end.h \
+    generations/reactions/lateral/dimer_drop_in_middle.h
