@@ -61,24 +61,24 @@ void MultiEventsContainer::remove(Atom *target, uint n)
                 uint lastIndex = _events.size();
                 auto range = _positions.equal_range(last->target());
 
-#ifdef DEBUG
+    #ifdef DEBUG
                 bool found = false;
-#endif // DEBUG
+    #endif // DEBUG
                 for (auto it = range.first; it != range.second; it++)
                 {
                     if (it->second == lastIndex)
                     {
                         it->second = currIt->second;
-#ifdef DEBUG
+    #ifdef DEBUG
                         found = true;
-#endif // DEBUG
+    #endif // DEBUG
                         break;
                     }
                 }
 
-#ifdef DEBUG
+    #ifdef DEBUG
                 assert(found);
-#endif // DEBUG
+    #endif // DEBUG
             }
 
             _positions.erase(currIt);
@@ -105,6 +105,25 @@ void MultiEventsContainer::remove(Atom *target, uint n)
 #ifdef PARALLEL
     });
 #endif // PARALLEL
+}
+
+uint MultiEventsContainer::check(Atom *target)
+{
+    uint quantity = 0;
+
+#ifdef PARALLEL
+    lock([this, target, &quantity]() {
+#endif // PARALLEL
+
+        auto range = _positions.equal_range(target);
+        quantity = std::distance(range.first, range.second);
+
+#ifdef PARALLEL
+    });
+#endif // PARALLEL
+
+    assert(quantity < target->valence());
+    return quantity;
 }
 
 }

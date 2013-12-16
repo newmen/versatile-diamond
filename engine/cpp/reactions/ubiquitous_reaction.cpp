@@ -5,24 +5,30 @@ namespace vd
 
 short UbiquitousReaction::delta(const Atom *anchor, const ushort *typeToNum)
 {
-    short currNum = 0, prevNum = 0;
-    ushort at = anchor->type();
+    return currNum(anchor, typeToNum) - prevNum(anchor, typeToNum);
+}
 
-    if (at == NO_VALUE)
+short UbiquitousReaction::currNum(const Atom *anchor, const ushort *typeToNum)
+{
+    ushort currType = anchor->type();
+    if (currType == NO_VALUE)
     {
-        assert (anchor->prevType() != NO_VALUE);
-        currNum = -typeToNum[anchor->prevType()];
-    }
-    else
-    {
-        currNum = typeToNum[at];
-        if (anchor->prevType() != NO_VALUE)
-        {
-            prevNum = typeToNum[anchor->prevType()];
-        }
+        assert(anchor->prevType() != NO_VALUE);
+        return -typeToNum[anchor->prevType()];
     }
 
-    return currNum - prevNum;
+    return typeToNum[currType];
+}
+
+short UbiquitousReaction::prevNum(const Atom *anchor, const ushort *typeToNum)
+{
+    ushort prevType = anchor->prevType();
+    if (prevType != NO_VALUE && anchor->type() != NO_VALUE)
+    {
+        return typeToNum[prevType];
+    }
+
+    return 0;
 }
 
 Atom *UbiquitousReaction::anchor() const
@@ -41,7 +47,7 @@ Atom *UbiquitousReaction::anchor() const
 
 void UbiquitousReaction::doIt()
 {
-    uint type = toType(target()->type());
+    uint type = toType();
     assert(type != target()->type());
 
     action();

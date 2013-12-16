@@ -8,7 +8,7 @@
 namespace vd
 {
 
-class LateralReaction : virtual public SpecReaction
+class LateralReaction : public SpecReaction
 {
     TypicalReaction *_parent = nullptr;
 

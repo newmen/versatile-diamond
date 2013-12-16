@@ -11,10 +11,16 @@ class UbiquitousReaction : public Reaction
     Atom *_target;
 
 protected:
+    static short delta(const Atom *anchor, const ushort *typeToNum);
+    static short currNum(const Atom *anchor, const ushort *typeToNum);
+    static short prevNum(const Atom *anchor, const ushort *typeToNum);
+
     UbiquitousReaction(Atom *target) : _target(target) {}
 
 public:
     Atom *target() { return _target; }
+    const Atom *target() const { return _target; } // should be replaced to .anchor() call everywhere
+
     Atom *anchor() const override;
     void doIt() override;
 
@@ -23,9 +29,7 @@ public:
 #endif // PRINT
 
 protected:
-    static short delta(const Atom *anchor, const ushort *typeToNum);
-
-    virtual short toType(ushort type) const = 0;
+    virtual ushort toType() const = 0;
     virtual void action() = 0;
 };
 

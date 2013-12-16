@@ -48,6 +48,12 @@ private:
     static const ushort __atomsSpecifing[];
 
 public:
+    static const ushort __hToActives[];
+    static const ushort __hOnAtoms[];
+    static const ushort __activesOnAtoms[];
+    static const ushort __activesToH[];
+
+public:
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
 };

@@ -8,7 +8,7 @@ enum : ushort
     BASE_SPECS_NUM = 4,
     SPECIFIC_SPECS_NUM = 10,
 
-    UBIQUITOUS_REACTIONS_NUM = 2,
+    UBIQUITOUS_REACTIONS_NUM = 3,
     TYPICAL_REACTIONS_NUM = 10,
     LATERAL_REACTIONS_NUM = 2,
 
@@ -61,7 +61,8 @@ enum LateralReactionNames : ushort
 enum UbiquitousReactionNames : ushort
 {
     SURFACE_ACTIVATION = ALL_SPEC_REACTIONS_NUM,
-    SURFACE_DEACTIVATION
+    SURFACE_DEACTIVATION,
+    METHYL_ON_DIMER_ACTIVATION
 };
 
 #endif // NAMES_H

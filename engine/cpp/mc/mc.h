@@ -41,7 +41,8 @@ public:
     void remove(uint index, SpecReaction *reaction);
 
     void add(uint index, UbiquitousReaction *reaction, uint n);
-    void remove(uint index, UbiquitousReaction *reaction, uint n);
+    void remove(uint index, UbiquitousReaction *templateReaction, uint n);
+    uint check(uint index, Atom *target);
 
 #ifdef DEBUG
     void doOneOfOne(ushort rt);
@@ -327,17 +328,24 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *react
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *templateReaction, uint n)
 {
 #ifdef PRINT
-    printReaction(reaction, "Remove multi");
+    printReaction(*reaction, "Remove multi");
 #endif // PRINT
 
     assert(index < MULTI_EVENTS_NUM);
-    assert(n < reaction->target()->valence());
+    assert(n < templateReaction->target()->valence());
 
-    updateRate(-reaction->rate() * n);
-    _multiEvents[index].remove(reaction->target(), n);
+    updateRate(-templateReaction->rate() * n);
+    _multiEvents[index].remove(templateReaction->target(), n);
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+uint MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(uint index, Atom *target)
+{
+    assert(index < MULTI_EVENTS_NUM);
+    return _multiEvents[index].check(target);
 }
 
 #ifdef DEBUG

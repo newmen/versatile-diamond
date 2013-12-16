@@ -6,7 +6,7 @@
 namespace vd
 {
 
-class TypicalReaction : virtual public SpecReaction
+class TypicalReaction : public SpecReaction
 {
 public:
     void store() override { insertToTargets(this); }

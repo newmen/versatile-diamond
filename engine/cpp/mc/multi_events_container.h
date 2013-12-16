@@ -17,6 +17,7 @@ public:
 
     void add(UbiquitousReaction *event, uint n);
     void remove(Atom *target, uint n);
+    uint check(Atom *target);
 };
 
 }

@@ -1,25 +1,17 @@
 #ifndef SURFACE_ACTIVATION_H
 #define SURFACE_ACTIVATION_H
 
-#include "../ubiquitous.h"
+#include "data/activation_data.h"
 
-class SurfaceActivation : public Ubiquitous<SURFACE_ACTIVATION>
+class SurfaceActivation : public ActivationData<SURFACE_ACTIVATION>
 {
-    static const ushort __hToActives[];
-    static const ushort __hOnAtoms[];
-
 public:
     static void find(Atom *anchor);
 
-    SurfaceActivation(Atom *target) : Ubiquitous(target) {}
+    SurfaceActivation(Atom *target) : ActivationData(target) {}
 
     double rate() const { return 3600; }
-
     std::string name() const { return "surface activation"; }
-
-protected:
-    short toType(ushort type) const override;
-    void action() override { target()->activate(); }
 };
 
 #endif // SURFACE_ACTIVATION_H
