@@ -25,25 +25,18 @@ protected:
 template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
 typename Local<B, U, RT, S, AT>::ParentType::DepFindResult Local<B, U, RT, S, AT>::check(Atom *anchor)
 {
-    if (anchor->is(AT))
+    bool stored = Handbook::mc().check(ParentType::MC_INDEX, anchor);
+
+    if (anchor->is(AT) && anchor->hasRole<S>(AT))
     {
-        if (anchor->hasRole<S>(AT))
-        {
-            uint quantity = Handbook::mc().check(ParentType::MC_INDEX, anchor);
-            return  quantity > 0 ?
-                        ParentType::DepFindResult::FOUND :
-                        ParentType::DepFindResult::NEW;
-        }
+        return stored ?
+                    ParentType::DepFindResult::FOUND :
+                    ParentType::DepFindResult::NEW;
     }
 
-    if (anchor->prevIs(AT))
+    if (stored && anchor->prevIs(AT))
     {
-        uint quantity = Handbook::mc().check(ParentType::MC_INDEX, anchor);
-        if (quantity > 0)
-        {
-            assert(quantity == ParentType::prevNum(anchor, ParentType::nums()));
-            return ParentType::DepFindResult::REMOVED;
-        }
+        return ParentType::DepFindResult::REMOVED;
     }
 
     return ParentType::DepFindResult::NOT_FOUND;

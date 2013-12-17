@@ -17,7 +17,11 @@ public:
 
     void add(UbiquitousReaction *event, uint n);
     void remove(Atom *target, uint n);
-    uint check(Atom *target);
+    uint removeAll(Atom *target);
+    bool check(Atom *target);
+
+private:
+    void unlockedRemove(Atom *target, uint n);
 };
 
 }

@@ -42,7 +42,8 @@ public:
 
     void add(uint index, UbiquitousReaction *reaction, uint n);
     void remove(uint index, UbiquitousReaction *templateReaction, uint n);
-    uint check(uint index, Atom *target);
+    void removeAll(uint index, UbiquitousReaction *templateReaction);
+    bool check(uint index, Atom *target);
 
 #ifdef DEBUG
     void doOneOfOne(ushort rt);
@@ -231,12 +232,14 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
 {
     double r = data->rand(1.0);
-    double dt = -log(r) / totalRate();
 
 #ifdef PARALLEL
-#pragma omp atomic
+#pragma omp critical
 #endif // PARALLEL
-    _totalTime += dt;
+    {
+        double dt = -log(r) / totalRate();
+        _totalTime += dt;
+    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -342,7 +345,19 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *te
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-uint MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(uint index, Atom *target)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(uint index, UbiquitousReaction *templateReaction)
+{
+    assert(index < MULTI_EVENTS_NUM);
+    uint n = _multiEvents[index].removeAll(templateReaction->target());
+    if (n > 0)
+    {
+        assert(n < templateReaction->target()->valence());
+        updateRate(-templateReaction->rate() * n);
+    }
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+bool MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(uint index, Atom *target)
 {
     assert(index < MULTI_EVENTS_NUM);
     return _multiEvents[index].check(target);

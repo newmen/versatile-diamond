@@ -14,11 +14,11 @@ class Ubiquitous : public Typed<UbiquitousReaction, RT>
     typedef Typed<UbiquitousReaction, RT> ParentType;
 
 public:
+    enum : ushort { MC_INDEX = RT - SURFACE_ACTIVATION }; // must used first ID of ubiquitous reactions names
+
     void doIt() override;
 
 protected:
-    enum : ushort { MC_INDEX = RT - SURFACE_ACTIVATION }; // must used first ID of ubiquitous reactions names
-
     enum DepFindResult : ushort // only if has Local reaction
     {
         NEW,
@@ -41,6 +41,9 @@ private:
 
     template <class R>
     static void remove(Atom *anchor, short delta);
+
+    template <class R>
+    static void removeAll(Atom *anchor);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,12 +67,18 @@ template <ushort RT>
 template <class R>
 void Ubiquitous<RT>::findChild(Atom *anchor)
 {
+    short n;
     auto result = R::check(anchor);
     switch (result)
     {
     case NEW:
-        remove<typename R::UbiquitousType>(anchor, -ParentType::prevNum(anchor, R::nums()));
-        store<R>(anchor, ParentType::currNum(anchor, R::nums()));
+        removeAll<typename R::UbiquitousType>(anchor);
+
+        n = ParentType::currNum(anchor, R::nums());
+        if (n > 0)
+        {
+            store<R>(anchor, n);
+        }
         break;
 
     case FOUND:
@@ -81,8 +90,13 @@ void Ubiquitous<RT>::findChild(Atom *anchor)
         break;
 
     case REMOVED:
-        remove<R>(anchor, -ParentType::prevNum(anchor, R::nums()));
-        store<typename R::UbiquitousType>(anchor, ParentType::currNum(anchor, R::nums()));
+        removeAll<R>(anchor);
+
+        n = ParentType::currNum(anchor, R::nums());
+        if (n > 0)
+        {
+            store<typename R::UbiquitousType>(anchor, n);
+        }
         break;
     }
 }
@@ -91,7 +105,7 @@ template <ushort RT>
 template <class R>
 void Ubiquitous<RT>::store(Atom *anchor, short delta)
 {
-    Handbook::mc().add(MC_INDEX, new R(anchor), delta);
+    Handbook::mc().add(R::MC_INDEX, new R(anchor), delta);
 }
 
 template <ushort RT>
@@ -99,7 +113,15 @@ template <class R>
 void Ubiquitous<RT>::remove(Atom *anchor, short delta)
 {
     R removableTemplate(anchor);
-    Handbook::mc().remove(MC_INDEX, &removableTemplate, -delta);
+    Handbook::mc().remove(R::MC_INDEX, &removableTemplate, -delta);
+}
+
+template <ushort RT>
+template <class R>
+void Ubiquitous<RT>::removeAll(Atom *anchor)
+{
+    R removableTemplate(anchor);
+    Handbook::mc().removeAll(R::MC_INDEX, &removableTemplate);
 }
 
 template <ushort RT>
