@@ -16,9 +16,6 @@ class ConcreteLateralReaction : public LateralReaction, public Targets<LateralSp
 public:
     Atom *anchor() const { return LateralReaction::anchor(); /* || TargetsType::anchor(); */ }
 
-    void store() override;
-    void remove() override;
-
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT
@@ -29,8 +26,8 @@ protected:
     ConcreteLateralReaction(ConcreteLateralReaction<LATERALS_NUM - 1> *lateralParent, LateralSpec *sidepiece);
     ConcreteLateralReaction(ConcreteLateralReaction<LATERALS_NUM + 1> *lateralParent, LateralSpec *sidepiece);
 
-    void insertToTargets(LateralReaction *reaction) override { this->insert(reaction); }
-    void eraseFromTargets(LateralReaction *reaction) override { this->erase(reaction); }
+    void insertToTargets(LateralReaction *reaction) override;
+    void eraseFromTargets(LateralReaction *reaction) override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,17 +60,17 @@ ConcreteLateralReaction<LATERALS_NUM>::ConcreteLateralReaction(
 }
 
 template <ushort LATERALS_NUM>
-void ConcreteLateralReaction<LATERALS_NUM>::store()
+void ConcreteLateralReaction<LATERALS_NUM>::insertToTargets(LateralReaction *reaction)
 {
-    LateralReaction::store();
-    insertToTargets(this);
+    insertToParentTargets();
+    this->insert(reaction);
 }
 
 template <ushort LATERALS_NUM>
-void ConcreteLateralReaction<LATERALS_NUM>::remove()
+void ConcreteLateralReaction<LATERALS_NUM>::eraseFromTargets(LateralReaction *reaction)
 {
-    eraseFromTargets(this);
-    LateralReaction::remove();
+    this->erase(reaction);
+    eraseFromParentTargets();
 }
 
 #ifdef PRINT

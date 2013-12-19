@@ -65,7 +65,7 @@ void Dimer::findAllReactions()
                             specsInNeighbour[0]->checkoutReactionWith<DimerFormationAtEnd>(specsInNeighbour[1]);
                     if (neighbourReaction)
                     {
-                        if (haveReaction(neighbourReaction))
+                        if (!haveReaction(neighbourReaction))
                         {
                             neighbourReaction->concretize<DimerFormationInMiddle>(this);
                         }
@@ -91,14 +91,14 @@ void Dimer::findAllReactions()
                 neighbours[1]->specByRole<DimerCRiCLi>(20)
             };
 
-            if (specsInNeighbour[0] && specsInNeighbour[1])
+            if (specsInNeighbour[0] && specsInNeighbour[0] == specsInNeighbour[1])
             {
                 {
                     auto neighbourReaction =
                             specsInNeighbour[0]->checkoutReactionWith<DimerDropAtEnd>(specsInNeighbour[1]);
                     if (neighbourReaction)
                     {
-                        if (haveReaction(neighbourReaction))
+                        if (!haveReaction(neighbourReaction))
                         {
                             neighbourReaction->concretize<DimerDropInMiddle>(this);
                         }

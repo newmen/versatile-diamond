@@ -20,14 +20,17 @@ public:
     Atom *anchor() const { return _parent->anchor(); }
     void doIt() { _parent->doIt(); }
 
-    void store() override { _parent->insertToTargets(this); }
-    void remove() override { _parent->eraseFromTargets(this); }
+    void store() override { insertToTargets(this); }
+    void remove() override { eraseFromTargets(this); }
 
     virtual void unconcretizeBy(LateralSpec *spec) = 0;
 
 protected:
     virtual void insertToTargets(LateralReaction *reaction) = 0;
     virtual void eraseFromTargets(LateralReaction *reaction) = 0;
+
+    void insertToParentTargets() { _parent->insertToTargets(this); }
+    void eraseFromParentTargets() { _parent->eraseFromTargets(this); }
 
     TypicalReaction *parent() { return _parent; }
 };
