@@ -26,33 +26,21 @@ void DimerDrop::doIt()
 LateralReaction *DimerDrop::findAllLateral()
 {
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };
-    LateralSpec *neighbourSpecs[2] = { nullptr, nullptr };
+    LateralSpec *neighbours[2] = { nullptr, nullptr };
     LateralReaction *concreted = nullptr;
 
-    eachNeighbours<2>(atoms, &Diamond::cross_100, [this, &neighbourSpecs, &concreted](Atom **neighbours) {
-        if (neighbours[0]->is(22) && neighbours[1]->is(22))
+    Dimer::dimersRow(atoms, [this, &neighbours, &concreted](LateralSpec *spec) {
+        if (neighbours[0])
         {
-            LateralSpec *specsInNeighbour[2] = {
-                neighbours[0]->specByRole<Dimer>(22),
-                neighbours[1]->specByRole<Dimer>(22)
-            };
-
-            auto lateralSpec = specsInNeighbour[0];
-            if (lateralSpec && specsInNeighbour[0] == specsInNeighbour[1])
-            {
-                if (neighbourSpecs[0])
-                {
-                    neighbourSpecs[1] = lateralSpec;
-                    assert(concreted);
-                    delete concreted;
-                    concreted = new DimerDropInMiddle(this, neighbourSpecs);
-                }
-                else
-                {
-                    concreted = new DimerDropAtEnd(this, lateralSpec);
-                    neighbourSpecs[0] = lateralSpec;
-                }
-            }
+            neighbours[1] = spec;
+            assert(concreted);
+            delete concreted;
+            concreted = new DimerDropInMiddle(this, neighbours);
+        }
+        else
+        {
+            concreted = new DimerDropAtEnd(this, spec);
+            neighbours[0] = spec;
         }
     });
 

@@ -51,70 +51,50 @@ void Dimer::findAllReactions()
     Atom *atoms[2] = { atom(0), atom(3) };
 
     eachNeighbours<2>(atoms, &Diamond::cross_100, [this](Atom **neighbours) {
-        if (neighbours[0]->is(28) && neighbours[1]->is(28))
-        {
-            SpecificSpec *specsInNeighbour[2] = {
-                neighbours[0]->specByRole<BridgeCTsi>(28),
-                neighbours[1]->specByRole<BridgeCTsi>(28)
-            };
-
-            if (specsInNeighbour[0] && specsInNeighbour[1])
+        DimerFormation::ifTargets(neighbours, [this](SpecificSpec **targets) {
             {
+                auto neighbourReaction =
+                        targets[0]->checkoutReactionWith<DimerFormationAtEnd>(targets[1]);
+                if (neighbourReaction)
                 {
-                    auto neighbourReaction =
-                            specsInNeighbour[0]->checkoutReactionWith<DimerFormationAtEnd>(specsInNeighbour[1]);
-                    if (neighbourReaction)
+                    if (!haveReaction(neighbourReaction))
                     {
-                        if (!haveReaction(neighbourReaction))
-                        {
-                            neighbourReaction->concretize<DimerFormationInMiddle>(this);
-                        }
-                        return;
+                        neighbourReaction->concretize<DimerFormationInMiddle>(this);
                     }
-                }
-                {
-                    auto neighbourReaction =
-                            specsInNeighbour[0]->checkoutReactionWith<DimerFormation>(specsInNeighbour[1]);
-                    if (neighbourReaction)
-                    {
-                        neighbourReaction->concretize<DimerFormationAtEnd>(this);
-                        return;
-                    }
+                    return;
                 }
             }
-        }
-        // TODO: no else there in common case
-        else if (neighbours[0]->is(20) && neighbours[1]->is(20))
-        {
-            SpecificSpec *specsInNeighbour[2] = {
-                neighbours[0]->specByRole<DimerCRiCLi>(20),
-                neighbours[1]->specByRole<DimerCRiCLi>(20)
-            };
-
-            if (specsInNeighbour[0] && specsInNeighbour[0] == specsInNeighbour[1])
             {
+                auto neighbourReaction =
+                        targets[0]->checkoutReactionWith<DimerFormation>(targets[1]);
+                if (neighbourReaction)
                 {
-                    auto neighbourReaction =
-                            specsInNeighbour[0]->checkoutReactionWith<DimerDropAtEnd>(specsInNeighbour[1]);
-                    if (neighbourReaction)
-                    {
-                        if (!haveReaction(neighbourReaction))
-                        {
-                            neighbourReaction->concretize<DimerDropInMiddle>(this);
-                        }
-                        return;
-                    }
-                }
-                {
-                    auto neighbourReaction =
-                            specsInNeighbour[0]->checkoutReactionWith<DimerDrop>(specsInNeighbour[1]);
-                    if (neighbourReaction)
-                    {
-                        neighbourReaction->concretize<DimerDropAtEnd>(this);
-                        return;
-                    }
+                    neighbourReaction->concretize<DimerFormationAtEnd>(this);
+                    return;
                 }
             }
-        }
+        });
+
+        DimerDrop::ifTarget(neighbours, [this](SpecificSpec *target) {
+            {
+                auto neighbourReaction = target->checkoutReaction<DimerDropAtEnd>();
+                if (neighbourReaction)
+                {
+                    if (!haveReaction(neighbourReaction))
+                    {
+                        neighbourReaction->concretize<DimerDropInMiddle>(this);
+                    }
+                    return;
+                }
+            }
+            {
+                auto neighbourReaction = target->checkoutReaction<DimerDrop>();
+                if (neighbourReaction)
+                {
+                    neighbourReaction->concretize<DimerDropAtEnd>(this);
+                    return;
+                }
+            }
+        });
     });
 }

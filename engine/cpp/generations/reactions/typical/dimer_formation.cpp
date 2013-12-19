@@ -44,33 +44,21 @@ void DimerFormation::doIt()
 LateralReaction *DimerFormation::findAllLateral()
 {
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
-    LateralSpec *neighbourSpecs[2] = { nullptr, nullptr };
+    LateralSpec *neighbours[2] = { nullptr, nullptr };
     LateralReaction *concreted = nullptr;
 
-    eachNeighbours<2>(atoms, &Diamond::cross_100, [this, &neighbourSpecs, &concreted](Atom **neighbours) {
-        if (neighbours[0]->is(22) && neighbours[1]->is(22))
+    Dimer::dimersRow(atoms, [this, &neighbours, &concreted](LateralSpec *spec) {
+        if (neighbours[0])
         {
-            LateralSpec *specsInNeighbour[2] = {
-                neighbours[0]->specByRole<Dimer>(22),
-                neighbours[1]->specByRole<Dimer>(22)
-            };
-
-            auto lateralSpec = specsInNeighbour[0];
-            if (lateralSpec && specsInNeighbour[0] == specsInNeighbour[1])
-            {
-                if (neighbourSpecs[0])
-                {
-                    neighbourSpecs[1] = lateralSpec;
-                    assert(concreted);
-                    delete concreted;
-                    concreted = new DimerFormationInMiddle(this, neighbourSpecs);
-                }
-                else
-                {
-                    concreted = new DimerFormationAtEnd(this, lateralSpec);
-                    neighbourSpecs[0] = lateralSpec;
-                }
-            }
+            neighbours[1] = spec;
+            assert(concreted);
+            delete concreted;
+            concreted = new DimerFormationInMiddle(this, neighbours);
+        }
+        else
+        {
+            concreted = new DimerFormationAtEnd(this, spec);
+            neighbours[0] = spec;
         }
     });
 

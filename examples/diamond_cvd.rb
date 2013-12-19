@@ -95,9 +95,10 @@ surface
     bond :ct, :cr
     position :cl, :cr, face: 100, dir: :cross
     # TODO: не полностью уточнено положение димеров друг относительно друга, для данной структуры
+    # полезно использовать not
 
   size x: 100, y: 100
-  composition C%d
+  composition C%d # TODO: ??
   temperature 1000
 
 events
@@ -456,6 +457,7 @@ events
   # TODO: не определяются изменённые атомы!
   reaction 'vinyl incorporion'
     # эта реакция - шутка? есть ещё 3 реакции на эту тему, поэтапно
+    # TODO: сделать поэтапно, поскольку всё-равно нужна миграция (не изменяемые атомы тоже следует починить)
     equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
     forward_activation 40.1
     reverse_activation 7.5
