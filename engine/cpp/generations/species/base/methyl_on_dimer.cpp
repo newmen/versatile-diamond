@@ -1,5 +1,7 @@
 #include "methyl_on_dimer.h"
 #include "../specific/methyl_on_dimer_cmu.h"
+#include "../../reactions/ubiquitous/local/methyl_on_dimer_activation.h"
+#include "../../reactions/ubiquitous/local/methyl_on_dimer_deactivation.h"
 
 ushort MethylOnDimer::__indexes[2] = { 1, 0 };
 ushort MethylOnDimer::__roles[2] = { 23, 14 };
@@ -23,6 +25,30 @@ void MethylOnDimer::find(Dimer *target)
                 }
             }
         }
+    }
+}
+
+void MethylOnDimer::store()
+{
+    Base::store();
+
+    Atom *target = this->atom(0);
+    if (target->isVisited())
+    {
+        MethylOnDimerActivation::concretize(target);
+        MethylOnDimerDeactivation::concretize(target);
+    }
+}
+
+void MethylOnDimer::remove()
+{
+    Base::remove();
+
+    Atom *target = this->atom(0);
+    if (target->isVisited())
+    {
+        MethylOnDimerActivation::unconcretize(target);
+        MethylOnDimerDeactivation::unconcretize(target);
     }
 }
 

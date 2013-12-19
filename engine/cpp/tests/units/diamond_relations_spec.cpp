@@ -1,6 +1,6 @@
 #include <vector>
 #include <generations/builders/atom_builder.h>
-#include <generations/crystals/diamond.h>
+#include <generations/phases/diamond.h>
 using namespace vd;
 
 #include "../support/open_diamond.h"
@@ -103,21 +103,20 @@ int main()
     Atom *c100 = buildCd(1, 0, 0);
     Atom *cx00 = buildCd(s.x, 0, 0);
     auto coords = int3(0, 0, 1);
-    assert(DiamondRelations::front_110(c000, c100) == coords);
-    assert(DiamondRelations::front_110(c100, c000) == coords);
+    assert(Diamond::Relations::front_110(c000, c100) == coords);
+    assert(Diamond::Relations::front_110(c100, c000) == coords);
     coords = int3(s.x, 0, 1);
-    std::cout << DiamondRelations::front_110(c000, cx00) << std::endl;
-    assert(DiamondRelations::front_110(c000, cx00) == coords);
-    assert(DiamondRelations::front_110(cx00, c000) == coords);
+    assert(Diamond::Relations::front_110(c000, cx00) == coords);
+    assert(Diamond::Relations::front_110(cx00, c000) == coords);
 
     Atom *c101 = buildCd(1, 0, 1);
     Atom *c1y1 = buildCd(1, s.y, 1);
     coords = int3(1, 0, 2);
-    assert(DiamondRelations::front_110(c101, c111) == coords);
-    assert(DiamondRelations::front_110(c111, c101) == coords);
+    assert(Diamond::Relations::front_110(c101, c111) == coords);
+    assert(Diamond::Relations::front_110(c111, c101) == coords);
     coords = int3(1, s.y, 2);
-    assert(DiamondRelations::front_110(c101, c1y1) == coords);
-    assert(DiamondRelations::front_110(c1y1, c101) == coords);
+    assert(Diamond::Relations::front_110(c101, c1y1) == coords);
+    assert(Diamond::Relations::front_110(c1y1, c101) == coords);
 
     for (Atom *atom : atoms) delete atom;
 

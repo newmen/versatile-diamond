@@ -11,6 +11,10 @@ class Diamond : public DiamondRelations<Crystal>
     int _defaultSurfaceHeight;
 
 public:
+#ifdef DEBUG
+    typedef DiamondRelations<Crystal> Relations;
+#endif // DEBUG
+
     Diamond(const dim3 &sizes, int defaultSurfaceHeight = 2);
     ~Diamond();
 

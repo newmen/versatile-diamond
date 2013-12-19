@@ -1,6 +1,7 @@
 #ifndef BASE_SPEC_H
 #define BASE_SPEC_H
 
+#include <functional>
 #include "../atoms/atom.h"
 #include "../tools/creator.h"
 

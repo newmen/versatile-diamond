@@ -1,8 +1,8 @@
+#ifdef DEBUG
+
 #include "../../generations/atoms/c.h"
 #include "../../generations/phases/diamond.h"
 #include "../support/corrected_types.h"
-
-#ifdef DEBUG
 
 class OpenDiamond : public Diamond
 {

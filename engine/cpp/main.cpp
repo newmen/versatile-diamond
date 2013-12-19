@@ -1,14 +1,8 @@
 #include <omp.h>
 #include <iostream>
-
 #include "mc/common_mc_data.h"
 #include "generations/handbook.h"
-#include "generations/builders/atom_builder.h"
 #include "generations/phases/diamond.h"
-
-#include "reactions/ubiquitous_reaction.h"
-
-#include "tests/support/open_diamond.h"
 
 #ifdef PRINT
 void printSeparator()

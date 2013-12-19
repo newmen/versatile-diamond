@@ -29,21 +29,14 @@ protected:
 
     Ubiquitous(Atom *target) : ParentType(target) {}
 
-    template <class R>
-    static void findSelf(Atom *anchor);
+    template <class R> static void findSelf(Atom *anchor);
+    template <class R> static void findChild(Atom *anchor);
 
-    template <class R>
-    static void findChild(Atom *anchor);
+    template <class R> static void store(Atom *anchor, short delta);
+    template <class R> static void remove(Atom *anchor, short delta);
 
 private:
-    template <class R>
-    static void store(Atom *anchor, short delta);
-
-    template <class R>
-    static void remove(Atom *anchor, short delta);
-
-    template <class R>
-    static void removeAll(Atom *anchor);
+    template <class R> static void removeAll(Atom *anchor);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

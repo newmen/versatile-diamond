@@ -13,6 +13,9 @@ public:
     MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, ParentSpec *parent) :
         Base(additionalAtoms, atomsShift, parent) {}
 
+    void store() override;
+    void remove() override;
+
 #ifdef PRINT
     std::string name() const override { return "methyl on dimer"; }
 #endif // PRINT

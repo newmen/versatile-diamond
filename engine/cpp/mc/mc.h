@@ -334,7 +334,7 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *templateReaction, uint n)
 {
 #ifdef PRINT
-    printReaction(*reaction, "Remove multi");
+    printReaction(templateReaction, "Remove multi");
 #endif // PRINT
 
     assert(index < MULTI_EVENTS_NUM);
