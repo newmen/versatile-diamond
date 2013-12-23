@@ -135,16 +135,19 @@ module VersatileDiamond
         self.class.new(wihtout_relevants)
       end
 
+      # Has incoherent property or not
+      # @return [Boolean] contain or not
+      def incoherent?
+        relevants && relevants.include?(:incoherent)
+      end
+
       # Makes incoherent copy of self
       # @return [AtomProperties] incoherented atom properties or nil
       def incoherent
-        if valence > bonds_num && (!relevants ||
-            (relevants && relevants.include?(:incoherent) &&
-              relevants.size > 1))
-
+        if valence > bonds_num && (!relevants || !incoherent?)
           props = wihtout_relevants
           new_rel = [:incoherent]
-          new_rel + relevants.reject { |r| r == :incoherent } if relevants
+          new_rel + relevants if relevants
           props << new_rel
           self.class.new(props)
         else
