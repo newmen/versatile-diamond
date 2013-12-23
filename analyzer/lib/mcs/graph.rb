@@ -8,8 +8,21 @@ module VersatileDiamond
 
       # Initialize instance by links hash of original spec graph
       # @param [Hash] links the hash of links
-      def initialize(links)
-        @edges = Hash[links.map { |key, list| [key, list.dup] }]
+      # @option [Boolean] :separated_multi_bond set to true if need separated
+      #   instances for double or triple bonds
+      # @raise [RuntimeError] if some of separated multi-bonds is invalid
+      def initialize(links, separated_multi_bond: false)
+        dup_result = links.map do |key, list|
+          pair = [key]
+          if separated_multi_bond
+            pair << collapse_bonds(list)
+          else
+            pair << list.dup
+          end
+          pair
+        end
+
+        @edges = Hash[dup_result]
         @changed_vertices = {}
       end
 
@@ -153,6 +166,58 @@ module VersatileDiamond
       end
 
     private
+
+      # Collapse several bonds between two atoms to one multi-bond
+      # @param [Array] list the list of pairs, where atom is first and bond is
+      #   second
+      # @raise [RuntimeError] if collapsed bond is invalid
+      # @return [Array] duplicated collapsed list of bonds
+      def collapse_bonds(list)
+        groups = list.group_by { |atom, _| atom }
+        groups.map do |atom, group|
+          if group.size == 1
+            group.first
+          else
+            bonds = group.map(&:last)
+            check_bond_is_same(bonds)
+            check_bond_is_correct(bonds.first)
+
+            pair = [atom]
+            if group.size == 2
+              pair << :dbond
+            elsif group.size == 3
+              pair << :tbond
+            else
+              raise 'Incorrect bonds num'
+            end
+            pair
+          end
+        end
+      end
+
+      # Checks that list contain same item few times
+      # @raise [RuntimeError] if it is not
+      def check_bond_is_same(bonds)
+        first = nil
+        bonds.each do |bond|
+          if !first
+            first = bond
+          elsif first != bond
+            raise 'Several different bonds between atoms'
+          end
+        end
+      end
+
+      # Checks that bond is correct (it is not position and haven't face or
+      # direction)
+      #
+      # @param [Bond] bond the checking bond
+      # @raise [RuntimeError] if bond is incorrect
+      def check_bond_is_correct(bond)
+        if bond.is_a?(Position) || bond.face || bond.dir
+          raise 'Incorrect multi-bond'
+        end
+      end
 
       # Changes atoms with each other by replacing internal state of edges hash
       # and store both atoms to changed vertices storage

@@ -11,10 +11,15 @@ module VersatileDiamond
         # Checks contents of the second (small) link in the first (large)
         # @param [Hash] large_links links of structure in which to search
         # @param [Hash] small_links links that search will be carried out
+        # @option [Boolean] :separated_multi_bond set to true if need separated
+        #   instances for double or triple bonds
+        # @raise [RuntimeError] if some of separated multi-bonds is invalid
         # @return [Boolean] contain or not
-        def contain?(large_links, small_links)
-          large_graph = Graph.new(large_links)
-          small_graph = Graph.new(small_links)
+        def contain?(large_links, small_links, separated_multi_bond: false)
+          large_graph = Graph.new(large_links,
+            separated_multi_bond: separated_multi_bond)
+          small_graph = Graph.new(small_links,
+            separated_multi_bond: separated_multi_bond)
           assoc_graph = AssocGraph.new(large_graph, small_graph)
 
           interset = first_interset(assoc_graph)

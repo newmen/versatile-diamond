@@ -71,7 +71,7 @@ module VersatileDiamond
           it { bridge_base.parent.should be_nil }
           it { dimer_base.parent.should == bridge_base }
           it { methyl_on_bridge_base.parent.should == bridge_base }
-          it { high_bridge_base.parent.should == methyl_on_bridge_base }
+          it { high_bridge_base.parent.should == bridge_base }
           it { methyl_on_dimer_base.parent.should == dimer_base }
         end
 
