@@ -166,6 +166,19 @@ module VersatileDiamond
           it { aib_ct.unrelevanted.should == ab_ct.unrelevanted }
         end
 
+        describe "#incoherent?" do
+          it { c2b.incoherent?.should be_false }
+          it { ab_ct.incoherent?.should be_false }
+          it { bridge_ct.incoherent?.should be_false }
+          it { bridge_cr.incoherent?.should be_false }
+          it { dimer_cr.incoherent?.should be_false }
+          it { ad_cr.incoherent?.should be_false }
+          it { ab_ct.incoherent?.should be_false }
+          it { eab_ct.incoherent?.should be_false }
+
+          it { aib_ct.incoherent?.should be_true }
+        end
+
         describe "#incoherent" do
           it { ab_ct.incoherent.should == aib_ct }
           it { aib_ct.incoherent.should be_nil }

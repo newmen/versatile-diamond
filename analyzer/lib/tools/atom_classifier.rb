@@ -7,7 +7,7 @@ module VersatileDiamond
     # been realised) for updating of real specs set
     class AtomClassifier
 
-      # Initialize a classifier by set of properties
+      # Initialize a classifier by empty sets of properties
       def initialize
         @props = []
         @unrelevanted_props = Set.new
@@ -38,9 +38,6 @@ module VersatileDiamond
           while deactivated_prop = deactivated_prop.deactivated
             store_prop(deactivated_prop)
           end
-
-          incoherent_prop = prop.incoherent
-          store_prop(incoherent_prop) if incoherent_prop
         end
       end
 
@@ -228,6 +225,11 @@ module VersatileDiamond
       #   properties
       def store_prop(prop, check: true)
         @props << prop unless check && index(prop)
+
+        if !prop.incoherent?
+          incoherent_prop = prop.incoherent
+          store_prop(incoherent_prop) if incoherent_prop
+        end
 
         unrel_prop = prop.unrelevanted
         @props << unrel_prop unless index(unrel_prop)

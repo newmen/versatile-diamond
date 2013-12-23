@@ -28,20 +28,6 @@ module VersatileDiamond
           puts values.join(', ')
         end
 
-        ubiquitous_reactions.each do |reaction|
-          print "#{reaction.name}: "
-          term_spec = (reaction.source - reaction.send(:simple_source)).first
-          print "#{term_spec.name} -> "
-
-          reaction.more_complex.each do |more_complex|
-            spec_atom = more_complex.complex_source_spec_and_atom
-            next unless term_spec.cover?(*spec_atom)
-
-            print classifier.index(*spec_atom)
-          end
-          puts
-        end
-
         puts "* -> H :: #{classifier.actives_to_deactives.join(', ')}"
         puts "H -> * :: #{classifier.deactives_to_actives.join(', ')}"
       end

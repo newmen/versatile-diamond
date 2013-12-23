@@ -37,7 +37,7 @@ rescue Docopt::Exit => e
   exit
 end
 
-require_relative 'config_parser/config_parser'
+require_relative 'analyzer/loader'
 require_each "../#{opt['--lattices']}/*.rb"
 VD = VersatileDiamond
 
@@ -78,4 +78,3 @@ if opt['--code']
   generator = VD::Generators::CodeGenerator.new
   doit[generator]
 end
-
