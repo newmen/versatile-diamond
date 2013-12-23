@@ -261,7 +261,7 @@ module VersatileDiamond
 
         describe "#each_props" do
           it { subject.each_props.should be_a(Enumerator) }
-          it { subject.each_props.size.should == 23 }
+          it { subject.each_props.size.should == 27 }
           it { subject.each_props.to_a.should include(
               ab_ct, bridge_cr, dimer_cr
             ) }
@@ -291,8 +291,8 @@ module VersatileDiamond
             it { find(bridge_cr).sames.should be_nil }
             it { find(dimer_cr).sames.should be_nil }
             it { find(ab_ct).sames.should be_nil }
-            it { find(aib_ct).sames.should be_nil }
 
+            it { find(aib_ct).sames.size.should == 1 }
             it { find(ad_cr).sames.size.should == 1 }
           end
         end
@@ -300,36 +300,43 @@ module VersatileDiamond
         describe "#classify" do
           describe "termination spec" do
             it { subject.classify(active_bond).should == {
-                1 => ["^*C.%d<", 1],
+                2 => ["^*C.%d<", 1],
                 3 => ["*C:i%d<", 1],
-                4 => ["**C%d<", 2],
-                6 => ["*C%d<", 1],
-                8 => ["-*C%d<", 1],
-                11 => ["*C~", 1],
-                12 => ["**C~", 2],
-                13 => ["***C~", 3],
-                17 => ["~*C%d<", 1],
-                19 => ["*C=", 1],
-                20 => ["**C=", 2],
+                4 => ["*C%d<", 1],
+                5 => ["**C%d<", 2],
+                10 => ["-*C%d<", 1],
+                13 => ["*C:i~", 1],
+                14 => ["*C~", 1],
+                15 => ["**C:i~", 2],
+                16 => ["**C~", 2],
+                17 => ["***C~", 3],
+                20 => ["~*C%d<", 1],
+                23 => ["*C:i=", 1],
+                24 => ["*C=", 1],
+                25 => ["**C=", 2],
               } }
 
             it { subject.classify(adsorbed_h).should == {
                 0 => ["^C.:i%d<", 1],
-                2 => ["^C.%d<", 1],
+                1 => ["^C.%d<", 1],
                 3 => ["*C:i%d<", 1],
-                5 => ["C%d<", 2],
-                6 => ["*C%d<", 1],
-                7 => ["-C:i%d<", 1],
+                4 => ["*C%d<", 1],
+                6 => ["C:i%d<", 2],
+                7 => ["C%d<", 2],
+                8 => ["-C:i%d<", 1],
                 9 => ["-C%d<", 1],
-                10 => ["C:i~", 3],
-                11 => ["*C~", 2],
-                12 => ["**C~", 1],
-                14 => ["C~", 3],
-                15 => ["~C:i%d<", 1],
-                16 => ["~C%d<", 1],
-                18 => ["C:i=", 2],
-                19 => ["*C=", 1],
-                21 => ["C=", 2],
+                11 => ["C:i~", 3],
+                12 => ["C~", 3],
+                13 => ["*C:i~", 2],
+                14 => ["*C~", 2],
+                15 => ["**C:i~", 1],
+                16 => ["**C~", 1],
+                18 => ["~C:i%d<", 1],
+                19 => ["~C%d<", 1],
+                21 => ["C:i=", 2],
+                22 => ["C=", 2],
+                23 => ["*C:i=", 1],
+                24 => ["*C=", 1],
               } }
 
             it { subject.classify(adsorbed_cl).should be_empty }
@@ -337,37 +344,37 @@ module VersatileDiamond
 
           describe "not termination spec" do
             it { subject.classify(activated_bridge).should == {
-                2 => ['^C.%d<', 2],
-                6 => ['*C%d<', 1],
+                1 => ['^C.%d<', 2],
+                4 => ['*C%d<', 1],
               } }
 
             it { subject.classify(dimer).should == {
-                2 => ['^C.%d<', 4],
+                1 => ['^C.%d<', 4],
                 9 => ['-C%d<', 2],
               } }
 
             it { subject.classify(activated_dimer).should == {
-                2 => ['^C.%d<', 4],
-                8 => ['-*C%d<', 1],
+                1 => ['^C.%d<', 4],
                 9 => ['-C%d<', 1],
+                10 => ['-*C%d<', 1],
               } }
 
             it { subject.classify(methyl_on_incoherent_bridge).should == {
-                2 => ['^C.%d<', 2],
-                14 => ['C~', 1],
-                15 => ['~C:i%d<', 1],
+                1 => ['^C.%d<', 2],
+                12 => ['C~', 1],
+                18 => ['~C:i%d<', 1],
               } }
 
             it { subject.classify(high_bridge).should == {
-                2 => ['^C.%d<', 2],
-                21 => ['C=', 1],
-                22 => ['=C%d<', 1],
+                1 => ["^C.%d<", 2],
+                22 => ["C=", 1],
+                26 => ["=C%d<", 1],
               } }
 
             describe "without" do
               it { subject.classify(activated_bridge, without: bridge_base).
                 should == {
-                  6 => ['*C%d<', 1]
+                  4 => ['*C%d<', 1]
                 } }
 
               it { subject.classify(dimer, without: bridge_base).
@@ -379,20 +386,20 @@ module VersatileDiamond
         end
 
         describe "#index" do
-          it { subject.index(bridge_cr).should == 2 }
-          it { subject.index(bridge, bridge.atom(:cr)).should == 2 }
+          it { subject.index(bridge_cr).should == 1 }
+          it { subject.index(bridge, bridge.atom(:cr)).should == 1 }
 
-          it { subject.index(ab_ct).should == 6 }
+          it { subject.index(ab_ct).should == 4 }
           it { subject.index(activated_bridge, activated_bridge.atom(:ct)).
-            should == 6 }
+            should == 4 }
         end
 
         describe "#all_types_num" do
-          it { subject.all_types_num.should == 23 }
+          it { subject.all_types_num.should == 27 }
         end
 
         describe "#notrelevant_types_num" do
-          it { subject.notrelevant_types_num.should == 22 }
+          it { subject.notrelevant_types_num.should == 17 }
         end
 
         # describe "#has_relevants?" do

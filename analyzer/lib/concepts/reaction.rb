@@ -209,6 +209,8 @@ module VersatileDiamond
       # @param [Array] first see at #position_between same argument
       # @param [Array] second see at #position_between same argument
       # @param [Position] position see at #position_between same argument
+      # @raise [Position::UnspecifiedAtoms] if first or second atom isn't
+      #   specified by lattice
       # @override
       def link_together(first, second, position)
         unless all_latticed?(first.last, second.last)

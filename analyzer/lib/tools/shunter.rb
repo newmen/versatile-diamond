@@ -36,6 +36,7 @@ module VersatileDiamond
         # Reorganize dependencies between base specs
         def organize_specs_dependencies!
           specs = Chest.all(:surface_spec)
+          # sort ascending size
           specs.sort! do |a, b|
             if a.size == b.size
               b.external_bonds <=> a.external_bonds

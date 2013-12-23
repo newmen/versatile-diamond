@@ -176,19 +176,12 @@ module VersatileDiamond
       def organize_dependencies!(possible_parents)
         # find and reorganize dependencies
         possible_parents.each do |possible_parent|
-          if parents.include?(possible_parent) ||
-            contain?(links, possible_parent.links)
-
+          if contain?(links, possible_parent.links)
             parents.clear
             parents << possible_parent
             break
           end
         end
-
-      #   # clear dependecies if dependent only from itself
-      #   if parents.size == 1 && parents.include?(self)
-      #     parents.clear
-      #   end
       end
 
       # Gets a number of atoms
@@ -324,9 +317,12 @@ module VersatileDiamond
       # The large links contains small links?
       # @param [Hash] large_links the links from large spec
       # @param [Hash] small_links the links from small spec
+      # @raise [RuntimeError] if some of multi-bond (in large or small links)
+      #   is invalid
       # @return [Boolean] contains or not
       def contain?(large_links, small_links)
-        HanserRecursiveAlgorithm.contain?(large_links, small_links)
+        HanserRecursiveAlgorithm.contain?(large_links, small_links,
+          separated_multi_bond: true)
       end
 
       # Resets internal caches

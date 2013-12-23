@@ -12,7 +12,6 @@ module VersatileDiamond
       end
 
       describe "#self.contain?" do
-
         it { described_class.contain?(methyl_on_bridge_links, bridge_links).
           should be_true }
         it { described_class.contain?(bridge_links, methyl_on_bridge_links).
@@ -43,6 +42,17 @@ module VersatileDiamond
           methyl_on_dimer_links, methane_links).should be_true }
         it { described_class.contain?(
           methane_links, methyl_on_dimer_links).should be_false }
+
+        let(:high_bridge_links) { high_bridge_base.links }
+
+        it { described_class.contain?(
+          high_bridge_links, methyl_on_bridge_links).should be_true }
+
+        describe "separated_multi_bond: true" do
+          it { described_class.contain?(
+            high_bridge_links, methyl_on_bridge_links ,
+            separated_multi_bond: true).should be_false }
+        end
       end
 
       describe "#self.first_interset" do
