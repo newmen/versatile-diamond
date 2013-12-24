@@ -12,7 +12,7 @@ module VersatileDiamond
     # the double bond is not a bond of some other type - it's just two bonds.
     # Atoms may belong (or not belong) crystal lattice, break and form of
     # communication, maintaining its relative position.
-    # Finds only changed atoms.
+    # Also finds only changed atoms.
     class ManyToOneAlgorithm
       include Mcs::IntersetProjection
 

@@ -47,6 +47,7 @@ module VersatileDiamond
       # @param [Array] second the array with second spec and atom
       # @param [Position] position the position relation between atoms of both
       #   species
+      # @raise [RuntimeError] if linking atoms belongs to one spec
       # @raise [Lattices::Base::UndefinedRelation] if used relation instance is
       #   wrong for current lattice
       # @raise [Position::Duplicate] if same position already exist
@@ -110,19 +111,22 @@ module VersatileDiamond
         @mapping.swap_source(from, to)
       end
 
-      # Swaps used specific spec atom to new atom (used only when atom was
-      # changed for some specific spec and not chaned for current reaction)
-      #
-      # @param [SpecificSpec] spec the specific spec the atom of which will be
-      #   swapped
-      # @param [Atom] from the used atom
-      # @param [Atom] to the new atom
-      def swap_atom(spec, from, to)
-        each_spec_atom do |spec_atom|
-          spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
+      # Applies relevant states for other side atom
+      # @param [SpecificSpec] spec
+      # @param [Atom | SpecificAtom] old_atom the atom which will be replaced
+      # @param [SpecificAtom] new_atom the atom to which will be changed
+      # @option [Boolean] :to_reverse_too applies relevant state to reverse
+      #   reaction if set to true
+      def apply_relevants(spec, old_atom, new_atom, to_reverse_too: true)
+        if to_reverse_too
+          @mapping.apply_relevants(spec, old_atom, new_atom)
+          reverse.apply_relevants(spec, old_atom, new_atom,
+            to_reverse_too: false)
         end
 
-        @mapping.swap_atom(spec, from, to)
+        swap_atom_in_positions(spec, old_atom, new_atom)
+        os_spec, os_atom = @mapping.other_side(spec, new_atom)
+        swap_atom_in_positions(os_spec, os_atom, new_atom)
       end
 
       # Also compares positions in both reactions
@@ -337,6 +341,21 @@ module VersatileDiamond
         @links.each do |spec_atom1, references|
           block[spec_atom1]
           references.each { |spec_atom2, _| block[spec_atom2] }
+        end
+      end
+
+      # Swaps used specific spec atom to new atom (used only when atom was
+      # changed for some specific spec and not chaned for current reaction)
+      #
+      # @param [SpecificSpec] spec the specific spec the atom of which will be
+      #   swapped
+      # @param [Atom] from the used atom
+      # @param [Atom] to the new atom
+      def swap_atom_in_positions(spec, from, to)
+        return if from == to
+
+        each_spec_atom do |spec_atom|
+          spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
         end
       end
     end

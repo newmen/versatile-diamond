@@ -215,25 +215,44 @@ module VersatileDiamond
         it_behaves_like "checks mob duplication"
       end
 
-      describe "#swap_atom" do
-        let(:old_atom) { activated_bridge.atom(:ct) }
-        let(:new_atom) { old_atom.dup }
-        before(:each) do
-          df_atom_map.swap_atom(activated_bridge, old_atom, new_atom)
+      describe "exnchange atoms" do
+        shared_examples_for "check exchanges in result" do
+          shared_examples_for "check atoms" do
+            subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
+            it { should include(new_atom) }
+            it { should_not include(old_atom) }
+          end
+
+          it_behaves_like "check atoms" do
+            let(:atoms) { df_atom_map.changes.map(&:last) }
+          end
+
+          it_behaves_like "check atoms" do
+            let(:atoms) { df_atom_map.full.map(&:last) }
+          end
         end
 
-        shared_examples_for "check atoms" do
-          subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
-          it { should include(new_atom) }
-          it { should_not include(old_atom) }
+        describe "#swap_atom" do
+          let(:old_atom) { activated_bridge.atom(:ct) }
+          let(:new_atom) { old_atom.dup }
+          before(:each) do
+            df_atom_map.swap_atom(activated_bridge, old_atom, new_atom)
+          end
+
+          it_behaves_like "check exchanges in result"
         end
 
-        it_behaves_like "check atoms" do
-          let(:atoms) { df_atom_map.changes.map(&:last) }
-        end
+        describe "#apply_relevants" do
+          let(:old_atom) { activated_bridge.atom(:ct) }
+          let(:new_atom) { incoherent_activated_cd }
+          before(:each) do
+            df_atom_map.apply_relevants(activated_bridge, old_atom, new_atom)
+          end
 
-        it_behaves_like "check atoms" do
-          let(:atoms) { df_atom_map.full.map(&:last) }
+          it { df_atom_map.products.first.atom(:cl).incoherent?.should be_true }
+          it { df_atom_map.products.first.atom(:cr).incoherent?.should be_true }
+
+          it_behaves_like "check exchanges in result"
         end
       end
 

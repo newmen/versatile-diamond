@@ -79,8 +79,7 @@ surface
     bond :cl, :cr, face: 100, dir: :front
 
   spec :bridge_with_dimer
-    aliases dmr: dimer
-    atoms ct: C%d, cl: bridge(:ct), cr: dmr(:cr)
+    atoms ct: C%d, cl: bridge(:ct), cr: dimer(:cr)
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
 

@@ -48,7 +48,8 @@ module VersatileDiamond
 
         check_compliance(names_and_specs[:source], names_and_specs[:products])
 
-        @reaction = if has_termination_spec?(source, products)
+        @reaction =
+          if has_termination_spec?(source, products)
             check_balance(source, products) || syntax_error('.wrong_balance')
 
             Concepts::UbiquitousReaction.new(:forward, @name, source, products)

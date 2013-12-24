@@ -6,6 +6,20 @@ module VersatileDiamond
 
       attr_reader :source, :products, :reaction_type
 
+      # Common data structure:
+      # @result = {
+      #   conformity: [
+      #     [
+      #       [spec1, spec2],
+      #       [
+      #         [atom12, atom11], [atom11, atom12], [...]
+      #       ]
+      #     ],
+      #     [...]
+      #   ],
+      #   change: [...]
+      # }
+      #
       # Initialize a result by reactants and setups internal mirrors to links
       # @param [Array] source the array of source species
       # @param [Array] products the array of product species
@@ -68,11 +82,15 @@ module VersatileDiamond
           break
         end
 
+        return nil unless specs && atoms
+
         reverse_index = is_source ? 1 : 0
         [specs[reverse_index], atoms[reverse_index]]
       end
 
-      # Adds correspond mapping result for :change and :conformity keys
+      # Adds correspond mapping result for :change and :conformity keys. Also
+      # changes reactant for relevant states of ther atoms
+      #
       # @param [Array] specs the associating species
       # @param [Array] full_atoms all atoms for each associating spec
       # @param [Array] changed_atoms only changed atoms for associating spec
@@ -159,6 +177,7 @@ module VersatileDiamond
       #   exchanged
       # @param [Atom] from the old atom
       # @param [Atom] to the new atom
+      # @todo must be protected but checking by test
       def swap_atom(spec, from, to)
         is_source = @source.include?(spec)
 
@@ -166,16 +185,38 @@ module VersatileDiamond
           mapping.each do |specs, atoms|
             next unless spec == (is_source ? specs.first : specs.last)
 
-            atoms.each_with_index do |pair, i|
+            atoms.each do |pair|
               atom_index = is_source ? 0 : 1
               next unless from == pair[atom_index]
               pair[atom_index] = to
             end
           end
         end
+
+        @reverse.swap_atom(spec, from, to) if @reverse
+      end
+
+      # Applies relevant states form new atom instead old atom
+      # @param [SpecificSpec] spec the spec for which excahnging will do
+      # @param [Atom | SpecificAtom] old_atom the atom which will be replaced
+      # @param [SpecificAtom] new_atom the atom from which relevant states will
+      #   got
+      def apply_relevants(spec, old_atom, new_atom)
+        os = other_side(spec, old_atom) if old_atom != new_atom
+        os = other_side(spec, new_atom) if !os
+        os_spec, os_old_atom = os
+        swap_atom(spec, old_atom, new_atom) if old_atom != new_atom
+
+        os_old_atom = os_spec.atom(os_spec.keyname(os_old_atom))
+        os_new_atom = setup_by_other(os_spec, spec, os_old_atom, new_atom)
+
+        if os_new_atom != os_old_atom
+          swap_atom(os_spec, os_old_atom, os_new_atom)
+        end
       end
 
       # Gets single source complex spec and their changed atom
+      # @raise [RuntimeError] if complex source spec or their atom not just one
       # @return [Concepts::SpecificSpec, Concepts::SpecificAtom] the single
       #   spec and their atom
       def complex_source_spec_and_atom
@@ -255,8 +296,8 @@ module VersatileDiamond
       # @return [Concepts::SpecificAtom] changed or original own atom
       def setup_by_other(target, other, own, foreign)
         return own if target.is_gas?
-        original_own = own
 
+        original_own = own
         own = SpecificAtom.new(own) unless own.is_a?(SpecificAtom)
         diff = own.diff(foreign)
 
@@ -270,12 +311,15 @@ module VersatileDiamond
 
         own.unfixed! if !own.unfixed? &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
-          (other.is_gas? || (diff.include?(:unfixed) && !own.lattice))
+          ((other.is_gas? && !other.simple?) || diff.include?(:unfixed)) &&
+          !own.lattice
 
         # return own specific atom if atom was a simple atom
         if own != original_own && !own.relevants.empty?
           keyname = target.keyname(original_own)
-          target.describe_atom(keyname, own) # changing target!
+
+          # changing target through specific spec
+          target.describe_atom(keyname, own)
           own
         else
           original_own

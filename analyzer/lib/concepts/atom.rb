@@ -52,6 +52,12 @@ module VersatileDiamond
         0
       end
 
+      %w(incoherent unfixed).each do |state|
+        # Base atom cannot be #{state}
+        # @return [Boolean] false
+        define_method(:"#{state}?") { false }
+      end
+
       # Compares with other atom
       # @param [Atom | AtomReference | SpecificAtom] other the atom with which
       #   compare
@@ -76,6 +82,10 @@ module VersatileDiamond
 
       def to_s
         @lattice ? "#{name}%#{@lattice}" : name.to_s
+      end
+
+      def inspect
+        to_s
       end
     end
 

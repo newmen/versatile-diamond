@@ -34,7 +34,11 @@ module VersatileDiamond
           a = activated_cd.dup
           a.incoherent!; a
         end
+        set(:incoherent_c) { SpecificAtom.new(c, options: [:incoherent]) }
         set(:incoherent_cd) { SpecificAtom.new(cd, options: [:incoherent]) }
+        set(:incoherent_activated_cd) do
+          SpecificAtom.new(cd, options: [:incoherent, :active])
+        end
         set(:unfixed_c) { SpecificAtom.new(c, options: [:unfixed]) }
         set(:unfixed_activated_c) do
           SpecificAtom.new(c, options: [:unfixed, :active])
@@ -281,7 +285,7 @@ module VersatileDiamond
           source: [
             [:mob, activated_methyl_on_extended_bridge],
             [:d, activated_dimer]],
-          products: [[:ed, dimer]]
+          products: [[:ed, extended_dimer]]
         } end
         set(:mi_atom_map) do
           Mcs::AtomMapper.map(mi_source, mi_product, mi_names_to_specs)

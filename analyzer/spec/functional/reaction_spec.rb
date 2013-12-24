@@ -82,26 +82,97 @@ module VersatileDiamond
             describe "refinements" do
               it { expect { reaction.interpret('  incoherent bridge(:ct)') }.
                 not_to raise_error }
-              it { expect { reaction.interpret(
-                  '  unfixed methyl_on_bridge(:cb)') }.
+              it { expect { reaction.interpret('  unfixed methyl_on_bridge(:cm)') }.
                 not_to raise_error }
             end
           end
 
-          describe "setup corresponding relevant state" do
-            before(:each) do
-              surface.interpret('spec :bridge_with_dimer')
-              surface.interpret('  aliases dm: dimer')
-              surface.interpret(
-                '  atoms ct: C%d, cl: bridge(:ct), cr: dm(:cr), cf: dm(:cl)')
-              surface.interpret('  bond :ct, :cl, face: 110, dir: :cross')
-              surface.interpret('  bond :ct, :cr, face: 110, dir: :cross')
+          describe "setup corresponding relevant" do
+            describe "incoherent states" do
+              describe "by keyname modifier" do
+                before(:each) do
+                  surface.interpret('spec :bridge_with_dimer')
+                  surface.interpret('  aliases dm: dimer')
+                  surface.interpret('  atoms ct: C%d, cl: bridge(:ct), cr: dm(:cr), cf: dm(:cl)')
+                  surface.interpret('  bond :ct, :cl, face: 110, dir: :cross')
+                  surface.interpret('  bond :ct, :cr, face: 110, dir: :cross')
 
-              reaction.interpret('aliases one: bridge, two: bridge')
-              reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
+                  reaction.interpret('aliases one: bridge, two: bridge')
+                  reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
+                end
+
+                it { concept.products.first.atom(:cf).incoherent?.should be_true }
+              end
+
+              describe "by operator" do
+                before(:each) do
+                  reaction.interpret('aliases one: bridge, two: bridge')
+                  reaction.interpret('equation one(ct: *) + two(ct: *) = dimer')
+                  reaction.interpret('  incoherent one(:ct), two(:ct)')
+                end
+
+                let(:dimer) { concept.products.first }
+                it { dimer.atom(:cr).incoherent?.should be_true }
+                it { dimer.atom(:cl).incoherent?.should be_true }
+              end
             end
 
-            it { concept.products.first.atom(:cf).incoherent?.should be_true }
+            describe "unfixed states" do
+              shared_examples_for "check both unfixed" do
+                it { concept.source.first.atom(:cm).unfixed?.should be_true }
+                it { concept.products.first.atom(:cm).unfixed?.should be_true }
+              end
+
+              shared_examples_for "check unfixed only one" do
+                it { concept.source.first.atom(:cm).unfixed?.should be_true }
+                it { concept.products.first.atom(:cm).unfixed?.should be_false }
+              end
+
+              before(:each) do
+                surface.interpret('spec :methyl_on_dimer')
+                surface.interpret('  aliases mb: methyl_on_bridge')
+                surface.interpret('  atoms cl: bridge(:ct), cr: mb(:cb), cm: mb(:cm)')
+                surface.interpret('  bond :cl, :cr, face: 100, dir: :front')
+              end
+
+              describe "by keyname modifier" do
+                describe "for exchange reaction type" do
+                  before(:each) do
+                    reaction.interpret('equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *, cm: u) + dimer')
+                  end
+
+                  it_behaves_like "check both unfixed"
+                end
+
+                describe "when high bridge forms" do
+                  before(:each) do
+                    reaction.interpret('equation methyl_on_dimer(cm: *, cm: u) = high_bridge + bridge(ct: *)')
+                  end
+
+                  it_behaves_like "check unfixed only one"
+                end
+              end
+
+              describe "by operator" do
+                describe "for exchange reaction type" do
+                  before(:each) do
+                    reaction.interpret('equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *) + dimer')
+                    reaction.interpret('  unfixed methyl_on_dimer(:cm)')
+                  end
+
+                  it_behaves_like "check both unfixed"
+                end
+
+                describe "when high bridge forms" do
+                  before(:each) do
+                    reaction.interpret('equation methyl_on_dimer(cm: *) = high_bridge + bridge(ct: *)')
+                    reaction.interpret('  unfixed methyl_on_dimer(:cm)')
+                  end
+
+                  it_behaves_like "check unfixed only one"
+                end
+              end
+            end
           end
 
           describe "incomplete bridge with dimer" do
@@ -169,21 +240,16 @@ module VersatileDiamond
             events.interpret('  targets :one, :two')
             events.interpret('  aliases left: dimer, right: dimer')
             events.interpret("  where :end_row, 'at end'")
-            events.interpret(
-              '    position one, left(:cl), face: 100, dir: :cross')
-            events.interpret(
-              '    position two, left(:cr), face: 100, dir: :cross')
+            events.interpret('    position one, left(:cl), face: 100, dir: :cross')
+            events.interpret('    position two, left(:cr), face: 100, dir: :cross')
             events.interpret("  where :mid_row, 'in middle'")
             events.interpret('    use :end_row')
-            events.interpret(
-              '    position one, right(:cl), face: 100, dir: :cross')
-            events.interpret(
-              '    position two, right(:cr), face: 100, dir: :cross')
+            events.interpret('    position one, right(:cl), face: 100, dir: :cross')
+            events.interpret('    position two, right(:cr), face: 100, dir: :cross')
 
             reaction.interpret('aliases one: bridge, two: bridge')
             reaction.interpret('equation one(ct: *) + two(ct: *) = dimer')
-            reaction.interpret(
-              '  lateral :dimers_row, one: one(:ct), two: two(:ct)')
+            reaction.interpret('  lateral :dimers_row, one: one(:ct), two: two(:ct)')
 
             reaction.interpret("  refinement 'not in dimers row'")
             reaction.interpret('  there :end_row')

@@ -138,39 +138,94 @@ module VersatileDiamond
         end
       end
 
-      describe "#swap_atom" do
-        let(:old_atom) { methyl_on_dimer.atom(:cr) }
-        let(:new_atom) { old_atom.dup }
+      describe "exnchange atoms" do
+        shared_examples_for "check mapping and positions changes" do
+          shared_examples_for "check atoms existence" do
+            it { should include(new_atom) }
+            it { should_not include(old_atom) }
+          end
 
-        before(:each) do
-          # before need to set position between swapped atom and some other
-          # atom
-          hydrogen_migration.position_between(
-            [methyl_on_dimer, old_atom],
-            [activated_dimer, activated_dimer.atom(:cr)],
-            position_100_front
-          )
-          # and then exchange target atom
-          hydrogen_migration.swap_atom(methyl_on_dimer, old_atom, new_atom)
-        end
-
-        shared_examples_for "check atoms existence" do
-          it { should include(new_atom) }
-          it { should_not include(old_atom) }
-        end
-
-        it_behaves_like "check atoms existence" do
-          subject { hydrogen_migration.positions.map(&:first).map(&:last) }
-        end
-
-        it_behaves_like "check atoms existence" do
-          subject { hydrogen_migration.positions.map { |p| p[1] }.map(&:last) }
-        end
-
-        describe "atom mapping changes too" do
           it_behaves_like "check atoms existence" do
-            let(:atoms) { hm_atom_map.full.map(&:last) }
+            subject { reaction.positions.map(&:first).map(&:last) }
+          end
+
+          it_behaves_like "check atoms existence" do
+            subject { reaction.positions.map { |p| p[1] }.map(&:last) }
+          end
+
+          it_behaves_like "check atoms existence" do
+            let(:atoms) { mapping.full.map(&:last) }
             subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
+          end
+        end
+
+        describe "#apply_relevants" do
+          shared_examples_for "check incoherent only one" do
+            let(:old_atom) { spec.atom(target_kn) }
+            let(:new_atom) { spec.atom(target_kn) }
+
+            before(:each) do
+              old_atom # initialize memoized value
+              spec.incoherent!(target_kn)
+              methyl_incorporation.apply_relevants(spec, old_atom, new_atom)
+            end
+
+            shared_examples_for "for direction" do
+              it { direction.atom(inc_kn).incoherent?.should be_true }
+              it { direction.atom(not_inc_kn).incoherent?.should be_false }
+            end
+
+            it_behaves_like "for direction" do
+              let(:direction) { forward }
+            end
+
+            it_behaves_like "for direction" do
+              let(:direction) { reverse }
+            end
+          end
+
+          describe "for source" do
+            let(:spec) { activated_methyl_on_extended_bridge }
+
+            shared_examples_for "check product" do
+              it_behaves_like "check incoherent only one" do
+                let(:forward) { methyl_incorporation.products.first }
+                let(:reverse) { methyl_incorporation.reverse.source.first }
+              end
+            end
+
+            describe "bridge atom" do
+              it_behaves_like "check product" do
+                let(:target_kn) { :cb }
+                let(:inc_kn) { :cl }
+                let(:not_inc_kn) { :cr }
+              end
+            end
+
+            describe "caugth on methyl atom" do
+              it_behaves_like "check product" do
+                let(:target_kn) { :cm }
+                let(:inc_kn) { :cr }
+                let(:not_inc_kn) { :cl }
+              end
+            end
+          end
+
+          describe "for product" do
+            let(:spec) { extended_dimer }
+
+            shared_examples_for "check source" do
+              it_behaves_like "check incoherent only one" do
+                let(:forward) { methyl_incorporation.source.first }
+                let(:reverse) { methyl_incorporation.reverse.products.first }
+              end
+            end
+
+            it_behaves_like "check source" do
+              let(:target_kn) { :cr }
+              let(:inc_kn) { :cb }
+              let(:not_inc_kn) { :cm }
+            end
           end
         end
       end

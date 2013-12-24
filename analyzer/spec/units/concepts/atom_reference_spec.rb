@@ -28,6 +28,11 @@ module VersatileDiamond
         it { ref.actives.should == 0 }
       end
 
+      describe "#incoherent? and #unfixed?" do
+        it { ref.incoherent?.should be_false }
+        it { ref.unfixed?.should be_false }
+      end
+
       describe "#diff" do
         it { ref.diff(ref.dup).should == [] }
         it { ref.diff(c).should == [] }
