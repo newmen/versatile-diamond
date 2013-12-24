@@ -190,6 +190,26 @@ module VersatileDiamond
         end
       end
 
+      # Defines four methods for get a coolection of reactions or theres and
+      # storing each new concept from which self spec depended
+      %w(reaction there).each do |type|
+        var = :"@#{type}"
+        method = :"#{type}s"
+
+        # Gets a collection of concepts
+        # @return [Array] collection
+        define_method(method) do
+          instance_variable_get(var) || instance_variable_set(var, [])
+        end
+
+        # Adds new item to collection of concepts
+        # @param [Reaction | There] concept the concept from which self spec
+        #   depended
+        define_method("store_#{type}") do |concept|
+          send(method) << concept
+        end
+      end
+
       # Compares two specific specs
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] the same or not
