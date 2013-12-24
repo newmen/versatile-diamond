@@ -7,29 +7,22 @@ module VersatileDiamond
       include Interpreter::PositionErrorsCatcher
 
       # Defines two methods for setup an instance of specific spec which found
-      # specs set by spec name
+      # specs by spec name
       %w(incoherent unfixed).each do |state|
         # Setup of state provides for concrete atom by keyname
         # @param [Array] used_atom_strs the array of string where each string
-        #   matched for atom used in specific spec
-        # @raise [Errors::SyntaxError] if setuped atom already has setuping
-        #   state
+        #   matched for one atom used in specific spec
         define_method(state) do |*used_atom_strs|
-          begin
-            used_atom_strs.each do |atom_str|
-              find_all_specs(atom_str) do |specific_spec, atom_keyname|
-                old_atom = specific_spec.atom(atom_keyname)
+          used_atom_strs.each do |atom_str|
+            find_all_specs(atom_str) do |specific_spec, atom_keyname|
+              old_atom = specific_spec.atom(atom_keyname)
+              unless old_atom.send(:"#{state}?")
                 specific_spec.send(:"#{state}!", atom_keyname)
-                new_atom = specific_spec.atom(atom_keyname)
-                next if old_atom == new_atom
-
-                @reaction.swap_atom(specific_spec, old_atom, new_atom)
-                @reaction.reverse.swap_atom(specific_spec, old_atom, new_atom)
               end
+              new_atom = specific_spec.atom(atom_keyname)
+
+              @reaction.apply_relevants(specific_spec, old_atom, new_atom)
             end
-          rescue Concepts::SpecificAtom::AlreadyStated => e
-            syntax_error('specific_spec.atom_already_has_state',
-              state: e.state)
           end
         end
       end

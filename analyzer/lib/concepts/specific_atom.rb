@@ -124,6 +124,10 @@ module VersatileDiamond
         "#{@atom}[#{chars.sort.join(', ')}]"
       end
 
+      def inspect
+        to_s
+      end
+
     protected
 
       attr_reader :atom, :options

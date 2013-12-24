@@ -20,7 +20,7 @@ module VersatileDiamond
       end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :same?, :actives,
-        :diff, :original_valence
+        :incoherent?, :unfixed?, :diff, :original_valence
 
       # Valence of atom with taking into account position of the atom in
       #   structure
@@ -42,6 +42,10 @@ module VersatileDiamond
 
       def to_s
         "&#{@atom}"
+      end
+
+      def inspect
+        to_s
       end
 
     private

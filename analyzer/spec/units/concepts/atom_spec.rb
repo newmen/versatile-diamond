@@ -37,6 +37,11 @@ module VersatileDiamond
         it { c.actives.should == 0 }
       end
 
+      describe "#incoherent? and #unfixed?" do
+        it { c.incoherent?.should be_false }
+        it { c.unfixed?.should be_false }
+      end
+
       describe "#diff" do
         it { c.diff(c.dup).should == [] }
         it { c.diff(unfixed_c).should == [:unfixed] }

@@ -37,14 +37,14 @@ module VersatileDiamond
             describe "#incoherent" do
               it_behaves_like "check state" do
                 let(:state) { :incoherent }
-                let(:name) { :mod }
-                let(:atom) { :methyl_on_dimer }
+                let(:name) { :d }
                 let(:keyname) { :cl }
               end
 
               describe "property is realy state" do
-                before { subject.interpret("incoherent d(:cl)") }
+                before(:each) { subject.interpret("incoherent d(:cl)") }
                 it { hm_source.last.atom(:cl).incoherent?.should be_true }
+                it { hm_products.last.atom(:cl).incoherent?.should be_true }
               end
             end
 
@@ -52,13 +52,13 @@ module VersatileDiamond
               it_behaves_like "check state" do
                 let(:state) { :unfixed }
                 let(:name) { :mod }
-                let(:atom) { :methyl_on_dimer }
                 let(:keyname) { :cm }
               end
 
               describe "property is realy state" do
-                before { subject.interpret("unfixed mod(:cm)") }
-                it { activated_c.unfixed?.should be_true }
+                before(:each) { subject.interpret("unfixed mod(:cm)") }
+                it { hm_source.first.atom(:cm).unfixed?.should be_true }
+                it { hm_products.first.atom(:cm).unfixed?.should be_true }
               end
             end
           end

@@ -133,7 +133,7 @@ module VersatileDiamond
       end
 
       # Extends originial spec by atom-references and store it to temp variable
-      # after that count bonds for extended spec
+      # after that counts bonds for extended spec
       #
       # @return [Integer] the number of external bonds for extended spec
       def external_bonds_after_extend
