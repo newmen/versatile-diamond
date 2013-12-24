@@ -71,9 +71,10 @@ module VersatileDiamond
         end
 
         # Collects specific species from all reactions and store them to
-        # internal sac variable. Each spec must be already looked around!
+        # internal chest variable. Each spec must be already looked around!
         # At collecting time swaps reaction source spec with another same spec
         # (with same name) if it another spec already collected.
+        # Each specific spec stores reaction or theres from which it dependent.
         def collect_specific_specs!
           cache = {}
           store_lambda = -> concept do
@@ -84,6 +85,18 @@ module VersatileDiamond
               else
                 cache[full_name] = specific_spec
               end
+
+              method =
+                if concept.is_a?(Concepts::UbiquitousReaction)
+                  :store_reaction
+                elsif concept.is_a?(Concepts::There)
+                  :store_there
+                else
+                  binding.pry
+                  raise 'Undefined concept type'
+                end
+
+              cache[full_name].send(method, concept)
             end
           end
 

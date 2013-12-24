@@ -107,13 +107,15 @@ module VersatileDiamond
             end
 
             describe "methyl activation" do
-              it { Chest.specific_spec(:'methyl_on_bridge()').
-                should be_specific_spec }
+              subject { Chest.specific_spec(:'methyl_on_bridge()') }
+              it { should be_specific_spec }
+              it { subject.reactions.should include(methyl_activation) }
             end
 
             describe "methyl deactivation" do
-              it { Chest.specific_spec(:'methyl_on_bridge(cm: *)').
-                should be_specific_spec }
+              subject { Chest.specific_spec(:'methyl_on_bridge(cm: *)') }
+              it { should be_specific_spec }
+              it { subject.reactions.should include(methyl_deactivation) }
             end
 
             describe "surface deactivation" do
@@ -121,33 +123,61 @@ module VersatileDiamond
             end
 
             describe "methyl desorption" do
-              it { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)').
-                should be_specific_spec }
+              subject { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)') }
+              it { should be_specific_spec }
+              it { subject.reactions.should include(methyl_desorption) }
             end
 
             describe "forward hydrogen migration" do
-              it { Chest.specific_spec(:'dimer(cr: *)').
-                should be_specific_spec }
-              it { Chest.specific_spec(:'methyl_on_dimer()').
-                should be_specific_spec }
+              describe "dimer(cr: *)" do
+                subject { Chest.specific_spec(:'dimer(cr: *)') }
+                it { should be_specific_spec }
+                it { subject.reactions.should include(hydrogen_migration) }
+              end
+
+              describe "methyl_on_dimer()" do
+                subject { Chest.specific_spec(:'methyl_on_dimer()') }
+                it { should be_specific_spec }
+                it { subject.reactions.should include(hydrogen_migration) }
+              end
             end
 
             describe "reverse hydrogen migration" do
-              it { Chest.specific_spec(:'dimer()').should be_specific_spec }
-              it { Chest.specific_spec(:'methyl_on_dimer(cm: *)').
-                should be_specific_spec }
+              describe "dimer()" do
+                subject { Chest.specific_spec(:'dimer()') }
+                it { should be_specific_spec }
+                it { subject.reactions.should include(hydrogen_migration.reverse) }
+
+                it { subject.theres.size.should == 2 }
+                it { subject.theres.first.where.name.should == :at_middle }
+                it { subject.theres.last.where.name.should == :at_middle }
+              end
+
+              describe "methyl_on_dimer(cm: *)" do
+                subject { Chest.specific_spec(:'methyl_on_dimer(cm: *)') }
+                it { should be_specific_spec }
+                it { subject.reactions.should include(hydrogen_migration.reverse) }
+              end
             end
 
             describe "forward dimer formation" do
-              it { Chest.specific_spec(:'bridge(ct: *)').
-                should be_specific_spec }
-              it { Chest.specific_spec(:'bridge(ct: *, ct: i)').
-                should be_specific_spec }
+              describe "bridge(ct: *)" do
+                subject { Chest.specific_spec(:'bridge(ct: *)') }
+                it { should be_specific_spec }
+                it { subject.reactions.should include(dimer_formation) }
+              end
+
+              describe "bridge(ct: *, ct: i)" do
+                subject { Chest.specific_spec(:'bridge(ct: *, ct: i)') }
+                it { should be_specific_spec }
+                it { subject.reactions.should include(dimer_formation) }
+              end
             end
 
             describe "reverse dimer formation" do
-              it { Chest.specific_spec(:'dimer(cl: i)').
-                should be_specific_spec }
+              subject { Chest.specific_spec(:'dimer(cl: i)') }
+              it { should be_specific_spec }
+              it { subject.reactions.should include(dimer_formation.reverse) }
             end
           end
 

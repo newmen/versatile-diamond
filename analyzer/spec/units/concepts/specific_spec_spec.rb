@@ -246,6 +246,24 @@ module VersatileDiamond
         end
       end
 
+      describe "#reactions" do
+        it { dimer.reactions.should be_empty }
+      end
+
+      describe "#store_reaction" do
+        before { dimer.store_reaction(dimer_formation) }
+        it { dimer.reactions.should == [dimer_formation] }
+      end
+
+      describe "#theres" do
+        it { dimer.theres.should be_empty }
+      end
+
+      describe "#store_reaction" do
+        before { dimer.store_there(on_end) }
+        it { dimer.theres.should == [on_end] }
+      end
+
       describe "#same?" do
         it { methyl.same?(methyl.dup).should be_true }
         it { bridge.same?(bridge.dup).should be_true }
