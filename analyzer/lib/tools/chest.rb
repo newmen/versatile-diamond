@@ -44,7 +44,7 @@ module VersatileDiamond
         #   name of concept
         # @raise [KeyNameError] when same concepts with same name
         #   is exist
-        # @return [ConceptChest] self
+        # @return [Chest] self
         def store(*concepts, method: :name)
           @sac ||= {}
 
@@ -102,6 +102,16 @@ module VersatileDiamond
           end
 
           theres.first
+        end
+
+        # Checks that concepts sequence was stored to Chest
+        # @param [Array] concepts see at #store same argument
+        # @option [Symbol] :method see at #store same argument
+        # @return [Boolean] has or not
+        def has?(*concepts, method: :name)
+          find_bottom(concepts, method) do |_, bottom, name|
+            return !!bottom[name]
+          end
         end
 
         # Finds the key in sac and if key exist then finding by name continues

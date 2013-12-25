@@ -52,7 +52,11 @@ module VersatileDiamond
       # Builds the full name of specific spec (with specificied atom info)
       # @return [String] the full name of specific spec
       def full_name
-        args = @specific_atoms.reduce([]) do |arr, (keyname, atom)|
+        sorted_atoms = @specific_atoms.to_a.sort do |(k1, _), (k2, _)|
+          k1 <=> k2
+        end
+
+        args = sorted_atoms.reduce([]) do |arr, (keyname, atom)|
           arr << "#{keyname}: #{'*' * atom.actives}" if atom.actives > 0
           unless atom.relevants.empty?
             arr += atom.relevants.map do |state|
@@ -149,11 +153,54 @@ module VersatileDiamond
         external_bonds_after_extend unless @extended_spec
 
         spec = self.class.new(@extended_spec)
+        spec.reduced = self
         @specific_atoms.each do |keyname, old_atom|
           spec.specific_atoms[keyname] =
             SpecificAtom.new(@extended_spec.atom(keyname), ancestor: old_atom)
         end
         spec
+      end
+
+      # Is extended or not
+      # @return [Boolean] extended or not
+      def extended?
+        !!@reduced
+      end
+
+      # Makes a correct reduced spec by applying specific atoms from current
+      # spec to reduced
+      # @return [SpecificSpec] correct reduced spec or nil
+      def reduced
+        return unless extended?
+
+        return @correct_reduced if @correct_reduced
+        @correct_reduced = @reduced.dup
+        correct_is_same = true
+
+        @specific_atoms.each do |keyname, atom|
+          rd_atom = @correct_reduced.atom(keyname)
+          is_specific = @correct_reduced.specific_atoms[keyname]
+          df = atom.diff(rd_atom)
+
+          correct_is_same = false unless is_specific && df.empty?
+
+          if is_specific
+            rd_atom.apply_diff(df)
+          else
+            @correct_reduced.
+              describe_atom(keyname, SpecificAtom.new(rd_atom, ancestor: atom))
+          end
+        end
+        @correct_reduced = @reduced if correct_is_same
+        @correct_reduced
+      end
+
+      # Checks that specific spec could be reduced
+      # @return [Boolean] could or not
+      def could_be_reduced?
+        raise "Not extended spec cannot be reduced" unless extended?
+
+        Spec.good_for_reduce?(@specific_atoms.keys)
       end
 
       # Gets parent specific spec
@@ -264,6 +311,7 @@ module VersatileDiamond
     protected
 
       attr_reader :specific_atoms
+      attr_writer :reduced
 
       # Counts the sum of active bonds
       # @return [Integer] sum of active bonds

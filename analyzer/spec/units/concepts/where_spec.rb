@@ -31,6 +31,16 @@ module VersatileDiamond
         # TODO: check positions
       end
 
+      describe "#used_keynames_of" do
+        it { at_end.used_keynames_of(dimer).size.should == 2 }
+        it { at_end.used_keynames_of(dimer).should include(:cr, :cl) }
+
+        it { at_middle.used_keynames_of(dimer).size.should == 2 }
+        it { at_middle.used_keynames_of(dimer).should include(:cr, :cl) }
+
+        it { near_methyl.used_keynames_of(methyl_on_bridge).should == [:cb] }
+      end
+
       it_behaves_like "visitable" do
         subject { at_end }
       end

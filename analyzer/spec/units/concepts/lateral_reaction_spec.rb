@@ -10,6 +10,7 @@ module VersatileDiamond
       let(:other) do
         dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
       end
+      let(:target_dimer) { reaction.reverse.source.first }
 
       describe "#theres" do
         it { reaction.theres.size.should == 1 }
@@ -27,7 +28,6 @@ module VersatileDiamond
         it { should be_a(described_class) }
 
         describe "theres reversed too" do
-          let(:target_dimer) { subject.source.first }
           it { there.positions.should == {
               [target_dimer, target_dimer.atom(:cr)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
@@ -63,6 +63,23 @@ module VersatileDiamond
                 [[dimer, dimer.atom(:cr)], position_110_front],
               ],
             } }
+        end
+      end
+
+      describe "#used_keynames_of" do
+        describe "forward" do
+          subject { reaction }
+          let(:first_bridge) { subject.source.first }
+          let(:second_bridge) { subject.source.last }
+
+          it { subject.used_keynames_of(first_bridge).should == [:ct] }
+          it { subject.used_keynames_of(second_bridge).should == [:ct] }
+        end
+
+        describe "reverse" do
+          subject { reaction.reverse.used_keynames_of(target_dimer) }
+          it { subject.size.should == 2 }
+          it { should include(:cr, :cl) }
         end
       end
 

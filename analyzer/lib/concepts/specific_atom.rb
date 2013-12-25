@@ -23,7 +23,7 @@ module VersatileDiamond
 
       # Initialize a new instance
       # @param [Atom] atom the specified atom
-      # @option [SpecificAtom] :ancestor the ancestor of new file
+      # @option [SpecificAtom] :ancestor the ancestor of new atom
       # @option [Array] :options the atom configuration (not using if ancestor
       #   passed)
       def initialize(atom, ancestor: nil, options: [])
@@ -96,6 +96,12 @@ module VersatileDiamond
       # @return [Array] the array of relevants state symbols
       def diff(other)
         self.class == other.class ? other.relevants - relevants : []
+      end
+
+      # Applies diff to current options
+      # @param [Array] diff the array which contain adsorbing states
+      def apply_diff(diff)
+        diff.each { |state| send(:"#{state}!") }
       end
 
       # Gets only relevant states

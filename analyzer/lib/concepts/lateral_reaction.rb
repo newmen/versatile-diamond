@@ -14,6 +14,20 @@ module VersatileDiamond
         @theres = theres
       end
 
+      # Also checks using in there objects
+      # @param [SpecificSpec] spec the one of reactant
+      # @return [Array] the array of keynames of used atoms of passed spec
+      # @override
+      def used_keynames_of(spec)
+        keynames = super + theres.reduce([]) do |acc, there|
+          acc + there.positions.keys.select { |s, _| s == spec }.map do |_, a|
+            spec.keyname(a)
+          end
+        end
+
+        keynames.uniq
+      end
+
       # Also compare there objects
       # @param [UbiqutousReaction] other see at #super same argument
       # @return [Boolean] the same or not

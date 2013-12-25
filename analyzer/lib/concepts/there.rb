@@ -32,7 +32,7 @@ module VersatileDiamond
         @positions = Hash[duplicated_positions]
       end
 
-      def_delegators :where, :description, :visit
+      def_delegators :where, :description, :used_keynames_of, :visit
 
       # Provides environment species
       # @return [Array] all species stored in used where and in their parents

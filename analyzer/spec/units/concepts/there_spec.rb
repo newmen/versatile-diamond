@@ -105,6 +105,16 @@ module VersatileDiamond
           } }
       end
 
+      describe "#used_keynames_of" do
+        it { on_end.used_keynames_of(dimer).size.should == 2 }
+        it { on_end.used_keynames_of(dimer).should include(:cr, :cl) }
+
+        it { on_middle.used_keynames_of(dimer).size.should == 2 }
+        it { on_middle.used_keynames_of(dimer).should include(:cr, :cl) }
+
+        it { there_methyl.used_keynames_of(methyl_on_bridge).should == [:cb] }
+      end
+
       describe "#same?" do
         let(:same) do
           at_end.concretize(

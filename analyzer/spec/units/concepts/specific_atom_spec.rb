@@ -115,6 +115,12 @@ module VersatileDiamond
           should == [:incoherent] }
       end
 
+      describe "#apply_diff" do
+        before(:each) { activated_c.apply_diff([:unfixed, :incoherent]) }
+        it { activated_c.incoherent?.should be_true }
+        it { activated_c.unfixed?.should be_true }
+      end
+
       describe "#relevants" do
         it { activated_c.relevants.should == [] }
         it { unfixed_c.relevants.should == [:unfixed] }

@@ -305,6 +305,11 @@ module VersatileDiamond
         end
       end
 
+      describe "#used_keynames_of" do
+        it { dimer_formation.used_keynames_of(activated_bridge) == [:ct] }
+        it { dimer_formation.used_keynames_of(activated_incoherent_bridge) == [:ct] }
+      end
+
       let(:reaction) { dimer_formation.duplicate('dup') }
       let(:lateral) { dimer_formation.lateral_duplicate('tail', [on_end]) }
 

@@ -4,6 +4,11 @@ module VersatileDiamond
   module Concepts
 
     describe Spec do
+      describe "self#good_for_reduce?" do
+        it { described_class.good_for_reduce?([:cl]).should be_true }
+        it { described_class.good_for_reduce?([:_cl]).should be_false }
+      end
+
       describe "#simple?" do
         it { Spec.new(:not_set).simple?.should be_nil }
 

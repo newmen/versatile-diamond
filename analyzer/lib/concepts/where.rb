@@ -57,8 +57,7 @@ module VersatileDiamond
       #   real reactant and it atom
       # @return [There] the concretized instance as there object
       def concretize(target_refs)
-        raw_positions = @raw_positions + parents_reduce(:raw_positions)
-        positions = raw_positions.each_with_object({}) do |arr, hash|
+        positions = total_raw_positions.each_with_object({}) do |arr, hash|
           target, env_spec_atom, position = arr
           target_spec_atom = target_refs[target]
 
@@ -67,6 +66,15 @@ module VersatileDiamond
         end
 
         There.new(self, positions)
+      end
+
+      # Grep atoms of passed spec used in raw positions of where object. For
+      # each atom find keyname.
+      # @param [SpecificSpec] spec the one of reactant
+      # @return [Array] the array of keynames of used atoms of passed spec
+      def used_keynames_of(spec)
+        total_raw_positions.select { |_, (s, _), _| s == spec }.
+          map { |_, (_, a), _| spec.keyname(a) }.uniq
       end
 
       # Also visit base spec that belongs to self
@@ -80,6 +88,12 @@ module VersatileDiamond
     protected
 
       attr_reader :raw_positions
+
+      # Collect raw positions from current object and parent objects
+      # @return [Array] the array of reconrds of raw_position
+      def total_raw_positions
+        raw_positions + parents_reduce(:raw_positions)
+      end
 
     private
 

@@ -12,6 +12,13 @@ module VersatileDiamond
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
 
+      # Checks that atom keyname suitable for reducing
+      # @param [Array] keyname the array of atom keyname which will be checked
+      # @return [Boolean] all situable or not
+      def self.good_for_reduce?(keynames)
+        keynames.all? { |kn| kn =~ /^[^_]/ }
+      end
+
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
       # @param [Symbol] name the name of spec
       # @param [Hash] atoms the associated array [Symbol]Atom

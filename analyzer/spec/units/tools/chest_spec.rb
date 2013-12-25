@@ -112,6 +112,12 @@ module VersatileDiamond
         end
       end
 
+      describe "#has?" do
+        before(:each) { Chest.store(concept) }
+        it { Chest.has?(concept).should be_true }
+        it { Chest.has?(Concept.new(:wrong)).should be_false }
+      end
+
       describe "#all" do
         before(:each) do
           Chest.store(methane_base)
