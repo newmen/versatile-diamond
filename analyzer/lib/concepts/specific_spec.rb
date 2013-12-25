@@ -172,6 +172,8 @@ module VersatileDiamond
         similar_specs = similar_specs.reject do |s|
           s == self || s.specific_atoms.size > @specific_atoms.size
         end
+
+        # sorts descending size
         similar_specs = similar_specs.sort do |a, b|
           if a.specific_atoms.size == b.specific_atoms.size
             b.active_bonds_num <=> a.active_bonds_num
@@ -188,11 +190,13 @@ module VersatileDiamond
                 (atom.relevants - a.relevants).empty?
             end
         end
+
+        (@parent || @spec).store_child(self)
       end
 
       # Defines four methods for get a coolection of reactions or theres and
       # storing each new concept from which self spec depended
-      %w(reaction there).each do |type|
+      %w(child reaction there).each do |type|
         var = :"@#{type}"
         method = :"#{type}s"
 

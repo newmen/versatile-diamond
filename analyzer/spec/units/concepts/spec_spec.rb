@@ -139,6 +139,15 @@ module VersatileDiamond
         it { methyl_on_bridge_base.parent.should == bridge_base }
       end
 
+      describe "#childs" do
+        it { dimer_base.childs.should be_empty }
+      end
+
+      describe "#store_child" do
+        before { dimer_base.store_child(methyl_on_dimer_base) }
+        it { dimer_base.childs.should == [methyl_on_dimer_base] }
+      end
+
       describe "#size" do
         it { hydrogen_base.size.should == 1 }
         it { methane_base.size.should == 1 }
