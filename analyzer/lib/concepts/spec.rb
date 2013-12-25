@@ -179,9 +179,22 @@ module VersatileDiamond
           if contain?(links, possible_parent.links)
             parents.clear
             parents << possible_parent
+            parent.store_child(self)
             break
           end
         end
+      end
+
+      # Gets children species
+      # @return [Array] children species
+      def childs
+        @children ||= []
+      end
+
+      # Adds a new child to collection of children
+      # @param [Spec | SpecificSpec] spec which will be stored as child
+      def store_child(spec)
+        childs << spec
       end
 
       # Gets a number of atoms
@@ -309,9 +322,9 @@ module VersatileDiamond
       # Contain all dependecies from another specs, but finaly contain just one
       # element after organize dependencies
       #
-      # @return [Set] dependencies from another specs
+      # @return [Array] dependencies from another specs
       def parents
-        @parents ||= Set.new
+        @parents ||= []
       end
 
       # The large links contains small links?

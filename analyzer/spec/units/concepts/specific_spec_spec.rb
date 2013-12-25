@@ -246,6 +246,15 @@ module VersatileDiamond
         end
       end
 
+      describe "#childs" do
+        it { dimer.childs.should be_empty }
+      end
+
+      describe "#store_child" do
+        before { dimer.store_child(methyl_on_dimer) }
+        it { dimer.childs.should == [methyl_on_dimer] }
+      end
+
       describe "#reactions" do
         it { dimer.reactions.should be_empty }
       end
