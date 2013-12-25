@@ -129,6 +129,15 @@ module VersatileDiamond
         swap_atom_in_positions(os_spec, os_atom, new_atom)
       end
 
+      # Grep atoms of passed spec used in positions. For each atom find keyname
+      # @param [SpecificSpec] spec the one of reactant
+      # @return [Array] the array of keynames of used atoms of passed spec
+      def used_keynames_of(spec)
+        @links.keys.select { |s, _| s == spec }.map do |_, a|
+          spec.keyname(a)
+        end
+      end
+
       # Also compares positions in both reactions
       # @param [UbiquitousReaction] see at #super same argument
       # @override

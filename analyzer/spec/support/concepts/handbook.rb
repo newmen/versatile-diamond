@@ -105,8 +105,11 @@ module VersatileDiamond
           SpecificSpec.new(bridge_base, ct: extra_activated_cd)
         end
         set(:extended_bridge_base) { bridge_base.extend_by_references }
+        set(:right_activated_bridge) do
+          SpecificSpec.new(bridge_base, cr: activated_cd)
+        end
         set(:right_activated_extended_bridge) do
-          SpecificSpec.new(extended_bridge_base, cr: activated_cd)
+          right_activated_bridge.extended
         end
 
         set(:methyl_on_bridge_base) do
@@ -139,7 +142,7 @@ module VersatileDiamond
           methyl_on_bridge_base.extend_by_references
         end
         set(:activated_methyl_on_extended_bridge) do
-          SpecificSpec.new(methyl_on_extended_bridge_base, cm: activated_c)
+          activated_methyl_on_bridge.extended
         end
 
         set(:chloride_bridge_base) do
@@ -169,7 +172,7 @@ module VersatileDiamond
           SpecificSpec.new(dimer_base, cr: activated_cd)
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
-        set(:extended_dimer) { SpecificSpec.new(extended_dimer_base) }
+        set(:extended_dimer) { dimer.extended }
 
         set(:methyl_on_dimer_base) do
           s = SurfaceSpec.new(:methyl_on_dimer, cm: c)

@@ -41,6 +41,9 @@ module VersatileDiamond
           dimer_formation.reverse.rate = 5
           dimer_formation.reverse.activation = 2e3
 
+          methyl_incorporation.rate = 6
+          methyl_incorporation.activation = 0
+
           # lateral dimer formation crated there
           lateral_dimer_formation.rate = 6
           lateral_dimer_formation.activation = 0
@@ -51,7 +54,7 @@ module VersatileDiamond
             methyl_desorption.reverse, # synthetics
             hydrogen_migration, hydrogen_migration.reverse,
             dimer_formation, dimer_formation.reverse,
-            lateral_dimer_formation
+            lateral_dimer_formation, methyl_incorporation
           ].each { |reaction| Chest.store(reaction) }
 
           Shunter.organize_dependecies!
@@ -232,6 +235,20 @@ module VersatileDiamond
               it { subject.parent.should == Chest.specific_spec(:'dimer()') }
               it { subject.childs.should be_empty }
               it { subject.reactions.should include(dimer_formation.reverse) }
+            end
+
+            describe "forward methyl incorporation" do
+              describe "methyl_on_bridge(cm: *, cm: u)" do
+                # other props checks in "methyl deactivation"
+                it { Chest.specific_spec(:'methyl_on_bridge(cm: *)').reactions.
+                  should include(methyl_incorporation) }
+              end
+
+              describe "dimer(cr: *)" do
+                # other props checks in "forward hydrogen migration"
+                it { Chest.specific_spec(:'dimer(cr: *)').reactions.
+                  should include(methyl_incorporation) }
+              end
             end
           end
 

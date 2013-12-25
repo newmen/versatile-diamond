@@ -60,6 +60,8 @@ module VersatileDiamond
         # Organize dependencies between specific species
         def organize_specific_spec_dependencies!
           collect_specific_specs!
+          purge_unused_extended_specs!
+
           specific_specs = Chest.all(:specific_spec)
           specific_specs.each_with_object({}) do |ss, specs|
             base_spec = ss.spec
@@ -86,17 +88,7 @@ module VersatileDiamond
                 cache[full_name] = specific_spec
               end
 
-              method =
-                if concept.is_a?(Concepts::UbiquitousReaction)
-                  :store_reaction
-                elsif concept.is_a?(Concepts::There)
-                  :store_there
-                else
-                  binding.pry
-                  raise 'Undefined concept type'
-                end
-
-              cache[full_name].send(method, concept)
+              store_concept_to(concept, cache[full_name])
             end
           end
 
@@ -112,6 +104,41 @@ module VersatileDiamond
 
           cache.values.each do |specific_spec|
             Chest.store(specific_spec, method: :full_name)
+          end
+        end
+
+        # Purges extended spec if atoms of each one can be used as same in
+        # reduced spec
+        def purge_unused_extended_specs!
+          extended_specs = Chest.all(:specific_spec).select do |spec|
+            spec.reduced && spec.could_be_reduced?
+          end
+
+          extended_specs.each do |ext_spec|
+            check_that_can = -> concept do
+              used_keynames = concept.used_keynames_of(ext_spec)
+              Concepts::Spec.good_for_reduce?(used_keynames)
+            end
+
+            next unless ext_spec.reactions.all?(&check_that_can) &&
+              ext_spec.theres.all?(&check_that_can)
+
+            rd_spec = ext_spec.reduced
+            if Chest.has?(rd_spec, method: :full_name)
+              rd_spec = Chest.specific_spec(rd_spec.full_name)
+            else
+              Chest.store(rd_spec, method: :full_name)
+            end
+
+            swap_and_store = -> concept do
+              concept.swap_source(ext_spec, rd_spec)
+              store_concept_to(concept, rd_spec)
+            end
+
+            ext_spec.reactions.each(&swap_and_store)
+            ext_spec.theres.each(&swap_and_store)
+
+            Chest.purge!(ext_spec, method: :full_name)
           end
         end
 
@@ -177,6 +204,21 @@ module VersatileDiamond
         # @param [Array] the array of lateral reactions
         def lateral_reactions
           Chest.all(:lateral_reaction)
+        end
+
+        # Checks type of concept and store it to spec by correspond method
+        # @param [concept] concept the checkable concept
+        # @param [Spec | SpecificSpec] spec the spec to which concept will be
+        #   stored
+        # @raise [RuntimeError] if type of concept is undefined
+        def store_concept_to(concept, spec)
+          if concept.is_a?(Concepts::UbiquitousReaction)
+            spec.store_reaction(concept)
+          elsif concept.is_a?(Concepts::There)
+            spec.store_there(concept)
+          else
+            raise 'Undefined concept type'
+          end
         end
       end
     end

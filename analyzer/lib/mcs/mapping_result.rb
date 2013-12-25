@@ -152,7 +152,9 @@ module VersatileDiamond
         self.class.new(source, products, result: exchanged_result)
       end
 
-      # Swap source species in result
+      # Swap source species in result. Drops atom mapping result for atoms
+      # which is not belongs to new spec if it spec is reduced version of from
+      #
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
       def swap_source(from, to)
@@ -161,9 +163,8 @@ module VersatileDiamond
           mapping.map! do |specs, atoms|
             spec = specs.first
             if spec == from
-              changed_atoms = atoms.map do |f, s|
-                [to.atom(from.keyname(f)), s]
-              end
+              changed_atoms = atoms.select { |f, _| from.keyname(f) }.
+                map { |f, s| [to.atom(from.keyname(f)), s] }
               [[to, specs.last], changed_atoms]
             else
               [specs, atoms]

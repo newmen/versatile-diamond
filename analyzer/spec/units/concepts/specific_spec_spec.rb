@@ -130,6 +130,26 @@ module VersatileDiamond
         it { chloride_bridge.external_bonds.should == 3 }
       end
 
+      describe "#extended?" do
+        it { bridge.extended?.should be_false }
+        it { dimer.extended?.should be_false }
+
+        it { activated_methyl_on_extended_bridge.extended?.should be_true }
+        it { right_activated_extended_bridge.extended?.should be_true }
+        it { extended_dimer.extended?.should be_true }
+      end
+
+      describe "#reduced" do
+        it { bridge.reduced.should be_nil }
+        it { dimer.reduced.should be_nil }
+
+        it { activated_methyl_on_extended_bridge.reduced.
+          should == activated_methyl_on_bridge }
+        it { right_activated_extended_bridge.reduced.
+          should == right_activated_bridge }
+        it { extended_dimer.reduced.should == dimer }
+      end
+
       describe "#extendable?" do
         it { methane.extendable?.should be_false }
         it { methyl.extendable?.should be_false }
@@ -150,6 +170,12 @@ module VersatileDiamond
           subject { SpecificSpec.new(bridge_base, cr: activated_cd).extended }
           it { subject.atom(:cr).valence.should == 3 }
         end
+      end
+
+      describe "#could_be_reduced?" do
+        it { activated_methyl_on_extended_bridge.could_be_reduced?.should be_true }
+        it { right_activated_extended_bridge.could_be_reduced?.should be_true }
+        it { extended_dimer.could_be_reduced?.should be_true }
       end
 
       describe "#dependet_from" do
