@@ -5,11 +5,14 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       extend Forwardable
+      extend Collector
 
       include Visitors::Visitable
       include BondsCounter
 
       attr_reader :spec
+
+      collector_methods :child, :reaction, :there
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
@@ -25,6 +28,7 @@ module VersatileDiamond
         end
 
         @spec = spec
+        @original_name = @spec.name
         @specific_atoms = specific_atoms
       end
 
@@ -36,7 +40,13 @@ module VersatileDiamond
         reset_caches
       end
 
-      def_delegators :@spec, :name, :extendable?, :is_gas?, :simple?
+      def_delegators :@spec, :extendable?, :is_gas?, :simple?
+
+      # Updates base spec from which dependent current specific spec
+      # @param [Spec] new_spec the new base spec
+      def update_base_spec(new_spec)
+        @spec = new_spec
+      end
 
       # Finds positions between atoms in base structure.
       # Can be used only for specified *surface* spec.
@@ -47,6 +57,12 @@ module VersatileDiamond
       def position_between(atom1, atom2)
         @spec.position_between(
           @spec.atom(keyname(atom1)), @spec.atom(keyname(atom2)))
+      end
+
+      # Gets original name of base spec
+      # @return [Symbol] the original name of base spec
+      def name
+        @original_name
       end
 
       # Builds the full name of specific spec (with specificied atom info)
@@ -252,26 +268,6 @@ module VersatileDiamond
         end
 
         (@parent || @spec).store_child(self)
-      end
-
-      # Defines four methods for get a coolection of reactions or theres and
-      # storing each new concept from which self spec depended
-      %w(child reaction there).each do |type|
-        var = :"@#{type}"
-        method = :"#{type}s"
-
-        # Gets a collection of concepts
-        # @return [Array] collection
-        define_method(method) do
-          instance_variable_get(var) || instance_variable_set(var, [])
-        end
-
-        # Adds new item to collection of concepts
-        # @param [Reaction | There] concept the concept from which self spec
-        #   depended
-        define_method("store_#{type}") do |concept|
-          send(method) << concept
-        end
       end
 
       # Compares two specific specs

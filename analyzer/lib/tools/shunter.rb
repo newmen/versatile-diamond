@@ -110,6 +110,7 @@ module VersatileDiamond
 
         # Purges extended spec if atoms of each one can be used as same in
         # reduced spec
+        # TODO: rspec it!
         def purge_unused_extended_specs!
           extended_specs = Chest.all(:specific_spec).select do |spec|
             spec.reduced && spec.could_be_reduced?
@@ -133,7 +134,7 @@ module VersatileDiamond
 
             swap_and_store = -> concept do
               concept.swap_source(ext_spec, rd_spec)
-              store_concept_to(concept, rd_spec) # TODO: move to #reduced creating ??
+              store_concept_to(concept, rd_spec)
             end
 
             ext_spec.reactions.each(&swap_and_store)
@@ -145,9 +146,9 @@ module VersatileDiamond
 
         # Purges all specific specs if some of doesn't have specific atoms and
         # reactions
+        # TODO: rspec it!
         def purge_unspecified_specs!
           unspecified_specs = Chest.all(:specific_spec).select do |spec|
-            # TODO: move reactions condition to #specific? method ??
             !spec.specific? && spec.reactions.empty?
           end
 
@@ -155,10 +156,8 @@ module VersatileDiamond
             base_spec = specific_spec.spec
             specific_spec.theres.each do |there|
               there.swap_source(specific_spec, base_spec)
+              store_concept_to(there, base_spec)
             end
-
-            base_spec.remove_child(specific_spec)
-            base_spec.append_childs(specific_spec.childs)
 
             Chest.purge!(specific_spec, method: :full_name)
           end
@@ -195,6 +194,8 @@ module VersatileDiamond
 
         # Removes all unused base specs from Chest
         def purge_unused_specs!
+          purge_excess_extrime_specs!
+
           specs = Chest.all(:gas_spec, :surface_spec)
           specific_specs = Chest.all(:specific_spec)
 
@@ -205,6 +206,28 @@ module VersatileDiamond
             end
 
             Chest.purge!(spec) unless has_children
+          end
+        end
+
+        # Purges all extrime base spec if some have just one child and it
+        # child is unspecified specific spec
+        def purge_excess_extrime_specs!
+          unspecified_specs = Chest.all(:specific_spec).select do |spec|
+            !spec.specific? && !spec.parent
+          end
+
+          unspecified_specs.each do |specific_spec|
+            base_spec = specific_spec.spec
+            next unless base_spec.childs.size == 1 && base_spec.theres.empty?
+
+            base_parent = base_spec.parent
+            next unless base_parent
+
+            specific_spec.update_base_spec(base_parent)
+            base_parent.remove_child(base_spec)
+            base_parent.store_child(specific_spec)
+
+            Chest.purge!(base_spec)
           end
         end
 

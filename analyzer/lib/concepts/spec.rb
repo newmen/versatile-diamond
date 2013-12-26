@@ -4,13 +4,16 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      include Visitors::Visitable
+      extend Collector
 
+      include Visitors::Visitable
       include Linker
       include BondsCounter
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
+
+      collector_methods :child, :there
 
       # Checks that atom keyname suitable for reducing
       # @param [Array] keyname the array of atom keyname which will be checked
@@ -192,22 +195,10 @@ module VersatileDiamond
         end
       end
 
-      # Gets children species
-      # @return [Array] children species
-      def childs
-        @children ||= []
-      end
-
       # Appends a childs to current collection
       # @param [Array] specs the array of appenging childs
       def append_childs(specs)
         childs.concat(specs)
-      end
-
-      # Adds a new child to collection of children
-      # @param [Spec | SpecificSpec] spec which will be stored as child
-      def store_child(spec)
-        childs << spec
       end
 
       # Removes a spec from collection of children
