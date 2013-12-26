@@ -61,6 +61,7 @@ module VersatileDiamond
         def organize_specific_spec_dependencies!
           collect_specific_specs!
           purge_unused_extended_specs!
+          purge_unspecified_specs!
 
           specific_specs = Chest.all(:specific_spec)
           specific_specs.each_with_object({}) do |ss, specs|
@@ -132,13 +133,34 @@ module VersatileDiamond
 
             swap_and_store = -> concept do
               concept.swap_source(ext_spec, rd_spec)
-              store_concept_to(concept, rd_spec)
+              store_concept_to(concept, rd_spec) # TODO: move to #reduced creating ??
             end
 
             ext_spec.reactions.each(&swap_and_store)
             ext_spec.theres.each(&swap_and_store)
 
             Chest.purge!(ext_spec, method: :full_name)
+          end
+        end
+
+        # Purges all specific specs if some of doesn't have specific atoms and
+        # reactions
+        def purge_unspecified_specs!
+          unspecified_specs = Chest.all(:specific_spec).select do |spec|
+            # TODO: move reactions condition to #specific? method ??
+            !spec.specific? && spec.reactions.empty?
+          end
+
+          unspecified_specs.each do |specific_spec|
+            base_spec = specific_spec.spec
+            specific_spec.theres.each do |there|
+              there.swap_source(specific_spec, base_spec)
+            end
+
+            base_spec.remove_child(specific_spec)
+            base_spec.append_childs(specific_spec.childs)
+
+            Chest.purge!(specific_spec, method: :full_name)
           end
         end
 

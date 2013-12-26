@@ -198,10 +198,22 @@ module VersatileDiamond
         @children ||= []
       end
 
+      # Appends a childs to current collection
+      # @param [Array] specs the array of appenging childs
+      def append_childs(specs)
+        childs.concat(specs)
+      end
+
       # Adds a new child to collection of children
       # @param [Spec | SpecificSpec] spec which will be stored as child
       def store_child(spec)
         childs << spec
+      end
+
+      # Removes a spec from collection of children
+      # @param [SpecificSpec] spec the removable child
+      def remove_child(spec)
+        childs.reject! { |s| s == spec }
       end
 
       # Gets a number of atoms
