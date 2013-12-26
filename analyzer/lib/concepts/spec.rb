@@ -13,7 +13,7 @@ module VersatileDiamond
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
 
-      collector_methods :child, :there
+      collector_methods :parent, :child, :there
 
       # Checks that atom keyname suitable for reducing
       # @param [Array] keyname the array of atom keyname which will be checked
@@ -187,8 +187,7 @@ module VersatileDiamond
         # find and reorganize dependencies
         possible_parents.each do |possible_parent|
           if contain?(links, possible_parent.links)
-            parents.clear
-            parents << possible_parent
+            store_parent(possible_parent)
             parent.store_child(self)
             break
           end
@@ -327,14 +326,6 @@ module VersatileDiamond
           i += 1
         end while (atom(keyname))
         keyname
-      end
-
-      # Contain all dependecies from another specs, but finaly contain just one
-      # element after organize dependencies
-      #
-      # @return [Array] dependencies from another specs
-      def parents
-        @parents ||= []
       end
 
       # The large links contains small links?
