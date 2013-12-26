@@ -203,10 +203,23 @@ module VersatileDiamond
         Spec.good_for_reduce?(@specific_atoms.keys)
       end
 
+      # Contain specific atoms or not
+      # @return [Boolean] contain or not
+      def specific?
+        !@specific_atoms.empty?
+      end
+
       # Gets parent specific spec
       # @return [SpecificSpec] the parten specific spec or nil
       def parent
         @parent
+      end
+
+      # Clears parent for current specific_spec
+      # @param [Spec] new_parent the base spec parent to which will be changed
+      #   current dependency
+      def clear_parent
+        @parent = nil
       end
 
       # Organize dependencies from another similar species. Dependencies set if

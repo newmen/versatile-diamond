@@ -172,13 +172,22 @@ module VersatileDiamond
         end
       end
 
+      describe "#specific?" do
+        it { bridge.specific?.should be_false }
+        it { dimer.specific?.should be_false }
+        it { high_bridge.specific?.should be_false }
+
+        it { right_activated_bridge.specific?.should be_true }
+        it { activated_dimer.specific?.should be_true }
+      end
+
       describe "#could_be_reduced?" do
         it { activated_methyl_on_extended_bridge.could_be_reduced?.should be_true }
         it { right_activated_extended_bridge.could_be_reduced?.should be_true }
         it { extended_dimer.could_be_reduced?.should be_true }
       end
 
-      describe "#dependet_from" do
+      describe "#parent" do
         # default state of dependent from variable
         it { bridge.parent.should be_nil }
         it { activated_bridge.parent.should be_nil }

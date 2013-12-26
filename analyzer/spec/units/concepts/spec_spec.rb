@@ -148,9 +148,22 @@ module VersatileDiamond
         it { dimer_base.childs.should be_empty }
       end
 
+      describe "#append_childs" do
+        before { dimer_base.append_childs([activated_dimer]) }
+        it { dimer_base.childs.should == [activated_dimer] }
+      end
+
       describe "#store_child" do
         before { dimer_base.store_child(methyl_on_dimer_base) }
         it { dimer_base.childs.should == [methyl_on_dimer_base] }
+      end
+
+      describe "#remove_child" do
+        before do
+          dimer_base.store_child(dimer)
+          dimer_base.remove_child(dimer)
+        end
+        it { dimer_base.childs.should be_empty }
       end
 
       describe "#size" do
