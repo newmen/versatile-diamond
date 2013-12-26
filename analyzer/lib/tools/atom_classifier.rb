@@ -86,7 +86,6 @@ module VersatileDiamond
           atoms = spec.links.keys
 
           if without
-            without_same = spec.class.new(spec.name)
             parent_atoms = without.links.keys
             atoms = atoms.select do |atom|
               prop = AtomProperties.new(spec, atom)

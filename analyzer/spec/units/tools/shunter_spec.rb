@@ -361,7 +361,10 @@ module VersatileDiamond
           it { expect { Chest.spec(:bridge) }.not_to raise_error }
           it { expect { Chest.spec(:methyl_on_bridge) }.not_to raise_error }
           it { expect { Chest.spec(:dimer) }.not_to raise_error }
-          it { expect { Chest.spec(:methyl_on_dimer) }.not_to raise_error }
+
+          describe "#purge_excess_extrime_specs!" do
+            it { expect { Chest.spec(:methyl_on_dimer) }.to raise_error }
+          end
         end
       end
     end

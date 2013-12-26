@@ -144,18 +144,27 @@ module VersatileDiamond
         it { methyl_on_bridge_base.parent.should == bridge_base }
       end
 
-      describe "#childs" do
-        it { dimer_base.childs.should be_empty }
+      describe "#theres" do
+        it { dimer_base.theres.should be_empty }
       end
 
-      describe "#append_childs" do
-        before { dimer_base.append_childs([activated_dimer]) }
-        it { dimer_base.childs.should == [activated_dimer] }
+      describe "#store_there" do
+        before { dimer_base.store_there(on_end) }
+        it { dimer_base.theres.should == [on_end] }
+      end
+
+      describe "#childs" do
+        it { dimer_base.childs.should be_empty }
       end
 
       describe "#store_child" do
         before { dimer_base.store_child(methyl_on_dimer_base) }
         it { dimer_base.childs.should == [methyl_on_dimer_base] }
+      end
+
+      describe "#append_childs" do
+        before { dimer_base.append_childs([activated_dimer]) }
+        it { dimer_base.childs.should == [activated_dimer] }
       end
 
       describe "#remove_child" do

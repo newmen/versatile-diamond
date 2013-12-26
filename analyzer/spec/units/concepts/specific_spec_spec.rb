@@ -10,6 +10,18 @@ module VersatileDiamond
         it { methyl.dup.external_bonds.should == 3 }
       end
 
+      describe "#spec" do
+        it { methyl.spec.should == methane_base }
+        it { bridge.spec.should == bridge_base }
+        it { dimer.spec.should == dimer_base }
+      end
+
+      describe "#update_base_spec" do
+        before(:each) { high_bridge.update_base_spec(bridge_base) }
+        it { high_bridge.spec.should == bridge_base }
+        it { high_bridge.name.should == :high_bridge }
+      end
+
       describe "#position_between" do
         it { activated_dimer.position_between(
             activated_dimer.atom(:cr), activated_dimer.atom(:cl)).
@@ -26,6 +38,10 @@ module VersatileDiamond
         it { activated_methyl_on_incoherent_bridge.position_between(
             activated_methyl_on_incoherent_bridge.atom(:cb),
             activated_methyl_on_incoherent_bridge.atom(:cm)).should be_nil }
+      end
+
+      describe "#name" do
+        it { bridge.name.should == :bridge }
       end
 
       describe "#full_name" do
