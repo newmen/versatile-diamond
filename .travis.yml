@@ -2,6 +2,6 @@ language: ruby
 rvm:
   - 2.0.0
 script:
-  - cd config_parser/
+  - cd analyzer/
   - rspec
 
