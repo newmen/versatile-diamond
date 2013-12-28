@@ -141,8 +141,9 @@ void Atom::describe(ushort role, BaseSpec *spec)
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        os << "describe " << this << std::dec;
+        os << "describe " << this << " " << std::dec;
         pos(os);
+        os << " " << spec->name();
         os << " |" << type() << ", " << _prevType << "| role type: " << role
            << ". spec type: " << spec->type() << ". key: " << key;
     });
@@ -185,12 +186,29 @@ void Atom::forget(ushort role, BaseSpec *spec)
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        os << "forget " << this << std::dec;
+        os << "forget " << this << " " << std::dec;
         pos(os);
+        os << " " << spec->name();
         os << " |" << type() << ", " << _prevType << "| role type: " << role
                   << ". spec type: " << spec->type() << ". key: " << key;
     });
 #endif // PRINT
+}
+
+bool Atom::hasSpec(ushort role, BaseSpec *spec) const
+{
+    const uint key = hash(role, spec->type());
+
+    auto range = _specs.equal_range(key);
+    for (; range.first != range.second; ++range.first)
+    {
+        if (range.first->second == spec)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void Atom::setSpecsUnvisited()

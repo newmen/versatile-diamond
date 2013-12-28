@@ -12,7 +12,7 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
     {
         if (!checkAndFind<MethylOnDimerCMu>(anchor, 31))
         {
-            createBy<MethylOnDimerCMu>(parent);
+            create<MethylOnDimerCMu>(parent);
         }
     }
 }

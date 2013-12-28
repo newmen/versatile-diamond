@@ -19,7 +19,7 @@ void BridgeCRsCTiCLi::find(BridgeCRs *parent)
         if (!anchors[0]->hasRole<BridgeCRsCTiCLi>(0) || !anchors[1]->hasRole<BridgeCRsCTiCLi>(5) ||
                 !anchors[2]->hasRole<BridgeCRsCTiCLi>(4))
         {
-            createBy<BridgeCRsCTiCLi>(parent);
+            create<BridgeCRsCTiCLi>(parent);
         }
     }
 }

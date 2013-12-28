@@ -11,7 +11,7 @@ void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
     {
         if (!anchors[0]->hasRole<MethylOnBridgeCBiCMu>(25) && !anchors[1]->hasRole<MethylOnBridgeCBiCMu>(7))
         {
-            createBy<MethylOnBridgeCBiCMu>(parent);
+            create<MethylOnBridgeCBiCMu>(parent);
         }
     }
 }

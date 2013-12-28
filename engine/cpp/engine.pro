@@ -4,13 +4,13 @@ CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 QMAKE_CXXFLAGS += -DDEBUG
-#QMAKE_CXXFLAGS += -DPRINT
+QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++0x
-#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 
-QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
-LIBS += -fopenmp -lstdc++
+#QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
+#LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
@@ -71,7 +71,10 @@ SOURCES += main.cpp \
     tools/lockable.cpp \
     tools/scavenger.cpp \
     generations/reactions/lateral/dimer_drop_at_end.cpp \
-    generations/reactions/lateral/dimer_drop_in_middle.cpp
+    generations/reactions/lateral/dimer_drop_in_middle.cpp \
+    generations/species/base/two_bridges.cpp \
+    generations/species/specific/two_bridges_cbrs.cpp \
+    generations/reactions/typical/two_bridges_to_high_bridge.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -172,4 +175,7 @@ HEADERS += \
     tools/vector3d.h \
     generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     generations/reactions/lateral/dimer_drop_at_end.h \
-    generations/reactions/lateral/dimer_drop_in_middle.h
+    generations/reactions/lateral/dimer_drop_in_middle.h \
+    generations/species/base/two_bridges.h \
+    generations/species/specific/two_bridges_cbrs.h \
+    generations/reactions/typical/two_bridges_to_high_bridge.h

@@ -16,7 +16,7 @@ void HighBridge::find(Bridge *parent)
             Atom *amorph = anchor->amorphNeighbour();
             if (amorph->is(18))
             {
-                createBy<HighBridge>(&amorph, parent);
+                create<HighBridge>(amorph, parent);
             }
         }
     }

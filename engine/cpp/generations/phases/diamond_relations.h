@@ -11,6 +11,7 @@ class DiamondRelations : public B
 {
 public:
     typedef Neighbours<2> TN;
+    typedef TN (DiamondRelations<B>::*RelationsMethod)(const Atom *) const;
 
     template <class... Args>
     DiamondRelations(Args... args) : B(args...) {}
@@ -20,7 +21,7 @@ public:
     TN front_100(const Atom *atom) const;
     TN cross_100(const Atom *atom) const;
 
-    static int3 front_110(const Atom *first, const Atom *second);
+    static int3 front_110_at(const Atom *first, const Atom *second);
 };
 
 template <class B>
@@ -105,7 +106,7 @@ typename DiamondRelations<B>::TN DiamondRelations<B>::cross_100(const Atom *atom
 }
 
 template <class B>
-int3 DiamondRelations<B>::front_110(const Atom *first, const Atom *second)
+int3 DiamondRelations<B>::front_110_at(const Atom *first, const Atom *second)
 {
     assert(first->lattice());
     assert(second->lattice());

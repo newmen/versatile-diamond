@@ -10,7 +10,7 @@ class HighBridge : public Specific<AdditionalAtomsWrapper<DependentSpec<BaseSpec
 public:
     static void find(Bridge *parent);
 
-    HighBridge(Atom **additionalAtoms, ParentSpec *parent) : Specific(additionalAtoms, parent) {}
+    HighBridge(Atom *additionalAtom, ParentSpec *parent) : Specific(additionalAtom, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "high bridge"; }

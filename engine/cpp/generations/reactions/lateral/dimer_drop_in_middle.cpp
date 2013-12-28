@@ -5,5 +5,5 @@
 void DimerDropInMiddle::createUnconcreted(LateralSpec *removableSpec)
 {
     assert(removableSpec->type() == Dimer::ID);
-    createBy<DimerDropAtEnd>(this, removableSpec);
+    create<DimerDropAtEnd>(this, removableSpec);
 }

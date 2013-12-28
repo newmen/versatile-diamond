@@ -14,6 +14,9 @@ class AdditionalAtomsWrapper : public B
 
 public:
     template <class... Ts>
+    AdditionalAtomsWrapper(Atom *additionalAtom, Ts... args);
+
+    template <class... Ts>
     AdditionalAtomsWrapper(Atom **additionalAtoms, Ts... args);
 
     Atom *atom(ushort index) const override;
@@ -25,6 +28,14 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class B, ushort ATOMS_NUM>
+template <class... Ts>
+AdditionalAtomsWrapper<B, ATOMS_NUM>::AdditionalAtomsWrapper(Atom *additionalAtom, Ts... args) :
+    AdditionalAtomsWrapper<B, ATOMS_NUM>(&additionalAtom, args...)
+{
+    static_assert(ATOMS_NUM == 1, "Wrong ATOMS_NUM value for using constructor");
+}
 
 template <class B, ushort ATOMS_NUM>
 template <class... Ts>

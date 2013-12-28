@@ -176,6 +176,12 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
     if (event && !data->isSame())
     {
+#ifdef PRINT
+        debugPrint([&](std::ostream &os) {
+            os << event->name();
+        });
+#endif // PRINT
+
         data->counter()->inc(event);
         event->doIt();
     }

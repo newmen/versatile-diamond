@@ -14,7 +14,7 @@ void HighBridgeToTwoBridges::find(HighBridge *target)
                 neighbourSpec
             };
 
-            createBy<HighBridgeToTwoBridges>(targets);
+            create<HighBridgeToTwoBridges>(targets);
         }
     });
 }
@@ -33,7 +33,7 @@ void HighBridgeToTwoBridges::find(BridgeCRs *target)
                 target
             };
 
-            createBy<HighBridgeToTwoBridges>(targets);
+            create<HighBridgeToTwoBridges>(targets);
         }
     });
 }
@@ -58,7 +58,7 @@ void HighBridgeToTwoBridges::doIt()
 
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

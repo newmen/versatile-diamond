@@ -3,7 +3,7 @@
 
 void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
 {
-    createBy<MethylOnDimerHydrogenMigration>(target);
+    create<MethylOnDimerHydrogenMigration>(target);
 }
 
 void MethylOnDimerHydrogenMigration::doIt()

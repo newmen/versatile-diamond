@@ -6,7 +6,7 @@
 
 // 32 :: -^C%d<
 const ushort Handbook::atomsNum = 33;
-const bool Handbook::__atomsAccordance[] = {
+const bool Handbook::__atomsAccordance[33 * 33] = {
     true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
     false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
     true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false,

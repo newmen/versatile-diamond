@@ -2,7 +2,7 @@
 
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
-    createBy<MethylToHighBridge>(target);
+    create<MethylToHighBridge>(target);
 }
 
 void MethylToHighBridge::doIt()

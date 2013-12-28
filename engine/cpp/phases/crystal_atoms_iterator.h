@@ -18,6 +18,9 @@ public:
 
     template <ushort ATOMS_NUM, class RL, class AL>
     static void eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda);
+
+    template <ushort RELS_NUM, class RL, class AL>
+    static void eachRelations(Atom *anchor, const RL *relationMethods, const AL &actionLambda);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,13 +64,12 @@ void CrystalAtomsIterator<C>::eachNeighbours(Atom **anchors, const RL &relations
         for (ushort n = 0; n < ATOMS_NUM; ++n)
         {
             Atom *neighbour = arrOfNeighbours[n][i];
-            neighbours[n] = neighbour;
-
             if (!neighbour)
             {
                 goto next_main_iteration;
             }
 
+            neighbours[n] = neighbour;
             allVisited &= neighbour->isVisited();
         }
 
@@ -75,6 +77,42 @@ void CrystalAtomsIterator<C>::eachNeighbours(Atom **anchors, const RL &relations
         {
             actionLambda(neighbours);
         }
+
+        next_main_iteration :;
+    }
+}
+
+template <class C>
+template <ushort RELS_NUM, class RL, class AL>
+void CrystalAtomsIterator<C>::eachRelations(Atom *anchor, const RL *relationMethods, const AL &actionLambda)
+{
+    static_assert(RELS_NUM > 0, "Invalid number of relations");
+
+    C *crystal = crystalBy(anchor);
+    typedef decltype((crystal->*relationMethods[0])(nullptr)) NeighboursType;
+
+    NeighboursType arrOfNeighbours[RELS_NUM];
+    for (ushort n = 0; n < RELS_NUM; ++n)
+    {
+        arrOfNeighbours[n] = (crystal->*relationMethods[n])(anchor);
+    }
+
+    Atom *neighbours[RELS_NUM];
+    for (ushort i = 0; i < NeighboursType::QUANTITY; ++i)
+    {
+        // TODO: visiting of atoms is not verifieng for multisearch!
+        for (ushort n = 0; n < RELS_NUM; ++n)
+        {
+            Atom *neighbour = arrOfNeighbours[n][i];
+            if (!neighbour)
+            {
+                goto next_main_iteration;
+            }
+
+            neighbours[n] = neighbour;
+        }
+
+        actionLambda(neighbours);
 
         next_main_iteration :;
     }

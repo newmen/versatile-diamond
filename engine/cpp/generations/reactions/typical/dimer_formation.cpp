@@ -20,7 +20,7 @@ void DimerFormation::find(BridgeCTsi *target)
                 neighbourSpec
             };
 
-            createBy<DimerFormation>(targets);
+            create<DimerFormation>(targets);
         }
     });
 }

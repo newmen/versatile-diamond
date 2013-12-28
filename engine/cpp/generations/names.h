@@ -5,11 +5,11 @@
 
 enum : ushort
 {
-    BASE_SPECS_NUM = 4,
-    SPECIFIC_SPECS_NUM = 10,
+    BASE_SPECS_NUM = 5,
+    SPECIFIC_SPECS_NUM = 11,
 
     UBIQUITOUS_REACTIONS_NUM = 4,
-    TYPICAL_REACTIONS_NUM = 10,
+    TYPICAL_REACTIONS_NUM = 11,
     LATERAL_REACTIONS_NUM = 4,
 
 //    ALL_SPECS_NUM = BASE_SPECS_NUM + SPECIFIC_SPECS_NUM,
@@ -21,7 +21,8 @@ enum BaseSpecNames : ushort
     BRIDGE,
     DIMER,
     METHYL_ON_DIMER,
-    METHYL_ON_BRIDGE
+    METHYL_ON_BRIDGE,
+    TWO_BRIDGES
 };
 
 enum SpecificSpecNames : ushort
@@ -35,7 +36,8 @@ enum SpecificSpecNames : ushort
     METHYL_ON_DIMER_CMsu,
     METHYL_ON_DIMER_CLs_CMu,
     METHYL_ON_BRIDGE_CBi_CMu,
-    HIGH_BRIDGE
+    HIGH_BRIDGE,
+    TWO_BRIDGES_CBRs
 };
 
 enum TypicalReactionNames : ushort
@@ -49,7 +51,8 @@ enum TypicalReactionNames : ushort
     HIGH_BRIDGE_STAND_TO_ONE_BRIDGE,
     DES_METHYL_FROM_BRIDGE,
     NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE,
-    HIGH_BRIDGE_STAND_TO_TWO_BRIDGES
+    HIGH_BRIDGE_STAND_TO_TWO_BRIDGES,
+    TWO_BRIDGES_TO_HIGH_BRIDGE
 };
 
 enum LateralReactionNames : ushort

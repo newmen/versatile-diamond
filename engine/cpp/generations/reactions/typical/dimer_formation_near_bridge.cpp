@@ -14,7 +14,7 @@ void DimerFormationNearBridge::find(BridgeCTsi *target)
                 neighbourSpec
             };
 
-            createBy<DimerFormationNearBridge>(targets);
+            create<DimerFormationNearBridge>(targets);
         }
     });
 }
@@ -33,7 +33,7 @@ void DimerFormationNearBridge::find(BridgeCRs *target)
                 target
             };
 
-            createBy<DimerFormationNearBridge>(targets);
+            create<DimerFormationNearBridge>(targets);
         }
     });
 }
