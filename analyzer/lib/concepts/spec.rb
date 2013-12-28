@@ -164,7 +164,7 @@ module VersatileDiamond
       def extend_by_references
         extended_name = "extended_#{@name}".to_sym
         begin # caching
-          Tools::Chest.spec(extended_name)
+          Tools::Chest.spec(extended_name).dup
         rescue Tools::Chest::KeyNameError
           extendable_spec = self.class.new(extended_name)
           extendable_spec.adsorb(self)
@@ -186,7 +186,7 @@ module VersatileDiamond
       def organize_dependencies!(possible_parents)
         # find and reorganize dependencies
         possible_parents.each do |possible_parent|
-          if contain?(links, possible_parent.links)
+          if residue(links, possible_parent.links)
             store_parent(possible_parent)
             parent.store_child(self)
             break
@@ -334,7 +334,7 @@ module VersatileDiamond
       # @raise [RuntimeError] if some of multi-bond (in large or small links)
       #   is invalid
       # @return [Boolean] contains or not
-      def contain?(large_links, small_links)
+      def residue(large_links, small_links)
         HanserRecursiveAlgorithm.contain?(large_links, small_links,
           separated_multi_bond: true)
       end

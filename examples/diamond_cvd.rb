@@ -84,9 +84,9 @@ surface
     bond :ct, :cr, face: 110, dir: :cross
 
   spec :two_bridges
-    atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
-    bond :ctl, :cl, face: 110, dir: :cross
-    bond :ctl, :cc, face: 110, dir: :cross
+    atoms ctr: C%d, cbr: bridge(:ct), cc: bridge(:cr)
+    bond :ctr, :cbr, face: 110, dir: :cross
+    bond :ctr, :cc, face: 110, dir: :cross
 
   spec :cross_bridge_on_dimers
     atoms ct: C, cl: dimer(:cr), cr: dimer(:cr)
@@ -350,7 +350,7 @@ events
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
-    equation high_bridge + bridge(cr: *) = two_bridges(cl: *)
+    equation high_bridge + bridge(cr: *) = two_bridges(cbr: *)
       refinement 'without chain neighbour methyl'
         activation 3.2
 
