@@ -10,8 +10,8 @@ class MethylOnDimer :
 public:
     static void find(Dimer *target);
 
-    MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, ParentSpec *parent) :
-        Base(additionalAtoms, atomsShift, parent) {}
+    MethylOnDimer(Atom *additionalAtom, ushort atomsShift, ParentSpec *parent) :
+        Base(additionalAtom, atomsShift, parent) {}
 
     void store() override;
     void remove() override;

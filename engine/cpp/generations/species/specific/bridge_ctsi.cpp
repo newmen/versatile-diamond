@@ -9,12 +9,11 @@ ushort BridgeCTsi::__roles[1] = { 28 };
 void BridgeCTsi::find(Bridge *parent)
 {
     Atom *anchor = parent->atom(0);
-
     if (anchor->is(28))
     {
         if (!anchor->hasRole<BridgeCTsi>(28))
         {
-            createBy<BridgeCTsi>(parent);
+            create<BridgeCTsi>(parent);
         }
     }
 }

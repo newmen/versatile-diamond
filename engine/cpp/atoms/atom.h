@@ -58,12 +58,16 @@ public:
 
     void describe(ushort role, BaseSpec *spec);
     void forget(ushort role, BaseSpec *spec);
+    bool hasSpec(ushort role, BaseSpec *spec) const;
 
     template <class S>
-    bool hasRole(ushort role);
+    bool hasRole(ushort role) const;
 
     template <class S>
     S *specByRole(ushort role);
+
+    template <class S, class L>
+    S *findSpecByRole(ushort role, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -95,8 +99,10 @@ private:
     }
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class S>
-bool Atom::hasRole(ushort role)
+bool Atom::hasRole(ushort role) const
 {
     const uint key = hash(role, S::ID);
     return _specs.find(key) != _specs.cend();
@@ -125,6 +131,25 @@ S *Atom::specByRole(ushort role)
     {
         assert(distance == 1);
         result = range.first->second;
+    }
+
+    return cast_to<S *>(result);
+}
+
+template <class S, class L>
+S *Atom::findSpecByRole(ushort role, const L &lambda)
+{
+    BaseSpec *result = nullptr;
+    const uint key = hash(role, S::ID);
+
+    auto range = _specs.equal_range(key);
+    for (; range.first != range.second; ++range.first)
+    {
+        BaseSpec *spec = range.first->second;
+        if (lambda(spec))
+        {
+            result = spec;
+        }
     }
 
     return cast_to<S *>(result);

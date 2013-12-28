@@ -17,7 +17,7 @@ void BridgeCRs::find(Bridge *parent)
         {
             if (!checkAndFind<BridgeCRs>(anchor, 5))
             {
-                createBy<BridgeCRs>(checkingIndexes[i], 1, parent);
+                create<BridgeCRs>(checkingIndexes[i], 1, parent);
             }
         }
     }

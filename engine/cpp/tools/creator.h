@@ -8,13 +8,13 @@ public:
 
 protected:
     template <class T, class... Args>
-    static void createBy(Args... args);
+    static void create(Args... args);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T, class... Args>
-void Creator::createBy(Args... args)
+void Creator::create(Args... args)
 {
     auto item = new T(args...);
     item->store();

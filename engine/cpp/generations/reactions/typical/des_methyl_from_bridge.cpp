@@ -2,7 +2,7 @@
 
 void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 {
-    createBy<DesMethylFromBridge>(target);
+    create<DesMethylFromBridge>(target);
 }
 
 void DesMethylFromBridge::doIt()

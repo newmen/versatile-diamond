@@ -21,10 +21,9 @@ void Dimer::find(Atom *anchor)
         if (!checkAndFind<Dimer>(anchor, 22))
         {
             eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
-                if (anchor->hasBondWith(neighbour))
+                if (neighbour->is(22) && anchor->hasBondWith(neighbour))
                 {
                     assert(neighbour->hasRole<Bridge>(3));
-                    assert(neighbour->is(22));
                     assert(neighbour->lattice());
 
                     ParentSpec *parents[2] = {
@@ -32,7 +31,7 @@ void Dimer::find(Atom *anchor)
                         neighbour->specByRole<Bridge>(3)
                     };
 
-                    createBy<Dimer>(parents);
+                    create<Dimer>(parents);
                 }
             });
         }

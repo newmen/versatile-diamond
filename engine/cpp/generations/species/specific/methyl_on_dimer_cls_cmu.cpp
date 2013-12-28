@@ -11,7 +11,7 @@ void MethylOnDimerCLsCMu::find(MethylOnDimerCMu *parent)
     {
         if (!anchor->hasRole<MethylOnDimerCLsCMu>(21))
         {
-            createBy<MethylOnDimerCLsCMu>(parent);
+            create<MethylOnDimerCLsCMu>(parent);
         }
     }
 }

@@ -27,7 +27,7 @@ void ConcretizableRole<Typical, RT, TARGETS_NUM>::concretize(LateralSpec *spec)
     Handbook::mc().remove(RT, this);
     this->eraseFromTargets(this);
 
-    Creator::createBy<R>(this, spec);
+    Creator::create<R>(this, spec);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ void ConcretizableRole<Lateral, RT, LATERALS_NUM>::concretize(LateralSpec *spec)
     this->eraseFromTargets(this);
     Handbook::scavenger().markReaction(this);
 
-    Creator::createBy<R>(this, spec);
+    Creator::create<R>(this, spec);
 }
 
 #endif // CONCRETIZABLE_ROLE_H

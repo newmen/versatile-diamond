@@ -3,7 +3,7 @@
 
 void AdsMethylToDimer::find(DimerCRs *target)
 {
-    createBy<AdsMethylToDimer>(target);
+    create<AdsMethylToDimer>(target);
 }
 
 void AdsMethylToDimer::doIt()

@@ -1,20 +1,20 @@
-#include "next_level_bridge_to_high_bridge.h"
+#include "two_bridges_to_high_bridge.h"
 
-void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
+void TwoBridgesToHighBridge::find(TwoBridgesCBRs *target)
 {
-    create<NextLevelBridgeToHighBridge>(target);
+    create<TwoBridgesToHighBridge>(target);
 }
 
-void NextLevelBridgeToHighBridge::doIt()
+void TwoBridgesToHighBridge::doIt()
 {
-    assert(target()->type() == BridgeCRsCTiCLi::ID);
+    assert(target()->type() == TwoBridgesCBRs::ID);
 
-    Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(2) };
+    Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(4) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(0));
     assert(b->is(5));
-    assert(c->is(4));
+    assert(c->is(24));
 
     // erase from crystal should be before bond-unbond atoms
     a->lattice()->crystal()->erase(a);
@@ -28,9 +28,7 @@ void NextLevelBridgeToHighBridge::doIt()
     else a->changeType(15);
 
     b->changeType(19);
-
-    if (c->is(5)) c->changeType(2);
-    else c->changeType(28);
+    c->changeType(5);
 
     Finder::findAll(atoms, 3);
 }

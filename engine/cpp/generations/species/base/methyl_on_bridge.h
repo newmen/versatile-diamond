@@ -9,7 +9,7 @@ class MethylOnBridge : public Base<AdditionalAtomsWrapper<DependentSpec<ParentSp
 public:
     static void find(Bridge *target);
 
-    MethylOnBridge(Atom **additionalAtoms, ParentSpec *parent) : Base(additionalAtoms, parent) {}
+    MethylOnBridge(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "methyl on bridge"; }

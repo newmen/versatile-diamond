@@ -14,7 +14,7 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
                 neighbourSpec
             };
 
-            createBy<HighBridgeStandToOneBridge>(targets);
+            create<HighBridgeStandToOneBridge>(targets);
         }
     });
 }
@@ -33,7 +33,7 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
                 target
             };
 
-            createBy<HighBridgeStandToOneBridge>(targets);
+            create<HighBridgeStandToOneBridge>(targets);
         }
     });
 }
@@ -58,7 +58,7 @@ void HighBridgeStandToOneBridge::doIt()
 
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

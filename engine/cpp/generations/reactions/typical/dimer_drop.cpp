@@ -5,7 +5,7 @@
 
 void DimerDrop::find(DimerCRiCLi *target)
 {
-    createBy<DimerDrop>(target);
+    create<DimerDrop>(target);
 }
 
 void DimerDrop::doIt()

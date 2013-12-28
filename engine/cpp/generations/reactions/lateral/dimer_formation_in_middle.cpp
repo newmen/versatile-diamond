@@ -6,5 +6,5 @@
 void DimerFormationInMiddle::createUnconcreted(LateralSpec *removableSpec)
 {
     assert(removableSpec->type() == Dimer::ID);
-    createBy<DimerFormationAtEnd>(this, removableSpec);
+    create<DimerFormationAtEnd>(this, removableSpec);
 }

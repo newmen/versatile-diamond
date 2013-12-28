@@ -18,10 +18,10 @@ void MethylOnDimer::find(Dimer *target)
         {
             if (!checkAndFind<MethylOnDimer>(anchor, 23) && !anchor->isVisited())
             {
-                Atom *methyl = anchor->amorphNeighbour();
-                if (methyl->is(14))
+                Atom *amorph = anchor->amorphNeighbour();
+                if (amorph->is(14))
                 {
-                    createBy<MethylOnDimer>(&methyl, checkingIndexes[i], target);
+                    create<MethylOnDimer>(amorph, checkingIndexes[i], target);
                 }
             }
         }
