@@ -1,8 +1,8 @@
 #include "dimer_cri_cli.h"
 #include "../../reactions/typical/dimer_drop.h"
 
-ushort DimerCRiCLi::__indexes[2] = { 0, 3 };
-ushort DimerCRiCLi::__roles[2] = { 20, 20 };
+const ushort DimerCRiCLi::__indexes[2] = { 0, 3 };
+const ushort DimerCRiCLi::__roles[2] = { 20, 20 };
 
 void DimerCRiCLi::find(Dimer *parent)
 {

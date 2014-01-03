@@ -2,27 +2,28 @@
 #define TWO_BRIDGES_H
 
 #include "../base.h"
+#include "bridge.h"
 
-class TwoBridges : public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec, 2>, 1>, TWO_BRIDGES, 3>
+class TwoBridges : public Base<AtomsSwapWrapper<DependentSpec<ParentSpec, 3>>, TWO_BRIDGES, 1>
 {
 public:
-    static void find(Atom *anchor);
+    static void find(Bridge *parent);
 
-    TwoBridges(Atom *additionalAtom, ParentSpec **parents) : Base(additionalAtom, parents) {}
+    TwoBridges(ushort from, ushort to, ParentSpec **parents) : Base(from, to, parents) {}
 
 #ifdef PRINT
-    std::string name() const override { return "two bridges"; }
+    const std::string name() const override { return "two bridges"; }
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[3];
-    static ushort __roles[3];
+    static const ushort __indexes[1];
+    static const ushort __roles[1];
 };
 
 #endif // TWO_BRIDGES_H

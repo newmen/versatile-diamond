@@ -16,6 +16,8 @@ protected:
     DependentSpec(ParentSpec *parent);
     DependentSpec(ParentSpec **parents);
 
+    ParentSpec *parent(ushort index);
+
 public:
     ushort size() const;
     Atom *atom(ushort index) const;
@@ -45,6 +47,13 @@ DependentSpec<B, PARENTS_NUM>::DependentSpec(ParentSpec **parents)
         assert(parents[i]);
         _parents[i] = parents[i];
     }
+}
+
+template <class B, ushort PARENTS_NUM>
+ParentSpec *DependentSpec<B, PARENTS_NUM>::parent(ushort index)
+{
+    assert(index < PARENTS_NUM);
+    return _parents[index];
 }
 
 template <class B, ushort PARENTS_NUM>

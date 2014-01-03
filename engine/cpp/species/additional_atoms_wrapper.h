@@ -20,6 +20,7 @@ public:
     AdditionalAtomsWrapper(Atom **additionalAtoms, Ts... args);
 
     Atom *atom(ushort index) const override;
+    ushort size() const override;
 
 #ifdef PRINT
     void info(std::ostream &os) override;
@@ -51,6 +52,12 @@ template <class B, ushort ATOMS_NUM>
 Atom *AdditionalAtomsWrapper<B, ATOMS_NUM>::atom(ushort index) const
 {
     return (index < ATOMS_NUM) ? _additionalAtoms[index] : B::atom(index - ATOMS_NUM);
+}
+
+template <class B, ushort ATOMS_NUM>
+ushort AdditionalAtomsWrapper<B, ATOMS_NUM>::size() const
+{
+    return ATOMS_NUM + B::size();
 }
 
 #ifdef PRINT

@@ -8,16 +8,17 @@ public:
 
 protected:
     template <class T, class... Args>
-    static void create(Args... args);
+    static T *create(Args... args);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T, class... Args>
-void Creator::create(Args... args)
+T *Creator::create(Args... args)
 {
     auto item = new T(args...);
     item->store();
+    return item;
 }
 
 #endif // CREATOR_H

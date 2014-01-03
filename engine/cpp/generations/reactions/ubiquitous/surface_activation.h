@@ -11,7 +11,7 @@ public:
     SurfaceActivation(Atom *target) : ActivationData(target) {}
 
     double rate() const { return 3600; }
-    std::string name() const { return "surface activation"; }
+    const std::string name() const { return "surface activation"; }
 };
 
 #endif // SURFACE_ACTIVATION_H

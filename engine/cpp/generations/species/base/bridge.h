@@ -3,7 +3,9 @@
 
 #include "../base.h"
 
-class Bridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>
+class Bridge :
+        public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>,
+        public ComponentSpec
 {
 public:
     static void find(Atom *anchor);
@@ -11,18 +13,19 @@ public:
     Bridge(Atom **atoms) : Base(atoms) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge"; }
+    const std::string name() const override { return "bridge"; }
 #endif // PRINT
 
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
-
+    void findAllComplexes() override;
 protected:
     void findAllChildren() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[3];
-    static ushort __roles[3];
+    static const ushort __indexes[3];
+    static const ushort __roles[3];
 };
 
 #endif // BRIDGE_H

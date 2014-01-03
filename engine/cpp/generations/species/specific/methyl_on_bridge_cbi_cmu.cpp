@@ -1,8 +1,9 @@
 #include "methyl_on_bridge_cbi_cmu.h"
 #include "../../reactions/typical/des_methyl_from_bridge.h"
+#include "methyl_on_bridge_cbi_cmsu.h"
 
-ushort MethylOnBridgeCBiCMu::__indexes[2] = { 1, 0 };
-ushort MethylOnBridgeCBiCMu::__roles[2] = { 7, 25 };
+const ushort MethylOnBridgeCBiCMu::__indexes[2] = { 1, 0 };
+const ushort MethylOnBridgeCBiCMu::__roles[2] = { 7, 25 };
 
 void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
 {
@@ -14,6 +15,11 @@ void MethylOnBridgeCBiCMu::find(MethylOnBridge *parent)
             create<MethylOnBridgeCBiCMu>(parent);
         }
     }
+}
+
+void MethylOnBridgeCBiCMu::findAllChildren()
+{
+    MethylOnBridgeCBiCMsu::find(this);
 }
 
 void MethylOnBridgeCBiCMu::findAllReactions()

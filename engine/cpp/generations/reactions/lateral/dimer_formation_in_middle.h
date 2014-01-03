@@ -10,7 +10,7 @@ public:
     DimerFormationInMiddle(Args... args) : Lateral(args...) {}
 
     double rate() const { return 3.1e5; }
-    std::string name() const { return "dimer formation in middle of dimers row"; }
+    const std::string name() const { return "dimer formation in middle of dimers row"; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };

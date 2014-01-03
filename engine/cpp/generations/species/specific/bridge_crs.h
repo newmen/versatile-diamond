@@ -2,30 +2,30 @@
 #define BRIDGE_CRS_H
 
 #include "../base/bridge.h"
-#include "../specific.h"
+#include "../base_specific.h"
 
 class BridgeCRs :
-        public Specific<AtomsSwapWrapper<DependentSpec<ParentSpec>>, BRIDGE_CRs, 1>
+        public BaseSpecific<AtomsSwapWrapper<DependentSpec<ParentSpec>>, BRIDGE_CRs, 1>
 {
 public:
     static void find(Bridge *parent);
 
-    BridgeCRs(ushort fromIndex, ushort toIndex, ParentSpec *parent) : Specific(fromIndex, toIndex, parent) {}
+    BridgeCRs(ushort fromIndex, ushort toIndex, ParentSpec *parent) : BaseSpecific(fromIndex, toIndex, parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge(cr: *)"; }
+    const std::string name() const override { return "bridge(cr: *)"; }
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
     void findAllReactions() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[1];
-    static ushort __roles[1];
+    static const ushort __indexes[1];
+    static const ushort __roles[1];
 };
 
 #endif // BRIDGE_CRS_H

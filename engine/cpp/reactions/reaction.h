@@ -22,7 +22,7 @@ public:
     virtual void info(std::ostream &os) = 0;
 #endif // PRINT
 
-    virtual std::string name() const = 0;
+    virtual const std::string name() const = 0;
 
 protected:
 };

@@ -13,6 +13,7 @@ void DesMethylFromBridge::doIt()
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(7));
+    assert(b->is(25));
 
     a->unbondFrom(b);
 

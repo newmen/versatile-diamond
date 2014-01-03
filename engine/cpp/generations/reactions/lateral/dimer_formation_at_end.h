@@ -11,7 +11,7 @@ public:
     DimerFormationAtEnd(Args... args) : ConcretizableRole(args...) {}
 
     double rate() const { return 2.6e5; }
-    std::string name() const { return "dimer formation at end of dimers row"; }
+    const std::string name() const { return "dimer formation at end of dimers row"; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };

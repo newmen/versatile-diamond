@@ -1,6 +1,7 @@
 #ifndef LOCAL_H
 #define LOCAL_H
 
+#include <type_traits>
 #include "../../atoms/atom.h"
 using namespace vd;
 
@@ -49,7 +50,7 @@ template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
 template <class R>
 void Local<B, U, RT, S, AT>::concretize(Atom *anchor)
 {
-    static_assert(std::is_same<typename R::UbiquitousType, U>(), "Undefined using reaction type");
+    static_assert(std::is_same<typename R::UbiquitousType, U>::value, "Undefined using reaction type");
 
     assert(anchor->isVisited());
     assert(anchor->is(AT));
@@ -64,7 +65,7 @@ template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
 template <class R>
 void Local<B, U, RT, S, AT>::unconcretize(Atom *anchor)
 {
-    static_assert(std::is_same<typename R::UbiquitousType, U>(), "Undefined using reaction type");
+    static_assert(std::is_same<typename R::UbiquitousType, U>::value, "Undefined using reaction type");
 
     assert(anchor->isVisited());
     assert(anchor->is(AT));

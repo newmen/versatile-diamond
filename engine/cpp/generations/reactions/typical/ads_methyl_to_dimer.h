@@ -14,7 +14,7 @@ public:
     double rate() const { return 1e7; }
     void doIt();
 
-    std::string name() const override { return "adsorption methyl to dimer"; }
+    const std::string name() const override { return "adsorption methyl to dimer"; }
 };
 
 #endif // ADS_METHYL_TO_DIMER_H
