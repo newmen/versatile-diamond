@@ -135,7 +135,6 @@ HEADERS += \
     generations/reactions/ubiquitous.h \
     generations/reactions/ubiquitous/data/activation_data.h \
     generations/reactions/ubiquitous/data/deactivation_data.h \
-    generations/reactions/ubiquitous/local/methyl_on_dimer_activation.h \
     generations/reactions/ubiquitous/surface_activation.h \
     generations/reactions/ubiquitous/surface_deactivation.h \
     generations/species/base.h \
@@ -195,7 +194,6 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     generations/reactions/lateral/dimer_drop_at_end.h \
     generations/reactions/lateral/dimer_drop_in_middle.h \
     generations/species/base/two_bridges.h \
@@ -239,4 +237,6 @@ HEADERS += \
     generations/reactions/typical/migration_down_at_dimer_from_high_bridge.h \
     generations/reactions/typical/lookers/near_high_bridge.h \
     generations/species/specific/high_bridge_cms.h \
-    generations/reactions/typical/migration_down_in_gap_from_high_bridge.h
+    generations/reactions/typical/migration_down_in_gap_from_high_bridge.h \
+    generations/reactions/ubiquitous/local/methyl_on_bridge_activation.h \
+    generations/reactions/ubiquitous/local/methyl_on_bridge_deactivation.h

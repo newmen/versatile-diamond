@@ -4,5 +4,5 @@
 void SurfaceDeactivation::find(Atom *anchor)
 {
 //    findSelf<SurfaceDeactivation>(anchor);
-    findChild<MethylOnDimerDeactivation>(anchor);
+    findChild<MethylOnBridgeDeactivation>(anchor);
 }
