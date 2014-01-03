@@ -1,7 +1,6 @@
 #ifndef LOCAL_H
 #define LOCAL_H
 
-#include <type_traits>
 #include "../../atoms/atom.h"
 using namespace vd;
 

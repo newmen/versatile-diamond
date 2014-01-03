@@ -4,12 +4,16 @@
 #include "../base.h"
 #include "bridge.h"
 
-class MethylOnBridge : public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_BRIDGE, 2>
+class MethylOnBridge :
+        public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_BRIDGE, 2>
 {
 public:
     static void find(Bridge *target);
 
     MethylOnBridge(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
+
+    void store() override;
+    void remove() override;
 
 #ifdef PRINT
     const std::string name() const override { return "methyl on bridge"; }
