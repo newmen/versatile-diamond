@@ -14,19 +14,19 @@ public:
     Dimer(ParentSpec **parents) : Sidepiece(parents) {}
 
 #ifdef PRINT
-    std::string name() const override { return "dimer"; }
+    const std::string name() const override { return "dimer"; }
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
     void findAllReactions() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[2];
-    static ushort __roles[2];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
 template <class L>

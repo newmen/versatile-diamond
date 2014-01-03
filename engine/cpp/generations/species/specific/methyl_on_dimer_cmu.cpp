@@ -2,8 +2,8 @@
 #include "methyl_on_dimer_cmsu.h"
 #include "methyl_on_dimer_cls_cmu.h"
 
-ushort MethylOnDimerCMu::__indexes[1] = { 0 };
-ushort MethylOnDimerCMu::__roles[1] = { 31 };
+const ushort MethylOnDimerCMu::__indexes[1] = { 0 };
+const ushort MethylOnDimerCMu::__roles[1] = { 31 };
 
 void MethylOnDimerCMu::find(MethylOnDimer *parent)
 {

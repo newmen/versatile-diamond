@@ -11,7 +11,7 @@ public:
     DimerDropAtEnd(Args... args) : ConcretizableRole(args...) {}
 
     double rate() const { return 4.9e3; }
-    std::string name() const { return "dimer drop at end of dimers row"; }
+    const std::string name() const { return "dimer drop at end of dimers row"; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };

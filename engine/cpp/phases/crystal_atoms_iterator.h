@@ -19,6 +19,7 @@ public:
     template <ushort ATOMS_NUM, class RL, class AL>
     static void eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda);
 
+    // TODO: never used!
     template <ushort RELS_NUM, class RL, class AL>
     static void eachRelations(Atom *anchor, const RL *relationMethods, const AL &actionLambda);
 };

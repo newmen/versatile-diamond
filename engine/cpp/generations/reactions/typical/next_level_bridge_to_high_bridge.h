@@ -14,7 +14,7 @@ public:
     double rate() const { return 3.5e3; }
     void doIt();
 
-    std::string name() const override { return "next layer bridge to high bridge"; }
+    const std::string name() const override { return "next layer bridge to high bridge"; }
 };
 
 #endif // NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE_H

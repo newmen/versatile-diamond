@@ -11,8 +11,8 @@
 #include "../specific/dimer_cri_cli.h"
 #include "../specific/dimer_crs.h"
 
-ushort Dimer::__indexes[2] = { 0, 3 };
-ushort Dimer::__roles[2] = { 22, 22 };
+const ushort Dimer::__indexes[2] = { 0, 3 };
+const ushort Dimer::__roles[2] = { 22, 22 };
 
 void Dimer::find(Atom *anchor)
 {

@@ -2,48 +2,44 @@
 #include "bridge.h"
 #include "../specific/two_bridges_cbrs.h"
 
-ushort TwoBridges::__indexes[3] = { 0, 1, 4 };
-ushort TwoBridges::__roles[3] = { 0, 6, 24 };
+const ushort TwoBridges::__indexes[1] = { 0 };
+const ushort TwoBridges::__roles[1] = { 0 };
 
-void TwoBridges::find(Atom *anchor)
+void TwoBridges::find(Bridge *parent)
 {
-    if (anchor->is(24) && anchor->lattice()->coords().z > 0)
+    Atom *anchor = parent->atom(0);
+    assert(anchor->lattice());
+
+    if (anchor->is(0) && anchor->lattice()->coords().z > 1)
     {
-        if (!checkAndFind<TwoBridges>(anchor, 24))
+        const uint bottomIndexes[2] = { 1, 2 };
+        const uint nearIndexes[2] = { 2, 1 };
+
+        for (int i = 0; i < 2; ++i)
         {
-            const Diamond::RelationsMethod relations[2] = {
-                &Diamond::front_110,
-                &Diamond::front_100
-            };
+            Atom *bottomAnchor = parent->atom(bottomIndexes[i]);
+            Atom *nearAnchor = parent->atom(nearIndexes[i]);
 
-            eachRelations<2>(anchor, relations, [anchor](Atom **neighbours) {
-                Atom *top = neighbours[0], *bottom = neighbours[1];
+            assert(bottomAnchor->is(6));
+            if (nearAnchor->is(24))
+            {
+                auto bottom = bottomAnchor->specByRole<Bridge>(3);
+                assert(bottom);
 
-                //  || top->is(19)
-                if (top->is(0) && bottom->is(6))
-                {
-                    assert(top->hasBondWith(anchor));
-                    assert(top->hasBondWith(bottom));
+                auto near = nearAnchor->findSpecByRole<Bridge>(6, [parent](BaseSpec *spec) {
+                    return spec != parent;
+                });
+                assert(near);
 
-                    assert(top->hasRole<Bridge>(3));
-                    assert(top->lattice());
-                    assert(bottom->hasRole<Bridge>(3));
-                    assert(bottom->lattice());
+                ParentSpec *parents[] = {
+                    parent,
+                    bottom,
+                    near
+                };
 
-                    auto first = anchor->findSpecByRole<Bridge>(6, [bottom] (BaseSpec *spec) {
-                        return !bottom->hasSpec(6, spec);
-                    });
-
-                    assert(first);
-
-                    ParentSpec *parents[2] = {
-                        first,
-                        bottom->specByRole<Bridge>(3)
-                    };
-
-                    create<TwoBridges>(top, parents);
-                }
-            });
+                create<TwoBridges>(bottomIndexes[i], 1, parents);
+                break;
+            }
         }
     }
 }

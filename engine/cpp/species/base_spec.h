@@ -22,20 +22,17 @@ public:
 
     virtual ushort size() const = 0;
     virtual Atom *atom(ushort index) const = 0;
+    virtual Atom *anchor() = 0;
 
-    virtual Atom *anchor() { return atom(indexes()[0]); }
     virtual void findChildren() {}
 
     virtual void store();
     virtual void remove();
 
-    virtual ushort *indexes() const = 0;
-    virtual ushort *roles() const = 0;
-
 #ifdef PRINT
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
-    virtual std::string name() const = 0;
+    virtual const std::string name() const = 0;
     virtual void info(std::ostream &os) = 0;
 
 private:

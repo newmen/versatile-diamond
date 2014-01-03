@@ -12,18 +12,18 @@ public:
     MethylOnBridge(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "methyl on bridge"; }
+    const std::string name() const override { return "methyl on bridge"; }
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[2];
-    static ushort __roles[2];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
 #endif // METHYL_ON_BRIDGE_H

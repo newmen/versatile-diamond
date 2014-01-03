@@ -16,7 +16,7 @@ public:
     double rate() const { return 5e6; }
     void doIt();
 
-    std::string name() const override { return "high bridge stand to bridge at new level"; }
+    const std::string name() const override { return "high bridge stand to bridge at new level"; }
 };
 
 #endif // HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H

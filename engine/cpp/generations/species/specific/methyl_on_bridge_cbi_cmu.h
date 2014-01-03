@@ -2,28 +2,30 @@
 #define METHYL_ON_BRIDGE_CBI_CMU_H
 
 #include "../base/methyl_on_bridge.h"
-#include "../specific.h"
+#include "../base_specific.h"
 
-class MethylOnBridgeCBiCMu : public Specific<DependentSpec<BaseSpec>, METHYL_ON_BRIDGE_CBi_CMu, 2>
+class MethylOnBridgeCBiCMu :
+        public BaseSpecific<DependentSpec<ParentSpec>, METHYL_ON_BRIDGE_CBi_CMu, 2>
 {
 public:
     static void find(MethylOnBridge *parent);
 
-    MethylOnBridgeCBiCMu(ParentSpec *parent) : Specific(parent) {}
+    MethylOnBridgeCBiCMu(ParentSpec *parent) : BaseSpecific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "methyl_on_bridge(cb: i, cm: u)"; }
+    const std::string name() const override { return "methyl_on_bridge(cb: i, cm: u)"; }
 #endif // PRINT
 
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
-
 protected:
+    void findAllChildren() override;
     void findAllReactions() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[2];
-    static ushort __roles[2];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
 #endif // METHYL_ON_BRIDGE_CBI_CMU_H

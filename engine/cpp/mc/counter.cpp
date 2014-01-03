@@ -67,7 +67,18 @@ void Counter::printStats()
 void Counter::sort()
 {
     std::sort(_records.begin(), _records.end(), [](Record *a, Record *b) {
-        return !a || !b || a->counter > b->counter;
+        if (a == nullptr)
+        {
+            return b == nullptr;
+        }
+        else if (b == nullptr)
+        {
+            return false;
+        }
+        else
+        {
+            return a->counter > b->counter;
+        }
     });
 }
 

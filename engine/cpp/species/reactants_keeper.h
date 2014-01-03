@@ -1,14 +1,13 @@
-#ifndef KEEPER_H
-#define KEEPER_H
+#ifndef REACTANTS_KEEPER_H
+#define REACTANTS_KEEPER_H
 
-#include <vector>
 #include "../tools/collector.h"
 
 namespace vd
 {
 
 template <class S>
-class Keeper : public Collector<S>
+class ReactantsKeeper : public Collector<S>
 {
 public:
     void findReactions();
@@ -17,7 +16,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class S>
-void Keeper<S>::findReactions()
+void ReactantsKeeper<S>::findReactions()
 {
     Collector<S>::each([](S * spec) {
         spec->findReactions();
@@ -26,4 +25,4 @@ void Keeper<S>::findReactions()
 
 }
 
-#endif // KEEPER_H
+#endif // REACTANTS_KEEPER_H

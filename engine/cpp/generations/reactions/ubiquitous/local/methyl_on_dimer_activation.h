@@ -14,7 +14,7 @@ public:
     MethylOnDimerActivation(Atom *target) : Local(target) {}
 
     double rate() const { return 38950; }
-    std::string name() const { return "methyl on dimer activation"; }
+    const std::string name() const { return "methyl on dimer activation"; }
 
     static void concretize(Atom *anchor) { ParentType::concretize<MethylOnDimerActivation>(anchor); }
     static void unconcretize(Atom *anchor) { ParentType::unconcretize<MethylOnDimerActivation>(anchor); }

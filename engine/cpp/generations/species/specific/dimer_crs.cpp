@@ -1,8 +1,12 @@
 #include "dimer_crs.h"
+#include "dimer_crs_cli.h"
 #include "../../reactions/typical/ads_methyl_to_dimer.h"
+#include "../../reactions/typical/migration_down_at_dimer.h"
+#include "../../reactions/typical/migration_down_at_dimer_from_111.h"
+#include "../../reactions/typical/migration_down_at_dimer_from_high_bridge.h"
 
-ushort DimerCRs::__indexes[1] = { 0 };
-ushort DimerCRs::__roles[1] = { 21 };
+const ushort DimerCRs::__indexes[1] = { 0 };
+const ushort DimerCRs::__roles[1] = { 21 };
 
 void DimerCRs::find(Dimer *parent)
 {
@@ -23,7 +27,15 @@ void DimerCRs::find(Dimer *parent)
     }
 }
 
+void DimerCRs::findAllChildren()
+{
+    DimerCRsCLi::find(this);
+}
+
 void DimerCRs::findAllReactions()
 {
     AdsMethylToDimer::find(this);
+    MigrationDownAtDimer::find(this);
+    MigrationDownAtDimerFrom111::find(this);
+    MigrationDownAtDimerFromHighBridge::find(this);
 }

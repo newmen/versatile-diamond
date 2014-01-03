@@ -1,14 +1,15 @@
 #include "methyl_on_dimer.h"
-#include "../specific/methyl_on_dimer_cmu.h"
 #include "../../reactions/ubiquitous/local/methyl_on_dimer_activation.h"
 #include "../../reactions/ubiquitous/local/methyl_on_dimer_deactivation.h"
+#include "../specific/methyl_on_dimer_cmu.h"
+#include "shifted_dimer.h"
 
-ushort MethylOnDimer::__indexes[2] = { 1, 0 };
-ushort MethylOnDimer::__roles[2] = { 23, 14 };
+const ushort MethylOnDimer::__indexes[2] = { 1, 0 };
+const ushort MethylOnDimer::__roles[2] = { 23, 14 };
 
 void MethylOnDimer::find(Dimer *target)
 {
-    uint checkingIndexes[2] = { 0, 3 };
+    const uint checkingIndexes[2] = { 0, 3 };
 
     for (int i = 0; i < 2; ++i)
     {
@@ -21,7 +22,15 @@ void MethylOnDimer::find(Dimer *target)
                 Atom *amorph = anchor->amorphNeighbour();
                 if (amorph->is(14))
                 {
-                    create<MethylOnDimer>(amorph, checkingIndexes[i], target);
+                    if (checkingIndexes[i] == 0)
+                    {
+                        create<MethylOnDimer>(amorph, target);
+                    }
+                    else
+                    {
+                        auto shiftedDimer = create<ShiftedDimer>(target);
+                        create<MethylOnDimer>(amorph, shiftedDimer);
+                    }
                 }
             }
         }

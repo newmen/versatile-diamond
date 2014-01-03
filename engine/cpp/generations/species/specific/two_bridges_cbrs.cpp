@@ -1,8 +1,8 @@
 #include "two_bridges_cbrs.h"
 #include "../../reactions/typical/two_bridges_to_high_bridge.h"
 
-ushort TwoBridgesCBRs::__indexes[1] = { 1 };
-ushort TwoBridgesCBRs::__roles[1] = { 5 };
+const ushort TwoBridgesCBRs::__indexes[1] = { 1 };
+const ushort TwoBridgesCBRs::__roles[1] = { 5 };
 
 void TwoBridgesCBRs::find(TwoBridges *parent)
 {

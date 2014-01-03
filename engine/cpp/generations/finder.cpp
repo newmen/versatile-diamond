@@ -2,7 +2,6 @@
 #include "handbook.h"
 
 #include "species/base/bridge.h"
-#include "species/base/two_bridges.h"
 #include "species/sidepiece/dimer.h"
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
@@ -70,8 +69,9 @@ void Finder::findAll(Atom **atoms, uint n)
     for (uint i = 0; i < n; ++i)
     {
         Dimer::find(atoms[i]);
-        TwoBridges::find(atoms[i]);
     }
+
+    Handbook::componentKeeper().findComplexSpecies();
 
     for (uint i = 0; i < n; ++i)
     {
@@ -110,6 +110,7 @@ void Finder::removeAll(Atom **atoms, uint n)
 
 void Finder::finalize()
 {
+    Handbook::componentKeeper().clear();
     Handbook::specificKeeper().clear();
     Handbook::lateralKeeper().clear();
 
