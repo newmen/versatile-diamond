@@ -56,8 +56,11 @@ void Local<B, U, RT, S, AT>::concretize(Atom *anchor)
     assert(anchor->hasRole<S>(AT));
 
     short n = ParentType::currNum(anchor, R::nums());
-    ParentType::template remove<U>(anchor, -n);
-    ParentType::template store<R>(anchor, n);
+    if (n > 0)
+    {
+        ParentType::template remove<U>(anchor, n);
+        ParentType::template store<R>(anchor, n);
+    }
 }
 
 template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
@@ -71,8 +74,11 @@ void Local<B, U, RT, S, AT>::unconcretize(Atom *anchor)
     assert(!anchor->hasRole<S>(AT));
 
     short n = ParentType::currNum(anchor, R::nums());
-    ParentType::template remove<R>(anchor, -n);
-    ParentType::template store<U>(anchor, n);
+    if (n > 0)
+    {
+        ParentType::template remove<R>(anchor, n);
+        ParentType::template store<U>(anchor, n);
+    }
 }
 
 #endif // LOCAL_H
