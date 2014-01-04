@@ -3,7 +3,7 @@
 namespace vd
 {
 
-#ifdef DEBUG
+#ifndef NDEBUG
 Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
 {
     for (Reaction *event : _events)
@@ -17,7 +17,7 @@ Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
     assert(false); // multi event by crd was not found
     return nullptr;
 }
-#endif // DEBUG
+#endif // NDEBUG
 
 Reaction *BaseEventsContainer::selectEvent(double r)
 {

@@ -80,16 +80,16 @@ public:
     void pos(std::ostream &os);
 #endif // PRINT
 
-#ifdef DEBUG
+#ifndef NDEBUG
     virtual ushort valence() const = 0;
-#endif // DEBUG
+#endif // NDEBUG
 
 protected:
     void setType(ushort type) { _type = type; }
 
-#ifdef DEBUG
+#ifndef NDEBUG
     ushort actives() const { return _actives; }
-#endif // DEBUG
+#endif // NDEBUG
 
 private:
     uint hash(ushort first, ushort second) const

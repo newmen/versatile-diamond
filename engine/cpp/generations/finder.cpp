@@ -39,12 +39,12 @@ void Finder::findAll(Atom **atoms, uint n)
     });
 #endif // PRINT
 
-#ifdef DEBUG
+#ifndef NDEBUG
     for (uint i = 0; i < n; ++i)
     {
         assert(atoms[i]);
     }
-#endif // DEBUG
+#endif // NDEBUG
 
     for (uint i = 0; i < n; ++i)
     {
