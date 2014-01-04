@@ -1,4 +1,4 @@
-#ifdef DEBUG
+#ifndef NDEBUG
 
 #include "../../generations/atoms/c.h"
 #include "../../generations/phases/diamond.h"
@@ -44,4 +44,4 @@ public:
     uint activesNum() const { return C::actives(); }
 };
 
-#endif // DEBUG
+#endif // NDEBUG
