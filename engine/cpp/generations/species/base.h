@@ -50,8 +50,6 @@ void Base<B, ST, USED_ATOMS_NUM>::store()
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::remove()
 {
-    ParentType::remove();
-
     const ushort *idxs = this->indexes();
     const ushort *rls = this->roles();
 
@@ -60,7 +58,7 @@ void Base<B, ST, USED_ATOMS_NUM>::remove()
         this->atom(idxs[i])->forget(rls[i], this);
     }
 
-    Handbook::scavenger().markSpec(this);
+    ParentType::remove();
 }
 
 #endif // BASE_H
