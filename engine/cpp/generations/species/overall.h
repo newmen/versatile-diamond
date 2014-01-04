@@ -16,9 +16,21 @@ class Overall : public Typed<B, ST>, public DiamondAtomsIterator
 {
     typedef Typed<B, ST> ParentType;
 
+public:
+    void remove() override;
+
 protected:
     template <class... Args>
     Overall(Args... args) : ParentType(args...) {}
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class B, ushort ST>
+void Overall<B, ST>::remove()
+{
+    B::remove();
+    Handbook::scavenger().markSpec(this);
+}
 
 #endif // OVERALL_H
