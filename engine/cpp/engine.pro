@@ -12,8 +12,8 @@ QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -fopenmp -lstdc++
 
-QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=2
-LIBS += -L/opt/intel/lib/ia32/ -liomp5 -openmp
+QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
+LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += main.cpp \
     atoms/atom.cpp \
