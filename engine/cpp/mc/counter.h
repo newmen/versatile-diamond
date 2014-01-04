@@ -12,7 +12,7 @@ class Counter
 {
     struct Record
     {
-        uint counter = 0;
+        ullong counter = 0;
 
         std::string name;
         double rate;
@@ -28,14 +28,14 @@ class Counter
     };
 
     std::vector<Record *> _records;
-    uint _total = 0;
+    ullong _total = 0;
 
 public:
     Counter(uint reactionsNum);
     ~Counter();
 
     void inc(Reaction *event);
-    uint total() const { return _total; }
+    ullong total() const { return _total; }
 
     void printStats();
 
