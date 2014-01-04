@@ -31,12 +31,12 @@ int main()
     });
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
+//    Diamond *diamond = new Diamond(dim3(100, 100, 50));
+    Diamond *diamond = new Diamond(dim3(20, 20, 50));
 //    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
 
-    std::cout << "Atoms num: " << diamond->countAtoms() << std::endl;
+    std::cout << "Begin atoms num: " << diamond->countAtoms() << "\n" << std::endl;
 
 #ifdef PRINT
     printSeparator();
@@ -50,8 +50,8 @@ int main()
 #pragma omp parallel
 #endif // PARALLEL
 //    for (uint i = 0; i < 50000 / THREADS_NUM; ++i)
-//    while (Handbook::mc().totalTime() < 1e-4)
-    while (Handbook::mc().totalTime() < 2e-2)
+    while (Handbook::mc().totalTime() < 4e-4)
+//    while (Handbook::mc().totalTime() < 2e-2)
     {
         Handbook::mc().doRandom(&mcData);
 
@@ -62,12 +62,23 @@ int main()
 #endif // PRINT
 
 #ifdef PARALLEL
-#pragma omp atomic
+#pragma omp critical
 #endif // PARALLEL
-        ++n;
+        {
+            ++n;
+
+            if (n == 1000000)
+            {
+                std::cout.width(20);
+                std::cout << Handbook::mc().totalTime() << " (s)";
+                std::cout.width(20);
+                std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
+		n = 0;
+            }
+        }
     }
 
-    std::cout << "Atoms num: " << diamond->countAtoms() << "\n"
+    std::cout << "\nEnd atoms num: " << diamond->countAtoms() << "\n"
               << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / n) << " %\n"
               << std::endl;
     mcData.counter()->printStats();
