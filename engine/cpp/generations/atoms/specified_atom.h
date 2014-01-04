@@ -17,9 +17,9 @@ public:
 
     void specifyType() override;
 
-#ifdef DEBUG
+#ifndef NDEBUG
     ushort valence() const override { return VALENCE; }
-#endif // DEBUG
+#endif // NDEBUG
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

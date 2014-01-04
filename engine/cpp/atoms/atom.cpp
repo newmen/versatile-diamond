@@ -38,13 +38,13 @@ void Atom::bondWith(Atom *neighbour, int depth)
     assert(_actives > 0);
     assert(_relatives.size() + _actives <= valence());
 
-#ifdef DEBUG
+#ifndef NDEBUG
     // latticed atom cannot be bonded twise with another latticed atom
     if (lattice() && neighbour->lattice())
     {
         assert(_relatives.find(neighbour) == _relatives.cend());
     }
-#endif // DEBUG
+#endif // NDEBUG
 
     _relatives.insert(neighbour);
     deactivate();
@@ -79,7 +79,7 @@ Atom *Atom::amorphNeighbour()
     }
 
     assert(neighbour);
-#ifdef DEBUG
+#ifndef NDEBUG
     for (Atom *relative : _relatives)
     {
         if (!relative->lattice() && relative != neighbour)
@@ -87,7 +87,7 @@ Atom *Atom::amorphNeighbour()
             assert(false); // if has many unlatticed atoms
         }
     }
-#endif // DEBUG
+#endif // NDEBUG
 
     return neighbour;
 }

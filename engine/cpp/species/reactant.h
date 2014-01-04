@@ -69,10 +69,10 @@ template <class R>
 template <class CR>
 CR *Reactant<R>::checkoutReaction()
 {
-#ifdef DEBUG
+#ifndef NDEBUG
     auto range = _reactions.equal_range(CR::ID);
     assert(std::distance(range.first, range.second) < 2);
-#endif // DEBUG
+#endif // NDEBUG
 
     auto pr = _reactions.find(CR::ID);
     return (pr != _reactions.cend()) ? cast_to<CR *>(pr->second) : nullptr;
