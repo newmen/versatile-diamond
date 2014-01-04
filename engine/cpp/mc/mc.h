@@ -45,11 +45,11 @@ public:
     void removeAll(uint index, UbiquitousReaction *templateReaction);
     bool check(uint index, Atom *target);
 
-#ifdef DEBUG
+#ifndef NDEBUG
     void doOneOfOne(ushort rt);
     void doOneOfMul(ushort rt);
     void doOneOfMul(ushort rt, int x, int y, int z);
-#endif // DEBUG
+#endif // NDEBUG
 
 private:
     void increaseTime(CommonMCData *data);
@@ -369,7 +369,7 @@ bool MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(uint index, Atom *target)
     return _multiEvents[index].check(target);
 }
 
-#ifdef DEBUG
+#ifndef NDEBUG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
 {
@@ -390,7 +390,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z
     auto crd = int3(x, y, z);
     _multiEvents[rt].selectEvent(crd)->doIt();
 }
-#endif // DEBUG
+#endif // NDEBUG
 
 #ifdef PRINT
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
