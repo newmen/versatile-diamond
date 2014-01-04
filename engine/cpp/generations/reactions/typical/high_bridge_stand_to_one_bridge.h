@@ -13,7 +13,7 @@ public:
 
     HighBridgeStandToOneBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e6; }
+    double rate() const { return 7.114e5; }
     void doIt();
 
     const std::string name() const override { return "high bridge stand to bridge at new level"; }

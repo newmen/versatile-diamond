@@ -13,7 +13,7 @@ class MethylOnBridgeDeactivation :
 public:
     MethylOnBridgeDeactivation(Atom *target) : Local(target) {}
 
-    double rate() const { return 3670; }
+    double rate() const { return 4.5e4; }
     const std::string name() const { return "methyl on dimer deactivation"; }
 
     static void concretize(Atom *anchor) { ParentType::concretize<MethylOnBridgeDeactivation>(anchor); }

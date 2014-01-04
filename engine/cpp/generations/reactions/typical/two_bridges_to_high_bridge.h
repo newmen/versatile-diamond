@@ -11,7 +11,7 @@ public:
 
     TwoBridgesToHighBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 3.16e3; }
+    double rate() const { return 2.198e7; }
     void doIt();
 
     const std::string name() const override { return "two bridges to high bridge"; }

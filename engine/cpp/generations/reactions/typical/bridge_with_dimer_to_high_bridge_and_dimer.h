@@ -12,7 +12,7 @@ public:
 
     BridgeWithDimerToHighBridgeAndDimer(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 3.78e3; }
+    double rate() const { return 2.328e5; }
     void doIt();
 
     const std::string name() const override { return "bridge with dimer to high bridge and dimer"; }

@@ -11,7 +11,7 @@ public:
 
     MethylOnDimerHydrogenMigration(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e6; }
+    double rate() const { return 1.339e4; }
     void doIt();
 
     const std::string name() const override { return "methyl on dimer hydrogen migration"; }

@@ -15,7 +15,7 @@ public:
 
     DimerDrop(SpecificSpec *target) : LaterableRole(target) {}
 
-    double rate() const { return 5e3; }
+    double rate() const { return 1.471e6; }
     void doIt();
 
     const std::string name() const override { return "dimer drop"; }

@@ -9,7 +9,7 @@ public:
     template <class... Args>
     DimerDropInMiddle(Args... args) : Lateral(args...) {}
 
-    double rate() const { return 4.8e3; }
+    double rate() const { return 1.203e6; }
     const std::string name() const { return "dimer drop in middle of dimers row"; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;

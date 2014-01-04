@@ -11,7 +11,7 @@ public:
 
     NextLevelBridgeToHighBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 3.5e3; }
+    double rate() const { return 2.256e9; }
     void doIt();
 
     const std::string name() const override { return "next layer bridge to high bridge"; }

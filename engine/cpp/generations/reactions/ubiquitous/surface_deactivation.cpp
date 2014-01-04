@@ -1,5 +1,5 @@
 #include "surface_deactivation.h"
-#include "local/methyl_on_dimer_deactivation.h"
+#include "local/methyl_on_bridge_deactivation.h"
 
 void SurfaceDeactivation::find(Atom *anchor)
 {
