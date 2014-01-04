@@ -11,7 +11,7 @@ public:
 
     DesMethylFromBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e4; }
+    double rate() const { return 1.7e7; }
     void doIt();
 
     const std::string name() const override { return "desorption methyl from bridge"; }

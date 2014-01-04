@@ -11,7 +11,7 @@ public:
 
     AdsMethylToDimer(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e7; }
+    double rate() const { return 1e3; }
     void doIt();
 
     const std::string name() const override { return "adsorption methyl to dimer"; }

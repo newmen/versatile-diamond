@@ -13,7 +13,7 @@ public:
 
     DimerFormationNearBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 2.1e5; }
+    double rate() const { return 1.002e11; }
     void doIt();
 
     const std::string name() const override { return "dimer formation near bridge"; }

@@ -14,7 +14,7 @@ public:
 
     MigrationDownAtDimerFromHighBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 1.9e4; }
+    double rate() const { return 5e2; }
     void doIt();
 
     const std::string name() const override { return "migration down at activated dimer from high bridge"; }

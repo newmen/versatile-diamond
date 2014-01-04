@@ -13,7 +13,7 @@ public:
 
     HighBridgeToTwoBridges(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 7.7e6; }
+    double rate() const { return 5.795e10; }
     void doIt();
 
     const std::string name() const override { return "high bridge incorporates in crystal lattice near another bridge"; }

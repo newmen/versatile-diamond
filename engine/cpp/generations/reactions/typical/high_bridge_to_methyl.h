@@ -15,7 +15,7 @@ public:
 
     HighBridgeToMethyl(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 4e4; }
+    double rate() const { return 6.275e10; }
     void doIt();
 
     const std::string name() const override { return "high bridge to methyl"; }

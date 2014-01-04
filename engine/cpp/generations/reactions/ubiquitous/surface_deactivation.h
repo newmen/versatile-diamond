@@ -10,7 +10,7 @@ public:
 
     SurfaceDeactivation(Atom *target) : DeactivationData(target) {}
 
-    double rate() const { return 2000; }
+    double rate() const { return 2e4; }
     const std::string name() const { return "surface deactivation"; }
 };
 

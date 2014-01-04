@@ -13,7 +13,7 @@ public:
 
     HighBridgeStandToDimer(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 2.76e6; }
+    double rate() const { return 1.219e6; }
     void doIt();
 
     const std::string name() const override { return "high bridge stand to dimer"; }

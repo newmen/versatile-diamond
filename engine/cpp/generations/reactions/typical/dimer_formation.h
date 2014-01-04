@@ -15,7 +15,7 @@ public:
 
     DimerFormation(SpecificSpec **targets) : LaterableRole(targets) {}
 
-    double rate() const { return 1e5; }
+    double rate() const { return 5.951e11; }
     void doIt();
 
     const std::string name() const override { return "dimer formation"; }

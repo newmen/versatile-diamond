@@ -10,7 +10,7 @@ public:
     template <class... Args>
     DimerFormationAtEnd(Args... args) : ConcretizableRole(args...) {}
 
-    double rate() const { return 2.6e5; }
+    double rate() const { return 7.277e11; }
     const std::string name() const { return "dimer formation at end of dimers row"; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;

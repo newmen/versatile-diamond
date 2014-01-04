@@ -11,7 +11,7 @@ public:
 
     DimerDropNearBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 6e3; }
+    double rate() const { return 1.603e10; }
     void doIt();
 
     const std::string name() const override { return "dimer drop near bridge"; }
