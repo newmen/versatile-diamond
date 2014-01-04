@@ -52,7 +52,7 @@ void Ubiquitous<RT>::findSelf(Atom *anchor)
     }
     else if (dn < 0)
     {
-        remove<R>(anchor, dn);
+        remove<R>(anchor, -dn);
     }
 }
 
@@ -106,7 +106,7 @@ template <class R>
 void Ubiquitous<RT>::remove(Atom *anchor, short delta)
 {
     R removableTemplate(anchor);
-    Handbook::mc().remove(R::MC_INDEX, &removableTemplate, -delta);
+    Handbook::mc().remove(R::MC_INDEX, &removableTemplate, delta);
 }
 
 template <ushort RT>
