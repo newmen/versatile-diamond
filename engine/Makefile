@@ -1,4 +1,4 @@
-ARKSFLAGS	:= -DPARALLEL -DTHREADS_NUM=8
+ARKSFLAGS	:= -DPARALLEL -DTHREADS_NUM=2
 ICC_PATH	:= /opt/intel/composerxe
 
 CXX		:= $(ICC_PATH)/bin/icpc
