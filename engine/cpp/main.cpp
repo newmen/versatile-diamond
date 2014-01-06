@@ -1,8 +1,18 @@
+#include <signal.h>
 #include <omp.h>
 #include <iostream>
 #include "mc/common_mc_data.h"
 #include "generations/handbook.h"
 #include "generations/phases/diamond.h"
+
+volatile bool stopCalculating = false;
+void stopSignalHandler(int)
+{
+#ifdef PARALLEL
+#pragma omp master
+#endif // PARALLEL
+    stopCalculating = true;
+}
 
 #ifdef PRINT
 void printSeparator()
@@ -15,6 +25,9 @@ void printSeparator()
 
 int main()
 {
+    signal(SIGINT, stopSignalHandler);
+    signal(SIGTERM, stopSignalHandler);
+
     RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
 
 #ifdef PARALLEL
@@ -31,10 +44,15 @@ int main()
     });
 #endif // PRINT
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
+    double totalTime = 0.5;
+
 //    Diamond *diamond = new Diamond(dim3(100, 100, 50));
     Diamond *diamond = new Diamond(dim3(20, 20, 20));
-//    Diamond *diamond = new Diamond(dim3(3, 3, 4));
     diamond->initialize();
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
     std::cout << "Atoms num: " << diamond->countAtoms() << std::endl;
 
@@ -49,11 +67,10 @@ int main()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-//    for (uint i = 0; i < 50000 / THREADS_NUM; ++i)
-//    while (Handbook::mc().totalTime() < 1e-4)
-    while (Handbook::mc().totalTime() < 0.5)
+    while (!stopCalculating && Handbook::mc().totalTime() < totalTime)
     {
         Handbook::mc().doRandom(&mcData);
+        if (stopCalculating) break;
 
 #ifdef PRINT
         debugPrint([&](std::ostream &os) {
