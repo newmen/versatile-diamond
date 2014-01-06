@@ -28,7 +28,7 @@ int main()
     signal(SIGINT, stopSignalHandler);
     signal(SIGTERM, stopSignalHandler);
 
-    std::cout.precision(3); // for percents output in main loop
+    std::cout.precision(3); // for outputs in main loop
 
     RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
 
