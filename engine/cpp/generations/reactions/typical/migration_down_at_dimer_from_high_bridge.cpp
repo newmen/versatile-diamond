@@ -38,7 +38,7 @@ void MigrationDownAtDimerFromHighBridge::doIt()
     assert(c->is(22));
 
     bool hMigratedDown = false;
-    if (a->type() == 18)
+    if (a->type() == 18 || a->type() == 15)
     {
         a->activate();
         b->deactivate();
