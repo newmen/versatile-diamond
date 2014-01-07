@@ -20,7 +20,7 @@ void NearActivatedDimer::look(SpecificSpec *target)
 {
     Atom *atoms[2] = { target->atom(2), target->atom(3) };
     eachNeighbours<2>(atoms, &Diamond::cross_100, [target](Atom **neighbours) {
-        if (neighbours[0]->is(22) && neighbours[1]->is(22))
+        if (neighbours[0]->is(22) && neighbours[1]->is(22) && neighbours[0]->hasBondWith(neighbours[1]))
         {
             for (int i = 0; i < 2; ++i)
             {
@@ -28,6 +28,7 @@ void NearActivatedDimer::look(SpecificSpec *target)
                 {
                     auto dimerCRs = neighbours[i]->specByRole<DimerCRs>(21);
                     assert(dimerCRs);
+                    assert(dimerCRs->atom(3) == neighbours[1 - i]);
 
                     SpecificSpec *targets[2] = { dimerCRs, target };
                     create<R>(targets);
