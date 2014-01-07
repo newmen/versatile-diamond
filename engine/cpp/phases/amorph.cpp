@@ -34,4 +34,16 @@ void Amorph::erase(Atom *atom)
     _atoms.erase(atom);
 }
 
+uint Amorph::countAtoms() const
+{
+    uint n = 0;
+
+#ifdef PARALLEL
+#pragma omp critical (amorph_atoms)
+#endif // PARALLEL
+    n = _atoms.size();
+
+    return n;
+}
+
 }
