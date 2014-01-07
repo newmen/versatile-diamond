@@ -6,6 +6,7 @@ namespace vd
 
 class Atom;
 
+// TODO: for what?
 class Phase
 {
 public:

@@ -2,6 +2,7 @@
 #define AMORPH_H
 
 #include <unordered_set>
+#include "../tools/common.h"
 #include "phase.h"
 
 namespace vd
@@ -17,6 +18,8 @@ public:
 
     void insert(Atom *atom);
     void erase(Atom *atom) override;
+
+    uint countAtoms() const;
 
 protected:
     Atoms &atoms() { return _atoms; }

@@ -94,12 +94,14 @@ int main()
 #pragma omp critical
 #endif // PARALLEL
         {
-            ++n;
-
-            if (n % 10000000 == 0)
+            if (++n % 10000000 == 0)
             {
                 std::cout.width(10);
                 std::cout << Handbook::mc().totalTime() / totalTime << " %";
+                std::cout.width(10);
+                std::cout << diamond->countAtoms();
+                std::cout.width(10);
+                std::cout << Handbook::amorph().countAtoms();
                 std::cout.width(20);
                 std::cout << Handbook::mc().totalTime() << " (s)";
                 std::cout.width(20);
