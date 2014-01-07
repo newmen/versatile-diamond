@@ -14,6 +14,15 @@ void stopSignalHandler(int)
     stopCalculating = true;
 }
 
+void segfaultSignalHandler(int sig)
+{
+#ifdef PARALLEL
+#pragma omp master
+#endif // PARALLEL
+    std::cout << "Segmentation fault signal recived! Stop computing..." << std::endl;
+    stopSignalHandler(sig);
+}
+
 #ifdef PRINT
 void printSeparator()
 {
@@ -27,6 +36,7 @@ int main()
 {
     signal(SIGINT, stopSignalHandler);
     signal(SIGTERM, stopSignalHandler);
+    signal(SIGSEGV, segfaultSignalHandler);
 
     std::cout.precision(3); // for outputs in main loop
 
