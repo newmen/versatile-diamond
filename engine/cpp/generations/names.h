@@ -9,7 +9,7 @@ enum : ushort
     SPECIFIC_SPECS_NUM = 21,
 
     UBIQUITOUS_REACTIONS_NUM = 4,
-    TYPICAL_REACTIONS_NUM = 23,
+    TYPICAL_REACTIONS_NUM = 24,
     LATERAL_REACTIONS_NUM = 4,
 
 //    ALL_SPECS_NUM = BASE_SPECS_NUM + SPECIFIC_SPECS_NUM,
@@ -26,6 +26,9 @@ enum BaseSpecNames : ushort
     TWO_BRIDGES,
     BRIDGE_WITH_DIMER
 };
+
+static_assert(BRIDGE_WITH_DIMER + 1 == BASE_SPECS_NUM,
+              "Incorrect number of base species");
 
 enum SpecificSpecNames : ushort
 {
@@ -52,6 +55,9 @@ enum SpecificSpecNames : ushort
     BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi
 };
 
+static_assert(BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi + 1 == SPECIFIC_SPECS_NUM + BASE_SPECS_NUM,
+              "Incorrect number of specific species");
+
 enum TypicalReactionNames : ushort
 {
     DIMER_FORMATION,
@@ -61,9 +67,11 @@ enum TypicalReactionNames : ushort
     ADS_METHYL_TO_DIMER,
     METHYL_ON_DIMER_HYDROGEN_MIGRATION,
     METHYL_TO_HIGH_BRIDGE,
+    FORM_TWO_BOND,
     HIGH_BRIDGE_STAND_TO_ONE_BRIDGE,
     DES_METHYL_FROM_BRIDGE,
     DES_METHYL_FROM_111,
+    DES_METHYL_FROM_DIMER,
     NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE,
     HIGH_BRIDGE_STAND_TO_TWO_BRIDGES,
     TWO_BRIDGES_TO_HIGH_BRIDGE,
@@ -75,9 +83,11 @@ enum TypicalReactionNames : ushort
     MIGRATION_DOWN_AT_DIMER_FROM_111,
     MIGRATION_DOWN_IN_GAP_FROM_111,
     MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE,
-    MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE,
-    FORM_TWO_BOND
+    MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE
 };
+
+static_assert(MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE + 1 == TYPICAL_REACTIONS_NUM,
+              "Incorrect number of typical reactions");
 
 enum LateralReactionNames : ushort
 {
@@ -87,6 +97,9 @@ enum LateralReactionNames : ushort
     DIMER_DROP_IN_MIDDLE
 };
 
+static_assert(DIMER_DROP_IN_MIDDLE + 1 == TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM,
+              "Incorrect number of lateral reactions");
+
 enum UbiquitousReactionNames : ushort
 {
     SURFACE_ACTIVATION = ALL_SPEC_REACTIONS_NUM,
@@ -94,5 +107,8 @@ enum UbiquitousReactionNames : ushort
     METHYL_ON_BRIDGE_ACTIVATION,
     METHYL_ON_BRIDGE_DEACTIVATION
 };
+
+static_assert(METHYL_ON_BRIDGE_DEACTIVATION + 1 == TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM + UBIQUITOUS_REACTIONS_NUM,
+              "Incorrect number of ubiquitous reactions");
 
 #endif // NAMES_H
