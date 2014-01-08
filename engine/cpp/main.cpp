@@ -14,13 +14,14 @@ void stopSignalHandler(int)
     stopCalculating = true;
 }
 
-void segfaultSignalHandler(int sig)
+void segfaultSignalHandler(int)
 {
 #ifdef PARALLEL
 #pragma omp master
 #endif // PARALLEL
     std::cout << "Segmentation fault signal recived! Stop computing..." << std::endl;
-    stopSignalHandler(sig);
+
+    exit(1);
 }
 
 #ifdef PRINT
@@ -37,7 +38,6 @@ int main()
     signal(SIGINT, stopSignalHandler);
     signal(SIGTERM, stopSignalHandler);
     signal(SIGSEGV, segfaultSignalHandler);
-
     std::cout.precision(3); // for outputs in main loop
 
     RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
