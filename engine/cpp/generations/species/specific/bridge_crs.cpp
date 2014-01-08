@@ -1,5 +1,6 @@
 #include "bridge_crs.h"
 #include "bridge_crs_cti_cli.h"
+#include "../../reactions/typical/ads_methyl_to_111.h"
 #include "../../reactions/typical/dimer_formation_near_bridge.h"
 #include "../../reactions/typical/high_bridge_to_two_bridges.h"
 #include "../../reactions/typical/high_bridge_to_methyl.h"
@@ -34,6 +35,7 @@ void BridgeCRs::findAllChildren()
 
 void BridgeCRs::findAllReactions()
 {
+    AdsMethylTo111::find(this);
     DimerFormationNearBridge::find(this);
     HighBridgeToTwoBridges::find(this);
     HighBridgeToMethyl::find(this);
