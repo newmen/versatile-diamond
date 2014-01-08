@@ -21,7 +21,7 @@ void MethylOnBridgeCBiCMsu::find(MethylOnBridgeCBiCMu *parent)
 void MethylOnBridgeCBiCMsu::findAllChildren()
 {
     MethylOnBridgeCBiCMssu::find(this);
-    MethylOnBridgeCBsCMsu::find(this);
+//    MethylOnBridgeCBsCMsu::find(this); // DISABLED: form two bond
 }
 
 void MethylOnBridgeCBiCMsu::findAllReactions()

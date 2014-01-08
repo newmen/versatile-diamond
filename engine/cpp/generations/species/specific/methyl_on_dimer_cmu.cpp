@@ -1,4 +1,5 @@
 #include "methyl_on_dimer_cmu.h"
+#include "../../reactions/typical/des_methyl_from_dimer.h"
 #include "methyl_on_dimer_cmsu.h"
 #include "methyl_on_dimer_cls_cmu.h"
 
@@ -21,4 +22,9 @@ void MethylOnDimerCMu::findAllChildren()
 {
     MethylOnDimerCLsCMu::find(this);
     MethylOnDimerCMsu::find(this);
+}
+
+void MethylOnDimerCMu::findAllReactions()
+{
+    DesMethylFromDimer::find(this);
 }
