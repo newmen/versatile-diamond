@@ -4,7 +4,7 @@
 #include "../../species/specific/methyl_on_dimer_cmu.h"
 #include "../typical.h"
 
-class DesMethylFromDimer : public Typical<DES_METHYL_FROM_BRIDGE>
+class DesMethylFromDimer : public Typical<DES_METHYL_FROM_DIMER>
 {
 public:
     // TODO: methyl_on_dimer(cm: u, cm: i) should be used
