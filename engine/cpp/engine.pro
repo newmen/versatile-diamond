@@ -7,10 +7,10 @@ CONFIG -= qt
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++11
-#QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 
-QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
-LIBS += -fopenmp -lstdc++
+#QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
+#LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
@@ -99,7 +99,8 @@ SOURCES += main.cpp \
     generations/reactions/typical/migration_down_at_dimer_from_high_bridge.cpp \
     generations/species/specific/high_bridge_cms.cpp \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
-    generations/reactions/typical/des_methyl_from_dimer.cpp
+    generations/reactions/typical/des_methyl_from_dimer.cpp \
+    generations/reactions/typical/ads_methyl_to_111.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -241,4 +242,5 @@ HEADERS += \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.h \
     generations/reactions/ubiquitous/local/methyl_on_bridge_activation.h \
     generations/reactions/ubiquitous/local/methyl_on_bridge_deactivation.h \
-    generations/reactions/typical/des_methyl_from_dimer.h
+    generations/reactions/typical/des_methyl_from_dimer.h \
+    generations/reactions/typical/ads_methyl_to_111.h
