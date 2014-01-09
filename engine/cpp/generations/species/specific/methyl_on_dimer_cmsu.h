@@ -4,7 +4,7 @@
 #include "../base_specific.h"
 #include "methyl_on_dimer_cmu.h"
 
-class MethylOnDimerCMsu : public BaseSpecific<DependentSpec<BaseSpec>, METHYL_ON_DIMER_CMsu, 1>
+class MethylOnDimerCMsu : public BaseSpecific<DependentSpec<ParentSpec>, METHYL_ON_DIMER_CMsu, 1>
 {
 public:
     static void find(MethylOnDimerCMu *parent);
@@ -16,6 +16,7 @@ public:
 #endif // PRINT
 
 protected:
+    void findAllChildren() override;
     void findAllReactions() override;
 
     const ushort *indexes() const override { return __indexes; }

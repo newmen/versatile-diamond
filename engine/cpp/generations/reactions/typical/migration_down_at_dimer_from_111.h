@@ -13,7 +13,7 @@ public:
 
     MigrationDownAtDimerFrom111(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e6; }
+    double rate() const { return 5e12; }
     void doIt();
 
     const std::string name() const override { return "migration down at activated dimer from 111"; }

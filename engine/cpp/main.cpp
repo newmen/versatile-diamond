@@ -94,7 +94,7 @@ int main()
 #pragma omp critical
 #endif // PARALLEL
         {
-            if (++n % 10000000 == 0)
+            if (++n % 1000000 == 0)
             {
                 std::cout.width(10);
                 std::cout << Handbook::mc().totalTime() / totalTime << " %";

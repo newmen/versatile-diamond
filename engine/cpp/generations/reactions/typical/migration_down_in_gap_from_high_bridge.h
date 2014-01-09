@@ -14,7 +14,7 @@ public:
 
     MigrationDownInGapFromHighBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e2; }
+    double rate() const { return 5e4; }
     void doIt();
 
     const std::string name() const override { return "migration down in gap from high bridge"; }
