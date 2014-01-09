@@ -100,7 +100,10 @@ SOURCES += main.cpp \
     generations/species/specific/high_bridge_cms.cpp \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
     generations/reactions/typical/des_methyl_from_dimer.cpp \
-    generations/reactions/typical/ads_methyl_to_111.cpp
+    generations/reactions/typical/ads_methyl_to_111.cpp \
+    generations/reactions/typical/migration_down_at_dimer_from_dimer.cpp \
+    generations/species/specific/methyl_on_dimer_cmssu.cpp \
+    generations/reactions/typical/migration_down_in_gap_from_dimer.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -243,4 +246,8 @@ HEADERS += \
     generations/reactions/ubiquitous/local/methyl_on_bridge_activation.h \
     generations/reactions/ubiquitous/local/methyl_on_bridge_deactivation.h \
     generations/reactions/typical/des_methyl_from_dimer.h \
-    generations/reactions/typical/ads_methyl_to_111.h
+    generations/reactions/typical/ads_methyl_to_111.h \
+    generations/reactions/typical/migration_down_at_dimer_from_dimer.h \
+    generations/reactions/typical/lookers/near_methyl_on_dimer.h \
+    generations/species/specific/methyl_on_dimer_cmssu.h \
+    generations/reactions/typical/migration_down_in_gap_from_dimer.h

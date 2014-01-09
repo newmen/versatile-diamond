@@ -13,7 +13,7 @@ public:
 
     MigrationDownInGapFrom111(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e6; }
+    double rate() const { return 5e8; }
     void doIt();
 
     const std::string name() const override { return "migration down in gap from 111"; }

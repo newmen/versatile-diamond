@@ -13,10 +13,10 @@ public:
 
     MigrationDownInGap(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e6; }
+    double rate() const { return 5e8; }
     void doIt();
 
-    const std::string name() const override { return "migration down in gap from methyl"; }
+    const std::string name() const override { return "migration down in gap from methyl on bridge"; }
 };
 
 #endif // MIGRATION_DOWN_IN_GAP_H
