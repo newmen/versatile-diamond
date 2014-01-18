@@ -76,4 +76,26 @@ uint Crystal::countAtoms() const
     });
 }
 
+void Crystal::setUnvisited()
+{
+    _atoms.each([](Atom *atom) {
+        if (atom) atom->setUnvisited();
+    });
+}
+
+#ifndef NDEBUG
+void Crystal::checkAllVisited()
+{
+    _atoms.each([](Atom *atom) {
+        if (atom) assert(atom->isVisited());
+    });
+}
+#endif // NDEBUG
+
+float3 Crystal::translate(const int3 &coords) const
+{
+    float3 realCoords = coords * periods();
+    return realCoords + seeks(coords);
+}
+
 }

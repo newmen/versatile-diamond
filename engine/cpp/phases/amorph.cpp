@@ -46,4 +46,22 @@ uint Amorph::countAtoms() const
     return n;
 }
 
+void Amorph::setUnvisited()
+{
+    for (Atom *atom : _atoms)
+    {
+        atom->setUnvisited();
+    }
+}
+
+#ifndef NDEBUG
+void Amorph::checkAllVisited()
+{
+    for (Atom *atom : _atoms)
+    {
+        assert(atom->isVisited());
+    }
+}
+#endif // NDEBUG
+
 }

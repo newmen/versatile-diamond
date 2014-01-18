@@ -66,7 +66,7 @@ bool Atom::hasBondWith(Atom *neighbour) const
     return _relatives.find(neighbour) != _relatives.cend();
 }
 
-Atom *Atom::amorphNeighbour()
+Atom *Atom::amorphNeighbour() const
 {
     Atom *neighbour = nullptr;
     for (Atom *relative : _relatives)
@@ -92,7 +92,7 @@ Atom *Atom::amorphNeighbour()
     return neighbour;
 }
 
-Atom *Atom::firstCrystalNeighbour()
+Atom *Atom::firstCrystalNeighbour() const
 {
     if (!_relatives.empty())
     {

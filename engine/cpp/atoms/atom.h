@@ -1,6 +1,7 @@
 #ifndef ATOM_H
 #define ATOM_H
 
+#include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
 #include "../tools/common.h"
@@ -32,7 +33,7 @@ public:
 
     void setVisited() { _visited = true; }
     void setUnvisited() { _visited = false; }
-    bool isVisited() { return _visited; }
+    bool isVisited() const { return _visited; }
 
     ushort type() const { return _type; }
     ushort prevType() const { return _prevType; }
@@ -49,8 +50,11 @@ public:
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
 
-    Atom *amorphNeighbour();
-    Atom *firstCrystalNeighbour();
+    template <class L>
+    void eachNeighbour(const L &lambda) const;
+
+    Atom *amorphNeighbour() const;
+    Atom *firstCrystalNeighbour() const;
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
@@ -75,21 +79,20 @@ public:
 
     void prepareToRemove();
 
+    virtual const char *name() const = 0;
+
+    virtual ushort valence() const = 0;
+    ushort actives() const { return _actives; }
+    // TODO: should be ushort
+    int hCount() const { return (int)valence() - _actives - _relatives.size(); }
+
 #ifdef PRINT
     void info(std::ostream &os);
     void pos(std::ostream &os);
 #endif // PRINT
 
-#ifndef NDEBUG
-    virtual ushort valence() const = 0;
-#endif // NDEBUG
-
 protected:
     void setType(ushort type) { _type = type; }
-
-#ifndef NDEBUG
-    ushort actives() const { return _actives; }
-#endif // NDEBUG
 
 private:
     uint hash(ushort first, ushort second) const
@@ -100,6 +103,12 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class L>
+void Atom::eachNeighbour(const L &lambda) const
+{
+    std::for_each(_relatives.cbegin(), _relatives.cend(), lambda);
+}
 
 template <class S>
 bool Atom::hasRole(ushort role) const

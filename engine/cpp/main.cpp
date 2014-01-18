@@ -2,6 +2,7 @@
 #include <omp.h>
 #include <iostream>
 #include "mc/common_mc_data.h"
+#include "tools/saver/mol_saver.h"
 #include "generations/handbook.h"
 #include "generations/phases/diamond.h"
 
@@ -37,7 +38,7 @@ int main()
 {
     signal(SIGINT, stopSignalHandler);
     signal(SIGTERM, stopSignalHandler);
-    signal(SIGSEGV, segfaultSignalHandler);
+//    signal(SIGSEGV, segfaultSignalHandler);
     std::cout.precision(3); // for outputs in main loop
 
     RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
@@ -61,7 +62,7 @@ int main()
     double totalTime = 60;
 
 //    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-    Diamond *diamond = new Diamond(dim3(20, 20, 2000));
+    Diamond *diamond = new Diamond(dim3(10, 10, 2000));
     diamond->initialize();
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -75,6 +76,8 @@ int main()
     ullong n = 0;
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
+
+    MolSaver saver("First diamond");
 
 #ifdef PARALLEL
 #pragma omp parallel
@@ -94,7 +97,7 @@ int main()
 #pragma omp critical
 #endif // PARALLEL
         {
-            if (++n % 1000000 == 0)
+            if (++n % 10000000 == 0)
             {
                 std::cout.width(10);
                 std::cout << Handbook::mc().totalTime() / totalTime << " %";
@@ -106,6 +109,14 @@ int main()
                 std::cout << Handbook::mc().totalTime() << " (s)";
                 std::cout.width(20);
                 std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
+
+                Handbook::amorph().setUnvisited();
+                diamond->setUnvisited();
+                saver.writeFrom(diamond->firstAtom());
+#ifndef NDEBUG
+                Handbook::amorph().checkAllVisited();
+                diamond->checkAllVisited();
+#endif // NDEBUG
             }
         }
     }

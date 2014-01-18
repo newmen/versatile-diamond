@@ -19,6 +19,9 @@ public:
     ~Diamond();
 
 protected:
+    const float3 &periods() const override;
+    float3 seeks(const int3 &coords) const override;
+
     void buildAtoms() override;
     Atom *makeAtom(uint type, const int3 &coords) override;
     void bondAllAtoms() override;
