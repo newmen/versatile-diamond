@@ -12,6 +12,26 @@ Diamond::~Diamond()
     Finder::removeAll(atoms().data(), atoms().size());
 }
 
+const float3 &Diamond::periods() const
+{
+    static const float3 periods(0.5049, 0.5409, 0.357 / 4);
+    return periods;
+}
+
+float3 Diamond::seeks(const int3 &coords) const
+{
+    float3 result;
+    if (coords.z % 2 == 0)
+    {
+        result.y += periods().y / 2;
+    }
+    else
+    {
+        result.x += periods().x / 2;
+    }
+    return std::move(result);
+}
+
 void Diamond::buildAtoms()
 {
     for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)

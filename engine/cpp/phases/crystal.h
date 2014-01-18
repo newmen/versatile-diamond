@@ -3,31 +3,44 @@
 
 #include "../tools/common.h"
 #include "../tools/vector3d.h"
-#include "phase.h"
 
 namespace vd
 {
 
-class Crystal : public Phase
+class Atom;
+
+class Crystal
 {
     typedef vector3d<Atom *> Atoms;
     Atoms _atoms;
 
 public:
     Crystal(const dim3 &sizes);
-    ~Crystal() override;
+    ~Crystal();
 
     void initialize();
 
     void insert(Atom *atom, const int3 &coords);
-    void erase(Atom *atom) override;
+    void erase(Atom *atom);
 
     Atom *atom(const int3 &coords) const { return _atoms[coords]; }
 
     uint countAtoms() const;
     const dim3 &sizes() const { return _atoms.sizes(); }
 
+    void setUnvisited();
+#ifndef NDEBUG
+    void checkAllVisited();
+#endif // NDEBUG
+
+    Atom *firstAtom() const { return _atoms.data()[0]; }
+    float3 translate(const int3 &coords) const;
+
+    virtual const float3 &periods() const = 0;
+
 protected:
+    virtual float3 seeks(const int3 &coords) const = 0;
+
     virtual void buildAtoms() = 0;
     virtual void bondAllAtoms() = 0;
     virtual void findAll() = 0;

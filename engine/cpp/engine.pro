@@ -103,7 +103,12 @@ SOURCES += main.cpp \
     generations/reactions/typical/ads_methyl_to_111.cpp \
     generations/reactions/typical/migration_down_at_dimer_from_dimer.cpp \
     generations/species/specific/methyl_on_dimer_cmssu.cpp \
-    generations/reactions/typical/migration_down_in_gap_from_dimer.cpp
+    generations/reactions/typical/migration_down_in_gap_from_dimer.cpp \
+    tools/saver/mol_saver.cpp \
+    tools/saver/mol_accumulator.cpp \
+    tools/saver/atom_info.cpp \
+    tools/saver/bond_info.cpp \
+    generations/atoms/c.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -168,7 +173,6 @@ HEADERS += \
     phases/amorph.h \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
-    phases/phase.h \
     reactions/concrete_lateral_reaction.h \
     reactions/concrete_typical_reaction.h \
     reactions/lateral_reaction.h \
@@ -250,4 +254,8 @@ HEADERS += \
     generations/reactions/typical/migration_down_at_dimer_from_dimer.h \
     generations/reactions/typical/lookers/near_methyl_on_dimer.h \
     generations/species/specific/methyl_on_dimer_cmssu.h \
-    generations/reactions/typical/migration_down_in_gap_from_dimer.h
+    generations/reactions/typical/migration_down_in_gap_from_dimer.h \
+    tools/saver/mol_saver.h \
+    tools/saver/mol_accumulator.h \
+    tools/saver/atom_info.h \
+    tools/saver/bond_info.h

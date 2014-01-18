@@ -17,7 +17,8 @@ public:
     vector3d(const dim3 &sizes, const T &initValue);
     ~vector3d();
 
-    T *data() { return _data; }
+    T *data() const { return _data; }
+
     uint size() const { return _sizes.N(); }
     const dim3 &sizes() const { return _sizes; }
 

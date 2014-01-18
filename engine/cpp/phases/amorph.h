@@ -2,24 +2,29 @@
 #define AMORPH_H
 
 #include <unordered_set>
+#include "../atoms/atom.h"
 #include "../tools/common.h"
-#include "phase.h"
 
 namespace vd
 {
 
-class Amorph : public Phase
+class Amorph
 {
     typedef std::unordered_set<Atom *> Atoms;
     Atoms _atoms;
 
 public:
-    ~Amorph();
+    virtual ~Amorph();
 
     void insert(Atom *atom);
-    void erase(Atom *atom) override;
+    void erase(Atom *atom);
 
     uint countAtoms() const;
+
+    void setUnvisited();
+#ifndef NDEBUG
+    void checkAllVisited();
+#endif // NDEBUG
 
 protected:
     Atoms &atoms() { return _atoms; }
