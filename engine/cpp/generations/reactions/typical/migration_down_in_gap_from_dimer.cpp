@@ -71,5 +71,5 @@ void MigrationDownInGapFromDimer::doIt()
     b->changeType(24);
     c->changeType(24);
 
-    Finder::findAll(atoms, 4);
+    Finder::findAll(atoms, 5);
 }
