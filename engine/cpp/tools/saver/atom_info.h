@@ -10,6 +10,7 @@ namespace vd
 class AtomInfo
 {
     const Atom *const _atom;
+    uint _noBond = 0;
 
     friend class std::hash<AtomInfo>;
 
@@ -17,6 +18,8 @@ public:
     explicit AtomInfo(const Atom *atom);
 
     bool operator == (const AtomInfo &other) const;
+
+    void incNoBond();
 
     const char *type() const;
     float3 coords() const;

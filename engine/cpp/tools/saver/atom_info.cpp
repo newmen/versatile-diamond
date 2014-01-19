@@ -13,6 +13,11 @@ bool AtomInfo::operator ==(const AtomInfo &other) const
     return _atom == other._atom;
 }
 
+void AtomInfo::incNoBond()
+{
+    ++_noBond;
+}
+
 const char *AtomInfo::type() const
 {
     return _atom->name();
@@ -38,17 +43,23 @@ float3 AtomInfo::coords() const
 
 std::string AtomInfo::options() const
 {
-    int hc = _atom->hCount();
-    assert(hc >= 0);
+    bool isBottom = _atom->lattice() && _atom->lattice()->coords().z == 0;
 
-    if (hc == 0 || (_atom->lattice() && _atom->lattice()->coords().z == 0))
+    ushort hc = _atom->hCount();
+    if (hc == 0 || isBottom)
     {
         hc = -1;
     }
 
     std::stringstream ss;
-    ss << "CHG=-" << _atom->actives() << " "
-       << "HCOUNT=" << hc;
+    ss << " HCOUNT=" << hc;
+
+    ushort ac = isBottom ? _atom->valence() - _atom->bonds() : _atom->actives();
+    ac += _noBond;
+    if (ac > 0)
+    {
+        ss << " CHG=-" << ac;
+    }
 
     return ss.str();
 }

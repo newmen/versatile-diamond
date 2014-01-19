@@ -62,7 +62,7 @@ int main()
     double totalTime = 60;
 
 //    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-    Diamond *diamond = new Diamond(dim3(10, 10, 2000));
+    Diamond *diamond = new Diamond(dim3(20, 20, 2000));
     diamond->initialize();
 
 // ------------------------------------------------------------------------------------------------------------------ //

@@ -4,13 +4,16 @@
 #include "../../generations/phases/diamond.h"
 #include "../support/corrected_types.h"
 
+#define DEFAULT_HEIGHT 4
+
 class OpenDiamond : public Diamond
 {
 public:
     typedef Neighbours<4> FN;
 
     static const dim3 SIZES;
-    OpenDiamond(uint height = 4) : Diamond(SIZES, height) {}
+    OpenDiamond(uint height = DEFAULT_HEIGHT) : Diamond(SIZES, height) {}
+    OpenDiamond(const dim3 &sizes, uint height = DEFAULT_HEIGHT) : Diamond(sizes, height) {}
 
     Atom *atom(const int3 &coords) { return atoms()[coords]; }
 

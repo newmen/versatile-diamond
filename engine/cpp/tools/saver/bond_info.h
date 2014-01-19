@@ -39,19 +39,7 @@ struct hash<BondInfo>
 {
     std::size_t operator () (const BondInfo &bi) const
     {
-        uint big, small;
-        if (bi._from > bi._to)
-        {
-            big = bi._from;
-            small = bi._to;
-        }
-        else
-        {
-            small = bi._from;
-            big = bi._to;
-        }
-
-        return (small << 16) ^ big;
+        return (bi._from << 16) ^ bi._to;
     }
 };
 
