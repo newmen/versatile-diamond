@@ -45,7 +45,7 @@ std::string AtomInfo::options() const
 {
     bool isBottom = _atom->lattice() && _atom->lattice()->coords().z == 0;
 
-    ushort hc = _atom->hCount();
+    int hc = _atom->hCount();
     if (hc == 0 || isBottom)
     {
         hc = -1;

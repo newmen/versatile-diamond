@@ -2,8 +2,8 @@
 #define MOL_SAVER_H
 
 #include <fstream>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include "mol_accumulator.h"
 
 namespace vd
@@ -12,10 +12,6 @@ namespace vd
 class MolSaver
 {
     std::string _name;
-
-    class Accumulator
-    {
-    };
 
 public:
     MolSaver(const std::string &name);
