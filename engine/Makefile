@@ -7,7 +7,7 @@ LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64/ -liomp5 -openmp
 
 NAME	:= engine
 
-SOURCE_SUBDIRS	:= tools generations generations/builders generations/species generations/species/base generations/species/specific generations/species/sidepiece generations/atoms generations/phases generations/reactions generations/reactions/lateral generations/reactions/ubiquitous generations/reactions/ubiquitous/local generations/reactions/ubiquitous/data generations/reactions/typical generations/reactions/typical/lookers species atoms phases mc reactions
+SOURCE_SUBDIRS	:= tools tools/saver generations generations/builders generations/species generations/species/base generations/species/specific generations/species/sidepiece generations/atoms generations/phases generations/reactions generations/reactions/lateral generations/reactions/ubiquitous generations/reactions/ubiquitous/local generations/reactions/ubiquitous/data generations/reactions/typical generations/reactions/typical/lookers species atoms phases mc reactions
 
 SRC_DIR := cpp
 OBJ_DIR := obj
