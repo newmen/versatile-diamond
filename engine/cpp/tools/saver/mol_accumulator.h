@@ -28,7 +28,7 @@ public:
     void writeTo(std::ostream &os, const char *prefix) const;
 
 private:
-    uint atomIndex(const Atom *atom);
+    AtomInfo &findAI(const Atom *atom);
     uint aiIndex(const AtomInfo &ai) const;
     uint biIndex(const BondInfo &bi) const;
 

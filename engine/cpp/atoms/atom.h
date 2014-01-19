@@ -82,9 +82,9 @@ public:
     virtual const char *name() const = 0;
 
     virtual ushort valence() const = 0;
+    ushort bonds() const { return _relatives.size(); }
     ushort actives() const { return _actives; }
-    // TODO: should be ushort
-    int hCount() const { return (int)valence() - _actives - _relatives.size(); }
+    ushort hCount() const;
 
 #ifdef PRINT
     void info(std::ostream &os);

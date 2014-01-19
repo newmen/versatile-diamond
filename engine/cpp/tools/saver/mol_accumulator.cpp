@@ -11,20 +11,33 @@ MolAccumulator::MolAccumulator()
 
 void MolAccumulator::addBond(const Atom *from, const Atom *to)
 {
-    uint first = atomIndex(from);
-    uint second = atomIndex(to);
+    assert(from != to);
 
-    if (!isNear(from, to)) return;
+    AtomInfo &fai = findAI(from);
+    AtomInfo &sai = findAI(to);
 
-    BondInfo bond(first, second);
-    auto it = _bonds.find(bond);
-    if (it != _bonds.cend())
+    uint first = aiIndex(fai);
+    uint second = aiIndex(sai);
+
+    if (first > second) return;
+
+    if (!isNear(from, to))
     {
-        const_cast<BondInfo &>(it->first).incArity();
+        fai.incNoBond();
+        sai.incNoBond();
     }
     else
     {
-        _bonds.insert(BondInfos::value_type(bond, ++_bondsNum));
+        BondInfo bond(first, second);
+        auto it = _bonds.find(bond);
+        if (it != _bonds.cend())
+        {
+            const_cast<BondInfo &>(it->first).incArity();
+        }
+        else
+        {
+            _bonds.insert(BondInfos::value_type(bond, ++_bondsNum));
+        }
     }
 }
 
@@ -35,19 +48,22 @@ void MolAccumulator::writeTo(std::ostream &os, const char *prefix) const
     writeBonds(os, prefix);
 }
 
-uint MolAccumulator::atomIndex(const Atom *atom)
+AtomInfo &MolAccumulator::findAI(const Atom *atom)
 {
+    const AtomInfo *result;
+
     AtomInfo ai(atom);
     auto it = _atoms.find(ai);
     if (it != _atoms.cend())
     {
-        return it->second;
+        result = &it->first;
     }
     else
     {
-        _atoms.insert(AtomInfos::value_type(ai, ++_atomsNum));
-        return _atomsNum;
+        result = &_atoms.insert(AtomInfos::value_type(ai, ++_atomsNum)).first->first;
     }
+
+    return const_cast<AtomInfo &>(*result);
 }
 
 uint MolAccumulator::aiIndex(const AtomInfo &ai) const

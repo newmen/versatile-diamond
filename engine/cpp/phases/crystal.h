@@ -16,7 +16,7 @@ class Crystal
 
 public:
     Crystal(const dim3 &sizes);
-    ~Crystal();
+    virtual ~Crystal();
 
     void initialize();
 

@@ -15,8 +15,7 @@ void BondInfo::incArity()
 
 uint BondInfo::type() const
 {
-    assert(_arity % 2 == 0);
-    return _arity / 2;
+    return _arity;
 }
 
 uint BondInfo::from() const

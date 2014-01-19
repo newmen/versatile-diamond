@@ -14,22 +14,23 @@ Diamond::~Diamond()
 
 const float3 &Diamond::periods() const
 {
-    static const float3 periods(0.5049, 0.5409, 0.357 / 4);
+    static const float3 periods(2.45, 2.45, 3.57 / 4);
     return periods;
 }
 
 float3 Diamond::seeks(const int3 &coords) const
 {
-    float3 result;
-    if (coords.z % 2 == 0)
+    if (coords.z == 0)
     {
-        result.y += periods().y / 2;
+        return std::move(float3());
     }
     else
     {
-        result.x += periods().x / 2;
+        float px = periods().x / 2, py = periods().y / 2;
+        int cx = (coords.z + 1) / 2, cy = coords.z / 2;
+
+        return std::move(float3(cx * px, cy * py));
     }
-    return std::move(result);
 }
 
 void Diamond::buildAtoms()

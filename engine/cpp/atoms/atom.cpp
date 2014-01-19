@@ -267,6 +267,13 @@ void Atom::prepareToRemove()
     setType(NO_VALUE);
 }
 
+ushort Atom::hCount() const
+{
+    int hc = (int)valence() - actives() - bonds();
+    assert(hc >= 0);
+    return (ushort)hc;
+}
+
 #ifdef PRINT
 void Atom::info(std::ostream &os)
 {
