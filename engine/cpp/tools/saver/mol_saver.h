@@ -12,17 +12,18 @@ namespace vd
 class MolSaver
 {
     std::string _name;
+    std::ofstream _out;
 
 public:
     MolSaver(const std::string &name);
     ~MolSaver();
 
-    void writeFrom(Atom *atom) const;
+    void writeFrom(Atom *atom);
 
 private:
     const std::string &name() const { return _name; }
 
-    std::string ext() const { return ".mol"; }
+    std::string ext() const { return ".sdf"; }
     std::string filename() const;
 
     void writeHeader(std::ostream &os) const;

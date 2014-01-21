@@ -6,7 +6,7 @@
 namespace vd
 {
 
-MolSaver::MolSaver(const std::string &name) : _name(name)
+MolSaver::MolSaver(const std::string &name) : _name(name), _out(filename())
 {
 }
 
@@ -14,29 +14,37 @@ MolSaver::~MolSaver()
 {
 }
 
-void MolSaver::writeFrom(Atom *atom) const
+void MolSaver::writeFrom(Atom *atom)
 {
+    static uint counter = 0;
+
     MolAccumulator acc;
     accumulateToFrom(acc, atom);
 
-    std::ofstream out(filename());
-    writeHeader(out);
-    acc.writeTo(out, mainPrefix());
-    writeFooter(out);
+    if (counter > 0)
+    {
+        _out << "$$$$" << "\n";
+    }
+
+    writeHeader(_out);
+    acc.writeTo(_out, mainPrefix());
+    writeFooter(_out);
+
+    ++counter;
 }
 
 std::string MolSaver::filename() const
 {
     std::stringstream ss;
-    ss << name() << " " << timestamp() << ext();
+    ss << name() << ext();
     return ss.str();
 }
 
 void MolSaver::writeHeader(std::ostream &os) const
 {
-    os << "VD out " << name() << "\n"
+    os << name() << "\n"
        << "Writen at " << timestamp() << "\n"
-       << "Versatile diamond MOLv3000 writer" << "\n"
+       << "Versatile Diamond MOLv3000 writer" << "\n"
        << "  0  0  0     0 0             999 V3000" << "\n"
 
        << mainPrefix() << "BEGIN CTAB" << "\n";
