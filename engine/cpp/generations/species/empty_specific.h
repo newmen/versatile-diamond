@@ -5,8 +5,7 @@
 #include "empty_dependent.h"
 
 template <class B, ushort ST, ushort USED_PARENTS_NUM>
-class EmptySpecific :
-        public SpecificRole<EmptyDependent<SpecClassBuilder<B, SpecificSpec>, ST, USED_PARENTS_NUM>>
+class EmptySpecific : public SpecificRole<EmptyDependent<SpecClassBuilder<B, SpecificSpec>, ST, USED_PARENTS_NUM>>
 {
     typedef SpecificRole<EmptyDependent<SpecClassBuilder<B, SpecificSpec>, ST, USED_PARENTS_NUM>> ParentType;
 

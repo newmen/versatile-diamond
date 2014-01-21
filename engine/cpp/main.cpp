@@ -34,11 +34,22 @@ void printSeparator()
 }
 #endif // PRINT
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc != 2)
+    {
+        std::cerr << "Wrong number of argument!" << std::endl;
+        std::cout << "Try: " << argv[0] << " run_name" << std::endl;
+        return 1;
+    }
+
+    const char *runName = argv[1];
+
     signal(SIGINT, stopSignalHandler);
     signal(SIGTERM, stopSignalHandler);
-//    signal(SIGSEGV, segfaultSignalHandler);
+#ifndef PARALLEL
+    signal(SIGSEGV, segfaultSignalHandler);
+#endif // PARALLEL
     std::cout.precision(3); // for outputs in main loop
 
     RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
@@ -61,8 +72,8 @@ int main()
 
     double totalTime = 60;
 
-//    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-    Diamond *diamond = new Diamond(dim3(20, 20, 2000));
+    Diamond *diamond = new Diamond(dim3(100, 100, 50));
+//    Diamond *diamond = new Diamond(dim3(20, 20, 2000));
     diamond->initialize();
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -77,7 +88,7 @@ int main()
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
 
-    MolSaver saver("First diamond");
+    MolSaver saver(runName);
 
 #ifdef PARALLEL
 #pragma omp parallel
