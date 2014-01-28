@@ -306,4 +306,37 @@ void Atom::pos(std::ostream &os)
 
 #endif // PRINT
 
+bool Atom::hasRole(ushort sid, ushort role) const
+{
+    const uint key = hash(role, sid);
+    return _specs.find(key) != _specs.cend();
+}
+
+BaseSpec *Atom::specByRole(ushort sid, ushort role)
+{
+    BaseSpec *result = nullptr;
+    const uint key = hash(role, sid);
+
+#ifdef PRINT
+    debugPrint([&](std::ostream &os) {
+        os << "specByRole " << this << std::dec;
+        pos(os);
+        os << " |" << type() << ", " << _prevType << "| role type: " << role
+           << ". spec type: " << sid << ". key: " << key;
+        auto range = _specs.equal_range(key);
+        os << " -> distance: " << std::distance(range.first, range.second);
+    });
+#endif // PRINT
+
+    auto range = _specs.equal_range(key);
+    uint distance = std::distance(range.first, range.second);
+    if (distance > 0)
+    {
+        assert(distance == 1);
+        result = range.first->second;
+    }
+
+    return result;
+}
+
 }

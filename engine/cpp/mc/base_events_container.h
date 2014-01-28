@@ -47,7 +47,7 @@ R *BaseEventsContainer::exchangeToLast(uint index)
     if (_events.cbegin() + index != _events.cend())
     {
         _events[index] = last;
-        return cast_to<R *>(last);
+        return static_cast<R *>(last);
     }
     return nullptr;
 }

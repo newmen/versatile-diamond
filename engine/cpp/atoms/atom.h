@@ -94,6 +94,12 @@ public:
 protected:
     void setType(ushort type) { _type = type; }
 
+    bool hasRole(ushort sid, ushort role) const;
+    BaseSpec *specByRole(ushort sid, ushort role);
+
+    template <class L>
+    BaseSpec *findSpecByRole(ushort sid, ushort role, const L &lambda);
+
 private:
     uint hash(ushort first, ushort second) const
     {
@@ -113,43 +119,28 @@ void Atom::eachNeighbour(const L &lambda) const
 template <class S>
 bool Atom::hasRole(ushort role) const
 {
-    const uint key = hash(role, S::ID);
-    return _specs.find(key) != _specs.cend();
+    return hasRole(S::ID, role);
 }
 
 template <class S>
 S *Atom::specByRole(ushort role)
 {
-    BaseSpec *result = nullptr;
-    const uint key = hash(role, S::ID);
-
-#ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "specByRole " << this << std::dec;
-        pos(os);
-        os << " |" << type() << ", " << _prevType << "| role type: " << role
-           << ". spec type: " << S::ID << ". key: " << key;
-        auto range = _specs.equal_range(key);
-        os << " -> distance: " << std::distance(range.first, range.second);
-    });
-#endif // PRINT
-
-    auto range = _specs.equal_range(key);
-    uint distance = std::distance(range.first, range.second);
-    if (distance > 0)
-    {
-        assert(distance == 1);
-        result = range.first->second;
-    }
-
-    return cast_to<S *>(result);
+    BaseSpec *result = specByRole(S::ID, role);
+    return dynamic_cast<S *>(result);
 }
 
 template <class S, class L>
 S *Atom::findSpecByRole(ushort role, const L &lambda)
 {
+    BaseSpec *result = findSpecByRole(S::ID, role, lambda);
+    return dynamic_cast<S *>(result);
+}
+
+template <class L>
+BaseSpec *Atom::findSpecByRole(ushort sid, ushort role, const L &lambda)
+{
     BaseSpec *result = nullptr;
-    const uint key = hash(role, S::ID);
+    const uint key = hash(role, sid);
 
     auto range = _specs.equal_range(key);
     for (; range.first != range.second; ++range.first)
@@ -158,10 +149,10 @@ S *Atom::findSpecByRole(ushort role, const L &lambda)
         if (lambda(spec))
         {
             result = spec;
+            break;
         }
     }
-
-    return cast_to<S *>(result);
+    return result;
 }
 
 }

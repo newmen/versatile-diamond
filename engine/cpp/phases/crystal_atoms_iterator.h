@@ -30,7 +30,7 @@ template <class C>
 C *CrystalAtomsIterator<C>::crystalBy(Atom *atom)
 {
     assert(atom->lattice());
-    return cast_to<C *>(atom->lattice()->crystal());
+    return static_cast<C *>(atom->lattice()->crystal());
 }
 
 template <class C>

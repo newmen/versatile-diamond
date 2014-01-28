@@ -194,7 +194,6 @@ HEADERS += \
     species/spec_class_builder.h \
     species/specific_spec.h \
     tests/support/open_diamond.h \
-    tools/caster.h \
     tools/collector.h \
     tools/common.h \
     tools/creator.h \
