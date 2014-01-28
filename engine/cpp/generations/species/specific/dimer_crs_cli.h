@@ -4,7 +4,7 @@
 #include "../base_specific.h"
 #include "dimer_crs.h"
 
-class DimerCRsCLi : public BaseSpecific<DependentSpec<BaseSpec>, METHYL_ON_DIMER_CMsu, 2>
+class DimerCRsCLi : public BaseSpecific<DependentSpec<BaseSpec>, DIMER_CRs_CLi, 2>
 {
 public:
     static void find(DimerCRs *parent);
