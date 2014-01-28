@@ -75,7 +75,7 @@ CR *Reactant<R>::checkoutReaction()
 #endif // NDEBUG
 
     auto pr = _reactions.find(CR::ID);
-    return (pr != _reactions.cend()) ? cast_to<CR *>(pr->second) : nullptr;
+    return (pr != _reactions.cend()) ? static_cast<CR *>(pr->second) : nullptr;
 }
 
 template <class R>
@@ -103,7 +103,7 @@ CR *Reactant<R>::checkoutReactionWith(S *spec)
 
     break_both_loops :;
 
-    return cast_to<CR *>(result);
+    return static_cast<CR *>(result);
 }
 
 template <class R>
