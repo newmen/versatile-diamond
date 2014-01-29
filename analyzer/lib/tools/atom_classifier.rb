@@ -17,7 +17,7 @@ module VersatileDiamond
       # @yield [AtomProperties] do something with each properties
       # @return [Enumerator] if block is not given
       def each_props(&block)
-        block_given? ? @props.each(&block) : @props.each
+        @props.each(&block)
       end
 
       # Analyze spec and store all uniq properties

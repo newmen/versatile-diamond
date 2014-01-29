@@ -78,8 +78,7 @@ module VersatileDiamond
       # @yield [TerminationSpec] do for each reactant
       # @return [Enumerator] if block is not given
       def each_source(&block)
-        source = @source.dup
-        block_given? ? source.each(&block) : source.each
+        @source.dup.each(&block)
       end
 
       # Swaps source spec to another same source spec
