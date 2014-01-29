@@ -32,7 +32,7 @@ module VersatileDiamond
       # @yeild [Concepts::Atom] do something actions with vertex
       # @return [Enumerable] if block is not given
       def each_vertex(&block)
-        block_given? ? @edges.keys.each(&block) : @edges.keys.each
+        @edges.keys.each(&block)
       end
 
       # Gets a last edge between V and W vertices (serv for check edge

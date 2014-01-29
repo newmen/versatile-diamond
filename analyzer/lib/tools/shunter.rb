@@ -236,7 +236,7 @@ module VersatileDiamond
         # @return [Enumerator] if block is not given
         def each_reaction(&block)
           reactions = Chest.all(*REACTION_KEYS)
-          block_given? ? reactions.each(&block) : reactions.each
+          reactions.each(&block)
         end
 
         # Gets all typical reactions
