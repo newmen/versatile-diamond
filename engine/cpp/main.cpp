@@ -105,10 +105,16 @@ int main(int argc, char *argv[])
 #endif // PRINT
 
 #ifdef PARALLEL
+#pragma omp atomic
+#endif // PARALLEL
+        ++n;
+
+#ifndef NOUT
+#ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
         {
-            if (++n % 10000000 == 0)
+            if (n % 10000000 == 0)
             {
                 std::cout.width(10);
                 std::cout << Handbook::mc().totalTime() / totalTime << " %";
@@ -130,6 +136,7 @@ int main(int argc, char *argv[])
 #endif // NDEBUG
             }
         }
+#endif // NOUT
     }
 
     std::cout << "\nEnd atoms num: " << diamond->countAtoms() << "\n"
