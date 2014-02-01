@@ -12,13 +12,14 @@ class AdditionalAtomsWrapper : public B
 {
     Atom *_additionalAtoms[ATOMS_NUM];
 
-public:
+protected:
     template <class... Ts>
     AdditionalAtomsWrapper(Atom *additionalAtom, Ts... args);
 
     template <class... Ts>
     AdditionalAtomsWrapper(Atom **additionalAtoms, Ts... args);
 
+public:
     Atom *atom(ushort index) const override;
     ushort size() const override;
 

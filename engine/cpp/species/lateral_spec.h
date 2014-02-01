@@ -10,6 +10,9 @@ class LateralReaction;
 
 class LateralSpec : public Reactant<LateralReaction>
 {
+protected:
+    LateralSpec() = default;
+
 public:
     void remove() override;
 };

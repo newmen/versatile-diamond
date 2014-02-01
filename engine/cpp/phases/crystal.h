@@ -20,7 +20,7 @@ public:
 
     void initialize();
 
-    void insert(Atom *atom, const int3 &coords);
+    void insert(Atom *atom, int3 &&coords);
     void erase(Atom *atom);
 
     Atom *atom(const int3 &coords) const { return _atoms[coords]; }
@@ -45,14 +45,18 @@ protected:
     virtual void bondAllAtoms() = 0;
     virtual void findAll() = 0;
 
-    virtual Atom *makeAtom(uint type, const int3 &coords) = 0;
+    virtual Atom *makeAtom(uint type, int3 &&coords) = 0;
 
     void makeLayer(uint z, uint type);
 
     const Atoms &atoms() const { return _atoms; }
     Atoms &atoms() { return _atoms; }
 
-//    Atom *atom(const int3 &coords) { return _atoms[coords]; }
+private:
+    Crystal(const Crystal &) = delete;
+    Crystal(Crystal &&) = delete;
+    Crystal &operator = (const Crystal &) = delete;
+    Crystal &operator = (Crystal &&) = delete;
 };
 
 }

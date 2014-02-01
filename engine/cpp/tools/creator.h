@@ -7,6 +7,8 @@ public:
     virtual ~Creator() {}
 
 protected:
+    Creator() = default;
+
     template <class T, class... Args>
     static T *create(Args... args);
 };

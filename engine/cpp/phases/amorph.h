@@ -14,6 +14,7 @@ class Amorph
     Atoms _atoms;
 
 public:
+    Amorph() = default;
     virtual ~Amorph();
 
     void insert(Atom *atom);
@@ -28,6 +29,12 @@ public:
 
 protected:
     Atoms &atoms() { return _atoms; }
+
+private:
+    Amorph(const Amorph &) = delete;
+    Amorph(Amorph &&) = delete;
+    Amorph &operator = (const Amorph &) = delete;
+    Amorph &operator = (Amorph &&) = delete;
 };
 
 }

@@ -12,10 +12,11 @@ class Lockable
     omp_lock_t _lock;
 
 public:
-    Lockable();
     virtual ~Lockable();
 
 protected:
+    Lockable();
+
     template <class L>
     void lock(const L &lambda);
 };

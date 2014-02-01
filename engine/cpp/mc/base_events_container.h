@@ -16,6 +16,9 @@ class BaseEventsContainer :
 class BaseEventsContainer
 #endif // PARALLEL
 {
+protected:
+    std::vector<Reaction *> _events;
+
 public:
     virtual ~BaseEventsContainer() {}
 
@@ -30,11 +33,13 @@ public:
 #endif // PRINT
 
 protected:
+    BaseEventsContainer() = default;
+
     template <class R>
     R *exchangeToLast(uint index);
-
-    std::vector<Reaction *> _events;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class R>
 R *BaseEventsContainer::exchangeToLast(uint index)

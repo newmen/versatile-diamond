@@ -22,14 +22,14 @@ float3 Diamond::seeks(const int3 &coords) const
 {
     if (coords.z == 0)
     {
-        return std::move(float3());
+        return float3();
     }
     else
     {
         float px = periods().x / 2, py = periods().y / 2;
         int cx = (coords.z + 1) / 2, cy = coords.z / 2;
 
-        return std::move(float3(cx * px, cy * py));
+        return float3(cx * px, cy * py);
     }
 }
 
@@ -57,10 +57,10 @@ void Diamond::bondAllAtoms()
     });
 }
 
-Atom *Diamond::makeAtom(uint type, const int3 &coords)
+Atom *Diamond::makeAtom(uint type, int3 &&coords)
 {
     AtomBuilder builder;
-    Atom *atom = builder.buildCd(type, 2, this, coords);
+    Atom *atom = builder.buildCd(type, 2, this, std::move(coords));
 
     int z = coords.z;
     if (z > 0 && z < _defaultSurfaceHeight - 1)

@@ -27,6 +27,12 @@ public:
         Distribution distribution(0.0, maxValue);
         return distribution(_generator);
     }
+
+private:
+    RandomGenerator(const RandomGenerator &) = delete;
+    RandomGenerator(RandomGenerator &&) = delete;
+    RandomGenerator &operator = (const RandomGenerator &) = delete;
+    RandomGenerator &operator = (RandomGenerator &&) = delete;
 };
 
 }

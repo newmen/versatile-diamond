@@ -33,7 +33,12 @@ class dv3
 
 public:
     T x, y, z;
+
     dv3(T x = DEFAULT_VALUE, T y = DEFAULT_VALUE, T z = DEFAULT_VALUE) : x(x), y(y), z(z) {}
+    dv3(const CurrentType &) = default;
+    dv3(CurrentType &&) = default;
+
+    CurrentType &operator = (CurrentType &&) = default;
 
     DVOP(+)
     DVOP(*)
@@ -50,6 +55,9 @@ public:
         return x == another.x && y == another.y && z == another.z;
     }
 #endif // NDEBUG
+
+private:
+     CurrentType &operator = (const CurrentType &) = delete;
 };
 
 }

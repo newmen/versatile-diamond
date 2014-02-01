@@ -19,6 +19,8 @@ public:
     void remove() override;
 
 protected:
+    ParentSpec() = default;
+
     virtual void findAllChildren() = 0;
 };
 

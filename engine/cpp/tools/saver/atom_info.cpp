@@ -8,7 +8,7 @@ AtomInfo::AtomInfo(const Atom *atom) : _atom(atom)
 {
 }
 
-bool AtomInfo::operator ==(const AtomInfo &other) const
+bool AtomInfo::operator == (const AtomInfo &other) const
 {
     return _atom == other._atom;
 }
