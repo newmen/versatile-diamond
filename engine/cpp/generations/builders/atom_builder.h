@@ -15,9 +15,9 @@ public:
         return specify(new C(type, actives, (Lattice *)nullptr));
     }
 
-    Atom *buildCd(uint type, uint actives, Crystal *crystal, int3 &&coords) const
+    Atom *buildCd(uint type, uint actives, Crystal *crystal, const int3 &coords) const
     {
-        return specify(new C(type, actives, new Lattice(crystal, std::move(coords))));
+        return specify(new C(type, actives, new Lattice(crystal, coords)));
     }
 
 private:

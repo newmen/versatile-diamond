@@ -27,7 +27,7 @@ float3 AtomInfo::coords() const
 {
     if (_atom->lattice())
     {
-        return std::move(_atom->lattice()->crystal()->translate(_atom->lattice()->coords()));
+        return _atom->lattice()->crystal()->translate(_atom->lattice()->coords());
     }
     else
     {
@@ -37,7 +37,7 @@ float3 AtomInfo::coords() const
         auto crystal = crystAtom->lattice()->crystal();
         auto crds = crystal->translate(crystAtom->lattice()->coords());
         crds.z += crystal->periods().z * 1.618;
-        return std::move(crds);
+        return crds;
     }
 }
 

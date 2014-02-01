@@ -38,7 +38,7 @@ public:
     dv3(const CurrentType &) = default;
     dv3(CurrentType &&) = default;
 
-    CurrentType &operator = (CurrentType &&) = default;
+    CurrentType &operator = (const CurrentType &) = default;
 
     DVOP(+)
     DVOP(*)
@@ -57,7 +57,7 @@ public:
 #endif // NDEBUG
 
 private:
-     CurrentType &operator = (const CurrentType &) = delete;
+     CurrentType &operator = (CurrentType &&) = delete;
 };
 
 }
