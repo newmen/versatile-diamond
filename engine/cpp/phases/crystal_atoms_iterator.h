@@ -22,6 +22,9 @@ public:
     // TODO: never used!
     template <ushort RELS_NUM, class RL, class AL>
     static void eachRelations(Atom *anchor, const RL *relationMethods, const AL &actionLambda);
+
+protected:
+    CrystalAtomsIterator() = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

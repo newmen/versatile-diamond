@@ -9,6 +9,9 @@ namespace vd
 
 class SpecificSpec : public Reactant<SpecReaction>
 {
+protected:
+    SpecificSpec() = default;
+
 public:
     void remove() override;
 };

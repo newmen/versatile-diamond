@@ -28,6 +28,8 @@ public:
     void findReactions();
 
 protected:
+    Reactant() = default;
+
     virtual void keepFirstTime() = 0;
     virtual void findAllReactions() = 0;
 

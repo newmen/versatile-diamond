@@ -25,6 +25,12 @@ class Counter
 #endif // PARALLEL
             ++counter;
         }
+
+    private:
+        Record(const Record &) = delete;
+        Record(Record &&) = delete;
+        Record &operator = (const Record &) = delete;
+        Record &operator = (Record &&) = delete;
     };
 
     std::vector<Record *> _records;
@@ -40,6 +46,11 @@ public:
     void printStats();
 
 private:
+    Counter(const Counter &) = delete;
+    Counter(Counter &&) = delete;
+    Counter &operator = (const Counter &) = delete;
+    Counter &operator = (Counter &&) = delete;
+
     void sort();
 };
 

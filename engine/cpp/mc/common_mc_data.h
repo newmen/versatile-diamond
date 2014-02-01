@@ -43,6 +43,11 @@ public:
     void reset();
 
 private:
+    CommonMCData(const CommonMCData &) = delete;
+    CommonMCData(CommonMCData &&) = delete;
+    CommonMCData &operator = (const CommonMCData &) = delete;
+    CommonMCData &operator = (CommonMCData &&) = delete;
+
     inline int currThreadNum() const;
     inline void updateSame(int currentThread, int anotherThread);
     inline void setSame(uint threadId);

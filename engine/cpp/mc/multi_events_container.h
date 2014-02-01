@@ -13,6 +13,7 @@ class MultiEventsContainer : public BaseEventsContainer
     std::unordered_multimap<Atom *, uint> _positions;
 
 public:
+    MultiEventsContainer() = default;
     ~MultiEventsContainer();
 
     void add(UbiquitousReaction *event, uint n);
@@ -21,6 +22,11 @@ public:
     bool check(Atom *target);
 
 private:
+    MultiEventsContainer(const MultiEventsContainer &) = delete;
+    MultiEventsContainer(MultiEventsContainer &&) = delete;
+    MultiEventsContainer &operator = (const MultiEventsContainer &) = delete;
+    MultiEventsContainer &operator = (MultiEventsContainer &&) = delete;
+
     void unlockedRemove(Atom *target, uint n);
 };
 

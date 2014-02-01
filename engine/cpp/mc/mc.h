@@ -52,6 +52,11 @@ public:
 #endif // NDEBUG
 
 private:
+    MC(const MC &) = delete;
+    MC(MC &&) = delete;
+    MC &operator = (const MC &) = delete;
+    MC &operator = (MC &&) = delete;
+
     void increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)

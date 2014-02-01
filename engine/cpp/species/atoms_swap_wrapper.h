@@ -12,10 +12,11 @@ class AtomsSwapWrapper : public B
 {
     ushort _from, _to;
 
-public:
+protected:
     template <class... Ts>
     AtomsSwapWrapper(ushort from, ushort to, Ts... args) : B(args...), _from(from), _to(to) {}
 
+public:
     Atom *atom(ushort index) const override;
 };
 

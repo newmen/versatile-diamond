@@ -104,7 +104,7 @@ Atom *Atom::firstCrystalNeighbour() const
     }
 }
 
-void Atom::setLattice(Crystal *crystal, const int3 &coords)
+void Atom::setLattice(Crystal *crystal, int3 &&coords)
 {
     assert(crystal);
     assert(!_lattice);
@@ -112,12 +112,12 @@ void Atom::setLattice(Crystal *crystal, const int3 &coords)
     if (_cacheLattice && _cacheLattice->crystal() == crystal)
     {
         _lattice = _cacheLattice;
-        _lattice->updateCoords(coords);
+        _lattice->updateCoords(std::move(coords));
     }
     else
     {
         delete _cacheLattice;
-        _cacheLattice = _lattice = new Lattice(crystal, coords);
+        _cacheLattice = _lattice = new Lattice(crystal, std::move(coords));
     }
 }
 

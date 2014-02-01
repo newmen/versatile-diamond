@@ -28,7 +28,6 @@ class Atom
     std::unordered_multimap<uint, BaseSpec *> _specs;
 
 public:
-    Atom(ushort type, ushort actives, Lattice *lattice);
     virtual ~Atom();
 
     void setVisited() { _visited = true; }
@@ -57,7 +56,7 @@ public:
     Atom *firstCrystalNeighbour() const;
 
     Lattice *lattice() const { return _lattice; }
-    void setLattice(Crystal *crystal, const int3 &coords);
+    void setLattice(Crystal *crystal, int3 &&coords);
     void unsetLattice();
 
     void describe(ushort role, BaseSpec *spec);
@@ -92,15 +91,14 @@ public:
 #endif // PRINT
 
 protected:
+    Atom(ushort type, ushort actives, Lattice *lattice);
+
     void setType(ushort type) { _type = type; }
 
+private:
     bool hasRole(ushort sid, ushort role) const;
     BaseSpec *specByRole(ushort sid, ushort role);
 
-    template <class L>
-    BaseSpec *findSpecByRole(ushort sid, ushort role, const L &lambda);
-
-private:
     uint hash(ushort first, ushort second) const
     {
         uint at = first;
@@ -132,15 +130,8 @@ S *Atom::specByRole(ushort role)
 template <class S, class L>
 S *Atom::findSpecByRole(ushort role, const L &lambda)
 {
-    BaseSpec *result = findSpecByRole(S::ID, role, lambda);
-    return dynamic_cast<S *>(result);
-}
-
-template <class L>
-BaseSpec *Atom::findSpecByRole(ushort sid, ushort role, const L &lambda)
-{
     BaseSpec *result = nullptr;
-    const uint key = hash(role, sid);
+    const uint key = hash(role, S::ID);
 
     auto range = _specs.equal_range(key);
     for (; range.first != range.second; ++range.first)
@@ -152,7 +143,7 @@ BaseSpec *Atom::findSpecByRole(ushort sid, ushort role, const L &lambda)
             break;
         }
     }
-    return result;
+    return dynamic_cast<S *>(result);
 }
 
 }
