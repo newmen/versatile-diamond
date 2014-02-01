@@ -26,7 +26,7 @@ void Crystal::initialize()
     findAll();
 }
 
-void Crystal::insert(Atom *atom, int3 &&coords)
+void Crystal::insert(Atom *atom, const int3 &coords)
 {
 //    static int maxHeight = 0;
 //    if (coords.z > maxHeight)
@@ -41,7 +41,7 @@ void Crystal::insert(Atom *atom, int3 &&coords)
     Atom **cell = &_atoms[coords];
     assert(!*cell);
 
-    atom->setLattice(this, std::move(coords));
+    atom->setLattice(this, coords);
     *cell = atom;
 }
 
@@ -64,7 +64,7 @@ void Crystal::makeLayer(uint z, uint type)
         for (uint x = 0; x < sizes.x; ++x)
         {
             int3 coords(x, y, z);
-            _atoms[coords] = makeAtom(type, std::move(coords));
+            _atoms[coords] = makeAtom(type, coords);
         }
 
 }

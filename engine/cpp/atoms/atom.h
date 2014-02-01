@@ -56,7 +56,7 @@ public:
     Atom *firstCrystalNeighbour() const;
 
     Lattice *lattice() const { return _lattice; }
-    void setLattice(Crystal *crystal, int3 &&coords);
+    void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
 
     void describe(ushort role, BaseSpec *spec);

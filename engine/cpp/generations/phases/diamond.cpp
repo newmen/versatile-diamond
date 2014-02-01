@@ -57,10 +57,10 @@ void Diamond::bondAllAtoms()
     });
 }
 
-Atom *Diamond::makeAtom(uint type, int3 &&coords)
+Atom *Diamond::makeAtom(uint type, const int3 &coords)
 {
     AtomBuilder builder;
-    Atom *atom = builder.buildCd(type, 2, this, std::move(coords));
+    Atom *atom = builder.buildCd(type, 2, this, coords);
 
     int z = coords.z;
     if (z > 0 && z < _defaultSurfaceHeight - 1)

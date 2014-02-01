@@ -23,7 +23,7 @@ protected:
     float3 seeks(const int3 &coords) const override;
 
     void buildAtoms() override;
-    Atom *makeAtom(uint type, int3 &&coords) override;
+    Atom *makeAtom(uint type, const int3 &coords) override;
     void bondAllAtoms() override;
 
     void findAll() override;
