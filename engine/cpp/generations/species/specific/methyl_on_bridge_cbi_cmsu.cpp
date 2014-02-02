@@ -20,11 +20,11 @@ void MethylOnBridgeCBiCMsu::find(MethylOnBridgeCBiCMu *parent)
 
 void MethylOnBridgeCBiCMsu::findAllChildren()
 {
-    MethylOnBridgeCBiCMssu::find(this);
-//    MethylOnBridgeCBsCMsu::find(this); // DISABLED: form two bond
+//    MethylOnBridgeCBiCMssu::find(this); // DISABLED: MigrationDownInGap
+    MethylOnBridgeCBsCMsu::find(this);
 }
 
 void MethylOnBridgeCBiCMsu::findAllReactions()
 {
-    MigrationDownAtDimer::find(this);
+//    MigrationDownAtDimer::find(this); // DISABLED
 }

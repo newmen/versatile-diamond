@@ -107,7 +107,7 @@ void Runner::calculate()
 
                 // ----------------------------------------------------------- //
 
-                csSaver.writeBySlicesOf(surfaceCrystal);
+                csSaver.writeBySlicesOf(surfaceCrystal, Handbook::mc().totalTime());
 
                 // ----------------------------------------------------------- //
 

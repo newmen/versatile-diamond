@@ -27,5 +27,5 @@ void MethylOnDimerCMsu::findAllChildren()
 void MethylOnDimerCMsu::findAllReactions()
 {
     MethylToHighBridge::find(this);
-    MigrationDownAtDimerFromDimer::find(this);
+//    MigrationDownAtDimerFromDimer::find(this); // DISABLED
 }
