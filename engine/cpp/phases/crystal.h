@@ -36,6 +36,9 @@ public:
     Atom *firstAtom() const { return _atoms.data()[0]; }
     float3 translate(const int3 &coords) const;
 
+    template <class L>
+    void eachSlice(const L &lambda) const;
+
     virtual const float3 &periods() const = 0;
 
 protected:
@@ -58,6 +61,18 @@ private:
     Crystal &operator = (const Crystal &) = delete;
     Crystal &operator = (Crystal &&) = delete;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class L>
+void Crystal::eachSlice(const L &lambda) const
+{
+    uint step = sizes().x * sizes().y;
+    for (uint i = 0; i < sizes().N(); i += step)
+    {
+        lambda(_atoms.data() + i);
+    }
+}
 
 }
 

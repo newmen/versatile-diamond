@@ -16,7 +16,7 @@ public:
     void writeFrom(Atom *atom) override;
 
 protected:
-    std::string ext() const override { return ".sdf"; }
+    const char *ext() const override;
     std::string filename() const override;
 };
 

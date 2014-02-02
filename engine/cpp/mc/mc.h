@@ -10,15 +10,14 @@
 #include "events_container.h"
 #include "multi_events_container.h"
 
-// for #compareContainers()
-#define MULTI_EVENTS_INDEX_SHIFT 1000
-
 namespace vd
 {
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 class MC
 {
+    enum : ushort { MULTI_EVENTS_INDEX_SHIFT = 1000 }; // for #compareContainers()
+
     double _totalRate = 0;
     double _totalTime = 0;
 

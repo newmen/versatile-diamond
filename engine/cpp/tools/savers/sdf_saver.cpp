@@ -20,6 +20,12 @@ void SdfSaver::writeFrom(Atom *atom)
     writeToFrom(_out, atom);
 }
 
+const char *SdfSaver::ext() const
+{
+    static const char value[] = ".sdf";
+    return value;
+}
+
 std::string SdfSaver::filename() const
 {
     std::stringstream ss;

@@ -15,6 +15,12 @@ void MolSaver::writeFrom(Atom *atom)
     writeToFrom(out, atom);
 }
 
+const char *MolSaver::ext() const
+{
+    static const char value[] = ".mol";
+    return value;
+}
+
 std::string MolSaver::filename() const
 {
     static uint n = 0;
