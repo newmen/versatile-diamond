@@ -1,43 +1,36 @@
 #include "mol_saver.h"
 #include <ctime>
 #include <sstream>
-#include <unordered_set>
 
 namespace vd
 {
 
-MolSaver::MolSaver(const std::string &name) : _name(name), _out(filename())
-{
-}
-
-MolSaver::~MolSaver()
+MolSaver::MolSaver(const char *name) : _name(name)
 {
 }
 
 void MolSaver::writeFrom(Atom *atom)
 {
-    static uint counter = 0;
-
-    MolAccumulator acc;
-    accumulateToFrom(acc, atom);
-
-    if (counter > 0)
-    {
-        _out << "$$$$" << "\n";
-    }
-
-    writeHeader(_out);
-    acc.writeTo(_out, mainPrefix());
-    writeFooter(_out);
-
-    ++counter;
+    std::ofstream out(filename());
+    writeToFrom(out, atom);
 }
 
 std::string MolSaver::filename() const
 {
     std::stringstream ss;
-    ss << name() << ext();
+    ss << timestamp() << " - " << name() << ext();
     return ss.str();
+}
+
+void MolSaver::writeToFrom(std::ostream &os, Atom *atom)
+{
+    writeHeader(os);
+
+    MolAccumulator acc;
+    accumulateToFrom(acc, atom);
+    acc.writeTo(os, mainPrefix());
+
+    writeFooter(os);
 }
 
 void MolSaver::writeHeader(std::ostream &os) const
@@ -53,7 +46,6 @@ void MolSaver::writeHeader(std::ostream &os) const
 void MolSaver::writeFooter(std::ostream &os) const
 {
     os << mainPrefix() << "END CTAB" << "\n"
-
        << "M  END" << std::endl;
 }
 
