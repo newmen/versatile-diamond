@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include "../mc/common_mc_data.h"
-#include "saver/mol_saver.h"
+#include "savers/crystal_slice_saver.h"
+#include "savers/mol_saver.h"
 #include "common.h"
 #include "error.h"
 
@@ -14,6 +15,8 @@ namespace vd
 
 class Runner
 {
+    enum : ushort { MAX_HEIGHT = 100 };
+
     static volatile bool __stopCalculating;
 
     const std::string _name;
@@ -44,7 +47,11 @@ private:
 template <class SCT>
 void Runner::calculate()
 {
-    SCT *surfaceCrystal = new SCT(dim3(_x, _y, 2000));
+    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, { 0, 2, 4, 5, 20, 21, 24, 28, 32 });
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+    SCT *surfaceCrystal = new SCT(dim3(_x, _y, MAX_HEIGHT));
     surfaceCrystal->initialize();
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -75,28 +82,37 @@ void Runner::calculate()
 #endif // PARALLEL
         ++steps;
 
-        if (_volumeSaver)
-        {
+#ifndef NOUT
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
+        {
+            timeCounter += dt;
+            if (timeCounter >= _eachTime)
             {
-                timeCounter += dt;
-                if (timeCounter > _eachTime)
+                timeCounter = 0;
+
+                // ----------------------------------------------------------- //
+
+                std::cout.width(10);
+                std::cout << 100 * Handbook::mc().totalTime() / _totalTime << " %";
+                std::cout.width(10);
+                std::cout << surfaceCrystal->countAtoms();
+                std::cout.width(10);
+                std::cout << Handbook::amorph().countAtoms();
+                std::cout.width(20);
+                std::cout << Handbook::mc().totalTime() << " (s)";
+                std::cout.width(20);
+                std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
+
+                // ----------------------------------------------------------- //
+
+                csSaver.writeBySlicesOf(surfaceCrystal);
+
+                // ----------------------------------------------------------- //
+
+                if (_volumeSaver)
                 {
-                    timeCounter = 0;
-
-                    std::cout.width(10);
-                    std::cout << Handbook::mc().totalTime() / _totalTime << " %";
-                    std::cout.width(10);
-                    std::cout << surfaceCrystal->countAtoms();
-                    std::cout.width(10);
-                    std::cout << Handbook::amorph().countAtoms();
-                    std::cout.width(20);
-                    std::cout << Handbook::mc().totalTime() << " (s)";
-                    std::cout.width(20);
-                    std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
-
                     Handbook::amorph().setUnvisited();
                     surfaceCrystal->setUnvisited();
                     _volumeSaver->writeFrom(surfaceCrystal->firstAtom());
@@ -107,6 +123,7 @@ void Runner::calculate()
                 }
             }
         }
+#endif // NOUT
     }
 
     std::cout << "\nEnd crystal atoms num: " << surfaceCrystal->countAtoms() << "\n"

@@ -23,7 +23,7 @@ protected:
 
     const std::string &name() const { return _name; }
 
-    virtual std::string ext() const { return ".mol"; }
+    virtual const char *ext() const;
     virtual std::string filename() const;
 
 private:

@@ -4,10 +4,10 @@
 #include "../../generations/phases/diamond.h"
 #include "../support/corrected_types.h"
 
-#define DEFAULT_HEIGHT 4
-
 class OpenDiamond : public Diamond
 {
+    enum : ushort { DEFAULT_HEIGHT = 4 };
+
 public:
     typedef Neighbours<4> FN;
 

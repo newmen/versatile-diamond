@@ -16,3 +16,4 @@ Gemfile.lock
 *.png
 *.mol
 *.sdf
+*.sls

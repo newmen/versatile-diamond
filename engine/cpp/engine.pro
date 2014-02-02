@@ -3,7 +3,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-#QMAKE_CXXFLAGS += -DNDEBUG
+QMAKE_CXXFLAGS += -DNDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++11
@@ -104,15 +104,16 @@ SOURCES += main.cpp \
     generations/reactions/typical/migration_down_at_dimer_from_dimer.cpp \
     generations/species/specific/methyl_on_dimer_cmssu.cpp \
     generations/reactions/typical/migration_down_in_gap_from_dimer.cpp \
-    tools/saver/mol_saver.cpp \
-    tools/saver/mol_accumulator.cpp \
-    tools/saver/atom_info.cpp \
-    tools/saver/bond_info.cpp \
+    tools/savers/mol_saver.cpp \
+    tools/savers/mol_accumulator.cpp \
+    tools/savers/atom_info.cpp \
+    tools/savers/bond_info.cpp \
     generations/atoms/c.cpp \
-    tools/saver/sdf_saver.cpp \
-    tools/saver/volume_saver_factory.cpp \
+    tools/savers/sdf_saver.cpp \
+    tools/savers/volume_saver_factory.cpp \
     tools/runner.cpp \
-    generations/run.cpp
+    generations/run.cpp \
+    tools/savers/crystal_slice_saver.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -258,13 +259,14 @@ HEADERS += \
     generations/reactions/typical/lookers/near_methyl_on_dimer.h \
     generations/species/specific/methyl_on_dimer_cmssu.h \
     generations/reactions/typical/migration_down_in_gap_from_dimer.h \
-    tools/saver/mol_saver.h \
-    tools/saver/mol_accumulator.h \
-    tools/saver/atom_info.h \
-    tools/saver/bond_info.h \
-    tools/saver/sdf_saver.h \
+    tools/savers/mol_saver.h \
+    tools/savers/mol_accumulator.h \
+    tools/savers/atom_info.h \
+    tools/savers/bond_info.h \
+    tools/savers/sdf_saver.h \
     tools/factory.h \
-    tools/saver/volume_saver_factory.h \
+    tools/savers/volume_saver_factory.h \
     tools/runner.h \
     generations/run.h \
-    tools/error.h
+    tools/error.h \
+    tools/savers/crystal_slice_saver.h
