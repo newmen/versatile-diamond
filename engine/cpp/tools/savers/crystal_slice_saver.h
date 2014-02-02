@@ -25,7 +25,7 @@ class CrystalSliceSaver
 public:
     CrystalSliceSaver(const char *name, uint sliceMaxNum, std::initializer_list<ushort> targetTypes);
 
-    void writeBySlicesOf(const Crystal *crystal);
+    void writeBySlicesOf(const Crystal *crystal, double currentTime);
 
 private:
     void writeHeader();

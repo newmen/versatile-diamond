@@ -16,9 +16,9 @@ CrystalSliceSaver::CrystalSliceSaver(const char *name, uint sliceMaxNum, std::in
     writeHeader();
 }
 
-void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal)
+void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTime)
 {
-    _out << "-\n";
+    _out << "= " << currentTime << "\n";
 
     crystal->eachSlice([this](Atom **atoms) {
         auto counter = _counterProto;

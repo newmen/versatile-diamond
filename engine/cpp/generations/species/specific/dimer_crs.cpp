@@ -4,6 +4,7 @@
 #include "../../reactions/typical/migration_down_at_dimer.h"
 #include "../../reactions/typical/migration_down_at_dimer_from_111.h"
 #include "../../reactions/typical/migration_down_at_dimer_from_high_bridge.h"
+#include "../../reactions/typical/migration_down_at_dimer_from_dimer.h"
 
 const ushort DimerCRs::__indexes[1] = { 0 };
 const ushort DimerCRs::__roles[1] = { 21 };
@@ -35,7 +36,8 @@ void DimerCRs::findAllChildren()
 void DimerCRs::findAllReactions()
 {
     AdsMethylToDimer::find(this);
-    MigrationDownAtDimer::find(this);
+//    MigrationDownAtDimer::find(this); // DISABLED
     MigrationDownAtDimerFrom111::find(this);
     MigrationDownAtDimerFromHighBridge::find(this);
+//    MigrationDownAtDimerFromDimer::find(this); // DISABLED
 }
