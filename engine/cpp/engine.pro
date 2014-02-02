@@ -108,7 +108,9 @@ SOURCES += main.cpp \
     tools/saver/mol_accumulator.cpp \
     tools/saver/atom_info.cpp \
     tools/saver/bond_info.cpp \
-    generations/atoms/c.cpp
+    generations/atoms/c.cpp \
+    tools/saver/sdf_saver.cpp \
+    tools/saver/volume_saver_factory.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -257,4 +259,7 @@ HEADERS += \
     tools/saver/mol_saver.h \
     tools/saver/mol_accumulator.h \
     tools/saver/atom_info.h \
-    tools/saver/bond_info.h
+    tools/saver/bond_info.h \
+    tools/saver/sdf_saver.h \
+    tools/factory.h \
+    tools/saver/volume_saver_factory.h

@@ -2,7 +2,7 @@
 #include <omp.h>
 #include <iostream>
 #include "mc/common_mc_data.h"
-#include "tools/saver/mol_saver.h"
+#include "tools/saver/volume_saver_factory.h"
 #include "generations/handbook.h"
 #include "generations/phases/diamond.h"
 
@@ -17,11 +17,7 @@ void stopSignalHandler(int)
 
 void segfaultSignalHandler(int)
 {
-#ifdef PARALLEL
-#pragma omp master
-#endif // PARALLEL
     std::cout << "Segmentation fault signal recived! Stop computing..." << std::endl;
-
     exit(1);
 }
 
@@ -50,6 +46,7 @@ int main(int argc, char *argv[])
 #ifndef PARALLEL
     signal(SIGSEGV, segfaultSignalHandler);
 #endif // PARALLEL
+
     std::cout.precision(3); // for outputs in main loop
 
     RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
@@ -88,7 +85,8 @@ int main(int argc, char *argv[])
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
 
-    MolSaver saver(runName);
+    VolumeSaverFactory vsFactory;
+    auto saver = vsFactory.create("mol", runName);
 
 #ifdef PARALLEL
 #pragma omp paralslel
@@ -129,7 +127,7 @@ int main(int argc, char *argv[])
 
                 Handbook::amorph().setUnvisited();
                 diamond->setUnvisited();
-                saver.writeFrom(diamond->firstAtom());
+                saver->writeFrom(diamond->firstAtom());
 #ifndef NDEBUG
                 Handbook::amorph().checkAllVisited();
                 diamond->checkAllVisited();

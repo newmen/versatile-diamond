@@ -3,7 +3,6 @@
 
 #include <fstream>
 #include <string>
-#include <unordered_map>
 #include "mol_accumulator.h"
 
 namespace vd
@@ -12,20 +11,22 @@ namespace vd
 class MolSaver
 {
     std::string _name;
-    std::ofstream _out;
 
 public:
-    MolSaver(const std::string &name);
-    ~MolSaver();
+    MolSaver(const char *name);
+    virtual ~MolSaver() {}
 
-    void writeFrom(Atom *atom);
+    virtual void writeFrom(Atom *atom);
 
-private:
+protected:
+    void writeToFrom(std::ostream &os, Atom *atom);
+
     const std::string &name() const { return _name; }
 
-    std::string ext() const { return ".sdf"; }
-    std::string filename() const;
+    virtual std::string ext() const { return ".mol"; }
+    virtual std::string filename() const;
 
+private:
     void writeHeader(std::ostream &os) const;
     void writeFooter(std::ostream &os) const;
 
