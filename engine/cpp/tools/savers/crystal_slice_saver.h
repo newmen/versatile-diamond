@@ -12,7 +12,7 @@ namespace vd
 
 class CrystalSliceSaver
 {
-    enum : ushort { COLUMN_WIDTH = 8 };
+    enum : ushort { COLUMN_WIDTH = 12 };
 
     typedef std::map<ushort, uint> CounterType;
 

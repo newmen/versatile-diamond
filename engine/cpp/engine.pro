@@ -113,7 +113,10 @@ SOURCES += main.cpp \
     tools/savers/volume_saver_factory.cpp \
     tools/runner.cpp \
     generations/run.cpp \
-    tools/savers/crystal_slice_saver.cpp
+    tools/savers/crystal_slice_saver.cpp \
+    generations/reactions/typical/abs_hydrogen_from_gap.cpp \
+    generations/species/base/bridge_cri.cpp \
+    generations/species/specific/bridge_crh.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -269,4 +272,7 @@ HEADERS += \
     tools/runner.h \
     generations/run.h \
     tools/error.h \
-    tools/savers/crystal_slice_saver.h
+    tools/savers/crystal_slice_saver.h \
+    generations/reactions/typical/abs_hydrogen_from_gap.h \
+    generations/species/base/bridge_cri.h \
+    generations/species/specific/bridge_crh.h

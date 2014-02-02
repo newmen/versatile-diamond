@@ -11,19 +11,14 @@
 const ushort BridgeCRs::__indexes[1] = { 1 };
 const ushort BridgeCRs::__roles[1] = { 5 };
 
-void BridgeCRs::find(Bridge *parent)
+void BridgeCRs::find(BridgeCRi *parent)
 {
-    const uint checkingIndexes[2] = { 1, 2 };
-
-    for (int i = 0; i < 2; ++i)
+    Atom *anchor = parent->atom(1);
+    if (anchor->is(5))
     {
-        Atom *anchor = parent->atom(checkingIndexes[i]);
-        if (anchor->is(5))
+        if (!checkAndFind<BridgeCRs>(anchor, 5))
         {
-            if (!checkAndFind<BridgeCRs>(anchor, 5))
-            {
-                create<BridgeCRs>(checkingIndexes[i], 1, parent);
-            }
+            create<BridgeCRs>(parent);
         }
     }
 }
