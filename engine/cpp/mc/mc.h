@@ -33,7 +33,7 @@ public:
 
     void sort();
 
-    void doRandom(CommonMCData *data);
+    double doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
     double totalTime() const { return _totalTime; }
 
@@ -57,7 +57,7 @@ private:
     MC &operator = (const MC &) = delete;
     MC &operator = (MC &&) = delete;
 
-    void increaseTime(CommonMCData *data);
+    double increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)
     {
@@ -104,9 +104,13 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
+double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
     Reaction *event = nullptr;
+
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
     double r = data->rand(totalRate());
 
 #ifdef PRINT
@@ -170,9 +174,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #pragma omp barrier
 #endif // PARALLEL
 
+    double dt = 0;
     if (event && !data->isSame())
     {
-        increaseTime(data); // here little hack, because total rate of all events is similar for each process
+        dt = increaseTime(data); // here little hack, because total rate of all events is similar for each process
     }
 
 #ifdef PARALLEL
@@ -234,23 +239,24 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         data->reset();
     }
 
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
+    return dt;
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
+double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
 {
     double r = data->rand(1.0);
 
+    double dt;
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
     {
-        double dt = -log(r) / totalRate();
+        dt = -log(r) / totalRate();
         _totalTime += dt;
     }
+
+    return dt;
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>

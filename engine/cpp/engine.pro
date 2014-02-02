@@ -110,7 +110,9 @@ SOURCES += main.cpp \
     tools/saver/bond_info.cpp \
     generations/atoms/c.cpp \
     tools/saver/sdf_saver.cpp \
-    tools/saver/volume_saver_factory.cpp
+    tools/saver/volume_saver_factory.cpp \
+    tools/runner.cpp \
+    generations/run.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -262,4 +264,7 @@ HEADERS += \
     tools/saver/bond_info.h \
     tools/saver/sdf_saver.h \
     tools/factory.h \
-    tools/saver/volume_saver_factory.h
+    tools/saver/volume_saver_factory.h \
+    tools/runner.h \
+    generations/run.h \
+    tools/error.h
