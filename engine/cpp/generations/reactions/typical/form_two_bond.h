@@ -11,7 +11,7 @@ public:
 
     FormTwoBond(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e3; } // TODO: imagine
+    double rate() const { return 1e5; } // TODO: imagine
     void doIt();
 
     const std::string name() const override { return "form two bond"; }

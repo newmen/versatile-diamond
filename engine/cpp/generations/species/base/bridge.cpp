@@ -1,7 +1,7 @@
 #include "bridge.h"
 #include "../specific/bridge_ctsi.h"
-#include "../specific/bridge_crs.h"
 #include "../specific/high_bridge.h"
+#include "bridge_cri.h"
 #include "methyl_on_bridge.h"
 #include "two_bridges.h"
 #include "bridge_with_dimer.h"
@@ -36,7 +36,7 @@ void Bridge::findAllChildren()
     MethylOnBridge::find(this);
     HighBridge::find(this);
     BridgeCTsi::find(this);
-    BridgeCRs::find(this);
+    BridgeCRi::find(this);
 }
 
 void Bridge::findAllComplexes()
