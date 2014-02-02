@@ -17,8 +17,10 @@ void MolSaver::writeFrom(Atom *atom)
 
 std::string MolSaver::filename() const
 {
+    static uint n = 0;
+
     std::stringstream ss;
-    ss << timestamp() << " - " << name() << ext();
+    ss << name() << "_" << (n++) << ext();
     return ss.str();
 }
 

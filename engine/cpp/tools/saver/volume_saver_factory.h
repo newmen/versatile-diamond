@@ -8,13 +8,10 @@
 namespace vd
 {
 
-class VolumeSaverFactory : protected Factory<MolSaver, std::string, const char *>
+class VolumeSaverFactory : public Factory<MolSaver, std::string, const char *>
 {
 public:
     VolumeSaverFactory();
-
-    bool isRegistered(const std::string &id) const;
-    std::shared_ptr<MolSaver> create(const std::string &id, const char *name) const;
 };
 
 }
