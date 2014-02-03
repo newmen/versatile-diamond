@@ -7,6 +7,7 @@
 #include "../../reactions/typical/migration_down_in_gap.h"
 #include "../../reactions/typical/migration_down_in_gap_from_111.h"
 #include "../../reactions/typical/migration_down_in_gap_from_high_bridge.h"
+#include "../../reactions/typical/migration_down_in_gap_from_dimer.h"
 
 const ushort BridgeCRs::__indexes[1] = { 1 };
 const ushort BridgeCRs::__roles[1] = { 5 };
@@ -37,4 +38,5 @@ void BridgeCRs::findAllReactions()
 //    MigrationDownInGap::find(this); // DISABLED
     MigrationDownInGapFrom111::find(this);
     MigrationDownInGapFromHighBridge::find(this);
+//    MigrationDownInGapFromDimer::find(this); // DISABLED
 }

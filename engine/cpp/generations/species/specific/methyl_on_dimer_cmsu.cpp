@@ -21,7 +21,7 @@ void MethylOnDimerCMsu::find(MethylOnDimerCMu *parent)
 
 void MethylOnDimerCMsu::findAllChildren()
 {
-    MethylOnDimerCMssu::find(this);
+//    MethylOnDimerCMssu::find(this); // DISABLED: MigrationDownInGapFromDimer
 }
 
 void MethylOnDimerCMsu::findAllReactions()
