@@ -17,7 +17,7 @@ class CommonMCData
 {
     RandomGenerator _generators[THREADS_NUM];
 
-    uint _wasntFound, _sameSites;
+    ushort _wasntFound, _sameSites;
     bool _sames[THREADS_NUM];
     Reaction *_reactions[THREADS_NUM];
 

@@ -4,7 +4,6 @@
 #include "../../species/source_spec.h"
 #include "../../species/specific_spec.h"
 #include "../../species/lateral_spec.h"
-#include "../../species/component_spec.h"
 #include "../../species/additional_atoms_wrapper.h"
 #include "../../species/atom_shift_wrapper.h"
 #include "../../species/atoms_swap_wrapper.h"

@@ -24,8 +24,7 @@ void Bridge::find(Atom *anchor)
                     nbrs[1]->is(6) && anchor->hasBondWith(nbrs[1]))
             {
                 Atom *atoms[3] = { anchor, nbrs[0], nbrs[1] };
-                auto spec = create<Bridge>(atoms);
-                Handbook::componentKeeper().store(spec);
+                create<Bridge>(atoms);
             }
         }
     }

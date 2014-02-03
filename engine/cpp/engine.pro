@@ -276,4 +276,5 @@ HEADERS += \
     generations/reactions/typical/abs_hydrogen_from_gap.h \
     generations/species/base/bridge_cri.h \
     generations/species/specific/bridge_crh.h \
-    generations/env.h
+    generations/env.h \
+    generations/species/component.h

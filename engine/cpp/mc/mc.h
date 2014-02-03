@@ -70,7 +70,7 @@ private:
     inline BaseEventsContainer *correspondEvents(uint orderValue);
 
 #ifdef PRINT
-    void printReaction(Reaction *reaction, std::string message);
+    void printReaction(Reaction *reaction, std::string action, std::string type, uint n = 1);
 #endif // PRINT
 };
 
@@ -310,7 +310,7 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, SpecReaction *reaction)
 {
 #ifdef PRINT
-    printReaction(reaction, "Add one");
+    printReaction(reaction, "Add", "one");
 #endif // PRINT
 
     assert(index < EVENTS_NUM);
@@ -323,7 +323,7 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, SpecReaction *reaction)
 {
 #ifdef PRINT
-    printReaction(reaction, "Remove one");
+    printReaction(reaction, "Remove", "one");
 #endif // PRINT
 
     assert(index < EVENTS_NUM);
@@ -336,7 +336,7 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *reaction, uint n)
 {
 #ifdef PRINT
-    printReaction(reaction, "Add multi");
+    printReaction(reaction, "Add", "multi", n);
 #endif // PRINT
 
     assert(index < MULTI_EVENTS_NUM);
@@ -350,7 +350,7 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *templateReaction, uint n)
 {
 #ifdef PRINT
-    printReaction(templateReaction, "Remove multi");
+    printReaction(templateReaction, "Remove", "multi", n);
 #endif // PRINT
 
     assert(index < MULTI_EVENTS_NUM);
@@ -404,10 +404,15 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z
 
 #ifdef PRINT
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string message)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string action, std::string type, uint n)
 {
     debugPrint([&](std::ostream &os) {
-        os << message << " (" << reaction->type() << ") ";
+        os << action << " ";
+        if (n > 1)
+        {
+            os << n << " ";
+        }
+        os << type << " (" << reaction->type() << ") ";
         reaction->info(os);
     });
 }
