@@ -71,12 +71,12 @@ void Finder::findAll(Atom **atoms, uint n)
         Dimer::find(atoms[i]);
     }
 
-    Handbook::componentKeeper().findComplexSpecies();
-
     for (uint i = 0; i < n; ++i)
     {
         atoms[i]->findUnvisitedChildren();
     }
+
+    Handbook::componentKeeper().findComplexSpecies();
 
     for (uint i = 0; i < n; ++i)
     {

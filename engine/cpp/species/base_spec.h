@@ -46,7 +46,6 @@ protected:
     template <class S>
     static bool checkAndFind(Atom *anchor, ushort rType);
 
-private:
     void setVisited() { _visited = true; }
 };
 

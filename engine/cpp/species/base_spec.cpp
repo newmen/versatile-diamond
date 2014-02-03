@@ -11,7 +11,6 @@ void BaseSpec::store()
 
     assert(!isVisited());
     findChildren();
-    setVisited();
 }
 
 void BaseSpec::remove()

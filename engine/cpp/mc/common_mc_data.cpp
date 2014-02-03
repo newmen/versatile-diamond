@@ -105,6 +105,7 @@ int CommonMCData::currThreadNum() const
 
 void CommonMCData::updateSame(int currentThread, int anotherThread)
 {
+    // TODO: there should be probably condition
     if ((_reactions[currentThread]->rate() == _reactions[anotherThread]->rate() && currentThread < anotherThread) ||
         _reactions[currentThread]->rate() < _reactions[anotherThread]->rate())
     {

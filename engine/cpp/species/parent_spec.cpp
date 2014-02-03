@@ -18,6 +18,7 @@ void ParentSpec::eraseChild(BaseSpec *child)
 void ParentSpec::findChildren()
 {
     findAllChildren();
+    setVisited();
 }
 
 void ParentSpec::remove()
