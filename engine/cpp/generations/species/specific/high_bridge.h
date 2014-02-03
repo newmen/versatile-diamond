@@ -14,7 +14,7 @@ public:
     HighBridge(Atom *additionalAtom, ParentSpec *parent) : BaseSpecific(additionalAtom, parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "high bridge"; }
+    std::string name() const override { return "high bridge"; }
 #endif // PRINT
 
 protected:

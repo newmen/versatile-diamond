@@ -13,7 +13,7 @@ public:
         AtomsSwapWrapper(from, to, parents) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "bridge with dimer"; }
+    std::string name() const override { return "bridge with dimer"; }
 #endif // PRINT
 
 protected:

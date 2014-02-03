@@ -11,7 +11,7 @@ public:
     ShiftedDimer(Dimer *parent) : AtomShiftWrapper(3, parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "shifted dimer"; }
+    std::string name() const override { return "shifted dimer"; }
 #endif // PRINT
 
 protected:

@@ -8,6 +8,8 @@
 class DimerFormation : public LaterableRole<Typical, DIMER_FORMATION, 2>
 {
 public:
+    static constexpr double RATE = 8.9e11 * exp(-0.8e3 / (1.98 * Env::T));
+
     static void find(BridgeCTsi *target);
 
     template <class L>
@@ -15,10 +17,10 @@ public:
 
     DimerFormation(SpecificSpec **targets) : LaterableRole(targets) {}
 
-    double rate() const { return 5.951e11; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "dimer formation"; }
+    std::string name() const override { return "dimer formation"; }
 
 protected:
     LateralReaction *findAllLateral() override;
@@ -26,6 +28,8 @@ protected:
 private:
     inline void changeAtom(Atom *atom) const;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class L>
 void DimerFormation::ifTargets(Atom **atoms, const L &lambda)

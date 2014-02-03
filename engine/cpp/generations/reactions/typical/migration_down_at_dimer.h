@@ -8,15 +8,17 @@
 class MigrationDownAtDimer : public Typical<MIGRATION_DOWN_AT_DIMER, 2>
 {
 public:
+    static constexpr double RATE = 1e13 * exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
     static void find(DimerCRs *target);
     static void find(MethylOnBridgeCBiCMsu *target);
 
     MigrationDownAtDimer(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e12; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "migration down at activated dimer from methyl on bridge"; }
+    std::string name() const override { return "migration down at activated dimer from methyl on bridge"; }
 };
 
 #endif // MIGRATION_DOWN_AT_DIMER_H

@@ -12,7 +12,7 @@ public:
     BridgeWithDimerCDLi(ParentSpec *parent) : BaseSpecific(parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "bridge_with_dimer(cdl: i)"; }
+    std::string name() const override { return "bridge_with_dimer(cdl: i)"; }
 #endif // PRINT
 
 protected:

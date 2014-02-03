@@ -14,7 +14,7 @@ public:
     Dimer(ParentSpec **parents) : Sidepiece(parents) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "dimer"; }
+    std::string name() const override { return "dimer"; }
 #endif // PRINT
 
 protected:

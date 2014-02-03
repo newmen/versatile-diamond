@@ -8,6 +8,8 @@
 class DimerDrop : public LaterableRole<Typical, DIMER_DROP, 1>
 {
 public:
+    static constexpr double RATE = 2.2e6 * exp(-0.8e3 / (1.98 * Env::T));
+
     static void find(DimerCRiCLi *target);
 
     template <class L>
@@ -15,10 +17,10 @@ public:
 
     DimerDrop(SpecificSpec *target) : LaterableRole(target) {}
 
-    double rate() const { return 1.471e6; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "dimer drop"; }
+    std::string name() const override { return "dimer drop"; }
 
 protected:
     LateralReaction *findAllLateral() override;
@@ -26,6 +28,8 @@ protected:
 private:
     inline void changeAtom(Atom *atom) const;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class L>
 void DimerDrop::ifTarget(Atom **atoms, const L &lambda)

@@ -8,14 +8,16 @@ class BridgeWithDimerToHighBridgeAndDimer :
         public Typical<BRIDGE_WITH_DIMER_TO_HIGH_BRIDGE_AND_DIMER, 1>
 {
 public:
+    static constexpr double RATE = 4.2e8 * exp(-14.9e3 / (1.98 * Env::T));
+
     static void find(BridgeWithDimerCBTiCBRsCDLi *target);
 
     BridgeWithDimerToHighBridgeAndDimer(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 2.328e5; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "bridge with dimer to high bridge and dimer"; }
+    std::string name() const override { return "bridge with dimer to high bridge and dimer"; }
 };
 
 #endif // BRIDGE_WITH_DIMER_TO_HIGH_BRIDGE_AND_DIMER_H

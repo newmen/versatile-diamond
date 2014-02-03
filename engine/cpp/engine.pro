@@ -3,7 +3,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-QMAKE_CXXFLAGS += -DNDEBUG
+#QMAKE_CXXFLAGS += -DNDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++11
@@ -275,4 +275,5 @@ HEADERS += \
     tools/savers/crystal_slice_saver.h \
     generations/reactions/typical/abs_hydrogen_from_gap.h \
     generations/species/base/bridge_cri.h \
-    generations/species/specific/bridge_crh.h
+    generations/species/specific/bridge_crh.h \
+    generations/env.h

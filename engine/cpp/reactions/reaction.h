@@ -22,7 +22,7 @@ public:
     virtual void info(std::ostream &os) = 0;
 #endif // PRINT
 
-    virtual const std::string name() const = 0;
+    virtual std::string name() const = 0;
 
 protected:
     Reaction() = default;
