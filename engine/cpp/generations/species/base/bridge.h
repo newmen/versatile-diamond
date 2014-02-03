@@ -13,7 +13,7 @@ public:
     Bridge(Atom **atoms) : Base(atoms) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "bridge"; }
+    std::string name() const override { return "bridge"; }
 #endif // PRINT
 
     void findAllComplexes() override;

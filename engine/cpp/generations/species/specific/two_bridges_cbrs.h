@@ -12,7 +12,7 @@ public:
     TwoBridgesCBRs(ParentSpec *parent) : BaseSpecific(parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "two_bridges(cbr: *)"; }
+    std::string name() const override { return "two_bridges(cbr: *)"; }
 #endif // PRINT
 
 protected:

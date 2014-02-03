@@ -7,14 +7,16 @@
 class AdsMethylToDimer : public Typical<ADS_METHYL_TO_DIMER>
 {
 public:
+    static constexpr double RATE = Env::cCH3 * 1e13 * exp(-0 / (1.98 * Env::T));
+
     static void find(DimerCRs *target);
 
     AdsMethylToDimer(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e3; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "adsorption methyl to dimer"; }
+    std::string name() const override { return "adsorption methyl to dimer"; }
 };
 
 #endif // ADS_METHYL_TO_DIMER_H

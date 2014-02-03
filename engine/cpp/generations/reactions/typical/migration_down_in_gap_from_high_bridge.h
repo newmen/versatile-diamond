@@ -9,15 +9,17 @@ class MigrationDownInGapFromHighBridge :
         public Typical<MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE, 3>
 {
 public:
+    static constexpr double RATE = 1e9 * exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
     static void find(BridgeCRs *target);
     static void find(HighBridgeCMs *target);
 
     MigrationDownInGapFromHighBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e4; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "migration down in gap from high bridge"; }
+    std::string name() const override { return "migration down in gap from high bridge"; }
 };
 
 #endif // MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE_H

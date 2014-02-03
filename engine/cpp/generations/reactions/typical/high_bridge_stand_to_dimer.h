@@ -8,15 +8,17 @@
 class HighBridgeStandToDimer : public Typical<HIGH_BRIDGE_STAND_TO_DIMER, 2>
 {
 public:
+    static constexpr double RATE = 2.2e9 * exp(-14.9e3 / (1.98 * Env::T));
+
     static void find(HighBridge *target);
     static void find(DimerCRsCLi *target);
 
     HighBridgeStandToDimer(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 1.219e6; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "high bridge stand to dimer"; }
+    std::string name() const override { return "high bridge stand to dimer"; }
 };
 
 #endif // HIGH_BRIDGE_STAND_TO_DIMER_H

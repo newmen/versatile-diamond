@@ -12,7 +12,7 @@ public:
     DimerCRs(ushort atomsShift, ParentSpec *parent) : BaseSpecific(atomsShift, parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "dimer(cr: *)"; }
+    std::string name() const override { return "dimer(cr: *)"; }
 #endif // PRINT
 
 protected:

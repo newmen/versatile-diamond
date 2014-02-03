@@ -7,14 +7,16 @@
 class TwoBridgesToHighBridge : public Typical<TWO_BRIDGES_TO_HIGH_BRIDGE>
 {
 public:
+    static constexpr double RATE = 1.1e8 * exp(-3.2e3 / (1.98 * Env::T));
+
     static void find(TwoBridgesCBRs *target);
 
     TwoBridgesToHighBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 2.198e7; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "two bridges to high bridge"; }
+    std::string name() const override { return "two bridges to high bridge"; }
 };
 
 #endif // TWO_BRIDGES_TO_HIGH_BRIDGE_H

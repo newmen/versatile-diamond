@@ -12,7 +12,7 @@ public:
     HighBridgeCMs(ParentSpec *parent) : BaseSpecific(parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "high_bridge(cm: *)"; }
+    std::string name() const override { return "high_bridge(cm: *)"; }
 #endif // PRINT
 
 protected:

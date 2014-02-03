@@ -12,7 +12,7 @@ public:
     BridgeCTsi(ParentSpec *parent) : BaseSpecific(parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "bridge(ct: *, ct: i)"; }
+    std::string name() const override { return "bridge(ct: *, ct: i)"; }
 #endif // PRINT
 
 protected:

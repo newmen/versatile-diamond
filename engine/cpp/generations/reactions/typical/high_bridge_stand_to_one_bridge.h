@@ -8,15 +8,17 @@
 class HighBridgeStandToOneBridge : public Typical<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, 2>
 {
 public:
+    static constexpr double RATE = 6.1e13 * exp(-36.3e3 / (1.98 * Env::T));
+
     static void find(HighBridge *target);
     static void find(BridgeCTsi *target);
 
     HighBridgeStandToOneBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 7.114e5; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "high bridge stand to bridge at new level"; }
+    std::string name() const override { return "high bridge stand to bridge at new level"; }
 };
 
 #endif // HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H

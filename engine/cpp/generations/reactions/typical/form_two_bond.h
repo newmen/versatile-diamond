@@ -7,14 +7,16 @@
 class FormTwoBond : public Typical<FORM_TWO_BOND, 1>
 {
 public:
+    static constexpr double RATE = 1e7 * exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
     static void find(MethylOnBridgeCBsCMsu *target);
 
     FormTwoBond(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e5; } // TODO: imagine
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "form two bond"; }
+    std::string name() const override { return "form two bond"; }
 };
 
 #endif // FORM_TWO_BOND_H

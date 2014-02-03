@@ -9,6 +9,7 @@
 #include "../species/specific_spec.h"
 #include "../species/lateral_spec.h"
 
+#include "env.h"
 #include "finder.h"
 #include "names.h"
 #include "phases/diamond.h"

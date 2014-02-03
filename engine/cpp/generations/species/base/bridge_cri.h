@@ -11,7 +11,7 @@ public:
     BridgeCRi(ushort fromIndex, ushort toIndex, ParentSpec *parent) : Base(fromIndex, toIndex, parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "bridge(cr: i)"; }
+    std::string name() const override { return "bridge(cr: i)"; }
 #endif // PRINT
 
 protected:

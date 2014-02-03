@@ -12,7 +12,7 @@ public:
     DimerCRiCLi(ParentSpec *parent) : BaseSpecific(parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "dimer(cr: i, cl: i)"; }
+    std::string name() const override { return "dimer(cr: i, cl: i)"; }
 #endif // PRINT
 
 protected:

@@ -7,14 +7,16 @@
 class AbsHydrogenFromGap : public Typical<ABS_HYDROGEN_FROM_GAP, 2>
 {
 public:
+    static constexpr double RATE = 3e14 * exp(-35e3 / (1.98 * Env::T)); // REAL: A = 3e5
+
     static void find(BridgeCRh *target);
 
     AbsHydrogenFromGap(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 1e2; } // TODO: imagine
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "abs hydrogen from gap"; }
+    std::string name() const override { return "abs hydrogen from gap"; }
 
 private:
     void changeAtom(Atom *atom) const;

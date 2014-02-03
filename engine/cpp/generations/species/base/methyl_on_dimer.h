@@ -13,7 +13,7 @@ public:
     MethylOnDimer(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "methyl on dimer"; }
+    std::string name() const override { return "methyl on dimer"; }
 #endif // PRINT
 
 protected:

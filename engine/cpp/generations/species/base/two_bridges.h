@@ -12,7 +12,7 @@ public:
     TwoBridges(ushort from, ushort to, ParentSpec **parents) : Base(from, to, parents) {}
 
 #ifdef PRINT
-    const std::string name() const override { return "two bridges"; }
+    std::string name() const override { return "two bridges"; }
 #endif // PRINT
 
 protected:

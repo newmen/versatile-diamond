@@ -8,15 +8,17 @@
 class MigrationDownInGapFrom111 : public Typical<MIGRATION_DOWN_IN_GAP_FROM_111, 3>
 {
 public:
+    static constexpr double RATE = 5e12 * exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
     static void find(BridgeCRs *target);
     static void find(MethylOn111CMssu *target);
 
     MigrationDownInGapFrom111(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 5e8; }
-    void doIt();
+    double rate() const override { return RATE; }
+    void doIt() override;
 
-    const std::string name() const override { return "migration down in gap from 111"; }
+    std::string name() const override { return "migration down in gap from 111"; }
 };
 
 #endif // MIGRATION_DOWN_IN_GAP_FROM_111_H
