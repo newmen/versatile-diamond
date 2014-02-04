@@ -3,6 +3,7 @@
 #include <generations/phases/diamond.h>
 
 #include <generations/reactions/lateral/dimer_drop_at_end.h>
+#include <generations/reactions/lateral/dimer_drop_in_middle.h>
 #include <generations/reactions/lateral/dimer_formation_at_end.h>
 #include <generations/reactions/lateral/dimer_formation_in_middle.h>
 #include <generations/reactions/typical/abs_hydrogen_from_gap.h>

@@ -31,7 +31,7 @@ void HighBridge::findAllChildren()
     HighBridgeCMs::find(this);
 }
 
-void HighBridge::findAllReactions()
+void HighBridge::findAllTypicalReactions()
 {
     HighBridgeStandToOneBridge::find(this);
     HighBridgeToTwoBridges::find(this);

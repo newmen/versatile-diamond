@@ -4,10 +4,10 @@
 #include "../mc/mc.h"
 #include "../tools/common.h"
 #include "../tools/scavenger.h"
-#include "../species/components_keeper.h"
-#include "../species/reactants_keeper.h"
-#include "../species/specific_spec.h"
+#include "../species/keeper.h"
+#include "../species/component_spec.h"
 #include "../species/lateral_spec.h"
+#include "../species/specific_spec.h"
 
 #include "env.h"
 #include "finder.h"
@@ -19,15 +19,16 @@ class Handbook
 {
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
-    typedef ReactantsKeeper<SpecificSpec> SDKeeper;
-    typedef ReactantsKeeper<LateralSpec> LDKeeper;
+    typedef Keeper<ComponentSpec, &ComponentSpec::findComplexSpecies> CKeeper;
+    typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
+    typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 
     static DMC __mc;
     static PhaseBoundary __amorph;
 
-    static ComponentsKeeper __componentsKeepers[THREADS_NUM];
-    static SDKeeper __specificKeepers[THREADS_NUM];
-    static LDKeeper __lateralKeepers[THREADS_NUM];
+    static CKeeper __componentsKeepers[THREADS_NUM];
+    static LKeeper __lateralKeepers[THREADS_NUM];
+    static SKeeper __specificKeepers[THREADS_NUM];
 
     static Scavenger __scavengers[THREADS_NUM];
 
@@ -38,9 +39,9 @@ public:
 
     static PhaseBoundary &amorph();
 
-    static ComponentsKeeper &componentKeeper();
-    static SDKeeper &specificKeeper();
-    static LDKeeper &lateralKeeper();
+    static CKeeper &componentKeeper();
+    static SKeeper &specificKeeper();
+    static LKeeper &lateralKeeper();
 
     static Scavenger &scavenger();
 

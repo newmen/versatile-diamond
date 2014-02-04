@@ -66,7 +66,7 @@ void Runner::calculate()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-    while (!__stopCalculating && Handbook::mc().totalTime() < _totalTime)
+    while (!__stopCalculating && Handbook::mc().totalTime() <= _totalTime)
     {
         double dt = Handbook::mc().doRandom(&mcData);
 

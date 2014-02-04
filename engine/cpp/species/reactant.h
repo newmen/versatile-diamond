@@ -2,13 +2,14 @@
 #define REACTANT_H
 
 #include <unordered_map>
-#include "base_spec.h"
+#include "../atoms/atom.h"
+#include "../tools/common.h"
 
 namespace vd
 {
 
 template <class R>
-class Reactant : virtual public BaseSpec
+class Reactant
 {
     typedef std::unordered_multimap<ushort, R *> Reactions;
 
@@ -16,27 +17,38 @@ class Reactant : virtual public BaseSpec
     bool _isNew = true;
 
 public:
-    void store() override;
+    virtual ~Reactant() {}
+
+    virtual ushort type() const = 0;
+    virtual Atom *atom(ushort index) const = 0;
+    virtual Atom *anchor() const = 0;
+
+    void keep();
 
     void insertReaction(R *reaction);
     void eraseReaction(R *reaction);
 
-    template <class CR> CR *checkoutReaction(); // TODO: is never used now?
+    // for checkoutReactionWith
+    const Reactions &reactions() const { return _reactions; }
+
+    template <class CR> CR *checkoutReaction();
     template <class CR, class S> CR *checkoutReactionWith(S *spec);
     bool haveReaction(R *reaction) const;
-
-    void findReactions();
 
 protected:
     Reactant() = default;
 
+    void setNotNew() { _isNew = false; }
+
     virtual void keepFirstTime() = 0;
-    virtual void findAllReactions() = 0;
 
     template <class L>
     void eachDupReaction(const L &lambda);
 
 private:
+    R *checkoutReaction(ushort rid);
+    R *checkoutReactionWith(ushort rid, const Reactions &otherReactions);
+
     R **reactionsDup(uint &n);
     typename Reactions::const_iterator find(R *reaction) const;
 };
@@ -44,7 +56,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class R>
-void Reactant<R>::store()
+void Reactant<R>::keep()
 {
     if (_isNew)
     {
@@ -71,40 +83,15 @@ template <class R>
 template <class CR>
 CR *Reactant<R>::checkoutReaction()
 {
-#ifndef NDEBUG
-    auto range = _reactions.equal_range(CR::ID);
-    assert(std::distance(range.first, range.second) < 2);
-#endif // NDEBUG
-
-    auto pr = _reactions.find(CR::ID);
-    return (pr != _reactions.cend()) ? static_cast<CR *>(pr->second) : nullptr;
+    auto result = checkoutReaction(CR::ID);
+    return static_cast<CR *>(result);
 }
 
 template <class R>
 template <class CR, class S>
 CR *Reactant<R>::checkoutReactionWith(S *spec)
 {
-    auto currentRange = _reactions.equal_range(CR::ID);
-    auto anotherRange = spec->_reactions.equal_range(CR::ID);
-
-    R *result = nullptr;
-    for (; currentRange.first != currentRange.second; ++currentRange.first)
-    {
-        auto currentReaction = currentRange.first->second;
-        auto anotherRangeBegin = anotherRange.first;
-
-        for (; anotherRangeBegin != anotherRange.second; ++anotherRangeBegin)
-        {
-            if (currentReaction == anotherRangeBegin->second)
-            {
-                result = currentReaction;
-                goto break_both_loops;
-            }
-        }
-    }
-
-    break_both_loops :;
-
+    auto result = checkoutReactionWith(CR::ID, spec->reactions());
     return static_cast<CR *>(result);
 }
 
@@ -112,13 +99,6 @@ template <class R>
 bool Reactant<R>::haveReaction(R *reaction) const
 {
     return find(reaction) != _reactions.cend();
-}
-
-template <class R>
-void Reactant<R>::findReactions()
-{
-    findAllReactions();
-    _isNew = false;
 }
 
 template <class R>
@@ -158,6 +138,44 @@ R **Reactant<R>::reactionsDup(uint &n)
 
         return dup;
     }
+}
+
+template <class R>
+R *Reactant<R>::checkoutReaction(ushort rid)
+{
+#ifndef NDEBUG
+    auto range = _reactions.equal_range(rid);
+    assert(std::distance(range.first, range.second) < 2);
+#endif // NDEBUG
+
+    auto pr = _reactions.find(rid);
+    return (pr != _reactions.cend()) ? pr->second : nullptr;
+}
+
+template <class R>
+R *Reactant<R>::checkoutReactionWith(ushort rid, const Reactions &otherReactions)
+{
+    auto currentRange = _reactions.equal_range(rid);
+    auto anotherRange = otherReactions.equal_range(rid);
+
+    R *result = nullptr;
+    for (; currentRange.first != currentRange.second; ++currentRange.first)
+    {
+        auto currentReaction = currentRange.first->second;
+        auto anotherRangeBegin = anotherRange.first;
+
+        for (; anotherRangeBegin != anotherRange.second; ++anotherRangeBegin)
+        {
+            if (currentReaction == anotherRangeBegin->second)
+            {
+                result = currentReaction;
+                goto break_both_loops;
+            }
+        }
+    }
+
+    break_both_loops :;
+    return result;
 }
 
 template <class R>

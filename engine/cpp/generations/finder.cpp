@@ -76,7 +76,7 @@ void Finder::findAll(Atom **atoms, uint n)
         atoms[i]->findUnvisitedChildren();
     }
 
-    Handbook::componentKeeper().findComplexSpecies();
+    Handbook::componentKeeper().find();
 
     for (uint i = 0; i < n; ++i)
     {
@@ -85,8 +85,8 @@ void Finder::findAll(Atom **atoms, uint n)
     }
 
     // order is important
-    Handbook::specificKeeper().findReactions();
-    Handbook::lateralKeeper().findReactions();
+    Handbook::specificKeeper().find();
+    Handbook::lateralKeeper().find();
 
     for (uint i = 0; i < n; ++i)
     {

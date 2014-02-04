@@ -1,22 +1,21 @@
 #ifndef DIMER_CRS_CLI_H
 #define DIMER_CRS_CLI_H
 
-#include "../base_specific.h"
 #include "dimer_crs.h"
 
-class DimerCRsCLi : public BaseSpecific<DependentSpec<BaseSpec>, DIMER_CRs_CLi, 2>
+class DimerCRsCLi : public Specific<Base<DependentSpec<BaseSpec>, DIMER_CRs_CLi, 2>>
 {
 public:
     static void find(DimerCRs *parent);
 
-    DimerCRsCLi(ParentSpec *parent) : BaseSpecific(parent) {}
+    DimerCRsCLi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "dimer(cr: *, cl: i)"; }
 #endif // PRINT
 
 protected:
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }

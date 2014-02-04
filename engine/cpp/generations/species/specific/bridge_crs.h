@@ -2,14 +2,14 @@
 #define BRIDGE_CRS_H
 
 #include "../base/bridge_cri.h"
-#include "../base_specific.h"
+#include "../specific.h"
 
-class BridgeCRs : public BaseSpecific<DependentSpec<ParentSpec>, BRIDGE_CRs, 1>
+class BridgeCRs : public Specific<Base<DependentSpec<ParentSpec>, BRIDGE_CRs, 1>>
 {
 public:
     static void find(BridgeCRi *parent);
 
-    BridgeCRs(ParentSpec *parent) : BaseSpecific(parent) {}
+    BridgeCRs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge(cr: *)"; }
@@ -17,7 +17,7 @@ public:
 
 protected:
     void findAllChildren() override;
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }

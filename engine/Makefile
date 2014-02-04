@@ -1,8 +1,8 @@
-ARKSFLAGS	:= -DPARALLEL -DTHREADS_NUM=2
+ARKSFLAGS	:= -DNDEBUG -DTHREADS_NUM=1
 ICC_PATH	:= /opt/intel/composerxe
 
 CXX		:= $(ICC_PATH)/bin/icpc
-CXXFLAGS	:= -DNDEBUG -std=c++11 -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259 $(ARKSFLAGS)
+CXXFLAGS	:= -std=c++11 -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259 $(ARKSFLAGS)
 LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64/ -liomp5 -openmp
 
 NAME	:= engine

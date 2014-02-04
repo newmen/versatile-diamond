@@ -7,7 +7,7 @@
 namespace vd
 {
 
-class ParentSpec : virtual public BaseSpec
+class ParentSpec : public BaseSpec
 {
     std::unordered_set<BaseSpec *> _children;
 

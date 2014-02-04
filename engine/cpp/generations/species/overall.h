@@ -1,10 +1,13 @@
 #ifndef OVERALL_H
 #define OVERALL_H
 
-#include "../../species/spec_class_builder.h"
 #include "../../species/base_spec.h"
+#include "../../species/source_spec.h"
 #include "../../species/dependent_spec.h"
 #include "../../species/parent_spec.h"
+#include "../../species/additional_atoms_wrapper.h"
+#include "../../species/atom_shift_wrapper.h"
+#include "../../species/atoms_swap_wrapper.h"
 #include "../../tools/typed.h"
 using namespace vd;
 
@@ -29,7 +32,7 @@ protected:
 template <class B, ushort ST>
 void Overall<B, ST>::remove()
 {
-    B::remove();
+    ParentType::remove();
     Handbook::scavenger().markSpec(this);
 }
 

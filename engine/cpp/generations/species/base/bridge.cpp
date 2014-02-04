@@ -38,7 +38,7 @@ void Bridge::findAllChildren()
     BridgeCRi::find(this);
 }
 
-void Bridge::findAllComplexes()
+void Bridge::findComplexSpecies()
 {
     TwoBridges::find(this);
     BridgeWithDimer::find(this);

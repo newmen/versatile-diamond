@@ -4,8 +4,7 @@
 #include "../sidepiece/dimer.h"
 #include "../base.h"
 
-class MethylOnDimer :
-        public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_DIMER, 2>
+class MethylOnDimer : public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_DIMER, 2>
 {
 public:
     static void find(Dimer *target);

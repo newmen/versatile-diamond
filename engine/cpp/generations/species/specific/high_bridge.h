@@ -2,16 +2,14 @@
 #define HIGH_BRIDGE_H
 
 #include "../base/bridge.h"
-#include "../base_specific.h"
+#include "../specific.h"
 
-// TODO: wrong dependency tree (from analyzer), because high bridge is not dependent from methyl on bridge
-class HighBridge :
-        public BaseSpecific<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, HIGH_BRIDGE, 2>
+class HighBridge : public Specific<Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, HIGH_BRIDGE, 2>>
 {
 public:
     static void find(Bridge *parent);
 
-    HighBridge(Atom *additionalAtom, ParentSpec *parent) : BaseSpecific(additionalAtom, parent) {}
+    HighBridge(Atom *additionalAtom, ParentSpec *parent) : Specific(additionalAtom, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "high bridge"; }
@@ -19,7 +17,7 @@ public:
 
 protected:
     void findAllChildren() override;
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }

@@ -16,7 +16,7 @@ void MethylOnBridgeCBsCMsu::find(MethylOnBridgeCBiCMsu *parent)
     }
 }
 
-void MethylOnBridgeCBsCMsu::findAllReactions()
+void MethylOnBridgeCBsCMsu::findAllTypicalReactions()
 {
     FormTwoBond::find(this);
 }

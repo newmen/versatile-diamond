@@ -33,7 +33,7 @@ void DimerCRs::findAllChildren()
     DimerCRsCLi::find(this);
 }
 
-void DimerCRs::findAllReactions()
+void DimerCRs::findAllTypicalReactions()
 {
     AdsMethylToDimer::find(this);
 //    MigrationDownAtDimer::find(this); // DISABLED

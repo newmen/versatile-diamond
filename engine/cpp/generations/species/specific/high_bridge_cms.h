@@ -3,20 +3,19 @@
 
 #include "high_bridge.h"
 
-class HighBridgeCMs :
-        public BaseSpecific<DependentSpec<BaseSpec>, HIGH_BRIDGE_CMs, 1>
+class HighBridgeCMs : public Specific<Base<DependentSpec<BaseSpec>, HIGH_BRIDGE_CMs, 1>>
 {
 public:
     static void find(HighBridge *parent);
 
-    HighBridgeCMs(ParentSpec *parent) : BaseSpecific(parent) {}
+    HighBridgeCMs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "high_bridge(cm: *)"; }
 #endif // PRINT
 
 protected:
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }

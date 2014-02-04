@@ -21,7 +21,7 @@ void BridgeWithDimerCDLi::findAllChildren()
     BridgeWithDimerCBTiCBRsCDLi::find(this);
 }
 
-void BridgeWithDimerCDLi::findAllReactions()
+void BridgeWithDimerCDLi::findAllTypicalReactions()
 {
     DimerDropNearBridge::find(this);
 }

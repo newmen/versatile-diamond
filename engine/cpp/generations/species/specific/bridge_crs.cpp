@@ -29,7 +29,7 @@ void BridgeCRs::findAllChildren()
     BridgeCRsCTiCLi::find(this);
 }
 
-void BridgeCRs::findAllReactions()
+void BridgeCRs::findAllTypicalReactions()
 {
     AdsMethylTo111::find(this);
     DimerFormationNearBridge::find(this);

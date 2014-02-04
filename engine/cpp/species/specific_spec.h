@@ -1,19 +1,24 @@
 #ifndef SPECIFIC_SPEC_H
 #define SPECIFIC_SPEC_H
 
-#include "../reactions/spec_reaction.h"
 #include "reactant.h"
 
 namespace vd
 {
 
+class SpecReaction;
+
 class SpecificSpec : public Reactant<SpecReaction>
 {
+public:
+    void findTypicalReactions();
+
 protected:
     SpecificSpec() = default;
 
-public:
-    void remove() override;
+    virtual void findAllTypicalReactions() = 0;
+
+    void removeReactions();
 };
 
 }

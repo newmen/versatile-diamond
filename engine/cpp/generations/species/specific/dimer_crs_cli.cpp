@@ -16,7 +16,7 @@ void DimerCRsCLi::find(DimerCRs *parent)
     }
 }
 
-void DimerCRsCLi::findAllReactions()
+void DimerCRsCLi::findAllTypicalReactions()
 {
     HighBridgeStandToDimer::find(this);
 }
