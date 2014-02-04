@@ -16,7 +16,7 @@ void HighBridgeCMs::find(HighBridge *parent)
     }
 }
 
-void HighBridgeCMs::findAllReactions()
+void HighBridgeCMs::findAllTypicalReactions()
 {
     MigrationDownInGapFromHighBridge::find(this);
 }

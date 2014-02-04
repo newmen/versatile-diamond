@@ -2,14 +2,14 @@
 #define BRIDGE_WITH_DIMER_CDLi_H
 
 #include "../base/bridge_with_dimer.h"
-#include "../base_specific.h"
+#include "../specific.h"
 
-class BridgeWithDimerCDLi : public BaseSpecific<DependentSpec<ParentSpec>, BRIDGE_WITH_DIMER_CDLi, 1>
+class BridgeWithDimerCDLi : public Specific<Base<DependentSpec<ParentSpec>, BRIDGE_WITH_DIMER_CDLi, 1>>
 {
 public:
     static void find(BridgeWithDimer *parent);
 
-    BridgeWithDimerCDLi(ParentSpec *parent) : BaseSpecific(parent) {}
+    BridgeWithDimerCDLi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge_with_dimer(cdl: i)"; }
@@ -17,7 +17,7 @@ public:
 
 protected:
     void findAllChildren() override;
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }

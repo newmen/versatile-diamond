@@ -124,7 +124,7 @@ template <class S>
 S *Atom::specByRole(ushort role)
 {
     BaseSpec *result = specByRole(S::ID, role);
-    return dynamic_cast<S *>(result);
+    return static_cast<S *>(result);
 }
 
 template <class S, class L>
@@ -143,7 +143,7 @@ S *Atom::findSpecByRole(ushort role, const L &lambda)
             break;
         }
     }
-    return dynamic_cast<S *>(result);
+    return static_cast<S *>(result);
 }
 
 }

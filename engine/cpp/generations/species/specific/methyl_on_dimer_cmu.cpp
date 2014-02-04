@@ -24,7 +24,7 @@ void MethylOnDimerCMu::findAllChildren()
     MethylOnDimerCMsu::find(this);
 }
 
-void MethylOnDimerCMu::findAllReactions()
+void MethylOnDimerCMu::findAllTypicalReactions()
 {
     DesMethylFromDimer::find(this);
 }

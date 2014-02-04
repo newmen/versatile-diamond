@@ -16,7 +16,7 @@ void MethylOn111CMssu::find(MethylOn111CMsu *parent)
     }
 }
 
-void MethylOn111CMssu::findAllReactions()
+void MethylOn111CMssu::findAllTypicalReactions()
 {
     MigrationDownInGapFrom111::find(this);
 }

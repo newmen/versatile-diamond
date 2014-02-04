@@ -22,7 +22,7 @@ void MethylOnBridgeCBiCMu::findAllChildren()
     MethylOnBridgeCBiCMsu::find(this);
 }
 
-void MethylOnBridgeCBiCMu::findAllReactions()
+void MethylOnBridgeCBiCMu::findAllTypicalReactions()
 {
     DesMethylFromBridge::find(this);
 }

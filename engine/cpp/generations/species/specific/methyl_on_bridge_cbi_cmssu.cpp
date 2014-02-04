@@ -16,7 +16,7 @@ void MethylOnBridgeCBiCMssu::find(MethylOnBridgeCBiCMsu *parent)
     }
 }
 
-void MethylOnBridgeCBiCMssu::findAllReactions()
+void MethylOnBridgeCBiCMssu::findAllTypicalReactions()
 {
     MigrationDownInGap::find(this);
 }

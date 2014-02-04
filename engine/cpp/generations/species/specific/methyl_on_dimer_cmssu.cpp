@@ -17,7 +17,7 @@ void MethylOnDimerCMssu::find(MethylOnDimerCMsu *parent)
     }
 }
 
-void MethylOnDimerCMssu::findAllReactions()
+void MethylOnDimerCMssu::findAllTypicalReactions()
 {
     MigrationDownInGapFromDimer::find(this);
 }

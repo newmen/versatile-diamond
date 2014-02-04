@@ -24,7 +24,7 @@ void BridgeCRsCTiCLi::find(BridgeCRs *parent)
     }
 }
 
-void BridgeCRsCTiCLi::findAllReactions()
+void BridgeCRsCTiCLi::findAllTypicalReactions()
 {
     NextLevelBridgeToHighBridge::find(this);
 }

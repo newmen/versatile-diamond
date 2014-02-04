@@ -15,7 +15,7 @@ public:
     std::string name() const override { return "bridge"; }
 #endif // PRINT
 
-    void findAllComplexes() override;
+    void findComplexSpecies() override;
 protected:
     void findAllChildren() override;
 

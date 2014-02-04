@@ -2,13 +2,13 @@
 #define SHIFTED_DIMER_H
 
 #include "../sidepiece/dimer.h"
-#include "../empty_dependent.h"
+#include "../empty.h"
 
-// TODO: should not be!
-class ShiftedDimer : public AtomShiftWrapper<EmptyDependent<ParentSpec, SHIFTED_DIMER, 1>>
+// TODO: should not be!?
+class ShiftedDimer : public Empty<AtomShiftWrapper<DependentSpec<ParentSpec>>, SHIFTED_DIMER>
 {
 public:
-    ShiftedDimer(Dimer *parent) : AtomShiftWrapper(3, parent) {}
+    ShiftedDimer(Dimer *parent) : Empty(3, parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "shifted dimer"; }

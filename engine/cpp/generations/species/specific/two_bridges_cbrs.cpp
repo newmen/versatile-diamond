@@ -16,7 +16,7 @@ void TwoBridgesCBRs::find(TwoBridges *parent)
     }
 }
 
-void TwoBridgesCBRs::findAllReactions()
+void TwoBridgesCBRs::findAllTypicalReactions()
 {
     TwoBridgesToHighBridge::find(this);
 }

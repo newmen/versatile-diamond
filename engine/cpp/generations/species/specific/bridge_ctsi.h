@@ -2,21 +2,21 @@
 #define BRIDGE_CTSI_H
 
 #include "../base/bridge.h"
-#include "../base_specific.h"
+#include "../specific.h"
 
-class BridgeCTsi : public BaseSpecific<DependentSpec<BaseSpec>, BRIDGE_CTsi, 1>
+class BridgeCTsi : public Specific<Base<DependentSpec<BaseSpec>, BRIDGE_CTsi, 1>>
 {
 public:
     static void find(Bridge *parent);
 
-    BridgeCTsi(ParentSpec *parent) : BaseSpecific(parent) {}
+    BridgeCTsi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge(ct: *, ct: i)"; }
 #endif // PRINT
 
 protected:
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }

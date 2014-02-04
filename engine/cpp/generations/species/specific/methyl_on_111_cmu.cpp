@@ -22,7 +22,7 @@ void MethylOn111CMu::findAllChildren()
     MethylOn111CMsu::find(this);
 }
 
-void MethylOn111CMu::findAllReactions()
+void MethylOn111CMu::findAllTypicalReactions()
 {
     DesMethylFrom111::find(this);
 }

@@ -22,7 +22,7 @@ void MethylOn111CMsu::findAllChildren()
     MethylOn111CMssu::find(this);
 }
 
-void MethylOn111CMsu::findAllReactions()
+void MethylOn111CMsu::findAllTypicalReactions()
 {
     MigrationDownAtDimerFrom111::find(this);
 }

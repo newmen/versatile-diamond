@@ -19,7 +19,7 @@ void BridgeCTsi::find(Bridge *parent)
     }
 }
 
-void BridgeCTsi::findAllReactions()
+void BridgeCTsi::findAllTypicalReactions()
 {
     DimerFormation::find(this);
     DimerFormationNearBridge::find(this);

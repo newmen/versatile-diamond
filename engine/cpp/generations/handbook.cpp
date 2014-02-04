@@ -91,9 +91,9 @@ Handbook::DMC Handbook::__mc;
 
 PhaseBoundary Handbook::__amorph;
 
-ComponentsKeeper Handbook::__componentsKeepers[THREADS_NUM];
-Handbook::SDKeeper Handbook::__specificKeepers[THREADS_NUM];
-Handbook::LDKeeper Handbook::__lateralKeepers[THREADS_NUM];
+Handbook::CKeeper Handbook::__componentsKeepers[THREADS_NUM];
+Handbook::SKeeper Handbook::__specificKeepers[THREADS_NUM];
+Handbook::LKeeper Handbook::__lateralKeepers[THREADS_NUM];
 Scavenger Handbook::__scavengers[THREADS_NUM];
 
 Handbook::DMC &Handbook::mc()
@@ -106,17 +106,17 @@ PhaseBoundary &Handbook::amorph()
     return __amorph;
 }
 
-ComponentsKeeper &Handbook::componentKeeper()
+Handbook::CKeeper &Handbook::componentKeeper()
 {
     return selectForThread(__componentsKeepers);
 }
 
-Handbook::SDKeeper &Handbook::specificKeeper()
+Handbook::SKeeper &Handbook::specificKeeper()
 {
     return selectForThread(__specificKeepers);
 }
 
-Handbook::LDKeeper &Handbook::lateralKeeper()
+Handbook::LKeeper &Handbook::lateralKeeper()
 {
     return selectForThread(__lateralKeepers);
 }

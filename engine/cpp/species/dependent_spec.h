@@ -1,14 +1,13 @@
 #ifndef DEPENDENT_SPEC_H
 #define DEPENDENT_SPEC_H
 
-#include "multi_inheritance_dispatcher.h"
 #include "parent_spec.h"
 
 namespace vd
 {
 
 template <class B, ushort PARENTS_NUM = 1>
-class DependentSpec : public MultiInheritanceDispatcher<B>
+class DependentSpec : public B
 {
     ParentSpec *_parents[PARENTS_NUM];
 
@@ -16,7 +15,7 @@ protected:
     DependentSpec(ParentSpec *parent);
     DependentSpec(ParentSpec **parents);
 
-    ParentSpec *parent(ushort index);
+    ParentSpec *parent(ushort index) const;
 
 public:
     ushort size() const;
@@ -50,7 +49,7 @@ DependentSpec<B, PARENTS_NUM>::DependentSpec(ParentSpec **parents)
 }
 
 template <class B, ushort PARENTS_NUM>
-ParentSpec *DependentSpec<B, PARENTS_NUM>::parent(ushort index)
+ParentSpec *DependentSpec<B, PARENTS_NUM>::parent(ushort index) const
 {
     assert(index < PARENTS_NUM);
     return _parents[index];

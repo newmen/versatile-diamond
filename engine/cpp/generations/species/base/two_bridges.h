@@ -1,7 +1,6 @@
 #ifndef TWO_BRIDGES_H
 #define TWO_BRIDGES_H
 
-#include "../base.h"
 #include "bridge.h"
 
 class TwoBridges : public Base<AtomsSwapWrapper<DependentSpec<ParentSpec, 3>>, TWO_BRIDGES, 1>

@@ -24,7 +24,7 @@ void MethylOnBridgeCBiCMsu::findAllChildren()
     MethylOnBridgeCBsCMsu::find(this);
 }
 
-void MethylOnBridgeCBiCMsu::findAllReactions()
+void MethylOnBridgeCBiCMsu::findAllTypicalReactions()
 {
 //    MigrationDownAtDimer::find(this); // DISABLED
 }

@@ -16,7 +16,7 @@ void BridgeCRh::find(BridgeCRi *parent)
     }
 }
 
-void BridgeCRh::findAllReactions()
+void BridgeCRh::findAllTypicalReactions()
 {
     AbsHydrogenFromGap::find(this);
 }
