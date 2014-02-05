@@ -57,7 +57,7 @@ void Diamond::bondAllAtoms()
     });
 }
 
-Atom *Diamond::makeAtom(uint type, const int3 &coords)
+Atom *Diamond::makeAtom(ushort type, const int3 &coords)
 {
     AtomBuilder builder;
     Atom *atom = builder.buildCd(type, 2, this, coords);

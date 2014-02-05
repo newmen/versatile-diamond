@@ -36,13 +36,13 @@ public:
     double totalRate() const { return _totalRate; }
     double totalTime() const { return _totalTime; }
 
-    void add(uint index, SpecReaction *reaction);
-    void remove(uint index, SpecReaction *reaction);
+    void add(ushort index, SpecReaction *reaction);
+    void remove(ushort index, SpecReaction *reaction);
 
-    void add(uint index, UbiquitousReaction *reaction, uint n);
-    void remove(uint index, UbiquitousReaction *templateReaction, uint n);
-    void removeAll(uint index, UbiquitousReaction *templateReaction);
-    bool check(uint index, Atom *target);
+    void add(ushort index, UbiquitousReaction *reaction, ushort n);
+    void remove(ushort index, UbiquitousReaction *templateReaction, ushort n);
+    void removeAll(ushort index, UbiquitousReaction *templateReaction);
+    bool check(ushort index, Atom *target);
 
 #ifndef NDEBUG
     void doOneOfOne(ushort rt);
@@ -307,7 +307,7 @@ BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint ord
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, SpecReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *reaction)
 {
 #ifdef PRINT
     printReaction(reaction, "Add", "one");
@@ -320,7 +320,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, SpecReaction *reaction)
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, SpecReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction *reaction)
 {
 #ifdef PRINT
     printReaction(reaction, "Remove", "one");
@@ -333,7 +333,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, SpecReaction *reaction
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReaction *reaction, ushort n)
 {
 #ifdef PRINT
     printReaction(reaction, "Add", "multi", n);
@@ -347,7 +347,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *react
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *templateReaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *templateReaction, ushort n)
 {
 #ifdef PRINT
     printReaction(templateReaction, "Remove", "multi", n);
@@ -361,7 +361,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *te
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(uint index, UbiquitousReaction *templateReaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *templateReaction)
 {
     assert(index < MULTI_EVENTS_NUM);
     uint n = _multiEvents[index].removeAll(templateReaction->target());
@@ -373,7 +373,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(uint index, UbiquitousReaction 
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-bool MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(uint index, Atom *target)
+bool MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(ushort index, Atom *target)
 {
     assert(index < MULTI_EVENTS_NUM);
     return _multiEvents[index].check(target);

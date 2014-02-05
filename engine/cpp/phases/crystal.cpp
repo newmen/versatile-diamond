@@ -57,7 +57,7 @@ void Crystal::erase(Atom *atom)
     *cell = nullptr;
 }
 
-void Crystal::makeLayer(uint z, uint type)
+void Crystal::makeLayer(uint z, ushort type)
 {
     const dim3 &sizes = atoms().sizes();
     for (uint y = 0; y < sizes.y; ++y)

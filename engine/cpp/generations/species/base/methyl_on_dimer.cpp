@@ -7,7 +7,7 @@ const ushort MethylOnDimer::__roles[2] = { 23, 14 };
 
 void MethylOnDimer::find(Dimer *target)
 {
-    const uint checkingIndexes[2] = { 0, 3 };
+    const ushort checkingIndexes[2] = { 0, 3 };
 
     for (int i = 0; i < 2; ++i)
     {

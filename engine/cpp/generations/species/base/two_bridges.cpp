@@ -12,8 +12,8 @@ void TwoBridges::find(Bridge *parent)
 
     if (anchor->is(0) && anchor->lattice()->coords().z > 1)
     {
-        const uint bottomIndexes[2] = { 1, 2 };
-        const uint nearIndexes[2] = { 2, 1 };
+        const ushort bottomIndexes[2] = { 1, 2 };
+        const ushort nearIndexes[2] = { 2, 1 };
 
         for (int i = 0; i < 2; ++i)
         {

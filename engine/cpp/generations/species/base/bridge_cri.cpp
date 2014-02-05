@@ -7,7 +7,7 @@ const ushort BridgeCRi::__roles[1] = { 4 };
 
 void BridgeCRi::find(Bridge *parent)
 {
-    const uint checkingIndexes[2] = { 1, 2 };
+    const ushort checkingIndexes[2] = { 1, 2 };
 
     for (int i = 0; i < 2; ++i)
     {

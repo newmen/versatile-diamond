@@ -22,7 +22,7 @@ MultiEventsContainer::~MultiEventsContainer()
     }
 }
 
-void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
+void MultiEventsContainer::add(UbiquitousReaction *event, ushort n)
 {
 #ifdef PARALLEL
     lock([this, event, n]() {
@@ -39,7 +39,7 @@ void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
 #endif // PARALLEL
 }
 
-void MultiEventsContainer::remove(Atom *target, uint n)
+void MultiEventsContainer::remove(Atom *target, ushort n)
 {
 #ifdef PARALLEL
     lock([this, target, n]() {
