@@ -2,20 +2,18 @@
 #define BRIDGE_H
 
 #include "../base.h"
-#include "../component.h"
 
-class Bridge : public Component<Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>>
+class Bridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>
 {
 public:
     static void find(Atom *anchor);
 
-    Bridge(Atom **atoms) : Component(atoms) {}
+    Bridge(Atom **atoms) : Base(atoms) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge"; }
 #endif // PRINT
 
-    void findComplexSpecies() override;
 protected:
     void findAllChildren() override;
 

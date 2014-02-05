@@ -9,7 +9,7 @@ void BridgeWithDimerToHighBridgeAndDimer::doIt()
 {
     assert(target()->type() == BridgeWithDimerCBTiCBRsCDLi::ID);
 
-    Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(2) };
+    Atom *atoms[3] = { target()->atom(3), target()->atom(4), target()->atom(5) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(0));

@@ -5,7 +5,6 @@
 #include "../tools/common.h"
 #include "../tools/scavenger.h"
 #include "../species/keeper.h"
-#include "../species/component_spec.h"
 #include "../species/lateral_spec.h"
 #include "../species/specific_spec.h"
 
@@ -19,14 +18,12 @@ class Handbook
 {
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
-    typedef Keeper<ComponentSpec, &ComponentSpec::findComplexSpecies> CKeeper;
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 
     static DMC __mc;
     static PhaseBoundary __amorph;
 
-    static CKeeper __componentsKeepers[THREADS_NUM];
     static LKeeper __lateralKeepers[THREADS_NUM];
     static SKeeper __specificKeepers[THREADS_NUM];
 
@@ -39,7 +36,6 @@ public:
 
     static PhaseBoundary &amorph();
 
-    static CKeeper &componentKeeper();
     static SKeeper &specificKeeper();
     static LKeeper &lateralKeeper();
 
@@ -50,7 +46,7 @@ public:
 
 private:
     template <class T>
-    static T &selectForThread(T *container);
+    static inline T &selectForThread(T *container);
 
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
@@ -65,6 +61,8 @@ public:
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 T &Handbook::selectForThread(T *container)

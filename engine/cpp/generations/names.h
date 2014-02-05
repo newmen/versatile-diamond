@@ -5,7 +5,7 @@
 
 enum : ushort
 {
-    BASE_SPECS_NUM = 7,
+    BASE_SPECS_NUM = 8,
     SPECIFIC_SPECS_NUM = 24,
 
     UBIQUITOUS_REACTIONS_NUM = 4,
@@ -20,7 +20,8 @@ enum BaseSpecNames : ushort
 {
     BRIDGE,
     DIMER,
-    SHIFTED_DIMER, // TODO: realy need for methyl on dimer?!
+    SHIFTED_DIMER,
+    SWAPPED_BRIDGE,
     METHYL_ON_DIMER,
     METHYL_ON_BRIDGE,
     TWO_BRIDGES,
@@ -53,7 +54,7 @@ enum SpecificSpecNames : ushort
     METHYL_ON_111_CMssu,
     HIGH_BRIDGE,
     HIGH_BRIDGE_CMs,
-    TWO_BRIDGES_CBRs,
+    TWO_BRIDGES_CTRi_CBRs,
     BRIDGE_WITH_DIMER_CDLi,
     BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi
 };

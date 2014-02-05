@@ -34,8 +34,8 @@ Sidepiece<B>::Sidepiece(Args... args) : ParentType(args...)
 template <class B>
 void Sidepiece<B>::remove()
 {
-    this->unconcretizeReactions();
     ParentType::remove();
+    this->unconcretizeReactions();
 }
 
 template <class B>
