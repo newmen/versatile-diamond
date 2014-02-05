@@ -70,7 +70,7 @@ public:
     S *specByRole(ushort role);
 
     template <class S, class L>
-    S *findSpecByRole(ushort role, const L &lambda);
+    void eachSpecByRole(ushort role, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -128,22 +128,15 @@ S *Atom::specByRole(ushort role)
 }
 
 template <class S, class L>
-S *Atom::findSpecByRole(ushort role, const L &lambda)
+void Atom::eachSpecByRole(ushort role, const L &lambda)
 {
-    BaseSpec *result = nullptr;
     const uint key = hash(role, S::ID);
-
     auto range = _specs.equal_range(key);
     for (; range.first != range.second; ++range.first)
     {
         BaseSpec *spec = range.first->second;
-        if (lambda(spec))
-        {
-            result = spec;
-            break;
-        }
+        lambda(static_cast<S *>(spec));
     }
-    return static_cast<S *>(result);
 }
 
 }

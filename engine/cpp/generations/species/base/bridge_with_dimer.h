@@ -2,14 +2,13 @@
 #define BRIDGE_WITH_DIMER_H
 
 #include "../empty.h"
-#include "bridge.h"
 
-class BridgeWithDimer : public Empty<AtomsSwapWrapper<DependentSpec<ParentSpec, 3>>, BRIDGE_WITH_DIMER>
+class BridgeWithDimer : public Empty<DependentSpec<ParentSpec, 3>, BRIDGE_WITH_DIMER>
 {
 public:
-    static void find(Bridge *parent);
+    static void find(Atom *anchor);
 
-    BridgeWithDimer(ushort from, ushort to, ParentSpec **parents) : Empty(from, to, parents) {}
+    BridgeWithDimer(ParentSpec **parents) : Empty(parents) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge with dimer"; }

@@ -1,18 +1,19 @@
-#ifndef TWO_BRIDGES_CBRS_H
-#define TWO_BRIDGES_CBRS_H
+#ifndef TWO_BRIDGES_CTRI_CBRS_H
+#define TWO_BRIDGES_CTRI_CBRS_H
 
 #include "../base/two_bridges.h"
+#include "../base.h"
 #include "../specific.h"
 
-class TwoBridgesCBRs : public Specific<Base<DependentSpec<BaseSpec>, TWO_BRIDGES_CBRs, 1>>
+class TwoBridgesCTRiCBRs : public Specific<Base<DependentSpec<BaseSpec>, TWO_BRIDGES_CTRi_CBRs, 1>>
 {
 public:
     static void find(TwoBridges *parent);
 
-    TwoBridgesCBRs(ParentSpec *parent) : Specific(parent) {}
+    TwoBridgesCTRiCBRs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "two_bridges(cbr: *)"; }
+    std::string name() const override { return "two_bridges(ctr: i, cbr: *)"; }
 #endif // PRINT
 
 protected:
@@ -26,4 +27,4 @@ private:
     static const ushort __roles[1];
 };
 
-#endif // TWO_BRIDGES_CBRS_H
+#endif // TWO_BRIDGES_CTRI_CBRS_H

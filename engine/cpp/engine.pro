@@ -89,7 +89,7 @@ SOURCES += main.cpp \
     generations/species/specific/methyl_on_dimer_cmssu.cpp \
     generations/species/specific/methyl_on_dimer_cmsu.cpp \
     generations/species/specific/methyl_on_dimer_cmu.cpp \
-    generations/species/specific/two_bridges_cbrs.cpp \
+    generations/species/specific/two_bridges_ctri_cbrs.cpp \
     mc/base_events_container.cpp \
     mc/common_mc_data.cpp \
     mc/counter.cpp \
@@ -192,9 +192,9 @@ HEADERS += \
     generations/species/base/bridge_with_dimer.h \
     generations/species/base/methyl_on_bridge.h \
     generations/species/base/methyl_on_dimer.h \
-    generations/species/base/shifted_dimer.h \
     generations/species/base/two_bridges.h \
-    generations/species/component.h \
+    generations/species/dolls/shifted_dimer.h \
+    generations/species/dolls/swapped_bridge.h \
     generations/species/empty.h \
     generations/species/overall.h \
     generations/species/sidepiece.h \
@@ -222,7 +222,7 @@ HEADERS += \
     generations/species/specific/methyl_on_dimer_cmssu.h \
     generations/species/specific/methyl_on_dimer_cmsu.h \
     generations/species/specific/methyl_on_dimer_cmu.h \
-    generations/species/specific/two_bridges_cbrs.h \
+    generations/species/specific/two_bridges_ctri_cbrs.h \
     mc/base_events_container.h \
     mc/common_mc_data.h \
     mc/counter.h \
@@ -245,7 +245,6 @@ HEADERS += \
     species/atom_shift_wrapper.h \
     species/atoms_swap_wrapper.h \
     species/base_spec.h \
-    species/component_spec.h \
     species/dependent_spec.h \
     species/keeper.h \
     species/lateral_spec.h \

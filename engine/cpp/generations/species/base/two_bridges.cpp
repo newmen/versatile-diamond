@@ -1,50 +1,41 @@
 #include "two_bridges.h"
-#include "bridge.h"
-#include "../specific/two_bridges_cbrs.h"
+#include "../dolls/swapped_bridge.h"
+#include "../specific/two_bridges_ctri_cbrs.h"
 
-const ushort TwoBridges::__indexes[1] = { 0 };
-const ushort TwoBridges::__roles[1] = { 0 };
-
-void TwoBridges::find(Bridge *parent)
+void TwoBridges::find(Atom *anchor)
 {
-    Atom *anchor = parent->atom(0);
-    assert(anchor->lattice());
-
-    if (anchor->is(0) && anchor->lattice()->coords().z > 1)
+    if (anchor->is(24) && anchor->lattice()->coords().z > 0)
     {
-        const ushort bottomIndexes[2] = { 1, 2 };
-        const ushort nearIndexes[2] = { 2, 1 };
+        ParentSpec *topBridges[2];
+        ushort index = 0;
 
-        for (int i = 0; i < 2; ++i)
-        {
-            Atom *bottomAnchor = parent->atom(bottomIndexes[i]);
-            Atom *nearAnchor = parent->atom(nearIndexes[i]);
-
-            assert(bottomAnchor->is(6));
-            if (nearAnchor->is(24))
+        anchor->eachSpecByRole<Bridge>(6, [anchor, &topBridges, &index](Bridge *target) {
+            if (target->atom(2) == anchor)
             {
-                auto bottom = bottomAnchor->specByRole<Bridge>(3);
-                assert(bottom);
-
-                auto near = nearAnchor->findSpecByRole<Bridge>(6, [parent](BaseSpec *spec) {
-                    return spec != parent;
-                });
-                assert(near);
-
-                ParentSpec *parents[] = {
-                    parent,
-                    bottom,
-                    near
-                };
-
-                create<TwoBridges>(bottomIndexes[i], 1, parents);
-                break;
+                topBridges[index] = target;
             }
+            else
+            {
+                topBridges[index] = create<SwappedBridge>(target);
+            }
+            ++index;
+        });
+
+        for (uint i = 0; i < 2; ++i)
+        {
+            uint o = 1 - i;
+            ParentSpec *targets[3] = {
+                topBridges[i]->atom(1)->specByRole<Bridge>(3),
+                topBridges[i],
+                topBridges[o]
+            };
+
+            create<TwoBridges>(targets);
         }
     }
 }
 
 void TwoBridges::findAllChildren()
 {
-    TwoBridgesCBRs::find(this);
+    TwoBridgesCTRiCBRs::find(this);
 }

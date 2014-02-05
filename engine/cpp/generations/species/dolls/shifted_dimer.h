@@ -4,7 +4,6 @@
 #include "../sidepiece/dimer.h"
 #include "../empty.h"
 
-// TODO: should not be!?
 class ShiftedDimer : public Empty<AtomShiftWrapper<DependentSpec<ParentSpec>>, SHIFTED_DIMER>
 {
 public:

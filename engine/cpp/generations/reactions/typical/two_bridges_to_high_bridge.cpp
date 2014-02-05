@@ -1,15 +1,15 @@
 #include "two_bridges_to_high_bridge.h"
 
-void TwoBridgesToHighBridge::find(TwoBridgesCBRs *target)
+void TwoBridgesToHighBridge::find(TwoBridgesCTRiCBRs *target)
 {
     create<TwoBridgesToHighBridge>(target);
 }
 
 void TwoBridgesToHighBridge::doIt()
 {
-    assert(target()->type() == TwoBridgesCBRs::ID);
+    assert(target()->type() == TwoBridgesCTRiCBRs::ID);
 
-    Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(2) };
+    Atom *atoms[3] = { target()->atom(3), target()->atom(4), target()->atom(5) };
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(0));
