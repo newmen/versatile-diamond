@@ -10,8 +10,8 @@ void BridgeWithDimer::find(Bridge *parent)
 
     if (anchor->lattice()->coords().z > 1)
     {
-        const uint bottomIndexes[2] = { 1, 2 };
-        const uint nearIndexes[2] = { 2, 1 };
+        const ushort bottomIndexes[2] = { 1, 2 };
+        const ushort nearIndexes[2] = { 2, 1 };
 
         for (int i = 0; i < 2; ++i)
         {
@@ -29,7 +29,7 @@ void BridgeWithDimer::find(Bridge *parent)
 
                 ParentSpec *parents[3] = { parent, bridge, nullptr };
 
-                const uint checkingIndex[2] = { 0, 3 };
+                const ushort checkingIndex[2] = { 0, 3 };
                 for (int j = 0; j < 2; ++j)
                 {
                     if (dimer->atom(checkingIndex[j]) == dimerAnchor)

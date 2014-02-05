@@ -16,8 +16,8 @@ public:
     MultiEventsContainer() = default;
     ~MultiEventsContainer();
 
-    void add(UbiquitousReaction *event, uint n);
-    void remove(Atom *target, uint n);
+    void add(UbiquitousReaction *event, ushort n);
+    void remove(Atom *target, ushort n);
     uint removeAll(Atom *target);
     bool check(Atom *target);
 

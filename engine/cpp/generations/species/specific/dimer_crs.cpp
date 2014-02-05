@@ -11,7 +11,7 @@ const ushort DimerCRs::__roles[1] = { 21 };
 
 void DimerCRs::find(Dimer *parent)
 {
-    uint indexes[2] = { 0, 3 };
+    const ushort indexes[2] = { 0, 3 };
 
     for (int i = 0; i < 2; ++i)
     {
