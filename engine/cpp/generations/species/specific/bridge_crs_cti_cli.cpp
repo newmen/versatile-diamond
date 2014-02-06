@@ -4,6 +4,14 @@
 const ushort BridgeCRsCTiCLi::__indexes[3] = { 0, 1, 2 };
 const ushort BridgeCRsCTiCLi::__roles[3] = { 0, 5, 4 };
 
+#ifdef PRINT
+const char *BridgeCRsCTiCLi::name() const
+{
+    static const char value[] = "bridge(cr: *, ct: i, cl: i)";
+    return value;
+}
+#endif // PRINT
+
 void BridgeCRsCTiCLi::find(BridgeCRs *parent)
 {
     Atom *anchors[3];

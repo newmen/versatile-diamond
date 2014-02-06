@@ -12,7 +12,7 @@ public:
     BridgeCRs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge(cr: *)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

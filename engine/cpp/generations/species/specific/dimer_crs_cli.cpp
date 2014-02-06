@@ -4,6 +4,14 @@
 const ushort DimerCRsCLi::__indexes[2] = { 0, 3 };
 const ushort DimerCRsCLi::__roles[2] = { 21, 20 };
 
+#ifdef PRINT
+const char *DimerCRsCLi::name() const
+{
+    static const char value[] = "dimer(cr: *, cl: i)";
+    return value;
+}
+#endif // PRINT
+
 void DimerCRsCLi::find(DimerCRs *parent)
 {
     Atom *anchor = parent->atom(3);

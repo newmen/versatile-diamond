@@ -10,7 +10,7 @@ public:
     SwappedBridge(Bridge *parent) : Empty(1, 2, parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "swapped bridge"; }
+    const char *name() const override;
 #endif // PRINT
 };
 

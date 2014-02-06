@@ -11,7 +11,7 @@ public:
     BridgeWithDimer(ParentSpec **parents) : Base(parents) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge with dimer"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

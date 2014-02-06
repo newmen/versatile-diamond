@@ -11,7 +11,7 @@ public:
     HighBridgeCMs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "high_bridge(cm: *)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

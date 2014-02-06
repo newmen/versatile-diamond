@@ -4,6 +4,14 @@
 const ushort BridgeWithDimerCBTiCBRsCDLi::__indexes[2] = { 3, 4 };
 const ushort BridgeWithDimerCBTiCBRsCDLi::__roles[2] = { 0, 5 };
 
+#ifdef PRINT
+const char *BridgeWithDimerCBTiCBRsCDLi::name() const
+{
+    static const char value[] = "bridge_with_dimer(cbt: i, cbr: *, cdl: i)";
+    return value;
+}
+#endif // PRINT
+
 void BridgeWithDimerCBTiCBRsCDLi::find(BridgeWithDimerCDLi *parent)
 {
     Atom *anchor = parent->atom(3);

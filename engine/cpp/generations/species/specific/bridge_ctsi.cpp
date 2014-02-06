@@ -7,6 +7,14 @@
 const ushort BridgeCTsi::__indexes[1] = { 0 };
 const ushort BridgeCTsi::__roles[1] = { 28 };
 
+#ifdef PRINT
+const char *BridgeCTsi::name() const
+{
+    static const char value[] = "bridge(ct: *, ct: i)";
+    return value;
+}
+#endif // PRINT
+
 void BridgeCTsi::find(Bridge *parent)
 {
     Atom *anchor = parent->atom(0);

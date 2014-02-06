@@ -7,6 +7,14 @@
 const ushort MethylOnBridge::__indexes[2] = { 1, 0 };
 const ushort MethylOnBridge::__roles[2] = { 9, 14 };
 
+#ifdef PRINT
+const char *MethylOnBridge::name() const
+{
+    static const char value[] = "methyl on bridge";
+    return value;
+}
+#endif // PRINT
+
 void MethylOnBridge::find(Bridge *target)
 {
     Atom *anchor = target->atom(0);

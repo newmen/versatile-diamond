@@ -11,7 +11,7 @@ public:
     TwoBridges(ParentSpec **parents) : Base(parents) {}
 
 #ifdef PRINT
-    std::string name() const override { return "two bridges"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

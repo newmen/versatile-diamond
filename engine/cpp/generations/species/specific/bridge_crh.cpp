@@ -4,6 +4,14 @@
 const ushort BridgeCRh::__indexes[1] = { 1 };
 const ushort BridgeCRh::__roles[1] = { 34 };
 
+#ifdef PRINT
+const char *BridgeCRh::name() const
+{
+    static const char value[] = "bridge(cr: H)";
+    return value;
+}
+#endif // PRINT
+
 void BridgeCRh::find(BridgeCRi *parent)
 {
     Atom *anchor = parent->atom(1);

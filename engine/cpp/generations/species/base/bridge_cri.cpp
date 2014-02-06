@@ -5,6 +5,14 @@
 const ushort BridgeCRi::__indexes[1] = { 1 };
 const ushort BridgeCRi::__roles[1] = { 4 };
 
+#ifdef PRINT
+const char *BridgeCRi::name() const
+{
+    static const char value[] = "bridge(cr: i)";
+    return value;
+}
+#endif // PRINT
+
 void BridgeCRi::find(Bridge *parent)
 {
     const ushort checkingIndexes[2] = { 1, 2 };

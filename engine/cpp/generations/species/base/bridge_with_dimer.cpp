@@ -6,6 +6,14 @@
 const ushort BridgeWithDimer::__indexes[1] = { 5 };
 const ushort BridgeWithDimer::__roles[1] = { 32 };
 
+#ifdef PRINT
+const char *BridgeWithDimer::name() const
+{
+    static const char value[] = "bridge with dimer";
+    return value;
+}
+#endif // PRINT
+
 void BridgeWithDimer::find(Atom *anchor)
 {
     if (anchor->is(32) && anchor->lattice()->coords().z > 0)

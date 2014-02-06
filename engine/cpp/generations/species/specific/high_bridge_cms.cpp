@@ -4,6 +4,14 @@
 const ushort HighBridgeCMs::__indexes[1] = { 0 };
 const ushort HighBridgeCMs::__roles[1] = { 16 };
 
+#ifdef PRINT
+const char *HighBridgeCMs::name() const
+{
+    static const char value[] = "high_bridge(cm: *)";
+    return value;
+}
+#endif // PRINT
+
 void HighBridgeCMs::find(HighBridge *parent)
 {
     Atom *anchor = parent->atom(0);

@@ -11,7 +11,7 @@ public:
     MethylOnBridgeCBiCMssu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "methyl_on_bridge(cb: i, cm: **, cm: u)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

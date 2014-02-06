@@ -14,7 +14,7 @@ public:
     void remove() override;
 
 #ifdef PRINT
-    std::string name() const override { return "methyl on bridge"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

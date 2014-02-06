@@ -9,6 +9,14 @@
 const ushort HighBridge::__indexes[2] = { 1, 0 };
 const ushort HighBridge::__roles[2] = { 19, 18 };
 
+#ifdef PRINT
+const char *HighBridge::name() const
+{
+    static const char value[] = "high bridge";
+    return value;
+}
+#endif // PRINT
+
 void HighBridge::find(Bridge *parent)
 {
     Atom *anchor = parent->atom(0);
