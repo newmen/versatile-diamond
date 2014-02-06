@@ -15,7 +15,7 @@ class BaseSpec : public Creator
 public:
     virtual ~BaseSpec() {}
 
-    void setUnvisited() { _visited = false; }
+    virtual void setUnvisited() { _visited = false; }
     bool isVisited() const { return _visited; }
 
     virtual ushort type() const = 0;
@@ -24,7 +24,7 @@ public:
     virtual Atom *atom(ushort index) const = 0;
     virtual Atom *anchor() const = 0;
 
-    virtual void findChildren() {}
+    virtual void findChildren();
 
     virtual void store();
     virtual void remove();
@@ -46,6 +46,7 @@ protected:
     template <class S>
     static bool checkAndFind(Atom *anchor, ushort rType);
 
+private:
     void setVisited() { _visited = true; }
 };
 
