@@ -29,7 +29,7 @@ const char *DimerDrop::name() const
     return value;
 }
 
-LateralReaction *DimerDrop::findAllLateral()
+LateralReaction *DimerDrop::lookAround()
 {
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };
     LateralSpec *neighbours[2] = { nullptr, nullptr };
