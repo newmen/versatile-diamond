@@ -10,13 +10,8 @@ namespace vd
 
 class BaseSpec : public Creator
 {
-    bool _visited = false;
-
 public:
     virtual ~BaseSpec() {}
-
-    virtual void setUnvisited() { _visited = false; }
-    bool isVisited() const { return _visited; }
 
     virtual ushort type() const = 0;
 
@@ -24,7 +19,8 @@ public:
     virtual Atom *atom(ushort index) const = 0;
     virtual Atom *anchor() const = 0;
 
-    virtual void findChildren();
+    virtual void setUnvisited() {}
+    virtual void findChildren() {}
 
     virtual void store();
     virtual void remove();
@@ -45,9 +41,6 @@ protected:
 
     template <class S>
     static bool checkAndFind(Atom *anchor, ushort rType);
-
-private:
-    void setVisited() { _visited = true; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,6 +10,7 @@ namespace vd
 class ParentSpec : public BaseSpec
 {
     std::unordered_set<BaseSpec *> _children;
+    bool _visited = false;
 
 public:
     void insertChild(BaseSpec *child);

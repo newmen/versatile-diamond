@@ -3,18 +3,12 @@
 namespace vd
 {
 
-void BaseSpec::findChildren()
-{
-    setVisited();
-}
-
 void BaseSpec::store()
 {
 #ifdef PRINT
     this->wasFound();
 #endif // PRINT
 
-    assert(!isVisited());
     findChildren();
 }
 
