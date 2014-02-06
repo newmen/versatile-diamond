@@ -1,6 +1,8 @@
 #ifndef SOURCE_SPEC_H
 #define SOURCE_SPEC_H
 
+#include "../atoms/atom.h"
+
 namespace vd
 {
 

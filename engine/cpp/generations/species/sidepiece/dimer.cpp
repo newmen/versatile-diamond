@@ -18,7 +18,7 @@ void Dimer::find(Atom *anchor)
 {
     if (anchor->is(22))
     {
-        if (!checkAndFind<Dimer>(anchor, 22))
+        if (!anchor->checkAndFind<Dimer>(22))
         {
             eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
                 if (neighbour->is(22) && anchor->hasBondWith(neighbour))

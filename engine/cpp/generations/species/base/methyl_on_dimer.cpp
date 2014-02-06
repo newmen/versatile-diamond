@@ -15,7 +15,7 @@ void MethylOnDimer::find(Dimer *target)
 
         if (anchor->is(23))
         {
-            if (!checkAndFind<MethylOnDimer>(anchor, 23) && !anchor->isVisited())
+            if (!anchor->checkAndFind<MethylOnDimer>(23) && !anchor->isVisited())
             {
                 Atom *amorph = anchor->amorphNeighbour();
                 if (amorph->is(14))

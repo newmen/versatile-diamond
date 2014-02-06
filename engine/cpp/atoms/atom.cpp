@@ -1,5 +1,4 @@
 #include "atom.h"
-#include "../species/base_spec.h"
 #include "lattice.h"
 
 namespace vd

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
+#include "../species/base_spec.h"
 #include "../tools/common.h"
 #include "lattice.h"
 
@@ -11,8 +12,6 @@ namespace vd
 {
 
 const ushort NO_VALUE = (ushort)(-1);
-
-class BaseSpec;
 
 class Atom
 {
@@ -63,6 +62,7 @@ public:
     bool hasSpec(ushort role, BaseSpec *spec) const;
 
     template <class S> bool hasRole(ushort role) const;
+    template <class S> bool checkAndFind(ushort role);
     template <class S> S *specByRole(ushort role);
     template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
 
@@ -112,6 +112,18 @@ template <class S>
 bool Atom::hasRole(ushort role) const
 {
     return hasRole(S::ID, role);
+}
+
+template <class S>
+bool Atom::checkAndFind(ushort role)
+{
+    BaseSpec *spec = specByRole(S::ID, role);
+    if (spec)
+    {
+        spec->findChildren();
+    }
+
+    return spec != nullptr;
 }
 
 template <class S>
