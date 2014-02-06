@@ -128,6 +128,7 @@ void Runner::calculate()
     std::cout << "\nEnd crystal atoms num: " << surfaceCrystal->countAtoms() << "\n"
               << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %\n"
               << std::endl;
+    std::cout << "Elapsed time of process: " << Handbook::mc().totalTime() << " s" << std::endl;
     mcData.counter()->printStats();
 
     Handbook::amorph().clear(); // TODO: should not be explicitly!
