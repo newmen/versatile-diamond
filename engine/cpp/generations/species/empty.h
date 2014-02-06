@@ -14,6 +14,8 @@ public:
 
 protected:
     template <class... Args> Empty(Args... args) : ParentType(args...) {}
+
+    void findAllChildren() override {}
 };
 
 #endif // EMPTY_H

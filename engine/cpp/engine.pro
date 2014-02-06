@@ -193,9 +193,9 @@ HEADERS += \
     generations/species/base/methyl_on_bridge.h \
     generations/species/base/methyl_on_dimer.h \
     generations/species/base/two_bridges.h \
-    generations/species/dolls/shifted_dimer.h \
-    generations/species/dolls/swapped_bridge.h \
     generations/species/empty.h \
+    generations/species/empty/shifted_dimer.h \
+    generations/species/empty/swapped_bridge.h \
     generations/species/overall.h \
     generations/species/sidepiece.h \
     generations/species/sidepiece/dimer.h \

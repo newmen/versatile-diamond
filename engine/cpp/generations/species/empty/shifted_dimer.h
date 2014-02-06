@@ -12,9 +12,6 @@ public:
 #ifdef PRINT
     std::string name() const override { return "shifted dimer"; }
 #endif // PRINT
-
-protected:
-    void findAllChildren() override {}
 };
 
 #endif // SHIFTED_DIMER_H
