@@ -19,12 +19,16 @@ class Overall : public Typed<B, ST>, public DiamondAtomsIterator
 {
     typedef Typed<B, ST> ParentType;
 
+    bool _markedForRemove = false;
+
 public:
     void remove() override;
 
 protected:
     template <class... Args>
     Overall(Args... args) : ParentType(args...) {}
+
+    bool isMarked() const { return _markedForRemove; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +38,7 @@ void Overall<B, ST>::remove()
 {
     ParentType::remove();
     Handbook::scavenger().markSpec(this);
+    _markedForRemove = true;
 }
 
 #endif // OVERALL_H

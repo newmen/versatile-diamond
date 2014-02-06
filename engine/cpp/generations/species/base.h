@@ -43,6 +43,8 @@ void Base<B, ST, USED_ATOMS_NUM>::store()
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::remove()
 {
+    if (this->isMarked()) return;
+
     const ushort *idxs = this->indexes();
     const ushort *rls = this->roles();
 
