@@ -32,3 +32,9 @@ void TwoBridgesToHighBridge::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *TwoBridgesToHighBridge::name() const
+{
+    static const char value[] = "two bridges to high bridge";
+    return value;
+}

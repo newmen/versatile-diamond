@@ -6,3 +6,9 @@ void SurfaceActivation::find(Atom *anchor)
 //    findSelf<SurfaceActivation>(anchor);
     findChild<MethylOnBridgeActivation>(anchor);
 }
+
+const char *SurfaceActivation::name() const
+{
+    static const char value[] = "surface activation";
+    return value;
+}

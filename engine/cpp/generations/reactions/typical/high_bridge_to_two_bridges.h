@@ -18,7 +18,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "high bridge incorporates in crystal lattice near another bridge"; }
+    const char *name() const override;
 };
 
 #endif // HIGH_BRIDGE_TO_TWO_BRIDGES_H

@@ -61,3 +61,9 @@ void MigrationDownInGapFrom111::doIt()
 
     Finder::findAll(atoms, 4);
 }
+
+const char *MigrationDownInGapFrom111::name() const
+{
+    static const char value[] = "migration down in gap from 111";
+    return value;
+}

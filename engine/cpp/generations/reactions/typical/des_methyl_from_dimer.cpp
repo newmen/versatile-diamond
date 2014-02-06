@@ -25,3 +25,9 @@ void DesMethylFromDimer::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *DesMethylFromDimer::name() const
+{
+    static const char value[] = "desorption methyl from dimer";
+    return value;
+}

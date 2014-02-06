@@ -13,7 +13,7 @@ public:
     SurfaceActivation(Atom *target) : ActivationData(target) {}
 
     double rate() const override { return RATE; }
-    std::string name() const override { return "surface activation"; }
+    const char *name() const override;
 };
 
 #endif // SURFACE_ACTIVATION_H

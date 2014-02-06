@@ -89,3 +89,9 @@ void MigrationDownAtDimerFromDimer::doIt()
 
     Finder::findAll(atoms, 5);
 }
+
+const char *MigrationDownAtDimerFromDimer::name() const
+{
+    static const char value[] = "migration down at activated dimer from methyl on dimer";
+    return value;
+}

@@ -16,7 +16,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "adsorption methyl to 111"; }
+    const char *name() const override;
 };
 
 #endif // ADS_METHYL_TO_111_H

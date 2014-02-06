@@ -16,7 +16,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "form two bond"; }
+    const char *name() const override;
 };
 
 #endif // FORM_TWO_BOND_H

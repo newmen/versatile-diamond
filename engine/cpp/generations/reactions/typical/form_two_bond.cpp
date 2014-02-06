@@ -25,3 +25,9 @@ void FormTwoBond::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *FormTwoBond::name() const
+{
+    static const char value[] = "form two bond";
+    return value;
+}

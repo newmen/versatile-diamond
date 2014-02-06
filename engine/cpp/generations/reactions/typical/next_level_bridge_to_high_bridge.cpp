@@ -34,3 +34,9 @@ void NextLevelBridgeToHighBridge::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *NextLevelBridgeToHighBridge::name() const
+{
+    static const char value[] = "next layer bridge to high bridge";
+    return value;
+}

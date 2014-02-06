@@ -18,7 +18,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "migration down in gap from methyl on dimer"; }
+    const char *name() const override;
 };
 
 #endif // MIGRATION_DOWN_IN_GAP_FROM_DIMER_H

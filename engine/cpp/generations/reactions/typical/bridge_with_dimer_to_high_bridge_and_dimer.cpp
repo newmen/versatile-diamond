@@ -32,3 +32,9 @@ void BridgeWithDimerToHighBridgeAndDimer::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *BridgeWithDimerToHighBridgeAndDimer::name() const
+{
+    static const char value[] = "bridge with dimer to high bridge and dimer";
+    return value;
+}

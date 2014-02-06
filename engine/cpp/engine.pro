@@ -57,6 +57,8 @@ SOURCES += main.cpp \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
     generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
     generations/reactions/typical/two_bridges_to_high_bridge.cpp \
+    generations/reactions/ubiquitous/local/methyl_on_bridge_activation.cpp \
+    generations/reactions/ubiquitous/local/methyl_on_bridge_deactivation.cpp \
     generations/reactions/ubiquitous/surface_activation.cpp \
     generations/reactions/ubiquitous/surface_deactivation.cpp \
     generations/run.cpp \

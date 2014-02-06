@@ -26,3 +26,9 @@ void DesMethylFromBridge::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *DesMethylFromBridge::name() const
+{
+     static const char value[] = "desorption methyl from bridge";
+     return value;
+}

@@ -62,3 +62,9 @@ void MigrationDownInGapFromHighBridge::doIt()
 
     Finder::findAll(atoms, 4);
 }
+
+const char *MigrationDownInGapFromHighBridge::name() const
+{
+    static const char value[] = "migration down in gap from high bridge";
+    return value;
+}

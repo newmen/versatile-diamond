@@ -73,3 +73,9 @@ void MigrationDownInGapFromDimer::doIt()
 
     Finder::findAll(atoms, 5);
 }
+
+const char *MigrationDownInGapFromDimer::name() const
+{
+    static const char value[] = "migration down in gap from methyl on dimer";
+    return value;
+}

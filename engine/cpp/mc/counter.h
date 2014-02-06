@@ -1,7 +1,6 @@
 #ifndef COUNTER_H
 #define COUNTER_H
 
-#include <string>
 #include <vector>
 #include "../reactions/reaction.h"
 
@@ -14,10 +13,10 @@ class Counter
     {
         ullong counter = 0;
 
-        std::string name;
+        const char *name;
         double rate;
 
-        Record(const std::string &name, double rate) : name(name), rate(rate) {}
+        Record(const char *name, double rate) : name(name), rate(rate) {}
         void inc()
         {
 #ifdef PARALLEL

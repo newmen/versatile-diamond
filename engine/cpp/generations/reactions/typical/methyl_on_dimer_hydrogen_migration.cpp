@@ -28,3 +28,9 @@ void MethylOnDimerHydrogenMigration::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *MethylOnDimerHydrogenMigration::name() const
+{
+    static const char value[] = "methyl on dimer hydrogen migration";
+    return value;
+}

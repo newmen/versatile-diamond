@@ -23,6 +23,12 @@ void DimerDrop::doIt()
     Finder::findAll(atoms, 2);
 }
 
+const char *DimerDrop::name() const
+{
+    static const char value[] = "dimer drop";
+    return value;
+}
+
 LateralReaction *DimerDrop::findAllLateral()
 {
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };

@@ -62,3 +62,9 @@ void MigrationDownInGap::doIt()
 
     Finder::findAll(atoms, 4);
 }
+
+const char *MigrationDownInGap::name() const
+{
+    static const char value[] = "migration down in gap from methyl on bridge";
+    return value;
+}

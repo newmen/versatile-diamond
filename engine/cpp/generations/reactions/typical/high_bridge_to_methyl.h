@@ -20,7 +20,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "high bridge to methyl"; }
+    const char *name() const override;
 
 private:
     static void findByBridge(SpecificSpec *target);

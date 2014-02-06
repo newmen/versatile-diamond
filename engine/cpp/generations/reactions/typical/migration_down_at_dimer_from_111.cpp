@@ -77,3 +77,9 @@ void MigrationDownAtDimerFrom111::doIt()
 
     Finder::findAll(atoms, 4);
 }
+
+const char *MigrationDownAtDimerFrom111::name() const
+{
+    static const char value[] = "migration down at activated dimer from 111";
+    return value;
+}

@@ -13,7 +13,7 @@ public:
     SurfaceDeactivation(Atom *target) : DeactivationData(target) {}
 
     double rate() const override { return RATE; }
-    std::string name() const override { return "surface deactivation"; }
+    const char *name() const override;
 };
 
 #endif // SURFACE_DEACTIVATION_H

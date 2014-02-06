@@ -16,7 +16,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "abs hydrogen from gap"; }
+    const char *name() const override;
 
 private:
     void changeAtom(Atom *atom) const;

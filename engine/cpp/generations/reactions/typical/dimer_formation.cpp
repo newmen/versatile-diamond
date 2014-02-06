@@ -41,6 +41,12 @@ void DimerFormation::doIt()
     Finder::findAll(atoms, 2);
 }
 
+const char *DimerFormation::name() const
+{
+    static const char value[] = "dimer formation";
+    return value;
+}
+
 LateralReaction *DimerFormation::findAllLateral()
 {
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };

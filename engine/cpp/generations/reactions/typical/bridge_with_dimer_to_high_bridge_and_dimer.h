@@ -17,7 +17,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "bridge with dimer to high bridge and dimer"; }
+    const char *name() const override;
 };
 
 #endif // BRIDGE_WITH_DIMER_TO_HIGH_BRIDGE_AND_DIMER_H

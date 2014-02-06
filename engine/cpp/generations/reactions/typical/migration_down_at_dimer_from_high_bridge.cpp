@@ -74,3 +74,9 @@ void MigrationDownAtDimerFromHighBridge::doIt()
 
     Finder::findAll(atoms, 4);
 }
+
+const char *MigrationDownAtDimerFromHighBridge::name() const
+{
+    static const char value[] = "migration down at activated dimer from high bridge";
+    return value;
+}

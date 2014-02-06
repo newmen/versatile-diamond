@@ -1,6 +1,6 @@
 #include "bridge_with_dimer.h"
-#include "../dolls/swapped_bridge.h"
-#include "../dolls/shifted_dimer.h"
+#include "../empty/swapped_bridge.h"
+#include "../empty/shifted_dimer.h"
 #include "../specific/bridge_with_dimer_cdli.h"
 
 const ushort BridgeWithDimer::__indexes[1] = { 5 };

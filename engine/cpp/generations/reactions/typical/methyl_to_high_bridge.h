@@ -16,7 +16,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "methyl to high bridge"; }
+    const char *name() const override;
 };
 
 #endif // METHYL_TO_HIGH_BRIDGE_H

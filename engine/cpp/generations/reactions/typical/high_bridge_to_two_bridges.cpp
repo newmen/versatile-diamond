@@ -69,3 +69,9 @@ void HighBridgeToTwoBridges::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *HighBridgeToTwoBridges::name() const
+{
+    static const char value[] = "high bridge incorporates in crystal lattice near another bridge";
+    return value;
+}

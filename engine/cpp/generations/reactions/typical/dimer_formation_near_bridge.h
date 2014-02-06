@@ -18,7 +18,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "dimer formation near bridge"; }
+    const char *name() const override;
 };
 
 #endif // DIMER_FORMATION_NEAR_BRIDGE_H

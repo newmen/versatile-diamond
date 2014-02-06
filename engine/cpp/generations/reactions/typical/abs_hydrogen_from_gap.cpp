@@ -36,6 +36,12 @@ void AbsHydrogenFromGap::doIt()
     Finder::findAll(atoms, 2);
 }
 
+const char *AbsHydrogenFromGap::name() const
+{
+    static const char value[] = "abs hydrogen from gap";
+    return value;
+}
+
 void AbsHydrogenFromGap::changeAtom(Atom *atom) const
 {
     assert(atom->is(34));
