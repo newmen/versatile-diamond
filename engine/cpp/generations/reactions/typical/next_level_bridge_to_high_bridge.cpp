@@ -1,5 +1,8 @@
 #include "next_level_bridge_to_high_bridge.h"
 
+const char NextLevelBridgeToHighBridge::__name[] = "next layer bridge to high bridge";
+const double NextLevelBridgeToHighBridge::RATE = 1.1e12 * std::exp(-12.3e3 / (1.98 * Env::T));
+
 void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
 {
     create<NextLevelBridgeToHighBridge>(target);
@@ -33,10 +36,4 @@ void NextLevelBridgeToHighBridge::doIt()
     else c->changeType(28);
 
     Finder::findAll(atoms, 3);
-}
-
-const char *NextLevelBridgeToHighBridge::name() const
-{
-    static const char value[] = "next layer bridge to high bridge";
-    return value;
 }

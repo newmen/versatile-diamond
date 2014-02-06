@@ -3,6 +3,9 @@
 #include "lookers/near_gap.h"
 #include "lookers/near_part_of_gap.h"
 
+const char MigrationDownInGap::__name[] = "migration down in gap from methyl on bridge";
+const double MigrationDownInGap::RATE = 5e12 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
 void MigrationDownInGap::find(BridgeCRs *target)
 {
     NearPartOfGap::look(target, [target](SpecificSpec *neighbourBridge, Atom **anchors) {
@@ -61,10 +64,4 @@ void MigrationDownInGap::doIt()
     c->changeType(24);
 
     Finder::findAll(atoms, 4);
-}
-
-const char *MigrationDownInGap::name() const
-{
-    static const char value[] = "migration down in gap from methyl on bridge";
-    return value;
 }

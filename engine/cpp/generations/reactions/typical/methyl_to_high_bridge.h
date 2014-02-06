@@ -6,17 +6,19 @@
 
 class MethylToHighBridge : public Typical<METHYL_TO_HIGH_BRIDGE>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 9.8e10 * exp(-15.3e3 / (1.98 * Env::T)); // REAL: A = 9.8e12
+    static const double RATE;
 
     static void find(MethylOnDimerCMsu *target);
 
     MethylToHighBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // METHYL_TO_HIGH_BRIDGE_H

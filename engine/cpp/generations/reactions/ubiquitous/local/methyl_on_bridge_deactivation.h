@@ -10,13 +10,15 @@ class MethylOnBridgeDeactivation :
 {
     typedef Local<DeactivationData, SurfaceDeactivation, METHYL_ON_BRIDGE_DEACTIVATION, MethylOnBridge, 14> ParentType;
 
+    static const char __name[];
+
 public:
-    static constexpr double RATE = Env::cH * 4.5e13 * exp(-0 / (1.98 * Env::T));
+    static const double RATE;
 
     MethylOnBridgeDeactivation(Atom *target) : Local(target) {}
 
     double rate() const override { return RATE; }
-    const char *name() const override;
+    const char *name() const override { return __name; }
 
     static void concretize(Atom *anchor) { ParentType::concretize<MethylOnBridgeDeactivation>(anchor); }
     static void unconcretize(Atom *anchor) { ParentType::unconcretize<MethylOnBridgeDeactivation>(anchor); }

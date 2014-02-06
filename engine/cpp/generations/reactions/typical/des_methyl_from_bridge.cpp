@@ -1,5 +1,8 @@
 #include "des_methyl_from_bridge.h"
 
+const char DesMethylFromBridge::__name[] = "desorption methyl from bridge";
+const double DesMethylFromBridge::RATE = 1.7e7 * std::exp(-0 / (1.98 * Env::T));
+
 void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
 {
     create<DesMethylFromBridge>(target);
@@ -25,10 +28,4 @@ void DesMethylFromBridge::doIt()
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *DesMethylFromBridge::name() const
-{
-     static const char value[] = "desorption methyl from bridge";
-     return value;
 }

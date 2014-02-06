@@ -1,6 +1,9 @@
 #include "methyl_on_dimer_hydrogen_migration.h"
 #include "../../handbook.h"
 
+const char MethylOnDimerHydrogenMigration::__name[] = "methyl on dimer hydrogen migration";
+const double MethylOnDimerHydrogenMigration::RATE = 2.1e12 * std::exp(-37.5e3 / (1.98 * Env::T));
+
 void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
 {
     create<MethylOnDimerHydrogenMigration>(target);
@@ -27,10 +30,4 @@ void MethylOnDimerHydrogenMigration::doIt()
     b->changeType(20);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *MethylOnDimerHydrogenMigration::name() const
-{
-    static const char value[] = "methyl on dimer hydrogen migration";
-    return value;
 }

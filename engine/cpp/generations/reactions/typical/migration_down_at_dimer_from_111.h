@@ -7,18 +7,20 @@
 
 class MigrationDownAtDimerFrom111 : public Typical<MIGRATION_DOWN_AT_DIMER_FROM_111, 2>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 1e13 * exp(-0 / (1.98 * Env::T)); // TODO: imagine
+    static const double RATE;
 
     static void find(DimerCRs *target);
     static void find(MethylOn111CMsu *target);
 
     MigrationDownAtDimerFrom111(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // MIGRATION_DOWN_AT_DIMER_FROM_111_H

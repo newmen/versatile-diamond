@@ -7,18 +7,20 @@
 
 class HighBridgeStandToOneBridge : public Typical<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, 2>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 6.1e13 * exp(-36.3e3 / (1.98 * Env::T));
+    static const double RATE;
 
     static void find(HighBridge *target);
     static void find(BridgeCTsi *target);
 
     HighBridgeStandToOneBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H

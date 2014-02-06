@@ -1,5 +1,8 @@
 #include "high_bridge_to_two_bridges.h"
 
+const char HighBridgeToTwoBridges::__name[] = "high bridge incorporates in crystal lattice near another bridge";
+const double HighBridgeToTwoBridges::RATE = 2.9e11 * std::exp(-3.2e3 / (1.98 * Env::T));
+
 void HighBridgeToTwoBridges::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
@@ -68,10 +71,4 @@ void HighBridgeToTwoBridges::doIt()
     c->changeType(24);
 
     Finder::findAll(atoms, 3);
-}
-
-const char *HighBridgeToTwoBridges::name() const
-{
-    static const char value[] = "high bridge incorporates in crystal lattice near another bridge";
-    return value;
 }

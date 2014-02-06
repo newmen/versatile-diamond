@@ -6,17 +6,19 @@
 
 class DesMethylFromBridge : public Typical<DES_METHYL_FROM_BRIDGE>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 1.7e7 * exp(-0 / (1.98 * Env::T));
+    static const double RATE;
 
     static void find(MethylOnBridgeCBiCMu *target);
 
     DesMethylFromBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // DES_METHYL_FROM_BRIDGE_H
