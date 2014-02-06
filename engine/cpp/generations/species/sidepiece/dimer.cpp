@@ -14,6 +14,14 @@
 const ushort Dimer::__indexes[2] = { 0, 3 };
 const ushort Dimer::__roles[2] = { 22, 22 };
 
+#ifdef PRINT
+const char *Dimer::name() const
+{
+    static const char value[] = "dimer";
+    return value;
+}
+#endif // PRINT
+
 void Dimer::find(Atom *anchor)
 {
     if (anchor->is(22))

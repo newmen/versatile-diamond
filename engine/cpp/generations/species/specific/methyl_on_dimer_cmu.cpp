@@ -6,6 +6,14 @@
 const ushort MethylOnDimerCMu::__indexes[1] = { 0 };
 const ushort MethylOnDimerCMu::__roles[1] = { 31 };
 
+#ifdef PRINT
+const char *MethylOnDimerCMu::name() const
+{
+    static const char value[] = "methyl_on_dimer(cm: u)";
+    return value;
+}
+#endif // PRINT
+
 void MethylOnDimerCMu::find(MethylOnDimer *parent)
 {
     Atom *anchor = parent->atom(0);

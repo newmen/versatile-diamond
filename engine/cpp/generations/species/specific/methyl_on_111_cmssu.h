@@ -11,7 +11,7 @@ public:
     MethylOn111CMssu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "methyl_on_111(cm: **, cm: u)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

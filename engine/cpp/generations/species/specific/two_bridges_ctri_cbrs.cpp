@@ -4,6 +4,14 @@
 const ushort TwoBridgesCTRiCBRs::__indexes[1] = { 0 };
 const ushort TwoBridgesCTRiCBRs::__roles[1] = { 5 };
 
+#ifdef PRINT
+const char *TwoBridgesCTRiCBRs::name() const
+{
+    static const char value[] = "two_bridges(ctr: i, cbr: *)";
+    return value;
+}
+#endif // PRINT
+
 void TwoBridgesCTRiCBRs::find(TwoBridges *parent)
 {
     Atom *anchor = parent->atom(0);

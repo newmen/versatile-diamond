@@ -11,7 +11,7 @@ public:
     MethylOnDimerCMssu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "methyl_on_dimer(cm: **, cm: u)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

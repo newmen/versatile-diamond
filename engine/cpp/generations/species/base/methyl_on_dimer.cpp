@@ -5,6 +5,14 @@
 const ushort MethylOnDimer::__indexes[2] = { 1, 0 };
 const ushort MethylOnDimer::__roles[2] = { 23, 14 };
 
+#ifdef PRINT
+const char *MethylOnDimer::name() const
+{
+    static const char value[] = "methyl on dimer";
+    return value;
+}
+#endif // PRINT
+
 void MethylOnDimer::find(Dimer *target)
 {
     const ushort checkingIndexes[2] = { 0, 3 };

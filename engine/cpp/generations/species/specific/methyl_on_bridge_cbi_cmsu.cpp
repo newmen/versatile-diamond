@@ -6,6 +6,14 @@
 const ushort MethylOnBridgeCBiCMsu::__indexes[1] = { 0 };
 const ushort MethylOnBridgeCBiCMsu::__roles[1] = { 26 };
 
+#ifdef PRINT
+const char *MethylOnBridgeCBiCMsu::name() const
+{
+    static const char value[] = "methyl_on_bridge(cb: i, cm: *, cm: u)";
+    return value;
+}
+#endif // PRINT
+
 void MethylOnBridgeCBiCMsu::find(MethylOnBridgeCBiCMu *parent)
 {
     Atom *anchor = parent->atom(0);

@@ -68,6 +68,8 @@ SOURCES += main.cpp \
     generations/species/base/methyl_on_bridge.cpp \
     generations/species/base/methyl_on_dimer.cpp \
     generations/species/base/two_bridges.cpp \
+    generations/species/empty/shifted_dimer.cpp \
+    generations/species/empty/swapped_bridge.cpp \
     generations/species/sidepiece/dimer.cpp \
     generations/species/specific/bridge_crh.cpp \
     generations/species/specific/bridge_crs.cpp \

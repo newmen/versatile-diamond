@@ -5,6 +5,14 @@
 const ushort TwoBridges::__indexes[1] = { 5 };
 const ushort TwoBridges::__roles[1] = { 24 };
 
+#ifdef PRINT
+const char *TwoBridges::name() const
+{
+    static const char value[] = "two bridges";
+    return value;
+}
+#endif // PRINT
+
 void TwoBridges::find(Atom *anchor)
 {
     if (anchor->is(24) && anchor->lattice()->coords().z > 0)

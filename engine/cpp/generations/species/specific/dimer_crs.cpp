@@ -9,6 +9,14 @@
 const ushort DimerCRs::__indexes[1] = { 0 };
 const ushort DimerCRs::__roles[1] = { 21 };
 
+#ifdef PRINT
+const char *DimerCRs::name() const
+{
+    static const char value[] = "dimer(cr: *)";
+    return value;
+}
+#endif // PRINT
+
 void DimerCRs::find(Dimer *parent)
 {
     const ushort indexes[2] = { 0, 3 };

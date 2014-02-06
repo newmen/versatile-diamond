@@ -10,7 +10,7 @@ public:
     ShiftedDimer(Dimer *parent) : Empty(3, parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "shifted dimer"; }
+    const char *name() const override;
 #endif // PRINT
 };
 

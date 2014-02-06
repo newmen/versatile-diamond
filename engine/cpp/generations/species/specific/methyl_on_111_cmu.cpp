@@ -5,6 +5,14 @@
 const ushort MethylOn111CMu::__indexes[2] = { 1, 0 };
 const ushort MethylOn111CMu::__roles[2] = { 33, 25 };
 
+#ifdef PRINT
+const char *MethylOn111CMu::name() const
+{
+    static const char value[] = "methyl_on_111(cm: u)";
+    return value;
+}
+#endif // PRINT
+
 void MethylOn111CMu::find(MethylOnBridge *parent)
 {
     Atom *anchors[2] = { parent->atom(0), parent->atom(1) };

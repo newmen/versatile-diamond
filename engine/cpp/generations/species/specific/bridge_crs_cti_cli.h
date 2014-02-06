@@ -11,7 +11,7 @@ public:
     BridgeCRsCTiCLi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge(cr: *, ct: i, cl: i)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:

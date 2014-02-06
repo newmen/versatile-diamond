@@ -12,7 +12,7 @@ public:
     MethylOnBridgeCBiCMu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "methyl_on_bridge(cb: i, cm: u)"; }
+    const char *name() const override;
 #endif // PRINT
 
 protected:
