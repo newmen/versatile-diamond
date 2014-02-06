@@ -17,7 +17,8 @@ void ParentSpec::eraseChild(BaseSpec *child)
 
 void ParentSpec::setUnvisited()
 {
-    BaseSpec::setUnvisited();
+    _visited = false;
+
     for (BaseSpec *child : _children)
     {
         child->setUnvisited();
@@ -26,9 +27,9 @@ void ParentSpec::setUnvisited()
 
 void ParentSpec::findChildren()
 {
-    if (!isVisited())
+    if (!_visited)
     {
-        BaseSpec::findChildren(); // set visited
+        _visited = true;
 
         for (BaseSpec *child : _children)
         {
