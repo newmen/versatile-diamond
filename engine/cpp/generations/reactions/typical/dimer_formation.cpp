@@ -47,7 +47,7 @@ const char *DimerFormation::name() const
     return value;
 }
 
-LateralReaction *DimerFormation::findAllLateral()
+LateralReaction *DimerFormation::lookAround()
 {
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
     LateralSpec *neighbours[2] = { nullptr, nullptr };
