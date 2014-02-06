@@ -39,8 +39,7 @@ private:
 protected:
     BaseSpec() = default;
 
-    template <class S>
-    static bool checkAndFind(Atom *anchor, ushort rType);
+    template <class S> static bool checkAndFind(Atom *anchor, ushort rType);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

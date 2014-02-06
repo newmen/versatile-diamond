@@ -13,8 +13,7 @@ public:
     typedef Neighbours<2> TN;
     typedef TN (DiamondRelations<B>::*RelationsMethod)(const Atom *) const;
 
-    template <class... Args>
-    DiamondRelations(Args... args) : B(args...) {}
+    template <class... Args> DiamondRelations(Args... args) : B(args...) {}
 
     TN front_110(const Atom *atom) const;
     TN cross_110(const Atom *atom) const;
@@ -23,6 +22,8 @@ public:
 
     static int3 front_110_at(const Atom *first, const Atom *second);
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class B>
 typename DiamondRelations<B>::TN DiamondRelations<B>::front_110(const Atom *atom) const

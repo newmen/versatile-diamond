@@ -11,9 +11,7 @@ class Error
     std::string _message;
 
 public:
-    template <typename... Args>
-    Error(Args... args);
-
+    template <typename... Args> Error(Args... args);
     Error(const Error &) = default;
     Error(Error &&) = default;
 
@@ -23,11 +21,8 @@ private:
     Error &operator = (const Error &) = delete;
     Error &operator = (Error &&) = delete;
 
-    template <typename T, typename... Args>
-    void build(std::stringstream &ss, const T &first, Args... args);
-
-    template <typename T>
-    void build(std::stringstream &ss, const T &last);
+    template <typename T, typename... Args> void build(std::stringstream &ss, const T &first, Args... args);
+    template <typename T> void build(std::stringstream &ss, const T &last);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

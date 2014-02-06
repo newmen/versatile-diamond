@@ -9,8 +9,7 @@ public:
 protected:
     Creator() = default;
 
-    template <class T, class... Args>
-    static T *create(Args... args);
+    template <class T, class... Args> static T *create(Args... args);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

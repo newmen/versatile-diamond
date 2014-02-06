@@ -14,8 +14,7 @@ public:
     ushort type() const override { return BT; }
 
 protected:
-    template <class... Args>
-    Typed(Args... args) : B(args...) {}
+    template <class... Args> Typed(Args... args) : B(args...) {}
 };
 
 }

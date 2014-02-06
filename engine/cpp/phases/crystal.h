@@ -33,11 +33,10 @@ public:
     void checkAllVisited();
 #endif // NDEBUG
 
+    template <class L> void eachSlice(const L &lambda) const;
+
     Atom *firstAtom() const { return _atoms.data()[0]; }
     float3 translate(const int3 &coords) const;
-
-    template <class L>
-    void eachSlice(const L &lambda) const;
 
     virtual const float3 &periods() const = 0;
 

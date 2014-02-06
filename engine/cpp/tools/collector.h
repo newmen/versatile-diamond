@@ -17,8 +17,7 @@ public:
     void clear();
 
 protected:
-    template <class L>
-    inline void each(const L &lambda);
+    template <class L> inline void each(const L &lambda);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

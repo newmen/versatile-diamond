@@ -25,8 +25,7 @@ public:
     void remove() override;
 
 protected:
-    template <class... Args>
-    Overall(Args... args) : ParentType(args...) {}
+    template <class... Args> Overall(Args... args) : ParentType(args...) {}
 
     bool isMarked() const { return _markedForRemove; }
 };

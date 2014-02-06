@@ -19,8 +19,7 @@ public:
     void store() override;
 
 protected:
-    template <class... Args>
-    Sealer(Args... args) : B(args...) {}
+    template <class... Args> Sealer(Args... args) : B(args...) {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

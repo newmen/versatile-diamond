@@ -68,20 +68,17 @@ typedef unsigned long long ullong;
 
 struct uint3 : public common::dv3<uint, 0>
 {
-    template <class... Args>
-    uint3(Args... args) : dv3(args...) {}
+    template <class... Args> uint3(Args... args) : dv3(args...) {}
 };
 
 struct int3 : public common::dv3<int, 0>
 {
-    template <class... Args>
-    int3(Args... args) : dv3(args...) {}
+    template <class... Args> int3(Args... args) : dv3(args...) {}
 };
 
 struct dim3 : public common::dv3<uint, 1>
 {
-    template <class... Args>
-    dim3(Args... args) : dv3(args...) {}
+    template <class... Args> dim3(Args... args) : dv3(args...) {}
 
     uint N() const
     {
@@ -91,8 +88,7 @@ struct dim3 : public common::dv3<uint, 1>
 
 struct float3 : public common::dv3<float, 0>
 {
-    template <class... Args>
-    float3(Args... args) : dv3(args...) {}
+    template <class... Args> float3(Args... args) : dv3(args...) {}
 };
 
 }

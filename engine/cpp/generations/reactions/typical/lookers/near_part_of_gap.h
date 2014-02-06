@@ -8,8 +8,7 @@
 class NearPartOfGap : public DiamondAtomsIterator
 {
 public:
-    template <class L>
-    static void look(SpecificSpec *target, const L &lambda);
+    template <class L> static void look(SpecificSpec *target, const L &lambda);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -13,8 +13,7 @@ public:
     Atom *anchor() const override { return this->parent(0)->anchor(); }
 
 protected:
-    template <class... Args>
-    Empty(Args... args) : ParentType(args...) {}
+    template <class... Args> Empty(Args... args) : ParentType(args...) {}
 };
 
 #endif // EMPTY_H

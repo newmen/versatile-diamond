@@ -30,8 +30,7 @@ public:
     Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr);
     ~Runner();
 
-    template <class SurfaceCrystalType>
-    void calculate();
+    template <class SurfaceCrystalType> void calculate();
 
 private:
     Runner(const Runner &) = delete;

@@ -16,8 +16,7 @@ public:
     void remove() override;
 
 protected:
-    template <class... Args>
-    Specific(Args... args);
+    template <class... Args> Specific(Args... args);
 
     void keepFirstTime() override;
 };

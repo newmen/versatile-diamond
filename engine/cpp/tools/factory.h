@@ -24,9 +24,7 @@ class Factory
 public:
     Factory() = default;
 
-    template <class NewType>
-    void registerNewType(const KeyType &id);
-
+    template <class NewType> void registerNewType(const KeyType &id);
     bool isRegistered(const KeyType &id) const;
     AbstractType *create(const KeyType &id, CreatingArgs... args) const;
 

@@ -19,8 +19,7 @@ public:
     void remove() override;
 
 protected:
-    template <class... Args>
-    Registrator(Args... args) : ParentType(args...) {}
+    template <class... Args> Registrator(Args... args) : ParentType(args...) {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

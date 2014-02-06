@@ -11,9 +11,7 @@ public:
     static constexpr double RATE = 2.2e6 * exp(-0.8e3 / (1.98 * Env::T));
 
     static void find(DimerCRiCLi *target);
-
-    template <class L>
-    static void ifTarget(Atom **atoms, const L &lambda);
+    template <class L> static void ifTarget(Atom **atoms, const L &lambda);
 
     DimerDrop(SpecificSpec *target) : LaterableRole(target) {}
 
