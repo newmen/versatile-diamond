@@ -12,9 +12,6 @@ public:
 #ifdef PRINT
     std::string name() const override { return "swapped bridge"; }
 #endif // PRINT
-
-protected:
-    void findAllChildren() override {}
 };
 
 #endif // SWAPPED_BRIDGE_H
