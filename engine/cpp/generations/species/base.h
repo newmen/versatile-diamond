@@ -15,8 +15,7 @@ public:
     void remove() override;
 
 protected:
-    template <class... Args>
-    Base(Args... args) : ParentType(args...) {}
+    template <class... Args> Base(Args... args) : ParentType(args...) {}
 
     virtual const ushort *indexes() const = 0;
     virtual const ushort *roles() const = 0;

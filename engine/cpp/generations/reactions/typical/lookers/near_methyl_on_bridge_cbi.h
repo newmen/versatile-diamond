@@ -7,8 +7,7 @@
 class NearMethylOnBridgeCBi : public NearMethylOnBridge
 {
 public:
-    template <class S, class L>
-    static void look(ushort methylAtomType, Atom **atoms, const L &lambda);
+    template <class S, class L> static void look(ushort methylAtomType, Atom **atoms, const L &lambda);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -9,8 +9,7 @@ class DimerDropAtEnd : public ConcretizableRole<Lateral, DIMER_DROP_AT_END, 1>
 public:
     static constexpr double RATE = 2.2e6 * exp(-1e3 / (1.98 * Env::T));
 
-    template <class... Args>
-    DimerDropAtEnd(Args... args) : ConcretizableRole(args...) {}
+    template <class... Args> DimerDropAtEnd(Args... args) : ConcretizableRole(args...) {}
 
     double rate() const override { return RATE; }
     std::string name() const override { return "dimer drop at end of dimers row"; }

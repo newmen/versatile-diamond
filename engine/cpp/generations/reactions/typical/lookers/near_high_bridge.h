@@ -7,8 +7,7 @@
 class NearHighBridge : public NearMethylOnBridge
 {
 public:
-    template <class S, class L>
-    static void look(ushort amorphAtomType, Atom **atoms, const L &lambda);
+    template <class S, class L> static void look(ushort amorphAtomType, Atom **atoms, const L &lambda);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

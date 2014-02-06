@@ -16,8 +16,7 @@ public:
     void remove() override;
 
 protected:
-    template <class... Args>
-    Sidepiece(Args... args);
+    template <class... Args> Sidepiece(Args... args);
 
     void keepFirstTime() override;
 };

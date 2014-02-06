@@ -35,8 +35,7 @@ public:
 protected:
     BaseEventsContainer() = default;
 
-    template <class R>
-    R *exchangeToLast(uint index);
+    template <class R> R *exchangeToLast(uint index);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

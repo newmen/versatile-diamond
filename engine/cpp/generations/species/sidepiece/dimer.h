@@ -8,9 +8,7 @@ class Dimer : public Sidepiece<Base<DependentSpec<ParentSpec, 2>, DIMER, 2>>
 {
 public:
     static void find(Atom *anchor);
-
-    template <class L>
-    static void dimersRow(Atom **anchors, const L &lambda);
+    template <class L> static void dimersRow(Atom **anchors, const L &lambda);
 
     Dimer(ParentSpec **parents) : Sidepiece(parents) {}
 
@@ -29,6 +27,8 @@ private:
     static const ushort __indexes[2];
     static const ushort __roles[2];
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class L>
 void Dimer::dimersRow(Atom **anchors, const L &lambda)

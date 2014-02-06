@@ -37,8 +37,7 @@ public:
     template <class Lambda> void each(const Lambda &lambda) const;
     template <class Lambda> void ompParallelEach(const Lambda &lambda) const;
 
-    template <typename R, class Lambda>
-    R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
+    template <typename R, class Lambda> R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
 
 private:
     vector3d(const vector3d<T> &) = delete;

@@ -49,8 +49,7 @@ public:
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
 
-    template <class L>
-    void eachNeighbour(const L &lambda) const;
+    template <class L> void eachNeighbour(const L &lambda) const;
 
     Atom *amorphNeighbour() const;
     Atom *firstCrystalNeighbour() const;
@@ -63,14 +62,9 @@ public:
     void forget(ushort role, BaseSpec *spec);
     bool hasSpec(ushort role, BaseSpec *spec) const;
 
-    template <class S>
-    bool hasRole(ushort role) const;
-
-    template <class S>
-    S *specByRole(ushort role);
-
-    template <class S, class L>
-    void eachSpecByRole(ushort role, const L &lambda);
+    template <class S> bool hasRole(ushort role) const;
+    template <class S> S *specByRole(ushort role);
+    template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();

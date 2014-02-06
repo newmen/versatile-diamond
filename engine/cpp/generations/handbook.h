@@ -45,8 +45,7 @@ public:
     static const ushort atomsNum;
 
 private:
-    template <class T>
-    static inline T &selectForThread(T *container);
+    template <class T> static inline T &selectForThread(T *container);
 
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];

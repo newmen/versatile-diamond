@@ -9,8 +9,7 @@
 class NearActivatedDimer : public DiamondAtomsIterator, public Creator
 {
 public:
-    template <class R>
-    static void look(SpecificSpec *target);
+    template <class R> static void look(SpecificSpec *target);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

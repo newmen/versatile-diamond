@@ -14,8 +14,7 @@ public:
     void store() override;
 
 protected:
-    template <class... Args>
-    LaterableRole(Args... args)  : ParentType(args...) {}
+    template <class... Args> LaterableRole(Args... args)  : ParentType(args...) {}
 
     virtual LateralReaction *findAllLateral() = 0;
 };

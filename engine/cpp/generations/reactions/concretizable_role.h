@@ -12,13 +12,13 @@ template <ushort RT, ushort TARGETS_NUM>
 class ConcretizableRole<Typical, RT, TARGETS_NUM> : public Typical<RT, TARGETS_NUM>
 {
 public:
-    template <class R> void
-    concretize(LateralSpec *spec);
+    template <class R> void concretize(LateralSpec *spec);
 
 protected:
-    template <class... Args>
-    ConcretizableRole(Args... args) : Typical<RT, TARGETS_NUM>(args...) {}
+    template <class... Args> ConcretizableRole(Args... args) : Typical<RT, TARGETS_NUM>(args...) {}
 };
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 template <ushort RT, ushort TARGETS_NUM>
 template <class R>
@@ -36,13 +36,13 @@ template <ushort RT, ushort LATERALS_NUM>
 class ConcretizableRole<Lateral, RT, LATERALS_NUM> : public Lateral<RT, LATERALS_NUM>
 {
 public:
-    template <class R> void
-    concretize(LateralSpec *spec);
+    template <class R> void concretize(LateralSpec *spec);
 
 protected:
-    template <class... Args>
-    ConcretizableRole(Args... args) : Lateral<RT, LATERALS_NUM>(args...) {}
+    template <class... Args> ConcretizableRole(Args... args) : Lateral<RT, LATERALS_NUM>(args...) {}
 };
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 template <ushort RT, ushort LATERALS_NUM>
 template <class R>

@@ -13,13 +13,11 @@ public:
     void unconcretizeBy(LateralSpec *spec) override;
 
 protected:
-    template <class... Args>
-    Lateral(Args... args) : ParentType(args...) {}
+    template <class... Args> Lateral(Args... args) : ParentType(args...) {}
 
     virtual void createUnconcreted(LateralSpec *spec) = 0;
 
-    template <class R>
-    void restoreParent();
+    template <class R> void restoreParent();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

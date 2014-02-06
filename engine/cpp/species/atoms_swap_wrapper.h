@@ -13,14 +13,19 @@ class AtomsSwapWrapper : public B
     ushort _from, _to;
 
 protected:
-    template <class... Ts>
-    AtomsSwapWrapper(ushort from, ushort to, Ts... args) : B(args...), _from(from), _to(to) {}
+    template <class... Args> AtomsSwapWrapper(ushort from, ushort to, Args... args);
 
 public:
     Atom *atom(ushort index) const override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class B>
+template <class... Args>
+AtomsSwapWrapper<B>::AtomsSwapWrapper(ushort from, ushort to, Args... args) : B(args...), _from(from), _to(to)
+{
+}
 
 template <class B>
 Atom *AtomsSwapWrapper<B>::atom(ushort index) const
