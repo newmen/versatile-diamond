@@ -9,7 +9,7 @@ void BridgeCRh::find(BridgeCRi *parent)
     Atom *anchor = parent->atom(1);
     if (anchor->is(34))
     {
-        if (!checkAndFind<BridgeCRh>(anchor, 34))
+        if (!anchor->checkAndFind<BridgeCRh>(34))
         {
             create<BridgeCRh>(parent);
         }

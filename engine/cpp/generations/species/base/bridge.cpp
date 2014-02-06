@@ -13,7 +13,7 @@ void Bridge::find(Atom *anchor)
 {
     if (anchor->is(3))
     {
-        if (!checkAndFind<Bridge>(anchor, 3))
+        if (!anchor->checkAndFind<Bridge>(3))
         {
             auto diamond = crystalBy(anchor);
             if (anchor->lattice()->coords().z == 0) return;

@@ -1,4 +1,5 @@
 #include "base_spec.h"
+#include "../atoms/atom.h"
 
 namespace vd
 {

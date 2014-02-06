@@ -2,11 +2,13 @@
 #define BASE_SPEC_H
 
 #include <functional>
-#include "../atoms/atom.h"
+#include "../tools/common.h"
 #include "../tools/creator.h"
 
 namespace vd
 {
+
+class Atom;
 
 class BaseSpec : public Creator
 {
@@ -38,23 +40,7 @@ private:
 
 protected:
     BaseSpec() = default;
-
-    template <class S> static bool checkAndFind(Atom *anchor, ushort rType);
 };
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-template <class S>
-bool BaseSpec::checkAndFind(Atom *anchor, ushort rType)
-{
-    auto spec = anchor->specByRole<S>(rType);
-    if (spec)
-    {
-        spec->findChildren();
-    }
-
-    return spec != nullptr;
-}
 
 }
 
