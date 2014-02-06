@@ -16,7 +16,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "next layer bridge to high bridge"; }
+    const char *name() const override;
 };
 
 #endif // NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE_H

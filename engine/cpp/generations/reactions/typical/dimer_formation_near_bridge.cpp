@@ -61,3 +61,9 @@ void DimerFormationNearBridge::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *DimerFormationNearBridge::name() const
+{
+    static const char value[] = "dimer formation near bridge";
+    return value;
+}

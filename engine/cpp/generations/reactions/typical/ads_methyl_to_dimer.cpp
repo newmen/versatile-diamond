@@ -23,3 +23,9 @@ void AdsMethylToDimer::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *AdsMethylToDimer::name() const
+{
+    static const char value[] = "adsorption methyl to dimer";
+    return value;
+}

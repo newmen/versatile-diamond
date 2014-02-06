@@ -18,7 +18,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "dimer formation"; }
+    const char *name() const override;
 
 protected:
     LateralReaction *findAllLateral() override;

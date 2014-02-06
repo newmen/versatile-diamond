@@ -71,3 +71,9 @@ void HighBridgeStandToOneBridge::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *HighBridgeStandToOneBridge::name() const
+{
+    static const char value[] = "high bridge stand to bridge at new level";
+    return value;
+}

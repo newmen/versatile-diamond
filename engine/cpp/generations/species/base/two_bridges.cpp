@@ -1,5 +1,5 @@
 #include "two_bridges.h"
-#include "../dolls/swapped_bridge.h"
+#include "../empty/swapped_bridge.h"
 #include "../specific/two_bridges_ctri_cbrs.h"
 
 const ushort TwoBridges::__indexes[1] = { 5 };

@@ -18,7 +18,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "high bridge stand to dimer"; }
+    const char *name() const override;
 };
 
 #endif // HIGH_BRIDGE_STAND_TO_DIMER_H

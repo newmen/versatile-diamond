@@ -16,7 +16,7 @@ public:
     MethylOnBridgeDeactivation(Atom *target) : Local(target) {}
 
     double rate() const override { return RATE; }
-    std::string name() const override { return "methyl on surface deactivation"; }
+    const char *name() const override;
 
     static void concretize(Atom *anchor) { ParentType::concretize<MethylOnBridgeDeactivation>(anchor); }
     static void unconcretize(Atom *anchor) { ParentType::unconcretize<MethylOnBridgeDeactivation>(anchor); }

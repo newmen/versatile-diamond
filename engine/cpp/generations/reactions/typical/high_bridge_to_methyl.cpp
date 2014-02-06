@@ -93,3 +93,9 @@ void HighBridgeToMethyl::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *HighBridgeToMethyl::name() const
+{
+     static const char value[] = "high bridge to methyl";
+     return value;
+}

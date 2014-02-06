@@ -19,7 +19,7 @@ public:
     double rate() const override { return RATE; }
     void doIt() override;
 
-    std::string name() const override { return "migration down at activated dimer from high bridge"; }
+    const char *name() const override;
 };
 
 #endif // MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE_H

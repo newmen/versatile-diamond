@@ -71,3 +71,9 @@ void HighBridgeStandToDimer::doIt()
 
     Finder::findAll(atoms, 3);
 }
+
+const char *HighBridgeStandToDimer::name() const
+{
+    static const char value[] = "high bridge stand to dimer";
+    return value;
+}

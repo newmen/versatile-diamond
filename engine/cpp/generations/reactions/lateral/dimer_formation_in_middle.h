@@ -11,7 +11,7 @@ public:
     template <class... Args> DimerFormationInMiddle(Args... args) : Lateral(args...) {}
 
     double rate() const override { return RATE; }
-    std::string name() const override { return "dimer formation in middle of dimers row"; }
+    const char *name() const override;
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };

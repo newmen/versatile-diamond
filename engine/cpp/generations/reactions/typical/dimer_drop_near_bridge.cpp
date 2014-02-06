@@ -24,3 +24,9 @@ void DimerDropNearBridge::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *DimerDropNearBridge::name() const
+{
+    static const char value[] = "dimer drop near bridge";
+    return value;
+}

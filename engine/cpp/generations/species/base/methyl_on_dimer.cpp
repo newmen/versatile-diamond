@@ -1,5 +1,5 @@
 #include "methyl_on_dimer.h"
-#include "../dolls/shifted_dimer.h"
+#include "../empty/shifted_dimer.h"
 #include "../specific/methyl_on_dimer_cmu.h"
 
 const ushort MethylOnDimer::__indexes[2] = { 1, 0 };

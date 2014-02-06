@@ -23,3 +23,9 @@ void AdsMethylTo111::doIt()
 
     Finder::findAll(atoms, 2);
 }
+
+const char *AdsMethylTo111::name() const
+{
+    static const char value[] = "adsorption methyl to 111";
+    return value;
+}
