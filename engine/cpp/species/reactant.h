@@ -36,17 +36,14 @@ protected:
     Reactant() = default;
 
     void setNotNew() { _isNew = false; }
+    Reactions &reactions() { return _reactions; }
 
     virtual void keepFirstTime() = 0;
-
-    template <class L>
-    void eachDupReaction(const L &lambda);
 
 private:
     R *checkoutReaction(ushort rid);
     R *checkoutReactionWith(ushort rid, const Reactant<R> *other);
 
-    R **reactionsDup(uint &n);
     typename Reactions::const_iterator find(R *reaction) const;
 };
 
@@ -96,45 +93,6 @@ template <class R>
 bool Reactant<R>::haveReaction(R *reaction) const
 {
     return find(reaction) != _reactions.cend();
-}
-
-template <class R>
-template <class L>
-void Reactant<R>::eachDupReaction(const L &lambda)
-{
-    uint n = 0;
-    auto dup = reactionsDup(n);
-
-    if (n > 0)
-    {
-        for (uint i = 0; i < n; ++i)
-        {
-            lambda(dup[i]);
-        }
-
-        delete [] dup;
-    }
-}
-
-template <class R>
-R **Reactant<R>::reactionsDup(uint &n)
-{
-    n = 0;
-    if (_reactions.size() == 0)
-    {
-        return nullptr;
-    }
-    else
-    {
-        R **dup = new R *[_reactions.size()];
-
-        for (auto &pr : _reactions)
-        {
-            dup[n++] = pr.second;
-        }
-
-        return dup;
-    }
 }
 
 template <class R>

@@ -12,9 +12,10 @@ void LateralSpec::findLateralReactions()
 
 void LateralSpec::unconcretizeReactions()
 {
-    eachDupReaction([this](LateralReaction *reaction) {
-        reaction->unconcretizeBy(this);
-    });
+    for (auto &pr : reactions())
+    {
+        pr.second->unconcretizeBy(this);
+    }
 }
 
 }
