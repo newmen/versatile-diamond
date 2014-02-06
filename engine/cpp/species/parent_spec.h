@@ -15,6 +15,7 @@ public:
     void insertChild(BaseSpec *child);
     void eraseChild(BaseSpec *child);
 
+    void setUnvisited() override;
     void findChildren() override;
     void remove() override;
 

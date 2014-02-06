@@ -379,17 +379,18 @@ int main()
                 DimerFormationAtEnd::RATE +
                 DimerDropAtEnd::RATE);
 
-    return 0;
-
     // 29
     Handbook::mc().doOneOfOne(DIMER_FORMATION_AT_END);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 2, 1);
-    Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
+    Handbook::mc().doOneOfMul(CORR_METHYL_ON_BRIDGE_ACTIVATION);
     printSeparator();
     assert_rate(13 * SurfaceActivation::RATE +
                 4 * SurfaceDeactivation::RATE +
                 2 * MethylOnBridgeActivation::RATE +
                 MethylOnBridgeDeactivation::RATE +
+                TwoBridgesToHighBridge::RATE +
+                AdsMethylTo111::RATE +
+                DesMethylFromDimer::RATE +
                 DimerDropInMiddle::RATE +
                 DimerDropAtEnd::RATE +
                 MethylToHighBridge::RATE +
@@ -402,6 +403,9 @@ int main()
                 6 * SurfaceDeactivation::RATE +
                 2 * MethylOnBridgeActivation::RATE +
                 MethylOnBridgeDeactivation::RATE +
+                TwoBridgesToHighBridge::RATE +
+                AdsMethylTo111::RATE +
+                DesMethylFromDimer::RATE +
                 DimerFormationInMiddle::RATE +
                 DimerDrop::RATE +
                 MethylToHighBridge::RATE);
@@ -412,8 +416,11 @@ int main()
     printSeparator();
     assert_rate(15 * SurfaceActivation::RATE +
                 5 * SurfaceDeactivation::RATE +
+                2 * TwoBridgesToHighBridge::RATE +
+                2 * AdsMethylTo111::RATE +
                 2 * DimerDropAtEnd::RATE +
                 HighBridgeToTwoBridges::RATE +
+                HighBridgeToMethyl::RATE +
                 AdsMethylToDimer::RATE);
 
     // 32
@@ -422,19 +429,28 @@ int main()
     assert_rate(15 * SurfaceActivation::RATE +
                 4 * SurfaceDeactivation::RATE +
                 3 * MethylOnBridgeActivation::RATE +
+                2 * TwoBridgesToHighBridge::RATE +
+                2 * AdsMethylTo111::RATE +
+                DesMethylFromDimer::RATE +
                 DimerDropAtEnd::RATE +
-                HighBridgeToTwoBridges::RATE);
+                HighBridgeToTwoBridges::RATE +
+                HighBridgeToMethyl::RATE);
 
     // 33
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_TWO_BRIDGES);
-    Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
+    Handbook::mc().doOneOfMul(CORR_METHYL_ON_BRIDGE_ACTIVATION);
     Handbook::mc().doOneOfOne(METHYL_TO_HIGH_BRIDGE);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, 0, 2, 1);
     printSeparator();
     assert_rate(18 * SurfaceActivation::RATE +
                 4 * SurfaceDeactivation::RATE +
+                TwoBridgesToHighBridge::RATE +
+                AdsMethylTo111::RATE +
                 DimerDrop::RATE +
-                HighBridgeStandToOneBridge::RATE);
+                HighBridgeStandToOneBridge::RATE +
+                HighBridgeToMethyl::RATE);
+
+    return 0;
 
     // 34
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);

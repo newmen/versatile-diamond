@@ -28,11 +28,8 @@ public:
     void insertReaction(R *reaction);
     void eraseReaction(R *reaction);
 
-    // for checkoutReactionWith
-    const Reactions &reactions() const { return _reactions; }
-
     template <class CR> CR *checkoutReaction();
-    template <class CR, class S> CR *checkoutReactionWith(S *spec);
+    template <class CR> CR *checkoutReactionWith(const Reactant<R> *other);
     bool haveReaction(R *reaction) const;
 
 protected:
@@ -47,7 +44,7 @@ protected:
 
 private:
     R *checkoutReaction(ushort rid);
-    R *checkoutReactionWith(ushort rid, const Reactions &otherReactions);
+    R *checkoutReactionWith(ushort rid, const Reactant<R> *other);
 
     R **reactionsDup(uint &n);
     typename Reactions::const_iterator find(R *reaction) const;
@@ -83,15 +80,15 @@ template <class R>
 template <class CR>
 CR *Reactant<R>::checkoutReaction()
 {
-    auto result = checkoutReaction(CR::ID);
+    R *result = checkoutReaction(CR::ID);
     return static_cast<CR *>(result);
 }
 
 template <class R>
-template <class CR, class S>
-CR *Reactant<R>::checkoutReactionWith(S *spec)
+template <class CR>
+CR *Reactant<R>::checkoutReactionWith(const Reactant<R> *other)
 {
-    auto result = checkoutReactionWith(CR::ID, spec->reactions());
+    R *result = checkoutReactionWith(CR::ID, other);
     return static_cast<CR *>(result);
 }
 
@@ -153,10 +150,10 @@ R *Reactant<R>::checkoutReaction(ushort rid)
 }
 
 template <class R>
-R *Reactant<R>::checkoutReactionWith(ushort rid, const Reactions &otherReactions)
+R *Reactant<R>::checkoutReactionWith(ushort rid, const Reactant<R> *other)
 {
     auto currentRange = _reactions.equal_range(rid);
-    auto anotherRange = otherReactions.equal_range(rid);
+    auto anotherRange = other->_reactions.equal_range(rid);
 
     R *result = nullptr;
     for (; currentRange.first != currentRange.second; ++currentRange.first)

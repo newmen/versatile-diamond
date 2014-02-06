@@ -15,10 +15,28 @@ void ParentSpec::eraseChild(BaseSpec *child)
     _children.erase(child);
 }
 
+void ParentSpec::setUnvisited()
+{
+    BaseSpec::setUnvisited();
+    for (BaseSpec *child : _children)
+    {
+        child->setUnvisited();
+    }
+}
+
 void ParentSpec::findChildren()
 {
+    BaseSpec::findChildren(); // set visited
+
+    for (BaseSpec *child : _children)
+    {
+        if (!child->isVisited())
+        {
+            child->findChildren();
+        }
+    }
+
     findAllChildren();
-    setVisited();
 }
 
 void ParentSpec::remove()

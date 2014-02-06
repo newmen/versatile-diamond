@@ -3,6 +3,11 @@
 namespace vd
 {
 
+void BaseSpec::findChildren()
+{
+    setVisited();
+}
+
 void BaseSpec::store()
 {
 #ifdef PRINT
