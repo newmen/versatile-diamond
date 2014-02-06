@@ -12,9 +12,10 @@ void SpecificSpec::findTypicalReactions()
 
 void SpecificSpec::removeReactions()
 {
-    eachDupReaction([](SpecReaction *reaction) {
-        reaction->remove();
-    });
+    while (!reactions().empty())
+    {
+        reactions().begin()->second->remove();
+    }
 }
 
 }
