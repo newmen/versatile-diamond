@@ -17,11 +17,14 @@ void ParentSpec::eraseChild(BaseSpec *child)
 
 void ParentSpec::setUnvisited()
 {
-    _visited = false;
-
-    for (BaseSpec *child : _children)
+    if (_visited)
     {
-        child->setUnvisited();
+        _visited = false;
+
+        for (BaseSpec *child : _children)
+        {
+            child->setUnvisited();
+        }
     }
 }
 
