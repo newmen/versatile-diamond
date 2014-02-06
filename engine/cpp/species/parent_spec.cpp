@@ -42,22 +42,10 @@ void ParentSpec::findChildren()
 
 void ParentSpec::remove()
 {
-    if (_children.size() == 0) return;
-
-    BaseSpec **children = new BaseSpec *[_children.size()];
-    uint n = 0;
-
-    for (BaseSpec *child : _children)
+    while (!_children.empty())
     {
-        children[n++] = child;
+        (*_children.begin())->remove();
     }
-
-    for (uint i = 0; i < n; ++i)
-    {
-        children[i]->remove();
-    }
-
-    delete [] children;
 }
 
 }
