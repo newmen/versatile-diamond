@@ -12,7 +12,7 @@ void MethylOnBridge::find(Bridge *target)
     Atom *anchor = target->atom(0);
     if (anchor->is(9))
     {
-        if (!anchor->checkAndFind<MethylOnBridge>(9))
+        if (!anchor->checkAndFind(METHYL_ON_BRIDGE, 9))
         {
             Atom *amorph = anchor->amorphNeighbour();
             if (amorph->is(14))

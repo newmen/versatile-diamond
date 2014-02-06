@@ -9,7 +9,7 @@ void TwoBridgesCTRiCBRs::find(TwoBridges *parent)
     Atom *anchor = parent->atom(0);
     if (anchor->is(5))
     {
-        if (!anchor->hasRole<TwoBridgesCTRiCBRs>(5))
+        if (!anchor->hasRole(TWO_BRIDGES_CTRi_CBRs, 5))
         {
             create<TwoBridgesCTRiCBRs>(parent);
         }

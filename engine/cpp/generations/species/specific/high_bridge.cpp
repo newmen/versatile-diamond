@@ -15,7 +15,7 @@ void HighBridge::find(Bridge *parent)
 
     if (anchor->is(19))
     {
-        if (!anchor->hasRole<HighBridge>(19))
+        if (!anchor->hasRole(HIGH_BRIDGE, 19))
         {
             Atom *amorph = anchor->amorphNeighbour();
             if (amorph->is(18))

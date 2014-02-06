@@ -9,7 +9,7 @@ void MethylOnBridgeCBsCMsu::find(MethylOnBridgeCBiCMsu *parent)
     Atom *anchor = parent->atom(1);
     if (anchor->is(8))
     {
-        if (!anchor->hasRole<MethylOnBridgeCBsCMsu>(8))
+        if (!anchor->hasRole(METHYL_ON_BRIDGE_CBs_CMsu, 8))
         {
             create<MethylOnBridgeCBsCMsu>(parent);
         }

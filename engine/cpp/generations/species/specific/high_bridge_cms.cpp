@@ -9,7 +9,7 @@ void HighBridgeCMs::find(HighBridge *parent)
     Atom *anchor = parent->atom(0);
     if (anchor->is(16))
     {
-        if (!anchor->hasRole<HighBridgeCMs>(16))
+        if (!anchor->hasRole(HIGH_BRIDGE_CMs, 16))
         {
             create<HighBridgeCMs>(parent);
         }

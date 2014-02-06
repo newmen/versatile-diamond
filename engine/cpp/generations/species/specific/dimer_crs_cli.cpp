@@ -9,7 +9,7 @@ void DimerCRsCLi::find(DimerCRs *parent)
     Atom *anchor = parent->atom(3);
     if (anchor->is(20))
     {
-        if (!anchor->hasRole<DimerCRsCLi>(20))
+        if (!anchor->hasRole(DIMER_CRs_CLi, 20))
         {
             create<DimerCRsCLi>(parent);
         }

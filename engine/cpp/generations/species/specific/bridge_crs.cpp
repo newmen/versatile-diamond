@@ -17,7 +17,7 @@ void BridgeCRs::find(BridgeCRi *parent)
     Atom *anchor = parent->atom(1);
     if (anchor->is(5))
     {
-        if (!anchor->checkAndFind<BridgeCRs>(5))
+        if (!anchor->checkAndFind(BRIDGE_CRs, 5))
         {
             create<BridgeCRs>(parent);
         }

@@ -30,7 +30,7 @@ typename Local<B, U, RT, S, AT>::ParentType::DepFindResult Local<B, U, RT, S, AT
 {
     bool stored = Handbook::mc().check(ParentType::MC_INDEX, anchor);
 
-    if (anchor->is(AT) && anchor->hasRole<S>(AT))
+    if (anchor->is(AT) && anchor->hasRole(S::ID, AT))
     {
         return stored ?
                     ParentType::DepFindResult::FOUND :
@@ -53,7 +53,7 @@ void Local<B, U, RT, S, AT>::concretize(Atom *anchor)
 
     assert(anchor->isVisited());
     assert(anchor->is(AT));
-    assert(anchor->hasRole<S>(AT));
+    assert(anchor->hasRole(S::ID, AT));
 
     short n = ParentType::currNum(anchor, R::nums());
     if (n > 0)
@@ -71,7 +71,7 @@ void Local<B, U, RT, S, AT>::unconcretize(Atom *anchor)
 
     assert(anchor->isVisited());
     assert(anchor->is(AT));
-    assert(!anchor->hasRole<S>(AT));
+    assert(!anchor->hasRole(S::ID, AT));
 
     short n = ParentType::currNum(anchor, R::nums());
     if (n > 0)
