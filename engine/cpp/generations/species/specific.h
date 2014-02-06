@@ -34,6 +34,8 @@ Specific<B>::Specific(Args... args) : ParentType(args...)
 template <class B>
 void Specific<B>::remove()
 {
+    if (this->isMarked()) return;
+
     ParentType::remove();
     this->removeReactions();
 }
