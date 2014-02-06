@@ -12,15 +12,15 @@ void DimerDropNearBridge::doIt()
     Atom *atoms[2] = { target()->atom(6), atoms[1] = target()->atom(9) };
     Atom *a = atoms[0], *b = atoms[1];
 
-    assert(a->is(32));
-    assert(b->is(20));
+    assert(a->is(20));
+    assert(b->is(32));
 
     a->unbondFrom(b);
 
-    a->changeType(5);
+    if (a->is(21)) a->changeType(2);
+    else a->changeType(28);
 
-    if (b->is(21)) b->changeType(2);
-    else b->changeType(28);
+    b->changeType(5);
 
     Finder::findAll(atoms, 2);
 }
