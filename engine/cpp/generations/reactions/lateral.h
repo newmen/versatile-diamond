@@ -41,7 +41,6 @@ template <class R>
 void Lateral<RT, LATERALS_NUM>::restoreParent()
 {
     // except LaterableRole::store()
-
     typedef typename R::RegistratorType RegistratorType;
     static_cast<R *>(this->parent())->RegistratorType::store();
 }
