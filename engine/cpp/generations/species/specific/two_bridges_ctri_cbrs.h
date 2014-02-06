@@ -2,7 +2,6 @@
 #define TWO_BRIDGES_CTRI_CBRS_H
 
 #include "../base/two_bridges.h"
-#include "../base.h"
 #include "../specific.h"
 
 class TwoBridgesCTRiCBRs : public Specific<Base<DependentSpec<BaseSpec>, TWO_BRIDGES_CTRi_CBRs, 1>>
