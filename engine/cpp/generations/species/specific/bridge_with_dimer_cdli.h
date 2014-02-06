@@ -2,7 +2,6 @@
 #define BRIDGE_WITH_DIMER_CDLi_H
 
 #include "../base/bridge_with_dimer.h"
-#include "../base.h"
 #include "../specific.h"
 
 class BridgeWithDimerCDLi : public Specific<Base<DependentSpec<ParentSpec>, BRIDGE_WITH_DIMER_CDLi, 1>>

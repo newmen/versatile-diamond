@@ -136,6 +136,8 @@ void Atom::unsetLattice()
 
 void Atom::describe(ushort role, BaseSpec *spec)
 {
+    assert(is(role));
+
     const uint key = hash(role, spec->type());
 
 #ifdef PRINT

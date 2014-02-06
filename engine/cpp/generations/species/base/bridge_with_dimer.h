@@ -1,14 +1,14 @@
 #ifndef BRIDGE_WITH_DIMER_H
 #define BRIDGE_WITH_DIMER_H
 
-#include "../empty.h"
+#include "../base.h"
 
-class BridgeWithDimer : public Empty<DependentSpec<ParentSpec, 3>, BRIDGE_WITH_DIMER>
+class BridgeWithDimer : public Base<DependentSpec<ParentSpec, 3>, BRIDGE_WITH_DIMER, 1>
 {
 public:
     static void find(Atom *anchor);
 
-    BridgeWithDimer(ParentSpec **parents) : Empty(parents) {}
+    BridgeWithDimer(ParentSpec **parents) : Base(parents) {}
 
 #ifdef PRINT
     std::string name() const override { return "bridge with dimer"; }
@@ -16,6 +16,13 @@ public:
 
 protected:
     void findAllChildren() override;
+
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
+private:
+    static const ushort __indexes[1];
+    static const ushort __roles[1];
 };
 
 #endif // BRIDGE_WITH_DIMER_H
