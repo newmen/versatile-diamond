@@ -7,18 +7,20 @@
 
 class DimerFormationNearBridge : public Typical<DIMER_FORMATION_NEAR_BRIDGE, 2>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 7.5e11 * exp(-4e3 / (1.98 * Env::T));
+    static const double RATE;
 
     static void find(BridgeCTsi *target);
     static void find(BridgeCRs *target);
 
     DimerFormationNearBridge(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // DIMER_FORMATION_NEAR_BRIDGE_H

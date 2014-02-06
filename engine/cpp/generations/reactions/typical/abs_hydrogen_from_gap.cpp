@@ -1,5 +1,8 @@
 #include "abs_hydrogen_from_gap.h"
 
+const char AbsHydrogenFromGap::__name[] = "abs hydrogen from gap";
+const double AbsHydrogenFromGap::RATE = 3e14 * std::exp(-35e3 / (1.98 * Env::T)); // REAL: A = 3e5
+
 void AbsHydrogenFromGap::find(BridgeCRh *target)
 {
     Atom *anchor = target->anchor();
@@ -34,12 +37,6 @@ void AbsHydrogenFromGap::doIt()
     changeAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *AbsHydrogenFromGap::name() const
-{
-    static const char value[] = "abs hydrogen from gap";
-    return value;
 }
 
 void AbsHydrogenFromGap::changeAtom(Atom *atom) const

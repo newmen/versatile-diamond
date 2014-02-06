@@ -1,5 +1,8 @@
 #include "methyl_to_high_bridge.h"
 
+const char MethylToHighBridge::__name[] = "methyl to high bridge";
+const double MethylToHighBridge::RATE = 9.8e12 * std::exp(-15.3e3 / (1.98 * Env::T));
+
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
     create<MethylToHighBridge>(target);
@@ -29,10 +32,4 @@ void MethylToHighBridge::doIt()
     else c->changeType(28);
 
     Finder::findAll(atoms, 3);
-}
-
-const char *MethylToHighBridge::name() const
-{
-    static const char value[] = "methyl to high bridge";
-    return value;
 }

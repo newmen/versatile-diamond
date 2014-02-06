@@ -2,11 +2,8 @@
 #include "../../species/sidepiece/dimer.h"
 #include "dimer_drop_at_end.h"
 
-const char *DimerDropInMiddle::name() const
-{
-    static const char value[] = "dimer drop in middle of dimers row";
-    return value;
-}
+const char DimerDropInMiddle::__name[] = "dimer drop in middle of dimers row";
+const double DimerDropInMiddle::RATE = 2.2e6 * std::exp(-1.2e3 / (1.98 * Env::T));
 
 void DimerDropInMiddle::createUnconcreted(LateralSpec *removableSpec)
 {

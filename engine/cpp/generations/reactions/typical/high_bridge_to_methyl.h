@@ -8,8 +8,10 @@
 
 class HighBridgeToMethyl : public Typical<HIGH_BRIDGE_TO_METHYL, 2>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 2.7e9 * exp(-2.9e3 / (1.98 * Env::T)); // REAL: A = 2.7e11
+    static const double RATE;
 
     static void find(HighBridge *target);
     static void find(BridgeCTsi *target);
@@ -17,10 +19,10 @@ public:
 
     HighBridgeToMethyl(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 
 private:
     static void findByBridge(SpecificSpec *target);

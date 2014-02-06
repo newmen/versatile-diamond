@@ -81,7 +81,7 @@ bool MolAccumulator::isNear(const Atom *first, const Atom *second) const
     if (first->lattice() && second->lattice())
     {
         auto &fc = first->lattice()->coords(), &sc = second->lattice()->coords();
-        if (fabs(fc.x - sc.x) > 1 || fabs(fc.y - sc.y) > 1)
+        if (std::fabs(fc.x - sc.x) > 1 || std::fabs(fc.y - sc.y) > 1)
         {
             return false;
         }

@@ -1,5 +1,8 @@
 #include "des_methyl_from_dimer.h"
 
+const char DesMethylFromDimer::__name[] = "desorption methyl from dimer";
+const double DesMethylFromDimer::RATE = 5.3e3 * std::exp(-0 / (1.98 * Env::T));
+
 void DesMethylFromDimer::find(MethylOnDimerCMu *target)
 {
     create<DesMethylFromDimer>(target);
@@ -24,10 +27,4 @@ void DesMethylFromDimer::doIt()
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *DesMethylFromDimer::name() const
-{
-    static const char value[] = "desorption methyl from dimer";
-    return value;
 }

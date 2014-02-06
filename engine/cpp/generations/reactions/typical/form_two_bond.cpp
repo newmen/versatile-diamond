@@ -1,5 +1,8 @@
 #include "form_two_bond.h"
 
+const char FormTwoBond::__name[] = "form two bond";
+const double FormTwoBond::RATE = 1e7 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
 void FormTwoBond::find(MethylOnBridgeCBsCMsu *target)
 {
     create<FormTwoBond>(target);
@@ -24,10 +27,4 @@ void FormTwoBond::doIt()
     b->changeType(19);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *FormTwoBond::name() const
-{
-    static const char value[] = "form two bond";
-    return value;
 }

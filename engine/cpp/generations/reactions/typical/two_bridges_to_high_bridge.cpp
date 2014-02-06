@@ -1,5 +1,8 @@
 #include "two_bridges_to_high_bridge.h"
 
+const char TwoBridgesToHighBridge::__name[] = "two bridges to high bridge";
+const double TwoBridgesToHighBridge::RATE = 1.1e8 * std::exp(-3.2e3 / (1.98 * Env::T));
+
 void TwoBridgesToHighBridge::find(TwoBridgesCTRiCBRs *target)
 {
     create<TwoBridgesToHighBridge>(target);
@@ -31,10 +34,4 @@ void TwoBridgesToHighBridge::doIt()
     c->changeType(5);
 
     Finder::findAll(atoms, 3);
-}
-
-const char *TwoBridgesToHighBridge::name() const
-{
-    static const char value[] = "two bridges to high bridge";
-    return value;
 }

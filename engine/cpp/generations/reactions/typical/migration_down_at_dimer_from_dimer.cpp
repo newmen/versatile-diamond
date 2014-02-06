@@ -2,6 +2,9 @@
 #include "lookers/near_methyl_on_dimer.h"
 #include "lookers/near_activated_dimer.h"
 
+const char MigrationDownAtDimerFromDimer::__name[] = "migration down at activated dimer from methyl on dimer";
+const double MigrationDownAtDimerFromDimer::RATE = 1e13 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
 void MigrationDownAtDimerFromDimer::find(DimerCRs *target)
 {
     Atom *atoms[2] = { target->atom(0), target->atom(3) };
@@ -88,10 +91,4 @@ void MigrationDownAtDimerFromDimer::doIt()
     }
 
     Finder::findAll(atoms, 5);
-}
-
-const char *MigrationDownAtDimerFromDimer::name() const
-{
-    static const char value[] = "migration down at activated dimer from methyl on dimer";
-    return value;
 }

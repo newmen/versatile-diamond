@@ -6,18 +6,20 @@
 
 class DesMethylFromDimer : public Typical<DES_METHYL_FROM_DIMER>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = 5.3e3 * exp(-0 / (1.98 * Env::T));
+    static const double RATE;
 
     // TODO: methyl_on_dimer(cm: u, cm: i) should be used
     static void find(MethylOnDimerCMu *target);
 
     DesMethylFromDimer(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const override { return RATE; }
     void doIt() override;
 
-    const char *name() const override;
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // DES_METHYL_FROM_DIMER_H

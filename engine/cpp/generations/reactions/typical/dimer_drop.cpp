@@ -3,6 +3,9 @@
 #include "../lateral/dimer_drop_at_end.h"
 #include "../lateral/dimer_drop_in_middle.h"
 
+const char DimerDrop::__name[] = "dimer drop";
+const double DimerDrop::RATE = 2.2e6 * std::exp(-0.8e3 / (1.98 * Env::T));
+
 void DimerDrop::find(DimerCRiCLi *target)
 {
     create<DimerDrop>(target);
@@ -21,12 +24,6 @@ void DimerDrop::doIt()
     changeAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *DimerDrop::name() const
-{
-    static const char value[] = "dimer drop";
-    return value;
 }
 
 LateralReaction *DimerDrop::lookAround()

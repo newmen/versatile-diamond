@@ -1,5 +1,8 @@
 #include "high_bridge_stand_to_dimer.h"
 
+const char HighBridgeStandToDimer::__name[] = "high bridge stand to dimer";
+const double HighBridgeStandToDimer::RATE = 2.2e9 * std::exp(-14.9e3 / (1.98 * Env::T));
+
 void HighBridgeStandToDimer::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
@@ -70,10 +73,4 @@ void HighBridgeStandToDimer::doIt()
     c->changeType(32);
 
     Finder::findAll(atoms, 3);
-}
-
-const char *HighBridgeStandToDimer::name() const
-{
-    static const char value[] = "high bridge stand to dimer";
-    return value;
 }

@@ -3,6 +3,9 @@
 #include "../lateral/dimer_formation_at_end.h"
 #include "../lateral/dimer_formation_in_middle.h"
 
+const char DimerFormation::__name[] = "dimer formation";
+const double DimerFormation::RATE = 8.9e11 * std::exp(-0.8e3 / (1.98 * Env::T));
+
 void DimerFormation::find(BridgeCTsi *target)
 {
     Atom *anchor = target->anchor();
@@ -39,12 +42,6 @@ void DimerFormation::doIt()
     changeAtom(b);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *DimerFormation::name() const
-{
-    static const char value[] = "dimer formation";
-    return value;
 }
 
 LateralReaction *DimerFormation::lookAround()

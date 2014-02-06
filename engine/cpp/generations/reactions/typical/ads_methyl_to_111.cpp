@@ -1,6 +1,9 @@
 #include "ads_methyl_to_111.h"
 #include "../../builders/atom_builder.h"
 
+const char AdsMethylTo111::__name[] = "adsorption methyl to 111";
+const double AdsMethylTo111::RATE = Env::cCH3 * 1.2e9 * std::exp(-0 / (1.98 * Env::T));
+
 void AdsMethylTo111::find(BridgeCRs *target)
 {
     create<AdsMethylTo111>(target);
@@ -22,10 +25,4 @@ void AdsMethylTo111::doIt()
     a->changeType(33);
 
     Finder::findAll(atoms, 2);
-}
-
-const char *AdsMethylTo111::name() const
-{
-    static const char value[] = "adsorption methyl to 111";
-    return value;
 }

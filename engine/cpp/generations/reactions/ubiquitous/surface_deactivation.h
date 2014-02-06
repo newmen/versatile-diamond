@@ -5,15 +5,17 @@
 
 class SurfaceDeactivation : public DeactivationData<SURFACE_DEACTIVATION>
 {
+    static const char __name[];
+
 public:
-    static constexpr double RATE = Env::cH * 2e13 * exp(-0 / (1.98 * Env::T));
+    static const double RATE;
 
     static void find(Atom *anchor);
 
     SurfaceDeactivation(Atom *target) : DeactivationData(target) {}
 
     double rate() const override { return RATE; }
-    const char *name() const override;
+    const char *name() const override { return __name; }
 };
 
 #endif // SURFACE_DEACTIVATION_H

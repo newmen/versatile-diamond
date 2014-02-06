@@ -1,5 +1,8 @@
 #include "high_bridge_stand_to_one_bridge.h"
 
+const char HighBridgeStandToOneBridge::__name[] = "high bridge stand to bridge at new level";
+const double HighBridgeStandToOneBridge::RATE = 6.1e13 * std::exp(-36.3e3 / (1.98 * Env::T));
+
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
@@ -70,10 +73,4 @@ void HighBridgeStandToOneBridge::doIt()
     else c->changeType(4);
 
     Finder::findAll(atoms, 3);
-}
-
-const char *HighBridgeStandToOneBridge::name() const
-{
-    static const char value[] = "high bridge stand to bridge at new level";
-    return value;
 }
