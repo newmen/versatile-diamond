@@ -253,11 +253,7 @@ void Atom::findUnvisitedChildren()
 {
     for (auto &pr : _specs)
     {
-        BaseSpec *spec = pr.second;
-        if (!spec->isVisited())
-        {
-            spec->findChildren();
-        }
+        pr.second->findChildren();
     }
 }
 

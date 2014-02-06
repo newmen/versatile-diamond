@@ -26,17 +26,17 @@ void ParentSpec::setUnvisited()
 
 void ParentSpec::findChildren()
 {
-    BaseSpec::findChildren(); // set visited
-
-    for (BaseSpec *child : _children)
+    if (!isVisited())
     {
-        if (!child->isVisited())
+        BaseSpec::findChildren(); // set visited
+
+        for (BaseSpec *child : _children)
         {
             child->findChildren();
         }
-    }
 
-    findAllChildren();
+        findAllChildren();
+    }
 }
 
 void ParentSpec::remove()
