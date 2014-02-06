@@ -61,8 +61,8 @@ public:
     void forget(ushort role, BaseSpec *spec);
     bool hasSpec(ushort role, BaseSpec *spec) const;
 
-    template <class S> bool hasRole(ushort role) const;
-    template <class S> bool checkAndFind(ushort role);
+    bool hasRole(ushort sid, ushort role) const;
+    bool checkAndFind(ushort sid, ushort role);
     template <class S> S *specByRole(ushort role);
     template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
 
@@ -90,7 +90,6 @@ protected:
     void setType(ushort type) { _type = type; }
 
 private:
-    bool hasRole(ushort sid, ushort role) const;
     BaseSpec *specByRole(ushort sid, ushort role);
 
     uint hash(ushort first, ushort second) const
@@ -106,24 +105,6 @@ template <class L>
 void Atom::eachNeighbour(const L &lambda) const
 {
     std::for_each(_relatives.cbegin(), _relatives.cend(), lambda);
-}
-
-template <class S>
-bool Atom::hasRole(ushort role) const
-{
-    return hasRole(S::ID, role);
-}
-
-template <class S>
-bool Atom::checkAndFind(ushort role)
-{
-    BaseSpec *spec = specByRole(S::ID, role);
-    if (spec)
-    {
-        spec->findChildren();
-    }
-
-    return spec != nullptr;
 }
 
 template <class S>

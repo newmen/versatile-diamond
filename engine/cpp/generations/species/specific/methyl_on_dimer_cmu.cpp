@@ -11,7 +11,7 @@ void MethylOnDimerCMu::find(MethylOnDimer *parent)
     Atom *anchor = parent->atom(0);
     if (anchor->is(31) && !anchor->is(13))
     {
-        if (!anchor->checkAndFind<MethylOnDimerCMu>(31))
+        if (!anchor->checkAndFind(METHYL_ON_DIMER_CMu, 31))
         {
             create<MethylOnDimerCMu>(parent);
         }

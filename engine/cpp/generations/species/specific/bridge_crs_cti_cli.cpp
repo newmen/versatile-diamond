@@ -16,8 +16,8 @@ void BridgeCRsCTiCLi::find(BridgeCRs *parent)
     {
         // TODO: there || statement must be used because anchors[0] could have current role in another specie
         // the || statement can be defined through simetry of specie: if has central atom then || (else &&, if atoms num is even)
-        if (!anchors[0]->hasRole<BridgeCRsCTiCLi>(0) || !anchors[1]->hasRole<BridgeCRsCTiCLi>(5) ||
-                !anchors[2]->hasRole<BridgeCRsCTiCLi>(4))
+        if (!anchors[0]->hasRole(BRIDGE_CRs_CTi_CLi, 0) || !anchors[1]->hasRole(BRIDGE_CRs_CTi_CLi, 5) ||
+                !anchors[2]->hasRole(BRIDGE_CRs_CTi_CLi, 4))
         {
             create<BridgeCRsCTiCLi>(parent);
         }

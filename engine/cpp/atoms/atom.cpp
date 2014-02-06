@@ -307,6 +307,17 @@ bool Atom::hasRole(ushort sid, ushort role) const
     return _specs.find(key) != _specs.cend();
 }
 
+bool Atom::checkAndFind(ushort sid, ushort role)
+{
+    BaseSpec *spec = specByRole(sid, role);
+    if (spec)
+    {
+        spec->findChildren();
+    }
+
+    return spec != nullptr;
+}
+
 BaseSpec *Atom::specByRole(ushort sid, ushort role)
 {
     BaseSpec *result = nullptr;

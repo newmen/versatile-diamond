@@ -10,7 +10,7 @@ void MethylOnDimerCMssu::find(MethylOnDimerCMsu *parent)
 
     if (anchor->is(27))
     {
-        if (!anchor->hasRole<MethylOnDimerCMssu>(27))
+        if (!anchor->hasRole(METHYL_ON_DIMER_CMssu, 27))
         {
             create<MethylOnDimerCMssu>(parent);
         }
