@@ -3,7 +3,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-QMAKE_CXXFLAGS += -DNDEBUG
+#QMAKE_CXXFLAGS += -DNDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++11
@@ -57,8 +57,8 @@ SOURCES += main.cpp \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
     generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
     generations/reactions/typical/two_bridges_to_high_bridge.cpp \
-    generations/reactions/ubiquitous/local/methyl_on_bridge_activation.cpp \
-    generations/reactions/ubiquitous/local/methyl_on_bridge_deactivation.cpp \
+    generations/reactions/ubiquitous/local/methyl_on_dimer_activation.cpp \
+    generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
     generations/reactions/ubiquitous/surface_activation.cpp \
     generations/reactions/ubiquitous/surface_deactivation.cpp \
     generations/run.cpp \
@@ -185,8 +185,8 @@ HEADERS += \
     generations/reactions/ubiquitous.h \
     generations/reactions/ubiquitous/data/activation_data.h \
     generations/reactions/ubiquitous/data/deactivation_data.h \
-    generations/reactions/ubiquitous/local/methyl_on_bridge_activation.h \
-    generations/reactions/ubiquitous/local/methyl_on_bridge_deactivation.h \
+    generations/reactions/ubiquitous/local/methyl_on_dimer_activation.h \
+    generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     generations/reactions/ubiquitous/surface_activation.h \
     generations/reactions/ubiquitous/surface_deactivation.h \
     generations/run.h \

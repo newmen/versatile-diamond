@@ -1,6 +1,4 @@
 #include "methyl_on_bridge.h"
-#include "../../reactions/ubiquitous/local/methyl_on_bridge_activation.h"
-#include "../../reactions/ubiquitous/local/methyl_on_bridge_deactivation.h"
 #include "../specific/methyl_on_bridge_cbi_cmu.h"
 #include "../specific/methyl_on_111_cmu.h"
 
@@ -28,30 +26,6 @@ void MethylOnBridge::find(Bridge *target)
                 create<MethylOnBridge>(amorph, target);
             }
         }
-    }
-}
-
-void MethylOnBridge::store()
-{
-    Base::store();
-
-    Atom *target = this->atom(0);
-    if (target->isVisited())
-    {
-        MethylOnBridgeActivation::concretize(target);
-        MethylOnBridgeDeactivation::concretize(target);
-    }
-}
-
-void MethylOnBridge::remove()
-{
-    Base::remove();
-
-    Atom *target = this->atom(0);
-    if (target->isVisited())
-    {
-        MethylOnBridgeActivation::unconcretize(target);
-        MethylOnBridgeDeactivation::unconcretize(target);
     }
 }
 

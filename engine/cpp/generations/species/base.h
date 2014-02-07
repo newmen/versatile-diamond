@@ -26,6 +26,8 @@ protected:
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::store()
 {
+    ParentType::store();
+
     const ushort *idxs = this->indexes();
     const ushort *rls = this->roles();
 
@@ -33,10 +35,6 @@ void Base<B, ST, USED_ATOMS_NUM>::store()
     {
         this->atom(idxs[i])->describe(rls[i], this);
     }
-
-    // parent store must be called after describe spec to atoms,
-    // for correct order of removing unsupported specs from atoms
-    ParentType::store();
 }
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>

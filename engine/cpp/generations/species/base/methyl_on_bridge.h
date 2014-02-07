@@ -10,9 +10,6 @@ public:
 
     MethylOnBridge(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
 
-    void store() override;
-    void remove() override;
-
 #ifdef PRINT
     const char *name() const override;
 #endif // PRINT
