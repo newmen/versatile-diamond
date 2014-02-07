@@ -309,6 +309,15 @@ int main()
                 2 * AdsMethylTo111::RATE);
 
     // 23
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, 0, s.y - 1, 1);
+    printSeparator();
+    assert_rate(11 * SurfaceActivation::RATE +
+                SurfaceDeactivation::RATE +
+                TwoBridgesToHighBridge::RATE +
+                AdsMethylTo111::RATE);
+
+    // 24
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, s.y - 1, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, s.y - 1, 2);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, 0, 2);
     printSeparator();
@@ -317,7 +326,7 @@ int main()
                 2 * TwoBridgesToHighBridge::RATE +
                 2 * AdsMethylTo111::RATE);
 
-    // 24
+    // 25
     buildBridge(0, 2, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, 2, 1);
     printSeparator();
@@ -327,7 +336,7 @@ int main()
                 2 * AdsMethylTo111::RATE +
                 DimerFormationNearBridge::RATE);
 
-    // 25
+    // 26
     Handbook::mc().doOneOfOne(DIMER_FORMATION_NEAR_BRIDGE);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, 2, 1);
     printSeparator();
@@ -338,7 +347,7 @@ int main()
                 AdsMethylToDimer::RATE +
                 DimerDropNearBridge::RATE);
 
-    // 26
+    // 27
     Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
     printSeparator();
     assert_rate(10 * SurfaceActivation::RATE +
@@ -348,7 +357,7 @@ int main()
                 AdsMethylTo111::RATE +
                 DesMethylFromDimer::RATE);
 
-    // 27
+    // 28
     buildBridge(s.x - 1, 1, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 1, 1);
     buildBridge(s.x - 1, 2, 1);
@@ -362,7 +371,7 @@ int main()
                 DesMethylFromDimer::RATE +
                 DimerFormationAtEnd::RATE);
 
-    // 28
+    // 29
     Handbook::mc().doOneOfOne(DIMER_FORMATION_AT_END);
     buildBridge(s.x - 2, 1, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 1, 1);
@@ -378,7 +387,7 @@ int main()
                 DimerFormationAtEnd::RATE +
                 DimerDropAtEnd::RATE);
 
-    // 29
+    // 30
     Handbook::mc().doOneOfOne(DIMER_FORMATION_AT_END);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 2, 1);
     Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
@@ -395,7 +404,7 @@ int main()
                 MethylToHighBridge::RATE +
                 AdsMethylToDimer::RATE);
 
-    // 30
+    // 31
     Handbook::mc().doOneOfOne(DIMER_DROP_IN_MIDDLE);
     printSeparator();
     assert_rate(13 * SurfaceActivation::RATE +
@@ -409,7 +418,7 @@ int main()
                 DimerDrop::RATE +
                 MethylToHighBridge::RATE);
 
-    // 31
+    // 32
     Handbook::mc().doOneOfOne(DIMER_FORMATION_IN_MIDDLE);
     Handbook::mc().doOneOfOne(METHYL_TO_HIGH_BRIDGE);
     printSeparator();
@@ -422,7 +431,7 @@ int main()
                 HighBridgeToMethyl::RATE +
                 AdsMethylToDimer::RATE);
 
-    // 32
+    // 33
     Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
     printSeparator();
     assert_rate(15 * SurfaceActivation::RATE +
@@ -435,7 +444,7 @@ int main()
                 HighBridgeToTwoBridges::RATE +
                 HighBridgeToMethyl::RATE);
 
-    // 33
+    // 34
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_TWO_BRIDGES);
     Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
     Handbook::mc().doOneOfOne(METHYL_TO_HIGH_BRIDGE);
@@ -449,7 +458,7 @@ int main()
                 HighBridgeStandToOneBridge::RATE +
                 HighBridgeToMethyl::RATE);
 
-    // 34
+    // 35
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, 1, 2);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 1, 2);
@@ -462,7 +471,7 @@ int main()
                 DimerDrop::RATE +
                 DimerFormation::RATE);
 
-    // 35
+    // 36
     Handbook::mc().doOneOfOne(DIMER_FORMATION);
     printSeparator();
     assert_rate(17 * SurfaceActivation::RATE +
