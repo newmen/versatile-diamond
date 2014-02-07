@@ -4,7 +4,7 @@
 #include "../base/two_bridges.h"
 #include "../specific.h"
 
-class TwoBridgesCTRiCBRs : public Specific<Base<DependentSpec<BaseSpec>, TWO_BRIDGES_CTRi_CBRs, 1>>
+class TwoBridgesCTRiCBRs : public Specific<Base<DependentSpec<BaseSpec>, TWO_BRIDGES_CTRi_CBRs, 2>>
 {
 public:
     static void find(TwoBridges *parent);
@@ -22,8 +22,8 @@ protected:
     const ushort *roles() const override { return __roles; }
 
 private:
-    static const ushort __indexes[1];
-    static const ushort __roles[1];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
 #endif // TWO_BRIDGES_CTRI_CBRS_H

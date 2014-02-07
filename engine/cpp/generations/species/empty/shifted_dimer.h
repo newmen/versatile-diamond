@@ -4,7 +4,7 @@
 #include "../sidepiece/dimer.h"
 #include "../empty.h"
 
-class ShiftedDimer : public Empty<AtomShiftWrapper<DependentSpec<ParentSpec>>, SHIFTED_DIMER>
+class ShiftedDimer : public Empty<AtomShiftWrapper, SHIFTED_DIMER>
 {
 public:
     ShiftedDimer(Dimer *parent) : Empty(3, parent) {}

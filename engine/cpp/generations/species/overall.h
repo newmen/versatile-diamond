@@ -35,9 +35,10 @@ protected:
 template <class B, ushort ST>
 void Overall<B, ST>::remove()
 {
+    _markedForRemove = true;
+
     ParentType::remove();
     Handbook::scavenger().markSpec(this);
-    _markedForRemove = true;
 }
 
 #endif // OVERALL_H
