@@ -1,4 +1,6 @@
 #include "methyl_on_dimer.h"
+#include "../../reactions/ubiquitous/local/methyl_on_dimer_activation.h"
+#include "../../reactions/ubiquitous/local/methyl_on_dimer_deactivation.h"
 #include "../empty/shifted_dimer.h"
 #include "../specific/methyl_on_dimer_cmu.h"
 
@@ -40,6 +42,30 @@ void MethylOnDimer::find(Dimer *target)
                 }
             }
         }
+    }
+}
+
+void MethylOnDimer::store()
+{
+    Base::store();
+
+    Atom *target = this->atom(0);
+    if (target->isVisited())
+    {
+        MethylOnDimerActivation::concretize(target);
+        MethylOnDimerDeactivation::concretize(target);
+    }
+}
+
+void MethylOnDimer::remove()
+{
+    Base::remove();
+
+    Atom *target = this->atom(0);
+    if (target->isVisited())
+    {
+        MethylOnDimerActivation::unconcretize(target);
+        MethylOnDimerDeactivation::unconcretize(target);
     }
 }
 
