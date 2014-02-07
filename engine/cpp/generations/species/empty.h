@@ -1,21 +1,35 @@
 #ifndef EMPTY_H
 #define EMPTY_H
 
+#include "../../species/empty_spec.h"
+using namespace vd;
+
 #include "overall.h"
 
-template <class B, ushort ST>
-class Empty : public Overall<B, ST>
+template <template <class> class W, ushort ST>
+class Empty : public Overall<W<DependentSpec<EmptySpec>>, ST>
 {
-    typedef Overall<B, ST> ParentType;
+    typedef Overall<W<DependentSpec<EmptySpec>>, ST> ParentType;
 
 public:
-    // works only if B contain DependentSpec
     Atom *anchor() const override { return this->parent(0)->anchor(); }
+
+    void remove() override;
 
 protected:
     template <class... Args> Empty(Args... args) : ParentType(args...) {}
 
     void findAllChildren() override {}
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <template <class> class W, ushort ST>
+void Empty<W, ST>::remove()
+{
+    if (this->isMarked()) return;
+
+    ParentType::remove();
+}
 
 #endif // EMPTY_H

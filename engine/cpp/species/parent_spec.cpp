@@ -49,6 +49,8 @@ void ParentSpec::remove()
     {
         (*_children.begin())->remove();
     }
+
+    BaseSpec::remove();
 }
 
 }

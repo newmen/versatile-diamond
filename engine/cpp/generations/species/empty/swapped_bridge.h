@@ -4,7 +4,7 @@
 #include "../base/bridge.h"
 #include "../empty.h"
 
-class SwappedBridge : public Empty<AtomsSwapWrapper<DependentSpec<ParentSpec>>, SWAPPED_BRIDGE>
+class SwappedBridge : public Empty<AtomsSwapWrapper, SWAPPED_BRIDGE>
 {
 public:
     SwappedBridge(Bridge *parent) : Empty(1, 2, parent) {}

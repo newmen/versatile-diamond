@@ -105,6 +105,7 @@ SOURCES += main.cpp \
     reactions/lateral_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \
+    species/empty_spec.cpp \
     species/lateral_spec.cpp \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
@@ -250,6 +251,7 @@ HEADERS += \
     species/atoms_swap_wrapper.h \
     species/base_spec.h \
     species/dependent_spec.h \
+    species/empty_spec.h \
     species/keeper.h \
     species/lateral_spec.h \
     species/parent_spec.h \
