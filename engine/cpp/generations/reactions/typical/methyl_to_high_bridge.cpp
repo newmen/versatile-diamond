@@ -1,7 +1,7 @@
 #include "methyl_to_high_bridge.h"
 
 const char MethylToHighBridge::__name[] = "methyl to high bridge";
-const double MethylToHighBridge::RATE = 9.8e12 * std::exp(-15.3e3 / (1.98 * Env::T));
+const double MethylToHighBridge::RATE = 9.8e10 * std::exp(-15.3e3 / (1.98 * Env::T)); // REAL: A = 9.8e12
 
 void MethylToHighBridge::find(MethylOnDimerCMsu *target)
 {
