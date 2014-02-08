@@ -50,7 +50,7 @@ template <class T, uint MAX_CAPACITY>
 template <class L>
 void Collector<T, MAX_CAPACITY>::each(const L &lambda)
 {
-    for (auto item : _collect)
+    for (auto &item : _collect)
     {
         lambda(item);
     }
