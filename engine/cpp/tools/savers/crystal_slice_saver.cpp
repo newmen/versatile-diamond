@@ -50,7 +50,7 @@ void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTi
 void CrystalSliceSaver::writeHeader()
 {
     _out << _sliceMaxNum << "\n";
-    for (auto pr : _counterProto)
+    for (auto &pr : _counterProto)
     {
         _out.width(COLUMN_WIDTH);
         _out << pr.first;
@@ -60,7 +60,7 @@ void CrystalSliceSaver::writeHeader()
 
 void CrystalSliceSaver::writeSlice(const CounterType &counter)
 {
-    for (auto pr : counter)
+    for (auto &pr : counter)
     {
         _out.width(COLUMN_WIDTH);
         _out << (double)pr.second/_sliceMaxNum;
