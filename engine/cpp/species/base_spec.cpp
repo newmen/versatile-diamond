@@ -19,7 +19,7 @@ void BaseSpec::remove()
     wasForgotten();
 
     debugPrint([&](std::ostream &os) {
-        os << "Removing reactions for " << this->name() << " with atoms of: " << std::endl;
+        os << "Removing " << this->name() << " with atoms of: " << std::endl;
         os << std::dec;
         this->eachAtom([&os](Atom *atom) {
             atom->info(os);
