@@ -4022,6 +4022,7 @@
     </atom>
     <atom id="a659" element="C">
       <position x="9334.7888201549285" y="290.93679251580852"/>
+      <electron id="el105" position="ne"/>
     </atom>
     <atom id="a660" element="C">
       <position x="9178.7341326549285" y="292.23317923455852"/>
