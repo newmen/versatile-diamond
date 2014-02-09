@@ -1,12 +1,12 @@
 #ifndef METHYL_ON_DIMER_CLS_CMU_H
 #define METHYL_ON_DIMER_CLS_CMU_H
 
-#include "methyl_on_dimer_cmu.h"
+#include "methyl_on_dimer_cmiu.h"
 
 class MethylOnDimerCLsCMu : public Specific<Base<DependentSpec<BaseSpec>, METHYL_ON_DIMER_CLs_CMu, 1>>
 {
 public:
-    static void find(MethylOnDimerCMu *parent);
+    static void find(MethylOnDimerCMiu *parent);
 
     MethylOnDimerCLsCMu(ParentSpec *parent) : Specific(parent) {}
 

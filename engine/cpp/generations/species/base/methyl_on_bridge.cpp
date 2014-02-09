@@ -1,6 +1,6 @@
 #include "methyl_on_bridge.h"
 #include "../specific/methyl_on_bridge_cbi_cmu.h"
-#include "../specific/methyl_on_111_cmu.h"
+#include "../specific/methyl_on_111_cmiu.h"
 
 const ushort MethylOnBridge::__indexes[2] = { 1, 0 };
 const ushort MethylOnBridge::__roles[2] = { 9, 14 };
@@ -32,5 +32,5 @@ void MethylOnBridge::find(Bridge *target)
 void MethylOnBridge::findAllChildren()
 {
     MethylOnBridgeCBiCMu::find(this);
-    MethylOn111CMu::find(this);
+    MethylOn111CMiu::find(this);
 }

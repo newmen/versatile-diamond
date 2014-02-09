@@ -2,7 +2,7 @@
 #define MIGRATION_DOWN_IN_GAP_FROM_DIMER_H
 
 #include "../../species/specific/bridge_crs.h"
-#include "../../species/specific/methyl_on_dimer_cmssu.h"
+#include "../../species/specific/methyl_on_dimer_cmssiu.h"
 #include "../typical.h"
 
 class MigrationDownInGapFromDimer : public Typical<MIGRATION_DOWN_IN_GAP_FROM_DIMER, 3>
@@ -13,7 +13,7 @@ public:
     static const double RATE;
 
     static void find(BridgeCRs *target);
-    static void find(MethylOnDimerCMssu *target);
+    static void find(MethylOnDimerCMssiu *target);
 
     MigrationDownInGapFromDimer(SpecificSpec **targets) : Typical(targets) {}
 

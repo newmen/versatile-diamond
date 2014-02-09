@@ -2,7 +2,7 @@
 #define MIGRATION_DOWN_AT_DIMER_FROM_111_H
 
 #include "../../species/specific/dimer_crs.h"
-#include "../../species/specific/methyl_on_111_cmsu.h"
+#include "../../species/specific/methyl_on_111_cmsiu.h"
 #include "../typical.h"
 
 class MigrationDownAtDimerFrom111 : public Typical<MIGRATION_DOWN_AT_DIMER_FROM_111, 2>
@@ -13,7 +13,7 @@ public:
     static const double RATE;
 
     static void find(DimerCRs *target);
-    static void find(MethylOn111CMsu *target);
+    static void find(MethylOn111CMsiu *target);
 
     MigrationDownAtDimerFrom111(SpecificSpec **targets) : Typical(targets) {}
 

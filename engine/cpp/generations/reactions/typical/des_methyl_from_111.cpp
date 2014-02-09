@@ -3,14 +3,14 @@
 const char DesMethylFrom111::__name[] = "desorption methyl from 111";
 const double DesMethylFrom111::RATE = 5.4e6 * std::exp(-0 / (1.98 * Env::T));
 
-void DesMethylFrom111::find(MethylOn111CMu *target)
+void DesMethylFrom111::find(MethylOn111CMiu *target)
 {
     create<DesMethylFrom111>(target);
 }
 
 void DesMethylFrom111::doIt()
 {
-    assert(target()->type() == MethylOn111CMu::ID);
+    assert(target()->type() == MethylOn111CMiu::ID);
 
     Atom *atoms[2] = { target()->atom(1), target()->atom(0) };
     Atom *a = atoms[0], *b = atoms[1];

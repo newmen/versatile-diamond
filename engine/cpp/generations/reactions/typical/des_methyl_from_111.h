@@ -1,7 +1,7 @@
 #ifndef DES_METHYL_FROM_111_H
 #define DES_METHYL_FROM_111_H
 
-#include "../../species/specific/methyl_on_111_cmu.h"
+#include "../../species/specific/methyl_on_111_cmiu.h"
 #include "../typical.h"
 
 class DesMethylFrom111 : public Typical<DES_METHYL_FROM_111>
@@ -11,7 +11,7 @@ class DesMethylFrom111 : public Typical<DES_METHYL_FROM_111>
 public:
     static const double RATE;
 
-    static void find(MethylOn111CMu *target);
+    static void find(MethylOn111CMiu *target);
 
     DesMethylFrom111(SpecificSpec *target) : Typical(target) {}
 

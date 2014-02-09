@@ -8,13 +8,13 @@ const double MigrationDownAtDimerFromDimer::RATE = 1e13 * std::exp(-0 / (1.98 * 
 void MigrationDownAtDimerFromDimer::find(DimerCRs *target)
 {
     Atom *atoms[2] = { target->atom(0), target->atom(3) };
-    NearMethylOnDimer::look<MethylOnDimerCMsu>(26, atoms, [target](SpecificSpec *other) {
+    NearMethylOnDimer::look<MethylOnDimerCMsiu>(26, atoms, [target](SpecificSpec *other) {
         SpecificSpec *targets[2] = { target, other };
         create<MigrationDownAtDimerFromDimer>(targets);
     });
 }
 
-void MigrationDownAtDimerFromDimer::find(MethylOnDimerCMsu *target)
+void MigrationDownAtDimerFromDimer::find(MethylOnDimerCMsiu *target)
 {
     NearActivatedDimer::look<MigrationDownAtDimerFromDimer>(target);
 }
@@ -25,7 +25,7 @@ void MigrationDownAtDimerFromDimer::doIt()
     SpecificSpec *methylOnDimerCMsu = target(1);
 
     assert(dimerCRs->type() == DimerCRs::ID);
-    assert(methylOnDimerCMsu->type() == MethylOnDimerCMsu::ID);
+    assert(methylOnDimerCMsu->type() == MethylOnDimerCMsiu::ID);
 
     Atom *atoms[5] = {
         methylOnDimerCMsu->atom(4),

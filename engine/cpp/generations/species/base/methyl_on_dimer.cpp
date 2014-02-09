@@ -2,7 +2,7 @@
 #include "../../reactions/ubiquitous/local/methyl_on_dimer_activation.h"
 #include "../../reactions/ubiquitous/local/methyl_on_dimer_deactivation.h"
 #include "../empty/shifted_dimer.h"
-#include "../specific/methyl_on_dimer_cmu.h"
+#include "../specific/methyl_on_dimer_cmiu.h"
 
 const ushort MethylOnDimer::__indexes[2] = { 1, 0 };
 const ushort MethylOnDimer::__roles[2] = { 23, 14 };
@@ -71,5 +71,5 @@ void MethylOnDimer::remove()
 
 void MethylOnDimer::findAllChildren()
 {
-    MethylOnDimerCMu::find(this);
+    MethylOnDimerCMiu::find(this);
 }

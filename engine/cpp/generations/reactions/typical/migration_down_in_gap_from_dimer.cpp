@@ -9,7 +9,7 @@ const double MigrationDownInGapFromDimer::RATE = 5e12 * std::exp(-0 / (1.98 * En
 void MigrationDownInGapFromDimer::find(BridgeCRs *target)
 {
     NearPartOfGap::look(target, [target](SpecificSpec *neighbourBridge, Atom **anchors) {
-        NearMethylOnDimer::look<MethylOnDimerCMssu>(
+        NearMethylOnDimer::look<MethylOnDimerCMssiu>(
                     27, anchors, [target, neighbourBridge](SpecificSpec *other) {
             SpecificSpec *targets[3] = { other, target, neighbourBridge };
             create<MigrationDownInGapFromDimer>(targets);
@@ -17,7 +17,7 @@ void MigrationDownInGapFromDimer::find(BridgeCRs *target)
     });
 }
 
-void MigrationDownInGapFromDimer::find(MethylOnDimerCMssu *target)
+void MigrationDownInGapFromDimer::find(MethylOnDimerCMssiu *target)
 {
     NearGap::look<MigrationDownInGapFromDimer>(target);
 }
@@ -30,7 +30,7 @@ void MigrationDownInGapFromDimer::doIt()
     assert(bridges[0]->atom(1) != bridges[1]->atom(2));
     assert(bridges[0]->atom(2) != bridges[1]->atom(1));
 
-    assert(methylOnDimerCMssu->type() == MethylOnDimerCMssu::ID);
+    assert(methylOnDimerCMssu->type() == MethylOnDimerCMssiu::ID);
     assert(bridges[0]->type() == BridgeCRs::ID);
     assert(bridges[1]->type() == BridgeCRs::ID);
 
