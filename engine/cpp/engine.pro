@@ -82,17 +82,17 @@ SOURCES += main.cpp \
     generations/species/specific/dimer_crs_cli.cpp \
     generations/species/specific/high_bridge.cpp \
     generations/species/specific/high_bridge_cms.cpp \
-    generations/species/specific/methyl_on_111_cmssu.cpp \
-    generations/species/specific/methyl_on_111_cmsu.cpp \
-    generations/species/specific/methyl_on_111_cmu.cpp \
+    generations/species/specific/methyl_on_111_cmiu.cpp \
+    generations/species/specific/methyl_on_111_cmsiu.cpp \
+    generations/species/specific/methyl_on_111_cmssiu.cpp \
     generations/species/specific/methyl_on_bridge_cbi_cmssu.cpp \
     generations/species/specific/methyl_on_bridge_cbi_cmsu.cpp \
     generations/species/specific/methyl_on_bridge_cbi_cmu.cpp \
     generations/species/specific/methyl_on_bridge_cbs_cmsu.cpp \
-    generations/species/specific/methyl_on_dimer_cls_cmu.cpp \
-    generations/species/specific/methyl_on_dimer_cmssu.cpp \
-    generations/species/specific/methyl_on_dimer_cmsu.cpp \
-    generations/species/specific/methyl_on_dimer_cmu.cpp \
+    generations/species/specific/methyl_on_dimer_cls_cmhiu.cpp \
+    generations/species/specific/methyl_on_dimer_cmiu.cpp \
+    generations/species/specific/methyl_on_dimer_cmsiu.cpp \
+    generations/species/specific/methyl_on_dimer_cmssiu.cpp \
     generations/species/specific/two_bridges_ctri_cbrs.cpp \
     mc/base_events_container.cpp \
     mc/common_mc_data.cpp \
@@ -216,17 +216,17 @@ HEADERS += \
     generations/species/specific/dimer_crs_cli.h \
     generations/species/specific/high_bridge.h \
     generations/species/specific/high_bridge_cms.h \
-    generations/species/specific/methyl_on_111_cmssu.h \
-    generations/species/specific/methyl_on_111_cmsu.h \
-    generations/species/specific/methyl_on_111_cmu.h \
+    generations/species/specific/methyl_on_111_cmiu.h \
+    generations/species/specific/methyl_on_111_cmsiu.h \
+    generations/species/specific/methyl_on_111_cmssiu.h \
     generations/species/specific/methyl_on_bridge_cbi_cmssu.h \
     generations/species/specific/methyl_on_bridge_cbi_cmsu.h \
     generations/species/specific/methyl_on_bridge_cbi_cmu.h \
     generations/species/specific/methyl_on_bridge_cbs_cmsu.h \
-    generations/species/specific/methyl_on_dimer_cls_cmu.h \
-    generations/species/specific/methyl_on_dimer_cmssu.h \
-    generations/species/specific/methyl_on_dimer_cmsu.h \
-    generations/species/specific/methyl_on_dimer_cmu.h \
+    generations/species/specific/methyl_on_dimer_cls_cmhiu.h \
+    generations/species/specific/methyl_on_dimer_cmiu.h \
+    generations/species/specific/methyl_on_dimer_cmsiu.h \
+    generations/species/specific/methyl_on_dimer_cmssiu.h \
     generations/species/specific/two_bridges_ctri_cbrs.h \
     mc/base_events_container.h \
     mc/common_mc_data.h \

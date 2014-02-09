@@ -1,7 +1,7 @@
 #ifndef METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 #define METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 
-#include "../../species/specific/methyl_on_dimer_cls_cmu.h"
+#include "../../species/specific/methyl_on_dimer_cls_cmhiu.h"
 #include "../typical.h"
 
 class MethylOnDimerHydrogenMigration : public Typical<METHYL_ON_DIMER_HYDROGEN_MIGRATION>
@@ -11,7 +11,7 @@ class MethylOnDimerHydrogenMigration : public Typical<METHYL_ON_DIMER_HYDROGEN_M
 public:
     static const double RATE;
 
-    static void find(MethylOnDimerCLsCMu *target);
+    static void find(MethylOnDimerCLsCMhiu *target);
 
     MethylOnDimerHydrogenMigration(SpecificSpec *target) : Typical(target) {}
 

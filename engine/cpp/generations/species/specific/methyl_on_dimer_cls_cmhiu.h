@@ -1,14 +1,14 @@
-#ifndef METHYL_ON_DIMER_CLS_CMU_H
-#define METHYL_ON_DIMER_CLS_CMU_H
+#ifndef METHYL_ON_DIMER_CLS_CMHIU_H
+#define METHYL_ON_DIMER_CLS_CMHIU_H
 
 #include "methyl_on_dimer_cmiu.h"
 
-class MethylOnDimerCLsCMu : public Specific<Base<DependentSpec<BaseSpec>, METHYL_ON_DIMER_CLs_CMu, 1>>
+class MethylOnDimerCLsCMhiu : public Specific<Base<DependentSpec<BaseSpec>, METHYL_ON_DIMER_CLs_CMhiu, 2>>
 {
 public:
     static void find(MethylOnDimerCMiu *parent);
 
-    MethylOnDimerCLsCMu(ParentSpec *parent) : Specific(parent) {}
+    MethylOnDimerCLsCMhiu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     const char *name() const override;
@@ -21,8 +21,8 @@ protected:
     const ushort *roles() const override { return __roles; }
 
 private:
-    static const ushort __indexes[1];
-    static const ushort __roles[1];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
-#endif // METHYL_ON_DIMER_CLS_CMU_H
+#endif // METHYL_ON_DIMER_CLS_CMHIU_H
