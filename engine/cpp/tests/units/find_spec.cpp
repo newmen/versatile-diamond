@@ -617,6 +617,18 @@ int main()
                 AdsMethylTo111::RATE +
                 DimerDrop::RATE);
 
+    // 50
+    Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
+    buildBridge(s.x - 1, s.y - 1, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, s.y - 1, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 1, 1, 1);
+    printRate();
+    assert_rate(25 * SurfaceActivation::RATE +
+                SurfaceDeactivation::RATE +
+                HighBridgeToMethyl::RATE +
+                HighBridgeStandToOneBridge::RATE +
+                DimerDrop::RATE);
+
     delete diamond;
     return 0;
 }
