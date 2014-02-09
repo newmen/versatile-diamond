@@ -49,7 +49,11 @@ module VersatileDiamond
     private
 
       def matrix_to_s(matrix)
-        matrix.map { |row| row.join(', ') }.join(",\n")
+        strs = matrix.map.with_index do |row, i|
+          line = row.join(', ')
+          "/* #{i.to_s.rjust(2)} */  #{line}"
+        end
+        strs.join(",\n")
       end
 
     end
