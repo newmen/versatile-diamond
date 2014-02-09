@@ -575,6 +575,17 @@ int main()
                 AdsMethylToDimer::RATE +
                 DimerDrop::RATE);
 
+    // 46
+    Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_DIMER);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 1, 2, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 0, 1);
+    printRate();
+    assert_rate(21 * SurfaceActivation::RATE +
+                3 * SurfaceDeactivation::RATE +
+                AdsMethylToDimer::RATE +
+                DimerDropNearBridge::RATE +
+                DimerFormation::RATE);
+
     delete diamond;
     return 0;
 }
