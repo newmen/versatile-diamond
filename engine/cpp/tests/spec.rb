@@ -36,8 +36,7 @@ def make
     f.write(makefile.result(binding))
   end
 
-  # `make clean; make`
-  `make`
+  `make clean; make`
 end
 
 def compile_test(file_name, random_name)

@@ -8,13 +8,13 @@ const double MigrationDownAtDimer::RATE = 1e13 * std::exp(-0 / (1.98 * Env::T));
 void MigrationDownAtDimer::find(DimerCRs *target)
 {
     Atom *atoms[2] = { target->atom(0), target->atom(3) };
-    NearMethylOnBridgeCBi::look<MethylOnBridgeCBiCMsu>(26, atoms, [target](SpecificSpec *other) {
+    NearMethylOnBridgeCBi::look<MethylOnBridgeCBiCMsiu>(26, atoms, [target](SpecificSpec *other) {
         SpecificSpec *targets[2] = { target, other };
         create<MigrationDownAtDimer>(targets);
     });
 }
 
-void MigrationDownAtDimer::find(MethylOnBridgeCBiCMsu *target)
+void MigrationDownAtDimer::find(MethylOnBridgeCBiCMsiu *target)
 {
     NearActivatedDimer::look<MigrationDownAtDimer>(target);
 }
@@ -22,14 +22,14 @@ void MigrationDownAtDimer::find(MethylOnBridgeCBiCMsu *target)
 void MigrationDownAtDimer::doIt()
 {
     SpecificSpec *dimerCRs = target(0);
-    SpecificSpec *methylOnBridgeCBiCMsu = target(1);
+    SpecificSpec *methylOnBridgeCBiCMsiu = target(1);
 
     assert(dimerCRs->type() == DimerCRs::ID);
-    assert(methylOnBridgeCBiCMsu->type() == MethylOnBridgeCBiCMsu::ID);
+    assert(methylOnBridgeCBiCMsiu->type() == MethylOnBridgeCBiCMsiu::ID);
 
     Atom *atoms[4] = {
-        methylOnBridgeCBiCMsu->atom(1),
-        methylOnBridgeCBiCMsu->atom(0),
+        methylOnBridgeCBiCMsiu->atom(1),
+        methylOnBridgeCBiCMsiu->atom(0),
         dimerCRs->atom(0),
         dimerCRs->atom(3)
     };

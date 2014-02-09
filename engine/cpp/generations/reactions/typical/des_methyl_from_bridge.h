@@ -1,7 +1,7 @@
 #ifndef DES_METHYL_FROM_BRIDGE_H
 #define DES_METHYL_FROM_BRIDGE_H
 
-#include "../../species/specific/methyl_on_bridge_cbi_cmu.h"
+#include "../../species/specific/methyl_on_bridge_cbi_cmiu.h"
 #include "../typical.h"
 
 class DesMethylFromBridge : public Typical<DES_METHYL_FROM_BRIDGE>
@@ -11,7 +11,7 @@ class DesMethylFromBridge : public Typical<DES_METHYL_FROM_BRIDGE>
 public:
     static const double RATE;
 
-    static void find(MethylOnBridgeCBiCMu *target);
+    static void find(MethylOnBridgeCBiCMiu *target);
 
     DesMethylFromBridge(SpecificSpec *target) : Typical(target) {}
 

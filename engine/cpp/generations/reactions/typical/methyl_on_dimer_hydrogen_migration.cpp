@@ -16,16 +16,16 @@ void MethylOnDimerHydrogenMigration::doIt()
     Atom *atoms[3] = { target()->atom(0), target()->atom(4) };
     Atom *a = atoms[0], *b = atoms[1];
 
-    assert(a->is(31));
+    assert(a->is(35));
     assert(!a->is(13));
     assert(b->is(21));
 
     a->activate();
     b->deactivate();
 
-    if (a->is(30)) a->changeType(13);
-    else if (a->is(29)) a->changeType(30);
-    else a->changeType(29);
+    if (a->is(27)) a->changeType(13);
+    else if (a->is(26)) a->changeType(27);
+    else a->changeType(26);
 
     b->changeType(20);
 

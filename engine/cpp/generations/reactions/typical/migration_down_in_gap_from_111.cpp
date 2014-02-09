@@ -24,19 +24,19 @@ void MigrationDownInGapFrom111::find(MethylOn111CMssiu *target)
 
 void MigrationDownInGapFrom111::doIt()
 {
-    SpecificSpec *methylOn111CMssu = target(0);
+    SpecificSpec *methylOn111CMssiu = target(0);
     SpecificSpec *bridges[2] = { target(1), target(2) };
     assert(bridges[0] != bridges[1]);
     assert(bridges[0]->atom(1) != bridges[1]->atom(2));
     assert(bridges[0]->atom(2) != bridges[1]->atom(1));
 
-    assert(methylOn111CMssu->type() == MethylOn111CMssiu::ID);
+    assert(methylOn111CMssiu->type() == MethylOn111CMssiu::ID);
     assert(bridges[0]->type() == BridgeCRs::ID);
     assert(bridges[1]->type() == BridgeCRs::ID);
 
     Atom *atoms[4] = {
-        methylOn111CMssu->atom(1),
-        methylOn111CMssu->atom(0),
+        methylOn111CMssiu->atom(1),
+        methylOn111CMssiu->atom(0),
         bridges[0]->atom(1),
         bridges[1]->atom(1)
     };

@@ -3,14 +3,14 @@
 const char DesMethylFromBridge::__name[] = "desorption methyl from bridge";
 const double DesMethylFromBridge::RATE = 1.7e7 * std::exp(-0 / (1.98 * Env::T));
 
-void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
+void DesMethylFromBridge::find(MethylOnBridgeCBiCMiu *target)
 {
     create<DesMethylFromBridge>(target);
 }
 
 void DesMethylFromBridge::doIt()
 {
-    assert(target()->type() == MethylOnBridgeCBiCMu::ID);
+    assert(target()->type() == MethylOnBridgeCBiCMiu::ID);
 
     Atom *atoms[2] = { target()->atom(1), target()->atom(0) };
     Atom *a = atoms[0], *b = atoms[1];

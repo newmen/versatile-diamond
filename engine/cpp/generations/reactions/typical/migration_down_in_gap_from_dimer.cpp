@@ -24,20 +24,20 @@ void MigrationDownInGapFromDimer::find(MethylOnDimerCMssiu *target)
 
 void MigrationDownInGapFromDimer::doIt()
 {
-    SpecificSpec *methylOnDimerCMssu = target(0);
+    SpecificSpec *methylOnDimerCMssiu = target(0);
     SpecificSpec *bridges[2] = { target(1), target(2) };
     assert(bridges[0] != bridges[1]);
     assert(bridges[0]->atom(1) != bridges[1]->atom(2));
     assert(bridges[0]->atom(2) != bridges[1]->atom(1));
 
-    assert(methylOnDimerCMssu->type() == MethylOnDimerCMssiu::ID);
+    assert(methylOnDimerCMssiu->type() == MethylOnDimerCMssiu::ID);
     assert(bridges[0]->type() == BridgeCRs::ID);
     assert(bridges[1]->type() == BridgeCRs::ID);
 
     Atom *atoms[5] = {
-        methylOnDimerCMssu->atom(4),
-        methylOnDimerCMssu->atom(1),
-        methylOnDimerCMssu->atom(0),
+        methylOnDimerCMssiu->atom(4),
+        methylOnDimerCMssiu->atom(1),
+        methylOnDimerCMssiu->atom(0),
         bridges[0]->atom(1),
         bridges[1]->atom(1)
     };
