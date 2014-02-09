@@ -9,7 +9,7 @@ const double MigrationDownInGap::RATE = 5e12 * std::exp(-0 / (1.98 * Env::T)); /
 void MigrationDownInGap::find(BridgeCRs *target)
 {
     NearPartOfGap::look(target, [target](SpecificSpec *neighbourBridge, Atom **anchors) {
-        NearMethylOnBridgeCBi::look<MethylOnBridgeCBiCMssu>(
+        NearMethylOnBridgeCBi::look<MethylOnBridgeCBiCMssiu>(
                     27, anchors, [target, neighbourBridge](SpecificSpec *other) {
             SpecificSpec *targets[3] = { other, target, neighbourBridge };
             create<MigrationDownInGap>(targets);
@@ -17,26 +17,26 @@ void MigrationDownInGap::find(BridgeCRs *target)
     });
 }
 
-void MigrationDownInGap::find(MethylOnBridgeCBiCMssu *target)
+void MigrationDownInGap::find(MethylOnBridgeCBiCMssiu *target)
 {
     NearGap::look<MigrationDownInGap>(target);
 }
 
 void MigrationDownInGap::doIt()
 {
-    SpecificSpec *methylOnBridgeCBiCMssu = target(0);
+    SpecificSpec *methylOnBridgeCBiCMssiu = target(0);
     SpecificSpec *bridges[2] = { target(1), target(2) };
     assert(bridges[0] != bridges[1]);
     assert(bridges[0]->atom(1) != bridges[1]->atom(2));
     assert(bridges[0]->atom(2) != bridges[1]->atom(1));
 
-    assert(methylOnBridgeCBiCMssu->type() == MethylOnBridgeCBiCMssu::ID);
+    assert(methylOnBridgeCBiCMssiu->type() == MethylOnBridgeCBiCMssiu::ID);
     assert(bridges[0]->type() == BridgeCRs::ID);
     assert(bridges[1]->type() == BridgeCRs::ID);
 
     Atom *atoms[4] = {
-        methylOnBridgeCBiCMssu->atom(1),
-        methylOnBridgeCBiCMssu->atom(0),
+        methylOnBridgeCBiCMssiu->atom(1),
+        methylOnBridgeCBiCMssiu->atom(0),
         bridges[0]->atom(1),
         bridges[1]->atom(1)
     };

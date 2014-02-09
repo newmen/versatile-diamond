@@ -3,14 +3,14 @@
 const char FormTwoBond::__name[] = "form two bond";
 const double FormTwoBond::RATE = 1e7 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
 
-void FormTwoBond::find(MethylOnBridgeCBsCMsu *target)
+void FormTwoBond::find(MethylOnBridgeCBsCMsiu *target)
 {
     create<FormTwoBond>(target);
 }
 
 void FormTwoBond::doIt()
 {
-    assert(target()->type() == MethylOnBridgeCBsCMsu::ID);
+    assert(target()->type() == MethylOnBridgeCBsCMsiu::ID);
 
     Atom *atoms[2] = { target()->atom(0), atoms[1] = target()->atom(1) };
     Atom *a = atoms[0], *b = atoms[1];

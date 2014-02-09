@@ -2,7 +2,7 @@
 #define MIGRATION_DOWN_IN_GAP_H
 
 #include "../../species/specific/bridge_crs.h"
-#include "../../species/specific/methyl_on_bridge_cbi_cmssu.h"
+#include "../../species/specific/methyl_on_bridge_cbi_cmssiu.h"
 #include "../typical.h"
 
 class MigrationDownInGap : public Typical<MIGRATION_DOWN_IN_GAP, 3>
@@ -13,7 +13,7 @@ public:
     static const double RATE;
 
     static void find(BridgeCRs *target);
-    static void find(MethylOnBridgeCBiCMssu *target);
+    static void find(MethylOnBridgeCBiCMssiu *target);
 
     MigrationDownInGap(SpecificSpec **targets) : Typical(targets) {}
 

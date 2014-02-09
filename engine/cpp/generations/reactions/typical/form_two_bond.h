@@ -1,7 +1,7 @@
 #ifndef FORM_TWO_BOND_H
 #define FORM_TWO_BOND_H
 
-#include "../../species/specific/methyl_on_bridge_cbs_cmsu.h"
+#include "../../species/specific/methyl_on_bridge_cbs_cmsiu.h"
 #include "../typical.h"
 
 class FormTwoBond : public Typical<FORM_TWO_BOND, 1>
@@ -11,7 +11,7 @@ class FormTwoBond : public Typical<FORM_TWO_BOND, 1>
 public:
     static const double RATE;
 
-    static void find(MethylOnBridgeCBsCMsu *target);
+    static void find(MethylOnBridgeCBsCMsiu *target);
 
     FormTwoBond(SpecificSpec *target) : Typical(target) {}
 

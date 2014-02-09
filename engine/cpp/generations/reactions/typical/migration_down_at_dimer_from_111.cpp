@@ -22,14 +22,14 @@ void MigrationDownAtDimerFrom111::find(MethylOn111CMsiu *target)
 void MigrationDownAtDimerFrom111::doIt()
 {
     SpecificSpec *dimerCRs = target(0);
-    SpecificSpec *methylOn111CMsu = target(1);
+    SpecificSpec *methylOn111CMsiu = target(1);
 
     assert(dimerCRs->type() == DimerCRs::ID);
-    assert(methylOn111CMsu->type() == MethylOn111CMsiu::ID);
+    assert(methylOn111CMsiu->type() == MethylOn111CMsiu::ID);
 
     Atom *atoms[4] = {
-        methylOn111CMsu->atom(1),
-        methylOn111CMsu->atom(0),
+        methylOn111CMsiu->atom(1),
+        methylOn111CMsiu->atom(0),
         dimerCRs->atom(0),
         dimerCRs->atom(3)
     };

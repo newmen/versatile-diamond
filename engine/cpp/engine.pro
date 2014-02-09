@@ -85,10 +85,10 @@ SOURCES += main.cpp \
     generations/species/specific/methyl_on_111_cmiu.cpp \
     generations/species/specific/methyl_on_111_cmsiu.cpp \
     generations/species/specific/methyl_on_111_cmssiu.cpp \
-    generations/species/specific/methyl_on_bridge_cbi_cmssu.cpp \
-    generations/species/specific/methyl_on_bridge_cbi_cmsu.cpp \
-    generations/species/specific/methyl_on_bridge_cbi_cmu.cpp \
-    generations/species/specific/methyl_on_bridge_cbs_cmsu.cpp \
+    generations/species/specific/methyl_on_bridge_cbi_cmiu.cpp \
+    generations/species/specific/methyl_on_bridge_cbi_cmsiu.cpp \
+    generations/species/specific/methyl_on_bridge_cbi_cmssiu.cpp \
+    generations/species/specific/methyl_on_bridge_cbs_cmsiu.cpp \
     generations/species/specific/methyl_on_dimer_cls_cmhiu.cpp \
     generations/species/specific/methyl_on_dimer_cmiu.cpp \
     generations/species/specific/methyl_on_dimer_cmsiu.cpp \
@@ -219,10 +219,10 @@ HEADERS += \
     generations/species/specific/methyl_on_111_cmiu.h \
     generations/species/specific/methyl_on_111_cmsiu.h \
     generations/species/specific/methyl_on_111_cmssiu.h \
-    generations/species/specific/methyl_on_bridge_cbi_cmssu.h \
-    generations/species/specific/methyl_on_bridge_cbi_cmsu.h \
-    generations/species/specific/methyl_on_bridge_cbi_cmu.h \
-    generations/species/specific/methyl_on_bridge_cbs_cmsu.h \
+    generations/species/specific/methyl_on_bridge_cbi_cmiu.h \
+    generations/species/specific/methyl_on_bridge_cbi_cmsiu.h \
+    generations/species/specific/methyl_on_bridge_cbi_cmssiu.h \
+    generations/species/specific/methyl_on_bridge_cbs_cmsiu.h \
     generations/species/specific/methyl_on_dimer_cls_cmhiu.h \
     generations/species/specific/methyl_on_dimer_cmiu.h \
     generations/species/specific/methyl_on_dimer_cmsiu.h \
