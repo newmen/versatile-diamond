@@ -4,14 +4,14 @@
 const char MethylOnDimerHydrogenMigration::__name[] = "methyl on dimer hydrogen migration";
 const double MethylOnDimerHydrogenMigration::RATE = 2.1e12 * std::exp(-37.5e3 / (1.98 * Env::T));
 
-void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMu *target)
+void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMhiu *target)
 {
     create<MethylOnDimerHydrogenMigration>(target);
 }
 
 void MethylOnDimerHydrogenMigration::doIt()
 {
-    assert(target()->type() == MethylOnDimerCLsCMu::ID);
+    assert(target()->type() == MethylOnDimerCLsCMhiu::ID);
 
     Atom *atoms[3] = { target()->atom(0), target()->atom(4) };
     Atom *a = atoms[0], *b = atoms[1];

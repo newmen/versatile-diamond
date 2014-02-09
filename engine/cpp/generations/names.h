@@ -44,7 +44,7 @@ enum SpecificSpecNames : ushort
     METHYL_ON_DIMER_CMiu,
     METHYL_ON_DIMER_CMsiu,
     METHYL_ON_DIMER_CMssiu,
-    METHYL_ON_DIMER_CLs_CMu,
+    METHYL_ON_DIMER_CLs_CMhiu,
     METHYL_ON_BRIDGE_CBi_CMu,
     METHYL_ON_BRIDGE_CBi_CMsu,
     METHYL_ON_BRIDGE_CBi_CMssu,

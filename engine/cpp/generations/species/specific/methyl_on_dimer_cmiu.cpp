@@ -1,7 +1,7 @@
 #include "methyl_on_dimer_cmiu.h"
 #include "../../reactions/typical/des_methyl_from_dimer.h"
 #include "methyl_on_dimer_cmsiu.h"
-#include "methyl_on_dimer_cls_cmu.h"
+#include "methyl_on_dimer_cls_cmhiu.h"
 
 const ushort MethylOnDimerCMiu::__indexes[1] = { 0 };
 const ushort MethylOnDimerCMiu::__roles[1] = { 25 };
@@ -28,7 +28,7 @@ void MethylOnDimerCMiu::find(MethylOnDimer *parent)
 
 void MethylOnDimerCMiu::findAllChildren()
 {
-    MethylOnDimerCLsCMu::find(this);
+    MethylOnDimerCLsCMhiu::find(this);
     MethylOnDimerCMsiu::find(this);
 }
 
