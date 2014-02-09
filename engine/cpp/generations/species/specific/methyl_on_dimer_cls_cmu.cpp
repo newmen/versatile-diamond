@@ -12,7 +12,7 @@ const char *MethylOnDimerCLsCMu::name() const
 }
 #endif // PRINT
 
-void MethylOnDimerCLsCMu::find(MethylOnDimerCMu *parent)
+void MethylOnDimerCLsCMu::find(MethylOnDimerCMiu *parent)
 {
     Atom *anchor = parent->atom(4);
     if (anchor->is(21))

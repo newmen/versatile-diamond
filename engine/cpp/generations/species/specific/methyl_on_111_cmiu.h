@@ -1,15 +1,15 @@
-#ifndef METHYL_ON_111_CMU_H
-#define METHYL_ON_111_CMU_H
+#ifndef METHYL_ON_111_CMIU_H
+#define METHYL_ON_111_CMIU_H
 
 #include "../base/methyl_on_bridge.h"
 #include "../specific.h"
 
-class MethylOn111CMu : public Specific<Base<DependentSpec<ParentSpec>, METHYL_ON_111_CMu, 2>>
+class MethylOn111CMiu : public Specific<Base<DependentSpec<ParentSpec>, METHYL_ON_111_CMiu, 2>>
 {
 public:
     static void find(MethylOnBridge *parent);
 
-    MethylOn111CMu(ParentSpec *parent) : Specific(parent) {}
+    MethylOn111CMiu(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     const char *name() const override;
@@ -27,4 +27,4 @@ private:
     static const ushort __roles[2];
 };
 
-#endif // METHYL_ON_111_CMU_H
+#endif // METHYL_ON_111_CMIU_H
