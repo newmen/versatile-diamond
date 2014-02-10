@@ -724,6 +724,15 @@ int main()
                 DesMethylFrom111::RATE +
                 MigrationDownAtDimerFrom111::RATE);
 
+    // 64
+    Handbook::mc().doOneOfOne(MIGRATION_DOWN_AT_DIMER_FROM_111);
+    assert_rate(25 * SurfaceActivation::RATE +
+                SurfaceDeactivation::RATE +
+                2 * DimerDrop::RATE +
+                DimerDropNearBridge::RATE +
+                AbsHydrogenFromGap::RATE +
+                AdsMethylToDimer::RATE);
+
     delete diamond;
     return 0;
 }

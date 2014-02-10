@@ -50,12 +50,14 @@ const bool Handbook::__atomsAccordance[37 * 37] = {
 /* 36 */  false, false, false, false, false, false, false, false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, true, true, false, false, true, false, true, false, false, false, true, true
 };
 
+// TODO: manualy changed transitions for 25 and 26 types because has same types with H
+// TODO: transition 14 -> 10 is the question
 const ushort Handbook::__atomsSpecifing[37] =
 {
     0, 28, 2, 0, 34, 5, 4, 7, 8, 7,
-    10, 26, 27, 13, 10, 15, 16, 17, 15, 19,
-    20, 21, 20, 23, 24, 35, 36, 27, 28, 26,
-    27, 25, 32, 33, 34, 35, 36
+    10, 36, 27, 13, 10, 15, 16, 17, 15, 19,
+    20, 21, 20, 23, 24, 35, 36, 27, 28, 36,
+    27, 35, 32, 33, 34, 35, 36
 };
 
 const ushort Handbook::__hToActives[37] =

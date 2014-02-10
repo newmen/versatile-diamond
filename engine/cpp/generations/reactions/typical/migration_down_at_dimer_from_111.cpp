@@ -41,7 +41,7 @@ void MigrationDownAtDimerFrom111::doIt()
     assert(c->is(22));
 
     bool hMigratedDown = false;
-    if (a->type() == 26)
+    if (a->type() == 36)
     {
         a->activate();
         b->deactivate();
@@ -56,13 +56,13 @@ void MigrationDownAtDimerFrom111::doIt()
     assert(b->lattice()->crystal() == c->lattice()->crystal());
     crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
-    z->changeType(24);
+    z->changeType(32);
 
     if (a->is(13)) a->changeType(21);
     else if (a->is(27)) a->changeType(20);
     else
     {
-        assert(a->type() == 26);
+        assert(a->type() == 36);
         a->changeType(20);
     }
 
