@@ -43,8 +43,8 @@ void BridgeCRs::findAllTypicalReactions()
     DimerFormationNearBridge::find(this);
     HighBridgeToTwoBridges::find(this);
     HighBridgeToMethyl::find(this);
-//    MigrationDownInGap::find(this); // DISABLED
+    MigrationDownInGap::find(this);
     MigrationDownInGapFrom111::find(this);
     MigrationDownInGapFromHighBridge::find(this);
-//    MigrationDownInGapFromDimer::find(this); // DISABLED
+    MigrationDownInGapFromDimer::find(this);
 }

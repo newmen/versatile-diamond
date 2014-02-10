@@ -29,11 +29,11 @@ void MethylOnDimerCMsiu::find(MethylOnDimerCMiu *parent)
 
 void MethylOnDimerCMsiu::findAllChildren()
 {
-//    MethylOnDimerCMssiu::find(this); // DISABLED: MigrationDownInGapFromDimer
+    MethylOnDimerCMssiu::find(this);
 }
 
 void MethylOnDimerCMsiu::findAllTypicalReactions()
 {
     MethylToHighBridge::find(this);
-//    MigrationDownAtDimerFromDimer::find(this); // DISABLED
+    MigrationDownAtDimerFromDimer::find(this);
 }
