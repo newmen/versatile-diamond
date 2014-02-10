@@ -70,6 +70,7 @@ void assert_rate(double rate)
     static const double EPS = 1e-3;
 
     double delta = abs(Handbook::mc().totalRate() - rate);
+    // cout << " <> d = " << delta << endl;
     assert(delta < EPS);
 }
 
@@ -661,6 +662,19 @@ int main()
                 3 * SurfaceDeactivation::RATE +
                 2 * DimerDrop::RATE +
                 AdsMethylTo111::RATE);
+
+    // 59
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 1, s.y - 1, 1);
+    buildBridge(s.x - 2, s.y - 1, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, s.y - 1, 1);
+    buildBridge(s.x - 2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, 0, s.y - 1, 2);
+    assert_rate(23 * SurfaceActivation::RATE +
+                5 * SurfaceDeactivation::RATE +
+                2 * DimerDrop::RATE +
+                DimerFormation::RATE +
+                AdsMethylToDimer::RATE);
 
     delete diamond;
     return 0;
