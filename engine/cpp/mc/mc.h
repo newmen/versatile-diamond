@@ -46,6 +46,8 @@ public:
 
 #ifndef NDEBUG
     void doOneOfOne(ushort rt);
+    void doLastOfOne(ushort rt);
+
     void doOneOfMul(ushort rt);
     void doOneOfMul(ushort rt, int x, int y, int z);
     void doLastOfMul(ushort rt);
@@ -386,6 +388,13 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
 {
     assert(rt < EVENTS_NUM);
     _events[rt].selectEvent(0)->doIt();
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort rt)
+{
+    assert(rt < EVENTS_NUM);
+    _events[rt].selectEvent((_events[rt].size() - 0.5) * _events[rt].oneRate())->doIt();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
