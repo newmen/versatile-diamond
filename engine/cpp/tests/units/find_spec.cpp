@@ -59,9 +59,7 @@ void assert_rate(double rate)
 
 #ifdef PRINT
     cout << "\n\n\n" << endl;
-#endif // PRINT
     cout << delta << endl;
-#ifdef PRINT
     cout << "\n\n\n" << endl;
 #endif // PRINT
 
@@ -804,6 +802,16 @@ int main()
                 2 * NextLevelBridgeToHighBridge::RATE +
                 DesMethylFrom111::RATE +
                 MigrationDownInGapFrom111::RATE +
+                DimerDrop::RATE);
+
+    // 72
+    Handbook::mc().doOneOfOne(MIGRATION_DOWN_IN_GAP_FROM_111);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, s.y - 1, 1);
+    assert_rate(27 * SurfaceActivation::RATE +
+                SurfaceDeactivation::RATE +
+                TwoBridgesToHighBridge::RATE +
+                AdsMethylTo111::RATE +
+                DimerDropNearBridge::RATE +
                 DimerDrop::RATE);
 
     delete diamond;

@@ -54,7 +54,7 @@ void MigrationDownInGapFrom111::doIt()
     assert(b->lattice()->crystal() == c->lattice()->crystal());
     crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
-    z->changeType(24);
+    z->changeType(32);
 
     if (a->is(13)) a->changeType(21);
     else a->changeType(20);
