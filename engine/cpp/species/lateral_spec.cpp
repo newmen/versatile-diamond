@@ -4,11 +4,27 @@
 namespace vd
 {
 
-void LateralSpec::remove()
+void LateralSpec::findLateralReactions()
 {
-    eachDupReaction([this](LateralReaction *reaction) {
-        reaction->unconcretizeBy(this);
-    });
+    findAllLateralReactions();
+    setNotNew();
+}
+
+void LateralSpec::unconcretizeReactions()
+{
+    uint n = 0;
+    LateralReaction **reactionsDup = new LateralReaction *[reactions().size()];
+    for (auto &pr : reactions())
+    {
+        reactionsDup[n++] = pr.second;
+    }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        reactionsDup[i]->unconcretizeBy(this);
+    }
+
+    delete [] reactionsDup;
 }
 
 }

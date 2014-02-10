@@ -12,6 +12,27 @@ Diamond::~Diamond()
     Finder::removeAll(atoms().data(), atoms().size());
 }
 
+const float3 &Diamond::periods() const
+{
+    static const float3 periods(2.45, 2.45, 3.57 / 4);
+    return periods;
+}
+
+float3 Diamond::seeks(const int3 &coords) const
+{
+    if (coords.z == 0)
+    {
+        return float3();
+    }
+    else
+    {
+        float px = periods().x / 2, py = periods().y / 2;
+        int cx = (coords.z + 1) / 2, cy = coords.z / 2;
+
+        return float3(cx * px, cy * py);
+    }
+}
+
 void Diamond::buildAtoms()
 {
     for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
@@ -36,7 +57,7 @@ void Diamond::bondAllAtoms()
     });
 }
 
-Atom *Diamond::makeAtom(uint type, const int3 &coords)
+Atom *Diamond::makeAtom(ushort type, const int3 &coords)
 {
     AtomBuilder builder;
     Atom *atom = builder.buildCd(type, 2, this, coords);

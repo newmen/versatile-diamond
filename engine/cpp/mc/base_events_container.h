@@ -16,25 +16,31 @@ class BaseEventsContainer :
 class BaseEventsContainer
 #endif // PARALLEL
 {
+protected:
+    std::vector<Reaction *> _events;
+
 public:
     virtual ~BaseEventsContainer() {}
 
-#ifdef DEBUG
+#ifndef NDEBUG
     Reaction *selectEvent(const int3 &crd);
-#endif // DEBUG
+#endif // NDEBUG
     Reaction *selectEvent(double r);
-    double commonRate() const;
 
-#ifdef PRINT
+    double oneRate() const { return _events.front()->rate(); }
+    double commonRate() const { return _events.empty() ? 0.0 : oneRate() * _events.size(); }
+
+#if defined(PRINT) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
 #endif // PRINT
 
 protected:
-    template <class R>
-    R *exchangeToLast(uint index);
+    BaseEventsContainer() = default;
 
-    std::vector<Reaction *> _events;
+    template <class R> R *exchangeToLast(uint index);
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class R>
 R *BaseEventsContainer::exchangeToLast(uint index)
@@ -47,7 +53,7 @@ R *BaseEventsContainer::exchangeToLast(uint index)
     if (_events.cbegin() + index != _events.cend())
     {
         _events[index] = last;
-        return cast_to<R *>(last);
+        return static_cast<R *>(last);
     }
     return nullptr;
 }

@@ -1,26 +1,25 @@
 #ifndef KEEPER_H
 #define KEEPER_H
 
-#include <vector>
 #include "../tools/collector.h"
 
 namespace vd
 {
 
-template <class S>
+template <class S, void (S::*M)()>
 class Keeper : public Collector<S>
 {
 public:
-    void findReactions();
+    void find();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class S>
-void Keeper<S>::findReactions()
+template <class S, void (S::*M)()>
+void Keeper<S, M>::find()
 {
-    Collector<S>::each([](S * spec) {
-        spec->findReactions();
+    Collector<S>::each([](S *spec) {
+        (spec->*M)();
     });
 }
 

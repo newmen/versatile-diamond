@@ -1,13 +1,13 @@
 #ifndef SOURCE_SPEC_H
 #define SOURCE_SPEC_H
 
-#include "multi_inheritance_dispatcher.h"
+#include "../atoms/atom.h"
 
 namespace vd
 {
 
 template <class B, ushort ATOMS_NUM>
-class SourceSpec : public MultiInheritanceDispatcher<B>
+class SourceSpec : public B
 {
     Atom *_atoms[ATOMS_NUM];
 

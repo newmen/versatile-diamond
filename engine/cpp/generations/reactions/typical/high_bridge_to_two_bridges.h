@@ -7,16 +7,20 @@
 
 class HighBridgeToTwoBridges : public Typical<HIGH_BRIDGE_STAND_TO_TWO_BRIDGES, 2>
 {
+    static const char __name[];
+
 public:
+    static const double RATE;
+
     static void find(HighBridge *target);
     static void find(BridgeCRs *target);
 
     HighBridgeToTwoBridges(SpecificSpec **targets) : Typical(targets) {}
 
-    double rate() const { return 7.7e6; }
-    void doIt();
+    void doIt() override;
 
-    std::string name() const override { return "high bridge incorporates in crystal lattice near another bridge"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // HIGH_BRIDGE_TO_TWO_BRIDGES_H

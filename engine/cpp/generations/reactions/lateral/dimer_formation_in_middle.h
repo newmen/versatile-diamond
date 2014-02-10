@@ -5,12 +5,15 @@
 
 class DimerFormationInMiddle : public Lateral<DIMER_FORMATION_IN_MIDDLE, 2>
 {
-public:
-    template <class... Args>
-    DimerFormationInMiddle(Args... args) : Lateral(args...) {}
+    static const char __name[];
 
-    double rate() const { return 3.1e5; }
-    std::string name() const { return "dimer formation in middle of dimers row"; }
+public:
+    static const double RATE;
+
+    template <class... Args> DimerFormationInMiddle(Args... args) : Lateral(args...) {}
+
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };

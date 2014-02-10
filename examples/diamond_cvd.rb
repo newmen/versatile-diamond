@@ -126,6 +126,7 @@ events
   reaction 'methyl adsorption to face 111'
     equation bridge(cr: *) + methane(c: *) = methyl_on_111
     activation 0
+    forward_rate 1.2e-1
     reverse_rate 5.4e6
 
   reaction 'methyl activation'
@@ -142,6 +143,13 @@ events
 
     activation 0
     forward_rate 4.5e13, 'cm3/(mol * s)'
+
+  reaction 'hydrogen abstraction from gap'
+    aliases one: bridge, two: bridge
+    # TODO: there should be used H atoms directly
+    equation one(cr: i) + two(cr: i) = one(cr: *) + two(cr: *) + hydrogen
+    activation 35
+    forward_rate 3e5 # TODO: maybe value more grater than present
 
   reaction 'same methyl-dimer hydrogen migration'
     equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)

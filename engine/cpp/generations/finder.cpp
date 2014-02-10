@@ -2,6 +2,8 @@
 #include "handbook.h"
 
 #include "species/base/bridge.h"
+#include "species/base/bridge_with_dimer.h"
+#include "species/base/two_bridges.h"
 #include "species/sidepiece/dimer.h"
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
@@ -31,6 +33,7 @@ void Finder::findAll(Atom **atoms, uint n)
 {
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
+        os << " ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
         os << "Find by " << n << " atoms";
         for (uint i = 0; i < n; ++i)
         {
@@ -39,12 +42,12 @@ void Finder::findAll(Atom **atoms, uint n)
     });
 #endif // PRINT
 
-#ifdef DEBUG
+#ifndef NDEBUG
     for (uint i = 0; i < n; ++i)
     {
         assert(atoms[i]);
     }
-#endif // DEBUG
+#endif // NDEBUG
 
     for (uint i = 0; i < n; ++i)
     {
@@ -61,6 +64,8 @@ void Finder::findAll(Atom **atoms, uint n)
         atoms[i]->setSpecsUnvisited();
     }
 
+    // ---------------------------------------------------------------------------------------------------------- //
+
     for (uint i = 0; i < n; ++i)
     {
         Bridge::find(atoms[i]);
@@ -70,6 +75,18 @@ void Finder::findAll(Atom **atoms, uint n)
     {
         Dimer::find(atoms[i]);
     }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        TwoBridges::find(atoms[i]);
+    }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        BridgeWithDimer::find(atoms[i]);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------- //
 
     for (uint i = 0; i < n; ++i)
     {
@@ -83,8 +100,8 @@ void Finder::findAll(Atom **atoms, uint n)
     }
 
     // order is important
-    Handbook::specificKeeper().findReactions();
-    Handbook::lateralKeeper().findReactions();
+    Handbook::specificKeeper().find();
+    Handbook::lateralKeeper().find();
 
     for (uint i = 0; i < n; ++i)
     {

@@ -3,9 +3,12 @@
 #include "../lateral/dimer_drop_at_end.h"
 #include "../lateral/dimer_drop_in_middle.h"
 
+const char DimerDrop::__name[] = "dimer drop";
+const double DimerDrop::RATE = 2.2e6 * std::exp(-0.8e3 / (1.98 * Env::T));
+
 void DimerDrop::find(DimerCRiCLi *target)
 {
-    createBy<DimerDrop>(target);
+    create<DimerDrop>(target);
 }
 
 void DimerDrop::doIt()
@@ -23,7 +26,7 @@ void DimerDrop::doIt()
     Finder::findAll(atoms, 2);
 }
 
-LateralReaction *DimerDrop::findAllLateral()
+LateralReaction *DimerDrop::lookAround()
 {
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };
     LateralSpec *neighbours[2] = { nullptr, nullptr };

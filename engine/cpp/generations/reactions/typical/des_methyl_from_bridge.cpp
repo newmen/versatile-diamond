@@ -1,18 +1,22 @@
 #include "des_methyl_from_bridge.h"
 
-void DesMethylFromBridge::find(MethylOnBridgeCBiCMu *target)
+const char DesMethylFromBridge::__name[] = "desorption methyl from bridge";
+const double DesMethylFromBridge::RATE = 1.7e7 * std::exp(-0 / (1.98 * Env::T));
+
+void DesMethylFromBridge::find(MethylOnBridgeCBiCMiu *target)
 {
-    createBy<DesMethylFromBridge>(target);
+    create<DesMethylFromBridge>(target);
 }
 
 void DesMethylFromBridge::doIt()
 {
-    assert(target()->type() == MethylOnBridgeCBiCMu::ID);
+    assert(target()->type() == MethylOnBridgeCBiCMiu::ID);
 
     Atom *atoms[2] = { target()->atom(1), target()->atom(0) };
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(7));
+    assert(b->is(25));
 
     a->unbondFrom(b);
 

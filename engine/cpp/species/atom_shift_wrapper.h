@@ -12,10 +12,10 @@ class AtomShiftWrapper : public B
 {
     ushort _atomsShift;
 
-public:
-    template <class... Ts>
-    AtomShiftWrapper(ushort atomsShift, Ts... args) : B(args...), _atomsShift(atomsShift) {}
+protected:
+    template <class... Args> AtomShiftWrapper(ushort atomsShift, Args... args) : B(args...), _atomsShift(atomsShift) {}
 
+public:
     Atom *atom(ushort index) const override;
 };
 

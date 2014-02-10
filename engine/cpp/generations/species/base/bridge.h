@@ -11,18 +11,18 @@ public:
     Bridge(Atom **atoms) : Base(atoms) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge"; }
+    const char *name() const override;
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[3];
-    static ushort __roles[3];
+    static const ushort __indexes[3];
+    static const ushort __roles[3];
 };
 
 #endif // BRIDGE_H

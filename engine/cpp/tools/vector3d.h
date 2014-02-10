@@ -17,18 +17,19 @@ public:
     vector3d(const dim3 &sizes, const T &initValue);
     ~vector3d();
 
-    T *data() { return _data; }
+    T *data() const { return _data; }
+
     uint size() const { return _sizes.N(); }
     const dim3 &sizes() const { return _sizes; }
 
-    const T &operator[] (const int3 &coords) const
+    const T &operator [] (const int3 &coords) const
     {
         int3 cc = correct(coords);
         uint i = index(cc);
         return _data[i];
     }
 
-    T &operator[] (const int3 &coords)
+    T &operator [] (const int3 &coords)
     {
         return _data[index(correct(coords))];
     }
@@ -36,10 +37,14 @@ public:
     template <class Lambda> void each(const Lambda &lambda) const;
     template <class Lambda> void ompParallelEach(const Lambda &lambda) const;
 
-    template <typename R, class Lambda>
-    R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
+    template <typename R, class Lambda> R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
 
 private:
+    vector3d(const vector3d<T> &) = delete;
+    vector3d(vector3d<T> &&) = delete;
+    vector3d<T> &operator = (const vector3d<T> &) = delete;
+    vector3d<T> &operator = (vector3d<T> &&) = delete;
+
     uint index(const int3 &coords) const
     {
         return _sizes.x * _sizes.y * coords.z + _sizes.x * coords.y + coords.x;
@@ -63,6 +68,8 @@ private:
         return value;
     }
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
 vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes)

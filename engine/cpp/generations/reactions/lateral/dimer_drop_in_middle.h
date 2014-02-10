@@ -5,12 +5,15 @@
 
 class DimerDropInMiddle : public Lateral<DIMER_DROP_IN_MIDDLE, 2>
 {
-public:
-    template <class... Args>
-    DimerDropInMiddle(Args... args) : Lateral(args...) {}
+    static const char __name[];
 
-    double rate() const { return 4.8e3; }
-    std::string name() const { return "dimer drop in middle of dimers row"; }
+public:
+    static const double RATE;
+
+    template <class... Args> DimerDropInMiddle(Args... args) : Lateral(args...) {}
+
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };

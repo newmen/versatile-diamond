@@ -5,9 +5,10 @@
 #include "../tools/common.h"
 #include "../tools/scavenger.h"
 #include "../species/keeper.h"
-#include "../species/specific_spec.h"
 #include "../species/lateral_spec.h"
+#include "../species/specific_spec.h"
 
+#include "env.h"
 #include "finder.h"
 #include "names.h"
 #include "phases/diamond.h"
@@ -17,13 +18,15 @@ class Handbook
 {
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
-    typedef Keeper<SpecificSpec> SDKeeper;
-    typedef Keeper<LateralSpec> LDKeeper;
+    typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
+    typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 
     static DMC __mc;
     static PhaseBoundary __amorph;
-    static SDKeeper __specificKeepers[THREADS_NUM];
-    static LDKeeper __lateralKeepers[THREADS_NUM];
+
+    static LKeeper __lateralKeepers[THREADS_NUM];
+    static SKeeper __specificKeepers[THREADS_NUM];
+
     static Scavenger __scavengers[THREADS_NUM];
 
 public:
@@ -33,16 +36,16 @@ public:
 
     static PhaseBoundary &amorph();
 
-    static SDKeeper &specificKeeper();
-    static LDKeeper &lateralKeeper();
+    static SKeeper &specificKeeper();
+    static LKeeper &lateralKeeper();
+
     static Scavenger &scavenger();
 
     // atoms
     static const ushort atomsNum;
 
 private:
-    template <class T>
-    static T &selectForThread(T *container);
+    template <class T> static inline T &selectForThread(T *container);
 
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
@@ -57,6 +60,8 @@ public:
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 T &Handbook::selectForThread(T *container)

@@ -1,5 +1,4 @@
 #include "atom.h"
-#include "../species/specific_spec.h"
 #include "lattice.h"
 
 namespace vd
@@ -38,13 +37,13 @@ void Atom::bondWith(Atom *neighbour, int depth)
     assert(_actives > 0);
     assert(_relatives.size() + _actives <= valence());
 
-#ifdef DEBUG
+#ifndef NDEBUG
     // latticed atom cannot be bonded twise with another latticed atom
     if (lattice() && neighbour->lattice())
     {
         assert(_relatives.find(neighbour) == _relatives.cend());
     }
-#endif // DEBUG
+#endif // NDEBUG
 
     _relatives.insert(neighbour);
     deactivate();
@@ -66,7 +65,7 @@ bool Atom::hasBondWith(Atom *neighbour) const
     return _relatives.find(neighbour) != _relatives.cend();
 }
 
-Atom *Atom::amorphNeighbour()
+Atom *Atom::amorphNeighbour() const
 {
     Atom *neighbour = nullptr;
     for (Atom *relative : _relatives)
@@ -79,7 +78,7 @@ Atom *Atom::amorphNeighbour()
     }
 
     assert(neighbour);
-#ifdef DEBUG
+#ifndef NDEBUG
     for (Atom *relative : _relatives)
     {
         if (!relative->lattice() && relative != neighbour)
@@ -87,12 +86,12 @@ Atom *Atom::amorphNeighbour()
             assert(false); // if has many unlatticed atoms
         }
     }
-#endif // DEBUG
+#endif // NDEBUG
 
     return neighbour;
 }
 
-Atom *Atom::firstCrystalNeighbour()
+Atom *Atom::firstCrystalNeighbour() const
 {
     if (!_relatives.empty())
     {
@@ -137,12 +136,15 @@ void Atom::unsetLattice()
 
 void Atom::describe(ushort role, BaseSpec *spec)
 {
+    assert(is(role));
+
     const uint key = hash(role, spec->type());
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        os << "describe " << this << std::dec;
+        os << "describe " << this << " " << std::dec;
         pos(os);
+        os << " " << spec->name();
         os << " |" << type() << ", " << _prevType << "| role type: " << role
            << ". spec type: " << spec->type() << ". key: " << key;
     });
@@ -185,12 +187,29 @@ void Atom::forget(ushort role, BaseSpec *spec)
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        os << "forget " << this << std::dec;
+        os << "forget " << this << " " << std::dec;
         pos(os);
+        os << " " << spec->name();
         os << " |" << type() << ", " << _prevType << "| role type: " << role
                   << ". spec type: " << spec->type() << ". key: " << key;
     });
 #endif // PRINT
+}
+
+bool Atom::hasSpec(ushort role, BaseSpec *spec) const
+{
+    const uint key = hash(role, spec->type());
+
+    auto range = _specs.equal_range(key);
+    for (; range.first != range.second; ++range.first)
+    {
+        if (range.first->second == spec)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void Atom::setSpecsUnvisited()
@@ -235,11 +254,7 @@ void Atom::findUnvisitedChildren()
 {
     for (auto &pr : _specs)
     {
-        BaseSpec *spec = pr.second;
-        if (!spec->isVisited())
-        {
-            spec->findChildren();
-        }
+        pr.second->findChildren();
     }
 }
 
@@ -247,6 +262,13 @@ void Atom::prepareToRemove()
 {
     _prevType = _type;
     setType(NO_VALUE);
+}
+
+ushort Atom::hCount() const
+{
+    int hc = (int)valence() - actives() - bonds();
+    assert(hc >= 0);
+    return (ushort)hc;
 }
 
 #ifdef PRINT
@@ -280,5 +302,49 @@ void Atom::pos(std::ostream &os)
 }
 
 #endif // PRINT
+
+bool Atom::hasRole(ushort sid, ushort role) const
+{
+    const uint key = hash(role, sid);
+    return _specs.find(key) != _specs.cend();
+}
+
+bool Atom::checkAndFind(ushort sid, ushort role)
+{
+    BaseSpec *spec = specByRole(sid, role);
+    if (spec)
+    {
+        spec->findChildren();
+    }
+
+    return spec != nullptr;
+}
+
+BaseSpec *Atom::specByRole(ushort sid, ushort role)
+{
+    BaseSpec *result = nullptr;
+    const uint key = hash(role, sid);
+
+#ifdef PRINT
+    debugPrint([&](std::ostream &os) {
+        os << "specByRole " << this << std::dec;
+        pos(os);
+        os << " |" << type() << ", " << _prevType << "| role type: " << role
+           << ". spec type: " << sid << ". key: " << key;
+        auto range = _specs.equal_range(key);
+        os << " -> distance: " << std::distance(range.first, range.second);
+    });
+#endif // PRINT
+
+    auto range = _specs.equal_range(key);
+    uint distance = std::distance(range.first, range.second);
+    if (distance > 0)
+    {
+        assert(distance == 1);
+        result = range.first->second;
+    }
+
+    return result;
+}
 
 }

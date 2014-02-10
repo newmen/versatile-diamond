@@ -1,4 +1,4 @@
-#ifdef DEBUG
+#ifndef NDEBUG
 
 #include "../../generations/atoms/c.h"
 #include "../../generations/phases/diamond.h"
@@ -6,11 +6,14 @@
 
 class OpenDiamond : public Diamond
 {
+    enum : ushort { DEFAULT_HEIGHT = 4 };
+
 public:
     typedef Neighbours<4> FN;
 
     static const dim3 SIZES;
-    OpenDiamond(uint height = 4) : Diamond(SIZES, height) {}
+    OpenDiamond(uint height = DEFAULT_HEIGHT) : Diamond(SIZES, height) {}
+    OpenDiamond(const dim3 &sizes, uint height = DEFAULT_HEIGHT) : Diamond(sizes, height) {}
 
     Atom *atom(const int3 &coords) { return atoms()[coords]; }
 
@@ -44,4 +47,4 @@ public:
     uint activesNum() const { return C::actives(); }
 };
 
-#endif // DEBUG
+#endif // NDEBUG

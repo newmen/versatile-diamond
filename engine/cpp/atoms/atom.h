@@ -1,8 +1,10 @@
 #ifndef ATOM_H
 #define ATOM_H
 
+#include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
+#include "../species/base_spec.h"
 #include "../tools/common.h"
 #include "lattice.h"
 
@@ -10,8 +12,6 @@ namespace vd
 {
 
 const ushort NO_VALUE = (ushort)(-1);
-
-class BaseSpec;
 
 class Atom
 {
@@ -27,12 +27,11 @@ class Atom
     std::unordered_multimap<uint, BaseSpec *> _specs;
 
 public:
-    Atom(ushort type, ushort actives, Lattice *lattice);
     virtual ~Atom();
 
     void setVisited() { _visited = true; }
     void setUnvisited() { _visited = false; }
-    bool isVisited() { return _visited; }
+    bool isVisited() const { return _visited; }
 
     ushort type() const { return _type; }
     ushort prevType() const { return _prevType; }
@@ -49,8 +48,10 @@ public:
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
 
-    Atom *amorphNeighbour();
-    Atom *firstCrystalNeighbour();
+    template <class L> void eachNeighbour(const L &lambda) const;
+
+    Atom *amorphNeighbour() const;
+    Atom *firstCrystalNeighbour() const;
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
@@ -58,12 +59,12 @@ public:
 
     void describe(ushort role, BaseSpec *spec);
     void forget(ushort role, BaseSpec *spec);
+    bool hasSpec(ushort role, BaseSpec *spec) const;
 
-    template <class S>
-    bool hasRole(ushort role);
-
-    template <class S>
-    S *specByRole(ushort role);
+    bool hasRole(ushort sid, ushort role) const;
+    bool checkAndFind(ushort sid, ushort role);
+    template <class S> S *specByRole(ushort role);
+    template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -71,23 +72,26 @@ public:
 
     void prepareToRemove();
 
+    virtual const char *name() const = 0;
+
+    virtual ushort valence() const = 0;
+    ushort bonds() const { return _relatives.size(); }
+    ushort actives() const { return _actives; }
+    ushort hCount() const;
+
 #ifdef PRINT
     void info(std::ostream &os);
     void pos(std::ostream &os);
 #endif // PRINT
 
-#ifdef DEBUG
-    virtual ushort valence() const = 0;
-#endif // DEBUG
-
 protected:
+    Atom(ushort type, ushort actives, Lattice *lattice);
+
     void setType(ushort type) { _type = type; }
 
-#ifdef DEBUG
-    ushort actives() const { return _actives; }
-#endif // DEBUG
-
 private:
+    BaseSpec *specByRole(ushort sid, ushort role);
+
     uint hash(ushort first, ushort second) const
     {
         uint at = first;
@@ -95,39 +99,31 @@ private:
     }
 };
 
-template <class S>
-bool Atom::hasRole(ushort role)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <class L>
+void Atom::eachNeighbour(const L &lambda) const
 {
-    const uint key = hash(role, S::ID);
-    return _specs.find(key) != _specs.cend();
+    std::for_each(_relatives.cbegin(), _relatives.cend(), lambda);
 }
 
 template <class S>
 S *Atom::specByRole(ushort role)
 {
-    BaseSpec *result = nullptr;
+    BaseSpec *result = specByRole(S::ID, role);
+    return static_cast<S *>(result);
+}
+
+template <class S, class L>
+void Atom::eachSpecByRole(ushort role, const L &lambda)
+{
     const uint key = hash(role, S::ID);
-
-#ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "specByRole " << this << std::dec;
-        pos(os);
-        os << " |" << type() << ", " << _prevType << "| role type: " << role
-           << ". spec type: " << S::ID << ". key: " << key;
-        auto range = _specs.equal_range(key);
-        os << " -> distance: " << std::distance(range.first, range.second);
-    });
-#endif // PRINT
-
     auto range = _specs.equal_range(key);
-    uint distance = std::distance(range.first, range.second);
-    if (distance > 0)
+    for (; range.first != range.second; ++range.first)
     {
-        assert(distance == 1);
-        result = range.first->second;
+        BaseSpec *spec = range.first->second;
+        lambda(static_cast<S *>(spec));
     }
-
-    return cast_to<S *>(result);
 }
 
 }

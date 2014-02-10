@@ -11,16 +11,19 @@ class Diamond : public DiamondRelations<Crystal>
     int _defaultSurfaceHeight;
 
 public:
-#ifdef DEBUG
+#ifndef NDEBUG
     typedef DiamondRelations<Crystal> Relations;
-#endif // DEBUG
+#endif // NDEBUG
 
     Diamond(const dim3 &sizes, int defaultSurfaceHeight = 2);
     ~Diamond();
 
 protected:
+    const float3 &periods() const override;
+    float3 seeks(const int3 &coords) const override;
+
     void buildAtoms() override;
-    Atom *makeAtom(uint type, const int3 &coords) override;
+    Atom *makeAtom(ushort type, const int3 &coords) override;
     void bondAllAtoms() override;
 
     void findAll() override;

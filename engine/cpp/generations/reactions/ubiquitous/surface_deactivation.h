@@ -5,13 +5,17 @@
 
 class SurfaceDeactivation : public DeactivationData<SURFACE_DEACTIVATION>
 {
+    static const char __name[];
+
 public:
+    static const double RATE;
+
     static void find(Atom *anchor);
 
     SurfaceDeactivation(Atom *target) : DeactivationData(target) {}
 
-    double rate() const { return 2000; }
-    std::string name() const { return "surface deactivation"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // SURFACE_DEACTIVATION_H

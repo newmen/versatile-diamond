@@ -1,20 +1,24 @@
 #ifndef DES_METHYL_FROM_BRIDGE_H
 #define DES_METHYL_FROM_BRIDGE_H
 
-#include "../../species/specific/methyl_on_bridge_cbi_cmu.h"
+#include "../../species/specific/methyl_on_bridge_cbi_cmiu.h"
 #include "../typical.h"
 
 class DesMethylFromBridge : public Typical<DES_METHYL_FROM_BRIDGE>
 {
+    static const char __name[];
+
 public:
-    static void find(MethylOnBridgeCBiCMu *target);
+    static const double RATE;
+
+    static void find(MethylOnBridgeCBiCMiu *target);
 
     DesMethylFromBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e4; }
-    void doIt();
+    void doIt() override;
 
-    std::string name() const override { return "desorption methyl from bridge"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // DES_METHYL_FROM_BRIDGE_H

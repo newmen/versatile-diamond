@@ -11,7 +11,14 @@ class LateralReaction;
 class LateralSpec : public Reactant<LateralReaction>
 {
 public:
-    void remove() override;
+    void findLateralReactions();
+
+protected:
+    LateralSpec() = default;
+
+    virtual void findAllLateralReactions() = 0;
+
+    void unconcretizeReactions();
 };
 
 }

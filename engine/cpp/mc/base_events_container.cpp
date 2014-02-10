@@ -3,7 +3,7 @@
 namespace vd
 {
 
-#ifdef DEBUG
+#ifndef NDEBUG
 Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
 {
     for (Reaction *event : _events)
@@ -17,7 +17,7 @@ Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
     assert(false); // multi event by crd was not found
     return nullptr;
 }
-#endif // DEBUG
+#endif // NDEBUG
 
 Reaction *BaseEventsContainer::selectEvent(double r)
 {
@@ -33,13 +33,6 @@ Reaction *BaseEventsContainer::selectEvent(double r)
 #endif // PRINT
 
     return _events[index];
-}
-
-double BaseEventsContainer::commonRate() const
-{
-    return (_events.empty()) ?
-                0.0 :
-                _events.front()->rate() * _events.size();
 }
 
 }

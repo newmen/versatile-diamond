@@ -11,20 +11,27 @@
 #include "../specific/dimer_cri_cli.h"
 #include "../specific/dimer_crs.h"
 
-ushort Dimer::__indexes[2] = { 0, 3 };
-ushort Dimer::__roles[2] = { 22, 22 };
+const ushort Dimer::__indexes[2] = { 0, 3 };
+const ushort Dimer::__roles[2] = { 22, 22 };
+
+#ifdef PRINT
+const char *Dimer::name() const
+{
+    static const char value[] = "dimer";
+    return value;
+}
+#endif // PRINT
 
 void Dimer::find(Atom *anchor)
 {
     if (anchor->is(22))
     {
-        if (!checkAndFind<Dimer>(anchor, 22))
+        if (!anchor->checkAndFind(DIMER, 22))
         {
             eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
-                if (anchor->hasBondWith(neighbour))
+                if (neighbour->is(22) && anchor->hasBondWith(neighbour))
                 {
-                    assert(neighbour->hasRole<Bridge>(3));
-                    assert(neighbour->is(22));
+                    assert(neighbour->hasRole(BRIDGE, 3));
                     assert(neighbour->lattice());
 
                     ParentSpec *parents[2] = {
@@ -32,7 +39,7 @@ void Dimer::find(Atom *anchor)
                         neighbour->specByRole<Bridge>(3)
                     };
 
-                    createBy<Dimer>(parents);
+                    create<Dimer>(parents);
                 }
             });
         }
@@ -46,7 +53,7 @@ void Dimer::findAllChildren()
     DimerCRs::find(this);
 }
 
-void Dimer::findAllReactions()
+void Dimer::findAllLateralReactions()
 {
     Atom *atoms[2] = { atom(0), atom(3) };
 

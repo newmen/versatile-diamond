@@ -5,13 +5,17 @@
 
 class SurfaceActivation : public ActivationData<SURFACE_ACTIVATION>
 {
+    static const char __name[];
+
 public:
+    static const double RATE;
+
     static void find(Atom *anchor);
 
     SurfaceActivation(Atom *target) : ActivationData(target) {}
 
-    double rate() const { return 3600; }
-    std::string name() const { return "surface activation"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // SURFACE_ACTIVATION_H

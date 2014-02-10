@@ -17,7 +17,7 @@ class CommonMCData
 {
     RandomGenerator _generators[THREADS_NUM];
 
-    uint _wasntFound, _sameSites;
+    ushort _wasntFound, _sameSites;
     bool _sames[THREADS_NUM];
     Reaction *_reactions[THREADS_NUM];
 
@@ -43,6 +43,11 @@ public:
     void reset();
 
 private:
+    CommonMCData(const CommonMCData &) = delete;
+    CommonMCData(CommonMCData &&) = delete;
+    CommonMCData &operator = (const CommonMCData &) = delete;
+    CommonMCData &operator = (CommonMCData &&) = delete;
+
     inline int currThreadNum() const;
     inline void updateSame(int currentThread, int anotherThread);
     inline void setSame(uint threadId);

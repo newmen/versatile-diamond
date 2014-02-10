@@ -1,5 +1,8 @@
 #include "high_bridge_to_two_bridges.h"
 
+const char HighBridgeToTwoBridges::__name[] = "high bridge incorporates in crystal lattice near another bridge";
+const double HighBridgeToTwoBridges::RATE = 2.9e11 * std::exp(-3.2e3 / (1.98 * Env::T));
+
 void HighBridgeToTwoBridges::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
@@ -14,7 +17,7 @@ void HighBridgeToTwoBridges::find(HighBridge *target)
                 neighbourSpec
             };
 
-            createBy<HighBridgeToTwoBridges>(targets);
+            create<HighBridgeToTwoBridges>(targets);
         }
     });
 }
@@ -33,7 +36,7 @@ void HighBridgeToTwoBridges::find(BridgeCRs *target)
                 target
             };
 
-            createBy<HighBridgeToTwoBridges>(targets);
+            create<HighBridgeToTwoBridges>(targets);
         }
     });
 }
@@ -58,7 +61,7 @@ void HighBridgeToTwoBridges::doIt()
 
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

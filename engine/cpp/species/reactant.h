@@ -2,13 +2,14 @@
 #define REACTANT_H
 
 #include <unordered_map>
-#include "base_spec.h"
+#include "../atoms/atom.h"
+#include "../tools/common.h"
 
 namespace vd
 {
 
 template <class R>
-class Reactant : virtual public BaseSpec
+class Reactant
 {
     typedef std::unordered_multimap<ushort, R *> Reactions;
 
@@ -16,33 +17,40 @@ class Reactant : virtual public BaseSpec
     bool _isNew = true;
 
 public:
-    void store() override;
+    virtual ~Reactant() {}
+
+    virtual ushort type() const = 0;
+    virtual Atom *atom(ushort index) const = 0;
+    virtual Atom *anchor() const = 0;
+
+    void keep();
 
     void insertReaction(R *reaction);
     void eraseReaction(R *reaction);
 
-    template <class CR> CR *checkoutReaction(); // TODO: is never used now?
-    template <class CR, class S> CR *checkoutReactionWith(S *spec);
+    template <class CR> CR *checkoutReaction();
+    template <class CR> CR *checkoutReactionWith(const Reactant<R> *other);
     bool haveReaction(R *reaction) const;
 
-    void findReactions();
-
 protected:
-    virtual void keepFirstTime() = 0;
-    virtual void findAllReactions() = 0;
+    Reactant() = default;
 
-    template <class L>
-    void eachDupReaction(const L &lambda);
+    void setNotNew() { _isNew = false; }
+    Reactions &reactions() { return _reactions; }
+
+    virtual void keepFirstTime() = 0;
 
 private:
-    R **reactionsDup(uint &n);
+    R *checkoutReaction(ushort rid);
+    R *checkoutReactionWith(ushort rid, const Reactant<R> *other);
+
     typename Reactions::const_iterator find(R *reaction) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class R>
-void Reactant<R>::store()
+void Reactant<R>::keep()
 {
     if (_isNew)
     {
@@ -69,21 +77,41 @@ template <class R>
 template <class CR>
 CR *Reactant<R>::checkoutReaction()
 {
-#ifdef DEBUG
-    auto range = _reactions.equal_range(CR::ID);
-    assert(std::distance(range.first, range.second) < 2);
-#endif // DEBUG
-
-    auto pr = _reactions.find(CR::ID);
-    return (pr != _reactions.cend()) ? cast_to<CR *>(pr->second) : nullptr;
+    R *result = checkoutReaction(CR::ID);
+    return static_cast<CR *>(result);
 }
 
 template <class R>
-template <class CR, class S>
-CR *Reactant<R>::checkoutReactionWith(S *spec)
+template <class CR>
+CR *Reactant<R>::checkoutReactionWith(const Reactant<R> *other)
 {
-    auto currentRange = _reactions.equal_range(CR::ID);
-    auto anotherRange = spec->_reactions.equal_range(CR::ID);
+    R *result = checkoutReactionWith(CR::ID, other);
+    return static_cast<CR *>(result);
+}
+
+template <class R>
+bool Reactant<R>::haveReaction(R *reaction) const
+{
+    return find(reaction) != _reactions.cend();
+}
+
+template <class R>
+R *Reactant<R>::checkoutReaction(ushort rid)
+{
+#ifndef NDEBUG
+    auto range = _reactions.equal_range(rid);
+    assert(std::distance(range.first, range.second) < 2);
+#endif // NDEBUG
+
+    auto pr = _reactions.find(rid);
+    return (pr != _reactions.cend()) ? pr->second : nullptr;
+}
+
+template <class R>
+R *Reactant<R>::checkoutReactionWith(ushort rid, const Reactant<R> *other)
+{
+    auto currentRange = _reactions.equal_range(rid);
+    auto anotherRange = other->_reactions.equal_range(rid);
 
     R *result = nullptr;
     for (; currentRange.first != currentRange.second; ++currentRange.first)
@@ -102,60 +130,7 @@ CR *Reactant<R>::checkoutReactionWith(S *spec)
     }
 
     break_both_loops :;
-
-    return cast_to<CR *>(result);
-}
-
-template <class R>
-bool Reactant<R>::haveReaction(R *reaction) const
-{
-    return find(reaction) != _reactions.cend();
-}
-
-template <class R>
-void Reactant<R>::findReactions()
-{
-    findAllReactions();
-    _isNew = false;
-}
-
-template <class R>
-template <class L>
-void Reactant<R>::eachDupReaction(const L &lambda)
-{
-    uint n = 0;
-    auto dup = reactionsDup(n);
-
-    if (n > 0)
-    {
-        for (uint i = 0; i < n; ++i)
-        {
-            lambda(dup[i]);
-        }
-
-        delete [] dup;
-    }
-}
-
-template <class R>
-R **Reactant<R>::reactionsDup(uint &n)
-{
-    n = 0;
-    if (_reactions.size() == 0)
-    {
-        return nullptr;
-    }
-    else
-    {
-        R **dup = new R *[_reactions.size()];
-
-        for (auto &pr : _reactions)
-        {
-            dup[n++] = pr.second;
-        }
-
-        return dup;
-    }
+    return result;
 }
 
 template <class R>

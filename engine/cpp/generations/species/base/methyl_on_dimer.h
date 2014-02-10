@@ -4,31 +4,29 @@
 #include "../sidepiece/dimer.h"
 #include "../base.h"
 
-class MethylOnDimer :
-        public Base<AdditionalAtomsWrapper<AtomShiftWrapper<DependentSpec<ParentSpec>>, 1>, METHYL_ON_DIMER, 2>
+class MethylOnDimer : public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_DIMER, 2>
 {
 public:
     static void find(Dimer *target);
 
-    MethylOnDimer(Atom **additionalAtoms, ushort atomsShift, ParentSpec *parent) :
-        Base(additionalAtoms, atomsShift, parent) {}
+    MethylOnDimer(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
 
     void store() override;
     void remove() override;
 
 #ifdef PRINT
-    std::string name() const override { return "methyl on dimer"; }
+    const char *name() const override;
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
 
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
+
 private:
-    static ushort __indexes[2];
-    static ushort __roles[2];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
 #endif // METHYL_ON_DIMER_H

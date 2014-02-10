@@ -6,15 +6,19 @@
 
 class NextLevelBridgeToHighBridge : public Typical<NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE>
 {
+    static const char __name[];
+
 public:
+    static const double RATE;
+
     static void find(BridgeCRsCTiCLi *target);
 
     NextLevelBridgeToHighBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 3.5e3; }
-    void doIt();
+    void doIt() override;
 
-    std::string name() const override { return "next layer bridge to high bridge"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE_H

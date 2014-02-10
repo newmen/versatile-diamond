@@ -6,12 +6,15 @@
 
 class DimerDropAtEnd : public ConcretizableRole<Lateral, DIMER_DROP_AT_END, 1>
 {
-public:
-    template <class... Args>
-    DimerDropAtEnd(Args... args) : ConcretizableRole(args...) {}
+    static const char __name[];
 
-    double rate() const { return 4.9e3; }
-    std::string name() const { return "dimer drop at end of dimers row"; }
+public:
+    static const double RATE;
+
+    template <class... Args> DimerDropAtEnd(Args... args) : ConcretizableRole(args...) {}
+
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;
 };
