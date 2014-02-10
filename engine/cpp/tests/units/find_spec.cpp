@@ -1079,6 +1079,42 @@ int main()
                 AdsMethylToDimer::RATE +
                 DimerDropNearBridge::RATE);
 
+    // 95
+    Handbook::mc().doOneOfOne(MIGRATION_DOWN_AT_DIMER);
+    assert_rate(28 * SurfaceActivation::RATE +
+                2 * SurfaceDeactivation::RATE +
+                HighBridgeStandToDimer::RATE +
+                AdsMethylToDimer::RATE +
+                DimerDrop::RATE);
+
+    // 96
+    Handbook::mc().doOneOfOne(DIMER_DROP);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 0, 1);
+    assert_rate(27 * SurfaceActivation::RATE +
+                5 * SurfaceDeactivation::RATE +
+                DimerFormation::RATE +
+                HighBridgeToMethyl::RATE +
+                HighBridgeStandToOneBridge::RATE +
+                TwoBridgesToHighBridge::RATE +
+                AdsMethylTo111::RATE +
+                DimerFormationNearBridge::RATE);
+
+    // 97
+    Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
+    Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
+    Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
+    Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);
+    assert_rate(25 * SurfaceActivation::RATE +
+                4 * SurfaceDeactivation::RATE +
+                MethylOnDimerActivation::RATE +
+                2 * MethylOnDimerDeactivation::RATE +
+                2 * NextLevelBridgeToHighBridge::RATE +
+                2 * AdsMethylTo111::RATE +
+                AdsMethylToDimer::RATE +
+                DesMethylFromDimer::RATE +
+                MethylOnDimerHydrogenMigration::RATE +
+                MethylToHighBridge::RATE);
+
     delete diamond;
     return 0;
 }
