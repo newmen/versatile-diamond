@@ -28,11 +28,11 @@ void MethylOnBridgeCBiCMsiu::find(MethylOnBridgeCBiCMiu *parent)
 
 void MethylOnBridgeCBiCMsiu::findAllChildren()
 {
-//    MethylOnBridgeCBiCMssiu::find(this); // DISABLED: MigrationDownInGap
+    MethylOnBridgeCBiCMssiu::find(this);
     MethylOnBridgeCBsCMsiu::find(this);
 }
 
 void MethylOnBridgeCBiCMsiu::findAllTypicalReactions()
 {
-//    MigrationDownAtDimer::find(this); // DISABLED
+    MigrationDownAtDimer::find(this);
 }

@@ -32,13 +32,13 @@
 #include <generations/reactions/typical/lookers/near_part_of_gap.h>
 #include <generations/reactions/typical/methyl_on_dimer_hydrogen_migration.h>
 #include <generations/reactions/typical/methyl_to_high_bridge.h>
-// #include <generations/reactions/typical/migration_down_at_dimer.h>
+#include <generations/reactions/typical/migration_down_at_dimer.h>
 #include <generations/reactions/typical/migration_down_at_dimer_from_111.h>
-// #include <generations/reactions/typical/migration_down_at_dimer_from_dimer.h>
+#include <generations/reactions/typical/migration_down_at_dimer_from_dimer.h>
 #include <generations/reactions/typical/migration_down_at_dimer_from_high_bridge.h>
-// #include <generations/reactions/typical/migration_down_in_gap.h>
+#include <generations/reactions/typical/migration_down_in_gap.h>
 #include <generations/reactions/typical/migration_down_in_gap_from_111.h>
-// #include <generations/reactions/typical/migration_down_in_gap_from_dimer.h>
+#include <generations/reactions/typical/migration_down_in_gap_from_dimer.h>
 #include <generations/reactions/typical/migration_down_in_gap_from_high_bridge.h>
 #include <generations/reactions/typical/next_level_bridge_to_high_bridge.h>
 #include <generations/reactions/typical/two_bridges_to_high_bridge.h>
@@ -460,6 +460,7 @@ int main()
                 MethylToHighBridge::RATE +
                 DesMethylFromDimer::RATE +
                 DimerDrop::RATE +
+                MigrationDownAtDimerFromDimer::RATE +
                 AdsMethylToDimer::RATE);
 
     // 39

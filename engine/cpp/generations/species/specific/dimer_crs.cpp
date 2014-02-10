@@ -44,8 +44,8 @@ void DimerCRs::findAllChildren()
 void DimerCRs::findAllTypicalReactions()
 {
     AdsMethylToDimer::find(this);
-//    MigrationDownAtDimer::find(this); // DISABLED
+    MigrationDownAtDimer::find(this);
     MigrationDownAtDimerFrom111::find(this);
     MigrationDownAtDimerFromHighBridge::find(this);
-//    MigrationDownAtDimerFromDimer::find(this); // DISABLED
+    MigrationDownAtDimerFromDimer::find(this);
 }

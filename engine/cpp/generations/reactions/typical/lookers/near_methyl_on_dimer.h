@@ -15,7 +15,7 @@ public:
 template <class S, class L>
 void NearMethylOnDimer::look(ushort methylAtomType, Atom **atoms, const L &lambda)
 {
-    NearMethylOnBridge::look<MethylOnDimerCMsiu>(23, atoms, [methylAtomType, lambda](Atom *methyl) {
+    NearMethylOnBridge::look<MethylOnDimer>(23, atoms, [methylAtomType, lambda](Atom *methyl) {
         if (methyl->is(methylAtomType))
         {
             auto target = methyl->specByRole<S>(methylAtomType);
