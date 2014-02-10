@@ -14,10 +14,9 @@ public:
     void store() override;
 
 protected:
-    template <class... Args>
-    LaterableRole(Args... args)  : ParentType(args...) {}
+    template <class... Args> LaterableRole(Args... args)  : ParentType(args...) {}
 
-    virtual LateralReaction *findAllLateral() = 0;
+    virtual LateralReaction *lookAround() = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +24,7 @@ protected:
 template <ushort RT, ushort TARGETS_NUM>
 void LaterableRole<Typical, RT, TARGETS_NUM>::store()
 {
-    auto lateralReaction = findAllLateral();
+    auto lateralReaction = lookAround();
     if (lateralReaction)
     {
         lateralReaction->store();

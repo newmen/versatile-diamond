@@ -1,25 +1,46 @@
 #ifndef SIDEPIECE_H
 #define SIDEPIECE_H
 
-#include "base.h"
+#include "../../species/sealer.h"
+#include "../../species/lateral_spec.h"
+using namespace vd;
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Sidepiece : public Base<SpecClassBuilder<B, LateralSpec>, ST, USED_ATOMS_NUM>
+#include "../handbook.h"
+
+template <class B>
+class Sidepiece : public Sealer<B, LateralSpec>
 {
-    typedef Base<SpecClassBuilder<B, LateralSpec>, ST, USED_ATOMS_NUM> ParentType;
+    typedef Sealer<B, LateralSpec> ParentType;
 
 public:
-    template <class... Args>
-    Sidepiece(Args... args) : ParentType(args...) {}
+    void remove() override;
 
 protected:
+    template <class... Args> Sidepiece(Args... args);
+
     void keepFirstTime() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-void Sidepiece<B, ST, USED_ATOMS_NUM>::keepFirstTime()
+template <class B>
+template <class... Args>
+Sidepiece<B>::Sidepiece(Args... args) : ParentType(args...)
+{
+    static_assert(!std::is_base_of<LateralSpec, B>::value, "Specie already is lateral sidepiece");
+}
+
+template <class B>
+void Sidepiece<B>::remove()
+{
+    if (this->isMarked()) return;
+
+    ParentType::remove();
+    this->unconcretizeReactions();
+}
+
+template <class B>
+void Sidepiece<B>::keepFirstTime()
 {
     Handbook::lateralKeeper().store(this);
 }

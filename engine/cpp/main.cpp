@@ -1,21 +1,37 @@
+#include <signal.h>
 #include <omp.h>
-#include <iostream>
-#include "mc/common_mc_data.h"
-#include "generations/handbook.h"
-#include "generations/phases/diamond.h"
+#include "generations/run.h"
 
-#ifdef PRINT
-void printSeparator()
+void stopSignalHandler(int)
 {
-    debugPrint([&](std::ostream &os) {
-        os << Handbook::mc().totalRate();
-    });
+#ifdef PARALLEL
+#pragma omp master
+#endif // PARALLEL
+    Runner::stop();
 }
-#endif // PRINT
 
-int main()
+void segfaultSignalHandler(int)
 {
-    RandomGenerator::init(); // it must be called just one time at program begin (before init CommonMCData!)
+    std::cerr << "Segmentation fault signal recived! Stop computing..." << std::endl;
+    exit(1);
+}
+
+int main(int argc, char *argv[])
+{
+    std::cout.precision(3);
+
+    if (argc < 6 || argc > 7)
+    {
+        std::cerr << "Wrong number of run arguments!" << std::endl;
+        std::cout << "Try: " << argv[0] << " run_name X Y total_time save_each_time [out_format]" << std::endl;
+        return 1;
+    }
+
+    signal(SIGINT, stopSignalHandler);
+    signal(SIGTERM, stopSignalHandler);
+#ifndef PARALLEL
+    signal(SIGSEGV, segfaultSignalHandler);
+#endif // PARALLEL
 
 #ifdef PARALLEL
     omp_set_num_threads(THREADS_NUM);
@@ -31,48 +47,16 @@ int main()
     });
 #endif // PRINT
 
-    Diamond *diamond = new Diamond(dim3(100, 100, 50));
-//    Diamond *diamond = new Diamond(dim3(20, 20, 10));
-//    Diamond *diamond = new Diamond(dim3(3, 3, 4));
-    diamond->initialize();
-
-    std::cout << "Atoms num: " << diamond->countAtoms() << std::endl;
-
-#ifdef PRINT
-    printSeparator();
-#endif // PRINT
-
-    uint n = 0;
-    CommonMCData mcData;
-    Handbook::mc().initCounter(&mcData);
-
-#ifdef PARALLEL
-#pragma omp parallel
-#endif // PARALLEL
-//    for (uint i = 0; i < 50000 / THREADS_NUM; ++i)
-//    while (Handbook::mc().totalTime() < 1e-4)
-    while (Handbook::mc().totalTime() < 2e-2)
+    try
     {
-        Handbook::mc().doRandom(&mcData);
-
-#ifdef PRINT
-        debugPrint([&](std::ostream &os) {
-            os << n << ". " << Handbook::mc().totalRate() << "\n";
-        });
-#endif // PRINT
-
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
-        ++n;
+        const char *volumeSaverType = (argc == 7) ? argv[6] : nullptr;
+        Runner runner(argv[1], atoi(argv[2]), atoi(argv[3]), atof(argv[4]), atof(argv[5]), volumeSaverType);
+        run(runner);
+    }
+    catch (Error error)
+    {
+        std::cerr << "Run error:\n  " << error.message() << std::endl;
     }
 
-    std::cout << "Atoms num: " << diamond->countAtoms() << "\n"
-              << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / n) << " %\n"
-              << std::endl;
-    mcData.counter()->printStats();
-
-    Handbook::amorph().clear(); // TODO: should not be explicitly!
-    delete diamond;
     return 0;
 }

@@ -1,34 +1,24 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include "../../species/spec_class_builder.h"
-#include "../../species/base_spec.h"
-#include "../../species/source_spec.h"
-#include "../../species/dependent_spec.h"
-#include "../../species/parent_spec.h"
-#include "../../species/specific_spec.h"
-#include "../../species/lateral_spec.h"
-#include "../../species/additional_atoms_wrapper.h"
-#include "../../species/atom_shift_wrapper.h"
-#include "../../species/atoms_swap_wrapper.h"
-#include "../../tools/typed.h"
-using namespace vd;
-
-#include "../phases/diamond_atoms_iterator.h"
-#include "../handbook.h"
+#include "overall.h"
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Base : public Typed<B, ST>, public DiamondAtomsIterator
+class Base : public Overall<B, ST>
 {
-    typedef Typed<B, ST> ParentType;
-
-protected:
-    template <class... Args>
-    Base(Args... args) : ParentType(args...) {}
+    typedef Overall<B, ST> ParentType;
 
 public:
+    Atom *anchor() const override { return this->atom(indexes()[0]); }
+
     void store() override;
     void remove() override;
+
+protected:
+    template <class... Args> Base(Args... args) : ParentType(args...) {}
+
+    virtual const ushort *indexes() const = 0;
+    virtual const ushort *roles() const = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,8 +26,8 @@ public:
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::store()
 {
-    ushort *idxs = this->indexes();
-    ushort *rls = this->roles();
+    const ushort *idxs = this->indexes();
+    const ushort *rls = this->roles();
 
     for (uint i = 0; i < USED_ATOMS_NUM; ++i)
     {
@@ -50,17 +40,17 @@ void Base<B, ST, USED_ATOMS_NUM>::store()
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::remove()
 {
-    ParentType::remove();
+    if (this->isMarked()) return;
 
-    ushort *idxs = this->indexes();
-    ushort *rls = this->roles();
+    const ushort *idxs = this->indexes();
+    const ushort *rls = this->roles();
 
     for (uint i = 0; i < USED_ATOMS_NUM; ++i)
     {
         this->atom(idxs[i])->forget(rls[i], this);
     }
 
-    Handbook::scavenger().markSpec(this);
+    ParentType::remove();
 }
 
 #endif // BASE_H

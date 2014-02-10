@@ -1,13 +1,21 @@
 #include "specific_spec.h"
+#include "../reactions/spec_reaction.h"
 
 namespace vd
 {
 
-void SpecificSpec::remove()
+void SpecificSpec::findTypicalReactions()
 {
-    eachDupReaction([](SpecReaction *reaction) {
-        reaction->remove();
-    });
+    findAllTypicalReactions();
+    setNotNew();
+}
+
+void SpecificSpec::removeReactions()
+{
+    while (!reactions().empty())
+    {
+        reactions().begin()->second->remove();
+    }
 }
 
 }

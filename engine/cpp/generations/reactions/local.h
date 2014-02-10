@@ -6,7 +6,7 @@ using namespace vd;
 
 #include "ubiquitous.h"
 
-template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
+template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>
 class Local : public B<RT>
 {
     typedef B<RT> ParentType;
@@ -25,12 +25,12 @@ protected:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
-typename Local<B, U, RT, S, AT>::ParentType::DepFindResult Local<B, U, RT, S, AT>::check(Atom *anchor)
+template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>
+typename Local<B, U, RT, ST, AT>::ParentType::DepFindResult Local<B, U, RT, ST, AT>::check(Atom *anchor)
 {
     bool stored = Handbook::mc().check(ParentType::MC_INDEX, anchor);
 
-    if (anchor->is(AT) && anchor->hasRole<S>(AT))
+    if (anchor->is(AT) && anchor->hasRole(ST, AT))
     {
         return stored ?
                     ParentType::DepFindResult::FOUND :
@@ -45,34 +45,40 @@ typename Local<B, U, RT, S, AT>::ParentType::DepFindResult Local<B, U, RT, S, AT
     return ParentType::DepFindResult::NOT_FOUND;
 }
 
-template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
+template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>
 template <class R>
-void Local<B, U, RT, S, AT>::concretize(Atom *anchor)
+void Local<B, U, RT, ST, AT>::concretize(Atom *anchor)
 {
-    static_assert(std::is_same<typename R::UbiquitousType, U>(), "Undefined using reaction type");
+    static_assert(std::is_same<typename R::UbiquitousType, U>::value, "Undefined using reaction type");
 
     assert(anchor->isVisited());
     assert(anchor->is(AT));
-    assert(anchor->hasRole<S>(AT));
+    assert(anchor->hasRole(ST, AT));
 
     short n = ParentType::currNum(anchor, R::nums());
-    ParentType::template remove<U>(anchor, -n);
-    ParentType::template store<R>(anchor, n);
+    if (n > 0)
+    {
+        ParentType::template remove<U>(anchor, n);
+        ParentType::template store<R>(anchor, n);
+    }
 }
 
-template <template <ushort> class B, class U, ushort RT, class S, ushort AT>
+template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>
 template <class R>
-void Local<B, U, RT, S, AT>::unconcretize(Atom *anchor)
+void Local<B, U, RT, ST, AT>::unconcretize(Atom *anchor)
 {
-    static_assert(std::is_same<typename R::UbiquitousType, U>(), "Undefined using reaction type");
+    static_assert(std::is_same<typename R::UbiquitousType, U>::value, "Undefined using reaction type");
 
     assert(anchor->isVisited());
     assert(anchor->is(AT));
-    assert(!anchor->hasRole<S>(AT));
+    assert(!anchor->hasRole(ST, AT));
 
     short n = ParentType::currNum(anchor, R::nums());
-    ParentType::template remove<R>(anchor, -n);
-    ParentType::template store<U>(anchor, n);
+    if (n > 0)
+    {
+        ParentType::template remove<R>(anchor, n);
+        ParentType::template store<U>(anchor, n);
+    }
 }
 
 #endif // LOCAL_H

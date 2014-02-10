@@ -10,8 +10,7 @@ public:
     typedef Registrator<ConcreteTypicalReaction<TARGETS_NUM>, RT> RegistratorType;
 
 protected:
-    template <class... Args>
-    Typical(Args... args) : RegistratorType(args...) {}
+    template <class... Args> Typical(Args... args) : RegistratorType(args...) {}
 };
 
 #endif // TYPICAL_H

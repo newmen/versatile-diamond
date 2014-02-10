@@ -1,7 +1,6 @@
 #ifndef REACTION_H
 #define REACTION_H
 
-#include <string>
 #include "../atoms/atom.h"
 
 namespace vd
@@ -22,9 +21,10 @@ public:
     virtual void info(std::ostream &os) = 0;
 #endif // PRINT
 
-    virtual std::string name() const = 0;
+    virtual const char *name() const = 0;
 
 protected:
+    Reaction() = default;
 };
 
 }

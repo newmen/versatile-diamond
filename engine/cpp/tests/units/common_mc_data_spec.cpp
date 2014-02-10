@@ -24,7 +24,6 @@ void store(CommonMCData *mcData, Reaction *a, Reaction *b)
 
 #pragma omp barrier
 
-
     if (omp_get_thread_num() == 0)
     {
         mcData->checkSame();
@@ -115,16 +114,16 @@ int main()
     checkSame(&mcData, &sa111, &sa111);
     mcData.reset();
 
-    checkSame(&mcData, &sd111, &sa111);
+    checkSame(&mcData, &sa111, &sd111);
     mcData.reset();
 
-    checkSame(&mcData, &sd121, &sa211);
+    checkSame(&mcData, &sa211, &sd121);
     mcData.reset();
 
-    checkSame(&mcData, &sa211, &sd121, false, true);
+    checkSame(&mcData, &sa211, &sd121);
     mcData.reset();
 
-    checkSame(&mcData, &sdxy1, &sa111);
+    checkSame(&mcData, &sa111, &sdxy1);
     mcData.reset();
 
     checkNotSame(&mcData, &sa111, &sa991);

@@ -34,4 +34,34 @@ void Amorph::erase(Atom *atom)
     _atoms.erase(atom);
 }
 
+uint Amorph::countAtoms() const
+{
+    uint n = 0;
+
+#ifdef PARALLEL
+#pragma omp critical (amorph_atoms)
+#endif // PARALLEL
+    n = _atoms.size();
+
+    return n;
+}
+
+void Amorph::setUnvisited()
+{
+    for (Atom *atom : _atoms)
+    {
+        atom->setUnvisited();
+    }
+}
+
+#ifndef NDEBUG
+void Amorph::checkAllVisited()
+{
+    for (Atom *atom : _atoms)
+    {
+        assert(atom->isVisited());
+    }
+}
+#endif // NDEBUG
+
 }

@@ -1,20 +1,24 @@
 #ifndef METHYL_TO_HIGH_BRIDGE_H
 #define METHYL_TO_HIGH_BRIDGE_H
 
-#include "../../species/specific/methyl_on_dimer_cmsu.h"
+#include "../../species/specific/methyl_on_dimer_cmsiu.h"
 #include "../typical.h"
 
 class MethylToHighBridge : public Typical<METHYL_TO_HIGH_BRIDGE>
 {
+    static const char __name[];
+
 public:
-    static void find(MethylOnDimerCMsu *target);
+    static const double RATE;
+
+    static void find(MethylOnDimerCMsiu *target);
 
     MethylToHighBridge(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 5e5; }
-    void doIt();
+    void doIt() override;
 
-    std::string name() const override { return "methyl to high bridge"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // METHYL_TO_HIGH_BRIDGE_H

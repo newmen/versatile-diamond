@@ -10,15 +10,14 @@
 #include "events_container.h"
 #include "multi_events_container.h"
 
-// for #compareContainers()
-#define MULTI_EVENTS_INDEX_SHIFT 1000
-
 namespace vd
 {
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 class MC
 {
+    enum : ushort { MULTI_EVENTS_INDEX_SHIFT = 1000 }; // for #compareContainers()
+
     double _totalRate = 0;
     double _totalTime = 0;
 
@@ -33,26 +32,34 @@ public:
 
     void sort();
 
-    void doRandom(CommonMCData *data);
+    double doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
     double totalTime() const { return _totalTime; }
 
-    void add(uint index, SpecReaction *reaction);
-    void remove(uint index, SpecReaction *reaction);
+    void add(ushort index, SpecReaction *reaction);
+    void remove(ushort index, SpecReaction *reaction);
 
-    void add(uint index, UbiquitousReaction *reaction, uint n);
-    void remove(uint index, UbiquitousReaction *templateReaction, uint n);
-    void removeAll(uint index, UbiquitousReaction *templateReaction);
-    bool check(uint index, Atom *target);
+    void add(ushort index, UbiquitousReaction *reaction, ushort n);
+    void remove(ushort index, UbiquitousReaction *templateReaction, ushort n);
+    void removeAll(ushort index, UbiquitousReaction *templateReaction);
+    bool check(ushort index, Atom *target);
 
-#ifdef DEBUG
+#ifndef NDEBUG
     void doOneOfOne(ushort rt);
+    void doLastOfOne(ushort rt);
+
     void doOneOfMul(ushort rt);
     void doOneOfMul(ushort rt, int x, int y, int z);
-#endif // DEBUG
+    void doLastOfMul(ushort rt);
+#endif // NDEBUG
 
 private:
-    void increaseTime(CommonMCData *data);
+    MC(const MC &) = delete;
+    MC(MC &&) = delete;
+    MC &operator = (const MC &) = delete;
+    MC &operator = (MC &&) = delete;
+
+    double increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)
     {
@@ -66,7 +73,7 @@ private:
     inline BaseEventsContainer *correspondEvents(uint orderValue);
 
 #ifdef PRINT
-    void printReaction(Reaction *reaction, std::string message);
+    void printReaction(Reaction *reaction, std::string action, std::string type, uint n = 1);
 #endif // PRINT
 };
 
@@ -99,9 +106,13 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
+double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
     Reaction *event = nullptr;
+
+#ifdef PARALLEL
+#pragma omp barrier
+#endif // PARALLEL
     double r = data->rand(totalRate());
 
 #ifdef PRINT
@@ -165,9 +176,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #pragma omp barrier
 #endif // PARALLEL
 
+    double dt = 0;
     if (event && !data->isSame())
     {
-        increaseTime(data); // here little hack, because total rate of all events is similar for each process
+        dt = increaseTime(data); // here little hack, because total rate of all events is similar for each process
     }
 
 #ifdef PARALLEL
@@ -176,6 +188,12 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
     if (event && !data->isSame())
     {
+#ifdef PRINT
+        debugPrint([&](std::ostream &os) {
+            os << event->name();
+        });
+#endif // PRINT
+
         data->counter()->inc(event);
         event->doIt();
     }
@@ -223,23 +241,24 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         data->reset();
     }
 
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
+    return dt;
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
+double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
 {
     double r = data->rand(1.0);
 
+    double dt;
 #ifdef PARALLEL
 #pragma omp critical
 #endif // PARALLEL
     {
-        double dt = -log(r) / totalRate();
+        dt = -log(r) / totalRate();
         _totalTime += dt;
     }
+
+    return dt;
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -291,10 +310,10 @@ BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint ord
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, SpecReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *reaction)
 {
 #ifdef PRINT
-    printReaction(reaction, "Add one");
+    printReaction(reaction, "Add", "one");
 #endif // PRINT
 
     assert(index < EVENTS_NUM);
@@ -304,10 +323,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, SpecReaction *reaction)
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, SpecReaction *reaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction *reaction)
 {
 #ifdef PRINT
-    printReaction(reaction, "Remove one");
+    printReaction(reaction, "Remove", "one");
 #endif // PRINT
 
     assert(index < EVENTS_NUM);
@@ -317,10 +336,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, SpecReaction *reaction
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *reaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReaction *reaction, ushort n)
 {
 #ifdef PRINT
-    printReaction(reaction, "Add multi");
+    printReaction(reaction, "Add", "multi", n);
 #endif // PRINT
 
     assert(index < MULTI_EVENTS_NUM);
@@ -331,10 +350,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(uint index, UbiquitousReaction *react
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *templateReaction, uint n)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *templateReaction, ushort n)
 {
 #ifdef PRINT
-    printReaction(templateReaction, "Remove multi");
+    printReaction(templateReaction, "Remove", "multi", n);
 #endif // PRINT
 
     assert(index < MULTI_EVENTS_NUM);
@@ -345,7 +364,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(uint index, UbiquitousReaction *te
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(uint index, UbiquitousReaction *templateReaction)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *templateReaction)
 {
     assert(index < MULTI_EVENTS_NUM);
     uint n = _multiEvents[index].removeAll(templateReaction->target());
@@ -357,18 +376,25 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(uint index, UbiquitousReaction 
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-bool MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(uint index, Atom *target)
+bool MC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(ushort index, Atom *target)
 {
     assert(index < MULTI_EVENTS_NUM);
     return _multiEvents[index].check(target);
 }
 
-#ifdef DEBUG
+#ifndef NDEBUG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
 {
     assert(rt < EVENTS_NUM);
     _events[rt].selectEvent(0)->doIt();
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort rt)
+{
+    assert(rt < EVENTS_NUM);
+    _events[rt].selectEvent((_events[rt].size() - 0.5) * _events[rt].oneRate())->doIt();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -384,14 +410,26 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z
     auto crd = int3(x, y, z);
     _multiEvents[rt].selectEvent(crd)->doIt();
 }
-#endif // DEBUG
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
+{
+    assert(rt < MULTI_EVENTS_NUM);
+    _multiEvents[rt].selectEvent((_multiEvents[rt].size() - 0.5) * _multiEvents[rt].oneRate())->doIt();
+}
+#endif // NDEBUG
 
 #ifdef PRINT
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string message)
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string action, std::string type, uint n)
 {
     debugPrint([&](std::ostream &os) {
-        os << message << " (" << reaction->type() << ") ";
+        os << action << " ";
+        if (n > 1)
+        {
+            os << n << " ";
+        }
+        os << type << " (" << reaction->type() << ") ";
         reaction->info(os);
     });
 }

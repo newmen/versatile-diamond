@@ -1,8 +1,16 @@
 #include "bridge_crs_cti_cli.h"
 #include "../../reactions/typical/next_level_bridge_to_high_bridge.h"
 
-ushort BridgeCRsCTiCLi::__indexes[3] = { 0, 1, 2 };
-ushort BridgeCRsCTiCLi::__roles[3] = { 0, 5, 4 };
+const ushort BridgeCRsCTiCLi::__indexes[3] = { 0, 1, 2 };
+const ushort BridgeCRsCTiCLi::__roles[3] = { 0, 5, 4 };
+
+#ifdef PRINT
+const char *BridgeCRsCTiCLi::name() const
+{
+    static const char value[] = "bridge(cr: *, ct: i, cl: i)";
+    return value;
+}
+#endif // PRINT
 
 void BridgeCRsCTiCLi::find(BridgeCRs *parent)
 {
@@ -16,15 +24,15 @@ void BridgeCRsCTiCLi::find(BridgeCRs *parent)
     {
         // TODO: there || statement must be used because anchors[0] could have current role in another specie
         // the || statement can be defined through simetry of specie: if has central atom then || (else &&, if atoms num is even)
-        if (!anchors[0]->hasRole<BridgeCRsCTiCLi>(0) || !anchors[1]->hasRole<BridgeCRsCTiCLi>(5) ||
-                !anchors[2]->hasRole<BridgeCRsCTiCLi>(4))
+        if (!anchors[0]->hasRole(BRIDGE_CRs_CTi_CLi, 0) || !anchors[1]->hasRole(BRIDGE_CRs_CTi_CLi, 5) ||
+                !anchors[2]->hasRole(BRIDGE_CRs_CTi_CLi, 4))
         {
-            createBy<BridgeCRsCTiCLi>(parent);
+            create<BridgeCRsCTiCLi>(parent);
         }
     }
 }
 
-void BridgeCRsCTiCLi::findAllReactions()
+void BridgeCRsCTiCLi::findAllTypicalReactions()
 {
     NextLevelBridgeToHighBridge::find(this);
 }

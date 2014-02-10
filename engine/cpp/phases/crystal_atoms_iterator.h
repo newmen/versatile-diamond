@@ -18,6 +18,9 @@ public:
 
     template <ushort ATOMS_NUM, class RL, class AL>
     static void eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda);
+
+protected:
+    CrystalAtomsIterator() = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +29,7 @@ template <class C>
 C *CrystalAtomsIterator<C>::crystalBy(Atom *atom)
 {
     assert(atom->lattice());
-    return cast_to<C *>(atom->lattice()->crystal());
+    return static_cast<C *>(atom->lattice()->crystal());
 }
 
 template <class C>
@@ -61,13 +64,12 @@ void CrystalAtomsIterator<C>::eachNeighbours(Atom **anchors, const RL &relations
         for (ushort n = 0; n < ATOMS_NUM; ++n)
         {
             Atom *neighbour = arrOfNeighbours[n][i];
-            neighbours[n] = neighbour;
-
             if (!neighbour)
             {
                 goto next_main_iteration;
             }
 
+            neighbours[n] = neighbour;
             allVisited &= neighbour->isVisited();
         }
 

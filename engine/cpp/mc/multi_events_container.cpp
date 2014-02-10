@@ -22,7 +22,7 @@ MultiEventsContainer::~MultiEventsContainer()
     }
 }
 
-void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
+void MultiEventsContainer::add(UbiquitousReaction *event, ushort n)
 {
 #ifdef PARALLEL
     lock([this, event, n]() {
@@ -39,16 +39,16 @@ void MultiEventsContainer::add(UbiquitousReaction *event, uint n)
 #endif // PARALLEL
 }
 
-void MultiEventsContainer::remove(Atom *target, uint n)
+void MultiEventsContainer::remove(Atom *target, ushort n)
 {
 #ifdef PARALLEL
     lock([this, target, n]() {
 #endif // PARALLEL
 
-#ifdef DEBUG
+#ifndef NDEBUG
         auto range = _positions.equal_range(target);
         assert(std::distance(range.first, range.second) >= n);
-#endif // DEBUG
+#endif // NDEBUG
 
         unlockedRemove(target, n);
 
@@ -108,24 +108,24 @@ void MultiEventsContainer::unlockedRemove(Atom *target, uint n)
             uint lastIndex = _events.size();
             auto range = _positions.equal_range(last->target());
 
-#ifdef DEBUG
+#ifndef NDEBUG
             bool found = false;
-#endif // DEBUG
+#endif // NDEBUG
             for (auto it = range.first; it != range.second; it++)
             {
                 if (it->second == lastIndex)
                 {
                     it->second = currIt->second;
-#ifdef DEBUG
+#ifndef NDEBUG
                     found = true;
-#endif // DEBUG
+#endif // NDEBUG
                     break;
                 }
             }
 
-#ifdef DEBUG
+#ifndef NDEBUG
             assert(found);
-#endif // DEBUG
+#endif // NDEBUG
         }
 
         _positions.erase(currIt);

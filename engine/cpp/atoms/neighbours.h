@@ -31,7 +31,10 @@ public:
         }
     }
 
-    Atom *operator[](uint i)
+    Neighbours(Neighbours<NUM> &&) = default;
+    Neighbours<NUM>& operator = (Neighbours<NUM> &&) = default;
+
+    Atom *operator [] (uint i)
     {
         return _atoms[i];
     }
@@ -45,6 +48,10 @@ public:
         }
         return result;
     }
+
+private:
+    Neighbours(const Neighbours<NUM> &) = delete;
+    Neighbours<NUM>& operator = (const Neighbours<NUM> &) = delete;
 };
 
 }

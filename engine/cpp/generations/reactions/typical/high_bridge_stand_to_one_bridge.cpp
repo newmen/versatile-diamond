@@ -1,5 +1,8 @@
 #include "high_bridge_stand_to_one_bridge.h"
 
+const char HighBridgeStandToOneBridge::__name[] = "high bridge stand to bridge at new level";
+const double HighBridgeStandToOneBridge::RATE = 6.1e13 * std::exp(-36.3e3 / (1.98 * Env::T));
+
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
     Atom *anchor = target->anchor();
@@ -14,7 +17,7 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
                 neighbourSpec
             };
 
-            createBy<HighBridgeStandToOneBridge>(targets);
+            create<HighBridgeStandToOneBridge>(targets);
         }
     });
 }
@@ -33,7 +36,7 @@ void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
                 target
             };
 
-            createBy<HighBridgeStandToOneBridge>(targets);
+            create<HighBridgeStandToOneBridge>(targets);
         }
     });
 }
@@ -58,7 +61,7 @@ void HighBridgeStandToOneBridge::doIt()
 
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

@@ -10,12 +10,12 @@ using namespace vd;
 class AtomBuilder
 {
 public:
-    Atom *buildC(uint type, uint actives) const
+    Atom *buildC(ushort type, ushort actives) const
     {
         return specify(new C(type, actives, (Lattice *)nullptr));
     }
 
-    Atom *buildCd(uint type, uint actives, Crystal *crystal, const int3 &coords) const
+    Atom *buildCd(ushort type, ushort actives, Crystal *crystal, const int3 &coords) const
     {
         return specify(new C(type, actives, new Lattice(crystal, coords)));
     }

@@ -1,25 +1,46 @@
 #ifndef SPECIFIC_H
 #define SPECIFIC_H
 
-#include "base.h"
+#include "../../species/sealer.h"
+#include "../../species/specific_spec.h"
+using namespace vd;
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-class Specific : public Base<SpecClassBuilder<B, SpecificSpec>, ST, USED_ATOMS_NUM>
+#include "../handbook.h"
+
+template <class B>
+class Specific : public Sealer<B, SpecificSpec>
 {
-    typedef Base<SpecClassBuilder<B, SpecificSpec>, ST, USED_ATOMS_NUM> ParentType;
+    typedef Sealer<B, SpecificSpec> ParentType;
 
 public:
-    template <class... Args>
-    Specific(Args... args) : ParentType(args...) {}
+    void remove() override;
 
 protected:
+    template <class... Args> Specific(Args... args);
+
     void keepFirstTime() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class B, ushort ST, ushort USED_ATOMS_NUM>
-void Specific<B, ST, USED_ATOMS_NUM>::keepFirstTime()
+template <class B>
+template <class... Args>
+Specific<B>::Specific(Args... args) : ParentType(args...)
+{
+    static_assert(!std::is_base_of<SpecificSpec, B>::value, "Specie already is specific");
+}
+
+template <class B>
+void Specific<B>::remove()
+{
+    if (this->isMarked()) return;
+
+    ParentType::remove();
+    this->removeReactions();
+}
+
+template <class B>
+void Specific<B>::keepFirstTime()
 {
     Handbook::specificKeeper().store(this);
 }

@@ -23,9 +23,9 @@ int main()
         return atom;
     };
 
-    Atom *c111 = buildCd(1, 1, 1);
-    Atom *c222 = buildCd(2, 2, 2);
-    Atom *c444 = buildCd(4, 4, 4);
+    const Atom *c111 = buildCd(1, 1, 1);
+    const Atom *c222 = buildCd(2, 2, 2);
+    const Atom *c444 = buildCd(4, 4, 4);
 
     // 110
     auto nbrs = diamond.neighbours110(c111);
@@ -99,24 +99,24 @@ int main()
     assert(diamond.isBonded(int3(s.x - 1, s.y - 1, 2), int3(s.x - 1, 0, 1)));
 
     // front_110(a, b)
-    Atom *c000 = buildCd(0, 0, 0);
-    Atom *c100 = buildCd(1, 0, 0);
-    Atom *cx00 = buildCd(s.x, 0, 0);
+    const Atom *c000 = buildCd(0, 0, 0);
+    const Atom *c100 = buildCd(1, 0, 0);
+    const Atom *cx00 = buildCd(s.x, 0, 0);
     auto coords = int3(0, 0, 1);
-    assert(Diamond::Relations::front_110(c000, c100) == coords);
-    assert(Diamond::Relations::front_110(c100, c000) == coords);
+    assert(Diamond::Relations::front_110_at(c000, c100) == coords);
+    assert(Diamond::Relations::front_110_at(c100, c000) == coords);
     coords = int3(s.x, 0, 1);
-    assert(Diamond::Relations::front_110(c000, cx00) == coords);
-    assert(Diamond::Relations::front_110(cx00, c000) == coords);
+    assert(Diamond::Relations::front_110_at(c000, cx00) == coords);
+    assert(Diamond::Relations::front_110_at(cx00, c000) == coords);
 
-    Atom *c101 = buildCd(1, 0, 1);
-    Atom *c1y1 = buildCd(1, s.y, 1);
+    const Atom *c101 = buildCd(1, 0, 1);
+    const Atom *c1y1 = buildCd(1, s.y, 1);
     coords = int3(1, 0, 2);
-    assert(Diamond::Relations::front_110(c101, c111) == coords);
-    assert(Diamond::Relations::front_110(c111, c101) == coords);
+    assert(Diamond::Relations::front_110_at(c101, c111) == coords);
+    assert(Diamond::Relations::front_110_at(c111, c101) == coords);
     coords = int3(1, s.y, 2);
-    assert(Diamond::Relations::front_110(c101, c1y1) == coords);
-    assert(Diamond::Relations::front_110(c1y1, c101) == coords);
+    assert(Diamond::Relations::front_110_at(c101, c1y1) == coords);
+    assert(Diamond::Relations::front_110_at(c1y1, c101) == coords);
 
     for (Atom *atom : atoms) delete atom;
 

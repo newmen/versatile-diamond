@@ -6,15 +6,19 @@
 
 class AdsMethylToDimer : public Typical<ADS_METHYL_TO_DIMER>
 {
+    static const char __name[];
+
 public:
+    static const double RATE;
+
     static void find(DimerCRs *target);
 
     AdsMethylToDimer(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e7; }
-    void doIt();
+    void doIt() override;
 
-    std::string name() const override { return "adsorption methyl to dimer"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // ADS_METHYL_TO_DIMER_H

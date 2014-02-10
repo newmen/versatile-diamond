@@ -57,7 +57,7 @@ void Crystal::erase(Atom *atom)
     *cell = nullptr;
 }
 
-void Crystal::makeLayer(uint z, uint type)
+void Crystal::makeLayer(uint z, ushort type)
 {
     const dim3 &sizes = atoms().sizes();
     for (uint y = 0; y < sizes.y; ++y)
@@ -74,6 +74,28 @@ uint Crystal::countAtoms() const
     return atoms().ompParallelReducePlus(0, [](Atom *atom) {
         return (atom) ? 1 : 0;
     });
+}
+
+void Crystal::setUnvisited()
+{
+    _atoms.each([](Atom *atom) {
+        if (atom) atom->setUnvisited();
+    });
+}
+
+#ifndef NDEBUG
+void Crystal::checkAllVisited()
+{
+    _atoms.each([](Atom *atom) {
+        if (atom) assert(atom->isVisited());
+    });
+}
+#endif // NDEBUG
+
+float3 Crystal::translate(const int3 &coords) const
+{
+    float3 realCoords = coords * periods();
+    return realCoords + seeks(coords);
 }
 
 }

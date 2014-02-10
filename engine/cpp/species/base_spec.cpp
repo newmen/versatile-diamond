@@ -1,4 +1,5 @@
 #include "base_spec.h"
+#include "../atoms/atom.h"
 
 namespace vd
 {
@@ -9,9 +10,7 @@ void BaseSpec::store()
     this->wasFound();
 #endif // PRINT
 
-    assert(!isVisited());
     findChildren();
-    setVisited();
 }
 
 void BaseSpec::remove()
@@ -20,7 +19,7 @@ void BaseSpec::remove()
     wasForgotten();
 
     debugPrint([&](std::ostream &os) {
-        os << "Removing reactions for " << this->name() << " with atoms of: " << std::endl;
+        os << "Removing " << this->name() << " with atoms of: " << std::endl;
         os << std::dec;
         this->eachAtom([&os](Atom *atom) {
             atom->info(os);

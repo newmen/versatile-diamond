@@ -4,7 +4,7 @@
 #include "../sidepiece/dimer.h"
 #include "../specific.h"
 
-class DimerCRiCLi : public Specific<DependentSpec<BaseSpec>, DIMER_CRi_CLi, 2>
+class DimerCRiCLi : public Specific<Base<DependentSpec<BaseSpec>, DIMER_CRi_CLi, 2>>
 {
 public:
     static void find(Dimer *parent);
@@ -12,18 +12,18 @@ public:
     DimerCRiCLi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "dimer(cr: i, cl: i)"; }
+    const char *name() const override;
 #endif // PRINT
 
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
-
 protected:
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
+
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
 
 private:
-    static ushort __indexes[2];
-    static ushort __roles[2];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
 
 #endif // DIMER_CRI_CLI_H

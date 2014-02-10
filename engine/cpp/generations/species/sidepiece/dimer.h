@@ -1,33 +1,34 @@
 #ifndef DIMER_H
 #define DIMER_H
 
+#include "../base.h"
 #include "../sidepiece.h"
 
-class Dimer : public Sidepiece<DependentSpec<ParentSpec, 2>, DIMER, 2>
+class Dimer : public Sidepiece<Base<DependentSpec<ParentSpec, 2>, DIMER, 2>>
 {
 public:
     static void find(Atom *anchor);
-
-    template <class L>
-    static void dimersRow(Atom **anchors, const L &lambda);
+    template <class L> static void dimersRow(Atom **anchors, const L &lambda);
 
     Dimer(ParentSpec **parents) : Sidepiece(parents) {}
 
 #ifdef PRINT
-    std::string name() const override { return "dimer"; }
+    const char *name() const override;
 #endif // PRINT
-
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
 
 protected:
     void findAllChildren() override;
-    void findAllReactions() override;
+    void findAllLateralReactions() override;
+
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
 
 private:
-    static ushort __indexes[2];
-    static ushort __roles[2];
+    static const ushort __indexes[2];
+    static const ushort __roles[2];
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class L>
 void Dimer::dimersRow(Atom **anchors, const L &lambda)

@@ -1,7 +1,6 @@
 #ifndef COUNTER_H
 #define COUNTER_H
 
-#include <string>
 #include <vector>
 #include "../reactions/reaction.h"
 
@@ -12,12 +11,12 @@ class Counter
 {
     struct Record
     {
-        uint counter = 0;
+        ullong counter = 0;
 
-        std::string name;
+        const char *name;
         double rate;
 
-        Record(const std::string &name, double rate) : name(name), rate(rate) {}
+        Record(const char *name, double rate) : name(name), rate(rate) {}
         void inc()
         {
 #ifdef PARALLEL
@@ -25,21 +24,32 @@ class Counter
 #endif // PARALLEL
             ++counter;
         }
+
+    private:
+        Record(const Record &) = delete;
+        Record(Record &&) = delete;
+        Record &operator = (const Record &) = delete;
+        Record &operator = (Record &&) = delete;
     };
 
     std::vector<Record *> _records;
-    uint _total = 0;
+    ullong _total = 0;
 
 public:
     Counter(uint reactionsNum);
     ~Counter();
 
     void inc(Reaction *event);
-    uint total() const { return _total; }
+    ullong total() const { return _total; }
 
     void printStats();
 
 private:
+    Counter(const Counter &) = delete;
+    Counter(Counter &&) = delete;
+    Counter &operator = (const Counter &) = delete;
+    Counter &operator = (Counter &&) = delete;
+
     void sort();
 };
 

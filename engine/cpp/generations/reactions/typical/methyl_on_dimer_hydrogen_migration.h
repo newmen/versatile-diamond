@@ -1,20 +1,24 @@
 #ifndef METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 #define METHYL_ON_DIMER_HYDROGEN_MIGRATION_H
 
-#include "../../species/specific/methyl_on_dimer_cls_cmu.h"
+#include "../../species/specific/methyl_on_dimer_cls_cmhiu.h"
 #include "../typical.h"
 
 class MethylOnDimerHydrogenMigration : public Typical<METHYL_ON_DIMER_HYDROGEN_MIGRATION>
 {
+    static const char __name[];
+
 public:
-    static void find(MethylOnDimerCLsCMu *target);
+    static const double RATE;
+
+    static void find(MethylOnDimerCLsCMhiu *target);
 
     MethylOnDimerHydrogenMigration(SpecificSpec *target) : Typical(target) {}
 
-    double rate() const { return 1e6; }
-    void doIt();
+    void doIt() override;
 
-    std::string name() const override { return "methyl on dimer hydrogen migration"; }
+    double rate() const override { return RATE; }
+    const char *name() const override { return __name; }
 };
 
 #endif // METHYL_ON_DIMER_HYDROGEN_MIGRATION_H

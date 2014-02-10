@@ -4,7 +4,7 @@
 #include "../base/bridge.h"
 #include "../specific.h"
 
-class BridgeCTsi : public Specific<DependentSpec<BaseSpec>, BRIDGE_CTsi, 1>
+class BridgeCTsi : public Specific<Base<DependentSpec<BaseSpec>, BRIDGE_CTsi, 1>>
 {
 public:
     static void find(Bridge *parent);
@@ -12,18 +12,18 @@ public:
     BridgeCTsi(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    std::string name() const override { return "bridge(ct: *, ct: i)"; }
+    const char *name() const override;
 #endif // PRINT
 
-    ushort *indexes() const override { return __indexes; }
-    ushort *roles() const override { return __roles; }
-
 protected:
-    void findAllReactions() override;
+    void findAllTypicalReactions() override;
+
+    const ushort *indexes() const override { return __indexes; }
+    const ushort *roles() const override { return __roles; }
 
 private:
-    static ushort __indexes[1];
-    static ushort __roles[1];
+    static const ushort __indexes[1];
+    static const ushort __roles[1];
 };
 
 #endif // BRIDGE_CTSI_H

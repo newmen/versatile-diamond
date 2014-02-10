@@ -152,17 +152,7 @@ module VersatileDiamond
       # Gets matrix of transitive clojure for atom properties dependencies
       # @return [Matrix] the general transitive clojure matrix
       def general_transitive_matrix
-        return @_tmatrix if @_tmatrix
-
-        @_tmatrix = Marshal.load(Marshal.dump(smallests_transitive_matrix))
-        @props.size.times { |i| tcR(@_tmatrix, i, i, :sames) }
-
-        # @props.each_with_index do |prop, i|
-        #   next unless prop.sames
-        #   prop.sames.each { |sp| @_tmatrix[i, index(sp)] = true }
-        # end
-
-        @_tmatrix
+        @_tmatrix ||= build_transitive_matrix(:smallests, :sames)
       end
 
       # Gets array where each element is index of result specifieng of atom
@@ -253,25 +243,36 @@ module VersatileDiamond
       # @return [Matrix] the transitive clojure matrix of smallests
       #   dependencies
       def smallests_transitive_matrix
-        return @_st_matrix if @_st_matrix
+        @_st_matrix ||= build_transitive_matrix(:smallests)
+      end
 
-        size = @props.size
-        @_st_matrix = Patches::SetableMatrix.build(size) { false }
-        size.times { |i| tcR(@_st_matrix, i, i, :smallests) }
-
-        @_st_matrix
+      # Build matrix of transitive clojure for atom properties dependencies by
+      # using some method of atom property for get children
+      #
+      # @param [Array] methods which will be used for get children of each atom
+      #   property
+      # @return [Matrix] the general transitive clojure matrix
+      def build_transitive_matrix(*methods)
+        matrix = Patches::SetableMatrix.build(@props.size) { false }
+        @props.size.times { |i| tcR(matrix, i, i, *methods) }
+        matrix
       end
 
       # Transitive clojure on DFS
       # @param [Matrix] matrix the matrix of result
       # @param [Integer] v the v vertex
       # @param [Integer] w the w vertex
-      # @param [Symbol] method the method wich will be called for get children
-      def tcR(matrix, v, w, method)
+      # @param [Array] methods wich will be called for get children
+      def tcR(matrix, v, w, *methods)
         matrix[v, w] = true
-        @props[w].send(method) && @props[w].send(method).each do |prop|
+        children = methods.reduce([]) do |acc, method|
+          cds = @props[w].send(method)
+          cds ? acc + cds.to_a : acc
+        end
+
+        children.uniq.each do |prop|
           t = index(prop)
-          tcR(matrix, v, t, method) unless matrix[v, t]
+          tcR(matrix, v, t, *methods) unless matrix[v, t]
         end
       end
 

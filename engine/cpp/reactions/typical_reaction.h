@@ -15,6 +15,8 @@ public:
 protected:
     friend class LateralReaction;
 
+    TypicalReaction() = default;
+
     virtual void insertToTargets(SpecReaction *reaction) = 0;
     virtual void eraseFromTargets(SpecReaction *reaction) = 0;
 };
