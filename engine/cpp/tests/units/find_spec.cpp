@@ -54,7 +54,7 @@ using namespace std;
 
 void assert_rate(double rate)
 {
-    static const double EPS = 1e-3;
+    static const double EPS = 1e-2;
     double delta = Handbook::mc().totalRate() - rate;
 
 #ifdef PRINT
@@ -1052,6 +1052,21 @@ int main()
                 DesMethylFromDimer::RATE +
                 MethylToHighBridge::RATE +
                 MethylOnDimerHydrogenMigration::RATE +
+                DimerDropNearBridge::RATE);
+
+
+    // 93
+    Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
+    Handbook::mc().doLastOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 0, 1);
+    assert_rate(24 * SurfaceActivation::RATE +
+                2 * SurfaceDeactivation::RATE +
+                4 * MethylOnDimerActivation::RATE +
+                2 * MethylOnDimerDeactivation::RATE +
+                2 * DesMethylFromDimer::RATE +
+                2 * MethylToHighBridge::RATE +
+                MigrationDownAtDimerFromDimer::RATE +
+                AdsMethylToDimer::RATE +
                 DimerDropNearBridge::RATE);
 
     delete diamond;
