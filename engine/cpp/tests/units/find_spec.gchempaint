@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<gcp:chemistry xmlns:gcp="http://www.nongnu.org/gchempaint" creation="12/19/2013" revision="02/09/2014">
+<gcp:chemistry xmlns:gcp="http://www.nongnu.org/gchempaint" creation="12/19/2013" revision="02/10/2014">
   <generator>GChemPaint 0.14.5</generator>
   <author name="newmen"/>
   <theme name="GChemPaint" bond-length="140" bond-angle="120" bond-dist="5" bond-width="1" arrow-length="200" arrow-head-a="6" arrow-head-b="8" arrow-head-c="4" arrow-dist="5" arrow-width="1" arrow-padding="16" hash-width="1" hash-dist="2" stereo-bond-width="5" zoom-factor="4" padding="2" stoichiometry-padding="1" object-padding="16" sign-padding="8" charge-sign-size="9" font-family="Bitstream Vera Sans" font-style="normal" font-weight="normal" font-variant="normal" font-stretch="normal" font-size="12288" text-font-family="Bitstream Vera Serif" text-font-style="normal" text-font-weight="normal" text-font-variant="normal" text-font-stretch="normal" text-font-size="12288"/>
@@ -363,282 +363,121 @@
     <bond id="b1907" order="1" begin="a1789" end="a1794" level="1"/>
     <bond id="b1908" order="1" begin="a1777" end="a1795" level="1"/>
   </molecule>
-  <molecule id="m102">
-    <atom id="a1796" element="C">
-      <position x="15739.631355630167" y="2931.2263274891011"/>
-    </atom>
-    <atom id="a1797" element="C">
-      <position x="15768.237145518193" y="3285.6520042051661"/>
-    </atom>
-    <atom id="a1798" element="C">
-      <position x="15870.888816480128" y="3073.6520802846817"/>
-    </atom>
-    <atom id="a1799" element="C">
-      <position x="15636.979684668231" y="3143.2262514095855"/>
-    </atom>
-    <atom id="a1800" element="C">
-      <position x="15610.932458018191" y="3290.9474143614161"/>
-    </atom>
-    <atom id="a1801" element="C">
-      <position x="15713.584128980128" y="3078.9474904409317"/>
-    </atom>
-    <atom id="a1802" element="C">
-      <position x="15755.259691620191" y="3019.8590252601998"/>
-    </atom>
-    <atom id="a1803" element="C">
-      <position x="15912.564379120191" y="3014.5636151039498"/>
-    </atom>
-    <atom id="a1804" element="C">
-      <position x="16069.11570210689" y="3013.6441623887158"/>
-    </atom>
-    <atom id="a1805" element="C">
-      <position x="16106.890382654929" y="3135.7150018193524"/>
-    </atom>
-    <atom id="a1806" element="C">
-      <position x="15950.835695154929" y="3137.0113885381024"/>
-    </atom>
-    <atom id="a1807" element="C">
-      <position x="15924.78846850489" y="3284.7325514899339"/>
-    </atom>
-    <atom id="a1808" element="C">
-      <position x="16080.84315600489" y="3283.4361647711839"/>
-    </atom>
-    <atom id="a1809" element="C">
-      <position x="16008.139593785016" y="3166.5556211284684"/>
-    </atom>
-    <atom id="a1810" element="C">
-      <position x="15992.511257794991" y="3077.9229233573697"/>
-    </atom>
-    <atom id="a1811" element="C">
-      <position x="15966.464031144953" y="3225.6440863092012"/>
-    </atom>
-    <atom id="a1812" element="C">
-      <position x="16164.194281285016" y="3165.2592344097184"/>
-    </atom>
-    <atom id="a1813" element="C">
-      <position x="16027.440139466828" y="3072.7326275694486"/>
-    </atom>
-    <atom id="a1814" element="C">
-      <position x="16148.565945294991" y="3076.6265366386197"/>
-    </atom>
-    <atom id="a1815" element="C">
-      <position x="16065.214820014866" y="3194.8034670000852"/>
-    </atom>
-    <atom id="a1816" element="C">
-      <position x="15909.160132514866" y="3196.0998537188352"/>
-    </atom>
-    <atom id="a1817" element="C">
-      <position x="15883.112905864828" y="3343.8210166706658"/>
-    </atom>
-    <atom id="a1818" element="C">
-      <position x="16039.167593364828" y="3342.5246299519158"/>
-    </atom>
-    <atom id="a1819" element="C">
-      <position x="15851.588270798318" y="3167.4750738437024"/>
-    </atom>
-    <atom id="a1820" element="C">
-      <position x="15835.959934808294" y="3078.8423760726037"/>
-    </atom>
-    <atom id="a1821" element="C">
-      <position x="15694.283583298318" y="3172.7704839999524"/>
-    </atom>
-    <atom id="a1822" element="C">
-      <position x="15678.655247308294" y="3084.1377862288537"/>
-    </atom>
-    <atom id="a1823" element="C">
-      <position x="15652.608020658256" y="3231.8589491806842"/>
-    </atom>
-    <atom id="a1824" element="C">
-      <position x="15809.912708158256" y="3226.5635390244342"/>
-    </atom>
-    <atom id="a1825" element="C">
-      <position x="16122.518718644953" y="3224.3476995904512"/>
-    </atom>
-    <atom id="a1826" element="C">
-      <position x="15988.610375702969" y="3130.5247060314314"/>
-    </atom>
-    <atom id="a1827" element="C">
-      <position x="15794.284372168231" y="3137.9308412533355"/>
-    </atom>
-    <atom id="a1828" element="C">
-      <position x="15752.608809528168" y="3197.0193064340674"/>
-    </atom>
-    <atom id="a1829" element="C">
-      <position x="15595.304122028167" y="3202.3147165903174"/>
-      <electron id="el210" position="n"/>
-    </atom>
-    <atom id="a1830" element="C">
-      <position x="15569.256895378127" y="3350.0358795421489"/>
-    </atom>
-    <atom id="a1831" element="C">
-      <position x="15726.561582878128" y="3344.7404693858989"/>
-    </atom>
-    <atom id="a1832" element="C">
-      <position x="15896.936043130167" y="2925.9309173328511"/>
-    </atom>
-    <atom id="a1833" element="C">
-      <position x="15752.608809528168" y="3097.0193064340674"/>
-    </atom>
-    <bond id="b1903" order="1" begin="a1802" end="a1796" type="down"/>
-    <bond id="b1909" order="1" begin="a1796" end="a1801" type="up" level="1"/>
-    <bond id="b1910" order="1" begin="a1802" end="a1820"/>
-    <bond id="b1911" order="1" begin="a1820" end="a1803"/>
-    <bond id="b1912" order="1" begin="a1803" end="a1810"/>
-    <bond id="b1913" order="1" begin="a1810" end="a1804"/>
-    <bond id="b1914" order="1" begin="a1809" end="a1810" type="down"/>
-    <bond id="b1915" order="1" begin="a1810" end="a1811" type="up"/>
-    <bond id="b1916" order="1" begin="a1804" end="a1814"/>
-    <bond id="b1917" order="1" begin="a1812" end="a1814" type="down"/>
-    <bond id="b1918" order="1" begin="a1819" end="a1820" type="down"/>
-    <bond id="b1919" order="1" begin="a1825" end="a1805" type="down"/>
-    <bond id="b1920" order="1" begin="a1811" end="a1806" type="down"/>
-    <bond id="b1921" order="1" begin="a1806" end="a1807" type="up"/>
-    <bond id="b1922" order="1" begin="a1805" end="a1808" type="up"/>
-    <bond id="b1923" order="1" begin="a1806" end="a1813" level="1"/>
-    <bond id="b1924" order="1" begin="a1813" end="a1805"/>
-    <bond id="b1925" order="1" begin="a1815" end="a1826" level="1"/>
-    <bond id="b1926" order="1" begin="a1808" end="a1815" type="down"/>
-    <bond id="b1927" order="1" begin="a1807" end="a1816" type="down"/>
-    <bond id="b1928" order="1" begin="a1816" end="a1817" type="up"/>
-    <bond id="b1929" order="1" begin="a1815" end="a1818" type="up"/>
-    <bond id="b1930" order="1" begin="a1826" end="a1816" level="1"/>
-    <bond id="b1931" order="1" begin="a1821" end="a1822" type="down"/>
-    <bond id="b1932" order="1" begin="a1822" end="a1823" type="up"/>
-    <bond id="b1933" order="1" begin="a1820" end="a1824" type="up"/>
-    <bond id="b1934" order="1" begin="a1814" end="a1825" type="up"/>
-    <bond id="b1935" order="1" begin="a1824" end="a1827" type="down"/>
-    <bond id="b1936" order="1" begin="a1827" end="a1797" type="up"/>
-    <bond id="b1937" order="1" begin="a1823" end="a1799" type="down"/>
-    <bond id="b1938" order="1" begin="a1799" end="a1800" type="up"/>
-    <bond id="b1939" order="1" begin="a1798" end="a1806"/>
-    <bond id="b1940" order="1" begin="a1799" end="a1801" level="1"/>
-    <bond id="b1941" order="1" begin="a1801" end="a1827"/>
-    <bond id="b1942" order="1" begin="a1827" end="a1798" level="1"/>
-    <bond id="b1943" order="1" begin="a1822" end="a1802"/>
-    <bond id="b1944" order="1" begin="a1797" end="a1828" type="down"/>
-    <bond id="b1945" order="1" begin="a1800" end="a1829" type="down"/>
-    <bond id="b1946" order="1" begin="a1829" end="a1830" type="up"/>
-    <bond id="b1947" order="1" begin="a1828" end="a1831" type="up"/>
-    <bond id="b1948" order="1" begin="a1803" end="a1832" type="down"/>
-    <bond id="b1949" order="1" begin="a1832" end="a1798" type="up" level="1"/>
-    <bond id="b1950" order="1" begin="a1796" end="a1832"/>
-    <bond id="b1951" order="2" begin="a1828" end="a1833" level="1"/>
-  </molecule>
   <molecule id="m103">
     <atom id="a1834" element="C">
-      <position x="17031.756355630168" y="87.261483739101095"/>
+      <position x="15739.764168130168" y="2931.2263274891011"/>
     </atom>
     <atom id="a1835" element="C">
-      <position x="17060.362145518193" y="441.68716045516612"/>
+      <position x="15768.369958018193" y="3285.6520042051661"/>
     </atom>
     <atom id="a1836" element="C">
-      <position x="17163.013816480128" y="229.68723653468169"/>
+      <position x="15871.021628980128" y="3073.6520802846817"/>
     </atom>
     <atom id="a1837" element="C">
-      <position x="16929.104684668229" y="299.26140765958553"/>
+      <position x="15637.112497168229" y="3143.2262514095855"/>
     </atom>
     <atom id="a1838" element="C">
-      <position x="16903.057458018193" y="446.98257061141612"/>
+      <position x="15611.065270518193" y="3290.9474143614161"/>
     </atom>
     <atom id="a1839" element="C">
-      <position x="17005.709128980128" y="234.98264669093169"/>
+      <position x="15713.716941480128" y="3078.9474904409317"/>
     </atom>
     <atom id="a1840" element="C">
-      <position x="17047.384691620191" y="175.89418151019981"/>
+      <position x="15755.392504120191" y="3019.8590252601998"/>
     </atom>
     <atom id="a1841" element="C">
-      <position x="17204.689379120191" y="170.59877135394981"/>
+      <position x="15912.697191620191" y="3014.5636151039498"/>
     </atom>
     <atom id="a1842" element="C">
-      <position x="17361.24070210689" y="169.67931863871581"/>
+      <position x="16069.24851460689" y="3013.6441623887158"/>
     </atom>
     <atom id="a1843" element="C">
-      <position x="17399.015382654929" y="291.75015806935244"/>
+      <position x="16107.023195154929" y="3135.7150018193524"/>
     </atom>
     <atom id="a1844" element="C">
-      <position x="17242.960695154929" y="293.04654478810244"/>
+      <position x="15950.968507654929" y="3137.0113885381024"/>
     </atom>
     <atom id="a1845" element="C">
-      <position x="17216.913468504892" y="440.76770773993394"/>
+      <position x="15924.921281004892" y="3284.7325514899339"/>
     </atom>
     <atom id="a1846" element="C">
-      <position x="17372.968156004892" y="439.47132102118394"/>
+      <position x="16080.975968504892" y="3283.4361647711839"/>
     </atom>
     <atom id="a1847" element="C">
-      <position x="17300.264593785017" y="322.59077737846837"/>
+      <position x="16008.272406285017" y="3166.5556211284684"/>
     </atom>
     <atom id="a1848" element="C">
-      <position x="17284.636257794991" y="233.95807960736965"/>
+      <position x="15992.644070294991" y="3077.9229233573697"/>
     </atom>
     <atom id="a1849" element="C">
-      <position x="17258.589031144955" y="381.67924255920116"/>
+      <position x="15966.596843644955" y="3225.6440863092012"/>
     </atom>
     <atom id="a1850" element="C">
-      <position x="17456.319281285017" y="321.29439065971837"/>
+      <position x="16164.327093785017" y="3165.2592344097184"/>
     </atom>
     <atom id="a1851" element="C">
-      <position x="17319.565139466828" y="228.7677838194486"/>
+      <position x="16027.572951966828" y="3072.7326275694486"/>
     </atom>
     <atom id="a1852" element="C">
-      <position x="17440.690945294991" y="232.66169288861965"/>
+      <position x="16148.698757794991" y="3076.6265366386197"/>
     </atom>
     <atom id="a1853" element="C">
-      <position x="17357.339820014866" y="350.83862325008522"/>
+      <position x="16065.347632514866" y="3194.8034670000852"/>
     </atom>
     <atom id="a1854" element="C">
-      <position x="17201.285132514866" y="352.13500996883522"/>
+      <position x="15909.292945014866" y="3196.0998537188352"/>
     </atom>
     <atom id="a1855" element="C">
-      <position x="17175.237905864829" y="499.85617292066581"/>
+      <position x="15883.245718364829" y="3343.8210166706658"/>
     </atom>
     <atom id="a1856" element="C">
-      <position x="17331.292593364829" y="498.55978620191581"/>
+      <position x="16039.300405864829" y="3342.5246299519158"/>
     </atom>
     <atom id="a1857" element="C">
-      <position x="17143.713270798318" y="323.51023009370238"/>
+      <position x="15851.721083298318" y="3167.4750738437024"/>
     </atom>
     <atom id="a1858" element="C">
-      <position x="17128.084934808292" y="234.87753232260366"/>
+      <position x="15836.092747308292" y="3078.8423760726037"/>
     </atom>
     <atom id="a1859" element="C">
-      <position x="16986.408583298318" y="328.80564024995238"/>
+      <position x="15694.416395798318" y="3172.7704839999524"/>
     </atom>
     <atom id="a1860" element="C">
-      <position x="16970.780247308292" y="240.17294247885366"/>
+      <position x="15678.788059808292" y="3084.1377862288537"/>
     </atom>
     <atom id="a1861" element="C">
-      <position x="16944.733020658256" y="387.89410543068425"/>
+      <position x="15652.740833158256" y="3231.8589491806842"/>
     </atom>
     <atom id="a1862" element="C">
-      <position x="17102.037708158256" y="382.59869527443425"/>
+      <position x="15810.045520658256" y="3226.5635390244342"/>
     </atom>
     <atom id="a1863" element="C">
-      <position x="17414.643718644955" y="380.38285584045116"/>
+      <position x="16122.651531144955" y="3224.3476995904512"/>
     </atom>
     <atom id="a1864" element="C">
-      <position x="17280.73537570297" y="286.55986228143138"/>
+      <position x="15988.74318820297" y="3130.5247060314314"/>
     </atom>
     <atom id="a1865" element="C">
-      <position x="17086.409372168229" y="293.96599750333553"/>
+      <position x="15794.417184668229" y="3137.9308412533355"/>
     </atom>
     <atom id="a1866" element="C">
-      <position x="17044.733809528167" y="353.0544626840674"/>
+      <position x="15752.741622028167" y="3197.0193064340674"/>
     </atom>
     <atom id="a1867" element="C">
-      <position x="16887.429122028167" y="358.3498728403174"/>
+      <position x="15595.436934528167" y="3202.3147165903174"/>
       <electron id="el211" position="n"/>
     </atom>
     <atom id="a1868" element="C">
-      <position x="16861.381895378127" y="506.0710357921489"/>
+      <position x="15569.389707878127" y="3350.0358795421489"/>
     </atom>
     <atom id="a1869" element="C">
-      <position x="17018.68658287813" y="500.7756256358989"/>
+      <position x="15726.69439537813" y="3344.7404693858989"/>
     </atom>
     <atom id="a1870" element="C">
-      <position x="17189.061043130168" y="81.966073582851095"/>
+      <position x="15897.068855630168" y="2925.9309173328511"/>
     </atom>
     <atom id="a1871" element="C">
-      <position x="17044.733809528167" y="253.0544626840674"/>
+      <position x="15752.741622028167" y="3097.0193064340674"/>
     </atom>
     <bond id="b1952" order="1" begin="a1840" end="a1834" type="down"/>
     <bond id="b1953" order="1" begin="a1834" end="a1839" type="up" level="1"/>
@@ -687,123 +526,123 @@
   </molecule>
   <molecule id="m104">
     <atom id="a1872" element="C">
-      <position x="17039.693855630168" y="715.2619720203511"/>
+      <position x="17043.678230630168" y="107.2346282703511"/>
     </atom>
     <atom id="a1873" element="C">
-      <position x="17068.299645518193" y="1069.6876487364161"/>
+      <position x="17072.284020518193" y="461.66030498641612"/>
     </atom>
     <atom id="a1874" element="C">
-      <position x="17170.951316480128" y="857.68772481593169"/>
+      <position x="17174.935691480128" y="249.66038106593169"/>
     </atom>
     <atom id="a1875" element="C">
-      <position x="16937.042184668229" y="927.26189594083553"/>
+      <position x="16941.026559668229" y="319.23455219083553"/>
     </atom>
     <atom id="a1876" element="C">
-      <position x="16910.994958018193" y="1074.9830588926661"/>
+      <position x="16914.979333018193" y="466.95571514266612"/>
     </atom>
     <atom id="a1877" element="C">
-      <position x="17013.646628980128" y="862.98313497218169"/>
+      <position x="17017.631003980128" y="254.95579122218169"/>
     </atom>
     <atom id="a1878" element="C">
-      <position x="17055.322191620191" y="803.89466979144981"/>
+      <position x="17059.306566620191" y="195.86732604144981"/>
     </atom>
     <atom id="a1879" element="C">
-      <position x="17212.626879120191" y="798.59925963519981"/>
+      <position x="17216.611254120191" y="190.57191588519981"/>
     </atom>
     <atom id="a1880" element="C">
-      <position x="17369.17820210689" y="797.67980691996581"/>
+      <position x="17373.16257710689" y="189.65246316996581"/>
     </atom>
     <atom id="a1881" element="C">
-      <position x="17406.952882654929" y="919.75064635060244"/>
+      <position x="17410.937257654929" y="311.72330260060244"/>
     </atom>
     <atom id="a1882" element="C">
-      <position x="17250.898195154929" y="921.04703306935244"/>
+      <position x="17254.882570154929" y="313.01968931935244"/>
     </atom>
     <atom id="a1883" element="C">
-      <position x="17224.850968504892" y="1068.7681960211839"/>
+      <position x="17228.835343504892" y="460.74085227118394"/>
     </atom>
     <atom id="a1884" element="C">
-      <position x="17380.905656004892" y="1067.4718093024339"/>
+      <position x="17384.890031004892" y="459.44446555243394"/>
     </atom>
     <atom id="a1885" element="C">
-      <position x="17308.202093785017" y="950.59126565971837"/>
+      <position x="17312.186468785017" y="342.56392190971837"/>
     </atom>
     <atom id="a1886" element="C">
-      <position x="17292.573757794991" y="861.95856788861965"/>
+      <position x="17296.558132794991" y="253.93122413861965"/>
     </atom>
     <atom id="a1887" element="C">
-      <position x="17266.526531144955" y="1009.6797308404512"/>
+      <position x="17270.510906144955" y="401.65238709045116"/>
     </atom>
     <atom id="a1888" element="C">
-      <position x="17464.256781285017" y="949.29487894096837"/>
+      <position x="17468.241156285017" y="341.26753519096837"/>
     </atom>
     <atom id="a1889" element="C">
-      <position x="17327.502639466828" y="856.7682721006986"/>
+      <position x="17331.487014466828" y="248.7409283506986"/>
     </atom>
     <atom id="a1890" element="C">
-      <position x="17448.628445294991" y="860.66218116986965"/>
+      <position x="17452.612820294991" y="252.63483741986965"/>
     </atom>
     <atom id="a1891" element="C">
-      <position x="17365.277320014866" y="978.83911153133522"/>
+      <position x="17369.261695014866" y="370.81176778133522"/>
     </atom>
     <atom id="a1892" element="C">
-      <position x="17209.222632514866" y="980.13549825008522"/>
+      <position x="17213.207007514866" y="372.10815450008522"/>
     </atom>
     <atom id="a1893" element="C">
-      <position x="17183.175405864829" y="1127.8566612019158"/>
+      <position x="17187.159780864829" y="519.82931745191581"/>
     </atom>
     <atom id="a1894" element="C">
-      <position x="17339.230093364829" y="1126.5602744831658"/>
+      <position x="17343.214468364829" y="518.53293073316581"/>
     </atom>
     <atom id="a1895" element="C">
-      <position x="17151.650770798318" y="951.51071837495238"/>
+      <position x="17155.635145798318" y="343.48337462495238"/>
     </atom>
     <atom id="a1896" element="C">
-      <position x="17136.022434808292" y="862.87802060385366"/>
+      <position x="17140.006809808292" y="254.85067685385366"/>
     </atom>
     <atom id="a1897" element="C">
-      <position x="16994.346083298318" y="956.80612853120238"/>
+      <position x="16998.330458298318" y="348.77878478120238"/>
     </atom>
     <atom id="a1898" element="C">
-      <position x="16978.717747308292" y="868.17343076010366"/>
+      <position x="16982.702122308292" y="260.14608701010366"/>
     </atom>
     <atom id="a1899" element="C">
-      <position x="16952.670520658256" y="1015.8945937119342"/>
+      <position x="16956.654895658256" y="407.86724996193425"/>
     </atom>
     <atom id="a1900" element="C">
-      <position x="17109.975208158256" y="1010.5991835556842"/>
+      <position x="17113.959583158256" y="402.57183980568425"/>
     </atom>
     <atom id="a1901" element="C">
-      <position x="17422.581218644955" y="1008.3833441217012"/>
+      <position x="17426.565593644955" y="400.35600037170116"/>
     </atom>
     <atom id="a1902" element="C">
-      <position x="17288.67287570297" y="914.56035056268138"/>
+      <position x="17292.65725070297" y="306.53300681268138"/>
     </atom>
     <atom id="a1903" element="C">
-      <position x="17094.346872168229" y="921.96648578458553"/>
+      <position x="17098.331247168229" y="313.93914203458553"/>
     </atom>
     <atom id="a1904" element="C">
-      <position x="17052.671309528167" y="981.0549509653174"/>
+      <position x="17056.655684528167" y="373.0276072153174"/>
       <electron id="el212" position="ne"/>
     </atom>
     <atom id="a1905" element="C">
-      <position x="16895.366622028167" y="986.3503611215674"/>
+      <position x="16899.350997028167" y="378.3230173715674"/>
     </atom>
     <atom id="a1906" element="C">
-      <position x="16869.319395378127" y="1134.0715240733989"/>
+      <position x="16873.303770378127" y="526.0441803233989"/>
     </atom>
     <atom id="a1907" element="C">
-      <position x="17026.62408287813" y="1128.7761139171489"/>
+      <position x="17030.60845787813" y="520.7487701671489"/>
     </atom>
     <atom id="a1908" element="C">
-      <position x="17196.998543130168" y="709.9665618641011"/>
+      <position x="17200.982918130168" y="101.9392181141011"/>
       <electron id="el213" position="n"/>
     </atom>
     <atom id="a1909" element="C">
-      <position x="16971.971066340066" y="922.07160015291345"/>
+      <position x="16975.955441340066" y="314.04425640291345"/>
     </atom>
     <atom id="a1910" element="C">
-      <position x="16971.971066340066" y="922.07160015291345"/>
+      <position x="16975.955441340066" y="314.04425640291345"/>
     </atom>
     <bond id="b1996" order="1" begin="a1878" end="a1872" type="down"/>
     <bond id="b1997" order="1" begin="a1872" end="a1877" type="up" level="1"/>
@@ -852,124 +691,124 @@
   </molecule>
   <molecule id="m105">
     <atom id="a1911" element="C">
-      <position x="17043.748543130168" y="1404.2268157703511"/>
+      <position x="17047.732918130168" y="796.1994720203511"/>
     </atom>
     <atom id="a1912" element="C">
-      <position x="17072.354333018193" y="1758.6524924864161"/>
+      <position x="17076.338708018193" y="1150.6251487364161"/>
     </atom>
     <atom id="a1913" element="C">
-      <position x="17175.006003980128" y="1546.6525685659317"/>
+      <position x="17178.990378980128" y="938.62522481593169"/>
     </atom>
     <atom id="a1914" element="C">
-      <position x="16941.096872168229" y="1616.2267396908355"/>
+      <position x="16945.081247168229" y="1008.1993959408355"/>
     </atom>
     <atom id="a1915" element="C">
-      <position x="16915.049645518193" y="1763.9479026426661"/>
+      <position x="16919.034020518193" y="1155.9205588926661"/>
     </atom>
     <atom id="a1916" element="C">
-      <position x="17017.701316480128" y="1551.9479787221817"/>
+      <position x="17021.685691480128" y="943.92063497218169"/>
     </atom>
     <atom id="a1917" element="C">
-      <position x="17059.376879120191" y="1492.8595135414498"/>
+      <position x="17063.361254120191" y="884.83216979144981"/>
     </atom>
     <atom id="a1918" element="C">
-      <position x="17216.681566620191" y="1487.5641033851998"/>
+      <position x="17220.665941620191" y="879.53675963519981"/>
     </atom>
     <atom id="a1919" element="C">
-      <position x="17373.23288960689" y="1486.6446506699658"/>
+      <position x="17377.21726460689" y="878.61730691996581"/>
     </atom>
     <atom id="a1920" element="C">
-      <position x="17411.007570154929" y="1608.7154901006024"/>
+      <position x="17414.991945154929" y="1000.6881463506024"/>
     </atom>
     <atom id="a1921" element="C">
-      <position x="17254.952882654929" y="1610.0118768193524"/>
+      <position x="17258.937257654929" y="1001.9845330693524"/>
     </atom>
     <atom id="a1922" element="C">
-      <position x="17228.905656004892" y="1757.7330397711839"/>
+      <position x="17232.890031004892" y="1149.7056960211839"/>
     </atom>
     <atom id="a1923" element="C">
-      <position x="17384.960343504892" y="1756.4366530524339"/>
+      <position x="17388.944718504892" y="1148.4093093024339"/>
     </atom>
     <atom id="a1924" element="C">
-      <position x="17312.256781285017" y="1639.5561094097184"/>
+      <position x="17316.241156285017" y="1031.5287656597184"/>
     </atom>
     <atom id="a1925" element="C">
-      <position x="17296.628445294991" y="1550.9234116386197"/>
+      <position x="17300.612820294991" y="942.89606788861965"/>
     </atom>
     <atom id="a1926" element="C">
-      <position x="17270.581218644955" y="1698.6445745904512"/>
+      <position x="17274.565593644955" y="1090.6172308404512"/>
     </atom>
     <atom id="a1927" element="C">
-      <position x="17468.311468785017" y="1638.2597226909684"/>
+      <position x="17472.295843785017" y="1030.2323789409684"/>
     </atom>
     <atom id="a1928" element="C">
-      <position x="17331.557326966828" y="1545.7331158506986"/>
+      <position x="17335.541701966828" y="937.7057721006986"/>
     </atom>
     <atom id="a1929" element="C">
-      <position x="17452.683132794991" y="1549.6270249198697"/>
+      <position x="17456.667507794991" y="941.59968116986965"/>
     </atom>
     <atom id="a1930" element="C">
-      <position x="17369.332007514866" y="1667.8039552813352"/>
+      <position x="17373.316382514866" y="1059.7766115313352"/>
     </atom>
     <atom id="a1931" element="C">
-      <position x="17213.277320014866" y="1669.1003420000852"/>
+      <position x="17217.261695014866" y="1061.0729982500852"/>
       <electron id="el216" position="w"/>
     </atom>
     <atom id="a1932" element="C">
-      <position x="17187.230093364829" y="1816.8215049519158"/>
+      <position x="17191.214468364829" y="1208.7941612019158"/>
     </atom>
     <atom id="a1933" element="C">
-      <position x="17343.284780864829" y="1815.5251182331658"/>
+      <position x="17347.269155864829" y="1207.4977744831658"/>
     </atom>
     <atom id="a1934" element="C">
-      <position x="17155.705458298318" y="1640.4755621249524"/>
+      <position x="17159.689833298318" y="1032.4482183749524"/>
     </atom>
     <atom id="a1935" element="C">
-      <position x="17140.077122308292" y="1551.8428643538537"/>
+      <position x="17144.061497308292" y="943.81552060385366"/>
     </atom>
     <atom id="a1936" element="C">
-      <position x="16998.400770798318" y="1645.7709722812024"/>
+      <position x="17002.385145798318" y="1037.7436285312024"/>
     </atom>
     <atom id="a1937" element="C">
-      <position x="16982.772434808292" y="1557.1382745101037"/>
+      <position x="16986.756809808292" y="949.11093076010366"/>
     </atom>
     <atom id="a1938" element="C">
-      <position x="16956.725208158256" y="1704.8594374619342"/>
+      <position x="16960.709583158256" y="1096.8320937119342"/>
     </atom>
     <atom id="a1939" element="C">
-      <position x="17114.029895658256" y="1699.5640273056842"/>
+      <position x="17118.014270658256" y="1091.5366835556842"/>
     </atom>
     <atom id="a1940" element="C">
-      <position x="17426.635906144955" y="1697.3481878717012"/>
+      <position x="17430.620281144955" y="1089.3208441217012"/>
     </atom>
     <atom id="a1941" element="C">
-      <position x="17292.72756320297" y="1603.5251943126814"/>
+      <position x="17296.71193820297" y="995.49785056268138"/>
     </atom>
     <atom id="a1942" element="C">
-      <position x="17098.401559668229" y="1610.9313295345855"/>
+      <position x="17102.385934668229" y="1002.9039857845855"/>
     </atom>
     <atom id="a1943" element="C">
-      <position x="17056.725997028167" y="1670.0197947153174"/>
+      <position x="17060.710372028167" y="1061.9924509653174"/>
       <electron id="el214" position="ne"/>
     </atom>
     <atom id="a1944" element="C">
-      <position x="16899.421309528167" y="1675.3152048715674"/>
+      <position x="16903.405684528167" y="1067.2878611215674"/>
     </atom>
     <atom id="a1945" element="C">
-      <position x="16873.374082878127" y="1823.0363678233989"/>
+      <position x="16877.358457878127" y="1215.0090240733989"/>
     </atom>
     <atom id="a1946" element="C">
-      <position x="17030.67877037813" y="1817.7409576671489"/>
+      <position x="17034.66314537813" y="1209.7136139171489"/>
     </atom>
     <atom id="a1947" element="C">
-      <position x="17201.053230630168" y="1398.9314056141011"/>
+      <position x="17205.037605630168" y="790.9040618641011"/>
       <electron id="el215" position="n"/>
     </atom>
     <atom id="a1948" element="C">
-      <position x="16976.025753840066" y="1611.0364439029136"/>
+      <position x="16980.010128840066" y="1003.0091001529136"/>
     </atom>
     <atom id="a1949" element="C">
-      <position x="16976.025753840066" y="1611.0364439029136"/>
+      <position x="16980.010128840066" y="1003.0091001529136"/>
     </atom>
     <bond id="b2040" order="1" begin="a1917" end="a1911" type="down"/>
     <bond id="b2041" order="1" begin="a1911" end="a1916" type="up" level="1"/>
@@ -1018,124 +857,124 @@
   </molecule>
   <molecule id="m106">
     <atom id="a1950" element="C">
-      <position x="17039.646980630168" y="2128.2697845203511"/>
+      <position x="17043.631355630168" y="1520.2424407703511"/>
     </atom>
     <atom id="a1951" element="C">
-      <position x="17068.252770518193" y="2482.6954612364161"/>
+      <position x="17072.237145518193" y="1874.6681174864161"/>
     </atom>
     <atom id="a1952" element="C">
-      <position x="17170.904441480128" y="2270.6955373159317"/>
+      <position x="17174.888816480128" y="1662.6681935659317"/>
     </atom>
     <atom id="a1953" element="C">
-      <position x="16936.995309668229" y="2340.2697084408355"/>
+      <position x="16940.979684668229" y="1732.2423646908355"/>
     </atom>
     <atom id="a1954" element="C">
-      <position x="16910.948083018193" y="2487.9908713926661"/>
+      <position x="16914.932458018193" y="1879.9635276426661"/>
     </atom>
     <atom id="a1955" element="C">
-      <position x="17013.599753980128" y="2275.9909474721817"/>
+      <position x="17017.584128980128" y="1667.9636037221817"/>
     </atom>
     <atom id="a1956" element="C">
-      <position x="17055.275316620191" y="2216.9024822914498"/>
+      <position x="17059.259691620191" y="1608.8751385414498"/>
     </atom>
     <atom id="a1957" element="C">
-      <position x="17212.580004120191" y="2211.6070721351998"/>
+      <position x="17216.564379120191" y="1603.5797283851998"/>
     </atom>
     <atom id="a1958" element="C">
-      <position x="17369.13132710689" y="2210.6876194199658"/>
+      <position x="17373.11570210689" y="1602.6602756699658"/>
     </atom>
     <atom id="a1959" element="C">
-      <position x="17406.906007654929" y="2332.7584588506024"/>
+      <position x="17410.890382654929" y="1724.7311151006024"/>
     </atom>
     <atom id="a1960" element="C">
-      <position x="17250.851320154929" y="2334.0548455693524"/>
+      <position x="17254.835695154929" y="1726.0275018193524"/>
     </atom>
     <atom id="a1961" element="C">
-      <position x="17224.804093504892" y="2481.7760085211839"/>
+      <position x="17228.788468504892" y="1873.7486647711839"/>
     </atom>
     <atom id="a1962" element="C">
-      <position x="17380.858781004892" y="2480.4796218024339"/>
+      <position x="17384.843156004892" y="1872.4522780524339"/>
     </atom>
     <atom id="a1963" element="C">
-      <position x="17308.155218785017" y="2363.5990781597184"/>
+      <position x="17312.139593785017" y="1755.5717344097184"/>
     </atom>
     <atom id="a1964" element="C">
-      <position x="17292.526882794991" y="2274.9663803886197"/>
+      <position x="17296.511257794991" y="1666.9390366386197"/>
     </atom>
     <atom id="a1965" element="C">
-      <position x="17266.479656144955" y="2422.6875433404512"/>
+      <position x="17270.464031144955" y="1814.6601995904512"/>
     </atom>
     <atom id="a1966" element="C">
-      <position x="17464.209906285017" y="2362.3026914409684"/>
+      <position x="17468.194281285017" y="1754.2753476909684"/>
     </atom>
     <atom id="a1967" element="C">
-      <position x="17327.455764466828" y="2269.7760846006986"/>
+      <position x="17331.440139466828" y="1661.7487408506986"/>
     </atom>
     <atom id="a1968" element="C">
-      <position x="17448.581570294991" y="2273.6699936698697"/>
+      <position x="17452.565945294991" y="1665.6426499198697"/>
     </atom>
     <atom id="a1969" element="C">
-      <position x="17365.230445014866" y="2391.8469240313352"/>
+      <position x="17369.214820014866" y="1783.8195802813352"/>
     </atom>
     <atom id="a1970" element="C">
-      <position x="17209.175757514866" y="2393.1433107500852"/>
+      <position x="17213.160132514866" y="1785.1159670000852"/>
       <electron id="el217" position="w"/>
     </atom>
     <atom id="a1971" element="C">
-      <position x="17183.128530864829" y="2540.8644737019158"/>
+      <position x="17187.112905864829" y="1932.8371299519158"/>
     </atom>
     <atom id="a1972" element="C">
-      <position x="17339.183218364829" y="2539.5680869831658"/>
+      <position x="17343.167593364829" y="1931.5407432331658"/>
     </atom>
     <atom id="a1973" element="C">
-      <position x="17151.603895798318" y="2364.5185308749524"/>
+      <position x="17155.588270798318" y="1756.4911871249524"/>
     </atom>
     <atom id="a1974" element="C">
-      <position x="17135.975559808292" y="2275.8858331038537"/>
+      <position x="17139.959934808292" y="1667.8584893538537"/>
     </atom>
     <atom id="a1975" element="C">
-      <position x="16994.299208298318" y="2369.8139410312024"/>
+      <position x="16998.283583298318" y="1761.7865972812024"/>
     </atom>
     <atom id="a1976" element="C">
-      <position x="16978.670872308292" y="2281.1812432601037"/>
+      <position x="16982.655247308292" y="1673.1538995101037"/>
     </atom>
     <atom id="a1977" element="C">
-      <position x="16952.623645658256" y="2428.9024062119342"/>
+      <position x="16956.608020658256" y="1820.8750624619342"/>
     </atom>
     <atom id="a1978" element="C">
-      <position x="17109.928333158256" y="2423.6069960556842"/>
+      <position x="17113.912708158256" y="1815.5796523056842"/>
     </atom>
     <atom id="a1979" element="C">
-      <position x="17422.534343644955" y="2421.3911566217012"/>
+      <position x="17426.518718644955" y="1813.3638128717012"/>
     </atom>
     <atom id="a1980" element="C">
-      <position x="17288.62600070297" y="2327.5681630626814"/>
+      <position x="17292.61037570297" y="1719.5408193126814"/>
     </atom>
     <atom id="a1981" element="C">
-      <position x="17094.299997168229" y="2334.9742982845855"/>
+      <position x="17098.284372168229" y="1726.9469545345855"/>
     </atom>
     <atom id="a1982" element="C">
-      <position x="17052.624434528167" y="2394.0627634653174"/>
+      <position x="17056.608809528167" y="1786.0354197153174"/>
       <electron id="el218" position="ne"/>
     </atom>
     <atom id="a1983" element="C">
-      <position x="16895.319747028167" y="2399.3581736215674"/>
+      <position x="16899.304122028167" y="1791.3308298715674"/>
     </atom>
     <atom id="a1984" element="C">
-      <position x="16869.272520378127" y="2547.0793365733989"/>
+      <position x="16873.256895378127" y="1939.0519928233989"/>
     </atom>
     <atom id="a1985" element="C">
-      <position x="17026.57720787813" y="2541.7839264171489"/>
+      <position x="17030.56158287813" y="1933.7565826671489"/>
     </atom>
     <atom id="a1986" element="C">
-      <position x="17170.904441480128" y="2170.6955373159317"/>
+      <position x="17174.888816480128" y="1562.6681935659317"/>
       <electron id="el219" position="n"/>
     </atom>
     <atom id="a1987" element="C">
-      <position x="16971.924191340066" y="2335.0794126529136"/>
+      <position x="16975.908566340066" y="1727.0520689029136"/>
     </atom>
     <atom id="a1988" element="C">
-      <position x="16971.924191340066" y="2335.0794126529136"/>
+      <position x="16975.908566340066" y="1727.0520689029136"/>
     </atom>
     <bond id="b2084" order="1" begin="a1956" end="a1950" type="down"/>
     <bond id="b2085" order="1" begin="a1950" end="a1955" type="up" level="1"/>
@@ -1183,128 +1022,128 @@
   </molecule>
   <molecule id="m107">
     <atom id="a1989" element="C">
-      <position x="17043.646980630168" y="2916.5815520984761"/>
+      <position x="17055.717293130168" y="2268.5420013172261"/>
     </atom>
     <atom id="a1990" element="C">
-      <position x="17072.252770518193" y="3271.0072288145411"/>
+      <position x="17084.323083018193" y="2622.9676780332911"/>
     </atom>
     <atom id="a1991" element="C">
-      <position x="17174.904441480128" y="3059.0073048940567"/>
+      <position x="17186.974753980128" y="2410.9677541128067"/>
       <electron id="el220" position="n"/>
     </atom>
     <atom id="a1992" element="C">
-      <position x="16940.995309668229" y="3128.5814760189605"/>
+      <position x="16953.065622168229" y="2480.5419252377105"/>
     </atom>
     <atom id="a1993" element="C">
-      <position x="16914.948083018193" y="3276.3026389707911"/>
+      <position x="16927.018395518193" y="2628.2630881895411"/>
     </atom>
     <atom id="a1994" element="C">
-      <position x="17017.599753980128" y="3064.3027150503067"/>
+      <position x="17029.670066480128" y="2416.2631642690567"/>
     </atom>
     <atom id="a1995" element="C">
-      <position x="17059.275316620191" y="3005.2142498695748"/>
+      <position x="17071.345629120191" y="2357.1746990883248"/>
     </atom>
     <atom id="a1996" element="C">
-      <position x="17216.580004120191" y="2999.9188397133248"/>
+      <position x="17228.650316620191" y="2351.8792889320748"/>
     </atom>
     <atom id="a1997" element="C">
-      <position x="17373.13132710689" y="2998.9993869980908"/>
+      <position x="17385.20163960689" y="2350.9598362168408"/>
     </atom>
     <atom id="a1998" element="C">
-      <position x="17410.906007654929" y="3121.0702264287274"/>
+      <position x="17422.976320154929" y="2473.0306756474774"/>
     </atom>
     <atom id="a1999" element="C">
-      <position x="17254.851320154929" y="3122.3666131474774"/>
+      <position x="17266.921632654929" y="2474.3270623662274"/>
     </atom>
     <atom id="a2000" element="C">
-      <position x="17228.804093504892" y="3270.0877760993089"/>
+      <position x="17240.874406004892" y="2622.0482253180589"/>
     </atom>
     <atom id="a2001" element="C">
-      <position x="17384.858781004892" y="3268.7913893805589"/>
+      <position x="17396.929093504892" y="2620.7518385993089"/>
     </atom>
     <atom id="a2002" element="C">
-      <position x="17312.155218785017" y="3151.9108457378434"/>
+      <position x="17324.225531285017" y="2503.8712949565934"/>
     </atom>
     <atom id="a2003" element="C">
-      <position x="17296.526882794991" y="3063.2781479667447"/>
+      <position x="17308.597195294991" y="2415.2385971854947"/>
     </atom>
     <atom id="a2004" element="C">
-      <position x="17270.479656144955" y="3210.9993109185762"/>
+      <position x="17282.549968644955" y="2562.9597601373262"/>
     </atom>
     <atom id="a2005" element="C">
-      <position x="17468.209906285017" y="3150.6144590190934"/>
+      <position x="17480.280218785017" y="2502.5749082378434"/>
     </atom>
     <atom id="a2006" element="C">
-      <position x="17331.455764466828" y="3058.0878521788236"/>
+      <position x="17343.526076966828" y="2410.0483013975736"/>
     </atom>
     <atom id="a2007" element="C">
-      <position x="17452.581570294991" y="3061.9817612479947"/>
+      <position x="17464.651882794991" y="2413.9422104667447"/>
     </atom>
     <atom id="a2008" element="C">
-      <position x="17369.230445014866" y="3180.1586916094602"/>
+      <position x="17381.300757514866" y="2532.1191408282102"/>
     </atom>
     <atom id="a2009" element="C">
-      <position x="17213.175757514866" y="3181.4550783282102"/>
+      <position x="17225.246070014866" y="2533.4155275469602"/>
     </atom>
     <atom id="a2010" element="C">
-      <position x="17187.128530864829" y="3329.1762412800408"/>
+      <position x="17199.198843364829" y="2681.1366904987908"/>
     </atom>
     <atom id="a2011" element="C">
-      <position x="17343.183218364829" y="3327.8798545612908"/>
+      <position x="17355.253530864829" y="2679.8403037800408"/>
     </atom>
     <atom id="a2012" element="C">
-      <position x="17155.603895798318" y="3152.8302984530774"/>
+      <position x="17167.674208298318" y="2504.7907476718274"/>
     </atom>
     <atom id="a2013" element="C">
-      <position x="17139.975559808292" y="3064.1976006819787"/>
+      <position x="17152.045872308292" y="2416.1580499007287"/>
     </atom>
     <atom id="a2014" element="C">
-      <position x="16998.299208298318" y="3158.1257086093274"/>
+      <position x="17010.369520798318" y="2510.0861578280774"/>
     </atom>
     <atom id="a2015" element="C">
-      <position x="16982.670872308292" y="3069.4930108382287"/>
+      <position x="16994.741184808292" y="2421.4534600569787"/>
     </atom>
     <atom id="a2016" element="C">
-      <position x="16956.623645658256" y="3217.2141737900592"/>
+      <position x="16968.693958158256" y="2569.1746230088092"/>
     </atom>
     <atom id="a2017" element="C">
-      <position x="17113.928333158256" y="3211.9187636338092"/>
+      <position x="17125.998645658256" y="2563.8792128525592"/>
     </atom>
     <atom id="a2018" element="C">
-      <position x="17426.534343644955" y="3209.7029241998262"/>
+      <position x="17438.604656144955" y="2561.6633734185762"/>
     </atom>
     <atom id="a2019" element="C">
-      <position x="17292.62600070297" y="3115.8799306408064"/>
+      <position x="17304.69631320297" y="2467.8403798595564"/>
     </atom>
     <atom id="a2020" element="C">
-      <position x="17098.299997168229" y="3123.2860658627105"/>
+      <position x="17110.370309668229" y="2475.2465150814605"/>
     </atom>
     <atom id="a2021" element="C">
-      <position x="17056.624434528167" y="3182.3745310434424"/>
+      <position x="17068.694747028167" y="2534.3349802621924"/>
     </atom>
     <atom id="a2022" element="C">
-      <position x="16899.319747028167" y="3187.6699411996924"/>
+      <position x="16911.390059528167" y="2539.6303904184424"/>
     </atom>
     <atom id="a2023" element="C">
-      <position x="16873.272520378127" y="3335.3911041515239"/>
+      <position x="16885.342832878127" y="2687.3515533702739"/>
     </atom>
     <atom id="a2024" element="C">
-      <position x="17030.57720787813" y="3330.0956939952739"/>
+      <position x="17042.64752037813" y="2682.0561432140239"/>
     </atom>
     <atom id="a2025" element="C">
-      <position x="17133.228878840066" y="3118.0957700747886"/>
+      <position x="17145.299191340066" y="2470.0562192935386"/>
     </atom>
     <atom id="a2026" element="C">
-      <position x="16975.924191340066" y="3123.3911802310386"/>
+      <position x="16987.994503840066" y="2475.3516294497886"/>
     </atom>
     <atom id="a2027" element="C">
-      <position x="16975.924191340066" y="3123.3911802310386"/>
+      <position x="16987.994503840066" y="2475.3516294497886"/>
     </atom>
     <atom id="a2028" element="C">
-      <position x="17133.228878840066" y="3118.0957700747886"/>
+      <position x="17145.299191340066" y="2470.0562192935386"/>
     </atom>
     <atom id="a2029" element="C">
-      <position x="17133.228878840066" y="3118.0957700747886"/>
+      <position x="17145.299191340066" y="2470.0562192935386"/>
     </atom>
     <bond id="b2125" order="1" begin="a1995" end="a1989" type="down"/>
     <bond id="b2128" order="1" begin="a1989" end="a1994" type="up" level="1"/>
@@ -8994,29 +8833,25 @@
     <position x="15415.586968714984" y="3186.7752040520354"/>
     <font name="Bitstream Vera Serif 12">77</font>
   </text>
-  <text id="o78">
-    <position x="16707.711968714983" y="342.81036030203541"/>
-    <font name="Bitstream Vera Serif 12">78</font>
-  </text>
   <text id="o79">
-    <position x="16715.649468714983" y="970.81084858328541"/>
-    <font name="Bitstream Vera Serif 12">79</font>
+    <position x="16719.633843714983" y="362.78350483328541"/>
+    <font name="Bitstream Vera Serif 12">78</font>
   </text>
   <text id="o8">
     <position x="364.6602783203125" y="3354.2729837417719"/>
     <font name="Bitstream Vera Serif 12">8</font>
   </text>
   <text id="o80">
-    <position x="16719.704156214983" y="1659.7756923332854"/>
-    <font name="Bitstream Vera Serif 12">80</font>
+    <position x="16723.688531214983" y="1051.7483485832854"/>
+    <font name="Bitstream Vera Serif 12">79</font>
   </text>
   <text id="o81">
-    <position x="16715.602593714983" y="2383.8186610832854"/>
-    <font name="Bitstream Vera Serif 12">81</font>
+    <position x="16719.586968714983" y="1775.7913173332854"/>
+    <font name="Bitstream Vera Serif 12">80</font>
   </text>
   <text id="o82">
-    <position x="16719.602593714983" y="3172.1304286614104"/>
-    <font name="Bitstream Vera Serif 12">82</font>
+    <position x="16731.672906214983" y="2524.0908778801604"/>
+    <font name="Bitstream Vera Serif 12">81</font>
   </text>
   <text id="o9">
     <position x="1789.8148193359375" y="316.48190708161565"/>
