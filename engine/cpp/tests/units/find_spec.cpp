@@ -1131,6 +1131,16 @@ int main()
                 2 * NextLevelBridgeToHighBridge::RATE +
                 MigrationDownInGapFromDimer::RATE);
 
+    // 99
+    Handbook::mc().doOneOfOne(METHYL_TO_HIGH_BRIDGE);
+    assert_rate(29 * SurfaceActivation::RATE +
+                5 * SurfaceDeactivation::RATE +
+                2 * NextLevelBridgeToHighBridge::RATE +
+                2 * AdsMethylTo111::RATE +
+                FormTwoBond::RATE +
+                DesMethylFromBridge::RATE +
+                MigrationDownInGap::RATE);
+
     delete diamond;
     return 0;
 }
