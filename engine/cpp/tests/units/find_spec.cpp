@@ -836,6 +836,14 @@ int main()
                 MethylToHighBridge::RATE +
                 DimerDrop::RATE);
 
+    // 75
+    Handbook::mc().doOneOfOne(DES_METHYL_FROM_DIMER);
+    assert_rate(27 * SurfaceActivation::RATE +
+                SurfaceDeactivation::RATE +
+                AdsMethylToDimer::RATE +
+                DimerDropNearBridge::RATE +
+                DimerDrop::RATE);
+
     delete diamond;
     return 0;
 }
