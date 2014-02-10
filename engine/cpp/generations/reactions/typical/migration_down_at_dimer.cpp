@@ -41,7 +41,7 @@ void MigrationDownAtDimer::doIt()
     assert(c->is(22));
 
     bool hMigratedDown = false;
-    if (a->type() == 26)
+    if (a->type() == 36)
     {
         a->activate();
         b->deactivate();
@@ -63,7 +63,7 @@ void MigrationDownAtDimer::doIt()
     else if (a->is(27)) a->changeType(20);
     else
     {
-        assert(a->type() == 26);
+        assert(a->type() == 36);
         a->changeType(20);
     }
 
