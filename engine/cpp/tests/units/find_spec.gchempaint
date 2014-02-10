@@ -2616,7 +2616,6 @@
     </atom>
     <atom id="a2331" element="C">
       <position x="19617.960372028167" y="1752.9902522301163"/>
-      <electron id="el251" position="nw"/>
     </atom>
     <atom id="a2332" element="C">
       <position x="19460.655684528167" y="1758.2856623863663"/>
