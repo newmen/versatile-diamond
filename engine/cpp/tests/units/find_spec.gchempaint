@@ -4151,6 +4151,9 @@
     <atom id="a2726" element="C">
       <position x="22206.541378840066" y="1676.3831743832025"/>
     </atom>
+    <atom id="a2768" element="C">
+      <position x="22206.541378840066" y="1676.3831743832025"/>
+    </atom>
     <bond id="b2908" order="1" begin="a2692" end="a2686" type="down"/>
     <bond id="b2910" order="1" begin="a2686" end="a2691" type="up" level="1"/>
     <bond id="b2911" order="1" begin="a2692" end="a2710"/>
@@ -4196,6 +4199,7 @@
     <bond id="b2951" order="2" begin="a2693" end="a2724"/>
     <bond id="b2952" order="1" begin="a2718" end="a2725" level="1"/>
     <bond id="b2953" order="1" begin="a2706" end="a2726" level="1"/>
+    <bond id="b3000" order="1" begin="a2688" end="a2768" level="1"/>
   </molecule>
   <molecule id="m125">
     <atom id="a2606" element="C">
@@ -4494,6 +4498,9 @@
     <atom id="a2767" element="C">
       <position x="22212.088253840066" y="2359.0736040707025"/>
     </atom>
+    <atom id="a2769" element="C">
+      <position x="22212.088253840066" y="2359.0736040707025"/>
+    </atom>
     <bond id="b2954" order="1" begin="a2733" end="a2727" type="down"/>
     <bond id="b2955" order="1" begin="a2727" end="a2732" type="up" level="1"/>
     <bond id="b2956" order="1" begin="a2733" end="a2751"/>
@@ -4540,6 +4547,7 @@
     <bond id="b2997" order="1" begin="a2759" end="a2766" level="1"/>
     <bond id="b2998" order="1" begin="a2747" end="a2767" level="1"/>
     <bond id="b2999" order="1" begin="a2765" end="a2729" type="up" level="1"/>
+    <bond id="b3001" order="1" begin="a2729" end="a2769" level="1"/>
   </molecule>
   <molecule id="m13">
     <atom id="a34" element="C">
