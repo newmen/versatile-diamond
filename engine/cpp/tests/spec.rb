@@ -6,8 +6,8 @@ ENGINE_DIR = '..'
 OBJS_DIR = 'obj'
 
 CC = 'g++'
-# FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
-FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
+FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
+# FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
 # FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
 
 def compile_line(file_in, file_out, additional_args = '')
@@ -53,10 +53,7 @@ end
 
 def count_asserts(file_name)
   @asserts ||= 0
-
-  File.open(file_name) do |f|
-    @asserts += f.readlines.join.scan(/\bassert\(/).size
-  end
+  @asserts += File.read(file_name).scan(/\bassert/).size
 end
 
 def asserts
