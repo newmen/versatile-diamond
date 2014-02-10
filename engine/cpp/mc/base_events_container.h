@@ -26,9 +26,11 @@ public:
     Reaction *selectEvent(const int3 &crd);
 #endif // NDEBUG
     Reaction *selectEvent(double r);
-    double commonRate() const;
 
-#ifdef PRINT
+    double oneRate() const { return _events.front()->rate(); }
+    double commonRate() const { return _events.empty() ? 0.0 : oneRate() * _events.size(); }
+
+#if defined(PRINT) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
 #endif // PRINT
 
