@@ -872,6 +872,14 @@ int main()
                 AdsMethylTo111::RATE +
                 NextLevelBridgeToHighBridge::RATE);
 
+    // 79
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 1, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 0, 2);
+    assert_rate(28 * SurfaceActivation::RATE +
+                4 * SurfaceDeactivation::RATE +
+                3 * AdsMethylTo111::RATE +
+                3 * NextLevelBridgeToHighBridge::RATE);
+
     delete diamond;
     return 0;
 }

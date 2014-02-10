@@ -698,6 +698,7 @@
     </atom>
     <atom id="a1913" element="C">
       <position x="17178.990378980128" y="938.62522481593169"/>
+      <electron id="el124" position="nw"/>
     </atom>
     <atom id="a1914" element="C">
       <position x="16945.081247168229" y="1008.1993959408355"/>
