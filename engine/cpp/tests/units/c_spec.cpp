@@ -34,8 +34,8 @@ int main(int argc, char const *argv[])
     C c11(11, 1, (Lattice *)nullptr);
     c11.specifyType();
     assert(!c11.lattice());
-    assert(c11.type() == 26);
-    assertIs(&c11, { 11, 14, 25, 26, 29, 31 });
+    assert(c11.type() == 36);
+    assertIs(&c11, { 11, 14, 25, 26, 29, 31, 35, 36 });
 
     c8.bondWith(&c11);
     assert(c8.hasBondWith(&c11));
