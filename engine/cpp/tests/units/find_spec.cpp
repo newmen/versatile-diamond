@@ -880,6 +880,19 @@ int main()
                 3 * AdsMethylTo111::RATE +
                 3 * NextLevelBridgeToHighBridge::RATE);
 
+    // 80
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 2, 1, 1);
+    Handbook::mc().doOneOfOne(NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, 0, 0, 2);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 1, 1);
+    assert_rate(29 * SurfaceActivation::RATE +
+                3 * SurfaceDeactivation::RATE +
+                2 * AdsMethylTo111::RATE +
+                2 * NextLevelBridgeToHighBridge::RATE +
+                MigrationDownInGapFromHighBridge::RATE);
+
     delete diamond;
     return 0;
 }
