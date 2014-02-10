@@ -767,20 +767,30 @@ int main()
 
     // 68
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);
-    assert_rate(25 * SurfaceActivation::RATE +
+    Handbook::mc().doOneOfOne(DIMER_DROP);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 1, 1, 2);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 2, 1, 2);
+    assert_rate(27 * SurfaceActivation::RATE +
                 3 * SurfaceDeactivation::RATE +
                 3 * AdsMethylTo111::RATE +
-                NextLevelBridgeToHighBridge::RATE +
-                DimerDrop::RATE +
+                2 * NextLevelBridgeToHighBridge::RATE +
                 DimerDropNearBridge::RATE);
 
     // 69
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, s.y - 1, 3);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 0, 3);
-    assert_rate(23 * SurfaceActivation::RATE +
+    assert_rate(25 * SurfaceActivation::RATE +
                 5 * SurfaceDeactivation::RATE +
                 3 * AdsMethylTo111::RATE +
+                2 * NextLevelBridgeToHighBridge::RATE +
                 DimerFormation::RATE +
+                DimerDropNearBridge::RATE);
+
+    // 70
+    Handbook::mc().doOneOfOne(DIMER_FORMATION);
+    assert_rate(25 * SurfaceActivation::RATE +
+                3 * SurfaceDeactivation::RATE +
+                3 * AdsMethylTo111::RATE +
                 NextLevelBridgeToHighBridge::RATE +
                 DimerDrop::RATE +
                 DimerDropNearBridge::RATE);
