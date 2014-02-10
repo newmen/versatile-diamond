@@ -733,6 +733,15 @@ int main()
                 AbsHydrogenFromGap::RATE +
                 AdsMethylToDimer::RATE);
 
+    // 65
+    Handbook::mc().doOneOfOne(ABS_HYDROGEN_FROM_GAP);
+    assert_rate(23 * SurfaceActivation::RATE +
+                3 * SurfaceDeactivation::RATE +
+                2 * AdsMethylTo111::RATE +
+                2 * DimerDrop::RATE +
+                DimerDropNearBridge::RATE +
+                AdsMethylToDimer::RATE);
+
     delete diamond;
     return 0;
 }
