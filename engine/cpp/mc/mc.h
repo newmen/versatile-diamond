@@ -48,6 +48,7 @@ public:
     void doOneOfOne(ushort rt);
     void doOneOfMul(ushort rt);
     void doOneOfMul(ushort rt, int x, int y, int z);
+    void doLastOfMul(ushort rt);
 #endif // NDEBUG
 
 private:
@@ -399,6 +400,13 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z
 {
     auto crd = int3(x, y, z);
     _multiEvents[rt].selectEvent(crd)->doIt();
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
+{
+    assert(rt < MULTI_EVENTS_NUM);
+    _multiEvents[rt].selectEvent((_multiEvents[rt].size() - 0.5) * _multiEvents[rt].oneRate())->doIt();
 }
 #endif // NDEBUG
 

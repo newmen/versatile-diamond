@@ -35,11 +35,4 @@ Reaction *BaseEventsContainer::selectEvent(double r)
     return _events[index];
 }
 
-double BaseEventsContainer::commonRate() const
-{
-    return (_events.empty()) ?
-                0.0 :
-                _events.front()->rate() * _events.size();
-}
-
 }
