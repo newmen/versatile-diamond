@@ -52,26 +52,20 @@
 #include <iostream>
 using namespace std;
 
-void printRate()
-{
-#ifdef PRINT
-    cout << "\n\n\n" << endl;
-#endif // PRINT
-    cout << Handbook::mc().totalRate() << endl;
-#ifdef PRINT
-    cout << "\n\n\n" << endl;
-#endif // PRINT
-}
-
 void assert_rate(double rate)
 {
-    printRate();
-
     static const double EPS = 1e-3;
+    double delta = Handbook::mc().totalRate() - rate;
 
-    double delta = abs(Handbook::mc().totalRate() - rate);
-    // cout << " <> d = " << delta << endl;
-    assert(delta < EPS);
+#ifdef PRINT
+    cout << "\n\n\n" << endl;
+#endif // PRINT
+    cout << delta << endl;
+#ifdef PRINT
+    cout << "\n\n\n" << endl;
+#endif // PRINT
+
+    assert(abs(delta) < EPS);
 }
 
 int main()
@@ -777,23 +771,40 @@ int main()
                 DimerDropNearBridge::RATE);
 
     // 69
+    Handbook::mc().doOneOfOne(DIMER_DROP_NEAR_BRIDGE);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 1, s.y - 1, 2);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 2, s.y - 1, 2);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, s.y - 1, 3);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, 0, 3);
-    assert_rate(25 * SurfaceActivation::RATE +
+    assert_rate(27 * SurfaceActivation::RATE +
                 5 * SurfaceDeactivation::RATE +
                 3 * AdsMethylTo111::RATE +
-                2 * NextLevelBridgeToHighBridge::RATE +
-                DimerFormation::RATE +
-                DimerDropNearBridge::RATE);
+                3 * NextLevelBridgeToHighBridge::RATE +
+                DimerFormation::RATE);
 
     // 70
     Handbook::mc().doOneOfOne(DIMER_FORMATION);
-    assert_rate(25 * SurfaceActivation::RATE +
+    assert_rate(27 * SurfaceActivation::RATE +
                 3 * SurfaceDeactivation::RATE +
                 3 * AdsMethylTo111::RATE +
-                NextLevelBridgeToHighBridge::RATE +
-                DimerDrop::RATE +
-                DimerDropNearBridge::RATE);
+                2 * NextLevelBridgeToHighBridge::RATE +
+                DimerDrop::RATE);
+
+    // 71
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x - 2, 1, 1);
+    Handbook::mc().doOneOfOne(ADS_METHYL_TO_111);
+    Handbook::mc().doLastOfMul(CORR_SURFACE_ACTIVATION);
+    Handbook::mc().doLastOfMul(CORR_SURFACE_ACTIVATION);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 2, 1, 1);
+    assert_rate(28 * SurfaceActivation::RATE +
+                4 * SurfaceDeactivation::RATE +
+                2 * AdsMethylTo111::RATE +
+                2 * NextLevelBridgeToHighBridge::RATE +
+                DesMethylFrom111::RATE +
+                MigrationDownInGapFrom111::RATE +
+                DimerDrop::RATE);
 
     delete diamond;
     return 0;
