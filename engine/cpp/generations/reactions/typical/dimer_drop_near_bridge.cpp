@@ -1,7 +1,7 @@
 #include "dimer_drop_near_bridge.h"
 
 const char DimerDropNearBridge::__name[] = "dimer drop near bridge";
-const double DimerDropNearBridge::RATE = 1.2e10 * std::exp(-4e3 / (1.98 * Env::T)); // REAL: A = 1.2e11
+const double DimerDropNearBridge::RATE = 1.2e11 * std::exp(-4e3 / (1.98 * Env::T));
 
 void DimerDropNearBridge::find(BridgeWithDimerCDLi *target)
 {

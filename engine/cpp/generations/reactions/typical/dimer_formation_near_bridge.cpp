@@ -1,7 +1,7 @@
 #include "dimer_formation_near_bridge.h"
 
 const char DimerFormationNearBridge::__name[] = "dimer formation near bridge";
-const double DimerFormationNearBridge::RATE = 7.5e10 * std::exp(-4e3 / (1.98 * Env::T)); // REAL: A = 7.5e11
+const double DimerFormationNearBridge::RATE = 7.5e11 * std::exp(-4e3 / (1.98 * Env::T));
 
 void DimerFormationNearBridge::find(BridgeCTsi *target)
 {
