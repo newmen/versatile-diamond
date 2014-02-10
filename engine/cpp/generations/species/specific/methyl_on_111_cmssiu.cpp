@@ -7,7 +7,7 @@ const ushort MethylOn111CMssiu::__roles[1] = { 27 };
 #ifdef PRINT
 const char *MethylOn111CMssiu::name() const
 {
-    static const char value[] = "methyl_on_111(cm: **, cm: u)";
+    static const char value[] = "methyl_on_111(cm: **, cm: i, cm: u)";
     return value;
 }
 #endif // PRINT
