@@ -676,6 +676,21 @@ int main()
                 DimerFormation::RATE +
                 AdsMethylToDimer::RATE);
 
+    // 60
+    Handbook::mc().doOneOfOne(DIMER_FORMATION);
+    Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
+    Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x - 1, s.y - 1, 2);
+    assert_rate(22 * SurfaceActivation::RATE +
+                3 * SurfaceDeactivation::RATE +
+                2 * MethylOnDimerActivation::RATE +
+                MethylOnDimerDeactivation::RATE +
+                2 * DimerDrop::RATE +
+                DesMethylFromDimer::RATE +
+                MethylOnDimerHydrogenMigration::RATE +
+                MethylToHighBridge::RATE +
+                AdsMethylToDimer::RATE);
+
     delete diamond;
     return 0;
 }
