@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<gcp:chemistry xmlns:gcp="http://www.nongnu.org/gchempaint" creation="12/19/2013" revision="02/10/2014">
+<gcp:chemistry xmlns:gcp="http://www.nongnu.org/gchempaint" creation="12/19/2013" revision="02/11/2014">
   <generator>GChemPaint 0.14.5</generator>
   <author name="newmen"/>
   <theme name="GChemPaint" bond-length="140" bond-angle="120" bond-dist="5" bond-width="1" arrow-length="200" arrow-head-a="6" arrow-head-b="8" arrow-head-c="4" arrow-dist="5" arrow-width="1" arrow-padding="16" hash-width="1" hash-dist="2" stereo-bond-width="5" zoom-factor="4" padding="2" stoichiometry-padding="1" object-padding="16" sign-padding="8" charge-sign-size="9" font-family="Bitstream Vera Sans" font-style="normal" font-weight="normal" font-variant="normal" font-stretch="normal" font-size="12288" text-font-family="Bitstream Vera Serif" text-font-style="normal" text-font-weight="normal" text-font-variant="normal" text-font-stretch="normal" text-font-size="12288"/>
@@ -2301,8 +2301,7 @@
     </atom>
     <atom id="a2258" element="C">
       <position x="19450.030684528167" y="413.40016382398449"/>
-      <electron id="el242" position="nw"/>
-      <electron id="el243" position="ne"/>
+      <electron id="el242" position="n"/>
     </atom>
     <atom id="a2259" element="C">
       <position x="19423.983457878127" y="561.12132677581599"/>
@@ -2460,8 +2459,7 @@
     </atom>
     <atom id="a2295" element="C">
       <position x="19455.288497028167" y="1037.4895192927345"/>
-      <electron id="el246" position="nw"/>
-      <electron id="el247" position="ne"/>
+      <electron id="el243" position="n"/>
     </atom>
     <atom id="a2296" element="C">
       <position x="19429.241270378127" y="1185.210682244566"/>
@@ -2622,8 +2620,7 @@
     </atom>
     <atom id="a2332" element="C">
       <position x="19460.655684528167" y="1758.2856623863663"/>
-      <electron id="el249" position="nw"/>
-      <electron id="el250" position="ne"/>
+      <electron id="el246" position="n"/>
     </atom>
     <atom id="a2333" element="C">
       <position x="19434.608457878127" y="1906.0068253381978"/>
@@ -3811,7 +3808,8 @@
     </atom>
     <atom id="a2605" element="C">
       <position x="21048.852120604864" y="2910.4799511006868"/>
-      <electron id="el289" position="n"/>
+      <electron id="el247" position="nw"/>
+      <electron id="el249" position="ne"/>
     </atom>
     <bond id="b2776" order="1" begin="a2573" end="a2567" type="down"/>
     <bond id="b2777" order="1" begin="a2567" end="a2572" type="up" level="1"/>
