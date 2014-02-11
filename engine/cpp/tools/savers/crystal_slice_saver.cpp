@@ -22,7 +22,13 @@ void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTi
     static uint n = 0;
     _out << n++ << " = " << currentTime << " s\n";
 
-    crystal->eachSlice([this](Atom **atoms) {
+    uint sliceNumber = 0;
+    crystal->eachSlice([this, &sliceNumber](Atom **atoms) {
+        if (sliceNumber++ == 0)
+        {
+            return;
+        }
+
         auto counter = _counterProto;
         bool have = false;
 
