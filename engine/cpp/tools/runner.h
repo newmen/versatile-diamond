@@ -60,8 +60,47 @@ void Runner::calculate()
 
     std::cout << "Begin crystal atoms num: " << surfaceCrystal->countAtoms() << "\n" << std::endl;
 
-    double timeCounter = 0;
     ullong steps = 0;
+    double timeCounter = 0;
+    uint volumeSaveCounter = 0;
+
+    auto outLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
+        double currentTime = Handbook::mc().totalTime();
+
+        std::cout.width(10);
+        std::cout << 100 * currentTime / _totalTime << " %";
+        std::cout.width(10);
+        std::cout << surfaceCrystal->countAtoms();
+        std::cout.width(10);
+        std::cout << Handbook::amorph().countAtoms();
+        std::cout.width(20);
+        std::cout << currentTime << " (s)";
+        std::cout.width(20);
+        std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
+
+        // ----------------------------------------------------------- //
+
+        csSaver.writeBySlicesOf(surfaceCrystal, currentTime);
+
+        // ----------------------------------------------------------- //
+
+        if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
+        {
+            Handbook::amorph().setUnvisited();
+            surfaceCrystal->setUnvisited();
+            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), currentTime);
+#ifndef NDEBUG
+            Handbook::amorph().checkAllVisited();
+            surfaceCrystal->checkAllVisited();
+#endif // NDEBUG
+        }
+
+        if (++volumeSaveCounter == 10)
+        {
+            volumeSaveCounter = 0;
+        }
+    };
+
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
 
@@ -95,39 +134,15 @@ void Runner::calculate()
             if (timeCounter >= _eachTime)
             {
                 timeCounter = 0;
-
-                // ----------------------------------------------------------- //
-
-                std::cout.width(10);
-                std::cout << 100 * Handbook::mc().totalTime() / _totalTime << " %";
-                std::cout.width(10);
-                std::cout << surfaceCrystal->countAtoms();
-                std::cout.width(10);
-                std::cout << Handbook::amorph().countAtoms();
-                std::cout.width(20);
-                std::cout << Handbook::mc().totalTime() << " (s)";
-                std::cout.width(20);
-                std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
-
-                // ----------------------------------------------------------- //
-
-                csSaver.writeBySlicesOf(surfaceCrystal, Handbook::mc().totalTime());
-
-                // ----------------------------------------------------------- //
-
-                if (_volumeSaver)
-                {
-                    Handbook::amorph().setUnvisited();
-                    surfaceCrystal->setUnvisited();
-                    _volumeSaver->writeFrom(surfaceCrystal->firstAtom());
-#ifndef NDEBUG
-                    Handbook::amorph().checkAllVisited();
-                    surfaceCrystal->checkAllVisited();
-#endif // NDEBUG
-                }
+                outLambda(false);
             }
         }
 #endif // NOUT
+    }
+
+    if (timeCounter > 0)
+    {
+        outLambda(true);
     }
 
     double stopTime = timestamp();

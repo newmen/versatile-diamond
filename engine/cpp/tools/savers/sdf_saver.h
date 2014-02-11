@@ -13,7 +13,7 @@ class SdfSaver : public MolSaver
 public:
     SdfSaver(const char *name);
 
-    void writeFrom(Atom *atom) override;
+    void writeFrom(Atom *atom, double currentTime) override;
 
 protected:
     const char *ext() const override;

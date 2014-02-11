@@ -9,10 +9,10 @@ MolSaver::MolSaver(const char *name) : _name(name)
 {
 }
 
-void MolSaver::writeFrom(Atom *atom)
+void MolSaver::writeFrom(Atom *atom, double currentTime)
 {
     std::ofstream out(filename());
-    writeToFrom(out, atom);
+    writeToFrom(out, atom, currentTime);
 }
 
 const char *MolSaver::ext() const
@@ -30,9 +30,9 @@ std::string MolSaver::filename() const
     return ss.str();
 }
 
-void MolSaver::writeToFrom(std::ostream &os, Atom *atom)
+void MolSaver::writeToFrom(std::ostream &os, Atom *atom, double currentTime)
 {
-    writeHeader(os);
+    writeHeader(os, currentTime);
 
     MolAccumulator acc;
     accumulateToFrom(acc, atom);
@@ -41,9 +41,9 @@ void MolSaver::writeToFrom(std::ostream &os, Atom *atom)
     writeFooter(os);
 }
 
-void MolSaver::writeHeader(std::ostream &os) const
+void MolSaver::writeHeader(std::ostream &os, double currentTime) const
 {
-    os << name() << "\n"
+    os << name() << "(" << currentTime << " s)\n"
        << "Writen at " << timestamp() << "\n"
        << "Versatile Diamond MOLv3000 writer" << "\n"
        << "  0  0  0     0 0             999 V3000" << "\n"
