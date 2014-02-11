@@ -16,10 +16,10 @@ public:
     MolSaver(const char *name);
     virtual ~MolSaver() {}
 
-    virtual void writeFrom(Atom *atom);
+    virtual void writeFrom(Atom *atom, double currentTime);
 
 protected:
-    void writeToFrom(std::ostream &os, Atom *atom);
+    void writeToFrom(std::ostream &os, Atom *atom, double currentTime);
 
     const std::string &name() const { return _name; }
 
@@ -27,7 +27,7 @@ protected:
     virtual std::string filename() const;
 
 private:
-    void writeHeader(std::ostream &os) const;
+    void writeHeader(std::ostream &os, double currentTime) const;
     void writeFooter(std::ostream &os) const;
 
     const char *mainPrefix() const;
