@@ -1,5 +1,5 @@
 #include "counter.h"
-#include <iostream>
+#include <ostream>
 #include <algorithm>
 
 namespace vd
@@ -41,26 +41,26 @@ void Counter::inc(Reaction *event)
     ++_total;
 }
 
-void Counter::printStats()
+void Counter::printStats(std::ostream &os)
 {
     sort();
 
-    std::cout.precision(3);
-    std::cout << "Total events: " << _total << "\n";
+    os.precision(3);
+    os << "Total events: " << _total << "\n";
     for (Record *record : _records)
     {
         if (!record) continue;
 
-        std::cout.width(74);
-        std::cout << record->name << " :: ";
+        os.width(74);
+        os << record->name << " :: ";
 
-        std::cout.width(11);
-        std::cout << record->counter << " :: ";
+        os.width(11);
+        os << record->counter << " :: ";
 
         double rate = 100 * (double)record->counter / _total;
-        std::cout.width(11);
-        std::cout << rate << " % :: ";
-        std::cout << record->rate << std::endl;
+        os.width(11);
+        os << rate << " % :: ";
+        os << record->rate << std::endl;
     }
 }
 
