@@ -39,6 +39,9 @@ private:
     Runner &operator = (Runner &&) = delete;
 
     std::string filename() const;
+    double timestamp() const;
+
+    void outputMemoryUsage(std::ostream &os) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +64,8 @@ void Runner::calculate()
     ullong steps = 0;
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
+
+    double startTime = timestamp();
 
 #ifdef PARALLEL
 #pragma omp parallel
@@ -125,11 +130,20 @@ void Runner::calculate()
 #endif // NOUT
     }
 
-    std::cout << "\nEnd crystal atoms num: " << surfaceCrystal->countAtoms() << "\n"
-              << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %\n"
-              << std::endl;
+    double stopTime = timestamp();
+
+    std::cout << "\nEnd crystal atoms num: " << surfaceCrystal->countAtoms() << "\n" << std::endl;
+    std::cout.precision(5);
     std::cout << "Elapsed time of process: " << Handbook::mc().totalTime() << " s" << std::endl;
-    mcData.counter()->printStats();
+    std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
+
+    std::cout << std::endl;
+    outputMemoryUsage(std::cout);
+    std::cout << std::endl;
+
+    std::cout.precision(3);
+    std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
+    mcData.counter()->printStats(std::cout);
 
     Handbook::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
