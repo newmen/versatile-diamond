@@ -24,30 +24,28 @@ void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTi
 
     uint sliceNumber = 0;
     crystal->eachSlice([this, &sliceNumber](Atom **atoms) {
-        if (sliceNumber++ == 0)
+        if (++sliceNumber > 1)
         {
-            return;
-        }
+            auto counter = _counterProto;
+            bool have = false;
 
-        auto counter = _counterProto;
-        bool have = false;
-
-        for (uint i = 0; i < _sliceMaxNum; ++i)
-        {
-            if (!atoms[i]) continue;
-
-            ushort type = atoms[i]->type();
-            auto it = counter.find(type);
-            if (it != counter.cend())
+            for (uint i = 0; i < _sliceMaxNum; ++i)
             {
-                ++it->second;
-                have = true;
-            }
-        }
+                if (!atoms[i]) continue;
 
-        if (have)
-        {
-            writeSlice(counter);
+                ushort type = atoms[i]->type();
+                auto it = counter.find(type);
+                if (it != counter.cend())
+                {
+                    ++it->second;
+                    have = true;
+                }
+            }
+
+            if (have)
+            {
+                writeSlice(counter);
+            }
         }
     });
 
