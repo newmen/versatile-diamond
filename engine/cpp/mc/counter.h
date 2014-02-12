@@ -42,7 +42,7 @@ public:
     void inc(Reaction *event);
     ullong total() const { return _total; }
 
-    void printStats();
+    void printStats(std::ostream &os);
 
 private:
     Counter(const Counter &) = delete;

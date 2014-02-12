@@ -4,6 +4,7 @@
 #include <omp.h>
 #endif // PARALLEL
 
+// TODO: move matrixes to separated tables.* instance
 // 32 :: -^C%d<
 // 33 :: ~^C%d<
 // 34 :: ^HC%d<
@@ -51,7 +52,7 @@ const bool Handbook::__atomsAccordance[37 * 37] = {
 };
 
 // TODO: manualy changed transitions for 25 and 26 types because has same types with H
-// TODO: transition 14 -> 10 is the question
+// TODO: transition 14 -> 10 is the question (why 25, 26, 27, 35, 36 is not 10?)
 const ushort Handbook::__atomsSpecifing[37] =
 {
     0, 28, 2, 0, 34, 5, 4, 7, 8, 7,
