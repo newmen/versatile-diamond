@@ -43,7 +43,7 @@ void MolSaver::writeToFrom(std::ostream &os, Atom *atom, double currentTime)
 
 void MolSaver::writeHeader(std::ostream &os, double currentTime) const
 {
-    os << name() << "(" << currentTime << " s)\n"
+    os << name() << " (" << currentTime << " s)\n"
        << "Writen at " << timestamp() << "\n"
        << "Versatile Diamond MOLv3000 writer" << "\n"
        << "  0  0  0     0 0             999 V3000" << "\n"
