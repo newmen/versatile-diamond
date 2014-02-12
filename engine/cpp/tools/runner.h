@@ -39,6 +39,9 @@ private:
     Runner &operator = (Runner &&) = delete;
 
     std::string filename() const;
+    double timestamp() const;
+
+    void outputMemoryUsage(std::ostream &os) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,10 +60,51 @@ void Runner::calculate()
 
     std::cout << "Begin crystal atoms num: " << surfaceCrystal->countAtoms() << "\n" << std::endl;
 
-    double timeCounter = 0;
     ullong steps = 0;
+    double timeCounter = 0;
+    uint volumeSaveCounter = 0;
+
+    auto outLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
+        double currentTime = Handbook::mc().totalTime();
+
+        std::cout.width(10);
+        std::cout << 100 * currentTime / _totalTime << " %";
+        std::cout.width(10);
+        std::cout << surfaceCrystal->countAtoms();
+        std::cout.width(10);
+        std::cout << Handbook::amorph().countAtoms();
+        std::cout.width(20);
+        std::cout << currentTime << " (s)";
+        std::cout.width(20);
+        std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
+
+        // ----------------------------------------------------------- //
+
+        csSaver.writeBySlicesOf(surfaceCrystal, currentTime);
+
+        // ----------------------------------------------------------- //
+
+        if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
+        {
+            Handbook::amorph().setUnvisited();
+            surfaceCrystal->setUnvisited();
+            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), currentTime);
+#ifndef NDEBUG
+            Handbook::amorph().checkAllVisited();
+            surfaceCrystal->checkAllVisited();
+#endif // NDEBUG
+        }
+
+        if (++volumeSaveCounter == 10)
+        {
+            volumeSaveCounter = 0;
+        }
+    };
+
     CommonMCData mcData;
     Handbook::mc().initCounter(&mcData);
+
+    double startTime = timestamp();
 
 #ifdef PARALLEL
 #pragma omp parallel
@@ -90,46 +134,31 @@ void Runner::calculate()
             if (timeCounter >= _eachTime)
             {
                 timeCounter = 0;
-
-                // ----------------------------------------------------------- //
-
-                std::cout.width(10);
-                std::cout << 100 * Handbook::mc().totalTime() / _totalTime << " %";
-                std::cout.width(10);
-                std::cout << surfaceCrystal->countAtoms();
-                std::cout.width(10);
-                std::cout << Handbook::amorph().countAtoms();
-                std::cout.width(20);
-                std::cout << Handbook::mc().totalTime() << " (s)";
-                std::cout.width(20);
-                std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
-
-                // ----------------------------------------------------------- //
-
-                csSaver.writeBySlicesOf(surfaceCrystal, Handbook::mc().totalTime());
-
-                // ----------------------------------------------------------- //
-
-                if (_volumeSaver)
-                {
-                    Handbook::amorph().setUnvisited();
-                    surfaceCrystal->setUnvisited();
-                    _volumeSaver->writeFrom(surfaceCrystal->firstAtom());
-#ifndef NDEBUG
-                    Handbook::amorph().checkAllVisited();
-                    surfaceCrystal->checkAllVisited();
-#endif // NDEBUG
-                }
+                outLambda(false);
             }
         }
 #endif // NOUT
     }
 
-    std::cout << "\nEnd crystal atoms num: " << surfaceCrystal->countAtoms() << "\n"
-              << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %\n"
-              << std::endl;
+    if (timeCounter > 0)
+    {
+        outLambda(true);
+    }
+
+    double stopTime = timestamp();
+
+    std::cout << "\nEnd crystal atoms num: " << surfaceCrystal->countAtoms() << "\n" << std::endl;
+    std::cout.precision(5);
     std::cout << "Elapsed time of process: " << Handbook::mc().totalTime() << " s" << std::endl;
-    mcData.counter()->printStats();
+    std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
+
+    std::cout << std::endl;
+    outputMemoryUsage(std::cout);
+    std::cout << std::endl;
+
+    std::cout.precision(3);
+    std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
+    mcData.counter()->printStats(std::cout);
 
     Handbook::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;

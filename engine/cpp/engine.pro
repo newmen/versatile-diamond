@@ -112,6 +112,7 @@ SOURCES += main.cpp \
     tests/support/open_diamond.cpp \
     tools/common.cpp \
     tools/lockable.cpp \
+    tools/process_mem_usage.cpp \
     tools/runner.cpp \
     tools/savers/atom_info.cpp \
     tools/savers/bond_info.cpp \
@@ -267,6 +268,7 @@ HEADERS += \
     tools/error.h \
     tools/factory.h \
     tools/lockable.h \
+    tools/process_mem_usage.h \
     tools/runner.h \
     tools/savers/atom_info.h \
     tools/savers/bond_info.h \

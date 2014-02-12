@@ -8,7 +8,7 @@ SdfSaver::SdfSaver(const char *name) : MolSaver(name), _out(filename())
 {
 }
 
-void SdfSaver::writeFrom(Atom *atom)
+void SdfSaver::writeFrom(Atom *atom, double currentTime)
 {
     static uint counter = 0;
     if (counter > 0)
@@ -17,7 +17,7 @@ void SdfSaver::writeFrom(Atom *atom)
     }
     ++counter;
 
-    writeToFrom(_out, atom);
+    writeToFrom(_out, atom, currentTime);
 }
 
 const char *SdfSaver::ext() const

@@ -1,5 +1,7 @@
 #include "runner.h"
+#include <sys/time.h>
 #include "savers/volume_saver_factory.h"
+#include "process_mem_usage.h"
 
 namespace vd
 {
@@ -55,6 +57,21 @@ std::string Runner::filename() const
     std::stringstream ss;
     ss << _name << "_" << _x << "x" << _y << "_" << _totalTime << "s";
     return ss.str();
+}
+
+double Runner::timestamp() const
+{
+    timeval tv;
+    gettimeofday(&tv, 0);
+    return tv.tv_sec + tv.tv_usec / 1e6;
+}
+
+void Runner::outputMemoryUsage(std::ostream &os) const
+{
+    double vm, rss;
+    process_mem_usage(vm, rss);
+    os << "Used virtual memory: " << (vm / 1024) << " MB\n"
+       << "Used resident set: " << (rss / 1024) << " MB" << std::endl;
 }
 
 }
