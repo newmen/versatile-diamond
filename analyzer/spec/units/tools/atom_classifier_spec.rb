@@ -4,7 +4,7 @@ module VersatileDiamond
   module Tools
 
     describe AtomClassifier do
-      let(:dc) { AtomClassifier::AtomProperties }
+      let(:dc) { AtomProperties }
 
       let(:methyl) do
         dc.new(unfixed_methyl_on_bridge, unfixed_methyl_on_bridge.atom(:cm))
@@ -292,6 +292,17 @@ module VersatileDiamond
             it { find(aib_ct).sames.size.should == 1 }
             it { find(ad_cr).sames.size.should == 1 }
           end
+
+          # Uncomment code below for draw a graph which could help to inspect
+          #   dependencies between atom properties
+          #
+          # describe "generate graph" do
+          #   let(:graph) do
+          #     Generators::ClassifierResultGraphGenerator.
+          #       new(subject, 'classifier_spec')
+          #   end
+          #   it { expect { graph.generate }.to_not raise_error }
+          # end
         end
 
         describe "#classify" do
