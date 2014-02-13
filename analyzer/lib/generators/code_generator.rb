@@ -9,7 +9,7 @@ module VersatileDiamond
       def generate(**params)
         analyze_specs
 
-        props = classifier.each_props.to_a
+        props = classifier.props
         puts props.size
 
         result = classifier.general_transitive_matrix.to_a
