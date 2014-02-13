@@ -260,7 +260,7 @@ module VersatileDiamond
         end
 
         describe "#props" do
-          it { subject.props.size.should == 27 }
+          it { subject.props.size.should == 24 }
           it { subject.props.should include(ab_ct, bridge_cr, dimer_cr) }
         end
 
@@ -302,15 +302,13 @@ module VersatileDiamond
                 4 => ["*C%d<", 1],
                 5 => ["**C%d<", 2],
                 10 => ["-*C%d<", 1],
-                13 => ["*C:i~", 1],
-                14 => ["*C~", 1],
-                15 => ["**C:i~", 2],
-                16 => ["**C~", 2],
-                17 => ["***C~", 3],
-                20 => ["~*C%d<", 1],
-                23 => ["*C:i=", 1],
-                24 => ["*C=", 1],
-                25 => ["**C=", 2],
+                12 => ["*C~", 1],
+                13 => ["**C~", 2],
+                14 => ["***C~", 3],
+                17 => ["~*C%d<", 1],
+                20 => ["*C:i=", 1],
+                21 => ["*C=", 1],
+                22 => ["**C=", 2],
               } }
 
             it { subject.classify(adsorbed_h).should == {
@@ -322,18 +320,15 @@ module VersatileDiamond
                 7 => ["C%d<", 2],
                 8 => ["-C:i%d<", 1],
                 9 => ["-C%d<", 1],
-                11 => ["C:i~", 3],
-                12 => ["C~", 3],
-                13 => ["*C:i~", 2],
-                14 => ["*C~", 2],
-                15 => ["**C:i~", 1],
-                16 => ["**C~", 1],
-                18 => ["~C:i%d<", 1],
-                19 => ["~C%d<", 1],
-                21 => ["C:i=", 2],
-                22 => ["C=", 2],
-                23 => ["*C:i=", 1],
-                24 => ["*C=", 1],
+                11 => ["C~", 3],
+                12 => ["*C~", 2],
+                13 => ["**C~", 1],
+                15 => ["~C:i%d<", 1],
+                16 => ["~C%d<", 1],
+                18 => ["C:i=", 2],
+                19 => ["C=", 2],
+                20 => ["*C:i=", 1],
+                21 => ["*C=", 1],
               } }
 
             it { subject.classify(adsorbed_cl).should be_empty }
@@ -358,14 +353,14 @@ module VersatileDiamond
 
             it { subject.classify(methyl_on_incoherent_bridge).should == {
                 1 => ['^C.%d<', 2],
-                12 => ['C~', 1],
-                18 => ['~C:i%d<', 1],
+                11 => ['C~', 1],
+                15 => ['~C:i%d<', 1],
               } }
 
             it { subject.classify(high_bridge).should == {
                 1 => ["^C.%d<", 2],
-                22 => ["C=", 1],
-                26 => ["=C%d<", 1],
+                19 => ["C=", 1],
+                23 => ["=C%d<", 1],
               } }
 
             describe "without" do
@@ -392,7 +387,7 @@ module VersatileDiamond
         end
 
         describe "#all_types_num" do
-          it { subject.all_types_num.should == 27 }
+          it { subject.all_types_num.should == 24 }
         end
 
         describe "#notrelevant_types_num" do
