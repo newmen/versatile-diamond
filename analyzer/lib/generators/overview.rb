@@ -18,7 +18,7 @@ module VersatileDiamond
 
         @atoms_format = "%25s | %5s | %10s | %4s | %s"
         puts @atoms_format % %w(Image Index Lattice Name Parents)
-        print_atoms("Atoms", classifier.each_props.to_a)
+        print_atoms("Atoms", classifier.props)
         puts
         puts "Total number of different atom types: #{classifier.all_types_num}"
         puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"

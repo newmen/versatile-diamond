@@ -259,17 +259,14 @@ module VersatileDiamond
           end
         end
 
-        describe "#each_props" do
-          it { subject.each_props.should be_a(Enumerator) }
-          it { subject.each_props.size.should == 27 }
-          it { subject.each_props.to_a.should include(
-              ab_ct, bridge_cr, dimer_cr
-            ) }
+        describe "#props" do
+          it { subject.props.size.should == 27 }
+          it { subject.props.should include(ab_ct, bridge_cr, dimer_cr) }
         end
 
         describe "#organize_properties!" do
           def find(prop)
-            subject.each_props.to_a[subject.index(prop)]
+            subject.props[subject.index(prop)]
           end
 
           before(:each) { subject.organize_properties! }

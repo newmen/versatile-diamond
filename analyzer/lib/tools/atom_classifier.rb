@@ -7,17 +7,12 @@ module VersatileDiamond
     # been realised) for updating of real specs set
     class AtomClassifier
 
+      attr_reader :props
+
       # Initialize a classifier by empty sets of properties
       def initialize
         @props = []
         @unrelevanted_props = Set.new
-      end
-
-      # Provides each iterator for all properties
-      # @yield [AtomProperties] do something with each properties
-      # @return [Enumerator] if block is not given
-      def each_props(&block)
-        @props.each(&block)
       end
 
       # Analyze spec and store all uniq properties
@@ -172,7 +167,7 @@ module VersatileDiamond
         end
         source_props_indexes = source_props_indexes.to_set
 
-        each_props.map.with_index do |prop, i|
+        @props.map.with_index do |prop, i|
           curr_srs =
             smallests_transitive_matrix.column(i).map.with_index do |b, j|
               [b && source_props_indexes.include?(j), j]
@@ -231,7 +226,7 @@ module VersatileDiamond
       # @param [Symbol] method the method name which will be called
       # @return [Array] collected array
       def collect_trainsitions(method, &block)
-        each_props.map.with_index do |prop, p|
+        @props.map.with_index do |prop, p|
           other = prop.send(method)
           other && (i = index(other)) && p != i ? i : p
         end
