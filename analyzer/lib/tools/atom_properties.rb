@@ -144,7 +144,10 @@ module VersatileDiamond
       # Makes incoherent copy of self
       # @return [AtomProperties] incoherented atom properties or nil
       def incoherent
-        if valence > bonds_num && (!relevants || !incoherent?)
+        could_be = valence > bonds_num && estab_bonds_num > 1 &&
+          (!relevants || !incoherent?)
+
+        if could_be
           props = wihtout_relevants
           new_rel = [:incoherent]
           new_rel + relevants if relevants
@@ -315,12 +318,18 @@ module VersatileDiamond
         relevants ? props[0...(props.length - 1)] : props
       end
 
-      # Gets number of bond relations
-      # @return [Array] the array of bond relations
-      def bonds_num
-        relations.select { |r| r.class == Bond || r == :active }.size +
+      # Gets number of established bond relations
+      # @return [Integer] the number of established bond relations
+      def estab_bonds_num
+        relations.select { |r| r.class == Bond }.size +
           (relations.include?(:dbond) ? 2 : 0) +
           (relations.include?(:tbond) ? 3 : 0)
+      end
+
+      # Gets number of established and active bond relations
+      # @return [Integer] the number of bonds
+      def bonds_num
+        estab_bonds_num + relations.select { |r| r == :active }.size
       end
     end
 
