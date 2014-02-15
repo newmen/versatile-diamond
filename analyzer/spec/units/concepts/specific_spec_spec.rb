@@ -244,7 +244,7 @@ module VersatileDiamond
           let(:similars) { [methyl_on_bridge, activated_methyl_on_bridge,
             methyl_on_activated_bridge, methyl_on_incoherent_bridge,
             unfixed_methyl_on_bridge, activated_methyl_on_incoherent_bridge,
-            unfixed_activated_methyl_on_bridge] }
+            unfixed_activated_methyl_on_incoherent_bridge] }
 
           it_behaves_like "organize and check" do
             let(:target) { methyl_on_bridge }
@@ -277,8 +277,8 @@ module VersatileDiamond
           end
 
           it_behaves_like "organize and check" do
-            let(:target) { unfixed_activated_methyl_on_bridge }
-            let(:parent) { activated_methyl_on_bridge }
+            let(:target) { unfixed_activated_methyl_on_incoherent_bridge }
+            let(:parent) { activated_methyl_on_incoherent_bridge }
           end
         end
 

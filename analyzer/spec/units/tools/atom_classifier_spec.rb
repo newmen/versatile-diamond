@@ -260,7 +260,7 @@ module VersatileDiamond
         end
 
         describe "#props" do
-          it { subject.props.size.should == 24 }
+          it { subject.props.size.should == 27 }
           it { subject.props.should include(ab_ct, bridge_cr, dimer_cr) }
         end
 
@@ -293,16 +293,17 @@ module VersatileDiamond
             it { find(ad_cr).sames.size.should == 1 }
           end
 
-          # Uncomment code below for draw a graph which could help to inspect
-          #   dependencies between atom properties
-          #
-          # describe "generate graph" do
-          #   let(:graph) do
-          #     Generators::ClassifierResultGraphGenerator.
-          #       new(subject, 'classifier_spec')
-          #   end
-          #   it { expect { graph.generate }.to_not raise_error }
-          # end
+          describe "generate graph" do
+            let(:filename) { 'classifier_spec' }
+            let(:graph) do
+              Generators::ClassifierResultGraphGenerator.new(subject, filename)
+            end
+            it { expect { graph.generate }.to_not raise_error }
+
+            # Comment line below for draw a graph which could help to inspect
+            #   dependencies between atom properties
+            # after { File.unlink("#{filename}.png") }
+          end
         end
 
         describe "#classify" do
@@ -313,13 +314,15 @@ module VersatileDiamond
                 4 => ["*C%d<", 1],
                 5 => ["**C%d<", 2],
                 10 => ["-*C%d<", 1],
-                12 => ["*C~", 1],
-                13 => ["**C~", 2],
-                14 => ["***C~", 3],
-                17 => ["~*C%d<", 1],
-                20 => ["*C:i=", 1],
-                21 => ["*C=", 1],
-                22 => ["**C=", 2],
+                13 => ["*C:i:u~", 1],
+                14 => ["*C~", 1],
+                15 => ["**C:i:u~", 2],
+                16 => ["**C~", 2],
+                17 => ["***C~", 3],
+                20 => ["~*C%d<", 1],
+                23 => ["*C:i=", 1],
+                24 => ["*C=", 1],
+                25 => ["**C=", 2],
               } }
 
             it { subject.classify(adsorbed_h).should == {
@@ -331,15 +334,18 @@ module VersatileDiamond
                 7 => ["C%d<", 2],
                 8 => ["-C:i%d<", 1],
                 9 => ["-C%d<", 1],
-                11 => ["C~", 3],
-                12 => ["*C~", 2],
-                13 => ["**C~", 1],
-                15 => ["~C:i%d<", 1],
-                16 => ["~C%d<", 1],
-                18 => ["C:i=", 2],
-                19 => ["C=", 2],
-                20 => ["*C:i=", 1],
-                21 => ["*C=", 1],
+                11 => ["C:i:u~", 3],
+                12 => ["C~", 3],
+                13 => ["*C:i:u~", 2],
+                14 => ["*C~", 2],
+                15 => ["**C:i:u~", 1],
+                16 => ["**C~", 1],
+                18 => ["~C:i%d<", 1],
+                19 => ["~C%d<", 1],
+                21 => ["C:i=", 2],
+                22 => ["C=", 2],
+                23 => ["*C:i=", 1],
+                24 => ["*C=", 1],
               } }
 
             it { subject.classify(adsorbed_cl).should be_empty }
@@ -364,14 +370,14 @@ module VersatileDiamond
 
             it { subject.classify(methyl_on_incoherent_bridge).should == {
                 1 => ['^C.%d<', 2],
-                11 => ['C~', 1],
-                15 => ['~C:i%d<', 1],
+                12 => ['C~', 1],
+                18 => ['~C:i%d<', 1],
               } }
 
             it { subject.classify(high_bridge).should == {
                 1 => ["^C.%d<", 2],
-                19 => ["C=", 1],
-                23 => ["=C%d<", 1],
+                22 => ["C=", 1],
+                26 => ["=C%d<", 1],
               } }
 
             describe "without" do
@@ -398,7 +404,7 @@ module VersatileDiamond
         end
 
         describe "#all_types_num" do
-          it { subject.all_types_num.should == 24 }
+          it { subject.all_types_num.should == 27 }
         end
 
         describe "#notrelevant_types_num" do

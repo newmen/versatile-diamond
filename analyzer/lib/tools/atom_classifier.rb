@@ -91,9 +91,6 @@ module VersatileDiamond
             end
           end
 
-          spec_props =
-            atoms.map { |atom| [spec, AtomProperties.new(spec, atom)] }
-
           atoms.each_with_object({}) do |atom, hash|
             prop = AtomProperties.new(spec, atom)
             index = index(prop)
