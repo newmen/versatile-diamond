@@ -135,8 +135,9 @@ module VersatileDiamond
         set(:unfixed_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: unfixed_c)
         end
-        set(:unfixed_activated_methyl_on_bridge) do
-          SpecificSpec.new(methyl_on_bridge_base, cm: unfixed_activated_c)
+        set(:unfixed_activated_methyl_on_incoherent_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base,
+            cm: unfixed_activated_c, cb: incoherent_cd)
         end
         set(:methyl_on_extended_bridge_base) do
           methyl_on_bridge_base.extend_by_references

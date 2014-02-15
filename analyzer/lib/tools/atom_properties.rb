@@ -144,13 +144,10 @@ module VersatileDiamond
       # Makes incoherent copy of self
       # @return [AtomProperties] incoherented atom properties or nil
       def incoherent
-        could_be = valence > bonds_num && estab_bonds_num > 1 &&
-          (!relevants || !incoherent?)
-
-        if could_be
+        if valence > bonds_num && !incoherent?
           props = wihtout_relevants
           new_rel = [:incoherent]
-          new_rel + relevants if relevants
+          new_rel << :unfixed if estab_bonds_num == 1
           props << new_rel
           self.class.new(props)
         else
