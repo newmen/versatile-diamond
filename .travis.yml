@@ -4,4 +4,5 @@ rvm:
 script:
   - cd analyzer/
   - rspec
-
+before_install:
+  - sudo apt-get install graphviz
