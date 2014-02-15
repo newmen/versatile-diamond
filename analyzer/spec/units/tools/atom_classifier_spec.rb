@@ -293,6 +293,56 @@ module VersatileDiamond
             it { find(ad_cr).sames.size.should == 1 }
           end
 
+          describe "#general_transitive_matrix" do
+            it { subject.general_transitive_matrix.to_a.should == [
+                  [true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [true, true, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, true, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, true, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, true, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+                  [false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, false],
+                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true]
+                ] }
+          end
+
+          describe "#specification" do
+            it { subject.specification.should == [
+                  0, 0, 2, 3, 3, 5, 6, 6, 8, 8, 10, 11, 11, 13, 13, 15, 15, 17, 18, 18, 20, 21, 21, 23, 23, 25, 26
+                ] }
+          end
+
+          describe "#actives_to_deactives" do
+            it { subject.actives_to_deactives.should == [
+                  0, 1, 1, 6, 7, 4, 6, 7, 8, 9, 9, 11, 12, 11, 12, 13, 14, 16, 18, 19, 19, 21, 22, 21, 22, 24, 26
+                ] }
+          end
+
+          describe "#deactives_to_actives" do
+            it { subject.deactives_to_actives.should == [
+                  2, 2, 2, 5, 5, 5, 3, 4, 10, 10, 10, 13, 14, 15, 16, 17, 17, 17, 20, 20, 20, 23, 24, 25, 25, 25, 26
+                ] }
+          end
+
           describe "generate graph" do
             let(:filename) { 'classifier_spec' }
             let(:graph) do
@@ -301,8 +351,8 @@ module VersatileDiamond
             it { expect { graph.generate }.to_not raise_error }
 
             # Comment line below for draw a graph which could help to inspect
-            #   dependencies between atom properties
-            # after { File.unlink("#{filename}.png") }
+            # dependencies between atom properties
+            after { File.unlink("#{filename}.png") }
           end
         end
 
@@ -411,26 +461,22 @@ module VersatileDiamond
           it { subject.notrelevant_types_num.should == 17 }
         end
 
-        # describe "#has_relevants?" do
-        # end
+        describe "#has_relevants?" do
+          it { subject.has_relevants?(0).should be_true }
+          it { subject.has_relevants?(6).should be_true }
+          it { subject.has_relevants?(8).should be_true }
+          it { subject.has_relevants?(15).should be_true }
+          it { subject.has_relevants?(18).should be_true }
+          it { subject.has_relevants?(21).should be_true }
 
-        describe "#general_transitive_matrix" do
-          it { subject.general_transitive_matrix.to_a.size.
-            should == subject.all_types_num }
-        end
-
-        describe "#specification" do
-          it { subject.specification.size.should == subject.all_types_num }
-        end
-
-        describe "#actives_to_deactives" do
-          it { subject.actives_to_deactives.size.
-            should == subject.all_types_num }
-        end
-
-        describe "#deactives_to_actives" do
-          it { subject.deactives_to_actives.size.
-            should == subject.all_types_num }
+          it { subject.has_relevants?(2).should be_false }
+          it { subject.has_relevants?(4).should be_false }
+          it { subject.has_relevants?(10).should be_false }
+          it { subject.has_relevants?(12).should be_false }
+          it { subject.has_relevants?(14).should be_false }
+          it { subject.has_relevants?(20).should be_false }
+          it { subject.has_relevants?(24).should be_false }
+          it { subject.has_relevants?(26).should be_false }
         end
       end
     end
