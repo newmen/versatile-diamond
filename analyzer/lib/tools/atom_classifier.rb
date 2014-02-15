@@ -159,10 +159,7 @@ module VersatileDiamond
           end
 
         source_props_indexes = source_cols.select(&:first).map(&:last)
-        source_props_indexes.select! do |i|
-          @props[i].relevants && @props[i].relevants.include?(:incoherent)
-        end
-        source_props_indexes = source_props_indexes.to_set
+        source_props_indexes.select! { |i| @props[i].incoherent? }.to_set
 
         @props.map.with_index do |prop, i|
           curr_srs =
