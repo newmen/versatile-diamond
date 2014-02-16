@@ -15,7 +15,7 @@ public:
     typedef DiamondRelations<Crystal> Relations;
 #endif // NDEBUG
 
-    Diamond(const dim3 &sizes, int defaultSurfaceHeight = 2);
+    Diamond(const dim3 &sizes, int defaultSurfaceHeight = 3);
     ~Diamond();
 
 protected:

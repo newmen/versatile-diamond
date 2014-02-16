@@ -24,7 +24,7 @@ void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTi
 
     uint sliceNumber = 0;
     crystal->eachSlice([this, &sliceNumber](Atom **atoms) {
-        if (++sliceNumber > 1)
+        if (++sliceNumber > 2)
         {
             auto counter = _counterProto;
             bool have = false;
