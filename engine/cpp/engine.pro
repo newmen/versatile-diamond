@@ -255,6 +255,7 @@ HEADERS += \
     species/empty_spec.h \
     species/keeper.h \
     species/lateral_spec.h \
+    species/localable_role.h \
     species/parent_spec.h \
     species/reactant.h \
     species/sealer.h \

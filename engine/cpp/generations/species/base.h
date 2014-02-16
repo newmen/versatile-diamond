@@ -1,6 +1,9 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "../../species/localable_role.h"
+using namespace vd;
+
 #include "overall.h"
 
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
