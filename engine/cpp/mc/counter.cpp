@@ -1,6 +1,6 @@
 #include "counter.h"
-#include <ostream>
 #include <algorithm>
+#include <ostream>
 
 namespace vd
 {
@@ -41,13 +41,21 @@ void Counter::inc(Reaction *event)
     ++_total;
 }
 
-void Counter::printStats(std::ostream &os)
+void Counter::printStats(std::ostream &os) const
 {
-    sort();
+    auto recordsDup = _records;
+    auto itEnd = std::remove_if(recordsDup.begin(), recordsDup.end(), [](Record *record) {
+        return record == nullptr;
+    });
+
+    recordsDup.erase(itEnd, recordsDup.end());
+    std::sort(recordsDup.begin(), recordsDup.end(), [](Record *a, Record *b) {
+        return a->counter > b->counter;
+    });
 
     os.precision(3);
     os << "Total events: " << _total << "\n";
-    for (Record *record : _records)
+    for (Record *record : recordsDup)
     {
         if (!record) continue;
 
@@ -62,24 +70,6 @@ void Counter::printStats(std::ostream &os)
         os << rate << " % :: ";
         os << record->rate << std::endl;
     }
-}
-
-void Counter::sort()
-{
-    std::sort(_records.begin(), _records.end(), [](Record *a, Record *b) {
-        if (a == nullptr)
-        {
-            return b == nullptr;
-        }
-        else if (b == nullptr)
-        {
-            return false;
-        }
-        else
-        {
-            return a->counter > b->counter;
-        }
-    });
 }
 
 }

@@ -10,7 +10,7 @@ CrystalSliceSaver::CrystalSliceSaver(const char *name, uint sliceMaxNum, std::in
 {
     for (ushort type : targetTypes)
     {
-        _counterProto[type] = 0;
+        _counterProto.insert(CounterType::value_type(type, 0));
     }
 
     writeHeader();
@@ -24,30 +24,28 @@ void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTi
 
     uint sliceNumber = 0;
     crystal->eachSlice([this, &sliceNumber](Atom **atoms) {
-        if (sliceNumber++ == 0)
+        if (++sliceNumber > 2)
         {
-            return;
-        }
+            auto counter = _counterProto;
+            bool have = false;
 
-        auto counter = _counterProto;
-        bool have = false;
-
-        for (uint i = 0; i < _sliceMaxNum; ++i)
-        {
-            if (!atoms[i]) continue;
-
-            ushort type = atoms[i]->type();
-            auto it = counter.find(type);
-            if (it != counter.cend())
+            for (uint i = 0; i < _sliceMaxNum; ++i)
             {
-                ++it->second;
-                have = true;
-            }
-        }
+                if (!atoms[i]) continue;
 
-        if (have)
-        {
-            writeSlice(counter);
+                ushort type = atoms[i]->type();
+                auto it = counter.find(type);
+                if (it != counter.cend())
+                {
+                    ++it->second;
+                    have = true;
+                }
+            }
+
+            if (have)
+            {
+                writeSlice(counter);
+            }
         }
     });
 
@@ -69,7 +67,7 @@ void CrystalSliceSaver::writeSlice(const CounterType &counter)
     for (auto &pr : counter)
     {
         _out.width(COLUMN_WIDTH);
-        _out << (double)pr.second/_sliceMaxNum;
+        _out << (double)pr.second / _sliceMaxNum;
     }
     _out << "\n";
 }

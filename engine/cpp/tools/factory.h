@@ -2,7 +2,6 @@
 #define FACTORY_H
 
 #include <assert.h>
-#include <functional>
 #include <unordered_map>
 
 namespace vd
@@ -16,13 +15,28 @@ template
 >
 class Factory
 {
-    typedef std::function<AbstractType *(CreatingArgs...)> CreatorFunc;
-    typedef std::unordered_map<KeyType, CreatorFunc> MapType;
+    struct CreatorFunc
+    {
+        virtual ~CreatorFunc() {}
+        virtual AbstractType *operator () (CreatingArgs... args) = 0;
+    };
+
+    template <class NewType>
+    struct ConcreteCreatorFunc : public CreatorFunc
+    {
+        AbstractType *operator () (CreatingArgs... args)
+        {
+            return new NewType(args...);
+        }
+    };
+
+    typedef std::unordered_map<KeyType, CreatorFunc *> MapType;
 
     MapType _map;
 
 public:
     Factory() = default;
+    virtual ~Factory();
 
     template <class NewType> void registerNewType(const KeyType &id);
     bool isRegistered(const KeyType &id) const;
@@ -38,16 +52,20 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class AT, class KT, class... CArgs>
+Factory<AT, KT, CArgs...>::~Factory()
+{
+    for (auto &pr : _map)
+    {
+        delete pr.second;
+    }
+}
+
+template <class AT, class KT, class... CArgs>
 template <class NT>
 void Factory<AT, KT, CArgs...>::registerNewType(const KT &id)
 {
     assert(!isRegistered(id));
-
-    CreatorFunc lambda = [](CArgs... args) {
-        return new NT(args...);
-    };
-
-    _map.insert(typename MapType::value_type(id, lambda));
+    _map.insert(typename MapType::value_type(id, new ConcreteCreatorFunc<NT>));
 }
 
 template <class AT, class KT, class... CArgs>
@@ -61,7 +79,7 @@ AT *Factory<AT, KT, CArgs...>::create(const KT &id, CArgs... args) const
 {
     auto it = _map.find(id);
     assert(it != _map.cend());
-    return (it->second)(args...);
+    return (*it->second)(args...);
 }
 
 }
