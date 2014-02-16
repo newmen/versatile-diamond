@@ -10,7 +10,7 @@ CrystalSliceSaver::CrystalSliceSaver(const char *name, uint sliceMaxNum, std::in
 {
     for (ushort type : targetTypes)
     {
-        _counterProto[type] = 0;
+        _counterProto.insert(CounterType::value_type(type, 0));
     }
 
     writeHeader();
@@ -67,7 +67,7 @@ void CrystalSliceSaver::writeSlice(const CounterType &counter)
     for (auto &pr : counter)
     {
         _out.width(COLUMN_WIDTH);
-        _out << (double)pr.second/_sliceMaxNum;
+        _out << (double)pr.second / _sliceMaxNum;
     }
     _out << "\n";
 }
