@@ -45,31 +45,19 @@ void MethylOnDimer::find(Dimer *target)
     }
 }
 
-void MethylOnDimer::store()
-{
-    Base::store();
-
-    Atom *target = this->atom(0);
-    if (target->isVisited())
-    {
-        MethylOnDimerActivation::concretize(target);
-        MethylOnDimerDeactivation::concretize(target);
-    }
-}
-
-void MethylOnDimer::remove()
-{
-    Base::remove();
-
-    Atom *target = this->atom(0);
-    if (target->isVisited())
-    {
-        MethylOnDimerActivation::unconcretize(target);
-        MethylOnDimerDeactivation::unconcretize(target);
-    }
-}
-
 void MethylOnDimer::findAllChildren()
 {
     MethylOnDimerCMiu::find(this);
+}
+
+void MethylOnDimer::concretizeLocal(Atom *target) const
+{
+    MethylOnDimerActivation::concretize(target);
+    MethylOnDimerDeactivation::concretize(target);
+}
+
+void MethylOnDimer::unconcretizeLocal(Atom *target) const
+{
+    MethylOnDimerActivation::unconcretize(target);
+    MethylOnDimerDeactivation::unconcretize(target);
 }
