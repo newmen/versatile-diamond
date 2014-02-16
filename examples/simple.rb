@@ -46,6 +46,15 @@ surface
     atoms cl: bridge(:ct), cr: mb(:cb), cm: mb(:cm)
     bond :cl, :cr, face: 100, dir: :front
 
+  spec :methyl_on_111
+    atoms cm: C, cb: bridge(:cr)
+    bond :cm, :cb
+
+  spec :bridge_with_dimer
+    atoms ct: C%d, cl: bridge(:ct), cr: dimer(:cr)
+    bond :ct, :cl, face: 110, dir: :cross
+    bond :ct, :cr, face: 110, dir: :cross
+
   spec :two_bridges
     atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
     bond :ctl, :cl, face: 110, dir: :cross
@@ -145,8 +154,15 @@ events
     activation 0
     reverse_rate 1.7e7
 
+  reaction 'methyl adsorption to face 111'
+    equation bridge(cr: *) + methane(c: *) = methyl_on_111
+    activation 0
+    forward_rate 1.2e-1, 'cm3/(mol * s)'
+    reverse_rate 5.4e6
+
   reaction 'same methyl-dimer hydrogen migration'
-    equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
+    # TODO: move to diamond_cvd config; there is way to not specify H atom
+    equation methyl_on_dimer(cm: *, cl: H) = methyl_on_dimer(cl: *, cm: H)
       unfixed methyl_on_dimer(:cm)
 
     forward_activation 37.5
@@ -162,3 +178,24 @@ events
     activation 14.9
     forward_rate 6.1e13
     reverse_rate 1.1e12
+
+  reaction 'high bridge to bridge and dimer'
+    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
+    activation 14.9
+    forward_rate 2.2e9
+    reverse_rate 4.2e8
+
+  reaction 'methyl to dimer (incorporate down at 100 face)'
+    aliases source: dimer, product: dimer
+    equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
+      position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
+      position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
+
+    activation 31.3
+    forward_rate 3.5e8
+
+  reaction 'hydrogen abstraction from gap'
+    aliases one: bridge, two: bridge
+    equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
+    activation 35
+    forward_rate 3e5 # TODO: maybe value more grater than present
