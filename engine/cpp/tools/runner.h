@@ -150,7 +150,7 @@ void Runner::calculate()
 #endif // NOUT
 
     std::cout << std::endl;
-    std::cout.precision(5);
+    std::cout.precision(8);
     std::cout << "Elapsed time of process: " << Handbook::mc().totalTime() << " s" << std::endl;
     std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
 
