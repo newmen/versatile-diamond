@@ -126,7 +126,7 @@ events
   reaction 'methyl adsorption to face 111'
     equation bridge(cr: *) + methane(c: *) = methyl_on_111
     activation 0
-    forward_rate 1.2e-1
+    forward_rate 1.2e-1, 'cm3/(mol * s)'
     reverse_rate 5.4e6
 
   reaction 'methyl activation'
