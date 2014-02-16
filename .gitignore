@@ -7,6 +7,11 @@ Makefile
 obj/
 engine/engine
 
+engine/results
+*.job
+vde-*s.o*
+vde-*s.e*
+
 .idea
 *.dump
 coverage/
