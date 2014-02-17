@@ -26,9 +26,12 @@ module VersatileDiamond
       # @option [SpecificAtom] :ancestor the ancestor of new atom
       # @option [Array] :options the atom configuration (not using if ancestor
       #   passed)
-      def initialize(atom, ancestor: nil, options: [])
+      # @option [Array] :monovalent_atoms with which current atom is bonded
+      def initialize(atom, ancestor: nil, options: [], monovalent_atoms: [])
         @atom = atom.dup # because atom can be changed by mapping algorithm
         @options = ancestor ? ancestor.options : options
+        @monovalent_atoms =
+          ancestor ? ancestor.monovalent_atoms : monovalent_atoms
       end
 
       # Makes copy of another instance
@@ -36,6 +39,7 @@ module VersatileDiamond
       def initialize_copy(other)
         @atom = other.atom.dup
         @options = other.options.dup
+        @monovalent_atoms = other.monovalent_atoms.dup
       end
 
       # Gets valence of specific atom
@@ -50,10 +54,17 @@ module VersatileDiamond
       # @return [Boolean] is the same atom or not
       def same?(other)
         if self.class == other.class
-          @atom.same?(other.atom) && @options.sort == other.options.sort
+          @atom.same?(other.atom) && @options.sort == other.options.sort &&
+            monovalents.sort == other.monovalents.sort
         else
           false
         end
+      end
+
+      # Setup monovalent atom for using it
+      # @param [Atom] atom the monovalent atom which is used as one of bond
+      def use!(atom)
+        @monovalent_atoms << atom
       end
 
       # Activates atom instance
@@ -82,6 +93,12 @@ module VersatileDiamond
           raise NotStated.new(state) unless send("#{sym_state}?")
           @options.delete(sym_state)
         end
+      end
+
+      # Gets a list of monovalent atoms names
+      # @return [Array] the array of syboled names
+      def monovalents
+        @monovalent_atoms.map(&:name)
       end
 
       # Counts active bonds
@@ -127,6 +144,7 @@ module VersatileDiamond
           when :unfixed then 'u'
           end
         end
+        chars += monovalents.map(&:to_s)
         "#{@atom}[#{chars.sort.join(', ')}]"
       end
 
@@ -136,7 +154,7 @@ module VersatileDiamond
 
     protected
 
-      attr_reader :atom, :options
+      attr_reader :atom, :options, :monovalent_atoms
 
     private
 

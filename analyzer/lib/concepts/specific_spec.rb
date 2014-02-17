@@ -22,7 +22,10 @@ module VersatileDiamond
       def initialize(spec, specific_atoms = {})
         specific_atoms.each do |atom_keyname, specific_atom|
           atom = spec.atom(atom_keyname)
-          if spec.external_bonds_for(atom) - specific_atom.actives < 0
+          unused_bonds = spec.external_bonds_for(atom) -
+            specific_atom.actives - specific_atom.monovalents.size
+
+          if unused_bonds < 0
             raise Atom::IncorrectValence.new(atom_keyname)
           end
         end
@@ -184,7 +187,8 @@ module VersatileDiamond
       end
 
       # Makes a correct reduced spec by applying specific atoms from current
-      # spec to reduced
+      # spec to reduced spec
+      #
       # @return [SpecificSpec] correct reduced spec or nil
       def reduced
         return unless extended?

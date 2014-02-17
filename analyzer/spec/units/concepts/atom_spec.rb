@@ -37,6 +37,10 @@ module VersatileDiamond
         it { c.actives.should == 0 }
       end
 
+      describe "#monovalents" do
+        it { c.monovalents.should be_empty }
+      end
+
       describe "#incoherent? and #unfixed?" do
         it { c.incoherent?.should be_false }
         it { c.unfixed?.should be_false }
