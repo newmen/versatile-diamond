@@ -38,7 +38,7 @@ module VersatileDiamond
           before(:each) { define_spec_and_atom(1) }
           it { expect { gas.interpret('concentration some(x: **), 1') }.
             to raise_error *syntax_error(
-              'specific_spec.invalid_actives_num', atom: 'x', spec: 'some') }
+              'specific_spec.atom_invalid_bonds_num', atom: 'x', spec: 'some') }
         end
 
         describe "wrong defining a activated specific spec" do

@@ -68,7 +68,7 @@ en:
 
   specific_spec:
     atom_already_has_state: "Atom already has %{state} state"
-    invalid_actives_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
+    atom_invalid_bonds_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
   reaction:

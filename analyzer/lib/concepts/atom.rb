@@ -45,11 +45,15 @@ module VersatileDiamond
       end
 
       # Not specified atom cannot have active bonds
-      # (property is used in Hanser's algorithm)
-      #
       # @return [Integer] 0 active bonds
       def actives
         0
+      end
+
+      # Not specified atom cannot have monovalent atoms
+      # @return [Array] the empty array
+      def monovalents
+        []
       end
 
       %w(incoherent unfixed).each do |state|

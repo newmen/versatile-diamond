@@ -7,14 +7,19 @@ module VersatileDiamond
       subject { described_class.new(n) }
 
       describe "#initialize" do
-        subject { described_class.new(cd, options: [:active, :incoherent]) }
+        subject do
+          described_class.new(cd,
+            options: [:active, :incoherent], monovalent_atoms: [h])
+        end
         it { subject.actives.should == 1 }
         it { subject.incoherent?.should be_true }
+        it { subject.monovalents.should == [:H] }
 
         describe "from specific atom" do
           let(:child) { described_class.new(cd, ancestor: subject) }
           it { child.actives.should == 1 }
           it { child.incoherent?.should be_true }
+          it { child.monovalents.should == [:H] }
         end
       end
 
@@ -22,6 +27,7 @@ module VersatileDiamond
         it { subject.dup.should_not == subject }
         it { activated_c.dup.actives.should == 1 }
         it { activated_cd.dup.lattice.should == diamond }
+        it { activated_cd_hydride.dup.monovalents.should == [:H] }
       end
 
       describe "#name" do
@@ -77,6 +83,11 @@ module VersatileDiamond
         end
       end
 
+      describe "#monovalents" do
+        it { activated_c.monovalents.should be_empty }
+        it { c_chloride.monovalents.should == [:Cl] }
+      end
+
       describe "#same?" do
         it { subject.same?(n).should be_false }
         it { n.same?(subject).should be_false }
@@ -84,15 +95,33 @@ module VersatileDiamond
         describe "same class instance" do
           let(:other) { SpecificAtom.new(n.dup) }
 
-          it "both atoms is activated" do
-            subject.active!
-            other.active!
-            subject.same?(other).should be_true
+          shared_examples_for "equal if both and not if just one" do
+            it "both atoms" do
+              do_with(subject)
+              do_with(other)
+              subject.same?(other).should be_true
+            end
+
+            it "just one atom" do
+              do_with(other)
+              subject.same?(other).should be_false
+            end
           end
 
-          it "just one atom is activated" do
-            other.active!
-            subject.same?(other).should be_false
+          it_behaves_like "equal if both and not if just one" do
+            def do_with(atom); atom.active! end
+          end
+
+          it_behaves_like "equal if both and not if just one" do
+            def do_with(atom); atom.incoherent! end
+          end
+
+          it_behaves_like "equal if both and not if just one" do
+            def do_with(atom); atom.unfixed! end
+          end
+
+          it_behaves_like "equal if both and not if just one" do
+            def do_with(atom); atom.use!(h) end
           end
         end
       end
@@ -138,6 +167,20 @@ module VersatileDiamond
         it { activated_cd.relations_in(activated_bridge).size.should == 3 }
         it { activated_bridge.atom(:cr).relations_in(activated_bridge).size.
           should == 4 }
+      end
+
+      describe "#to_s" do
+        it { activated_c.to_s.should == "C[*]" }
+        it { unfixed_activated_c.to_s.should == "C[*, u]" }
+        it { activated_cd.to_s.should == "C%d[*]" }
+        it { activated_cd_hydride.to_s.should == "C%d[*, H]" }
+        it { incoherent_cd.to_s.should == "C%d[i]" }
+        it { activated_incoherent_cd.to_s.should == "C%d[*, i]" }
+        it { activated_incoherent_cd_hydride.to_s.should == "C%d[*, H, i]" }
+
+        it { c_chloride.to_s.should == "C[Cl]" }
+        it { c_hydride.to_s.should == "C[H]" }
+        it { cd_hydride.to_s.should == "C%d[H]" }
       end
     end
 

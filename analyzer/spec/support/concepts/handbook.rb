@@ -44,6 +44,17 @@ module VersatileDiamond
           SpecificAtom.new(c, options: [:unfixed, :active])
         end
 
+        set(:c_chloride) { SpecificAtom.new(c, monovalent_atoms: [cl]) }
+        set(:c_hydride) { SpecificAtom.new(c, monovalent_atoms: [h]) }
+        set(:cd_hydride) { SpecificAtom.new(cd, monovalent_atoms: [h]) }
+        set(:activated_cd_hydride) do
+          SpecificAtom.new(cd, options: [:active], monovalent_atoms: [h])
+        end
+        set(:activated_incoherent_cd_hydride) do
+          SpecificAtom.new(cd,
+            options: [:incoherent, :active], monovalent_atoms: [h])
+        end
+
         # Few atoms for different cases
         3.times do |i|
           set(:"c#{i}") { c.dup }

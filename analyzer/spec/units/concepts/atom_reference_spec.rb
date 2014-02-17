@@ -28,6 +28,10 @@ module VersatileDiamond
         it { ref.actives.should == 0 }
       end
 
+      describe "#monovalents" do
+        it { ref.monovalents.should be_empty }
+      end
+
       describe "#incoherent? and #unfixed?" do
         it { ref.incoherent?.should be_false }
         it { ref.unfixed?.should be_false }
