@@ -77,20 +77,9 @@ module VersatileDiamond
 
         args = sorted_atoms.reduce([]) do |arr, (keyname, atom)|
           arr << "#{keyname}: #{'*' * atom.actives}" if atom.actives > 0
-          unless atom.relevants.empty?
-            arr += atom.relevants.map do |state|
-              "#{keyname}: #{state.to_s[0]}"
-            end
-          end
-          unless atom.monovalents.empty?
-            arr += atom.monovalents.map do |monoatom|
-              "#{keyname}: #{monoatom}"
-            end
-          end
-          arr
+          arr + relevants_for(atom) + monovalents_for(atom)
         end
-        args = "(#{args.join(', ')})"
-        "#{name}#{args}"
+        "#{name}(#{args.join(', ')})"
       end
 
       # Gets corresponding atom, because it can be specific atom
@@ -356,6 +345,38 @@ module VersatileDiamond
       end
 
     private
+
+      # Collect all relevant states for passed atom
+      # @param [SpecificAtom] atom see at #collect_states same argument
+      # @return [Array] the array of relevant states
+      def relevants_for(atom)
+        collect_states(atom, :relevants, 'to_s[0]')
+      end
+
+      # Collect all monovalent atoms for passed atom
+      # @param [SpecificAtom] atom see at #collect_states same argument
+      # @return [Array] the array of monovalent atoms
+      def monovalents_for(atom)
+        collect_states(atom, :monovalents)
+      end
+
+      # Collects all states of atom by passed for each of them
+      # @param [SpecificAtom] atom the atom for which states will be got
+      # @param [Symbol] atom_method the method states to take
+      # @param [String] state_method the additional method that applied to each
+      #   state if has
+      # @return [Array] the array where each element is key-value string with
+      #   atom keyname and some state
+      def collect_states(atom, atom_method, state_method = nil)
+        atom_keyname = keyname(atom)
+        states = atom.send(atom_method)
+        states.empty? ?
+          [] :
+          states.map do |state|
+            state_str = state_method ? eval("state.#{state_method}") : state
+            "#{atom_keyname}: #{state_str}"
+          end
+      end
 
       # Verifies that the passed instance is correspond to the current, by
       # using the Hanser's algorithm
