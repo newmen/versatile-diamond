@@ -131,7 +131,8 @@ events
 
   reaction 'methyl activation'
     # TODO: может быть следует использовать methyl_on_bridge?
-    equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
+    # TODO: можно автоматом узнавать, что :cm атом в methyl_on_dimer должен иметь H
+    equation methyl_on_dimer(cm: H) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       unfixed methyl_on_dimer(:cm)
 
     activation 37.5
@@ -146,13 +147,14 @@ events
 
   reaction 'hydrogen abstraction from gap'
     aliases one: bridge, two: bridge
-    # TODO: there should be used H atoms directly
-    equation one(cr: i) + two(cr: i) = one(cr: *) + two(cr: *) + hydrogen
+    # TODO: возможно стоит скрыть от пользователя возможность определения необходимости наличия одновалентных атомов, и определять это автоматически. Можно сделать условия более мягкими, и для случая, если пользователь указать "cr: i", то автоматически определять по правой части уравнения, что должно быть "cr: H".
+    equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
     activation 35
-    forward_rate 3e5 # TODO: maybe value more grater than present
+    forward_rate 3e5 # TODO: maybe value more grater than presented
 
   reaction 'same methyl-dimer hydrogen migration'
-    equation methyl_on_dimer(cm: *) = methyl_on_dimer(cl: *)
+    # TODO: следует предоставить возможость автоматического определения необходимости в атоме водорода, которая потом проявляется в своействе атома при генерации, это же относится к остальным реакциям с участием водорода, описанным ниже
+    equation methyl_on_dimer(cm: *, cl: H) = methyl_on_dimer(cl: *, cm: H)
       unfixed methyl_on_dimer(:cm)
 
   #  enthalpy -10
@@ -166,7 +168,7 @@ events
     reverse_rate 1.2e12
 
   reaction 'methyl neighbour-dimer hydrogen migration'
-    equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *) + dimer
+    equation methyl_on_dimer(cm: H) + dimer(cr: *) = methyl_on_dimer(cm: *) + dimer(cr: H)
       unfixed methyl_on_dimer(:cm)
 
       refinement 'along chain'
@@ -188,7 +190,7 @@ events
     reverse_rate 4.8e12
 
   reaction 'chain neighbour dimermethyl-fixedbridge hydrogen migration'
-    equation methyl_on_dimer + bridge(cr: *) = methyl_on_dimer(cm: *) + bridge
+    equation methyl_on_dimer(cm: H) + bridge(cr: *) = methyl_on_dimer(cm: *) + bridge(cr: H)
       unfixed methyl_on_dimer(:cm)
       position methyl_on_dimer(:cr), bridge(:cr), face: 100, dir: :front
 
@@ -197,7 +199,7 @@ events
     reverse_rate 1.1e11
 
   reaction 'chain neighbour bridgemethyl-fixedbridge hydrogen migration'
-    equation methyl_on_bridge + bridge(cr: *) = methyl_on_bridge(cm: *) + bridge
+    equation methyl_on_bridge(cm: H) + bridge(cr: *) = methyl_on_bridge(cm: *) + bridge(cm: H)
       unfixed methyl_on_bridge(:cm)
       incoherent methyl_on_bridge(:cb)
       position methyl_on_bridge(:cb), bridge(:cr), face: 100, dir: :front
@@ -208,7 +210,7 @@ events
 
   reaction 'chain neighbour bridge-fixedbridge hydrogen migration'
     aliases left: bridge, right: bridge
-    equation left(cr: *) + right = left + right(ct: *)
+    equation left(cr: *) + right(ct: H) = left(cr: H) + right(ct: *)
       position left(:cr), right(:ct), face: 100, dir: :front
       incoherent right(:ct)
 
@@ -217,7 +219,7 @@ events
     reverse_rate 1e10
 
   reaction 'chain neighbour bridge-dimer hydrogen migration'
-    equation dimer(cr: *) + bridge = dimer + bridge(ct: *)
+    equation dimer(cr: *) + bridge(ct: H) = dimer(cr: H) + bridge(ct: *)
       position dimer(:cr), bridge(:ct), face: 100, dir: :front
       incoherent bridge(:ct)
 
@@ -226,7 +228,7 @@ events
     reverse_rate 1.4e5
 
   reaction 'dimer hydrogen migration'
-    equation dimer(cr: *) = dimer(cl: *)
+    equation dimer(cr: *, cl: H) = dimer(cl: *, cr: H)
     activation 51
     forward_rate 2.3e13
 
@@ -412,6 +414,7 @@ events
     # значения также выдуманы
     forward_rate 2.8e11
 
+  # TODO: реакции с ацетиленом следовало бы вынести в отдельный файл и предоставить возможность подключения этого другого файла
   reaction 'vinyl adsorption to dimer'
     equation ethylene(c1: *) + dimer(cr: *) = vinyl_on_dimer
     activation 8.4
@@ -436,8 +439,8 @@ events
     forward_rate 1.3e2
 
   reaction 'vinyl activation'
-    # есть ещё активация атома c2
-    equation vinyl_on_dimer + hydrogen(h: *) = vinyl_on_dimer(c1: *) + hydrogen
+    # TODO: есть ещё активация атома c2
+    equation vinyl_on_dimer(c1: H) + hydrogen(h: *) = vinyl_on_dimer(c1: *) + hydrogen
     activation 0
     forward_rate 0.6e13, 'cm3/(mol * s)'
 
@@ -448,7 +451,7 @@ events
     reverse_rate 1.2e5
 
   reaction 'vinyl neighbour dimer hydrogen migration'
-    equation dimer(cr: *) + vinyl_on_dimer = vinyl_on_dimer(c1: *) + dimer
+    equation dimer(cr: *) + vinyl_on_dimer(c1: H) = vinyl_on_dimer(c1: *) + dimer(cr: H)
       refinement 'in chain'
         position dimer(:cr), vinyl_on_dimer(:cr), face: 100, dir: :front
         activation 33.4
@@ -463,7 +466,6 @@ events
 
   # TODO: не определяются изменённые атомы!
   reaction 'vinyl incorporion'
-    # эта реакция - шутка? есть ещё 3 реакции на эту тему, поэтапно
     # TODO: сделать поэтапно, поскольку всё-равно нужна миграция (не изменяемые атомы тоже следует починить)
     equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
     forward_activation 40.1

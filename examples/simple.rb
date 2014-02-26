@@ -81,7 +81,8 @@ events
     reverse_rate 5.3e3
 
   reaction 'methyl activation'
-    equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
+    # TODO: need to know that methyl_on_dimer on left side should have H at :cm
+    equation methyl_on_dimer(cm: H) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 
@@ -161,7 +162,7 @@ events
     reverse_rate 5.4e6
 
   reaction 'same methyl-dimer hydrogen migration'
-    # TODO: move to diamond_cvd config; there is way to not specify H atom
+    # TODO: there is way to not specify H atom
     equation methyl_on_dimer(cm: *, cl: H) = methyl_on_dimer(cl: *, cm: H)
       unfixed methyl_on_dimer(:cm)
 
@@ -198,4 +199,4 @@ events
     aliases one: bridge, two: bridge
     equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
     activation 35
-    forward_rate 3e5 # TODO: maybe value more grater than present
+    forward_rate 3e5
