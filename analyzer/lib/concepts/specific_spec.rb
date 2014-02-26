@@ -294,7 +294,11 @@ module VersatileDiamond
       # @return [Float] size of current specific spec
       def size
         is_gas? ?
-          0 : @spec.size + active_bonds_num * 0.88 + relevants_num * 0.34
+          0 :
+          @spec.size +
+            active_bonds_num * 0.88 +
+            monovalents_num * 0.75 +
+            relevants_num * 0.33
       end
 
       # Also visit base spec
@@ -326,13 +330,28 @@ module VersatileDiamond
         @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
       end
 
+    private
+
       # Counts the sum of relevant properties of specific atoms
       # @return [Integer] sum of relevant properties
       def relevants_num
-        relevants = @specific_atoms.values.reduce([]) do |acc, atom|
-          acc + atom.relevants
+        states_num(:relevants)
+      end
+
+      # Counts the sum of monovalent atoms at specific atoms
+      # @return [Integer] sum of monovalent atoms
+      def monovalents_num
+        states_num(:monovalents)
+      end
+
+      # Counts the sum of monovalent atoms at specific atoms
+      # @param [Symbol] atom_method the method by which states will be counted
+      # @return [Integer] sum of monovalent atoms
+      def states_num(atom_method)
+        states = @specific_atoms.values.reduce([]) do |acc, atom|
+          acc + atom.send(atom_method)
         end
-        relevants.size
+        states.size
       end
 
       # Selects bonds for passed atom
@@ -343,8 +362,6 @@ module VersatileDiamond
         valid_atom = links[atom] ? atom : atom(@spec.keyname(atom))
         super(atom)
       end
-
-    private
 
       # Collect all relevant states for passed atom
       # @param [SpecificAtom] atom see at #collect_states same argument
