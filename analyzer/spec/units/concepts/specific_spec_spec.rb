@@ -51,6 +51,9 @@ module VersatileDiamond
         it { bridge.full_name.should == 'bridge()' }
         it { activated_bridge.full_name.should == 'bridge(ct: *)' }
         it { extra_activated_bridge.full_name.should == 'bridge(ct: **)' }
+        it { hydrogenated_bridge.full_name.should == 'bridge(ct: H)' }
+        it { activated_hydrogenated_bridge.full_name.
+          should == 'bridge(ct: *, ct: H)' }
         it { activated_incoherent_bridge.full_name.
           should == 'bridge(ct: *, ct: i)' }
 

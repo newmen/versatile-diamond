@@ -82,6 +82,11 @@ module VersatileDiamond
               "#{keyname}: #{state.to_s[0]}"
             end
           end
+          unless atom.monovalents.empty?
+            arr += atom.monovalents.map do |monoatom|
+              "#{keyname}: #{monoatom}"
+            end
+          end
           arr
         end
         args = "(#{args.join(', ')})"
