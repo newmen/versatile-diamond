@@ -164,9 +164,37 @@ module VersatileDiamond
       end
 
       describe "#relations_in" do
-        it { activated_cd.relations_in(activated_bridge).size.should == 3 }
-        it { activated_bridge.atom(:cr).relations_in(activated_bridge).size.
-          should == 4 }
+        let(:spec) { activated_bridge }
+
+        describe ":ct of activated_bridge" do
+          subject { spec.atom(:ct) }
+          it { subject.relations_in(spec).size.should == 3 }
+          it { subject.relations_in(spec).should include(
+              :active,
+              [spec.atom(:cr), bond_110_cross],
+              [spec.atom(:cl), bond_110_cross]
+            ) }
+        end
+
+        describe ":cr of activated_bridge" do
+          subject { spec.atom(:cr) }
+          it { subject.relations_in(spec).size.should == 4 }
+          it { subject.relations_in(spec).map(&:last).should include(
+              bond_110_front, bond_110_cross, bond_110_cross,
+              position_100_front
+            ) }
+        end
+
+        describe ":ct of activated_hydrogenated_bridge" do
+          let(:spec) { activated_hydrogenated_bridge }
+          subject { spec.atom(:ct) }
+          it { subject.relations_in(spec).size.should == 4 }
+          it { subject.relations_in(spec).should include(
+              :active, :H,
+              [spec.atom(:cr), bond_110_cross],
+              [spec.atom(:cl), bond_110_cross]
+            ) }
+        end
       end
 
       describe "#to_s" do

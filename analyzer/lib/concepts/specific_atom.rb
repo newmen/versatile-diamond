@@ -133,7 +133,7 @@ module VersatileDiamond
       # @return [Array] the array of relations
       def relations_in(specific_spec)
         real_atom(specific_spec).relations_in(specific_spec.spec) +
-          active_options
+          active_options + monovalents
       end
 
       def to_s
