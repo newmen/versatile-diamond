@@ -250,18 +250,19 @@ module VersatileDiamond
         # sorts descending size
         similar_specs = similar_specs.sort do |a, b|
           if a.specific_atoms.size == b.specific_atoms.size
-            b.active_bonds_num <=> a.active_bonds_num
+            b.dangling_bonds_num <=> a.dangling_bonds_num
           else
             b.specific_atoms.size <=> a.specific_atoms.size
           end
         end
 
         @parent = similar_specs.find do |ss|
-          ss.active_bonds_num <= active_bonds_num &&
+          ss.dangling_bonds_num <= dangling_bonds_num &&
             ss.specific_atoms.all? do |keyname, atom|
               a = @specific_atoms[keyname]
               a && atom.actives <= a.actives &&
-                (atom.relevants - a.relevants).empty?
+                (atom.relevants - a.relevants).empty? &&
+                (atom.monovalents - a.monovalents).empty?
             end
         end
 
@@ -324,13 +325,19 @@ module VersatileDiamond
       attr_reader :specific_atoms
       attr_writer :reduced
 
+      # Counts the sum of active bonds and monovalent atoms
+      # @return [Integer] sum of dangling bonds
+      def dangling_bonds_num
+        active_bonds_num + monovalents_num
+      end
+
+    private
+
       # Counts the sum of active bonds
       # @return [Integer] sum of active bonds
       def active_bonds_num
         @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
       end
-
-    private
 
       # Counts the sum of relevant properties of specific atoms
       # @return [Integer] sum of relevant properties
@@ -348,10 +355,9 @@ module VersatileDiamond
       # @param [Symbol] atom_method the method by which states will be counted
       # @return [Integer] sum of monovalent atoms
       def states_num(atom_method)
-        states = @specific_atoms.values.reduce([]) do |acc, atom|
-          acc + atom.send(atom_method)
+        @specific_atoms.values.reduce(0) do |acc, atom|
+          acc + atom.send(atom_method).size
         end
-        states.size
       end
 
       # Selects bonds for passed atom
