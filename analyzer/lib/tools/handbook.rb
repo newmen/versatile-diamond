@@ -12,7 +12,7 @@ module VersatileDiamond
       module ClassMethods
         # Resets internal cache for RSpec
         def reset
-          @handbook.clear
+          @@__handbook.clear
         end
 
       private
@@ -21,10 +21,10 @@ module VersatileDiamond
         # @param [Symbol] name the name of defining method
         # @yield the body of method
         def set(name, &block)
-          hb = (@handbook ||= {})
-          instance = nil
+          hb = (@@__handbook ||= {})
           define_method(name) do
-            hb[name] ||= self.class.new.instance_eval(&block)
+            @__evaluator ||= self.class.new
+            hb[name] ||= @__evaluator.instance_eval(&block)
           end
         end
       end
