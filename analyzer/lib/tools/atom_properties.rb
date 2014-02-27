@@ -11,7 +11,7 @@ module VersatileDiamond
 
       attr_reader :smallests, :sames
 
-      # Overloaded constructor that stores all properties of atom
+      # Stores all properties of atom
       # @overload new(props)
       #   @param [Array] props the array of default properties
       # @overload new(spec, atom)
@@ -53,13 +53,9 @@ module VersatileDiamond
       # @param [AtomProperties] other an other atom properties
       # @return [Boolean] equal or not
       def == (other)
-        lists_are_identical?(props, other.props) do |v, w|
-          if v.is_a?(Array) && w.is_a?(Array)
-            lists_are_identical?(v, w) { |a, b| a == b }
-          else
-            v == w
-          end
-        end
+        range = (0..2)
+        props[range] == other.props[range] &&
+          eq_by(other, :relations) && eq_by(other, :relevants)
       end
 
       # Checks that current properties contained in another properties
@@ -269,6 +265,19 @@ module VersatileDiamond
       end
 
     private
+
+      # Compares with other properties by some method which returns list or nil
+      # @param [AtomProperties] other the comparing properties
+      # @param [Symbol] method by which will be comparing
+      # @return [Boolean] lists are equal or not
+      def eq_by(other, method)
+        curr_states = send(method)
+        other_states = other.send(method)
+        return true if !curr_states && !other_states
+
+        curr_states && other_states &&
+          lists_are_identical?(curr_states, other_states) { |a, b| a == b }
+      end
 
       # Compares basic values of two properties
       # @peram [AtomProperties] other the comparing properties
