@@ -204,7 +204,7 @@ module VersatileDiamond
         it { activated_cd_hydride.to_s.should == "C%d[*, H]" }
         it { incoherent_cd.to_s.should == "C%d[i]" }
         it { activated_incoherent_cd.to_s.should == "C%d[*, i]" }
-        it { activated_incoherent_cd_hydride.to_s.should == "C%d[*, H, i]" }
+        it { incoherent_cd_hydride.to_s.should == "C%d[H, i]" }
 
         it { c_chloride.to_s.should == "C[Cl]" }
         it { c_hydride.to_s.should == "C[H]" }
