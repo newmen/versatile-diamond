@@ -3,57 +3,13 @@ require 'spec_helper'
 module VersatileDiamond
   module Tools
     describe AtomProperties, use: :atom_properties do
-      describe "#atom_name" do
-        it { bridge_ct.atom_name.should == :C }
-      end
-
-      describe "#valence" do
-        it { methyl.valence.should == 4 }
-        it { c2b.valence.should == 4 }
-        it { bridge_ct.valence.should == 4 }
-        it { bridge_cr.valence.should == 4 }
-        it { ab_ct.valence.should == 4 }
-        it { eab_ct.valence.should == 4 }
-      end
-
-      describe "#lattice" do
-        it { methyl.lattice.should be_nil }
-        it { bridge_ct.lattice.should == diamond }
-      end
-
-      describe "#relations" do
-        it { methyl.relations.should == [free_bond] }
-        it { c2b.relations.should == [:dbond] }
-        it { bridge_ct.relations.should == [bond_110_cross, bond_110_cross] }
-        it { bridge_cr.relations.should == [
-            bond_110_cross, bond_110_cross, position_100_front, bond_110_front
-          ] }
-
-        it { ad_cr.relations.should == [
-            :active, bond_100_front, bond_110_cross, bond_110_cross
-          ] }
-
-        it { aib_ct.relations.should == [
-            :active, bond_110_cross, bond_110_cross
-          ] }
-
-        it { eab_ct.relations.should == [
-            :active, :active, bond_110_cross, bond_110_cross
-          ] }
-      end
-
-      describe "#relevants" do
-        it { methyl.relevants.should == [:unfixed] }
-        it { c2b.relevants.should be_nil }
-        it { bridge_ct.relevants.should be_nil }
-        it { ad_cr.relevants.should be_nil }
-        it { aib_ct.relevants.should == [:incoherent] }
-        it { eab_ct.relevants.should be_nil }
-      end
 
       describe "#==" do
-        it { methyl.should_not == c2b }
-        it { c2b.should_not == methyl }
+        it { methyl.should_not == high_cm }
+        it { high_cm.should_not == methyl }
+
+        it { high_cm.should_not == bridge_ct }
+        it { bridge_ct.should_not == high_cm }
 
         it { bridge_ct.should_not == methyl }
         it { methyl.should_not == bridge_ct }
@@ -78,11 +34,20 @@ module VersatileDiamond
 
         it { aib_ct.should_not == eab_ct }
         it { eab_ct.should_not == aib_ct }
+
+        it { ab_ct.should_not == hb_ct }
+        it { hb_ct.should_not == ab_ct }
+
+        it { ab_ct.should_not == ahb_ct }
+        it { ahb_ct.should_not == ab_ct }
+
+        it { ahb_ct.should_not == hib_ct }
+        it { hib_ct.should_not == ahb_ct }
       end
 
       describe "#contained_in?" do
-        it { methyl.contained_in?(c2b).should be_false }
-        it { c2b.contained_in?(methyl).should be_false }
+        it { methyl.contained_in?(high_cm).should be_false }
+        it { high_cm.contained_in?(methyl).should be_false }
 
         it { methyl.contained_in?(bridge_cr).should be_false }
         it { bridge_cr.contained_in?(methyl).should be_false }
@@ -91,6 +56,7 @@ module VersatileDiamond
         it { bridge_ct.contained_in?(dimer_cr).should be_true }
         it { bridge_ct.contained_in?(ab_ct).should be_true }
         it { bridge_ct.contained_in?(aib_ct).should be_true }
+        it { bridge_ct.contained_in?(hb_ct).should be_true }
 
         it { dimer_cr.contained_in?(ad_cr).should be_true }
         it { ad_cr.contained_in?(dimer_cr).should be_false }
@@ -104,31 +70,67 @@ module VersatileDiamond
         it { dimer_cr.contained_in?(bridge_ct).should be_false }
         it { dimer_cr.contained_in?(bridge_cr).should be_false }
         it { ab_ct.contained_in?(bridge_cr).should be_false }
+        it { ab_ct.contained_in?(hb_ct).should be_false }
+        it { hb_ct.contained_in?(bridge_ct).should be_false }
         it { bridge_cr.contained_in?(ab_ct).should be_false }
+
+        it { ab_ct.contained_in?(ahb_ct).should be_true }
+        it { hb_ct.contained_in?(ahb_ct).should be_true }
+        it { ahb_ct.contained_in?(ab_ct).should be_false }
+        it { ahb_ct.contained_in?(hb_ct).should be_false }
+
+        it { ab_ct.contained_in?(aib_ct).should be_true }
+        it { aib_ct.contained_in?(ab_ct).should be_false }
+        it { hb_ct.contained_in?(hib_ct).should be_true }
+        it { hib_ct.contained_in?(hb_ct).should be_false }
       end
 
       describe "#same_incoherent?" do
         it { ab_ct.same_incoherent?(ad_cr).should be_false }
         it { ad_cr.same_incoherent?(ab_ct).should be_false }
-        it { ab_ct.same_incoherent?(eab_ct).should be_false }
-        it { aib_ct.same_incoherent?(eab_ct).should be_false }
         it { eab_ct.same_incoherent?(ab_ct).should be_false }
+        it { aib_ct.same_incoherent?(eab_ct).should be_false }
+        it { aib_ct.same_incoherent?(ahb_ct).should be_false }
+        it { ab_ct.same_incoherent?(eab_ct).should be_false }
+        it { ab_ct.same_incoherent?(aib_ct).should be_false }
+        it { hb_ct.same_incoherent?(hib_ct).should be_false }
+        it { hb_ct.same_incoherent?(ahb_ct).should be_false }
+        it { hib_ct.same_incoherent?(ahb_ct).should be_false }
 
         it { eab_ct.same_incoherent?(aib_ct).should be_true }
+        it { ahb_ct.same_incoherent?(aib_ct).should be_true }
+        it { ahb_ct.same_incoherent?(hib_ct).should be_true }
       end
 
       describe "#terminations_num" do
         it { methyl.terminations_num(active_bond).should == 0 }
         it { methyl.terminations_num(adsorbed_h).should == 3 }
 
+        it { high_cm.terminations_num(active_bond).should == 0 }
+        it { high_cm.terminations_num(adsorbed_h).should == 2 }
+
         it { bridge_cr.terminations_num(active_bond).should == 0 }
         it { bridge_cr.terminations_num(adsorbed_h).should == 1 }
+
+        it { ab_ct.terminations_num(active_bond).should == 1 }
+        it { ab_ct.terminations_num(adsorbed_h).should == 1 }
 
         it { ad_cr.terminations_num(active_bond).should == 1 }
         it { ad_cr.terminations_num(adsorbed_h).should == 0 }
 
         it { eab_ct.terminations_num(active_bond).should == 2 }
         it { eab_ct.terminations_num(adsorbed_h).should == 0 }
+
+        it { hb_ct.terminations_num(active_bond).should == 0 }
+        it { hb_ct.terminations_num(adsorbed_h).should == 2 }
+
+        it { ahb_ct.terminations_num(active_bond).should == 1 }
+        it { ahb_ct.terminations_num(adsorbed_h).should == 1 }
+
+        it { expect { bridge_ct.terminations_num(bridge_base) }.
+          to raise_error ArgumentError }
+        it { expect { bridge_ct.terminations_num(bridge) }.
+          to raise_error ArgumentError }
       end
 
       describe "#unrelevanted" do
@@ -138,12 +140,12 @@ module VersatileDiamond
         it { bridge_ct.should_not == ab_ct.unrelevanted }
         it { ab_ct.unrelevanted.should_not == bridge_ct }
 
-        it { ab_ct.unrelevanted.should == aib_ct.unrelevanted }
-        it { aib_ct.unrelevanted.should == ab_ct.unrelevanted }
+        it { aib_ct.unrelevanted.should == ab_ct }
+        it { hib_ct.unrelevanted.should == hb_ct }
       end
 
       describe "#incoherent?" do
-        it { c2b.incoherent?.should be_false }
+        it { high_cm.incoherent?.should be_false }
         it { ab_ct.incoherent?.should be_false }
         it { bridge_ct.incoherent?.should be_false }
         it { bridge_cr.incoherent?.should be_false }
@@ -151,11 +153,17 @@ module VersatileDiamond
         it { ad_cr.incoherent?.should be_false }
         it { ab_ct.incoherent?.should be_false }
         it { eab_ct.incoherent?.should be_false }
+        it { hb_ct.incoherent?.should be_false }
+        it { ahb_ct.incoherent?.should be_false }
 
         it { aib_ct.incoherent?.should be_true }
+        it { hib_ct.incoherent?.should be_true }
       end
 
       describe "#incoherent" do
+        it { methyl.incoherent.should_not be_nil }
+        it { high_cm.incoherent.should_not be_nil }
+
         it { ab_ct.incoherent.should == aib_ct }
         it { aib_ct.incoherent.should be_nil }
 
@@ -163,30 +171,51 @@ module VersatileDiamond
         it { bridge_cr.incoherent.should_not == aib_ct }
 
         it { ad_cr.incoherent.should be_nil }
+
+        it { hb_ct.incoherent.should == hib_ct }
+        it { hib_ct.incoherent.should be_nil }
+        it { ahb_ct.incoherent.should be_nil }
       end
 
-      describe "#active?" do
-        it { bridge_ct.active?.should be_false }
-        it { bridge_cr.active?.should be_false }
-        it { dimer_cr.active?.should be_false }
+      describe "#relevant?" do
+        it { high_cm.relevant?.should be_false }
+        it { bridge_ct.relevant?.should be_false }
+        it { ad_cr.relevant?.should be_false }
+        it { eab_ct.relevant?.should be_false }
+        it { hb_ct.relevant?.should be_false }
+        it { ahb_ct.relevant?.should be_false }
 
-        it { ad_cr.active?.should be_true }
-        it { ab_ct.active?.should be_true }
-        it { aib_ct.active?.should be_true }
+        it { methyl.relevant?.should be_true }
+        it { aib_ct.relevant?.should be_true }
+        it { hib_ct.relevant?.should be_true }
       end
 
       describe "activated" do
+        it { methyl.activated.should_not be_nil }
+        it { high_cm.activated.should_not be_nil }
+
         it { bridge_ct.activated.should == ab_ct }
+        it { ab_ct.activated.should == eab_ct }
         it { ad_cr.activated.should be_nil }
 
         it { bridge_cr.activated.activated.should be_nil }
+
+        it { hb_ct.activated.should == ahb_ct }
+        it { ahb_ct.activated.should be_nil }
       end
 
       describe "deactivated" do
+        it { methyl.deactivated.should be_nil }
+        it { high_cm.deactivated.should be_nil }
+
         it { bridge_ct.deactivated.should be_nil }
         it { ab_ct.deactivated.should == bridge_ct }
+        it { eab_ct.deactivated.should == ab_ct }
 
         it { ab_ct.deactivated.deactivated.should be_nil }
+
+        it { ahb_ct.deactivated.should == hb_ct }
+        it { hb_ct.deactivated.should be_nil }
       end
 
       describe "#smallests" do
@@ -212,11 +241,38 @@ module VersatileDiamond
       end
 
       describe "#size" do
+        it { methyl.size.should == 5.34 }
+        it { high_cm.size.should == 6 }
+
         it { bridge_ct.size.should == 6.5 }
         it { bridge_cr.size.should == 8.5 }
         it { dimer_cr.size.should == 7.5 }
+
         it { ab_ct.size.should == 7.5 }
         it { aib_ct.size.should == 7.84 }
+        it { eab_ct.size.should == 8.5 }
+
+        it { hb_ct.size.should == 7.5 }
+        it { hib_ct.size.should == 7.84 }
+        it { ahb_ct.size.should == 8.5 }
+      end
+
+      describe "#to_s" do
+        it { methyl.to_s.should == 'C:u~' }
+        it { high_cm.to_s.should == 'C=' }
+
+        it { bridge_ct.to_s.should == 'C%d<' }
+        it { bridge_cr.to_s.should == '^C.%d<' }
+        it { dimer_cr.to_s.should == '-C%d<' }
+
+        it { ad_cr.to_s.should == '-*C%d<' }
+        it { ab_ct.to_s.should == '*C%d<' }
+        it { aib_ct.to_s.should == '*C:i%d<' }
+        it { eab_ct.to_s.should == '**C%d<' }
+
+        it { hb_ct.to_s.should == 'HC%d<' }
+        it { ahb_ct.to_s.should == 'H*C%d<' }
+        it { hib_ct.to_s.should == 'HC:i%d<' }
       end
     end
 

@@ -138,7 +138,7 @@ module VersatileDiamond
       # @param [Integer] index the index of properties
       # @return [Boolean] has or not
       def has_relevants?(index)
-        !!@props[index].relevants
+        !!@props[index].relevant?
       end
 
       # Gets matrix of transitive clojure for atom properties dependencies

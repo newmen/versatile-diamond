@@ -27,49 +27,32 @@ module VersatileDiamond
             atom.name,
             atom.original_valence,
             atom.lattice,
-            relations_for(spec, atom)
+            relations_for(spec, atom),
+            danglings_for(spec, atom)
           ]
 
           if atom.is_a?(SpecificAtom) && !atom.relevants.empty?
             @props << atom.relevants
           end
         else
-          raise ArgumentError
+          raise ArgumentError, 'Wrong number of arguments'
         end
-      end
-
-      # Define human named methods for accessing to props
-      %w(
-        atom_name
-        valence
-        lattice
-        relations
-        relevants
-      ).each_with_index do |name, i|
-        define_method(name) { @props[i] }
       end
 
       # Deep compares two properties by all properties
       # @param [AtomProperties] other an other atom properties
       # @return [Boolean] equal or not
       def == (other)
-        range = (0..2)
-        props[range] == other.props[range] &&
-          eq_by(other, :relations) && eq_by(other, :relevants)
+        same_basic_values?(other) && eq_relations?(other) &&
+          eq_danglings?(other) && eq_relevants?(other)
       end
 
       # Checks that current properties contained in another properties
       # @param [AtomProperties] other probably parent atom properties
       # @return [Boolean] contained or not
       def contained_in?(other)
-        return false unless same_basic_values?(other)
-
-        oth_rels = other.relations.dup
-        relations.all? { |rel| oth_rels.delete_one(rel) } &&
-          (!relevants || (other.relevants &&
-            !relevants.include?(:incoherent) &&
-            (!relevants.include?(:unfixed) ||
-              other.relevants.include?(:unfixed))))
+        same_basic_values?(other) && contain_all_bonds?(other) &&
+          same_unfixed_only?(other)
       end
 
       # Checks that other properties has same incoherent state
@@ -77,34 +60,28 @@ module VersatileDiamond
       #   state
       # @return [Boolean] same or not
       def same_incoherent?(other)
-        return false unless same_basic_values?(other) && active? &&
-          other.relevants && other.relevants.include?(:incoherent) &&
-          !contained_in?(other)
-
-        lists_are_identical?(
-          relations_wo_actives, other.relations_wo_actives) { |a, b| a == b } &&
-          actives_num > other.actives_num &&
-          (bonds_num == valence || (relevants &&
-            lists_are_identical?(relevants, other.relevants) { |a, b| a == b }))
+        same_basic_values?(other) && !danglings.empty? && other.incoherent? &&
+          other.contain_all_danglings?(self) && eq_relations?(other) &&
+          (bonds_num == valence || eq_relevants?(other))
       end
 
       # Gives the number of how many termination specs lies in current
       # properties
       #
       # @param [TerminationSpec] term_spec the verifiable termination spec
+      # @raise [ArgumentError] if argument is not termination spec
       # @return [Boolean] have or not
       def terminations_num(term_spec)
-        case term_spec.class.to_s.underscore
-        when 'active_bond'
+        if term_spec.class == ActiveBond
           actives_num
-        when 'atomic_spec'
+        elsif term_spec.class == AtomicSpec
           if term_spec.is_hydrogen?
-            valence - bonds_num
+            valence - bonds_num + hydrogens_num
           else
-            (valence == 1 && atom_name == term_spec.name) ? 1 : 0
+            count_danglings(term_spec.name)
           end
         else
-          raise 'Undefined termination spec type'
+          raise ArgumentError, 'Undefined termination spec type'
         end
       end
 
@@ -151,17 +128,17 @@ module VersatileDiamond
         end
       end
 
-      # Are properties contain active
+      # Are properties contain relevant values
       # @return [Boolean] contain or not
-      def active?
-        relations.include?(:active)
+      def relevant?
+        !!relevants
       end
 
       # Gets property same as current but activated
       # @return [AtomProperties] activated properties or nil
       def activated
         if valence > bonds_num
-          props = [atom_name, valence, lattice, relations + [:active]]
+          props = [*static_states, relations, danglings + [:active]]
           props << relevants.dup if relevants && valence > bonds_num + 1
           self.class.new(props)
         else
@@ -172,9 +149,9 @@ module VersatileDiamond
       # Gets property same as current but deactivated
       # @return [AtomProperties] deactivated properties or nil
       def deactivated
-        r = relations.dup
-        if r.delete_one(:active)
-          props = [atom_name, valence, lattice, r]
+        dgs = danglings.dup
+        if dgs.delete_one(:active)
+          props = [*static_states, relations.dup, dgs]
           props << relevants if relevants
           self.class.new(props)
         else
@@ -183,20 +160,28 @@ module VersatileDiamond
       end
 
       # Gets size of properties
+      # @return [Integer] the size of properties
       def size
         return @size if @size
-        @size = valence + (lattice ? 0.5 : 0) + relations.size +
+        @size = valence + (lattice ? 0.5 : 0) + bonds_num + positions_num +
           (relevants ? relevants.size * 0.34 : 0)
       end
 
+      # Convert properties to string representation
+      # @return [String] the string representaion of properties
       def to_s
-        rl = relations.dup
         name = atom_name.to_s
 
-        while rl.delete_one(:active)
+        dg = danglings.dup
+        while dg.delete_one(:active)
           name = "*#{name}"
         end
 
+        while (monovalent_atom = dg.pop)
+          name = "#{monovalent_atom}#{name}"
+        end
+
+        rl = relations.dup
         while rl.delete_one { |r| r.is_a?(Position) }
           name = "#{name}."
         end
@@ -252,55 +237,118 @@ module VersatileDiamond
 
       attr_reader :props
 
-      # Gets relations array without active bonds
-      # @return [Array] the array of relations without active bonds
-      def relations_wo_actives
-        relations.reject { |r| r == :active }
+      # Define human named methods for accessing to props
+      %w(
+        atom_name
+        valence
+        lattice
+        relations
+        danglings
+        relevants
+      ).each_with_index do |name, i|
+        define_method(name) { @props[i] }
       end
 
-      # Gets number of active bonds
-      # @return [Integer] number of active bonds
-      def actives_num
-        relations.select { |r| r == :active }.size
+      # The static states of properties
+      # @return [Array] the array of static states
+      def static_states
+        props[0..2]
+      end
+
+      # Checks that other properties contain all current danglings
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def contain_all_danglings?(other)
+        contain_all_by?(other, :danglings)
       end
 
     private
 
-      # Compares with other properties by some method which returns list or nil
+      # Compares with other properties by some method which returns list
       # @param [AtomProperties] other the comparing properties
       # @param [Symbol] method by which will be comparing
       # @return [Boolean] lists are equal or not
-      def eq_by(other, method)
-        curr_states = send(method)
-        other_states = other.send(method)
-        return true if !curr_states && !other_states
+      def eq_by?(other, method)
+        lists_are_identical?(send(method), other.send(method)) do |a, b|
+          a == b
+        end
+      end
 
-        curr_states && other_states &&
-          lists_are_identical?(curr_states, other_states) { |a, b| a == b }
+      # Compares current relations with other relations
+      # @param [AtomProperties] other the comparing properties
+      # @return [Boolean] lists are equal or not
+      def eq_relations?(other)
+        eq_by?(other, :relations)
+      end
+
+      # Compares current danglings with other danglings
+      # @param [AtomProperties] other the comparing properties
+      # @return [Boolean] lists are equal or not
+      def eq_danglings?(other)
+        eq_by?(other, :danglings)
+      end
+
+      # Compares current relevant states with other relevant states
+      # @param [AtomProperties] other the comparing properties
+      # @param [Symbol] method by which will be comparing
+      # @return [Boolean] lists are equal or not
+      def eq_relevants?(other)
+        return true if !relevants && !other.relevants
+        relevants && other.relevants && eq_by?(other, :relevants)
       end
 
       # Compares basic values of two properties
       # @peram [AtomProperties] other the comparing properties
       # @return [Boolean] same or not
       def same_basic_values?(other)
-        atom_name == other.atom_name && lattice == other.lattice
+        static_states == other.static_states
+      end
+
+      # Checks that other properties contain all bonds from current properties
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def contain_all_bonds?(other)
+        contain_all_relations?(other) && contain_all_danglings?(other)
+      end
+
+      # Checks that other properties contain all current relations
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def contain_all_relations?(other)
+        contain_all_by?(other, :relations)
+      end
+
+      # Checks that other properties contain all current states that go by some
+      # method
+      #
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def contain_all_by?(other, method)
+        oth_stats = other.send(method).dup
+        send(method).all? { |rel| oth_stats.delete_one(rel) }
+      end
+
+      # Checks that other properties contain relevant states from current
+      # properties
+      #
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def same_unfixed_only?(other)
+        return false if relevants && !other.relevants
+        return true if !relevants
+        !relevants.include?(:incoherent) && other.relevants.include?(:unfixed)
       end
 
       # Harvest relations of atom in spec
       # @param [Spec | SpecificSpec] spec see at #new same argument
       # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
       #   argument
+      # @return [Array] relations array
       def relations_for(spec, atom)
         relations = []
-        links = atom.relations_in(spec)
+        links = atom.relations_in(spec).reject { |ar| ar.is_a?(Symbol) }
         until links.empty?
           atom_rel = links.pop
-
-          if atom_rel.is_a?(Symbol)
-            relations << atom_rel
-            next
-          end
-
           same = links.select { |ar| ar == atom_rel }
 
           if !same.empty?
@@ -318,24 +366,68 @@ module VersatileDiamond
         relations
       end
 
+      # Harvest dangling bonds of atom in spec
+      # @param [Spec | SpecificSpec] spec see at #new same argument
+      # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
+      #   argument
+      # @return [Array] dangling states array
+      def danglings_for(spec, atom)
+        links = atom.relations_in(spec)
+        links.reduce([]) do |acc, atom_rel|
+          atom_rel.is_a?(Symbol) ? acc + [atom_rel] : acc
+        end
+      end
+
       # Drops relevants properties if it exists
       # @return [Array] properties without relevants
       def wihtout_relevants
         relevants ? props[0...(props.length - 1)] : props
       end
 
+      # Counts relations that is a instance of passed class
+      # @param [Class] klass the class of counting instances
+      # @return [Integer] the number of relations
+      def count_relations(klass)
+        relations.select { |r| r.class == klass }.size
+      end
+
       # Gets number of established bond relations
       # @return [Integer] the number of established bond relations
       def estab_bonds_num
-        relations.select { |r| r.class == Bond }.size +
+        count_relations(Bond) +
           (relations.include?(:dbond) ? 2 : 0) +
           (relations.include?(:tbond) ? 3 : 0)
       end
 
-      # Gets number of established and active bond relations
-      # @return [Integer] the number of bonds
+      # Gets number of position relations
+      # @return [Integer] the number of position relations
+      def positions_num
+        count_relations(Position)
+      end
+
+      # Gets number of established and dangling bond relations
+      # @return [Integer] the total number of bonds
       def bonds_num
-        estab_bonds_num + relations.select { |r| r == :active }.size
+        estab_bonds_num + danglings.size
+      end
+
+      # Counts of dangling instances
+      # @param [Symbol] state the counting state
+      # @return [Integer] number of instances
+      def count_danglings(state)
+        danglings.select { |r| r == state }.size
+      end
+
+      # Gets number of active bonds
+      # @return [Integer] number of active bonds
+      def actives_num
+        count_danglings(:active)
+      end
+
+      # Gets number of hydrogen atoms
+      # @return [Integer] number of active bonds
+      def hydrogens_num
+        count_danglings(:H)
       end
     end
 

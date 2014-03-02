@@ -50,9 +50,8 @@ module VersatileDiamond
         set(:activated_cd_hydride) do
           SpecificAtom.new(cd, options: [:active], monovalent_atoms: [h])
         end
-        set(:activated_incoherent_cd_hydride) do
-          SpecificAtom.new(cd,
-            options: [:incoherent, :active], monovalent_atoms: [h])
+        set(:incoherent_cd_hydride) do
+          SpecificAtom.new(cd, options: [:incoherent], monovalent_atoms: [h])
         end
 
         # Few atoms for different cases
@@ -117,6 +116,9 @@ module VersatileDiamond
         end
         set(:activated_incoherent_bridge) do
           SpecificSpec.new(bridge_base, ct: activated_incoherent_cd)
+        end
+        set(:hydrogenated_incoherent_bridge) do
+          SpecificSpec.new(bridge_base, ct: incoherent_cd_hydride)
         end
         set(:extra_activated_bridge) do
           SpecificSpec.new(bridge_base, ct: extra_activated_cd)

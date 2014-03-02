@@ -16,7 +16,7 @@ module VersatileDiamond
         end
 
         prop(:methyl, :unfixed_methyl_on_bridge, :cm)
-        prop(:c2b, :high_bridge, :cm)
+        prop(:high_cm, :high_bridge, :cm)
 
         prop(:bridge_ct, :bridge, :ct)
         prop(:bridge_cr, :bridge, :cr)
@@ -27,6 +27,10 @@ module VersatileDiamond
         prop(:ab_ct, :activated_bridge, :ct)
         prop(:aib_ct, :activated_incoherent_bridge, :ct)
         prop(:eab_ct, :extra_activated_bridge, :ct)
+
+        prop(:hb_ct, :hydrogenated_bridge, :ct)
+        prop(:ahb_ct, :activated_hydrogenated_bridge, :ct)
+        prop(:hib_ct, :hydrogenated_incoherent_bridge, :ct)
 
       end
     end
