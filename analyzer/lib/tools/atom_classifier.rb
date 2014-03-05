@@ -49,15 +49,9 @@ module VersatileDiamond
           end
         end
 
-        # TODO: need refactoring internal method :same_incoherent for use above
-        # code block again
         until props_sd.empty?
-          prop1 = props_sd.shift
-          props_sd.each do |prop2|
-            next unless prop2.same_incoherent?(prop1)
-            prop2.add_same(prop1)
-            break
-          end
+          smallest = props_sd.shift
+          organize_by_incoherent_from!(props_sd, smallest)
         end
       end
 
@@ -214,6 +208,34 @@ module VersatileDiamond
 
         return if @unrelevanted_props.find { |p| p == unrel_prop }
         @unrelevanted_props << unrel_prop
+      end
+
+      # Organize dependencies between properties by incoheren state from most
+      # bigger property
+      #
+      # @param [Array] props the array of atom properties in which smallest
+      #   will find same incoherent properties
+      # @param [AtomProperties] smallest the properties for what will be
+      #   found same incoherent more bigger properties
+      def organize_by_incoherent_from!(props, smallest)
+        @organized_by_incoherent ||= Set.new
+        return if @organized_by_incoherent.include?(smallest)
+        @organized_by_incoherent << smallest
+
+        bigger_props = props.reject do |prop|
+          smallest == prop || smallest.size > prop.size
+        end
+
+        bigger_props.each do |bigger|
+          if bigger.same_incoherent?(smallest)
+            organize_by_incoherent_from!(bigger_props, bigger)
+
+            bas = bigger.all_sames
+            unless bas && bas.include?(smallest)
+              bigger.add_same(smallest)
+            end
+          end
+        end
       end
 
       # Collects transitions array by passed method name
