@@ -52,7 +52,7 @@ module VersatileDiamond
       # @return [Boolean] contained or not
       def contained_in?(other)
         same_basic_values?(other) && contain_all_bonds?(other) &&
-          same_unfixed_only?(other)
+          same_correspond_relations?(other)
       end
 
       # Checks that other properties has same incoherent state
@@ -76,7 +76,7 @@ module VersatileDiamond
           actives_num
         elsif term_spec.class == AtomicSpec
           if term_spec.is_hydrogen?
-            valence - bonds_num + hydrogens_num
+            total_hydrogens_num
           else
             count_danglings(term_spec.name)
           end
@@ -163,8 +163,10 @@ module VersatileDiamond
       # @return [Integer] the size of properties
       def size
         return @size if @size
-        @size = valence + (lattice ? 0.5 : 0) + bonds_num + positions_num +
-          (relevants ? relevants.size * 0.34 : 0)
+        @size = valence + (lattice ? 0.5 : 0) +
+          estab_bonds_num + positions_num +
+          danglings.size * 0.34 +
+          (relevants ? relevants.size * 0.21 : 0)
       end
 
       # Convert properties to string representation
@@ -248,6 +250,7 @@ module VersatileDiamond
       ).each_with_index do |name, i|
         define_method(name) { @props[i] }
       end
+      public :lattice
 
       # The static states of properties
       # @return [Array] the array of static states
@@ -260,6 +263,12 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def contain_all_danglings?(other)
         contain_all_by?(other, :danglings)
+      end
+
+      # Gets number of hydrogen atoms
+      # @return [Integer] number of active bonds
+      def dangling_hydrogens_num
+        count_danglings(:H)
       end
 
     private
@@ -328,12 +337,23 @@ module VersatileDiamond
         send(method).all? { |rel| oth_stats.delete_one(rel) }
       end
 
+      # Checks that other properties is incoherent and it is same as current
+      # properties by hydrogen atom nums
+      #
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] other is incoherent and contain same hydrogen nums or
+      #   not
+      def same_by_hydrogens?(other)
+        incoherent? && contain_all_by?(other, :danglings_wo_hydrogens) &&
+          total_hydrogens_num == other.dangling_hydrogens_num
+      end
+
       # Checks that other properties contain relevant states from current
       # properties
       #
       # @param [AtomProperties] other the checking properties
       # @return [Boolean] contain or not
-      def same_unfixed_only?(other)
+      def same_correspond_relations?(other)
         return false if relevants && !other.relevants
         return true if !relevants
         !relevants.include?(:incoherent) && other.relevants.include?(:unfixed)
@@ -424,10 +444,16 @@ module VersatileDiamond
         count_danglings(:active)
       end
 
-      # Gets number of hydrogen atoms
-      # @return [Integer] number of active bonds
-      def hydrogens_num
-        count_danglings(:H)
+      # Counts total number of hydrogen atoms
+      # @return [Integer] the number of total number of hydrogen atoms
+      def total_hydrogens_num
+        valence - bonds_num + dangling_hydrogens_num
+      end
+
+      # Gets danglings without hydrogen atoms
+      # @return [Array] the array of danglings without hydrogen atoms
+      def danglings_wo_hydrogens
+        danglings.reject { |d| d == :H }
       end
     end
 
