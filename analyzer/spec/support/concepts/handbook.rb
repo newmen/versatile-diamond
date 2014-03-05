@@ -125,7 +125,16 @@ module VersatileDiamond
         end
         set(:extended_bridge_base) { bridge_base.extend_by_references }
         set(:right_activated_bridge) do
-          SpecificSpec.new(bridge_base, cr: activated_cd)
+          a = SpecificAtom.new(bridge_base.atom(:cr), options: [:active])
+          SpecificSpec.new(bridge_base, cr: a)
+        end
+        set(:right_incoherent_bridge) do
+          a = SpecificAtom.new(bridge_base.atom(:cr), options: [:incoherent])
+          SpecificSpec.new(bridge_base, cr: a)
+        end
+        set(:right_hydrogenated_bridge) do
+          a = SpecificAtom.new(bridge_base.atom(:cr), monovalent_atoms: [h])
+          SpecificSpec.new(bridge_base, cr: a)
         end
         set(:right_activated_extended_bridge) do
           right_activated_bridge.extended

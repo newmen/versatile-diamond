@@ -32,6 +32,9 @@ module VersatileDiamond
         prop(:ahb_ct, :activated_hydrogenated_bridge, :ct)
         prop(:hib_ct, :hydrogenated_incoherent_bridge, :ct)
 
+        prop(:hb_cr, :right_hydrogenated_bridge, :cr)
+        prop(:ib_cr, :right_incoherent_bridge, :cr)
+
       end
     end
   end
