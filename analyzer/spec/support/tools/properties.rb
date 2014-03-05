@@ -19,21 +19,21 @@ module VersatileDiamond
         prop(:high_cm, :high_bridge, :cm)
 
         prop(:bridge_ct, :bridge, :ct)
-        prop(:bridge_cr, :bridge, :cr)
-        prop(:dimer_cr, :dimer, :cr)
-        prop(:dimer_cl, :dimer, :cl)
-
-        prop(:ad_cr, :activated_dimer, :cr)
         prop(:ab_ct, :activated_bridge, :ct)
-        prop(:aib_ct, :activated_incoherent_bridge, :ct)
         prop(:eab_ct, :extra_activated_bridge, :ct)
-
+        prop(:aib_ct, :activated_incoherent_bridge, :ct)
         prop(:hb_ct, :hydrogenated_bridge, :ct)
         prop(:ahb_ct, :activated_hydrogenated_bridge, :ct)
         prop(:hib_ct, :hydrogenated_incoherent_bridge, :ct)
 
+        prop(:bridge_cr, :bridge, :cr)
+        prop(:ab_cr, :right_activated_bridge, :cr)
         prop(:hb_cr, :right_hydrogenated_bridge, :cr)
         prop(:ib_cr, :right_incoherent_bridge, :cr)
+
+        prop(:dimer_cr, :dimer, :cr)
+        prop(:dimer_cl, :dimer, :cl)
+        prop(:ad_cr, :activated_dimer, :cr)
 
       end
     end

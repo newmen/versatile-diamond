@@ -32,15 +32,19 @@ module VersatileDiamond
           before(:each) { subject.organize_properties! }
 
           describe "#smallests" do
+            it { find(high_cm).smallests.should be_nil }
+
             it { find(bridge_ct).smallests.should be_nil }
+            it { find(ab_ct).smallests.to_a.should == [bridge_ct] }
+            it { find(eab_ct).smallests.to_a.should == [ab_ct] }
+            it { find(aib_ct).smallests.to_a.should == [ab_ct] }
 
-            it { find(bridge_cr).smallests.to_a.should == [find(bridge_ct)] }
-            it { find(dimer_cr).smallests.to_a.should == [find(bridge_ct)] }
-            it { find(ab_ct).smallests.to_a.should == [find(bridge_ct)] }
-            it { find(aib_ct).smallests.to_a.should == [find(ab_ct)] }
+            it { find(bridge_cr).smallests.to_a.should == [bridge_ct] }
+            it { find(ab_cr).smallests.to_a.should == [ab_ct, bridge_cr] }
+            it { find(ib_cr).smallests.to_a.should == [bridge_cr] }
 
-            it { find(ad_cr).smallests.size.should == 2 }
-            it { find(ad_cr).smallests.to_a.should include(dimer_cr, ab_ct) }
+            it { find(dimer_cr).smallests.to_a.should == [bridge_ct] }
+            it { find(ad_cr).smallests.to_a.should == [ab_ct, dimer_cr] }
           end
 
           describe "#sames" do
@@ -51,6 +55,19 @@ module VersatileDiamond
 
             it { find(aib_ct).sames.size.should == 1 }
             it { find(ad_cr).sames.size.should == 1 }
+
+            it { find(eab_ct).sames.to_a.should == [aib_ct] }
+            it { find(ab_cr).sames.to_a.should == [ib_cr] }
+          end
+
+          describe "#all_sames" do
+            it { find(bridge_ct).all_sames.should be_nil }
+
+            it { find(aib_ct).all_sames.size.should == 1 }
+            it { find(eab_ct).all_sames.size.should == 2 }
+            it { find(ad_cr).all_sames.size.should == 1 }
+
+            it { find(ab_cr).all_sames.to_a.should == [ib_cr] }
           end
 
           describe "#general_transitive_matrix" do
