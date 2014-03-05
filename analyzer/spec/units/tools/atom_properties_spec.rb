@@ -8,18 +8,6 @@ module VersatileDiamond
         it { methyl.should_not == high_cm }
         it { high_cm.should_not == methyl }
 
-        it { high_cm.should_not == bridge_ct }
-        it { bridge_ct.should_not == high_cm }
-
-        it { bridge_ct.should_not == methyl }
-        it { methyl.should_not == bridge_ct }
-
-        it { bridge_ct.should_not == bridge_cr }
-        it { bridge_cr.should_not == bridge_ct }
-
-        it { bridge_ct.should_not == dimer_cr }
-        it { dimer_cr.should_not == bridge_ct }
-
         it { dimer_cl.should == dimer_cr }
         it { dimer_cr.should == dimer_cl }
 
@@ -29,20 +17,14 @@ module VersatileDiamond
         it { ab_ct.should_not == aib_ct }
         it { aib_ct.should_not == ab_ct }
 
-        it { ab_ct.should_not == eab_ct }
-        it { eab_ct.should_not == ab_ct }
+        it { aib_ct.should_not == hib_ct }
+        it { hib_ct.should_not == aib_ct }
 
-        it { aib_ct.should_not == eab_ct }
-        it { eab_ct.should_not == aib_ct }
+        it { bridge_cr.should_not == hb_cr }
+        it { hb_cr.should_not == bridge_cr }
 
-        it { ab_ct.should_not == hb_ct }
-        it { hb_ct.should_not == ab_ct }
-
-        it { ab_ct.should_not == ahb_ct }
-        it { ahb_ct.should_not == ab_ct }
-
-        it { ahb_ct.should_not == hib_ct }
-        it { hib_ct.should_not == ahb_ct }
+        it { ib_cr.should_not == hb_cr }
+        it { hb_cr.should_not == ib_cr }
       end
 
       describe "#contained_in?" do
@@ -80,9 +62,18 @@ module VersatileDiamond
         it { ahb_ct.contained_in?(hb_ct).should be_false }
 
         it { ab_ct.contained_in?(aib_ct).should be_true }
-        it { aib_ct.contained_in?(ab_ct).should be_false }
         it { hb_ct.contained_in?(hib_ct).should be_true }
+        it { bridge_cr.contained_in?(ib_cr).should be_true }
+        it { aib_ct.contained_in?(ahb_ct).should be_true }
+        it { ib_cr.contained_in?(hb_cr).should be_true }
+        it { bridge_cr.contained_in?(hb_cr).should be_true }
+
+        it { aib_ct.contained_in?(ab_ct).should be_false }
         it { hib_ct.contained_in?(hb_ct).should be_false }
+        it { ib_cr.contained_in?(bridge_cr).should be_false }
+        it { ahb_ct.contained_in?(aib_ct).should be_false }
+        it { hb_cr.contained_in?(ib_cr).should be_false }
+        it { hb_cr.contained_in?(bridge_cr).should be_false }
       end
 
       describe "#same_incoherent?" do
@@ -96,9 +87,11 @@ module VersatileDiamond
         it { hb_ct.same_incoherent?(hib_ct).should be_false }
         it { hb_ct.same_incoherent?(ahb_ct).should be_false }
         it { hib_ct.same_incoherent?(ahb_ct).should be_false }
+        it { ahb_ct.same_incoherent?(aib_ct).should be_false }
+        it { hb_cr.same_incoherent?(ib_cr).should be_false }
+        it { ib_cr.same_incoherent?(hb_cr).should be_false }
 
         it { eab_ct.same_incoherent?(aib_ct).should be_true }
-        it { ahb_ct.same_incoherent?(aib_ct).should be_true }
         it { ahb_ct.same_incoherent?(hib_ct).should be_true }
       end
 
@@ -127,6 +120,12 @@ module VersatileDiamond
         it { ahb_ct.terminations_num(active_bond).should == 1 }
         it { ahb_ct.terminations_num(adsorbed_h).should == 1 }
 
+        it { ib_cr.terminations_num(active_bond).should == 0 }
+        it { ib_cr.terminations_num(adsorbed_h).should == 1 }
+
+        it { hb_cr.terminations_num(active_bond).should == 0 }
+        it { hb_cr.terminations_num(adsorbed_h).should == 1 }
+
         it { expect { bridge_ct.terminations_num(bridge_base) }.
           to raise_error ArgumentError }
         it { expect { bridge_ct.terminations_num(bridge) }.
@@ -142,6 +141,8 @@ module VersatileDiamond
 
         it { aib_ct.unrelevanted.should == ab_ct }
         it { hib_ct.unrelevanted.should == hb_ct }
+
+        it { ib_cr.unrelevanted.should == bridge_cr }
       end
 
       describe "#incoherent?" do
@@ -154,10 +155,12 @@ module VersatileDiamond
         it { ab_ct.incoherent?.should be_false }
         it { eab_ct.incoherent?.should be_false }
         it { hb_ct.incoherent?.should be_false }
+        it { hb_cr.incoherent?.should be_false }
         it { ahb_ct.incoherent?.should be_false }
 
         it { aib_ct.incoherent?.should be_true }
         it { hib_ct.incoherent?.should be_true }
+        it { ib_cr.incoherent?.should be_true }
       end
 
       describe "#incoherent" do
@@ -175,6 +178,9 @@ module VersatileDiamond
         it { hb_ct.incoherent.should == hib_ct }
         it { hib_ct.incoherent.should be_nil }
         it { ahb_ct.incoherent.should be_nil }
+
+        it { hb_cr.incoherent.should be_nil }
+        it { ib_cr.incoherent.should be_nil }
       end
 
       describe "#relevant?" do
@@ -202,6 +208,9 @@ module VersatileDiamond
 
         it { hb_ct.activated.should == ahb_ct }
         it { ahb_ct.activated.should be_nil }
+
+        it { hb_cr.activated.should be_nil }
+        it { ib_cr.activated.should_not be_nil }
       end
 
       describe "deactivated" do
@@ -216,6 +225,8 @@ module VersatileDiamond
 
         it { ahb_ct.deactivated.should == hb_ct }
         it { hb_ct.deactivated.should be_nil }
+        it { hb_cr.deactivated.should be_nil }
+        it { ib_cr.deactivated.should be_nil }
       end
 
       describe "#smallests" do
@@ -241,20 +252,23 @@ module VersatileDiamond
       end
 
       describe "#size" do
-        it { methyl.size.should == 5.34 }
+        it { methyl.size.should == 5.21 }
         it { high_cm.size.should == 6 }
 
         it { bridge_ct.size.should == 6.5 }
         it { bridge_cr.size.should == 8.5 }
         it { dimer_cr.size.should == 7.5 }
 
-        it { ab_ct.size.should == 7.5 }
-        it { aib_ct.size.should == 7.84 }
-        it { eab_ct.size.should == 8.5 }
+        it { ab_ct.size.should == 6.84 }
+        it { aib_ct.size.should == 7.05 }
+        it { eab_ct.size.should == 7.18 }
 
-        it { hb_ct.size.should == 7.5 }
-        it { hib_ct.size.should == 7.84 }
-        it { ahb_ct.size.should == 8.5 }
+        it { hb_ct.size.should == 6.84 }
+        it { hib_ct.size.should == 7.05 }
+        it { ahb_ct.size.should == 7.18 }
+
+        it { hb_cr.size.should == 8.84 }
+        it { ib_cr.size.should == 8.71 }
       end
 
       describe "#to_s" do
@@ -273,6 +287,9 @@ module VersatileDiamond
         it { hb_ct.to_s.should == 'HC%d<' }
         it { ahb_ct.to_s.should == 'H*C%d<' }
         it { hib_ct.to_s.should == 'HC:i%d<' }
+
+        it { hb_cr.to_s.should == '^HC.%d<' }
+        it { ib_cr.to_s.should == '^C.:i%d<' }
       end
     end
 
