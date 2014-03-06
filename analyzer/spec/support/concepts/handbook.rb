@@ -47,6 +47,9 @@ module VersatileDiamond
         set(:c_chloride) { SpecificAtom.new(c, monovalent_atoms: [cl]) }
         set(:c_hydride) { SpecificAtom.new(c, monovalent_atoms: [h]) }
         set(:cd_hydride) { SpecificAtom.new(cd, monovalent_atoms: [h]) }
+        set(:cd_extra_hydride) do
+          SpecificAtom.new(cd, monovalent_atoms: [h, h])
+        end
         set(:activated_cd_hydride) do
           SpecificAtom.new(cd, options: [:active], monovalent_atoms: [h])
         end
@@ -122,6 +125,9 @@ module VersatileDiamond
         end
         set(:extra_activated_bridge) do
           SpecificSpec.new(bridge_base, ct: extra_activated_cd)
+        end
+        set(:extra_hydrogenated_bridge) do
+          SpecificSpec.new(bridge_base, ct: cd_extra_hydride)
         end
         set(:extended_bridge_base) { bridge_base.extend_by_references }
         set(:right_activated_bridge) do
