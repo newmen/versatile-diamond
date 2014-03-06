@@ -51,7 +51,14 @@ module VersatileDiamond
 
         until props_sd.empty?
           smallest = props_sd.shift
-          organize_by_incoherent_from!(props_sd, smallest)
+          props_sd.each do |bigger|
+            next unless bigger.same_incoherent?(smallest)
+            if bigger.same_hydrogens?(smallest)
+              bigger.add_smallest(smallest)
+            else
+              bigger.add_same(smallest)
+            end
+          end
         end
       end
 
@@ -146,34 +153,16 @@ module VersatileDiamond
       #
       # @return [Array] the specification array
       def specification
-        source_cols = smallests_transitive_matrix.column_vectors.map(&:to_a).
-          map.with_index do |col, i|
-            children_num = col.map { |t| t ? 1 : 0 }.reduce(:+)
-            [children_num == 1, i]
-          end
-
-        source_props_indexes = source_cols.select(&:first).map(&:last)
-        source_props_indexes.select! { |i| @props[i].incoherent? }.to_set
+        sp_indexes = source_props_indexes
 
         @props.map.with_index do |prop, i|
-          curr_srs =
-            smallests_transitive_matrix.column(i).map.with_index do |b, j|
-              [b && source_props_indexes.include?(j), j]
+          curr_source_indexes = smallests_transitive_matrix.column(i).
+            map.with_index.reduce([]) do |acc, (b, j)|
+              b && sp_indexes.include?(j) ? acc << j : acc
             end
 
-          curr_source_indexes = curr_srs.select(&:first).map(&:last)
-
-          if curr_source_indexes.empty?
-            i
-          elsif curr_source_indexes.size == 1
-            curr_source_indexes.first
-          else
-            lengths = curr_source_indexes.map do |j|
-              [path_length(@props[j], prop), j]
-            end
-
-            lengths.min_by(&:first).last
-          end
+          curr_source_indexes.empty? ?
+            i : select_best_index(prop, curr_source_indexes)
         end
       end
 
@@ -208,34 +197,6 @@ module VersatileDiamond
 
         return if @unrelevanted_props.find { |p| p == unrel_prop }
         @unrelevanted_props << unrel_prop
-      end
-
-      # Organize dependencies between properties by incoheren state from most
-      # bigger property
-      #
-      # @param [Array] props the array of atom properties in which smallest
-      #   will find same incoherent properties
-      # @param [AtomProperties] smallest the properties for what will be
-      #   found same incoherent more bigger properties
-      def organize_by_incoherent_from!(props, smallest)
-        @organized_by_incoherent ||= Set.new
-        return if @organized_by_incoherent.include?(smallest)
-        @organized_by_incoherent << smallest
-
-        bigger_props = props.reject do |prop|
-          smallest == prop || smallest.size > prop.size
-        end
-
-        bigger_props.each do |bigger|
-          if bigger.same_incoherent?(smallest)
-            organize_by_incoherent_from!(bigger_props, bigger)
-
-            bas = bigger.all_sames
-            unless bas && bas.include?(smallest)
-              bigger.add_same(smallest)
-            end
-          end
-        end
       end
 
       # Collects transitions array by passed method name
@@ -287,6 +248,49 @@ module VersatileDiamond
         end
       end
 
+      # Selects only source properties from transitive clojure matrix builded
+      # for :smallests dependencies
+      #
+      # @return [Set] the set of source properties indexes
+      def source_props_indexes
+        smallests_transitive_matrix.column_vectors.map(&:to_a).
+          map.with_index.reduce(Set.new) do |acc, (col, i)|
+            children_num = col.map { |t| t ? 1 : 0 }.reduce(:+)
+            prop = @props[i]
+            children_num == 1 &&
+              (prop.incoherent? || prop.dangling_hydrogens_num > 0) ?
+                acc << i : acc
+          end
+      end
+
+      # Selects the best index of passed prop from presented array
+      # @param [AtomProperties] prop the target properties for which will be
+      #   found the best index
+      # @param [Array] indexes the array of pretendents to select
+      # @option [Boolean] :check_hydros configure selecting algorithm for
+      #   select properties with maximal dangling hydogen atoms number
+      # @return [Integer] the best index
+      def select_best_index(prop, indexes, check_hydros: true)
+        if indexes.size == 1
+          indexes.first
+        elsif check_hydros
+          maximal_hydro_indexes = select_by_max_hydros(indexes)
+          select_best_index(prop, maximal_hydro_indexes, check_hydros: false)
+        else
+          lengths = indexes.map { |j| [path_length(@props[j], prop), j] }
+          lengths.min_by(&:first).last
+        end
+      end
+
+      # Selects indexes of properties by max number of dangling hydrogen atoms
+      # @param [Array] indexes the filtering array of indexes
+      # @return [Array] the filtered indexes of maximal hydrogenated properties
+      def select_by_max_hydros(indexes)
+        hydros = indexes.map { |j| [@props[j].dangling_hydrogens_num, j] }
+        max_hydros = hydros.max_by(&:first).first
+        hydros.select { |n, _| n == max_hydros }.map(&:last)
+      end
+
       # Calculating length of path from first argument prop to second argument
       # prop by BFS algorithm
       #
@@ -314,7 +318,8 @@ module VersatileDiamond
             visited[small] = true
           end
         end
-        raise 'Cannot rich :('
+
+        raise "Cannot rich #{from} (#{index(from)})] -> [#{to} (#{index(to)})]"
       end
     end
 

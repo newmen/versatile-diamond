@@ -16,6 +16,10 @@ module VersatileDiamond
 
         it { ab_ct.should_not == aib_ct }
         it { aib_ct.should_not == ab_ct }
+        it { ab_ct.should_not == eab_ct }
+        it { eab_ct.should_not == ab_ct }
+        it { eab_ct.should_not == aib_ct }
+        it { aib_ct.should_not == eab_ct }
 
         it { aib_ct.should_not == hib_ct }
         it { hib_ct.should_not == aib_ct }
@@ -49,6 +53,8 @@ module VersatileDiamond
 
         it { ab_ct.contained_in?(eab_ct).should be_true }
         it { eab_ct.contained_in?(ab_ct).should be_false }
+        it { hb_ct.contained_in?(ehb_ct).should be_true }
+        it { ehb_ct.contained_in?(hb_ct).should be_false }
 
         it { dimer_cr.contained_in?(bridge_ct).should be_false }
         it { dimer_cr.contained_in?(bridge_cr).should be_false }
@@ -91,16 +97,46 @@ module VersatileDiamond
         it { hb_ct.same_incoherent?(ahb_ct).should be_false }
         it { hb_ct.same_incoherent?(hib_ct).should be_false }
         it { hib_ct.same_incoherent?(ahb_ct).should be_false }
+        it { hib_ct.same_incoherent?(ehb_ct).should be_false }
         it { ib_cr.same_incoherent?(hb_cr).should be_false }
         it { ib_cr.same_incoherent?(ab_cr).should be_false }
         it { hb_cr.same_incoherent?(ab_cr).should be_false }
         it { ab_cr.same_incoherent?(hb_cr).should be_false }
 
+        it { ehb_ct.same_incoherent?(hib_ct).should be_true }
         it { eab_ct.same_incoherent?(aib_ct).should be_true }
         it { ahb_ct.same_incoherent?(hib_ct).should be_true }
         it { ahb_ct.same_incoherent?(aib_ct).should be_true }
         it { hb_cr.same_incoherent?(ib_cr).should be_true }
         it { ab_cr.same_incoherent?(ib_cr).should be_true }
+      end
+
+      describe "#same_hydrogens?" do
+        it { ab_ct.same_hydrogens?(ad_cr).should be_false }
+        it { ab_ct.same_hydrogens?(eab_ct).should be_false }
+        it { ad_cr.same_hydrogens?(ab_ct).should be_false }
+        it { ahb_ct.same_hydrogens?(hib_ct).should be_false }
+        it { aib_ct.same_hydrogens?(eab_ct).should be_false }
+        it { eab_ct.same_hydrogens?(ab_ct).should be_false }
+        it { eab_ct.same_hydrogens?(aib_ct).should be_false }
+        it { hb_ct.same_hydrogens?(ahb_ct).should be_false }
+        it { hib_ct.same_hydrogens?(ahb_ct).should be_false }
+        it { ab_cr.same_hydrogens?(hb_cr).should be_false }
+        it { ab_cr.same_hydrogens?(ib_cr).should be_false }
+        it { hb_cr.same_hydrogens?(ab_cr).should be_false }
+        it { ib_cr.same_hydrogens?(ab_cr).should be_false }
+
+        it { bridge_ct.same_hydrogens?(ehb_ct).should be_true }
+        it { bridge_ct.same_hydrogens?(hb_ct).should be_true }
+        it { bridge_ct.same_hydrogens?(hib_ct).should be_true }
+        it { ab_ct.same_hydrogens?(aib_ct).should be_true }
+        it { ahb_ct.same_hydrogens?(aib_ct).should be_true }
+        it { aib_ct.same_hydrogens?(ahb_ct).should be_true }
+        it { ehb_ct.same_hydrogens?(hib_ct).should be_true }
+        it { hb_ct.same_hydrogens?(hib_ct).should be_true }
+        it { hib_ct.same_hydrogens?(ehb_ct).should be_true }
+        it { hb_cr.same_hydrogens?(ib_cr).should be_true }
+        it { ib_cr.same_hydrogens?(hb_cr).should be_true }
       end
 
       describe "#terminations_num" do
@@ -124,6 +160,9 @@ module VersatileDiamond
 
         it { hb_ct.terminations_num(active_bond).should == 0 }
         it { hb_ct.terminations_num(adsorbed_h).should == 2 }
+
+        it { ehb_ct.terminations_num(active_bond).should == 0 }
+        it { ehb_ct.terminations_num(adsorbed_h).should == 2 }
 
         it { ahb_ct.terminations_num(active_bond).should == 1 }
         it { ahb_ct.terminations_num(adsorbed_h).should == 1 }
@@ -165,6 +204,7 @@ module VersatileDiamond
         it { eab_ct.incoherent?.should be_false }
         it { ahb_ct.incoherent?.should be_false }
         it { hb_ct.incoherent?.should be_false }
+        it { ehb_ct.incoherent?.should be_false }
         it { bridge_cr.incoherent?.should be_false }
         it { ab_cr.incoherent?.should be_false }
         it { hb_cr.incoherent?.should be_false }
@@ -182,6 +222,7 @@ module VersatileDiamond
 
         it { ab_ct.incoherent.should == aib_ct }
         it { aib_ct.incoherent.should be_nil }
+        it { eab_ct.incoherent.should be_nil }
 
         it { bridge_cr.incoherent.should_not be_nil }
         it { bridge_cr.incoherent.should_not == aib_ct }
@@ -191,6 +232,7 @@ module VersatileDiamond
         it { hb_ct.incoherent.should == hib_ct }
         it { hib_ct.incoherent.should be_nil }
         it { ahb_ct.incoherent.should be_nil }
+        it { ehb_ct.incoherent.should be_nil }
 
         it { ab_cr.incoherent.should be_nil }
         it { hb_cr.incoherent.should be_nil }
@@ -203,6 +245,7 @@ module VersatileDiamond
         it { ad_cr.relevant?.should be_false }
         it { eab_ct.relevant?.should be_false }
         it { hb_ct.relevant?.should be_false }
+        it { ehb_ct.relevant?.should be_false }
         it { ahb_ct.relevant?.should be_false }
 
         it { methyl.relevant?.should be_true }
@@ -216,11 +259,13 @@ module VersatileDiamond
 
         it { bridge_ct.activated.should == ab_ct }
         it { ab_ct.activated.should == eab_ct }
+        it { eab_ct.activated.should be_nil }
         it { ad_cr.activated.should be_nil }
 
         it { bridge_cr.activated.activated.should be_nil }
 
         it { hb_ct.activated.should == ahb_ct }
+        it { ehb_ct.activated.should be_nil }
         it { ahb_ct.activated.should be_nil }
 
         it { ab_cr.activated.should be_nil }
@@ -242,8 +287,24 @@ module VersatileDiamond
         it { ab_cr.deactivated.should == bridge_cr }
 
         it { hb_ct.deactivated.should be_nil }
+        it { ehb_ct.deactivated.should be_nil }
         it { hb_cr.deactivated.should be_nil }
         it { ib_cr.deactivated.should be_nil }
+      end
+
+      describe "#dangling_hydrogens_num" do
+        it { bridge_ct.dangling_hydrogens_num.should == 0 }
+        it { ab_ct.dangling_hydrogens_num.should == 0 }
+        it { ahb_ct.dangling_hydrogens_num.should == 1 }
+        it { aib_ct.dangling_hydrogens_num.should == 0 }
+        it { eab_ct.dangling_hydrogens_num.should == 0 }
+        it { ehb_ct.dangling_hydrogens_num.should == 2 }
+        it { hb_ct.dangling_hydrogens_num.should == 1 }
+        it { hib_ct.dangling_hydrogens_num.should == 1 }
+        it { ab_cr.dangling_hydrogens_num.should == 0 }
+        it { hb_cr.dangling_hydrogens_num.should == 1 }
+        it { ib_cr.dangling_hydrogens_num.should == 0 }
+        it { ad_cr.dangling_hydrogens_num.should == 0 }
       end
 
       describe "#smallests" do
@@ -268,19 +329,6 @@ module VersatileDiamond
         end
       end
 
-      describe "#all_sames" do
-        it { eab_ct.all_sames.should be_nil }
-
-        describe "#add_same" do
-          before(:each) do
-            aib_ct.add_same(bridge_ct) # synthetic
-            eab_ct.add_same(aib_ct)
-          end
-
-          it { eab_ct.all_sames.to_a.should == [aib_ct, bridge_ct] }
-        end
-      end
-
       describe "#size" do
         it { methyl.size.should == 5.13 }
         it { high_cm.size.should == 6 }
@@ -295,6 +343,7 @@ module VersatileDiamond
 
         it { hb_ct.size.should == 6.84 }
         it { hib_ct.size.should == 6.97 }
+        it { ehb_ct.size.should == 7.18 }
         it { ahb_ct.size.should == 7.18 }
 
         it { ab_cr.size.should == 8.84 }
@@ -316,6 +365,7 @@ module VersatileDiamond
         it { eab_ct.to_s.should == '**C%d<' }
 
         it { hb_ct.to_s.should == 'HC%d<' }
+        it { ehb_ct.to_s.should == 'HHC%d<' }
         it { ahb_ct.to_s.should == 'H*C%d<' }
         it { hib_ct.to_s.should == 'HC:i%d<' }
 

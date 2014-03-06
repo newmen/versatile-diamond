@@ -55,7 +55,7 @@ module VersatileDiamond
           same_correspond_relations?(other)
       end
 
-      # Checks that other properties has same incoherent state
+      # Checks that other properties have same incoherent state
       # @param [AtomProperties] other probably same properties by incoherent
       #   state
       # @return [Boolean] same or not
@@ -63,6 +63,29 @@ module VersatileDiamond
         same_basic_values?(other) && !danglings.empty? && other.incoherent? &&
           other.contain_all_danglings?(self) && eq_relations?(other) &&
           (bonds_num == valence || eq_relevants?(other))
+      end
+
+      # Checks that both properties have same states by hydrogen atoms
+      # @param [AtomProperties] other properties which will be checked
+      # @return [Boolean] same or not
+      def same_hydrogens?(other)
+        total_hydrogens_num == other.total_hydrogens_num
+      end
+
+      %w(smallest same).each do |name|
+        var_name = :"@#{name}s"
+
+        # Adds dependency from #{name} properties
+        # @param [AtomProperties] stuff the #{name} properties from which
+        #   depends current
+        define_method(:"add_#{name}") do |stuff|
+          var = instance_variable_get(var_name) ||
+            instance_variable_set(var_name, Set.new)
+
+          from_child = stuff.send(:"#{name}s")
+          var.subtract(from_child) if from_child
+          var << stuff
+        end
       end
 
       # Gives the number of how many termination specs lies in current
@@ -85,40 +108,13 @@ module VersatileDiamond
         end
       end
 
-      # Adds dependency from smallest properties
-      # @param [AtomProperties] smallest the smallest properties from which
-      #   depends current
-      def add_smallest(smallest)
-        @smallests ||= Set.new
-        @smallests -= smallest.smallests if smallest.smallests
-        @smallests << smallest
-      end
-
-      # Adds dependency from same properties by incoherent state
-      # @param [AtomProperties] same the same properties from which depends
-      #   current properties
-      def add_same(same)
-        @sames ||= Set.new
-        @sames << same
-      end
-
-      # Recursively gets all same properties
-      # @return [Set] the array of all same properties or nil
-      def all_sames
-        @sames && @sames.reduce(Set.new) do |acc, same|
-          acc << same
-          as = same.all_sames
-          as ? acc + as : acc
-        end
-      end
-
       # Makes unrelevanted copy of self
       # @return [AtomProperties] unrelevanted atom properties
       def unrelevanted
         self.class.new(wihtout_relevants)
       end
 
-      # Has incoherent property or not
+      # Has incoherent state or not
       # @return [Boolean] contain or not
       def incoherent?
         relevants && relevants.include?(:incoherent)
@@ -167,6 +163,12 @@ module VersatileDiamond
         else
           nil
         end
+      end
+
+      # Gets number of hydrogen atoms
+      # @return [Integer] number of active bonds
+      def dangling_hydrogens_num
+        count_danglings(:H)
       end
 
       # Gets size of properties
@@ -276,6 +278,12 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def contain_all_danglings?(other)
         contain_all_by?(other, :danglings)
+      end
+
+      # Counts total number of hydrogen atoms
+      # @return [Integer] the number of total number of hydrogen atoms
+      def total_hydrogens_num
+        valence - bonds_num + dangling_hydrogens_num
       end
 
     private
@@ -438,18 +446,6 @@ module VersatileDiamond
       # @return [Integer] number of active bonds
       def actives_num
         count_danglings(:active)
-      end
-
-      # Gets number of hydrogen atoms
-      # @return [Integer] number of active bonds
-      def dangling_hydrogens_num
-        count_danglings(:H)
-      end
-
-      # Counts total number of hydrogen atoms
-      # @return [Integer] the number of total number of hydrogen atoms
-      def total_hydrogens_num
-        valence - bonds_num + dangling_hydrogens_num
       end
     end
 
