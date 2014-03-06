@@ -200,10 +200,7 @@ module VersatileDiamond
 
         if relevants
           relevants.each do |sym|
-            suffix = case sym
-              when :incoherent then 'i'
-              when :unfixed then 'u'
-            end
+            suffix = sym.to_s[0]
             name = "#{name}:#{suffix}"
           end
         end
