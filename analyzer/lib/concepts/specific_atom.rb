@@ -21,17 +21,19 @@ module VersatileDiamond
       extend Forwardable
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence
 
+      attr_reader :monovalents
+
       # Initialize a new instance
       # @param [Atom] atom the specified atom
       # @option [SpecificAtom] :ancestor the ancestor of new atom
       # @option [Array] :options the atom configuration (not using if ancestor
       #   passed)
-      # @option [Array] :monovalent_atoms with which current atom is bonded
-      def initialize(atom, ancestor: nil, options: [], monovalent_atoms: [])
+      # @option [Array] :monovalents names of monovalent atoms with which
+      #   the current atom is bonded
+      def initialize(atom, ancestor: nil, options: [], monovalents: [])
         @atom = atom.dup # because atom can be changed by mapping algorithm
         @options = ancestor ? ancestor.options : options
-        @monovalent_atoms =
-          ancestor ? ancestor.monovalent_atoms : monovalent_atoms
+        @monovalents = ancestor ? ancestor.monovalents : monovalents
       end
 
       # Makes copy of another instance
@@ -39,7 +41,7 @@ module VersatileDiamond
       def initialize_copy(other)
         @atom = other.atom.dup
         @options = other.options.dup
-        @monovalent_atoms = other.monovalent_atoms.dup
+        @monovalents = other.monovalents.dup
       end
 
       # Gets valence of specific atom
@@ -64,7 +66,7 @@ module VersatileDiamond
       # Setup monovalent atom for using it
       # @param [Atom] atom the monovalent atom which is used as one of bond
       def use!(atom)
-        @monovalent_atoms << atom
+        @monovalents << atom.name
       end
 
       # Activates atom instance
@@ -93,12 +95,6 @@ module VersatileDiamond
           raise NotStated.new(state) unless send("#{sym_state}?")
           @options.delete(sym_state)
         end
-      end
-
-      # Gets a list of monovalent atoms names
-      # @return [Array] the array of syboled names
-      def monovalents
-        @monovalent_atoms.map(&:name)
       end
 
       # Counts active bonds
@@ -154,7 +150,7 @@ module VersatileDiamond
 
     protected
 
-      attr_reader :atom, :options, :monovalent_atoms
+      attr_reader :atom, :options
 
     private
 
