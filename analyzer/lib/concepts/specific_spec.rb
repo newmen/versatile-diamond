@@ -297,9 +297,8 @@ module VersatileDiamond
         is_gas? ?
           0 :
           @spec.size +
-            active_bonds_num * 0.88 +
-            monovalents_num * 0.75 +
-            relevants_num * 0.33
+            (active_bonds_num + monovalents_num) * 0.34 +
+            relevants_num * 0.13
       end
 
       # Also visit base spec

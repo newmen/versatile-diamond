@@ -390,7 +390,7 @@ module VersatileDiamond
 
       describe "#size" do
         it { methyl_activation.size.should == 4 }
-        it { dimer_formation.size.should == 8.09 }
+        it { dimer_formation.size.should == 6.81 }
       end
 
       it_behaves_like "visitable" do
