@@ -197,6 +197,16 @@ module VersatileDiamond
         end
       end
 
+      describe "#size" do
+        it { activated_cd.size.round(2).should == 0.34 }
+        it { activated_cd_hydride.size.round(2).should == 0.68 }
+        it { activated_incoherent_cd.size.round(2).should == 0.47 }
+        it { incoherent_cd.size.round(2).should == 0.13 }
+        it { incoherent_cd_hydride.size.round(2).should == 0.47 }
+        it { unfixed_activated_c.size.round(2).should == 0.47 }
+        it { c_chloride.size.round(2).should == 0.34 }
+      end
+
       describe "#to_s" do
         it { activated_c.to_s.should == "C[*]" }
         it { unfixed_activated_c.to_s.should == "C[*, u]" }

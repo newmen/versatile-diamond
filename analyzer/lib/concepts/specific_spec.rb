@@ -247,16 +247,20 @@ module VersatileDiamond
           s == self || s.specific_atoms.size > @specific_atoms.size
         end
 
-        similar_specs = similar_specs.sort { |a, b| b.size <=> a.size }
+        # sorts descending size (cannot be sorted by specific spec sizes)
+        similar_specs = similar_specs.sort do |a, b|
+          if a.specific_atoms.size == b.specific_atoms.size
+            b.dangling_bonds_num <=> a.dangling_bonds_num
+          else
+            b.specific_atoms.size <=> a.specific_atoms.size
+          end
+        end
 
         @parent = similar_specs.find do |ss|
-          ss.dangling_bonds_num <= dangling_bonds_num &&
-            ss.specific_atoms.all? do |keyname, atom|
-              a = @specific_atoms[keyname]
-              a && atom.actives <= a.actives &&
-                (atom.relevants - a.relevants).empty? &&
-                (atom.monovalents - a.monovalents).empty?
-            end
+          ss.specific_atoms.all? do |keyname, atom|
+            a = @specific_atoms[keyname]
+            a && is?(a, atom)
+          end
         end
 
         (@parent || @spec).store_child(self)
@@ -288,10 +292,7 @@ module VersatileDiamond
       # @return [Float] size of current specific spec
       def size
         is_gas? ?
-          0 :
-          @spec.size +
-            (active_bonds_num + monovalents_num) * 0.34 +
-            relevants_num * 0.13
+          0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
       end
 
       # Also visit base spec
@@ -331,24 +332,11 @@ module VersatileDiamond
         @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
       end
 
-      # Counts the sum of relevant properties of specific atoms
-      # @return [Integer] sum of relevant properties
-      def relevants_num
-        states_num(:relevants)
-      end
-
       # Counts the sum of monovalent atoms at specific atoms
       # @return [Integer] sum of monovalent atoms
       def monovalents_num
-        states_num(:monovalents)
-      end
-
-      # Counts the sum of monovalent atoms at specific atoms
-      # @param [Symbol] atom_method the method by which states will be counted
-      # @return [Integer] sum of monovalent atoms
-      def states_num(atom_method)
         @specific_atoms.values.reduce(0) do |acc, atom|
-          acc + atom.send(atom_method).size
+          acc + atom.monovalents.size
         end
       end
 
@@ -400,6 +388,35 @@ module VersatileDiamond
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
         HanserRecursiveAlgorithm.contain?(links, other.links)
+      end
+
+      # Compares two specific atoms and checks that smallest is less than
+      # bigger
+      #
+      # @param [SpecificAtom] bigger probably the bigger atom
+      # @param [SpecificAtom smallest probably the smallest atom
+      # @return [Boolean] smallest is less or not
+      def is?(bigger, smallest)
+        same_danglings?(bigger, smallest) && same_relevants?(bigger, smallest)
+      end
+
+      # Checks that smallest atom contain less dangling states than bigger
+      # @param [SpecificAtom] bigger see at #is? same argument
+      # @param [SpecificAtom] smallest see at #is? same argument
+      # @return [Boolean] contain or not
+      def same_danglings?(bigger, smallest)
+        smallest.actives <= bigger.actives &&
+          (smallest.monovalents - bigger.monovalents).empty?
+      end
+
+      # Checks that smallest atom contain less relevant states than bigger
+      # @param [SpecificAtom] bigger see at #is? same argument
+      # @param [SpecificAtom] smallest see at #is? same argument
+      # @return [Boolean] contain or not
+      def same_relevants?(bigger, smallest)
+        diff = smallest.relevants - bigger.relevants
+        diff.empty? || (diff == [:incoherent] && bigger.size > smallest.size &&
+          (!bigger.monovalents.empty? || bigger.actives > 0))
       end
 
       # Resets internal caches
