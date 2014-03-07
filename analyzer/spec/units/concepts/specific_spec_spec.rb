@@ -239,7 +239,7 @@ module VersatileDiamond
 
           it_behaves_like "organize and check" do
             let(:target) { extra_activated_bridge }
-            let(:parent) { activated_bridge }
+            let(:parent) { activated_incoherent_bridge }
           end
         end
 
@@ -261,7 +261,7 @@ module VersatileDiamond
 
           it_behaves_like "organize and check" do
             let(:target) { methyl_on_activated_bridge }
-            let(:parent) { methyl_on_bridge }
+            let(:parent) { methyl_on_incoherent_bridge }
           end
 
           it_behaves_like "organize and check" do
