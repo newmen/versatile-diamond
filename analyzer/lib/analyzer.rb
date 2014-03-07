@@ -1,6 +1,5 @@
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichString
 
   # Class for analyzing configuration file writen on VD:DSL
   class Analyzer < Interpreter::Base

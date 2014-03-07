@@ -1,6 +1,6 @@
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichString
+
   module Visitors
 
     # Provides ability for call correspond method of visitor and pass to it

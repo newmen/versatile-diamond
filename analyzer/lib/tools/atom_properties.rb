@@ -1,7 +1,7 @@
-using VersatileDiamond::Patches::RichArray
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichArray
+  using Patches::RichString
+
   module Tools
 
     # Accumulates information about atom

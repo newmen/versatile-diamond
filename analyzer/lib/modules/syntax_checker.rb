@@ -1,6 +1,6 @@
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichString
+
   module Modules
 
     # Provides method for translating messages (by class name) and raising

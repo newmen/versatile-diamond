@@ -1,6 +1,6 @@
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichString
+
   module Interpreter
 
     # Interprets gas or surface block, and specify spec block in both
