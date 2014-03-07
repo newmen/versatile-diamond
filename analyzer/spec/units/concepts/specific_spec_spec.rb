@@ -361,10 +361,10 @@ module VersatileDiamond
         it { methane.size.should == 0 }
         it { methyl.size.should == 0 }
         it { bridge.size.should == 3 }
-        it { hydrogenated_bridge.size.should == 3.75 }
-        it { activated_hydrogenated_bridge.size.should == 4.63 }
-        it { extra_activated_bridge.size.should == 4.76 }
-        it { activated_methyl_on_incoherent_bridge.size.should == 5.21 }
+        it { hydrogenated_bridge.size.should == 3.34 }
+        it { activated_hydrogenated_bridge.size.should == 3.68 }
+        it { extra_activated_bridge.size.should == 3.68 }
+        it { activated_methyl_on_incoherent_bridge.size.should == 4.47 }
       end
 
       it_behaves_like "visitable" do

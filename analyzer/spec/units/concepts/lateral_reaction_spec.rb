@@ -105,8 +105,8 @@ module VersatileDiamond
       end
 
       describe "#size" do
-        it { reaction.size.should == 14.09 }
-        it { other.size.should == 18.09 }
+        it { reaction.size.round(2).should == 12.81 }
+        it { other.size.round(2).should == 16.81 }
       end
 
       it_behaves_like "visitable" do
