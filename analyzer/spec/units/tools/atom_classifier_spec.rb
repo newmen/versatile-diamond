@@ -130,6 +130,21 @@ module VersatileDiamond
                 ] }
           end
 
+          describe "#is?" do
+            it { subject.is?(hb_cr, ib_cr).should be_true }
+            it { subject.is?(ib_cr, hb_cr).should be_false }
+
+            it { subject.is?(hb_cr, bridge_ct).should be_true }
+            it { subject.is?(bridge_ct, hb_cr).should be_false }
+
+            it { subject.is?(eab_ct, ab_ct).should be_true }
+            it { subject.is?(ab_ct, eab_ct).should be_false }
+            it { subject.is?(eab_ct, aib_ct).should be_true }
+            it { subject.is?(aib_ct, eab_ct).should be_false }
+            it { subject.is?(eab_ct, bridge_ct).should be_true }
+            it { subject.is?(bridge_ct, eab_ct).should be_false }
+          end
+
           describe "generate graph" do
             let(:filename) { 'classifier_spec' }
             let(:graph) do
