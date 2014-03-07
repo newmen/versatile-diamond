@@ -178,6 +178,14 @@ module VersatileDiamond
         collect_trainsitions(:activated)
       end
 
+      # Checks that the first atom properties are the second atom properties
+      # @param [AtomProperties] first the bigger atom properties
+      # @param [AtomProperties] second the smallest atom properties
+      # @return [Boolean] is or not
+      def is?(first, second)
+        general_transitive_matrix[index(first), index(second)]
+      end
+
     private
 
       # Stores passed prop and it unrelevanted analog
