@@ -9,7 +9,7 @@ module VersatileDiamond
       describe "#initialize" do
         subject do
           described_class.new(cd,
-            options: [:active, :incoherent], monovalent_atoms: [h])
+            options: [:active, :incoherent], monovalents: [:H])
         end
         it { subject.actives.should == 1 }
         it { subject.incoherent?.should be_true }
