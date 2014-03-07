@@ -247,14 +247,7 @@ module VersatileDiamond
           s == self || s.specific_atoms.size > @specific_atoms.size
         end
 
-        # sorts descending size
-        similar_specs = similar_specs.sort do |a, b|
-          if a.specific_atoms.size == b.specific_atoms.size
-            b.dangling_bonds_num <=> a.dangling_bonds_num
-          else
-            b.specific_atoms.size <=> a.specific_atoms.size
-          end
-        end
+        similar_specs = similar_specs.sort { |a, b| b.size <=> a.size }
 
         @parent = similar_specs.find do |ss|
           ss.dangling_bonds_num <= dangling_bonds_num &&

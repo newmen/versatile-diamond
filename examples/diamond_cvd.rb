@@ -199,7 +199,7 @@ events
     reverse_rate 1.1e11
 
   reaction 'chain neighbour bridgemethyl-fixedbridge hydrogen migration'
-    equation methyl_on_bridge(cm: H) + bridge(cr: *) = methyl_on_bridge(cm: *) + bridge(cm: H)
+    equation methyl_on_bridge(cm: H) + bridge(cr: *) = methyl_on_bridge(cm: *) + bridge(ct: H)
       unfixed methyl_on_bridge(:cm)
       incoherent methyl_on_bridge(:cb)
       position methyl_on_bridge(:cb), bridge(:cr), face: 100, dir: :front
