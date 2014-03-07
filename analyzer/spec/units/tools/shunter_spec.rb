@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichString
+
   module Tools
 
     describe Shunter do

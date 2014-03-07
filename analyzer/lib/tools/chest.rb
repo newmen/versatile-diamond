@@ -1,6 +1,6 @@
-using VersatileDiamond::Patches::RichString
-
 module VersatileDiamond
+  using Patches::RichString
+
   module Tools
 
     # The singleton concepts storer
