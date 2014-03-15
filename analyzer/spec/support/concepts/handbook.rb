@@ -44,8 +44,8 @@ module VersatileDiamond
           SpecificAtom.new(c, options: [:unfixed, :active])
         end
 
-        set(:c_chloride) { SpecificAtom.new(c, monovalents: [:Cl]) }
         set(:c_hydride) { SpecificAtom.new(c, monovalents: [:H]) }
+        set(:cd_chloride) { SpecificAtom.new(cd, monovalents: [:Cl]) }
         set(:cd_hydride) { SpecificAtom.new(cd, monovalents: [:H]) }
         set(:cd_extra_hydride) { SpecificAtom.new(cd, monovalents: [:H] * 2) }
         set(:activated_cd_hydride) do

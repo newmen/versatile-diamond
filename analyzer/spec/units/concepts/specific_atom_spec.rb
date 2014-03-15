@@ -85,7 +85,9 @@ module VersatileDiamond
 
       describe "#monovalents" do
         it { activated_c.monovalents.should be_empty }
-        it { c_chloride.monovalents.should == [:Cl] }
+        it { cd_chloride.monovalents.should == [:Cl] }
+        it { activated_cd_hydride.monovalents.should == [:H] }
+        it { cd_extra_hydride.monovalents.should == [:H, :H] }
       end
 
       describe "#same?" do
@@ -204,21 +206,21 @@ module VersatileDiamond
         it { incoherent_cd.size.round(2).should == 0.13 }
         it { incoherent_cd_hydride.size.round(2).should == 0.47 }
         it { unfixed_activated_c.size.round(2).should == 0.47 }
-        it { c_chloride.size.round(2).should == 0.34 }
+        it { cd_chloride.size.round(2).should == 0.34 }
       end
 
       describe "#to_s" do
         it { activated_c.to_s.should == "C[*]" }
         it { unfixed_activated_c.to_s.should == "C[*, u]" }
+        it { c_hydride.to_s.should == "C[H]" }
+
         it { activated_cd.to_s.should == "C%d[*]" }
-        it { activated_cd_hydride.to_s.should == "C%d[*, H]" }
         it { incoherent_cd.to_s.should == "C%d[i]" }
+        it { cd_hydride.to_s.should == "C%d[H]" }
+        it { cd_chloride.to_s.should == "C%d[Cl]" }
+        it { activated_cd_hydride.to_s.should == "C%d[*, H]" }
         it { activated_incoherent_cd.to_s.should == "C%d[*, i]" }
         it { incoherent_cd_hydride.to_s.should == "C%d[H, i]" }
-
-        it { c_chloride.to_s.should == "C[Cl]" }
-        it { c_hydride.to_s.should == "C[H]" }
-        it { cd_hydride.to_s.should == "C%d[H]" }
       end
     end
 
