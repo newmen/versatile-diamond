@@ -90,7 +90,7 @@ events
     forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
 
   reaction 'methyl deactivation'
-    equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
+    equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer(cm: H)
       incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 

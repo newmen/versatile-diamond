@@ -31,6 +31,7 @@ module VersatileDiamond
         prop(:ab_cr, :right_activated_bridge, :cr)
         prop(:hb_cr, :right_hydrogenated_bridge, :cr)
         prop(:ib_cr, :right_incoherent_bridge, :cr)
+        prop(:clb_cr, :right_chlorigenated_bridge, :cr)
 
         prop(:dimer_cr, :dimer, :cr)
         prop(:dimer_cl, :dimer, :cl)

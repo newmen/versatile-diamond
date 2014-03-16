@@ -86,11 +86,6 @@ module VersatileDiamond
           it { subject.external_bonds_for(subject.atom(:cr)).should == 1 }
         end
 
-        describe "chloride_bridge" do
-          subject { chloride_bridge_base }
-          it { subject.external_bonds_for(subject.atom(:ct)).should == 1 }
-        end
-
         describe "methyl on bridge" do
           subject { methyl_on_bridge_base }
           it { subject.external_bonds_for(subject.atom(:cm)).should == 3 }

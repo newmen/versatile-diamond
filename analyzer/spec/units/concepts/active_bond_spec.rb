@@ -38,8 +38,8 @@ module VersatileDiamond
 
         it { active_bond.cover?(methyl, c).should be_false }
         it { active_bond.cover?(bridge, cd).should be_false }
-        it { active_bond.cover?(chloride_bridge, chloride_bridge.atom(:ct)).
-          should be_false }
+        it { active_bond.cover?(chlorigenated_bridge,
+          chlorigenated_bridge.atom(:ct)).should be_false }
         it { active_bond.cover?(methyl_on_bridge, c).should be_false }
         it { active_bond.cover?(
           activated_incoherent_bridge, incoherent_cd).

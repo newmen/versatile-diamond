@@ -127,7 +127,9 @@ module VersatileDiamond
         set(:extra_hydrogenated_bridge) do
           SpecificSpec.new(bridge_base, ct: cd_extra_hydride)
         end
-        set(:extended_bridge_base) { bridge_base.extend_by_references }
+        set(:chlorigenated_bridge) do
+          SpecificSpec.new(bridge_base, ct: cd_chloride)
+        end
         set(:right_activated_bridge) do
           a = SpecificAtom.new(bridge_base.atom(:cr), options: [:active])
           SpecificSpec.new(bridge_base, cr: a)
@@ -140,6 +142,11 @@ module VersatileDiamond
           a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [:H])
           SpecificSpec.new(bridge_base, cr: a)
         end
+        set(:right_chlorigenated_bridge) do
+          a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [:Cl])
+          SpecificSpec.new(bridge_base, cr: a)
+        end
+        set(:extended_bridge_base) { bridge_base.extend_by_references }
         set(:right_activated_extended_bridge) do
           right_activated_bridge.extended
         end
@@ -177,13 +184,6 @@ module VersatileDiamond
         set(:activated_methyl_on_extended_bridge) do
           activated_methyl_on_bridge.extended
         end
-
-        set(:chloride_bridge_base) do
-          s = SurfaceSpec.new(:chloride_bridge, clr: cl)
-          s.adsorb(bridge_base)
-          s.link(s.atom(:ct), cl, free_bond); s
-        end
-        set(:chloride_bridge) { SpecificSpec.new(chloride_bridge_base) }
 
         set(:high_bridge_base) do
           s = SurfaceSpec.new(:high_bridge)

@@ -347,15 +347,13 @@ module VersatileDiamond
           before(:each) do
             [
               methane_base, bridge_base, methyl_on_bridge_base, dimer_base,
-              methyl_on_dimer_base, ethylene_base, chloride_bridge_base,
-              high_bridge_base
+              methyl_on_dimer_base, ethylene_base, high_bridge_base
             ].each { |spec| Chest.store(spec) }
             store_and_organize_reactions
           end
 
           it { expect { Chest.spec(:methane) }.to raise_error keyname_error }
           it { expect { Chest.spec(:ethylene) }.to raise_error keyname_error }
-          it { expect { Chest.spec(:chloride_bridge) }.to raise_error keyname_error }
           it { expect { Chest.spec(:high_bridge) }.to raise_error keyname_error }
 
           it { expect { Chest.spec(:bridge) }.not_to raise_error }
