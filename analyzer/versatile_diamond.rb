@@ -6,6 +6,7 @@ require 'forwardable'
 require 'singleton'
 require 'set'
 require 'i18n'
+I18n.enforce_available_locales = true
 I18n.load_path << files_in('locales/*.yml')
 
 require_relative 'load_helper' # useful methods
