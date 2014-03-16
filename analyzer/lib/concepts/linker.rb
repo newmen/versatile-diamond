@@ -5,7 +5,7 @@ module VersatileDiamond
     module Linker
 
       # Exception for case when linking same atom
-      class SameAtom < Exception; end
+      class SameAtom < Errors::Base; end
 
     private
 

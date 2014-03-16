@@ -7,7 +7,7 @@ module VersatileDiamond
       include BasicRelations
 
       # Exception class for case when used bond is incorrect
-      class UndefinedRelation < Exception
+      class UndefinedRelation < Errors::Base
         attr_reader :relation
         def initialize(relation); @relation = relation end
       end

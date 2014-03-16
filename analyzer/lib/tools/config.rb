@@ -5,7 +5,7 @@ module VersatileDiamond
     class Config
 
       # Exception class for cases where setuping value already setuped
-      class AlreadyDefined < Exception
+      class AlreadyDefined < Errors::Base
         attr_reader :name
         def initialize(name); @name = name end
       end

@@ -6,16 +6,16 @@ module VersatileDiamond
     class Position < Bond
 
       # When position is incomplete then raised it exception
-      class Incomplete < Exception; end
+      class Incomplete < Errors::Base; end
 
       # Exception for position duplication case
-      class Duplicate < Exception
+      class Duplicate < Errors::Base
         attr_reader :position
         def initialize(position); @position = position end
       end
 
       # Exception for case when linking atoms do not have a crystal lattice
-      class UnspecifiedAtoms < Exception; end
+      class UnspecifiedAtoms < Errors::Base; end
 
       class << self
         # The singleton method [] caches all instnaces and returns it if face

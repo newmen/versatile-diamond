@@ -7,7 +7,7 @@ module VersatileDiamond
     class Chest
 
       # Exception of some key name wrongs, which contain info about it
-      class KeyNameError < Exception
+      class KeyNameError < Errors::Base
         attr_reader :key, :name, :type
 
         # @param [Symbol] key the underscored concept class name
@@ -19,7 +19,7 @@ module VersatileDiamond
       end
 
       # Exception for case when some reactions overlap
-      class ReactionDuplicate < Exception
+      class ReactionDuplicate < Errors::Base
         attr_reader :first, :second
         # @param [String] first the name of first reaction
         # @param [String] second the name of second reaction

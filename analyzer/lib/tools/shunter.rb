@@ -8,7 +8,7 @@ module VersatileDiamond
         [:ubiquitous_reaction, :reaction, :lateral_reaction].freeze
 
       # Exception for case when some reactions overlap
-      class ReactionDuplicate < Exception
+      class ReactionDuplicate < Errors::Base
         attr_reader :first, :second
         # @param [String] first the name of first reaction
         # @param [String] second the name of second reaction
