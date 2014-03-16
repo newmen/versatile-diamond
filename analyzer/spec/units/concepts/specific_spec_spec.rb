@@ -127,8 +127,7 @@ module VersatileDiamond
         it { activated_bridge.external_bonds_for(activated_cd).should == 1 }
         it { extra_activated_bridge.external_bonds_for(extra_activated_cd).
           should == 0 }
-        it { chloride_bridge.external_bonds_for(chloride_bridge.atom(:ct)).
-          should == 1 }
+        it { chlorigenated_bridge.external_bonds_for(cd_chloride).should == 1 }
         it { methyl_on_bridge.external_bonds_for(c).should == 3 }
         it { activated_methyl_on_bridge.external_bonds_for(activated_c).
           should == 2 }
@@ -146,7 +145,7 @@ module VersatileDiamond
         it { methyl.external_bonds.should == 3 }
         it { bridge.external_bonds.should == 4 }
         it { extra_activated_bridge.external_bonds.should == 2 }
-        it { chloride_bridge.external_bonds.should == 3 }
+        it { chlorigenated_bridge.external_bonds.should == 4 }#3 }
       end
 
       describe "#extended?" do
@@ -351,10 +350,10 @@ module VersatileDiamond
         it { extra_activated_bridge.has_termination_atom?(
           extra_activated_cd, h). should be_false }
 
-        it { chloride_bridge.has_termination_atom?(
-          chloride_bridge.atom(:ct), h). should be_true }
-        it { chloride_bridge.has_termination_atom?(
-          chloride_bridge.atom(:ct), cl). should be_true }
+        it { chlorigenated_bridge.has_termination_atom?(cd_chloride, h).
+          should be_true }
+        it { chlorigenated_bridge.has_termination_atom?(cd_chloride, cl).
+          should be_true }
       end
 
       describe "#size" do
@@ -362,6 +361,7 @@ module VersatileDiamond
         it { methyl.size.should == 0 }
         it { bridge.size.should == 3 }
         it { hydrogenated_bridge.size.should == 3.34 }
+        it { chlorigenated_bridge.size.should == 3.34 }
         it { activated_hydrogenated_bridge.size.should == 3.68 }
         it { extra_activated_bridge.size.should == 3.68 }
         it { activated_methyl_on_incoherent_bridge.size.should == 4.47 }

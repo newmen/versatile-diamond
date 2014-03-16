@@ -47,7 +47,7 @@ module VersatileDiamond
       # Gets valence of specific atom
       # @return [Integer] the number of valence bonds
       def valence
-        @atom.valence - actives
+        @atom.valence - actives - monovalents.size
       end
 
       # Compares current instance with other

@@ -146,7 +146,7 @@ module VersatileDiamond
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
       def external_bonds
-        @spec.external_bonds - active_bonds_num
+        @spec.external_bonds - active_bonds_num #- monovalents_num
       end
 
       # Extends originial spec by atom-references and store it to temp variable
@@ -281,9 +281,8 @@ module VersatileDiamond
       def has_termination_atom?(internal_atom, term_atom)
         (Atom.is_hydrogen?(term_atom) &&
           external_bonds_for(internal_atom) > 0) ||
-            links[internal_atom].find do |spec_atom, link|
-              link.class == Bond && spec_atom.same?(term_atom)
-            end
+          has_monovalent_in_links?(internal_atom, term_atom) ||
+          (internal_atom.monovalents.include?(term_atom.name))
       end
 
       # Gets a number of atoms with number of active bonds, but if spec is gas
@@ -379,6 +378,17 @@ module VersatileDiamond
             state_str = state_method ? eval("state.#{state_method}") : state
             "#{atom_keyname}: #{state_str}"
           end
+      end
+
+      # Finds monovalent termination atom in links of spec
+      # @param [Atom | SpecificAtom | AtomReference] internal_atom the atom for
+      #   which will check that it have monovalent atom
+      # @param [Atom] term_atom the monovalent atom which will be found or not
+      # @return [Boolean] has or not
+      def has_monovalent_in_links?(internal_atom, term_atom)
+        !!links[internal_atom].find do |spec_atom, link|
+          link.class == Bond && spec_atom.same?(term_atom)
+        end
       end
 
       # Verifies that the passed instance is correspond to the current, by

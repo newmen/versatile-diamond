@@ -29,7 +29,7 @@ module VersatileDiamond
       describe "#cover?" do
         it { adsorbed_h.cover?(bridge, cd).should be_true }
         it { adsorbed_h.cover?(activated_bridge, activated_cd).should be_true }
-        it { adsorbed_h.cover?(chloride_bridge, chloride_bridge.atom(:ct)).
+        it { adsorbed_h.cover?(chlorigenated_bridge, cd_chloride).
           should be_true }
         it { adsorbed_h.cover?(activated_methyl_on_bridge, activated_c).
           should be_true }
@@ -51,7 +51,7 @@ module VersatileDiamond
           should be_false }
 
         it { adsorbed_cl.cover?(bridge, bridge.atom(:ct)).should be_false }
-        it { adsorbed_cl.cover?(chloride_bridge, chloride_bridge.atom(:ct)).
+        it { adsorbed_cl.cover?(chlorigenated_bridge,cd_chloride).
           should be_true }
       end
 
