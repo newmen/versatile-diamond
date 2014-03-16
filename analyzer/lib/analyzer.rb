@@ -55,7 +55,7 @@ module VersatileDiamond
       puts e.message(@config_path, @line_number + 1)
       false
     rescue Errors::Base => e
-      puts "System error at line #{@line_number + 1}:"
+      puts "Versatile Diamond internal error at line #{@line_number + 1}:"
       puts "\n\t#{@line.strip}" if @line
       raise
     end
