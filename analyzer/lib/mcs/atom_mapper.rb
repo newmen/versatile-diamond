@@ -8,7 +8,7 @@ module VersatileDiamond
     class AtomMapper
 
       # Exception for cannot map case
-      class CannotMap < Exception; end
+      class CannotMap < Errors::Base; end
 
       class << self
         # Maps together source and product structures. Changes

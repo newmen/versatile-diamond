@@ -10,7 +10,7 @@ module VersatileDiamond
       include Visitors::Visitable
 
       # Exception class for cases when property already setted
-      class AlreadySet < Exception
+      class AlreadySet < Errors::Base
         attr_reader :property
         def initialize(property); @property = property end
       end

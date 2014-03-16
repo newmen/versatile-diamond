@@ -7,7 +7,7 @@ module VersatileDiamond
 
       # Error for case when something wrong with atom state
       # @abstract
-      class Stated < Exception
+      class Stated < Errors::Base
         attr_reader :state
         def initialize(state); @state = state end
       end

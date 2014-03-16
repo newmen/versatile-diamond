@@ -54,7 +54,7 @@ module VersatileDiamond
     rescue Errors::SyntaxError => e
       puts e.message(@config_path, @line_number + 1)
       false
-    rescue Exception => e
+    rescue Errors::Base => e
       puts "System error at line #{@line_number + 1}:"
       puts "\n\t#{@line.strip}" if @line
       raise

@@ -5,7 +5,7 @@ module VersatileDiamond
     class Atom < Named
 
       # Exception class for incorrect valence case
-      class IncorrectValence < Exception
+      class IncorrectValence < Errors::Base
         attr_reader :atom
         def initialize(atom); @atom = atom end
       end
