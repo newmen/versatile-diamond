@@ -5,13 +5,13 @@ module VersatileDiamond
 
     describe Where do
       describe "#specs" do
-        it { at_end.specs.should =~ [dimer] }
-        it { at_middle.specs.should =~ [dimer] }
-        it { near_methyl.specs.should =~ [methyl_on_bridge] }
+        it { expect(at_end.specs).to match_array([dimer]) }
+        it { expect(at_middle.specs).to match_array([dimer]) }
+        it { expect(near_methyl.specs).to match_array([methyl_on_bridge]) }
       end
 
       describe "#description" do
-        it { at_end.description.should == 'at end of dimers row' }
+        it { expect(at_end.description).to eq('at end of dimers row') }
       end
 
       it_behaves_like "check specs after swap_source" do
@@ -20,25 +20,25 @@ module VersatileDiamond
       end
 
       describe "#parents" do
-        it { at_end.parents.should be_empty }
-        it { at_middle.parents.should =~ [at_end] }
+        it { expect(at_end.parents).to be_empty }
+        it { expect(at_middle.parents).to match_array([at_end]) }
       end
 
       describe "#concretize" do
-        it { near_methyl.concretize(target: [bridge, bridge.atom(:ct)]).
-          should be_a(There) }
+        it { expect(near_methyl.concretize(target: [bridge, bridge.atom(:ct)])).
+          to be_a(There) }
 
         # TODO: check positions
       end
 
       describe "#used_keynames_of" do
-        it { at_end.used_keynames_of(dimer).size.should == 2 }
-        it { at_end.used_keynames_of(dimer).should include(:cr, :cl) }
+        it { expect(at_end.used_keynames_of(dimer).size).to eq(2) }
+        it { expect(at_end.used_keynames_of(dimer)).to include(:cr, :cl) }
 
-        it { at_middle.used_keynames_of(dimer).size.should == 2 }
-        it { at_middle.used_keynames_of(dimer).should include(:cr, :cl) }
+        it { expect(at_middle.used_keynames_of(dimer).size).to eq(2) }
+        it { expect(at_middle.used_keynames_of(dimer)).to include(:cr, :cl) }
 
-        it { near_methyl.used_keynames_of(methyl_on_bridge).should =~ [:cb] }
+        it { expect(near_methyl.used_keynames_of(methyl_on_bridge)).to match_array([:cb]) }
       end
 
       it_behaves_like "visitable" do

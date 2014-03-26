@@ -11,14 +11,14 @@ module VersatileDiamond
           events.interpret('  equation bridge(ct: *) + methane(c: *) = methyl_on_bridge')
         end
 
-        it { Tools::Chest.reaction('forward reaction name').
-          should be_a(Concepts::Reaction) }
+        it { expect(Tools::Chest.reaction('forward reaction name')).
+          to be_a(Concepts::Reaction) }
       end
 
       describe "#environment" do
         before(:each) { events.interpret('environment "env name"') }
-        it { Tools::Chest.environment('env name').
-          should be_a(Concepts::Environment) }
+        it { expect(Tools::Chest.environment('env name')).
+          to be_a(Concepts::Environment) }
       end
     end
 

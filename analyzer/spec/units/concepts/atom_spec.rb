@@ -5,61 +5,61 @@ module VersatileDiamond
 
     describe Atom do
       describe "#self.is_hydrogen?" do
-        it { Atom.is_hydrogen?(h).should be_true }
-        it { Atom.is_hydrogen?(c).should be_false }
+        it { expect(Atom.is_hydrogen?(h)).to be_true }
+        it { expect(Atom.is_hydrogen?(c)).to be_false }
       end
 
       describe "#valence" do
-        it { h.valence.should == 1 }
-        it { c.valence.should == 4 }
+        it { expect(h.valence).to eq(1) }
+        it { expect(c.valence).to eq(4) }
       end
 
       describe "#original_valence" do
-        it { h.original_valence.should == 1 }
-        it { c.original_valence.should == 4 }
+        it { expect(h.original_valence).to eq(1) }
+        it { expect(c.original_valence).to eq(4) }
       end
 
       describe "#lattice" do
         it "set and get lattice" do
-          cd.lattice.should == diamond
+          expect(cd.lattice).to eq(diamond)
         end
       end
 
       describe "#same?" do
-        it { c.same?(h).should be_false }
-        it { c.same?(c.dup).should be_true }
-        it { c.same?(cd).should be_false }
-        it { cd.same?(cd.dup).should be_true  }
+        it { expect(c.same?(h)).to be_false }
+        it { expect(c.same?(c.dup)).to be_true }
+        it { expect(c.same?(cd)).to be_false }
+        it { expect(cd.same?(cd.dup)).to be_true  }
       end
 
       describe "#actives" do
-        it { h.actives.should == 0 }
-        it { c.actives.should == 0 }
+        it { expect(h.actives).to eq(0) }
+        it { expect(c.actives).to eq(0) }
       end
 
       describe "#monovalents" do
-        it { c.monovalents.should be_empty }
+        it { expect(c.monovalents).to be_empty }
       end
 
       describe "#incoherent? and #unfixed?" do
-        it { c.incoherent?.should be_false }
-        it { c.unfixed?.should be_false }
+        it { expect(c.incoherent?).to be_false }
+        it { expect(c.unfixed?).to be_false }
       end
 
       describe "#diff" do
-        it { c.diff(c.dup).should be_empty }
-        it { c.diff(unfixed_c).should =~ [:unfixed] }
-        it { c.diff(unfixed_activated_c).should =~ [:unfixed] }
-        it { cd.diff(incoherent_cd).should =~ [:incoherent] }
-        it { cd.diff(activated_incoherent_cd).should =~ [:incoherent] }
+        it { expect(c.diff(c.dup)).to be_empty }
+        it { expect(c.diff(unfixed_c)).to match_array([:unfixed]) }
+        it { expect(c.diff(unfixed_activated_c)).to match_array([:unfixed]) }
+        it { expect(cd.diff(incoherent_cd)).to match_array([:incoherent]) }
+        it { expect(cd.diff(activated_incoherent_cd)).to match_array([:incoherent]) }
       end
 
       describe "#relations_in" do
-        it { cd.relations_in(bridge).should == bridge.links[cd] }
-        it { cd.relations_in(bridge).object_id.
-          should_not == bridge.links[cd].object_id }
+        it { expect(cd.relations_in(bridge)).to eq(bridge.links[cd]) }
+        it { expect(cd.relations_in(bridge).object_id).
+          not_to eq(bridge.links[cd].object_id) }
 
-        it { cd.relations_in(bridge).size.should == 2 }
+        it { expect(cd.relations_in(bridge).size).to eq(2) }
       end
     end
 

@@ -13,11 +13,11 @@ module VersatileDiamond
           before(:each) { subject } # do atom mapping
 
           it "map and associate all" do
-            mapping_result.full.should == full
+            expect(mapping_result.full).to eq(full)
           end
 
           it "map and associate changed" do
-            mapping_result.changes.should == changed
+            expect(mapping_result.changes).to eq(changed)
           end
         end
       end

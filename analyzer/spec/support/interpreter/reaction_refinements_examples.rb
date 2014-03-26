@@ -43,8 +43,8 @@ module VersatileDiamond
 
               describe "property is realy state" do
                 before(:each) { subject.interpret("incoherent d(:cl)") }
-                it { hm_source.last.atom(:cl).incoherent?.should be_true }
-                it { hm_products.last.atom(:cl).incoherent?.should be_true }
+                it { expect(hm_source.last.atom(:cl).incoherent?).to be_true }
+                it { expect(hm_products.last.atom(:cl).incoherent?).to be_true }
               end
             end
 
@@ -57,8 +57,8 @@ module VersatileDiamond
 
               describe "property is realy state" do
                 before(:each) { subject.interpret("unfixed mod(:cm)") }
-                it { hm_source.first.atom(:cm).unfixed?.should be_true }
-                it { hm_products.first.atom(:cm).unfixed?.should be_true }
+                it { expect(hm_source.first.atom(:cm).unfixed?).to be_true }
+                it { expect(hm_products.first.atom(:cm).unfixed?).to be_true }
               end
             end
           end

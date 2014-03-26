@@ -7,78 +7,78 @@ module VersatileDiamond
       describe "#active_bond" do
         let(:method) { Matcher.method(:active_bond) }
 
-        it { method['*'].should == '*' }
+        it { expect(method['*']).to eq('*') }
 
         describe "wrong" do
-          it { method['H'].should be_nil }
-          it { method['hello'].should be_nil }
+          it { expect(method['H']).to be_nil }
+          it { expect(method['hello']).to be_nil }
         end
       end
 
       describe "#atom" do
         let(:method) { Matcher.method(:atom) }
 
-        it { method['H'].should == 'H' }
-        it { method['Cu'].should == 'Cu' }
-        it { method['S6'].should == 'S6' }
-        it { method['Uut2'].should == 'Uut2' }
+        it { expect(method['H']).to eq('H') }
+        it { expect(method['Cu']).to eq('Cu') }
+        it { expect(method['S6']).to eq('S6') }
+        it { expect(method['Uut2']).to eq('Uut2') }
 
         describe "wrong" do
-          it { method['carbon'].should be_nil }
-          it { method['H2O'].should be_nil }
+          it { expect(method['carbon']).to be_nil }
+          it { expect(method['H2O']).to be_nil }
         end
       end
 
       describe "#specified_atom" do
         let(:method) { Matcher.method(:specified_atom) }
 
-        it { method['C%d'].should =~ ['C', 'd'] }
-        it { method['Cu%sq'].should =~ ['Cu', 'sq'] }
-        it { method['S6%hex'].should =~ ['S6', 'hex'] }
+        it { expect(method['C%d']).to match_array(['C', 'd']) }
+        it { expect(method['Cu%sq']).to match_array(['Cu', 'sq']) }
+        it { expect(method['S6%hex']).to match_array(['S6', 'hex']) }
 
         describe "wrong" do
-          it { method['C'].should be_nil }
-          it { method['S%'].should be_nil }
-          it { method['%d'].should be_nil }
-          it { method['carbon%diamond'].should be_nil }
-          it { method['C %d'].should be_nil }
-          it { method['C% d'].should be_nil }
-          it { method['C % d'].should be_nil }
+          it { expect(method['C']).to be_nil }
+          it { expect(method['S%']).to be_nil }
+          it { expect(method['%d']).to be_nil }
+          it { expect(method['carbon%diamond']).to be_nil }
+          it { expect(method['C %d']).to be_nil }
+          it { expect(method['C% d']).to be_nil }
+          it { expect(method['C % d']).to be_nil }
         end
       end
 
       describe "#used_atom" do
         let(:method) { Matcher.method(:used_atom) }
 
-        it { method['bridge(:ct)'].should =~ ['bridge', 'ct'] }
-        it { method['dimer( :cr )'].should =~ ['dimer', 'cr'] }
-        it { method['benzol(:c_3 )'].should =~ ['benzol', 'c_3'] }
+        it { expect(method['bridge(:ct)']).to match_array(['bridge', 'ct']) }
+        it { expect(method['dimer( :cr )']).to match_array(['dimer', 'cr']) }
+        it { expect(method['benzol(:c_3 )']).to match_array(['benzol', 'c_3']) }
 
         describe "wrong" do
-          it { method['BRIDGE(:ct)'].should be_nil }
-          it { method['bridge (:ct)'].should be_nil }
-          it { method['bridge(ct)'].should be_nil }
-          it { method['bridge[:ct]'].should be_nil }
-          it { method['bridge(:ct'].should be_nil }
-          it { method['bridge()'].should be_nil }
-          it { method['bridge(:)'].should be_nil }
+          it { expect(method['BRIDGE(:ct)']).to be_nil }
+          it { expect(method['bridge (:ct)']).to be_nil }
+          it { expect(method['bridge(ct)']).to be_nil }
+          it { expect(method['bridge[:ct]']).to be_nil }
+          it { expect(method['bridge(:ct']).to be_nil }
+          it { expect(method['bridge()']).to be_nil }
+          it { expect(method['bridge(:)']).to be_nil }
         end
       end
 
       describe "#specified_spec" do
         let(:method) { Matcher.method(:specified_spec) }
 
-        it { method['bridge(ct: *)'].should =~ ['bridge', 'ct: *'] }
-        it { method['dimer( cr: i )'].should =~ ['dimer', 'cr: i'] }
-        it { method['dm(cr: i, cl: u)'].should =~ ['dm', 'cr: i, cl: u'] }
-        it { method['methyl_on_brdg'].should =~ ['methyl_on_brdg', nil] }
+        it { expect(method['bridge(ct: *)']).to match_array(['bridge', 'ct: *']) }
+        it { expect(method['dimer( cr: i )']).to match_array(['dimer', 'cr: i']) }
+        it { expect(method['dm(cr: i, cl: u)']).to match_array(['dm', 'cr: i, cl: u']) }
+        it { expect(method['methyl_on_brdg']).to match_array(['methyl_on_brdg', nil]) }
 
         describe "wrong" do
-          it { method['BRIDGE(ct: *)'].should be_nil }
-          it { method['bridge (ct: *)'].should be_nil }
-          it { method['bridge(ct: *'].should be_nil }
-          it { method['bridge[ct: *]'].should be_nil }
-          it { method['bridge()'].should be_nil }
+          it { expect(method['BRIDGE(ct: *)']).to be_nil }
+          it { expect(method['bridge (ct: *)']).to be_nil }
+          it { expect(method['bridge(ct: *']).to be_nil }
+          it { expect(method['bridge[ct: *]']).to be_nil }
+          it { expect(method['bridge()']).to be_nil }
         end
       end
 
@@ -86,25 +86,25 @@ module VersatileDiamond
         let(:method) { Matcher.method(:equation) }
 
         describe "ubiquitous" do
-          it { method['H + hydrogen(h: *) = * + hydrogen'].
-              should =~ [['H', 'hydrogen(h: *)'], ['*', 'hydrogen']] }
-          it { method['*+hydrogen(h: *)  =   H'].
-              should =~ [['*', 'hydrogen(h: *)'], ['H']] }
+          it { expect(method['H + hydrogen(h: *) = * + hydrogen']).
+              to match_array([['H', 'hydrogen(h: *)'], ['*', 'hydrogen']]) }
+          it { expect(method['*+hydrogen(h: *)  =   H']).
+              to match_array([['*', 'hydrogen(h: *)'], ['H']]) }
         end
 
         describe "typical" do
-          it { method['bridge(cr: *) + hydrogen(h: *) = bridge'].
-              should =~ [['bridge(cr: *)', 'hydrogen(h: *)'], ['bridge']] }
-          it { method['one(ct: * )+two( ct: *)  =  dimer'].
-              should =~ [['one(ct: * )', 'two( ct: *)'], ['dimer']] }
+          it { expect(method['bridge(cr: *) + hydrogen(h: *) = bridge']).
+              to match_array([['bridge(cr: *)', 'hydrogen(h: *)'], ['bridge']]) }
+          it { expect(method['one(ct: * )+two( ct: *)  =  dimer']).
+              to match_array([['one(ct: * )', 'two( ct: *)'], ['dimer']]) }
         end
 
         describe "wrong" do
-          it { method['one(ct: *) + two( ct: *) => dimer'].should be_nil }
-          it { method['one(ct: *) + two( ct: *) -> dimer'].should be_nil }
-          it { method['one(ct: *) + two( ct: = dimer'].should be_nil }
-          it { method['one(ct: *) + = dimer'].should be_nil }
-          it { method['= dimer'].should be_nil }
+          it { expect(method['one(ct: *) + two( ct: *) => dimer']).to be_nil }
+          it { expect(method['one(ct: *) + two( ct: *) -> dimer']).to be_nil }
+          it { expect(method['one(ct: *) + two( ct: = dimer']).to be_nil }
+          it { expect(method['one(ct: *) + = dimer']).to be_nil }
+          it { expect(method['= dimer']).to be_nil }
         end
       end
     end

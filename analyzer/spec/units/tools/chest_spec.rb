@@ -15,7 +15,7 @@ module VersatileDiamond
       let(:keyname_error) { Chest::KeyNameError }
 
       describe "#store" do
-        it { (Chest.store(concept)).should == Chest }
+        it { expect(Chest.store(concept)).to eq(Chest) }
 
         shared_examples_for "check duplication" do
           describe "duplication" do
@@ -44,18 +44,18 @@ module VersatileDiamond
 
       describe "#atom" do
         before { Chest.store(c) }
-        it { Chest.atom(:C).should_not == c }
+        it { expect(Chest.atom(:C)).not_to eq(c) }
       end
 
       describe "#spec" do
         describe "gas spec" do
           before { Chest.store(methane_base) }
-          it { Chest.spec(:methane).should == methane_base }
+          it { expect(Chest.spec(:methane)).to eq(methane_base) }
         end
 
         describe "surface spec" do
           before { Chest.store(bridge_base) }
-          it { Chest.spec(:bridge).should == bridge_base }
+          it { expect(Chest.spec(:bridge)).to eq(bridge_base) }
         end
       end
 
@@ -66,8 +66,8 @@ module VersatileDiamond
           Chest.store(dimer_formation, lateral)
         end
 
-        it { Chest.there(dimer_formation, :at_end).
-          should be_a(Concepts::There) }
+        it { expect(Chest.there(dimer_formation, :at_end)).
+          to be_a(Concepts::There) }
         it { expect { Chest.there(dimer_formation, :wrong) }.
           to raise_error keyname_error }
 
@@ -91,7 +91,7 @@ module VersatileDiamond
       describe "#method_missing" do
         shared_examples_for "store and get concept" do
           before { Chest.store(*concepts) }
-          it { Chest.concept(*concepts.map(&:name)).should == concepts.last }
+          it { expect(Chest.concept(*concepts.map(&:name))).to eq(concepts.last) }
         end
 
         it_behaves_like "store and get concept" do
@@ -114,8 +114,8 @@ module VersatileDiamond
 
       describe "#has?" do
         before(:each) { Chest.store(concept) }
-        it { Chest.has?(concept).should be_true }
-        it { Chest.has?(Concept.new(:wrong)).should be_false }
+        it { expect(Chest.has?(concept)).to be_true }
+        it { expect(Chest.has?(Concept.new(:wrong))).to be_false }
       end
 
       describe "#all" do
@@ -124,8 +124,8 @@ module VersatileDiamond
           Chest.store(bridge_base)
         end
 
-        it { Chest.all(:gas_spec, :surface_spec).
-          should include(methane_base, bridge_base) }
+        it { expect(Chest.all(:gas_spec, :surface_spec)).
+          to include(methane_base, bridge_base) }
       end
 
       describe "#purge!" do

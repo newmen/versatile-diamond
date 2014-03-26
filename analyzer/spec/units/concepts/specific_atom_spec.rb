@@ -11,58 +11,58 @@ module VersatileDiamond
           described_class.new(cd,
             options: [:active, :incoherent], monovalents: [:H])
         end
-        it { subject.actives.should == 1 }
-        it { subject.incoherent?.should be_true }
-        it { subject.monovalents.should =~ [:H] }
+        it { expect(subject.actives).to eq(1) }
+        it { expect(subject.incoherent?).to be_true }
+        it { expect(subject.monovalents).to match_array([:H]) }
 
         describe "from specific atom" do
           let(:child) { described_class.new(cd, ancestor: subject) }
-          it { child.actives.should == 1 }
-          it { child.incoherent?.should be_true }
-          it { child.monovalents.should =~ [:H] }
+          it { expect(child.actives).to eq(1) }
+          it { expect(child.incoherent?).to be_true }
+          it { expect(child.monovalents).to match_array([:H]) }
         end
       end
 
       describe "#dup" do
-        it { subject.dup.should_not == subject }
-        it { activated_c.dup.actives.should == 1 }
-        it { activated_cd.dup.lattice.should == diamond }
-        it { activated_cd_hydride.dup.monovalents.should =~ [:H] }
+        it { expect(subject.dup).not_to eq(subject) }
+        it { expect(activated_c.dup.actives).to eq(1) }
+        it { expect(activated_cd.dup.lattice).to eq(diamond) }
+        it { expect(activated_cd_hydride.dup.monovalents).to match_array([:H]) }
       end
 
       describe "#name" do
-        it { activated_n.name.should == :N }
-        it { activated_c.name.should == :C }
+        it { expect(activated_n.name).to eq(:N) }
+        it { expect(activated_c.name).to eq(:C) }
       end
 
       describe "#valence" do
-        it { activated_n.valence.should == 2 }
-        it { activated_c.valence.should == 3 }
-        it { extra_activated_cd.valence.should == 2 }
-        it { SpecificAtom.new(c).valence.should == 4 }
+        it { expect(activated_n.valence).to eq(2) }
+        it { expect(activated_c.valence).to eq(3) }
+        it { expect(extra_activated_cd.valence).to eq(2) }
+        it { expect(SpecificAtom.new(c).valence).to eq(4) }
       end
 
       describe "#original_valence" do
-        it { activated_n.original_valence.should == 3 }
-        it { activated_c.original_valence.should == 4 }
-        it { extra_activated_cd.original_valence.should == 4 }
-        it { SpecificAtom.new(c).original_valence.should == 4 }
+        it { expect(activated_n.original_valence).to eq(3) }
+        it { expect(activated_c.original_valence).to eq(4) }
+        it { expect(extra_activated_cd.original_valence).to eq(4) }
+        it { expect(SpecificAtom.new(c).original_valence).to eq(4) }
       end
 
       describe "#actives" do
-        it { subject.actives.should == 0 }
+        it { expect(subject.actives).to eq(0) }
 
-        it { activated_h.actives.should == 1 }
-        it { activated_c.actives.should == 1 }
-        it { activated_cd.actives.should == 1 }
-        it { extra_activated_cd.actives.should == 2 }
+        it { expect(activated_h.actives).to eq(1) }
+        it { expect(activated_c.actives).to eq(1) }
+        it { expect(activated_cd.actives).to eq(1) }
+        it { expect(extra_activated_cd.actives).to eq(2) }
       end
 
       %w(incoherent unfixed).each do |state|
         describe "##{state}!?" do
           describe "is set" do
             before { subject.send("#{state}!") }
-            it { subject.send("#{state}?").should be_true }
+            it { expect(subject.send("#{state}?")).to be_true }
 
             describe "already stated" do
               it { expect { subject.send("#{state}!") }.
@@ -71,12 +71,12 @@ module VersatileDiamond
 
             describe "reset state" do
               before { subject.send("not_#{state}!") }
-              it { subject.send("#{state}?").should be_false }
+              it { expect(subject.send("#{state}?")).to be_false }
             end
           end
 
           describe "is not set" do
-            it { subject.send("#{state}?").should be_false }
+            it { expect(subject.send("#{state}?")).to be_false }
             it { expect { subject.send("not_#{state}!") }.
               to raise_error SpecificAtom::NotStated }
           end
@@ -84,15 +84,15 @@ module VersatileDiamond
       end
 
       describe "#monovalents" do
-        it { activated_c.monovalents.should be_empty }
-        it { cd_chloride.monovalents.should =~ [:Cl] }
-        it { activated_cd_hydride.monovalents.should =~ [:H] }
-        it { cd_extra_hydride.monovalents.should =~ [:H, :H] }
+        it { expect(activated_c.monovalents).to be_empty }
+        it { expect(cd_chloride.monovalents).to match_array([:Cl]) }
+        it { expect(activated_cd_hydride.monovalents).to match_array([:H]) }
+        it { expect(cd_extra_hydride.monovalents).to match_array([:H, :H]) }
       end
 
       describe "#same?" do
-        it { subject.same?(n).should be_false }
-        it { n.same?(subject).should be_false }
+        it { expect(subject.same?(n)).to be_false }
+        it { expect(n.same?(subject)).to be_false }
 
         describe "same class instance" do
           let(:other) { SpecificAtom.new(n.dup) }
@@ -101,12 +101,12 @@ module VersatileDiamond
             it "both atoms" do
               do_with(subject)
               do_with(other)
-              subject.same?(other).should be_true
+              expect(subject.same?(other)).to be_true
             end
 
             it "just one atom" do
               do_with(other)
-              subject.same?(other).should be_false
+              expect(subject.same?(other)).to be_false
             end
           end
 
@@ -129,35 +129,35 @@ module VersatileDiamond
       end
 
       describe "#diff" do
-        it { unfixed_c.diff(c).should be_empty }
-        it { unfixed_activated_c.diff(c).should be_empty }
-        it { unfixed_c.diff(SpecificAtom.new(c)).should be_empty }
+        it { expect(unfixed_c.diff(c)).to be_empty }
+        it { expect(unfixed_activated_c.diff(c)).to be_empty }
+        it { expect(unfixed_c.diff(SpecificAtom.new(c))).to be_empty }
 
-        it { incoherent_cd.diff(cd).should be_empty }
-        it { activated_incoherent_cd.diff(cd).should be_empty }
-        it { activated_incoherent_cd.diff(activated_cd).should be_empty }
-        it { activated_incoherent_cd.diff(bridge.atom(:cr)).should be_empty }
-        it { activated_cd.diff(bridge.atom(:cr)).should be_empty }
+        it { expect(incoherent_cd.diff(cd)).to be_empty }
+        it { expect(activated_incoherent_cd.diff(cd)).to be_empty }
+        it { expect(activated_incoherent_cd.diff(activated_cd)).to be_empty }
+        it { expect(activated_incoherent_cd.diff(bridge.atom(:cr))).to be_empty }
+        it { expect(activated_cd.diff(bridge.atom(:cr))).to be_empty }
 
-        it { activated_c.diff(unfixed_c).should =~ [:unfixed] }
-        it { activated_c.diff(unfixed_activated_c).should =~ [:unfixed] }
-        it { activated_cd.diff(incoherent_cd).should =~ [:incoherent] }
-        it { activated_cd.diff(activated_incoherent_cd).
-          should =~ [:incoherent] }
+        it { expect(activated_c.diff(unfixed_c)).to match_array([:unfixed]) }
+        it { expect(activated_c.diff(unfixed_activated_c)).to match_array([:unfixed]) }
+        it { expect(activated_cd.diff(incoherent_cd)).to match_array([:incoherent]) }
+        it { expect(activated_cd.diff(activated_incoherent_cd)).
+          to match_array([:incoherent]) }
       end
 
       describe "#apply_diff" do
         before(:each) { activated_c.apply_diff([:unfixed, :incoherent]) }
-        it { activated_c.incoherent?.should be_true }
-        it { activated_c.unfixed?.should be_true }
+        it { expect(activated_c.incoherent?).to be_true }
+        it { expect(activated_c.unfixed?).to be_true }
       end
 
       describe "#relevants" do
-        it { activated_c.relevants.should be_empty }
-        it { unfixed_c.relevants.should =~ [:unfixed] }
-        it { unfixed_activated_c.relevants.should =~ [:unfixed] }
-        it { incoherent_cd.relevants.should =~ [:incoherent] }
-        it { activated_incoherent_cd.relevants.should =~ [:incoherent] }
+        it { expect(activated_c.relevants).to be_empty }
+        it { expect(unfixed_c.relevants).to match_array([:unfixed]) }
+        it { expect(unfixed_activated_c.relevants).to match_array([:unfixed]) }
+        it { expect(incoherent_cd.relevants).to match_array([:incoherent]) }
+        it { expect(activated_incoherent_cd.relevants).to match_array([:incoherent]) }
       end
 
       it_behaves_like "#lattice" do
@@ -170,8 +170,8 @@ module VersatileDiamond
 
         describe ":ct of activated_bridge" do
           subject { spec.atom(:ct) }
-          it { subject.relations_in(spec).size.should == 3 }
-          it { subject.relations_in(spec).should include(
+          it { expect(subject.relations_in(spec).size).to eq(3) }
+          it { expect(subject.relations_in(spec)).to include(
               :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
@@ -180,8 +180,8 @@ module VersatileDiamond
 
         describe ":cr of activated_bridge" do
           subject { spec.atom(:cr) }
-          it { subject.relations_in(spec).size.should == 4 }
-          it { subject.relations_in(spec).map(&:last).should include(
+          it { expect(subject.relations_in(spec).size).to eq(4) }
+          it { expect(subject.relations_in(spec).map(&:last)).to include(
               bond_110_front, bond_110_cross, bond_110_cross,
               position_100_front
             ) }
@@ -190,8 +190,8 @@ module VersatileDiamond
         describe ":ct of activated_hydrogenated_bridge" do
           let(:spec) { activated_hydrogenated_bridge }
           subject { spec.atom(:ct) }
-          it { subject.relations_in(spec).size.should == 4 }
-          it { subject.relations_in(spec).should include(
+          it { expect(subject.relations_in(spec).size).to eq(4) }
+          it { expect(subject.relations_in(spec)).to include(
               :active, :H,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
@@ -200,27 +200,27 @@ module VersatileDiamond
       end
 
       describe "#size" do
-        it { activated_cd.size.round(2).should == 0.34 }
-        it { activated_cd_hydride.size.round(2).should == 0.68 }
-        it { activated_incoherent_cd.size.round(2).should == 0.47 }
-        it { incoherent_cd.size.round(2).should == 0.13 }
-        it { incoherent_cd_hydride.size.round(2).should == 0.47 }
-        it { unfixed_activated_c.size.round(2).should == 0.47 }
-        it { cd_chloride.size.round(2).should == 0.34 }
+        it { expect(activated_cd.size.round(2)).to eq(0.34) }
+        it { expect(activated_cd_hydride.size.round(2)).to eq(0.68) }
+        it { expect(activated_incoherent_cd.size.round(2)).to eq(0.47) }
+        it { expect(incoherent_cd.size.round(2)).to eq(0.13) }
+        it { expect(incoherent_cd_hydride.size.round(2)).to eq(0.47) }
+        it { expect(unfixed_activated_c.size.round(2)).to eq(0.47) }
+        it { expect(cd_chloride.size.round(2)).to eq(0.34) }
       end
 
       describe "#to_s" do
-        it { activated_c.to_s.should == "C[*]" }
-        it { unfixed_activated_c.to_s.should == "C[*, u]" }
-        it { c_hydride.to_s.should == "C[H]" }
+        it { expect(activated_c.to_s).to eq("C[*]") }
+        it { expect(unfixed_activated_c.to_s).to eq("C[*, u]") }
+        it { expect(c_hydride.to_s).to eq("C[H]") }
 
-        it { activated_cd.to_s.should == "C%d[*]" }
-        it { incoherent_cd.to_s.should == "C%d[i]" }
-        it { cd_hydride.to_s.should == "C%d[H]" }
-        it { cd_chloride.to_s.should == "C%d[Cl]" }
-        it { activated_cd_hydride.to_s.should == "C%d[*, H]" }
-        it { activated_incoherent_cd.to_s.should == "C%d[*, i]" }
-        it { incoherent_cd_hydride.to_s.should == "C%d[H, i]" }
+        it { expect(activated_cd.to_s).to eq("C%d[*]") }
+        it { expect(incoherent_cd.to_s).to eq("C%d[i]") }
+        it { expect(cd_hydride.to_s).to eq("C%d[H]") }
+        it { expect(cd_chloride.to_s).to eq("C%d[Cl]") }
+        it { expect(activated_cd_hydride.to_s).to eq("C%d[*, H]") }
+        it { expect(activated_incoherent_cd.to_s).to eq("C%d[*, i]") }
+        it { expect(incoherent_cd_hydride.to_s).to eq("C%d[H, i]") }
       end
     end
 

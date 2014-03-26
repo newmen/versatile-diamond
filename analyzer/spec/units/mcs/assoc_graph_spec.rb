@@ -22,8 +22,8 @@ module VersatileDiamond
         let(:assoc) { AssocGraph.new(graph1, graph2) }
         # before(:each) { assoc.save('assoc') }
 
-        it { assoc.vertices.size.should == 4 }
-        it { assoc.fbn([cd1, cf]).size.should == 3 }
+        it { expect(assoc.vertices.size).to eq(4) }
+        it { expect(assoc.fbn([cd1, cf]).size).to eq(3) }
       end
 
       describe "approximate match" do
@@ -32,10 +32,10 @@ module VersatileDiamond
         end
         # before(:each) { assoc.save('assoc') }
 
-        it { assoc.vertices.size.should == 4 }
-        it { assoc.ext([cd1, cf]).size.should == 1 }
-        it { assoc.ext([cd2, cs]).size.should == 1 }
-        it { assoc.fbn([cd1, cf]).size.should == 2 }
+        it { expect(assoc.vertices.size).to eq(4) }
+        it { expect(assoc.ext([cd1, cf]).size).to eq(1) }
+        it { expect(assoc.ext([cd2, cs]).size).to eq(1) }
+        it { expect(assoc.fbn([cd1, cf]).size).to eq(2) }
       end
     end
 

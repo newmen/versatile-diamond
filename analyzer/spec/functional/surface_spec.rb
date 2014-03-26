@@ -6,10 +6,10 @@ module VersatileDiamond
     describe Surface, type: :interpreter do
       describe "#spec" do
         it "interpreted spec stores in Chest" do
-          surface.interpret('spec :hello').
-            should be_a(Interpreter::SurfaceSpec)
+          expect(surface.interpret('spec :hello')).
+            to be_a(Interpreter::SurfaceSpec)
 
-          Tools::Chest.surface_spec(:hello).should be_a(Concepts::SurfaceSpec)
+          expect(Tools::Chest.surface_spec(:hello)).to be_a(Concepts::SurfaceSpec)
         end
       end
 
@@ -27,7 +27,7 @@ module VersatileDiamond
 
         it "lattice stores in Chest" do
           surface.interpret('lattice :d, class: Diamond')
-          Tools::Chest.lattice(:d).should be_a(Concepts::Lattice)
+          expect(Tools::Chest.lattice(:d)).to be_a(Concepts::Lattice)
         end
       end
 

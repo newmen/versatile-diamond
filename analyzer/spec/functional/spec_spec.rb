@@ -14,7 +14,7 @@ module VersatileDiamond
       describe "#atoms" do
         it "atoms line becomes to concept as instances of Atom" do
           spec.interpret('atoms n: N')
-          concept.atom(:n).name.should == :N
+          expect(concept.atom(:n).name).to eq(:N)
         end
       end
 

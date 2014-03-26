@@ -46,8 +46,8 @@ module VersatileDiamond
           described_class.surface_temperature(0, 'K')
         end
 
-        it { described_class.current_temperature(1).should == 100 }
-        it { described_class.current_temperature(0).should == 0 }
+        it { expect(described_class.current_temperature(1)).to eq(100) }
+        it { expect(described_class.current_temperature(0)).to eq(0) }
       end
 
       describe "#rate" do
@@ -57,8 +57,8 @@ module VersatileDiamond
           described_class.surface_temperature(300, 'K')
         end
 
-        it { described_class.rate(methyl_desorption).round(10).
-          should == 0.9995991725 }
+        it { expect(described_class.rate(methyl_desorption).round(10)).
+          to eq(0.9995991725) }
       end
     end
 

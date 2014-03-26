@@ -7,7 +7,7 @@ module VersatileDiamond
       subject { dimers_row.make_lateral(one: 1, two: 2) }
 
       describe "#there" do
-        it { subject.there(at_end).should be_a(There) }
+        it { expect(subject.there(at_end)).to be_a(There) }
       end
     end
 

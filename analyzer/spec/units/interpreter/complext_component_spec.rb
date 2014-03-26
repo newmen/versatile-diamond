@@ -18,22 +18,22 @@ module VersatileDiamond
 
         let(:complex) { Complex.new }
 
-        it { complex.interpret('foo tail').should == 'tail' }
-        it { complex.interpret('simple hello').should be_a(Simple) }
+        it { expect(complex.interpret('foo tail')).to eq('tail') }
+        it { expect(complex.interpret('simple hello')).to be_a(Simple) }
 
         it "passes line to nested if has indent" do
           complex.interpret('simple story')
-          complex.interpret('  tail_with end').should == 'story end'
+          expect(complex.interpret('  tail_with end')).to eq('story end')
         end
 
         it "switch to another nested component" do
           complex.interpret('simple story')
           complex.interpret('other example')
-          complex.interpret('  tail_with it').should == 'example it'
+          expect(complex.interpret('  tail_with it')).to eq('example it')
         end
 
         it "indent without nested raise syntax error" do
-          expect { complex.interpret('  foo wrong').should }.
+          expect { expect(complex.interpret('  foo wrong')).to }.
             to raise_error Errors::SyntaxError
         end
       end

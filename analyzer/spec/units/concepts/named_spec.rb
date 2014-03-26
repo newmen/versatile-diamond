@@ -5,7 +5,7 @@ module VersatileDiamond
 
     describe Named do
       describe "#name" do
-        it { Named.new('some').name.should == :some }
+        it { expect(Named.new('some').name).to eq(:some) }
       end
     end
 

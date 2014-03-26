@@ -29,8 +29,8 @@ module VersatileDiamond
             equation.interpret('lateral :some_env, one: mob(:cb)')
           end
 
-          it { Tools::Chest.lateral('forward methyl desorption', :some_env).
-            should be_a(Concepts::Lateral) }
+          it { expect(Tools::Chest.lateral('forward methyl desorption', :some_env)).
+            to be_a(Concepts::Lateral) }
           it { expect { equation.interpret('lateral :some_env, one: b(:ct)') }.
             to raise_error *keyname_error(:duplication, :lateral, :some_env) }
         end
@@ -72,8 +72,8 @@ module VersatileDiamond
 
         it "make and get" do
           equation.interpret('there :some_where')
-          Tools::Chest.lateral_reaction('forward methyl desorption where tail').
-            should be_a(Concepts::LateralReaction)
+          expect(Tools::Chest.lateral_reaction('forward methyl desorption where tail')).
+            to be_a(Concepts::LateralReaction)
         end
       end
 

@@ -57,33 +57,33 @@ module VersatileDiamond
           describe "two on 100" do
             let(:two_on_100) { SurfaceSpec.new(:two_on_100, c1: cd1, c2: cd2) }
             before { two_on_100.link(cd1, cd2, bond_100_front) }
-            it { two_on_100.position_between(cd1, cd2).
-              should == position_100_front }
+            it { expect(two_on_100.position_between(cd1, cd2)).
+              to eq(position_100_front) }
           end
 
           describe "two on 110" do
             let(:two_on_110) { SurfaceSpec.new(:two_on_110, c1: cd1, c2: cd2) }
             before(:each) { two_on_110.link(cd1, cd2, bond_110_front) }
 
-            it { two_on_110.position_between(cd1, cd2).
-              should == position_110_front }
-            it { two_on_110.position_between(cd2, cd1).
-              should == position_110_cross }
+            it { expect(two_on_110.position_between(cd1, cd2)).
+              to eq(position_110_front) }
+            it { expect(two_on_110.position_between(cd2, cd1)).
+              to eq(position_110_cross) }
           end
         end
 
         describe "methyl_on_bridge" do
-          it { methyl_on_bridge_base.position_between(
+          it { expect(methyl_on_bridge_base.position_between(
               methyl_on_bridge_base.atom(:cl),
-              methyl_on_bridge_base.atom(:cr)).should == position_100_front }
+              methyl_on_bridge_base.atom(:cr))).to eq(position_100_front) }
 
-          it { methyl_on_bridge_base.position_between(
+          it { expect(methyl_on_bridge_base.position_between(
               methyl_on_bridge_base.atom(:cr),
-              methyl_on_bridge_base.atom(:cl)).should == position_100_front }
+              methyl_on_bridge_base.atom(:cl))).to eq(position_100_front) }
 
-          it { methyl_on_bridge_base.position_between(
+          it { expect(methyl_on_bridge_base.position_between(
               methyl_on_bridge_base.atom(:cm),
-              methyl_on_bridge_base.atom(:cb)).should be_nil }
+              methyl_on_bridge_base.atom(:cb))).to be_nil }
         end
       end
     end

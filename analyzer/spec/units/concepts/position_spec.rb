@@ -6,7 +6,7 @@ module VersatileDiamond
     describe Position do
       describe "#self.[]" do
         it "if face and dir the same then returns the same instance" do
-          Position[face: 100, dir: :front].should == position_100_front
+          expect(Position[face: 100, dir: :front]).to eq(position_100_front)
         end
 
         it "if no has face or dir then raise error" do
@@ -28,19 +28,19 @@ module VersatileDiamond
       end
 
       describe "#face" do
-        it { position_100_front.face.should == 100 }
-        it { position_100_cross.face.should == 100 }
+        it { expect(position_100_front.face).to eq(100) }
+        it { expect(position_100_cross.face).to eq(100) }
       end
 
       describe "#dir" do
-        it { position_100_front.dir.should == :front }
-        it { position_100_cross.dir.should == :cross }
+        it { expect(position_100_front.dir).to eq(:front) }
+        it { expect(position_100_cross.dir).to eq(:cross) }
       end
 
       describe "#same?" do
-        it { position_100_front.same?(position_100_cross).should be_false }
-        it { position_100_front.same?(bond_110_front).should be_false }
-        it { position_100_front.same?(bond_100_front).should be_true }
+        it { expect(position_100_front.same?(position_100_cross)).to be_false }
+        it { expect(position_100_front.same?(bond_110_front)).to be_false }
+        it { expect(position_100_front.same?(bond_100_front)).to be_true }
       end
     end
 

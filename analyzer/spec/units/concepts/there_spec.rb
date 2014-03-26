@@ -10,50 +10,50 @@ module VersatileDiamond
       describe "#dup" do
         subject { on_end.dup }
         it { should_not == on_end }
-        it { subject.where.should == on_end.where }
-        it { subject.positions.should == on_end.positions }
-        it { subject.positions.object_id.
-          should_not == on_end.positions.object_id }
+        it { expect(subject.where).to eq(on_end.where) }
+        it { expect(subject.positions).to eq(on_end.positions) }
+        it { expect(subject.positions.object_id).
+          not_to eq(on_end.positions.object_id) }
 
         describe "target swapping doesn't change duplicate" do
           before { subject.swap_target(ai_bridge, ai_bridge_dup) }
-          it { subject.target_specs.should_not == on_end.target_specs }
+          it { expect(subject.target_specs).not_to eq(on_end.target_specs) }
         end
       end
 
       describe "#where" do
-        it { on_end.where.should == at_end }
-        it { on_middle.where.should == at_middle }
+        it { expect(on_end.where).to eq(at_end) }
+        it { expect(on_middle.where).to eq(at_middle) }
       end
 
       describe "#target_specs" do
-        it { on_end.target_specs.should =~ [activated_bridge, ai_bridge] }
-        it { on_middle.target_specs.should =~ [activated_bridge, ai_bridge] }
-        it { there_methyl.target_specs.should =~ [activated_bridge] }
+        it { expect(on_end.target_specs).to match_array([activated_bridge, ai_bridge]) }
+        it { expect(on_middle.target_specs).to match_array([activated_bridge, ai_bridge]) }
+        it { expect(there_methyl.target_specs).to match_array([activated_bridge]) }
       end
 
       describe "#env_specs" do
-        it { on_end.env_specs.should =~ [dimer] }
-        it { on_middle.env_specs.should =~ [dimer, dimer] }
-        it { there_methyl.env_specs.should =~ [methyl_on_bridge] }
+        it { expect(on_end.env_specs).to match_array([dimer]) }
+        it { expect(on_middle.env_specs).to match_array([dimer, dimer]) }
+        it { expect(there_methyl.env_specs).to match_array([methyl_on_bridge]) }
       end
 
       describe "#description" do
-        it { on_end.description.should == 'at end of dimers row' }
-        it { there_methyl.description.should == 'chain neighbour methyl' }
+        it { expect(on_end.description).to eq('at end of dimers row') }
+        it { expect(there_methyl.description).to eq('chain neighbour methyl') }
       end
 
       describe "#positions" do
-        it { on_end.positions.should == {
+        it { expect(on_end.positions).to eq({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cl)], position_100_cross]
             ],
             [ai_bridge, ai_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cr)], position_100_cross]
             ]
-          } }
+          }) }
 
-        it { on_middle.positions.should == {
+        it { expect(on_middle.positions).to eq({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cl)], position_100_cross],
               [[dimer, dimer.atom(:cl)], position_100_cross],
@@ -62,16 +62,16 @@ module VersatileDiamond
               [[dimer, dimer.atom(:cr)], position_100_cross],
               [[dimer, dimer.atom(:cr)], position_100_cross],
             ]
-          } }
+          }) }
 
-        it { there_methyl.positions.should == {
+        it { expect(there_methyl.positions).to eq({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [
                 [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
                 position_100_front
               ]
             ]
-          } }
+          }) }
 
       end
 
@@ -82,37 +82,37 @@ module VersatileDiamond
 
       describe "#swap_source" do
         before { on_end.swap_source(dimer, dimer_dup_ff) }
-        it { on_end.positions.should == {
+        it { expect(on_end.positions).to eq({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer_dup_ff, dimer_dup_ff.atom(:cl)], position_100_cross]
             ],
             [ai_bridge, ai_bridge.atom(:ct)] => [
               [[dimer_dup_ff, dimer_dup_ff.atom(:cr)], position_100_cross]
             ]
-          } }
+          }) }
       end
 
       describe "#swap_target" do
         before { on_end.swap_target(ai_bridge, ai_bridge_dup) }
 
-        it { on_end.positions.should == {
+        it { expect(on_end.positions).to eq({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cl)], position_100_cross]
             ],
             [ai_bridge_dup, ai_bridge_dup.atom(:ct)] => [
               [[dimer, dimer.atom(:cr)], position_100_cross]
             ]
-          } }
+          }) }
       end
 
       describe "#used_keynames_of" do
-        it { on_end.used_keynames_of(dimer).size.should == 2 }
-        it { on_end.used_keynames_of(dimer).should include(:cr, :cl) }
+        it { expect(on_end.used_keynames_of(dimer).size).to eq(2) }
+        it { expect(on_end.used_keynames_of(dimer)).to include(:cr, :cl) }
 
-        it { on_middle.used_keynames_of(dimer).size.should == 2 }
-        it { on_middle.used_keynames_of(dimer).should include(:cr, :cl) }
+        it { expect(on_middle.used_keynames_of(dimer).size).to eq(2) }
+        it { expect(on_middle.used_keynames_of(dimer)).to include(:cr, :cl) }
 
-        it { there_methyl.used_keynames_of(methyl_on_bridge).should =~ [:cb] }
+        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).to match_array([:cb]) }
       end
 
       describe "#same?" do
@@ -121,22 +121,22 @@ module VersatileDiamond
             two: [dimer, dimer.atom(:cl)], one: [dimer, dimer.atom(:cr)])
         end
 
-        it { on_end.same?(same).should be_true }
-        it { on_end.same?(on_middle).should be_false }
-        it { on_middle.same?(on_end).should be_false }
-        it { on_end.same?(there_methyl).should be_false }
+        it { expect(on_end.same?(same)).to be_true }
+        it { expect(on_end.same?(on_middle)).to be_false }
+        it { expect(on_middle.same?(on_end)).to be_false }
+        it { expect(on_end.same?(there_methyl)).to be_false }
       end
 
       describe "#cover?" do
-        it { on_end.cover?(on_middle).should be_true }
-        it { on_middle.cover?(on_end).should be_false }
-        it { there_methyl.cover?(on_end).should be_false }
+        it { expect(on_end.cover?(on_middle)).to be_true }
+        it { expect(on_middle.cover?(on_end)).to be_false }
+        it { expect(there_methyl.cover?(on_end)).to be_false }
       end
 
       describe "#size" do
-        it { on_end.size.should == 6 }
-        it { on_middle.size.should == 12 }
-        it { there_methyl.size.should == 4 }
+        it { expect(on_end.size).to eq(6) }
+        it { expect(on_middle.size).to eq(12) }
+        it { expect(there_methyl.size).to eq(4) }
       end
     end
 

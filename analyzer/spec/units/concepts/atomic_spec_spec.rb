@@ -5,15 +5,15 @@ module VersatileDiamond
 
     describe AtomicSpec do
       describe "#name" do
-        it { adsorbed_h.name.should == :H }
+        it { expect(adsorbed_h.name).to eq(:H) }
       end
 
       describe "#full_name" do
-        it { adsorbed_h.full_name.should == :H }
+        it { expect(adsorbed_h.full_name).to eq(:H) }
       end
 
       describe "#external_bonds" do
-        it { adsorbed_h.external_bonds.should == 1 }
+        it { expect(adsorbed_h.external_bonds).to eq(1) }
       end
 
       describe "#is_hydrogen?" do
@@ -21,38 +21,38 @@ module VersatileDiamond
       end
 
       describe "#same?" do
-        it { adsorbed_h.same?(AtomicSpec.new(h.dup)).should be_true }
-        it { adsorbed_h.same?(active_bond).should be_false }
-        it { adsorbed_h.same?(bridge).should be_false }
+        it { expect(adsorbed_h.same?(AtomicSpec.new(h.dup))).to be_true }
+        it { expect(adsorbed_h.same?(active_bond)).to be_false }
+        it { expect(adsorbed_h.same?(bridge)).to be_false }
       end
 
       describe "#cover?" do
-        it { adsorbed_h.cover?(bridge, cd).should be_true }
-        it { adsorbed_h.cover?(activated_bridge, activated_cd).should be_true }
-        it { adsorbed_h.cover?(chlorigenated_bridge, cd_chloride).
-          should be_true }
-        it { adsorbed_h.cover?(activated_methyl_on_bridge, activated_c).
-          should be_true }
-        it { adsorbed_h.cover?(
-          activated_methyl_on_bridge, activated_methyl_on_bridge.atom(:cb)).
-          should be_true }
-        it { adsorbed_h.cover?(
+        it { expect(adsorbed_h.cover?(bridge, cd)).to be_true }
+        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).to be_true }
+        it { expect(adsorbed_h.cover?(chlorigenated_bridge, cd_chloride)).
+          to be_true }
+        it { expect(adsorbed_h.cover?(activated_methyl_on_bridge, activated_c)).
+          to be_true }
+        it { expect(adsorbed_h.cover?(
+          activated_methyl_on_bridge, activated_methyl_on_bridge.atom(:cb))).
+          to be_true }
+        it { expect(adsorbed_h.cover?(
           activated_methyl_on_incoherent_bridge,
-          activated_methyl_on_incoherent_bridge.atom(:cb)).
-          should be_true }
-        it { adsorbed_h.cover?(methyl_on_dimer, methyl_on_dimer.atom(:cm)).
-          should be_true }
+          activated_methyl_on_incoherent_bridge.atom(:cb))).
+          to be_true }
+        it { expect(adsorbed_h.cover?(methyl_on_dimer, methyl_on_dimer.atom(:cm))).
+          to be_true }
 
-        it { adsorbed_h.cover?(methane, c).should be_false }
-        it { adsorbed_h.cover?(methyl, activated_c).should be_false }
-        it { adsorbed_h.cover?(extra_activated_bridge, extra_activated_cd).
-          should be_false }
-        it { adsorbed_h.cover?(methyl_on_dimer, methyl_on_dimer.atom(:cr)).
-          should be_false }
+        it { expect(adsorbed_h.cover?(methane, c)).to be_false }
+        it { expect(adsorbed_h.cover?(methyl, activated_c)).to be_false }
+        it { expect(adsorbed_h.cover?(extra_activated_bridge, extra_activated_cd)).
+          to be_false }
+        it { expect(adsorbed_h.cover?(methyl_on_dimer, methyl_on_dimer.atom(:cr))).
+          to be_false }
 
-        it { adsorbed_cl.cover?(bridge, bridge.atom(:ct)).should be_false }
-        it { adsorbed_cl.cover?(chlorigenated_bridge,cd_chloride).
-          should be_true }
+        it { expect(adsorbed_cl.cover?(bridge, bridge.atom(:ct))).to be_false }
+        it { expect(adsorbed_cl.cover?(chlorigenated_bridge,cd_chloride)).
+          to be_true }
       end
 
       it_behaves_like "termination spec" do

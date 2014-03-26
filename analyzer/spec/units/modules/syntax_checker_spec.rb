@@ -19,7 +19,7 @@ module VersatileDiamond
           begin
             subject.syntax_error('.hello', name: 'World')
           rescue syntax_error => e
-            e.message('/path', 0).should == "Hello, World!\n\tfrom /path:0"
+            expect(e.message('/path', 0)).to eq("Hello, World!\n\tfrom /path:0")
           end
         end
       end
@@ -34,7 +34,7 @@ module VersatileDiamond
           begin
             subject.syntax_warning('.warning', param: 'message')
           rescue syntax_warning => e
-            e.message.should == "Warning! Test message (skipped)"
+            expect(e.message).to eq("Warning! Test message (skipped)")
           end
         end
       end

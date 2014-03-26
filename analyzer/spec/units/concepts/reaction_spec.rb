@@ -6,23 +6,23 @@ module VersatileDiamond
     describe Reaction do
 
       describe "#type" do
-        it { methyl_desorption.type.should == :forward }
-        it { hydrogen_migration.type.should == :forward }
-        it { dimer_formation.type.should == :forward }
-        it { methyl_incorporation.type.should == :forward }
+        it { expect(methyl_desorption.type).to eq(:forward) }
+        it { expect(hydrogen_migration.type).to eq(:forward) }
+        it { expect(dimer_formation.type).to eq(:forward) }
+        it { expect(methyl_incorporation.type).to eq(:forward) }
 
-        it { methyl_desorption.reverse.type.should == :reverse }
+        it { expect(methyl_desorption.reverse.type).to eq(:reverse) }
       end
 
       shared_examples_for "check duplicate property" do
-        it { subject.name.should =~ /tail$/ }
-        it { subject.reverse.name.should =~ /tail$/ }
+        it { expect(subject.name).to match(/tail$/) }
+        it { expect(subject.reverse.name).to match(/tail$/) }
 
-        it { subject.source.should_not == df_source }
-        it { subject.source.first.should_not == df_source.first }
-        it { subject.products.should_not == df_products }
-        it { subject.products.first.should_not == df_products.first }
-        it { subject.products.last.should_not == df_products.last }
+        it { expect(subject.source).not_to eq(df_source) }
+        it { expect(subject.source.first).not_to eq(df_source.first) }
+        it { expect(subject.products).not_to eq(df_products) }
+        it { expect(subject.products.first).not_to eq(df_products.first) }
+        it { expect(subject.products.last).not_to eq(df_products.last) }
 
         shared_examples_for "child changes too" do
           %w(enthalpy activation rate).each do |prop|
@@ -31,7 +31,7 @@ module VersatileDiamond
                 child # makes a child
                 reaction.send(:"#{prop}=", 456)
               end
-              it { child.send(prop).should == 456 }
+              it { expect(child.send(prop)).to eq(456) }
             end
           end
         end
@@ -55,11 +55,11 @@ module VersatileDiamond
             subject.as(:forward).reverse.rate = 2
           end
 
-          it { subject.as(:forward).rate.should == 1 } # tautology
-          it { subject.as(:forward).name.should == "forward #{name}" }
+          it { expect(subject.as(:forward).rate).to eq(1) } # tautology
+          it { expect(subject.as(:forward).name).to eq("forward #{name}") }
 
-          it { subject.as(:reverse).rate.should == 2 }
-          it { subject.as(:reverse).name.should == "reverse #{name}" }
+          it { expect(subject.as(:reverse).rate).to eq(2) }
+          it { expect(subject.as(:reverse).name).to eq("reverse #{name}") }
         end
 
         describe "dimer formation" do
@@ -86,32 +86,32 @@ module VersatileDiamond
         subject { dimer_formation.duplicate('tail') }
 
         it_behaves_like "check duplicate property"
-        it { subject.should be_a(described_class) }
+        it { expect(subject).to be_a(described_class) }
       end
 
       describe "#lateral_duplicate" do
         subject { dimer_formation.lateral_duplicate('tail', [on_end]) }
 
         it_behaves_like "check duplicate property"
-        it { subject.should be_a(LateralReaction) }
+        it { expect(subject).to be_a(LateralReaction) }
       end
 
       describe "#reverse" do
         subject { methyl_desorption.reverse }
         it { should be_a(described_class) }
 
-        it { subject.source.size.should == 2 }
-        it { subject.source.should include(methyl, abridge_dup) }
+        it { expect(subject.source.size).to eq(2) }
+        it { expect(subject.source).to include(methyl, abridge_dup) }
 
-        it { subject.products.should =~ [methyl_on_bridge] }
+        it { expect(subject.products).to match_array([methyl_on_bridge]) }
       end
 
       describe "#gases_num" do
-        it { methyl_desorption.gases_num.should == 0 }
-        it { methyl_desorption.reverse.gases_num.should == 1 }
+        it { expect(methyl_desorption.gases_num).to eq(0) }
+        it { expect(methyl_desorption.reverse.gases_num).to eq(1) }
 
-        it { hydrogen_migration.gases_num.should == 0 }
-        it { hydrogen_migration.reverse.gases_num.should == 0 }
+        it { expect(hydrogen_migration.gases_num).to eq(0) }
+        it { expect(hydrogen_migration.reverse.gases_num).to eq(0) }
       end
 
       describe "#swap_source" do
@@ -171,8 +171,8 @@ module VersatileDiamond
             end
 
             shared_examples_for "for direction" do
-              it { direction.atom(inc_kn).incoherent?.should be_true }
-              it { direction.atom(not_inc_kn).incoherent?.should be_false }
+              it { expect(direction.atom(inc_kn).incoherent?).to be_true }
+              it { expect(direction.atom(not_inc_kn).incoherent?).to be_false }
             end
 
             it_behaves_like "for direction" do
@@ -238,7 +238,7 @@ module VersatileDiamond
           ) }
 
         describe "opposite relation stored too" do
-          it { hydrogen_migration.positions.should =~ [
+          it { expect(hydrogen_migration.positions).to match_array([
               [
                 [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
                 [activated_dimer, activated_dimer.atom(:cr)],
@@ -249,13 +249,13 @@ module VersatileDiamond
                 [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
                 position_100_front
               ],
-            ] }
+            ]) }
         end
 
         describe "apply to reverse" do
           subject { hydrogen_migration.reverse }
 
-          it { subject.positions.should =~ [
+          it { expect(subject.positions).to match_array([
               [
                 [
                   activated_methyl_on_dimer,
@@ -272,19 +272,19 @@ module VersatileDiamond
                 ],
                 position_100_front
               ],
-            ] }
+            ]) }
         end
       end
 
       describe "#positions" do
         describe "empty" do
-          it { methyl_activation.positions.should be_empty }
-          it { methyl_desorption.positions.should be_empty }
-          it { hydrogen_migration.positions.should be_empty }
+          it { expect(methyl_activation.positions).to be_empty }
+          it { expect(methyl_desorption.positions).to be_empty }
+          it { expect(hydrogen_migration.positions).to be_empty }
         end
 
         describe "dimer formation" do
-          it { dimer_formation.positions.should =~ [
+          it { expect(dimer_formation.positions).to match_array([
               [
                 [activated_bridge, activated_bridge.atom(:ct)],
                 [
@@ -301,7 +301,7 @@ module VersatileDiamond
                 [activated_bridge, activated_bridge.atom(:ct)],
                 position_100_front
               ],
-            ] }
+            ]) }
         end
       end
 
@@ -326,16 +326,16 @@ module VersatileDiamond
         end
 
         let(:same) { make_same(:forward) }
-        it { hydrogen_migration.same?(same).should be_true }
-        it { same.same?(hydrogen_migration).should be_true }
+        it { expect(hydrogen_migration.same?(same)).to be_true }
+        it { expect(same.same?(hydrogen_migration)).to be_true }
 
-        it { methyl_activation.same?(methyl_deactivation).should be_false }
-        it { methyl_desorption.same?(hydrogen_migration).should be_false }
+        it { expect(methyl_activation.same?(methyl_deactivation)).to be_false }
+        it { expect(methyl_desorption.same?(hydrogen_migration)).to be_false }
 
         describe "different types" do
           let(:reverse) { make_same(:reverse) }
-          it { hydrogen_migration.same?(same).should be_true }
-          it { same.same?(hydrogen_migration).should be_true }
+          it { expect(hydrogen_migration.same?(same)).to be_true }
+          it { expect(same.same?(hydrogen_migration)).to be_true }
         end
 
         describe "positions are different" do
@@ -347,35 +347,35 @@ module VersatileDiamond
             )
           end
 
-          it { hydrogen_migration.same?(same).should be_false }
-          it { same.same?(hydrogen_migration).should be_false }
+          it { expect(hydrogen_migration.same?(same)).to be_false }
+          it { expect(same.same?(hydrogen_migration)).to be_false }
         end
 
         describe "lateral reaction" do
-          it { reaction.same?(lateral).should be_true }
+          it { expect(reaction.same?(lateral)).to be_true }
         end
       end
 
       describe "#complex_source_spec_and_atom" do
-        it { methyl_activation.complex_source_spec_and_atom.should =~ [
+        it { expect(methyl_activation.complex_source_spec_and_atom).to match_array([
             ma_source.first, ma_source.first.atom(:cm)
-          ] }
+          ]) }
 
-        it { methyl_deactivation.complex_source_spec_and_atom.should =~ [
+        it { expect(methyl_deactivation.complex_source_spec_and_atom).to match_array([
             dm_source.first, dm_source.first.atom(:cm)
-          ] }
+          ]) }
       end
 
       describe "#complex_source_covered_by?" do
-        it { methyl_activation.complex_source_covered_by?(adsorbed_h).
-          should be_true }
-        it { methyl_activation.complex_source_covered_by?(active_bond).
-          should be_false }
+        it { expect(methyl_activation.complex_source_covered_by?(adsorbed_h)).
+          to be_true }
+        it { expect(methyl_activation.complex_source_covered_by?(active_bond)).
+          to be_false }
 
-        it { methyl_deactivation.complex_source_covered_by?(active_bond).
-          should be_true }
-        it { methyl_deactivation.complex_source_covered_by?(adsorbed_h).
-          should be_true }
+        it { expect(methyl_deactivation.complex_source_covered_by?(active_bond)).
+          to be_true }
+        it { expect(methyl_deactivation.complex_source_covered_by?(adsorbed_h)).
+          to be_true }
       end
 
       describe "#organize_dependencies! and #more_complex" do
@@ -384,13 +384,13 @@ module VersatileDiamond
           reaction.organize_dependencies!(lateral_reactions)
           methyl_desorption.organize_dependencies!(lateral_reactions)
         end
-        it { reaction.more_complex.should =~ [lateral] }
-        it { methyl_desorption.more_complex.should be_empty }
+        it { expect(reaction.more_complex).to match_array([lateral]) }
+        it { expect(methyl_desorption.more_complex).to be_empty }
       end
 
       describe "#size" do
-        it { methyl_activation.size.round(2).should == 4 }
-        it { dimer_formation.size.round(2).should == 6.81 }
+        it { expect(methyl_activation.size.round(2)).to eq(4) }
+        it { expect(dimer_formation.size.round(2)).to eq(6.81) }
       end
 
       it_behaves_like "visitable" do
@@ -398,7 +398,7 @@ module VersatileDiamond
       end
 
       describe "#changes" do
-        it { dimer_formation.changes.should =~ [
+        it { expect(dimer_formation.changes).to match_array([
             [
               [activated_bridge, activated_bridge.atom(:ct)],
               [dimer_dup_ff, dimer_dup_ff.atom(:cr)],
@@ -410,13 +410,13 @@ module VersatileDiamond
               ],
               [dimer_dup_ff, dimer_dup_ff.atom(:cl)],
             ]
-          ] }
+          ]) }
       end
 
       describe "#changes_size" do
-        it { dimer_formation.changes_size.should == 2 }
-        it { hydrogen_migration.changes_size.should == 2 }
-        it { methyl_incorporation.changes_size.should == 4 }
+        it { expect(dimer_formation.changes_size).to eq(2) }
+        it { expect(hydrogen_migration.changes_size).to eq(2) }
+        it { expect(methyl_incorporation.changes_size).to eq(4) }
       end
     end
 
