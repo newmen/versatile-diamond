@@ -11,8 +11,8 @@ module VersatileDiamond
         interpret_basis
       end
 
-      describe "#position" do
-        describe "both atoms has lattice" do
+      describe '#position' do
+        describe 'both atoms has lattice' do
           let(:incomplete) { syntax_error('position.incomplete') }
 
           before(:each) do
@@ -30,7 +30,7 @@ module VersatileDiamond
             }.to_not raise_error }
         end
 
-        describe "only one atom has lattice" do
+        describe 'only one atom has lattice' do
           before(:each) do
             spec.interpret('atoms c1: C%d, c2: C')
           end
@@ -42,7 +42,7 @@ module VersatileDiamond
           }
         end
 
-        describe "duplication" do
+        describe 'duplication' do
           let(:spec) { Interpreter::SurfaceSpec.new(bridge_base) }
 
           it { expect {

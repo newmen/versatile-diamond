@@ -4,13 +4,13 @@ module VersatileDiamond
   module Interpreter
 
     describe Reaction, type: :interpreter do
-      describe "#equation" do
-        it "error when spec name is undefined" do
+      describe '#equation' do
+        it 'error when spec name is undefined' do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
             to raise_error *keyname_error(:undefined, :spec, :hydrogen)
         end
 
-        describe "ubiquitous equation" do
+        describe 'ubiquitous equation' do
           let(:concept) do
             Tools::Chest.ubiquitous_reaction('forward reaction name')
           end
@@ -24,7 +24,7 @@ module VersatileDiamond
 
           it { expect(concept.class).to eq(Concepts::UbiquitousReaction) }
 
-          it "respects" do
+          it 'respects' do
             expect(concept.source.one? { |s| s.class == Concepts::ActiveBond }).
               to be_true
             expect(concept.source.one? { |s| s.class == Concepts::SpecificSpec }).
@@ -33,7 +33,7 @@ module VersatileDiamond
               to be_true
           end
 
-          it "not respects" do
+          it 'not respects' do
             expect(concept.products.one? { |s| s.class == Concepts::ActiveBond }).
               to be_false
             expect(concept.products.one? { |s| s.class == Concepts::SpecificSpec }).
@@ -48,38 +48,38 @@ module VersatileDiamond
           end
         end
 
-        describe "not ubiquitous equation" do
+        describe 'not ubiquitous equation' do
           let(:concept) { Tools::Chest.reaction('forward reaction name') }
 
           before(:each) { interpret_basis }
 
-          it "not complience reactants" do
+          it 'not complience reactants' do
             expect { reaction.interpret(
                 'equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
               to raise_error *syntax_error(
                 'reaction.cannot_map', name: 'bridge')
           end
 
-          describe "simple reaction" do
+          describe 'simple reaction' do
             before(:each) do
               reaction.interpret('equation bridge(ct: *) + methane(c: *) = methyl_on_bridge')
             end
 
             it { expect(concept.class).to eq(Concepts::Reaction) }
 
-            it "all is specific spec" do
+            it 'all is specific spec' do
               expect(concept.source.all? { |s| s.class == Concepts::SpecificSpec }).
                 to be_true
               expect(concept.products.all? { |s| s.class == Concepts::SpecificSpec }).
                 to be_true
             end
 
-            it "nest equation interpreter instance" do
+            it 'nest equation interpreter instance' do
               expect { reaction.interpret('  refinement "some"') }.
                 not_to raise_error
             end
 
-            describe "refinements" do
+            describe 'refinements' do
               it { expect { reaction.interpret('  incoherent bridge(:ct)') }.
                 not_to raise_error }
               it { expect { reaction.interpret('  unfixed methyl_on_bridge(:cm)') }.
@@ -87,9 +87,9 @@ module VersatileDiamond
             end
           end
 
-          describe "setup corresponding relevant" do
-            describe "incoherent states" do
-              describe "by keyname modifier" do
+          describe 'setup corresponding relevant' do
+            describe 'incoherent states' do
+              describe 'by keyname modifier' do
                 before(:each) do
                   surface.interpret('spec :bridge_with_dimer')
                   surface.interpret('  aliases dm: dimer')
@@ -104,7 +104,7 @@ module VersatileDiamond
                 it { expect(concept.products.first.atom(:cf).incoherent?).to be_true }
               end
 
-              describe "by operator" do
+              describe 'by operator' do
                 before(:each) do
                   reaction.interpret('aliases one: bridge, two: bridge')
                   reaction.interpret('equation one(ct: *) + two(ct: *) = dimer')
@@ -117,13 +117,13 @@ module VersatileDiamond
               end
             end
 
-            describe "unfixed states" do
-              shared_examples_for "check both unfixed" do
+            describe 'unfixed states' do
+              shared_examples_for 'check both unfixed' do
                 it { expect(concept.source.first.atom(:cm).unfixed?).to be_true }
                 it { expect(concept.products.first.atom(:cm).unfixed?).to be_true }
               end
 
-              shared_examples_for "check unfixed only one" do
+              shared_examples_for 'check unfixed only one' do
                 it { expect(concept.source.first.atom(:cm).unfixed?).to be_true }
                 it { expect(concept.products.first.atom(:cm).unfixed?).to be_false }
               end
@@ -135,47 +135,47 @@ module VersatileDiamond
                 surface.interpret('  bond :cl, :cr, face: 100, dir: :front')
               end
 
-              describe "by keyname modifier" do
-                describe "for exchange reaction type" do
+              describe 'by keyname modifier' do
+                describe 'for exchange reaction type' do
                   before(:each) do
                     reaction.interpret('equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *, cm: u) + dimer')
                   end
 
-                  it_behaves_like "check both unfixed"
+                  it_behaves_like 'check both unfixed'
                 end
 
-                describe "when high bridge forms" do
+                describe 'when high bridge forms' do
                   before(:each) do
                     reaction.interpret('equation methyl_on_dimer(cm: *, cm: u) = high_bridge + bridge(ct: *)')
                   end
 
-                  it_behaves_like "check unfixed only one"
+                  it_behaves_like 'check unfixed only one'
                 end
               end
 
-              describe "by operator" do
-                describe "for exchange reaction type" do
+              describe 'by operator' do
+                describe 'for exchange reaction type' do
                   before(:each) do
                     reaction.interpret('equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *) + dimer')
                     reaction.interpret('  unfixed methyl_on_dimer(:cm)')
                   end
 
-                  it_behaves_like "check both unfixed"
+                  it_behaves_like 'check both unfixed'
                 end
 
-                describe "when high bridge forms" do
+                describe 'when high bridge forms' do
                   before(:each) do
                     reaction.interpret('equation methyl_on_dimer(cm: *) = high_bridge + bridge(ct: *)')
                     reaction.interpret('  unfixed methyl_on_dimer(:cm)')
                   end
 
-                  it_behaves_like "check unfixed only one"
+                  it_behaves_like 'check unfixed only one'
                 end
               end
             end
           end
 
-          describe "incomplete bridge with dimer" do
+          describe 'incomplete bridge with dimer' do
             before(:each) do
               surface.interpret('spec :bridge_with_dimer')
               surface.interpret('  atoms cr: bridge(:cr), cf: bridge(:ct)')
@@ -189,8 +189,8 @@ module VersatileDiamond
             it { expect(concept.products.first.atom(:cf).incoherent?).to be_true }
           end
 
-          describe "not initialy balanced reaction" do
-            describe "extending product" do
+          describe 'not initialy balanced reaction' do
+            describe 'extending product' do
               before(:each) do
                 reaction.interpret('aliases source: bridge, product: bridge')
                 reaction.interpret(
@@ -202,7 +202,7 @@ module VersatileDiamond
               it { expect(concept.products.first.external_bonds).to eq(7) }
             end
 
-            describe "extending first source and single product" do
+            describe 'extending first source and single product' do
               before(:each) do
                 reaction.interpret('aliases source: dimer, product: dimer')
                 reaction.interpret(
@@ -215,7 +215,7 @@ module VersatileDiamond
             end
           end
 
-          describe "one to three" do
+          describe 'one to three' do
             before(:each) do
               reaction.interpret('aliases one: bridge, two: bridge')
             end
@@ -225,14 +225,14 @@ module VersatileDiamond
               ) }.not_to raise_error }
           end
 
-          describe "reaction with wrong balance" do
+          describe 'reaction with wrong balance' do
             it { expect { reaction.interpret(
                 'equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge'
               ) }.to raise_error *syntax_error('reaction.wrong_balance') }
           end
         end
 
-        describe "lateral reaction" do
+        describe 'lateral reaction' do
           before(:each) do
             interpret_basis
 
@@ -256,7 +256,7 @@ module VersatileDiamond
             reaction.interpret('  there :mid_row')
           end
 
-          describe "not in dimers row" do
+          describe 'not in dimers row' do
             subject do
               Tools::Chest.reaction('forward reaction name not in dimers row')
             end
@@ -278,12 +278,12 @@ module VersatileDiamond
               ]) }
           end
 
-          describe "lateral members" do
+          describe 'lateral members' do
             let(:there) { subject.theres.first }
             let(:c_bridge1) { subject.source.first }
             let(:c_bridge2) { subject.source.last }
 
-            describe "at end" do
+            describe 'at end' do
               subject do
                 Tools::Chest.lateral_reaction('forward reaction name at end')
               end
@@ -301,7 +301,7 @@ module VersatileDiamond
                 }) }
             end
 
-            describe "in middle" do
+            describe 'in middle' do
               subject do
                 Tools::Chest.lateral_reaction('forward reaction name in middle')
               end
@@ -325,12 +325,12 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like "reaction properties" do
+      it_behaves_like 'reaction properties' do
         let(:target) { reaction }
         let(:reverse) { Tools::Chest.reaction('reverse reaction name') }
       end
 
-      describe "extended specs exchanges in names and specs" do
+      describe 'extended specs exchanges in names and specs' do
         before do
           interpret_basis
           reaction.interpret('aliases source: dimer, product: dimer')

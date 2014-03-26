@@ -6,7 +6,7 @@ module VersatileDiamond
     describe Lateral do
       subject { dimers_row.make_lateral(one: 1, two: 2) }
 
-      describe "#there" do
+      describe '#there' do
         it { expect(subject.there(at_end)).to be_a(There) }
       end
     end

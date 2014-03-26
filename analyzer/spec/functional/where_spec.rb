@@ -10,7 +10,7 @@ module VersatileDiamond
           dimers_row, concept, { right: dimer, left: dimer_dup_ff })
       end
 
-      describe "#position" do
+      describe '#position' do
         it { expect { where.interpret(
             'position :one, right(:cr), face: 100, dir: :cross')
           }.not_to raise_error }
@@ -39,7 +39,7 @@ module VersatileDiamond
           'position :one, wrong(:c), face: 100, dir: :cross')
           }.to raise_error *keyname_error(:undefined, :spec, :wrong) }
 
-        describe "duplicate" do
+        describe 'duplicate' do
           let(:line) { 'position :one, right(:cr), face: 100, dir: :cross' }
           before { where.interpret(line) }
           it { expect {
@@ -48,7 +48,7 @@ module VersatileDiamond
               'position.duplicate', face: 100, dir: :cross) }
         end
 
-        describe "spec are not twise storable" do
+        describe 'spec are not twise storable' do
           before do
             where.interpret('position :one, right(:cr), face: 100, dir: :cross')
             where.interpret('position :two, right(:cl), face: 100, dir: :cross')
@@ -57,13 +57,13 @@ module VersatileDiamond
         end
       end
 
-      describe "#use" do
-        describe "unresolved" do
+      describe '#use' do
+        describe 'unresolved' do
           it { expect { where.interpret('use :not_important') }.
             to raise_error *keyname_error(:undefined, :where, :where) }
         end
 
-        describe "resolved" do
+        describe 'resolved' do
           before(:each) do
             events.interpret('environment :dimers_row')
             events.interpret('  where :using_where, "desc"')
@@ -72,7 +72,7 @@ module VersatileDiamond
           it { expect { where.interpret('use :using_where') }.
             not_to raise_error }
 
-          it "twise using" do
+          it 'twise using' do
             where.interpret('use :using_where')
             expect { where.interpret('use :using_where') }.
               to raise_error *syntax_error(
@@ -80,7 +80,7 @@ module VersatileDiamond
           end
         end
 
-        describe "spec are twise storable" do
+        describe 'spec are twise storable' do
           before do
             where.interpret('position :one, left(:cr), face: 100, dir: :cross')
             where.interpret('position :two, left(:cl), face: 100, dir: :cross')

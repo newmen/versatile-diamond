@@ -8,7 +8,7 @@ module VersatileDiamond
         described_class.new(methyl_desorption, md_names_to_specs)
       end
 
-      describe "#refinement" do
+      describe '#refinement' do
         before { equation.interpret('refinement "from 111 face"') }
         it { expect {
             Tools::Chest.reaction('forward methyl desorption from 111 face')
@@ -21,10 +21,10 @@ module VersatileDiamond
         events.interpret('  targets :one')
       end
 
-      describe "#lateral" do
+      describe '#lateral' do
         before(:each) { make_env }
 
-        describe "valid targets" do
+        describe 'valid targets' do
           before(:each) do
             equation.interpret('lateral :some_env, one: mob(:cb)')
           end
@@ -35,7 +35,7 @@ module VersatileDiamond
             to raise_error *keyname_error(:duplication, :lateral, :some_env) }
         end
 
-        describe "invalid targets" do
+        describe 'invalid targets' do
           it { expect { equation.interpret('lateral :wrong_env') }.
             to raise_error *keyname_error(
               :undefined, :environment, :wrong_env) }
@@ -60,7 +60,7 @@ module VersatileDiamond
         end
       end
 
-      describe "#there" do
+      describe '#there' do
         before(:each) do
           make_env
           events.interpret('  where :some_where, "where tail"')
@@ -70,14 +70,14 @@ module VersatileDiamond
         it { expect { equation.interpret('there :wrong') }.
           to raise_error *keyname_error(:undefined, :there, :wrong) }
 
-        it "make and get" do
+        it 'make and get' do
           equation.interpret('there :some_where')
           expect(Tools::Chest.lateral_reaction('forward methyl desorption where tail')).
             to be_a(Concepts::LateralReaction)
         end
       end
 
-      it_behaves_like "reaction refinemenets"
+      it_behaves_like 'reaction refinemenets'
     end
 
   end

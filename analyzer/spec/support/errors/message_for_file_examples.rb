@@ -5,12 +5,12 @@ module VersatileDiamond
     module Support
 
       module MessageForFileExamples
-        shared_examples_for "message for file" do
+        shared_examples_for 'message for file' do
           subject { described_class.new('hello') }
 
-          describe "#message" do
-            it { expect(subject.message).to eq("hello") }
-            it { expect(subject.message(2)).to eq("hello at line 2") }
+          describe '#message' do
+            it { expect(subject.message).to eq('hello') }
+            it { expect(subject.message(2)).to eq('hello at line 2') }
             it { expect(subject.message('/path', 0)).to eq("hello\n\tfrom /path:0") }
           end
         end

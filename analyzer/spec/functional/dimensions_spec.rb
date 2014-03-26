@@ -4,7 +4,7 @@ module VersatileDiamond
   module Interpreter
 
     describe Dimensions, type: :interpreter do
-      describe "#temperature" do
+      describe '#temperature' do
         [
           "temperature 'C'",
           "concentration 'mol/l'",

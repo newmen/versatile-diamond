@@ -10,8 +10,8 @@ module VersatileDiamond
       end
       subject { SomeMatcher.new }
 
-      describe "#match_used_atom" do
-        it { expect(subject.match_used_atom("bridge(:ct)")).to match_array([:bridge, :ct]) }
+      describe '#match_used_atom' do
+        it { expect(subject.match_used_atom('bridge(:ct)')).to match_array([:bridge, :ct]) }
 
         ['Wrong', '03001', ''].each do |name|
           atom_str = "#{name}(:ct)"
@@ -22,8 +22,8 @@ module VersatileDiamond
           end
         end
 
-        it "wrong used atom description" do
-          expect { subject.match_used_atom("bridge") }.
+        it 'wrong used atom description' do
+          expect { subject.match_used_atom('bridge') }.
             to raise_error *syntax_error(
               'matcher.undefined_used_atom', name: 'bridge')
         end

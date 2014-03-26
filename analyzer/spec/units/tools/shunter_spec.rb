@@ -8,7 +8,7 @@ module VersatileDiamond
     describe Shunter do
       let(:keyname_error) { Chest::KeyNameError }
 
-      describe "#organize_dependecies!" do
+      describe '#organize_dependecies!' do
         let(:lateral_dimer_formation) do
           dimer_formation.lateral_duplicate('lateral', [on_middle])
         end
@@ -60,7 +60,7 @@ module VersatileDiamond
           Shunter.organize_dependecies!
         end
 
-        describe "#organize_specs_dependencies!" do
+        describe '#organize_specs_dependencies!' do
           before(:each) do
             [
               methane_base, bridge_base, dimer_base, high_bridge_base,
@@ -91,17 +91,17 @@ module VersatileDiamond
           it { expect(methyl_on_dimer_base.childs).to be_empty }
         end
 
-        describe "#organize_specific_spec_dependencies!" do
+        describe '#organize_specific_spec_dependencies!' do
           before(:each) { store_and_organize_reactions }
 
-          describe "#purge_null_rate_reactions!" do
+          describe '#purge_null_rate_reactions!' do
             it { expect { Chest.reaction('forward methyl desorption') }.
               not_to raise_error }
             it { expect { Chest.reaction('reverse methyl desorption') }.
               to raise_error keyname_error }
           end
 
-          describe "#collect_specific_specs!" do
+          describe '#collect_specific_specs!' do
             [
               Concepts::AtomicSpec,
               Concepts::ActiveBond,
@@ -112,17 +112,17 @@ module VersatileDiamond
               end
             end
 
-            describe "surface activation" do
+            describe 'surface activation' do
               it { expect(Chest.atomic_spec(:H)).to be_atomic_spec }
               it { expect(Chest.specific_spec(:'hydrogen(h: *)')).
                 to be_specific_spec }
             end
 
-            describe "surface deactivation" do
+            describe 'surface deactivation' do
               it { expect(Chest.active_bond(:*)).to be_active_bond }
             end
 
-            describe "methyl activation" do
+            describe 'methyl activation' do
               subject { Chest.specific_spec(:'methyl_on_bridge()') }
               it { should be_specific_spec }
               it { expect(subject.parent).to be_nil }
@@ -137,7 +137,7 @@ module VersatileDiamond
               it { expect(subject.reactions).to include(methyl_activation) }
             end
 
-            describe "methyl deactivation" do
+            describe 'methyl deactivation' do
               subject { Chest.specific_spec(:'methyl_on_bridge(cm: *)') }
               it { should be_specific_spec }
               it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
@@ -145,11 +145,11 @@ module VersatileDiamond
               it { expect(subject.reactions).to include(methyl_deactivation) }
             end
 
-            describe "surface deactivation" do
+            describe 'surface deactivation' do
               it { expect(Chest.active_bond(:*)).to be_active_bond }
             end
 
-            describe "methyl desorption" do
+            describe 'methyl desorption' do
               subject { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)') }
               it { should be_specific_spec }
               it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
@@ -157,8 +157,8 @@ module VersatileDiamond
               it { expect(subject.reactions).to include(methyl_desorption) }
             end
 
-            describe "forward hydrogen migration" do
-              describe "dimer(cr: *)" do
+            describe 'forward hydrogen migration' do
+              describe 'dimer(cr: *)' do
                 subject { Chest.specific_spec(:'dimer(cr: *)') }
                 it { should be_specific_spec }
                 it { expect(subject.parent).to eq(Chest.specific_spec(:'dimer()')) }
@@ -166,7 +166,7 @@ module VersatileDiamond
                 it { expect(subject.reactions).to include(hydrogen_migration) }
               end
 
-              describe "methyl_on_dimer()" do
+              describe 'methyl_on_dimer()' do
                 subject { Chest.specific_spec(:'methyl_on_dimer()') }
                 it { should be_specific_spec }
                 it { expect(subject.parent).to be_nil }
@@ -179,8 +179,8 @@ module VersatileDiamond
               end
             end
 
-            describe "reverse hydrogen migration" do
-              describe "dimer()" do
+            describe 'reverse hydrogen migration' do
+              describe 'dimer()' do
                 subject { Chest.specific_spec(:'dimer()') }
                 it { should be_specific_spec }
                 it { expect(subject.parent).to be_nil }
@@ -199,7 +199,7 @@ module VersatileDiamond
                 it { expect(subject.theres.last.where.name).to eq(:at_middle) }
               end
 
-              describe "methyl_on_dimer(cm: *)" do
+              describe 'methyl_on_dimer(cm: *)' do
                 subject { Chest.specific_spec(:'methyl_on_dimer(cm: *)') }
                 it { should be_specific_spec }
                 it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_dimer()')) }
@@ -208,8 +208,8 @@ module VersatileDiamond
               end
             end
 
-            describe "forward dimer formation" do
-              describe "bridge(ct: *)" do
+            describe 'forward dimer formation' do
+              describe 'bridge(ct: *)' do
                 subject { Chest.specific_spec(:'bridge(ct: *)') }
                 it { should be_specific_spec }
                 it { expect(subject.parent).to be_nil }
@@ -220,7 +220,7 @@ module VersatileDiamond
                 it { expect(subject.reactions).to include(dimer_formation) }
               end
 
-              describe "bridge(ct: *, ct: i)" do
+              describe 'bridge(ct: *, ct: i)' do
                 subject { Chest.specific_spec(:'bridge(ct: *, ct: i)') }
                 it { should be_specific_spec }
                 it { expect(subject.parent).to eq(Chest.specific_spec(:'bridge(ct: *)')) }
@@ -229,7 +229,7 @@ module VersatileDiamond
               end
             end
 
-            describe "reverse dimer formation" do
+            describe 'reverse dimer formation' do
               subject { Chest.specific_spec(:'dimer(cl: i)') }
               it { should be_specific_spec }
               it { expect(subject.parent).to eq(Chest.specific_spec(:'dimer()')) }
@@ -237,22 +237,22 @@ module VersatileDiamond
               it { expect(subject.reactions).to include(dimer_formation.reverse) }
             end
 
-            describe "forward methyl incorporation" do
-              describe "methyl_on_bridge(cm: *, cm: u)" do
-                # other props checks in "methyl deactivation"
+            describe 'forward methyl incorporation' do
+              describe 'methyl_on_bridge(cm: *, cm: u)' do
+                # other props checks in 'methyl deactivation'
                 it { expect(Chest.specific_spec(:'methyl_on_bridge(cm: *)').reactions).
                   to include(methyl_incorporation) }
               end
 
-              describe "dimer(cr: *)" do
-                # other props checks in "forward hydrogen migration"
+              describe 'dimer(cr: *)' do
+                # other props checks in 'forward hydrogen migration'
                 it { expect(Chest.specific_spec(:'dimer(cr: *)').reactions).
                   to include(methyl_incorporation) }
               end
             end
           end
 
-          describe "swapping reaction specs" do
+          describe 'swapping reaction specs' do
             let(:same) { Chest.specific_spec(:'hydrogen(h: *)') }
 
             it { expect(surface_activation.source).to include(same) }
@@ -268,16 +268,16 @@ module VersatileDiamond
           end
         end
 
-        describe "#check_reactions_for_duplicates" do
+        describe '#check_reactions_for_duplicates' do
           let(:reaction_duplicate) { Shunter::ReactionDuplicate }
 
-          shared_examples_for "duplicate or not" do
+          shared_examples_for 'duplicate or not' do
             before(:each) do
               Config.gas_temperature(1000, 'K')
               Config.surface_temperature(500, 'C')
             end
 
-            describe "duplicate" do
+            describe 'duplicate' do
               before do
                 Chest.store(reaction)
                 Chest.store(same)
@@ -287,7 +287,7 @@ module VersatileDiamond
                 to raise_error reaction_duplicate }
             end
 
-            describe "not duplicate" do
+            describe 'not duplicate' do
               before do
                 reaction.reverse.rate = reaction.rate
                 reaction.reverse.activation = reaction.activation
@@ -300,7 +300,7 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like "duplicate or not" do
+          it_behaves_like 'duplicate or not' do
             let(:reaction) { surface_deactivation }
             let(:same) do
               Concepts::UbiquitousReaction.new(
@@ -315,7 +315,7 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like "duplicate or not" do
+          it_behaves_like 'duplicate or not' do
             let(:reaction) { dimer_formation }
             let(:same) { reaction.duplicate('same') }
 
@@ -329,7 +329,7 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like "duplicate or not" do
+          it_behaves_like 'duplicate or not' do
             let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
             let(:reaction) do
               dimer_formation.lateral_duplicate('lateral', [on_end])
@@ -343,7 +343,7 @@ module VersatileDiamond
           end
         end
 
-        describe "#purge_unused_specs!" do
+        describe '#purge_unused_specs!' do
           before(:each) do
             [
               methane_base, bridge_base, methyl_on_bridge_base, dimer_base,
@@ -360,7 +360,7 @@ module VersatileDiamond
           it { expect { Chest.spec(:methyl_on_bridge) }.not_to raise_error }
           it { expect { Chest.spec(:dimer) }.not_to raise_error }
 
-          describe "#purge_excess_extrime_specs!" do
+          describe '#purge_excess_extrime_specs!' do
             it { expect { Chest.spec(:methyl_on_dimer) }.to raise_error }
           end
         end

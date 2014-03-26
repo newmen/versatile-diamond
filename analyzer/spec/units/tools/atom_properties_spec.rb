@@ -4,7 +4,7 @@ module VersatileDiamond
   module Tools
     describe AtomProperties, use: :atom_properties do
 
-      describe "#==" do
+      describe '#==' do
         it { expect(methyl).not_to eq(high_cm) }
         it { expect(high_cm).not_to eq(methyl) }
 
@@ -33,7 +33,7 @@ module VersatileDiamond
         it { expect(ib_cr).not_to eq(hb_cr) }
       end
 
-      describe "#contained_in?" do
+      describe '#contained_in?' do
         it { expect(methyl.contained_in?(high_cm)).to be_false }
         it { expect(high_cm.contained_in?(methyl)).to be_false }
 
@@ -90,7 +90,7 @@ module VersatileDiamond
         it { expect(ahb_ct.contained_in?(aib_ct)).to be_false }
       end
 
-      describe "#same_incoherent?" do
+      describe '#same_incoherent?' do
         it { expect(ab_ct.same_incoherent?(ad_cr)).to be_false }
         it { expect(ab_ct.same_incoherent?(eab_ct)).to be_false }
         it { expect(ab_ct.same_incoherent?(aib_ct)).to be_false }
@@ -117,7 +117,7 @@ module VersatileDiamond
         it { expect(clb_cr.same_incoherent?(ib_cr)).to be_true }
       end
 
-      describe "#same_hydrogens?" do
+      describe '#same_hydrogens?' do
         it { expect(ab_ct.same_hydrogens?(ad_cr)).to be_false }
         it { expect(ab_ct.same_hydrogens?(eab_ct)).to be_false }
         it { expect(ad_cr.same_hydrogens?(ab_ct)).to be_false }
@@ -147,7 +147,7 @@ module VersatileDiamond
         it { expect(ib_cr.same_hydrogens?(hb_cr)).to be_true }
       end
 
-      describe "#terminations_num" do
+      describe '#terminations_num' do
         it { expect(methyl.terminations_num(active_bond)).to eq(0) }
         it { expect(methyl.terminations_num(adsorbed_h)).to eq(3) }
 
@@ -193,7 +193,7 @@ module VersatileDiamond
           to raise_error ArgumentError }
       end
 
-      describe "#unrelevanted" do
+      describe '#unrelevanted' do
         it { expect(bridge_ct.unrelevanted).to eq(bridge_ct) }
         it { expect(bridge_ct).to eq(bridge_ct.unrelevanted) }
 
@@ -209,7 +209,7 @@ module VersatileDiamond
         it { expect(clb_cr.unrelevanted).to eq(clb_cr) }
       end
 
-      describe "#incoherent?" do
+      describe '#incoherent?' do
         it { expect(high_cm.incoherent?).to be_false }
         it { expect(bridge_ct.incoherent?).to be_false }
         it { expect(ab_ct.incoherent?).to be_false }
@@ -229,7 +229,7 @@ module VersatileDiamond
         it { expect(ib_cr.incoherent?).to be_true }
       end
 
-      describe "#incoherent" do
+      describe '#incoherent' do
         it { expect(methyl.incoherent).not_to be_nil }
         it { expect(high_cm.incoherent).not_to be_nil }
 
@@ -252,7 +252,7 @@ module VersatileDiamond
         it { expect(ib_cr.incoherent).to be_nil }
       end
 
-      describe "#relevant?" do
+      describe '#relevant?' do
         it { expect(high_cm.relevant?).to be_false }
         it { expect(bridge_ct.relevant?).to be_false }
         it { expect(ad_cr.relevant?).to be_false }
@@ -267,7 +267,7 @@ module VersatileDiamond
         it { expect(hib_ct.relevant?).to be_true }
       end
 
-      describe "activated" do
+      describe 'activated' do
         it { expect(methyl.activated).not_to be_nil }
         it { expect(high_cm.activated).not_to be_nil }
 
@@ -287,7 +287,7 @@ module VersatileDiamond
         it { expect(ib_cr.activated).not_to be_nil }
       end
 
-      describe "deactivated" do
+      describe 'deactivated' do
         it { expect(methyl.deactivated).to be_nil }
         it { expect(high_cm.deactivated).to be_nil }
 
@@ -306,7 +306,7 @@ module VersatileDiamond
         it { expect(ib_cr.deactivated).to be_nil }
       end
 
-      describe "#dangling_hydrogens_num" do
+      describe '#dangling_hydrogens_num' do
         it { expect(bridge_ct.dangling_hydrogens_num).to eq(0) }
         it { expect(ab_ct.dangling_hydrogens_num).to eq(0) }
         it { expect(ahb_ct.dangling_hydrogens_num).to eq(1) }
@@ -322,29 +322,29 @@ module VersatileDiamond
         it { expect(ad_cr.dangling_hydrogens_num).to eq(0) }
       end
 
-      describe "#smallests" do
+      describe '#smallests' do
         it { expect(bridge_ct.smallests).to be_nil }
         it { expect(ab_ct.smallests).to be_nil }
 
-        describe "#add_smallest" do
+        describe '#add_smallest' do
           before(:each) { ab_ct.add_smallest(bridge_ct) }
           it { expect(bridge_ct.smallests).to be_nil }
           it { expect(ab_ct.smallests.to_a).to match_array([bridge_ct]) }
         end
       end
 
-      describe "#sames" do
+      describe '#sames' do
         it { expect(aib_ct.sames).to be_nil }
         it { expect(eab_ct.sames).to be_nil }
 
-        describe "#add_same" do
+        describe '#add_same' do
           before(:each) { eab_ct.add_same(aib_ct) }
           it { expect(aib_ct.sames).to be_nil }
           it { expect(eab_ct.sames.to_a).to match_array([aib_ct]) }
         end
       end
 
-      describe "#size" do
+      describe '#size' do
         it { expect(methyl.size).to eq(5.13) }
         it { expect(high_cm.size).to eq(6) }
 
@@ -367,7 +367,7 @@ module VersatileDiamond
         it { expect(clb_cr.size).to eq(8.84) }
       end
 
-      describe "#to_s" do
+      describe '#to_s' do
         it { expect(methyl.to_s).to eq('C:u~') }
         it { expect(high_cm.to_s).to eq('C=') }
 

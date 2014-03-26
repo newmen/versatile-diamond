@@ -9,7 +9,7 @@ module VersatileDiamond
       end
       subject { SomeComparer.new }
 
-      describe "#lists_are_identical?" do
+      describe '#lists_are_identical?' do
         let(:list1) { [1, 2, 3] }
         let(:list2) { [3, 1, 2] }
         let(:short_list) { [1, 2] }

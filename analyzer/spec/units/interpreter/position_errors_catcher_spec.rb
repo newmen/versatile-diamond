@@ -19,13 +19,13 @@ module VersatileDiamond
       end
       subject { Some.new }
 
-      describe "#interpret_position_errors" do
-        describe "incomplete" do
+      describe '#interpret_position_errors' do
+        describe 'incomplete' do
           it { expect { subject.raise_incomplete }.
             to raise_error *syntax_error('position.incomplete') }
         end
 
-        describe "duplicate" do
+        describe 'duplicate' do
           it { expect { subject.raise_duplicate}.
             to raise_error *syntax_warning(
               'position.duplicate', face: 100, dir: :front) }

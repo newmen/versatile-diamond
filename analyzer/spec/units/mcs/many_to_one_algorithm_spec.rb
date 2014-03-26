@@ -4,11 +4,11 @@ module VersatileDiamond
   module Mcs
 
     describe ManyToOneAlgorithm do
-      describe "#self.map_to" do
+      describe '#self.map_to' do
         subject { described_class.map_to(mapping_result) }
 
-        describe "simple case" do
-          describe "each atom has a copy" do
+        describe 'simple case' do
+          describe 'each atom has a copy' do
             let(:n1) { n.dup }
             let(:o1) { o.dup }
 
@@ -33,7 +33,7 @@ module VersatileDiamond
               Concepts::SpecificSpec.new(s)
             end
 
-            describe "forward" do
+            describe 'forward' do
               # with default source and products sequence
               let(:changed) do
                 [[[spec1, spec3],
@@ -50,10 +50,10 @@ module VersatileDiamond
                 ]]]
               end
 
-              it_behaves_like "check mapping result"
+              it_behaves_like 'check mapping result'
             end
 
-            describe "reverse" do
+            describe 'reverse' do
               # override default source and products sequence
               let(:source) { [spec3] }
               let(:products) { [spec1, spec2] }
@@ -72,11 +72,11 @@ module VersatileDiamond
                 ]]]
               end
 
-              it_behaves_like "check mapping result"
+              it_behaves_like 'check mapping result'
             end
           end
 
-          describe "not each atom has a copy" do
+          describe 'not each atom has a copy' do
             let(:spec1) do
               s = Concepts::SurfaceSpec.new(:spec1, n: n, c: cd)
               s.link(n, cd, free_bond)
@@ -112,12 +112,12 @@ module VersatileDiamond
               ]]]
             end
 
-            it_behaves_like "check mapping result"
+            it_behaves_like 'check mapping result'
           end
         end
 
-        describe "surface structures" do
-          describe "methyl on bridge with bridge" do
+        describe 'surface structures' do
+          describe 'methyl on bridge with bridge' do
             let(:spec1) { methyl_on_activated_bridge }
             let(:spec2) { activated_bridge }
             let(:spec3) { methyl_on_dimer }
@@ -144,10 +144,10 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like "check mapping result"
+            it_behaves_like 'check mapping result'
           end
 
-          describe "high bridge with bridge" do
+          describe 'high bridge with bridge' do
             let(:spec1) { high_bridge }
             let(:spec2) { activated_bridge }
             let(:spec3) { right_activated_extended_bridge }
@@ -180,10 +180,10 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like "check mapping result"
+            it_behaves_like 'check mapping result'
           end
 
-          describe "methyl on extended bridge" do
+          describe 'methyl on extended bridge' do
             let(:spec1) { activated_methyl_on_extended_bridge }
             let(:spec2) { activated_dimer }
             let(:spec3) { extended_dimer }
@@ -223,7 +223,7 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like "check mapping result"
+            it_behaves_like 'check mapping result'
           end
         end
       end

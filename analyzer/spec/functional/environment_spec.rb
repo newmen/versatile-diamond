@@ -6,14 +6,14 @@ module VersatileDiamond
     describe Environment, type: :interpreter do
       let(:environment) { Environment.new(dimers_row) }
 
-      describe "#targets" do
+      describe '#targets' do
         before { environment.interpret('targets :one_atom, :two_atom') }
         it { expect(dimers_row.is_target?(:one_atom)).to be_true }
         it { expect(dimers_row.is_target?(:two_atom)).to be_true }
         it { expect(dimers_row.is_target?(:wrong)).to be_false }
       end
 
-      describe "#aliases" do
+      describe '#aliases' do
         before(:each) { interpret_basis }
         it { expect { environment.interpret('aliases f: dimer, s: dimer') }.
           not_to raise_error }
@@ -21,7 +21,7 @@ module VersatileDiamond
         it { expect { environment.interpret('aliases one: wrong') }.
           to raise_error *keyname_error(:undefined, :spec, :wrong) }
 
-        describe "aliases use specific specs" do
+        describe 'aliases use specific specs' do
           before do
             environment.interpret('targets :o')
             environment.interpret('aliases f: dimer')
@@ -34,7 +34,7 @@ module VersatileDiamond
         end
       end
 
-      describe "#where" do
+      describe '#where' do
         before(:each) do
           environment.interpret('where :end_row, "at end of dimers row"')
         end

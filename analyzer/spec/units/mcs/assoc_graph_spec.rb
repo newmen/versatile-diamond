@@ -18,7 +18,7 @@ module VersatileDiamond
       end
       let(:graph2) { Graph.new(spec2.links) }
 
-      describe "exact match" do
+      describe 'exact match' do
         let(:assoc) { AssocGraph.new(graph1, graph2) }
         # before(:each) { assoc.save('assoc') }
 
@@ -26,7 +26,7 @@ module VersatileDiamond
         it { expect(assoc.fbn([cd1, cf]).size).to eq(3) }
       end
 
-      describe "approximate match" do
+      describe 'approximate match' do
         let(:assoc) do
           AssocGraph.new(graph1, graph2) { |_, _| true }
         end

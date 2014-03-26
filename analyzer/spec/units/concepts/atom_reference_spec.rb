@@ -6,38 +6,38 @@ module VersatileDiamond
     describe AtomReference do
       let(:ref) { AtomReference.new(ethylene_base, :c1) }
 
-      describe "#name" do
+      describe '#name' do
         it { expect(ref.name).to eq(:C) }
       end
 
-      describe "#valence" do
+      describe '#valence' do
         it { expect(ref.valence).to eq(2) }
       end
 
-      describe "#original_valence" do
+      describe '#original_valence' do
         it { expect(ref.original_valence).to eq(4) }
       end
 
-      describe "#same?" do
+      describe '#same?' do
         it { expect(c1.same?(ref)).to be_true }
         it { expect(ref.same?(c1)).to be_true }
         it { expect(ref.same?(ref.dup)).to be_true }
       end
 
-      describe "#actives" do
+      describe '#actives' do
         it { expect(ref.actives).to eq(0) }
       end
 
-      describe "#monovalents" do
+      describe '#monovalents' do
         it { expect(ref.monovalents).to be_empty }
       end
 
-      describe "#incoherent? and #unfixed?" do
+      describe '#incoherent? and #unfixed?' do
         it { expect(ref.incoherent?).to be_false }
         it { expect(ref.unfixed?).to be_false }
       end
 
-      describe "#diff" do
+      describe '#diff' do
         it { expect(ref.diff(ref.dup)).to be_empty }
         it { expect(ref.diff(c)).to be_empty }
         it { expect(ref.diff(activated_c)).to be_empty }
@@ -49,11 +49,11 @@ module VersatileDiamond
           to match_array([:incoherent]) }
       end
 
-      describe "#relations_in" do
+      describe '#relations_in' do
         it { expect(bridge.atom(:cr).relations_in(bridge).size).to eq(4) }
       end
 
-      it_behaves_like "#lattice" do
+      it_behaves_like '#lattice' do
         let(:target) { c1 }
         let(:reference) { ref }
       end

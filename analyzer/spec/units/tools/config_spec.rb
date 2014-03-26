@@ -6,23 +6,23 @@ module VersatileDiamond
     describe Config do
       let(:error) { described_class::AlreadyDefined }
 
-      describe "#total_time" do
-        it "duplicating" do
+      describe '#total_time' do
+        it 'duplicating' do
           described_class.total_time(1, 'sec')
           expect { described_class.total_time(12, 'sec') }.to raise_error error
         end
       end
 
-      describe "#gas_concentration" do
-        it "duplicating" do
+      describe '#gas_concentration' do
+        it 'duplicating' do
           described_class.gas_concentration(methyl, 1e-3, 'mol/l')
           expect { described_class.gas_concentration(methyl, 1e-5, 'mol/l') }.
             to raise_error error
         end
       end
 
-      describe "#surface_composition" do
-        it "duplicating" do
+      describe '#surface_composition' do
+        it 'duplicating' do
           described_class.surface_composition(cd)
           expect { described_class.surface_composition(cd) }.
             to raise_error error
@@ -32,7 +32,7 @@ module VersatileDiamond
       %w(gas surface).each do |type|
         name = "#{type}_temperature"
         describe "##{name}" do
-          it "duplicating" do
+          it 'duplicating' do
             described_class.send(name, 1000, 'C')
             expect { described_class.send(name, 373, 'K') }.
               to raise_error error
@@ -40,7 +40,7 @@ module VersatileDiamond
         end
       end
 
-      describe "#current_temperature" do
+      describe '#current_temperature' do
         before(:each) do
           described_class.gas_temperature(100, 'K')
           described_class.surface_temperature(0, 'K')
@@ -50,7 +50,7 @@ module VersatileDiamond
         it { expect(described_class.current_temperature(0)).to eq(0) }
       end
 
-      describe "#rate" do
+      describe '#rate' do
         before do
           methyl_desorption.activation = 1
           methyl_desorption.rate = 1

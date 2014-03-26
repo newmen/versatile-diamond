@@ -4,8 +4,8 @@ module VersatileDiamond
   module Interpreter
 
     describe Surface, type: :interpreter do
-      describe "#spec" do
-        it "interpreted spec stores in Chest" do
+      describe '#spec' do
+        it 'interpreted spec stores in Chest' do
           expect(surface.interpret('spec :hello')).
             to be_a(Interpreter::SurfaceSpec)
 
@@ -13,25 +13,25 @@ module VersatileDiamond
         end
       end
 
-      describe "#temperature" do
-        describe "duplicating" do
+      describe '#temperature' do
+        describe 'duplicating' do
           before { surface.interpret('temperature 100, C') }
           it { expect { surface.interpret('temperature 200, F') }.
             to raise_error *syntax_error('surface.temperature_already_set') }
         end
       end
 
-      describe "#lattice" do
+      describe '#lattice' do
         it { expect { surface.interpret('lattice :d') }.
           to raise_error *syntax_error('lattice.need_define_class') }
 
-        it "lattice stores in Chest" do
+        it 'lattice stores in Chest' do
           surface.interpret('lattice :d, class: Diamond')
           expect(Tools::Chest.lattice(:d)).to be_a(Concepts::Lattice)
         end
       end
 
-      describe "#size" do
+      describe '#size' do
         [
           'size x: 2',
           'size y: 2',
@@ -42,24 +42,24 @@ module VersatileDiamond
           end
         end
 
-        describe "duplicating" do
+        describe 'duplicating' do
           before { surface.interpret('size x: 20, y: 20') }
           it { expect { surface.interpret('size x: 2, y: 2') }.
             to raise_error *syntax_error('surface.sizes_already_set') }
         end
       end
 
-      describe "#composition" do
+      describe '#composition' do
         before(:each) do
           elements.interpret('atom C, valence: 4')
         end
 
-        it "wrong atom" do
+        it 'wrong atom' do
           expect { surface.interpret('composition C') }.
             to raise_error *syntax_error('surface.need_pass_specified_atom')
         end
 
-        describe "duplicating" do
+        describe 'duplicating' do
           before do
             surface.interpret('lattice :d, class: Diamond')
             surface.interpret('composition C%d')

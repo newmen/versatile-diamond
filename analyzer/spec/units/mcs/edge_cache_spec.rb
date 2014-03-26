@@ -6,7 +6,7 @@ module VersatileDiamond
     describe EdgeCache do
       let(:cache) { described_class.new }
 
-      describe "#add and #has?" do
+      describe '#add and #has?' do
         before(:each) { cache.add(c, n) }
 
         it { expect(cache.has?(c, n)).to be_true }
