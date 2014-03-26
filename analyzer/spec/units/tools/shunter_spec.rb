@@ -79,7 +79,7 @@ module VersatileDiamond
             ) }
 
           it { dimer_base.parent.should == bridge_base }
-          it { dimer_base.childs.should == [methyl_on_dimer_base] }
+          it { dimer_base.childs.should =~ [methyl_on_dimer_base] }
 
           it { methyl_on_bridge_base.parent.should == bridge_base }
           it { methyl_on_bridge_base.childs.should be_empty }
@@ -172,7 +172,7 @@ module VersatileDiamond
                 it { subject.parent.should be_nil }
                 it { methyl_on_dimer_base.childs.should include(subject) }
 
-                it { subject.childs.should == [
+                it { subject.childs.should =~ [
                     Chest.specific_spec(:'methyl_on_dimer(cm: *)')
                   ] }
                 it { subject.reactions.should include(hydrogen_migration) }
@@ -214,7 +214,7 @@ module VersatileDiamond
                 it { should be_specific_spec }
                 it { subject.parent.should be_nil }
                 it { bridge_base.childs.should include(subject) }
-                it { subject.childs.should == [
+                it { subject.childs.should =~ [
                     Chest.specific_spec(:'bridge(ct: *, ct: i)')
                   ] }
                 it { subject.reactions.should include(dimer_formation) }

@@ -305,7 +305,7 @@ module VersatileDiamond
 
       describe "#store_child" do
         before { dimer.store_child(methyl_on_dimer) }
-        it { dimer.childs.should == [methyl_on_dimer] }
+        it { dimer.childs.should =~ [methyl_on_dimer] }
       end
 
       describe "#reactions" do
@@ -314,7 +314,7 @@ module VersatileDiamond
 
       describe "#store_reaction" do
         before { dimer.store_reaction(dimer_formation) }
-        it { dimer.reactions.should == [dimer_formation] }
+        it { dimer.reactions.should =~ [dimer_formation] }
       end
 
       describe "#theres" do
@@ -323,7 +323,7 @@ module VersatileDiamond
 
       describe "#store_reaction" do
         before { dimer.store_there(on_end) }
-        it { dimer.theres.should == [on_end] }
+        it { dimer.theres.should =~ [on_end] }
       end
 
       describe "#same?" do

@@ -38,15 +38,15 @@ module VersatileDiamond
       end
 
       describe "#diff" do
-        it { ref.diff(ref.dup).should == [] }
-        it { ref.diff(c).should == [] }
-        it { ref.diff(activated_c).should == [] }
-        it { ref.diff(unfixed_c).should == [:unfixed] }
-        it { ref.diff(unfixed_activated_c).should == [:unfixed] }
+        it { ref.diff(ref.dup).should be_empty }
+        it { ref.diff(c).should be_empty }
+        it { ref.diff(activated_c).should be_empty }
+        it { ref.diff(unfixed_c).should =~ [:unfixed] }
+        it { ref.diff(unfixed_activated_c).should =~ [:unfixed] }
         it { AtomReference.new(bridge_base, :ct).diff(activated_incoherent_cd).
-          should == [:incoherent] }
+          should =~ [:incoherent] }
         it { AtomReference.new(bridge_base, :ct).diff(incoherent_cd).
-          should == [:incoherent] }
+          should =~ [:incoherent] }
       end
 
       describe "#relations_in" do

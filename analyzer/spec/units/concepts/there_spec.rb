@@ -27,15 +27,15 @@ module VersatileDiamond
       end
 
       describe "#target_specs" do
-        it { on_end.target_specs.should == [activated_bridge, ai_bridge] }
-        it { on_middle.target_specs.should == [activated_bridge, ai_bridge] }
-        it { there_methyl.target_specs.should == [activated_bridge] }
+        it { on_end.target_specs.should =~ [activated_bridge, ai_bridge] }
+        it { on_middle.target_specs.should =~ [activated_bridge, ai_bridge] }
+        it { there_methyl.target_specs.should =~ [activated_bridge] }
       end
 
       describe "#env_specs" do
-        it { on_end.env_specs.should == [dimer] }
-        it { on_middle.env_specs.should == [dimer, dimer] }
-        it { there_methyl.env_specs.should == [methyl_on_bridge] }
+        it { on_end.env_specs.should =~ [dimer] }
+        it { on_middle.env_specs.should =~ [dimer, dimer] }
+        it { there_methyl.env_specs.should =~ [methyl_on_bridge] }
       end
 
       describe "#description" do
@@ -112,7 +112,7 @@ module VersatileDiamond
         it { on_middle.used_keynames_of(dimer).size.should == 2 }
         it { on_middle.used_keynames_of(dimer).should include(:cr, :cl) }
 
-        it { there_methyl.used_keynames_of(methyl_on_bridge).should == [:cb] }
+        it { there_methyl.used_keynames_of(methyl_on_bridge).should =~ [:cb] }
       end
 
       describe "#same?" do

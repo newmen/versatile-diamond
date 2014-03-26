@@ -18,12 +18,12 @@ module VersatileDiamond
       end
 
       describe "#string_to_args" do
-        it { subject.string_to_args('').should == [] }
-        it { subject.string_to_args('one').should == ['one'] }
-        it { subject.string_to_args(':one, 2').should == [:one, 2] }
-        it { subject.string_to_args('1, two: 3').should == [1, { two: 3 }] }
+        it { subject.string_to_args('').should be_empty }
+        it { subject.string_to_args('one').should =~ ['one'] }
+        it { subject.string_to_args(':one, 2').should =~ [:one, 2] }
+        it { subject.string_to_args('1, two: 3').should =~ [1, { two: 3 }] }
         it { subject.string_to_args('one: 2, three: 4').
-          should == [{ one: 2, three: 4 }] }
+          should =~ [{ one: 2, three: 4 }] }
 
         it "options key duplication" do
           expect { subject.string_to_args(':one, two: 3, two: 4') }.
@@ -37,7 +37,7 @@ module VersatileDiamond
 
       describe "#extract_hash_args" do
         it { subject.extract_hash_args(':one, 2, three: 4').
-          should == [:one, 2] }
+          should =~ [:one, 2] }
 
         it "pass each pair to block" do
           pairs = {}

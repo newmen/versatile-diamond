@@ -25,14 +25,14 @@ module VersatileDiamond
       end
 
       describe "#changes" do
-        it { md_atom_map.changes.should == [
+        it { md_atom_map.changes.should =~ [
             [[methyl_on_bridge, abridge_dup],
               [[methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)]]],
             [[methyl_on_bridge, methyl],
               [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
           ] }
 
-        it { mi_atom_map.changes.should == [
+        it { mi_atom_map.changes.should =~ [
             [[activated_methyl_on_extended_bridge, extended_dimer], [
               [activated_methyl_on_extended_bridge.atom(:cm),
                 extended_dimer.atom(:cr)],
@@ -47,7 +47,7 @@ module VersatileDiamond
       end
 
       describe "#full" do
-        it { md_atom_map.full.should == [
+        it { md_atom_map.full.should =~ [
             [[methyl_on_bridge, abridge_dup], [
               [methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)],
               [methyl_on_bridge.atom(:cl), abridge_dup.atom(:cl)],
@@ -62,42 +62,42 @@ module VersatileDiamond
         describe "hydrogen migration" do
           it { hm_atom_map.other_side(
               methyl_on_dimer, methyl_on_dimer.atom(:cm)).
-            should == [
+            should =~ [
               activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)
             ] }
 
           it { hm_atom_map.other_side(
               activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)).
-            should == [
+            should =~ [
               methyl_on_dimer, methyl_on_dimer.atom(:cm)
             ] }
 
-          it { hm_atom_map.other_side(dimer, dimer.atom(:cr)).should == [
+          it { hm_atom_map.other_side(dimer, dimer.atom(:cr)).should =~ [
               activated_dimer, activated_dimer.atom(:cr)
             ] }
 
           it { hm_atom_map.other_side(
               activated_dimer, activated_dimer.atom(:cr)).
-            should == [dimer, dimer.atom(:cr)] }
+            should =~ [dimer, dimer.atom(:cr)] }
         end
 
         describe "dimer formation" do
           it { df_atom_map.other_side(
               activated_bridge, activated_bridge.atom(:ct)).
-            should == [dimer_dup_ff, dimer_dup_ff.atom(:cr)] }
+            should =~ [dimer_dup_ff, dimer_dup_ff.atom(:cr)] }
 
           it { df_atom_map.other_side(
               activated_incoherent_bridge,
               activated_incoherent_bridge.atom(:ct)).
-            should == [dimer_dup_ff, dimer_dup_ff.atom(:cl)] }
+            should =~ [dimer_dup_ff, dimer_dup_ff.atom(:cl)] }
 
           it { df_atom_map.other_side(
               dimer_dup_ff, dimer_dup_ff.atom(:cr)).
-            should == [activated_bridge, activated_bridge.atom(:ct)] }
+            should =~ [activated_bridge, activated_bridge.atom(:ct)] }
 
           it { df_atom_map.other_side(
               dimer_dup_ff, dimer_dup_ff.atom(:cl)).
-            should == [
+            should =~ [
               activated_incoherent_bridge,
               activated_incoherent_bridge.atom(:ct)
             ] }
@@ -114,14 +114,14 @@ module VersatileDiamond
 
         before(:each) { subject.add(specs, full, changes) }
 
-        it { subject.full.should == [
+        it { subject.full.should =~ [
             [[activated_incoherent_bridge, dimer_dup_ff], [[
               activated_incoherent_bridge.atom(:ct),
               dimer_dup_ff.atom(:cr)
             ]]]
           ] }
 
-        it { subject.changes.should == [
+        it { subject.changes.should =~ [
             [[activated_incoherent_bridge, dimer_dup_ff], []]
           ] }
 
@@ -130,7 +130,7 @@ module VersatileDiamond
 
       describe "#reverse" do
         describe "methyl desorption" do
-          it { md_atom_map.reverse.full.should == [
+          it { md_atom_map.reverse.full.should =~ [
               [[abridge_dup, methyl_on_bridge], [
                 [abridge_dup.atom(:ct), methyl_on_bridge.atom(:cb)],
                 [abridge_dup.atom(:cl), methyl_on_bridge.atom(:cl)],
@@ -149,7 +149,7 @@ module VersatileDiamond
         describe "hydrogen migration" do
           it { hm_atom_map.reverse.should be_a(MappingResult) }
 
-          it { hm_atom_map.reverse.changes.should == [
+          it { hm_atom_map.reverse.changes.should =~ [
               [[activated_methyl_on_dimer, methyl_on_dimer],
                 [[activated_methyl_on_dimer.atom(:cm),
                   methyl_on_dimer.atom(:cm)]]],
@@ -159,7 +159,7 @@ module VersatileDiamond
         end
 
         describe "dimer formation" do
-          it { df_atom_map.reverse.changes.should == [
+          it { df_atom_map.reverse.changes.should =~ [
               [[dimer_dup_ff, activated_bridge],
                 [[dimer_dup_ff.atom(:cr), activated_bridge.atom(:ct)]]],
               [[dimer_dup_ff, activated_incoherent_bridge],
@@ -196,8 +196,8 @@ module VersatileDiamond
         it { should be_a(MappingResult) }
         it { should_not == df_atom_map }
 
-        it { subject.source.should == [abridge_dup, aib_dup] }
-        it { subject.products.should == [d_dup] }
+        it { subject.source.should =~ [abridge_dup, aib_dup] }
+        it { subject.products.should =~ [d_dup] }
 
         it { subject.changes.should_not == df_atom_map.changes }
         it { subject.full.should_not == df_atom_map.full }
@@ -258,10 +258,10 @@ module VersatileDiamond
 
       describe "#complex_source_spec_and_atom" do
         it { ma_atom_map.complex_source_spec_and_atom.
-          should == [ma_source.first, c] }
+          should =~ [ma_source.first, c] }
 
         it { dm_atom_map.complex_source_spec_and_atom.
-          should == [activated_methyl_on_bridge, activated_c] }
+          should =~ [activated_methyl_on_bridge, activated_c] }
       end
     end
 

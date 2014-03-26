@@ -72,8 +72,8 @@ module VersatileDiamond
           let(:first_bridge) { subject.source.first }
           let(:second_bridge) { subject.source.last }
 
-          it { subject.used_keynames_of(first_bridge).should == [:ct] }
-          it { subject.used_keynames_of(second_bridge).should == [:ct] }
+          it { subject.used_keynames_of(first_bridge).should =~ [:ct] }
+          it { subject.used_keynames_of(second_bridge).should =~ [:ct] }
         end
 
         describe "reverse" do
@@ -99,7 +99,7 @@ module VersatileDiamond
           other.organize_dependencies!(reactions)
         end
 
-        it { reaction.more_complex.should == [middle] }
+        it { reaction.more_complex.should =~ [middle] }
         it { middle.more_complex.should be_empty }
         it { other.more_complex.should be_empty }
       end
@@ -114,7 +114,7 @@ module VersatileDiamond
       end
 
       describe "#wheres" do
-        it { reaction.wheres.should == [at_end] }
+        it { reaction.wheres.should =~ [at_end] }
 
         it { other.wheres.size.should == 2 }
         it { other.wheres.should include(at_end, near_methyl) }

@@ -13,13 +13,13 @@ module VersatileDiamond
         end
         it { subject.actives.should == 1 }
         it { subject.incoherent?.should be_true }
-        it { subject.monovalents.should == [:H] }
+        it { subject.monovalents.should =~ [:H] }
 
         describe "from specific atom" do
           let(:child) { described_class.new(cd, ancestor: subject) }
           it { child.actives.should == 1 }
           it { child.incoherent?.should be_true }
-          it { child.monovalents.should == [:H] }
+          it { child.monovalents.should =~ [:H] }
         end
       end
 
@@ -27,7 +27,7 @@ module VersatileDiamond
         it { subject.dup.should_not == subject }
         it { activated_c.dup.actives.should == 1 }
         it { activated_cd.dup.lattice.should == diamond }
-        it { activated_cd_hydride.dup.monovalents.should == [:H] }
+        it { activated_cd_hydride.dup.monovalents.should =~ [:H] }
       end
 
       describe "#name" do
@@ -85,9 +85,9 @@ module VersatileDiamond
 
       describe "#monovalents" do
         it { activated_c.monovalents.should be_empty }
-        it { cd_chloride.monovalents.should == [:Cl] }
-        it { activated_cd_hydride.monovalents.should == [:H] }
-        it { cd_extra_hydride.monovalents.should == [:H, :H] }
+        it { cd_chloride.monovalents.should =~ [:Cl] }
+        it { activated_cd_hydride.monovalents.should =~ [:H] }
+        it { cd_extra_hydride.monovalents.should =~ [:H, :H] }
       end
 
       describe "#same?" do
@@ -129,21 +129,21 @@ module VersatileDiamond
       end
 
       describe "#diff" do
-        it { unfixed_c.diff(c).should == [] }
-        it { unfixed_activated_c.diff(c).should == [] }
-        it { unfixed_c.diff(SpecificAtom.new(c)).should == [] }
+        it { unfixed_c.diff(c).should be_empty }
+        it { unfixed_activated_c.diff(c).should be_empty }
+        it { unfixed_c.diff(SpecificAtom.new(c)).should be_empty }
 
-        it { incoherent_cd.diff(cd).should == [] }
-        it { activated_incoherent_cd.diff(cd).should == [] }
-        it { activated_incoherent_cd.diff(activated_cd).should == [] }
-        it { activated_incoherent_cd.diff(bridge.atom(:cr)).should == [] }
-        it { activated_cd.diff(bridge.atom(:cr)).should == [] }
+        it { incoherent_cd.diff(cd).should be_empty }
+        it { activated_incoherent_cd.diff(cd).should be_empty }
+        it { activated_incoherent_cd.diff(activated_cd).should be_empty }
+        it { activated_incoherent_cd.diff(bridge.atom(:cr)).should be_empty }
+        it { activated_cd.diff(bridge.atom(:cr)).should be_empty }
 
-        it { activated_c.diff(unfixed_c).should == [:unfixed] }
-        it { activated_c.diff(unfixed_activated_c).should == [:unfixed] }
-        it { activated_cd.diff(incoherent_cd).should == [:incoherent] }
+        it { activated_c.diff(unfixed_c).should =~ [:unfixed] }
+        it { activated_c.diff(unfixed_activated_c).should =~ [:unfixed] }
+        it { activated_cd.diff(incoherent_cd).should =~ [:incoherent] }
         it { activated_cd.diff(activated_incoherent_cd).
-          should == [:incoherent] }
+          should =~ [:incoherent] }
       end
 
       describe "#apply_diff" do
@@ -153,11 +153,11 @@ module VersatileDiamond
       end
 
       describe "#relevants" do
-        it { activated_c.relevants.should == [] }
-        it { unfixed_c.relevants.should == [:unfixed] }
-        it { unfixed_activated_c.relevants.should == [:unfixed] }
-        it { incoherent_cd.relevants.should == [:incoherent] }
-        it { activated_incoherent_cd.relevants.should == [:incoherent] }
+        it { activated_c.relevants.should be_empty }
+        it { unfixed_c.relevants.should =~ [:unfixed] }
+        it { unfixed_activated_c.relevants.should =~ [:unfixed] }
+        it { incoherent_cd.relevants.should =~ [:incoherent] }
+        it { activated_incoherent_cd.relevants.should =~ [:incoherent] }
       end
 
       it_behaves_like "#lattice" do

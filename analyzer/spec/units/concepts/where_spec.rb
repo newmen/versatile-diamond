@@ -5,9 +5,9 @@ module VersatileDiamond
 
     describe Where do
       describe "#specs" do
-        it { at_end.specs.should == [dimer] }
-        it { at_middle.specs.should == [dimer] }
-        it { near_methyl.specs.should == [methyl_on_bridge] }
+        it { at_end.specs.should =~ [dimer] }
+        it { at_middle.specs.should =~ [dimer] }
+        it { near_methyl.specs.should =~ [methyl_on_bridge] }
       end
 
       describe "#description" do
@@ -21,7 +21,7 @@ module VersatileDiamond
 
       describe "#parents" do
         it { at_end.parents.should be_empty }
-        it { at_middle.parents.should == [at_end] }
+        it { at_middle.parents.should =~ [at_end] }
       end
 
       describe "#concretize" do
@@ -38,7 +38,7 @@ module VersatileDiamond
         it { at_middle.used_keynames_of(dimer).size.should == 2 }
         it { at_middle.used_keynames_of(dimer).should include(:cr, :cl) }
 
-        it { near_methyl.used_keynames_of(methyl_on_bridge).should == [:cb] }
+        it { near_methyl.used_keynames_of(methyl_on_bridge).should =~ [:cb] }
       end
 
       it_behaves_like "visitable" do

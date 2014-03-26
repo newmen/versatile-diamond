@@ -264,7 +264,7 @@ module VersatileDiamond
             let(:c_bridge1) { subject.source.first }
             let(:c_bridge2) { subject.source.last }
 
-            it { subject.positions.should == [
+            it { subject.positions.should =~ [
                 [
                   [c_bridge1, c_bridge1.atom(:ct)],
                   [c_bridge2, c_bridge2.atom(:ct)],
