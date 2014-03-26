@@ -79,7 +79,7 @@ module VersatileDiamond
             ) }
 
           it { expect(dimer_base.parent).to eq(bridge_base) }
-          it { expect(dimer_base.childs).to match_array([methyl_on_dimer_base]) }
+          it { expect(dimer_base.childs).to eq([methyl_on_dimer_base]) }
 
           it { expect(methyl_on_bridge_base.parent).to eq(bridge_base) }
           it { expect(methyl_on_bridge_base.childs).to be_empty }
@@ -139,8 +139,10 @@ module VersatileDiamond
 
             describe 'methyl deactivation' do
               subject { Chest.specific_spec(:'methyl_on_bridge(cm: *)') }
+
               it { should be_specific_spec }
-              it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
+              it { expect(subject.parent).
+                to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
               it { expect(subject.childs).to be_empty }
               it { expect(subject.reactions).to include(methyl_deactivation) }
             end
@@ -150,9 +152,13 @@ module VersatileDiamond
             end
 
             describe 'methyl desorption' do
-              subject { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)') }
+              subject do
+                Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)')
+              end
+
               it { should be_specific_spec }
-              it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
+              it { expect(subject.parent).
+                to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
               it { expect(subject.childs).to be_empty }
               it { expect(subject.reactions).to include(methyl_desorption) }
             end
@@ -161,7 +167,8 @@ module VersatileDiamond
               describe 'dimer(cr: *)' do
                 subject { Chest.specific_spec(:'dimer(cr: *)') }
                 it { should be_specific_spec }
-                it { expect(subject.parent).to eq(Chest.specific_spec(:'dimer()')) }
+                it { expect(subject.parent).
+                  to eq(Chest.specific_spec(:'dimer()')) }
                 it { expect(subject.childs).to be_empty }
                 it { expect(subject.reactions).to include(hydrogen_migration) }
               end
@@ -172,7 +179,7 @@ module VersatileDiamond
                 it { expect(subject.parent).to be_nil }
                 it { expect(methyl_on_dimer_base.childs).to include(subject) }
 
-                it { expect(subject.childs).to match_array([
+                it { expect(subject.childs).to eq([
                     Chest.specific_spec(:'methyl_on_dimer(cm: *)')
                   ]) }
                 it { expect(subject.reactions).to include(hydrogen_migration) }
@@ -192,19 +199,23 @@ module VersatileDiamond
                     Chest.specific_spec(:'dimer(cl: i)')
                   ) }
 
-                it { expect(subject.reactions).to include(hydrogen_migration.reverse) }
+                it { expect(subject.reactions).
+                  to include(hydrogen_migration.reverse) }
 
                 it { expect(subject.theres.size).to eq(2) }
-                it { expect(subject.theres.first.where.name).to eq(:at_middle) }
+                it { expect(subject.theres.first.where.name).
+                  to eq(:at_middle) }
                 it { expect(subject.theres.last.where.name).to eq(:at_middle) }
               end
 
               describe 'methyl_on_dimer(cm: *)' do
                 subject { Chest.specific_spec(:'methyl_on_dimer(cm: *)') }
                 it { should be_specific_spec }
-                it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_dimer()')) }
+                it { expect(subject.parent).
+                  to eq(Chest.specific_spec(:'methyl_on_dimer()')) }
                 it { expect(subject.childs).to be_empty }
-                it { expect(subject.reactions).to include(hydrogen_migration.reverse) }
+                it { expect(subject.reactions).
+                  to include(hydrogen_migration.reverse) }
               end
             end
 
@@ -223,7 +234,8 @@ module VersatileDiamond
               describe 'bridge(ct: *, ct: i)' do
                 subject { Chest.specific_spec(:'bridge(ct: *, ct: i)') }
                 it { should be_specific_spec }
-                it { expect(subject.parent).to eq(Chest.specific_spec(:'bridge(ct: *)')) }
+                it { expect(subject.parent).
+                  to eq(Chest.specific_spec(:'bridge(ct: *)')) }
                 it { expect(subject.childs).to be_empty }
                 it { expect(subject.reactions).to include(dimer_formation) }
               end
@@ -232,9 +244,11 @@ module VersatileDiamond
             describe 'reverse dimer formation' do
               subject { Chest.specific_spec(:'dimer(cl: i)') }
               it { should be_specific_spec }
-              it { expect(subject.parent).to eq(Chest.specific_spec(:'dimer()')) }
+              it { expect(subject.parent).
+                to eq(Chest.specific_spec(:'dimer()')) }
               it { expect(subject.childs).to be_empty }
-              it { expect(subject.reactions).to include(dimer_formation.reverse) }
+              it { expect(subject.reactions).
+                to include(dimer_formation.reverse) }
             end
 
             describe 'forward methyl incorporation' do
@@ -296,7 +310,8 @@ module VersatileDiamond
                 Chest.store(reaction.reverse) # synthetics
               end
 
-              it { expect { Shunter.organize_dependecies! }.not_to raise_error }
+              it { expect { Shunter.organize_dependecies! }.
+                not_to raise_error }
             end
           end
 
@@ -354,7 +369,8 @@ module VersatileDiamond
 
           it { expect { Chest.spec(:methane) }.to raise_error keyname_error }
           it { expect { Chest.spec(:ethylene) }.to raise_error keyname_error }
-          it { expect { Chest.spec(:high_bridge) }.to raise_error keyname_error }
+          it { expect { Chest.spec(:high_bridge) }.
+            to raise_error keyname_error }
 
           it { expect { Chest.spec(:bridge) }.not_to raise_error }
           it { expect { Chest.spec(:methyl_on_bridge) }.not_to raise_error }

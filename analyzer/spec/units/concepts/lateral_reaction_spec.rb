@@ -72,8 +72,8 @@ module VersatileDiamond
           let(:first_bridge) { subject.source.first }
           let(:second_bridge) { subject.source.last }
 
-          it { expect(subject.used_keynames_of(first_bridge)).to match_array([:ct]) }
-          it { expect(subject.used_keynames_of(second_bridge)).to match_array([:ct]) }
+          it { expect(subject.used_keynames_of(first_bridge)).to eq([:ct]) }
+          it { expect(subject.used_keynames_of(second_bridge)).to eq([:ct]) }
         end
 
         describe 'reverse' do
@@ -99,7 +99,7 @@ module VersatileDiamond
           other.organize_dependencies!(reactions)
         end
 
-        it { expect(reaction.more_complex).to match_array([middle]) }
+        it { expect(reaction.more_complex).to eq([middle]) }
         it { expect(middle.more_complex).to be_empty }
         it { expect(other.more_complex).to be_empty }
       end
@@ -114,7 +114,7 @@ module VersatileDiamond
       end
 
       describe '#wheres' do
-        it { expect(reaction.wheres).to match_array([at_end]) }
+        it { expect(reaction.wheres).to eq([at_end]) }
 
         it { expect(other.wheres.size).to eq(2) }
         it { expect(other.wheres).to include(at_end, near_methyl) }

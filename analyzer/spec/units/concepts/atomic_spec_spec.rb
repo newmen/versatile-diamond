@@ -28,7 +28,8 @@ module VersatileDiamond
 
       describe '#cover?' do
         it { expect(adsorbed_h.cover?(bridge, cd)).to be_true }
-        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).to be_true }
+        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).
+          to be_true }
         it { expect(adsorbed_h.cover?(chlorigenated_bridge, cd_chloride)).
           to be_true }
         it { expect(adsorbed_h.cover?(activated_methyl_on_bridge, activated_c)).

@@ -52,7 +52,8 @@ module VersatileDiamond
 
         it { expect(method['bridge(:ct)']).to match_array(['bridge', 'ct']) }
         it { expect(method['dimer( :cr )']).to match_array(['dimer', 'cr']) }
-        it { expect(method['benzol(:c_3 )']).to match_array(['benzol', 'c_3']) }
+        it { expect(method['benzol(:c_3 )']).
+          to match_array(['benzol', 'c_3']) }
 
         describe 'wrong' do
           it { expect(method['BRIDGE(:ct)']).to be_nil }
@@ -68,10 +69,14 @@ module VersatileDiamond
       describe '#specified_spec' do
         let(:method) { Matcher.method(:specified_spec) }
 
-        it { expect(method['bridge(ct: *)']).to match_array(['bridge', 'ct: *']) }
-        it { expect(method['dimer( cr: i )']).to match_array(['dimer', 'cr: i']) }
-        it { expect(method['dm(cr: i, cl: u)']).to match_array(['dm', 'cr: i, cl: u']) }
-        it { expect(method['methyl_on_brdg']).to match_array(['methyl_on_brdg', nil]) }
+        it { expect(method['bridge(ct: *)']).
+          to match_array(['bridge', 'ct: *']) }
+        it { expect(method['dimer( cr: i )']).
+          to match_array(['dimer', 'cr: i']) }
+        it { expect(method['dm(cr: i, cl: u)']).
+          to match_array(['dm', 'cr: i, cl: u']) }
+        it { expect(method['methyl_on_brdg']).
+          to match_array(['methyl_on_brdg', nil]) }
 
         describe 'wrong' do
           it { expect(method['BRIDGE(ct: *)']).to be_nil }

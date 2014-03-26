@@ -28,8 +28,9 @@ module VersatileDiamond
 
         describe 'defining a activated specific spec' do
           before(:each) { define_spec_and_atom(3) }
-          it { expect { gas.interpret('concentration some(x: **), 1, "mol/l"') }.
-            not_to raise_error }
+          it { expect {
+              gas.interpret('concentration some(x: **), 1, "mol/l"')
+            }.not_to raise_error }
           it { expect { gas.interpret('concentration some(x: **), 1') }.
             not_to raise_error }
         end

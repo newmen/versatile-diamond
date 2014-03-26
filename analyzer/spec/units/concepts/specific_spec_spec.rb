@@ -76,7 +76,8 @@ module VersatileDiamond
         it { expect(methyl.keyname(activated_c)).to eq(:c) }
         it { expect(bridge.keyname(cd)).to eq(:ct) }
         it { expect(activated_dimer.keyname(activated_cd)).to eq(:cr) }
-        it { expect(activated_dimer.keyname(activated_dimer.atom(:cl))).to eq(:cl) }
+        it { expect(activated_dimer.keyname(activated_dimer.atom(:cl))).
+          to eq(:cl) }
       end
 
       describe '#describe_atom' do
@@ -124,10 +125,12 @@ module VersatileDiamond
         it { expect(methane.external_bonds_for(c)).to eq(4) }
         it { expect(methyl.external_bonds_for(activated_c)).to eq(3) }
         it { expect(bridge.external_bonds_for(cd)).to eq(2) }
-        it { expect(activated_bridge.external_bonds_for(activated_cd)).to eq(1) }
+        it { expect(activated_bridge.external_bonds_for(activated_cd)).
+          to eq(1) }
         it { expect(extra_activated_bridge.external_bonds_for(extra_activated_cd)).
           to eq(0) }
-        it { expect(chlorigenated_bridge.external_bonds_for(cd_chloride)).to eq(1) }
+        it { expect(chlorigenated_bridge.external_bonds_for(cd_chloride)).
+          to eq(1) }
         it { expect(methyl_on_bridge.external_bonds_for(c)).to eq(3) }
         it { expect(activated_methyl_on_bridge.external_bonds_for(activated_c)).
           to eq(2) }
@@ -177,7 +180,8 @@ module VersatileDiamond
 
       describe '#external_bonds_after_extend' do
         it { expect(bridge.external_bonds_after_extend).to eq(8) }
-        it { expect(extra_activated_bridge.external_bonds_after_extend).to eq(6) }
+        it { expect(extra_activated_bridge.external_bonds_after_extend).
+          to eq(6) }
       end
 
       describe '#extended' do
@@ -200,8 +204,10 @@ module VersatileDiamond
       end
 
       describe '#could_be_reduced?' do
-        it { expect(activated_methyl_on_extended_bridge.could_be_reduced?).to be_true }
-        it { expect(right_activated_extended_bridge.could_be_reduced?).to be_true }
+        it { expect(activated_methyl_on_extended_bridge.could_be_reduced?).
+          to be_true }
+        it { expect(right_activated_extended_bridge.could_be_reduced?).
+          to be_true }
         it { expect(extended_dimer.could_be_reduced?).to be_true }
       end
 
@@ -305,7 +311,7 @@ module VersatileDiamond
 
       describe '#store_child' do
         before { dimer.store_child(methyl_on_dimer) }
-        it { expect(dimer.childs).to match_array([methyl_on_dimer]) }
+        it { expect(dimer.childs).to eq([methyl_on_dimer]) }
       end
 
       describe '#reactions' do
@@ -314,7 +320,7 @@ module VersatileDiamond
 
       describe '#store_reaction' do
         before { dimer.store_reaction(dimer_formation) }
-        it { expect(dimer.reactions).to match_array([dimer_formation]) }
+        it { expect(dimer.reactions).to eq([dimer_formation]) }
       end
 
       describe '#theres' do
@@ -323,7 +329,7 @@ module VersatileDiamond
 
       describe '#store_reaction' do
         before { dimer.store_there(on_end) }
-        it { expect(dimer.theres).to match_array([on_end]) }
+        it { expect(dimer.theres).to eq([on_end]) }
       end
 
       describe '#same?' do

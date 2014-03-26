@@ -38,7 +38,7 @@ module VersatileDiamond
         it { expect(subject.reverse).to eq(surface_deactivation) }
         it { expect(subject.name).to match(/^reverse/) }
 
-        it { expect(subject.source).to match_array([adsorbed_h]) }
+        it { expect(subject.source).to eq([adsorbed_h]) }
 
         it { expect(subject.products.size).to eq(2) }
         it { expect(subject.products).to include(active_bond, hydrogen_ion) }
@@ -77,8 +77,10 @@ module VersatileDiamond
         it { expect(surface_deactivation.same?(same)).to be_true }
         it { expect(same.same?(surface_deactivation)).to be_true }
 
-        it { expect(surface_activation.same?(surface_deactivation)).to be_false }
-        it { expect(surface_deactivation.same?(surface_activation)).to be_false }
+        it { expect(surface_activation.same?(surface_deactivation)).
+          to be_false }
+        it { expect(surface_deactivation.same?(surface_activation)).
+          to be_false }
       end
 
       describe '#organize_dependencies! and #more_complex' do
@@ -89,7 +91,7 @@ module VersatileDiamond
                 dimer_formation, hydrogen_migration])
           end
 
-          it { expect(target.more_complex).to match_array([complex]) }
+          it { expect(target.more_complex).to eq([complex]) }
         end
 
         it_behaves_like 'cover just one' do
@@ -111,7 +113,8 @@ module VersatileDiamond
           surface_deactivation.rate = 2
         end
 
-        it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
+        it { expect(surface_deactivation.full_rate.round(10)).
+          to eq(0.1773357811) }
       end
 
       describe '#size' do

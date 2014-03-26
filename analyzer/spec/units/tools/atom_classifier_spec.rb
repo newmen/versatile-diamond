@@ -44,21 +44,25 @@ module VersatileDiamond
             it { expect(find(high_cm).smallests).to be_nil }
 
             it { expect(find(bridge_ct).smallests).to be_nil }
-            it { expect(find(ab_ct).smallests.to_a).to match_array([bridge_ct]) }
-            it { expect(find(hb_ct).smallests.to_a).to match_array([bridge_ct]) }
-            it { expect(find(eab_ct).smallests.to_a).to match_array([ab_ct]) }
-            it { expect(find(aib_ct).smallests.to_a).to match_array([ab_ct]) }
-            it { expect(find(ahb_ct).smallests.to_a).to match_array([hb_ct, aib_ct]) }
-            it { expect(find(ehb_ct).smallests.to_a).to match_array([hib_ct]) }
+            it { expect(find(ab_ct).smallests.to_a).to eq([bridge_ct]) }
+            it { expect(find(hb_ct).smallests.to_a).to eq([bridge_ct]) }
+            it { expect(find(eab_ct).smallests.to_a).to eq([ab_ct]) }
+            it { expect(find(aib_ct).smallests.to_a).to eq([ab_ct]) }
+            it { expect(find(ehb_ct).smallests.to_a).to eq([hib_ct]) }
             it { expect(find(hib_ct).smallests.size).to eq(2) }
+            it { expect(find(ahb_ct).smallests.to_a).
+              to match_array([hb_ct, aib_ct]) }
 
-            it { expect(find(bridge_cr).smallests.to_a).to match_array([bridge_ct]) }
-            it { expect(find(ab_cr).smallests.to_a).to match_array([ab_ct, bridge_cr]) }
-            it { expect(find(hb_cr).smallests.to_a).to match_array([hb_ct, ib_cr]) }
-            it { expect(find(ib_cr).smallests.to_a).to match_array([bridge_cr]) }
+            it { expect(find(bridge_cr).smallests.to_a).to eq([bridge_ct]) }
+            it { expect(find(ib_cr).smallests.to_a).to eq([bridge_cr]) }
+            it { expect(find(ab_cr).smallests.to_a).
+              to match_array([ab_ct, bridge_cr]) }
+            it { expect(find(hb_cr).smallests.to_a).
+              to match_array([hb_ct, ib_cr]) }
 
-            it { expect(find(dimer_cr).smallests.to_a).to match_array([bridge_ct]) }
-            it { expect(find(ad_cr).smallests.to_a).to match_array([ab_ct, dimer_cr]) }
+            it { expect(find(dimer_cr).smallests.to_a).to eq([bridge_ct]) }
+            it { expect(find(ad_cr).smallests.to_a).
+              to match_array([ab_ct, dimer_cr]) }
           end
 
           describe '#sames' do
@@ -71,12 +75,12 @@ module VersatileDiamond
             it { expect(find(ahb_ct).sames.size).to eq(2) }
             it { expect(find(ad_cr).sames.size).to eq(1) }
 
-            it { expect(find(eab_ct).sames.to_a).to match_array([aib_ct]) }
-            it { expect(find(ab_cr).sames.to_a).to match_array([ib_cr]) }
+            it { expect(find(eab_ct).sames.to_a).to eq([aib_ct]) }
+            it { expect(find(ab_cr).sames.to_a).to eq([ib_cr]) }
           end
 
           describe '#general_transitive_matrix' do
-            it { expect(subject.general_transitive_matrix.to_a).to match_array([
+            it { expect(subject.general_transitive_matrix.to_a).to eq([
                   [true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [true, true, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
@@ -113,19 +117,19 @@ module VersatileDiamond
           end
 
           describe '#specification' do
-            it { expect(subject.specification).to match_array([
+            it { expect(subject.specification).to eq([
                   12, 12, 2, 10, 10, 5, 11, 11, 11, 11, 10, 11, 12, 13, 13, 15, 16, 16, 18, 18, 20, 20, 22, 23, 23, 25, 26, 26, 28, 28, 30, 31
                 ]) }
           end
 
           describe '#actives_to_deactives' do
-            it { expect(subject.actives_to_deactives).to match_array([
+            it { expect(subject.actives_to_deactives).to eq([
                   0, 1, 1, 6, 7, 4, 6, 7, 8, 9, 9, 11, 12, 13, 14, 14, 16, 17, 16, 17, 18, 19, 21, 23, 24, 24, 26, 27, 26, 27, 29, 31
                 ]) }
           end
 
           describe '#deactives_to_actives' do
-            it { expect(subject.deactives_to_actives).to match_array([
+            it { expect(subject.deactives_to_actives).to eq([
                   2, 2, 2, 5, 5, 5, 3, 4, 10, 10, 10, 11, 12, 15, 15, 15, 18, 19, 20, 21, 22, 22, 22, 25, 25, 25, 28, 29, 30, 30, 30, 31
                 ]) }
           end

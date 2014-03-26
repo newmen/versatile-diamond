@@ -48,10 +48,10 @@ module VersatileDiamond
 
       describe '#diff' do
         it { expect(c.diff(c.dup)).to be_empty }
-        it { expect(c.diff(unfixed_c)).to match_array([:unfixed]) }
-        it { expect(c.diff(unfixed_activated_c)).to match_array([:unfixed]) }
-        it { expect(cd.diff(incoherent_cd)).to match_array([:incoherent]) }
-        it { expect(cd.diff(activated_incoherent_cd)).to match_array([:incoherent]) }
+        it { expect(c.diff(unfixed_c)).to eq([:unfixed]) }
+        it { expect(c.diff(unfixed_activated_c)).to eq([:unfixed]) }
+        it { expect(cd.diff(incoherent_cd)).to eq([:incoherent]) }
+        it { expect(cd.diff(activated_incoherent_cd)).to eq([:incoherent]) }
       end
 
       describe '#relations_in' do

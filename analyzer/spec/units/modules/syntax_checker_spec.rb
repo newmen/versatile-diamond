@@ -19,7 +19,8 @@ module VersatileDiamond
           begin
             subject.syntax_error('.hello', name: 'World')
           rescue syntax_error => e
-            expect(e.message('/path', 0)).to eq("Hello, World!\n\tfrom /path:0")
+            expect(e.message('/path', 0)).
+              to eq("Hello, World!\n\tfrom /path:0")
           end
         end
       end

@@ -42,7 +42,7 @@ module VersatileDiamond
       end
 
       describe '#lattices' do
-        it { expect(graph.lattices).to match_array([nil]) }
+        it { expect(graph.lattices).to eq([nil]) }
 
         describe 'one of atoms has lattice' do
           before(:each) { c2.lattice = diamond }
@@ -93,13 +93,13 @@ module VersatileDiamond
       end
 
       describe '#remaining_vertices' do
-        it { expect(graph.remaining_vertices([c0, c2])).to match_array([c1]) }
+        it { expect(graph.remaining_vertices([c0, c2])).to eq([c1]) }
       end
 
       describe '#boundary_vertices' do
-        it { expect(graph.boundary_vertices([c0])).to match_array([c1]) }
-        it { expect(graph.boundary_vertices([c0, c1])).to match_array([c2]) }
-        it { expect(graph.boundary_vertices([c0, c2])).to match_array([c1]) }
+        it { expect(graph.boundary_vertices([c0])).to eq([c1]) }
+        it { expect(graph.boundary_vertices([c0, c1])).to eq([c2]) }
+        it { expect(graph.boundary_vertices([c0, c2])).to eq([c1]) }
       end
 
       describe '#remove_edges!' do
@@ -139,7 +139,7 @@ module VersatileDiamond
 
         describe 'two vertices' do
           before(:each) { graph.remove_vertices!([c0, c1]) }
-          it { expect(vertices).to match_array([c2]) }
+          it { expect(vertices).to eq([c2]) }
         end
       end
 
