@@ -329,7 +329,7 @@ module VersatileDiamond
         describe "#add_smallest" do
           before(:each) { ab_ct.add_smallest(bridge_ct) }
           it { bridge_ct.smallests.should be_nil }
-          it { ab_ct.smallests.to_a.should == [bridge_ct] }
+          it { ab_ct.smallests.to_a.should =~ [bridge_ct] }
         end
       end
 
@@ -340,7 +340,7 @@ module VersatileDiamond
         describe "#add_same" do
           before(:each) { eab_ct.add_same(aib_ct) }
           it { aib_ct.sames.should be_nil }
-          it { eab_ct.sames.to_a.should == [aib_ct] }
+          it { eab_ct.sames.to_a.should =~ [aib_ct] }
         end
       end
 

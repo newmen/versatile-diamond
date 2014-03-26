@@ -145,7 +145,7 @@ module VersatileDiamond
 
       describe "#store_there" do
         before { dimer_base.store_there(on_end) }
-        it { dimer_base.theres.should == [on_end] }
+        it { dimer_base.theres.should =~ [on_end] }
       end
 
       describe "#childs" do
@@ -154,12 +154,12 @@ module VersatileDiamond
 
       describe "#store_child" do
         before { dimer_base.store_child(methyl_on_dimer_base) }
-        it { dimer_base.childs.should == [methyl_on_dimer_base] }
+        it { dimer_base.childs.should =~ [methyl_on_dimer_base] }
       end
 
       describe "#append_childs" do
         before { dimer_base.append_childs([activated_dimer]) }
-        it { dimer_base.childs.should == [activated_dimer] }
+        it { dimer_base.childs.should =~ [activated_dimer] }
       end
 
       describe "#remove_child" do

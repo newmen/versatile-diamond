@@ -61,7 +61,7 @@ module VersatileDiamond
         describe "right atom of bridge is hydride" do
           before(:each) { Tools::Chest.store(h) }
           subject { matcher.match('bridge(cr: H)') }
-          it { subject.atom(:cr).monovalents.should == [:H] }
+          it { subject.atom(:cr).monovalents.should =~ [:H] }
           it { subject.atom(:cl).monovalents.should be_empty }
         end
 
@@ -71,7 +71,7 @@ module VersatileDiamond
           it { subject.atom(:cb).incoherent?.should be_true }
           it { subject.atom(:cm).unfixed?.should be_true }
           it { subject.atom(:cm).actives.should == 2 }
-          it { subject.atom(:cm).monovalents.should == [:Cl] }
+          it { subject.atom(:cm).monovalents.should =~ [:Cl] }
         end
 
         describe "wrong specification" do

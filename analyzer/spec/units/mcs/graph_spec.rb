@@ -42,7 +42,7 @@ module VersatileDiamond
       end
 
       describe "#lattices" do
-        it { graph.lattices.should == [nil] }
+        it { graph.lattices.should =~ [nil] }
 
         describe "one of atoms has lattice" do
           before(:each) { c2.lattice = diamond }
@@ -93,13 +93,13 @@ module VersatileDiamond
       end
 
       describe "#remaining_vertices" do
-        it { graph.remaining_vertices([c0, c2]).should == [c1] }
+        it { graph.remaining_vertices([c0, c2]).should =~ [c1] }
       end
 
       describe "#boundary_vertices" do
-        it { graph.boundary_vertices([c0]).should == [c1] }
-        it { graph.boundary_vertices([c0, c1]).should == [c2] }
-        it { graph.boundary_vertices([c0, c2]).should == [c1] }
+        it { graph.boundary_vertices([c0]).should =~ [c1] }
+        it { graph.boundary_vertices([c0, c1]).should =~ [c2] }
+        it { graph.boundary_vertices([c0, c2]).should =~ [c1] }
       end
 
       describe "#remove_edges!" do
@@ -139,7 +139,7 @@ module VersatileDiamond
 
         describe "two vertices" do
           before(:each) { graph.remove_vertices!([c0, c1]) }
-          it { vertices.should == [c2] }
+          it { vertices.should =~ [c2] }
         end
       end
 

@@ -59,7 +59,7 @@ describe Diamond do
       } end
 
       it { diamond.positions_between(cd0, cd2, links).
-        should == [position_100_front, position_100_front] }
+        should =~ [position_100_front, position_100_front] }
     end
 
     describe "position 100 cross" do
@@ -71,7 +71,7 @@ describe Diamond do
         } end
 
         it { diamond.positions_between(cd0, cd2, links).
-          should == [position_100_cross, position_100_cross] }
+          should =~ [position_100_cross, position_100_cross] }
       end
 
       describe "not found positions in dimer fondation because ambiguity" do

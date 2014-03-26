@@ -32,9 +32,9 @@ module VersatileDiamond
       describe "#specified_atom" do
         let(:method) { Matcher.method(:specified_atom) }
 
-        it { method['C%d'].should == ['C', 'd'] }
-        it { method['Cu%sq'].should == ['Cu', 'sq'] }
-        it { method['S6%hex'].should == ['S6', 'hex'] }
+        it { method['C%d'].should =~ ['C', 'd'] }
+        it { method['Cu%sq'].should =~ ['Cu', 'sq'] }
+        it { method['S6%hex'].should =~ ['S6', 'hex'] }
 
         describe "wrong" do
           it { method['C'].should be_nil }
@@ -50,9 +50,9 @@ module VersatileDiamond
       describe "#used_atom" do
         let(:method) { Matcher.method(:used_atom) }
 
-        it { method['bridge(:ct)'].should == ['bridge', 'ct'] }
-        it { method['dimer( :cr )'].should == ['dimer', 'cr'] }
-        it { method['benzol(:c_3 )'].should == ['benzol', 'c_3'] }
+        it { method['bridge(:ct)'].should =~ ['bridge', 'ct'] }
+        it { method['dimer( :cr )'].should =~ ['dimer', 'cr'] }
+        it { method['benzol(:c_3 )'].should =~ ['benzol', 'c_3'] }
 
         describe "wrong" do
           it { method['BRIDGE(:ct)'].should be_nil }
@@ -68,10 +68,10 @@ module VersatileDiamond
       describe "#specified_spec" do
         let(:method) { Matcher.method(:specified_spec) }
 
-        it { method['bridge(ct: *)'].should == ['bridge', 'ct: *'] }
-        it { method['dimer( cr: i )'].should == ['dimer', 'cr: i'] }
-        it { method['dm(cr: i, cl: u)'].should == ['dm', 'cr: i, cl: u'] }
-        it { method['methyl_on_brdg'].should == ['methyl_on_brdg', nil] }
+        it { method['bridge(ct: *)'].should =~ ['bridge', 'ct: *'] }
+        it { method['dimer( cr: i )'].should =~ ['dimer', 'cr: i'] }
+        it { method['dm(cr: i, cl: u)'].should =~ ['dm', 'cr: i, cl: u'] }
+        it { method['methyl_on_brdg'].should =~ ['methyl_on_brdg', nil] }
 
         describe "wrong" do
           it { method['BRIDGE(ct: *)'].should be_nil }
@@ -87,16 +87,16 @@ module VersatileDiamond
 
         describe "ubiquitous" do
           it { method['H + hydrogen(h: *) = * + hydrogen'].
-              should == [['H', 'hydrogen(h: *)'], ['*', 'hydrogen']] }
+              should =~ [['H', 'hydrogen(h: *)'], ['*', 'hydrogen']] }
           it { method['*+hydrogen(h: *)  =   H'].
-              should == [['*', 'hydrogen(h: *)'], ['H']] }
+              should =~ [['*', 'hydrogen(h: *)'], ['H']] }
         end
 
         describe "typical" do
           it { method['bridge(cr: *) + hydrogen(h: *) = bridge'].
-              should == [['bridge(cr: *)', 'hydrogen(h: *)'], ['bridge']] }
+              should =~ [['bridge(cr: *)', 'hydrogen(h: *)'], ['bridge']] }
           it { method['one(ct: * )+two( ct: *)  =  dimer'].
-              should == [['one(ct: * )', 'two( ct: *)'], ['dimer']] }
+              should =~ [['one(ct: * )', 'two( ct: *)'], ['dimer']] }
         end
 
         describe "wrong" do

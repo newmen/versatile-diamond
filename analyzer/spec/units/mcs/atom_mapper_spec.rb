@@ -14,7 +14,7 @@ module VersatileDiamond
                   source: [[:b, activated_bridge], [:mob, methyl_on_bridge]],
                   products: [[:b, bridge], [:mob, activated_methyl_on_bridge]]
                 }
-              ).changes.should == [
+              ).changes.should =~ [
                 [[activated_bridge, bridge], [[activated_cd, cd]]],
                 [[methyl_on_bridge, activated_methyl_on_bridge],
                   [[c, activated_c]]]
@@ -22,7 +22,7 @@ module VersatileDiamond
           end
 
           describe "methyl activation" do
-            it { ma_atom_map.changes.should == [
+            it { ma_atom_map.changes.should =~ [
                 [[ma_source.first, activated_methyl_on_bridge],
                   [[c, activated_c]]]
               ] }
@@ -36,7 +36,7 @@ module VersatileDiamond
 
         describe "many to one" do
           describe "dimer formation" do
-            it { df_atom_map.changes.should == [
+            it { df_atom_map.changes.should =~ [
                 [[activated_bridge, dimer_dup_ff],
                   [[activated_cd, dimer_dup_ff.atom(:cr)]]],
                 [[activated_incoherent_bridge, dimer_dup_ff],

@@ -38,7 +38,7 @@ module VersatileDiamond
         it { subject.reverse.should == surface_deactivation }
         it { subject.name.should =~ /^reverse/ }
 
-        it { subject.source.should == [adsorbed_h] }
+        it { subject.source.should =~ [adsorbed_h] }
 
         it { subject.products.size.should == 2 }
         it { subject.products.should include(active_bond, hydrogen_ion) }
@@ -89,7 +89,7 @@ module VersatileDiamond
                 dimer_formation, hydrogen_migration])
           end
 
-          it { target.more_complex.should == [complex] }
+          it { target.more_complex.should =~ [complex] }
         end
 
         it_behaves_like "cover just one" do

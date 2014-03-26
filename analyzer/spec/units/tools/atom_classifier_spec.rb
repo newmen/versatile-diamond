@@ -44,21 +44,21 @@ module VersatileDiamond
             it { find(high_cm).smallests.should be_nil }
 
             it { find(bridge_ct).smallests.should be_nil }
-            it { find(ab_ct).smallests.to_a.should == [bridge_ct] }
-            it { find(hb_ct).smallests.to_a.should == [bridge_ct] }
-            it { find(eab_ct).smallests.to_a.should == [ab_ct] }
-            it { find(aib_ct).smallests.to_a.should == [ab_ct] }
-            it { find(ahb_ct).smallests.to_a.should == [hb_ct, aib_ct] }
-            it { find(ehb_ct).smallests.to_a.should == [hib_ct] }
+            it { find(ab_ct).smallests.to_a.should =~ [bridge_ct] }
+            it { find(hb_ct).smallests.to_a.should =~ [bridge_ct] }
+            it { find(eab_ct).smallests.to_a.should =~ [ab_ct] }
+            it { find(aib_ct).smallests.to_a.should =~ [ab_ct] }
+            it { find(ahb_ct).smallests.to_a.should =~ [hb_ct, aib_ct] }
+            it { find(ehb_ct).smallests.to_a.should =~ [hib_ct] }
             it { find(hib_ct).smallests.size.should == 2 }
 
-            it { find(bridge_cr).smallests.to_a.should == [bridge_ct] }
-            it { find(ab_cr).smallests.to_a.should == [ab_ct, bridge_cr] }
-            it { find(hb_cr).smallests.to_a.should == [hb_ct, ib_cr] }
-            it { find(ib_cr).smallests.to_a.should == [bridge_cr] }
+            it { find(bridge_cr).smallests.to_a.should =~ [bridge_ct] }
+            it { find(ab_cr).smallests.to_a.should =~ [ab_ct, bridge_cr] }
+            it { find(hb_cr).smallests.to_a.should =~ [hb_ct, ib_cr] }
+            it { find(ib_cr).smallests.to_a.should =~ [bridge_cr] }
 
-            it { find(dimer_cr).smallests.to_a.should == [bridge_ct] }
-            it { find(ad_cr).smallests.to_a.should == [ab_ct, dimer_cr] }
+            it { find(dimer_cr).smallests.to_a.should =~ [bridge_ct] }
+            it { find(ad_cr).smallests.to_a.should =~ [ab_ct, dimer_cr] }
           end
 
           describe "#sames" do
@@ -71,12 +71,12 @@ module VersatileDiamond
             it { find(ahb_ct).sames.size.should == 2 }
             it { find(ad_cr).sames.size.should == 1 }
 
-            it { find(eab_ct).sames.to_a.should == [aib_ct] }
-            it { find(ab_cr).sames.to_a.should == [ib_cr] }
+            it { find(eab_ct).sames.to_a.should =~ [aib_ct] }
+            it { find(ab_cr).sames.to_a.should =~ [ib_cr] }
           end
 
           describe "#general_transitive_matrix" do
-            it { subject.general_transitive_matrix.to_a.should == [
+            it { subject.general_transitive_matrix.to_a.should =~ [
                   [true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [true, true, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
@@ -113,19 +113,19 @@ module VersatileDiamond
           end
 
           describe "#specification" do
-            it { subject.specification.should == [
+            it { subject.specification.should =~ [
                   12, 12, 2, 10, 10, 5, 11, 11, 11, 11, 10, 11, 12, 13, 13, 15, 16, 16, 18, 18, 20, 20, 22, 23, 23, 25, 26, 26, 28, 28, 30, 31
                 ] }
           end
 
           describe "#actives_to_deactives" do
-            it { subject.actives_to_deactives.should == [
+            it { subject.actives_to_deactives.should =~ [
                   0, 1, 1, 6, 7, 4, 6, 7, 8, 9, 9, 11, 12, 13, 14, 14, 16, 17, 16, 17, 18, 19, 21, 23, 24, 24, 26, 27, 26, 27, 29, 31
                 ] }
           end
 
           describe "#deactives_to_actives" do
-            it { subject.deactives_to_actives.should == [
+            it { subject.deactives_to_actives.should =~ [
                   2, 2, 2, 5, 5, 5, 3, 4, 10, 10, 10, 11, 12, 15, 15, 15, 18, 19, 20, 21, 22, 22, 22, 25, 25, 25, 28, 29, 30, 30, 30, 31
                 ] }
           end

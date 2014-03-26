@@ -103,7 +103,7 @@ module VersatileDiamond
         it { subject.source.size.should == 2 }
         it { subject.source.should include(methyl, abridge_dup) }
 
-        it { subject.products.should == [methyl_on_bridge] }
+        it { subject.products.should =~ [methyl_on_bridge] }
       end
 
       describe "#gases_num" do
@@ -238,7 +238,7 @@ module VersatileDiamond
           ) }
 
         describe "opposite relation stored too" do
-          it { hydrogen_migration.positions.should == [
+          it { hydrogen_migration.positions.should =~ [
               [
                 [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
                 [activated_dimer, activated_dimer.atom(:cr)],
@@ -255,7 +255,7 @@ module VersatileDiamond
         describe "apply to reverse" do
           subject { hydrogen_migration.reverse }
 
-          it { subject.positions.should == [
+          it { subject.positions.should =~ [
               [
                 [
                   activated_methyl_on_dimer,
@@ -284,7 +284,7 @@ module VersatileDiamond
         end
 
         describe "dimer formation" do
-          it { dimer_formation.positions.should == [
+          it { dimer_formation.positions.should =~ [
               [
                 [activated_bridge, activated_bridge.atom(:ct)],
                 [
@@ -357,11 +357,11 @@ module VersatileDiamond
       end
 
       describe "#complex_source_spec_and_atom" do
-        it { methyl_activation.complex_source_spec_and_atom.should == [
+        it { methyl_activation.complex_source_spec_and_atom.should =~ [
             ma_source.first, ma_source.first.atom(:cm)
           ] }
 
-        it { methyl_deactivation.complex_source_spec_and_atom.should == [
+        it { methyl_deactivation.complex_source_spec_and_atom.should =~ [
             dm_source.first, dm_source.first.atom(:cm)
           ] }
       end
@@ -384,7 +384,7 @@ module VersatileDiamond
           reaction.organize_dependencies!(lateral_reactions)
           methyl_desorption.organize_dependencies!(lateral_reactions)
         end
-        it { reaction.more_complex.should == [lateral] }
+        it { reaction.more_complex.should =~ [lateral] }
         it { methyl_desorption.more_complex.should be_empty }
       end
 
@@ -398,7 +398,7 @@ module VersatileDiamond
       end
 
       describe "#changes" do
-        it { dimer_formation.changes.should == [
+        it { dimer_formation.changes.should =~ [
             [
               [activated_bridge, activated_bridge.atom(:ct)],
               [dimer_dup_ff, dimer_dup_ff.atom(:cr)],
