@@ -81,32 +81,32 @@ module VersatileDiamond
         describe 'wrong specification' do
           it 'invalid options' do
             expect { matcher.match('bridge(:wrong)') }.
-              to raise_error *syntax_error(
-                'specific_spec.wrong_specification', atom: 'wrong')
+              to raise_error(*syntax_error(
+                'specific_spec.wrong_specification', atom: 'wrong'))
           end
 
           it 'invalid valence' do
             expect { matcher.match('bridge(ct: ***)') }.
-              to raise_error *syntax_error(
-                'specific_spec.atom_invalid_bonds_num', atom: 'ct', spec: 'bridge')
+              to raise_error(*syntax_error(
+                'specific_spec.atom_invalid_bonds_num', atom: 'ct', spec: 'bridge'))
           end
 
           it 'invalid valence too' do
             expect { matcher.match('bridge(ct: *, ct: *, ct: *)') }.
-              to raise_error *syntax_error(
-                'specific_spec.atom_invalid_bonds_num', atom: 'ct', spec: 'bridge')
+              to raise_error(*syntax_error(
+                'specific_spec.atom_invalid_bonds_num', atom: 'ct', spec: 'bridge'))
           end
 
           it 'twise incoherent' do
             expect { matcher.match('bridge(ct: i, ct: i)') }.
-              to raise_error *syntax_error(
-                'specific_spec.atom_already_has_state', state: 'i')
+              to raise_error(*syntax_error(
+                'specific_spec.atom_already_has_state', state: 'i'))
           end
 
           it 'twise unfixed' do
             expect { matcher.match('methyl_on_bridge(cm: u, cm: u)') }.
-              to raise_error *syntax_error(
-                'specific_spec.atom_already_has_state', state: 'u')
+              to raise_error(*syntax_error(
+                'specific_spec.atom_already_has_state', state: 'u'))
           end
 
           describe 'wrong value' do
@@ -117,20 +117,20 @@ module VersatileDiamond
 
             it 'invalid keyname' do
               expect { matcher.match('bridge(ct: w)') }.
-                to raise_error *syntax_error(
-                  'specific_spec.wrong_specification', atom: 'ct')
+                to raise_error(*syntax_error(
+                  'specific_spec.wrong_specification', atom: 'ct'))
             end
 
             it 'cannot use not monovalent atom' do
               expect { matcher.match('bridge(ct: O)') }.
-                to raise_error *syntax_error(
-                  'specific_spec.wrong_specification', atom: 'ct')
+                to raise_error(*syntax_error(
+                  'specific_spec.wrong_specification', atom: 'ct'))
             end
 
             it 'cannot be hydride' do
               expect { matcher.match('bridge(ct: **, ct: H)') }.
-                to raise_error *syntax_error(
-                  'specific_spec.atom_invalid_bonds_num', atom: 'ct', spec: 'bridge')
+                to raise_error(*syntax_error(
+                  'specific_spec.atom_invalid_bonds_num', atom: 'ct', spec: 'bridge'))
             end
           end
         end

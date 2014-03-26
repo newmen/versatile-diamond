@@ -21,31 +21,31 @@ module VersatileDiamond
 
         it { expect { where.interpret(
             'position :one, :two, face: 100, dir: :front')
-          }.to raise_error *syntax_error('where.cannot_link_targets') }
+          }.to raise_error(*syntax_error('where.cannot_link_targets')) }
 
         it { expect { where.interpret(
             'position right(:cl), right(:cr), face: 100, dir: :front')
-          }.to raise_error *syntax_error('where.should_links_with_target') }
+          }.to raise_error(*syntax_error('where.should_links_with_target')) }
 
         it { expect { where.interpret('position :one, right(:cr)')
-          }.to raise_error *syntax_error('position.incomplete') }
+          }.to raise_error(*syntax_error('position.incomplete')) }
 
         it { expect { where.interpret(
             'position :one, right(:wrong), face: 100, dir: :cross')
-          }.to raise_error *syntax_error(
-            'matcher.undefined_used_atom', name: 'right(:wrong)') }
+          }.to raise_error(*syntax_error(
+            'matcher.undefined_used_atom', name: 'right(:wrong)')) }
 
         it { expect { where.interpret(
           'position :one, wrong(:c), face: 100, dir: :cross')
-          }.to raise_error *keyname_error(:undefined, :spec, :wrong) }
+          }.to raise_error(*keyname_error(:undefined, :spec, :wrong)) }
 
         describe 'duplicate' do
           let(:line) { 'position :one, right(:cr), face: 100, dir: :cross' }
           before { where.interpret(line) }
           it { expect {
               where.interpret(line)
-            }.to raise_error *syntax_warning(
-              'position.duplicate', face: 100, dir: :cross) }
+            }.to raise_error(*syntax_warning(
+              'position.duplicate', face: 100, dir: :cross)) }
         end
 
         describe 'spec are not twise storable' do
@@ -60,7 +60,7 @@ module VersatileDiamond
       describe '#use' do
         describe 'unresolved' do
           it { expect { where.interpret('use :not_important') }.
-            to raise_error *keyname_error(:undefined, :where, :where) }
+            to raise_error(*keyname_error(:undefined, :where, :where)) }
         end
 
         describe 'resolved' do
@@ -75,8 +75,8 @@ module VersatileDiamond
           it 'twise using' do
             where.interpret('use :using_where')
             expect { where.interpret('use :using_where') }.
-              to raise_error *syntax_error(
-                'where.already_use', name: :using_where)
+              to raise_error(*syntax_error(
+                'where.already_use', name: :using_where))
           end
         end
 

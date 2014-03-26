@@ -31,10 +31,10 @@ module VersatileDiamond
 
         describe 'undefined atoms' do
           it { expect { spec.interpret('atoms x: X') }.
-            to raise_error *keyname_error(:undefined, :atom, :X) }
+            to raise_error(*keyname_error(:undefined, :atom, :X)) }
 
           it { expect { spec.interpret('atoms n: nitrogen(:n1)') }.
-            to raise_error *keyname_error(:undefined, :spec, :nitrogen) }
+            to raise_error(*keyname_error(:undefined, :spec, :nitrogen)) }
         end
       end
 
@@ -76,22 +76,22 @@ module VersatileDiamond
         describe 'wrong syntax' do
           let(:wrong_bond) { syntax_error('gas_spec.wrong_bond') }
           it { expect { spec.interpret('bond :n1, :n2, face: 100') }.
-            to raise_error *wrong_bond }
+            to raise_error(*wrong_bond) }
 
           it { expect { spec.interpret('bond :n1, :n2, dir: :front') }.
-            to raise_error *wrong_bond }
+            to raise_error(*wrong_bond) }
         end
 
         describe 'same atom' do
           it { expect { spec.interpret('bond :n1, :n1') }.
-            to raise_error *syntax_error('linker.same_atom') }
+            to raise_error(*syntax_error('linker.same_atom')) }
         end
       end
 
       describe '#simple_atom' do
         it { expect { spec.interpret('atoms n1: N, n2: N%nh4') }.
-          to raise_error *syntax_error(
-            'matcher.undefined_used_atom', name: 'N%nh4') }
+          to raise_error(*syntax_error(
+            'matcher.undefined_used_atom', name: 'N%nh4')) }
       end
     end
 

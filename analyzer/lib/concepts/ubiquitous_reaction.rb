@@ -71,7 +71,7 @@ module VersatileDiamond
       # Counts gases num in source specs scope
       # @return [Integer] number of specs that belongs to gas phase
       def gases_num
-        @source.select(&:is_gas?).size
+        @source.select(&:gas?).size
       end
 
       # Iterates each source spec

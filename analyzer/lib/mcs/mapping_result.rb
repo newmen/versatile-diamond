@@ -97,7 +97,7 @@ module VersatileDiamond
       def add(specs, full_atoms, changed_atoms)
         spec1, spec2 = specs
         atoms1, atoms2 = full_atoms
-        changes1, changes2 = changed_atoms
+        changes1, _ = changed_atoms
 
         # Changes specifics specs and they atoms if it need. After, the
         # relevant states of atoms must be set accordingly.
@@ -204,7 +204,7 @@ module VersatileDiamond
       #   got
       def apply_relevants(spec, old_atom, new_atom)
         os = other_side(spec, old_atom) if old_atom != new_atom
-        os = other_side(spec, new_atom) if !os
+        os = other_side(spec, new_atom) unless os
         os_spec, os_old_atom = os
         swap_atom(spec, old_atom, new_atom) if old_atom != new_atom
 
@@ -296,7 +296,7 @@ module VersatileDiamond
       #   witch compares the own atom
       # @return [Concepts::SpecificAtom] changed or original own atom
       def setup_by_other(target, other, own, foreign)
-        return own if target.is_gas?
+        return own if target.gas?
 
         original_own = own
         own = SpecificAtom.new(own) unless own.is_a?(SpecificAtom)
@@ -305,14 +305,14 @@ module VersatileDiamond
         extb = target.external_bonds_for(original_own)
         if extb > 0
           own.incoherent! if !own.incoherent? &&
-            (other.is_gas? || diff.include?(:incoherent))
+            (other.gas? || diff.include?(:incoherent))
         elsif extb == 0
           own.not_incoherent! if own.incoherent?
         end
 
         own.unfixed! if !own.unfixed? &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
-          ((other.is_gas? && !other.simple?) || diff.include?(:unfixed)) &&
+          ((other.gas? && !other.simple?) || diff.include?(:unfixed)) &&
           !own.lattice
 
         # return own specific atom if atom was a simple atom

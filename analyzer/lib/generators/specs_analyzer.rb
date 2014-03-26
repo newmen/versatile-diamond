@@ -21,11 +21,11 @@ module VersatileDiamond
       # @return [Array] the array of used species
       def used_surface_specs
         return @used_surface_specs if @used_surface_specs
-        @used_surface_specs = (base_specs + specific_specs).reject(&:is_gas?)
+        @used_surface_specs = (base_specs + specific_specs).reject(&:gas?)
         cache =
           (base_specs.map(&:name) + specific_specs.map(&:full_name)).to_set
         nonubiquitous_reactions.each do |reaction|
-          reaction.products.reject(&:is_gas?).each do |spec|
+          reaction.products.reject(&:gas?).each do |spec|
             name = spec.full_name
             next if cache.include?(name)
             cache << name
@@ -38,7 +38,7 @@ module VersatileDiamond
       # Gets all base surface species
       # @return [Array] the array of base specs
       def base_surface_specs
-        base_specs.reject(&:is_gas?)
+        base_specs.reject(&:gas?)
       end
 
       # Gets all specific surface species

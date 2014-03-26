@@ -93,13 +93,13 @@ module VersatileDiamond
           c2 => [[activated_c, free_bond], [activated_c, free_bond]] }) }
       end
 
-      describe '#is_gas?' do
-        it { expect(hydrogen.is_gas?).to be_true }
-        it { expect(hydrogen_ion.is_gas?).to be_true }
-        it { expect(methane.is_gas?).to be_true }
-        it { expect(methyl.is_gas?).to be_true }
-        it { expect(bridge.is_gas?).to be_false }
-        it { expect(extra_activated_bridge.is_gas?).to be_false }
+      describe '#gas?' do
+        it { expect(hydrogen.gas?).to be_true }
+        it { expect(hydrogen_ion.gas?).to be_true }
+        it { expect(methane.gas?).to be_true }
+        it { expect(methyl.gas?).to be_true }
+        it { expect(bridge.gas?).to be_false }
+        it { expect(extra_activated_bridge.gas?).to be_false }
       end
 
       describe '#simple?' do

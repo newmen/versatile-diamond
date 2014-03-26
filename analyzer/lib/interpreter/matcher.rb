@@ -1,7 +1,8 @@
 module VersatileDiamond
   module Interpreter
 
-    # Matcher class is intended for matching special entities from analyzing file
+    # Matcher class is intended for matching special entities from analyzing
+    # file
     class Matcher
 
       # active bond always defined as star (*)
@@ -62,7 +63,8 @@ module VersatileDiamond
           /\A(?<spec>#{SPEC_NAME})\(\s*:(?<atom>[a-z][a-z0-9_]*)\s*\)\Z/
         end
 
-        # Matches species specified by options passed in brackets if they exists
+        # Matches species specified by options passed in brackets if they
+        # exists
         define_match :specified_spec, :spec, :options do
           /\A(?<spec>#{SPEC_NAME})(?:\(\s*(?<options>#{OPTIONS})\s*\))?\Z/
         end

@@ -55,7 +55,7 @@ module VersatileDiamond
       #   lattice
       def position_between(first, second, position)
         if @mapping.reaction_type == :dissociation
-          raise "Cannot link atoms of single structure"
+          raise 'Cannot link atoms of single structure'
         end
 
         link_together(first, second, position)

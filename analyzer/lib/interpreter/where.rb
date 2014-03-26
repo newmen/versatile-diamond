@@ -35,7 +35,7 @@ module VersatileDiamond
 
         atom_strs.each do |atom_str|
           atom_sym = atom_str.to_sym
-          if @env.is_target?(atom_sym)
+          if @env.target?(atom_sym)
             syntax_error('.cannot_link_targets') if target
             target = atom_sym
           else

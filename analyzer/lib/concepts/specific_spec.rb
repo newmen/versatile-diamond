@@ -43,7 +43,7 @@ module VersatileDiamond
         reset_caches
       end
 
-      def_delegators :@spec, :extendable?, :is_gas?, :simple?
+      def_delegators :@spec, :extendable?, :gas?, :simple?
 
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec
@@ -102,17 +102,16 @@ module VersatileDiamond
       # @raise [ArgumentError] when keyname is undefined, or keyname already
       #   specified, or atom is not specified
       def describe_atom(keyname, atom)
-        if !spec.atom(keyname)
+        unless spec.atom(keyname)
           raise ArgumentError, "Undefined atom #{keyname} for #{name}!"
         end
         if @specific_atoms[keyname]
           raise ArgumentError,
             "Atom #{keyname} for specific #{name} already described!"
         end
-        if !atom.is_a?(SpecificAtom)
+        unless atom.is_a?(SpecificAtom)
           raise ArgumentError,
-            "Described atom #{keyname} for specific #{name} cannot be"
-            "unspecified"
+            "Described atom #{keyname} for specific #{name} cannot be unspecified"
         end
         @specific_atoms[keyname] = atom
         reset_caches
@@ -212,7 +211,7 @@ module VersatileDiamond
       # Checks that specific spec could be reduced
       # @return [Boolean] could or not
       def could_be_reduced?
-        raise "Not extended spec cannot be reduced" unless extended?
+        raise 'Not extended spec cannot be reduced' unless extended?
 
         Spec.good_for_reduce?(@specific_atoms.keys)
       end
@@ -279,7 +278,7 @@ module VersatileDiamond
       # @param [Atom] term_atom the termination atom
       # @return [Boolean] has termination atom or not
       def has_termination_atom?(internal_atom, term_atom)
-        (Atom.is_hydrogen?(term_atom) &&
+        (Atom.hydrogen?(term_atom) &&
           external_bonds_for(internal_atom) > 0) ||
           has_monovalent_in_links?(internal_atom, term_atom) ||
           (internal_atom.monovalents.include?(term_atom.name))
@@ -290,7 +289,7 @@ module VersatileDiamond
       #
       # @return [Float] size of current specific spec
       def size
-        is_gas? ?
+        gas? ?
           0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
       end
 
@@ -345,7 +344,7 @@ module VersatileDiamond
       # @override
       def internal_bonds_for(atom)
         valid_atom = links[atom] ? atom : atom(@spec.keyname(atom))
-        super(atom)
+        super(valid_atom)
       end
 
       # Collect all relevant states for passed atom

@@ -16,8 +16,8 @@ module VersatileDiamond
         it { expect(adsorbed_h.external_bonds).to eq(1) }
       end
 
-      describe '#is_hydrogen?' do
-        it { adsorbed_h.is_hydrogen? }
+      describe '#hydrogen?' do
+        it { adsorbed_h.hydrogen? }
       end
 
       describe '#same?' do

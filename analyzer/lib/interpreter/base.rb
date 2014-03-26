@@ -18,10 +18,10 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] then incorrect when line with indent
       #   and block has not given
       def interpret(line, zero_level_func, &block)
-        if !has_indent?(line)
-          zero_level_func[line]
-        else
+        if has_indent?(line)
           block_given? ? block[line] : syntax_error('common.wrong_hierarchy')
+        else
+          zero_level_func[line]
         end
       end
 

@@ -31,12 +31,12 @@ module VersatileDiamond
       # @override
       def generate(no_specs: false, no_spec_specs: false, no_reactions: false)
         # draw calls order is important!
-        draw_specs if !no_specs
-        draw_specific_specs if !no_spec_specs
+        draw_specs unless no_specs
+        draw_specific_specs unless no_spec_specs
         draw_termination_specs
         draw_wheres
 
-        if !no_reactions
+        unless no_reactions
           draw_typical_reactions
           draw_ubiquitous_reactions
           draw_lateral_reactions
@@ -194,7 +194,7 @@ module VersatileDiamond
         draw_edge_to = -> spec do
         if (spec_node = @sp_specs_to_nodes[spec])
             @graph.add_edges(reaction_node, spec_node).set do |e|
-              color = spec.is_gas? ?
+              color = spec.gas? ?
                 TYPICAL_REACTION_SECOND_SOURCE_EDGE_COLOR :
                 TYPICAL_REACTION_COLOR
 

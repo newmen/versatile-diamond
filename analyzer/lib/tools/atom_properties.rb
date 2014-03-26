@@ -98,7 +98,7 @@ module VersatileDiamond
         if term_spec.class == ActiveBond
           actives_num
         elsif term_spec.class == AtomicSpec
-          if term_spec.is_hydrogen?
+          if term_spec.hydrogen?
             total_hydrogens_num
           else
             count_danglings(term_spec.name)
@@ -187,18 +187,14 @@ module VersatileDiamond
         name = atom_name.to_s
 
         dg = danglings.dup
-        while dg.delete_one(:active)
-          name = "*#{name}"
-        end
+        name = "*#{name}" while dg.delete_one(:active)
 
         while (monovalent_atom = dg.pop)
           name = "#{monovalent_atom}#{name}"
         end
 
         rl = relations.dup
-        while rl.delete_one { |r| r.is_a?(Position) }
-          name = "#{name}."
-        end
+        name = "#{name}." while rl.delete_one { |r| r.is_a?(Position) }
 
         if relevants
           relevants.each do |sym|
@@ -233,13 +229,8 @@ module VersatileDiamond
           name = "=#{name}"
         end
 
-        if rl.delete_one(bond_front_100)
-          name = "-#{name}"
-        end
-
-        while rl.delete_one(undirected_bond)
-          name = "~#{name}"
-        end
+        name = "-#{name}" if rl.delete_one(bond_front_100)
+        name = "~#{name}" while rl.delete_one(undirected_bond)
 
         name
       end
@@ -263,7 +254,7 @@ module VersatileDiamond
       ).each_with_index do |name, i|
         define_method(name) { @props[i] }
       end
-      public :lattice
+      public :atom_name, :lattice
 
       # The static (not arrayed) states of properties
       #   [atom_name, valence, lattice]
@@ -317,7 +308,7 @@ module VersatileDiamond
       # @param [Symbol] method by which will be comparing
       # @return [Boolean] lists are equal or not
       def eq_relevants?(other)
-        return true if !relevants && !other.relevants
+        return true unless relevants || other.relevants
         relevants && other.relevants && eq_by?(other, :relevants)
       end
 
@@ -359,7 +350,7 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def same_correspond_relations?(other)
         return false if relevants && !other.relevants
-        return true if !relevants
+        return true unless relevants
         !relevants.include?(:incoherent) && other.relevants.include?(:unfixed)
       end
 
@@ -375,7 +366,9 @@ module VersatileDiamond
           atom_rel = links.pop
           same = links.select { |ar| ar == atom_rel }
 
-          if !same.empty?
+          if same.empty?
+            relations << atom_rel.last
+          else
             if same.size == 3 && same.size != 4
               relations << :tbond
               links.delete_one(atom_rel)
@@ -383,8 +376,6 @@ module VersatileDiamond
               relations << :dbond
             end
             links.delete_one(atom_rel)
-          else
-            relations << atom_rel.last
           end
         end
         relations

@@ -4,8 +4,8 @@ module VersatileDiamond
   module Concepts
 
     describe GasSpec do
-      describe '#is_gas?' do
-        subject { GasSpec.new(:some_gas).is_gas? }
+      describe '#gas?' do
+        subject { GasSpec.new(:some_gas).gas? }
         it { should be_true }
       end
 

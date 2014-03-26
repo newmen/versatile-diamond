@@ -34,7 +34,7 @@ module VersatileDiamond
         env = get(:environment, env_name)
         targeted = {}
         resolved_targets = target_refs.map do |target_name, used_atom_str|
-          if env.is_target?(target_name) && !targeted[target_name]
+          if env.target?(target_name) && !targeted[target_name]
             targeted[target_name] = true
           else
             syntax_error('.undefined_target', name: target_name)

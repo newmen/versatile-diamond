@@ -25,12 +25,12 @@ module VersatileDiamond
           store_prop(prop, check: false)
 
           activated_prop = prop
-          while activated_prop = activated_prop.activated
+          while (activated_prop = activated_prop.activated)
             store_prop(activated_prop)
           end
 
           deactivated_prop = prop
-          while deactivated_prop = deactivated_prop.deactivated
+          while (deactivated_prop = deactivated_prop.deactivated)
             store_prop(deactivated_prop)
           end
         end
@@ -195,7 +195,7 @@ module VersatileDiamond
       def store_prop(prop, check: true)
         @props << prop unless check && index(prop)
 
-        if !prop.incoherent?
+        unless prop.incoherent?
           incoherent_prop = prop.incoherent
           store_prop(incoherent_prop) if incoherent_prop
         end
@@ -313,9 +313,7 @@ module VersatileDiamond
         n = 0
         until queue.empty?
           curr = queue.shift
-          if curr == to
-            return n
-          end
+          return n if curr == to
 
           break unless curr.smallests
 

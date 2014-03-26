@@ -4,8 +4,8 @@ module VersatileDiamond
   module Concepts
 
     describe SurfaceSpec do
-      describe '#is_gas?' do
-        subject { SurfaceSpec.new(:some_surface).is_gas? }
+      describe '#gas?' do
+        subject { SurfaceSpec.new(:some_surface).gas? }
         it { should be_false }
       end
 

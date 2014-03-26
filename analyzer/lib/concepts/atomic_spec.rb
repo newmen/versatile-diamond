@@ -15,8 +15,8 @@ module VersatileDiamond
 
       # Is hydrogen or not?
       # @return [Boolean]
-      def is_hydrogen?
-        Atom.is_hydrogen?(@atom)
+      def hydrogen?
+        Atom.hydrogen?(@atom)
       end
 
       # Each atomic spec have 1 external bonds
@@ -37,12 +37,11 @@ module VersatileDiamond
       # @param [Atom | SpecificAtom] atom the verifying atom
       # @return [Boolean] is cover or not
       def cover?(specific_spec, atom)
-        !specific_spec.is_gas? &&
-          specific_spec.has_termination_atom?(atom, @atom)
+        !specific_spec.gas? && specific_spec.has_termination_atom?(atom, @atom)
       end
 
       def to_s
-        "[#{@atom.to_s}]"
+        "[#{@atom}]"
       end
     end
 

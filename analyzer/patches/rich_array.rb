@@ -10,7 +10,7 @@ module VersatileDiamond
         def delete_one(item = nil, &block)
           index = item && !block_given? ?
             index(item) :
-            block_given? ? index(&block) : (raise ArgumentError)
+            (block_given? ? index(&block) : (raise ArgumentError))
 
           delete_at(index || size)
         end

@@ -15,7 +15,7 @@ module VersatileDiamond
         list1, list2 = list1.to_a.dup, list2.to_a.dup
         list1.reduce(true) do |acc, item1|
           acc && (i = list2.index { |item2| block[item1, item2] }) &&
-            !!(list2.delete_at(i) || item1.nil?)
+            (list2.delete_at(i) || item1.nil?)
         end
       end
     end

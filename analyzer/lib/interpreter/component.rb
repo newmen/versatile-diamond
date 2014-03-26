@@ -14,7 +14,7 @@ module VersatileDiamond
 
     private
 
-      # Сalls self method where methond name is first word of the line
+      # Calls self method where method name is first word of the line
       # @param [String] line see at super interpret method same argument
       def call_by_first_word(line)
         method_name, args_str = head_and_tail(line)

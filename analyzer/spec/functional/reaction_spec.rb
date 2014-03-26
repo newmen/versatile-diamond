@@ -11,7 +11,7 @@ module VersatileDiamond
 
         it 'error when spec name is undefined' do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
-            to raise_error *keyname_error(:undefined, :spec, :hydrogen)
+            to raise_error(*keyname_error(:undefined, :spec, :hydrogen))
         end
 
         describe 'ubiquitous equation' do
@@ -42,7 +42,7 @@ module VersatileDiamond
 
           it "don't nest equation interpreter instance" do
             expect { reaction.interpret('  refinement "some"') }.
-              to raise_error *syntax_error('common.wrong_hierarchy')
+              to raise_error(*syntax_error('common.wrong_hierarchy'))
           end
         end
 
@@ -54,8 +54,8 @@ module VersatileDiamond
           it 'not complience reactants' do
             expect { reaction.interpret(
                 'equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
-              to raise_error *syntax_error(
-                'reaction.cannot_map', name: 'bridge')
+              to raise_error(*syntax_error(
+                'reaction.cannot_map', name: 'bridge'))
           end
 
           describe 'simple reaction' do
@@ -230,7 +230,7 @@ module VersatileDiamond
           describe 'reaction with wrong balance' do
             it { expect { reaction.interpret(
                 'equation bridge(cr: *, cl: *) + methane(c: *) = methyl_on_bridge'
-              ) }.to raise_error *syntax_error('reaction.wrong_balance') }
+              ) }.to raise_error(*syntax_error('reaction.wrong_balance')) }
           end
         end
 

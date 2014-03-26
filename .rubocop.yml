@@ -1,0 +1,23 @@
+AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+DotPosition:
+  EnforcedStyle: trailing
+
+FormatString:
+  EnforcedStyle: percent
+
+LambdaCall:
+  EnforcedStyle: braces
+
+
+PredicateName:
+  NamePrefixBlacklist:
+    - is_
+    - are_
+
+SignalException:
+  EnforcedStyle: only_raise

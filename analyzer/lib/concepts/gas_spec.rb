@@ -6,7 +6,7 @@ module VersatileDiamond
 
       # Returns that spec is gas
       # @return [Boolean] gas or not
-      def is_gas?
+      def gas?
         true
       end
 
