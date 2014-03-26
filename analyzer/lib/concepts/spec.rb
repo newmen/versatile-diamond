@@ -81,7 +81,7 @@ module VersatileDiamond
         duplicates.each do |keyname, atom|
           current_keyname = block_given? ?
             block[keyname, generate_keyname(keyname), atom] :
-            @atoms[keyname] ? generate_keyname(keyname) : keyname
+            (@atoms[keyname] ? generate_keyname(keyname) : keyname)
 
           # if block was given and returned keyname or block is not given
           describe_atom(current_keyname, atom) if current_keyname
@@ -324,7 +324,7 @@ module VersatileDiamond
         begin
           keyname = "#{prefix}#{name}#{i}".to_sym
           i += 1
-        end while (atom(keyname))
+        end while atom(keyname)
         keyname
       end
 

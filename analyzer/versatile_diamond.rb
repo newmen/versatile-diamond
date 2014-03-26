@@ -14,14 +14,14 @@ require_each 'patches/*.rb' # same as monkey's patches
 using VersatileDiamond::Patches::RichString
 
 AUTO_LOADING_DIRS = Dir["#{__dir__}/lib/**/"].map do |dir|
-  (m = dir.match(/\/(\w+)\/\Z/)) && m[1]
+  (m = dir.match(%r{/(\w+)/\Z})) && m[1]
 end.compact
 
 def VersatileDiamond.const_missing(class_name, dir = nil)
   filename = class_name.to_s.underscore
 
   unless dir
-    dir = find_dir(filename, *AUTO_LOADING_DIRS.map { |dir| "lib/#{dir}" })
+    dir = find_dir(filename, *AUTO_LOADING_DIRS.map { |d| "lib/#{d}" })
   end
 
   if dir

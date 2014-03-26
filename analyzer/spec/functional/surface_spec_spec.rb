@@ -20,10 +20,10 @@ module VersatileDiamond
           end
 
           it { expect { spec.interpret('position :c1, :c2, face: 100') }.
-            to raise_error *incomplete }
+            to raise_error(*incomplete) }
 
           it { expect { spec.interpret('position :c1, :c2, dir: :front') }.
-            to raise_error *incomplete }
+            to raise_error(*incomplete) }
 
           it { expect {
               spec.interpret('position :c1, :c2, face: 100, dir: :front')
@@ -37,8 +37,8 @@ module VersatileDiamond
 
           it { expect {
               spec.interpret('position :c1, :c2, face: 100, dir: :front')
-            }.to raise_error *syntax_error(
-              'surface_spec.undefined_relation', relation: position_100_front)
+            }.to raise_error(*syntax_error(
+              'surface_spec.undefined_relation', relation: position_100_front))
           }
         end
 
@@ -47,8 +47,8 @@ module VersatileDiamond
 
           it { expect {
               spec.interpret('position :cl, :cr, face: 100, dir: :front')
-            }.to raise_error *syntax_warning(
-              'position.duplicate', face: 100, dir: :front) }
+            }.to raise_error(*syntax_warning(
+              'position.duplicate', face: 100, dir: :front)) }
         end
       end
     end

@@ -1,15 +1,15 @@
 module VersatileDiamond
   module Tools
 
-    # Converts the passing values in concrete dimension to self
-    #   dimension values
+    # Converts the passing values in concrete dimension to self dimension
+    # values
     class Dimension
 
       # Universal gas constant
       R = 8.3144621 # J/(mol * K)
 
       # These values are using into calculation program on C++ by default
-      # On these values bases convert_value methods ​​in this class
+      # On there values bases convert_value methods in this class
       DEFAULT_TEMPERATURE = 'K'.freeze
       DEFAULT_CONCENTRATION = 'mol/cm3'.freeze
       DEFAULT_ENERGY = 'J/mol'.freeze
@@ -65,7 +65,7 @@ module VersatileDiamond
           if gases_num > 0 || dimension != DEFAULT_RATE
             _, dividend, _, divisor =
               dimension.gsub(/\(|\)/, '|').gsub(/\s/, '').
-                scan(/\A(\|)?([^\/]+)\1?\/(\|)?(.+?)\3?\Z/).first
+                scan(%r{\A(\|)?([^\/]+)\1?/(\|)?(.+?)\3?\Z}).first
 
             syntax_error('.undefined_value') unless dividend && divisor
 
@@ -184,7 +184,7 @@ module VersatileDiamond
         # @raise [Errors::SyntaxError] if value cannot be converted
         # @return [Float] converted value
         def convert_value(value, dimension, cases)
-          _, func = cases.find { |matcher, _| matcher === dimension }
+          _, func = cases.find { |matcher, _| matcher.match(dimension) }
           func ? func[value] : syntax_error('.undefined_value')
         end
 

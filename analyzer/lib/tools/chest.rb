@@ -121,12 +121,15 @@ module VersatileDiamond
         # @return [Concepts::Named] founded concept
         # @override
         def method_missing(key, *names)
-          unless @sac && @sac[key]
-            super
+          if @sac && @sac[key]
+            result = names.reduce(@sac[key]) { |hash, name| hash[name.to_sym] }
+            unless result
+              names_seq = names.join(' -> ')
+              raise(Chest::KeyNameError.new(key, names_seq, :undefined))
+            end
+            result
           else
-            names.reduce(@sac[key]) { |hash, name| hash[name.to_sym] } ||
-              raise(
-                Chest::KeyNameError.new(key, names.join(' -> '), :undefined))
+            super
           end
         rescue NoMethodError => e
           raise(Chest::KeyNameError.new(key, e.name, :undefined))

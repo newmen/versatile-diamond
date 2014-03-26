@@ -90,9 +90,7 @@ module VersatileDiamond
           reaction.gases_num == 0 ?
             arrenius :
             reaction.each_source.reduce(arrenius) do |acc, spec|
-              spec.is_gas? ?
-                acc * ((@concs && @concs[spec.full_name]) || 0) :
-                acc
+              spec.gas? ? acc * ((@concs && @concs[spec.full_name]) || 0) : acc
             end
         end
       end

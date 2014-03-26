@@ -23,7 +23,7 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] if spec cannot be resolved
       def aliases(**refs)
         @names_and_specs = refs.each_with_object({}) do |(name, spec_str), h|
-          h[name] = match_specific_spec(spec_str) { |name| get(:spec, name) }
+          h[name] = match_specific_spec(spec_str) { |nm| get(:spec, nm) }
         end
       end
 

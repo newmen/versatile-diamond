@@ -7,8 +7,8 @@ module VersatileDiamond
       attr_reader :face, :dir
 
       class << self
-        # The singleton method [] caches all instnaces and returns it if face and
-        #   direction of the same.
+        # The singleton method [] caches all instnaces and returns it if face
+        # and direction of the same.
         #
         # @option [Symbol] :face the face of bond
         # @option [Symbol] :dir the direction of bond

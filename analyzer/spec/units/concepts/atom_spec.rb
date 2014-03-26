@@ -4,9 +4,9 @@ module VersatileDiamond
   module Concepts
 
     describe Atom do
-      describe '#self.is_hydrogen?' do
-        it { expect(Atom.is_hydrogen?(h)).to be_true }
-        it { expect(Atom.is_hydrogen?(c)).to be_false }
+      describe '#self.hydrogen?' do
+        it { expect(Atom.hydrogen?(h)).to be_true }
+        it { expect(Atom.hydrogen?(c)).to be_false }
       end
 
       describe '#valence' do

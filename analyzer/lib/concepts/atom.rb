@@ -14,7 +14,7 @@ module VersatileDiamond
         # Checks passed atom to hydrogen
         # @param [Atom] atom is checking atom
         # @return [Boolean] is it?
-        def is_hydrogen?(atom)
+        def hydrogen?(atom)
           atom.name == :H
         end
       end

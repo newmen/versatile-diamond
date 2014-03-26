@@ -15,7 +15,7 @@ module VersatileDiamond
         result = classifier.general_transitive_matrix.to_a
         puts matrix_to_s(result)
 
-        print "Specification: "
+        print 'Specification: '
         puts classifier.specification.join(', ')
 
         termination_specs.map do |spec|
@@ -23,7 +23,7 @@ module VersatileDiamond
 
           values = Array.new(props.size) { 0 }
           classifier.classify(spec).each do |i, (_, n)|
-            values[i] = n;
+            values[i] = n
           end
           puts values.join(', ')
         end

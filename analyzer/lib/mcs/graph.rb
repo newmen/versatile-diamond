@@ -266,7 +266,7 @@ module VersatileDiamond
         end
       end
 
-      # Performs a recursive search in hash, in which the values ​​are the keys
+      # Performs a recursive search in hash, in which the values are the keys
       # for other values
       #
       # @param [Hash] hash the hash to be searched

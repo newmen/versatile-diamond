@@ -21,7 +21,7 @@ module VersatileDiamond
       describe '#aliases' do
         context 'undefined spec' do
           it { expect { spec.interpret('aliases ng: nitrogen') }.
-            to raise_error *keyname_error(:undefined, :spec, :nitrogen) }
+            to raise_error(*keyname_error(:undefined, :spec, :nitrogen)) }
         end
       end
     end

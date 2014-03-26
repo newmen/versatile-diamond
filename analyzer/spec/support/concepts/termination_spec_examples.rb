@@ -6,8 +6,8 @@ module VersatileDiamond
         shared_examples_for 'termination spec' do
           it { expect(subject).to be_a(TerminationSpec) }
 
-          describe '#is_gas?' do
-            it { expect(subject.is_gas?).to be_false }
+          describe '#gas?' do
+            it { expect(subject.gas?).to be_false }
           end
 
           describe '#simple?' do

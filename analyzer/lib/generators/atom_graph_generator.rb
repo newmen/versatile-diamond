@@ -99,7 +99,7 @@ module VersatileDiamond
         cache = {}
         nonubiquitous_reactions.each do |reaction|
           reaction.changes.each do |spec_atoms|
-            next if spec_atoms.map(&:first).any?(&:is_gas?)
+            next if spec_atoms.map(&:first).any?(&:gas?)
 
             indexes = spec_atoms.map do |spec_atom|
               classifier.index(*spec_atom)

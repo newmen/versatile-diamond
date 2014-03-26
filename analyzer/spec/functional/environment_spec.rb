@@ -8,9 +8,9 @@ module VersatileDiamond
 
       describe '#targets' do
         before { environment.interpret('targets :one_atom, :two_atom') }
-        it { expect(dimers_row.is_target?(:one_atom)).to be_true }
-        it { expect(dimers_row.is_target?(:two_atom)).to be_true }
-        it { expect(dimers_row.is_target?(:wrong)).to be_false }
+        it { expect(dimers_row.target?(:one_atom)).to be_true }
+        it { expect(dimers_row.target?(:two_atom)).to be_true }
+        it { expect(dimers_row.target?(:wrong)).to be_false }
       end
 
       describe '#aliases' do
@@ -19,7 +19,7 @@ module VersatileDiamond
           not_to raise_error }
 
         it { expect { environment.interpret('aliases one: wrong') }.
-          to raise_error *keyname_error(:undefined, :spec, :wrong) }
+          to raise_error(*keyname_error(:undefined, :spec, :wrong)) }
 
         describe 'aliases use specific specs' do
           before do
@@ -43,7 +43,7 @@ module VersatileDiamond
           to be_a(Concepts::Where) }
 
         it { expect { environment.interpret('where :end_row, "some desc"') }.
-          to raise_error *keyname_error(:duplication, :where, :end_row) }
+          to raise_error(*keyname_error(:duplication, :where, :end_row)) }
       end
     end
 

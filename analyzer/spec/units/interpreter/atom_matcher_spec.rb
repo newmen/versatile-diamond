@@ -18,15 +18,15 @@ module VersatileDiamond
           atom_str = "#{name}(:ct)"
           it %(wrong spec name "#{name}") do
             expect { subject.match_used_atom(atom_str) }.
-              to raise_error *syntax_error(
-                'matcher.undefined_used_atom', name: atom_str)
+              to raise_error(*syntax_error(
+                'matcher.undefined_used_atom', name: atom_str))
           end
         end
 
         it 'wrong used atom description' do
           expect { subject.match_used_atom('bridge') }.
-            to raise_error *syntax_error(
-              'matcher.undefined_used_atom', name: 'bridge')
+            to raise_error(*syntax_error(
+              'matcher.undefined_used_atom', name: 'bridge'))
         end
       end
     end

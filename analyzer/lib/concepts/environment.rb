@@ -22,7 +22,7 @@ module VersatileDiamond
       # Checks passed name for current target
       # @param [Symbol] name the name of one of targets
       # @return [Boolean] it is target or not
-      def is_target?(name)
+      def target?(name)
         @targets.include?(name)
       end
 

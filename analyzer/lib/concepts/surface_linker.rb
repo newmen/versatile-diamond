@@ -45,7 +45,7 @@ module VersatileDiamond
         if a && b
           true
         elsif a || b
-          raise "Checking positions ERROR"
+          raise 'Checking positions ERROR'
         else
           false
         end

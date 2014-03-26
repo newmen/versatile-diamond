@@ -14,7 +14,7 @@ module VersatileDiamond
 
       # Termination spec cannot belong to the gas phase
       # @return [Boolean] false
-      def is_gas?
+      def gas?
         false
       end
 

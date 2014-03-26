@@ -12,17 +12,17 @@ module VersatileDiamond
       describe 'incorrect atom' do
         it 'atom name is invalid' do
           expect { elements.interpret('atom wrong, valence: 1') }.
-            to raise_error *syntax_error('atom.invalid_name', name: 'wrong')
+            to raise_error(*syntax_error('atom.invalid_name', name: 'wrong'))
         end
 
         it 'wihtout valence' do
           expect { elements.interpret('atom H') }.
-            to raise_error *syntax_error('atom.without_valence', name: 'H')
+            to raise_error(*syntax_error('atom.without_valence', name: 'H'))
         end
 
         it 'incorrect valence' do
           expect { elements.interpret('atom H, valence: 0') }.
-            to raise_error *syntax_error('atom.invalid_valence', name: 'H')
+            to raise_error(*syntax_error('atom.invalid_valence', name: 'H'))
         end
       end
     end
