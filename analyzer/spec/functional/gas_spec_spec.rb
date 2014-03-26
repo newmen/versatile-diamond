@@ -24,9 +24,9 @@ module VersatileDiamond
             spec.interpret('atoms n: nitrogen(:n1)')
           end
 
-          it { concept.external_bonds_for(concept.atom(:n)).should == 0 }
-          it { concept.atom(:n1).should be_nil }
-          it { concept.atom(:n2).should be_nil }
+          it { expect(concept.external_bonds_for(concept.atom(:n))).to eq(0) }
+          it { expect(concept.atom(:n1)).to be_nil }
+          it { expect(concept.atom(:n2)).to be_nil }
         end
 
         describe "undefined atoms" do
@@ -46,9 +46,9 @@ module VersatileDiamond
             spec.interpret('atoms nf: ng(:n1), ns: ng(:n2)')
           end
 
-          it { concept.external_bonds_for(concept.atom(:nf)).should == 0 }
-          it { concept.external_bonds_for(concept.atom(:ns)).should == 0 }
-          it { concept.size.should == 2 }
+          it { expect(concept.external_bonds_for(concept.atom(:nf))).to eq(0) }
+          it { expect(concept.external_bonds_for(concept.atom(:ns))).to eq(0) }
+          it { expect(concept.size).to eq(2) }
         end
       end
 
@@ -57,20 +57,20 @@ module VersatileDiamond
 
         describe "#bond" do
           before(:each) { spec.interpret('bond :n1, :n2') }
-          it { concept.external_bonds_for(concept.atom(:n1)).should == 2 }
-          it { concept.external_bonds_for(concept.atom(:n2)).should == 2 }
+          it { expect(concept.external_bonds_for(concept.atom(:n1))).to eq(2) }
+          it { expect(concept.external_bonds_for(concept.atom(:n2))).to eq(2) }
         end
 
         describe "#dbond" do
           before(:each) { spec.interpret('dbond :n1, :n2') }
-          it { concept.external_bonds_for(concept.atom(:n1)).should == 1 }
-          it { concept.external_bonds_for(concept.atom(:n2)).should == 1 }
+          it { expect(concept.external_bonds_for(concept.atom(:n1))).to eq(1) }
+          it { expect(concept.external_bonds_for(concept.atom(:n2))).to eq(1) }
         end
 
         describe "#tbond" do
           before(:each) { spec.interpret('tbond :n1, :n2') }
-          it { concept.external_bonds_for(concept.atom(:n1)).should == 0 }
-          it { concept.external_bonds_for(concept.atom(:n2)).should == 0 }
+          it { expect(concept.external_bonds_for(concept.atom(:n1))).to eq(0) }
+          it { expect(concept.external_bonds_for(concept.atom(:n2))).to eq(0) }
         end
 
         describe "wrong syntax" do

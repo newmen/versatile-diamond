@@ -6,33 +6,33 @@ module VersatileDiamond
     describe MappingResult do
       %w(source products).each do |type|
         describe "##{type}" do
-          it { md_atom_map.send(type).should == send("md_#{type}") }
+          it { expect(md_atom_map.send(type)).to eq(send("md_#{type}")) }
         end
       end
 
       describe "#reaction_type" do
-        it { ma_atom_map.reaction_type.should == :exchange }
-        it { dm_atom_map.reaction_type.should == :exchange }
-        it { md_atom_map.reaction_type.should == :dissociation }
-        it { hm_atom_map.reaction_type.should == :exchange }
-        it { df_atom_map.reaction_type.should == :association }
+        it { expect(ma_atom_map.reaction_type).to eq(:exchange) }
+        it { expect(dm_atom_map.reaction_type).to eq(:exchange) }
+        it { expect(md_atom_map.reaction_type).to eq(:dissociation) }
+        it { expect(hm_atom_map.reaction_type).to eq(:exchange) }
+        it { expect(df_atom_map.reaction_type).to eq(:association) }
       end
 
       describe "setup incoherent and unfixed" do
         before(:each) { md_atom_map } # runs atom mapping
-        it { methyl_on_bridge.atom(:cm).incoherent?.should be_true }
-        it { methyl_on_bridge.atom(:cm).unfixed?.should be_true }
+        it { expect(methyl_on_bridge.atom(:cm).incoherent?).to be_true }
+        it { expect(methyl_on_bridge.atom(:cm).unfixed?).to be_true }
       end
 
       describe "#changes" do
-        it { md_atom_map.changes.should =~ [
+        it { expect(md_atom_map.changes).to match_array([
             [[methyl_on_bridge, abridge_dup],
               [[methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)]]],
             [[methyl_on_bridge, methyl],
               [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
-          ] }
+          ]) }
 
-        it { mi_atom_map.changes.should =~ [
+        it { expect(mi_atom_map.changes).to match_array([
             [[activated_methyl_on_extended_bridge, extended_dimer], [
               [activated_methyl_on_extended_bridge.atom(:cm),
                 extended_dimer.atom(:cr)],
@@ -43,11 +43,11 @@ module VersatileDiamond
               [activated_dimer.atom(:cl), extended_dimer.atom(:_cr0)],
               [activated_dimer.atom(:cr), extended_dimer.atom(:_cl1)],
             ]]
-          ] }
+          ]) }
       end
 
       describe "#full" do
-        it { md_atom_map.full.should =~ [
+        it { expect(md_atom_map.full).to match_array([
             [[methyl_on_bridge, abridge_dup], [
               [methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)],
               [methyl_on_bridge.atom(:cl), abridge_dup.atom(:cl)],
@@ -55,52 +55,52 @@ module VersatileDiamond
             ]],
             [[methyl_on_bridge, methyl],
               [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
-          ] }
+          ]) }
       end
 
       describe "other_side" do
         describe "hydrogen migration" do
-          it { hm_atom_map.other_side(
-              methyl_on_dimer, methyl_on_dimer.atom(:cm)).
-            should =~ [
+          it { expect(hm_atom_map.other_side(
+              methyl_on_dimer, methyl_on_dimer.atom(:cm))).
+            to match_array([
               activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)
-            ] }
+            ]) }
 
-          it { hm_atom_map.other_side(
-              activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm)).
-            should =~ [
+          it { expect(hm_atom_map.other_side(
+              activated_methyl_on_dimer, activated_methyl_on_dimer.atom(:cm))).
+            to match_array([
               methyl_on_dimer, methyl_on_dimer.atom(:cm)
-            ] }
+            ]) }
 
-          it { hm_atom_map.other_side(dimer, dimer.atom(:cr)).should =~ [
+          it { expect(hm_atom_map.other_side(dimer, dimer.atom(:cr))).to match_array([
               activated_dimer, activated_dimer.atom(:cr)
-            ] }
+            ]) }
 
-          it { hm_atom_map.other_side(
-              activated_dimer, activated_dimer.atom(:cr)).
-            should =~ [dimer, dimer.atom(:cr)] }
+          it { expect(hm_atom_map.other_side(
+              activated_dimer, activated_dimer.atom(:cr))).
+            to match_array([dimer, dimer.atom(:cr)]) }
         end
 
         describe "dimer formation" do
-          it { df_atom_map.other_side(
-              activated_bridge, activated_bridge.atom(:ct)).
-            should =~ [dimer_dup_ff, dimer_dup_ff.atom(:cr)] }
+          it { expect(df_atom_map.other_side(
+              activated_bridge, activated_bridge.atom(:ct))).
+            to match_array([dimer_dup_ff, dimer_dup_ff.atom(:cr)]) }
 
-          it { df_atom_map.other_side(
+          it { expect(df_atom_map.other_side(
               activated_incoherent_bridge,
-              activated_incoherent_bridge.atom(:ct)).
-            should =~ [dimer_dup_ff, dimer_dup_ff.atom(:cl)] }
+              activated_incoherent_bridge.atom(:ct))).
+            to match_array([dimer_dup_ff, dimer_dup_ff.atom(:cl)]) }
 
-          it { df_atom_map.other_side(
-              dimer_dup_ff, dimer_dup_ff.atom(:cr)).
-            should =~ [activated_bridge, activated_bridge.atom(:ct)] }
+          it { expect(df_atom_map.other_side(
+              dimer_dup_ff, dimer_dup_ff.atom(:cr))).
+            to match_array([activated_bridge, activated_bridge.atom(:ct)]) }
 
-          it { df_atom_map.other_side(
-              dimer_dup_ff, dimer_dup_ff.atom(:cl)).
-            should =~ [
+          it { expect(df_atom_map.other_side(
+              dimer_dup_ff, dimer_dup_ff.atom(:cl))).
+            to match_array([
               activated_incoherent_bridge,
               activated_incoherent_bridge.atom(:ct)
-            ] }
+            ]) }
         end
       end
 
@@ -114,23 +114,23 @@ module VersatileDiamond
 
         before(:each) { subject.add(specs, full, changes) }
 
-        it { subject.full.should =~ [
+        it { expect(subject.full).to match_array([
             [[activated_incoherent_bridge, dimer_dup_ff], [[
               activated_incoherent_bridge.atom(:ct),
               dimer_dup_ff.atom(:cr)
             ]]]
-          ] }
+          ]) }
 
-        it { subject.changes.should =~ [
+        it { expect(subject.changes).to match_array([
             [[activated_incoherent_bridge, dimer_dup_ff], []]
-          ] }
+          ]) }
 
-        it { dimer_dup_ff.atom(:cr).incoherent?.should be_true }
+        it { expect(dimer_dup_ff.atom(:cr).incoherent?).to be_true }
       end
 
       describe "#reverse" do
         describe "methyl desorption" do
-          it { md_atom_map.reverse.full.should =~ [
+          it { expect(md_atom_map.reverse.full).to match_array([
               [[abridge_dup, methyl_on_bridge], [
                 [abridge_dup.atom(:ct), methyl_on_bridge.atom(:cb)],
                 [abridge_dup.atom(:cl), methyl_on_bridge.atom(:cl)],
@@ -139,44 +139,44 @@ module VersatileDiamond
               [[methyl, methyl_on_bridge], [
                 [methyl.atom(:c), methyl_on_bridge.atom(:cm)]
               ]]
-            ] }
+            ]) }
 
-          it { hm_atom_map.reverse.reaction_type.should == :exchange }
-          it { md_atom_map.reverse.reaction_type.should == :association }
-          it { df_atom_map.reverse.reaction_type.should == :dissociation }
+          it { expect(hm_atom_map.reverse.reaction_type).to eq(:exchange) }
+          it { expect(md_atom_map.reverse.reaction_type).to eq(:association) }
+          it { expect(df_atom_map.reverse.reaction_type).to eq(:dissociation) }
         end
 
         describe "hydrogen migration" do
-          it { hm_atom_map.reverse.should be_a(MappingResult) }
+          it { expect(hm_atom_map.reverse).to be_a(MappingResult) }
 
-          it { hm_atom_map.reverse.changes.should =~ [
+          it { expect(hm_atom_map.reverse.changes).to match_array([
               [[activated_methyl_on_dimer, methyl_on_dimer],
                 [[activated_methyl_on_dimer.atom(:cm),
                   methyl_on_dimer.atom(:cm)]]],
               [[dimer, activated_dimer],
                 [[dimer.atom(:cr), activated_dimer.atom(:cr)]]]
-            ] }
+            ]) }
         end
 
         describe "dimer formation" do
-          it { df_atom_map.reverse.changes.should =~ [
+          it { expect(df_atom_map.reverse.changes).to match_array([
               [[dimer_dup_ff, activated_bridge],
                 [[dimer_dup_ff.atom(:cr), activated_bridge.atom(:ct)]]],
               [[dimer_dup_ff, activated_incoherent_bridge],
                 [[dimer_dup_ff.atom(:cl),
                   activated_incoherent_bridge.atom(:ct)]]],
-            ] }
+            ]) }
         end
       end
 
       shared_examples_for "checks mob duplication" do
-        it { subject.changes.first.first.first.should == abridge_dup }
-        it { subject.changes.first.last.first.first.
-          should == abridge_dup.atom(:ct) }
+        it { expect(subject.changes.first.first.first).to eq(abridge_dup) }
+        it { expect(subject.changes.first.last.first.first).
+          to eq(abridge_dup.atom(:ct)) }
 
-        it { subject.full.first.first.first.should == abridge_dup }
-        it { subject.full.first.last.first.first.
-          should == abridge_dup.atom(:ct) }
+        it { expect(subject.full.first.first.first).to eq(abridge_dup) }
+        it { expect(subject.full.first.last.first.first).
+          to eq(abridge_dup.atom(:ct)) }
       end
 
       describe "#duplicate" do
@@ -196,11 +196,11 @@ module VersatileDiamond
         it { should be_a(MappingResult) }
         it { should_not == df_atom_map }
 
-        it { subject.source.should =~ [abridge_dup, aib_dup] }
-        it { subject.products.should =~ [d_dup] }
+        it { expect(subject.source).to match_array([abridge_dup, aib_dup]) }
+        it { expect(subject.products).to match_array([d_dup]) }
 
-        it { subject.changes.should_not == df_atom_map.changes }
-        it { subject.full.should_not == df_atom_map.full }
+        it { expect(subject.changes).not_to eq(df_atom_map.changes) }
+        it { expect(subject.full).not_to eq(df_atom_map.full) }
 
         it_behaves_like "checks mob duplication"
       end
@@ -209,8 +209,8 @@ module VersatileDiamond
         subject { df_atom_map }
         before(:each) { subject.swap_source(activated_bridge, abridge_dup) }
 
-        it { subject.source.should_not include(activated_bridge) }
-        it { subject.source.should include(abridge_dup) }
+        it { expect(subject.source).not_to include(activated_bridge) }
+        it { expect(subject.source).to include(abridge_dup) }
 
         it_behaves_like "checks mob duplication"
       end
@@ -249,19 +249,19 @@ module VersatileDiamond
             df_atom_map.apply_relevants(activated_bridge, old_atom, new_atom)
           end
 
-          it { df_atom_map.products.first.atom(:cl).incoherent?.should be_true }
-          it { df_atom_map.products.first.atom(:cr).incoherent?.should be_true }
+          it { expect(df_atom_map.products.first.atom(:cl).incoherent?).to be_true }
+          it { expect(df_atom_map.products.first.atom(:cr).incoherent?).to be_true }
 
           it_behaves_like "check exchanges in result"
         end
       end
 
       describe "#complex_source_spec_and_atom" do
-        it { ma_atom_map.complex_source_spec_and_atom.
-          should =~ [ma_source.first, c] }
+        it { expect(ma_atom_map.complex_source_spec_and_atom).
+          to match_array([ma_source.first, c]) }
 
-        it { dm_atom_map.complex_source_spec_and_atom.
-          should =~ [activated_methyl_on_bridge, activated_c] }
+        it { expect(dm_atom_map.complex_source_spec_and_atom).
+          to match_array([activated_methyl_on_bridge, activated_c]) }
       end
     end
 

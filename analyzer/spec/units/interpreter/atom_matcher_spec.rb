@@ -11,7 +11,7 @@ module VersatileDiamond
       subject { SomeMatcher.new }
 
       describe "#match_used_atom" do
-        it { subject.match_used_atom("bridge(:ct)").should =~ [:bridge, :ct] }
+        it { expect(subject.match_used_atom("bridge(:ct)")).to match_array([:bridge, :ct]) }
 
         ['Wrong', '03001', ''].each do |name|
           atom_str = "#{name}(:ct)"

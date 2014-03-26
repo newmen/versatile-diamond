@@ -14,8 +14,8 @@ module VersatileDiamond
       let(:vertices) { graph.each_vertex.to_a }
 
       describe "#each_vertex" do
-        it { graph.each_vertex.should be_a(Enumerable) }
-        it { vertices.size.should == 3 }
+        it { expect(graph.each_vertex).to be_a(Enumerable) }
+        it { expect(vertices.size).to eq(3) }
 
         describe "with block" do
           let(:vertices) do
@@ -24,31 +24,31 @@ module VersatileDiamond
             vs
           end
 
-          it { vertices.size.should == 3 }
-          it { vertices.should include(c0, c1, c2) }
+          it { expect(vertices.size).to eq(3) }
+          it { expect(vertices).to include(c0, c1, c2) }
         end
       end
 
       describe "#edge" do
-        it { graph.edge(c0, c1).should == free_bond }
-        it { graph.edge(c1, c2).should == free_bond }
-        it { graph.edge(c0, c2).should be_nil }
+        it { expect(graph.edge(c0, c1)).to eq(free_bond) }
+        it { expect(graph.edge(c1, c2)).to eq(free_bond) }
+        it { expect(graph.edge(c0, c2)).to be_nil }
       end
 
       describe "#edges" do
-        it { graph.edges(c0, c1).size.should == 1 }
-        it { graph.edges(c1, c2).size.should == 1 }
-        it { graph.edges(c0, c2).size.should == 0 }
+        it { expect(graph.edges(c0, c1).size).to eq(1) }
+        it { expect(graph.edges(c1, c2).size).to eq(1) }
+        it { expect(graph.edges(c0, c2).size).to eq(0) }
       end
 
       describe "#lattices" do
-        it { graph.lattices.should =~ [nil] }
+        it { expect(graph.lattices).to match_array([nil]) }
 
         describe "one of atoms has lattice" do
           before(:each) { c2.lattice = diamond }
 
-          it { graph.lattices.size.should == 2 }
-          it { graph.lattices.should include(nil, diamond) }
+          it { expect(graph.lattices.size).to eq(2) }
+          it { expect(graph.lattices).to include(nil, diamond) }
         end
       end
 
@@ -56,21 +56,21 @@ module VersatileDiamond
         before(:each) { graph.change_lattice!(c2, diamond) }
 
         describe "#change_lattice!" do
-          it { vertices.size.should == 3 }
-          it { graph.lattices.size.should == 2 }
-          it { graph.lattices.should include(nil, diamond) }
+          it { expect(vertices.size).to eq(3) }
+          it { expect(graph.lattices.size).to eq(2) }
+          it { expect(graph.lattices).to include(nil, diamond) }
         end
 
         let(:new_c) { (vertices - [c0, c1]).first }
 
         describe "#changed_vertex" do
-          it { graph.changed_vertex(c0).should be_nil }
-          it { graph.changed_vertex(c1).should be_nil }
-          it { graph.changed_vertex(new_c).should == c2 }
+          it { expect(graph.changed_vertex(c0)).to be_nil }
+          it { expect(graph.changed_vertex(c1)).to be_nil }
+          it { expect(graph.changed_vertex(new_c)).to eq(c2) }
         end
 
         describe "#vertex_changed_to" do
-          it { graph.vertex_changed_to(c2).should == new_c }
+          it { expect(graph.vertex_changed_to(c2)).to eq(new_c) }
         end
 
         describe "deep changing" do
@@ -79,42 +79,42 @@ module VersatileDiamond
           # there need to direct get graph vertices
           let(:new_new) { (graph.each_vertex.to_a - [c0, c1]).first }
 
-          it { new_new.should_not == c2 }
-          it { new_new.should_not == new_c }
+          it { expect(new_new).not_to eq(c2) }
+          it { expect(new_new).not_to eq(new_c) }
 
-          it { graph.changed_vertex(new_new).should == c2 }
-          it { graph.vertex_changed_to(c2).should == new_new }
+          it { expect(graph.changed_vertex(new_new)).to eq(c2) }
+          it { expect(graph.vertex_changed_to(c2)).to eq(new_new) }
         end
       end
 
       describe "#select_vertices" do
-        it { graph.select_vertices([c0, c1]).size.should == 2 }
-        it { graph.select_vertices([c0, c1]).should include(c0, c1) }
+        it { expect(graph.select_vertices([c0, c1]).size).to eq(2) }
+        it { expect(graph.select_vertices([c0, c1])).to include(c0, c1) }
       end
 
       describe "#remaining_vertices" do
-        it { graph.remaining_vertices([c0, c2]).should =~ [c1] }
+        it { expect(graph.remaining_vertices([c0, c2])).to match_array([c1]) }
       end
 
       describe "#boundary_vertices" do
-        it { graph.boundary_vertices([c0]).should =~ [c1] }
-        it { graph.boundary_vertices([c0, c1]).should =~ [c2] }
-        it { graph.boundary_vertices([c0, c2]).should =~ [c1] }
+        it { expect(graph.boundary_vertices([c0])).to match_array([c1]) }
+        it { expect(graph.boundary_vertices([c0, c1])).to match_array([c2]) }
+        it { expect(graph.boundary_vertices([c0, c2])).to match_array([c1]) }
       end
 
       describe "#remove_edges!" do
         describe "only one vertex" do
           before(:each) { graph.remove_edges!([c1]) }
 
-          it { graph.edge(c0, c1).should == free_bond }
-          it { graph.edge(c1, c2).should == free_bond }
+          it { expect(graph.edge(c0, c1)).to eq(free_bond) }
+          it { expect(graph.edge(c1, c2)).to eq(free_bond) }
         end
 
         describe "two vertices" do
           before(:each) { graph.remove_edges!([c0, c1]) }
 
-          it { graph.edge(c0, c1).should be_nil }
-          it { graph.edge(c1, c2).should == free_bond }
+          it { expect(graph.edge(c0, c1)).to be_nil }
+          it { expect(graph.edge(c1, c2)).to eq(free_bond) }
         end
       end
 
@@ -122,24 +122,24 @@ module VersatileDiamond
         describe "boundary vertex" do
           before(:each) { graph.remove_vertices!([c0]) }
 
-          it { vertices.size.should == 2 }
-          it { vertices.should include(c1, c2) }
-          it { graph.edge(c0, c1).should be_nil }
-          it { graph.edge(c1, c2).should == free_bond }
+          it { expect(vertices.size).to eq(2) }
+          it { expect(vertices).to include(c1, c2) }
+          it { expect(graph.edge(c0, c1)).to be_nil }
+          it { expect(graph.edge(c1, c2)).to eq(free_bond) }
         end
 
         describe "central vertex" do
           before(:each) { graph.remove_vertices!([c1]) }
 
-          it { vertices.size.should == 2 }
-          it { vertices.should include(c0, c2) }
-          it { graph.edge(c0, c1).should be_nil }
-          it { graph.edge(c1, c2).should be_nil }
+          it { expect(vertices.size).to eq(2) }
+          it { expect(vertices).to include(c0, c2) }
+          it { expect(graph.edge(c0, c1)).to be_nil }
+          it { expect(graph.edge(c1, c2)).to be_nil }
         end
 
         describe "two vertices" do
           before(:each) { graph.remove_vertices!([c0, c1]) }
-          it { vertices.should =~ [c2] }
+          it { expect(vertices).to match_array([c2]) }
         end
       end
 
@@ -150,8 +150,8 @@ module VersatileDiamond
             graph.remove_disconnected_vertices!
           end
 
-          it { vertices.size.should == 2 }
-          it { vertices.should include(c1, c2) }
+          it { expect(vertices.size).to eq(2) }
+          it { expect(vertices).to include(c1, c2) }
         end
 
         describe "central vertex" do
@@ -160,7 +160,7 @@ module VersatileDiamond
             graph.remove_disconnected_vertices!
           end
 
-          it { vertices.should be_empty }
+          it { expect(vertices).to be_empty }
         end
       end
     end

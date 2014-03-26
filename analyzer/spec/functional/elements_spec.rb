@@ -6,7 +6,7 @@ module VersatileDiamond
     describe Elements, type: :interpreter do
       it "interpreted result should be stored in Chest" do
         elements.interpret('atom H, valence: 1')
-        Tools::Chest.atom(:H).should be_a(Concepts::Atom)
+        expect(Tools::Chest.atom(:H)).to be_a(Concepts::Atom)
       end
 
       describe "incorrect atom" do

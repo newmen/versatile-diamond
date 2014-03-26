@@ -17,8 +17,8 @@ module VersatileDiamond
           end
 
           def checks_reverse
-            reverse.source.size.should == 1
-            reverse.products.size.should == 2
+            expect(reverse.source.size).to eq(1)
+            expect(reverse.products.size).to eq(2)
           end
 
           describe "#enthalpy" do

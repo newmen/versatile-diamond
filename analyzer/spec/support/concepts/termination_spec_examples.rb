@@ -4,22 +4,22 @@ module VersatileDiamond
 
       module TerminationSpecExamples
         shared_examples_for "termination spec" do
-          it { subject.should be_a(TerminationSpec) }
+          it { expect(subject).to be_a(TerminationSpec) }
 
           describe "#is_gas?" do
-            it { subject.is_gas?.should be_false }
+            it { expect(subject.is_gas?).to be_false }
           end
 
           describe "#simple?" do
-            it { subject.simple?.should be_false }
+            it { expect(subject.simple?).to be_false }
           end
 
           describe "#extendable?" do
-            it { subject.extendable?.should be_false }
+            it { expect(subject.extendable?).to be_false }
           end
 
           describe "#size" do
-            it { subject.size.should == 1 }
+            it { expect(subject.size).to eq(1) }
           end
         end
       end

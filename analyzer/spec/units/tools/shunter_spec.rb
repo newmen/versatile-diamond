@@ -70,25 +70,25 @@ module VersatileDiamond
             Shunter.organize_dependecies!
           end
 
-          it { methane_base.parent.should be_nil }
+          it { expect(methane_base.parent).to be_nil }
 
-          it { bridge_base.parent.should be_nil }
-          it { bridge_base.childs.size.should == 3 }
-          it { bridge_base.childs.should include(
+          it { expect(bridge_base.parent).to be_nil }
+          it { expect(bridge_base.childs.size).to eq(3) }
+          it { expect(bridge_base.childs).to include(
               dimer_base, methyl_on_bridge_base, high_bridge_base
             ) }
 
-          it { dimer_base.parent.should == bridge_base }
-          it { dimer_base.childs.should =~ [methyl_on_dimer_base] }
+          it { expect(dimer_base.parent).to eq(bridge_base) }
+          it { expect(dimer_base.childs).to match_array([methyl_on_dimer_base]) }
 
-          it { methyl_on_bridge_base.parent.should == bridge_base }
-          it { methyl_on_bridge_base.childs.should be_empty }
+          it { expect(methyl_on_bridge_base.parent).to eq(bridge_base) }
+          it { expect(methyl_on_bridge_base.childs).to be_empty }
 
-          it { high_bridge_base.parent.should == bridge_base }
-          it { high_bridge_base.childs.should be_empty }
+          it { expect(high_bridge_base.parent).to eq(bridge_base) }
+          it { expect(high_bridge_base.childs).to be_empty }
 
-          it { methyl_on_dimer_base.parent.should == dimer_base }
-          it { methyl_on_dimer_base.childs.should be_empty }
+          it { expect(methyl_on_dimer_base.parent).to eq(dimer_base) }
+          it { expect(methyl_on_dimer_base.childs).to be_empty }
         end
 
         describe "#organize_specific_spec_dependencies!" do
@@ -113,69 +113,69 @@ module VersatileDiamond
             end
 
             describe "surface activation" do
-              it { Chest.atomic_spec(:H).should be_atomic_spec }
-              it { Chest.specific_spec(:'hydrogen(h: *)').
-                should be_specific_spec }
+              it { expect(Chest.atomic_spec(:H)).to be_atomic_spec }
+              it { expect(Chest.specific_spec(:'hydrogen(h: *)')).
+                to be_specific_spec }
             end
 
             describe "surface deactivation" do
-              it { Chest.active_bond(:*).should be_active_bond }
+              it { expect(Chest.active_bond(:*)).to be_active_bond }
             end
 
             describe "methyl activation" do
               subject { Chest.specific_spec(:'methyl_on_bridge()') }
               it { should be_specific_spec }
-              it { subject.parent.should be_nil }
-              it { methyl_on_bridge_base.childs.should include(subject) }
+              it { expect(subject.parent).to be_nil }
+              it { expect(methyl_on_bridge_base.childs).to include(subject) }
 
-              it { subject.childs.size.should == 2 }
-              it { subject.childs.should include(
+              it { expect(subject.childs.size).to eq(2) }
+              it { expect(subject.childs).to include(
                   Chest.specific_spec(:'methyl_on_bridge(cm: *)'),
                   Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)')
                 ) }
 
-              it { subject.reactions.should include(methyl_activation) }
+              it { expect(subject.reactions).to include(methyl_activation) }
             end
 
             describe "methyl deactivation" do
               subject { Chest.specific_spec(:'methyl_on_bridge(cm: *)') }
               it { should be_specific_spec }
-              it { subject.parent.should == Chest.specific_spec(:'methyl_on_bridge()') }
-              it { subject.childs.should be_empty }
-              it { subject.reactions.should include(methyl_deactivation) }
+              it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
+              it { expect(subject.childs).to be_empty }
+              it { expect(subject.reactions).to include(methyl_deactivation) }
             end
 
             describe "surface deactivation" do
-              it { Chest.active_bond(:*).should be_active_bond }
+              it { expect(Chest.active_bond(:*)).to be_active_bond }
             end
 
             describe "methyl desorption" do
               subject { Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)') }
               it { should be_specific_spec }
-              it { subject.parent.should == Chest.specific_spec(:'methyl_on_bridge()') }
-              it { subject.childs.should be_empty }
-              it { subject.reactions.should include(methyl_desorption) }
+              it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
+              it { expect(subject.childs).to be_empty }
+              it { expect(subject.reactions).to include(methyl_desorption) }
             end
 
             describe "forward hydrogen migration" do
               describe "dimer(cr: *)" do
                 subject { Chest.specific_spec(:'dimer(cr: *)') }
                 it { should be_specific_spec }
-                it { subject.parent.should == Chest.specific_spec(:'dimer()') }
-                it { subject.childs.should be_empty }
-                it { subject.reactions.should include(hydrogen_migration) }
+                it { expect(subject.parent).to eq(Chest.specific_spec(:'dimer()')) }
+                it { expect(subject.childs).to be_empty }
+                it { expect(subject.reactions).to include(hydrogen_migration) }
               end
 
               describe "methyl_on_dimer()" do
                 subject { Chest.specific_spec(:'methyl_on_dimer()') }
                 it { should be_specific_spec }
-                it { subject.parent.should be_nil }
-                it { methyl_on_dimer_base.childs.should include(subject) }
+                it { expect(subject.parent).to be_nil }
+                it { expect(methyl_on_dimer_base.childs).to include(subject) }
 
-                it { subject.childs.should =~ [
+                it { expect(subject.childs).to match_array([
                     Chest.specific_spec(:'methyl_on_dimer(cm: *)')
-                  ] }
-                it { subject.reactions.should include(hydrogen_migration) }
+                  ]) }
+                it { expect(subject.reactions).to include(hydrogen_migration) }
               end
             end
 
@@ -183,28 +183,28 @@ module VersatileDiamond
               describe "dimer()" do
                 subject { Chest.specific_spec(:'dimer()') }
                 it { should be_specific_spec }
-                it { subject.parent.should be_nil }
-                it { dimer_base.childs.should include(subject) }
+                it { expect(subject.parent).to be_nil }
+                it { expect(dimer_base.childs).to include(subject) }
 
-                it { subject.childs.size.should == 2 }
-                it { subject.childs.should include(
+                it { expect(subject.childs.size).to eq(2) }
+                it { expect(subject.childs).to include(
                     Chest.specific_spec(:'dimer(cr: *)'),
                     Chest.specific_spec(:'dimer(cl: i)')
                   ) }
 
-                it { subject.reactions.should include(hydrogen_migration.reverse) }
+                it { expect(subject.reactions).to include(hydrogen_migration.reverse) }
 
-                it { subject.theres.size.should == 2 }
-                it { subject.theres.first.where.name.should == :at_middle }
-                it { subject.theres.last.where.name.should == :at_middle }
+                it { expect(subject.theres.size).to eq(2) }
+                it { expect(subject.theres.first.where.name).to eq(:at_middle) }
+                it { expect(subject.theres.last.where.name).to eq(:at_middle) }
               end
 
               describe "methyl_on_dimer(cm: *)" do
                 subject { Chest.specific_spec(:'methyl_on_dimer(cm: *)') }
                 it { should be_specific_spec }
-                it { subject.parent.should == Chest.specific_spec(:'methyl_on_dimer()') }
-                it { subject.childs.should be_empty }
-                it { subject.reactions.should include(hydrogen_migration.reverse) }
+                it { expect(subject.parent).to eq(Chest.specific_spec(:'methyl_on_dimer()')) }
+                it { expect(subject.childs).to be_empty }
+                it { expect(subject.reactions).to include(hydrogen_migration.reverse) }
               end
             end
 
@@ -212,42 +212,42 @@ module VersatileDiamond
               describe "bridge(ct: *)" do
                 subject { Chest.specific_spec(:'bridge(ct: *)') }
                 it { should be_specific_spec }
-                it { subject.parent.should be_nil }
-                it { bridge_base.childs.should include(subject) }
-                it { subject.childs.should =~ [
+                it { expect(subject.parent).to be_nil }
+                it { expect(bridge_base.childs).to include(subject) }
+                it { expect(subject.childs).to match_array([
                     Chest.specific_spec(:'bridge(ct: *, ct: i)')
-                  ] }
-                it { subject.reactions.should include(dimer_formation) }
+                  ]) }
+                it { expect(subject.reactions).to include(dimer_formation) }
               end
 
               describe "bridge(ct: *, ct: i)" do
                 subject { Chest.specific_spec(:'bridge(ct: *, ct: i)') }
                 it { should be_specific_spec }
-                it { subject.parent.should == Chest.specific_spec(:'bridge(ct: *)') }
-                it { subject.childs.should be_empty }
-                it { subject.reactions.should include(dimer_formation) }
+                it { expect(subject.parent).to eq(Chest.specific_spec(:'bridge(ct: *)')) }
+                it { expect(subject.childs).to be_empty }
+                it { expect(subject.reactions).to include(dimer_formation) }
               end
             end
 
             describe "reverse dimer formation" do
               subject { Chest.specific_spec(:'dimer(cl: i)') }
               it { should be_specific_spec }
-              it { subject.parent.should == Chest.specific_spec(:'dimer()') }
-              it { subject.childs.should be_empty }
-              it { subject.reactions.should include(dimer_formation.reverse) }
+              it { expect(subject.parent).to eq(Chest.specific_spec(:'dimer()')) }
+              it { expect(subject.childs).to be_empty }
+              it { expect(subject.reactions).to include(dimer_formation.reverse) }
             end
 
             describe "forward methyl incorporation" do
               describe "methyl_on_bridge(cm: *, cm: u)" do
                 # other props checks in "methyl deactivation"
-                it { Chest.specific_spec(:'methyl_on_bridge(cm: *)').reactions.
-                  should include(methyl_incorporation) }
+                it { expect(Chest.specific_spec(:'methyl_on_bridge(cm: *)').reactions).
+                  to include(methyl_incorporation) }
               end
 
               describe "dimer(cr: *)" do
                 # other props checks in "forward hydrogen migration"
-                it { Chest.specific_spec(:'dimer(cr: *)').reactions.
-                  should include(methyl_incorporation) }
+                it { expect(Chest.specific_spec(:'dimer(cr: *)').reactions).
+                  to include(methyl_incorporation) }
               end
             end
           end
@@ -255,16 +255,16 @@ module VersatileDiamond
           describe "swapping reaction specs" do
             let(:same) { Chest.specific_spec(:'hydrogen(h: *)') }
 
-            it { surface_activation.source.should include(same) }
-            it { surface_deactivation.source.should include(same) }
-            it { methyl_activation.source.should include(same) }
-            it { methyl_deactivation.source.should include(same) }
+            it { expect(surface_activation.source).to include(same) }
+            it { expect(surface_deactivation.source).to include(same) }
+            it { expect(methyl_activation.source).to include(same) }
+            it { expect(methyl_deactivation.source).to include(same) }
 
-            it { lateral_dimer_formation.theres.map(&:env_specs).flatten.
-              should include(Chest.specific_spec(:'dimer()')) }
-            it { lateral_dimer_formation.theres.map(&:env_specs).flatten.
-              select { |spec| spec == Chest.specific_spec(:'dimer()') }.size.
-              should == 2 }
+            it { expect(lateral_dimer_formation.theres.map(&:env_specs).flatten).
+              to include(Chest.specific_spec(:'dimer()')) }
+            it { expect(lateral_dimer_formation.theres.map(&:env_specs).flatten.
+              select { |spec| spec == Chest.specific_spec(:'dimer()') }.size).
+              to eq(2) }
           end
         end
 

@@ -8,9 +8,9 @@ module VersatileDiamond
 
       describe "#targets" do
         before { environment.interpret('targets :one_atom, :two_atom') }
-        it { dimers_row.is_target?(:one_atom).should be_true }
-        it { dimers_row.is_target?(:two_atom).should be_true }
-        it { dimers_row.is_target?(:wrong).should be_false }
+        it { expect(dimers_row.is_target?(:one_atom)).to be_true }
+        it { expect(dimers_row.is_target?(:two_atom)).to be_true }
+        it { expect(dimers_row.is_target?(:wrong)).to be_false }
       end
 
       describe "#aliases" do
@@ -30,7 +30,7 @@ module VersatileDiamond
               '  position o, f(:cr), face: 100, dir: :front')
           end
           let(:where) { Tools::Chest.where(:dimers_row, :some) }
-          it { where.specs.map(&:name).should =~ [:dimer] }
+          it { expect(where.specs.map(&:name)).to match_array([:dimer]) }
         end
       end
 
@@ -39,8 +39,8 @@ module VersatileDiamond
           environment.interpret('where :end_row, "at end of dimers row"')
         end
 
-        it { Tools::Chest.where(:dimers_row, :end_row).
-          should be_a(Concepts::Where) }
+        it { expect(Tools::Chest.where(:dimers_row, :end_row)).
+          to be_a(Concepts::Where) }
 
         it { expect { environment.interpret('where :end_row, "some desc"') }.
           to raise_error *keyname_error(:duplication, :where, :end_row) }

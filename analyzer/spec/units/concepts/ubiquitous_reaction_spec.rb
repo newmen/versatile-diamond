@@ -8,7 +8,7 @@ module VersatileDiamond
 
       %w(enthalpy activation rate).each do |prop|
         describe "##{prop}" do
-          it { surface_deactivation.send(prop).should be_nil }
+          it { expect(surface_deactivation.send(prop)).to be_nil }
         end
 
         describe "##{prop}=" do
@@ -22,33 +22,33 @@ module VersatileDiamond
 
           it "set and get" do
             surface_deactivation.send(:"#{prop}=", 567)
-            surface_deactivation.send(prop).should == 567
+            expect(surface_deactivation.send(prop)).to eq(567)
           end
         end
       end
 
       describe "#name" do
-        it { surface_deactivation.name.should =~ /^forward/ }
+        it { expect(surface_deactivation.name).to match(/^forward/) }
       end
 
       describe "#reverse" do # it's no use for ubiquitous reaction?
         subject { surface_deactivation.reverse } # synthetics
         it { should be_a(described_class) }
 
-        it { subject.reverse.should == surface_deactivation }
-        it { subject.name.should =~ /^reverse/ }
+        it { expect(subject.reverse).to eq(surface_deactivation) }
+        it { expect(subject.name).to match(/^reverse/) }
 
-        it { subject.source.should =~ [adsorbed_h] }
+        it { expect(subject.source).to match_array([adsorbed_h]) }
 
-        it { subject.products.size.should == 2 }
-        it { subject.products.should include(active_bond, hydrogen_ion) }
+        it { expect(subject.products.size).to eq(2) }
+        it { expect(subject.products).to include(active_bond, hydrogen_ion) }
       end
 
       describe "#gases_num" do
-        it { surface_deactivation.gases_num.should == 1 }
-        it { surface_deactivation.reverse.gases_num.should == 0 }
-        it { surface_activation.gases_num.should == 1 }
-        it { surface_activation.reverse.gases_num.should == 1 }
+        it { expect(surface_deactivation.gases_num).to eq(1) }
+        it { expect(surface_deactivation.reverse.gases_num).to eq(0) }
+        it { expect(surface_activation.gases_num).to eq(1) }
+        it { expect(surface_activation.reverse.gases_num).to eq(1) }
       end
 
       describe "#each_source" do
@@ -57,15 +57,15 @@ module VersatileDiamond
             arr << spec
           end
         end
-        it { collected_source.size.should == 2 }
-        it { collected_source.should include(active_bond, hydrogen_ion) }
+        it { expect(collected_source.size).to eq(2) }
+        it { expect(collected_source).to include(active_bond, hydrogen_ion) }
       end
 
       describe "#swap_source" do
         let(:dup) { hydrogen_ion.dup }
         before(:each) { surface_deactivation.swap_source(hydrogen_ion, dup) }
-        it { surface_deactivation.source.should include(dup) }
-        it { surface_deactivation.source.should_not include(hydrogen_ion) }
+        it { expect(surface_deactivation.source).to include(dup) }
+        it { expect(surface_deactivation.source).not_to include(hydrogen_ion) }
       end
 
       describe "#same?" do
@@ -74,11 +74,11 @@ module VersatileDiamond
             :forward, 'duplicate', sd_source.shuffle, sd_product)
         end
 
-        it { surface_deactivation.same?(same).should be_true }
-        it { same.same?(surface_deactivation).should be_true }
+        it { expect(surface_deactivation.same?(same)).to be_true }
+        it { expect(same.same?(surface_deactivation)).to be_true }
 
-        it { surface_activation.same?(surface_deactivation).should be_false }
-        it { surface_deactivation.same?(surface_activation).should be_false }
+        it { expect(surface_activation.same?(surface_deactivation)).to be_false }
+        it { expect(surface_deactivation.same?(surface_activation)).to be_false }
       end
 
       describe "#organize_dependencies! and #more_complex" do
@@ -89,7 +89,7 @@ module VersatileDiamond
                 dimer_formation, hydrogen_migration])
           end
 
-          it { target.more_complex.should =~ [complex] }
+          it { expect(target.more_complex).to match_array([complex]) }
         end
 
         it_behaves_like "cover just one" do
@@ -111,17 +111,17 @@ module VersatileDiamond
           surface_deactivation.rate = 2
         end
 
-        it { surface_deactivation.full_rate.round(10).should == 0.1773357811 }
+        it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
       end
 
       describe "#size" do
-        it { surface_activation.size.should == 1 }
-        it { surface_deactivation.size.should == 1 }
+        it { expect(surface_activation.size).to eq(1) }
+        it { expect(surface_deactivation.size).to eq(1) }
       end
 
       describe "#changes_size" do
-        it { surface_activation.changes_size.should == 1 }
-        it { surface_deactivation.changes_size.should == 1 }
+        it { expect(surface_activation.changes_size).to eq(1) }
+        it { expect(surface_deactivation.changes_size).to eq(1) }
       end
 
       it_behaves_like "visitable" do

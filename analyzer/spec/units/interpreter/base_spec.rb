@@ -11,9 +11,9 @@ module VersatileDiamond
           base.interpret(line, -> _ { :no_indent }, &-> _ { :indent })
         end
 
-        it { interpret_line("hello").should == :no_indent }
-        it { interpret_line("  hello").should == :indent }
-        it { interpret_line("\thello").should == :indent }
+        it { expect(interpret_line("hello")).to eq(:no_indent) }
+        it { expect(interpret_line("  hello")).to eq(:indent) }
+        it { expect(interpret_line("\thello")).to eq(:indent) }
 
         let(:syntax_error) { Errors::SyntaxError }
 
@@ -29,8 +29,8 @@ module VersatileDiamond
 
       describe "#head_and_tail" do
         let(:hat) { base.head_and_tail('hello the great world!') }
-        it { hat.first.should == 'hello' }
-        it { hat.last.should == 'the great world!' }
+        it { expect(hat.first).to eq('hello') }
+        it { expect(hat.last).to eq('the great world!') }
       end
 
       describe "#pass_line_to" do
@@ -42,8 +42,8 @@ module VersatileDiamond
           end
         end
 
-        it { base.pass_line_to(Child.new, '  hello').should == 'hello' }
-        it { base.pass_line_to(Child.new, '    hello').should == 'hello' }
+        it { expect(base.pass_line_to(Child.new, '  hello')).to eq('hello') }
+        it { expect(base.pass_line_to(Child.new, '    hello')).to eq('hello') }
       end
     end
 

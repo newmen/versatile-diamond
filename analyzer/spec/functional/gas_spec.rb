@@ -6,8 +6,8 @@ module VersatileDiamond
     describe Gas, type: :interpreter do
       describe "#spec" do
         it "interpreted spec stores in chest" do
-          gas.interpret('spec :hello').should be_a(Interpreter::GasSpec)
-          Tools::Chest.gas_spec(:hello).should be_a(Concepts::GasSpec)
+          expect(gas.interpret('spec :hello')).to be_a(Interpreter::GasSpec)
+          expect(Tools::Chest.gas_spec(:hello)).to be_a(Concepts::GasSpec)
         end
       end
 

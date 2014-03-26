@@ -22,24 +22,24 @@ module VersatileDiamond
             reaction.interpret('equation * + hydrogen(h: *) = H')
           end
 
-          it { concept.class.should == Concepts::UbiquitousReaction }
+          it { expect(concept.class).to eq(Concepts::UbiquitousReaction) }
 
           it "respects" do
-            concept.source.one? { |s| s.class == Concepts::ActiveBond }.
-              should be_true
-            concept.source.one? { |s| s.class == Concepts::SpecificSpec }.
-              should be_true
-            concept.products.one? { |s| s.class == Concepts::AtomicSpec }.
-              should be_true
+            expect(concept.source.one? { |s| s.class == Concepts::ActiveBond }).
+              to be_true
+            expect(concept.source.one? { |s| s.class == Concepts::SpecificSpec }).
+              to be_true
+            expect(concept.products.one? { |s| s.class == Concepts::AtomicSpec }).
+              to be_true
           end
 
           it "not respects" do
-            concept.products.one? { |s| s.class == Concepts::ActiveBond }.
-              should be_false
-            concept.products.one? { |s| s.class == Concepts::SpecificSpec }.
-              should be_false
-            concept.source.one? { |s| s.class == Concepts::AtomicSpec }.
-              should be_false
+            expect(concept.products.one? { |s| s.class == Concepts::ActiveBond }).
+              to be_false
+            expect(concept.products.one? { |s| s.class == Concepts::SpecificSpec }).
+              to be_false
+            expect(concept.source.one? { |s| s.class == Concepts::AtomicSpec }).
+              to be_false
           end
 
           it "don't nest equation interpreter instance" do
@@ -65,13 +65,13 @@ module VersatileDiamond
               reaction.interpret('equation bridge(ct: *) + methane(c: *) = methyl_on_bridge')
             end
 
-            it { concept.class.should == Concepts::Reaction }
+            it { expect(concept.class).to eq(Concepts::Reaction) }
 
             it "all is specific spec" do
-              concept.source.all? { |s| s.class == Concepts::SpecificSpec }.
-                should be_true
-              concept.products.all? { |s| s.class == Concepts::SpecificSpec }.
-                should be_true
+              expect(concept.source.all? { |s| s.class == Concepts::SpecificSpec }).
+                to be_true
+              expect(concept.products.all? { |s| s.class == Concepts::SpecificSpec }).
+                to be_true
             end
 
             it "nest equation interpreter instance" do
@@ -101,7 +101,7 @@ module VersatileDiamond
                   reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
                 end
 
-                it { concept.products.first.atom(:cf).incoherent?.should be_true }
+                it { expect(concept.products.first.atom(:cf).incoherent?).to be_true }
               end
 
               describe "by operator" do
@@ -112,20 +112,20 @@ module VersatileDiamond
                 end
 
                 let(:dimer) { concept.products.first }
-                it { dimer.atom(:cr).incoherent?.should be_true }
-                it { dimer.atom(:cl).incoherent?.should be_true }
+                it { expect(dimer.atom(:cr).incoherent?).to be_true }
+                it { expect(dimer.atom(:cl).incoherent?).to be_true }
               end
             end
 
             describe "unfixed states" do
               shared_examples_for "check both unfixed" do
-                it { concept.source.first.atom(:cm).unfixed?.should be_true }
-                it { concept.products.first.atom(:cm).unfixed?.should be_true }
+                it { expect(concept.source.first.atom(:cm).unfixed?).to be_true }
+                it { expect(concept.products.first.atom(:cm).unfixed?).to be_true }
               end
 
               shared_examples_for "check unfixed only one" do
-                it { concept.source.first.atom(:cm).unfixed?.should be_true }
-                it { concept.products.first.atom(:cm).unfixed?.should be_false }
+                it { expect(concept.source.first.atom(:cm).unfixed?).to be_true }
+                it { expect(concept.products.first.atom(:cm).unfixed?).to be_false }
               end
 
               before(:each) do
@@ -186,7 +186,7 @@ module VersatileDiamond
                 'equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
             end
 
-            it { concept.products.first.atom(:cf).incoherent?.should be_true }
+            it { expect(concept.products.first.atom(:cf).incoherent?).to be_true }
           end
 
           describe "not initialy balanced reaction" do
@@ -197,9 +197,9 @@ module VersatileDiamond
                   'equation high_bridge + source(ct: *) = product(cr: *)')
               end
 
-              it { concept.source.first.external_bonds.should == 4 }
-              it { concept.source.last.external_bonds.should == 3 }
-              it { concept.products.first.external_bonds.should == 7 }
+              it { expect(concept.source.first.external_bonds).to eq(4) }
+              it { expect(concept.source.last.external_bonds).to eq(3) }
+              it { expect(concept.products.first.external_bonds).to eq(7) }
             end
 
             describe "extending first source and single product" do
@@ -209,9 +209,9 @@ module VersatileDiamond
                   'equation methyl_on_bridge(cm: *) + source(cr: *) = product')
               end
 
-              it { concept.source.first.external_bonds.should == 9 }
-              it { concept.source.last.external_bonds.should == 5 }
-              it { concept.products.first.external_bonds.should == 14 }
+              it { expect(concept.source.first.external_bonds).to eq(9) }
+              it { expect(concept.source.last.external_bonds).to eq(5) }
+              it { expect(concept.products.first.external_bonds).to eq(14) }
             end
           end
 
@@ -264,7 +264,7 @@ module VersatileDiamond
             let(:c_bridge1) { subject.source.first }
             let(:c_bridge2) { subject.source.last }
 
-            it { subject.positions.should =~ [
+            it { expect(subject.positions).to match_array([
                 [
                   [c_bridge1, c_bridge1.atom(:ct)],
                   [c_bridge2, c_bridge2.atom(:ct)],
@@ -275,7 +275,7 @@ module VersatileDiamond
                   [c_bridge1, c_bridge1.atom(:ct)],
                   position_100_front
                 ],
-              ] }
+              ]) }
           end
 
           describe "lateral members" do
@@ -290,15 +290,15 @@ module VersatileDiamond
 
               let(:w_dimer) { there.env_specs.first }
 
-              it { subject.theres.size.should == 1 }
-              it { there.positions.should == {
+              it { expect(subject.theres.size).to eq(1) }
+              it { expect(there.positions).to eq({
                   [c_bridge1, c_bridge1.atom(:ct)] => [
                     [[w_dimer, w_dimer.atom(:cl)], position_100_cross]
                   ],
                   [c_bridge2, c_bridge2.atom(:ct)] => [
                     [[w_dimer, w_dimer.atom(:cr)], position_100_cross]
                   ],
-                } }
+                }) }
             end
 
             describe "in middle" do
@@ -309,8 +309,8 @@ module VersatileDiamond
               let(:w_dimer1) { there.env_specs.first }
               let(:w_dimer2) { there.env_specs.last }
 
-              it { subject.theres.size.should == 1 }
-              it { there.positions.should == {
+              it { expect(subject.theres.size).to eq(1) }
+              it { expect(there.positions).to eq({
                   [c_bridge1, c_bridge1.atom(:ct)] => [
                     [[w_dimer1, w_dimer1.atom(:cl)], position_100_cross],
                     [[w_dimer2, w_dimer2.atom(:cl)], position_100_cross],
@@ -319,7 +319,7 @@ module VersatileDiamond
                     [[w_dimer1, w_dimer1.atom(:cr)], position_100_cross],
                     [[w_dimer2, w_dimer2.atom(:cr)], position_100_cross],
                   ],
-                } }
+                }) }
             end
           end
         end

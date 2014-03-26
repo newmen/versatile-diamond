@@ -12,9 +12,9 @@ module VersatileDiamond
             subject.swap_source(from, to)
           end
 
-          it { subject.send(method).should include(to) }
-          it { subject.send(method).should_not include(from) }
-          it { subject.send(method).size.should == before_size }
+          it { expect(subject.send(method)).to include(to) }
+          it { expect(subject.send(method)).not_to include(from) }
+          it { expect(subject.send(method).size).to eq(before_size) }
         end
       end
 

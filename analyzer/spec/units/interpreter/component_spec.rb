@@ -13,8 +13,8 @@ module VersatileDiamond
         end
 
         let(:some) { Some.new }
-        it { some.interpret('foo bar').should == 'bar' }
-        it { some.interpret('  foo hello').should == 'hello' }
+        it { expect(some.interpret('foo bar')).to eq('bar') }
+        it { expect(some.interpret('  foo hello')).to eq('hello') }
       end
     end
 

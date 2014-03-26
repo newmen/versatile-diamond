@@ -24,19 +24,19 @@ module VersatileDiamond
         describe "bridge" do
           subject { matcher.match('bridge') }
           it { should be_a(Concepts::SpecificSpec) }
-          it { subject.spec.should == bridge_base }
+          it { expect(subject.spec).to eq(bridge_base) }
         end
 
         describe "activated bridge" do
           subject { matcher.match('bridge(ct: *)') }
-          it { subject.atom(:ct).should be_a(Concepts::SpecificAtom) }
-          it { subject.atom(:ct).actives.should == 1 }
+          it { expect(subject.atom(:ct)).to be_a(Concepts::SpecificAtom) }
+          it { expect(subject.atom(:ct).actives).to eq(1) }
         end
 
         describe "extra activated bridge" do
           shared_examples_for "different expression" do
             subject { matcher.match(expr) }
-            it { subject.atom(:ct).actives.should == 2 }
+            it { expect(subject.atom(:ct).actives).to eq(2) }
           end
 
           it_behaves_like "different expression" do
@@ -50,28 +50,28 @@ module VersatileDiamond
 
         describe "incoherent bridge" do
           subject { matcher.match('bridge(ct: i)') }
-          it { subject.atom(:ct).incoherent?.should be_true }
+          it { expect(subject.atom(:ct).incoherent?).to be_true }
         end
 
         describe "unfixed methyl" do
           subject { matcher.match('methyl_on_bridge(cm: u)') }
-          it { subject.atom(:cm).unfixed?.should be_true }
+          it { expect(subject.atom(:cm).unfixed?).to be_true }
         end
 
         describe "right atom of bridge is hydride" do
           before(:each) { Tools::Chest.store(h) }
           subject { matcher.match('bridge(cr: H)') }
-          it { subject.atom(:cr).monovalents.should =~ [:H] }
-          it { subject.atom(:cl).monovalents.should be_empty }
+          it { expect(subject.atom(:cr).monovalents).to match_array([:H]) }
+          it { expect(subject.atom(:cl).monovalents).to be_empty }
         end
 
         describe "just a lot of" do
           before(:each) { Tools::Chest.store(cl) }
           subject { matcher.match('methyl_on_bridge(cb: i, cm: u, cm: **, cm: Cl)') }
-          it { subject.atom(:cb).incoherent?.should be_true }
-          it { subject.atom(:cm).unfixed?.should be_true }
-          it { subject.atom(:cm).actives.should == 2 }
-          it { subject.atom(:cm).monovalents.should =~ [:Cl] }
+          it { expect(subject.atom(:cb).incoherent?).to be_true }
+          it { expect(subject.atom(:cm).unfixed?).to be_true }
+          it { expect(subject.atom(:cm).actives).to eq(2) }
+          it { expect(subject.atom(:cm).monovalents).to match_array([:Cl]) }
         end
 
         describe "wrong specification" do

@@ -11,30 +11,30 @@ module VersatileDiamond
             { face: 110, dir: :front } => bond_110_front,
             { face: 110, dir: :cross } => bond_110_cross
           }.each do |hash, bond|
-            Bond[hash].should == bond
+            expect(Bond[hash]).to eq(bond)
           end
         end
       end
 
       describe "#face" do
-        it { free_bond.face.should be_nil }
-        it { bond_110_front.face.should == 110 }
-        it { bond_110_cross.face.should == 110 }
-        it { bond_100_front.face.should == 100 }
-        it { bond_100_cross.face.should == 100 }
+        it { expect(free_bond.face).to be_nil }
+        it { expect(bond_110_front.face).to eq(110) }
+        it { expect(bond_110_cross.face).to eq(110) }
+        it { expect(bond_100_front.face).to eq(100) }
+        it { expect(bond_100_cross.face).to eq(100) }
       end
 
       describe "#dir" do
-        it { free_bond.dir.should be_nil }
-        it { bond_110_front.dir.should == :front }
-        it { bond_110_cross.dir.should == :cross }
-        it { bond_100_front.dir.should == :front }
-        it { bond_100_cross.dir.should == :cross }
+        it { expect(free_bond.dir).to be_nil }
+        it { expect(bond_110_front.dir).to eq(:front) }
+        it { expect(bond_110_cross.dir).to eq(:cross) }
+        it { expect(bond_100_front.dir).to eq(:front) }
+        it { expect(bond_100_cross.dir).to eq(:cross) }
       end
 
       describe "#same?" do
-        it { free_bond.same?(bond_110_front).should be_true }
-        it { bond_110_front.same?(free_bond).should be_true }
+        it { expect(free_bond.same?(bond_110_front)).to be_true }
+        it { expect(bond_110_front.same?(free_bond)).to be_true }
       end
     end
 
