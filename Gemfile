@@ -1,17 +1,24 @@
 source 'https://rubygems.org'
 
-# main
-gem 'docopt'
-gem 'i18n'
-gem 'ruby-graphviz'
+group :ruby do
+  gem 'docopt'
+  gem 'i18n'
+  gem 'ruby-graphviz'
+end
 
-# tests
-gem 'rspec'
-gem 'coveralls', require: false
-gem 'colorize' # for c++ specs
+group :ruby, :test do
+  gem 'rspec'
+  gem 'coveralls', require: false
+end
+
+group :cpp, :test do
+  gem 'colorize' # for c++ specs
+end
 
 # support
-gem 'pry'
-gem 'pry-byebug'
-gem 'pry-stack_explorer'
-# gem 'pry-rescue'
+group :debug do
+  gem 'pry'
+  gem 'pry-byebug'
+  gem 'pry-stack_explorer'
+  # gem 'pry-rescue'
+end
