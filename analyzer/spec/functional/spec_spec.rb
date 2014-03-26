@@ -11,15 +11,15 @@ module VersatileDiamond
         elements.interpret('atom N, valence: 3')
       end
 
-      describe "#atoms" do
-        it "atoms line becomes to concept as instances of Atom" do
+      describe '#atoms' do
+        it 'atoms line becomes to concept as instances of Atom' do
           spec.interpret('atoms n: N')
           expect(concept.atom(:n).name).to eq(:N)
         end
       end
 
-      describe "#aliases" do
-        context "undefined spec" do
+      describe '#aliases' do
+        context 'undefined spec' do
           it { expect { spec.interpret('aliases ng: nitrogen') }.
             to raise_error *keyname_error(:undefined, :spec, :nitrogen) }
         end

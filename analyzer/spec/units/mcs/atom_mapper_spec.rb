@@ -4,9 +4,9 @@ module VersatileDiamond
   module Mcs
 
     describe AtomMapper do
-      describe "#self.map" do
-        describe "many to many" do
-          describe "bridge hydrogen migration" do
+      describe '#self.map' do
+        describe 'many to many' do
+          describe 'bridge hydrogen migration' do
             it { expect(described_class.map(
                 [activated_bridge, methyl_on_bridge],
                 [bridge, activated_methyl_on_bridge],
@@ -21,7 +21,7 @@ module VersatileDiamond
               ]) }
           end
 
-          describe "methyl activation" do
+          describe 'methyl activation' do
             it { expect(ma_atom_map.changes).to match_array([
                 [[ma_source.first, activated_methyl_on_bridge],
                   [[c, activated_c]]]
@@ -34,8 +34,8 @@ module VersatileDiamond
           end
         end
 
-        describe "many to one" do
-          describe "dimer formation" do
+        describe 'many to one' do
+          describe 'dimer formation' do
             it { expect(df_atom_map.changes).to match_array([
                 [[activated_bridge, dimer_dup_ff],
                   [[activated_cd, dimer_dup_ff.atom(:cr)]]],
@@ -43,7 +43,7 @@ module VersatileDiamond
                   [[activated_incoherent_cd, dimer_dup_ff.atom(:cl)]]]
               ]) }
 
-            describe "correspond dimer atom is incoherent" do
+            describe 'correspond dimer atom is incoherent' do
               before(:each) { df_atom_map } # runs atom mapping
               it { expect(dimer_dup_ff.atom(:cl).incoherent?).to be_true }
               it { expect(dimer_dup_ff.atom(:cr)).to be_a(Concepts::Atom) }

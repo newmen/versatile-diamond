@@ -4,25 +4,25 @@ module VersatileDiamond
   module Concepts
 
     describe ActiveBond do
-      describe "#name" do
+      describe '#name' do
         it { expect(active_bond.name).to eq(:*) }
       end
 
-      describe "#full_name" do
+      describe '#full_name' do
         it { expect(active_bond.full_name).to eq(:*) }
       end
 
-      describe "#external_bonds" do
+      describe '#external_bonds' do
         it { expect(active_bond.external_bonds).to eq(0) }
       end
 
-      describe "#same?" do
+      describe '#same?' do
         it { expect(active_bond.same?(ActiveBond.new)).to be_true }
         it { expect(active_bond.same?(adsorbed_h)).to be_false }
         it { expect(active_bond.same?(bridge)).to be_false }
       end
 
-      describe "#cover?" do
+      describe '#cover?' do
         it { expect(active_bond.cover?(activated_methyl_on_dimer, activated_c)).
           to be_true }
         it { expect(active_bond.cover?(
@@ -49,11 +49,11 @@ module VersatileDiamond
           to be_false }
       end
 
-      it_behaves_like "termination spec" do
+      it_behaves_like 'termination spec' do
         subject { active_bond }
       end
 
-      it_behaves_like "visitable" do
+      it_behaves_like 'visitable' do
         subject { active_bond }
       end
     end

@@ -4,29 +4,29 @@ module VersatileDiamond
   module Concepts
 
     describe AtomicSpec do
-      describe "#name" do
+      describe '#name' do
         it { expect(adsorbed_h.name).to eq(:H) }
       end
 
-      describe "#full_name" do
+      describe '#full_name' do
         it { expect(adsorbed_h.full_name).to eq(:H) }
       end
 
-      describe "#external_bonds" do
+      describe '#external_bonds' do
         it { expect(adsorbed_h.external_bonds).to eq(1) }
       end
 
-      describe "#is_hydrogen?" do
+      describe '#is_hydrogen?' do
         it { adsorbed_h.is_hydrogen? }
       end
 
-      describe "#same?" do
+      describe '#same?' do
         it { expect(adsorbed_h.same?(AtomicSpec.new(h.dup))).to be_true }
         it { expect(adsorbed_h.same?(active_bond)).to be_false }
         it { expect(adsorbed_h.same?(bridge)).to be_false }
       end
 
-      describe "#cover?" do
+      describe '#cover?' do
         it { expect(adsorbed_h.cover?(bridge, cd)).to be_true }
         it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).to be_true }
         it { expect(adsorbed_h.cover?(chlorigenated_bridge, cd_chloride)).
@@ -55,11 +55,11 @@ module VersatileDiamond
           to be_true }
       end
 
-      it_behaves_like "termination spec" do
+      it_behaves_like 'termination spec' do
         subject { adsorbed_h }
       end
 
-      it_behaves_like "visitable" do
+      it_behaves_like 'visitable' do
         subject { adsorbed_h }
       end
     end

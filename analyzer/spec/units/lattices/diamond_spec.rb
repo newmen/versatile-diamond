@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Diamond do
   subject(:diamond) { described_class.new }
 
-  describe "#opposite_relation" do
-    describe "same lattice" do
-      describe "bonds" do
+  describe '#opposite_relation' do
+    describe 'same lattice' do
+      describe 'bonds' do
         it { expect { diamond.opposite_relation(diamond, free_bond) }.
           to raise_error undefined_relation }
 
@@ -19,7 +19,7 @@ describe Diamond do
           to eq(bond_110_front) }
       end
 
-      describe "positions" do
+      describe 'positions' do
         it { expect(diamond.opposite_relation(diamond, position_100_front)).
           to eq(position_100_front) }
         it { expect(diamond.opposite_relation(diamond, position_100_cross)).
@@ -27,8 +27,8 @@ describe Diamond do
       end
     end
 
-    describe "other lattice" do
-      describe "bonds" do
+    describe 'other lattice' do
+      describe 'bonds' do
         it { expect(diamond.opposite_relation(nil, free_bond)).to eq(free_bond) }
 
         it { expect { diamond.opposite_relation(nil, bond_100_front) }.
@@ -41,7 +41,7 @@ describe Diamond do
           to raise_error undefined_relation }
       end
 
-      describe "positions" do
+      describe 'positions' do
         it { expect { diamond.opposite_relation(nil, position_100_front) }.
           to raise_error undefined_relation }
         it { expect { diamond.opposite_relation(nil, position_100_cross) }.
@@ -50,8 +50,8 @@ describe Diamond do
     end
   end
 
-  describe "#positions_between" do
-    describe "position 100 front" do
+  describe '#positions_between' do
+    describe 'position 100 front' do
       let(:links) do {
         cd0 => [[cd1, bond_110_front]],
         cd1 => [[cd0, bond_110_cross], [cd2, bond_110_cross]],
@@ -62,8 +62,8 @@ describe Diamond do
         to match_array([position_100_front, position_100_front]) }
     end
 
-    describe "position 100 cross" do
-      describe "inverted bridge" do
+    describe 'position 100 cross' do
+      describe 'inverted bridge' do
         let(:links) do {
           cd0 => [[cd1, bond_110_cross]],
           cd1 => [[cd0, bond_110_front], [cd2, bond_110_front]],
@@ -74,7 +74,7 @@ describe Diamond do
           to match_array([position_100_cross, position_100_cross]) }
       end
 
-      describe "not found positions in dimer fondation because ambiguity" do
+      describe 'not found positions in dimer fondation because ambiguity' do
         3.times do |i|
           let(:"cd#{i + 3}") { cd.dup }
         end

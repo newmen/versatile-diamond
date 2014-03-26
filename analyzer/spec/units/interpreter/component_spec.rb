@@ -4,7 +4,7 @@ module VersatileDiamond
   module Interpreter
 
     describe Component do
-      describe "#interpret" do
+      describe '#interpret' do
         class Some < Component
           def foo(v); v end
           def interpret(line)

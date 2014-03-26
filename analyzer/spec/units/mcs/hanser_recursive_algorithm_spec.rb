@@ -11,7 +11,7 @@ module VersatileDiamond
           Graph.new(bridge_links), Graph.new(methyl_on_bridge_links))
       end
 
-      describe "#self.contain?" do
+      describe '#self.contain?' do
         it { expect(described_class.contain?(methyl_on_bridge_links, bridge_links)).
           to be_true }
         it { expect(described_class.contain?(bridge_links, methyl_on_bridge_links)).
@@ -48,14 +48,14 @@ module VersatileDiamond
         it { expect(described_class.contain?(
           high_bridge_links, methyl_on_bridge_links)).to be_true }
 
-        describe "separated_multi_bond: true" do
+        describe 'separated_multi_bond: true' do
           it { expect(described_class.contain?(
             high_bridge_links, methyl_on_bridge_links ,
             separated_multi_bond: true)).to be_false }
         end
       end
 
-      describe "#self.first_interset" do
+      describe '#self.first_interset' do
         subject { described_class.first_interset(assoc) }
         it { expect(subject.size).to eq(3) }
         it { expect(subject).to include(
@@ -65,7 +65,7 @@ module VersatileDiamond
           ) }
       end
 
-      describe "#intersets" do
+      describe '#intersets' do
         subject { described_class.new(assoc).intersets }
         it { expect(subject.size).to eq(2) }
         it { expect(subject.first).to include(

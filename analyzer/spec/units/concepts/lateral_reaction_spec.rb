@@ -12,7 +12,7 @@ module VersatileDiamond
       end
       let(:target_dimer) { reaction.reverse.source.first }
 
-      describe "#theres" do
+      describe '#theres' do
         it { expect(reaction.theres.size).to eq(1) }
         it { expect(reaction.theres.first.same?(on_end)).to be_true }
 
@@ -21,13 +21,13 @@ module VersatileDiamond
         it { expect(other.theres.last.same?(there_methyl)).to be_true }
       end
 
-      describe "#reverse" do
+      describe '#reverse' do
         subject { reaction.reverse }
         let(:there) { subject.theres.first }
 
         it { should be_a(described_class) }
 
-        describe "theres reversed too" do
+        describe 'theres reversed too' do
           it { expect(there.positions).to eq({
               [target_dimer, target_dimer.atom(:cr)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
@@ -66,8 +66,8 @@ module VersatileDiamond
         end
       end
 
-      describe "#used_keynames_of" do
-        describe "forward" do
+      describe '#used_keynames_of' do
+        describe 'forward' do
           subject { reaction }
           let(:first_bridge) { subject.source.first }
           let(:second_bridge) { subject.source.last }
@@ -76,14 +76,14 @@ module VersatileDiamond
           it { expect(subject.used_keynames_of(second_bridge)).to match_array([:ct]) }
         end
 
-        describe "reverse" do
+        describe 'reverse' do
           subject { reaction.reverse.used_keynames_of(target_dimer) }
           it { expect(subject.size).to eq(2) }
           it { should include(:cr, :cl) }
         end
       end
 
-      describe "#same?" do
+      describe '#same?' do
         it { expect(reaction.same?(same)).to be_true }
         it { expect(reaction.same?(middle)).to be_false }
         it { expect(middle.same?(reaction)).to be_false }
@@ -91,7 +91,7 @@ module VersatileDiamond
         it { expect(reaction.same?(dimer_formation)).to be_false }
       end
 
-      describe "#organize_dependencies!" do
+      describe '#organize_dependencies!' do
         before(:each) do
           reactions = [reaction, middle, other]
           reaction.organize_dependencies!(reactions)
@@ -104,16 +104,16 @@ module VersatileDiamond
         it { expect(other.more_complex).to be_empty }
       end
 
-      describe "#size" do
+      describe '#size' do
         it { expect(reaction.size.round(2)).to eq(12.81) }
         it { expect(other.size.round(2)).to eq(16.81) }
       end
 
-      it_behaves_like "visitable" do
+      it_behaves_like 'visitable' do
         subject { reaction }
       end
 
-      describe "#wheres" do
+      describe '#wheres' do
         it { expect(reaction.wheres).to match_array([at_end]) }
 
         it { expect(other.wheres.size).to eq(2) }

@@ -4,7 +4,7 @@ module VersatileDiamond
   module Interpreter
 
     describe Events, type: :interpreter do
-      describe "#reaction" do
+      describe '#reaction' do
         before(:each) do
           interpret_basis
           events.interpret('reaction "reaction name"')
@@ -15,7 +15,7 @@ module VersatileDiamond
           to be_a(Concepts::Reaction) }
       end
 
-      describe "#environment" do
+      describe '#environment' do
         before(:each) { events.interpret('environment "env name"') }
         it { expect(Tools::Chest.environment('env name')).
           to be_a(Concepts::Environment) }

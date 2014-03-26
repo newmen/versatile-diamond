@@ -4,8 +4,8 @@ module VersatileDiamond
   module Mcs
 
     describe ManyToManyAlgorithm do
-      describe "#self.map_to" do
-        describe "methyl deactivation" do
+      describe '#self.map_to' do
+        describe 'methyl deactivation' do
           let(:spec1) { activated_methyl_on_bridge }
           let(:spec2) { hydrogen_ion }
           let(:spec3) { methyl_on_bridge }
@@ -26,13 +26,13 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like "check mapping result" do
+          it_behaves_like 'check mapping result' do
             subject { described_class.map_to(
               mapping_result, dm_names_to_specs) }
           end
         end
 
-        describe "hydrogen migration" do
+        describe 'hydrogen migration' do
           let(:spec1) { methyl_on_dimer }
           let(:spec2) { activated_dimer }
           let(:spec3) { activated_methyl_on_dimer }
@@ -67,7 +67,7 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like "check mapping result" do
+          it_behaves_like 'check mapping result' do
             subject { described_class.map_to(
               mapping_result, hm_names_to_specs) }
           end

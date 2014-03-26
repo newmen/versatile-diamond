@@ -14,24 +14,24 @@ module VersatileDiamond
         describe "##{prop}=" do
           it { expect { surface_deactivation.send(:"#{prop}=", 123) }.
             not_to raise_error }
-          it "twise setup" do
+          it 'twise setup' do
             surface_deactivation.send(:"#{prop}=", 123)
             expect { surface_deactivation.send(:"#{prop}=", 987) }.
               to raise_error already_set
           end
 
-          it "set and get" do
+          it 'set and get' do
             surface_deactivation.send(:"#{prop}=", 567)
             expect(surface_deactivation.send(prop)).to eq(567)
           end
         end
       end
 
-      describe "#name" do
+      describe '#name' do
         it { expect(surface_deactivation.name).to match(/^forward/) }
       end
 
-      describe "#reverse" do # it's no use for ubiquitous reaction?
+      describe '#reverse' do # it's no use for ubiquitous reaction?
         subject { surface_deactivation.reverse } # synthetics
         it { should be_a(described_class) }
 
@@ -44,14 +44,14 @@ module VersatileDiamond
         it { expect(subject.products).to include(active_bond, hydrogen_ion) }
       end
 
-      describe "#gases_num" do
+      describe '#gases_num' do
         it { expect(surface_deactivation.gases_num).to eq(1) }
         it { expect(surface_deactivation.reverse.gases_num).to eq(0) }
         it { expect(surface_activation.gases_num).to eq(1) }
         it { expect(surface_activation.reverse.gases_num).to eq(1) }
       end
 
-      describe "#each_source" do
+      describe '#each_source' do
         let(:collected_source) do
           surface_deactivation.each_source.with_object([]) do |spec, arr|
             arr << spec
@@ -61,14 +61,14 @@ module VersatileDiamond
         it { expect(collected_source).to include(active_bond, hydrogen_ion) }
       end
 
-      describe "#swap_source" do
+      describe '#swap_source' do
         let(:dup) { hydrogen_ion.dup }
         before(:each) { surface_deactivation.swap_source(hydrogen_ion, dup) }
         it { expect(surface_deactivation.source).to include(dup) }
         it { expect(surface_deactivation.source).not_to include(hydrogen_ion) }
       end
 
-      describe "#same?" do
+      describe '#same?' do
         let(:same) do
           described_class.new(
             :forward, 'duplicate', sd_source.shuffle, sd_product)
@@ -81,8 +81,8 @@ module VersatileDiamond
         it { expect(surface_deactivation.same?(surface_activation)).to be_false }
       end
 
-      describe "#organize_dependencies! and #more_complex" do
-        shared_examples_for "cover just one" do
+      describe '#organize_dependencies! and #more_complex' do
+        shared_examples_for 'cover just one' do
           before do
             target.organize_dependencies!(
               [methyl_activation, methyl_deactivation, methyl_desorption,
@@ -92,18 +92,18 @@ module VersatileDiamond
           it { expect(target.more_complex).to match_array([complex]) }
         end
 
-        it_behaves_like "cover just one" do
+        it_behaves_like 'cover just one' do
           let(:target) { surface_activation }
           let(:complex) { methyl_activation }
         end
 
-        it_behaves_like "cover just one" do
+        it_behaves_like 'cover just one' do
           let(:target) { surface_deactivation }
           let(:complex) { methyl_deactivation }
         end
       end
 
-      describe "#full_rate" do
+      describe '#full_rate' do
         before do
           Tools::Config.gas_temperature(1000, 'K')
           Tools::Config.gas_concentration(hydrogen_ion, 0.1, 'mol/cm3')
@@ -114,17 +114,17 @@ module VersatileDiamond
         it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
       end
 
-      describe "#size" do
+      describe '#size' do
         it { expect(surface_activation.size).to eq(1) }
         it { expect(surface_deactivation.size).to eq(1) }
       end
 
-      describe "#changes_size" do
+      describe '#changes_size' do
         it { expect(surface_activation.changes_size).to eq(1) }
         it { expect(surface_deactivation.changes_size).to eq(1) }
       end
 
-      it_behaves_like "visitable" do
+      it_behaves_like 'visitable' do
         subject { surface_activation }
       end
     end
