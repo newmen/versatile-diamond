@@ -41,12 +41,13 @@ module VersatileDiamond
         it { expect(ref.diff(ref.dup)).to be_empty }
         it { expect(ref.diff(c)).to be_empty }
         it { expect(ref.diff(activated_c)).to be_empty }
-        it { expect(ref.diff(unfixed_c)).to match_array([:unfixed]) }
-        it { expect(ref.diff(unfixed_activated_c)).to match_array([:unfixed]) }
-        it { expect(AtomReference.new(bridge_base, :ct).diff(activated_incoherent_cd)).
-          to match_array([:incoherent]) }
-        it { expect(AtomReference.new(bridge_base, :ct).diff(incoherent_cd)).
-          to match_array([:incoherent]) }
+        it { expect(ref.diff(unfixed_c)).to eq([:unfixed]) }
+        it { expect(ref.diff(unfixed_activated_c)).to eq([:unfixed]) }
+
+        it { expect(AtomReference.new(bridge_base, :ct).
+          diff(activated_incoherent_cd)).to eq([:incoherent]) }
+        it { expect(AtomReference.new(bridge_base, :ct).
+          diff(incoherent_cd)).to eq([:incoherent]) }
       end
 
       describe '#relations_in' do

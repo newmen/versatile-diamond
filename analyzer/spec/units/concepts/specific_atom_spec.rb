@@ -13,13 +13,13 @@ module VersatileDiamond
         end
         it { expect(subject.actives).to eq(1) }
         it { expect(subject.incoherent?).to be_true }
-        it { expect(subject.monovalents).to match_array([:H]) }
+        it { expect(subject.monovalents).to eq([:H]) }
 
         describe 'from specific atom' do
           let(:child) { described_class.new(cd, ancestor: subject) }
           it { expect(child.actives).to eq(1) }
           it { expect(child.incoherent?).to be_true }
-          it { expect(child.monovalents).to match_array([:H]) }
+          it { expect(child.monovalents).to eq([:H]) }
         end
       end
 
@@ -27,7 +27,7 @@ module VersatileDiamond
         it { expect(subject.dup).not_to eq(subject) }
         it { expect(activated_c.dup.actives).to eq(1) }
         it { expect(activated_cd.dup.lattice).to eq(diamond) }
-        it { expect(activated_cd_hydride.dup.monovalents).to match_array([:H]) }
+        it { expect(activated_cd_hydride.dup.monovalents).to eq([:H]) }
       end
 
       describe '#name' do
@@ -85,9 +85,9 @@ module VersatileDiamond
 
       describe '#monovalents' do
         it { expect(activated_c.monovalents).to be_empty }
-        it { expect(cd_chloride.monovalents).to match_array([:Cl]) }
-        it { expect(activated_cd_hydride.monovalents).to match_array([:H]) }
-        it { expect(cd_extra_hydride.monovalents).to match_array([:H, :H]) }
+        it { expect(cd_chloride.monovalents).to eq([:Cl]) }
+        it { expect(activated_cd_hydride.monovalents).to eq([:H]) }
+        it { expect(cd_extra_hydride.monovalents).to eq([:H, :H]) }
       end
 
       describe '#same?' do
@@ -136,14 +136,15 @@ module VersatileDiamond
         it { expect(incoherent_cd.diff(cd)).to be_empty }
         it { expect(activated_incoherent_cd.diff(cd)).to be_empty }
         it { expect(activated_incoherent_cd.diff(activated_cd)).to be_empty }
-        it { expect(activated_incoherent_cd.diff(bridge.atom(:cr))).to be_empty }
+        it { expect(activated_incoherent_cd.diff(bridge.atom(:cr))).
+          to be_empty }
         it { expect(activated_cd.diff(bridge.atom(:cr))).to be_empty }
 
-        it { expect(activated_c.diff(unfixed_c)).to match_array([:unfixed]) }
-        it { expect(activated_c.diff(unfixed_activated_c)).to match_array([:unfixed]) }
-        it { expect(activated_cd.diff(incoherent_cd)).to match_array([:incoherent]) }
+        it { expect(activated_c.diff(unfixed_c)).to eq([:unfixed]) }
+        it { expect(activated_c.diff(unfixed_activated_c)).to eq([:unfixed]) }
+        it { expect(activated_cd.diff(incoherent_cd)).to eq([:incoherent]) }
         it { expect(activated_cd.diff(activated_incoherent_cd)).
-          to match_array([:incoherent]) }
+          to eq([:incoherent]) }
       end
 
       describe '#apply_diff' do
@@ -154,10 +155,10 @@ module VersatileDiamond
 
       describe '#relevants' do
         it { expect(activated_c.relevants).to be_empty }
-        it { expect(unfixed_c.relevants).to match_array([:unfixed]) }
-        it { expect(unfixed_activated_c.relevants).to match_array([:unfixed]) }
-        it { expect(incoherent_cd.relevants).to match_array([:incoherent]) }
-        it { expect(activated_incoherent_cd.relevants).to match_array([:incoherent]) }
+        it { expect(unfixed_c.relevants).to eq([:unfixed]) }
+        it { expect(unfixed_activated_c.relevants).to eq([:unfixed]) }
+        it { expect(incoherent_cd.relevants).to eq([:incoherent]) }
+        it { expect(activated_incoherent_cd.relevants).to eq([:incoherent]) }
       end
 
       it_behaves_like '#lattice' do

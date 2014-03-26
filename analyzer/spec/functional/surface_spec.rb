@@ -9,7 +9,8 @@ module VersatileDiamond
           expect(surface.interpret('spec :hello')).
             to be_a(Interpreter::SurfaceSpec)
 
-          expect(Tools::Chest.surface_spec(:hello)).to be_a(Concepts::SurfaceSpec)
+          expect(Tools::Chest.surface_spec(:hello)).
+            to be_a(Concepts::SurfaceSpec)
         end
       end
 

@@ -29,7 +29,8 @@ describe Diamond do
 
     describe 'other lattice' do
       describe 'bonds' do
-        it { expect(diamond.opposite_relation(nil, free_bond)).to eq(free_bond) }
+        it { expect(diamond.opposite_relation(nil, free_bond)).
+          to eq(free_bond) }
 
         it { expect { diamond.opposite_relation(nil, bond_100_front) }.
           to raise_error undefined_relation }

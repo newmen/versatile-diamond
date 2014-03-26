@@ -44,7 +44,8 @@ module VersatileDiamond
               describe 'property is realy state' do
                 before(:each) { subject.interpret('incoherent d(:cl)') }
                 it { expect(hm_source.last.atom(:cl).incoherent?).to be_true }
-                it { expect(hm_products.last.atom(:cl).incoherent?).to be_true }
+                it { expect(hm_products.last.atom(:cl).incoherent?).
+                  to be_true }
               end
             end
 

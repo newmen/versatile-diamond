@@ -51,8 +51,9 @@ module VersatileDiamond
             describe 'evaluate value' do
               before { Tools::Config.gas_temperature(100, 'C') }
               it 'uses gas temperature' do
-                expect { target.interpret('forward_rate 1e3 * T ** 2, cm6/(mol2 * s)') }.
-                  not_to raise_error
+                expect {
+                  target.interpret('forward_rate 1e3 * T ** 2, cm6/(mol2 * s)')
+                }.not_to raise_error
               end
             end
           end

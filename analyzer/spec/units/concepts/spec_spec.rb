@@ -145,7 +145,7 @@ module VersatileDiamond
 
       describe '#store_there' do
         before { dimer_base.store_there(on_end) }
-        it { expect(dimer_base.theres).to match_array([on_end]) }
+        it { expect(dimer_base.theres).to eq([on_end]) }
       end
 
       describe '#childs' do
@@ -154,12 +154,12 @@ module VersatileDiamond
 
       describe '#store_child' do
         before { dimer_base.store_child(methyl_on_dimer_base) }
-        it { expect(dimer_base.childs).to match_array([methyl_on_dimer_base]) }
+        it { expect(dimer_base.childs).to eq([methyl_on_dimer_base]) }
       end
 
       describe '#append_childs' do
         before { dimer_base.append_childs([activated_dimer]) }
-        it { expect(dimer_base.childs).to match_array([activated_dimer]) }
+        it { expect(dimer_base.childs).to eq([activated_dimer]) }
       end
 
       describe '#remove_child' do
@@ -179,9 +179,10 @@ module VersatileDiamond
         it { expect(methyl_on_extended_bridge_base.size).to eq(8) }
         it { expect(high_bridge_base.size).to eq(4) }
         it { expect(dimer_base.size).to eq(6) }
-        it { expect(extended_dimer_base.size).to eq(14) } # if take into account the
-        # crystal lattice then value should be 12
         it { expect(methyl_on_dimer_base.size).to eq(7) }
+
+        # if take into account the crystal lattice then value should be 12
+        it { expect(extended_dimer_base.size).to eq(14) }
       end
 
       it_behaves_like 'visitable' do

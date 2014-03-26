@@ -19,9 +19,11 @@ module VersatileDiamond
 
       describe '#string_to_args' do
         it { expect(subject.string_to_args('')).to be_empty }
-        it { expect(subject.string_to_args('one')).to match_array(['one']) }
-        it { expect(subject.string_to_args(':one, 2')).to match_array([:one, 2]) }
-        it { expect(subject.string_to_args('1, two: 3')).to match_array([1, { two: 3 }]) }
+        it { expect(subject.string_to_args('one')).to eq(['one']) }
+        it { expect(subject.string_to_args(':one, 2')).
+          to match_array([:one, 2]) }
+        it { expect(subject.string_to_args('1, two: 3')).
+          to match_array([1, { two: 3 }]) }
         it { expect(subject.string_to_args('one: 2, three: 4')).
           to match_array([{ one: 2, three: 4 }]) }
 

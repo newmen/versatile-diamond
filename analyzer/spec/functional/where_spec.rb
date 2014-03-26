@@ -53,7 +53,7 @@ module VersatileDiamond
             where.interpret('position :one, right(:cr), face: 100, dir: :cross')
             where.interpret('position :two, right(:cl), face: 100, dir: :cross')
           end
-          it { expect(concept.specs).to match_array([dimer]) }
+          it { expect(concept.specs).to eq([dimer]) }
         end
       end
 

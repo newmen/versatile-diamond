@@ -329,7 +329,7 @@ module VersatileDiamond
         describe '#add_smallest' do
           before(:each) { ab_ct.add_smallest(bridge_ct) }
           it { expect(bridge_ct.smallests).to be_nil }
-          it { expect(ab_ct.smallests.to_a).to match_array([bridge_ct]) }
+          it { expect(ab_ct.smallests.to_a).to eq([bridge_ct]) }
         end
       end
 
@@ -340,7 +340,7 @@ module VersatileDiamond
         describe '#add_same' do
           before(:each) { eab_ct.add_same(aib_ct) }
           it { expect(aib_ct.sames).to be_nil }
-          it { expect(eab_ct.sames.to_a).to match_array([aib_ct]) }
+          it { expect(eab_ct.sames.to_a).to eq([aib_ct]) }
         end
       end
 

@@ -72,9 +72,8 @@ module VersatileDiamond
               methyl_on_dimer, methyl_on_dimer.atom(:cm)
             ]) }
 
-          it { expect(hm_atom_map.other_side(dimer, dimer.atom(:cr))).to match_array([
-              activated_dimer, activated_dimer.atom(:cr)
-            ]) }
+          it { expect(hm_atom_map.other_side(dimer, dimer.atom(:cr))).
+            to match_array([activated_dimer, activated_dimer.atom(:cr)]) }
 
           it { expect(hm_atom_map.other_side(
               activated_dimer, activated_dimer.atom(:cr))).
@@ -197,7 +196,7 @@ module VersatileDiamond
         it { should_not == df_atom_map }
 
         it { expect(subject.source).to match_array([abridge_dup, aib_dup]) }
-        it { expect(subject.products).to match_array([d_dup]) }
+        it { expect(subject.products).to eq([d_dup]) }
 
         it { expect(subject.changes).not_to eq(df_atom_map.changes) }
         it { expect(subject.full).not_to eq(df_atom_map.full) }
@@ -249,8 +248,10 @@ module VersatileDiamond
             df_atom_map.apply_relevants(activated_bridge, old_atom, new_atom)
           end
 
-          it { expect(df_atom_map.products.first.atom(:cl).incoherent?).to be_true }
-          it { expect(df_atom_map.products.first.atom(:cr).incoherent?).to be_true }
+          it { expect(df_atom_map.products.first.atom(:cl).incoherent?).
+            to be_true }
+          it { expect(df_atom_map.products.first.atom(:cr).incoherent?).
+            to be_true }
 
           it_behaves_like 'check exchanges in result'
         end

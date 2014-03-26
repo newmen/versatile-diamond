@@ -5,6 +5,10 @@ module VersatileDiamond
 
     describe Reaction, type: :interpreter do
       describe '#equation' do
+        let(:is_active_bond) { -> s { s.class == Concepts::ActiveBond } }
+        let(:is_atomic_spec) { -> s { s.class == Concepts::AtomicSpec } }
+        let(:is_specific_spec) { -> s { s.class == Concepts::SpecificSpec } }
+
         it 'error when spec name is undefined' do
           expect { reaction.interpret('equation * + hydrogen(h: *) = H') }.
             to raise_error *keyname_error(:undefined, :spec, :hydrogen)
@@ -24,22 +28,16 @@ module VersatileDiamond
 
           it { expect(concept.class).to eq(Concepts::UbiquitousReaction) }
 
-          it 'respects' do
-            expect(concept.source.one? { |s| s.class == Concepts::ActiveBond }).
-              to be_true
-            expect(concept.source.one? { |s| s.class == Concepts::SpecificSpec }).
-              to be_true
-            expect(concept.products.one? { |s| s.class == Concepts::AtomicSpec }).
-              to be_true
+          describe 'respects' do
+            it { expect(concept.source.one?(&is_active_bond)).to be_true }
+            it { expect(concept.source.one?(&is_specific_spec)).to be_true }
+            it { expect(concept.products.one?(&is_atomic_spec)).to be_true }
           end
 
-          it 'not respects' do
-            expect(concept.products.one? { |s| s.class == Concepts::ActiveBond }).
-              to be_false
-            expect(concept.products.one? { |s| s.class == Concepts::SpecificSpec }).
-              to be_false
-            expect(concept.source.one? { |s| s.class == Concepts::AtomicSpec }).
-              to be_false
+          describe 'not respects' do
+            it { expect(concept.products.one?(&is_active_bond)).to be_false }
+            it { expect(concept.products.one?(&is_specific_spec)).to be_false }
+            it { expect(concept.source.one?(&is_atomic_spec)).to be_false }
           end
 
           it "don't nest equation interpreter instance" do
@@ -67,11 +65,9 @@ module VersatileDiamond
 
             it { expect(concept.class).to eq(Concepts::Reaction) }
 
-            it 'all is specific spec' do
-              expect(concept.source.all? { |s| s.class == Concepts::SpecificSpec }).
-                to be_true
-              expect(concept.products.all? { |s| s.class == Concepts::SpecificSpec }).
-                to be_true
+            describe 'all is specific spec' do
+              it { expect(concept.source.all?(&is_specific_spec)).to be_true }
+              it { expect(concept.products.all?(&is_specific_spec)).to be_true }
             end
 
             it 'nest equation interpreter instance' do
@@ -101,7 +97,8 @@ module VersatileDiamond
                   reaction.interpret('equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
                 end
 
-                it { expect(concept.products.first.atom(:cf).incoherent?).to be_true }
+                it { expect(concept.products.first.atom(:cf).incoherent?).
+                  to be_true }
               end
 
               describe 'by operator' do
@@ -119,13 +116,17 @@ module VersatileDiamond
 
             describe 'unfixed states' do
               shared_examples_for 'check both unfixed' do
-                it { expect(concept.source.first.atom(:cm).unfixed?).to be_true }
-                it { expect(concept.products.first.atom(:cm).unfixed?).to be_true }
+                it { expect(concept.source.first.atom(:cm).unfixed?).
+                  to be_true }
+                it { expect(concept.products.first.atom(:cm).unfixed?).
+                  to be_true }
               end
 
               shared_examples_for 'check unfixed only one' do
-                it { expect(concept.source.first.atom(:cm).unfixed?).to be_true }
-                it { expect(concept.products.first.atom(:cm).unfixed?).to be_false }
+                it { expect(concept.source.first.atom(:cm).unfixed?).
+                  to be_true }
+                it { expect(concept.products.first.atom(:cm).unfixed?).
+                  to be_false }
               end
 
               before(:each) do
@@ -186,7 +187,8 @@ module VersatileDiamond
                 'equation one(ct: *, ct: i) + two(cr: *) = bridge_with_dimer')
             end
 
-            it { expect(concept.products.first.atom(:cf).incoherent?).to be_true }
+            it { expect(concept.products.first.atom(:cf).incoherent?).
+              to be_true }
           end
 
           describe 'not initialy balanced reaction' do

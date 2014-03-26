@@ -34,7 +34,8 @@ module VersatileDiamond
           to be_true }
         it { expect(active_bond.cover?(activated_incoherent_bridge, activated_c)).
           to be_true }
-        it { expect(active_bond.cover?(activated_dimer, activated_cd)).to be_true }
+        it { expect(active_bond.cover?(activated_dimer, activated_cd)).
+          to be_true }
 
         it { expect(active_bond.cover?(methyl, c)).to be_false }
         it { expect(active_bond.cover?(bridge, cd)).to be_false }

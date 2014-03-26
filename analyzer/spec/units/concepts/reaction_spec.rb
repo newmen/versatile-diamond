@@ -103,7 +103,7 @@ module VersatileDiamond
         it { expect(subject.source.size).to eq(2) }
         it { expect(subject.source).to include(methyl, abridge_dup) }
 
-        it { expect(subject.products).to match_array([methyl_on_bridge]) }
+        it { expect(subject.products).to eq([methyl_on_bridge]) }
       end
 
       describe '#gases_num' do
@@ -306,8 +306,10 @@ module VersatileDiamond
       end
 
       describe '#used_keynames_of' do
-        it { dimer_formation.used_keynames_of(activated_bridge) == [:ct] }
-        it { dimer_formation.used_keynames_of(activated_incoherent_bridge) == [:ct] }
+        it { expect(dimer_formation.used_keynames_of(activated_bridge)).
+          to eq([:ct]) }
+        it { expect(dimer_formation.used_keynames_of(activated_incoherent_bridge)).
+          to eq([:ct]) }
       end
 
       let(:reaction) { dimer_formation.duplicate('dup') }
@@ -357,13 +359,11 @@ module VersatileDiamond
       end
 
       describe '#complex_source_spec_and_atom' do
-        it { expect(methyl_activation.complex_source_spec_and_atom).to match_array([
-            ma_source.first, ma_source.first.atom(:cm)
-          ]) }
+        it { expect(methyl_activation.complex_source_spec_and_atom).
+          to match_array([ma_source.first, ma_source.first.atom(:cm)]) }
 
-        it { expect(methyl_deactivation.complex_source_spec_and_atom).to match_array([
-            dm_source.first, dm_source.first.atom(:cm)
-          ]) }
+        it { expect(methyl_deactivation.complex_source_spec_and_atom).
+          to match_array([dm_source.first, dm_source.first.atom(:cm)]) }
       end
 
       describe '#complex_source_covered_by?' do
@@ -384,7 +384,7 @@ module VersatileDiamond
           reaction.organize_dependencies!(lateral_reactions)
           methyl_desorption.organize_dependencies!(lateral_reactions)
         end
-        it { expect(reaction.more_complex).to match_array([lateral]) }
+        it { expect(reaction.more_complex).to eq([lateral]) }
         it { expect(methyl_desorption.more_complex).to be_empty }
       end
 

@@ -91,7 +91,8 @@ module VersatileDiamond
       describe '#method_missing' do
         shared_examples_for 'store and get concept' do
           before { Chest.store(*concepts) }
-          it { expect(Chest.concept(*concepts.map(&:name))).to eq(concepts.last) }
+          it { expect(Chest.concept(*concepts.map(&:name))).
+            to eq(concepts.last) }
         end
 
         it_behaves_like 'store and get concept' do

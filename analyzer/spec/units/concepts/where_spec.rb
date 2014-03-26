@@ -5,9 +5,9 @@ module VersatileDiamond
 
     describe Where do
       describe '#specs' do
-        it { expect(at_end.specs).to match_array([dimer]) }
-        it { expect(at_middle.specs).to match_array([dimer]) }
-        it { expect(near_methyl.specs).to match_array([methyl_on_bridge]) }
+        it { expect(at_end.specs).to eq([dimer]) }
+        it { expect(at_middle.specs).to eq([dimer]) }
+        it { expect(near_methyl.specs).to eq([methyl_on_bridge]) }
       end
 
       describe '#description' do
@@ -21,7 +21,7 @@ module VersatileDiamond
 
       describe '#parents' do
         it { expect(at_end.parents).to be_empty }
-        it { expect(at_middle.parents).to match_array([at_end]) }
+        it { expect(at_middle.parents).to eq([at_end]) }
       end
 
       describe '#concretize' do
@@ -38,7 +38,8 @@ module VersatileDiamond
         it { expect(at_middle.used_keynames_of(dimer).size).to eq(2) }
         it { expect(at_middle.used_keynames_of(dimer)).to include(:cr, :cl) }
 
-        it { expect(near_methyl.used_keynames_of(methyl_on_bridge)).to match_array([:cb]) }
+        it { expect(near_methyl.used_keynames_of(methyl_on_bridge)).
+          to eq([:cb]) }
       end
 
       it_behaves_like 'visitable' do

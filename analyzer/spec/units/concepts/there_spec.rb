@@ -27,15 +27,17 @@ module VersatileDiamond
       end
 
       describe '#target_specs' do
-        it { expect(on_end.target_specs).to match_array([activated_bridge, ai_bridge]) }
-        it { expect(on_middle.target_specs).to match_array([activated_bridge, ai_bridge]) }
-        it { expect(there_methyl.target_specs).to match_array([activated_bridge]) }
+        it { expect(on_end.target_specs).
+          to match_array([activated_bridge, ai_bridge]) }
+        it { expect(on_middle.target_specs).
+          to match_array([activated_bridge, ai_bridge]) }
+        it { expect(there_methyl.target_specs).to eq([activated_bridge]) }
       end
 
       describe '#env_specs' do
-        it { expect(on_end.env_specs).to match_array([dimer]) }
+        it { expect(on_end.env_specs).to eq([dimer]) }
         it { expect(on_middle.env_specs).to match_array([dimer, dimer]) }
-        it { expect(there_methyl.env_specs).to match_array([methyl_on_bridge]) }
+        it { expect(there_methyl.env_specs).to eq([methyl_on_bridge]) }
       end
 
       describe '#description' do
@@ -112,7 +114,8 @@ module VersatileDiamond
         it { expect(on_middle.used_keynames_of(dimer).size).to eq(2) }
         it { expect(on_middle.used_keynames_of(dimer)).to include(:cr, :cl) }
 
-        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).to match_array([:cb]) }
+        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).
+          to eq([:cb]) }
       end
 
       describe '#same?' do

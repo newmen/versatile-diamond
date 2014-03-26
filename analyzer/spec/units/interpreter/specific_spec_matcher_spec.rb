@@ -61,17 +61,21 @@ module VersatileDiamond
         describe 'right atom of bridge is hydride' do
           before(:each) { Tools::Chest.store(h) }
           subject { matcher.match('bridge(cr: H)') }
-          it { expect(subject.atom(:cr).monovalents).to match_array([:H]) }
+          it { expect(subject.atom(:cr).monovalents).to eq([:H]) }
           it { expect(subject.atom(:cl).monovalents).to be_empty }
         end
 
         describe 'just a lot of' do
+          subject do
+            matcher.match('methyl_on_bridge(cb: i, cm: u, cm: **, cm: Cl)')
+          end
+
           before(:each) { Tools::Chest.store(cl) }
-          subject { matcher.match('methyl_on_bridge(cb: i, cm: u, cm: **, cm: Cl)') }
+
           it { expect(subject.atom(:cb).incoherent?).to be_true }
           it { expect(subject.atom(:cm).unfixed?).to be_true }
           it { expect(subject.atom(:cm).actives).to eq(2) }
-          it { expect(subject.atom(:cm).monovalents).to match_array([:Cl]) }
+          it { expect(subject.atom(:cm).monovalents).to eq([:Cl]) }
         end
 
         describe 'wrong specification' do
