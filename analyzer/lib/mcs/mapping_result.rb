@@ -28,6 +28,7 @@ module VersatileDiamond
       def initialize(source, proructs, result: { change: [], conformity: [] })
         @source, @products = source, proructs
         @result = result
+        @reverse = nil
 
         size_wo_simple = -> specs { specs.reject { |sp| sp.simple? }.size }
         source_size_wo_simple = size_wo_simple[source]

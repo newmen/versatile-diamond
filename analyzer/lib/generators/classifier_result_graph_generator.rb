@@ -22,7 +22,7 @@ module VersatileDiamond
         super
       end
 
-    private
+    protected
 
       attr_reader :classifier
 

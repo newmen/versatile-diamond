@@ -13,6 +13,7 @@ module VersatileDiamond
       # @param [Concepts::Spec] concept_spec the stored concept spec instance
       def initialize(concept_spec)
         @concept = concept_spec
+        @aliases_to = nil
       end
 
       # Adsorbs atoms and links of aliases and store duplicated atoms hash to

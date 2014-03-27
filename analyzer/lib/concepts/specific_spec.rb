@@ -33,6 +33,11 @@ module VersatileDiamond
         @spec = spec
         @original_name = @spec.name
         @specific_atoms = specific_atoms
+
+        @external_bonds_after_extend = nil
+        @reduced, @correct_reduced = nil
+
+        @child, @reaction, @there = nil
       end
 
       # Makes a copy of other specific spec by dup each specific atom from it

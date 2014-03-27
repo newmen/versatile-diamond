@@ -11,6 +11,12 @@ module VersatileDiamond
       end
 
       class << self
+
+        # Initialize internal variables of config
+        def init
+          @gas_temperature, @surface_temperature = nil
+        end
+
         # Reset all internal values. Used by RSpec only.
         def reset
           instance_variables.each do |var|

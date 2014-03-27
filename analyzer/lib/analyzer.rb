@@ -28,9 +28,9 @@ module VersatileDiamond
     # Launches analysis cycle
     # @return [Boolean] the result of analysis
     def analyze
-      loop do
-  # puts "LINE #{@line_number + 1}: #{@line}"
+      Tools::Config.init
 
+      loop do
         interpret(@line, method(:change_root)) do
           begin
             pass_line_to(@root, @line)

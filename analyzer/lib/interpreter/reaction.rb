@@ -12,6 +12,8 @@ module VersatileDiamond
       #   accumulate interpreted values
       def initialize(name)
         @name = name
+        @aliases = nil
+        @reverse_was_stored = false
       end
 
       # Stores aliases to internal hash for future checking and instancing
