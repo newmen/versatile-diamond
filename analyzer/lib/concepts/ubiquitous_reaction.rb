@@ -46,8 +46,12 @@ module VersatileDiamond
         super(name)
         @type = type
         @source, @products = source, products
-
         @source.sort! { |a, b| b.size <=> a.size }
+        @simple_source, @simple_products = nil
+
+        @reverse = nil
+
+        @enthalpy, @activation, @rate = nil
       end
 
       # Gets a name of reaction with prepend type of reaction

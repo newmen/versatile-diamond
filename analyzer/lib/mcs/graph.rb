@@ -24,6 +24,7 @@ module VersatileDiamond
 
         @edges = Hash[dup_result]
         @changed_vertices = {}
+        @atom_alias = nil
       end
 
       def_delegator :@edges, :size

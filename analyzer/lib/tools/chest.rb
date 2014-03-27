@@ -27,10 +27,6 @@ module VersatileDiamond
       end
 
       class << self
-        def to_s
-          @sac ? @sac.inspect : 'is empty!'
-        end
-
         # Reset the sac and using by RSpec only
         def reset; @sac && @sac.clear end
 
@@ -158,9 +154,10 @@ module VersatileDiamond
         end
 
         def to_s
-          @sac && @sac.keys.each_with_object({}) do |key, hash|
-            hash[key] = @sac[key].map(&:first)
-          end.inspect + ' '
+          content = @sac && @sac.keys.reduce('') do |acc, (key, value)|
+            "#{acc}#{key}: #{value.map(&:first).join(' ')}\n"
+          end
+          content ? content : 'is empty'
         end
 
       private
