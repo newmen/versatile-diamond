@@ -121,16 +121,7 @@ module VersatileDiamond
         # @return [Concepts::Named] founded concept
         # @override
         def method_missing(key, *names)
-          if @sac && @sac[key]
-            result = names.reduce(@sac[key]) { |hash, name| hash[name.to_sym] }
-            unless result
-              names_seq = names.join(' -> ')
-              raise(Chest::KeyNameError.new(key, names_seq, :undefined))
-            end
-            result
-          else
-            super
-          end
+          @sac && @sac[key] ? find_value(key, names) : super
         rescue NoMethodError => e
           raise(Chest::KeyNameError.new(key, e.name, :undefined))
         end
@@ -195,6 +186,27 @@ module VersatileDiamond
               bottom = (bottom[name] ||= {})
             end
           end until concepts.empty?
+        end
+
+        # Finds concept in sac by initial key (which is concept type) and
+        # sequence of names where the last name point out finding concept
+        #
+        # @param [Symbol] key the type of target concept in sac
+        # @param [Array] names the sequence of names to find concept
+        # @raise [KeyNameError] if value not reached by presented sequence of
+        #   names
+        # @return [Concept::Base] the finded concept
+        def find_value(key, names)
+          value = names.reduce(@sac[key]) do |hash, name|
+            hash && hash[name.to_sym]
+          end
+
+          unless value
+            names_seq = names.join(' -> ')
+            raise(Chest::KeyNameError.new(key, names_seq, :undefined))
+          end
+
+          value
         end
 
       end
