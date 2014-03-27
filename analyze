@@ -40,6 +40,7 @@ end
 require_relative 'analyzer/loader'
 require_each "../#{opt['--lattices']}/*.rb"
 VD = VersatileDiamond
+Gens = VD::Generators
 
 I18n.locale = opt['--lang']
 if !VD::Analyzer.read_config(opt['<path_to_config>'])
@@ -55,26 +56,18 @@ props_to_ops = props.map do |prop|
 end
 props_to_ops = Hash[props_to_ops.compact]
 
-doit = -> generator do
-  generator.generate(props_to_ops)
-end
+doit = -> generator { generator.generate(props_to_ops) }
+define_generator = -> key, generator { doit[generator] if opt[key] }
 
-if opt['--total-tree']
-  generator = VD::Generators::ConceptsTreeGenerator.new('total_tree', draw_second_source_deps: true)
-  doit[generator]
-end
+define_generator['--code', Gens::CodeGenerator.new]
+define_generator['--overview', Gens::Overview.new]
 
-if opt['--composition']
-  generator = VD::Generators::AtomsGraphGenerator.new('composition')
-  doit[generator]
-end
+define_generator[
+  '--total-tree',
+  Gens::ConceptsTreeGenerator.new('total_tree', draw_second_source_deps: true)
+]
 
-if opt['--overview']
-  generator = VD::Generators::Overview.new
-  doit[generator]
-end
-
-if opt['--code']
-  generator = VD::Generators::CodeGenerator.new
-  doit[generator]
-end
+define_generator[
+  '--composition',
+  Gens::AtomsGraphGenerator.new('composition')
+]
