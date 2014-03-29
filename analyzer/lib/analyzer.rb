@@ -44,16 +44,17 @@ module VersatileDiamond
         next_line || break
       end
 
+      result = nil
       begin
-        Tools::Shunter.organize_dependecies!
-      rescue Tools::Shunter::ReactionDuplicate => e
+        result = Organizers::AnalysisResult.new
+      rescue Organizers::AnalysisResult::ReactionDuplicate => e
         syntax_error('.reaction_duplicate', first: e.first, second: e.second)
       end
 
-      true
+      result
     rescue Errors::SyntaxError => e
       puts e.message(@config_path, @line_number + 1)
-      false
+      result
     rescue Errors::Base
       puts "Versatile Diamond internal error at line #{@line_number + 1}:"
       puts "\n\t#{@line.strip}" if @line
