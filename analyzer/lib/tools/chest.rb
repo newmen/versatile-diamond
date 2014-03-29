@@ -148,9 +148,8 @@ module VersatileDiamond
         def visit(visitor)
           # necessary to visit only reactions because they will visit all the
           # rest
-          all(*Shunter::REACTION_KEYS).each do |reaction|
-            reaction.visit(visitor)
-          end
+          reactions = [:ubiquitous_reaction, :reaction, :lateral_reaction]
+          all(*reactions).each { |reaction| reaction.visit(visitor) }
         end
 
         def to_s
