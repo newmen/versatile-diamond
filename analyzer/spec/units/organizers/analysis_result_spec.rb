@@ -131,6 +131,23 @@ module VersatileDiamond
             end
           end
 
+          describe 'from bases' do
+            before { store_bases }
+
+            it_behaves_like :all_dependent_base_specs do
+              let(:quant) { 5 }
+              let(:names) do
+                [
+                  :bridge,
+                  :dimer,
+                  :high_bridge,
+                  :methyl_on_bridge,
+                  :methyl_on_dimer
+                ]
+              end
+            end
+          end
+
           describe 'from reactions' do
             def reactions_for(name)
               subject.base_spec(name).reactions
@@ -158,23 +175,6 @@ module VersatileDiamond
             it { expect(reactions_for(:methyl_on_bridge)).to_not be_empty }
             it { expect(reactions_for(:methyl_on_dimer)).to_not be_empty }
           end
-
-          describe 'from bases' do
-            before { store_bases }
-
-            it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 5 }
-              let(:names) do
-                [
-                  :bridge,
-                  :dimer,
-                  :high_bridge,
-                  :methyl_on_bridge,
-                  :methyl_on_dimer
-                ]
-              end
-            end
-          end
         end
 
         describe '#specific_specs' do
@@ -200,9 +200,6 @@ module VersatileDiamond
               ]
             end
           end
-        end
-
-        describe '#organize_dependecies!' do
         end
 
 
