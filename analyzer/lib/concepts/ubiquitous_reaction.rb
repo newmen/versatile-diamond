@@ -61,6 +61,20 @@ module VersatileDiamond
         "#{@type} #{super}"
       end
 
+      %w(source products).each do |target|
+        # Selects and caches simple specs from #{target} array
+        # @return [Array] cached array of simple #{target} specs
+        name = "simple_#{target}"
+        define_method(name) do
+          var = instance_variable_get(:"@#{name}")
+          return var if var
+
+          specs = instance_variable_get(:"@#{target}").
+            select { |specific_spec| specific_spec.simple? }
+          instance_variable_set(:"@#{name}", specs)
+        end
+      end
+
       # Makes reversed reaction instance and change current name by append
       # "forward" word
       #
@@ -82,7 +96,7 @@ module VersatileDiamond
       # @yield [TerminationSpec] do for each reactant
       # @return [Enumerator] if block is not given
       def each_source(&block)
-        @source.dup.each(&block)
+        @source.each(&block)
       end
 
       # Swaps source spec to another same source spec
@@ -170,20 +184,6 @@ module VersatileDiamond
     protected
 
       attr_writer :reverse
-
-      %w(source products).each do |target|
-        # Selects and caches simple specs from #{target} array
-        # @return [Array] cached array of simple #{target} specs
-        name = "simple_#{target}"
-        define_method(name) do
-          var = instance_variable_get(:"@#{name}")
-          return var if var
-
-          specs = instance_variable_get(:"@#{target}").
-            select { |specific_spec| specific_spec.simple? }
-          instance_variable_set(:"@#{name}", specs)
-        end
-      end
 
     private
 

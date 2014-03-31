@@ -22,13 +22,14 @@ module VersatileDiamond
         @typical_reactions = wrap_reactions(:reaction)
         @lateral_reactions = wrap_reactions(:lateral_reaction)
 
+        @term_specs = collect_termination_specs
         @base_specs, @specific_specs =
           purge_unspecified_specs(collect_base_specs, collect_specific_specs)
 
         organize_dependecies!
       end
 
-      %w(base specific).each do |type|
+      %w(term base specific).each do |type|
         var = :"@#{type}_specs"
 
         define_method(:"#{type}_spec") do |name|
@@ -54,7 +55,19 @@ module VersatileDiamond
       # Gets all collected reactions
       # @return [Array] the array of arrays of reactions
       def reactions
-        [ubiquitous_reactions, typical_reactions, lateral_reactions]
+        [typical_reactions, lateral_reactions]
+      end
+
+      # Collects termination species from reactions
+      # @return [Hash] the hash where keys are names of specs and wrapped
+      #    termination species as values
+      def collect_termination_specs
+        ubiquitous_reactions.each.with_object({}) do |reaction, cache|
+          reaction.each_source do |spec|
+            cache[spec.name] ||= DependentTermination.new(spec)
+            store_concept_to(reaction, cache[spec.name])
+          end
+        end
       end
 
       # Collects base spec from Chest and each one
@@ -92,13 +105,13 @@ module VersatileDiamond
           end
         end
 
-        reactions do |concrete_reactions|
+        reactions.each do |concrete_reactions|
           concrete_reactions.each do |reaction|
             reaction.each_source(&store_lambda[reaction])
           end
         end
 
-        @lateral_reactions.each do |reaction|
+        lateral_reactions.each do |reaction|
           reaction.theres.each do |there|
             there.env_specs.each(&store_lambda[there])
           end
@@ -129,7 +142,6 @@ module VersatileDiamond
       # @param [Hash] specific_specs_cache the cache of specific specs where
       #   keys is full names of specs
       # @return [Hash] resulted cache of specific specs
-      # TODO: rspec it!
       def purge_unused_extended_specs(specific_specs_cache)
         extended_specs = specific_specs_cache.select do |_, spec|
           spec.reduced && spec.could_be_reduced?
@@ -161,19 +173,21 @@ module VersatileDiamond
       # @param [Hash] specific_specs_cache the cache of specific specs where
       #   keys is full names of specs
       # @return [Hash] resulted cache of specific specs
-      # TODO: rspec it!
       def purge_unspecified_specs(base_specs_cache, specific_specs_cache)
-        unspecified_specs = specific_specs_cache.select do |_, wrapped_spec|
-          !wrapped_spec.specific? && wrapped_spec.reactions.empty?
+        unspecified_specs = specific_specs_cache.values.reject(&:specific?)
+
+        store_lambda = -> wrapped_specific do
+          spec = wrapped_specific.base_spec
+          base_specs_cache[spec.name] ||= DependentBaseSpec.new(spec)
         end
 
-        unspecified_specs.each do |_, wrapped_specific|
-          base_spec = wrapped_specific.base_spec
-          wrapped_base =
-            base_specs_cache[base_spec.name] ||= DependentBaseSpec.new(base_spec)
-
-          exchange(specific_specs_cache, wrapped_specific, wrapped_base)
+        unspecified_specs.each do |wrapped_specific|
+          wrapped_base = store_lambda[wrapped_specific]
+          exchange_specs(specific_specs_cache, wrapped_specific, wrapped_base)
         end
+
+        specified_specs = specific_specs_cache.values - unspecified_specs
+        specified_specs.each(&store_lambda)
 
         [base_specs_cache, specific_specs_cache]
       end
@@ -184,7 +198,7 @@ module VersatileDiamond
       # @param [DependentSpecificSpec | DependentSpec] to the spec to which
       #   will be exchanged
       # @param [Hash] cache where contains pairs of name => dependent_spec
-      def exchange(cache, from, to)
+      def exchange_specs(cache, from, to)
         lambda = -> wrapped_concept do
           wrapped_concept.swap_source(from.spec, to.spec)
           store_concept_to(wrapped_concept, to)

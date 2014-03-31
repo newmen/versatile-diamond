@@ -5,6 +5,8 @@ module VersatileDiamond
     class DependentSpecificSpec < DependentSpec
       extend Forwardable
 
+      attr_reader :parent
+
       # Initializes dependent specific spec by specific spec
       # @param [Concepts::SpecificSpec] specific_spec
       def initialize(specific_spec)
@@ -40,12 +42,6 @@ module VersatileDiamond
         !specific_atoms.empty?
       end
 
-      # Gets parent specific spec
-      # @return [SpecificSpec] the parten specific spec or nil
-      def parent
-        @parent
-      end
-
       # Organize dependencies from another similar species. Dependencies set if
       # similar spec has less specific atoms and existed specific atoms is same
       # in both specs. Moreover, activated atoms have a greater advantage.
@@ -68,7 +64,8 @@ module VersatileDiamond
           end
         end
 
-        (@parent || base_cache[base_name]).store_child(self)
+        @parent ||= base_cache[base_name]
+        @parent.store_child(self)
       end
 
       # Counts number of specific atoms

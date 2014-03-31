@@ -4,7 +4,11 @@ module VersatileDiamond
   module Organizers
 
     describe DependentSpecificSpec do
-      subject { described_class.new(activated_dimer) }
+      def wrap(spec)
+        described_class.new(spec)
+      end
+
+      subject { wrap(activated_dimer) }
 
       describe '#reduced' do
         it { expect(subject.reduced).to be_nil }
@@ -32,47 +36,16 @@ module VersatileDiamond
 
       describe '#specific?' do
         it { expect(subject.specific?).to be_true }
+        it { expect(wrap(dimer).specific?).to be_false }
       end
 
-      describe 'default' do
-        describe '#parent state' do
-          it { expect(subject.parent).to be_nil }
-        end
-
-        describe '#childs state' do
-          it { expect(subject.childs).to be_empty }
-        end
-
-        describe '#reactions state' do
-          it { expect(subject.reactions).to be_empty }
-        end
-
-        describe '#theres state' do
-          it { expect(subject.theres).to be_empty }
-        end
-      end
-
-      describe '#store_child' do
-        let(:child) { described_class.new(methyl_on_dimer) }
-        before { subject.store_child(child) }
-        it { expect(subject.childs).to eq([child]) }
-      end
-
-      describe '#store_reaction' do
-        let(:reaction) { DependentReaction.new(dimer_formation) }
-        before { subject.store_reaction(reaction) }
-        it { expect(subject.reactions).to eq([reaction]) }
-      end
-
-      describe '#store_there' do
-        let(:there) { DependentThere.new(on_end) }
-        before { subject.store_there(there) }
-        it { expect(subject.theres).to eq([there]) }
+      describe '#parent' do
+        it { expect(subject.parent).to be_nil }
       end
 
       describe '#size' do
         it { expect(subject.size).to eq(10) }
-        it { expect(described_class.new(activated_incoherent_bridge).size).to eq(11) }
+        it { expect(wrap(activated_incoherent_bridge).size).to eq(11) }
       end
 
       describe '#organize_dependencies!' do
@@ -83,15 +56,12 @@ module VersatileDiamond
         let(:base_cache) { Hash[base_specs.map(&:name).zip(dependent_bases)] }
 
         shared_examples_for :organize_and_check do
-          let(:instance) { described_class.new(target) }
-          let(:inst_parent) { parent && described_class.new(parent) }
-          let(:inst_childs) { childs.map { |s| described_class.new(s) } }
+          let(:instance) { wrap(target) }
+          let(:inst_childs) { childs.map { |s| wrap(s) } }
 
-          let(:remain) { similars - [target, parent] - childs }
-          let(:main) { (parent ? [inst_parent] : []) + [instance] }
-          let(:others) do
-            main + inst_childs + remain.map { |s| described_class.new(s) }
-          end
+          let(:remain) { similars - childs - without - [target] }
+          let(:main) { [instance] + with }
+          let(:others) { main + inst_childs + remain.map { |s| wrap(s) } }
 
           before do
             (main + inst_childs).map do |cld|
@@ -103,29 +73,45 @@ module VersatileDiamond
           it { expect(instance.childs).to match_array(inst_childs) }
         end
 
+        shared_examples_for :organize_and_check_base_parent do
+          it_behaves_like :organize_and_check do
+            let(:inst_parent) { base_cache[parent.name] }
+            let(:without) { [] }
+            let(:with) { [] }
+          end
+        end
+
+        shared_examples_for :organize_and_check_specific_parent do
+          it_behaves_like :organize_and_check do
+            let(:inst_parent) { wrap(parent) }
+            let(:without) { [parent] }
+            let(:with) { [inst_parent] }
+          end
+        end
+
         describe 'bridge' do
           let(:similars) { [bridge, activated_bridge,
             activated_incoherent_bridge, extra_activated_bridge] }
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_base_parent do
             let(:target) { bridge }
-            let(:parent) { nil }
+            let(:parent) { bridge_base }
             let(:childs) { [activated_bridge] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_bridge }
             let(:parent) { bridge }
             let(:childs) { [activated_incoherent_bridge] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_incoherent_bridge }
             let(:parent) { activated_bridge }
             let(:childs) { [extra_activated_bridge] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { extra_activated_bridge }
             let(:parent) { activated_incoherent_bridge }
             let(:childs) { [] }
@@ -138,9 +124,9 @@ module VersatileDiamond
             unfixed_methyl_on_bridge, activated_methyl_on_incoherent_bridge,
             unfixed_activated_methyl_on_incoherent_bridge] }
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_base_parent do
             let(:target) { methyl_on_bridge }
-            let(:parent) { nil }
+            let(:parent) { methyl_on_bridge_base }
             let(:childs) do
               [
                 activated_methyl_on_bridge,
@@ -150,37 +136,37 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_methyl_on_bridge }
             let(:parent) { methyl_on_bridge }
             let(:childs) { [activated_methyl_on_incoherent_bridge] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_methyl_on_incoherent_bridge }
             let(:parent) { activated_methyl_on_bridge }
             let(:childs) { [unfixed_activated_methyl_on_incoherent_bridge] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { unfixed_activated_methyl_on_incoherent_bridge }
             let(:parent) { activated_methyl_on_incoherent_bridge }
             let(:childs) { [] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { methyl_on_incoherent_bridge }
             let(:parent) { methyl_on_bridge }
             let(:childs) { [methyl_on_activated_bridge] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { methyl_on_activated_bridge }
             let(:parent) { methyl_on_incoherent_bridge }
             let(:childs) { [] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { unfixed_methyl_on_bridge }
             let(:parent) { methyl_on_bridge }
             let(:childs) { [] }
@@ -190,13 +176,13 @@ module VersatileDiamond
         describe 'dimer' do
           let(:similars) { [dimer, activated_dimer] }
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_base_parent do
             let(:target) { dimer }
-            let(:parent) { nil }
+            let(:parent) { dimer_base }
             let(:childs) { [activated_dimer] }
           end
 
-          it_behaves_like :organize_and_check do
+          it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_dimer }
             let(:parent) { dimer }
             let(:childs) { [] }

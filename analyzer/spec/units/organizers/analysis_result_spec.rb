@@ -8,330 +8,220 @@ module VersatileDiamond
       subject { described_class.new }
       let(:keyname_error) { Chest::KeyNameError }
 
-      describe '#organize_dependecies!' do
-        let(:lateral_dimer_formation) do
-          dimer_formation.lateral_duplicate('lateral', [on_middle])
+      let(:lateral_dimer_formation) do
+        dimer_formation.lateral_duplicate('lateral', [on_middle])
+      end
+
+      def store_bases
+        [
+          methane_base, bridge_base, dimer_base, high_bridge_base,
+          methyl_on_bridge_base, methyl_on_dimer_base
+        ].each { |spec| Tools::Chest.store(spec) }
+      end
+
+      def store_reactions
+        Tools::Config.gas_concentration(hydrogen_ion, 1, 'mol/l')
+        Tools::Config.gas_temperature(1000, 'K')
+        Tools::Config.surface_temperature(500, 'K')
+
+        surface_activation.rate = 0.1
+        surface_activation.activation = 0
+        surface_deactivation.rate = 0.2
+        surface_deactivation.activation = 0
+
+        methyl_activation.rate = 0.3
+        methyl_activation.activation = 0
+        methyl_deactivation.rate = 0.4
+        methyl_deactivation.activation = 0
+
+        methyl_desorption.rate = 1
+        methyl_desorption.activation = 0
+
+        hydrogen_migration.rate = 2
+        hydrogen_migration.activation = 0
+        hydrogen_migration.reverse.rate = 3
+        hydrogen_migration.reverse.activation = 1e3
+
+        dimer_formation.rate = 4
+        dimer_formation.activation = 0
+        dimer_formation.reverse.rate = 5
+        dimer_formation.reverse.activation = 2e3
+
+        methyl_incorporation.rate = 6
+        methyl_incorporation.activation = 0
+
+        # lateral dimer formation crated there
+        lateral_dimer_formation.rate = 6
+        lateral_dimer_formation.activation = 0
+
+        [
+          surface_activation, surface_deactivation,
+          methyl_activation, methyl_deactivation, methyl_desorption,
+          methyl_desorption.reverse, # synthetics
+          hydrogen_migration, hydrogen_migration.reverse,
+          dimer_formation, dimer_formation.reverse,
+          lateral_dimer_formation, methyl_incorporation
+        ].each { |reaction| Tools::Chest.store(reaction) }
+      end
+
+      let(:instances) { subject.public_send(method) }
+      let(:classes) { instances.map(&:class) }
+
+      shared_examples_for :each_class_dependent do
+        it { expect(instances.size).to eq(quant) }
+        it { expect(classes.all? { |c| c == dependent_class }).to be_true }
+      end
+
+      describe 'reactions' do
+        before { store_reactions }
+
+        %w(ubiquitous typical lateral).zip([2, 8, 1]).each do |name, quant|
+          describe "##{name}_reactions" do
+            it_behaves_like :each_class_dependent do
+              let(:dependent_class) { DependentReaction }
+              let(:method) { :"#{name}_reactions" }
+              let(:quant) { quant }
+            end
+          end
+        end
+      end
+
+      describe 'specs' do
+        let(:mono_method) { method.to_s[0..-2].to_sym }
+
+        shared_examples_for :each_spec_dependent do
+          it_behaves_like :each_class_dependent
+
+          it { expect(instances.map(&:name)).to match_array(names) }
+          it { expect(names.size).to eq(quant) }
+
+          it 'all names are good keys' do
+            names.each do |name|
+              expect(subject.public_send(mono_method, name)).to_not be_nil
+            end
+          end
         end
 
-        def store_bases
-          [
-            methane_base, bridge_base, dimer_base, high_bridge_base,
-            methyl_on_bridge_base, methyl_on_dimer_base
-          ].each { |spec| Tools::Chest.store(spec) }
+        shared_examples_for :each_reactant_dependent do
+          it_behaves_like :each_spec_dependent
+
+          it 'all specs have reactions' do
+            instances.each do |instance|
+              expect(instance.reactions).to_not be_empty
+            end
+          end
         end
 
-        def store_reactions
-          Tools::Config.gas_concentration(hydrogen_ion, 1, 'mol/l')
-          Tools::Config.gas_temperature(1000, 'K')
-          Tools::Config.surface_temperature(500, 'K')
-
-          surface_activation.rate = 0.1
-          surface_activation.activation = 0
-          surface_deactivation.rate = 0.2
-          surface_deactivation.activation = 0
-
-          methyl_activation.rate = 0.3
-          methyl_activation.activation = 0
-          methyl_deactivation.rate = 0.4
-          methyl_deactivation.activation = 0
-
-          methyl_desorption.rate = 1
-          methyl_desorption.activation = 0
-
-          hydrogen_migration.rate = 2
-          hydrogen_migration.activation = 0
-          hydrogen_migration.reverse.rate = 3
-          hydrogen_migration.reverse.activation = 1e3
-
-          dimer_formation.rate = 4
-          dimer_formation.activation = 0
-          dimer_formation.reverse.rate = 5
-          dimer_formation.reverse.activation = 2e3
-
-          methyl_incorporation.rate = 6
-          methyl_incorporation.activation = 0
-
-          # lateral dimer formation crated there
-          lateral_dimer_formation.rate = 6
-          lateral_dimer_formation.activation = 0
-
-          [
-            surface_activation, surface_deactivation,
-            methyl_activation, methyl_deactivation, methyl_desorption,
-            methyl_desorption.reverse, # synthetics
-            hydrogen_migration, hydrogen_migration.reverse,
-            dimer_formation, dimer_formation.reverse,
-            lateral_dimer_formation, methyl_incorporation
-          ].each { |reaction| Tools::Chest.store(reaction) }
-        end
-
-        shared_examples_for :each_class_dependent do
-          let(:classes) { subject.public_send(method).map(&:class) }
-          it { expect(classes.all? { |c| c == dependent_class }).to be_true }
-          it { expect(classes.size).to eq(quant) }
-        end
-
-        describe 'reactions' do
+        describe '#term_specs' do
           before { store_reactions }
 
-          %w(ubiquitous typical lateral).zip([2, 8, 1]).each do |name, quant|
-          # %w(typical).zip([9]).each do |name, quant|
-            describe "##{name}_reactions" do
-              it_behaves_like :each_class_dependent do
-                let(:dependent_class) { DependentReaction }
-                let(:method) { :"#{name}_reactions" }
-                let(:quant) { quant }
-              end
-            end
+          it_behaves_like :each_reactant_dependent do
+            let(:dependent_class) { DependentTermination }
+            let(:method) { :term_specs }
+            let(:quant) { 2 }
+            let(:names) { [:*, :H] }
           end
         end
 
         describe '#base_specs' do
           shared_examples_for :all_dependent_base_specs do
-            it_behaves_like :each_class_dependent do
+            it_behaves_like :each_spec_dependent do
               let(:dependent_class) { DependentBaseSpec }
               let(:method) { :base_specs }
             end
           end
 
           describe 'from reactions' do
-            before(:each) { store_reactions }
-
-            it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 3 }
+            def reactions_for(name)
+              subject.base_spec(name).reactions
             end
 
-            it { expect(subject.base_spec(:dimer)).to_not be_nil }
-            it { expect(subject.base_spec(:extended_dimer)).to_not be_nil }
-            it { expect(subject.base_spec(:extended_methyl_on_bridge)).to_not be_nil }
+            before { store_reactions }
+
+            it_behaves_like :all_dependent_base_specs do
+              let(:quant) { 6 }
+              let(:names) do
+                [
+                  :bridge,
+                  :dimer,
+                  :extended_dimer,
+                  :extended_methyl_on_bridge,
+                  :methyl_on_bridge,
+                  :methyl_on_dimer
+                ]
+              end
+            end
+
+            it { expect(reactions_for(:bridge)).to be_empty }
+
+            it { expect(reactions_for(:dimer)).to_not be_empty }
+            it { expect(reactions_for(:methyl_on_bridge)).to_not be_empty }
+            it { expect(reactions_for(:methyl_on_dimer)).to_not be_empty }
           end
 
           describe 'from bases' do
-            before(:each) { store_bases }
+            before { store_bases }
 
             it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 5 } # TODO: 6??
+              let(:quant) { 5 }
+              let(:names) do
+                [
+                  :bridge,
+                  :dimer,
+                  :high_bridge,
+                  :methyl_on_bridge,
+                  :methyl_on_dimer
+                ]
+              end
             end
-
-            it { expect(subject.base_spec(:wrong)).to be_nil }
-
-            it { expect(subject.base_spec(:bridge)).to_not be_nil }
-            it { expect(subject.base_spec(:dimer)).to_not be_nil }
-            it { expect(subject.base_spec(:high_bridge)).to_not be_nil }
-            it { expect(subject.base_spec(:methyl_on_bridge)).to_not be_nil }
-            it { expect(subject.base_spec(:methyl_on_dimer)).to_not be_nil }
           end
+        end
 
+        describe '#specific_specs' do
+          before { store_reactions }
+
+          it_behaves_like :each_reactant_dependent do
+            let(:dependent_class) { DependentSpecificSpec }
+            let(:method) { :specific_specs }
+            let(:quant) { 7 }
+            let(:names) do
+              [
+                :'bridge(ct: *)',
+                :'bridge(ct: *, ct: i)',
+                # :'dimer()', # purged
+                :'dimer(cl: i)',
+                :'dimer(cr: *)',
+                # :'extended_methyl_on_bridge(cm: *)', # purged
+                # :'methyl_on_bridge()', # purged
+                :'methyl_on_bridge(cm: *)',
+                :'methyl_on_bridge(cm: i, cm: u)',
+                # :'methyl_on_dimer()', # purged
+                :'methyl_on_dimer(cm: *)'
+              ]
+            end
+          end
+        end
+
+        describe '#organize_dependecies!' do
         end
 
 
 
 
-      #   describe '#organize_specs_dependencies!' do
-      #     before(:each) do
-      #       [
-      #         methane_base, bridge_base, dimer_base, high_bridge_base,
-      #         methyl_on_bridge_base, methyl_on_dimer_base
-      #       ].each { |spec| Chest.store(spec) }
 
-      #       Shunter.organize_dependecies!
-      #     end
 
-      #     it { expect(methane_base.parent).to be_nil }
 
-      #     it { expect(bridge_base.parent).to be_nil }
-      #     it { expect(bridge_base.childs.size).to eq(3) }
-      #     it { expect(bridge_base.childs).to include(
-      #         dimer_base, methyl_on_bridge_base, high_bridge_base
-      #       ) }
-
-      #     it { expect(dimer_base.parent).to eq(bridge_base) }
-      #     it { expect(dimer_base.childs).to eq([methyl_on_dimer_base]) }
-
-      #     it { expect(methyl_on_bridge_base.parent).to eq(bridge_base) }
-      #     it { expect(methyl_on_bridge_base.childs).to be_empty }
-
-      #     it { expect(high_bridge_base.parent).to eq(bridge_base) }
-      #     it { expect(high_bridge_base.childs).to be_empty }
-
-      #     it { expect(methyl_on_dimer_base.parent).to eq(dimer_base) }
-      #     it { expect(methyl_on_dimer_base.childs).to be_empty }
-      #   end
-
-      #   describe '#organize_specific_spec_dependencies!' do
-      #     before(:each) { store_and_organize_reactions }
-
-      #     describe '#purge_null_rate_reactions!' do
-      #       it { expect { Chest.reaction('forward methyl desorption') }.
-      #         not_to raise_error }
-      #       it { expect { Chest.reaction('reverse methyl desorption') }.
-      #         to raise_error keyname_error }
-      #     end
-
-      #     describe '#collect_specific_specs!' do
-      #       [
-      #         Concepts::AtomicSpec,
-      #         Concepts::ActiveBond,
-      #         Concepts::SpecificSpec
-      #       ].each do |type|
-      #         RSpec::Matchers.define("be_#{type.to_s.underscore}") do
-      #           match { |spec| spec.is_a?(type) }
-      #         end
-      #       end
-
-      #       describe 'surface activation' do
-      #         it { expect(Chest.atomic_spec(:H)).to be_atomic_spec }
-      #         it { expect(Chest.specific_spec(:'hydrogen(h: *)')).
-      #           to be_specific_spec }
-      #       end
-
-      #       describe 'surface deactivation' do
-      #         it { expect(Chest.active_bond(:*)).to be_active_bond }
-      #       end
-
-      #       describe 'methyl activation' do
-      #         subject { Chest.specific_spec(:'methyl_on_bridge()') }
-      #         it { should be_specific_spec }
-      #         it { expect(subject.parent).to be_nil }
-      #         it { expect(methyl_on_bridge_base.childs).to include(subject) }
-
-      #         it { expect(subject.childs.size).to eq(2) }
-      #         it { expect(subject.childs).to include(
-      #             Chest.specific_spec(:'methyl_on_bridge(cm: *)'),
-      #             Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)')
-      #           ) }
+        # describe '#organize_specific_spec_dependencies!' do
+        #   before { store_reactions }
 
       #         it { expect(subject.reactions).to include(methyl_activation) }
       #       end
-
-      #       describe 'methyl deactivation' do
-      #         subject { Chest.specific_spec(:'methyl_on_bridge(cm: *)') }
-
-      #         it { should be_specific_spec }
-      #         it { expect(subject.parent).
-      #           to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
-      #         it { expect(subject.childs).to be_empty }
-      #         it { expect(subject.reactions).to include(methyl_deactivation) }
       #       end
 
-      #       describe 'surface deactivation' do
-      #         it { expect(Chest.active_bond(:*)).to be_active_bond }
-      #       end
 
-      #       describe 'methyl desorption' do
-      #         subject do
-      #           Chest.specific_spec(:'methyl_on_bridge(cm: i, cm: u)')
-      #         end
 
-      #         it { should be_specific_spec }
-      #         it { expect(subject.parent).
-      #           to eq(Chest.specific_spec(:'methyl_on_bridge()')) }
-      #         it { expect(subject.childs).to be_empty }
-      #         it { expect(subject.reactions).to include(methyl_desorption) }
-      #       end
 
-      #       describe 'forward hydrogen migration' do
-      #         describe 'dimer(cr: *)' do
-      #           subject { Chest.specific_spec(:'dimer(cr: *)') }
-      #           it { should be_specific_spec }
-      #           it { expect(subject.parent).
-      #             to eq(Chest.specific_spec(:'dimer()')) }
-      #           it { expect(subject.childs).to be_empty }
-      #           it { expect(subject.reactions).to include(hydrogen_migration) }
-      #         end
 
-      #         describe 'methyl_on_dimer()' do
-      #           subject { Chest.specific_spec(:'methyl_on_dimer()') }
-      #           it { should be_specific_spec }
-      #           it { expect(subject.parent).to be_nil }
-      #           it { expect(methyl_on_dimer_base.childs).to include(subject) }
-
-      #           it { expect(subject.childs).to eq([
-      #               Chest.specific_spec(:'methyl_on_dimer(cm: *)')
-      #             ]) }
-      #           it { expect(subject.reactions).to include(hydrogen_migration) }
-      #         end
-      #       end
-
-      #       describe 'reverse hydrogen migration' do
-      #         describe 'dimer()' do
-      #           subject { Chest.specific_spec(:'dimer()') }
-      #           it { should be_specific_spec }
-      #           it { expect(subject.parent).to be_nil }
-      #           it { expect(dimer_base.childs).to include(subject) }
-
-      #           it { expect(subject.childs.size).to eq(2) }
-      #           it { expect(subject.childs).to include(
-      #               Chest.specific_spec(:'dimer(cr: *)'),
-      #               Chest.specific_spec(:'dimer(cl: i)')
-      #             ) }
-
-      #           it { expect(subject.reactions).
-      #             to include(hydrogen_migration.reverse) }
-
-      #           it { expect(subject.theres.size).to eq(2) }
-      #           it { expect(subject.theres.first.where.name).
-      #             to eq(:at_middle) }
-      #           it { expect(subject.theres.last.where.name).to eq(:at_middle) }
-      #         end
-
-      #         describe 'methyl_on_dimer(cm: *)' do
-      #           subject { Chest.specific_spec(:'methyl_on_dimer(cm: *)') }
-      #           it { should be_specific_spec }
-      #           it { expect(subject.parent).
-      #             to eq(Chest.specific_spec(:'methyl_on_dimer()')) }
-      #           it { expect(subject.childs).to be_empty }
-      #           it { expect(subject.reactions).
-      #             to include(hydrogen_migration.reverse) }
-      #         end
-      #       end
-
-      #       describe 'forward dimer formation' do
-      #         describe 'bridge(ct: *)' do
-      #           subject { Chest.specific_spec(:'bridge(ct: *)') }
-      #           it { should be_specific_spec }
-      #           it { expect(subject.parent).to be_nil }
-      #           it { expect(bridge_base.childs).to include(subject) }
-      #           it { expect(subject.childs).to match_array([
-      #               Chest.specific_spec(:'bridge(ct: *, ct: i)')
-      #             ]) }
-      #           it { expect(subject.reactions).to include(dimer_formation) }
-      #         end
-
-      #         describe 'bridge(ct: *, ct: i)' do
-      #           subject { Chest.specific_spec(:'bridge(ct: *, ct: i)') }
-      #           it { should be_specific_spec }
-      #           it { expect(subject.parent).
-      #             to eq(Chest.specific_spec(:'bridge(ct: *)')) }
-      #           it { expect(subject.childs).to be_empty }
-      #           it { expect(subject.reactions).to include(dimer_formation) }
-      #         end
-      #       end
-
-      #       describe 'reverse dimer formation' do
-      #         subject { Chest.specific_spec(:'dimer(cl: i)') }
-      #         it { should be_specific_spec }
-      #         it { expect(subject.parent).
-      #           to eq(Chest.specific_spec(:'dimer()')) }
-      #         it { expect(subject.childs).to be_empty }
-      #         it { expect(subject.reactions).
-      #           to include(dimer_formation.reverse) }
-      #       end
-
-      #       describe 'forward methyl incorporation' do
-      #         describe 'methyl_on_bridge(cm: *, cm: u)' do
-      #           # other props checks in 'methyl deactivation'
-      #           it { expect(Chest.specific_spec(:'methyl_on_bridge(cm: *)').reactions).
-      #             to include(methyl_incorporation) }
-      #         end
-
-      #         describe 'dimer(cr: *)' do
-      #           # other props checks in 'forward hydrogen migration'
-      #           it { expect(Chest.specific_spec(:'dimer(cr: *)').reactions).
-      #             to include(methyl_incorporation) }
-      #         end
-      #       end
-      #     end
 
       #     describe 'swapping reaction specs' do
       #       let(:same) { Chest.specific_spec(:'hydrogen(h: *)') }
@@ -425,28 +315,6 @@ module VersatileDiamond
       #     end
       #   end
 
-      #   describe '#purge_unused_specs!' do
-      #     before(:each) do
-      #       [
-      #         methane_base, bridge_base, methyl_on_bridge_base, dimer_base,
-      #         methyl_on_dimer_base, ethylene_base, high_bridge_base
-      #       ].each { |spec| Chest.store(spec) }
-      #       store_and_organize_reactions
-      #     end
-
-      #     it { expect { Chest.spec(:methane) }.to raise_error keyname_error }
-      #     it { expect { Chest.spec(:ethylene) }.to raise_error keyname_error }
-      #     it { expect { Chest.spec(:high_bridge) }.
-      #       to raise_error keyname_error }
-
-      #     it { expect { Chest.spec(:bridge) }.not_to raise_error }
-      #     it { expect { Chest.spec(:methyl_on_bridge) }.not_to raise_error }
-      #     it { expect { Chest.spec(:dimer) }.not_to raise_error }
-
-      #     describe '#purge_excess_extrime_specs!' do
-      #       it { expect { Chest.spec(:methyl_on_dimer) }.to raise_error }
-      #     end
-        # end
       end
     end
 
