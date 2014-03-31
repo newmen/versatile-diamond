@@ -9,7 +9,7 @@ module VersatileDiamond
       include Visitors::Visitable
       include BondsCounter
 
-      attr_reader :spec
+      attr_reader :spec, :specific_atoms
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
@@ -33,8 +33,6 @@ module VersatileDiamond
 
         @external_bonds_after_extend = nil
         @reduced, @correct_reduced = nil
-
-        @child, @reaction, @there = nil
       end
 
       # Makes a copy of other specific spec by dup each specific atom from it
@@ -211,61 +209,9 @@ module VersatileDiamond
       end
 
       # Checks that specific spec could be reduced
-      # @raise [Exception] not extended spec couldn't be reduced
       # @return [Boolean] could or not
       def could_be_reduced?
-        raise 'Not extended spec cannot be reduced' unless extended?
-
-        Spec.good_for_reduce?(@specific_atoms.keys)
-      end
-
-      # Contain specific atoms or not
-      # @return [Boolean] contain or not
-      def specific?
-        !@specific_atoms.empty?
-      end
-
-      # Gets parent specific spec
-      # @return [SpecificSpec] the parten specific spec or nil
-      def parent
-        @parent
-      end
-
-      # Clears parent for current specific_spec
-      # @param [Spec] new_parent the base spec parent to which will be changed
-      #   current dependency
-      def clear_parent
-        @parent = nil
-      end
-
-      # Organize dependencies from another similar species. Dependencies set if
-      # similar spec has less specific atoms and existed specific atoms is same
-      # in both specs. Moreover, activated atoms have a greater advantage.
-      #
-      # @param [Array] similar_specs the array of specs where each spec has
-      #   same basic spec
-      def organize_dependencies!(similar_specs)
-        similar_specs = similar_specs.reject do |s|
-          s == self || s.specific_atoms.size > @specific_atoms.size
-        end
-
-        # sorts descending size (cannot be sorted by specific spec sizes)
-        similar_specs = similar_specs.sort do |a, b|
-          if a.specific_atoms.size == b.specific_atoms.size
-            b.dangling_bonds_num <=> a.dangling_bonds_num
-          else
-            b.specific_atoms.size <=> a.specific_atoms.size
-          end
-        end
-
-        @parent = similar_specs.find do |ss|
-          ss.specific_atoms.all? do |keyname, atom|
-            a = @specific_atoms[keyname]
-            a && is?(a, atom)
-          end
-        end
-
-        (@parent || @spec).store_child(self)
+        extended? && Spec.good_for_reduce?(@specific_atoms.keys)
       end
 
       # Compares two specific specs
@@ -296,6 +242,12 @@ module VersatileDiamond
           0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
       end
 
+      # Counts the sum of active bonds
+      # @return [Integer] sum of active bonds
+      def active_bonds_num
+        specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+      end
+
       # Also visit base spec
       # @param [Visitors::Visitor] visitor the object which accumulate state of
       #   current instance
@@ -316,30 +268,9 @@ module VersatileDiamond
 
     protected
 
-      attr_reader :specific_atoms
       attr_writer :reduced
 
-      # Counts the sum of active bonds and monovalent atoms
-      # @return [Integer] sum of dangling bonds
-      def dangling_bonds_num
-        active_bonds_num + monovalents_num
-      end
-
     private
-
-      # Counts the sum of active bonds
-      # @return [Integer] sum of active bonds
-      def active_bonds_num
-        @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
-      end
-
-      # Counts the sum of monovalent atoms at specific atoms
-      # @return [Integer] sum of monovalent atoms
-      def monovalents_num
-        @specific_atoms.values.reduce(0) do |acc, atom|
-          acc + atom.monovalents.size
-        end
-      end
 
       # Selects bonds for passed atom
       # @param [Atom] atom the atom for which bonds will be selected
@@ -400,35 +331,6 @@ module VersatileDiamond
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
         HanserRecursiveAlgorithm.contain?(links, other.links)
-      end
-
-      # Compares two specific atoms and checks that smallest is less than
-      # bigger
-      #
-      # @param [SpecificAtom] bigger probably the bigger atom
-      # @param [SpecificAtom smallest probably the smallest atom
-      # @return [Boolean] smallest is less or not
-      def is?(bigger, smallest)
-        same_danglings?(bigger, smallest) && same_relevants?(bigger, smallest)
-      end
-
-      # Checks that smallest atom contain less dangling states than bigger
-      # @param [SpecificAtom] bigger see at #is? same argument
-      # @param [SpecificAtom] smallest see at #is? same argument
-      # @return [Boolean] contain or not
-      def same_danglings?(bigger, smallest)
-        smallest.actives <= bigger.actives &&
-          (smallest.monovalents - bigger.monovalents).empty?
-      end
-
-      # Checks that smallest atom contain less relevant states than bigger
-      # @param [SpecificAtom] bigger see at #is? same argument
-      # @param [SpecificAtom] smallest see at #is? same argument
-      # @return [Boolean] contain or not
-      def same_relevants?(bigger, smallest)
-        diff = smallest.relevants - bigger.relevants
-        diff.empty? || (diff == [:incoherent] && bigger.size > smallest.size &&
-          (!bigger.monovalents.empty? || bigger.actives > 0))
       end
 
       # Resets internal caches

@@ -6,7 +6,7 @@ module VersatileDiamond
     class DependentSpec
       extend Collector
 
-      collector_methods :there, :reaction
+      collector_methods :there, :reaction, :child
       attr_reader :spec
 
       # Stores wrappable spec
