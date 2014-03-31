@@ -35,11 +35,6 @@ module VersatileDiamond
       def size
         1
       end
-
-      # Do not store reactions where used
-      def store_reaction(_)
-        # nothing to do
-      end
     end
 
   end

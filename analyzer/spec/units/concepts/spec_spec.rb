@@ -130,31 +130,9 @@ module VersatileDiamond
         it { expect(links[c1].select { |a, _| a == o }.size).to eq(2) }
       end
 
-      describe '#parent' do
-        it { expect(bridge_base.parent).to be_nil } # by default
-      end
-
       describe '#organize_dependencies!' do
         before { methyl_on_bridge_base.organize_dependencies!([bridge_base]) }
         it { expect(methyl_on_bridge_base.parent).to eq(bridge_base) }
-      end
-
-      describe '#theres' do
-        it { expect(dimer_base.theres).to be_empty }
-      end
-
-      describe '#store_there' do
-        before { dimer_base.store_there(on_end) }
-        it { expect(dimer_base.theres).to eq([on_end]) }
-      end
-
-      describe '#childs' do
-        it { expect(dimer_base.childs).to be_empty }
-      end
-
-      describe '#store_child' do
-        before { dimer_base.store_child(methyl_on_dimer_base) }
-        it { expect(dimer_base.childs).to eq([methyl_on_dimer_base]) }
       end
 
       describe '#append_childs' do

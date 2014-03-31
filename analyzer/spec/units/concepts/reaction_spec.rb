@@ -306,8 +306,7 @@ module VersatileDiamond
       end
 
       describe '#used_keynames_of' do
-        it { expect(dimer_formation.used_keynames_of(activated_bridge)).
-          to eq([:ct]) }
+        it { expect(dimer_formation.used_keynames_of(activated_bridge)).to eq([:ct]) }
         it { expect(dimer_formation.used_keynames_of(activated_incoherent_bridge)).
           to eq([:ct]) }
       end

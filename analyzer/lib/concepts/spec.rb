@@ -25,8 +25,6 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
-
-        @parent, @child, @there = nil
       end
 
       # If spec is simple (H2 or HCl for example) then true or false

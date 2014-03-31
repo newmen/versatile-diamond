@@ -54,7 +54,7 @@ module VersatileDiamond
 
       # Gets all collected reactions
       # @return [Array] the array of arrays of reactions
-      def reactions
+      def spec_reactions
         [typical_reactions, lateral_reactions]
       end
 
@@ -105,7 +105,7 @@ module VersatileDiamond
           end
         end
 
-        reactions.each do |concrete_reactions|
+        spec_reactions.each do |concrete_reactions|
           concrete_reactions.each do |reaction|
             reaction.each_source(&store_lambda[reaction])
           end
@@ -236,6 +236,20 @@ module VersatileDiamond
         end
       end
 
+      # Checks stored reactions for duplication with each other
+      # @raise [ReactionDuplicate] if duplicate is found
+      def check_reactions_for_duplicates
+        ([ubiquitous_reactions] + spec_reactions).each do |reactions|
+          reactions = reactions.dup
+
+          until reactions.empty?
+            reaction = reactions.pop
+            same = reactions.find { |r| r != reaction && reaction.same?(r) }
+            raise ReactionDuplicate.new(reaction.name, same.name) if same
+          end
+        end
+      end
+
 
 
 
@@ -270,19 +284,6 @@ module VersatileDiamond
 
 
 
-
-      # Checks stored reactions for duplication with each other
-      # @raise [ReactionDuplicate] if duplicate is found
-      def check_reactions_for_duplicates
-        REACTION_KEYS.each do |key|
-          reactions = Chest.all(key).dup
-          until reactions.empty?
-            reaction = reactions.pop
-            same = reactions.find { |r| r != reaction && reaction.same?(r) }
-            raise ReactionDuplicate.new(reaction.name, same.name) if same
-          end
-        end
-      end
 
       # Organize dependencies between all stored reactions
       def organize_reactions_dependencies!
