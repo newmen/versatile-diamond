@@ -16,6 +16,11 @@ module VersatileDiamond
         it { expect(dimer.spec).to eq(dimer_base) }
       end
 
+      describe '#specific_atoms' do
+        it { expect(bridge.specific_atoms).to be_empty }
+        it { expect(activated_dimer.specific_atoms).to eq({cr: activated_cd}) }
+      end
+
       describe '#update_base_spec' do
         before(:each) { high_bridge.update_base_spec(bridge_base) }
         it { expect(high_bridge.spec).to eq(bridge_base) }
@@ -194,142 +199,10 @@ module VersatileDiamond
         end
       end
 
-      describe '#specific?' do
-        it { expect(bridge.specific?).to be_false }
-        it { expect(dimer.specific?).to be_false }
-        it { expect(high_bridge.specific?).to be_false }
-
-        it { expect(right_activated_bridge.specific?).to be_true }
-        it { expect(activated_dimer.specific?).to be_true }
-      end
-
       describe '#could_be_reduced?' do
-        it { expect(activated_methyl_on_extended_bridge.could_be_reduced?).
-          to be_true }
-        it { expect(right_activated_extended_bridge.could_be_reduced?).
-          to be_true }
+        it { expect(activated_methyl_on_extended_bridge.could_be_reduced?).to be_true }
+        it { expect(right_activated_extended_bridge.could_be_reduced?).to be_true }
         it { expect(extended_dimer.could_be_reduced?).to be_true }
-      end
-
-      describe '#parent' do
-        # default state of dependent from variable
-        it { expect(bridge.parent).to be_nil }
-        it { expect(activated_bridge.parent).to be_nil }
-      end
-
-      describe '#organize_dependencies!' do
-        shared_examples_for 'organize and check' do
-          before { target.organize_dependencies!(similars) }
-          it { expect(target.parent).to eq(parent) }
-        end
-
-        describe 'bridge' do
-          let(:similars) { [bridge, activated_bridge,
-            activated_incoherent_bridge, extra_activated_bridge] }
-
-          it_behaves_like 'organize and check' do
-            let(:target) { bridge }
-            let(:parent) { nil }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { activated_bridge }
-            let(:parent) { bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { activated_incoherent_bridge }
-            let(:parent) { activated_bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { extra_activated_bridge }
-            let(:parent) { activated_incoherent_bridge }
-          end
-        end
-
-        describe 'methyl on bridge' do
-          let(:similars) { [methyl_on_bridge, activated_methyl_on_bridge,
-            methyl_on_activated_bridge, methyl_on_incoherent_bridge,
-            unfixed_methyl_on_bridge, activated_methyl_on_incoherent_bridge,
-            unfixed_activated_methyl_on_incoherent_bridge] }
-
-          it_behaves_like 'organize and check' do
-            let(:target) { methyl_on_bridge }
-            let(:parent) { nil }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { activated_methyl_on_bridge }
-            let(:parent) { methyl_on_bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { methyl_on_activated_bridge }
-            let(:parent) { methyl_on_incoherent_bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { methyl_on_incoherent_bridge }
-            let(:parent) { methyl_on_bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { unfixed_methyl_on_bridge }
-            let(:parent) { methyl_on_bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { activated_methyl_on_incoherent_bridge }
-            let(:parent) { activated_methyl_on_bridge }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { unfixed_activated_methyl_on_incoherent_bridge }
-            let(:parent) { activated_methyl_on_incoherent_bridge }
-          end
-        end
-
-        describe 'dimer' do
-          let(:similars) { [dimer, activated_dimer] }
-
-          it_behaves_like 'organize and check' do
-            let(:target) { dimer }
-            let(:parent) { nil }
-          end
-
-          it_behaves_like 'organize and check' do
-            let(:target) { activated_dimer }
-            let(:parent) { dimer }
-          end
-        end
-      end
-
-      describe '#childs' do
-        it { expect(dimer.childs).to be_empty }
-      end
-
-      describe '#store_child' do
-        before { dimer.store_child(methyl_on_dimer) }
-        it { expect(dimer.childs).to eq([methyl_on_dimer]) }
-      end
-
-      describe '#reactions' do
-        it { expect(dimer.reactions).to be_empty }
-      end
-
-      describe '#store_reaction' do
-        before { dimer.store_reaction(dimer_formation) }
-        it { expect(dimer.reactions).to eq([dimer_formation]) }
-      end
-
-      describe '#theres' do
-        it { expect(dimer.theres).to be_empty }
-      end
-
-      describe '#store_reaction' do
-        before { dimer.store_there(on_end) }
-        it { expect(dimer.theres).to eq([on_end]) }
       end
 
       describe '#same?' do
@@ -360,6 +233,11 @@ module VersatileDiamond
           to be_true }
         it { expect(chlorigenated_bridge.has_termination_atom?(cd_chloride, cl)).
           to be_true }
+      end
+
+      describe '#active_bonds_num' do
+        it { expect(bridge.active_bonds_num).to eq(0) }
+        it { expect(activated_dimer.active_bonds_num).to eq(1) }
       end
 
       describe '#size' do

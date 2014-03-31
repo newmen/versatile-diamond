@@ -25,11 +25,12 @@ module VersatileDiamond
         @base_specs, @specific_specs =
           purge_unspecified_specs(collect_base_specs, collect_specific_specs)
 
-        # organize_dependecies!
+        organize_dependecies!
       end
 
       %w(base specific).each do |type|
         var = :"@#{type}_specs"
+
         define_method(:"#{type}_spec") do |name|
           instance_variable_get(var)[name]
         end
@@ -195,21 +196,6 @@ module VersatileDiamond
         cache.delete(from.name)
       end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       # Organize dependecies between concepts stored in Chest
       # @raise [ReactionDuplicate] if was defined some duplicate of reaction
       def organize_dependecies!
@@ -217,12 +203,39 @@ module VersatileDiamond
         organize_specific_spec_dependencies!
 
         # before need to update specs by organize their dependecies!
-        check_reactions_for_duplicates
-        organize_reactions_dependencies!
+        # check_reactions_for_duplicates
+        # organize_reactions_dependencies!
 
-        organize_specs_dependencies!
-        purge_unused_specs!
+        # organize_specs_dependencies!
+        # purge_unused_specs!
       end
+
+      # Organize dependencies between specific species
+      def organize_specific_spec_dependencies!
+        specific_specs.each_with_object({}) do |wss, specs|
+          base_name = wss.base_name
+          specs[base_name] ||= specific_specs.select do |s|
+            s.base_name == base_name
+          end
+
+          wss.organize_dependencies!(@base_specs, specs[base_name])
+        end
+      end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       # Reorganize dependencies between base specs
       def organize_specs_dependencies!
@@ -238,22 +251,6 @@ module VersatileDiamond
         specs.each_with_object([]) do |spec, possible_parents|
           spec.organize_dependencies!(possible_parents)
           possible_parents.unshift(spec)
-        end
-      end
-
-      # Organize dependencies between specific species
-      def organize_specific_spec_dependencies!
-        collect_specific_specs!
-        purge_unused_extended_specs!
-        purge_unspecified_specs!
-
-        specific_specs = Chest.all(:specific_spec)
-        specific_specs.each_with_object({}) do |ss, specs|
-          base_spec = ss.spec
-          specs[base_spec] ||= specific_specs.select do |s|
-            s.spec == base_spec
-          end
-          ss.organize_dependencies!(specs[base_spec])
         end
       end
 
