@@ -17,6 +17,11 @@ module VersatileDiamond
       def theres
         @reaction.theres.map { |there| DependentThere.new(there) }
       end
+
+      def each_source(&block)
+        (@reaction.source - @reaction.simple_source).each(&block)
+      end
+
     end
 
   end

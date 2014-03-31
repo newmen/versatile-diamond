@@ -31,6 +31,22 @@ module VersatileDiamond
         it { expect(surface_deactivation.name).to match(/^forward/) }
       end
 
+      describe '#simple_source' do
+        it { expect(surface_activation.simple_source).to eq([hydrogen_ion]) }
+        it { expect(surface_deactivation.simple_source).to eq([hydrogen_ion]) }
+        it { expect(methyl_activation.simple_source).to eq([hydrogen_ion]) }
+        it { expect(methyl_deactivation.simple_source).to eq([hydrogen_ion]) }
+
+        it { expect(dimer_formation.simple_source).to be_empty }
+      end
+
+      describe '#simple_products' do
+        it { expect(surface_activation.simple_products).to eq([hydrogen]) }
+        it { expect(surface_deactivation.simple_products).to be_empty }
+        it { expect(methyl_activation.simple_products).to eq([hydrogen]) }
+        it { expect(methyl_deactivation.simple_products).to be_empty }
+      end
+
       describe '#reverse' do # it's no use for ubiquitous reaction?
         subject { surface_deactivation.reverse } # synthetics
         it { should be_a(described_class) }
