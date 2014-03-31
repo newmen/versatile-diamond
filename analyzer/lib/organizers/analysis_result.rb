@@ -13,33 +13,59 @@ module VersatileDiamond
         def initialize(first, second); @first, @second = first, second end
       end
 
+      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions
+
       # Collects results of interpretations from Chest to internal storage and
       # organizes dependencies between collected concepts
       def initialize
-        @ubiquitous_reactions = Chest.all(:ubiquitous_reaction)
-        @typical_reactions = Chest.all(:reaction)
-        @lateral_reactions = Chest.all(:lateral_reaction)
-        purge_null_rate_reactions!
+        @ubiquitous_reactions = wrap_reactions(:ubiquitous_reaction)
+        @typical_reactions = wrap_reactions(:reaction)
+        @lateral_reactions = wrap_reactions(:lateral_reaction)
 
-        @specific_specs = collect_specific_specs
-        @specs = []
+        @base_specs, @specific_specs =
+          purge_unspecified_specs(collect_base_specs, collect_specific_specs)
 
-        organize_dependecies!
+        # organize_dependecies!
+      end
+
+      %w(base specific).each do |type|
+        var = :"@#{type}_specs"
+        define_method(:"#{type}_spec") do |name|
+          instance_variable_get(var)[name]
+        end
+
+        define_method(:"#{type}_specs") do
+          instance_variable_get(var).values
+        end
       end
 
     private
 
+      # Wraps reactions from Chest
+      # @param [Symbol] reactions_key the key by which reactions will be got
+      #   from Chest
+      # @return [Array] the array with each wrapped reaction
+      def wrap_reactions(reactions_key)
+        with_rate = Chest.all(reactions_key).reject { |r| r.full_rate == 0 }
+        with_rate.map { |reaction| DependentReaction.new(reaction) }
+      end
+
       # Gets all collected reactions
       # @return [Array] the array of arrays of reactions
       def reactions
-        [@ubiquitous_reactions, @typical_reactions, @lateral_reactions]
+        [ubiquitous_reactions, typical_reactions, lateral_reactions]
       end
 
-      # Removes all reactions with full rate equal 0
-      def purge_null_rate_reactions!
-        reactions do |rs|
-          rs.reject! { |reaction| reaction.full_rate == 0 }
-        end
+      # Collects base spec from Chest and each one
+      # @return [Hash] the hash of collected base species where keys are names
+      #   of each base spec
+      def collect_base_specs
+        dependent_bases =
+          Chest.all(:surface_spec).map do |base_spec|
+            DependentBaseSpec.new(base_spec)
+          end
+
+        Hash[dependent_bases.map(&:name).zip(dependent_bases)]
       end
 
       # Collects specific species from all reactions. Each spec must be already
@@ -48,17 +74,20 @@ module VersatileDiamond
       # collected. Each specific spec stores reaction or theres from which it
       # dependent.
       #
-      # @return [Array] the array of collected specific species
+      # @return [Hash] the hash of collected specific species where keys are
+      #   full names of each specific spec
       def collect_specific_specs
         cache = {}
         store_lambda = -> concept do
           -> specific_spec do
             full_name = specific_spec.full_name
             if cache[full_name]
-              concept.swap_source(specific_spec, cache[full_name])
+              concept.swap_source(specific_spec, cache[full_name].spec)
             else
-              cache[full_name] = specific_spec
+              cache[full_name] = DependentSpecificSpec.new(specific_spec)
             end
+
+            store_concept_to(concept, cache[full_name])
           end
         end
 
@@ -74,44 +103,98 @@ module VersatileDiamond
           end
         end
 
-        cache.values
+        purge_unused_extended_specs(cache)
+      end
+
+      # Checks type of concept and store it to spec by correspond method
+      # @param [DependentReaction | DependentThere] wrapped_concept the
+      #   checkable and storable concept
+      # @param [DependentSpec | DependentSpecificSpec] wrapped_spec the wrapped
+      #   spec to which concept will be stored
+      # @raise [RuntimeError] if type of concept is undefined
+      def store_concept_to(wrapped_concept, wrapped_spec)
+        if wrapped_concept.is_a?(DependentReaction)
+          wrapped_spec.store_reaction(wrapped_concept)
+        elsif wrapped_concept.is_a?(DependentThere)
+          wrapped_spec.store_there(wrapped_concept)
+        else
+          raise 'Undefined concept type'
+        end
       end
 
       # Purges extended spec if atoms of each one can be used as same in
       # reduced spec
+      #
+      # @param [Hash] specific_specs_cache the cache of specific specs where
+      #   keys is full names of specs
+      # @return [Hash] resulted cache of specific specs
       # TODO: rspec it!
-      def purge_unused_extended_specs(specific_specs)
-        extended_specs = specific_specs.select do |spec|
+      def purge_unused_extended_specs(specific_specs_cache)
+        extended_specs = specific_specs_cache.select do |_, spec|
           spec.reduced && spec.could_be_reduced?
         end
 
-        extended_specs.each do |ext_spec|
-          check_that_can = -> concept do
-            used_keynames = concept.used_keynames_of(ext_spec)
+        extended_specs.each do |_, wrapped_ext|
+          check_that_can = -> wrapped_concept do
+            used_keynames = wrapped_concept.used_keynames_of(wrapped_ext.spec)
             Concepts::Spec.good_for_reduce?(used_keynames)
           end
 
-          next unless ext_spec.reactions.all?(&check_that_can) &&
-            ext_spec.theres.all?(&check_that_can)
+          next unless wrapped_ext.reactions.all?(&check_that_can) &&
+            wrapped_ext.theres.all?(&check_that_can)
 
-          rd_spec = ext_spec.reduced
-          if Chest.has?(rd_spec, method: :full_name)
-            rd_spec = Chest.specific_spec(rd_spec.full_name)
-          else
-            Chest.store(rd_spec, method: :full_name)
-          end
+          rd_spec = wrapped_ext.reduced
+          wrapped_rd =
+            specific_specs_cache[rd_spec.full_name] ||=
+              DependentSpecificSpec.new(rd_spec)
 
-          swap_and_store = -> concept do
-            concept.swap_source(ext_spec, rd_spec)
-            store_concept_to(concept, rd_spec)
-          end
-
-          ext_spec.reactions.each(&swap_and_store)
-          ext_spec.theres.each(&swap_and_store)
-
-          Chest.purge!(ext_spec, method: :full_name)
+          exchange_specs(specific_specs_cache, wrapped_ext, wrapped_rd)
         end
+
+        specific_specs_cache
       end
+
+      # Purges all specific specs if some of doesn't have specific atoms and
+      # reactions
+      #
+      # @param [Hash] specific_specs_cache the cache of specific specs where
+      #   keys is full names of specs
+      # @return [Hash] resulted cache of specific specs
+      # TODO: rspec it!
+      def purge_unspecified_specs(base_specs_cache, specific_specs_cache)
+        unspecified_specs = specific_specs_cache.select do |_, wrapped_spec|
+          !wrapped_spec.specific? && wrapped_spec.reactions.empty?
+        end
+
+        unspecified_specs.each do |_, wrapped_specific|
+          base_spec = wrapped_specific.base_spec
+          wrapped_base =
+            base_specs_cache[base_spec.name] ||= DependentBaseSpec.new(base_spec)
+
+          exchange(specific_specs_cache, wrapped_specific, wrapped_base)
+        end
+
+        [base_specs_cache, specific_specs_cache]
+      end
+
+      # Excnahges two specs
+      # @param [DependentSpecificSpec | DependentSpecificSpec] from the spec
+      #   which will be exchanged
+      # @param [DependentSpecificSpec | DependentSpec] to the spec to which
+      #   will be exchanged
+      # @param [Hash] cache where contains pairs of name => dependent_spec
+      def exchange(cache, from, to)
+        lambda = -> wrapped_concept do
+          wrapped_concept.swap_source(from.spec, to.spec)
+          store_concept_to(wrapped_concept, to)
+        end
+
+        from.reactions.each(&lambda)
+        from.theres.each(&lambda)
+
+        cache.delete(from.name)
+      end
+
 
 
 
@@ -176,25 +259,6 @@ module VersatileDiamond
 
 
 
-
-      # Purges all specific specs if some of doesn't have specific atoms and
-      # reactions
-      # TODO: rspec it!
-      def purge_unspecified_specs!
-        unspecified_specs = Chest.all(:specific_spec).select do |spec|
-          !spec.specific? && spec.reactions.empty?
-        end
-
-        unspecified_specs.each do |specific_spec|
-          base_spec = specific_spec.spec
-          specific_spec.theres.each do |there|
-            there.swap_source(specific_spec, base_spec)
-            store_concept_to(there, base_spec)
-          end
-
-          Chest.purge!(specific_spec, method: :full_name)
-        end
-      end
 
       # Checks stored reactions for duplication with each other
       # @raise [ReactionDuplicate] if duplicate is found
@@ -261,33 +325,6 @@ module VersatileDiamond
           base_parent.store_child(specific_spec)
 
           Chest.purge!(base_spec)
-        end
-      end
-
-      # Gets all typical reactions
-      # @param [Array] the array of typical reactions
-      def typical_reactions
-        Chest.all(:reaction)
-      end
-
-      # Gets all lateral reactions
-      # @param [Array] the array of lateral reactions
-      def lateral_reactions
-        Chest.all(:lateral_reaction)
-      end
-
-      # Checks type of concept and store it to spec by correspond method
-      # @param [concept] concept the checkable concept
-      # @param [Spec | SpecificSpec] spec the spec to which concept will be
-      #   stored
-      # @raise [RuntimeError] if type of concept is undefined
-      def store_concept_to(concept, spec)
-        if concept.is_a?(Concepts::UbiquitousReaction)
-          spec.store_reaction(concept)
-        elsif concept.is_a?(Concepts::There)
-          spec.store_there(concept)
-        else
-          raise 'Undefined concept type'
         end
       end
     end

@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Concepts
+  module Organizers
 
     # Provides methods for creating methods for get access to all collection
     # and for storing new item to collection

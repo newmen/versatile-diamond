@@ -13,6 +13,8 @@ FormatString:
 LambdaCall:
   EnforcedStyle: braces
 
+LineLength:
+  Max: 87
 
 PredicateName:
   NamePrefixBlacklist:

@@ -50,13 +50,6 @@ module VersatileDiamond
           end
         end
 
-        # Removes all reactions with full rate equal 0 from Chest
-        def purge_null_rate_reactions!
-          each_reaction do |reaction|
-            Chest.purge!(reaction) if reaction.full_rate == 0
-          end
-        end
-
         # Organize dependencies between specific species
         def organize_specific_spec_dependencies!
           collect_specific_specs!
@@ -70,96 +63,6 @@ module VersatileDiamond
               s.spec == base_spec
             end
             ss.organize_dependencies!(specs[base_spec])
-          end
-        end
-
-        # Collects specific species from all reactions and store them to
-        # internal chest variable. Each spec must be already looked around!
-        # At collecting time swaps reaction source spec with another same spec
-        # (with same name) if it another spec already collected.
-        # Each specific spec stores reaction or theres from which it dependent.
-        def collect_specific_specs!
-          cache = {}
-          store_lambda = -> concept do
-            -> specific_spec do
-              full_name = specific_spec.full_name
-              if cache[full_name]
-                concept.swap_source(specific_spec, cache[full_name])
-              else
-                cache[full_name] = specific_spec
-              end
-
-              store_concept_to(concept, cache[full_name])
-            end
-          end
-
-          each_reaction do |reaction|
-            reaction.each_source(&store_lambda[reaction])
-          end
-
-          lateral_reactions.each do |reaction|
-            reaction.theres.each do |there|
-              there.env_specs.each(&store_lambda[there])
-            end
-          end
-
-          cache.values.each do |specific_spec|
-            Chest.store(specific_spec, method: :full_name)
-          end
-        end
-
-        # Purges extended spec if atoms of each one can be used as same in
-        # reduced spec
-        # TODO: rspec it!
-        def purge_unused_extended_specs!
-          extended_specs = Chest.all(:specific_spec).select do |spec|
-            spec.reduced && spec.could_be_reduced?
-          end
-
-          extended_specs.each do |ext_spec|
-            check_that_can = -> concept do
-              used_keynames = concept.used_keynames_of(ext_spec)
-              Concepts::Spec.good_for_reduce?(used_keynames)
-            end
-
-            next unless ext_spec.reactions.all?(&check_that_can) &&
-              ext_spec.theres.all?(&check_that_can)
-
-            rd_spec = ext_spec.reduced
-            if Chest.has?(rd_spec, method: :full_name)
-              rd_spec = Chest.specific_spec(rd_spec.full_name)
-            else
-              Chest.store(rd_spec, method: :full_name)
-            end
-
-            swap_and_store = -> concept do
-              concept.swap_source(ext_spec, rd_spec)
-              store_concept_to(concept, rd_spec)
-            end
-
-            ext_spec.reactions.each(&swap_and_store)
-            ext_spec.theres.each(&swap_and_store)
-
-            Chest.purge!(ext_spec, method: :full_name)
-          end
-        end
-
-        # Purges all specific specs if some of doesn't have specific atoms and
-        # reactions
-        # TODO: rspec it!
-        def purge_unspecified_specs!
-          unspecified_specs = Chest.all(:specific_spec).select do |spec|
-            !spec.specific? && spec.reactions.empty?
-          end
-
-          unspecified_specs.each do |specific_spec|
-            base_spec = specific_spec.spec
-            specific_spec.theres.each do |there|
-              there.swap_source(specific_spec, base_spec)
-              store_concept_to(there, base_spec)
-            end
-
-            Chest.purge!(specific_spec, method: :full_name)
           end
         end
 
@@ -231,40 +134,6 @@ module VersatileDiamond
           end
         end
 
-        # Iterates all reactions
-        # @yield [Concepts::UbiquitoursReaction] do for each reaction
-        # @return [Enumerator] if block is not given
-        def each_reaction(&block)
-          reactions = Chest.all(*REACTION_KEYS)
-          reactions.each(&block)
-        end
-
-        # Gets all typical reactions
-        # @param [Array] the array of typical reactions
-        def typical_reactions
-          Chest.all(:reaction)
-        end
-
-        # Gets all lateral reactions
-        # @param [Array] the array of lateral reactions
-        def lateral_reactions
-          Chest.all(:lateral_reaction)
-        end
-
-        # Checks type of concept and store it to spec by correspond method
-        # @param [concept] concept the checkable concept
-        # @param [Spec | SpecificSpec] spec the spec to which concept will be
-        #   stored
-        # @raise [RuntimeError] if type of concept is undefined
-        def store_concept_to(concept, spec)
-          if concept.is_a?(Concepts::UbiquitousReaction)
-            spec.store_reaction(concept)
-          elsif concept.is_a?(Concepts::There)
-            spec.store_there(concept)
-          else
-            raise 'Undefined concept type'
-          end
-        end
       end
     end
 

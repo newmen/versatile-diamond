@@ -5,14 +5,11 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       extend Forwardable
-      extend Collector
 
       include Visitors::Visitable
       include BondsCounter
 
       attr_reader :spec
-
-      collector_methods :child, :reaction, :there
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
@@ -214,6 +211,7 @@ module VersatileDiamond
       end
 
       # Checks that specific spec could be reduced
+      # @raise [Exception] not extended spec couldn't be reduced
       # @return [Boolean] could or not
       def could_be_reduced?
         raise 'Not extended spec cannot be reduced' unless extended?

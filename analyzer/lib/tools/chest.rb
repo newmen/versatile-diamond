@@ -153,8 +153,8 @@ module VersatileDiamond
         end
 
         def to_s
-          content = @sac && @sac.keys.reduce('') do |acc, (key, value)|
-            "#{acc}#{key}: #{value.map(&:first).join(' ')}\n"
+          content = @sac && @sac.reduce('') do |acc, (key, value)|
+            "#{acc}#{key}: #{value.map(&:first).join(', ')}\n"
           end
           content ? content : 'is empty'
         end

@@ -4,16 +4,12 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      extend Collector
-
       include Visitors::Visitable
       include Linker
       include BondsCounter
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
-
-      collector_methods :parent, :child, :there
 
       # Checks that atom keyname suitable for reducing
       # @param [Array] keyname the array of atom keyname which will be checked
