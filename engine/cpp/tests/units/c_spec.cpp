@@ -61,6 +61,15 @@ int main(int argc, char const *argv[])
     assert(c3.lattice()->coords().y == 2);
     assert(c3.lattice()->coords().z == 1);
 
+    C c10(10, 0, (Lattice *)nullptr);
+    assertIs(&c10, { 10, 14 });
+
+    C c37(37, 1, (Lattice *)nullptr);
+    assertIs(&c37, { 10, 11, 14, 37 });
+
+    C c38(38, 2, (Lattice *)nullptr);
+    assertIs(&c38, { 10, 11, 12, 14, 37, 38 });
+
     delete lattice;
     delete diamond;
 
