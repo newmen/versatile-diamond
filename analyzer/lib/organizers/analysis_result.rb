@@ -217,7 +217,7 @@ module VersatileDiamond
         organize_specific_spec_dependencies!
 
         # before need to update specs by organize their dependecies!
-        # check_reactions_for_duplicates
+        check_reactions_for_duplicates
         # organize_reactions_dependencies!
 
         # organize_specs_dependencies!
