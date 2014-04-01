@@ -52,7 +52,7 @@ module VersatileDiamond
         with_rate.map { |reaction| DependentReaction.new(reaction) }
       end
 
-      # Gets all collected reactions
+      # Gets all collected reactions with complex surface species
       # @return [Array] the array of arrays of reactions
       def spec_reactions
         [typical_reactions, lateral_reactions]

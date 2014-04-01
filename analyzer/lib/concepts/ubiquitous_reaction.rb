@@ -173,7 +173,12 @@ module VersatileDiamond
       end
 
       def to_s
-        specs_to_s = -> specs { specs.map(&:full_name).join(' + ') }
+        specs_to_s = -> specs do
+          names = specs.map do |spec|
+            spec.respond_to?(:full_name) ? spec.full_name : spec.name
+          end
+          names.join(' + ')
+        end
         "#{specs_to_s[@source]} = #{specs_to_s[@products]}"
       end
 
