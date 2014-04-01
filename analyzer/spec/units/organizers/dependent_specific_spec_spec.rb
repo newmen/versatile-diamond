@@ -57,20 +57,20 @@ module VersatileDiamond
 
         shared_examples_for :organize_and_check do
           let(:instance) { wrap(target) }
-          let(:inst_childs) { childs.map { |s| wrap(s) } }
+          let(:inst_children) { children.map { |s| wrap(s) } }
 
-          let(:remain) { similars - childs - without - [target] }
+          let(:remain) { similars - children - without - [target] }
           let(:main) { [instance] + with }
-          let(:others) { main + inst_childs + remain.map { |s| wrap(s) } }
+          let(:others) { main + inst_children + remain.map { |s| wrap(s) } }
 
           before do
-            (main + inst_childs).map do |cld|
+            (main + inst_children).map do |cld|
               cld.organize_dependencies!(base_cache, others)
             end
           end
 
           it { expect(instance.parent).to eq(inst_parent) }
-          it { expect(instance.childs).to match_array(inst_childs) }
+          it { expect(instance.children).to match_array(inst_children) }
         end
 
         shared_examples_for :organize_and_check_base_parent do
@@ -96,25 +96,25 @@ module VersatileDiamond
           it_behaves_like :organize_and_check_base_parent do
             let(:target) { bridge }
             let(:parent) { bridge_base }
-            let(:childs) { [activated_bridge] }
+            let(:children) { [activated_bridge] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_bridge }
             let(:parent) { bridge }
-            let(:childs) { [activated_incoherent_bridge] }
+            let(:children) { [activated_incoherent_bridge] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_incoherent_bridge }
             let(:parent) { activated_bridge }
-            let(:childs) { [extra_activated_bridge] }
+            let(:children) { [extra_activated_bridge] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { extra_activated_bridge }
             let(:parent) { activated_incoherent_bridge }
-            let(:childs) { [] }
+            let(:children) { [] }
           end
         end
 
@@ -127,7 +127,7 @@ module VersatileDiamond
           it_behaves_like :organize_and_check_base_parent do
             let(:target) { methyl_on_bridge }
             let(:parent) { methyl_on_bridge_base }
-            let(:childs) do
+            let(:children) do
               [
                 activated_methyl_on_bridge,
                 methyl_on_incoherent_bridge,
@@ -139,37 +139,37 @@ module VersatileDiamond
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_methyl_on_bridge }
             let(:parent) { methyl_on_bridge }
-            let(:childs) { [activated_methyl_on_incoherent_bridge] }
+            let(:children) { [activated_methyl_on_incoherent_bridge] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_methyl_on_incoherent_bridge }
             let(:parent) { activated_methyl_on_bridge }
-            let(:childs) { [unfixed_activated_methyl_on_incoherent_bridge] }
+            let(:children) { [unfixed_activated_methyl_on_incoherent_bridge] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { unfixed_activated_methyl_on_incoherent_bridge }
             let(:parent) { activated_methyl_on_incoherent_bridge }
-            let(:childs) { [] }
+            let(:children) { [] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { methyl_on_incoherent_bridge }
             let(:parent) { methyl_on_bridge }
-            let(:childs) { [methyl_on_activated_bridge] }
+            let(:children) { [methyl_on_activated_bridge] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { methyl_on_activated_bridge }
             let(:parent) { methyl_on_incoherent_bridge }
-            let(:childs) { [] }
+            let(:children) { [] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { unfixed_methyl_on_bridge }
             let(:parent) { methyl_on_bridge }
-            let(:childs) { [] }
+            let(:children) { [] }
           end
         end
 
@@ -179,13 +179,13 @@ module VersatileDiamond
           it_behaves_like :organize_and_check_base_parent do
             let(:target) { dimer }
             let(:parent) { dimer_base }
-            let(:childs) { [activated_dimer] }
+            let(:children) { [activated_dimer] }
           end
 
           it_behaves_like :organize_and_check_specific_parent do
             let(:target) { activated_dimer }
             let(:parent) { dimer }
-            let(:childs) { [] }
+            let(:children) { [] }
           end
         end
       end

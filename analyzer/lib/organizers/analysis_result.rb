@@ -18,9 +18,12 @@ module VersatileDiamond
       # Collects results of interpretations from Chest to internal storage and
       # organizes dependencies between collected concepts
       def initialize
-        @ubiquitous_reactions = wrap_reactions(:ubiquitous_reaction)
-        @typical_reactions = wrap_reactions(:reaction)
-        @lateral_reactions = wrap_reactions(:lateral_reaction)
+        @ubiquitous_reactions =
+          wrap_reactions(DependentUbiquitousReaction, :ubiquitous_reaction)
+        @typical_reactions =
+          wrap_reactions(DependentTypicalReaction, :reaction)
+        @lateral_reactions =
+          wrap_reactions(DependentLateralReaction, :lateral_reaction)
 
         @term_specs = collect_termination_specs
         @base_specs, @specific_specs =
@@ -32,10 +35,15 @@ module VersatileDiamond
       %w(term base specific).each do |type|
         var = :"@#{type}_specs"
 
+        # Gets an wrapped instance by name
+        # @param [Symbol] name the name of selecting spec
+        # @return [DependentSpec] the dependent instance
         define_method(:"#{type}_spec") do |name|
           instance_variable_get(var)[name]
         end
 
+        # Gets wrapped instances
+        # @return [Array] the array of dependent instance
         define_method(:"#{type}_specs") do
           instance_variable_get(var).values
         end
@@ -44,12 +52,14 @@ module VersatileDiamond
     private
 
       # Wraps reactions from Chest
-      # @param [Symbol] reactions_key the key by which reactions will be got
-      #   from Chest
+      # @param [Class] the class that inherits DependentReaction
+      # @param [Symbol] chest_key the key by which reactions will be got from Chest
       # @return [Array] the array with each wrapped reaction
-      def wrap_reactions(reactions_key)
-        with_rate = Chest.all(reactions_key).reject { |r| r.full_rate == 0 }
-        with_rate.map { |reaction| DependentReaction.new(reaction) }
+      def wrap_reactions(klass, chest_key)
+        raise 'Wrong klass value' unless klass.ancestors.include?(DependentReaction)
+
+        with_rate = Tools::Chest.all(chest_key).reject { |r| r.full_rate == 0 }
+        with_rate.map { |reaction| klass.new(reaction) }
       end
 
       # Gets all collected reactions with complex surface species
@@ -250,6 +260,20 @@ module VersatileDiamond
         end
       end
 
+      # Organize dependencies between all stored reactions
+      def organize_reactions_dependencies!
+        cached_spec_reactions = spec_reactions.flatten
+        # order of dependencies organization is important!
+        ubiquitous_reaction.each do |reaction|
+          reaction.organize_dependencies!(cached_spec_reactions)
+        end
+        lateral_reactions.each do |reaction|
+          reaction.organize_dependencies!(lateral_reactions)
+        end
+        typical_reactions.each do |reaction|
+          reaction.organize_dependencies!(lateral_reactions)
+        end
+      end
 
 
 
@@ -279,25 +303,6 @@ module VersatileDiamond
         specs.each_with_object([]) do |spec, possible_parents|
           spec.organize_dependencies!(possible_parents)
           possible_parents.unshift(spec)
-        end
-      end
-
-
-
-
-      # Organize dependencies between all stored reactions
-      def organize_reactions_dependencies!
-        not_ubiquitous_reactions = typical_reactions + lateral_reactions
-
-        # order of dependencies organization is important!
-        Chest.all(:ubiquitous_reaction).each do |reaction|
-          reaction.organize_dependencies!(not_ubiquitous_reactions)
-        end
-        lateral_reactions.each do |reaction|
-          reaction.organize_dependencies!(lateral_reactions)
-        end
-        typical_reactions.each do |reaction|
-          reaction.organize_dependencies!(lateral_reactions)
         end
       end
 

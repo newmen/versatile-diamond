@@ -7,8 +7,8 @@ module VersatileDiamond
       subject { described_class.new(activated_dimer) }
 
       describe 'default' do
-        describe '#childs state' do
-          it { expect(subject.childs).to be_empty }
+        describe '#children state' do
+          it { expect(subject.children).to be_empty }
         end
 
         describe '#reactions state' do
@@ -23,7 +23,7 @@ module VersatileDiamond
       describe '#store_child' do
         let(:child) { described_class.new(methyl_on_dimer) }
         before { subject.store_child(child) }
-        it { expect(subject.childs).to eq([child]) }
+        it { expect(subject.children).to eq([child]) }
       end
 
       describe '#store_reaction' do

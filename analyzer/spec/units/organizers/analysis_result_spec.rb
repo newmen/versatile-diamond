@@ -75,14 +75,20 @@ module VersatileDiamond
       describe 'reactions' do
         before { store_reactions }
 
-        %w(ubiquitous typical lateral).zip([2, 8, 1]).each do |name, quant|
-          describe "##{name}_reactions" do
-            it_behaves_like :each_class_dependent do
-              let(:dependent_class) { DependentReaction }
-              let(:method) { :"#{name}_reactions" }
-              let(:quant) { quant }
+        %w(ubiquitous typical lateral).
+          zip([
+            DependentUbiquitousReaction,
+            DependentTypicalReaction,
+            DependentLateralReaction
+          ]).
+          zip([2, 8, 1]).each do |(name, klass), quant|
+            describe "##{name}_reactions" do
+              it_behaves_like :each_class_dependent do
+                let(:dependent_class) { klass }
+                let(:method) { :"#{name}_reactions" }
+                let(:quant) { quant }
+              end
             end
-          end
         end
       end
 
@@ -255,7 +261,7 @@ module VersatileDiamond
             let(:children) { [subject.specific_spec(:'bridge(ct: *, ct: i)')] }
             let(:parent) { subject.base_spec(:bridge) }
 
-            it { expect(wrapped_specific.childs).to match_array(children) }
+            it { expect(wrapped_specific.children).to match_array(children) }
             it { expect(wrapped_specific.parent).to eq(parent) }
           end
 

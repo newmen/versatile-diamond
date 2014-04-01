@@ -11,7 +11,7 @@ module VersatileDiamond
       let(:target) { dimer_formation }
       let(:ai_bridge) { activated_incoherent_bridge }
       let(:duplicate) { wrap(dimer_formation.duplicate('dup')) }
-      let(:lateral_subject) { wrap(target.lateral_duplicate('lateral', [on_middle])) }
+
       subject { wrap(target) }
 
       describe '#reaction' do
@@ -50,12 +50,12 @@ module VersatileDiamond
         it { expect(subject.used_keynames_of(ai_bridge)).to eq([:ct]) }
       end
 
-      describe '#theres' do
-        it { expect { subject.theres }.to raise_error(NoMethodError) }
-        it { expect(lateral_subject.theres.map(&:class)).to eq([DependentThere]) }
-      end
-
       describe '#same?' do
+        let(:lateral_subject) do
+          DependentLateralReaction.new(
+            target.lateral_duplicate('lateral', [on_middle]))
+        end
+
         it { expect(subject.same?(duplicate)).to be_true }
         it { expect(duplicate.same?(subject)).to be_true }
 
