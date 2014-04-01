@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 group :ruby do
+  gem 'activesupport'
   gem 'docopt'
   gem 'i18n'
   gem 'ruby-graphviz'

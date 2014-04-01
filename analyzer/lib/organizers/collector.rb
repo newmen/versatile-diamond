@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Organizers
 
     # Provides methods for creating methods for get access to all collection
@@ -11,7 +13,7 @@ module VersatileDiamond
       def collector_methods(*names)
         names.each do |name|
           var = :"@#{name}"
-          method = :"#{name}s"
+          method = :"#{name.to_s.pluralize}"
 
           # Gets a collection of concepts
           # @return [Array] collection
