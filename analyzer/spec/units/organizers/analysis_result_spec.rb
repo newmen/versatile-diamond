@@ -248,9 +248,9 @@ module VersatileDiamond
         end
 
         describe '#organize_dependecies!' do
-          before { store_reactions }
-
           describe '#organize_specific_spec_dependencies!' do
+            before { store_reactions }
+
             let(:wrapped_specific) { subject.specific_spec(:'bridge(ct: *)') }
             let(:children) { [subject.specific_spec(:'bridge(ct: *, ct: i)')] }
             let(:parent) { subject.base_spec(:bridge) }
@@ -258,98 +258,62 @@ module VersatileDiamond
             it { expect(wrapped_specific.childs).to match_array(children) }
             it { expect(wrapped_specific.parent).to eq(parent) }
           end
+
+          describe '#check_reactions_for_duplicates' do
+            let(:reaction_duplicate) { described_class::ReactionDuplicate }
+
+            shared_examples_for :duplicate_or_not do
+              def store_to_chest(reaction)
+                reaction.rate = 1
+                reaction.activation = 0
+                Tools::Chest.store(reaction)
+              end
+
+              before do
+                Tools::Config.gas_temperature(1000, 'K')
+                Tools::Config.surface_temperature(500, 'C')
+              end
+
+              describe 'duplicate' do
+                before do
+                  store_to_chest(reaction)
+                  store_to_chest(same)
+                end
+
+                it { expect { subject }.to raise_error reaction_duplicate }
+              end
+
+              describe 'not duplicate' do
+                before do
+                  store_to_chest(reaction)
+                  store_to_chest(reaction.reverse) # synthetics
+                end
+
+                it { expect { subject }.not_to raise_error }
+              end
+            end
+
+            it_behaves_like :duplicate_or_not do
+              let(:reaction) { surface_deactivation }
+              let(:same) do
+                Concepts::UbiquitousReaction.new(
+                  :forward, 'duplicate', sd_source.shuffle, sd_product)
+              end
+
+              before { Tools::Config.gas_concentration(hydrogen_ion, 1, 'mol/l') }
+            end
+
+            it_behaves_like :duplicate_or_not do
+              let(:reaction) { dimer_formation }
+              let(:same) { reaction.duplicate('same') }
+            end
+
+            it_behaves_like :duplicate_or_not do
+              let(:reaction) { dimer_formation.lateral_duplicate('lateral', [on_end]) }
+              let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
+            end
+          end
         end
-
-
-
-
-
-
-      #         it { expect(subject.reactions).to include(methyl_activation) }
-      #       end
-      #       end
-
-
-
-
-
-
-      #   describe '#check_reactions_for_duplicates' do
-      #     let(:reaction_duplicate) { Shunter::ReactionDuplicate }
-
-      #     shared_examples_for 'duplicate or not' do
-      #       before(:each) do
-      #         Config.gas_temperature(1000, 'K')
-      #         Config.surface_temperature(500, 'C')
-      #       end
-
-      #       describe 'duplicate' do
-      #         before do
-      #           Chest.store(reaction)
-      #           Chest.store(same)
-      #         end
-
-      #         it { expect { Shunter.organize_dependecies! }.
-      #           to raise_error reaction_duplicate }
-      #       end
-
-      #       describe 'not duplicate' do
-      #         before do
-      #           reaction.reverse.rate = reaction.rate
-      #           reaction.reverse.activation = reaction.activation
-
-      #           Chest.store(reaction)
-      #           Chest.store(reaction.reverse) # synthetics
-      #         end
-
-      #         it { expect { Shunter.organize_dependecies! }.
-      #           not_to raise_error }
-      #       end
-      #     end
-
-      #     it_behaves_like 'duplicate or not' do
-      #       let(:reaction) { surface_deactivation }
-      #       let(:same) do
-      #         Concepts::UbiquitousReaction.new(
-      #           :forward, 'duplicate', sd_source.shuffle, sd_product)
-      #       end
-
-      #       before(:each) do
-      #         Config.gas_concentration(hydrogen_ion, 1, 'mol/l')
-      #         reaction.rate = 1
-      #         same.rate = 10
-      #         reaction.activation = same.activation = 0
-      #       end
-      #     end
-
-      #     it_behaves_like 'duplicate or not' do
-      #       let(:reaction) { dimer_formation }
-      #       let(:same) { reaction.duplicate('same') }
-
-      #       before(:each) do
-      #         reaction.rate = 2
-      #         reaction.activation = 0
-      #         # need before setup reaction properties and same later, because
-      #         # same is child of reaction and not it's not instanced
-      #         same.rate = 20
-      #         same.activation = 1
-      #       end
-      #     end
-
-      #     it_behaves_like 'duplicate or not' do
-      #       let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
-      #       let(:reaction) do
-      #         dimer_formation.lateral_duplicate('lateral', [on_end])
-      #       end
-
-      #       before(:each) do
-      #         reaction; same # creates children of dimer formation
-      #         dimer_formation.rate = 3
-      #         dimer_formation.activation = 0
-      #       end
-      #     end
-      #   end
-
       end
     end
 
