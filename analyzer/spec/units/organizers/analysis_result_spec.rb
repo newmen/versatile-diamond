@@ -149,10 +149,6 @@ module VersatileDiamond
           end
 
           describe 'from reactions' do
-            def reactions_for(name)
-              subject.base_spec(name).reactions
-            end
-
             before { store_reactions }
 
             it_behaves_like :all_dependent_base_specs do
@@ -169,15 +165,48 @@ module VersatileDiamond
               end
             end
 
-            it { expect(reactions_for(:bridge)).to be_empty }
+            describe '#exchange_specs' do
+              def get(name)
+                subject.base_spec(name)
+              end
 
-            it { expect(reactions_for(:dimer)).to_not be_empty }
-            it { expect(reactions_for(:methyl_on_bridge)).to_not be_empty }
-            it { expect(reactions_for(:methyl_on_dimer)).to_not be_empty }
+              describe '.swap_source' do
+                def base(name)
+                  get(name).spec
+                end
+
+                let(:lateral_reaction) { subject.lateral_reactions.first.reaction }
+                let(:used_there) { lateral_reaction.theres.map(&:env_specs).flatten }
+
+                it { expect(used_there).
+                  to match_array([base(:dimer), base(:dimer)]) }
+
+                it { expect(hydrogen_migration.reverse.source).
+                  to include(base(:dimer)) }
+              end
+
+              describe '#store_concept_to' do
+                def reactions_for(name)
+                  get(name).reactions
+                end
+
+                it { expect(reactions_for(:bridge)).to be_empty }
+
+                it { expect(reactions_for(:dimer).map(&:reaction)).
+                  to eq([hydrogen_migration.reverse]) }
+
+                it { expect(reactions_for(:methyl_on_bridge)).to_not be_empty }
+                it { expect(reactions_for(:methyl_on_dimer)).to_not be_empty }
+              end
+            end
           end
         end
 
         describe '#specific_specs' do
+          def get(name)
+            subject.specific_spec(name)
+          end
+
           before { store_reactions }
 
           it_behaves_like :each_reactant_dependent do
@@ -200,16 +229,41 @@ module VersatileDiamond
               ]
             end
           end
+
+          describe '#exchange_specs' do
+            describe '.swap_source' do
+              it { expect(methyl_incorporation.source).
+                to include(get(:'methyl_on_bridge(cm: *)').spec) }
+            end
+
+            describe '#store_concept_to' do
+              def reactions_for(name)
+                get(name).reactions
+              end
+
+              it { expect(reactions_for(:'dimer(cl: i)').map(&:reaction)).
+                to eq([dimer_formation.reverse]) }
+            end
+          end
+        end
+
+        describe '#organize_dependecies!' do
+          before { store_reactions }
+
+          describe '#organize_specific_spec_dependencies!' do
+            let(:wrapped_specific) { subject.specific_spec(:'bridge(ct: *)') }
+            let(:children) { [subject.specific_spec(:'bridge(ct: *, ct: i)')] }
+            let(:parent) { subject.base_spec(:bridge) }
+
+            it { expect(wrapped_specific.childs).to match_array(children) }
+            it { expect(wrapped_specific.parent).to eq(parent) }
+          end
         end
 
 
 
 
 
-
-
-        # describe '#organize_specific_spec_dependencies!' do
-        #   before { store_reactions }
 
       #         it { expect(subject.reactions).to include(methyl_activation) }
       #       end
@@ -219,22 +273,6 @@ module VersatileDiamond
 
 
 
-
-      #     describe 'swapping reaction specs' do
-      #       let(:same) { Chest.specific_spec(:'hydrogen(h: *)') }
-
-      #       it { expect(surface_activation.source).to include(same) }
-      #       it { expect(surface_deactivation.source).to include(same) }
-      #       it { expect(methyl_activation.source).to include(same) }
-      #       it { expect(methyl_deactivation.source).to include(same) }
-
-      #       it { expect(lateral_dimer_formation.theres.map(&:env_specs).flatten).
-      #         to include(Chest.specific_spec(:'dimer()')) }
-      #       it { expect(lateral_dimer_formation.theres.map(&:env_specs).flatten.
-      #         select { |spec| spec == Chest.specific_spec(:'dimer()') }.size).
-      #         to eq(2) }
-      #     end
-      #   end
 
       #   describe '#check_reactions_for_duplicates' do
       #     let(:reaction_duplicate) { Shunter::ReactionDuplicate }

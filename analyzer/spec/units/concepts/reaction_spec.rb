@@ -115,26 +115,43 @@ module VersatileDiamond
       end
 
       describe '#swap_source' do
-        let(:bridge_dup) { activated_bridge.dup }
-        before(:each) do
-          dimer_formation.swap_source(activated_bridge, bridge_dup)
-        end
-
         shared_examples_for 'check specs existence' do
-          it { should include(bridge_dup) }
-          it { should_not include(activated_bridge) }
+          before { reaction.swap_source(old, fresh) }
+          it { should include(fresh) }
+          it { should_not include(old) }
         end
 
-        it_behaves_like 'check specs existence' do
-          subject { dimer_formation.positions.map(&:first).map(&:first) }
+        shared_examples_for :check_mapping do
+          it_behaves_like 'check specs existence' do
+            subject { map.changes.map(&:first).map(&:first) }
+          end
         end
 
-        it_behaves_like 'check specs existence' do
-          subject { dimer_formation.positions.map { |p| p[1] }.map(&:first) }
+        describe 'to specific spec' do
+          let(:reaction) { dimer_formation }
+          let(:old) { activated_bridge }
+          let(:fresh) { old.dup }
+
+          it_behaves_like :check_mapping do
+            let(:map) { df_atom_map }
+          end
+
+          it_behaves_like 'check specs existence' do
+            subject { reaction.positions.map(&:first).map(&:first) }
+          end
+
+          it_behaves_like 'check specs existence' do
+            subject { reaction.positions.map { |p| p[1] }.map(&:first) }
+          end
         end
 
-        it_behaves_like 'check specs existence' do
-          subject { df_atom_map.changes.map(&:first).map(&:first) }
+        describe 'to base spec' do
+          it_behaves_like :check_mapping do
+            let(:old) { dimer }
+            let(:fresh) { dimer_base }
+            let(:reaction) { hydrogen_migration.reverse }
+            let(:map) { reaction.instance_variable_get(:'@mapping') }
+          end
         end
       end
 
@@ -306,7 +323,8 @@ module VersatileDiamond
       end
 
       describe '#used_keynames_of' do
-        it { expect(dimer_formation.used_keynames_of(activated_bridge)).to eq([:ct]) }
+        it { expect(dimer_formation.used_keynames_of(activated_bridge)).
+          to eq([:ct]) }
         it { expect(dimer_formation.used_keynames_of(activated_incoherent_bridge)).
           to eq([:ct]) }
       end
