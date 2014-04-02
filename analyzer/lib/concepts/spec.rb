@@ -208,6 +208,15 @@ module VersatileDiamond
         childs.reject! { |s| s == spec }
       end
 
+      # Checks termination atom at the inner atom which belongs to current spec
+      # @param [Atom | SpecificAtom] internal_atom the atom which belongs to
+      #   current spec
+      # @param [Atom] term_atom the termination atom
+      # @return [Boolean] has termination atom or not
+      def has_termination_atom?(internal_atom, term_atom)
+        Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0
+      end
+
       # Gets a number of atoms
       # @return size of current spec
       def size

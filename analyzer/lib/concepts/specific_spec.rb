@@ -228,10 +228,9 @@ module VersatileDiamond
       # @param [Atom] term_atom the termination atom
       # @return [Boolean] has termination atom or not
       def has_termination_atom?(internal_atom, term_atom)
-        (Atom.hydrogen?(term_atom) &&
-          external_bonds_for(internal_atom) > 0) ||
+        (Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0) ||
           has_monovalent_in_links?(internal_atom, term_atom) ||
-          (internal_atom.monovalents.include?(term_atom.name))
+          internal_atom.monovalents.include?(term_atom.name)
       end
 
       # Gets a number of atoms with number of active bonds, but if spec is gas

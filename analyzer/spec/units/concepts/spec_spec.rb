@@ -152,6 +152,24 @@ module VersatileDiamond
         it { expect(dimer_base.childs).to be_empty }
       end
 
+      describe '#has_termination_atom?' do
+        describe 'bridge(:ct)' do
+          let(:atom) { bridge_base.atom(:ct) }
+          it { expect(bridge_base.has_termination_atom?(atom, adsorbed_h)).to be_true }
+          it { expect(bridge_base.has_termination_atom?(atom, active_bond)).
+            to be_false }
+        end
+
+        describe 'methyl_on_dimer(:cr)' do
+          let(:atom) { methyl_on_dimer.atom(:cr) }
+
+          it { expect(methyl_on_dimer.has_termination_atom?(atom, adsorbed_h)).
+            to be_false }
+          it { expect(methyl_on_dimer.has_termination_atom?(atom, active_bond)).
+            to be_false }
+        end
+      end
+
       describe '#size' do
         it { expect(hydrogen_base.size).to eq(1) }
         it { expect(methane_base.size).to eq(1) }
