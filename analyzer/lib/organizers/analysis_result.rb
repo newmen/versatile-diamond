@@ -227,7 +227,7 @@ module VersatileDiamond
 
         # before need to update specs by organize their dependecies!
         check_reactions_for_duplicates
-        # organize_reactions_dependencies!
+        organize_reactions_dependencies!
 
         # organize_specs_dependencies!
         # purge_unused_specs!
@@ -263,7 +263,7 @@ module VersatileDiamond
       def organize_reactions_dependencies!
         cached_spec_reactions = spec_reactions.flatten
         # order of dependencies organization is important!
-        ubiquitous_reaction.each do |reaction|
+        ubiquitous_reactions.each do |reaction|
           reaction.organize_dependencies!(cached_spec_reactions)
         end
         lateral_reactions.each do |reaction|

@@ -20,34 +20,48 @@ module VersatileDiamond
         Tools::Config.gas_temperature(1000, 'K')
         Tools::Config.surface_temperature(500, 'K')
 
+        # ubuqitous[0]
         surface_activation.rate = 0.1
         surface_activation.activation = 0
+        # ubuqitous[1]
         surface_deactivation.rate = 0.2
         surface_deactivation.activation = 0
 
+        # typical[0]
         methyl_activation.rate = 0.3
         methyl_activation.activation = 0
+        # typical[1]
         methyl_deactivation.rate = 0.4
         methyl_deactivation.activation = 0
 
+        # typical[2]
         methyl_desorption.rate = 1
         methyl_desorption.activation = 0
 
+        # typical[3]
         hydrogen_migration.rate = 2
         hydrogen_migration.activation = 0
+        # typical[4]
         hydrogen_migration.reverse.rate = 3
         hydrogen_migration.reverse.activation = 1e3
 
+        # typical[5]
         dimer_formation.rate = 4
         dimer_formation.activation = 0
+        # typical[6]
         dimer_formation.reverse.rate = 5
         dimer_formation.reverse.activation = 2e3
 
+        # typical[7]
         methyl_incorporation.rate = 6
         methyl_incorporation.activation = 0
 
-        # lateral dimer formation crated there
-        middle_lateral_df.rate = 6
+        # lateral[0]
+        end_lateral_df.rate = 6
+        end_lateral_df.activation = 0
+
+        # lateral[1]
+        middle_lateral_df.rate = 7
         middle_lateral_df.activation = 0
 
         [
@@ -56,7 +70,7 @@ module VersatileDiamond
           methyl_desorption.reverse, # synthetics
           hydrogen_migration, hydrogen_migration.reverse,
           dimer_formation, dimer_formation.reverse,
-          middle_lateral_df, methyl_incorporation
+          end_lateral_df, middle_lateral_df, methyl_incorporation
         ].each { |reaction| Tools::Chest.store(reaction) }
       end
 
@@ -77,7 +91,7 @@ module VersatileDiamond
             DependentTypicalReaction,
             DependentLateralReaction
           ]).
-          zip([2, 8, 1]).each do |(name, klass), quant|
+          zip([2, 8, 2]).each do |(name, klass), quant|
             describe "##{name}_reactions" do
               it_behaves_like :each_class_dependent do
                 let(:dependent_class) { klass }
@@ -177,7 +191,7 @@ module VersatileDiamond
                   get(name).spec
                 end
 
-                let(:lateral_reaction) { subject.lateral_reactions.first.reaction }
+                let(:lateral_reaction) { subject.lateral_reactions.last.reaction }
                 let(:used_there) { lateral_reaction.theres.map(&:env_specs).flatten }
 
                 it { expect(used_there).
@@ -313,6 +327,37 @@ module VersatileDiamond
             it_behaves_like :duplicate_or_not do
               let(:reaction) { end_lateral_df }
               let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
+            end
+          end
+
+          describe '#organize_reactions_dependencies!' do
+            before { store_reactions }
+
+            shared_examples_for :expect_complex do
+              it { expect(reaction.complexes).to eq([complex]) }
+            end
+
+            describe 'ubiquitous' do
+              it_behaves_like :expect_complex do
+                let(:reaction) { subject.ubiquitous_reactions.first }
+                let(:complex) { subject.typical_reactions.first }
+              end
+            end
+
+            describe 'typical' do
+              it_behaves_like :expect_complex do
+                # index of reactions see in comments of #store_reactions method
+                let(:reaction) { subject.typical_reactions[5] }
+                let(:complex) { subject.lateral_reactions.first }
+              end
+            end
+
+            describe 'lateral' do
+              it_behaves_like :expect_complex do
+                # index of reactions see in comments of #store_reactions method
+                let(:reaction) { subject.lateral_reactions.first }
+                let(:complex) { subject.lateral_reactions.last }
+              end
             end
           end
         end
