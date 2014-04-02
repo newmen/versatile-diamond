@@ -329,9 +329,6 @@ module VersatileDiamond
           to eq([:ct]) }
       end
 
-      let(:reaction) { dimer_formation.duplicate('dup') }
-      let(:lateral) { dimer_formation.lateral_duplicate('tail', [on_end]) }
-
       describe '#same?' do
         def make_same(type)
           source = [methyl_on_dimer.dup, activated_dimer.dup]
@@ -371,7 +368,8 @@ module VersatileDiamond
         end
 
         describe 'lateral reaction' do
-          it { expect(reaction.same?(lateral)).to be_true }
+          subject { dimer_formation.duplicate('dup') }
+          it { expect(subject.same?(end_lateral_df)).to be_true }
         end
       end
 
@@ -381,28 +379,6 @@ module VersatileDiamond
 
         it { expect(methyl_deactivation.complex_source_spec_and_atom).
           to match_array([dm_source.first, dm_source.first.atom(:cm)]) }
-      end
-
-      describe '#complex_source_covered_by?' do
-        it { expect(methyl_activation.complex_source_covered_by?(adsorbed_h)).
-          to be_true }
-        it { expect(methyl_activation.complex_source_covered_by?(active_bond)).
-          to be_false }
-
-        it { expect(methyl_deactivation.complex_source_covered_by?(active_bond)).
-          to be_true }
-        it { expect(methyl_deactivation.complex_source_covered_by?(adsorbed_h)).
-          to be_true }
-      end
-
-      describe '#organize_dependencies! and #more_complex' do
-        before(:each) do
-          lateral_reactions = [lateral]
-          reaction.organize_dependencies!(lateral_reactions)
-          methyl_desorption.organize_dependencies!(lateral_reactions)
-        end
-        it { expect(reaction.more_complex).to eq([lateral]) }
-        it { expect(methyl_desorption.more_complex).to be_empty }
       end
 
       describe '#size' do

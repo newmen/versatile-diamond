@@ -99,28 +99,6 @@ module VersatileDiamond
           to be_false }
       end
 
-      describe '#organize_dependencies! and #more_complex' do
-        shared_examples_for 'cover just one' do
-          before do
-            target.organize_dependencies!(
-              [methyl_activation, methyl_deactivation, methyl_desorption,
-                dimer_formation, hydrogen_migration])
-          end
-
-          it { expect(target.more_complex).to eq([complex]) }
-        end
-
-        it_behaves_like 'cover just one' do
-          let(:target) { surface_activation }
-          let(:complex) { methyl_activation }
-        end
-
-        it_behaves_like 'cover just one' do
-          let(:target) { surface_deactivation }
-          let(:complex) { methyl_deactivation }
-        end
-      end
-
       describe '#full_rate' do
         before do
           Tools::Config.gas_temperature(1000, 'K')

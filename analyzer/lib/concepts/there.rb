@@ -82,6 +82,14 @@ module VersatileDiamond
       def size
         env_specs.map(&:size).reduce(:+)
       end
+
+      def to_s
+        env_specs.map(&:full_name).join(' * ')
+      end
+
+      def inspect
+        to_s
+      end
     end
 
   end

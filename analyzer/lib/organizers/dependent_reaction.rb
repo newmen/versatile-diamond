@@ -5,7 +5,9 @@ module VersatileDiamond
     # @abstract
     class DependentReaction
       extend Forwardable
+      extend Collector
 
+      collector_methods :complex
       attr_reader :reaction
 
       # Stores wrappable reaction
@@ -19,20 +21,23 @@ module VersatileDiamond
       # Iterates each not simple specific source spec
       # @yield [Concepts::SpecificSpec] do with each one
       def each_source(&block)
-        (reaction.source - reaction.simple_source).each(&block)
+        not_simple_source.each(&block)
       end
 
       # Checks that reactions are identical
       # @param [DependentReaction] other the comparable wrapped reaction
       # @return [Boolean] same or not
       def same?(other)
-        self.class == other.class && reaction.same?(other.reaction)
+        reaction.same?(other.reaction)
       end
 
     protected
 
+      def_delegators :@reaction, :source, :simple_source, :simple_products
 
-
+      def not_simple_source
+        source - simple_source
+      end
     end
 
   end

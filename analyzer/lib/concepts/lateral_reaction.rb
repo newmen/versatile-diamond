@@ -33,31 +33,22 @@ module VersatileDiamond
       # @return [Boolean] the same or not
       # @override
       def same?(other)
-        if self.class == other.class
-          compare_with_other(other) { |t1, t2| t1.same?(t2) }
-        else
-          false
-        end
+        self.class == other.class ? all_same?(other) : false
       end
 
-      # Organize dependencies from another lateral reactions
-      # @param [Array] lateral_reactions the possible children
-      # @override
-      def organize_dependencies!(lateral_reactions)
-        lateral_reactions.each do |reaction|
-          next if reaction == self
-          next unless compare_with_other(reaction) do |self_t, other_t|
-            self_t.cover?(other_t)
-          end
-
-          more_complex << reaction
+      # Checks that current reaction covered by other reaction
+      # @param [LateralReaction] other the comparable reaction
+      # @return [Boolean] covered or not
+      def cover?(other)
+        super_same?(other) && theres.all? do |there|
+          other.theres.any? { |t| there.same?(t) || there.cover?(t) }
         end
       end
 
       # Also counts sizes of there objects
       # @return [Float] the number of used atoms
       def size
-        super + @theres.map(&:size).reduce(:+)
+        super + theres.map(&:size).reduce(:+)
       end
 
       # Also visit there objects
@@ -65,13 +56,18 @@ module VersatileDiamond
       # @override
       def visit(visitor)
         super
-        @theres.each { |there| there.visit(visitor) }
+        theres.each { |there| there.visit(visitor) }
       end
 
       # Collects and return all where object for visitor
       # @return [Array] the array of where objects
       def wheres
-        @theres.reduce([]) { |acc, there| acc << there.where }
+        theres.reduce([]) { |acc, there| acc << there.where }
+      end
+
+      def to_s
+        lateral_strs = theres.map(&:to_s)
+        "#{super} | #{lateral_strs.join(' + ')}"
       end
 
     private
@@ -116,17 +112,19 @@ module VersatileDiamond
         [*super, reversed_theres]
       end
 
-      # Compares with other lateral reaction by calling the #same? method from
-      # superclass and comparing theres collections
-      #
+      # Calls the #same? method from superclass
+      # @param [LateralReaction] other the comparable lateral reaction
+      # @return [Boolean] same by super or not
+      def super_same?(other)
+        self.class.superclass.instance_method(:same?).bind(self).call(other)
+      end
+
+      # Are another reaction completely same
       # @param [LateralReaction] other with which comparison
-      # @yield [There, There] condition for comparison
-      # @return [Boolean] is reaction initially similar, and the condition is
-      #   met for both theres collections
-      def compare_with_other(other, &block)
-        # calling the .same? method from superclass
-        self.class.superclass.instance_method(:same?).bind(self).call(other) &&
-          lists_are_identical?(theres, other.theres, &block)
+      # @return [Boolean] is reaction initially similar, and all theres are same
+      def all_same?(other)
+        super_same?(other) &&
+          lists_are_identical?(theres, other.theres) { |t, o| t.same?(o) }
       end
     end
 

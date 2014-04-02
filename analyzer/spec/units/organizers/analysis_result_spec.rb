@@ -8,10 +8,6 @@ module VersatileDiamond
       subject { described_class.new }
       let(:keyname_error) { Chest::KeyNameError }
 
-      let(:lateral_dimer_formation) do
-        dimer_formation.lateral_duplicate('lateral', [on_middle])
-      end
-
       def store_bases
         [
           methane_base, bridge_base, dimer_base, high_bridge_base,
@@ -51,8 +47,8 @@ module VersatileDiamond
         methyl_incorporation.activation = 0
 
         # lateral dimer formation crated there
-        lateral_dimer_formation.rate = 6
-        lateral_dimer_formation.activation = 0
+        middle_lateral_df.rate = 6
+        middle_lateral_df.activation = 0
 
         [
           surface_activation, surface_deactivation,
@@ -60,7 +56,7 @@ module VersatileDiamond
           methyl_desorption.reverse, # synthetics
           hydrogen_migration, hydrogen_migration.reverse,
           dimer_formation, dimer_formation.reverse,
-          lateral_dimer_formation, methyl_incorporation
+          middle_lateral_df, methyl_incorporation
         ].each { |reaction| Tools::Chest.store(reaction) }
       end
 
@@ -315,7 +311,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :duplicate_or_not do
-              let(:reaction) { dimer_formation.lateral_duplicate('lateral', [on_end]) }
+              let(:reaction) { end_lateral_df }
               let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
             end
           end

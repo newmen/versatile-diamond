@@ -365,6 +365,14 @@ module VersatileDiamond
             ])
         end
 
+        set(:end_lateral_df) do
+          dimer_formation.lateral_duplicate('end lateral', [on_end])
+        end
+
+        set(:middle_lateral_df) do
+          dimer_formation.lateral_duplicate('middle lateral', [on_middle])
+        end
+
         set(:near_methyl) do
           w = Where.new(:near_methyl, 'chain neighbour methyl',
             specs: [methyl_on_bridge])

@@ -21,7 +21,7 @@ module VersatileDiamond
       # Gets name of specific spec
       # @return [Symbol] the symbol of name
       def name
-        spec.respond_to?(:full_name) ? spec.full_name.to_sym : spec.name
+        spec.full_name
       end
 
       # Gets base spec for wrapped specific spec
