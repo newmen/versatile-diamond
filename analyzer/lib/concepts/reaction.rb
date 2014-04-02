@@ -154,37 +154,6 @@ module VersatileDiamond
         is_same_positions && super
       end
 
-      # Selects complex source specs and them changed atom
-      # @return [Array] cached array of complex source specs
-      def complex_source_covered_by?(termination_spec)
-        spec, atom = complex_source_spec_and_atom
-        termination_spec.cover?(spec, atom)
-      end
-
-      # Organize dependencies from another lateral reactions
-      # @param [Array] lateral_reactions the possible children
-      # @override but another type of argument
-      def organize_dependencies!(lateral_reactions)
-        applicants = []
-        lateral_reactions.each do |reaction|
-          applicants << reaction if same?(reaction)
-        end
-
-        return if applicants.empty?
-
-        loop do
-          inc = applicants.select do |reaction|
-            applicants.find do |unr|
-              reaction != unr && reaction.more_complex.include?(unr)
-            end
-          end
-          break if inc.empty?
-          applicants = inc
-        end
-
-        applicants.each { |reaction| more_complex << reaction }
-      end
-
       # Checks that all atoms belongs to lattice
       # @return [Array] atoms the array of checking atoms
       # @return [Boolean] all or not

@@ -73,10 +73,9 @@ module VersatileDiamond
       #    termination species as values
       def collect_termination_specs
         ubiquitous_reactions.each.with_object({}) do |reaction, cache|
-          reaction.each_source do |spec|
-            cache[spec.name] ||= DependentTermination.new(spec)
-            store_concept_to(reaction, cache[spec.name])
-          end
+          term = reaction.termination
+          cache[term.name] ||= DependentTermination.new(term)
+          store_concept_to(reaction, cache[term.name])
         end
       end
 

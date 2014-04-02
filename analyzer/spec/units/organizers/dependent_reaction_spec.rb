@@ -14,6 +14,16 @@ module VersatileDiamond
 
       subject { wrap(target) }
 
+      describe '#complexes' do
+        it { expect(subject.complexes).to be_empty }
+      end
+
+      describe '#store_complex' do
+        let(:complex) { DependentLateralReaction.new(end_lateral_df) }
+        before { subject.store_complex(complex) }
+        it { expect(subject.complexes).to eq([complex]) }
+      end
+
       describe '#reaction' do
         it { subject.reaction == target }
       end
@@ -59,7 +69,7 @@ module VersatileDiamond
         it { expect(subject.same?(duplicate)).to be_true }
         it { expect(duplicate.same?(subject)).to be_true }
 
-        it { expect(subject.same?(lateral_subject)).to be_false }
+        it { expect(subject.same?(lateral_subject)).to be_true }
         it { expect(lateral_subject.same?(subject)).to be_false }
 
         it { expect(subject.same?(wrap(methyl_deactivation))).to be_false }
