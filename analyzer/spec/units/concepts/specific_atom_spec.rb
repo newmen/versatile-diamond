@@ -171,32 +171,32 @@ module VersatileDiamond
 
         describe ':ct of activated_bridge' do
           subject { spec.atom(:ct) }
-          it { expect(subject.relations_in(spec).size).to eq(3) }
-          it { expect(subject.relations_in(spec)).to include(
+          it { expect(subject.relations_in(spec)).to match_array([
               :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
-            ) }
+            ]) }
         end
 
         describe ':cr of activated_bridge' do
           subject { spec.atom(:cr) }
-          it { expect(subject.relations_in(spec).size).to eq(4) }
-          it { expect(subject.relations_in(spec).map(&:last)).to include(
-              bond_110_front, bond_110_cross, bond_110_cross,
+          it { expect(subject.relations_in(spec).map(&:last)).to match_array([
+              bond_110_front,
+              bond_110_cross,
+              bond_110_cross,
               position_100_front
-            ) }
+            ]) }
         end
 
         describe ':ct of activated_hydrogenated_bridge' do
           let(:spec) { activated_hydrogenated_bridge }
           subject { spec.atom(:ct) }
-          it { expect(subject.relations_in(spec).size).to eq(4) }
-          it { expect(subject.relations_in(spec)).to include(
-              :active, :H,
+          it { expect(subject.relations_in(spec)).to match_array([
+              :H,
+              :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
-            ) }
+            ]) }
         end
       end
 

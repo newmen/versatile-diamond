@@ -126,7 +126,7 @@ module VersatileDiamond
         end
 
         it { expect(Chest.all(:gas_spec, :surface_spec)).
-          to include(methane_base, bridge_base) }
+          to match_array([methane_base, bridge_base]) }
       end
 
       describe '#purge!' do

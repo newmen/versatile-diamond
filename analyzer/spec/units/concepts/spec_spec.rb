@@ -134,39 +134,18 @@ module VersatileDiamond
         it { expect(links[c1].select { |a, _| a == o }.size).to eq(2) }
       end
 
-      describe '#organize_dependencies!' do
-        before { methyl_on_bridge_base.organize_dependencies!([bridge_base]) }
-        it { expect(methyl_on_bridge_base.parent).to eq(bridge_base) }
-      end
-
-      describe '#append_childs' do
-        before { dimer_base.append_childs([activated_dimer]) }
-        it { expect(dimer_base.childs).to eq([activated_dimer]) }
-      end
-
-      describe '#remove_child' do
-        before do
-          dimer_base.store_child(dimer)
-          dimer_base.remove_child(dimer)
-        end
-        it { expect(dimer_base.childs).to be_empty }
-      end
-
-      describe '#has_termination_atom?' do
+      describe '#has_termination?' do
         describe 'bridge(:ct)' do
           let(:atom) { bridge_base.atom(:ct) }
-          it { expect(bridge_base.has_termination_atom?(atom, adsorbed_h)).to be_true }
-          it { expect(bridge_base.has_termination_atom?(atom, active_bond)).
-            to be_false }
+          it { expect(bridge_base.has_termination?(atom, adsorbed_h)).to be_true }
+          it { expect(bridge_base.has_termination?(atom, active_bond)).to be_false }
         end
 
         describe 'methyl_on_dimer(:cr)' do
-          let(:atom) { methyl_on_dimer.atom(:cr) }
-
-          it { expect(methyl_on_dimer.has_termination_atom?(atom, adsorbed_h)).
-            to be_false }
-          it { expect(methyl_on_dimer.has_termination_atom?(atom, active_bond)).
-            to be_false }
+          let(:target) { methyl_on_dimer }
+          let(:atom) { target.atom(:cr) }
+          it { expect(target.has_termination?(atom, adsorbed_h)).to be_false }
+          it { expect(target.has_termination?(atom, active_bond)).to be_false }
         end
       end
 

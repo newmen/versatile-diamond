@@ -108,14 +108,9 @@ module VersatileDiamond
       end
 
       describe '#used_keynames_of' do
-        it { expect(on_end.used_keynames_of(dimer).size).to eq(2) }
-        it { expect(on_end.used_keynames_of(dimer)).to include(:cr, :cl) }
-
-        it { expect(on_middle.used_keynames_of(dimer).size).to eq(2) }
-        it { expect(on_middle.used_keynames_of(dimer)).to include(:cr, :cl) }
-
-        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).
-          to eq([:cb]) }
+        it { expect(on_end.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
+        it { expect(on_middle.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
+        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
       end
 
       describe '#same?' do

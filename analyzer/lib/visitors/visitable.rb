@@ -5,6 +5,7 @@ module VersatileDiamond
 
     # Provides ability for call correspond method of visitor and pass to it
     # self instance
+    # @deprecated
     module Visitable
 
       # Provides method for to be visitable

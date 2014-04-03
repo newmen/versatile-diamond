@@ -136,6 +136,7 @@ module VersatileDiamond
         # Purge some concept from sac
         # @param [Array] concepts see at #store same argument
         # @option [Symbol] :method see at #store same option
+        # @deprectated
         def purge!(*concepts, method: :name)
           find_bottom(concepts, method) do |_, bottom, name|
             bottom.delete(name)

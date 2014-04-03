@@ -100,10 +100,8 @@ module VersatileDiamond
         subject { methyl_desorption.reverse }
         it { should be_a(described_class) }
 
-        it { expect(subject.source.size).to eq(2) }
-        it { expect(subject.source).to include(methyl, abridge_dup) }
-
-        it { expect(subject.products).to eq([methyl_on_bridge]) }
+        it { expect(subject.source).to match_array([methyl, abridge_dup]) }
+        it { expect(subject.products).to match_array([methyl_on_bridge]) }
       end
 
       describe '#gases_num' do

@@ -51,9 +51,7 @@ module VersatileDiamond
       # @param [Concepts::Atom] w see at #edge same argument
       # @return [Array] the array of edges
       def edges(v, w)
-        @edges[v] ?
-          @edges[v].select { |vertex, _| vertex == w }.map(&:last) :
-          []
+        @edges[v] ? @edges[v].select { |vertex, _| vertex == w }.map(&:last) : []
       end
 
       # Selects set of lattices from atom couple

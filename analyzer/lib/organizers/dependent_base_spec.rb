@@ -5,8 +5,46 @@ module VersatileDiamond
     class DependentBaseSpec < DependentSpec
       extend Forwardable
 
-      def_delegators :@spec, :name
+      def_delegators :@spec, :name, :size
 
+      # Gets parent of current spec
+      # @return [Spec] the parent
+      def parent
+        parents.first
+      end
+
+      # Organize dependencies from another specs by containing check
+      # @param [Array] possible_parents the array of possible parents in
+      #   descending order
+      def organize_dependencies!(possible_parents)
+        # find and reorganize dependencies
+        possible_parents.each do |possible_parent|
+          if residue(links, possible_parent.links)
+            store_parent(possible_parent)
+            parent.store_child(self)
+            break
+          end
+        end
+      end
+
+    private
+
+      # Removes a spec from collection of children
+      # @param [SpecificSpec] spec the removable child
+      def remove_child(spec)
+        childs.reject! { |s| s == spec }
+      end
+
+      # The large links contains small links?
+      # @param [Hash] large_links the links from large spec
+      # @param [Hash] small_links the links from small spec
+      # @raise [RuntimeError] if some of multi-bond (in large or small links)
+      #   is invalid
+      # @return [Boolean] contains or not
+      def residue(large_links, small_links)
+        HanserRecursiveAlgorithm.contain?(large_links, small_links,
+          separated_multi_bond: true)
+      end
     end
 
   end
