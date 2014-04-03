@@ -274,36 +274,32 @@ module VersatileDiamond
         end
       end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       # Reorganize dependencies between base specs
       def organize_specs_dependencies!
-        specs = Chest.all(:surface_spec)
-        # sorts ascending size
-        specs.sort! do |a, b|
+        specs = base_specs.sort do |a, b|
           if a.size == b.size
             b.external_bonds <=> a.external_bonds
           else
             a.size <=> b.size
           end
         end
+
         specs.each_with_object([]) do |spec, possible_parents|
           spec.organize_dependencies!(possible_parents)
           possible_parents.unshift(spec)
         end
       end
+
+
+
+
+
+
+
+
+
+
+
 
       # Removes all unused base specs from Chest
       def purge_unused_specs!
@@ -321,6 +317,20 @@ module VersatileDiamond
           Chest.purge!(spec) unless has_children
         end
       end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       # Purges all extrime base spec if some have just one child and it
       # child is unspecified specific spec

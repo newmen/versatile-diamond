@@ -37,6 +37,8 @@ module VersatileDiamond
       end
 
       describe '#each_source' do
+        it { expect(subject.each_source).to be_a(Enumerable) }
+
         it { expect(subject.each_source.to_a).
           to match_array([activated_bridge, ai_bridge]) }
 

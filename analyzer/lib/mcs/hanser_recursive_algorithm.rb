@@ -16,10 +16,10 @@ module VersatileDiamond
         # @raise [RuntimeError] if some of separated multi-bonds is invalid
         # @return [Boolean] contain or not
         def contain?(large_links, small_links, separated_multi_bond: false)
-          large_graph = Graph.new(large_links,
-            separated_multi_bond: separated_multi_bond)
-          small_graph = Graph.new(small_links,
-            separated_multi_bond: separated_multi_bond)
+          smb = separated_multi_bond
+
+          large_graph = Graph.new(large_links, separated_multi_bond: smb)
+          small_graph = Graph.new(small_links, separated_multi_bond: smb)
           assoc_graph = AssocGraph.new(large_graph, small_graph)
 
           interset = first_interset(assoc_graph)

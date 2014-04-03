@@ -78,8 +78,7 @@ module VersatileDiamond
 
         describe 'reverse' do
           subject { reaction.reverse.used_keynames_of(target_dimer) }
-          it { expect(subject.size).to eq(2) }
-          it { should include(:cr, :cl) }
+          it { should match_array([:cr, :cl]) }
         end
       end
 
@@ -106,10 +105,8 @@ module VersatileDiamond
       end
 
       describe '#wheres' do
-        it { expect(reaction.wheres).to eq([at_end]) }
-
-        it { expect(other.wheres.size).to eq(2) }
-        it { expect(other.wheres).to include(at_end, near_methyl) }
+        it { expect(reaction.wheres).to match_array([at_end]) }
+        it { expect(other.wheres).to match_array([at_end, near_methyl]) }
       end
     end
 

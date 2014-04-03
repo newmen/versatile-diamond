@@ -56,8 +56,7 @@ module VersatileDiamond
 
         it { expect(subject.source).to eq([adsorbed_h]) }
 
-        it { expect(subject.products.size).to eq(2) }
-        it { expect(subject.products).to include(active_bond, hydrogen_ion) }
+        it { expect(subject.products).to match_array([active_bond, hydrogen_ion]) }
       end
 
       describe '#gases_num' do
@@ -68,13 +67,9 @@ module VersatileDiamond
       end
 
       describe '#each_source' do
-        let(:collected_source) do
-          surface_deactivation.each_source.with_object([]) do |spec, arr|
-            arr << spec
-          end
-        end
-        it { expect(collected_source.size).to eq(2) }
-        it { expect(collected_source).to include(active_bond, hydrogen_ion) }
+        let(:collected_source) { surface_deactivation.each_source.to_a }
+        it { expect(surface_deactivation.each_source).to be_a(Enumerable) }
+        it { expect(collected_source).to match_array([active_bond, hydrogen_ion]) }
       end
 
       describe '#swap_source' do

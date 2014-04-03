@@ -28,21 +28,41 @@ module VersatileDiamond
       end
 
       describe '#position_between' do
-        it { expect(activated_dimer.position_between(
-            activated_dimer.atom(:cr), activated_dimer.atom(:cl))).
-          to eq(position_100_front) }
+        shared_examples_for :position_between_two_atoms do
+          let(:atom1) { spec.atom(keyname1) }
+          let(:atom2) { spec.atom(keyname2) }
+          it { expect(spec.position_between(atom1, atom2)).to eq(position) }
+        end
 
-        it { expect(activated_dimer.position_between(
-            activated_dimer.atom(:cl), activated_dimer.atom(:cr))).
-          to eq(position_100_front) }
+        describe 'activated dimer' do
+          let(:spec) { activated_dimer }
+          let(:position) { position_100_front }
 
-        it { expect(activated_methyl_on_incoherent_bridge.position_between(
-            activated_methyl_on_incoherent_bridge.atom(:cm),
-            activated_methyl_on_incoherent_bridge.atom(:cb))).to be_nil }
+          it_behaves_like :position_between_two_atoms do
+            let(:keyname1) { :cr }
+            let(:keyname2) { :cl }
+          end
 
-        it { expect(activated_methyl_on_incoherent_bridge.position_between(
-            activated_methyl_on_incoherent_bridge.atom(:cb),
-            activated_methyl_on_incoherent_bridge.atom(:cm))).to be_nil }
+          it_behaves_like :position_between_two_atoms do
+            let(:keyname1) { :cl }
+            let(:keyname2) { :cr }
+          end
+        end
+
+        describe 'activated methyl on incoherent bridge' do
+          let(:spec) { activated_methyl_on_incoherent_bridge }
+          let(:position) { nil }
+
+          it_behaves_like :position_between_two_atoms do
+            let(:keyname1) { :cm }
+            let(:keyname2) { :cb }
+          end
+
+          it_behaves_like :position_between_two_atoms do
+            let(:keyname1) { :cb }
+            let(:keyname2) { :cm }
+          end
+        end
       end
 
       describe '#name' do
@@ -81,8 +101,7 @@ module VersatileDiamond
         it { expect(methyl.keyname(activated_c)).to eq(:c) }
         it { expect(bridge.keyname(cd)).to eq(:ct) }
         it { expect(activated_dimer.keyname(activated_cd)).to eq(:cr) }
-        it { expect(activated_dimer.keyname(activated_dimer.atom(:cl))).
-          to eq(:cl) }
+        it { expect(activated_dimer.keyname(activated_dimer.atom(:cl))).to eq(:cl) }
       end
 
       describe '#describe_atom' do
@@ -130,18 +149,16 @@ module VersatileDiamond
         it { expect(methane.external_bonds_for(c)).to eq(4) }
         it { expect(methyl.external_bonds_for(activated_c)).to eq(3) }
         it { expect(bridge.external_bonds_for(cd)).to eq(2) }
-        it { expect(activated_bridge.external_bonds_for(activated_cd)).
-          to eq(1) }
-        it { expect(extra_activated_bridge.external_bonds_for(extra_activated_cd)).
-          to eq(0) }
-        it { expect(chlorigenated_bridge.external_bonds_for(cd_chloride)).
-          to eq(1) }
+        it { expect(activated_bridge.external_bonds_for(activated_cd)).to eq(1) }
+        it { expect(chlorigenated_bridge.external_bonds_for(cd_chloride)).to eq(1) }
         it { expect(methyl_on_bridge.external_bonds_for(c)).to eq(3) }
-        it { expect(activated_methyl_on_bridge.external_bonds_for(activated_c)).
-          to eq(2) }
         it { expect(methyl_on_activated_bridge.external_bonds_for(c)).to eq(3) }
         it { expect(methyl_on_activated_bridge.external_bonds_for(activated_cd)).
           to eq(0) }
+        it { expect(extra_activated_bridge.external_bonds_for(extra_activated_cd)).
+          to eq(0) }
+        it { expect(activated_methyl_on_bridge.external_bonds_for(activated_c)).
+          to eq(2) }
         it { expect(methyl_on_dimer.external_bonds_for(methyl_on_dimer.atom(:cr))).
           to eq(0) }
       end
@@ -214,25 +231,22 @@ module VersatileDiamond
 
         it { expect(methyl.same?(bridge)).to be_false }
         it { expect(bridge.same?(activated_bridge)).to be_false }
-        it { expect(activated_bridge.same?(activated_incoherent_bridge)).
-          to be_false }
-        it { expect(activated_bridge.same?(extra_activated_bridge)).
-          to be_false }
+        it { expect(activated_bridge.same?(activated_incoherent_bridge)).to be_false }
+        it { expect(activated_bridge.same?(extra_activated_bridge)).to be_false }
         it { expect(extra_activated_bridge.same?(activated_incoherent_bridge)).
           to be_false }
       end
 
-      describe '#has_termination_atom?' do
-        it { expect(bridge.has_termination_atom?(cd, h)).to be_true }
-        it { expect(activated_bridge.has_termination_atom?(activated_cd, h)).
-          to be_true }
-        it { expect(extra_activated_bridge.has_termination_atom?(
-          extra_activated_cd, h)). to be_false }
+      describe '#has_termination?' do
+        it { expect(bridge.has_termination?(cd, h)).to be_true }
+        it { expect(activated_bridge.has_termination?(activated_cd, h)).to be_true }
 
-        it { expect(chlorigenated_bridge.has_termination_atom?(cd_chloride, h)).
-          to be_true }
-        it { expect(chlorigenated_bridge.has_termination_atom?(cd_chloride, cl)).
-          to be_true }
+        let(:ea_bridge) { extra_activated_bridge }
+        it { expect(ea_bridge.has_termination?(extra_activated_cd, h)).to be_false }
+
+        let(:cl_bridge) { chlorigenated_bridge }
+        it { expect(cl_bridge.has_termination?(cd_chloride, h)).to be_true }
+        it { expect(cl_bridge.has_termination?(cd_chloride, cl)).to be_true }
       end
 
       describe '#active_bonds_num' do
