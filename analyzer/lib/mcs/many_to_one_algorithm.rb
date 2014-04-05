@@ -54,7 +54,7 @@ module VersatileDiamond
           [product_graphs, source_graphs.first]
       end
 
-      # Maps structures from stored graphs and associate they vertices by
+      # Maps structures from stored graphs and associate_links they vertices by
       # passed block. Maximum Common Substructure searching between each of
       # lower structures (their descending size) and larger structure
       # determines by Hanser's algorithm. Upon receipt of the projected
@@ -94,9 +94,9 @@ module VersatileDiamond
           end
 
           # store result
-          changes = associate(changed_big, changed_small)
-          full = associate(big_mapped_vertices, small_mapped_vertices)
-          mapping_result.add(associating_specs, full, changes)
+          changes = associate_links(changed_big, changed_small)
+          full = associate_links(big_mapped_vertices, small_mapped_vertices)
+          mapping_result.add(associate_specs, full, changes)
         end
       end
 
@@ -272,7 +272,7 @@ module VersatileDiamond
 
       # Gets associaing specis in correct order
       # @return [Array] the array of associating species
-      def associating_specs
+      def associate_specs
         big_spec = @graphs_to_specs[@big_graph]
         small_spec = @graphs_to_specs[@small_graph]
 
@@ -289,7 +289,7 @@ module VersatileDiamond
       #   spec
       # @return [Array] depending from type of reaction, return parameters in
       #   correct order
-      def associate(changed_big, changed_small)
+      def associate_links(changed_big, changed_small)
         if @reaction_type == :association
           [changed_small, changed_big]
         else
