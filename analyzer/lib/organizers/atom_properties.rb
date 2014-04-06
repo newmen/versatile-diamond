@@ -2,7 +2,7 @@ module VersatileDiamond
   using Patches::RichArray
   using Patches::RichString
 
-  module Tools
+  module Organizers
 
     # Accumulates information about atom
     class AtomProperties

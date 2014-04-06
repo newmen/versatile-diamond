@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module VersatileDiamond
-  module Tools
+  module Organizers
 
     describe AtomClassifier, use: :atom_properties do
       subject { described_class.new }
