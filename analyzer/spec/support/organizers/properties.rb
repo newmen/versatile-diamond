@@ -1,7 +1,7 @@
 require_relative '../concepts/handbook'
 
 module VersatileDiamond
-  module Tools
+  module Organizers
     module Support
 
       # Provides atom properties instances for RSpec

@@ -6,18 +6,34 @@ module VersatileDiamond
       extend Forwardable
 
       def_delegators :@spec, :name, :size
+      collector_methods :parent
 
-      # Gets parent of current spec
-      # @return [Spec] the parent
-      def parent
-        parents.first
-      end
+
+
+
+
+      # По спеку построить граф.
+      # Реализовать операцию вычитания одного графа из другого.
+      # - Производить новый зависимый.
+      # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
+      # Производить замену атома и перестраивать граф.
+
+
+
+
+
+
+
 
       # Organize dependencies from another specs by containing check
       # @param [Array] possible_parents the array of possible parents in
       #   descending order
       def organize_dependencies!(possible_parents)
-        # find and reorganize dependencies
+
+
+        # Строить таблицу соответствия.
+
+
         possible_parents.each do |possible_parent|
           if residue(links, possible_parent.links)
             store_parent(possible_parent)

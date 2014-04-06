@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module VersatileDiamond
-  module Tools
+  module Organizers
     describe AtomProperties, use: :atom_properties do
 
       describe '#==' do

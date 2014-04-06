@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Tools
+  module Organizers
 
     # Classifies atoms in specs and associate each atom type with some value,
     # which will be used for detecting overlapping specs between each other

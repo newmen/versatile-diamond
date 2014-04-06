@@ -7,7 +7,7 @@ module VersatileDiamond
       include AtomDependenciesDrawer
 
       # Initialize a generator by classifier, results of which will be drawn
-      # @param [Tools::AtomClassifier] classifier the classifier result of
+      # @param [Organizers::AtomClassifier] classifier the classifier result of
       #   which will be drawn as graph of dependencies between atom properties
       # @param [Array] args the array of arguments for surper class initialize
       #   method

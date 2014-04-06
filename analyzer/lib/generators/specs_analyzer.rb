@@ -6,9 +6,9 @@ module VersatileDiamond
     private
 
       # Gets a atom properties classifier
-      # @return [Tools::AtomClassifier] the instance of classifier
+      # @return [Organizers::AtomClassifier] the instance of classifier
       def classifier
-        @classifier ||= Tools::AtomClassifier.new
+        @classifier ||= Organizers::AtomClassifier.new
       end
 
       # Analyzes all used surface species by classifier
