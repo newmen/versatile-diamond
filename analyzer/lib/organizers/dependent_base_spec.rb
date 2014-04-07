@@ -10,6 +10,14 @@ module VersatileDiamond
 
 
 
+      # Checks that other spec has same atoms and links between them
+      # @param [DependentBaseSpec] other the comparable spec
+      # @return [Boolean] same or not
+      def same?(other)
+        return false unless size == other.size
+        interset = Mcs::HanserRecursiveAlgorithm.contain?(
+          spec.links, other.spec.links, separated_multi_bond: true)
+      end
 
 
       # По спеку построить граф.

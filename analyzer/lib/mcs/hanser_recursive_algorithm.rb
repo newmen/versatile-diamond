@@ -9,34 +9,44 @@ module VersatileDiamond
 
       class << self
         # Checks contents of the second (small) link in the first (large)
+        # @param [Hash] large_links see at #self.intersets same argument
+        # @param [Hash] small_links see at #self.intersets same argument
+        # @option [Boolean] :separated_multi_bond see at #self.intersets same
+        #   argument
+        # @return [Boolean] contain or not
+        def contain?(large_links, small_links, **options)
+          interset = interset_by_links(large_links, small_links, options)
+          interset && interset.size == small_links.size
+        end
+
+        # Gets all intersets between large links hash small links hash
         # @param [Hash] large_links links of structure in which to search
         # @param [Hash] small_links links that search will be carried out
         # @option [Boolean] :separated_multi_bond set to true if need separated
         #   instances for double or triple bonds
         # @raise [RuntimeError] if some of separated multi-bonds is invalid
-        # @return [Boolean] contain or not
-        def contain?(large_links, small_links, separated_multi_bond: false)
+        # @return [Set] the first intersection
+        def interset_by_links(large_links, small_links, separated_multi_bond: false)
           smb = separated_multi_bond
 
           large_graph = Graph.new(large_links, separated_multi_bond: smb)
           small_graph = Graph.new(small_links, separated_multi_bond: smb)
           assoc_graph = AssocGraph.new(large_graph, small_graph)
 
-          interset = first_interset(assoc_graph)
-          interset && interset.size == small_graph.size
+          interset_by_assoc(assoc_graph)
         end
 
         # Finds first interset in passed association graph
         # @param [AssocGraph] assoc_graph the association graph in which search
         #   will be carried out
-        # @return [Array] the first intersection
-        def first_interset(assoc_graph)
+        # @return [Set] the first intersection
+        def interset_by_assoc(assoc_graph)
           new(assoc_graph).intersets.first
         end
       end
 
       # Initialize an instance by association graph
-      # @param [AssocGraph] assoc_graph see at #self.first_interset same arg
+      # @param [AssocGraph] assoc_graph see at #self.interset_by_assoc same arg
       def initialize(assoc_graph)
         @assoc_graph = assoc_graph
       end

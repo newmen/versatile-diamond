@@ -119,7 +119,7 @@ module VersatileDiamond
         loop do
           assoc_graph = build_assoc_graph
 
-          interset = HanserRecursiveAlgorithm.first_interset(assoc_graph)
+          interset = HanserRecursiveAlgorithm.interset_by_assoc(assoc_graph)
           raise AtomMapper::CannotMap unless interset
 
           small_mapped_vertices = proj_small(interset)

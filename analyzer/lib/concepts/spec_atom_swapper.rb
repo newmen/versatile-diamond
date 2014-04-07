@@ -12,8 +12,28 @@ module VersatileDiamond
       # @param [SpecificSpec] to the spec to which need to swap
       def swap(spec_atom, from, to)
         return unless spec_atom[0] == from
+
+        if from.links.size != to.links.size
+          raise ArgumentError, 'swapped specs have not equalent sizes'
+        end
+
+        key = [from, to]
+        @@_intersets_cache ||= {}
+
+        mirror =
+          if @@_intersets_cache[key]
+            @@_intersets_cache[key]
+          else
+            interset = Mcs::HanserRecursiveAlgorithm.interset_by_links(
+              from.links, to.links, separated_multi_bond: true).to_a
+
+            raise 'Interset less than swapped specs' if interset.size < to.links.size
+
+            @@_intersets_cache[key] = Hash[interset]
+          end
+
         spec_atom[0] = to
-        spec_atom[1] = to.atom(from.keyname(spec_atom[1]))
+        spec_atom[1] = mirror[spec_atom[1]]
       end
 
     end

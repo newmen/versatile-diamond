@@ -97,14 +97,23 @@ module VersatileDiamond
         end
         set(:vinyl) { SpecificSpec.new(ethylene_base, c1: activated_c) }
 
-        set(:bridge_base) do
-          s = SurfaceSpec.new(:bridge, ct: cd)
+        def make_bridge_base(name)
+          s = SurfaceSpec.new(name, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
           s.link(cd, cl, bond_110_cross)
           s.link(cd, cr, bond_110_cross); s
         end
+
+        set(:bridge_base) { make_bridge_base(:bridge) }
+        set(:bridge_base_dup) do
+          s = make_bridge_base(:bridge_dup)
+          s.rename_atom(:ct, :t)
+          s.rename_atom(:cr, :r)
+          s.rename_atom(:cl, :l); s
+        end
+
         set(:bridge) { SpecificSpec.new(bridge_base) }
         set(:activated_bridge) do
           SpecificSpec.new(bridge_base, ct: activated_cd)

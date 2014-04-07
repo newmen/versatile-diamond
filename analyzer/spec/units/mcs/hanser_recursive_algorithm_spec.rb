@@ -6,6 +6,8 @@ module VersatileDiamond
     describe HanserRecursiveAlgorithm do
       let(:bridge_links) { bridge_base.links }
       let(:methyl_on_bridge_links) { methyl_on_bridge_base.links }
+      let(:high_bridge_links) { high_bridge_base.links }
+
       let(:assoc) do
         AssocGraph.new(
           Graph.new(bridge_links), Graph.new(methyl_on_bridge_links))
@@ -43,8 +45,6 @@ module VersatileDiamond
         it { expect(described_class.contain?(
           methane_links, methyl_on_dimer_links)).to be_false }
 
-        let(:high_bridge_links) { high_bridge_base.links }
-
         it { expect(described_class.contain?(
           high_bridge_links, methyl_on_bridge_links)).to be_true }
 
@@ -55,8 +55,39 @@ module VersatileDiamond
         end
       end
 
-      describe '#self.first_interset' do
-        subject { described_class.first_interset(assoc) }
+      describe '#self.interset_by_links' do
+        describe 'separated_multi_bond: false' do
+          subject do
+            described_class.interset_by_links(
+              high_bridge_links, methyl_on_bridge_links)
+          end
+
+          it { expect(subject.size).to eq(4) }
+          it { expect(subject).to include(
+              [high_bridge_base.atom(:cm), methyl_on_bridge_base.atom(:cm)],
+              [high_bridge_base.atom(:cb), methyl_on_bridge_base.atom(:cb)],
+              [high_bridge_base.atom(:cr), methyl_on_bridge_base.atom(:cr)],
+              [high_bridge_base.atom(:cl), methyl_on_bridge_base.atom(:cl)]
+            ) }
+        end
+
+        describe 'separated_multi_bond: true' do
+          subject do
+            described_class.interset_by_links(
+              high_bridge_links, methyl_on_bridge_links, separated_multi_bond: true)
+          end
+
+          it { expect(subject.size).to eq(3) }
+          it { expect(subject).to include(
+              [high_bridge_base.atom(:cb), methyl_on_bridge_base.atom(:cb)],
+              [high_bridge_base.atom(:cr), methyl_on_bridge_base.atom(:cr)],
+              [high_bridge_base.atom(:cl), methyl_on_bridge_base.atom(:cl)]
+            ) }
+        end
+      end
+
+      describe '#self.interset_by_assoc' do
+        subject { described_class.interset_by_assoc(assoc) }
         it { expect(subject.size).to eq(3) }
         it { expect(subject).to include(
             [bridge_base.atom(:ct), methyl_on_bridge_base.atom(:cb)],

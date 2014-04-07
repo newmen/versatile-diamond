@@ -23,6 +23,26 @@ module VersatileDiamond
 
       let(:cache) { Hash[specs.map { |spec| [spec.name, wrap(spec)] }] }
 
+      describe '#same?' do
+        describe 'bridge_base' do
+          let(:same_bridge) { wrap(bridge_base_dup) }
+          subject { wrap(bridge_base) }
+
+          it { expect(subject.same?(same_bridge)).to be_true }
+          it { expect(same_bridge.same?(subject)).to be_true }
+
+          it { expect(subject.same?(wrap(dimer_base))).to be_false }
+        end
+
+        describe 'methyl_on_bridge_base' do
+          let(:other) { wrap(high_bridge_base) }
+          subject { wrap(methyl_on_bridge_base) }
+
+          it { expect(subject.same?(other)).to be_false }
+          it { expect(other.same?(subject)).to be_false }
+        end
+      end
+
       describe '#organize_dependencies!' do
         pending 'not implemented'
         # before { methyl_on_bridge_base.organize_dependencies!([bridge_base]) }
