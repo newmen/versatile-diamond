@@ -340,24 +340,22 @@ module VersatileDiamond
 
 
 
-      # Removes all unused base specs from Chest
-      def purge_unused_specs!
-        purge_excess_extrime_specs!
+      # # Removes all unused base specs from Chest
+      # def purge_unused_specs!
+      #   purge_excess_extrime_specs!
 
-        specs = Chest.all(:gas_spec, :surface_spec)
-        specific_specs = Chest.all(:specific_spec)
+      #   specs = Chest.all(:gas_spec, :surface_spec)
+      #   specific_specs = Chest.all(:specific_spec)
 
-        specs.each do |spec|
-          has_parent = specs.any? { |s| s.parent == spec }
-          has_children = has_parent || specific_specs.any? do |specific_spec|
-            specific_spec.spec == spec
-          end
+      #   specs.each do |spec|
+      #     has_parent = specs.any? { |s| s.parent == spec }
+      #     has_children = has_parent || specific_specs.any? do |specific_spec|
+      #       specific_spec.spec == spec
+      #     end
 
-          Chest.purge!(spec) unless has_children
-        end
-      end
-
-
+      #     Chest.purge!(spec) unless has_children
+      #   end
+      # end
 
 
 
@@ -371,27 +369,29 @@ module VersatileDiamond
 
 
 
-      # Purges all extrime base spec if some have just one child and it
-      # child is unspecified specific spec
-      def purge_excess_extrime_specs!
-        unspecified_specs = Chest.all(:specific_spec).select do |spec|
-          !spec.specific? && !spec.parent
-        end
 
-        unspecified_specs.each do |specific_spec|
-          base_spec = specific_spec.spec
-          next unless base_spec.childs.size == 1 && base_spec.theres.empty?
 
-          base_parent = base_spec.parent
-          next unless base_parent
+    #   # Purges all extrime base spec if some have just one child and it
+    #   # child is unspecified specific spec
+    #   def purge_excess_extrime_specs!
+    #     unspecified_specs = Chest.all(:specific_spec).select do |spec|
+    #       !spec.specific? && !spec.parent
+    #     end
 
-          specific_spec.update_base_spec(base_parent)
-          base_parent.remove_child(base_spec)
-          base_parent.store_child(specific_spec)
+    #     unspecified_specs.each do |specific_spec|
+    #       base_spec = specific_spec.spec
+    #       next unless base_spec.childs.size == 1 && base_spec.theres.empty?
 
-          Chest.purge!(base_spec)
-        end
-      end
+    #       base_parent = base_spec.parent
+    #       next unless base_parent
+
+    #       specific_spec.replace_base_spec(base_parent)
+    #       base_parent.remove_child(base_spec)
+    #       base_parent.store_child(specific_spec)
+
+    #       Chest.purge!(base_spec)
+    #     end
+    #   end
     end
 
   end
