@@ -5,6 +5,7 @@ module VersatileDiamond
     class DependentThere
       extend Forwardable
 
+      def_delegators :@there, :env_specs, :swap_source, :used_keynames_of
       # attr_reader :there
 
       # Stores wrappable there
@@ -12,8 +13,6 @@ module VersatileDiamond
       def initialize(there)
         @there = there
       end
-
-      def_delegators :@there, :env_specs, :swap_source, :used_keynames_of
     end
 
   end

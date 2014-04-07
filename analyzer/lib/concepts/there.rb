@@ -7,6 +7,7 @@ module VersatileDiamond
       extend Forwardable
       include SpecAtomSwapper
 
+      def_delegators :where, :description, :used_keynames_of, :visit
       attr_reader :where, :positions
 
       # Initialize a new instance of there object
@@ -31,8 +32,6 @@ module VersatileDiamond
         @where = other.where
         @positions = Hash[duplicated_positions]
       end
-
-      def_delegators :where, :description, :used_keynames_of, :visit
 
       # Provides environment species
       # @return [Array] all species stored in used where and in their parents

@@ -9,6 +9,7 @@ module VersatileDiamond
       include Visitors::Visitable
       include BondsCounter
 
+      def_delegators :@spec, :extendable?, :gas?, :simple?
       attr_reader :spec, :specific_atoms
 
       # Initialize specific spec instalce. Checks specified atom for correct
@@ -42,8 +43,6 @@ module VersatileDiamond
         @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
         reset_caches
       end
-
-      def_delegators :@spec, :extendable?, :gas?, :simple?
 
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec

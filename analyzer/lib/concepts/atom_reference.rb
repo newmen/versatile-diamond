@@ -7,6 +7,9 @@ module VersatileDiamond
     class AtomReference
       extend Forwardable
 
+      def_delegators :@atom, :name, :lattice, :lattice=, :same?, :actives,
+        :monovalents, :incoherent?, :unfixed?, :diff, :original_valence
+
       attr_reader :spec, :keyname
 
       # Target settings
@@ -18,9 +21,6 @@ module VersatileDiamond
         @atom = @spec.atom(atom_keyname).dup # because atom can be changed by
         # mapping algorithm
       end
-
-      def_delegators :@atom, :name, :lattice, :lattice=, :same?, :actives,
-        :monovalents, :incoherent?, :unfixed?, :diff, :original_valence
 
       # Valence of atom with taking into account position of the atom in
       #   structure
