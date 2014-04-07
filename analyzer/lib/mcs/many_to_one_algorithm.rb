@@ -14,7 +14,7 @@ module VersatileDiamond
     # communication, maintaining its relative position.
     # Also finds only changed atoms.
     class ManyToOneAlgorithm
-      include Mcs::IntersetProjection
+      include Mcs::IntersecProjection
 
       class << self
         # Maps two structures to one (or vice versa) and pass result of
@@ -76,7 +76,7 @@ module VersatileDiamond
           @small_graph = small_graph
           @remaining_small_vertices = nil
 
-          big_mapped_vertices, small_mapped_vertices = find_interset
+          big_mapped_vertices, small_mapped_vertices = find_intersec
 
           changed_big, changed_small = if @remaining_small_vertices
               select_on_remaining(big_mapped_vertices, small_mapped_vertices)
@@ -110,20 +110,20 @@ module VersatileDiamond
       # of belonging to each of the lattice atoms, which could not be mapped.
       #
       # @raise [AtomMapper::CannotMap] see at #self.map
-      # @return [Array, Array] interseted vertices of both source and product
+      # @return [Array, Array] interseced vertices of both source and product
       #   graphs
-      def find_interset
+      def find_intersec
         big_mapped_vertices, small_mapped_vertices = [], []
         lattices_variants = nil
 
         loop do
           assoc_graph = build_assoc_graph
 
-          interset = HanserRecursiveAlgorithm.interset_by_assoc(assoc_graph)
-          raise AtomMapper::CannotMap unless interset
+          intersec = HanserRecursiveAlgorithm.first_intersec(assoc_graph)
+          raise AtomMapper::CannotMap unless intersec
 
-          small_mapped_vertices = proj_small(interset)
-          if interset.size < @small_graph.size
+          small_mapped_vertices = proj_small(intersec)
+          if intersec.size < @small_graph.size
             # TODO: here may be situation when remaining atoms are not targeted?
             @remaining_small_vertices ||=
               @small_graph.remaining_vertices(small_mapped_vertices)
@@ -142,7 +142,7 @@ module VersatileDiamond
               end
             end
           else
-            big_mapped_vertices = proj_large(interset)
+            big_mapped_vertices = proj_large(intersec)
             break
           end
         end

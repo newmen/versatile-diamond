@@ -15,8 +15,8 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same?(other)
         return false unless size == other.size
-        interset = Mcs::HanserRecursiveAlgorithm.contain?(
-          spec.links, other.spec.links, separated_multi_bond: true)
+        intersec = Mcs::SpeciesComparator.contain?(
+          spec, other.spec, separated_multi_bond: true)
       end
 
 

@@ -330,7 +330,7 @@ module VersatileDiamond
       # @param [SpecificSpec] other see at #same? same argument
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
-        Mcs::HanserRecursiveAlgorithm.contain?(links, other.links)
+        Mcs::SpeciesComparator.contain?(self, other)
       end
 
       # Resets internal caches

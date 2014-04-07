@@ -5,57 +5,29 @@ module VersatileDiamond
     # General description of the algorithm on russian language could be found
     # there: http://www.scitouch.net/downloads/mcs_article.pdf
     class HanserRecursiveAlgorithm
-      include Mcs::IntersetProjection
+      include Mcs::IntersecProjection
 
       class << self
-        # Checks contents of the second (small) link in the first (large)
-        # @param [Hash] large_links see at #self.intersets same argument
-        # @param [Hash] small_links see at #self.intersets same argument
-        # @option [Boolean] :separated_multi_bond see at #self.intersets same
-        #   argument
-        # @return [Boolean] contain or not
-        def contain?(large_links, small_links, **options)
-          interset = interset_by_links(large_links, small_links, options)
-          interset && interset.size == small_links.size
-        end
-
-        # Gets all intersets between large links hash small links hash
-        # @param [Hash] large_links links of structure in which to search
-        # @param [Hash] small_links links that search will be carried out
-        # @option [Boolean] :separated_multi_bond set to true if need separated
-        #   instances for double or triple bonds
-        # @raise [RuntimeError] if some of separated multi-bonds is invalid
-        # @return [Set] the first intersection
-        def interset_by_links(large_links, small_links, separated_multi_bond: false)
-          smb = separated_multi_bond
-
-          large_graph = Graph.new(large_links, separated_multi_bond: smb)
-          small_graph = Graph.new(small_links, separated_multi_bond: smb)
-          assoc_graph = AssocGraph.new(large_graph, small_graph)
-
-          interset_by_assoc(assoc_graph)
-        end
-
-        # Finds first interset in passed association graph
+        # Finds first intersection in passed association graph
         # @param [AssocGraph] assoc_graph the association graph in which search
         #   will be carried out
         # @return [Set] the first intersection
-        def interset_by_assoc(assoc_graph)
-          new(assoc_graph).intersets.first
+        def first_intersec(assoc_graph)
+          new(assoc_graph).intersec.first
         end
       end
 
       # Initialize an instance by association graph
-      # @param [AssocGraph] assoc_graph see at #self.interset_by_assoc same arg
+      # @param [AssocGraph] assoc_graph see at #self.intersec same arg
       def initialize(assoc_graph)
         @assoc_graph = assoc_graph
       end
 
-      # Finds all intersets of associated structures. Once all possible
+      # Finds all intersection of associated structures. Once all possible
       # intersections are found, are selected only those projections of that
       # correspond to associated structures.
-      def intersets
-        @intersets = []
+      def intersec
+        @intersec = []
 
         @max_size = 0
         @x = @assoc_graph.vertices
@@ -67,16 +39,16 @@ module VersatileDiamond
         parse_recursive(s, q_plus, q_minus)
 
         # filtering incorrect results
-        @intersets.select do |interset|
-          proj_large(interset).size == @max_size &&
-            proj_small(interset).size == @max_size
+        @intersec.select do |intersec|
+          proj_large(intersec).size == @max_size &&
+            proj_small(intersec).size == @max_size
         end
       end
 
     private
 
       # Modified Hanser's recursive function that searches for cliques in the
-      # association graph. All found solutions will be stored to intersets var.
+      # association graph. All found solutions will be stored to intersection var.
       #
       # @param [Set] s the set of vertices which belongs to clique
       # @param [Set] q_plus the set of vertices through which clique can be
@@ -87,10 +59,10 @@ module VersatileDiamond
         # store current solution if it has max number of association vertices
         if s.size > @max_size
           @max_size = s.size
-          @intersets.clear
-          @intersets << s
+          @intersec.clear
+          @intersec << s
         elsif s.size == @max_size
-          @intersets << s
+          @intersec << s
         end
 
         # simplified clique searching algorithm
