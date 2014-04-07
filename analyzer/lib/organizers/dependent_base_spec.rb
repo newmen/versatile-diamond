@@ -8,7 +8,14 @@ module VersatileDiamond
       def_delegators :@spec, :name, :size
       collector_methods :parent
 
+      def initialize(spec)
+        super
 
+        # @symmetrical = []
+        # @asymmetrical = []
+        # @graph = Mcs::Graph.new(spec.links)
+
+      end
 
       # Checks that other spec has same atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
@@ -20,7 +27,11 @@ module VersatileDiamond
       end
 
 
+
+
       # По спеку построить граф.
+      # Найти симметричные атомы и несемметричные
+      # - Учесть количество атомов - чётный/нечётный
       # Реализовать операцию вычитания одного графа из другого.
       # - Производить новый зависимый.
       # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
@@ -28,6 +39,15 @@ module VersatileDiamond
 
 
 
+
+      # При вычитании подменять остающийся атом ссылкой на соответствующий атом меньшей структуры
+
+
+
+      # Для нахождения симметричных и несимметричных атомов использовать словарь пересечений. Для этого необходимо минимум два пересечения
+      # {
+      #   Atom => [Atom, Atom]
+      # }
 
 
 
@@ -39,7 +59,7 @@ module VersatileDiamond
       def organize_dependencies!(possible_parents)
 
 
-        # Строить таблицу соответствия.
+        # Строить таблицу соответствия. И выбирать по ней родителей.
 
 
         possible_parents.each do |possible_parent|
@@ -66,8 +86,7 @@ module VersatileDiamond
       #   is invalid
       # @return [Boolean] contains or not
       def residue(large_links, small_links)
-        HanserRecursiveAlgorithm.contain?(large_links, small_links,
-          separated_multi_bond: true)
+
       end
     end
 
