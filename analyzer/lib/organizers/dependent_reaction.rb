@@ -7,6 +7,7 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
+      def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of
       collector_methods :complex
       attr_reader :reaction
 
@@ -15,8 +16,6 @@ module VersatileDiamond
       def initialize(reaction)
         @reaction = reaction
       end
-
-      def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of
 
       # Iterates each not simple specific source spec
       # @yield [Concepts::SpecificSpec] do with each one

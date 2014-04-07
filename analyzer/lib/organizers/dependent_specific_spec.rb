@@ -5,6 +5,9 @@ module VersatileDiamond
     class DependentSpecificSpec < DependentSpec
       extend Forwardable
 
+      def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
+        :active_bonds_num, :replace_base_spec
+
       attr_reader :parent
 
       # Initializes dependent specific spec by specific spec
@@ -14,9 +17,6 @@ module VersatileDiamond
         @parent = nil
         @child, @reaction, @there = nil
       end
-
-      def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
-        :active_bonds_num, :replace_base_spec
 
       # Gets name of specific spec
       # @return [Symbol] the symbol of name

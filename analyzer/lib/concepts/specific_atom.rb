@@ -4,6 +4,7 @@ module VersatileDiamond
     # Specified atom class, contain additional atom states like incoherentness,
     # unfixness and activeness
     class SpecificAtom
+      extend Forwardable
 
       # Error for case when something wrong with atom state
       # @abstract
@@ -18,9 +19,7 @@ module VersatileDiamond
       # Error for case if state for atom doesn't exsit
       class NotStated < Stated; end
 
-      extend Forwardable
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence
-
       attr_reader :monovalents
 
       # Initialize a new instance
