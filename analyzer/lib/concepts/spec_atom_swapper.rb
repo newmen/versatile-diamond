@@ -18,18 +18,20 @@ module VersatileDiamond
         end
 
         key = [from, to]
-        @@_intersets_cache ||= {}
+        @@_intersec_cache ||= {}
 
         mirror =
-          if @@_intersets_cache[key]
-            @@_intersets_cache[key]
+          if @@_intersec_cache[key]
+            @@_intersec_cache[key]
           else
-            interset = Mcs::HanserRecursiveAlgorithm.interset_by_links(
-              from.links, to.links, separated_multi_bond: true).to_a
+            intersec = Mcs::SpeciesComparator.intersec(
+              from, to, separated_multi_bond: true).first.to_a
 
-            raise 'Interset less than swapped specs' if interset.size < to.links.size
+            if intersec.size < to.links.size
+              raise ArgumentError, 'Intersection less than swapped specs'
+            end
 
-            @@_intersets_cache[key] = Hash[interset]
+            @@_intersec_cache[key] = Hash[intersec]
           end
 
         spec_atom[0] = to
