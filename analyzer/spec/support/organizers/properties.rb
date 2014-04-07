@@ -37,6 +37,7 @@ module VersatileDiamond
         prop(:dimer_cl, :dimer, :cl)
         prop(:ad_cr, :activated_dimer, :cr)
 
+        prop(:pseudo_dimer_cr, :pseudo_dimer_base, :cr)
       end
     end
   end
