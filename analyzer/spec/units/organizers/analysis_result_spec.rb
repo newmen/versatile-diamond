@@ -10,8 +10,8 @@ module VersatileDiamond
 
       def store_bases
         [
-          methane_base, bridge_base, dimer_base, high_bridge_base,
-          methyl_on_bridge_base, methyl_on_dimer_base
+          methane_base, bridge_base_dup, bridge_base, dimer_base,
+          high_bridge_base, methyl_on_bridge_base, methyl_on_dimer_base
         ].each { |spec| Tools::Chest.store(spec) }
       end
 
@@ -155,6 +155,7 @@ module VersatileDiamond
               let(:names) do
                 [
                   :bridge,
+                  # :bridge_dup, # purged
                   :dimer,
                   :high_bridge,
                   :methyl_on_bridge,

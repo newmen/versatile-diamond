@@ -87,7 +87,7 @@ module VersatileDiamond
         deep_find_in_hash(@changed_vertices.invert, atom)
       end
 
-      # Selects vertices from passed set of vertices
+      # Selects vertices which contains passed set of vertices
       # @param [Array] vertices the set of vertices in which the selection is
       #   made
       # @return [Array] array of corresponding vertices
@@ -118,8 +118,8 @@ module VersatileDiamond
         result.to_a
       end
 
-      # Removes edges from graph if it vertices included in passed set of
-      # vertices
+      # Removes edges from graph between all passed vertices if local vertices
+      # included in passed set of vertices
       #
       # @param [Array] vertices the set of vertices, edges between them are
       #   removed

@@ -16,7 +16,7 @@ module VersatileDiamond
       end
 
       def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
-        :active_bonds_num
+        :active_bonds_num, :replace_base_spec
 
       # Gets name of specific spec
       # @return [Symbol] the symbol of name

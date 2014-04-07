@@ -27,8 +27,8 @@ module VersatileDiamond
           end
         end
 
-        @spec = spec
-        @original_name = @spec.name
+        replace_base_spec(spec)
+
         @specific_atoms = specific_atoms
 
         @external_bonds_after_extend = nil
@@ -47,8 +47,9 @@ module VersatileDiamond
 
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec
-      def update_base_spec(new_spec)
+      def replace_base_spec(new_spec)
         @spec = new_spec
+        @original_name = @spec.name
       end
 
       # Finds positions between atoms in base structure.
@@ -330,7 +331,7 @@ module VersatileDiamond
       # @param [SpecificSpec] other see at #same? same argument
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
-        HanserRecursiveAlgorithm.contain?(links, other.links)
+        Mcs::HanserRecursiveAlgorithm.contain?(links, other.links)
       end
 
       # Resets internal caches

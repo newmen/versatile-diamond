@@ -21,10 +21,10 @@ module VersatileDiamond
         it { expect(activated_dimer.specific_atoms).to eq({cr: activated_cd}) }
       end
 
-      describe '#update_base_spec' do
-        before(:each) { high_bridge.update_base_spec(bridge_base) }
+      describe '#replace_base_spec' do
+        before(:each) { high_bridge.replace_base_spec(bridge_base) }
         it { expect(high_bridge.spec).to eq(bridge_base) }
-        it { expect(high_bridge.name).to eq(:high_bridge) }
+        it { expect(high_bridge.name).to eq(:bridge) }
       end
 
       describe '#position_between' do
