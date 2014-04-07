@@ -206,6 +206,12 @@ module VersatileDiamond
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }
+        set(:pseudo_dimer_base) do
+          b = bridge_base
+          r, l = AtomReference.new(b, :ct), AtomReference.new(b, :ct)
+          s = SurfaceSpec.new(:pseudo_dimer, cl: l, cr: r)
+          s.link(r, l, bond_100_front); s
+        end
 
         set(:methyl_on_dimer_base) do
           s = SurfaceSpec.new(:methyl_on_dimer, cm: c)

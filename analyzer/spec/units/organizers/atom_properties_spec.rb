@@ -10,6 +10,8 @@ module VersatileDiamond
 
         it { expect(dimer_cl).to eq(dimer_cr) }
         it { expect(dimer_cr).to eq(dimer_cl) }
+        it { expect(dimer_cr).to eq(pseudo_dimer_cr) }
+        it { expect(pseudo_dimer_cr).to eq(dimer_cr) }
 
         it { expect(bridge_ct).not_to eq(ab_ct) }
         it { expect(ab_ct).not_to eq(bridge_ct) }
