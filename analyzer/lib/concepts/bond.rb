@@ -57,6 +57,10 @@ module VersatileDiamond
         str << "#{@dir}#{symbol}" if @dir
         "#{str}#{symbol}"
       end
+
+      def inspect
+        to_s
+      end
     end
 
   end
