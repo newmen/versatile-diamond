@@ -1,15 +1,16 @@
 module VersatileDiamond
   module Organizers
 
-    # Contain result of base spec compliance, and used as cells in dynamic 
+    # Contain result of base spec compliance, and used as cells in dynamic
     # species table
     class TableCell
       extend Forwardable
 
       attr_reader :residual, :specs
+      def_delegators :residual, :empty?
 
       # Inits the new table cell
-      # @param [DependentBaseSpec | Residual] residual the minimal possible rest
+      # @param [DependentBaseSpec | SpecResidual] residual the minimal possible rest
       # @param [Array] specs the optimal array of contained species
       def initialize(residual, specs = [])
         @residual, @specs = residual, specs

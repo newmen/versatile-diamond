@@ -12,6 +12,12 @@ module VersatileDiamond
         Mcs::SpeciesComparator.contain?(self, other, separated_multi_bond: true)
       end
 
+      # Checks that current minuend instance is empty or not
+      # @return [Boolean] empty or not
+      def empty?
+        links.empty?
+      end
+
       # The number of links between atoms
       # @return [Integer] the number of links
       def links_size
@@ -26,11 +32,11 @@ module VersatileDiamond
 
       # Makes residual of difference between top and possible parent
       # @param [DependentBaseSpec] subtrahend the matching specie in top argument
-      # @param [Residual] the residual of diference between arguments or nil if
+      # @param [SpecResidual] the residual of diference between arguments or nil if
       #   it doesn't exist
       def residual(subtrahend)
         intersec = first_intersec(subtrahend)
-        return nil unless intersec
+        return nil unless intersec && intersec.size == subtrahend.links_size
 
         minuend_atoms, _ = intersec.transpose
         mapped_set = minuend_atoms.to_set
@@ -46,7 +52,7 @@ module VersatileDiamond
           links_arr = replace(links_arr, atom, ref)
         end
 
-        Residual.new(Hash[links_arr])
+        SpecResidual.new(Hash[links_arr])
       end
 
     private
@@ -108,5 +114,5 @@ module VersatileDiamond
   end
 end
 
-        
+
 
