@@ -315,17 +315,9 @@ module VersatileDiamond
 
       # Reorganize dependencies between base specs
       def organize_specs_dependencies!
-        specs = base_specs.sort do |a, b|
-          if a.size == b.size
-            b.external_bonds <=> a.external_bonds
-          else
-            a.size <=> b.size
-          end
-        end
-
-        specs.each_with_object([]) do |spec, possible_parents|
-          spec.organize_dependencies!(possible_parents)
-          possible_parents.unshift(spec)
+        table = BaseSpeciesTable.new(@base_specs.values)
+        @base_specs.each do |wrapped_base|
+          wrapped_base.organize_dependencies!(table)
         end
       end
 
