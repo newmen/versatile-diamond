@@ -34,7 +34,7 @@ module VersatileDiamond
 
       describe '#residual' do
         subject { wrap(methyl_on_bridge_base).residual(wrap(bridge_base)) }
-        it { should be_a(Residual) }
+        it { should be_a(SpecResidual) }
         it { expect(subject.links_size).to eq(2) }
 
         it_behaves_like :swap_to_atom_reference do
@@ -58,17 +58,17 @@ module VersatileDiamond
         end
 
         let(:wrapped_specs) { specs.map { |spec| wrap(spec) } }
-        let(:cache) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] } 
+        let(:cache) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] }
         let(:table) { BaseSpeciesTable.new(wrapped_specs) }
 
         describe 'bridge' do
           subject { cache[:bridge] }
           before { subject.organize_dependencies!(table) }
-          
+
           describe '#rest' do
-            it { expect(subject.rest.links).to be_empty }
+            it { expect(subject.rest).to be_nil }
           end
-          
+
           describe '#parents' do
             it { expect(subject.parents).to be_empty }
           end
@@ -81,7 +81,7 @@ module VersatileDiamond
           describe '#rest' do
             it { expect(subject.rest.links_size).to eq(2) }
           end
-          
+
           describe '#parents' do
             it { expect(subject.parents).to eq([cache[:bridge]]) }
           end

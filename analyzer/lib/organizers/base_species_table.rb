@@ -18,7 +18,7 @@ module VersatileDiamond
       # @param [DependentBaseSpec] base_spec the key of table
       # @return [TableCell] the best table cell with minimal residue
       def best(base_spec)
-        min(@table[base_spec])
+        min(@table[base_spec], except_empty: true)
       end
 
     private
@@ -31,7 +31,7 @@ module VersatileDiamond
       # Stores record to table as key and correspond array solutions for each
       # element of species set
       #
-      # @param [DependentBaseSpec | Residual] record the key of table
+      # @param [DependentBaseSpec | SpecResidual] record the key of table
       def add(record)
         cells = @column_keys.map { |key| find(key, record) }
         @table[record] = Hash[@column_keys.zip(cells)]
@@ -41,26 +41,30 @@ module VersatileDiamond
       # table cells
       #
       # @param [DependentBaseSpec] key the specie for which finds optimal table cell
-      # @param [DependentBaseSpec | Residual] record the minuend entity
+      # @param [DependentBaseSpec | SpecResidual] record the minuend entity
       # @return [TableCell] the table cell with optimal decomposition by another
       #   species
       def find(key, record)
-        if key.links_size < record.links_size
+        if key.same?(record)
+          return TableCell.new(SpecResidual.new({}), [key])
+        elsif key.links_size < record.links_size
           rest = record.residual(key)
-          row = row_for(rest)
-          unless row
-            add(rest)
-            row = @table[rest]
-          end
+          if rest
+            row = row_for(rest)
+            unless row
+              add(rest)
+              row = @table[rest]
+            end
 
-          TableCell.new(rest, [key]).adsorb(min(row))
-        else
-          TableCell.new(record)
+            return TableCell.new(rest, [key]).adsorb(min(row))
+          end
         end
+
+        TableCell.new(record)
       end
 
       # Checks that residual contain as record of table
-      # @param [Residual] the checking residual
+      # @param [SpecResidual] the checking residual
       # @return [Hash] the row of table or nil if rest was never stored
       def row_for(rest)
         row = @table.find { |record, _| record.same?(rest) }
@@ -70,8 +74,10 @@ module VersatileDiamond
       # Finds optimal table cell
       # @param [Hash] row in which will be found optimal cell
       # @return [TableCell] the optimal table cell
-      def min(row)
-        row.values.min
+      def min(row, except_empty: false)
+        values = row.values
+        values = values.reject(&:empty?) if except_empty
+        values.min
       end
 
       # Sorts array of base species by them sizes from smaller to larger

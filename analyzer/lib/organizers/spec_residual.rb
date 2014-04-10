@@ -2,7 +2,7 @@ module VersatileDiamond
   module Organizers
 
     # Contain some residual of find diff between base species
-    class Residual
+    class SpecResidual
       include Minuend
 
       attr_reader :links

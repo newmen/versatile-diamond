@@ -8,6 +8,10 @@ module VersatileDiamond
             it { expect(subject.same?(subject)).to be_true }
           end
 
+          describe '#empty?' do
+            it { expect(subject.empty?).to be_false }
+          end
+
           describe '#links_size' do
             it { expect(subject.links_size).to eq(subject.links.size) }
           end
