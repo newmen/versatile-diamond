@@ -20,6 +20,10 @@ module VersatileDiamond
         subject { methyl_on_bridge_part }
       end
 
+      describe '#self.empty' do
+        it { expect(described_class.empty.links).to be_empty }
+      end
+
       describe '#same?' do
         let(:methyl_on_bridge_dup) do
           m = c.dup

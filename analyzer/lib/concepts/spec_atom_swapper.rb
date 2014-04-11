@@ -14,25 +14,17 @@ module VersatileDiamond
         return unless spec_atom[0] == from
 
         if from.links.size != to.links.size
-          raise ArgumentError, 'swapped specs have not equalent sizes'
+          raise ArgumentError, 'Swapping specs have not equalent sizes'
         end
 
-        key = [from, to]
-        @@_intersec_cache ||= {}
+        intersec = Mcs::SpeciesComparator.intersec(
+          from, to, separated_multi_bond: true).first.to_a
 
-        mirror =
-          if @@_intersec_cache[key]
-            @@_intersec_cache[key]
-          else
-            intersec = Mcs::SpeciesComparator.intersec(
-              from, to, separated_multi_bond: true).first.to_a
+        if intersec.size < to.links.size
+          raise ArgumentError, 'Intersection less than swapped specs'
+        end
 
-            if intersec.size < to.links.size
-              raise ArgumentError, 'Intersection less than swapped specs'
-            end
-
-            @@_intersec_cache[key] = Hash[intersec]
-          end
+        mirror = Hash[intersec]
 
         spec_atom[0] = to
         spec_atom[1] = mirror[spec_atom[1]]

@@ -26,11 +26,16 @@ module VersatileDiamond
         def intersec(first, second, separated_multi_bond: false)
           smb = separated_multi_bond
 
+          @@_intersec_cache ||= {}
+          key = [first, second, smb]
+
+          return @@_intersec_cache[key] if @@_intersec_cache[key]
+
           large_graph = Graph.new(first.links, separated_multi_bond: smb)
           small_graph = Graph.new(second.links, separated_multi_bond: smb)
           assoc_graph = AssocGraph.new(large_graph, small_graph)
 
-          HanserRecursiveAlgorithm.new(assoc_graph).intersec
+          @@_intersec_cache[key] = HanserRecursiveAlgorithm.new(assoc_graph).intersec
         end
 
       end

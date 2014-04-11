@@ -38,7 +38,7 @@ module VersatileDiamond
       end
 
       describe '#empty?' do
-        let(:empty_part) { SpecResidual.new({}) }
+        let(:empty_part) { SpecResidual.empty }
         let(:empty_cell) { described_class.new(empty_part) }
         let(:not_empty_cell) { described_class.new(medium) }
 

@@ -5,6 +5,14 @@ module VersatileDiamond
     class SpecResidual
       include Minuend
 
+      class << self
+        # Gets empty residual instance
+        # @return [SpecResidual] the empty residual instance
+        def empty
+          new({})
+        end
+      end
+
       attr_reader :links
 
       # Initialize residual by hash of links
