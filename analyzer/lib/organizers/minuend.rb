@@ -34,7 +34,7 @@ module VersatileDiamond
       # @param [DependentBaseSpec] subtrahend the matching specie in top argument
       # @param [SpecResidual] the residual of diference between arguments or nil if
       #   it doesn't exist
-      def residual(subtrahend)
+      def - (subtrahend)
         intersec = first_intersec(subtrahend)
         return nil unless intersec && intersec.size == subtrahend.links_size
 
@@ -47,12 +47,17 @@ module VersatileDiamond
         # atom of subtrahend spec
         mirror = Hash[intersec]
         residual_atoms = mapped_set & Set[*links_arr.map(&:first)]
-        residual_atoms.each do |atom|
-          ref = reference(subtrahend, mirror[atom])
+        residual_atoms.map! do |atom|
+          sub_atom = mirror[atom]
+          ref = sub_atom.reference_to?(subtrahend.spec) ?
+            sub_atom :
+            reference(subtrahend, sub_atom)
+
           links_arr = replace(links_arr, atom, ref)
+          ref
         end
 
-        SpecResidual.new(Hash[links_arr])
+        make_residual(links_arr, residual_atoms)
       end
 
     private
@@ -74,8 +79,9 @@ module VersatileDiamond
       # @return [Array] the links without excluded bonds
       def except(links, set)
         links.map do |atom, list|
+          atom_is_included = set.include?(atom)
           cut_list = list.reject do |a, _|
-            set.include?(atom) && set.include?(a)
+            atom_is_included && set.include?(a)
           end
           [atom, cut_list]
         end
@@ -85,7 +91,7 @@ module VersatileDiamond
       # @param [Array] links the array of links between atoms (like a hash)
       # @return [Array] the links without disconnected atoms
       def purge(links)
-        links.reject { |_, list| list.empty? }
+        links.reject(&purge_condition)
       end
 
       # Makes atom reference to atom from subtrahend spec by residual atom and mirror

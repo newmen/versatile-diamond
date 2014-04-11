@@ -14,13 +14,14 @@ module VersatileDiamond
           dimer_base,
           high_bridge_base,
           methyl_on_bridge_base,
-          methyl_on_dimer_base
+          methyl_on_dimer_base,
+          extended_bridge_base
         ]
       end
 
       let(:wrapped_specs) { specs.map { |spec| wrap(spec) } }
-      let(:cache) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] } 
-      
+      let(:cache) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] }
+
       subject { described_class.new(wrapped_specs) }
 
       describe '#best' do
@@ -58,6 +59,12 @@ module VersatileDiamond
           let(:name) { :methyl_on_dimer }
           let(:residue_atoms_num) { 2 }
           let(:parts) { [:bridge, :methyl_on_bridge] }
+        end
+
+        it_behaves_like :check_cell do
+          let(:name) { :extended_bridge }
+          let(:residue_atoms_num) { 2 }
+          let(:parts) { [:bridge, :bridge, :bridge] }
         end
       end
     end
