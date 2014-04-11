@@ -33,7 +33,7 @@ module VersatileDiamond
       end
 
       describe '#residual' do
-        subject { wrap(methyl_on_bridge_base).residual(wrap(bridge_base)) }
+        subject { wrap(methyl_on_bridge_base)- wrap(bridge_base) }
         it { should be_a(SpecResidual) }
         it { expect(subject.links_size).to eq(2) }
 

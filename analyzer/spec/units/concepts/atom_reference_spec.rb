@@ -4,7 +4,7 @@ module VersatileDiamond
   module Concepts
 
     describe AtomReference do
-      let(:ref) { AtomReference.new(ethylene_base, :c1) }
+      let(:ref) { described_class.new(ethylene_base, :c1) }
 
       describe '#name' do
         it { expect(ref.name).to eq(:C) }
@@ -52,6 +52,11 @@ module VersatileDiamond
 
       describe '#relations_in' do
         it { expect(bridge.atom(:cr).relations_in(bridge).size).to eq(4) }
+      end
+
+      describe '#reference_to?' do
+        it { expect(ref.reference_to?(ethylene_base)).to be_true }
+        it { expect(ref.reference_to?(bridge_base)).to be_false }
       end
 
       it_behaves_like '#lattice' do

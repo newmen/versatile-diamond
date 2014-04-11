@@ -9,12 +9,10 @@ module VersatileDiamond
       end
 
       let(:wrapped_bridge) { wrap(bridge_base) }
-      let(:methyl_on_bridge_part) do
-        wrap(methyl_on_bridge_base).residual(wrapped_bridge)
-      end
-      let(:high_bridge_part) { wrap(high_bridge_base).residual(wrapped_bridge) }
-      let(:big_dimer_part) { wrap(dimer_base).residual(wrapped_bridge) }
-      let(:small_dimer_part) { big_dimer_part.residual(wrapped_bridge) }
+      let(:methyl_on_bridge_part) { wrap(methyl_on_bridge_base) - wrapped_bridge }
+      let(:high_bridge_part) { wrap(high_bridge_base) - wrapped_bridge }
+      let(:big_dimer_part) { wrap(dimer_base) - wrapped_bridge }
+      let(:small_dimer_part) { big_dimer_part - wrapped_bridge }
 
       it_behaves_like :minuend do
         subject { methyl_on_bridge_part }
@@ -34,9 +32,7 @@ module VersatileDiamond
           s.link(b, r, bond_110_cross); s
         end
 
-        let(:another_mob_part) do
-          wrap(methyl_on_bridge_dup).residual(wrap(bridge_base_dup))
-        end
+        let(:another_mob_part) { wrap(methyl_on_bridge_dup) - wrap(bridge_base_dup) }
 
         it { expect(methyl_on_bridge_part.same?(another_mob_part)).to be_true }
 
@@ -45,11 +41,16 @@ module VersatileDiamond
       end
 
       describe '#empty?' do
-        subject { described_class.new({}) }
-        it { should be_true }
+        it { expect(described_class.empty.empty?).to be_true }
+
+        describe 'extended bridge without three bridges' do
+          let(:eb) { wrap(extended_bridge_base) }
+          subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
+          it { expect(subject.empty?).to be_false }
+        end
       end
 
-      describe '#residual' do
+      describe '# - ' do
         it { expect(small_dimer_part.links_size).to eq(2) }
 
         it_behaves_like :swap_to_atom_reference do

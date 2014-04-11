@@ -78,6 +78,13 @@ module VersatileDiamond
         spec.links[self].dup
       end
 
+      # Atom could not relate to spec
+      # @param [Spec] _ do not used
+      # @return [Boolean] false
+      def reference_to?(_)
+        false
+      end
+
       # Gets original valence of atom
       # @return [Integer] the original valence of atom
       def original_valence

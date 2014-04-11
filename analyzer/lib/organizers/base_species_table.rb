@@ -48,7 +48,7 @@ module VersatileDiamond
         if key.same?(record)
           return TableCell.new(SpecResidual.empty, [key])
         elsif key.links_size < record.links_size
-          rest = record.residual(key)
+          rest = record - key
           if rest
             row = row_for(rest)
             unless row

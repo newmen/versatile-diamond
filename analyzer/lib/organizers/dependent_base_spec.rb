@@ -23,10 +23,7 @@ module VersatileDiamond
       # Найти симметричные атомы и несемметричные
       # - Учесть количество атомов - чётный/нечётный
       # Реализовать операцию вычитания одного графа из другого.
-      # - Производить остаток.
-      # - Подменять остающийся атом ссылкой на соответствующий атом меньшей структуры
       # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
-      # Производить замену атома и перестраивать граф.
 
 
 
@@ -45,6 +42,22 @@ module VersatileDiamond
         cell = table.best(self)
         @rest = cell.residual unless self == cell.residual
         cell.specs.each { |spec| store_parent(spec) }
+      end
+
+    protected
+
+      # Provides purge condition for initial minuend instance
+      # @return [Proc] the condition for purging
+      def purge_condition
+        Proc.new { |_, links| links.empty? }
+      end
+
+      # Makes a new residual
+      # @param [Array] links_arr the array that represent relations between atoms
+      # @param [Set] residual_atoms the residual atoms after diff operation
+      # @return [SpecResidual] the new residual
+      def make_residual(links_arr, residual_atoms)
+        SpecResidual.new(Hash[links_arr], residual_atoms)
       end
 
     private

@@ -61,6 +61,10 @@ module VersatileDiamond
 
         it { expect(cd.relations_in(bridge).size).to eq(2) }
       end
+
+      describe '#reference_to?' do
+        it { expect(cd.reference_to?(bridge_base)).to be_false }
+      end
     end
 
   end

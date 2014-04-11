@@ -13,10 +13,10 @@ module VersatileDiamond
       let(:wmob) { wrap(methyl_on_bridge_base) }
       let(:wmodm) { wrap(methyl_on_dimer_base) }
 
-      let(:bad_modm_part) { wmodm.residual(wdm) }
-      let(:big_modm_part) { wmodm.residual(wmob) }
-      let(:medium_modm_part) { wmodm.residual(wb).residual(wb) }
-      let(:small_modm_part) { big_modm_part.residual(wb) }
+      let(:bad_modm_part) { wmodm - wdm }
+      let(:big_modm_part) { wmodm - wmob }
+      let(:medium_modm_part) { wmodm - wb - wb }
+      let(:small_modm_part) { big_modm_part - wb }
 
       let(:bad) { described_class.new(bad_modm_part, [wdm]) }
       let(:big) { described_class.new(big_modm_part, [wmob]) }
