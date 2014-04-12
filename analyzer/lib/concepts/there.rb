@@ -83,7 +83,7 @@ module VersatileDiamond
       end
 
       def to_s
-        env_specs.map(&:full_name).join(' * ')
+        env_specs.map(&:name).join(' * ')
       end
 
       def inspect

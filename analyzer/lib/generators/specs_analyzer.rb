@@ -22,11 +22,10 @@ module VersatileDiamond
       def used_surface_specs
         return @used_surface_specs if @used_surface_specs
         @used_surface_specs = (base_specs + specific_specs).reject(&:gas?)
-        cache =
-          (base_specs.map(&:name) + specific_specs.map(&:full_name)).to_set
+        cache = (base_specs.map(&:name) + specific_specs.map(&:name)).to_set
         nonubiquitous_reactions.each do |reaction|
           reaction.products.reject(&:gas?).each do |spec|
-            name = spec.full_name
+            name = spec.name
             next if cache.include?(name)
             cache << name
             @used_surface_specs << spec

@@ -4,8 +4,10 @@ module VersatileDiamond
     # Contain some spec and set of dependent reactions, theres and children
     # @abstract
     class DependentSpec
+      extend Forwardable
       extend Collector
 
+      def_delegators :@spec, :name
       collector_methods :reaction, :there, :child
       attr_reader :spec
 

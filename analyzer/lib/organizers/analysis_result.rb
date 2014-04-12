@@ -103,14 +103,14 @@ module VersatileDiamond
         cache = {}
         store_lambda = -> concept do
           -> specific_spec do
-            full_name = specific_spec.full_name
-            if cache[full_name]
-              concept.swap_source(specific_spec, cache[full_name].spec)
+            name = specific_spec.name
+            if cache[name]
+              concept.swap_source(specific_spec, cache[name].spec)
             else
-              cache[full_name] = DependentSpecificSpec.new(specific_spec)
+              cache[name] = DependentSpecificSpec.new(specific_spec)
             end
 
-            store_concept_to(concept, cache[full_name])
+            store_concept_to(concept, cache[name])
           end
         end
 
@@ -167,8 +167,7 @@ module VersatileDiamond
 
           rd_spec = wrapped_ext.reduced
           wrapped_rd =
-            specific_specs_cache[rd_spec.full_name] ||=
-              DependentSpecificSpec.new(rd_spec)
+            specific_specs_cache[rd_spec.name] ||= DependentSpecificSpec.new(rd_spec)
 
           exchange_specs(specific_specs_cache, wrapped_ext, wrapped_rd)
         end

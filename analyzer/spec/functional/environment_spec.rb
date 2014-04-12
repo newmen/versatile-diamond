@@ -30,7 +30,7 @@ module VersatileDiamond
               '  position o, f(:cr), face: 100, dir: :front')
           end
           let(:where) { Tools::Chest.where(:dimers_row, :some) }
-          it { expect(where.specs.map(&:name)).to eq([:dimer]) }
+          it { expect(where.specs.map(&:name)).to eq([:'dimer()']) }
         end
       end
 

@@ -3,10 +3,9 @@ module VersatileDiamond
 
     # Contain some spec and set of dependent specs
     class DependentBaseSpec < DependentSpec
-      extend Forwardable
       include Minuend
 
-      def_delegators :@spec, :name, :size, :external_bonds, :links
+      def_delegators :@spec, :size, :external_bonds, :links
       collector_methods :parent
       attr_reader :rest
 

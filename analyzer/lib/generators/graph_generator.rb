@@ -55,7 +55,7 @@ module VersatileDiamond
         setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
 
         @sp_specs_to_nodes = specs.each_with_object({}) do |ss, hash|
-          ss_name = split_specific_spec(ss.full_name)
+          ss_name = split_specific_spec(ss.name)
           node = @graph.add_nodes(ss_name)
           node.set(&setup_lambda)
           hash[ss] = node

@@ -9,10 +9,6 @@ module VersatileDiamond
         it { expect(described_class.good_for_reduce?([:_cl])).to be_false }
       end
 
-      describe '#full_name' do
-        it { expect(dimer_base.full_name).to eq(:dimer) }
-      end
-
       describe '#simple?' do
         it { expect(Spec.new(:not_set).simple?).to be_nil }
 

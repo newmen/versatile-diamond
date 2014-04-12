@@ -8,10 +8,6 @@ module VersatileDiamond
         it { expect(adsorbed_h.name).to eq(:H) }
       end
 
-      describe '#full_name' do
-        it { expect(adsorbed_h.full_name).to eq(:H) }
-      end
-
       describe '#external_bonds' do
         it { expect(adsorbed_h.external_bonds).to eq(1) }
       end

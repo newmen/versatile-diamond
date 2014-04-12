@@ -27,12 +27,6 @@ module VersatileDiamond
         atoms.each { |k, a| describe_atom(k, a) }
       end
 
-      # Gets name as full name for beauty output information
-      # @return [Symbol] the name of base spec
-      def full_name
-        name
-      end
-
       # If spec is simple (H2 or HCl for example) then true or false overwise
       # @return [Boolean] is current spec simple?
       def simple?
