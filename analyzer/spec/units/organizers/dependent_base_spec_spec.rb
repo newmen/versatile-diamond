@@ -24,6 +24,17 @@ module VersatileDiamond
         subject { wrap(bridge_base) }
       end
 
+      describe '#rest' do
+        it { expect(wrap(bridge_base).rest).to be_nil }
+      end
+
+      describe '#store_rest' do
+        subject { wrap(methyl_on_bridge_base) }
+        let(:rest) { subject - wrap(bridge_base) }
+        before { subject.store_rest(rest) }
+        it { expect(subject.rest).to eq(rest) }
+      end
+
       describe '#same?' do
         describe 'bridge_base' do
           let(:same_bridge) { wrap(bridge_base_dup) }
@@ -162,14 +173,25 @@ module VersatileDiamond
         end
       end
 
-      # describe '#remove_child' do
-      #   pending 'deprecated'
-      #   # before do
-      #   #   dimer_base.store_child(dimer)
-      #   #   dimer_base.remove_child(dimer)
-      #   # end
-      #   # it { expect(dimer_base.childs).to be_empty }
-      # end
+      describe '#exclude' do
+        let(:left) { wrap(bridge_base) }
+        let(:middle) { wrap(methyl_on_bridge_base) }
+        let(:right) { DependentSpecificSpec.new(activated_methyl_on_bridge) }
+        let(:rest) { middle - left }
+
+        before do
+          middle.store_rest(rest)
+          middle.store_parent(left)
+          right.store_parent(middle)
+          middle.exclude
+        end
+
+        it { expect(left.children).to eq([right]) }
+        it { expect(right.parent).to eq(left) }
+
+        it { expect(left.rest).to be_nil }
+        it { expect(right.rest).to eq(rest) }
+      end
     end
 
   end

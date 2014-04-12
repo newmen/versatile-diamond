@@ -4,6 +4,7 @@ module VersatileDiamond
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentSpec
       include MultiChildrenSpec
+      include ResidualContainerSpec
 
       def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
         :active_bonds_num, :replace_base_spec
@@ -44,6 +45,16 @@ module VersatileDiamond
         raise 'Parent already exists' if @parent
         @parent = parent
         parent.store_child(self)
+      end
+
+      # Clears the parent of spec
+      # @param [DependentBaseSpec | DependentSpecificSpec] parent the real parent of
+      #   current spec
+      # @raise [RuntimeError] if parent is not set
+      def remove_parent(parent)
+        raise 'Parent is not exists' unless @parent
+        raise 'Removable parent is not same as passed' unless @parent == parent
+        @parent = nil
       end
 
       # Organize dependencies from another similar species. Dependencies set if

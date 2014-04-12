@@ -6,17 +6,15 @@ module VersatileDiamond
       include MultiParentsSpec
       include MultiChildrenSpec
       include Minuend
+      include ResidualContainerSpec
 
       def_delegators :@spec, :size, :external_bonds, :links
-      attr_reader :rest
 
       def initialize(spec)
         super
 
         # @symmetrical = []
         # @asymmetrical = []
-        # @graph = Mcs::Graph.new(spec.links)
-
       end
 
       # Base spec could not be specific
@@ -28,7 +26,23 @@ module VersatileDiamond
       # Is excess spec or not
       # @return [Boolean] is excess spec or not
       def excess?
-        parents.size == 1 && children.size == 1 && children.first.specific?
+        parents.size == 1 && children.size == 1 && children.first.specific? &&
+          reactions.empty? && theres.empty?
+      end
+
+      # Excludes current spec. Instead of the current spec replaces the parent to the
+      # child and vice versa. Should have only one parent and only one child.
+      def exclude
+        raise 'Unexcess spec could be exclude' unless excess?
+
+        parent = parents.first
+        child = children.first
+
+        parent.remove_child(self)
+        child.remove_parent(self)
+
+        child.store_parent(parent)
+        child.store_rest(rest)
       end
 
       # По спеку построить граф.
@@ -52,7 +66,7 @@ module VersatileDiamond
       # @param [BaseSpeciesTable] table the dynamic table of species dependencies
       def organize_dependencies!(table)
         cell = table.best(self)
-        @rest = cell.residual unless self == cell.residual
+        store_rest(cell.residual) unless self == cell.residual
         cell.specs.each { |spec| store_parent(spec) }
       end
 
@@ -80,14 +94,6 @@ module VersatileDiamond
       def make_residual(links_arr, residual_atoms)
         SpecResidual.new(Hash[links_arr], residual_atoms)
       end
-
-    private
-
-      # # Removes a spec from collection of children
-      # # @param [SpecificSpec] spec the removable child
-      # def remove_child(spec)
-      #   childs.reject! { |s| s == spec }
-      # end
     end
 
   end

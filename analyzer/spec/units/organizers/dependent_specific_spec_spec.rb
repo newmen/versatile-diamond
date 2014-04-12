@@ -15,6 +15,18 @@ module VersatileDiamond
 
       subject { wrap(activated_dimer) }
 
+      describe '#rest' do
+        it { expect(subject.rest).to be_nil }
+      end
+
+      describe '#store_rest' do
+        subject { wrap(activated_methyl_on_bridge) }
+        let(:minuend) { DependentBaseSpec.new(methyl_on_bridge_base) }
+        let(:rest) { minuend - DependentBaseSpec.new(bridge_base) }
+        before { subject.store_rest(rest) }
+        it { expect(subject.rest).to eq(rest) }
+      end
+
       describe '#reduced' do
         it { expect(subject.reduced).to be_nil }
       end
@@ -58,14 +70,22 @@ module VersatileDiamond
         it { expect(subject.parent).to be_nil }
       end
 
-      describe '#store_parent' do
+      describe 'parent operations' do
         let(:parent) { DependentBaseSpec.new(bridge_base) }
         let(:child) { wrap(activated_bridge) }
-
         before { child.store_parent(parent) }
 
-        it { expect(parent.children).to eq([child]) }
-        it { expect(child.parent).to eq(parent) }
+        describe '#store_parent' do
+          it { expect(parent.children).to eq([child]) }
+          it { expect(child.parent).to eq(parent) }
+        end
+
+        describe '#remove_parent' do
+          before { child.remove_parent(parent) }
+
+          it { expect(parent.children).to eq([child]) }
+          it { expect(child.parent).to be_nil }
+        end
       end
 
       describe '#size' do
