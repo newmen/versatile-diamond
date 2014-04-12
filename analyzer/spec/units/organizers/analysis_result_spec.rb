@@ -361,6 +361,23 @@ module VersatileDiamond
               end
             end
           end
+
+          describe '#organize_specs_dependencies!' do
+            before { store_reactions }
+
+            let(:wrapped_base) { subject.base_spec(:dimer) }
+            let(:parent) { subject.base_spec(:bridge) }
+            let(:children) do
+              [
+                subject.base_spec(:extended_dimer),
+                subject.specific_spec(:'dimer(cr: *)'),
+                subject.specific_spec(:'dimer(cl: i)')
+              ]
+            end
+
+            it { expect(wrapped_base.children).to match_array(children) }
+            it { expect(wrapped_base.parents).to eq([parent, parent]) }
+          end
         end
       end
     end

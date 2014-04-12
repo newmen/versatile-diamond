@@ -268,7 +268,7 @@ module VersatileDiamond
         check_reactions_for_duplicates
         organize_reactions_dependencies!
 
-        # organize_specs_dependencies!
+        organize_specs_dependencies!
         # purge_unused_specs!
       end
 
@@ -313,10 +313,10 @@ module VersatileDiamond
         end
       end
 
-      # Reorganize dependencies between base specs
+      # Organize dependencies between base specs
       def organize_specs_dependencies!
-        table = BaseSpeciesTable.new(@base_specs.values)
-        @base_specs.each do |wrapped_base|
+        table = BaseSpeciesTable.new(base_specs)
+        base_specs.each do |wrapped_base|
           wrapped_base.organize_dependencies!(table)
         end
       end
@@ -363,27 +363,34 @@ module VersatileDiamond
 
 
 
-    #   # Purges all extrime base spec if some have just one child and it
-    #   # child is unspecified specific spec
-    #   def purge_excess_extrime_specs!
-    #     unspecified_specs = Chest.all(:specific_spec).select do |spec|
-    #       !spec.specific? && !spec.parent
-    #     end
+      # Purges all extrime base spec if some have just one child and it
+      # child is unspecified specific spec
+      def purge_excess_extrime_specs!
+        base_specs.each do |wrapped_base|
 
-    #     unspecified_specs.each do |specific_spec|
-    #       base_spec = specific_spec.spec
-    #       next unless base_spec.childs.size == 1 && base_spec.theres.empty?
+        end
 
-    #       base_parent = base_spec.parent
-    #       next unless base_parent
 
-    #       specific_spec.replace_base_spec(base_parent)
-    #       base_parent.remove_child(base_spec)
-    #       base_parent.store_child(specific_spec)
 
-    #       Chest.purge!(base_spec)
-    #     end
-    #   end
+
+        unspecified_specs = Chest.all(:specific_spec).select do |spec|
+          !spec.specific? && !spec.parent
+        end
+
+        unspecified_specs.each do |specific_spec|
+          base_spec = specific_spec.spec
+          next unless base_spec.childs.size == 1 && base_spec.theres.empty?
+
+          base_parent = base_spec.parent
+          next unless base_parent
+
+          specific_spec.replace_base_spec(base_parent)
+          base_parent.remove_child(base_spec)
+          base_parent.store_child(specific_spec)
+
+          Chest.purge!(base_spec)
+        end
+      end
     end
 
   end

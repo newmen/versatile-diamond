@@ -88,6 +88,47 @@ module VersatileDiamond
         end
       end
 
+      describe '#specific?' do
+        it { expect(wrap(methyl_on_dimer_base)).to be_false }
+      end
+
+      describe '#excess?' do
+          let(:wrapped_bridge) { wrap(bridge_base) }
+
+        describe 'default behavior' do
+          it { expect(wrapped_bridge.excess?).to be_false }
+        end
+
+        describe 'extended behavior' do
+          let(:wrapped_dimer) { wrap(dimer_base) }
+          let(:wrapped_activated_dimer) do
+            DependentSpecificSpec.new(activated_dimer)
+          end
+
+          before do
+            wrapped_dimer.store_parent(wrapped_bridge)
+            wrapped_dimer.store_parent(wrapped_bridge)
+            wrapped_dimer.store_child(wrapped_activated_dimer)
+          end
+
+          it { expect(wrapped_dimer.excess?).to be_false }
+        end
+
+        describe 'excess behavior' do
+          let(:wrapped_methyl_on_bridge) { wrap(methyl_on_bridge_base) }
+          let(:wrapped_activated_methyl_on_dimer) do
+            DependentSpecificSpec.new(activated_methyl_on_dimer)
+          end
+
+          before do
+            wrapped_methyl_on_bridge.store_parent(wrapped_bridge)
+            wrapped_methyl_on_bridge.store_child(wrapped_activated_methyl_on_dimer)
+          end
+
+          it { expect(wrapped_methyl_on_bridge.excess?).to be_true }
+        end
+      end
+
       # describe '#remove_child' do
       #   pending 'deprecated'
       #   # before do
