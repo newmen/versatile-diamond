@@ -19,6 +19,18 @@ module VersatileDiamond
 
       end
 
+      # Base spec could not be specific
+      # @return [Boolean] false
+      def specific?
+        false
+      end
+
+      # Is excess spec or not
+      # @return [Boolean] is excess spec or not
+      def excess?
+        parents.size == 1 && children.size == 1 && children.first.specific?
+      end
+
       # По спеку построить граф.
       # Найти симметричные атомы и несемметричные
       # - Учесть количество атомов - чётный/нечётный
@@ -41,7 +53,19 @@ module VersatileDiamond
       def organize_dependencies!(table)
         cell = table.best(self)
         @rest = cell.residual unless self == cell.residual
-        cell.specs.each { |spec| store_parent(spec) }
+        cell.specs.each do |spec|
+          store_parent(spec)
+          spec.store_child(self)
+        end
+      end
+
+      def to_s
+        "(#{name}, [#{parents.map(&:name).join(' ')}], " +
+          "[#{children.map(&:to_s).join(' ')}])"
+      end
+
+      def inspect
+        to_s
       end
 
     protected
