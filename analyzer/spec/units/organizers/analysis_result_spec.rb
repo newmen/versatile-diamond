@@ -360,6 +360,27 @@ module VersatileDiamond
                 let(:complex) { subject.lateral_reactions.last }
               end
             end
+
+            describe 'organization termination species dependencies' do
+              shared_examples_for :termination_parents do
+                let(:parents) { subject.term_spec(term_name).parents }
+                let(:specific) { subject.public_send(spec_method, spec_name) }
+
+                it { expect(parents).to eq([specific]) }
+              end
+
+              it_behaves_like :termination_parents do
+                let(:term_name) { :H }
+                let(:spec_name) { :methyl_on_bridge }
+                let(:spec_method) { :base_spec }
+              end
+
+              it_behaves_like :termination_parents do
+                let(:term_name) { :* }
+                let(:spec_name) { :'methyl_on_bridge(cm: *)' }
+                let(:spec_method) { :specific_spec }
+              end
+            end
           end
 
           describe '#organize_specs_dependencies!' do

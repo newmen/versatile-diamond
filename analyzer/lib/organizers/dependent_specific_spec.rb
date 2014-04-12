@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentSpec
+      include MultiChildrenSpec
 
       def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
         :active_bonds_num, :replace_base_spec
@@ -35,6 +36,16 @@ module VersatileDiamond
         !specific_atoms.empty?
       end
 
+      # Sets the parent of spec and store self to it parent
+      # @param [DependentBaseSpec | DependentSpecificSpec] parent the real parent of
+      #   current spec
+      # @raise [RuntimeError] if parent already set
+      def store_parent(parent)
+        raise 'Parent already exists' if @parent
+        @parent = parent
+        parent.store_child(self)
+      end
+
       # Organize dependencies from another similar species. Dependencies set if
       # similar spec has less specific atoms and existed specific atoms is same
       # in both specs. Moreover, activated atoms have a greater advantage.
@@ -50,15 +61,14 @@ module VersatileDiamond
 
         similar_specs.sort_by! { |ss| -ss.size }
 
-        @parent = similar_specs.find do |ss|
+        parent = similar_specs.find do |ss|
           ss.specific_atoms.all? do |keyname, atom|
             a = specific_atoms[keyname]
             a && is?(a, atom)
           end
         end
 
-        @parent ||= base_cache[base_name]
-        @parent.store_child(self)
+        store_parent(parent || base_cache[base_name])
       end
 
       # Counts number of specific atoms
@@ -68,7 +78,9 @@ module VersatileDiamond
       end
 
       def to_s
-        "(#{name}, [#{parent.name}], [#{children.map(&:to_s).join(' ')}])"
+        result = "(#{name}, "
+        result += "[#{parent.name}], " if parent
+        result + "[#{children.map(&:to_s).join(' ')}])"
       end
 
       def inspect

@@ -185,13 +185,12 @@ module VersatileDiamond
       # @return [Array] the array where first item is base specs hash and
       #   second item is specific specs hash
       def purge_unspecified_specs(base_specs_cache, specific_specs_cache)
-        unspecified_specs = specific_specs_cache.values.reject(&:specific?)
-
         store_lambda = -> wrapped_specific do
           spec = wrapped_specific.base_spec
           base_specs_cache[spec.name] ||= DependentBaseSpec.new(spec)
         end
 
+        unspecified_specs = specific_specs_cache.values.reject(&:specific?)
         unspecified_specs.each do |wrapped_specific|
           wrapped_base = store_lambda[wrapped_specific]
           exchange_specs(specific_specs_cache, wrapped_specific, wrapped_base)
@@ -297,12 +296,16 @@ module VersatileDiamond
         end
       end
 
-      # Organize dependencies between all stored reactions
+      # Organize dependencies between all stored reactions.
+      # Also organize dependencies between termination species and their complex
+      # parents.
       def organize_reactions_dependencies!
         cached_spec_reactions = spec_reactions.flatten
         # order of dependencies organization is important!
         ubiquitous_reactions.each do |reaction|
-          reaction.organize_dependencies!(cached_spec_reactions)
+          common_spec_cache = @specific_specs.merge(@base_specs)
+          reaction.organize_dependencies!(
+            cached_spec_reactions, @term_specs, common_spec_cache)
         end
         lateral_reactions.each do |reaction|
           reaction.organize_dependencies!(lateral_reactions)

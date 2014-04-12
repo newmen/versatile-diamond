@@ -3,10 +3,11 @@ module VersatileDiamond
 
     # Contain some spec and set of dependent specs
     class DependentBaseSpec < DependentSpec
+      include MultiParentsSpec
+      include MultiChildrenSpec
       include Minuend
 
       def_delegators :@spec, :size, :external_bonds, :links
-      collector_methods :parent
       attr_reader :rest
 
       def initialize(spec)
@@ -52,10 +53,7 @@ module VersatileDiamond
       def organize_dependencies!(table)
         cell = table.best(self)
         @rest = cell.residual unless self == cell.residual
-        cell.specs.each do |spec|
-          store_parent(spec)
-          spec.store_child(self)
-        end
+        cell.specs.each { |spec| store_parent(spec) }
       end
 
       def to_s

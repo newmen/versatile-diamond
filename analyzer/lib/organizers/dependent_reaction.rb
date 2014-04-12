@@ -34,6 +34,8 @@ module VersatileDiamond
 
       def_delegators :@reaction, :source, :simple_source, :simple_products
 
+      # Gets not simple source species
+      # @return [Array] the array of not simple species
       def not_simple_source
         source - simple_source
       end

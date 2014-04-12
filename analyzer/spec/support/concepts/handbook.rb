@@ -256,10 +256,10 @@ module VersatileDiamond
 
         # Reactions:
         set(:ma_source) { [methyl_on_bridge.dup, hydrogen_ion] }
-        set(:ma_products) { [activated_methyl_on_bridge, hydrogen] }
+        set(:ma_products) { [activated_methyl_on_bridge.dup, hydrogen] }
         set(:ma_names_to_specs) do {
           source: [[:mob, ma_source.first], [:h, hydrogen_ion]],
-          products: [[:mob, activated_methyl_on_bridge], [:h, hydrogen]]
+          products: [[:mob, ma_products.first], [:h, hydrogen]]
         } end
         set(:ma_atom_map) do
           Mcs::AtomMapper.map(ma_source, ma_products, ma_names_to_specs)
@@ -269,11 +269,11 @@ module VersatileDiamond
             :forward, 'methyl activation', ma_source, ma_products, ma_atom_map)
         end
 
-        set(:dm_source) { [activated_methyl_on_bridge, hydrogen_ion] }
-        set(:dm_product) { [methyl_on_bridge] }
+        set(:dm_source) { [activated_methyl_on_bridge.dup, hydrogen_ion] }
+        set(:dm_product) { [methyl_on_bridge.dup] }
         set(:dm_names_to_specs) do {
-          source: [[:mob, activated_methyl_on_bridge], [:h, hydrogen_ion]],
-          products: [[:mob, methyl_on_bridge]]
+          source: [[:mob, dm_source.first], [:h, hydrogen_ion]],
+          products: [[:mob, dm_product.first]]
         } end
         set(:dm_atom_map) do
           Mcs::AtomMapper.map(dm_source, dm_product, dm_names_to_specs)
@@ -284,10 +284,10 @@ module VersatileDiamond
         end
 
         set(:abridge_dup) { activated_bridge.dup }
-        set(:md_source) { [methyl_on_bridge] }
+        set(:md_source) { [methyl_on_bridge.dup] }
         set(:md_products) { [methyl, abridge_dup] }
         set(:md_names_to_specs) do {
-          source: [[:mob, methyl_on_bridge]],
+          source: [[:mob, md_source.first]],
           products: [[:m, methyl], [:b, abridge_dup]]
         } end
         set(:md_atom_map) do
