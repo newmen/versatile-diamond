@@ -8,16 +8,22 @@ module VersatileDiamond
         described_class.new(reaction)
       end
 
-      describe '#source_covered_by?' do
-        it { expect(wrap(methyl_activation).source_covered_by?(adsorbed_h)).
-          to be_true }
-        it { expect(wrap(methyl_activation).source_covered_by?(active_bond)).
-          to be_false }
+      describe '#source_covered_by' do
+        describe 'methyl activation' do
+          subject { wrap(methyl_activation) }
+          let(:spec) { subject.each_source.to_a.first }
 
-        it { expect(wrap(methyl_deactivation).source_covered_by?(active_bond)).
-          to be_true }
-        it { expect(wrap(methyl_deactivation).source_covered_by?(adsorbed_h)).
-          to be_true }
+          it { expect(subject.source_covered_by(active_bond)).to be_nil }
+          it { expect(subject.source_covered_by(adsorbed_h)).to eq(spec) }
+        end
+
+        describe 'methyl deactivation' do
+          subject { wrap(methyl_deactivation) }
+          let(:spec) { subject.each_source.to_a.first }
+
+          it { expect(subject.source_covered_by(active_bond)).to eq(spec) }
+          it { expect(subject.source_covered_by(adsorbed_h)).to eq(spec) }
+        end
       end
 
       describe '#organize_dependencies!' do

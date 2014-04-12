@@ -19,42 +19,49 @@ module VersatileDiamond
       end
 
       describe 'setup incoherent and unfixed' do
-        before(:each) { md_atom_map } # runs atom mapping
-        it { expect(methyl_on_bridge.atom(:cm).incoherent?).to be_true }
-        it { expect(methyl_on_bridge.atom(:cm).unfixed?).to be_true }
+        let(:mob) { md_source.first }
+        before { md_atom_map } # runs atom mapping
+
+        it { expect(mob.atom(:cm).incoherent?).to be_true }
+        it { expect(mob.atom(:cm).unfixed?).to be_true }
       end
 
       describe '#changes' do
-        it { expect(md_atom_map.changes).to match_array([
-            [[methyl_on_bridge, abridge_dup],
-              [[methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)]]],
-            [[methyl_on_bridge, methyl],
-              [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
-          ]) }
+        describe 'methyl desorption' do
+          let(:mod) { md_source.first }
 
-        it { expect(mi_atom_map.changes).to match_array([
-            [[activated_methyl_on_extended_bridge, extended_dimer], [
-              [activated_methyl_on_extended_bridge.atom(:cm),
-                extended_dimer.atom(:cr)],
-              [activated_methyl_on_extended_bridge.atom(:cb),
-                extended_dimer.atom(:cl)],
-            ]],
-            [[activated_dimer, extended_dimer], [
-              [activated_dimer.atom(:cl), extended_dimer.atom(:_cr0)],
-              [activated_dimer.atom(:cr), extended_dimer.atom(:_cl1)],
-            ]]
-          ]) }
+          it { expect(md_atom_map.changes).to match_array([
+              [[mod, abridge_dup], [[mod.atom(:cb), abridge_dup.atom(:ct)]]],
+              [[mod, methyl], [[mod.atom(:cm), methyl.atom(:c)]]]
+            ]) }
+        end
+
+        describe 'methyl incorporation' do
+          it { expect(mi_atom_map.changes).to match_array([
+              [[activated_methyl_on_extended_bridge, extended_dimer], [
+                [activated_methyl_on_extended_bridge.atom(:cm),
+                  extended_dimer.atom(:cr)],
+                [activated_methyl_on_extended_bridge.atom(:cb),
+                  extended_dimer.atom(:cl)],
+              ]],
+              [[activated_dimer, extended_dimer], [
+                [activated_dimer.atom(:cl), extended_dimer.atom(:_cr0)],
+                [activated_dimer.atom(:cr), extended_dimer.atom(:_cl1)],
+              ]]
+            ]) }
+        end
       end
 
       describe '#full' do
+        let(:mod) { md_source.first }
+
         it { expect(md_atom_map.full).to match_array([
-            [[methyl_on_bridge, abridge_dup], [
-              [methyl_on_bridge.atom(:cb), abridge_dup.atom(:ct)],
-              [methyl_on_bridge.atom(:cl), abridge_dup.atom(:cl)],
-              [methyl_on_bridge.atom(:cr), abridge_dup.atom(:cr)],
-            ]],
-            [[methyl_on_bridge, methyl],
-              [[methyl_on_bridge.atom(:cm), methyl.atom(:c)]]]
+            [[mod, methyl], [[mod.atom(:cm), methyl.atom(:c)]]],
+            [[mod, abridge_dup], [
+              [mod.atom(:cb), abridge_dup.atom(:ct)],
+              [mod.atom(:cl), abridge_dup.atom(:cl)],
+              [mod.atom(:cr), abridge_dup.atom(:cr)],
+            ]]
           ]) }
       end
 
@@ -129,20 +136,16 @@ module VersatileDiamond
 
       describe '#reverse' do
         describe 'methyl desorption' do
+          let(:mob) { md_source.first }
+
           it { expect(md_atom_map.reverse.full).to match_array([
-              [[abridge_dup, methyl_on_bridge], [
-                [abridge_dup.atom(:ct), methyl_on_bridge.atom(:cb)],
-                [abridge_dup.atom(:cl), methyl_on_bridge.atom(:cl)],
-                [abridge_dup.atom(:cr), methyl_on_bridge.atom(:cr)],
-              ]],
-              [[methyl, methyl_on_bridge], [
-                [methyl.atom(:c), methyl_on_bridge.atom(:cm)]
+              [[methyl, mob], [[methyl.atom(:c), mob.atom(:cm)]]],
+              [[abridge_dup, mob], [
+                [abridge_dup.atom(:ct), mob.atom(:cb)],
+                [abridge_dup.atom(:cl), mob.atom(:cl)],
+                [abridge_dup.atom(:cr), mob.atom(:cr)],
               ]]
             ]) }
-
-          it { expect(hm_atom_map.reverse.reaction_type).to eq(:exchange) }
-          it { expect(md_atom_map.reverse.reaction_type).to eq(:association) }
-          it { expect(df_atom_map.reverse.reaction_type).to eq(:dissociation) }
         end
 
         describe 'hydrogen migration' do
@@ -258,11 +261,17 @@ module VersatileDiamond
       end
 
       describe '#complex_source_spec_and_atom' do
-        it { expect(ma_atom_map.complex_source_spec_and_atom).
-          to match_array([ma_source.first, c]) }
+        describe 'methyl activation' do
+          let(:spec) { ma_source.first }
+          it { expect(ma_atom_map.complex_source_spec_and_atom).
+            to match_array([spec, spec.atom(:cm)]) }
+        end
 
-        it { expect(dm_atom_map.complex_source_spec_and_atom).
-          to match_array([activated_methyl_on_bridge, activated_c]) }
+        describe 'methyl deactivation' do
+          let(:spec) { dm_source.first }
+          it { expect(dm_atom_map.complex_source_spec_and_atom).
+            to match_array([spec, spec.atom(:cm)]) }
+        end
       end
     end
 

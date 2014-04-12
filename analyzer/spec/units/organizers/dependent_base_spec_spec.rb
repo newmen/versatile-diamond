@@ -8,6 +8,18 @@ module VersatileDiamond
         described_class.new(spec)
       end
 
+      describe '#parents' do
+        it { expect(wrap(bridge_base).parents).to be_empty }
+      end
+
+      describe 'parents <-> children' do
+        let(:parent) { wrap(bridge_base) }
+        let(:child) { wrap(methyl_on_bridge_base) }
+
+        it_behaves_like :multi_parents
+        it_behaves_like :multi_children
+      end
+
       it_behaves_like :minuend do
         subject { wrap(bridge_base) }
       end
@@ -89,7 +101,7 @@ module VersatileDiamond
       end
 
       describe '#specific?' do
-        it { expect(wrap(methyl_on_dimer_base)).to be_false }
+        it { expect(wrap(methyl_on_dimer_base).specific?).to be_false }
       end
 
       describe '#excess?' do
@@ -99,7 +111,28 @@ module VersatileDiamond
           it { expect(wrapped_bridge.excess?).to be_false }
         end
 
-        describe 'extended behavior' do
+        describe 'source behavior' do
+          let(:wrapped_activated_bridge) do
+            DependentSpecificSpec.new(activated_bridge)
+          end
+
+          before { wrapped_bridge.store_child(wrapped_activated_bridge) }
+          it { expect(wrapped_bridge.excess?).to be_false }
+        end
+
+        describe 'intermediated behavior' do
+          let(:wrapped_methyl_on_bridge) { described_class.new(methyl_on_bridge_base) }
+          let(:wrapped_methyl_on_dimer) { described_class.new(methyl_on_dimer_base) }
+
+          before do
+            wrapped_methyl_on_bridge.store_parent(wrapped_bridge)
+            wrapped_methyl_on_bridge.store_child(wrapped_methyl_on_dimer)
+          end
+
+          it { expect(wrapped_methyl_on_bridge.excess?).to be_false }
+        end
+
+        describe 'border behavior' do
           let(:wrapped_dimer) { wrap(dimer_base) }
           let(:wrapped_activated_dimer) do
             DependentSpecificSpec.new(activated_dimer)

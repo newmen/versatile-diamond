@@ -43,7 +43,7 @@ module VersatileDiamond
           to match_array([activated_bridge, ai_bridge]) }
 
         it { expect(wrap(methyl_deactivation).each_source.to_a).
-          to match_array([activated_methyl_on_bridge]) }
+          to match_array([dm_source.first]) }
       end
 
       describe '#swap_source' do

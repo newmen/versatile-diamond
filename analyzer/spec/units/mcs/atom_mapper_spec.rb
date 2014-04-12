@@ -22,14 +22,16 @@ module VersatileDiamond
           end
 
           describe 'methyl activation' do
+            let(:ma_s) { ma_source.first }
+            let(:ma_p) { ma_products.first }
+
             it { expect(ma_atom_map.changes).to match_array([
-                [[ma_source.first, activated_methyl_on_bridge],
-                  [[c, activated_c]]]
+                [[ma_s, ma_p], [[ma_s.atom(:cm), ma_p.atom(:cm)]]]
               ]) }
 
             describe "methyl on bridge isn't specified" do
               before { ma_atom_map } # runs atom mapping
-              it { expect(methyl_on_bridge.atom(:cm)).to be_a(Concepts::Atom) }
+              it { expect(ma_s.atom(:cm)).to be_a(Concepts::Atom) }
             end
           end
         end

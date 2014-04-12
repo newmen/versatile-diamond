@@ -6,9 +6,9 @@ module VersatileDiamond
     describe ManyToManyAlgorithm do
       describe '#self.map_to' do
         describe 'methyl deactivation' do
-          let(:spec1) { activated_methyl_on_bridge }
+          let(:spec1) { dm_source.first }
           let(:spec2) { hydrogen_ion }
-          let(:spec3) { methyl_on_bridge }
+          let(:spec3) { dm_product.first }
 
           let(:changed) do
             [
@@ -27,8 +27,7 @@ module VersatileDiamond
           end
 
           it_behaves_like 'check mapping result' do
-            subject { described_class.map_to(
-              mapping_result, dm_names_to_specs) }
+            subject { described_class.map_to(mapping_result, dm_names_to_specs) }
           end
         end
 
@@ -68,8 +67,7 @@ module VersatileDiamond
           end
 
           it_behaves_like 'check mapping result' do
-            subject { described_class.map_to(
-              mapping_result, hm_names_to_specs) }
+            subject { described_class.map_to(mapping_result, hm_names_to_specs) }
           end
         end
       end

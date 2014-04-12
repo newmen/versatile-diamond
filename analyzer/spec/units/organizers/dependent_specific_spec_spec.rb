@@ -8,6 +8,11 @@ module VersatileDiamond
         described_class.new(spec)
       end
 
+      it_behaves_like :multi_children do
+        let(:parent) { wrap(dimer) }
+        let(:child) { wrap(activated_dimer) }
+      end
+
       subject { wrap(activated_dimer) }
 
       describe '#reduced' do
@@ -51,6 +56,16 @@ module VersatileDiamond
 
       describe '#parent' do
         it { expect(subject.parent).to be_nil }
+      end
+
+      describe '#store_parent' do
+        let(:parent) { DependentBaseSpec.new(bridge_base) }
+        let(:child) { wrap(activated_bridge) }
+
+        before { child.store_parent(parent) }
+
+        it { expect(parent.children).to eq([child]) }
+        it { expect(child.parent).to eq(parent) }
       end
 
       describe '#size' do

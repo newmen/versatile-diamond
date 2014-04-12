@@ -8,7 +8,7 @@ module VersatileDiamond
       extend Collector
 
       def_delegators :@spec, :name
-      collector_methods :reaction, :there, :child
+      collector_methods :reaction, :there
       attr_reader :spec
 
       # Stores wrappable spec

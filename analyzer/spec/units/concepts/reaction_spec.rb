@@ -101,7 +101,7 @@ module VersatileDiamond
         it { should be_a(described_class) }
 
         it { expect(subject.source).to match_array([methyl, abridge_dup]) }
-        it { expect(subject.products).to match_array([methyl_on_bridge]) }
+        it { expect(subject.products).to match_array([md_source.first]) }
       end
 
       describe '#gases_num' do
