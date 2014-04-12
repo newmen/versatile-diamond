@@ -54,6 +54,7 @@ module VersatileDiamond
       # Wraps reactions from Chest
       # @param [Class] the class that inherits DependentReaction
       # @param [Symbol] chest_key the key by which reactions will be got from Chest
+      # @raise [RuntimeError] if passed klass is not DependentReaction
       # @return [Array] the array with each wrapped reaction
       def wrap_reactions(klass, chest_key)
         raise 'Wrong klass value' unless klass.ancestors.include?(DependentReaction)
@@ -256,7 +257,7 @@ module VersatileDiamond
         cache.delete(from.name)
       end
 
-      # Organize dependecies between concepts stored in Chest
+      # Organize dependecies between collected items
       # @raise [ReactionDuplicate] if was defined some duplicate of reaction
       def organize_dependecies!
         # order of organization is important!
@@ -266,19 +267,19 @@ module VersatileDiamond
         check_reactions_for_duplicates
         organize_reactions_dependencies!
 
-        organize_specs_dependencies!
-        # purge_unused_specs!
+        organize_base_specs_dependencies!
+        purge_unused_base_specs!
       end
 
       # Organize dependencies between specific species
       def organize_specific_spec_dependencies!
-        specific_specs.each_with_object({}) do |wss, specs|
-          base_name = wss.base_name
+        specific_specs.each_with_object({}) do |wrapped_specific, specs|
+          base_name = wrapped_specific.base_name
           specs[base_name] ||= specific_specs.select do |s|
             s.base_name == base_name
           end
 
-          wss.organize_dependencies!(@base_specs, specs[base_name])
+          wrapped_specific.organize_dependencies!(@base_specs, specs[base_name])
         end
       end
 
@@ -316,62 +317,26 @@ module VersatileDiamond
       end
 
       # Organize dependencies between base specs
-      def organize_specs_dependencies!
+      def organize_base_specs_dependencies!
         table = BaseSpeciesTable.new(base_specs)
         base_specs.each do |wrapped_base|
           wrapped_base.organize_dependencies!(table)
         end
       end
 
-
-
-
-
-
-
-
-
-
-
-
-      # # Removes all unused base specs from Chest
-      # def purge_unused_specs!
-      #   purge_excess_extrime_specs!
-
-      #   specs = Chest.all(:gas_spec, :surface_spec)
-      #   specific_specs = Chest.all(:specific_spec)
-
-      #   specs.each do |spec|
-      #     has_parent = specs.any? { |s| s.parent == spec }
-      #     has_children = has_parent || specific_specs.any? do |specific_spec|
-      #       specific_spec.spec == spec
-      #     end
-
-      #     Chest.purge!(spec) unless has_children
-      #   end
-      # end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      # Removes all unused base specs
+      def purge_unused_base_specs!
+        purge_base_specs!(:excess?)
+        purge_base_specs!(:unused?)
+      end
 
       # Purges all extrime base spec if some have just one child and it
       # child is unspecified specific spec
-      def purge_excess_extrime_specs!
-        excess_specs = base_specs.select(:excess?)
-        excess_spec.each do |excess_spec|
-          excess_spec.exclude
-          @base_specs.delete(excess_spec.name)
+      def purge_base_specs!(check_method)
+        purging_specs = base_specs.select(&check_method)
+        purging_specs.each do |purging_spec|
+          purging_spec.exclude
+          @base_specs.delete(purging_spec.name)
         end
       end
     end

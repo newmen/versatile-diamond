@@ -8,9 +8,21 @@ module VersatileDiamond
         described_class.new(spec)
       end
 
-      it_behaves_like :multi_children do
+      describe 'multi children spec' do
         let(:parent) { wrap(dimer) }
         let(:child) { wrap(activated_dimer) }
+
+        it_behaves_like :multi_children
+
+        describe '#remove_child' do
+          before do
+            child.store_parent(parent)
+            parent.remove_child(child)
+          end
+
+          it { expect(parent.children).to be_empty }
+          it { expect(child.parent).to eq(parent) }
+        end
       end
 
       subject { wrap(activated_dimer) }

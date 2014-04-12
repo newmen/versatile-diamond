@@ -5,6 +5,12 @@ module VersatileDiamond
     class DependentTermination < DependentSpec
       include MultiParentsSpec
 
+      # Termination spec could not be a specific spec
+      # @return [Boolean] false
+      def specific?
+        false
+      end
+
       def to_s
         name
       end

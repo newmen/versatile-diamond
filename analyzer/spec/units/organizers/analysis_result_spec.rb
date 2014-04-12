@@ -8,13 +8,6 @@ module VersatileDiamond
       subject { described_class.new }
       let(:keyname_error) { Chest::KeyNameError }
 
-      def store_bases
-        [
-          methane_base, bridge_base_dup, bridge_base, dimer_base,
-          high_bridge_base, methyl_on_bridge_base, methyl_on_dimer_base
-        ].each { |spec| Tools::Chest.store(spec) }
-      end
-
       def store_reactions
         Tools::Config.gas_concentration(hydrogen_ion, 1, 'mol/l')
         Tools::Config.gas_temperature(1000, 'K')
@@ -148,18 +141,23 @@ module VersatileDiamond
           end
 
           describe 'from bases' do
-            before { store_bases }
+            before do
+              [
+                methane_base, bridge_base_dup, bridge_base, dimer_base,
+                high_bridge_base, methyl_on_bridge_base, methyl_on_dimer_base
+              ].each { |spec| Tools::Chest.store(spec) }
+            end
 
             it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 5 }
+              let(:quant) { 2 }
               let(:names) do
                 [
                   :bridge,
                   # :bridge_dup, # purged
-                  :dimer,
-                  :high_bridge,
-                  :methyl_on_bridge,
-                  :methyl_on_dimer
+                  # :dimer, # purged
+                  # :high_bridge, # purged
+                  # :methyl_on_dimer, # purged
+                  :methyl_on_bridge
                 ]
               end
             end
@@ -169,13 +167,13 @@ module VersatileDiamond
             before { store_reactions }
 
             it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 6 }
+              let(:quant) { 4 }
               let(:names) do
                 [
                   :bridge,
                   :dimer,
-                  :extended_dimer,
-                  :extended_methyl_on_bridge,
+                  # :extended_dimer, # purged
+                  # :extended_methyl_on_bridge, # purged
                   :methyl_on_bridge,
                   :methyl_on_dimer
                 ]
@@ -383,14 +381,13 @@ module VersatileDiamond
             end
           end
 
-          describe '#organize_specs_dependencies!' do
+          describe '#organize_base_specs_dependencies!' do
             before { store_reactions }
 
             let(:wrapped_base) { subject.base_spec(:dimer) }
             let(:parent) { subject.base_spec(:bridge) }
             let(:children) do
               [
-                subject.base_spec(:extended_dimer),
                 subject.specific_spec(:'dimer(cr: *)'),
                 subject.specific_spec(:'dimer(cl: i)')
               ]
