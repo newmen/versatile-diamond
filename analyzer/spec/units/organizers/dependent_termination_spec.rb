@@ -16,6 +16,10 @@ module VersatileDiamond
         let(:parent) { DependentSpecificSpec.new(activated_bridge) }
         let(:child) { wrap(active_bond) }
       end
+
+      describe '#specific?' do
+        it { expect(wrap(active_bond).specific?).to be_false }
+      end
     end
 
   end

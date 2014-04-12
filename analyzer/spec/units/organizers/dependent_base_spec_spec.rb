@@ -18,6 +18,16 @@ module VersatileDiamond
 
         it_behaves_like :multi_parents
         it_behaves_like :multi_children
+
+        describe '#remove_child' do
+          before do
+            child.store_parent(parent)
+            parent.remove_child(child)
+          end
+
+          it { expect(parent.children).to be_empty }
+          it { expect(child.parents).to eq([parent]) }
+        end
       end
 
       it_behaves_like :minuend do
@@ -113,6 +123,49 @@ module VersatileDiamond
 
       describe '#specific?' do
         it { expect(wrap(methyl_on_dimer_base).specific?).to be_false }
+      end
+
+      describe '#unused?' do
+        describe 'default behavior' do
+          it { expect(wrap(bridge_base)).to be_true }
+        end
+
+        describe 'with children' do
+          subject { wrap(methyl_on_bridge_base) }
+          let(:parent) { wrap(bridge_base) }
+          let(:child) { wrap(methyl_on_dimer_base) }
+
+          before do
+            subject.store_parent(parent)
+            child.store_parent(subject)
+          end
+
+          it { expect(subject.unused?).to be_false }
+        end
+
+        describe 'with reactions' do
+          let(:parent) { wrap(bridge_base) }
+          subject { wrap(methyl_on_bridge_base) }
+
+          before do
+            subject.store_reaction(methyl_activation)
+            subject.store_parent(parent)
+          end
+
+          it { expect(subject.unused?).to be_false }
+        end
+
+        describe 'with theres' do
+          let(:parent) { wrap(bridge_base) }
+          subject { wrap(methyl_on_bridge_base) }
+
+          before do
+            subject.store_there(there_methyl)
+            subject.store_parent(parent)
+          end
+
+          it { expect(subject.unused?).to be_false }
+        end
       end
 
       describe '#excess?' do

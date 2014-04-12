@@ -13,6 +13,16 @@ module VersatileDiamond
       def initialize(spec)
         super
 
+        # TODO:
+        # Найти симметричные атомы и несемметричные
+        # - Учесть количество атомов - чётный/нечётный
+        # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
+
+        # Для нахождения симметричных и несимметричных атомов использовать словарь пересечений. Для этого необходимо минимум два пересечения
+        # {
+        #   Atom => [Atom, Atom]
+        # }
+
         # @symmetrical = []
         # @asymmetrical = []
       end
@@ -23,44 +33,34 @@ module VersatileDiamond
         false
       end
 
+      # Is unused spec or not
+      # @return [Boolean] is unused or not
+      def unused?
+        children.empty? && !reactant?
+      end
+
       # Is excess spec or not
       # @return [Boolean] is excess spec or not
       def excess?
         parents.size == 1 && children.size == 1 && children.first.specific? &&
-          reactions.empty? && theres.empty?
+          !reactant?
       end
 
       # Excludes current spec. Instead of the current spec replaces the parent to the
       # child and vice versa. Should have only one parent and only one child.
+      # @raise [RuntimeError] if spec is not excess and not unused
       def exclude
-        raise 'Unexcess spec could be exclude' unless excess?
+        raise 'Unexcess spec could be exclude or unused' unless excess? || unused?
 
         parent = parents.first
         child = children.first
 
-        parent.remove_child(self)
-        child.remove_parent(self)
+        parent.remove_child(self) if parent
+        child.remove_parent(self) if child
 
-        child.store_parent(parent)
-        child.store_rest(rest)
+        child.store_parent(parent) if parent && child
+        child.store_rest(rest) if child
       end
-
-      # По спеку построить граф.
-      # Найти симметричные атомы и несемметричные
-      # - Учесть количество атомов - чётный/нечётный
-      # Реализовать операцию вычитания одного графа из другого.
-      # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
-
-
-
-
-
-      # Для нахождения симметричных и несимметричных атомов использовать словарь пересечений. Для этого необходимо минимум два пересечения
-      # {
-      #   Atom => [Atom, Atom]
-      # }
-
-
 
       # Organize dependencies from another specs by dynamic table
       # @param [BaseSpeciesTable] table the dynamic table of species dependencies
@@ -93,6 +93,14 @@ module VersatileDiamond
       # @return [SpecResidual] the new residual
       def make_residual(links_arr, residual_atoms)
         SpecResidual.new(Hash[links_arr], residual_atoms)
+      end
+
+    private
+
+      # Is current spec reactant or not
+      # @return [Boolean] is reactant or not
+      def reactant?
+        !(reactions.empty? && theres.empty?)
       end
     end
 
