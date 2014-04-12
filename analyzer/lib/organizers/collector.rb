@@ -21,11 +21,10 @@ module VersatileDiamond
             instance_variable_get(var) || instance_variable_set(var, [])
           end
 
-          # Adds new item to collection of concepts
-          # @param [Reaction | There] concept the concept from which self spec
-          #   depended
-          define_method("store_#{name}") do |concept|
-            send(method) << concept
+          # Adds new item to collection
+          # @param [Object] item the item from which self instance depended
+          define_method("store_#{name}") do |item|
+            send(method) << item
           end
         end
       end

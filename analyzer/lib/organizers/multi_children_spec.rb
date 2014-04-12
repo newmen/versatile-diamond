@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Also conatins children
     module MultiChildrenSpec
-      extend Organizers::Collector
+      extend Organizers::DisposedCollector
 
       collector_methods :child
     end
