@@ -24,7 +24,7 @@ module VersatileDiamond
       describe '#replace_base_spec' do
         before(:each) { high_bridge.replace_base_spec(bridge_base) }
         it { expect(high_bridge.spec).to eq(bridge_base) }
-        it { expect(high_bridge.name).to eq(:bridge) }
+        it { expect(high_bridge.name).to eq(:'bridge()') }
       end
 
       describe '#position_between' do
@@ -66,28 +66,24 @@ module VersatileDiamond
       end
 
       describe '#name' do
-        it { expect(bridge.name).to eq(:bridge) }
-      end
+        it { expect(methane.name).to eq(:'methane()') }
+        it { expect(methyl.name).to eq(:'methane(c: *)') }
 
-      describe '#full_name' do
-        it { expect(methane.full_name).to eq(:'methane()') }
-        it { expect(methyl.full_name).to eq(:'methane(c: *)') }
-
-        it { expect(bridge.full_name).to eq(:'bridge()') }
-        it { expect(activated_bridge.full_name).to eq(:'bridge(ct: *)') }
-        it { expect(extra_activated_bridge.full_name).to eq(:'bridge(ct: **)') }
-        it { expect(hydrogenated_bridge.full_name).to eq(:'bridge(ct: H)') }
-        it { expect(activated_hydrogenated_bridge.full_name).
+        it { expect(bridge.name).to eq(:'bridge()') }
+        it { expect(activated_bridge.name).to eq(:'bridge(ct: *)') }
+        it { expect(extra_activated_bridge.name).to eq(:'bridge(ct: **)') }
+        it { expect(hydrogenated_bridge.name).to eq(:'bridge(ct: H)') }
+        it { expect(activated_hydrogenated_bridge.name).
           to eq(:'bridge(ct: *, ct: H)') }
-        it { expect(activated_incoherent_bridge.full_name).
+        it { expect(activated_incoherent_bridge.name).
           to eq(:'bridge(ct: *, ct: i)') }
 
-        it { expect(methyl_on_bridge.full_name).to eq(:'methyl_on_bridge()') }
-        it { expect(activated_methyl_on_bridge.full_name).
+        it { expect(methyl_on_bridge.name).to eq(:'methyl_on_bridge()') }
+        it { expect(activated_methyl_on_bridge.name).
           to eq(:'methyl_on_bridge(cm: *)') }
-        it { expect(unfixed_methyl_on_bridge.full_name).
+        it { expect(unfixed_methyl_on_bridge.name).
           to eq(:'methyl_on_bridge(cm: u)') }
-        it { expect(methyl_on_activated_bridge.full_name).
+        it { expect(methyl_on_activated_bridge.name).
           to eq(:'methyl_on_bridge(cb: *)') }
       end
 

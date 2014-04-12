@@ -31,10 +31,7 @@ module VersatileDiamond
         end
 
         print_specs('Base specs', base_surface_specs) unless no_specs
-        unless no_spec_specs
-          print_specs('Specific specs', specific_surface_specs,
-            name_method: :full_name)
-        end
+        print_specs('Specific specs', specific_surface_specs) unless no_spec_specs
 
         unless no_specs && no_spec_specs
           puts
@@ -80,15 +77,13 @@ module VersatileDiamond
       # Prints surface specs list
       # @param [String] name the name which will be shown before list
       # @param [Array] specs the species which will be shown as table
-      # @option [Symbol] :name_method the name of method which will be called
-      #   for getting name of each printed spec
-      def print_specs(name, specs, name_method: :name)
+      def print_specs(name, specs)
         return if specs.empty?
 
         puts "\n#{name}: [#{specs.size}]"
         specs.sort_by(&:size).each do |spec|
           puts @specs_format % [
-            spec.send(name_method),
+            spec.name,
             spec.size,
             spec.external_bonds,
             hash_str(classifier.classify(spec))

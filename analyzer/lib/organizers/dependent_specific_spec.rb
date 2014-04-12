@@ -3,7 +3,6 @@ module VersatileDiamond
 
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentSpec
-      extend Forwardable
 
       def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
         :active_bonds_num, :replace_base_spec
@@ -16,12 +15,6 @@ module VersatileDiamond
         super
         @parent = nil
         @child, @reaction, @there = nil
-      end
-
-      # Gets name of specific spec
-      # @return [Symbol] the symbol of name
-      def name
-        spec.full_name
       end
 
       # Gets base spec for wrapped specific spec

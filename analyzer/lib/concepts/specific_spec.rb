@@ -62,15 +62,9 @@ module VersatileDiamond
           @spec.atom(keyname(atom1)), @spec.atom(keyname(atom2)))
       end
 
-      # Gets original name of base spec
-      # @return [Symbol] the original name of base spec
-      def name
-        @original_name
-      end
-
       # Builds the full name of specific spec (with specificied atom info)
       # @return [Symbol] the full name of specific spec
-      def full_name
+      def name
         sorted_atoms = @specific_atoms.to_a.sort do |(k1, _), (k2, _)|
           k1 <=> k2
         end
@@ -80,7 +74,7 @@ module VersatileDiamond
           arr + relevants_for(atom) + monovalents_for(atom)
         end
 
-        :"#{name}(#{args.join(', ')})"
+        :"#{@original_name}(#{args.join(', ')})"
       end
 
       # Gets corresponding atom, because it can be specific atom
@@ -263,7 +257,7 @@ module VersatileDiamond
       end
 
       def inspect
-        full_name
+        name
       end
 
     protected

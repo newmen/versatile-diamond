@@ -8,10 +8,6 @@ module VersatileDiamond
         it { expect(active_bond.name).to eq(:*) }
       end
 
-      describe '#full_name' do
-        it { expect(active_bond.full_name).to eq(:*) }
-      end
-
       describe '#external_bonds' do
         it { expect(active_bond.external_bonds).to eq(0) }
       end
