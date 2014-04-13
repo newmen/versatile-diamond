@@ -91,8 +91,8 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(subject.same?(n)).to be_false }
-        it { expect(n.same?(subject)).to be_false }
+        it { expect(subject.same?(n)).to be_true }
+        it { expect(n.same?(subject)).to be_true }
 
         describe 'same class instance' do
           let(:other) { SpecificAtom.new(n.dup) }

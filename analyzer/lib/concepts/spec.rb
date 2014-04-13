@@ -179,6 +179,14 @@ module VersatileDiamond
         Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0
       end
 
+      # Checks that other spec has same atoms and links between them
+      # @param [Spec | SpecificSpec] other the comparable spec
+      # @return [Boolean] same or not
+      def same?(other)
+        return false unless links.size == other.links.size
+        Mcs::SpeciesComparator.contain?(self, other, separated_multi_bond: true)
+      end
+
       # Gets a number of atoms
       # @return size of current spec
       def size

@@ -13,10 +13,6 @@ module VersatileDiamond
       def swap(spec_atom, from, to)
         return unless spec_atom[0] == from
 
-        if from.links.size != to.links.size
-          raise ArgumentError, 'Swapping specs have not equalent sizes'
-        end
-
         intersec = Mcs::SpeciesComparator.intersec(
           from, to, separated_multi_bond: true).first.to_a
 
