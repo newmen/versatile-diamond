@@ -328,9 +328,7 @@ module VersatileDiamond
             df_source, df_products, df_atom_map)
         end
 
-        set(:mi_source) do
-          [activated_methyl_on_extended_bridge, activated_dimer]
-        end
+        set(:mi_source) { [activated_methyl_on_extended_bridge, activated_dimer] }
         set(:mi_product) { [extended_dimer] }
         set(:mi_names_to_specs) do {
           source: [
@@ -356,12 +354,10 @@ module VersatileDiamond
           w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross); w
         end
         set(:on_end) do
+          activated_i_bridge = activated_incoherent_bridge
           at_end.concretize(
             one: [activated_bridge, activated_bridge.atom(:ct)],
-            two: [
-              activated_incoherent_bridge,
-              activated_incoherent_bridge.atom(:ct)
-            ])
+            two: [activated_i_bridge, activated_i_bridge.atom(:ct)])
         end
 
         set(:at_middle) do
@@ -372,12 +368,10 @@ module VersatileDiamond
           w.parents << at_end; w
         end
         set(:on_middle) do
+          activated_i_bridge = activated_incoherent_bridge
           at_middle.concretize(
             one: [activated_bridge, activated_bridge.atom(:ct)],
-            two: [
-              activated_incoherent_bridge,
-              activated_incoherent_bridge.atom(:ct)
-            ])
+            two: [activated_i_bridge, activated_i_bridge.atom(:ct)])
         end
 
         set(:end_lateral_df) do

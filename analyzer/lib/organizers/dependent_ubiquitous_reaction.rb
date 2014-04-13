@@ -10,7 +10,7 @@ module VersatileDiamond
       #
       # @return [Concepts::TerminationSpec] the termiation spec
       def termination
-        not_simple_source.first
+        surface_source.first
       end
 
       # Organize dependencies from another not ubiquitous reactions
@@ -25,7 +25,7 @@ module VersatileDiamond
             spec = possible.source_covered_by(termination)
             if spec
               terms_cache[termination.name].store_parent(specs_cache[spec.name])
-              store_complex(possible)
+              possible.store_parent(self)
             end
           end
         end

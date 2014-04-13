@@ -28,6 +28,10 @@ module VersatileDiamond
         it { subject.reaction == target }
       end
 
+      describe '#parent' do
+        it { expect(subject.parent).to be_nil }
+      end
+
       describe '#name' do
         it { subject.name == target.name }
       end

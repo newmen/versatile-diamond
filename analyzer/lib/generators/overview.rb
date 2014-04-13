@@ -7,13 +7,11 @@ module VersatileDiamond
       include SpecsAnalyzer
 
       # Generates a table
-      # @option [Boolean] :no_specs if set to true then base species doesn't
-      #   shown
-      # @option [Boolean] :no_spec_specs if set to true then specific species
-      #   doesn't shown
-      # @option [Boolean] :no_reactions if set to true then reactions doesn't
-      #   shown
-      def generate(no_specs: false, no_spec_specs: false, no_reactions: false)
+      # @option [Boolean] :no_base_specs if set to true then base species doesn't shown
+      # @option [Boolean] :no_spec_specs show or not specific species set
+      # @option [Boolean] :no_reactions if set to true then reactions doesn't shown
+      # @override
+      def generate(no_base_specs: false, no_spec_specs: false, no_reactions: false)
         analyze_specs
 
         @atoms_format = '%25s | %5s | %10s | %4s | %s'
@@ -25,21 +23,21 @@ module VersatileDiamond
 
         puts
 
-        unless no_specs && no_spec_specs
+        unless no_base_specs && no_spec_specs
           @specs_format = '%55s | %5s | %5s | %s'
           puts @specs_format % %w(Name Size ExtB Classification)
         end
 
-        print_specs('Base specs', base_surface_specs) unless no_specs
+        print_specs('Base specs', base_surface_specs) unless no_base_specs
         print_specs('Specific specs', specific_surface_specs) unless no_spec_specs
 
-        unless no_specs && no_spec_specs
+        unless no_base_specs && no_spec_specs
           puts
           puts "Total number of specs: #{base_specs.size + specific_specs.size}"
         end
 
         unless no_reactions
-          2.times { puts } unless no_specs && no_spec_specs
+          2.times { puts } unless no_base_specs && no_spec_specs
 
           @reactions_format = '%100s | %5s | %2s | %1.3e | %s'
           puts @reactions_format.sub('1.3e', '9s') %

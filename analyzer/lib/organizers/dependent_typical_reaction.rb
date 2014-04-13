@@ -30,7 +30,7 @@ module VersatileDiamond
           applicants = inc
         end
 
-        applicants.each { |possible| store_complex(possible) }
+        applicants.each { |possible| possible.store_parent(self) }
       end
     end
 

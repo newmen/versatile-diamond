@@ -9,7 +9,7 @@ module VersatileDiamond
 
       def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of
       collector_methods :complex
-      attr_reader :reaction
+      attr_reader :reaction, :parent
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
@@ -20,7 +20,7 @@ module VersatileDiamond
       # Iterates each not simple specific source spec
       # @yield [Concepts::SpecificSpec] do with each one
       def each_source(&block)
-        not_simple_source.each(&block)
+        surface_source.each(&block)
       end
 
       # Checks that reactions are identical
@@ -34,10 +34,18 @@ module VersatileDiamond
 
       def_delegators :@reaction, :source, :simple_source, :simple_products
 
-      # Gets not simple source species
+      # Gets surface source species
       # @return [Array] the array of not simple species
-      def not_simple_source
-        source - simple_source
+      def surface_source
+        source.reject(&:gas?)
+      end
+
+      # Stores the parent of reaction
+      # @param [DependentReaction] parent the parent of current reaction
+      def store_parent(parent)
+        raise 'Parent already set' if @parent
+        @parent = parent
+        parent.store_complex(self)
       end
     end
 
