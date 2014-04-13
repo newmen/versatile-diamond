@@ -4,14 +4,6 @@ module VersatileDiamond
     # Provides method for minuend behavior
     module Minuend
 
-      # Checks that other spec has same atoms and links between them
-      # @param [DependentBaseSpec] other the comparable spec
-      # @return [Boolean] same or not
-      def same?(other)
-        return false unless links_size == other.links_size
-        Mcs::SpeciesComparator.contain?(self, other, separated_multi_bond: true)
-      end
-
       # Checks that current minuend instance is empty or not
       # @return [Boolean] empty or not
       def empty?

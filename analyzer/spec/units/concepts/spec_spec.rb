@@ -145,6 +145,26 @@ module VersatileDiamond
         end
       end
 
+      describe '#same?' do
+        describe 'bridge_base' do
+          let(:same_bridge) { bridge_base_dup }
+          subject { bridge_base }
+
+          it { expect(subject.same?(same_bridge)).to be_true }
+          it { expect(same_bridge.same?(subject)).to be_true }
+
+          it { expect(subject.same?(dimer_base)).to be_false }
+        end
+
+        describe 'methyl_on_bridge_base' do
+          let(:other) { high_bridge_base }
+          subject { methyl_on_bridge_base }
+
+          it { expect(subject.same?(other)).to be_false }
+          it { expect(other.same?(subject)).to be_false }
+        end
+      end
+
       describe '#size' do
         it { expect(hydrogen_base.size).to eq(1) }
         it { expect(methane_base.size).to eq(1) }

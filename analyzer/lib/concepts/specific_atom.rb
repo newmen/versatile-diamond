@@ -58,7 +58,7 @@ module VersatileDiamond
           @atom.same?(other.atom) && @options.sort == other.options.sort &&
             monovalents.sort == other.monovalents.sort
         else
-          false
+          @options.empty? && @monovalents.empty? && @atom.same?(other)
         end
       end
 

@@ -27,6 +27,13 @@ module VersatileDiamond
         # @asymmetrical = []
       end
 
+      # Checks that other spec has same atoms and links between them
+      # @param [DependentBaseSpec] other the comparable spec
+      # @return [Boolean] same or not
+      def same?(other)
+        other.is_a?(DependentSpec) ? spec.same?(other.spec) : other.same?(self)
+      end
+
       # Base spec could not be specific
       # @return [Boolean] false
       def specific?
