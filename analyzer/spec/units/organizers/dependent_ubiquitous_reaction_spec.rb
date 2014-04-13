@@ -56,6 +56,10 @@ module VersatileDiamond
               to eq([terms_cache[term_name]]) }
           end
 
+          describe '#parent' do
+            it { expect(complex.parent).to eq(target) }
+          end
+
           describe '#complexes' do
             it { expect(target.complexes).to eq([complex]) }
           end

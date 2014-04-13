@@ -5,16 +5,21 @@ module VersatileDiamond
     # @abstract
     class GraphGenerator < Base
 
-      SPEC_COLOR = 'black'
+      BASE_SPEC_COLOR = 'black'
       SPECIFIC_SPEC_COLOR = 'blue'
       TERMINATION_SPEC_COLOR = 'chocolate'
 
       # Default constructor of graph generator
-      def initialize(filename, ext = 'png')
+      # @param [Organizers::AnalysisResult] analysis_result the result of analysis
+      # @param [String] filename the name of result image file
+      # @param [String] ext the extention of result image file
+      def initialize(analysis_result, filename, ext = 'png')
+        super(analysis_result)
         @filename = "#{filename}.#{ext}"
         @ext = ext.to_sym
 
         @graph = GraphViz.new(:G, type: :digraph)
+        @spec_to_node = {}
       end
 
       # Generates a graph image file
@@ -25,66 +30,110 @@ module VersatileDiamond
     private
 
       # Draws basic species and dependencies between them
-      # @param [Array] the array of base specs which will be shown
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specs(specs = base_specs, no_includes: false)
-        setup_lambda = -> x { x.color = SPEC_COLOR }
-
-        @spec_to_nodes = specs.each_with_object({}) do |spec, hash|
-          node = @graph.add_nodes(spec.name.to_s)
-          node.set(&setup_lambda)
-          hash[spec] = node
-        end
-
-        return if no_includes
-
-        specs.each do |spec|
-          next unless spec.parent
-          edge =
-            @graph.add_edges(@spec_to_nodes[spec], @spec_to_nodes[spec.parent])
-          edge.set(&setup_lambda)
-        end
+      def draw_base_specs(no_includes: false)
+        deps_method = !no_includes && method(:multiparents_deps)
+        add_specs(base_specs, BASE_SPEC_COLOR, deps_method)
       end
 
       # Draws specific species and dependencies between them, and also will
       # draw dependencies from basic species
       #
-      # @param [Array] the array of specific specs which will be shown
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specific_specs(specs = specific_specs, no_includes: false)
-        setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
-
-        @sp_specs_to_nodes = specs.each_with_object({}) do |ss, hash|
-          ss_name = split_specific_spec(ss.name)
-          node = @graph.add_nodes(ss_name)
-          node.set(&setup_lambda)
-          hash[ss] = node
-        end
-
-        return if no_includes
-
-        specs.each do |ss|
-          node = @sp_specs_to_nodes[ss]
-          parent = ss.parent
-          next unless parent || @spec_to_nodes
-
-          edge = if parent
-              @graph.add_edges(node, @sp_specs_to_nodes[parent])
-            elsif (base = @spec_to_nodes[ss.spec])
-              @graph.add_edges(node, base)
-            end
-          edge.set(&setup_lambda)
-        end
+      def draw_specific_specs(no_includes: false)
+        deps_method = !no_includes && method(:monoparent_deps)
+        name_method = method(:split_specific_spec)
+        add_specs(specific_specs, SPECIFIC_SPEC_COLOR, deps_method, name_method)
       end
 
       # Draws termination species
-      def draw_termination_specs
-        @sp_specs_to_nodes ||= {}
-        termination_specs.each do |ts|
-          node = @graph.add_nodes(ts.name.to_s)
-          node.set { |e| e.color = TERMINATION_SPEC_COLOR }
-          @sp_specs_to_nodes[ts] = node
+      # @option [Boolean] :no_includes if true then includes doesn't shown
+      def draw_termination_specs(no_includes: false)
+        deps_method = !no_includes && method(:multiparents_deps)
+        add_specs(term_specs, TERMINATION_SPEC_COLOR, deps_method)
+      end
+
+      # Draws nodes for species and dependencies between them if draw_deps is true
+      # @param [Array] specs the drawing species
+      # @param [String] color the color of adding graph instances
+      # @param [Proc] deps_method the method which will be used for drawing
+      #   dependencies between species
+      # @param [Proc] name_method the method that used for prepare name of specie
+      def add_specs(specs, color, deps_method = nil, name_method = nil)
+        setup_lambda = -> x { x.color = color }
+        key_method = -> spec { spec.name }
+        add_nodes_to(@spec_to_node, specs, key_method, name_method, &setup_lambda)
+        deps_method[specs, &setup_lambda] if deps_method
+      end
+
+      # Adds species as nodes to graph
+      # @param [Hash] cache the cache of nodes which will be changed
+      # @param [Array] entities the array of adding species
+      # @param [Symbol] key_method the method that calling for convert entity to key of
+      #   cache
+      # @param [Symbol] name_method the method that used for prepare name of specie
+      # @yield [Node] setups the added node
+      def add_nodes_to(cache, entities, key_method, name_method = nil,
+        &setup_block)
+
+        entities.each do |entity|
+          name = entity.name.to_s
+          name = name_method[name] if name_method
+
+          node = @graph.add_nodes(name)
+          node.set(&setup_block)
+          cache[key_method[entity]] = node
         end
+      end
+
+      # Draws dependencies between some entities and their dependet entities
+      # @param [Symbol] multi_method the name of method for get dependent entities
+      # @param [Array] entities the species for which dependencies will be drawn
+      # @param [Hash] child_node_method the method which will be used for get a node of
+      #   each child
+      # @param [Hash] parent_node_method the method which will be used for get a node
+      #   of each parent
+      #   entity
+      # @yield [Edge] setups the added edges
+      def multi_deps(multi_method, entities,
+        child_node_method, parent_node_method = child_node_method, &setup_block)
+
+        entities.each do |child|
+          child_node = child_node_method[child]
+          child.public_send(multi_method).each do |parent|
+            parent_node = parent_node_method[parent]
+            if parent_node
+              edge = @graph.add_edges(child_node, parent_node)
+              edge.set(&setup_block)
+            end
+          end
+        end
+      end
+
+      # Draws dependencies between species and their dependet species
+      # @param [Array] specs the species for which dependencies will be drawn
+      # @yield [Edge] see at #multi_deps same argument
+      def multiparents_deps(specs, &setup_block)
+        multi_deps(:parents, specs, method(:spec_node), &setup_block)
+      end
+
+      # Draws dependencies between each spec and their parent
+      # @param [Array] specs the species for which dependency will be drawn
+      # @yield [Edge] setups the added edges
+      def monoparent_deps(specs, &setup_block)
+        specs.each do |spec|
+          child_node = spec_node(spec)
+          parent_node = spec_node(spec.parent)
+          edge = @graph.add_edges(child_node, parent_node)
+          edge.set(&setup_block)
+        end
+      end
+
+      # Gets specie node from internal spec to node cache
+      # @param [DependentSpec] spec the spec by which node will returned
+      # @return [Node] the result spec node
+      def spec_node(spec)
+        @spec_to_node[spec.name]
       end
 
       # Splits specific spec full name to two lines

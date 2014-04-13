@@ -3,6 +3,13 @@ module VersatileDiamond
 
     # Wraps structural reaction with lateral interactions
     class DependentLateralReaction < DependentReaction
+
+      # Collects and return all where object
+      # @return [Array] the array of where objects
+      def wheres
+        theres.reduce([]) { |acc, there| acc << there.where }
+      end
+
       # Wraps each there object to correspond dependent instance
       # @return [Array] the array of wrapped there objects
       def theres
@@ -16,7 +23,7 @@ module VersatileDiamond
           next if possible == self
           next unless reaction.cover?(possible.reaction)
 
-          store_complex(possible)
+          possible.store_parent(self)
         end
       end
     end

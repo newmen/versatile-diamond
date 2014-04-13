@@ -95,6 +95,20 @@ module VersatileDiamond
         end
       end
 
+      describe 'lateral entities' do
+        before { store_reactions }
+
+        describe '#theres' do
+          it { expect(subject.theres.size).to eq(2) }
+          it { expect(subject.theres.map(&:class)).to eq([DependentThere] * 2) }
+        end
+
+        describe '#wheres' do
+          it { expect(subject.wheres.size).to eq(2) }
+          it { expect(subject.wheres).to match_array([at_end, at_middle]) }
+        end
+      end
+
       describe 'specs' do
         let(:mono_method) { method.to_s[0..-2].to_sym }
 
@@ -260,6 +274,13 @@ module VersatileDiamond
                 to eq([dimer_formation.reverse]) }
             end
           end
+        end
+
+        describe '#spec_reactions' do
+          before { store_reactions }
+
+          it { expect(subject.spec_reactions).
+            to_not include(*subject.ubiquitous_reactions) }
         end
 
         describe '#organize_dependecies!' do

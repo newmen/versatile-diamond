@@ -38,6 +38,14 @@ module VersatileDiamond
         shared_examples_for :organize_and_check do
           before { reaction.organize_dependencies!(lateral_reactions) }
 
+          describe '#parent' do
+            it 'each complex have a parent' do
+              complexes.each do |complex|
+                expect(complex.parent).to eq(reaction)
+              end
+            end
+          end
+
           describe '#complexes' do
             it { expect(reaction.complexes).to match_array(complexes) }
           end

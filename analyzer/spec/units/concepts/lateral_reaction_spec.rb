@@ -103,11 +103,6 @@ module VersatileDiamond
       it_behaves_like 'visitable' do
         subject { reaction }
       end
-
-      describe '#wheres' do
-        it { expect(reaction.wheres).to match_array([at_end]) }
-        it { expect(other.wheres).to match_array([at_end, near_methyl]) }
-      end
     end
 
   end

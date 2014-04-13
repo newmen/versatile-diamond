@@ -59,12 +59,6 @@ module VersatileDiamond
         theres.each { |there| there.visit(visitor) }
       end
 
-      # Collects and return all where object for visitor
-      # @return [Array] the array of where objects
-      def wheres
-        theres.reduce([]) { |acc, there| acc << there.where }
-      end
-
       def to_s
         lateral_strs = theres.map(&:to_s)
         "#{super} | #{lateral_strs.join(' + ')}"

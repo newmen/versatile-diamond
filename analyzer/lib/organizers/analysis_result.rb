@@ -13,7 +13,8 @@ module VersatileDiamond
         def initialize(first, second); @first, @second = first, second end
       end
 
-      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions
+      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions,
+        :theres
 
       # Collects results of interpretations from Chest to internal storage and
       # organizes dependencies between collected concepts
@@ -25,11 +26,24 @@ module VersatileDiamond
         @lateral_reactions =
           wrap_reactions(DependentLateralReaction, :lateral_reaction)
 
+        @theres = collect_theres
+
         @term_specs = collect_termination_specs
         @base_specs, @specific_specs =
           purge_unspecified_specs(collect_base_specs, collect_specific_specs)
 
         organize_dependecies!
+      end
+
+      # Collects all unique where objects
+      # @return [Array] the array of where objects
+      def wheres
+        cache = {}
+        theres.each do |there|
+          name = there.where.name
+          cache[name] ||= there.where
+        end
+        cache.values
       end
 
       %w(term base specific).each do |type|
@@ -49,6 +63,12 @@ module VersatileDiamond
         end
       end
 
+      # Gets all collected reactions with complex surface species
+      # @return [Array] the array of arrays of reactions
+      def spec_reactions
+        [typical_reactions, lateral_reactions]
+      end
+
     private
 
       # Wraps reactions from Chest
@@ -63,10 +83,10 @@ module VersatileDiamond
         with_rate.map { |reaction| klass.new(reaction) }
       end
 
-      # Gets all collected reactions with complex surface species
-      # @return [Array] the array of arrays of reactions
-      def spec_reactions
-        [typical_reactions, lateral_reactions]
+      # Collects there instances from lateral reactions
+      # @return [Array] the array of collected instances
+      def collect_theres
+        lateral_reactions.reduce([]) { |acc, reaction| acc + reaction.theres }
       end
 
       # Collects termination species from reactions
@@ -102,28 +122,18 @@ module VersatileDiamond
       #   full names of each specific spec
       def collect_specific_specs
         cache = {}
-        store_lambda = -> concept do
-          -> specific_spec do
-            name = specific_spec.name
-            if cache[name]
-              concept.swap_source(specific_spec, cache[name].spec)
-            else
-              cache[name] = DependentSpecificSpec.new(specific_spec)
+        (spec_reactions + [theres]).each do |concepts|
+          concepts.each do |concept|
+            concept.each_source do |specific_spec|
+              name = specific_spec.name
+              if cache[name]
+                concept.swap_source(specific_spec, cache[name].spec)
+              else
+                cache[name] = DependentSpecificSpec.new(specific_spec)
+              end
+
+              store_concept_to(concept, cache[name])
             end
-
-            store_concept_to(concept, cache[name])
-          end
-        end
-
-        spec_reactions.each do |concrete_reactions|
-          concrete_reactions.each do |reaction|
-            reaction.each_source(&store_lambda[reaction])
-          end
-        end
-
-        lateral_reactions.each do |reaction|
-          reaction.theres.each do |there|
-            there.env_specs.each(&store_lambda[there])
           end
         end
 

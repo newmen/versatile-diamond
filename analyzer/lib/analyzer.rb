@@ -6,7 +6,7 @@ module VersatileDiamond
     class << self
       # Self method for reading and analyzing configuration file
       # @param [String] config_path the path to configuration file
-      # @return [Boolean] finds any errors or not
+      # @return [Organizers::AnalysisResult] the result of analysis
       def read_config(config_path)
         content = File.open(config_path).readlines
         new(content, config_path).analyze
@@ -25,11 +25,28 @@ module VersatileDiamond
       @config_path = config_path
     end
 
-    # Launches analysis cycle
-    # @return [Boolean] the result of analysis
+    # Prepare analysis result
+    # @return [Organizers::AnalysisResult] the result of analysis
     def analyze
       Tools::Config.init
 
+      read_all_lines
+      grab_analysis
+    rescue Errors::SyntaxError => e
+      puts e.message(@config_path, @line_number + 1)
+      nil
+    rescue Errors::Base
+      puts "Versatile Diamond internal error at line #{@line_number + 1}:"
+      puts "\n\t#{@line.strip}" if @line
+      puts
+      puts "\nPlease report this error"
+      raise
+    end
+
+  private
+
+    # Launches analysis cycle
+    def read_all_lines
       loop do
         interpret(@line, method(:change_root)) do
           begin
@@ -43,25 +60,7 @@ module VersatileDiamond
 
         next_line || break
       end
-
-      result = nil
-      begin
-        result = Organizers::AnalysisResult.new
-      rescue Organizers::AnalysisResult::ReactionDuplicate => e
-        syntax_error('.reaction_duplicate', first: e.first, second: e.second)
-      end
-
-      result
-    rescue Errors::SyntaxError => e
-      puts e.message(@config_path, @line_number + 1)
-      result
-    rescue Errors::Base
-      puts "Versatile Diamond internal error at line #{@line_number + 1}:"
-      puts "\n\t#{@line.strip}" if @line
-      raise
     end
-
-  private
 
     # Changes instance root variable which will be receive next shifted lines
     # @param [String] decreased_line the line for analyzing without forward
@@ -93,6 +92,15 @@ module VersatileDiamond
       @line.sub!(/#.+\Z/, '') # drop comments
       @line.rstrip!
       (!@line || @line != '') ? @line : next_line
+    end
+
+    # Grabs analysis of all collected data
+    # @raise [Errors::SyntaxError] if found duplication of some reaction
+    # @return [AnalysisResult] the result of analysis
+    def grab_analysis
+      Organizers::AnalysisResult.new
+    rescue Organizers::AnalysisResult::ReactionDuplicate => e
+      syntax_error('.reaction_duplicate', first: e.first, second: e.second)
     end
   end
 

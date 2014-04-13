@@ -23,8 +23,10 @@ Options:
   --reactions        Generate some info about reactions
   --includes         Generate some info about includes
   --transitions      Generate some info about transitions
-  --no-specs         Not generate info about base specs
+  --no-base-specs    Not generate info about base specs
   --no-spec-specs    Not generate info about specific specs
+  --no-term-specs    Not generate info about termination specs
+  --no-wheres        Not generate info about where objects
   --no-reactions     Not generate info about reactions
   --no-includes      Not generate info about including some in some
   --no-transitions   Not generate info about transitions between some and some
@@ -39,16 +41,16 @@ end
 
 require_relative 'analyzer/loader'
 require_each "../#{opt['--lattices']}/*.rb"
+
 VD = VersatileDiamond
 Gens = VD::Generators
 
 I18n.locale = opt['--lang']
-if !VD::Analyzer.read_config(opt['<path_to_config>'])
-  exit
-end
+analysis_result = VD::Analyzer.read_config(opt['<path_to_config>'])
+exit unless analysis_result
 
-props = %w(specs spec-specs term-specs reactions includes transitions no-specs
-  no-spec-specs no-reactions no-includes no-transitions)
+props = %w(specs spec-specs term-specs reactions includes transitions no-base-specs
+  no-spec-specs no-term-specs no-wheres no-reactions no-includes no-transitions)
 
 props_to_ops = props.map do |prop|
   option = opt["--#{prop}"]
@@ -57,17 +59,11 @@ end
 props_to_ops = Hash[props_to_ops.compact]
 
 doit = -> generator { generator.generate(props_to_ops) }
-define_generator = -> key, generator { doit[generator] if opt[key] }
+define_generator = -> key, generator_class, *args do
+  doit[generator_class.new(analysis_result, *args)] if opt[key]
+end
 
-define_generator['--code', Gens::CodeGenerator.new]
-define_generator['--overview', Gens::Overview.new]
-
-define_generator[
-  '--total-tree',
-  Gens::ConceptsTreeGenerator.new('total_tree', draw_second_source_deps: true)
-]
-
-define_generator[
-  '--composition',
-  Gens::AtomsGraphGenerator.new('composition')
-]
+define_generator['--code', Gens::CodeGenerator]
+define_generator['--overview', Gens::Overview]
+define_generator['--composition', Gens::AtomsGraphGenerator, 'composition']
+define_generator['--total-tree', Gens::ConceptsTreeGenerator, 'total_tree']
