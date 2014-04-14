@@ -105,7 +105,7 @@ module VersatileDiamond
       #   of each base spec
       def collect_base_specs
         dependent_bases =
-          Chest.all(:surface_spec).map do |base_spec|
+          Chest.all(:gas_spec, :surface_spec).map do |base_spec|
             DependentBaseSpec.new(base_spec)
           end
 
@@ -196,19 +196,17 @@ module VersatileDiamond
       # @return [Array] the array where first item is base specs hash and
       #   second item is specific specs hash
       def purge_unspecified_specs(base_specs_cache, specific_specs_cache)
-        store_lambda = -> wrapped_specific do
+        specific_specs = specific_specs_cache.values
+        specific_specs.each do |wrapped_specific|
           spec = wrapped_specific.base_spec
           base_specs_cache[spec.name] ||= DependentBaseSpec.new(spec)
         end
 
-        unspecified_specs = specific_specs_cache.values.reject(&:specific?)
+        unspecified_specs = specific_specs.reject(&:specific?)
         unspecified_specs.each do |wrapped_specific|
-          wrapped_base = store_lambda[wrapped_specific]
+          wrapped_base = base_specs_cache[wrapped_specific.base_name]
           exchange_specs(specific_specs_cache, wrapped_specific, wrapped_base)
         end
-
-        specified_specs = specific_specs_cache.values - unspecified_specs
-        specified_specs.each(&store_lambda)
 
         purge_same_base_specs(base_specs_cache, specific_specs_cache)
       end

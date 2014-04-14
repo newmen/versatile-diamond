@@ -10,7 +10,7 @@ module VersatileDiamond
       #
       # @return [Concepts::TerminationSpec] the termiation spec
       def termination
-        surface_source.first
+        not_simple_source.first
       end
 
       # Organize dependencies from another not ubiquitous reactions

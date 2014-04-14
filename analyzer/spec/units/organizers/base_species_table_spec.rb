@@ -10,6 +10,7 @@ module VersatileDiamond
 
       let(:specs) do
         [
+          methane_base,
           bridge_base,
           dimer_base,
           high_bridge_base,
@@ -29,6 +30,12 @@ module VersatileDiamond
           let(:best) { subject.best(cache[name]) }
           it { expect(best.residual.links_size).to eq(residue_atoms_num) }
           it { expect(best.specs).to match_array(parts.map { |n| cache[n] }) }
+        end
+
+        it_behaves_like :check_cell do
+          let(:name) { :methane }
+          let(:residue_atoms_num) { 1 }
+          let(:parts) { [] }
         end
 
         it_behaves_like :check_cell do

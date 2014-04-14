@@ -20,7 +20,7 @@ module VersatileDiamond
       # Iterates each not simple specific source spec
       # @yield [Concepts::SpecificSpec] do with each one
       def each_source(&block)
-        surface_source.each(&block)
+        not_simple_source.each(&block)
       end
 
       # Checks that reactions are identical
@@ -34,10 +34,10 @@ module VersatileDiamond
 
       def_delegators :@reaction, :source, :simple_source, :simple_products
 
-      # Gets surface source species
+      # Gets not simple source species
       # @return [Array] the array of not simple species
-      def surface_source
-        source.reject(&:gas?)
+      def not_simple_source
+        source - simple_source
       end
 
       # Stores the parent of reaction
