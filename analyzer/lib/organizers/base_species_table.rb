@@ -49,7 +49,7 @@ module VersatileDiamond
           return TableCell.new(SpecResidual.empty, [key])
         elsif key.links_size < record.links_size
           rest = record - key
-          if rest
+          if rest && rest.links_size < record.links_size
             row = row_for(rest)
             unless row
               add(rest)
