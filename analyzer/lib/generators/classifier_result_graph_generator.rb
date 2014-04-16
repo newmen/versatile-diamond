@@ -3,7 +3,8 @@ module VersatileDiamond
 
     # Generates a graph with overveiw information about atoms classifier result
     # This generator could be used for writing correct unit tests of classifier
-    class ClassifierResultGraphGenerator < GraphGenerator
+    class ClassifierResultGraphGenerator
+      include GraphGenerator
       include AtomDependenciesDrawer
 
       # Initialize a generator by classifier, results of which will be drawn
@@ -12,14 +13,14 @@ module VersatileDiamond
       # @param [Array] args the array of arguments for surper class initialize
       #   method
       def initialize(classifier, *args)
-        super(*args)
+        init_graph(*args)
         @classifier = classifier
       end
 
       # Generates a graph
       def generate
         draw_atom_dependencies
-        super
+        generate_graph
       end
 
     protected

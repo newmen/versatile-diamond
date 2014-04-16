@@ -3,12 +3,9 @@ module VersatileDiamond
 
     module Code; end
 
-    class CodeGenerator < Base
-      include SpecsAnalyzer
+    class CodeGenerator < Classificator
 
       def generate(**params)
-        analyze_specs
-
         props = classifier.props
         puts props.size
 

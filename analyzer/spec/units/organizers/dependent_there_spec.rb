@@ -12,7 +12,7 @@ module VersatileDiamond
       end
 
       describe '#where' do
-        it { expect(subject.where).to eq([near_methyl]) }
+        it { expect(subject.where).to eq(near_methyl) }
       end
 
       describe '#swap_source' do

@@ -1,8 +1,8 @@
 module VersatileDiamond
   module Generators
 
-    # Implements methods for generating graph of general concepts dependencies
-    class ConceptsTreeGenerator < GraphGenerator
+    # Provides methods for reactions graph generation
+    module ReactionsGraphGenerator
 
       WHERE_COLOR = 'darkviolet'
 
@@ -11,51 +11,18 @@ module VersatileDiamond
       LATERAL_REACTION_COLOR = 'lightpink'
       REACTION_DEPENDENT_EDGE_COLOR = 'red'
 
-      # Initializes the tree generator object
-      # @param [Array] args the arguments of super class
-      def initialize(*args)
-        super
-        @reaction_to_node = {}
-        @where_to_node = {}
-      end
-
-      # Generates a graph image file
-      # @option [Boolean] :no_base_specs if set to true then base species doesn't shown
-      # @option [Boolean] :no_spec_specs show or not specific species set
-      # @option [Boolean] :no_term_specs show or not termination species set
-      # @option [Boolean] :no_wheres show or not termination species set
-      # @option [Boolean] :no_reactions if set to true then reactions doesn't shown
-      # @override
-      def generate(no_base_specs: false, no_spec_specs: false, no_term_specs: false,
-        no_wheres: false, no_reactions: false)
-
-        # draw calls order is important!
-        draw_base_specs unless no_base_specs
-        draw_specific_specs unless no_spec_specs
-        draw_termination_specs unless no_term_specs
-        draw_wheres unless no_wheres
-
-        unless no_reactions
-          draw_typical_reactions
-          draw_ubiquitous_reactions
-          draw_lateral_reactions
-
-          draw_all_reactions_deps
-        end
-
-        super()
-      end
-
     private
 
       # Draws where objects and dependencies between them, and also will
       # draw dependencies from specific species
       def draw_wheres
+        @where_to_node ||= {}
         setup_lambda = -> x { x.color = WHERE_COLOR }
+
         add_nodes_to(@where_to_node, wheres, method(:same_key), &setup_lambda)
 
         multi_deps(:parents, wheres, method(:where_node), &setup_lambda)
-        unless @spec_to_node.empty?
+        if @spec_to_node
           multi_deps(:specs, wheres,
             method(:where_node), method(:spec_node), &setup_lambda)
         end
@@ -78,7 +45,7 @@ module VersatileDiamond
       def draw_lateral_reactions
         setup_lambda = method(:lateral_setup)
         draw_reactions(lateral_reactions, &setup_lambda)
-        unless @where_to_node.empty?
+        if @where_to_node
           multi_deps(:wheres, lateral_reactions,
             method(:reaction_node), method(:where_node), &setup_lambda)
         end
@@ -88,7 +55,9 @@ module VersatileDiamond
       # @param [Array] reactions the array of reactions that will be drawed
       # @yield [Array] do someting with each reaction node
       def draw_reactions(reactions, &setup_block)
+        @reaction_to_node ||= {}
         name_method = method(:multilinize)
+
         add_nodes_to(
           @reaction_to_node, reactions, method(:same_key), name_method, &setup_block)
       end
@@ -109,7 +78,7 @@ module VersatileDiamond
         complexes_setup = -> x { x.color = REACTION_DEPENDENT_EDGE_COLOR }
         multi_deps(:complexes, reactions, method(:reaction_node), &complexes_setup)
 
-        unless @spec_to_node.empty?
+        if @spec_to_node
           parent_reactions = reactions.reject { |reaction| reaction.parent }
           multi_deps(:source, parent_reactions,
             method(:reaction_node), method(:spec_node), &setup_block)

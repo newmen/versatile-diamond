@@ -35,17 +35,6 @@ module VersatileDiamond
         organize_dependecies!
       end
 
-      # Collects all unique where objects
-      # @return [Array] the array of where objects
-      def wheres
-        cache = {}
-        theres.each do |there|
-          name = there.where.name
-          cache[name] ||= there.where
-        end
-        cache.values
-      end
-
       %w(term base specific).each do |type|
         var = :"@#{type}_specs"
 

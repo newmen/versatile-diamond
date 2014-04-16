@@ -102,11 +102,6 @@ module VersatileDiamond
           it { expect(subject.theres.size).to eq(2) }
           it { expect(subject.theres.map(&:class)).to eq([DependentThere] * 2) }
         end
-
-        describe '#wheres' do
-          it { expect(subject.wheres.size).to eq(2) }
-          it { expect(subject.wheres).to match_array([at_end, at_middle]) }
-        end
       end
 
       describe 'specs' do

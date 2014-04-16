@@ -7,7 +7,7 @@ module VersatileDiamond
       include ResidualContainerSpec
 
       def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
-        :active_bonds_num, :replace_base_spec
+        :replace_base_spec, :external_bonds, :links, :gas?
 
       attr_reader :parent
 
@@ -103,7 +103,7 @@ module VersatileDiamond
       # Counts the sum of active bonds and monovalent atoms
       # @return [Integer] sum of dangling bonds
       def dangling_bonds_num
-        active_bonds_num + monovalents_num
+        spec.active_bonds_num + monovalents_num
       end
 
     private

@@ -40,6 +40,10 @@ module VersatileDiamond
         it { subject.full_rate == target.full_rate }
       end
 
+      describe '#size' do
+        it { subject.size == target.size }
+      end
+
       describe '#each_source' do
         it { expect(subject.each_source).to be_a(Enumerable) }
 
@@ -79,6 +83,13 @@ module VersatileDiamond
         it { expect(lateral_subject.same?(subject)).to be_false }
 
         it { expect(subject.same?(wrap(methyl_deactivation))).to be_false }
+      end
+
+      describe '#formula' do
+        let(:formula) { subject.formula }
+        it { expect(formula).to match(/dimer\(.+? i\)/) }
+        it { expect(formula).to match(/bridge\(ct: \*\)/) }
+        it { expect(formula).to match(/bridge\(ct: \*, ct: i\)/) }
       end
     end
 

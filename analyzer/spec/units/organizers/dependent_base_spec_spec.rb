@@ -45,6 +45,22 @@ module VersatileDiamond
         it { expect(subject.rest).to eq(rest) }
       end
 
+      describe '#size' do
+        it { expect(subject.size).to eq(subject.spec.size) }
+      end
+
+      describe '#external_bonds' do
+        it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
+      end
+
+      describe '#links' do
+        it { expect(subject.links).to eq(subject.spec.links) }
+      end
+
+      describe '#gas?' do
+        it { expect(subject.gas?).to eq(subject.spec.gas?) }
+      end
+
       describe '#same?' do
         describe 'bridge_base' do
           let(:same_bridge) { wrap(bridge_base_dup) }
