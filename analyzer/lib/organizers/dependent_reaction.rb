@@ -7,9 +7,10 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of
-      collector_methods :complex
       attr_reader :reaction, :parent
+      collector_methods :complex
+      def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of,
+        :size
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
@@ -30,9 +31,13 @@ module VersatileDiamond
         reaction.same?(other.reaction)
       end
 
+      def formula
+        reaction.to_s
+      end
+
     protected
 
-      def_delegators :@reaction, :source, :simple_source, :simple_products
+      def_delegators :@reaction, :source, :products, :simple_source, :simple_products
 
       # Gets not simple source species
       # @return [Array] the array of not simple species

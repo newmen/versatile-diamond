@@ -61,6 +61,18 @@ module VersatileDiamond
         it { expect(subject.base_spec).to eq(cap) }
       end
 
+      describe '#external_bonds' do
+        it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
+      end
+
+      describe '#links' do
+        it { expect(subject.links).to eq(subject.spec.links) }
+      end
+
+      describe '#gas?' do
+        it { expect(subject.gas?).to eq(subject.spec.gas?) }
+      end
+
       describe '#name' do
         it { expect(subject.name).to eq(:'dimer(cr: *)') }
       end

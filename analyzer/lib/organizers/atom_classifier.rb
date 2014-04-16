@@ -65,9 +65,9 @@ module VersatileDiamond
       # Classify spec and return hash where keys is order number of property
       # and values is number of atoms in spec with same properties
       #
-      # @param [TerminationSpec | Spec | SpecificSpec] spec the analyzing spec
-      # @option [Spec | SpecificSpec] :without do not classify atoms like as
-      #   from passed spec (not using when spec is termination spec)
+      # @param [DependentSpec] spec the analyzing spec
+      # @option [DependentBaseSpec | DependentSpecificSpec] :without do not classify
+      #   atoms like as from passed spec (not using when spec is termination spec)
       # @return [Hash] result of classification
       def classify(spec, without: nil)
         if spec.is_a?(TerminationSpec)

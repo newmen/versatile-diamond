@@ -15,9 +15,10 @@ module VersatileDiamond
       # @overload new(props)
       #   @param [Array] props the array of default properties
       # @overload new(spec, atom)
-      #   @param [Spec | SpecificSpec] spec in which atom will find properties
-      #   @param [Atom | AtomReference | SpecificAtom] atom the atom for which
-      #     properties will be stored
+      #   @param [Concepts::Spec | Concepts::SpecificSpec] spec in which atom will
+      #     find properties
+      #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #     atom the atom for which properties will be stored
       def initialize(*args)
         if args.size == 1
           @props = args.first
@@ -91,7 +92,7 @@ module VersatileDiamond
       # Gives the number of how many termination specs lies in current
       # properties
       #
-      # @param [TerminationSpec] term_spec the verifiable termination spec
+      # @param [Concepts::TerminationSpec] term_spec the verifiable termination spec
       # @raise [ArgumentError] if argument is not termination spec
       # @return [Boolean] have or not
       def terminations_num(term_spec)
@@ -355,9 +356,9 @@ module VersatileDiamond
       end
 
       # Harvest relations of atom in spec
-      # @param [Spec | SpecificSpec] spec see at #new same argument
-      # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
-      #   argument
+      # @param [Concepts::Spec | Concepts::SpecificSpec] spec see at #new same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   spec see at #new same argument
       # @return [Array] relations array
       def relations_for(spec, atom)
         relations = []
@@ -382,9 +383,9 @@ module VersatileDiamond
       end
 
       # Harvest dangling bonds of atom in spec
-      # @param [Spec | SpecificSpec] spec see at #new same argument
-      # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
-      #   argument
+      # @param [Concepts::Spec | Concepts::SpecificSpec] spec see at #new same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   spec see at #new same argument
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
         links = atom.relations_in(spec)

@@ -3,11 +3,6 @@ module VersatileDiamond
 
     # Draws at @graph dependencies between classified atoms
     module AtomDependenciesDrawer
-
-      ATOM_COLOR = 'darkgreen'
-      RELEVANTS_ATOM_COLOR = 'lightblue'
-      SAME_INCOHERENT_COLOR = 'gold'
-
     private
 
       # Draws dependencies between atom properties by including of each other

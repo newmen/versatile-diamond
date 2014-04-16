@@ -8,7 +8,7 @@ module VersatileDiamond
       include Minuend
       include ResidualContainerSpec
 
-      def_delegators :@spec, :size, :external_bonds, :links
+      def_delegators :@spec, :size, :external_bonds, :links, :gas?
 
       def initialize(spec)
         super
