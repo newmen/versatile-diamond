@@ -64,7 +64,7 @@ define_generator = -> key, generator_class, *args do
   doit[generator_class.new(analysis_result, *args)] if opt[key]
 end
 
-define_generator['--code', Gens::CodeGenerator]
+define_generator['--code', Gens::EngineCode]
 define_generator['--overview', Gens::Overview]
-define_generator['--composition', Gens::AtomsGraphGenerator, 'composition']
+define_generator['--composition', Gens::AtomsSpeciesTree, 'composition']
 define_generator['--total-tree', Gens::SpeciesReactionsTree, 'total_tree']

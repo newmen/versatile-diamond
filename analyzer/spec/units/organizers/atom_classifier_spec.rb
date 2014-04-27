@@ -4,6 +4,10 @@ module VersatileDiamond
   module Organizers
 
     describe AtomClassifier, use: :atom_properties do
+      def wrap_specific(spec)
+        DependentSpecificSpec.new(spec)
+      end
+
       subject { described_class.new }
 
       describe '#analyze' do
@@ -19,7 +23,7 @@ module VersatileDiamond
             methyl_on_incoherent_bridge,
             high_bridge,
           ].each do |spec|
-            subject.analyze(spec)
+            subject.analyze(wrap_specific(spec))
           end
         end
 
@@ -164,115 +168,196 @@ module VersatileDiamond
 
         describe '#classify' do
           describe 'termination spec' do
-            it { expect(subject.classify(active_bond)).to eq({
-                10 => ['H*C%d<', 1],
-                15 => ['-*C%d<', 1],
-                18 => ['*C:i:u~', 1],
-                19 => ['*C~', 1],
-                2 => ['^*C.%d<', 1],
-                20 => ['**C:i:u~', 2],
-                21 => ['**C~', 2],
-                22 => ['***C~', 3],
-                25 => ['~*C%d<', 1],
-                28 => ['*C:i=', 1],
-                29 => ['*C=', 1],
-                3 => ['*C:i%d<', 1],
-                30 => ['**C=', 2],
-                4 => ['*C%d<', 1],
-                5 => ['**C%d<', 2],
-              }) }
+            shared_examples_for :termination_classify do
+              let(:result) { subject.classify(DependentTermination.new(term)) }
+              it { expect(result).to eq(hash) }
+            end
 
-            it { expect(subject.classify(adsorbed_h)).to eq({
-                0 => ['^C.:i%d<', 1],
-                1 => ['^C.%d<', 1],
-                10 => ['H*C%d<', 1],
-                11 => ['HHC%d<', 2],
-                12 => ['^HC.%d<', 1],
-                13 => ['-C:i%d<', 1],
-                14 => ['-C%d<', 1],
-                16 => ['C:i:u~', 3],
-                17 => ['C~', 3],
-                18 => ['*C:i:u~', 2],
-                19 => ['*C~', 2],
-                20 => ['**C:i:u~', 1],
-                21 => ['**C~', 1],
-                23 => ['~C:i%d<', 1],
-                24 => ['~C%d<', 1],
-                26 => ['C:i=', 2],
-                27 => ['C=', 2],
-                28 => ['*C:i=', 1],
-                29 => ['*C=', 1],
-                3 => ['*C:i%d<', 1],
-                4 => ['*C%d<', 1],
-                6 => ['C:i%d<', 2],
-                7 => ['C%d<', 2],
-                8 => ['HC:i%d<', 2],
-                9 => ['HC%d<', 2],
-              }) }
+            it_behaves_like :termination_classify do
+              let(:term) { active_bond }
+              let(:hash) do
+                {
+                  10 => ['H*C%d<', 1],
+                  15 => ['-*C%d<', 1],
+                  18 => ['*C:i:u~', 1],
+                  19 => ['*C~', 1],
+                  2 => ['^*C.%d<', 1],
+                  20 => ['**C:i:u~', 2],
+                  21 => ['**C~', 2],
+                  22 => ['***C~', 3],
+                  25 => ['~*C%d<', 1],
+                  28 => ['*C:i=', 1],
+                  29 => ['*C=', 1],
+                  3 => ['*C:i%d<', 1],
+                  30 => ['**C=', 2],
+                  4 => ['*C%d<', 1],
+                  5 => ['**C%d<', 2],
+                }
+              end
+            end
 
-            it { expect(subject.classify(adsorbed_cl)).to be_empty }
+            it_behaves_like :termination_classify do
+              let(:term) { adsorbed_h }
+              let(:hash) do
+                {
+                  0 => ['^C.:i%d<', 1],
+                  1 => ['^C.%d<', 1],
+                  10 => ['H*C%d<', 1],
+                  11 => ['HHC%d<', 2],
+                  12 => ['^HC.%d<', 1],
+                  13 => ['-C:i%d<', 1],
+                  14 => ['-C%d<', 1],
+                  16 => ['C:i:u~', 3],
+                  17 => ['C~', 3],
+                  18 => ['*C:i:u~', 2],
+                  19 => ['*C~', 2],
+                  20 => ['**C:i:u~', 1],
+                  21 => ['**C~', 1],
+                  23 => ['~C:i%d<', 1],
+                  24 => ['~C%d<', 1],
+                  26 => ['C:i=', 2],
+                  27 => ['C=', 2],
+                  28 => ['*C:i=', 1],
+                  29 => ['*C=', 1],
+                  3 => ['*C:i%d<', 1],
+                  4 => ['*C%d<', 1],
+                  6 => ['C:i%d<', 2],
+                  7 => ['C%d<', 2],
+                  8 => ['HC:i%d<', 2],
+                  9 => ['HC%d<', 2],
+                }
+              end
+            end
+
+            it_behaves_like :termination_classify do
+              let(:term) { adsorbed_cl }
+              let(:hash) { {} }
+            end
           end
 
           describe 'not termination spec' do
-            it { expect(subject.classify(activated_bridge)).to eq({
-                1 => ['^C.%d<', 2],
-                4 => ['*C%d<', 1],
-              }) }
+            shared_examples_for :specific_classify do
+              let(:result) { subject.classify(wrap_specific(spec)) }
+              it { expect(result).to eq(hash) }
+            end
 
-            it { expect(subject.classify(extra_activated_bridge)).to eq({
-                1 => ['^C.%d<', 2],
-                5 => ['**C%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { activated_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 2],
+                  4 => ['*C%d<', 1],
+                }
+              end
+            end
 
-            it { expect(subject.classify(hydrogenated_bridge)).to eq({
-                1 => ['^C.%d<', 2],
-                9 => ['HC%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { extra_activated_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 2],
+                  5 => ['**C%d<', 1],
+                }
+              end
+            end
 
-            it { expect(subject.classify(extra_hydrogenated_bridge)).to eq({
-                1 => ['^C.%d<', 2],
-                11 => ['HHC%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { hydrogenated_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 2],
+                  9 => ['HC%d<', 1],
+                }
+              end
+            end
 
-            it { expect(subject.classify(right_hydrogenated_bridge)).to eq({
-                1 => ['^C.%d<', 1],
-                7 => ['C%d<', 1],
-                12 => ['^HC.%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { extra_hydrogenated_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 2],
+                  11 => ['HHC%d<', 1],
+                }
+              end
+            end
 
-            it { expect(subject.classify(dimer)).to eq({
-                1 => ['^C.%d<', 4],
-                14 => ['-C%d<', 2],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { right_hydrogenated_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 1],
+                  7 => ['C%d<', 1],
+                  12 => ['^HC.%d<', 1],
+                }
+              end
+            end
 
-            it { expect(subject.classify(activated_dimer)).to eq({
-                1 => ['^C.%d<', 4],
-                14 => ['-C%d<', 1],
-                15 => ['-*C%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { dimer }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 4],
+                  14 => ['-C%d<', 2],
+                }
+              end
+            end
 
-            it { expect(subject.classify(methyl_on_incoherent_bridge)).to eq({
-                1 => ['^C.%d<', 2],
-                17 => ['C~', 1],
-                23 => ['~C:i%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { activated_dimer }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 4],
+                  14 => ['-C%d<', 1],
+                  15 => ['-*C%d<', 1],
+                }
+              end
+            end
 
-            it { expect(subject.classify(high_bridge)).to eq({
-                1 => ['^C.%d<', 2],
-                27 => ['C=', 1],
-                31 => ['=C%d<', 1],
-              }) }
+            it_behaves_like :specific_classify do
+              let(:spec) { methyl_on_incoherent_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 2],
+                  17 => ['C~', 1],
+                  23 => ['~C:i%d<', 1],
+                }
+              end
+            end
+
+            it_behaves_like :specific_classify do
+              let(:spec) { high_bridge }
+              let(:hash) do
+                {
+                  1 => ['^C.%d<', 2],
+                  27 => ['C=', 1],
+                  31 => ['=C%d<', 1],
+                }
+              end
+            end
 
             describe 'without' do
-              it { expect(subject.classify(activated_bridge, without: bridge_base)).
-                to eq({
-                  4 => ['*C%d<', 1]
-                }) }
+              shared_examples_for :specific_classify_without do
+                let(:specific_spec) { wrap_specific(spec) }
+                let(:without_spec) { wrap_specific(without) }
+                let(:result) { subject.classify(specific_spec, without: without_spec) }
+                it { expect(result).to eq(hash) }
+              end
 
-              it { expect(subject.classify(dimer, without: bridge_base)).
-                to eq({
-                  14 => ['-C%d<', 2]
-                }) }
+              it_behaves_like :specific_classify_without do
+                let(:spec) { activated_bridge }
+                let(:without) { bridge_base }
+                let(:hash) do
+                  { 4 => ['*C%d<', 1] }
+                end
+              end
+
+              it_behaves_like :specific_classify_without do
+                let(:spec) { dimer }
+                let(:without) { bridge_base }
+                let(:hash) do
+                  { 14 => ['-C%d<', 2] }
+                end
+              end
             end
           end
         end

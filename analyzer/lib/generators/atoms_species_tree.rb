@@ -6,7 +6,7 @@ module VersatileDiamond
       include AtomsGraphGenerator
       include SpeciesGraphGenerator
 
-      # Generates a graph
+      # Generates a graph image file
       # @option [Boolean] :base_specs species will be shown an graph or not
       # @option [Boolean] :spec_specs specific species will be shown an graph or not
       # @option [Boolean] :no_includes are includes not will be shown at graph or not
@@ -16,11 +16,11 @@ module VersatileDiamond
         no_includes: false, no_transitions: false)
 
         if base_specs || spec_specs || term_specs
-          draw_specs(no_includes: no_includes) if base_specs
+          draw_base_specs(no_includes: no_includes) if base_specs
           draw_specific_specs(no_includes: no_includes) if spec_specs
           draw_termination_specs if term_specs
         else
-          used_surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
+          surface_specs.each { |s| draw_atoms(classifier.classify(s)) }
         end
 
         draw_atom_dependencies unless no_includes

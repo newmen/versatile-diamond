@@ -14,52 +14,46 @@ module VersatileDiamond
 
       # Draws spec nodes and dependencies from classified atoms
       # @param [Hash] params the parameters of drawing
-      # @override
-      def draw_specs(**params)
-        super(base_surface_specs, params)
+      def atoms_of_base_specs(**params)
+        draw_base_specs(base_surface_specs, params)
         base_surface_specs.each do |spec|
-          draw_atoms_for(@spec_to_nodes, spec, spec.parent, SPEC_COLOR)
+          draw_atoms_for(spec, spec.parents, BASE_SPEC_COLOR)
         end
       end
 
       # Draws spec nodes and dependencies from classified atoms
       # @param [Hash] params the parameters of drawing
-      # @override
-      def draw_specific_specs(**params)
-        super(specific_surface_specs, params)
+      def atoms_of_specific_specs(**params)
+        draw_specific_specs(specific_surface_specs, params)
         specific_surface_specs.each do |spec|
-          draw_atoms_for(@sp_specs_to_nodes, spec,
-            spec.parent || spec.spec, SPECIFIC_SPEC_COLOR)
+          draw_atoms_for(spec, spec.parent, SPECIFIC_SPEC_COLOR)
         end
       end
 
       # Draws termination specs and dependencies from classified atoms
-      # @override
-      def draw_termination_specs
-        super
+      def atoms_for_termination_specs
+        draw_termination_specs
         termination_specs.each do |spec|
-          draw_atoms_for(@sp_specs_to_nodes, spec, nil, TERMINATION_SPEC_COLOR)
+          draw_atoms_for(spec, nil, TERMINATION_SPEC_COLOR)
         end
       end
 
       # Draw atoms for passed spec with edges from spec to each atom with
       # passed color
       #
-      # @param [Hash] nodes the mirror of spec to nodes
       # @param [Spec | SpecificSpec] spec the spec atoms of which will be shown
       # @param [Spec | SpecificSpec] parent don't draw atoms same as parent
       # @param [String] color the color of edges
-      def draw_atoms_for(nodes, spec, parent, color)
+      def draw_atoms_for(spec, parent, color)
         classification = classifier.classify(spec, without: parent)
-        draw_atoms(classification, nodes[spec], color)
+        draw_atoms(classification, @spec_to_node[spec.name], color)
       end
 
       # Draws classified atoms and their dependencies from spec
-      # @param [Hash] hash the classified atoms hash
-      # @param [Node] node the node of spec which belongs to atoms from
-      #   hash
-      def draw_atoms(hash, node = nil, color = nil)
-        hash.each do |index, (image, _)|
+      # @param [Hash] classification the classified atoms hash
+      # @param [Node] node the node of spec which belongs to atoms from hash
+      def draw_atoms(classification, node = nil, color = nil)
+        classification.each do |index, (image, _)|
           add_atom_node(index, image)
 
           next unless node
@@ -72,7 +66,7 @@ module VersatileDiamond
       # Draws transitions between atom properties by reactions
       def draw_atom_transitions
         cache = {}
-        nonubiquitous_reactions.each do |reaction|
+        spec_reactions.each do |reaction|
           reaction.changes.each do |spec_atoms|
             next if spec_atoms.map(&:first).any?(&:gas?)
 

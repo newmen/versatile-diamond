@@ -30,9 +30,7 @@ module VersatileDiamond
       #   cache
       # @param [Symbol] name_method the method that used for prepare name of specie
       # @yield [Node] setups the added node
-      def add_nodes_to(cache, entities, key_method, name_method = nil,
-        &setup_block)
-
+      def add_nodes_to(cache, entities, key_method, name_method = nil, &setup_block)
         entities.each do |entity|
           name = entity.name.to_s
           name = name_method[name] if name_method
