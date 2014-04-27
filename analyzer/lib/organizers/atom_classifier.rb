@@ -16,9 +16,10 @@ module VersatileDiamond
       end
 
       # Analyze spec and store all uniq properties
-      # @param [Spec | SpecificSpec] spec the analyzing spec
+      # @param [DependentBaseSpec | DependentSpecificSpec] spec the analyzing spec
       def analyze(spec)
-        props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
+        original_spec = spec.spec
+        props = spec.links.map { |atom, _| AtomProperties.new(original_spec, atom) }
 
         props.each do |prop|
           next if index(prop)
@@ -70,30 +71,31 @@ module VersatileDiamond
       #   atoms like as from passed spec (not using when spec is termination spec)
       # @return [Hash] result of classification
       def classify(spec, without: nil)
-        if spec.is_a?(TerminationSpec)
-          props = @props.select { |prop| prop.terminations_num(spec) > 0 }
+        original_spec = spec.spec
+        if original_spec.is_a?(TerminationSpec)
+          props = @props.select { |prop| prop.terminations_num(original_spec) > 0 }
 
           props.each_with_object({}) do |prop, hash|
             index = index(prop)
             image = prop.to_s
-            hash[index] = [image, prop.terminations_num(spec)]
+            hash[index] = [image, prop.terminations_num(original_spec)]
           end
         else
-          atoms = spec.links.keys
+          atoms = original_spec.links.keys
 
           if without
             parent_atoms = without.links.keys
             atoms = atoms.select do |atom|
-              prop = AtomProperties.new(spec, atom)
+              prop = AtomProperties.new(original_spec, atom)
               parent_atoms.all? do |parent_atom|
-                parent_prop = AtomProperties.new(without, parent_atom)
+                parent_prop = AtomProperties.new(without.spec, parent_atom)
                 prop != parent_prop
               end
             end
           end
 
           atoms.each_with_object({}) do |atom, hash|
-            prop = AtomProperties.new(spec, atom)
+            prop = AtomProperties.new(original_spec, atom)
             index = index(prop)
             image = prop.to_s
             hash[index] ||= [image, 0]
