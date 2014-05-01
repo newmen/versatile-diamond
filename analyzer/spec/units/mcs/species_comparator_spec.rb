@@ -60,6 +60,14 @@ module VersatileDiamond
             ) }
         end
       end
+
+      describe "#self.first_general_intersec" do
+        let(:intersec) do
+          described_class.first_general_intersec(bridge_base, bridge_base_dup)
+        end
+        let(:hash) { Hash[intersec.to_a] }
+        it { expect(hash[bridge_base.atom(:ct)]).to eq(bridge_base_dup.atom(:t)) }
+      end
     end
 
   end

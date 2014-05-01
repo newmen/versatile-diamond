@@ -158,15 +158,15 @@ module VersatileDiamond
             end
 
             it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 2 }
+              let(:quant) { 1 }
               let(:names) do
                 [
-                  :bridge,
+                  # :bridge, # purged
                   # :bridge_dup, # purged
                   # :dimer, # purged
                   # :high_bridge, # purged
                   # :methyl_on_dimer, # purged
-                  :methyl_on_bridge
+                  :methyl_on_bridge # TODO: should be purged too because no dependent specific species
                 ]
               end
             end

@@ -28,7 +28,8 @@ module VersatileDiamond
           end
         end
 
-        replace_base_spec(spec)
+        @spec = spec
+        @original_name = spec.name
 
         @specific_atoms = specific_atoms
 
@@ -47,8 +48,8 @@ module VersatileDiamond
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec
       def replace_base_spec(new_spec)
+        rename_used_keynames(new_spec)
         @spec = new_spec
-        @original_name = @spec.name
       end
 
       # Finds positions between atoms in base structure.
@@ -266,13 +267,18 @@ module VersatileDiamond
 
     private
 
-      # Selects bonds for passed atom
-      # @param [Atom] atom the atom for which bonds will be selected
-      # @return [Array] the array of bonds incedent to an atom
-      # @override
-      def internal_bonds_for(atom)
-        valid_atom = links[atom] ? atom : atom(@spec.keyname(atom))
-        super(valid_atom)
+      # Renames internal used keynames to new keynames from another base spec
+      # @param [Spec] other the base spec from which keynames will gotten
+      def rename_used_keynames(other)
+        intersec = Mcs::SpeciesComparator.first_general_intersec(@spec, other)
+        mirror = Hash[intersec.to_a]
+        new_specific_atoms = @specific_atoms.map do |old_keyname, atom|
+          base_atom = @spec.atom(old_keyname)
+          other_atom = mirror[base_atom]
+          new_keyname = other_atom ? other.keyname(other_atom) : old_keyname
+          [new_keyname, atom]
+        end
+        @specific_atoms = Hash[new_specific_atoms]
       end
 
       # Collect all relevant states for passed atom

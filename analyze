@@ -32,12 +32,13 @@ Options:
   --no-transitions   Not generate info wihtout transitions between some and some
 HELP
 
-opt = begin
-  Docopt::docopt(doc)
-rescue Docopt::Exit => e
-  puts e.message
-  exit
-end
+opt =
+  begin
+    Docopt::docopt(doc)
+  rescue Docopt::Exit => e
+    puts e.message
+    exit
+  end
 
 require_relative 'analyzer/loader'
 require_each "../#{opt['--lattices']}/*.rb"

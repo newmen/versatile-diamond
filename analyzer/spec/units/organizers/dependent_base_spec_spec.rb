@@ -45,20 +45,24 @@ module VersatileDiamond
         it { expect(subject.rest).to eq(rest) }
       end
 
-      describe '#size' do
-        it { expect(subject.size).to eq(subject.spec.size) }
-      end
+      describe 'delegation' do
+        subject { wrap(bridge_base) }
 
-      describe '#external_bonds' do
-        it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
-      end
+        describe '#size' do
+          it { expect(subject.size).to eq(subject.spec.size) }
+        end
 
-      describe '#links' do
-        it { expect(subject.links).to eq(subject.spec.links) }
-      end
+        describe '#external_bonds' do
+          it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
+        end
 
-      describe '#gas?' do
-        it { expect(subject.gas?).to eq(subject.spec.gas?) }
+        describe '#links' do
+          it { expect(subject.links).to eq(subject.spec.links) }
+        end
+
+        describe '#gas?' do
+          it { expect(subject.gas?).to eq(subject.spec.gas?) }
+        end
       end
 
       describe '#same?' do

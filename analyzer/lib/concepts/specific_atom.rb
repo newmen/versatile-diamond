@@ -102,9 +102,9 @@ module VersatileDiamond
         active_options.size
       end
 
-      # Compares with other atom
+      # Compares relevant states with states of another atom
       # @param [Atom | AtomReference | SpecificAtom] other the atom with which
-      #   compare
+      #   compares
       # @return [Array] the array of relevants state symbols
       def diff(other)
         self.class == other.class ? other.relevants - relevants : []

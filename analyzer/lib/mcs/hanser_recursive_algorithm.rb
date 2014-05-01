@@ -26,6 +26,7 @@ module VersatileDiamond
       # Finds all intersection of associated structures. Once all possible
       # intersections are found, are selected only those projections of that
       # correspond to associated structures.
+      # @return [Array] the array of all possible intersec
       def intersec
         @intersec = []
 

@@ -55,7 +55,7 @@ surface
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
 
-  spec :two_bridges
+  spec :three_bridges
     atoms ctl: C%d, cl: bridge(:ct), cc: bridge(:cr)
     bond :ctl, :cl, face: 110, dir: :cross
     bond :ctl, :cc, face: 110, dir: :cross
@@ -144,7 +144,7 @@ events
     reverse_rate 2.7e11
 
   reaction 'high bridge to two bridges on three'
-    equation high_bridge + bridge(cr: *) = two_bridges(cl: *)
+    equation high_bridge + bridge(cr: *) = three_bridges(cl: *)
     activation 3.2
     forward_rate 2.9e11
     reverse_rate 1.1e8
