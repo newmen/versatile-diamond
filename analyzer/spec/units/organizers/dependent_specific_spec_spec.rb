@@ -51,10 +51,6 @@ module VersatileDiamond
         it { expect(subject.specific_atoms).to eq(subject.spec.specific_atoms) }
       end
 
-      describe '#active_bonds_num' do
-        it { expect(subject.active_bonds_num).to eq(subject.spec.active_bonds_num) }
-      end
-
       describe '#replace_base_spec' do
         let(:cap) { bridge_base }
         before { subject.replace_base_spec(cap) }

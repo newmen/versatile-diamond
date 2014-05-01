@@ -24,7 +24,7 @@ module VersatileDiamond
 
       # Makes residual of difference between top and possible parent
       # @param [DependentBaseSpec] subtrahend the matching specie in top argument
-      # @param [SpecResidual] the residual of diference between arguments or nil if
+      # @return [SpecResidual] the residual of diference between arguments or nil if
       #   it doesn't exist
       def - (subtrahend)
         intersec = first_intersec(subtrahend)
@@ -59,9 +59,7 @@ module VersatileDiamond
       # @return [Array] the array of each pair of intersection or nil if intersection
       #   have not fond
       def first_intersec(spec)
-        first = Mcs::SpeciesComparator.intersec(
-          self, spec, separated_multi_bond: true).first
-
+        first = Mcs::SpeciesComparator.first_general_intersec(self, spec)
         first && first.to_a
       end
 

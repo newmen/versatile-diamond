@@ -22,9 +22,16 @@ module VersatileDiamond
       end
 
       describe '#replace_base_spec' do
-        before(:each) { high_bridge.replace_base_spec(bridge_base) }
-        it { expect(high_bridge.spec).to eq(bridge_base) }
-        it { expect(high_bridge.name).to eq(:'bridge()') }
+        before { activated_dimer.replace_base_spec(dimer_base_dup) }
+        it { expect(activated_dimer.spec).to eq(dimer_base_dup) }
+        it { expect(activated_dimer.name).to eq(:'dimer(r: *)') }
+
+        describe 'intersec is not full' do
+          let(:spec) { activated_methyl_on_bridge }
+          before { spec.replace_base_spec(bridge_base_dup) }
+          it { expect(spec.name).to eq(:'methyl_on_bridge(cm: *)') }
+          it { expect(spec.atom(:t)).to_not be_nil }
+        end
       end
 
       describe '#position_between' do

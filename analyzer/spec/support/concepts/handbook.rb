@@ -98,20 +98,18 @@ module VersatileDiamond
         set(:vinyl) { SpecificSpec.new(ethylene_base, c1: activated_c) }
 
         def make_bridge_base(name)
-          s = SurfaceSpec.new(name, ct: cd)
+        end
+
+        set(:bridge_base) do
+          s = DuppableSurfaceSpec.new(:bridge, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
           s.link(cd, cl, bond_110_cross)
           s.link(cd, cr, bond_110_cross); s
         end
-
-        set(:bridge_base) { make_bridge_base(:bridge) }
         set(:bridge_base_dup) do
-          s = make_bridge_base(:bridge_dup)
-          s.rename_atom(:ct, :t)
-          s.rename_atom(:cr, :r)
-          s.rename_atom(:cl, :l); s
+          bridge_base.dup(:bridge_dup, [[:ct, :t], [:cr, :r], [:cl, :l]])
         end
 
         set(:bridge) { SpecificSpec.new(bridge_base) }
@@ -202,13 +200,17 @@ module VersatileDiamond
         set(:high_bridge) { SpecificSpec.new(high_bridge_base) }
 
         set(:dimer_base) do
-          s = SurfaceSpec.new(:dimer)
+          s = DuppableSurfaceSpec.new(:dimer)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cl)
           s.link(s.atom(:cr), s.atom(:cl), bond_100_front); s
         end
+        set(:dimer_base_dup) do
+          dimer_base.dup(:dimer_dup, [[:cr, :r], [:cl, :l]])
+        end
+
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd)

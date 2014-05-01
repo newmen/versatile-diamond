@@ -83,7 +83,8 @@ surface
     bond :ct, :cl, face: 110, dir: :cross
     bond :ct, :cr, face: 110, dir: :cross
 
-  spec :two_bridges
+  # более правильно было бы использовать :two_bridges
+  spec :three_bridges
     atoms ctr: C%d, cbr: bridge(:ct), cc: bridge(:cr)
     bond :ctr, :cbr, face: 110, dir: :cross
     bond :ctr, :cc, face: 110, dir: :cross
@@ -360,7 +361,7 @@ events
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
-    equation high_bridge + bridge(cr: *) = two_bridges(cbr: *)
+    equation high_bridge + bridge(cr: *) = three_bridges(cbr: *)
       refinement 'without chain neighbour methyl'
         activation 3.2
 

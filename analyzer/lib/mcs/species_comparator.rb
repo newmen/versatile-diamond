@@ -22,7 +22,7 @@ module VersatileDiamond
         # @option [Boolean] :separated_multi_bond set to true if need separated
         #   instances for double or triple bonds
         # @raise [RuntimeError] if some of separated multi-bonds is invalid
-        # @return [Set] the first intersection
+        # @return [Array] the array of all possible intersections
         def intersec(first, second, separated_multi_bond: false)
           smb = separated_multi_bond
 
@@ -36,6 +36,14 @@ module VersatileDiamond
           assoc_graph = AssocGraph.new(large_graph, small_graph)
 
           @@_intersec_cache[key] = HanserRecursiveAlgorithm.new(assoc_graph).intersec
+        end
+
+        # Gets first full possible intersec between two species
+        # @param [Hash] first see at #intersec same argument
+        # @param [Hash] second see at #intersec same argument
+        # @return [Set] the set of atom pairs for two species
+        def first_general_intersec(first, second)
+          intersec(first, second, separated_multi_bond: false).first
         end
 
       end
