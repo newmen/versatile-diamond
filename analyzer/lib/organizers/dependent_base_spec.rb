@@ -74,8 +74,10 @@ module VersatileDiamond
       # @param [BaseSpeciesTable] table the dynamic table of species dependencies
       def organize_dependencies!(table)
         cell = table.best(self)
-        store_rest(cell.residual) unless self == cell.residual
-        cell.specs.each { |spec| store_parent(spec) }
+        if cell # if not only one specie in table
+          store_rest(cell.residual) unless self == cell.residual
+          cell.specs.each { |spec| store_parent(spec) }
+        end
       end
 
       def to_s
