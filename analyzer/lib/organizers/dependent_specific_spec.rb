@@ -7,7 +7,7 @@ module VersatileDiamond
       include ResidualContainerSpec
 
       def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
-        :replace_base_spec, :external_bonds, :links, :gas?
+        :external_bonds, :links, :gas?
 
       attr_reader :parent
 
@@ -45,6 +45,7 @@ module VersatileDiamond
         raise 'Parent already exists' if @parent
         @parent = parent
         parent.store_child(self)
+        store_rest(self - parent)
       end
 
       # Clears the parent of spec
@@ -54,7 +55,53 @@ module VersatileDiamond
       def remove_parent(parent)
         raise 'Parent is not exists' unless @parent
         raise 'Removable parent is not same as passed' unless @parent == parent
-        @parent = nil
+        @parent = @rest = nil
+      end
+
+      # Reassigns parent and accumulate the residual between old parent and new parent
+      # @param [DependentBaseSpec] new_parent the new parent which will be stored
+      def replace_parent(new_parent)
+        raise 'Previous parent is not exists' unless @parent
+
+        unless new_parent.is_a?(DependentBaseSpec)
+          raise ArgumentError, 'Passed parent is not DependentBaseSpec'
+        end
+        replace_base_spec(new_parent)
+
+        remove_parent(parent)
+        store_parent(new_parent)
+      end
+
+      # Replaces base specie of current wrapped specific specie
+      # @param [DependentBaseSpec] new_base the new base specie
+      def replace_base_spec(new_base)
+        children.each { |child| child.replace_base_spec(new_base) }
+        spec.replace_base_spec(new_base.spec)
+        rest.links.keys.map(&:update_keyname) if rest
+      end
+
+      # Makes difference between other dependent spec
+      # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
+      # @return [SpecResidual] the residual of difference operation
+      def - (other)
+        links_hash = {}
+        replaced_atoms = {}
+        mirror = mirror_to(other)
+
+        # the first pairs should targets on not mapped atoms (if other links size
+        # less than links size of current specie)
+        pairs_from(mirror).each do |curr_atom, other_atom|
+          if replaced_atoms[curr_atom] || !other_atom
+            key =
+              replaced_atoms[curr_atom] ||= replace_atom(other, curr_atom, other_atom)
+            links_hash[key] = ref_to_links_of(other, curr_atom, mirror, replaced_atoms)
+          elsif are_atoms_different?(curr_atom, other_atom)
+            key = Concepts::AtomReference.new(spec, spec.keyname(curr_atom))
+            links_hash[key] = []
+          end
+        end
+
+        SpecResidual.new(links_hash)
       end
 
       # Organize dependencies from another similar species. Dependencies set if
@@ -90,7 +137,7 @@ module VersatileDiamond
 
       def to_s
         result = "(#{name}, "
-        result += "[#{parent.name}], " if parent
+        result += parent ? "[#{parent.name}], " : '[], '
         result + "[#{children.map(&:to_s).join(' ')}])"
       end
 
@@ -107,6 +154,94 @@ module VersatileDiamond
       end
 
     private
+
+      # Gets a mirror to another dependent spec
+      # @param [DependentBaseSpec | DependentSpecificSpec] other the specie atom of
+      #   which will be mirrored from current spec atoms
+      # @return [Hash] the mirror
+      def mirror_to(other)
+        spec_atoms_comparer = -> _, _, a1, a2 { a1.original_same?(a2) }
+        intersec = Mcs::SpeciesComparator.first_general_intersec(
+          spec, other.spec, &spec_atoms_comparer)
+        raise 'Intersec is not full' if other.links.size != intersec.size
+
+        Hash[intersec.to_a]
+      end
+
+      # Makes pairs of atoms from mirror. If some atoms from current links are not
+      # presented in mirror then them will be added to head of pairs.
+      #
+      # @param [Hash] mirror of atoms from current spec to subtrahend spec
+      # @return [Array] the array of atoms pairs
+      def pairs_from(mirror)
+        pairs = mirror.to_a
+        if pairs.size < links.size
+          (links.keys - mirror.keys).each do |residual_atom|
+            pairs.unshift([residual_atom, nil])
+          end
+        end
+        pairs
+      end
+
+      # Checks that atoms are different
+      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
+      #   spec_atom the major of comparable atoms
+      # @param [Concepts::Atom | Concepts::AtomReference] base_atom the second
+      #   comparable atom
+      # @return [Boolean] are different or not
+      def are_atoms_different?(spec_atom, base_atom)
+        !(spec_atom.actives == base_atom.actives && base_atom.diff(spec_atom).empty?)
+      end
+
+      # Duplicates links of own atom and exchange them to correct correspond atoms
+      # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   own_atom the atom from current spec for which links are copied
+      # @param [Hash] mirror of atom from current spec to subtrahend spec
+      # @param [Hash] cache the changable cache of exchanged atoms
+      # @return [Array] the array of copied links of own atoms
+      def ref_to_links_of(other, own_atom, mirror, cache)
+        different_links =
+          if mirror[own_atom]
+            links[own_atom].select do |bonded_atom, _|
+              other_atom = mirror[bonded_atom]
+              !other_atom || are_atoms_different?(bonded_atom, other_atom)
+            end
+          else
+            links[own_atom]
+          end
+
+        different_links.map do |bonded_atom, link|
+          cache[bonded_atom] ||= replace_atom(other, bonded_atom, mirror[bonded_atom])
+          [cache[bonded_atom], link]
+        end
+      end
+
+      # Checks and replace some atom to correspond reference
+      # @param [DependentBaseSpec | DependentSpecificSpec] other see at
+      #   #ref_to_links_of same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   own_atom see at #ref_to_links_of same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   other_atom the atom from other spec
+      # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   the correspond atom or reference
+      def replace_atom(other, own_atom, other_atom)
+        if !other_atom
+          own_atom
+        else
+          sp = other.spec
+          ref = other_atom.reference_to?(sp) ?
+            other_atom :
+            Concepts::AtomReference.new(sp, sp.keyname(other_atom))
+
+          if are_atoms_different?(own_atom, other_atom)
+            Concepts::SpecificAtom.new(ref, ancestor: own_atom)
+          else
+            ref
+          end
+        end
+      end
 
       # Counts the sum of monovalent atoms at specific atoms
       # @return [Integer] sum of monovalent atoms

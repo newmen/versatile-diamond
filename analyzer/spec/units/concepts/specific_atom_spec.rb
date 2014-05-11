@@ -128,6 +128,17 @@ module VersatileDiamond
         end
       end
 
+      describe '#original_same?' do
+        it { expect(subject.original_same?(SpecificAtom.new(c))).to be_false }
+
+        %w(active! incoherent! unfixed! use!(h)).each do |eval_str|
+          let(:other) { subject.dup }
+          before { eval("other.#{eval_str}") }
+          it { expect(subject.original_same?(other)).to be_true }
+          it { expect(other.original_same?(subject)).to be_true }
+        end
+      end
+
       describe '#diff' do
         it { expect(unfixed_c.diff(c)).to be_empty }
         it { expect(unfixed_activated_c.diff(c)).to be_empty }

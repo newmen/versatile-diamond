@@ -30,7 +30,18 @@ module VersatileDiamond
           let(:spec) { activated_methyl_on_bridge }
           before { spec.replace_base_spec(bridge_base_dup) }
           it { expect(spec.name).to eq(:'methyl_on_bridge(cm: *)') }
-          it { expect(spec.atom(:t)).to_not be_nil }
+          it { expect(spec.atom(:t)).to eq(bridge_base_dup.atom(:t)) }
+          it { expect(spec.atom(:cm)).to eq(activated_methyl_on_bridge.atom(:cm)) }
+          it { expect(spec.links.size).to eq(4) }
+
+          describe 'correct atoms from links' do
+            def get_by(method)
+              spec.links.public_send(:"#{method}_by") { |_, l| l.size }.first
+            end
+
+            it { expect(get_by(:max)).to eq(spec.atom(:t)) }
+            it { expect(get_by(:min)).to eq(spec.atom(:cm)) }
+          end
         end
       end
 

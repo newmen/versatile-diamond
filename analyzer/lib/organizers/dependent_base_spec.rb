@@ -62,11 +62,12 @@ module VersatileDiamond
         parent = parents.first
         child = children.first
 
-        parent.remove_child(self) if parent
-        child.remove_parent(self) if child
-
-        child.store_parent(parent) if parent && child
-        child.store_rest(rest) if child
+        if parent
+          parent.remove_child(self)
+          child.replace_parent(parent) if child
+        elsif child
+          child.remove_parent(self)
+        end
       end
 
       # Organize dependencies from another specs by dynamic table
