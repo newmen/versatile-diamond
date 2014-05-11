@@ -104,35 +104,34 @@ module VersatileDiamond
         end
 
         describe '#replace_parent' do
+          subject { wrap(activated_methyl_on_incoherent_bridge) }
+          let(:old_base) { DependentBaseSpec.new(methyl_on_bridge_base) }
+          let(:new_base) { DependentBaseSpec.new(bridge_base_dup) }
 
-        end
-      end
-
-      describe '#replace_base_spec' do
-        let(:new_base) { DependentBaseSpec.new(bridge_base_dup) }
-        let(:specific) { activated_methyl_on_incoherent_bridge }
-        subject { wrap(specific) }
-
-        before { subject.replace_base_spec(new_base) }
-        it { expect(subject.base_spec).to eq(new_base.spec) }
-
-        describe 'when parent already set' do
-          let(:parent) { DependentBaseSpec.new(methyl_on_bridge_base) }
-          let(:ref_keynames) { subject.rest.links.map(&:first).map(&:keyname) }
-          before { subject.store_parent(parent) }
-          it { expect(ref_keynames).to match_array([:cm, :t]) }
-        end
-
-        describe 'children updates too' do
-          let(:child1) { wrap(activated_methyl_on_incoherent_bridge.dup) }
-          let(:child2) { wrap(activated_methyl_on_incoherent_bridge.dup) }
           before do
-            subject.store_child(child1)
-            subject.store_child(child2)
+            subject.store_parent(old_base)
+            subject.replace_parent(new_base)
           end
 
-          it { expect(child1.spec.atom(:t)).to_not be_nil }
-          it { expect(child2.spec.atom(:cm)).to_not be_nil }
+          it { expect(subject.base_spec).to eq(new_base.spec) }
+          it { expect(subject.name).to eq(:'methyl_on_bridge(cm: *, t: i)') }
+
+          describe 'rest setup' do
+            let(:links) { subject.rest.links }
+            it { expect(links.keys.size).to eq(2) }
+          end
+
+          describe 'children updates too' do
+            let(:child1) { wrap(activated_methyl_on_incoherent_bridge.dup) }
+            let(:child2) { wrap(activated_methyl_on_incoherent_bridge.dup) }
+            before do
+              subject.store_child(child1)
+              subject.store_child(child2)
+            end
+
+            it { expect(child1.spec.atom(:t)).to_not be_nil }
+            it { expect(child2.spec.atom(:cm)).to_not be_nil }
+          end
         end
       end
 

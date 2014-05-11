@@ -72,14 +72,6 @@ module VersatileDiamond
         store_parent(new_parent)
       end
 
-      # Replaces base specie of current wrapped specific specie
-      # @param [DependentBaseSpec] new_base the new base specie
-      def replace_base_spec(new_base)
-        children.each { |child| child.replace_base_spec(new_base) }
-        spec.replace_base_spec(new_base.spec)
-        rest.links.keys.map(&:update_keyname) if rest
-      end
-
       # Makes difference between other dependent spec
       # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
       # @return [SpecResidual] the residual of difference operation
@@ -151,6 +143,14 @@ module VersatileDiamond
       # @return [Integer] sum of dangling bonds
       def dangling_bonds_num
         spec.active_bonds_num + monovalents_num
+      end
+
+      # Replaces base specie of current wrapped specific specie
+      # @param [DependentBaseSpec] new_base the new base specie
+      def replace_base_spec(new_base)
+        children.each { |child| child.replace_base_spec(new_base) }
+        spec.replace_base_spec(new_base.spec)
+        rest.links.keys.map(&:update_keyname) if rest
       end
 
     private
