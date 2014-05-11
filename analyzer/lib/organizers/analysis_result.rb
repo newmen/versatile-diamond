@@ -315,18 +315,26 @@ module VersatileDiamond
 
       # Removes all unused base specs
       def purge_unused_base_specs!
-        purge_base_specs!(:excess?)
-        purge_base_specs!(:unused?)
+        loop do
+          have_excess = purge_base_specs!(:excess?)
+          have_unused = purge_base_specs!(:unused?)
+          break if !have_excess && !have_unused
+        end
       end
 
       # Purges all extrime base spec if some have just one child and it
       # child is unspecified specific spec
-      def purge_base_specs!(check_method)
-        purging_specs = base_specs.select(&check_method)
+      #
+      # @param [Symbol] check_method_name the method by which purging species will be
+      #   selected
+      # @return [Boolean] have purged species or not
+      def purge_base_specs!(check_method_name)
+        purging_specs = base_specs.select(&check_method_name)
         purging_specs.each do |purging_spec|
           purging_spec.exclude
           @base_specs.delete(purging_spec.name)
         end
+        !purging_specs.empty?
       end
     end
 
