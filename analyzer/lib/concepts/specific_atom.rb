@@ -19,7 +19,9 @@ module VersatileDiamond
       # Error for case if state for atom doesn't exsit
       class NotStated < Stated; end
 
-      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence
+      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
+        :original_same?
+
       attr_reader :monovalents
 
       # Initialize a new instance

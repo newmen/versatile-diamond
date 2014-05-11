@@ -7,8 +7,8 @@ module VersatileDiamond
     class AtomReference
       extend Forwardable
 
-      def_delegators :@atom, :name, :lattice, :lattice=, :same?, :actives,
-        :monovalents, :incoherent?, :unfixed?, :diff, :original_valence
+      def_delegators :@atom, :name, :lattice, :lattice=, :same?, :original_same?,
+        :actives, :monovalents, :incoherent?, :unfixed?, :diff, :original_valence
 
       attr_reader :spec, :keyname
 
@@ -18,8 +18,10 @@ module VersatileDiamond
       def initialize(spec, atom_keyname)
         @spec = spec
         @keyname = atom_keyname
-        @atom = @spec.atom(atom_keyname).dup # because atom can be changed by
-        # mapping algorithm
+
+        # because atom can be changed by mapping algorithm
+        @original_atom = spec.atom(atom_keyname)
+        @atom = @original_atom.dup
       end
 
       # Valence of atom with taking into account position of the atom in
@@ -45,6 +47,11 @@ module VersatileDiamond
       # @return [Boolean] is related or not?
       def reference_to?(spec)
         @spec == spec
+      end
+
+      # Updates keyname if it was changed in using specie for original atom
+      def update_keyname
+        @keyname = spec.keyname(@original_atom)
       end
 
       def to_s

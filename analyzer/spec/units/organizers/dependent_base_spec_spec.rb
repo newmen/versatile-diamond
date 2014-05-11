@@ -250,10 +250,9 @@ module VersatileDiamond
         let(:left) { wrap(bridge_base) }
         let(:middle) { wrap(methyl_on_bridge_base) }
         let(:right) { DependentSpecificSpec.new(activated_methyl_on_bridge) }
-        let(:rest) { middle - left }
 
         before do
-          middle.store_rest(rest)
+          middle.store_rest(middle - left)
           middle.store_parent(left)
           right.store_parent(middle)
           middle.exclude
@@ -261,9 +260,13 @@ module VersatileDiamond
 
         it { expect(left.children).to eq([right]) }
         it { expect(right.parent).to eq(left) }
-
         it { expect(left.rest).to be_nil }
-        it { expect(right.rest).to eq(rest) }
+
+        describe 'rest of right' do
+          let(:rls) { right.rest.links }
+          it { expect(rls.keys.map(&:actives)).to match_array([1, 0]) }
+          it { expect(rls.values.reduce(:+).map(&:last)).to eq([free_bond] * 2) }
+        end
       end
     end
 

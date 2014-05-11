@@ -33,8 +33,8 @@ module VersatileDiamond
 
       describe '#store_rest' do
         subject { wrap(activated_methyl_on_bridge) }
-        let(:minuend) { DependentBaseSpec.new(methyl_on_bridge_base) }
-        let(:rest) { minuend - DependentBaseSpec.new(bridge_base) }
+        let(:parent) { wrap(methyl_on_bridge) }
+        let(:rest) { subject - parent }
         before { subject.store_rest(rest) }
         it { expect(subject.rest).to eq(rest) }
       end
@@ -49,12 +49,6 @@ module VersatileDiamond
 
       describe '#specific_atoms' do
         it { expect(subject.specific_atoms).to eq(subject.spec.specific_atoms) }
-      end
-
-      describe '#replace_base_spec' do
-        let(:cap) { bridge_base }
-        before { subject.replace_base_spec(cap) }
-        it { expect(subject.base_spec).to eq(cap) }
       end
 
       describe '#external_bonds' do
@@ -98,6 +92,8 @@ module VersatileDiamond
         describe '#store_parent' do
           it { expect(parent.children).to eq([child]) }
           it { expect(child.parent).to eq(parent) }
+
+          it { expect(child.rest).to_not be_nil }
         end
 
         describe '#remove_parent' do
@@ -105,6 +101,78 @@ module VersatileDiamond
 
           it { expect(parent.children).to eq([child]) }
           it { expect(child.parent).to be_nil }
+        end
+
+        describe '#replace_parent' do
+
+        end
+      end
+
+      describe '#replace_base_spec' do
+        let(:new_base) { DependentBaseSpec.new(bridge_base_dup) }
+        let(:specific) { activated_methyl_on_incoherent_bridge }
+        subject { wrap(specific) }
+
+        before { subject.replace_base_spec(new_base) }
+        it { expect(subject.base_spec).to eq(new_base.spec) }
+
+        describe 'when parent already set' do
+          let(:parent) { DependentBaseSpec.new(methyl_on_bridge_base) }
+          let(:ref_keynames) { subject.rest.links.map(&:first).map(&:keyname) }
+          before { subject.store_parent(parent) }
+          it { expect(ref_keynames).to match_array([:cm, :t]) }
+        end
+
+        describe 'children updates too' do
+          let(:child1) { wrap(activated_methyl_on_incoherent_bridge.dup) }
+          let(:child2) { wrap(activated_methyl_on_incoherent_bridge.dup) }
+          before do
+            subject.store_child(child1)
+            subject.store_child(child2)
+          end
+
+          it { expect(child1.spec.atom(:t)).to_not be_nil }
+          it { expect(child2.spec.atom(:cm)).to_not be_nil }
+        end
+      end
+
+      describe '-' do
+        subject { minuend - subtrahend }
+        let(:links) { subject.links }
+
+        describe 'target is complex specific spec' do
+          let(:minuend) { wrap(activated_methyl_on_incoherent_bridge) }
+
+          shared_examples_for :rest_has_two_atoms do
+            it { should be_a(SpecResidual) }
+            it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
+            it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
+          end
+
+          describe 'other is specific' do
+            let(:subtrahend) { wrap(methyl_on_bridge) }
+
+            it_behaves_like :rest_has_two_atoms
+            it { expect(links.values.reduce(:+)).to be_empty }
+          end
+
+          describe 'parent links size less than current size' do
+            let(:subtrahend) { DependentBaseSpec.new(bridge_base_dup) }
+
+            it_behaves_like :rest_has_two_atoms
+            # one bond in both directions
+            it { expect(links.values.reduce(:+).map(&:last)).to eq([free_bond] * 2) }
+          end
+        end
+
+        describe 'other is base with same links size' do
+          let(:minuend) { wrap(activated_methyl_on_bridge) }
+          let(:subtrahend) { DependentBaseSpec.new(methyl_on_bridge_base) }
+
+          it { should be_a(SpecResidual) }
+          it { expect(links.size).to eq(1) }
+          it { expect(links.keys.first.actives).to eq(1) }
+          it { expect(links.values).to eq([[]]) }
         end
       end
 

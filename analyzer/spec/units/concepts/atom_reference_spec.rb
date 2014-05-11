@@ -24,6 +24,11 @@ module VersatileDiamond
         it { expect(ref.same?(ref.dup)).to be_true }
       end
 
+      describe '#original_same?' do
+        it { expect(c1.original_same?(ref)).to be_true }
+        it { expect(ref.original_same?(c1)).to be_true }
+      end
+
       describe '#actives' do
         it { expect(ref.actives).to eq(0) }
       end
@@ -59,11 +64,22 @@ module VersatileDiamond
         it { expect(ref.reference_to?(bridge_base)).to be_false }
       end
 
+      describe '#update_keyname' do
+        let(:spec) { activated_methyl_on_incoherent_bridge }
+        subject { described_class.new(spec, :cb) }
+        before do
+          subject # instantize subject before
+          spec.replace_base_spec(bridge_base_dup)
+          subject.update_keyname
+        end
+
+        it { expect(subject.keyname).to eq(:t) }
+      end
+
       it_behaves_like '#lattice' do
         let(:target) { c1 }
         let(:reference) { ref }
       end
-
     end
 
   end

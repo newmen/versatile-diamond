@@ -272,13 +272,38 @@ module VersatileDiamond
       def rename_used_keynames(other)
         intersec = Mcs::SpeciesComparator.first_general_intersec(@spec, other)
         mirror = Hash[intersec.to_a]
-        new_specific_atoms = @specific_atoms.map do |old_keyname, atom|
+
+        new_specific_atoms = {}
+        @specific_atoms.each do |old_keyname, atom|
           base_atom = @spec.atom(old_keyname)
           other_atom = mirror[base_atom]
           new_keyname = other_atom ? other.keyname(other_atom) : old_keyname
-          [new_keyname, atom]
+
+          # raise could be when other base spec contain keynames same as residual
+          # atom keynames which are present if other base spec atoms size less than
+          # previous base spec atoms size
+          raise 'Keyname is duplicated' if new_specific_atoms[new_keyname]
+          new_specific_atoms[new_keyname] = atom
         end
-        @specific_atoms = Hash[new_specific_atoms]
+
+        update_links(mirror)
+        @specific_atoms = new_specific_atoms
+      end
+
+      # Updates current links to correct atoms from some other base spec
+      # @param [Hash] mirror of atoms from prev base to some other new base spec
+      def update_links(mirror)
+        # before build curret links cache by calling #links method
+        new_links = links.map do |atom_key, atoms_ref_list|
+          new_atom_key = mirror[atom_key] || atom_key
+          new_atoms_ref_list = atoms_ref_list.map do |a, r|
+            [mirror[a] || a, r]
+          end
+
+          [new_atom_key, new_atoms_ref_list]
+        end
+
+        @links = Hash[new_links]
       end
 
       # Collect all relevant states for passed atom

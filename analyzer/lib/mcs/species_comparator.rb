@@ -21,9 +21,11 @@ module VersatileDiamond
         # @param [Hash] second links that search will be carried out
         # @option [Boolean] :separated_multi_bond set to true if need separated
         #   instances for double or triple bonds
+        # @yeild [Graph, Graph, Concepts::Atom, Concepts::Atom] if presented compares
+        #   two atoms of comparable species
         # @raise [RuntimeError] if some of separated multi-bonds is invalid
         # @return [Array] the array of all possible intersections
-        def intersec(first, second, separated_multi_bond: false)
+        def intersec(first, second, separated_multi_bond: false, &ver_comp_block)
           smb = separated_multi_bond
 
           @@_intersec_cache ||= {}
@@ -33,7 +35,8 @@ module VersatileDiamond
 
           large_graph = Graph.new(first.links, separated_multi_bond: smb)
           small_graph = Graph.new(second.links, separated_multi_bond: smb)
-          assoc_graph = AssocGraph.new(large_graph, small_graph)
+          assoc_graph =
+            AssocGraph.new(large_graph, small_graph, comparer: ver_comp_block)
 
           @@_intersec_cache[key] = HanserRecursiveAlgorithm.new(assoc_graph).intersec
         end
@@ -41,9 +44,11 @@ module VersatileDiamond
         # Gets first full possible intersec between two species
         # @param [Hash] first see at #intersec same argument
         # @param [Hash] second see at #intersec same argument
+        # @yeild [Graph, Graph, Concepts::Atom, Concepts::Atom] see at #intersec same
+        #   argument
         # @return [Set] the set of atom pairs for two species
-        def first_general_intersec(first, second)
-          intersec(first, second, separated_multi_bond: false).first
+        def first_general_intersec(first, second, &block)
+          intersec(first, second, separated_multi_bond: false, &block).first
         end
 
       end

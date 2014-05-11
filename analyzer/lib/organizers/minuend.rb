@@ -30,9 +30,7 @@ module VersatileDiamond
         intersec = first_intersec(subtrahend)
         return nil unless intersec && intersec.size == subtrahend.links_size
 
-        minuend_atoms, _ = intersec.transpose
-        mapped_set = minuend_atoms.to_set
-
+        mapped_set = intersec.map(&:first).to_set
         links_arr = purge(except(links, mapped_set))
 
         # replace residual atoms in minuend links to correspond atom reference to
@@ -43,7 +41,7 @@ module VersatileDiamond
           sub_atom = mirror[atom]
           ref = sub_atom.reference_to?(subtrahend.spec) ?
             sub_atom :
-            reference(subtrahend, sub_atom)
+            make_reference(subtrahend, sub_atom)
 
           links_arr = replace(links_arr, atom, ref)
           ref
@@ -84,12 +82,12 @@ module VersatileDiamond
         links.reject(&purge_condition)
       end
 
-      # Makes atom reference to atom from subtrahend spec by residual atom and mirror
+      # Makes atom reference to atom from subtrahend spec by residual atom
       # @param [DependentBaseSpec] subtrahend which provides original concept
       # @param [Concepts::Atom | Concepts::AtomReference] atom the reference for which
       #   will be maked
       # @return [Concepts::AtomReference] the reference to target atom
-      def reference(subtrahend, atom)
+      def make_reference(subtrahend, atom)
         spec = subtrahend.spec
         Concepts::AtomReference.new(spec, spec.keyname(atom))
       end
@@ -109,6 +107,3 @@ module VersatileDiamond
 
   end
 end
-
-
-

@@ -227,7 +227,7 @@ module VersatileDiamond
             same_name = same_base.name
             wrapped_specific_specs.each do |wrapped_specific|
               if wrapped_specific.base_name == same_name
-                wrapped_specific.replace_base_spec(wrapped_base.spec)
+                wrapped_specific.replace_base_spec(wrapped_base)
               end
             end
           end
