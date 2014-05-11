@@ -4,6 +4,7 @@ module VersatileDiamond
     # Stores analysis results of some kinetic schema and organizes the
     # relationship between interpreted concepts
     class AnalysisResult
+      include SpeciesOrganizer
 
       # Exception for case when some reactions overlap
       class ReactionDuplicate < Errors::Base
@@ -98,7 +99,7 @@ module VersatileDiamond
             DependentBaseSpec.new(base_spec)
           end
 
-        Hash[dependent_bases.map(&:name).zip(dependent_bases)]
+        make_cache(dependent_bases)
       end
 
       # Collects specific species from all reactions. Each spec must be already
@@ -222,54 +223,11 @@ module VersatileDiamond
       # @raise [ReactionDuplicate] if was defined some duplicate of reaction
       def organize_dependecies!
         # order of organization is important!
-        organize_specific_spec_dependencies!
-        purge_same_base_specs!
+        organize_spec_dependencies!(@base_specs, specific_specs)
 
         # before need to update specs by organize their dependecies!
         check_reactions_for_duplicates
         organize_reactions_dependencies!
-
-        organize_base_specs_dependencies!
-        purge_unused_base_specs!
-      end
-
-      # Organize dependencies between specific species
-      def organize_specific_spec_dependencies!
-        specific_specs.each_with_object({}) do |wrapped_specific, specs|
-          base_name = wrapped_specific.base_name
-          specs[base_name] ||= specific_specs.select do |s|
-            s.base_name == base_name
-          end
-
-          wrapped_specific.organize_dependencies!(@base_specs, specs[base_name])
-        end
-      end
-
-      # Purges same base specs if they exists, as replacing duplicated base
-      # spec in correspond specific spec and their reactions and theres
-      def purge_same_base_specs!
-        wrapped_base_specs = base_specs.dup
-
-        until wrapped_base_specs.empty?
-          wrapped_base = wrapped_base_specs.pop
-
-          sames = wrapped_base_specs.select do |wbs|
-            wbs.name != wrapped_base.name && wrapped_base.same?(wbs)
-          end
-
-          wrapped_base_specs -= sames
-
-          sames.each do |same_base|
-            exchange_specs(@base_specs, same_base, wrapped_base)
-
-            same_name = same_base.name
-            specific_specs.each do |wrapped_specific|
-              if wrapped_specific.parent && wrapped_specific.parent.name == same_name
-                wrapped_specific.replace_parent(wrapped_base)
-              end
-            end
-          end
-        end
       end
 
       # Checks stored reactions for duplication with each other
@@ -303,38 +261,6 @@ module VersatileDiamond
         typical_reactions.each do |reaction|
           reaction.organize_dependencies!(lateral_reactions)
         end
-      end
-
-      # Organize dependencies between base specs
-      def organize_base_specs_dependencies!
-        table = BaseSpeciesTable.new(base_specs)
-        base_specs.each do |wrapped_base|
-          wrapped_base.organize_dependencies!(table)
-        end
-      end
-
-      # Removes all unused base specs
-      def purge_unused_base_specs!
-        loop do
-          have_excess = purge_base_specs!(:excess?)
-          have_unused = purge_base_specs!(:unused?)
-          break if !have_excess && !have_unused
-        end
-      end
-
-      # Purges all extrime base spec if some have just one child and it
-      # child is unspecified specific spec
-      #
-      # @param [Symbol] check_method_name the method by which purging species will be
-      #   selected
-      # @return [Boolean] have purged species or not
-      def purge_base_specs!(check_method_name)
-        purging_specs = base_specs.select(&check_method_name)
-        purging_specs.each do |purging_spec|
-          purging_spec.exclude
-          @base_specs.delete(purging_spec.name)
-        end
-        !purging_specs.empty?
       end
     end
 
