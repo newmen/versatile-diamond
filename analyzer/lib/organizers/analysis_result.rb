@@ -197,42 +197,6 @@ module VersatileDiamond
           exchange_specs(specific_specs_cache, wrapped_specific, wrapped_base)
         end
 
-        purge_same_base_specs(base_specs_cache, specific_specs_cache)
-      end
-
-      # Purges same base specs if they exists, as replacing duplicated base
-      # spec in correspond specific spec and their reactions and theres
-      #
-      # @param [Hash] base_specs_cache see at #purge_unspecifified_specs same
-      #   argument
-      # @param [Hash] specific_specs_cache see at #purge_unspecifified_specs
-      #   same argument
-      # @return [Array] see at result of #purge_unspecifified_specs
-      def purge_same_base_specs(base_specs_cache, specific_specs_cache)
-        wrapped_base_specs = base_specs_cache.values
-        wrapped_specific_specs = specific_specs_cache.values
-
-        until wrapped_base_specs.empty?
-          wrapped_base = wrapped_base_specs.pop
-
-          sames = wrapped_base_specs.select do |wbs|
-            wbs.name != wrapped_base.name && wrapped_base.same?(wbs)
-          end
-
-          wrapped_base_specs -= sames
-
-          sames.each do |same_base|
-            exchange_specs(base_specs_cache, same_base, wrapped_base)
-
-            same_name = same_base.name
-            wrapped_specific_specs.each do |wrapped_specific|
-              if wrapped_specific.base_name == same_name
-                wrapped_specific.replace_base_spec(wrapped_base)
-              end
-            end
-          end
-        end
-
         [base_specs_cache, specific_specs_cache]
       end
 
@@ -259,6 +223,7 @@ module VersatileDiamond
       def organize_dependecies!
         # order of organization is important!
         organize_specific_spec_dependencies!
+        purge_same_base_specs!
 
         # before need to update specs by organize their dependecies!
         check_reactions_for_duplicates
@@ -277,6 +242,33 @@ module VersatileDiamond
           end
 
           wrapped_specific.organize_dependencies!(@base_specs, specs[base_name])
+        end
+      end
+
+      # Purges same base specs if they exists, as replacing duplicated base
+      # spec in correspond specific spec and their reactions and theres
+      def purge_same_base_specs!
+        wrapped_base_specs = base_specs.dup
+
+        until wrapped_base_specs.empty?
+          wrapped_base = wrapped_base_specs.pop
+
+          sames = wrapped_base_specs.select do |wbs|
+            wbs.name != wrapped_base.name && wrapped_base.same?(wbs)
+          end
+
+          wrapped_base_specs -= sames
+
+          sames.each do |same_base|
+            exchange_specs(@base_specs, same_base, wrapped_base)
+
+            same_name = same_base.name
+            specific_specs.each do |wrapped_specific|
+              if wrapped_specific.parent && wrapped_specific.parent.name == same_name
+                wrapped_specific.replace_parent(wrapped_base)
+              end
+            end
+          end
         end
       end
 
