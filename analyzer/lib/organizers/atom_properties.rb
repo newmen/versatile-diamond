@@ -89,26 +89,6 @@ module VersatileDiamond
         end
       end
 
-      # Gives the number of how many termination specs lies in current
-      # properties
-      #
-      # @param [Concepts::TerminationSpec] term_spec the verifiable termination spec
-      # @raise [ArgumentError] if argument is not termination spec
-      # @return [Boolean] have or not
-      def terminations_num(term_spec)
-        if term_spec.class == ActiveBond
-          actives_num
-        elsif term_spec.class == AtomicSpec
-          if term_spec.hydrogen?
-            total_hydrogens_num
-          else
-            count_danglings(term_spec.name)
-          end
-        else
-          raise ArgumentError, 'Undefined termination spec type'
-        end
-      end
-
       # Makes unrelevanted copy of self
       # @return [AtomProperties] unrelevanted atom properties
       def unrelevanted
@@ -166,10 +146,29 @@ module VersatileDiamond
         end
       end
 
+      # Counts of dangling instances
+      # @param [Symbol] state the counting state
+      # @return [Integer] number of instances
+      def count_danglings(state)
+        danglings.select { |r| r == state }.size
+      end
+
+      # Gets number of active bonds
+      # @return [Integer] number of active bonds
+      def actives_num
+        count_danglings(:active)
+      end
+
       # Gets number of hydrogen atoms
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
         count_danglings(:H)
+      end
+
+      # Counts total number of hydrogen atoms
+      # @return [Integer] the number of total number of hydrogen atoms
+      def total_hydrogens_num
+        valence - bonds_num + dangling_hydrogens_num
       end
 
       # Gets size of properties
@@ -270,12 +269,6 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def contain_all_danglings?(other)
         contain_all_by?(other, :danglings)
-      end
-
-      # Counts total number of hydrogen atoms
-      # @return [Integer] the number of total number of hydrogen atoms
-      def total_hydrogens_num
-        valence - bonds_num + dangling_hydrogens_num
       end
 
     private
@@ -425,19 +418,6 @@ module VersatileDiamond
       # @return [Integer] the total number of bonds
       def bonds_num
         estab_bonds_num + danglings.size
-      end
-
-      # Counts of dangling instances
-      # @param [Symbol] state the counting state
-      # @return [Integer] number of instances
-      def count_danglings(state)
-        danglings.select { |r| r == state }.size
-      end
-
-      # Gets number of active bonds
-      # @return [Integer] number of active bonds
-      def actives_num
-        count_danglings(:active)
       end
     end
 

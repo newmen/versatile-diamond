@@ -335,27 +335,42 @@ module VersatileDiamond
               end
             end
 
-            describe 'without' do
-              shared_examples_for :specific_classify_without do
-                let(:specific_spec) { wrap_specific(spec) }
-                let(:without_spec) { wrap_specific(without) }
-                let(:result) { subject.classify(specific_spec, without: without_spec) }
+            describe 'organize species dependencies' do
+              shared_examples_for :organized_specific_classify do
+                let(:result) { subject.classify(target_spec) }
+                before { organize(all_specific) }
                 it { expect(result).to eq(hash) }
               end
 
-              it_behaves_like :specific_classify_without do
-                let(:spec) { activated_bridge }
-                let(:without) { bridge_base }
+              it_behaves_like :organized_specific_classify do
+                let(:target_spec) { wrap_specific(activated_bridge) }
+                let(:all_specific) { [target_spec] }
                 let(:hash) do
                   { 4 => ['*C%d<', 1] }
                 end
               end
 
-              it_behaves_like :specific_classify_without do
-                let(:spec) { dimer }
-                let(:without) { bridge_base }
+              it_behaves_like :organized_specific_classify do
+                let(:one) { wrap_specific(bridge) }
+                let(:two) { wrap_specific(dimer) }
+                let(:target_spec) { two.parent }
+                let(:all_specific) { [one, two] }
                 let(:hash) do
                   { 14 => ['-C%d<', 2] }
+                end
+              end
+
+              it_behaves_like :organized_specific_classify do
+                let(:one) { wrap_specific(activated_bridge) }
+                let(:two) { wrap_specific(activated_dimer) }
+                let(:three) { wrap_specific(activated_methyl_on_incoherent_bridge) }
+                let(:target_spec) { three }
+                let(:all_specific) { [one, two, three] }
+                let(:hash) do
+                  {
+                    19 => ['*C~', 1],
+                    23 => ['~C:i%d<', 1]
+                  }
                 end
               end
             end

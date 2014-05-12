@@ -16,6 +16,12 @@ module VersatileDiamond
         0
       end
 
+      # Calls correspond method in atom properties
+      # @param [AtomProperties] prop the observed atom properties
+      def terminations_num(prop)
+        prop.actives_num
+      end
+
       # Compares with an other spec
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] is specs same or not

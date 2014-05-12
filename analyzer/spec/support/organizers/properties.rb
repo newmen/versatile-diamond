@@ -7,15 +7,36 @@ module VersatileDiamond
       # Provides atom properties instances for RSpec
       module Properties
         include Tools::Handbook
+        include SpeciesOrganizer
 
+        # Creates properties of atom with some name by dependent specific specie and
+        # atom of it
+        #
+        # @param [Symbol] propname the name of creating properties
+        # @param [Symbol] specname name of specie by atom of which the properties
+        #   will be created
+        # @param [Symbol] keyname atom keyname by which the target atom will be got
+        # @return [Concepts::AtomProperties] the new atom properties
         def self.prop(propname, specname, keyname)
           set(propname) do
-            spec = send(specname)
-            AtomProperties.new(spec, spec.atom(keyname))
+            concept = send(specname)
+            spec = DependentSpecificSpec.new(concept)
+            AtomProperties.new(spec, concept.atom(keyname))
           end
         end
 
-        prop(:methyl, :unfixed_methyl_on_bridge, :cm)
+        # Organize dependenceis between passed specific species and base species
+        # of them
+        #
+        # @param [Array] specific_species the array of organizing species
+        def organize(specific_species)
+          original_bases = specific_species.map(&:base_spec)
+          wrapped_bases = original_bases.map { |s| DependentBaseSpec.new(s) }
+          base_cache = make_cache(wrapped_bases)
+          organize_spec_dependencies!(base_cache, specific_species)
+        end
+
+        prop(:ucm, :unfixed_methyl_on_bridge, :cm)
         prop(:high_cm, :high_bridge, :cm)
 
         prop(:bridge_ct, :bridge, :ct)
