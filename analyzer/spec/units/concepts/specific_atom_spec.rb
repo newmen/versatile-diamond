@@ -178,12 +178,15 @@ module VersatileDiamond
       end
 
       describe '#relations_in' do
+        def dept_specific_spec(sp = spec)
+          Organizers::DependentSpecificSpec.new(sp)
+        end
+
         let(:spec) { activated_bridge }
-        let(:dept_spec) { Organizers::DependentSpecificSpec.new(spec) }
 
         describe ':ct of activated_bridge' do
           subject { spec.atom(:ct) }
-          it { expect(subject.relations_in(dept_spec)).to match_array([
+          it { expect(subject.relations_in(dept_specific_spec)).to match_array([
               :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
@@ -192,7 +195,7 @@ module VersatileDiamond
 
         describe ':cr of activated_bridge' do
           subject { spec.atom(:cr) }
-          it { expect(subject.relations_in(dept_spec).map(&:last)).to match_array([
+          it { expect(subject.relations_in(dept_specific_spec).map(&:last)).to match_array([
               bond_110_front,
               bond_110_cross,
               bond_110_cross,
@@ -204,7 +207,7 @@ module VersatileDiamond
           subject { spec.atom(:cr) }
           let(:spec) { right_activated_bridge }
           let(:relations) { lattice_relations + sybmolic_relations }
-          let(:all_relations) { subject.relations_in(dept_spec) }
+          let(:all_relations) { subject.relations_in(dept_specific_spec) }
           let(:sybmolic_relations) { all_relations.select { |r| r.is_a?(Symbol) } }
           let(:lattice_relations) do
             all_relations.reject { |r| r.is_a?(Symbol) }.map(&:last)
@@ -229,6 +232,50 @@ module VersatileDiamond
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
             ]) }
+        end
+
+        describe 'with Organizers::SpecResidual' do
+          let(:minuend_dept) { dept_specific_spec(minuend_concept) }
+
+          describe ':ct of activated_bridge - bridge' do
+            let(:minuend_concept) { activated_bridge }
+            let(:subtrahend_concept) { bridge }
+            let(:subtrahend_dept) { dept_specific_spec(subtrahend_concept) }
+
+            let(:rest) { minuend_dept - subtrahend_dept }
+
+            subject { rest.links.keys.first }
+
+            it { expect(subject.relations_in(rest)).to match_array([
+                :active,
+                [spec.atom(:cr), bond_110_cross],
+                [spec.atom(:cl), bond_110_cross]
+              ]) }
+          end
+
+          describe ':t of activated_methyl_on_incoherent_bridge - bridge_base_dup' do
+            let(:minuend_concept) { activated_methyl_on_incoherent_bridge }
+            let(:subtrahend_concept) { bridge_base_dup }
+            let(:subtrahend_dept) do
+              Organizers::DependentBaseSpec.new(subtrahend_concept)
+            end
+
+            let(:rest) { minuend_dept - subtrahend_dept }
+
+            let(:cm) { rest.links.keys.first }
+            let(:t) { rest.links.keys.last }
+
+            it { expect(cm.relations_in(rest)).to match_array([
+                :active,
+                [t, free_bond]
+              ]) }
+
+            it { expect(t.relations_in(rest)).to match_array([
+                [cm, free_bond],
+                [subtrahend_concept.atom(:r), bond_110_cross],
+                [subtrahend_concept.atom(:l), bond_110_cross]
+              ]) }
+          end
         end
       end
 
