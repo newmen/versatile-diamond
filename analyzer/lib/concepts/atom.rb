@@ -81,6 +81,12 @@ module VersatileDiamond
         spec.links[self].dup
       end
 
+      # Atom couldn't contain additional relations
+      # @return [Array] the empty array
+      def additional_relations
+        []
+      end
+
       # Atom could not relate to spec
       # @param [Spec] _ do not used
       # @return [Boolean] false

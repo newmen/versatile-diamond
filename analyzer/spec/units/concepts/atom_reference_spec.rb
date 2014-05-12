@@ -59,6 +59,10 @@ module VersatileDiamond
         it { expect(bridge.atom(:cr).relations_in(bridge).size).to eq(4) }
       end
 
+      describe '#additional_relations' do
+        it { expect(bridge.atom(:cr).additional_relations.size).to eq(2) }
+      end
+
       describe '#reference_to?' do
         it { expect(ref.reference_to?(ethylene_base)).to be_true }
         it { expect(ref.reference_to?(bridge_base)).to be_false }

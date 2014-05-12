@@ -15,7 +15,7 @@ module VersatileDiamond
       # @overload new(props)
       #   @param [Array] props the array of default properties
       # @overload new(spec, atom)
-      #   @param [Concepts::Spec | Concepts::SpecificSpec] spec in which atom will
+      #   @param [DependentSpec | SpecResidual] spec in which atom will
       #     find properties
       #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #     atom the atom for which properties will be stored
@@ -356,13 +356,15 @@ module VersatileDiamond
       end
 
       # Harvest relations of atom in spec
-      # @param [Concepts::Spec | Concepts::SpecificSpec] spec see at #new same argument
+      # @param [DependentSpec | SpecResidual] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   spec see at #new same argument
       # @return [Array] relations array
       def relations_for(spec, atom)
-        relations = []
+        # only bonds without relevat states
         links = atom.relations_in(spec).reject { |ar| ar.is_a?(Symbol) }
+        relations = []
+
         until links.empty?
           atom_rel = links.pop
           same = links.select { |ar| ar == atom_rel }
@@ -389,9 +391,7 @@ module VersatileDiamond
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
         links = atom.relations_in(spec)
-        links.reduce([]) do |acc, atom_rel|
-          atom_rel.is_a?(Symbol) ? acc + [atom_rel] : acc
-        end
+        links.select { |atom_rel| atom_rel.is_a?(Symbol) }
       end
 
       # Drops relevants properties if it exists

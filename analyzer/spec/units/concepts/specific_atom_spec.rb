@@ -179,10 +179,11 @@ module VersatileDiamond
 
       describe '#relations_in' do
         let(:spec) { activated_bridge }
+        let(:dept_spec) { Organizers::DependentSpecificSpec.new(spec) }
 
         describe ':ct of activated_bridge' do
           subject { spec.atom(:ct) }
-          it { expect(subject.relations_in(spec)).to match_array([
+          it { expect(subject.relations_in(dept_spec)).to match_array([
               :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
@@ -191,7 +192,26 @@ module VersatileDiamond
 
         describe ':cr of activated_bridge' do
           subject { spec.atom(:cr) }
-          it { expect(subject.relations_in(spec).map(&:last)).to match_array([
+          it { expect(subject.relations_in(dept_spec).map(&:last)).to match_array([
+              bond_110_front,
+              bond_110_cross,
+              bond_110_cross,
+              position_100_front
+            ]) }
+        end
+
+        describe ':cr of right_activated_bridge' do
+          subject { spec.atom(:cr) }
+          let(:spec) { right_activated_bridge }
+          let(:relations) { lattice_relations + sybmolic_relations }
+          let(:all_relations) { subject.relations_in(dept_spec) }
+          let(:sybmolic_relations) { all_relations.select { |r| r.is_a?(Symbol) } }
+          let(:lattice_relations) do
+            all_relations.reject { |r| r.is_a?(Symbol) }.map(&:last)
+          end
+
+          it { expect(relations).to match_array([
+              :active,
               bond_110_front,
               bond_110_cross,
               bond_110_cross,
@@ -202,6 +222,7 @@ module VersatileDiamond
         describe ':ct of activated_hydrogenated_bridge' do
           let(:spec) { activated_hydrogenated_bridge }
           subject { spec.atom(:ct) }
+
           it { expect(subject.relations_in(spec)).to match_array([
               :H,
               :active,
