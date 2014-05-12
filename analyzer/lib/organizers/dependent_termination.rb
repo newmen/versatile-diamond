@@ -5,6 +5,8 @@ module VersatileDiamond
     class DependentTermination < DependentSpec
       include MultiParentsSpec
 
+      def_delegators :spec, :terminations_num
+
       # Termination spec could not be a specific spec
       # @return [Boolean] false
       def specific?

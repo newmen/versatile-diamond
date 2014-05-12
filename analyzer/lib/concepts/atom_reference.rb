@@ -39,7 +39,7 @@ module VersatileDiamond
       #   contain current atom
       # @return [Array] the array of relations
       def relations_in(spec)
-        spec.links[self] + additional_relations
+        additional_relations + (spec.links[self] || [])
       end
 
       # Gets relations from reference

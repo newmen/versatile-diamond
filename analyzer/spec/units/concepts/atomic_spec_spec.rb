@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe AtomicSpec do
+    describe AtomicSpec, use: :atom_properties do
       describe '#name' do
         it { expect(adsorbed_h.name).to eq(:H) }
       end
@@ -14,6 +14,12 @@ module VersatileDiamond
 
       describe '#hydrogen?' do
         it { adsorbed_h.hydrogen? }
+      end
+
+      describe '#terminations_num' do
+        it { expect(adsorbed_h.terminations_num(eab_ct)).to eq(0) }
+        it { expect(adsorbed_h.terminations_num(ahb_ct)).to eq(1) }
+        it { expect(adsorbed_h.terminations_num(ehb_ct)).to eq(2) }
       end
 
       describe '#same?' do

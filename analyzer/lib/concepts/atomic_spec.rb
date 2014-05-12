@@ -25,6 +25,16 @@ module VersatileDiamond
         1
       end
 
+      # Calls correspond method in atom properties
+      # @param [AtomProperties] prop the observed atom properties
+      def terminations_num(prop)
+        if hydrogen?
+          prop.total_hydrogens_num
+        else
+          prop.count_danglings(name)
+        end
+      end
+
       # Compares with an other spec
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] is specs same or not
