@@ -10,7 +10,7 @@ module VersatileDiamond
       attr_reader :reaction, :parent
       collector_methods :complex
       def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of,
-        :size
+        :size, :changes_size
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
