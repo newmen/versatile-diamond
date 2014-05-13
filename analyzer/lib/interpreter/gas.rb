@@ -17,8 +17,7 @@ module VersatileDiamond
         specific_spec = detect_spec(specified_spec_str)
         Tools::Config.gas_concentration(specific_spec, value, dimension)
       rescue Tools::Config::AlreadyDefined
-        syntax_error('.concentration_already_set',
-          name: specific_spec.full_name)
+        syntax_error('.concentration_already_set', name: specific_spec.name)
       end
 
     private

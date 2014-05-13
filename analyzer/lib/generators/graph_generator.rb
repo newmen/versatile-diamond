@@ -2,15 +2,16 @@ module VersatileDiamond
   module Generators
 
     # Provides useful logic for graph generation
-    # @abstract
-    class GraphGenerator < Base
+    module GraphGenerator
+    private
 
-      SPEC_COLOR = 'black'
-      SPECIFIC_SPEC_COLOR = 'blue'
-      TERMINATION_SPEC_COLOR = 'chocolate'
+      attr_reader :graph
 
-      # Default constructor of graph generator
-      def initialize(filename, ext = 'png')
+      # Initializes of graph generator
+      # @param [Organizers::AnalysisResult] analysis_result the result of analysis
+      # @param [String] filename the name of result image file
+      # @param [String] ext the extention of result image file
+      def init_graph(filename, ext = 'png')
         @filename = "#{filename}.#{ext}"
         @ext = ext.to_sym
 
@@ -18,95 +19,50 @@ module VersatileDiamond
       end
 
       # Generates a graph image file
-      def generate
+      def generate_graph
         @graph.output(@ext => @filename)
       end
 
-    private
+      # Adds species as nodes to graph
+      # @param [Hash] cache the cache of nodes which will be changed
+      # @param [Array] entities the array of adding species
+      # @param [Symbol] key_method the method that calling for convert entity to key of
+      #   cache
+      # @param [Symbol] name_method the method that used for prepare name of specie
+      # @yield [Node] setups the added node
+      def add_nodes_to(cache, entities, key_method, name_method = nil, &setup_block)
+        entities.each do |entity|
+          name = entity.name.to_s
+          name = name_method[name] if name_method
 
-      # Draws basic species and dependencies between them
-      # @param [Array] the array of base specs which will be shown
-      # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specs(specs = base_specs, no_includes: false)
-        setup_lambda = -> x { x.color = SPEC_COLOR }
-
-        @spec_to_nodes = specs.each_with_object({}) do |spec, hash|
-          node = @graph.add_nodes(spec.name.to_s)
-          node.set(&setup_lambda)
-          hash[spec] = node
-        end
-
-        return if no_includes
-
-        specs.each do |spec|
-          next unless spec.parent
-          edge =
-            @graph.add_edges(@spec_to_nodes[spec], @spec_to_nodes[spec.parent])
-          edge.set(&setup_lambda)
+          node = @graph.add_nodes(name)
+          node.set(&setup_block)
+          cache[key_method[entity]] = node
         end
       end
 
-      # Draws specific species and dependencies between them, and also will
-      # draw dependencies from basic species
-      #
-      # @param [Array] the array of specific specs which will be shown
-      # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specific_specs(specs = specific_specs, no_includes: false)
-        setup_lambda = -> x { x.color = SPECIFIC_SPEC_COLOR }
+      # Draws dependencies between some entities and their dependet entities
+      # @param [Symbol] multi_method the name of method for get dependent entities
+      # @param [Array] entities the species for which dependencies will be drawn
+      # @param [Hash] child_node_method the method which will be used for get a node of
+      #   each child
+      # @param [Hash] parent_node_method the method which will be used for get a node
+      #   of each parent
+      #   entity
+      # @yield [Edge] setups the added edges
+      def multi_deps(multi_method, entities,
+        child_node_method, parent_node_method = child_node_method, &setup_block)
 
-        @sp_specs_to_nodes = specs.each_with_object({}) do |ss, hash|
-          ss_name = split_specific_spec(ss.full_name)
-          node = @graph.add_nodes(ss_name)
-          node.set(&setup_lambda)
-          hash[ss] = node
-        end
-
-        return if no_includes
-
-        specs.each do |ss|
-          node = @sp_specs_to_nodes[ss]
-          parent = ss.parent
-          next unless parent || @spec_to_nodes
-
-          edge = if parent
-              @graph.add_edges(node, @sp_specs_to_nodes[parent])
-            elsif (base = @spec_to_nodes[ss.spec])
-              @graph.add_edges(node, base)
+        entities.each do |child|
+          child_node = child_node_method[child]
+          child.public_send(multi_method).each do |parent|
+            parent_node = parent_node_method[parent]
+            if parent_node
+              edge = @graph.add_edges(child_node, parent_node)
+              edge.set(&setup_block)
             end
-          edge.set(&setup_lambda)
+          end
         end
-      end
-
-      # Draws termination species
-      def draw_termination_specs
-        @sp_specs_to_nodes ||= {}
-        termination_specs.each do |ts|
-          node = @graph.add_nodes(ts.name.to_s)
-          node.set { |e| e.color = TERMINATION_SPEC_COLOR }
-          @sp_specs_to_nodes[ts] = node
-        end
-      end
-
-      # Splits specific spec full name to two lines
-      # @param [String] ss_str the string with full name of specific spec
-      # @return [String] string with two lines
-      def split_specific_spec(ss_str)
-        ss_str.sub(/\A([^(]+)(.+)\Z/, "\\1\n\\2")
-      end
-
-      # Multilinize passed text where each result line is not more of limit
-      # @param [String] text the text for multilinizing
-      # @option [Integer] :limit the limit of one line length
-      # @return [String] multilinized text
-      def multilinize(text, limit: 13)
-        words = text.split(/\s+/)
-        splitted_text = ['']
-        until words.empty?
-          splitted_text << '' if splitted_text.last.size > limit
-          splitted_text.last << ' ' if splitted_text.last.size > 0
-          splitted_text.last << words.shift
-        end
-        splitted_text.join("\n")
       end
     end
 

@@ -1,42 +1,64 @@
 module VersatileDiamond
   module Generators
 
-    # @abstract
+    # Provides useful methods for get collections of interpreted instances
     class Base
+      extend Forwardable
+
+      # Initializes generator by analysis result
+      # @param [Organizers::AnalysisResult] analysis_result the result of
+      #   interpretation and analysis
+      def initialize(analysis_result)
+        @analysis_result = analysis_result
+      end
+
     private
 
-      def base_specs
-        @base_specs ||= Tools::Chest.all(:gas_spec, :surface_spec)
-      end
+      def_delegators :@analysis_result, :base_specs, :specific_specs, :term_specs,
+        :ubiquitous_reactions, :typical_reactions, :lateral_reactions
 
-      def specific_specs
-        @specific_specs ||= Tools::Chest.all(:specific_spec)
-      end
-
-      def termination_specs
-        @termination_specs ||= Tools::Chest.all(:active_bond, :atomic_spec)
-      end
-
+      # Collects all unique where objects
+      # @return [Array] the array of where objects
       def wheres
-        @wheres ||= Tools::Chest.all(:where).reduce([]) do |acc, hash|
-          acc + hash.values
+        cache = {}
+        @analysis_result.theres.each do |there|
+          name = there.where.name
+          cache[name] ||= there.where
         end
+        cache.values
       end
 
-      def ubiquitous_reactions
-        @ubiquitous_reactions ||= Tools::Chest.all(:ubiquitous_reaction)
+      # Gets not ubiquitous reactions
+      # @return [Array] the not ubiquitous reactions
+      def spec_reactions
+        @spec_reactions ||= @analysis_result.spec_reactions.flatten
       end
 
-      def nonubiquitous_reactions
-        @nonubiquitous_reactions ||= typical_reactions + lateral_reactions
+      # Creates atom classifier and analyse each surface spec
+      def classifier
+        return @classifier if @classifier
+
+        @classifier = Organizers::AtomClassifier.new
+        surface_specs.each { |spec| @classifier.analyze(spec) }
+        classifier.organize_properties!
+        @classifier
       end
 
-      def typical_reactions
-        @typical_reactions ||= Tools::Chest.all(:reaction)
+      # Collects all uniq used surface species
+      def surface_specs
+        @surface_specs ||= base_surface_specs + specific_surface_specs
       end
 
-      def lateral_reactions
-        @lateral_reactions ||= Tools::Chest.all(:lateral_reaction)
+      # Gets all base surface species
+      # @return [Array] the array of base specs
+      def base_surface_specs
+        base_specs.reject(&:gas?)
+      end
+
+      # Gets all specific surface species
+      # @return [Array] the array of specific specs
+      def specific_surface_specs
+        specific_specs.reject(&:gas?)
       end
     end
 

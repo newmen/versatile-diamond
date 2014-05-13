@@ -5,14 +5,12 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       extend Forwardable
-      extend Collector
 
       include Visitors::Visitable
       include BondsCounter
 
-      attr_reader :spec
-
-      collector_methods :child, :reaction, :there
+      def_delegators :@spec, :extendable?, :gas?, :simple?
+      attr_reader :spec, :specific_atoms
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
@@ -31,13 +29,12 @@ module VersatileDiamond
         end
 
         @spec = spec
-        @original_name = @spec.name
+        @original_name = spec.name
+
         @specific_atoms = specific_atoms
 
         @external_bonds_after_extend = nil
         @reduced, @correct_reduced = nil
-
-        @child, @reaction, @there = nil
       end
 
       # Makes a copy of other specific spec by dup each specific atom from it
@@ -48,11 +45,10 @@ module VersatileDiamond
         reset_caches
       end
 
-      def_delegators :@spec, :extendable?, :gas?, :simple?
-
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec
-      def update_base_spec(new_spec)
+      def replace_base_spec(new_spec)
+        rename_used_keynames(new_spec)
         @spec = new_spec
       end
 
@@ -67,15 +63,9 @@ module VersatileDiamond
           @spec.atom(keyname(atom1)), @spec.atom(keyname(atom2)))
       end
 
-      # Gets original name of base spec
-      # @return [Symbol] the original name of base spec
-      def name
-        @original_name
-      end
-
       # Builds the full name of specific spec (with specificied atom info)
-      # @return [String] the full name of specific spec
-      def full_name
+      # @return [Symbol] the full name of specific spec
+      def name
         sorted_atoms = @specific_atoms.to_a.sort do |(k1, _), (k2, _)|
           k1 <=> k2
         end
@@ -84,7 +74,8 @@ module VersatileDiamond
           arr << "#{keyname}: #{'*' * atom.actives}" if atom.actives > 0
           arr + relevants_for(atom) + monovalents_for(atom)
         end
-        "#{name}(#{args.join(', ')})"
+
+        :"#{@original_name}(#{args.join(', ')})"
       end
 
       # Gets corresponding atom, because it can be specific atom
@@ -216,58 +207,7 @@ module VersatileDiamond
       # Checks that specific spec could be reduced
       # @return [Boolean] could or not
       def could_be_reduced?
-        raise 'Not extended spec cannot be reduced' unless extended?
-
-        Spec.good_for_reduce?(@specific_atoms.keys)
-      end
-
-      # Contain specific atoms or not
-      # @return [Boolean] contain or not
-      def specific?
-        !@specific_atoms.empty?
-      end
-
-      # Gets parent specific spec
-      # @return [SpecificSpec] the parten specific spec or nil
-      def parent
-        @parent
-      end
-
-      # Clears parent for current specific_spec
-      # @param [Spec] new_parent the base spec parent to which will be changed
-      #   current dependency
-      def clear_parent
-        @parent = nil
-      end
-
-      # Organize dependencies from another similar species. Dependencies set if
-      # similar spec has less specific atoms and existed specific atoms is same
-      # in both specs. Moreover, activated atoms have a greater advantage.
-      #
-      # @param [Array] similar_specs the array of specs where each spec has
-      #   same basic spec
-      def organize_dependencies!(similar_specs)
-        similar_specs = similar_specs.reject do |s|
-          s == self || s.specific_atoms.size > @specific_atoms.size
-        end
-
-        # sorts descending size (cannot be sorted by specific spec sizes)
-        similar_specs = similar_specs.sort do |a, b|
-          if a.specific_atoms.size == b.specific_atoms.size
-            b.dangling_bonds_num <=> a.dangling_bonds_num
-          else
-            b.specific_atoms.size <=> a.specific_atoms.size
-          end
-        end
-
-        @parent = similar_specs.find do |ss|
-          ss.specific_atoms.all? do |keyname, atom|
-            a = @specific_atoms[keyname]
-            a && is?(a, atom)
-          end
-        end
-
-        (@parent || @spec).store_child(self)
+        extended? && Spec.good_for_reduce?(@specific_atoms.keys)
       end
 
       # Compares two specific specs
@@ -282,11 +222,10 @@ module VersatileDiamond
       #   current spec
       # @param [Atom] term_atom the termination atom
       # @return [Boolean] has termination atom or not
-      def has_termination_atom?(internal_atom, term_atom)
-        (Atom.hydrogen?(term_atom) &&
-          external_bonds_for(internal_atom) > 0) ||
+      def has_termination?(internal_atom, term_atom)
+        (Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0) ||
           has_monovalent_in_links?(internal_atom, term_atom) ||
-          (internal_atom.monovalents.include?(term_atom.name))
+          internal_atom.monovalents.include?(term_atom.name)
       end
 
       # Gets a number of atoms with number of active bonds, but if spec is gas
@@ -296,6 +235,12 @@ module VersatileDiamond
       def size
         gas? ?
           0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
+      end
+
+      # Counts the sum of active bonds
+      # @return [Integer] sum of active bonds
+      def active_bonds_num
+        specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
       end
 
       # Also visit base spec
@@ -313,43 +258,52 @@ module VersatileDiamond
       end
 
       def inspect
-        full_name
+        name
       end
 
     protected
 
-      attr_reader :specific_atoms
       attr_writer :reduced
-
-      # Counts the sum of active bonds and monovalent atoms
-      # @return [Integer] sum of dangling bonds
-      def dangling_bonds_num
-        active_bonds_num + monovalents_num
-      end
 
     private
 
-      # Counts the sum of active bonds
-      # @return [Integer] sum of active bonds
-      def active_bonds_num
-        @specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
-      end
+      # Renames internal used keynames to new keynames from another base spec
+      # @param [Spec] other the base spec from which keynames will gotten
+      def rename_used_keynames(other)
+        intersec = Mcs::SpeciesComparator.first_general_intersec(@spec, other)
+        mirror = Hash[intersec.to_a]
 
-      # Counts the sum of monovalent atoms at specific atoms
-      # @return [Integer] sum of monovalent atoms
-      def monovalents_num
-        @specific_atoms.values.reduce(0) do |acc, atom|
-          acc + atom.monovalents.size
+        new_specific_atoms = {}
+        @specific_atoms.each do |old_keyname, atom|
+          base_atom = @spec.atom(old_keyname)
+          other_atom = mirror[base_atom]
+          new_keyname = other_atom ? other.keyname(other_atom) : old_keyname
+
+          # raise could be when other base spec contain keynames same as residual
+          # atom keynames which are present if other base spec atoms size less than
+          # previous base spec atoms size
+          raise 'Keyname is duplicated' if new_specific_atoms[new_keyname]
+          new_specific_atoms[new_keyname] = atom
         end
+
+        update_links(mirror)
+        @specific_atoms = new_specific_atoms
       end
 
-      # Selects bonds for passed atom
-      # @param [Atom] atom the atom for which bonds will be selected
-      # @return [Array] the array of bonds incedent to an atom
-      # @override
-      def internal_bonds_for(atom)
-        valid_atom = links[atom] ? atom : atom(@spec.keyname(atom))
-        super(valid_atom)
+      # Updates current links to correct atoms from some other base spec
+      # @param [Hash] mirror of atoms from prev base to some other new base spec
+      def update_links(mirror)
+        # before build curret links cache by calling #links method
+        new_links = links.map do |atom_key, atoms_ref_list|
+          new_atom_key = mirror[atom_key] || atom_key
+          new_atoms_ref_list = atoms_ref_list.map do |a, r|
+            [mirror[a] || a, r]
+          end
+
+          [new_atom_key, new_atoms_ref_list]
+        end
+
+        @links = Hash[new_links]
       end
 
       # Collect all relevant states for passed atom
@@ -401,36 +355,7 @@ module VersatileDiamond
       # @param [SpecificSpec] other see at #same? same argument
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
-        HanserRecursiveAlgorithm.contain?(links, other.links)
-      end
-
-      # Compares two specific atoms and checks that smallest is less than
-      # bigger
-      #
-      # @param [SpecificAtom] bigger probably the bigger atom
-      # @param [SpecificAtom smallest probably the smallest atom
-      # @return [Boolean] smallest is less or not
-      def is?(bigger, smallest)
-        same_danglings?(bigger, smallest) && same_relevants?(bigger, smallest)
-      end
-
-      # Checks that smallest atom contain less dangling states than bigger
-      # @param [SpecificAtom] bigger see at #is? same argument
-      # @param [SpecificAtom] smallest see at #is? same argument
-      # @return [Boolean] contain or not
-      def same_danglings?(bigger, smallest)
-        smallest.actives <= bigger.actives &&
-          (smallest.monovalents - bigger.monovalents).empty?
-      end
-
-      # Checks that smallest atom contain less relevant states than bigger
-      # @param [SpecificAtom] bigger see at #is? same argument
-      # @param [SpecificAtom] smallest see at #is? same argument
-      # @return [Boolean] contain or not
-      def same_relevants?(bigger, smallest)
-        diff = smallest.relevants - bigger.relevants
-        diff.empty? || (diff == [:incoherent] && bigger.size > smallest.size &&
-          (!bigger.monovalents.empty? || bigger.actives > 0))
+        Mcs::SpeciesComparator.contain?(self, other)
       end
 
       # Resets internal caches

@@ -1,14 +1,9 @@
 module VersatileDiamond
   module Generators
 
-    module Code; end
-
-    class CodeGenerator < Base
-      include SpecsAnalyzer
+    class EngineCode < Base
 
       def generate(**params)
-        analyze_specs
-
         props = classifier.props
         puts props.size
 
@@ -18,7 +13,7 @@ module VersatileDiamond
         print 'Specification: '
         puts classifier.specification.join(', ')
 
-        termination_specs.map do |spec|
+        term_specs.map do |spec|
           print "#{spec.name} num: "
 
           values = Array.new(props.size) { 0 }

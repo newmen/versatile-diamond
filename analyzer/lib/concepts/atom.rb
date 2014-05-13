@@ -37,11 +37,14 @@ module VersatileDiamond
       #   which comparing do
       # @return [Boolean] is the same atom or not
       def same?(other)
-        if self.class == other.class
-          name == other.name && lattice == other.lattice
-        else
-          other.same?(self)
-        end
+        compare_by_method(:same?, other)
+      end
+
+      # Compares two atoms without comparing them specific states
+      # @param [Atom | AtomReference | SpecificAtom] other the comparable atom
+      # @return [Boolean] same or not
+      def original_same?(other)
+        compare_by_method(:original_same?, other)
       end
 
       # Not specified atom cannot have active bonds
@@ -78,6 +81,19 @@ module VersatileDiamond
         spec.links[self].dup
       end
 
+      # Atom couldn't contain additional relations
+      # @return [Array] the empty array
+      def additional_relations
+        []
+      end
+
+      # Atom could not relate to spec
+      # @param [Spec] _ do not used
+      # @return [Boolean] false
+      def reference_to?(_)
+        false
+      end
+
       # Gets original valence of atom
       # @return [Integer] the original valence of atom
       def original_valence
@@ -90,6 +106,23 @@ module VersatileDiamond
 
       def inspect
         to_s
+      end
+
+    private
+
+      # Compares two instances by some method if other instance is object of
+      # another class
+      #
+      # @param [Symbol] method by which will instances will be compared if classes is
+      #   different
+      # @param [Atom | AtomReference | SpecificAtom] other the comparable atom
+      # @return [Boolean] comparation result
+      def compare_by_method(method, other)
+        if self.class == other.class
+          name == other.name && lattice == other.lattice
+        else
+          other.public_send(method, self)
+        end
       end
     end
 

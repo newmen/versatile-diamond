@@ -12,8 +12,18 @@ module VersatileDiamond
       # @param [SpecificSpec] to the spec to which need to swap
       def swap(spec_atom, from, to)
         return unless spec_atom[0] == from
+
+        intersec = Mcs::SpeciesComparator.intersec(
+          from, to, separated_multi_bond: true).first.to_a
+
+        if intersec.size < to.links.size
+          raise ArgumentError, 'Intersection less than swapped specs'
+        end
+
+        mirror = Hash[intersec]
+
         spec_atom[0] = to
-        spec_atom[1] = to.atom(from.keyname(spec_atom[1]))
+        spec_atom[1] = mirror[spec_atom[1]]
       end
 
     end

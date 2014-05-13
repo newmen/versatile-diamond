@@ -2,7 +2,7 @@ module VersatileDiamond
   using Patches::RichArray
   using Patches::RichString
 
-  module Tools
+  module Organizers
 
     # Accumulates information about atom
     class AtomProperties
@@ -15,9 +15,10 @@ module VersatileDiamond
       # @overload new(props)
       #   @param [Array] props the array of default properties
       # @overload new(spec, atom)
-      #   @param [Spec | SpecificSpec] spec in which atom will find properties
-      #   @param [Atom | AtomReference | SpecificAtom] atom the atom for which
-      #     properties will be stored
+      #   @param [DependentSpec | SpecResidual] spec in which atom will
+      #     find properties
+      #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #     atom the atom for which properties will be stored
       def initialize(*args)
         if args.size == 1
           @props = args.first
@@ -88,26 +89,6 @@ module VersatileDiamond
         end
       end
 
-      # Gives the number of how many termination specs lies in current
-      # properties
-      #
-      # @param [TerminationSpec] term_spec the verifiable termination spec
-      # @raise [ArgumentError] if argument is not termination spec
-      # @return [Boolean] have or not
-      def terminations_num(term_spec)
-        if term_spec.class == ActiveBond
-          actives_num
-        elsif term_spec.class == AtomicSpec
-          if term_spec.hydrogen?
-            total_hydrogens_num
-          else
-            count_danglings(term_spec.name)
-          end
-        else
-          raise ArgumentError, 'Undefined termination spec type'
-        end
-      end
-
       # Makes unrelevanted copy of self
       # @return [AtomProperties] unrelevanted atom properties
       def unrelevanted
@@ -165,10 +146,29 @@ module VersatileDiamond
         end
       end
 
+      # Counts of dangling instances
+      # @param [Symbol] state the counting state
+      # @return [Integer] number of instances
+      def count_danglings(state)
+        danglings.select { |r| r == state }.size
+      end
+
+      # Gets number of active bonds
+      # @return [Integer] number of active bonds
+      def actives_num
+        count_danglings(:active)
+      end
+
       # Gets number of hydrogen atoms
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
         count_danglings(:H)
+      end
+
+      # Counts total number of hydrogen atoms
+      # @return [Integer] the number of total number of hydrogen atoms
+      def total_hydrogens_num
+        valence - bonds_num + dangling_hydrogens_num
       end
 
       # Gets size of properties
@@ -271,12 +271,6 @@ module VersatileDiamond
         contain_all_by?(other, :danglings)
       end
 
-      # Counts total number of hydrogen atoms
-      # @return [Integer] the number of total number of hydrogen atoms
-      def total_hydrogens_num
-        valence - bonds_num + dangling_hydrogens_num
-      end
-
     private
 
       # Compares with other properties by some method which returns list
@@ -355,13 +349,15 @@ module VersatileDiamond
       end
 
       # Harvest relations of atom in spec
-      # @param [Spec | SpecificSpec] spec see at #new same argument
-      # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
-      #   argument
+      # @param [DependentSpec | SpecResidual] spec see at #new same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   spec see at #new same argument
       # @return [Array] relations array
       def relations_for(spec, atom)
-        relations = []
+        # only bonds without relevat states
         links = atom.relations_in(spec).reject { |ar| ar.is_a?(Symbol) }
+        relations = []
+
         until links.empty?
           atom_rel = links.pop
           same = links.select { |ar| ar == atom_rel }
@@ -382,15 +378,13 @@ module VersatileDiamond
       end
 
       # Harvest dangling bonds of atom in spec
-      # @param [Spec | SpecificSpec] spec see at #new same argument
-      # @param [Atom | AtomReference | SpecificAtom] spec see at #new same
-      #   argument
+      # @param [Concepts::Spec | Concepts::SpecificSpec] spec see at #new same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   spec see at #new same argument
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
         links = atom.relations_in(spec)
-        links.reduce([]) do |acc, atom_rel|
-          atom_rel.is_a?(Symbol) ? acc + [atom_rel] : acc
-        end
+        links.select { |atom_rel| atom_rel.is_a?(Symbol) }
       end
 
       # Drops relevants properties if it exists
@@ -424,19 +418,6 @@ module VersatileDiamond
       # @return [Integer] the total number of bonds
       def bonds_num
         estab_bonds_num + danglings.size
-      end
-
-      # Counts of dangling instances
-      # @param [Symbol] state the counting state
-      # @return [Integer] number of instances
-      def count_danglings(state)
-        danglings.select { |r| r == state }.size
-      end
-
-      # Gets number of active bonds
-      # @return [Integer] number of active bonds
-      def actives_num
-        count_danglings(:active)
       end
     end
 

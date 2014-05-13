@@ -1,5 +1,7 @@
 module VersatileDiamond
-  module Concepts
+  using Patches::RichString
+
+  module Organizers
 
     # Provides methods for creating methods for get access to all collection
     # and for storing new item to collection
@@ -11,7 +13,7 @@ module VersatileDiamond
       def collector_methods(*names)
         names.each do |name|
           var = :"@#{name}"
-          method = :"#{name}s"
+          method = :"#{name.to_s.pluralize}"
 
           # Gets a collection of concepts
           # @return [Array] collection
@@ -19,11 +21,10 @@ module VersatileDiamond
             instance_variable_get(var) || instance_variable_set(var, [])
           end
 
-          # Adds new item to collection of concepts
-          # @param [Reaction | There] concept the concept from which self spec
-          #   depended
-          define_method("store_#{name}") do |concept|
-            send(method) << concept
+          # Adds new item to collection
+          # @param [Object] item the item from which self instance depended
+          define_method("store_#{name}") do |item|
+            send(method) << item
           end
         end
       end

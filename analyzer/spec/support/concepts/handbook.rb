@@ -97,14 +97,21 @@ module VersatileDiamond
         end
         set(:vinyl) { SpecificSpec.new(ethylene_base, c1: activated_c) }
 
+        def make_bridge_base(name)
+        end
+
         set(:bridge_base) do
-          s = SurfaceSpec.new(:bridge, ct: cd)
+          s = DuppableSurfaceSpec.new(:bridge, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
           s.link(cd, cl, bond_110_cross)
           s.link(cd, cr, bond_110_cross); s
         end
+        set(:bridge_base_dup) do
+          bridge_base.dup(:bridge_dup, [[:ct, :t], [:cr, :r], [:cl, :l]])
+        end
+
         set(:bridge) { SpecificSpec.new(bridge_base) }
         set(:activated_bridge) do
           SpecificSpec.new(bridge_base, ct: activated_cd)
@@ -193,19 +200,29 @@ module VersatileDiamond
         set(:high_bridge) { SpecificSpec.new(high_bridge_base) }
 
         set(:dimer_base) do
-          s = SurfaceSpec.new(:dimer)
+          s = DuppableSurfaceSpec.new(:dimer)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cl)
           s.link(s.atom(:cr), s.atom(:cl), bond_100_front); s
         end
+        set(:dimer_base_dup) do
+          dimer_base.dup(:dimer_dup, [[:cr, :r], [:cl, :l]])
+        end
+
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd)
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }
+        set(:pseudo_dimer_base) do
+          b = bridge_base
+          r, l = AtomReference.new(b, :ct), AtomReference.new(b, :ct)
+          s = SurfaceSpec.new(:pseudo_dimer, cl: l, cr: r)
+          s.link(r, l, bond_100_front); s
+        end
 
         set(:methyl_on_dimer_base) do
           s = SurfaceSpec.new(:methyl_on_dimer, cm: c)
@@ -241,10 +258,10 @@ module VersatileDiamond
 
         # Reactions:
         set(:ma_source) { [methyl_on_bridge.dup, hydrogen_ion] }
-        set(:ma_products) { [activated_methyl_on_bridge, hydrogen] }
+        set(:ma_products) { [activated_methyl_on_bridge.dup, hydrogen] }
         set(:ma_names_to_specs) do {
           source: [[:mob, ma_source.first], [:h, hydrogen_ion]],
-          products: [[:mob, activated_methyl_on_bridge], [:h, hydrogen]]
+          products: [[:mob, ma_products.first], [:h, hydrogen]]
         } end
         set(:ma_atom_map) do
           Mcs::AtomMapper.map(ma_source, ma_products, ma_names_to_specs)
@@ -254,11 +271,11 @@ module VersatileDiamond
             :forward, 'methyl activation', ma_source, ma_products, ma_atom_map)
         end
 
-        set(:dm_source) { [activated_methyl_on_bridge, hydrogen_ion] }
-        set(:dm_product) { [methyl_on_bridge] }
+        set(:dm_source) { [activated_methyl_on_bridge.dup, hydrogen_ion] }
+        set(:dm_product) { [methyl_on_bridge.dup] }
         set(:dm_names_to_specs) do {
-          source: [[:mob, activated_methyl_on_bridge], [:h, hydrogen_ion]],
-          products: [[:mob, methyl_on_bridge]]
+          source: [[:mob, dm_source.first], [:h, hydrogen_ion]],
+          products: [[:mob, dm_product.first]]
         } end
         set(:dm_atom_map) do
           Mcs::AtomMapper.map(dm_source, dm_product, dm_names_to_specs)
@@ -269,10 +286,10 @@ module VersatileDiamond
         end
 
         set(:abridge_dup) { activated_bridge.dup }
-        set(:md_source) { [methyl_on_bridge] }
+        set(:md_source) { [methyl_on_bridge.dup] }
         set(:md_products) { [methyl, abridge_dup] }
         set(:md_names_to_specs) do {
-          source: [[:mob, methyl_on_bridge]],
+          source: [[:mob, md_source.first]],
           products: [[:m, methyl], [:b, abridge_dup]]
         } end
         set(:md_atom_map) do
@@ -313,9 +330,7 @@ module VersatileDiamond
             df_source, df_products, df_atom_map)
         end
 
-        set(:mi_source) do
-          [activated_methyl_on_extended_bridge, activated_dimer]
-        end
+        set(:mi_source) { [activated_methyl_on_extended_bridge, activated_dimer] }
         set(:mi_product) { [extended_dimer] }
         set(:mi_names_to_specs) do {
           source: [
@@ -341,12 +356,10 @@ module VersatileDiamond
           w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross); w
         end
         set(:on_end) do
+          activated_i_bridge = activated_incoherent_bridge
           at_end.concretize(
             one: [activated_bridge, activated_bridge.atom(:ct)],
-            two: [
-              activated_incoherent_bridge,
-              activated_incoherent_bridge.atom(:ct)
-            ])
+            two: [activated_i_bridge, activated_i_bridge.atom(:ct)])
         end
 
         set(:at_middle) do
@@ -357,12 +370,18 @@ module VersatileDiamond
           w.parents << at_end; w
         end
         set(:on_middle) do
+          activated_i_bridge = activated_incoherent_bridge
           at_middle.concretize(
             one: [activated_bridge, activated_bridge.atom(:ct)],
-            two: [
-              activated_incoherent_bridge,
-              activated_incoherent_bridge.atom(:ct)
-            ])
+            two: [activated_i_bridge, activated_i_bridge.atom(:ct)])
+        end
+
+        set(:end_lateral_df) do
+          dimer_formation.lateral_duplicate('end lateral', [on_end])
+        end
+
+        set(:middle_lateral_df) do
+          dimer_formation.lateral_duplicate('middle lateral', [on_middle])
         end
 
         set(:near_methyl) do

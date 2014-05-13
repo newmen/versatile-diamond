@@ -130,44 +130,39 @@ module VersatileDiamond
         it { expect(links[c1].select { |a, _| a == o }.size).to eq(2) }
       end
 
-      describe '#parent' do
-        it { expect(bridge_base.parent).to be_nil } # by default
-      end
-
-      describe '#organize_dependencies!' do
-        before { methyl_on_bridge_base.organize_dependencies!([bridge_base]) }
-        it { expect(methyl_on_bridge_base.parent).to eq(bridge_base) }
-      end
-
-      describe '#theres' do
-        it { expect(dimer_base.theres).to be_empty }
-      end
-
-      describe '#store_there' do
-        before { dimer_base.store_there(on_end) }
-        it { expect(dimer_base.theres).to eq([on_end]) }
-      end
-
-      describe '#childs' do
-        it { expect(dimer_base.childs).to be_empty }
-      end
-
-      describe '#store_child' do
-        before { dimer_base.store_child(methyl_on_dimer_base) }
-        it { expect(dimer_base.childs).to eq([methyl_on_dimer_base]) }
-      end
-
-      describe '#append_childs' do
-        before { dimer_base.append_childs([activated_dimer]) }
-        it { expect(dimer_base.childs).to eq([activated_dimer]) }
-      end
-
-      describe '#remove_child' do
-        before do
-          dimer_base.store_child(dimer)
-          dimer_base.remove_child(dimer)
+      describe '#has_termination?' do
+        describe 'bridge(:ct)' do
+          let(:atom) { bridge_base.atom(:ct) }
+          it { expect(bridge_base.has_termination?(atom, adsorbed_h)).to be_true }
+          it { expect(bridge_base.has_termination?(atom, active_bond)).to be_false }
         end
-        it { expect(dimer_base.childs).to be_empty }
+
+        describe 'methyl_on_dimer(:cr)' do
+          let(:target) { methyl_on_dimer }
+          let(:atom) { target.atom(:cr) }
+          it { expect(target.has_termination?(atom, adsorbed_h)).to be_false }
+          it { expect(target.has_termination?(atom, active_bond)).to be_false }
+        end
+      end
+
+      describe '#same?' do
+        describe 'bridge_base' do
+          let(:same_bridge) { bridge_base_dup }
+          subject { bridge_base }
+
+          it { expect(subject.same?(same_bridge)).to be_true }
+          it { expect(same_bridge.same?(subject)).to be_true }
+
+          it { expect(subject.same?(dimer_base)).to be_false }
+        end
+
+        describe 'methyl_on_bridge_base' do
+          let(:other) { high_bridge_base }
+          subject { methyl_on_bridge_base }
+
+          it { expect(subject.same?(other)).to be_false }
+          it { expect(other.same?(subject)).to be_false }
+        end
       end
 
       describe '#size' do

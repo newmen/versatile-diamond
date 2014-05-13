@@ -4,6 +4,7 @@ module VersatileDiamond
     # Specified atom class, contain additional atom states like incoherentness,
     # unfixness and activeness
     class SpecificAtom
+      extend Forwardable
 
       # Error for case when something wrong with atom state
       # @abstract
@@ -18,8 +19,8 @@ module VersatileDiamond
       # Error for case if state for atom doesn't exsit
       class NotStated < Stated; end
 
-      extend Forwardable
-      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence
+      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
+        :original_same?
 
       attr_reader :monovalents
 
@@ -59,7 +60,7 @@ module VersatileDiamond
           @atom.same?(other.atom) && @options.sort == other.options.sort &&
             monovalents.sort == other.monovalents.sort
         else
-          false
+          @options.empty? && @monovalents.empty? && @atom.same?(other)
         end
       end
 
@@ -103,9 +104,9 @@ module VersatileDiamond
         active_options.size
       end
 
-      # Compares with other atom
+      # Compares relevant states with states of another atom
       # @param [Atom | AtomReference | SpecificAtom] other the atom with which
-      #   compare
+      #   compares
       # @return [Array] the array of relevants state symbols
       def diff(other)
         self.class == other.class ? other.relevants - relevants : []
@@ -128,7 +129,7 @@ module VersatileDiamond
       #   found, must contain current atom
       # @return [Array] the array of relations
       def relations_in(specific_spec)
-        real_atom(specific_spec).relations_in(specific_spec.spec) +
+        specific_spec.links[self] + @atom.additional_relations +
           active_options + monovalents
       end
 
@@ -164,14 +165,6 @@ module VersatileDiamond
       # @return [Array] array of :active options
       def active_options
         @options.select { |o| o == :active }
-      end
-
-      # Gets an atom to which references current instance
-      # @param [SpecificSpec] specific_spec see at #relations_in same argument
-      # @param [Atom | AtomReference] target atom of simple spec
-      def real_atom(specific_spec)
-        keyname = specific_spec.keyname(self)
-        specific_spec.spec.atom(keyname)
       end
     end
 

@@ -100,10 +100,8 @@ module VersatileDiamond
         subject { methyl_desorption.reverse }
         it { should be_a(described_class) }
 
-        it { expect(subject.source.size).to eq(2) }
-        it { expect(subject.source).to include(methyl, abridge_dup) }
-
-        it { expect(subject.products).to eq([methyl_on_bridge]) }
+        it { expect(subject.source).to match_array([methyl, abridge_dup]) }
+        it { expect(subject.products).to match_array([md_source.first]) }
       end
 
       describe '#gases_num' do
@@ -115,26 +113,43 @@ module VersatileDiamond
       end
 
       describe '#swap_source' do
-        let(:bridge_dup) { activated_bridge.dup }
-        before(:each) do
-          dimer_formation.swap_source(activated_bridge, bridge_dup)
-        end
-
         shared_examples_for 'check specs existence' do
-          it { should include(bridge_dup) }
-          it { should_not include(activated_bridge) }
+          before { reaction.swap_source(old, fresh) }
+          it { should include(fresh) }
+          it { should_not include(old) }
         end
 
-        it_behaves_like 'check specs existence' do
-          subject { dimer_formation.positions.map(&:first).map(&:first) }
+        shared_examples_for :check_mapping do
+          it_behaves_like 'check specs existence' do
+            subject { map.changes.map(&:first).map(&:first) }
+          end
         end
 
-        it_behaves_like 'check specs existence' do
-          subject { dimer_formation.positions.map { |p| p[1] }.map(&:first) }
+        describe 'to specific spec' do
+          let(:reaction) { dimer_formation }
+          let(:old) { activated_bridge }
+          let(:fresh) { old.dup }
+
+          it_behaves_like :check_mapping do
+            let(:map) { df_atom_map }
+          end
+
+          it_behaves_like 'check specs existence' do
+            subject { reaction.positions.map(&:first).map(&:first) }
+          end
+
+          it_behaves_like 'check specs existence' do
+            subject { reaction.positions.map { |p| p[1] }.map(&:first) }
+          end
         end
 
-        it_behaves_like 'check specs existence' do
-          subject { df_atom_map.changes.map(&:first).map(&:first) }
+        describe 'to base spec' do
+          it_behaves_like :check_mapping do
+            let(:old) { dimer }
+            let(:fresh) { dimer_base }
+            let(:reaction) { hydrogen_migration.reverse }
+            let(:map) { reaction.instance_variable_get(:'@mapping') }
+          end
         end
       end
 
@@ -312,9 +327,6 @@ module VersatileDiamond
           to eq([:ct]) }
       end
 
-      let(:reaction) { dimer_formation.duplicate('dup') }
-      let(:lateral) { dimer_formation.lateral_duplicate('tail', [on_end]) }
-
       describe '#same?' do
         def make_same(type)
           source = [methyl_on_dimer.dup, activated_dimer.dup]
@@ -354,7 +366,8 @@ module VersatileDiamond
         end
 
         describe 'lateral reaction' do
-          it { expect(reaction.same?(lateral)).to be_true }
+          subject { dimer_formation.duplicate('dup') }
+          it { expect(subject.same?(end_lateral_df)).to be_true }
         end
       end
 
@@ -364,28 +377,6 @@ module VersatileDiamond
 
         it { expect(methyl_deactivation.complex_source_spec_and_atom).
           to match_array([dm_source.first, dm_source.first.atom(:cm)]) }
-      end
-
-      describe '#complex_source_covered_by?' do
-        it { expect(methyl_activation.complex_source_covered_by?(adsorbed_h)).
-          to be_true }
-        it { expect(methyl_activation.complex_source_covered_by?(active_bond)).
-          to be_false }
-
-        it { expect(methyl_deactivation.complex_source_covered_by?(active_bond)).
-          to be_true }
-        it { expect(methyl_deactivation.complex_source_covered_by?(adsorbed_h)).
-          to be_true }
-      end
-
-      describe '#organize_dependencies! and #more_complex' do
-        before(:each) do
-          lateral_reactions = [lateral]
-          reaction.organize_dependencies!(lateral_reactions)
-          methyl_desorption.organize_dependencies!(lateral_reactions)
-        end
-        it { expect(reaction.more_complex).to eq([lateral]) }
-        it { expect(methyl_desorption.more_complex).to be_empty }
       end
 
       describe '#size' do

@@ -2,7 +2,7 @@ module VersatileDiamond
   module Generators
 
     # Draws at @graph dependencies between classified atoms
-    module AtomDependenciesDrawer
+    module AtomDependenciesGenerator
 
       ATOM_COLOR = 'darkgreen'
       RELEVANTS_ATOM_COLOR = 'lightblue'

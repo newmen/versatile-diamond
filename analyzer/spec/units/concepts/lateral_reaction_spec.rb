@@ -4,9 +4,9 @@ module VersatileDiamond
   module Concepts
 
     describe LateralReaction do
-      let(:reaction) { dimer_formation.lateral_duplicate('tail', [on_end]) }
+      let(:reaction) { end_lateral_df }
       let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
-      let(:middle) { dimer_formation.lateral_duplicate('middle', [on_middle]) }
+      let(:middle) { middle_lateral_df }
       let(:other) do
         dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
       end
@@ -78,8 +78,7 @@ module VersatileDiamond
 
         describe 'reverse' do
           subject { reaction.reverse.used_keynames_of(target_dimer) }
-          it { expect(subject.size).to eq(2) }
-          it { should include(:cr, :cl) }
+          it { should match_array([:cr, :cl]) }
         end
       end
 
@@ -91,17 +90,9 @@ module VersatileDiamond
         it { expect(reaction.same?(dimer_formation)).to be_false }
       end
 
-      describe '#organize_dependencies!' do
-        before(:each) do
-          reactions = [reaction, middle, other]
-          reaction.organize_dependencies!(reactions)
-          middle.organize_dependencies!(reactions)
-          other.organize_dependencies!(reactions)
-        end
-
-        it { expect(reaction.more_complex).to eq([middle]) }
-        it { expect(middle.more_complex).to be_empty }
-        it { expect(other.more_complex).to be_empty }
+      describe '#cover?' do
+        it { expect(reaction.cover?(middle)).to be_true }
+        it { expect(reaction.cover?(other)).to be_true }
       end
 
       describe '#size' do
@@ -111,13 +102,6 @@ module VersatileDiamond
 
       it_behaves_like 'visitable' do
         subject { reaction }
-      end
-
-      describe '#wheres' do
-        it { expect(reaction.wheres).to eq([at_end]) }
-
-        it { expect(other.wheres.size).to eq(2) }
-        it { expect(other.wheres).to include(at_end, near_methyl) }
       end
     end
 

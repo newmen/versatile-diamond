@@ -39,11 +39,10 @@ module VersatileDiamond
         # @param [String] dimenstion of concentration
         def gas_concentration(specific_spec, value, dimension = nil)
           @concs ||= {}
-          if @concs[specific_spec.full_name]
-            raise AlreadyDefined.new(
-              "concentration of #{specific_spec.full_name}")
+          if @concs[specific_spec.name]
+            raise AlreadyDefined.new("concentration of #{specific_spec.name}")
           end
-          @concs[specific_spec.full_name] =
+          @concs[specific_spec.name] =
             Dimension.convert_concentration(value, dimension)
         end
 
@@ -96,7 +95,7 @@ module VersatileDiamond
           reaction.gases_num == 0 ?
             arrenius :
             reaction.each_source.reduce(arrenius) do |acc, spec|
-              spec.gas? ? acc * ((@concs && @concs[spec.full_name]) || 0) : acc
+              spec.gas? ? acc * ((@concs && @concs[spec.name]) || 0) : acc
             end
         end
       end

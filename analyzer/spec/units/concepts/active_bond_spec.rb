@@ -3,17 +3,19 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe ActiveBond do
+    describe ActiveBond, use: :atom_properties do
       describe '#name' do
         it { expect(active_bond.name).to eq(:*) }
       end
 
-      describe '#full_name' do
-        it { expect(active_bond.full_name).to eq(:*) }
-      end
-
       describe '#external_bonds' do
         it { expect(active_bond.external_bonds).to eq(0) }
+      end
+
+      describe '#terminations_num' do
+        it { expect(active_bond.terminations_num(hib_ct)).to eq(0) }
+        it { expect(active_bond.terminations_num(ab_ct)).to eq(1) }
+        it { expect(active_bond.terminations_num(eab_ct)).to eq(2) }
       end
 
       describe '#same?' do

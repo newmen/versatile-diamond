@@ -54,8 +54,8 @@ module VersatileDiamond
         end
 
         describe 'surface spec' do
-          before { Chest.store(bridge_base) }
-          it { expect(Chest.spec(:bridge)).to eq(bridge_base) }
+          before { Chest.store(methyl_on_bridge_base) }
+          it { expect(Chest.spec(:methyl_on_bridge)).to eq(methyl_on_bridge_base) }
         end
       end
 
@@ -122,33 +122,11 @@ module VersatileDiamond
       describe '#all' do
         before(:each) do
           Chest.store(methane_base)
-          Chest.store(bridge_base)
+          Chest.store(methyl_on_bridge_base)
         end
 
         it { expect(Chest.all(:gas_spec, :surface_spec)).
-          to include(methane_base, bridge_base) }
-      end
-
-      describe '#purge!' do
-        describe 'only one' do
-          before(:each) do
-            Chest.store(methane_base)
-            Chest.purge!(methane_base)
-          end
-
-          it { expect { Chest.gas_spec(:methane) }.
-            to raise_error keyname_error }
-        end
-
-        describe 'just many' do
-          before(:each) do
-            Chest.store(dimers_row, at_end)
-            Chest.purge!(dimers_row, at_end)
-          end
-
-          it { expect { Chest.where(:dimers_row, :at_end) }.
-            to raise_error keyname_error }
-        end
+          to match_array([methane_base, methyl_on_bridge_base]) }
       end
     end
 
