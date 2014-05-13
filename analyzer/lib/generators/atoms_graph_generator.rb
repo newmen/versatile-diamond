@@ -3,6 +3,8 @@ module VersatileDiamond
 
     # Provides methods for drawing atom properties and dependencies between them
     module AtomsGraphGenerator
+      include Generators::AtomDependenciesGenerator
+
     private
 
       # Draws spec nodes and dependencies from classified atoms

@@ -5,7 +5,6 @@ module VersatileDiamond
     class AtomsSpeciesTree < Tree
       include SpeciesGraphGenerator
       include AtomsGraphGenerator
-      include AtomDependenciesGenerator
 
       # Generates a graph image file
       # @option [Boolean] :base_specs species will be shown an graph or not

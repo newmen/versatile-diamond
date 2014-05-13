@@ -15,8 +15,7 @@ module VersatileDiamond
       # @overload new(props)
       #   @param [Array] props the array of default properties
       # @overload new(spec, atom)
-      #   @param [DependentSpec | SpecResidual] spec in which atom will
-      #     find properties
+      #   @param [DependentSpec | SpecResidual] spec in which atom will find properties
       #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #     atom the atom for which properties will be stored
       def initialize(*args)
