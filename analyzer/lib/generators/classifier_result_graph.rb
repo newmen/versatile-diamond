@@ -3,12 +3,12 @@ module VersatileDiamond
 
     # Generates a graph with overveiw information about atoms classifier result
     # This generator could be used for writing correct unit tests of classifier
-    class ClassifierResultGraphGenerator
+    class ClassifierResultGraph
       include GraphGenerator
-      include AtomDependenciesDrawer
+      include AtomDependenciesGenerator
 
       # Initialize a generator by classifier, results of which will be drawn
-      # @param [Organizers::AtomClassifier] classifier the classifier result of
+      # @param [Organizers::AtomClassifier] classifier the result of classification of
       #   which will be drawn as graph of dependencies between atom properties
       # @param [Array] args the array of arguments for surper class initialize
       #   method
@@ -23,7 +23,7 @@ module VersatileDiamond
         generate_graph
       end
 
-    protected
+    private
 
       attr_reader :classifier
 

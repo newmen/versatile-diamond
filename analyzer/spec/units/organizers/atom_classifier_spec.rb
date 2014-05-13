@@ -155,14 +155,20 @@ module VersatileDiamond
 
           describe 'generate graph' do
             let(:filename) { 'classifier_spec' }
+            let(:image_name) { "#{filename}.png" }
             let(:graph) do
-              Generators::ClassifierResultGraphGenerator.new(subject, filename)
+              Generators::ClassifierResultGraph.new(subject, filename)
             end
             it { expect { graph.generate }.to_not raise_error }
 
+            describe 'image is not empty' do
+              before { graph.generate }
+              it { expect(File.size(image_name) > 200).to be_true }
+            end
+
             # Comment line below for draw a graph which could help to inspect
             # dependencies between atom properties
-            after { File.unlink("#{filename}.png") }
+            after { File.unlink(image_name) }
           end
         end
 
