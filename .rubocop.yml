@@ -4,6 +4,10 @@ AccessModifierIndentation:
 AlignParameters:
   EnforcedStyle: with_fixed_indentation
 
+CollectionMethods:
+  PreferredMethods:
+    inject: 'reduce'
+
 DotPosition:
   EnforcedStyle: trailing
 
