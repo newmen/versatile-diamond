@@ -22,7 +22,7 @@ module VersatileDiamond
 
         unless no_base_specs && no_spec_specs
           ml = column_size((base_specs + specific_specs).map(&:name).map(&:to_s))
-          @specs_format = "%#{ml}s | %5.2s | %5s | %s"
+          @specs_format = "%#{ml}s | %5s | %5s | %s"
           puts @specs_format % %w(Name Size ExtB Classification)
         end
 
@@ -88,7 +88,7 @@ module VersatileDiamond
         specs.sort_by(&:size).each do |spec|
           puts @specs_format % [
             spec.name,
-            spec.size,
+            spec.spec.size,
             spec.external_bonds,
             hash_str(classifier.classify(spec))
           ]
