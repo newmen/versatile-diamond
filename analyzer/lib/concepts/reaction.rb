@@ -145,44 +145,11 @@ module VersatileDiamond
         is_same_positions =
           lists_are_identical?(positions, other.positions) do |pos1, pos2|
             pos1.last == pos2.last && # compares position relation instances
-              ((pos1[0][0].same?(pos2[0][0]) && pos1[0][1].same?(pos2[0][1]) &&
-                pos1[1][0].same?(pos2[1][0]) && pos1[1][1].same?(pos2[1][1])) ||
-                (pos1[0][0].same?(pos2[0][1]) && pos1[0][1].same?(pos2[0][0]) &&
-                 pos1[1][0].same?(pos2[1][1]) && pos1[1][1].same?(pos2[1][0])))
+              (same_positions?(pos1, pos2, [[0, 0], [1, 1]]) ||
+                same_positions?(pos1, pos2, [[0, 1], [1, 0]]))
           end
 
         is_same_positions && super
-      end
-
-      # Selects complex source specs and them changed atom
-      # @return [Array] cached array of complex source specs
-      def complex_source_covered_by?(termination_spec)
-        spec, atom = complex_source_spec_and_atom
-        termination_spec.cover?(spec, atom)
-      end
-
-      # Organize dependencies from another lateral reactions
-      # @param [Array] lateral_reactions the possible children
-      # @override but another type of argument
-      def organize_dependencies!(lateral_reactions)
-        applicants = []
-        lateral_reactions.each do |reaction|
-          applicants << reaction if same?(reaction)
-        end
-
-        return if applicants.empty?
-
-        loop do
-          inc = applicants.select do |reaction|
-            applicants.find do |unr|
-              reaction != unr && reaction.more_complex.include?(unr)
-            end
-          end
-          break if inc.empty?
-          applicants = inc
-        end
-
-        applicants.each { |reaction| more_complex << reaction }
       end
 
       # Checks that all atoms belongs to lattice
@@ -350,6 +317,18 @@ module VersatileDiamond
         @links.each do |spec_atom1, references|
           block[spec_atom1]
           references.each { |spec_atom2, _| block[spec_atom2] }
+        end
+      end
+
+      # Compares two position instances by some pairs
+      # @param [Array] pos1 the first position instance
+      # @param [Array] pos2 the second position instance
+      # @param [Array] indexes_pairs the array that contain pairs of indexes of
+      #   comparing positions
+      # @return [Boolean] are same positions or not
+      def same_positions?(pos1, pos2, indexes_pairs)
+        indexes_pairs.all? do |i, j|
+          [0, 1].all? { |k| pos1[i][k].same?(pos2[j][k]) }
         end
       end
 

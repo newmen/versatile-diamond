@@ -32,6 +32,15 @@ module VersatileDiamond
         it { expect(cd.same?(cd.dup)).to be_true  }
       end
 
+      describe '#original_same?' do
+        it { expect(c.original_same?(n)).to be_false }
+        it { expect(c.original_same?(cd)).to be_false }
+
+        let(:other) { c.dup }
+        it { expect(c.original_same?(other)).to be_true }
+        it { expect(other.original_same?(c)).to be_true }
+      end
+
       describe '#actives' do
         it { expect(h.actives).to eq(0) }
         it { expect(c.actives).to eq(0) }
@@ -60,6 +69,14 @@ module VersatileDiamond
           not_to eq(bridge.links[cd].object_id) }
 
         it { expect(cd.relations_in(bridge).size).to eq(2) }
+      end
+
+      describe '#additional_relations' do
+        it { expect(cd.additional_relations).to be_empty }
+      end
+
+      describe '#reference_to?' do
+        it { expect(cd.reference_to?(bridge_base)).to be_false }
       end
     end
 

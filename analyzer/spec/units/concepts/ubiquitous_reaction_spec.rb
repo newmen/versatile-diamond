@@ -31,6 +31,22 @@ module VersatileDiamond
         it { expect(surface_deactivation.name).to match(/^forward/) }
       end
 
+      describe '#simple_source' do
+        it { expect(surface_activation.simple_source).to eq([hydrogen_ion]) }
+        it { expect(surface_deactivation.simple_source).to eq([hydrogen_ion]) }
+        it { expect(methyl_activation.simple_source).to eq([hydrogen_ion]) }
+        it { expect(methyl_deactivation.simple_source).to eq([hydrogen_ion]) }
+
+        it { expect(dimer_formation.simple_source).to be_empty }
+      end
+
+      describe '#simple_products' do
+        it { expect(surface_activation.simple_products).to eq([hydrogen]) }
+        it { expect(surface_deactivation.simple_products).to be_empty }
+        it { expect(methyl_activation.simple_products).to eq([hydrogen]) }
+        it { expect(methyl_deactivation.simple_products).to be_empty }
+      end
+
       describe '#reverse' do # it's no use for ubiquitous reaction?
         subject { surface_deactivation.reverse } # synthetics
         it { should be_a(described_class) }
@@ -40,8 +56,7 @@ module VersatileDiamond
 
         it { expect(subject.source).to eq([adsorbed_h]) }
 
-        it { expect(subject.products.size).to eq(2) }
-        it { expect(subject.products).to include(active_bond, hydrogen_ion) }
+        it { expect(subject.products).to match_array([active_bond, hydrogen_ion]) }
       end
 
       describe '#gases_num' do
@@ -52,13 +67,9 @@ module VersatileDiamond
       end
 
       describe '#each_source' do
-        let(:collected_source) do
-          surface_deactivation.each_source.with_object([]) do |spec, arr|
-            arr << spec
-          end
-        end
-        it { expect(collected_source.size).to eq(2) }
-        it { expect(collected_source).to include(active_bond, hydrogen_ion) }
+        let(:collected_source) { surface_deactivation.each_source.to_a }
+        it { expect(surface_deactivation.each_source).to be_a(Enumerable) }
+        it { expect(collected_source).to match_array([active_bond, hydrogen_ion]) }
       end
 
       describe '#swap_source' do
@@ -81,28 +92,6 @@ module VersatileDiamond
           to be_false }
         it { expect(surface_deactivation.same?(surface_activation)).
           to be_false }
-      end
-
-      describe '#organize_dependencies! and #more_complex' do
-        shared_examples_for 'cover just one' do
-          before do
-            target.organize_dependencies!(
-              [methyl_activation, methyl_deactivation, methyl_desorption,
-                dimer_formation, hydrogen_migration])
-          end
-
-          it { expect(target.more_complex).to eq([complex]) }
-        end
-
-        it_behaves_like 'cover just one' do
-          let(:target) { surface_activation }
-          let(:complex) { methyl_activation }
-        end
-
-        it_behaves_like 'cover just one' do
-          let(:target) { surface_deactivation }
-          let(:complex) { methyl_deactivation }
-        end
       end
 
       describe '#full_rate' do

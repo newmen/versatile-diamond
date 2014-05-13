@@ -133,29 +133,19 @@ module VersatileDiamond
           end
         end
 
-        # Purge some concept from sac
-        # @param [Array] concepts see at #store same argument
-        # @option [Symbol] :method see at #store same option
-        def purge!(*concepts, method: :name)
-          find_bottom(concepts, method) do |_, bottom, name|
-            bottom.delete(name)
-          end
-        end
-
         # Visit all stored concepts
         # @param [Visitors::Visitor] visitor the object that will accumulate
         #   states of all stored concepts
         def visit(visitor)
           # necessary to visit only reactions because they will visit all the
           # rest
-          all(*Shunter::REACTION_KEYS).each do |reaction|
-            reaction.visit(visitor)
-          end
+          reactions = [:ubiquitous_reaction, :reaction, :lateral_reaction]
+          all(*reactions).each { |reaction| reaction.visit(visitor) }
         end
 
         def to_s
-          content = @sac && @sac.keys.reduce('') do |acc, (key, value)|
-            "#{acc}#{key}: #{value.map(&:first).join(' ')}\n"
+          content = @sac && @sac.reduce('') do |acc, (key, value)|
+            "#{acc}#{key}: #{value.map(&:first).join(', ')}\n"
           end
           content ? content : 'is empty'
         end

@@ -4,16 +4,12 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      extend Collector
-
       include Visitors::Visitable
       include Linker
       include BondsCounter
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
-
-      collector_methods :parent, :child, :there
 
       # Checks that atom keyname suitable for reducing
       # @param [Array] keyname the array of atom keyname which will be checked
@@ -29,11 +25,9 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
-
-        @parent, @child, @there = nil
       end
 
-      # If spec is simple (H2 or HCl for example) then true or false
+      # If spec is simple (H2 or HCl for example) then true or false overwise
       # @return [Boolean] is current spec simple?
       def simple?
         @is_simple
@@ -176,36 +170,21 @@ module VersatileDiamond
         end
       end
 
-      # Gets parent of current spec
-      # @return [Spec] the parent
-      def parent
-        parents.first
+      # Checks termination atom at the inner atom which belongs to current spec
+      # @param [Atom | SpecificAtom] internal_atom the atom which belongs to
+      #   current spec
+      # @param [Atom] term_atom the termination atom
+      # @return [Boolean] has termination atom or not
+      def has_termination?(internal_atom, term_atom)
+        Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0
       end
 
-      # Organize dependencies from another specs by containing check
-      # @param [Array] possible_parents the array of possible parents in
-      #   descending order
-      def organize_dependencies!(possible_parents)
-        # find and reorganize dependencies
-        possible_parents.each do |possible_parent|
-          if residue(links, possible_parent.links)
-            store_parent(possible_parent)
-            parent.store_child(self)
-            break
-          end
-        end
-      end
-
-      # Appends a childs to current collection
-      # @param [Array] specs the array of appenging childs
-      def append_childs(specs)
-        childs.concat(specs)
-      end
-
-      # Removes a spec from collection of children
-      # @param [SpecificSpec] spec the removable child
-      def remove_child(spec)
-        childs.reject! { |s| s == spec }
+      # Checks that other spec has same atoms and links between them
+      # @param [Spec | SpecificSpec] other the comparable spec
+      # @return [Boolean] same or not
+      def same?(other)
+        return false unless links.size == other.links.size
+        Mcs::SpeciesComparator.contain?(self, other, separated_multi_bond: true)
       end
 
       # Gets a number of atoms
@@ -328,17 +307,6 @@ module VersatileDiamond
           i += 1
         end while atom(keyname)
         keyname
-      end
-
-      # The large links contains small links?
-      # @param [Hash] large_links the links from large spec
-      # @param [Hash] small_links the links from small spec
-      # @raise [RuntimeError] if some of multi-bond (in large or small links)
-      #   is invalid
-      # @return [Boolean] contains or not
-      def residue(large_links, small_links)
-        HanserRecursiveAlgorithm.contain?(large_links, small_links,
-          separated_multi_bond: true)
       end
 
       # Resets internal caches

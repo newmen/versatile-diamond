@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Tools
+  module Organizers
 
     # Classifies atoms in specs and associate each atom type with some value,
     # which will be used for detecting overlapping specs between each other
@@ -16,9 +16,10 @@ module VersatileDiamond
       end
 
       # Analyze spec and store all uniq properties
-      # @param [Spec | SpecificSpec] spec the analyzing spec
+      # @param [DependentBaseSpec | DependentSpecificSpec] spec the analyzing spec
       def analyze(spec)
-        props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
+        original_spec = spec.spec
+        props = spec.links.map { |atom, _| AtomProperties.new(original_spec, atom) }
 
         props.each do |prop|
           next if index(prop)
@@ -62,38 +63,28 @@ module VersatileDiamond
         end
       end
 
-      # Classify spec and return hash where keys is order number of property
+      # Classify spec and return the hash where keys is order number of property
       # and values is number of atoms in spec with same properties
       #
-      # @param [TerminationSpec | Spec | SpecificSpec] spec the analyzing spec
-      # @option [Spec | SpecificSpec] :without do not classify atoms like as
-      #   from passed spec (not using when spec is termination spec)
+      # @param [DependentSpec | SpecResidual] spec the analyzing spec
+      # @option [DependentBaseSpec | DependentSpecificSpec] :without do not classify
+      #   atoms like as from passed spec (not using when spec is termination spec)
       # @return [Hash] result of classification
-      def classify(spec, without: nil)
-        if spec.is_a?(TerminationSpec)
-          props = @props.select { |prop| prop.terminations_num(spec) > 0 }
+      def classify(spec)
+        if spec.is_a?(DependentTermination)
+          props = @props.select { |prop| spec.terminations_num(prop) > 0 }
 
           props.each_with_object({}) do |prop, hash|
             index = index(prop)
             image = prop.to_s
-            hash[index] = [image, prop.terminations_num(spec)]
+            hash[index] = [image, spec.terminations_num(prop)]
           end
         else
-          atoms = spec.links.keys
-
-          if without
-            parent_atoms = without.links.keys
-            atoms = atoms.select do |atom|
-              prop = AtomProperties.new(spec, atom)
-              parent_atoms.all? do |parent_atom|
-                parent_prop = AtomProperties.new(without, parent_atom)
-                prop != parent_prop
-              end
-            end
-          end
+          target = spec.rest || spec
+          atoms = target.links.keys
 
           atoms.each_with_object({}) do |atom, hash|
-            prop = AtomProperties.new(spec, atom)
+            prop = AtomProperties.new(target, atom)
             index = index(prop)
             image = prop.to_s
             hash[index] ||= [image, 0]

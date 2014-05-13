@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Mcs
 
-    describe IntersetProjection do
+    describe IntersecProjection do
       class T; end
 
       before(:each) { T.extend(described_class) }

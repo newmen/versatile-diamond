@@ -91,8 +91,8 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(subject.same?(n)).to be_false }
-        it { expect(n.same?(subject)).to be_false }
+        it { expect(subject.same?(n)).to be_true }
+        it { expect(n.same?(subject)).to be_true }
 
         describe 'same class instance' do
           let(:other) { SpecificAtom.new(n.dup) }
@@ -125,6 +125,17 @@ module VersatileDiamond
           it_behaves_like 'equal if both and not if just one' do
             def do_with(atom); atom.use!(h) end
           end
+        end
+      end
+
+      describe '#original_same?' do
+        it { expect(subject.original_same?(SpecificAtom.new(c))).to be_false }
+
+        %w(active! incoherent! unfixed! use!(h)).each do |eval_str|
+          let(:other) { subject.dup }
+          before { eval("other.#{eval_str}") }
+          it { expect(subject.original_same?(other)).to be_true }
+          it { expect(other.original_same?(subject)).to be_true }
         end
       end
 
@@ -167,36 +178,104 @@ module VersatileDiamond
       end
 
       describe '#relations_in' do
+        def dept_specific_spec(sp = spec)
+          Organizers::DependentSpecificSpec.new(sp)
+        end
+
         let(:spec) { activated_bridge }
 
         describe ':ct of activated_bridge' do
           subject { spec.atom(:ct) }
-          it { expect(subject.relations_in(spec).size).to eq(3) }
-          it { expect(subject.relations_in(spec)).to include(
+          it { expect(subject.relations_in(dept_specific_spec)).to match_array([
               :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
-            ) }
+            ]) }
         end
 
         describe ':cr of activated_bridge' do
           subject { spec.atom(:cr) }
-          it { expect(subject.relations_in(spec).size).to eq(4) }
-          it { expect(subject.relations_in(spec).map(&:last)).to include(
-              bond_110_front, bond_110_cross, bond_110_cross,
+          it { expect(subject.relations_in(dept_specific_spec).map(&:last)).to match_array([
+              bond_110_front,
+              bond_110_cross,
+              bond_110_cross,
               position_100_front
-            ) }
+            ]) }
+        end
+
+        describe ':cr of right_activated_bridge' do
+          subject { spec.atom(:cr) }
+          let(:spec) { right_activated_bridge }
+          let(:relations) { lattice_relations + sybmolic_relations }
+          let(:all_relations) { subject.relations_in(dept_specific_spec) }
+          let(:sybmolic_relations) { all_relations.select { |r| r.is_a?(Symbol) } }
+          let(:lattice_relations) do
+            all_relations.reject { |r| r.is_a?(Symbol) }.map(&:last)
+          end
+
+          it { expect(relations).to match_array([
+              :active,
+              bond_110_front,
+              bond_110_cross,
+              bond_110_cross,
+              position_100_front
+            ]) }
         end
 
         describe ':ct of activated_hydrogenated_bridge' do
           let(:spec) { activated_hydrogenated_bridge }
           subject { spec.atom(:ct) }
-          it { expect(subject.relations_in(spec).size).to eq(4) }
-          it { expect(subject.relations_in(spec)).to include(
-              :active, :H,
+
+          it { expect(subject.relations_in(spec)).to match_array([
+              :H,
+              :active,
               [spec.atom(:cr), bond_110_cross],
               [spec.atom(:cl), bond_110_cross]
-            ) }
+            ]) }
+        end
+
+        describe 'with Organizers::SpecResidual' do
+          let(:minuend_dept) { dept_specific_spec(minuend_concept) }
+
+          describe ':ct of activated_bridge - bridge' do
+            let(:minuend_concept) { activated_bridge }
+            let(:subtrahend_concept) { bridge }
+            let(:subtrahend_dept) { dept_specific_spec(subtrahend_concept) }
+
+            let(:rest) { minuend_dept - subtrahend_dept }
+
+            subject { rest.links.keys.first }
+
+            it { expect(subject.relations_in(rest)).to match_array([
+                :active,
+                [spec.atom(:cr), bond_110_cross],
+                [spec.atom(:cl), bond_110_cross]
+              ]) }
+          end
+
+          describe ':t of activated_methyl_on_incoherent_bridge - bridge_base_dup' do
+            let(:minuend_concept) { activated_methyl_on_incoherent_bridge }
+            let(:subtrahend_concept) { bridge_base_dup }
+            let(:subtrahend_dept) do
+              Organizers::DependentBaseSpec.new(subtrahend_concept)
+            end
+
+            let(:rest) { minuend_dept - subtrahend_dept }
+
+            let(:cm) { rest.links.keys.first }
+            let(:t) { rest.links.keys.last }
+
+            it { expect(cm.relations_in(rest)).to match_array([
+                :active,
+                [t, free_bond]
+              ]) }
+
+            it { expect(t.relations_in(rest)).to match_array([
+                [cm, free_bond],
+                [subtrahend_concept.atom(:r), bond_110_cross],
+                [subtrahend_concept.atom(:l), bond_110_cross]
+              ]) }
+          end
         end
       end
 

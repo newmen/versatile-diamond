@@ -6,12 +6,6 @@ module VersatileDiamond
     class TerminationSpec
       include Visitors::Visitable
 
-      # Makes useful method for get behavior like specific spec
-      # @return [Symbol] the name of spec
-      def full_name
-        name
-      end
-
       # Termination spec cannot belong to the gas phase
       # @return [Boolean] false
       def gas?
@@ -34,11 +28,6 @@ module VersatileDiamond
       # @return [Integer] 1
       def size
         1
-      end
-
-      # Do not store reactions where used
-      def store_reaction(_)
-        # nothing to do
       end
     end
 
