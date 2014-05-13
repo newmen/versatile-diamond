@@ -64,6 +64,17 @@ module VersatileDiamond
           let(:atoms_num) { 0 }
           let(:refs_num) { 2 }
         end
+
+        describe 'complex difference' do
+          let(:small_spec1) { DependentBaseSpec.new(methyl_on_bridge_base) }
+          let(:small_spec2) { DependentBaseSpec.new(bridge_base_dup) }
+          let(:big_spec) { DependentBaseSpec.new(methyl_on_dimer_base) }
+          subject { big_spec - small_spec1 - small_spec2 }
+
+          it { expect(subject.links.size).to eq(2) }
+          it { expect(subject.links.values.map(&:last).map(&:last)).
+            to eq([bond_100_front] * 2) }
+        end
       end
     end
 
