@@ -12,7 +12,7 @@ module VersatileDiamond
 
       # Draws dependencies between atom properties by including of each other
       def draw_atom_dependencies
-        classifier.props.each_with_index do |prop, index|
+        classifier.props_hash.each do |index, prop|
           next unless (smallests = prop.smallests)
 
           from = get_atom_node(index)
@@ -60,7 +60,7 @@ module VersatileDiamond
       # @return [Node] the correspond node
       def get_atom_node(index)
         unless @atoms_to_nodes && @atoms_to_nodes[index]
-          prop = classifier.props[index]
+          prop = classifier.props_hash[index]
           add_atom_node(index, prop.to_s)
         end
         @atoms_to_nodes[index]

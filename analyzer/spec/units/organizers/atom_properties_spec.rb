@@ -4,6 +4,53 @@ module VersatileDiamond
   module Organizers
     describe AtomProperties, use: :atom_properties do
 
+      describe 'initialize' do
+        describe 'crystal atom with methyl in specie methyl_on_dimer' do
+          let(:specific_specs) do
+            [
+              activated_bridge,
+              activated_incoherent_bridge,
+              hydrogenated_incoherent_bridge,
+              extra_activated_bridge,
+              methyl_on_incoherent_bridge,
+              methyl_on_activated_bridge,
+              activated_methyl_on_bridge,
+              activated_methyl_on_incoherent_bridge,
+              activated_methyl_on_dimer
+            ]
+          end
+
+          let(:wrapped_specs) do
+            specific_specs.map { |s| DependentSpecificSpec.new(s) }
+          end
+
+          let(:target) { wrapped_specs.last }
+          let(:classifier) { AtomClassifier.new }
+
+          before do
+            organize(wrapped_specs)
+            classifier.analyze(target)
+          end
+
+          describe '~-C%d< is presented' do
+            subject { classifier.index(mod_cr) }
+            it { should_not be_nil }
+          end
+
+          describe 'classification' do
+            subject { classifier.classify(target.parent) }
+            let(:hash) do
+              {
+                3 => ['~-C%d<', 1],
+                5 => ['-C%d<', 1]
+              }
+            end
+
+            it { should eq(hash) }
+          end
+        end
+      end
+
       describe '#==' do
         it { expect(ucm).not_to eq(high_cm) }
         it { expect(high_cm).not_to eq(ucm) }
