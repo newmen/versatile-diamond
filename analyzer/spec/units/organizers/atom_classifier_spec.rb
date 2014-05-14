@@ -11,7 +11,7 @@ module VersatileDiamond
       subject { described_class.new }
 
       describe '#analyze' do
-        before(:each) do
+        before do
           [
             activated_bridge,
             extra_activated_bridge,
@@ -185,10 +185,10 @@ module VersatileDiamond
                 {
                   10 => ['H*C%d<', 1],
                   15 => ['-*C%d<', 1],
-                  18 => ['*C:i:u~', 1],
+                  18 => ['*C:i~', 1],
                   19 => ['*C~', 1],
                   2 => ['^*C.%d<', 1],
-                  20 => ['**C:i:u~', 2],
+                  20 => ['**C:i~', 2],
                   21 => ['**C~', 2],
                   22 => ['***C~', 3],
                   25 => ['~*C%d<', 1],
@@ -213,11 +213,11 @@ module VersatileDiamond
                   12 => ['^HC.%d<', 1],
                   13 => ['-C:i%d<', 1],
                   14 => ['-C%d<', 1],
-                  16 => ['C:i:u~', 3],
+                  16 => ['C:i~', 3],
                   17 => ['C~', 3],
-                  18 => ['*C:i:u~', 2],
+                  18 => ['*C:i~', 2],
                   19 => ['*C~', 2],
-                  20 => ['**C:i:u~', 1],
+                  20 => ['**C:i~', 1],
                   21 => ['**C~', 1],
                   23 => ['~C:i%d<', 1],
                   24 => ['~C%d<', 1],

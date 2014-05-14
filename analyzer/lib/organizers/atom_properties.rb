@@ -106,7 +106,7 @@ module VersatileDiamond
         if valence > bonds_num && !incoherent?
           props = wihtout_relevants
           new_rel = [:incoherent]
-          new_rel << :unfixed if estab_bonds_num == 1
+          new_rel += relevants if relevants
           props << new_rel
           self.class.new(props)
         else
