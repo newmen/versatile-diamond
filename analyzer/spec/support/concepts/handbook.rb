@@ -192,6 +192,16 @@ module VersatileDiamond
           activated_methyl_on_bridge.extended
         end
 
+        set(:methyl_on_right_bridge_base) do
+          s = SurfaceSpec.new(:methyl_on_right_bridge, cm: c)
+          s.adsorb(bridge_base)
+          s.link(c, s.atom(:cr), free_bond); s
+        end
+        # set(:methyl_on_right_bridge) { SpecificSpec.new(methyl_on_right_bridge_base) }
+        set(:activated_methyl_on_right_bridge) do
+          SpecificSpec.new(methyl_on_right_bridge_base, cm: activated_c)
+        end
+
         set(:high_bridge_base) do
           s = SurfaceSpec.new(:high_bridge)
           s.adsorb(methyl_on_bridge_base)

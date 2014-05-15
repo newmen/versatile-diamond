@@ -85,14 +85,43 @@ module VersatileDiamond
         end
       end
 
-      describe '#residual' do
-        subject { wrap(methyl_on_bridge_base)- wrap(bridge_base) }
+      describe '# - ' do
+        subject { wrap(methyl_on_right_bridge_base) - wrap(bridge_base) }
         it { should be_a(SpecResidual) }
         it { expect(subject.links_size).to eq(2) }
 
         it_behaves_like :swap_to_atom_reference do
           let(:atoms_num) { 1 }
           let(:refs_num) { 1 }
+        end
+
+        describe 'detailed' do
+          let(:atoms) { subject.links.keys }
+          it { expect(atoms.size).to eq(2) }
+
+          let(:cm) { atoms.first }
+          it { expect(cm.relations_in(subject).size).to eq(1) }
+
+          let(:cb) { atoms.last }
+          let(:rls) do
+            [
+              free_bond,
+              bond_110_front,
+              bond_110_cross,
+              bond_110_cross,
+              position_100_front
+            ]
+          end
+
+          it { expect(subject.relations_of(cb)).to match_array(rls) }
+        end
+      end
+
+      it_behaves_like :relations_of do
+        let(:spec) { bridge_base }
+        let(:atom) { spec.atom(:cr) }
+        let(:rls) do
+          [bond_110_front, bond_110_cross, bond_110_cross, position_100_front]
         end
       end
 
@@ -189,7 +218,7 @@ module VersatileDiamond
       end
 
       describe '#excess?' do
-          let(:wrapped_bridge) { wrap(bridge_base) }
+        let(:wrapped_bridge) { wrap(bridge_base) }
 
         describe 'default behavior' do
           it { expect(wrapped_bridge.excess?).to be_false }

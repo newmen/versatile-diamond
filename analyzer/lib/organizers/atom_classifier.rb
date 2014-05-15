@@ -97,8 +97,6 @@ module VersatileDiamond
           target = spec.rest || spec
           atoms = target.links.keys
 
-# binding.pry if spec.name == :methyl_on_dimer
-
           atoms.each_with_object({}) do |atom, hash|
             prop = AtomProperties.new(target, atom)
             index = index(prop)

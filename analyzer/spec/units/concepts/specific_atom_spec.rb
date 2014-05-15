@@ -90,6 +90,14 @@ module VersatileDiamond
         it { expect(cd_extra_hydride.monovalents).to eq([:H, :H]) }
       end
 
+      describe '#specific?' do
+        it { expect(activated_c.specific?).to be_true }
+        it { expect(cd_chloride.specific?).to be_true }
+        it { expect(incoherent_cd.specific?).to be_true }
+
+        it { expect(described_class.new(cd).specific?).to be_false }
+      end
+
       describe '#same?' do
         it { expect(subject.same?(n)).to be_true }
         it { expect(n.same?(subject)).to be_true }

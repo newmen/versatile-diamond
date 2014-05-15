@@ -58,6 +58,7 @@ module VersatileDiamond
         prop(:dimer_cl, :dimer, :cl)
         prop(:ad_cr, :activated_dimer, :cr)
         prop(:mod_cr, :methyl_on_dimer, :cr)
+        prop(:mob_cb, :methyl_on_right_bridge_base, :cr)
 
         prop(:pseudo_dimer_cr, :pseudo_dimer_base, :cr)
       end

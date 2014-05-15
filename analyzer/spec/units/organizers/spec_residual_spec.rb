@@ -86,6 +86,14 @@ module VersatileDiamond
             to eq([bond_100_front] * 2) }
         end
       end
+
+      it_behaves_like :relations_of do
+        let(:spec) { methyl_on_dimer_base }
+        let(:atom) { spec.atom(:cr) }
+        let(:rls) do
+          [bond_100_front, bond_110_cross, bond_110_cross, free_bond]
+        end
+      end
     end
 
   end

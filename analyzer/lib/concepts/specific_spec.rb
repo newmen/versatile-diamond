@@ -105,7 +105,7 @@ module VersatileDiamond
           raise ArgumentError,
             "Atom #{keyname} for specific #{name} already described!"
         end
-        unless atom.is_a?(SpecificAtom)
+        unless atom.specific?
           raise ArgumentError,
             "Described atom #{keyname} for specific #{name} cannot be unspecified"
         end

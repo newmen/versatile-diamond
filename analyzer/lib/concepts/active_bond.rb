@@ -34,7 +34,7 @@ module VersatileDiamond
       # @param [Atom | SpecificAtom] atom the verifying atom
       # @return [Boolean] is cover or not
       def cover?(specific_spec, atom)
-        !specific_spec.gas? && atom.is_a?(SpecificAtom) && atom.actives > 0
+        !specific_spec.gas? && atom.actives > 0
       end
 
       def to_s
