@@ -117,8 +117,7 @@ module VersatileDiamond
       # @param [LateralReaction] other with which comparison
       # @return [Boolean] is reaction initially similar, and all theres are same
       def all_same?(other)
-        super_same?(other) &&
-          lists_are_identical?(theres, other.theres) { |t, o| t.same?(o) }
+        super_same?(other) && lists_are_identical?(theres, other.theres, &:same?)
       end
     end
 

@@ -104,7 +104,9 @@ module VersatileDiamond
         active_options.size
       end
 
-      # Compares relevant states with states of another atom
+      # Compares relevant states with states of another atom. Used in Hanser's
+      # algorithm.
+      #
       # @param [Atom | AtomReference | SpecificAtom] other the atom with which
       #   compares
       # @return [Array] the array of relevants state symbols

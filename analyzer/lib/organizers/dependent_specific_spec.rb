@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentSpec
+      include Module::ListsComparer
       include MultiChildrenSpec
       include ResidualContainerSpec
 
@@ -190,7 +191,9 @@ module VersatileDiamond
       #   comparable atom
       # @return [Boolean] are different or not
       def are_atoms_different?(spec_atom, base_atom)
-        !(spec_atom.actives == base_atom.actives && base_atom.diff(spec_atom).empty?)
+        !(spec_atom.actives == base_atom.actives &&
+            base_atom.diff(spec_atom).empty? &&
+              lists_are_identical?(spec_atom.monovalents, base_atom.monovalents, &:==))
       end
 
       # Duplicates links of own atom and exchange them to correct correspond atoms

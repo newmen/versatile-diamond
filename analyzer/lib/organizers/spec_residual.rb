@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Contain some residual of find diff between base species
     class SpecResidual
+      include Modules::ListsComparer
       include Minuend
 
       class << self
@@ -28,7 +29,13 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same?(other)
         return false unless links_size == other.links_size
-        Mcs::SpeciesComparator.contain?(self, other, separated_multi_bond: true)
+        intersec =
+          Mcs::SpeciesComparator.first_general_intersec(
+            self, other, separated_multi_bond: true)
+
+        intersec.size == links_size && intersec.all? do |a, b|
+          lists_are_identical?(relations_of(a), other.relations_of(b), &:==)
+        end
       end
 
       # Checks that current minuend instance is empty or not

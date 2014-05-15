@@ -50,6 +50,16 @@ module VersatileDiamond
         make_residual(links_arr, residual_atoms)
       end
 
+    protected
+
+      # Provides relations of atom in current resudual
+      # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
+      #   be got
+      # @return [Array] the array of atom relations
+      def relations_of(atom)
+        atom.relations_in(self).map(&:last)
+      end
+
     private
 
       # Finds first intersec with some spec
