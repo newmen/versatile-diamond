@@ -85,51 +85,47 @@ module VersatileDiamond
 
           describe '#general_transitive_matrix' do
             it { expect(subject.general_transitive_matrix.to_a).to eq([
-                  [true, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [true, true, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [true, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, true, true, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, true, true, false, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [true, true, false, false, false, false, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, true, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, true, false, false, true, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [true, true, false, false, false, false, true, false, true, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, true, false, false, true, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, true, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
-                  [false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+                  [false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, false],
-                  [false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true]
+                  [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true]
                 ]) }
           end
 
           describe '#specification' do
-            it { expect(subject.specification).to eq([
-                  12, 12, 2, 10, 10, 5, 11, 11, 11, 11, 10, 11, 12, 13, 13, 15, 16, 16, 18, 18, 20, 20, 22, 23, 23, 25, 26, 26, 28, 28, 30, 31
-                ]) }
+            it { expect(subject.specification).to eq([12, 12, 2, 10, 10, 5, 11, 11, 11, 11, 10, 11, 12, 14, 14, 15, 17, 17, 19, 19, 21, 21, 22, 23, 23, 25, 27, 27, 29, 29, 30, 31]) }
           end
 
           describe '#actives_to_deactives' do
-            it { expect(subject.actives_to_deactives).to eq([
-                  0, 1, 1, 6, 7, 4, 6, 7, 8, 9, 9, 11, 12, 13, 14, 14, 16, 17, 16, 17, 18, 19, 21, 23, 24, 24, 26, 27, 26, 27, 29, 31
-                ]) }
+            it { expect(subject.actives_to_deactives).to eq([0, 1, 0, 6, 7, 3, 6, 7, 8, 9, 8, 11, 12, 13, 14, 13, 16, 17, 16, 17, 18, 19, 20, 23, 24, 24, 26, 27, 26, 27, 28, 31]) }
           end
 
           describe '#deactives_to_actives' do
@@ -185,18 +181,18 @@ module VersatileDiamond
                 {
                   10 => ['H*C%d<', 1],
                   15 => ['-*C%d<', 1],
-                  18 => ['*C:i~', 1],
-                  19 => ['*C~', 1],
+                  18 => ['*C~', 1],
+                  19 => ['*C:i:u~', 1],
                   2 => ['^*C.%d<', 1],
-                  20 => ['**C:i~', 2],
-                  21 => ['**C~', 2],
+                  20 => ['**C~', 2],
+                  21 => ['**C:i:u~', 2],
                   22 => ['***C~', 3],
                   25 => ['~*C%d<', 1],
-                  28 => ['*C:i=', 1],
-                  29 => ['*C=', 1],
-                  3 => ['*C:i%d<', 1],
+                  28 => ['*C=', 1],
+                  29 => ['*C:i=', 1],
                   30 => ['**C=', 2],
-                  4 => ['*C%d<', 1],
+                  3 => ['*C%d<', 1],
+                  4 => ['*C:i%d<', 1],
                   5 => ['**C%d<', 2],
                 }
               end
@@ -206,31 +202,31 @@ module VersatileDiamond
               let(:term) { adsorbed_h }
               let(:hash) do
                 {
-                  0 => ['^C.:i%d<', 1],
-                  1 => ['^C.%d<', 1],
+                  0 => ['^C.%d<', 1],
+                  1 => ['^C.:i%d<', 1],
                   10 => ['H*C%d<', 1],
                   11 => ['HHC%d<', 2],
                   12 => ['^HC.%d<', 1],
-                  13 => ['-C:i%d<', 1],
-                  14 => ['-C%d<', 1],
-                  16 => ['C:i~', 3],
-                  17 => ['C~', 3],
-                  18 => ['*C:i~', 2],
-                  19 => ['*C~', 2],
-                  20 => ['**C:i~', 1],
-                  21 => ['**C~', 1],
+                  13 => ['-C%d<', 1],
+                  14 => ['-C:i%d<', 1],
+                  16 => ['C~', 3],
+                  17 => ['C:i:u~', 3],
+                  18 => ['*C~', 2],
+                  19 => ['*C:i:u~', 2],
+                  20 => ['**C~', 1],
+                  21 => ['**C:i:u~', 1],
                   23 => ['~C:i%d<', 1],
                   24 => ['~C%d<', 1],
-                  26 => ['C:i=', 2],
-                  27 => ['C=', 2],
-                  28 => ['*C:i=', 1],
-                  29 => ['*C=', 1],
-                  3 => ['*C:i%d<', 1],
-                  4 => ['*C%d<', 1],
-                  6 => ['C:i%d<', 2],
-                  7 => ['C%d<', 2],
-                  8 => ['HC:i%d<', 2],
-                  9 => ['HC%d<', 2],
+                  26 => ['C=', 2],
+                  27 => ['C:i=', 2],
+                  28 => ['*C=', 1],
+                  29 => ['*C:i=', 1],
+                  4 => ['*C:i%d<', 1],
+                  3 => ['*C%d<', 1],
+                  6 => ['C%d<', 2],
+                  7 => ['C:i%d<', 2],
+                  8 => ['HC%d<', 2],
+                  9 => ['HC:i%d<', 2],
                 }
               end
             end
@@ -251,8 +247,8 @@ module VersatileDiamond
               let(:spec) { activated_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 2],
-                  4 => ['*C%d<', 1],
+                  0 => ['^C.%d<', 2],
+                  3 => ['*C%d<', 1],
                 }
               end
             end
@@ -261,7 +257,7 @@ module VersatileDiamond
               let(:spec) { extra_activated_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 2],
+                  0 => ['^C.%d<', 2],
                   5 => ['**C%d<', 1],
                 }
               end
@@ -271,8 +267,8 @@ module VersatileDiamond
               let(:spec) { hydrogenated_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 2],
-                  9 => ['HC%d<', 1],
+                  0 => ['^C.%d<', 2],
+                  8 => ['HC%d<', 1],
                 }
               end
             end
@@ -281,7 +277,7 @@ module VersatileDiamond
               let(:spec) { extra_hydrogenated_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 2],
+                  0 => ['^C.%d<', 2],
                   11 => ['HHC%d<', 1],
                 }
               end
@@ -291,8 +287,8 @@ module VersatileDiamond
               let(:spec) { right_hydrogenated_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 1],
-                  7 => ['C%d<', 1],
+                  0 => ['^C.%d<', 1],
+                  6 => ['C%d<', 1],
                   12 => ['^HC.%d<', 1],
                 }
               end
@@ -302,8 +298,8 @@ module VersatileDiamond
               let(:spec) { dimer }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 4],
-                  14 => ['-C%d<', 2],
+                  0 => ['^C.%d<', 4],
+                  13 => ['-C%d<', 2],
                 }
               end
             end
@@ -312,8 +308,8 @@ module VersatileDiamond
               let(:spec) { activated_dimer }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 4],
-                  14 => ['-C%d<', 1],
+                  0 => ['^C.%d<', 4],
+                  13 => ['-C%d<', 1],
                   15 => ['-*C%d<', 1],
                 }
               end
@@ -323,8 +319,8 @@ module VersatileDiamond
               let(:spec) { methyl_on_incoherent_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 2],
-                  17 => ['C~', 1],
+                  0 => ['^C.%d<', 2],
+                  16 => ['C~', 1],
                   23 => ['~C:i%d<', 1],
                 }
               end
@@ -334,8 +330,8 @@ module VersatileDiamond
               let(:spec) { high_bridge }
               let(:hash) do
                 {
-                  1 => ['^C.%d<', 2],
-                  27 => ['C=', 1],
+                  0 => ['^C.%d<', 2],
+                  26 => ['C=', 1],
                   31 => ['=C%d<', 1],
                 }
               end
@@ -352,7 +348,7 @@ module VersatileDiamond
                 let(:target_spec) { wrap_specific(activated_bridge) }
                 let(:all_specific) { [target_spec] }
                 let(:hash) do
-                  { 4 => ['*C%d<', 1] }
+                  { 3 => ['*C%d<', 1] }
                 end
               end
 
@@ -362,7 +358,7 @@ module VersatileDiamond
                 let(:target_spec) { two.parent }
                 let(:all_specific) { [one, two] }
                 let(:hash) do
-                  { 14 => ['-C%d<', 2] }
+                  { 13 => ['-C%d<', 2] }
                 end
               end
 
@@ -374,7 +370,7 @@ module VersatileDiamond
                 let(:all_specific) { [one, two, three] }
                 let(:hash) do
                   {
-                    19 => ['*C~', 1],
+                    18 => ['*C~', 1],
                     23 => ['~C:i%d<', 1]
                   }
                 end
@@ -384,12 +380,12 @@ module VersatileDiamond
         end
 
         describe '#index' do
-          it { expect(subject.index(bridge_cr)).to eq(1) }
-          it { expect(subject.index(bridge, bridge.atom(:cr))).to eq(1) }
+          it { expect(subject.index(bridge_cr)).to eq(0) }
+          it { expect(subject.index(bridge, bridge.atom(:cr))).to eq(0) }
 
-          it { expect(subject.index(ab_ct)).to eq(4) }
+          it { expect(subject.index(ab_ct)).to eq(3) }
           it { expect(subject.index(activated_bridge, activated_bridge.atom(:ct))).
-            to eq(4) }
+            to eq(3) }
         end
 
         describe '#all_types_num' do
@@ -401,22 +397,22 @@ module VersatileDiamond
         end
 
         describe '#has_relevants?' do
-          it { expect(subject.has_relevants?(0)).to be_true }
-          it { expect(subject.has_relevants?(6)).to be_true }
-          it { expect(subject.has_relevants?(8)).to be_true }
-          it { expect(subject.has_relevants?(16)).to be_true }
-          it { expect(subject.has_relevants?(18)).to be_true }
-          it { expect(subject.has_relevants?(20)).to be_true }
-          it { expect(subject.has_relevants?(26)).to be_true }
-          it { expect(subject.has_relevants?(28)).to be_true }
+          it { expect(subject.has_relevants?(4)).to be_true }
+          it { expect(subject.has_relevants?(14)).to be_true }
 
+          it { expect(subject.has_relevants?(0)).to be_false }
           it { expect(subject.has_relevants?(2)).to be_false }
-          it { expect(subject.has_relevants?(4)).to be_false }
+          it { expect(subject.has_relevants?(6)).to be_false }
+          it { expect(subject.has_relevants?(8)).to be_false }
           it { expect(subject.has_relevants?(10)).to be_false }
           it { expect(subject.has_relevants?(12)).to be_false }
-          it { expect(subject.has_relevants?(14)).to be_false }
+          it { expect(subject.has_relevants?(16)).to be_false }
+          it { expect(subject.has_relevants?(18)).to be_false }
+          it { expect(subject.has_relevants?(20)).to be_false }
           it { expect(subject.has_relevants?(22)).to be_false }
           it { expect(subject.has_relevants?(24)).to be_false }
+          it { expect(subject.has_relevants?(26)).to be_false }
+          it { expect(subject.has_relevants?(28)).to be_false }
           it { expect(subject.has_relevants?(30)).to be_false }
         end
       end

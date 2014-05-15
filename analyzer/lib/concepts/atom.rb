@@ -73,6 +73,12 @@ module VersatileDiamond
         other.is_a?(SpecificAtom) ? other.relevants : []
       end
 
+      # Simple atom couldn't contain relevant states
+      # @return [Array] the empty array
+      def relevants
+        []
+      end
+
       # Finds all relation instances for current atom in passed spec
       # @param [Spec] spec the spec in which relations will be found, must
       #   contain current atom
@@ -81,7 +87,7 @@ module VersatileDiamond
         spec.links[self].dup
       end
 
-      # Atom couldn't contain additional relations
+      # Simple atom couldn't contain additional relations
       # @return [Array] the empty array
       def additional_relations
         []

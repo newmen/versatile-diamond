@@ -34,9 +34,9 @@ module VersatileDiamond
         props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
 
         props.each do |prop|
+          @used_relevants_num += 1 if prop.relevant?
           next if index(prop)
 
-          @used_relevants_num += 1 if prop.relevant?
           store_prop(prop, check: false)
 
           activated_prop = prop

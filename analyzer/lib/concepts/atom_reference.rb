@@ -8,7 +8,8 @@ module VersatileDiamond
       extend Forwardable
 
       def_delegators :@atom, :name, :lattice, :lattice=, :same?, :original_same?,
-        :actives, :monovalents, :incoherent?, :unfixed?, :diff, :original_valence
+        :actives, :monovalents, :incoherent?, :unfixed?, :diff, :original_valence,
+        :relevants
 
       attr_reader :spec, :keyname
 

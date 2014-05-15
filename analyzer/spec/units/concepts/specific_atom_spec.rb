@@ -170,6 +170,15 @@ module VersatileDiamond
         it { expect(unfixed_activated_c.relevants).to eq([:unfixed]) }
         it { expect(incoherent_cd.relevants).to eq([:incoherent]) }
         it { expect(activated_incoherent_cd.relevants).to eq([:incoherent]) }
+
+        describe 'chain of relevants' do
+          let(:ref) { AtomReference.new(unfixed_methyl_on_bridge, :cm) }
+
+          subject { described_class.new(ref) }
+          before { subject.incoherent! }
+
+          it { expect(subject.relevants).to match_array([:incoherent, :unfixed]) }
+        end
       end
 
       it_behaves_like '#lattice' do

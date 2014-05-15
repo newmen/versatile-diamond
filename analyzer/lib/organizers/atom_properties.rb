@@ -28,12 +28,9 @@ module VersatileDiamond
             atom.original_valence,
             atom.lattice,
             relations_for(spec, atom),
-            danglings_for(spec, atom)
+            danglings_for(spec, atom),
+            atom.relevants.dup
           ]
-
-          if atom.is_a?(SpecificAtom) && !atom.relevants.empty?
-            @props << atom.relevants
-          end
         else
           raise ArgumentError, 'Wrong number of arguments'
         end
@@ -91,23 +88,23 @@ module VersatileDiamond
       # Makes unrelevanted copy of self
       # @return [AtomProperties] unrelevanted atom properties
       def unrelevanted
-        self.class.new(wihtout_relevants)
+        self.class.new(without_relevants)
       end
 
       # Has incoherent state or not
       # @return [Boolean] contain or not
       def incoherent?
-        relevants && relevants.include?(:incoherent)
+        relevants.include?(:incoherent)
       end
 
       # Makes incoherent copy of self
       # @return [AtomProperties] incoherented atom properties or nil
       def incoherent
         if valence > bonds_num && !incoherent?
-          props = wihtout_relevants
+          props = without_relevants
           new_rel = [:incoherent]
-          new_rel += relevants if relevants
-          props << new_rel
+          new_rel << :unfixed if estab_bonds_num == 1
+          props[-1] = new_rel
           self.class.new(props)
         else
           nil
@@ -117,7 +114,7 @@ module VersatileDiamond
       # Are properties contain relevant values
       # @return [Boolean] contain or not
       def relevant?
-        !!relevants
+        !relevants.empty?
       end
 
       # Gets property same as current but activated
@@ -125,7 +122,7 @@ module VersatileDiamond
       def activated
         if valence > bonds_num
           props = [*static_states, relations, danglings + [:active]]
-          props << relevants.dup if relevants && valence > bonds_num + 1
+          props << (valence > bonds_num + 1 ? relevants.dup : [])
           self.class.new(props)
         else
           nil
@@ -137,8 +134,7 @@ module VersatileDiamond
       def deactivated
         dgs = danglings.dup
         if dgs.delete_one(:active)
-          props = [*static_states, relations.dup, dgs]
-          props << relevants if relevants
+          props = [*static_states, relations.dup, dgs, relevants.dup]
           self.class.new(props)
         else
           nil
@@ -176,8 +172,7 @@ module VersatileDiamond
         return @size if @size
         @size = valence + (lattice ? 0.5 : 0) +
           estab_bonds_num + positions_num +
-          danglings.size * 0.34 +
-          (relevants ? relevants.size * 0.13 : 0)
+          danglings.size * 0.34 + relevants.size * 0.13
       end
 
       # Convert properties to string representation
@@ -195,7 +190,7 @@ module VersatileDiamond
         rl = relations.dup
         name = "#{name}." while rl.delete_one { |r| r.is_a?(Position) }
 
-        if relevants
+        if relevant?
           relevants.each do |sym|
             suffix = sym.to_s[0]
             name = "#{name}:#{suffix}"
@@ -251,7 +246,7 @@ module VersatileDiamond
         danglings
         relevants
       ).each_with_index do |name, i|
-        define_method(name) { @props[i] }
+        define_method(name) { props[i] }
       end
       public :atom_name, :lattice
 
@@ -277,9 +272,7 @@ module VersatileDiamond
       # @param [Symbol] method by which will be comparing
       # @return [Boolean] lists are equal or not
       def eq_by?(other, method)
-        lists_are_identical?(send(method), other.send(method)) do |a, b|
-          a == b
-        end
+        lists_are_identical?(send(method), other.send(method), &:==)
       end
 
       # Compares current relations with other relations
@@ -301,8 +294,7 @@ module VersatileDiamond
       # @param [Symbol] method by which will be comparing
       # @return [Boolean] lists are equal or not
       def eq_relevants?(other)
-        return true unless relevants || other.relevants
-        relevants && other.relevants && eq_by?(other, :relevants)
+        eq_by?(other, :relevants)
       end
 
       # Compares basic values of two properties
@@ -342,8 +334,8 @@ module VersatileDiamond
       # @param [AtomProperties] other the checking properties
       # @return [Boolean] contain or not
       def same_correspond_relations?(other)
-        return false if relevants && !other.relevants
-        return true unless relevants
+        return false if relevant? && !other.relevant?
+        return true unless relevant?
         !relevants.include?(:incoherent) && other.relevants.include?(:unfixed)
       end
 
@@ -388,8 +380,10 @@ module VersatileDiamond
 
       # Drops relevants properties if it exists
       # @return [Array] properties without relevants
-      def wihtout_relevants
-        relevants ? props[0...(props.length - 1)] : props
+      def without_relevants
+        wr = props.dup
+        wr[-1] = [] if relevant?
+        wr
       end
 
       # Counts relations that is a instance of passed class
