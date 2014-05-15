@@ -55,6 +55,13 @@ module VersatileDiamond
           diff(incoherent_cd)).to eq([:incoherent]) }
       end
 
+      describe '#relevants' do
+        it { expect(bridge.atom(:cr).relevants).to be_empty }
+
+        let(:moib) { AtomReference.new(methyl_on_incoherent_bridge, :cb) }
+        it { expect(moib.relevants).to eq([:incoherent]) }
+      end
+
       describe '#relations_in' do
         it { expect(bridge.atom(:cr).relations_in(bridge).size).to eq(4) }
       end

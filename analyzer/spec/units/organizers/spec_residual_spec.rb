@@ -80,6 +80,7 @@ module VersatileDiamond
           let(:big_spec) { DependentBaseSpec.new(methyl_on_dimer_base) }
           subject { big_spec - small_spec1 - small_spec2 }
 
+          it { should be_a(described_class) }
           it { expect(subject.links.size).to eq(2) }
           it { expect(subject.links.values.map(&:last).map(&:last)).
             to eq([bond_100_front] * 2) }

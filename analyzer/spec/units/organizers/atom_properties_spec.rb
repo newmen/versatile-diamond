@@ -43,7 +43,7 @@ module VersatileDiamond
             let(:hash) do
               {
                 3 => ['~-C%d<', 1],
-                5 => ['-C%d<', 1]
+                4 => ['-C%d<', 1]
               }
             end
 

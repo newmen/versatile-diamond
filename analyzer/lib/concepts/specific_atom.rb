@@ -33,8 +33,8 @@ module VersatileDiamond
       #   the current atom is bonded
       def initialize(atom, ancestor: nil, options: [], monovalents: [])
         @atom = atom.dup # because atom can be changed by mapping algorithm
-        @options = ancestor ? ancestor.options : options
-        @monovalents = ancestor ? ancestor.monovalents : monovalents
+        @options = ancestor ? ancestor.options.dup : options
+        @monovalents = ancestor ? ancestor.monovalents.dup : monovalents
       end
 
       # Makes copy of another instance
@@ -123,7 +123,7 @@ module VersatileDiamond
       # Gets only relevant states
       # @return [Array] the array of relevant states
       def relevants
-        @options - [:active]
+        ((@options - [:active]) + @atom.relevants).uniq
       end
 
       # Finds all relation instances for current atom in passed spec

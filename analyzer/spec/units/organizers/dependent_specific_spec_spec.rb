@@ -181,6 +181,14 @@ module VersatileDiamond
           it { expect(links.size).to eq(1) }
           it { expect(links.keys.first.monovalents).to eq([:H]) }
         end
+
+        describe 'resudue contain atoms with relevant states' do
+          let(:minuend) { wrap(methyl_on_incoherent_bridge) }
+          let(:subtrahend) { DependentBaseSpec.new(methyl_on_bridge_base) }
+
+          it { expect(links.size).to eq(1) }
+          it { expect(links.keys.first.incoherent?).to be_true }
+        end
       end
 
       describe '#size' do
