@@ -88,7 +88,7 @@ module VersatileDiamond
         specs.sort_by(&:size).each do |spec|
           puts @specs_format % [
             spec.name,
-            spec.spec.size,
+            spec.spec.size.round(2),
             spec.external_bonds,
             hash_str(classifier.classify(spec))
           ]
@@ -108,7 +108,7 @@ module VersatileDiamond
         reactions.each do |reaction|
           puts @reactions_format % [
             reaction.formula,
-            reaction.size,
+            reaction.size.round(2),
             reaction.changes_size,
             reaction.full_rate,
             reaction.name,

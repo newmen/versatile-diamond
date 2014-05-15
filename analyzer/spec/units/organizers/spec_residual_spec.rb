@@ -9,7 +9,8 @@ module VersatileDiamond
       end
 
       let(:wrapped_bridge) { wrap(bridge_base) }
-      let(:methyl_on_bridge_part) { wrap(methyl_on_bridge_base) - wrapped_bridge }
+      let(:wrapped_mob) { wrap(methyl_on_bridge_base) }
+      let(:methyl_on_bridge_part) { wrapped_mob - wrapped_bridge }
       let(:high_bridge_part) { wrap(high_bridge_base) - wrapped_bridge }
       let(:big_dimer_part) { wrap(dimer_base) - wrapped_bridge }
       let(:small_dimer_part) { big_dimer_part - wrapped_bridge }
@@ -23,21 +24,29 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        let(:methyl_on_bridge_dup) do
-          m = c.dup
-          b, l, r = cd.dup, cd.dup, cd.dup
-          s = Concepts::SurfaceSpec.new(:mob_dup, m: m, b: b, l: l, r: r)
-          s.link(m, b, free_bond)
-          s.link(b, l, bond_110_cross)
-          s.link(b, r, bond_110_cross); s
+        describe 'methyl_on_bridge_dup' do
+          let(:methyl_on_bridge_dup) do
+            m = c.dup
+            b, l, r = cd.dup, cd.dup, cd.dup
+            s = Concepts::SurfaceSpec.new(:mob_dup, m: m, b: b, l: l, r: r)
+            s.link(m, b, free_bond)
+            s.link(b, l, bond_110_cross)
+            s.link(b, r, bond_110_cross); s
+          end
+
+          let(:another_mob_part) { wrap(methyl_on_bridge_dup) - wrap(bridge_base_dup) }
+
+          it { expect(methyl_on_bridge_part.same?(another_mob_part)).to be_true }
+
+          it { expect(methyl_on_bridge_part.same?(big_dimer_part)).to be_false }
+          it { expect(methyl_on_bridge_part.same?(high_bridge_part)).to be_false }
         end
 
-        let(:another_mob_part) { wrap(methyl_on_bridge_dup) - wrap(bridge_base_dup) }
-
-        it { expect(methyl_on_bridge_part.same?(another_mob_part)).to be_true }
-
-        it { expect(methyl_on_bridge_part.same?(big_dimer_part)).to be_false }
-        it { expect(methyl_on_bridge_part.same?(high_bridge_part)).to be_false }
+        describe 'rests of (dimer - bridge), (methyl_on_dimer - methyl_on_bridge)' do
+          let(:big_mod_part) { wrap(methyl_on_dimer_base) - wrapped_mob }
+          it { expect(big_dimer_part.same?(big_mod_part)).to be_false }
+          it { expect(big_mod_part.same?(big_dimer_part)).to be_false }
+        end
       end
 
       describe '#empty?' do

@@ -44,11 +44,13 @@ module VersatileDiamond
         # Gets first full possible intersec between two species
         # @param [Hash] first see at #intersec same argument
         # @param [Hash] second see at #intersec same argument
+        # @option [Boolean] :separated_multi_bond same as #intersec argument
         # @yeild [Graph, Graph, Concepts::Atom, Concepts::Atom] see at #intersec same
         #   argument
         # @return [Set] the set of atom pairs for two species
-        def first_general_intersec(first, second, &block)
-          intersec(first, second, separated_multi_bond: false, &block).first
+        def first_general_intersec(first, second, separated_multi_bond: false, &block)
+          smb = separated_multi_bond
+          intersec(first, second, separated_multi_bond: smb, &block).first
         end
 
       end

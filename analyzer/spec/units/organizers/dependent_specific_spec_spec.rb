@@ -173,6 +173,14 @@ module VersatileDiamond
           it { expect(links.keys.first.actives).to eq(1) }
           it { expect(links.values).to eq([[]]) }
         end
+
+        describe 'hidrogenated parent' do
+          let(:minuend) { wrap(hydrogenated_bridge) }
+          let(:subtrahend) { DependentBaseSpec.new(bridge_base_dup) }
+
+          it { expect(links.size).to eq(1) }
+          it { expect(links.keys.first.monovalents).to eq([:H]) }
+        end
       end
 
       describe '#size' do
