@@ -39,18 +39,13 @@ module VersatileDiamond
         residual_atoms = mapped_set & Set[*links_arr.map(&:first)]
         residual_atoms.map! do |atom|
           sub_atom = mirror[atom]
-          ref = sub_atom.reference_to?(subtrahend.spec) ?
-            sub_atom :
-            make_reference(subtrahend, sub_atom)
-
+          ref = make_reference(subtrahend, sub_atom)
           links_arr = replace(links_arr, atom, ref)
           ref
         end
 
         make_residual(links_arr, residual_atoms)
       end
-
-    protected
 
       # Provides relations of atom in current resudual
       # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will

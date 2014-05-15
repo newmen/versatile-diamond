@@ -26,6 +26,10 @@ module VersatileDiamond
       end
 
       describe '#same?' do
+        it { expect(c.specific?).to be_false }
+      end
+
+      describe '#same?' do
         it { expect(c.same?(h)).to be_false }
         it { expect(c.same?(c.dup)).to be_true }
         it { expect(c.same?(cd)).to be_false }
@@ -77,10 +81,6 @@ module VersatileDiamond
 
       describe '#additional_relations' do
         it { expect(cd.additional_relations).to be_empty }
-      end
-
-      describe '#reference_to?' do
-        it { expect(cd.reference_to?(bridge_base)).to be_false }
       end
     end
 

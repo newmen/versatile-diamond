@@ -9,7 +9,7 @@ module VersatileDiamond
 
       def_delegators :@atom, :name, :lattice, :lattice=, :same?, :original_same?,
         :actives, :monovalents, :incoherent?, :unfixed?, :diff, :original_valence,
-        :relevants
+        :relevants, :specific?
 
       attr_reader :spec, :keyname
 
@@ -47,13 +47,6 @@ module VersatileDiamond
       # @return [Array] the array of relations
       def additional_relations
         real_atom.relations_in(@spec)
-      end
-
-      # Checks that current reference relate to some spec
-      # @param [Spec] spec the checkable spec
-      # @return [Boolean] is related or not?
-      def reference_to?(spec)
-        @spec == spec
       end
 
       # Updates keyname if it was changed in using specie for original atom

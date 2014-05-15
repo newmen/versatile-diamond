@@ -300,7 +300,7 @@ module VersatileDiamond
         return own if target.gas?
 
         original_own = own
-        own = SpecificAtom.new(own) unless own.is_a?(SpecificAtom)
+        own = SpecificAtom.new(own) unless own.specific?
         diff = own.diff(foreign)
 
         extb = target.external_bonds_for(original_own)

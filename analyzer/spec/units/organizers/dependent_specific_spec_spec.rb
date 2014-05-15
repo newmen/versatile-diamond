@@ -135,7 +135,7 @@ module VersatileDiamond
         end
       end
 
-      describe '-' do
+      describe '# - ' do
         subject { minuend - subtrahend }
         let(:links) { subject.links }
 
@@ -188,6 +188,31 @@ module VersatileDiamond
 
           it { expect(links.size).to eq(1) }
           it { expect(links.keys.first.incoherent?).to be_true }
+        end
+
+        describe 'correct relations after base spec change' do
+          let(:minuend) { wrap(activated_methyl_on_right_bridge) }
+          let(:subtrahend) { DependentBaseSpec.new(bridge_base_dup) }
+          let(:cb) { subject.links.keys.last }
+          let(:rls) do
+            [
+              free_bond,
+              bond_110_front,
+              bond_110_cross,
+              bond_110_cross,
+              position_100_front
+            ]
+          end
+
+          it { expect(subject.relations_of(cb)).to match_array(rls) }
+        end
+      end
+
+      it_behaves_like :relations_of do
+        let(:spec) { methyl_on_dimer_base }
+        let(:atom) { spec.atom(:cr) }
+        let(:rls) do
+          [bond_100_front, bond_110_cross, bond_110_cross, free_bond]
         end
       end
 

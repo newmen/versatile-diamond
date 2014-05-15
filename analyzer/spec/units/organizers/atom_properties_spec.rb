@@ -5,7 +5,7 @@ module VersatileDiamond
     describe AtomProperties, use: :atom_properties do
 
       describe 'initialize' do
-        describe 'crystal atom with methyl in specie methyl_on_dimer' do
+        describe 'crystal atom with several dependencies' do
           let(:specific_specs) do
             [
               activated_bridge,
@@ -14,6 +14,7 @@ module VersatileDiamond
               extra_activated_bridge,
               methyl_on_incoherent_bridge,
               methyl_on_activated_bridge,
+              activated_methyl_on_right_bridge,
               activated_dimer,
               activated_methyl_on_bridge,
               activated_methyl_on_incoherent_bridge,
@@ -21,11 +22,11 @@ module VersatileDiamond
             ]
           end
 
+          let(:mirror) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] }
           let(:wrapped_specs) do
             specific_specs.map { |s| DependentSpecificSpec.new(s) }
           end
 
-          let(:target) { wrapped_specs.last }
           let(:classifier) { AtomClassifier.new }
 
           before do
@@ -33,21 +34,34 @@ module VersatileDiamond
             classifier.analyze(target)
           end
 
-          describe '~-C%d< is presented' do
-            subject { classifier.index(mod_cr) }
-            it { should_not be_nil }
-          end
+          describe 'activated_methyl_on_dimer' do
+            let(:target) { mirror[:'methyl_on_dimer(cm: *)'] }
 
-          describe 'classification' do
-            subject { classifier.classify(target.parent) }
-            let(:hash) do
-              {
-                3 => ['~-C%d<', 1],
-                4 => ['-C%d<', 1]
-              }
+            describe '~-C%d< is presented' do
+              subject { classifier.index(mod_cr) }
+              it { should_not be_nil }
             end
 
-            it { should eq(hash) }
+
+            describe 'classification' do
+              subject { classifier.classify(target.parent) }
+              let(:hash) do
+                {
+                  3 => ['~-C%d<', 1],
+                  4 => ['-C%d<', 1]
+                }
+              end
+
+              it { should eq(hash) }
+            end
+          end
+
+          describe 'activated_methyl_on_right_bridge' do
+            let(:target) { mirror[:'methyl_on_right_bridge(cm: *)'] }
+            describe '~^C%d< is presented' do
+              subject { classifier.index(mob_cb) }
+              it { should_not be_nil }
+            end
           end
         end
       end

@@ -88,13 +88,23 @@ module VersatileDiamond
             key =
               replaced_atoms[curr_atom] ||= replace_atom(other, curr_atom, other_atom)
             links_hash[key] = ref_to_links_of(other, curr_atom, mirror, replaced_atoms)
-          elsif are_atoms_different?(curr_atom, other_atom)
+          elsif are_atoms_different?(other, curr_atom, other_atom)
             key = Concepts::AtomReference.new(spec, spec.keyname(curr_atom))
             links_hash[key] = []
           end
         end
 
         SpecResidual.new(links_hash)
+      end
+
+      # Provides relations of atom in current specie
+      # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
+      #   be got
+      # @return [Array] the array of atom relations
+      def relations_of(atom)
+        relations = atom.relations_in(self)
+        syms = relations.select { |r| r.is_a?(Symbol) }
+        (relations - syms).map(&:last) + syms
       end
 
       # Organize dependencies from another similar species. Dependencies set if
@@ -185,15 +195,27 @@ module VersatileDiamond
       end
 
       # Checks that atoms are different
+      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
       #   spec_atom the major of comparable atoms
       # @param [Concepts::Atom | Concepts::AtomReference] base_atom the second
       #   comparable atom
       # @return [Boolean] are different or not
-      def are_atoms_different?(spec_atom, base_atom)
-        !(spec_atom.actives == base_atom.actives &&
-            base_atom.diff(spec_atom).empty? &&
-              lists_are_identical?(spec_atom.monovalents, base_atom.monovalents, &:==))
+      def are_atoms_different?(other, spec_atom, base_atom)
+        different_relations?(other, spec_atom, base_atom) ||
+          !base_atom.diff(spec_atom).empty?
+      end
+
+      # Checks that relations of both atom have same relations sets
+      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
+      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
+      #   spec_atom same as #are_atoms_different? argument
+      # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
+      #   #are_atoms_different? argument
+      # @return [Boolean] are different or not
+      def different_relations?(other, spec_atom, base_atom)
+        self_rel, other_rel = relations_of(spec_atom), other.relations_of(base_atom)
+        !lists_are_identical?(self_rel, other_rel, &:==)
       end
 
       # Duplicates links of own atom and exchange them to correct correspond atoms
@@ -208,7 +230,7 @@ module VersatileDiamond
           if mirror[own_atom]
             links[own_atom].select do |bonded_atom, _|
               other_atom = mirror[bonded_atom]
-              !other_atom || are_atoms_different?(bonded_atom, other_atom)
+              !other_atom || are_atoms_different?(other, bonded_atom, other_atom)
             end
           else
             links[own_atom]
@@ -234,11 +256,10 @@ module VersatileDiamond
           own_atom
         else
           sp = other.spec
-          ref = other_atom.reference_to?(sp) ?
-            other_atom :
-            Concepts::AtomReference.new(sp, sp.keyname(other_atom))
+          ref = Concepts::AtomReference.new(sp, sp.keyname(other_atom))
 
-          if are_atoms_different?(own_atom, other_atom)
+          own_relevant = !own_atom.relevants.empty?
+          if own_relevant && are_atoms_different?(other, own_atom, other_atom)
             Concepts::SpecificAtom.new(ref, ancestor: own_atom)
           else
             ref

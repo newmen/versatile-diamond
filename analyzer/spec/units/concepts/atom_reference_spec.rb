@@ -5,6 +5,7 @@ module VersatileDiamond
 
     describe AtomReference do
       let(:ref) { described_class.new(ethylene_base, :c1) }
+      let(:specific_ref) { described_class.new(methyl_on_incoherent_bridge, :cb) }
 
       describe '#name' do
         it { expect(ref.name).to eq(:C) }
@@ -57,9 +58,12 @@ module VersatileDiamond
 
       describe '#relevants' do
         it { expect(bridge.atom(:cr).relevants).to be_empty }
+        it { expect(specific_ref.relevants).to eq([:incoherent]) }
+      end
 
-        let(:moib) { AtomReference.new(methyl_on_incoherent_bridge, :cb) }
-        it { expect(moib.relevants).to eq([:incoherent]) }
+      describe '#specific?' do
+        it { expect(bridge.atom(:cr).specific?).to be_false }
+        it { expect(specific_ref.specific?).to be_true }
       end
 
       describe '#relations_in' do
@@ -68,11 +72,6 @@ module VersatileDiamond
 
       describe '#additional_relations' do
         it { expect(bridge.atom(:cr).additional_relations.size).to eq(2) }
-      end
-
-      describe '#reference_to?' do
-        it { expect(ref.reference_to?(ethylene_base)).to be_true }
-        it { expect(ref.reference_to?(bridge_base)).to be_false }
       end
 
       describe '#update_keyname' do

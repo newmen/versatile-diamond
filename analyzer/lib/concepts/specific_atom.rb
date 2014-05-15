@@ -51,6 +51,12 @@ module VersatileDiamond
         @atom.valence - actives - monovalents.size
       end
 
+      # Specific atom could be not specified
+      # @return [Boolean] is specified or not
+      def specific?
+        !(@options.empty? && @monovalents.empty?)
+      end
+
       # Compares current instance with other
       # @param [Atom | AtomReference | SpecificAtom] other the other atom with
       #   which comparing do
@@ -111,7 +117,7 @@ module VersatileDiamond
       #   compares
       # @return [Array] the array of relevants state symbols
       def diff(other)
-        self.class == other.class ? other.relevants - relevants : []
+        other.relevants - relevants
       end
 
       # Applies diff to current options

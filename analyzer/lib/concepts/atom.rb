@@ -29,6 +29,12 @@ module VersatileDiamond
         @valence = valence
       end
 
+      # Simple atom couldn't be specified
+      # @return [Boolean] false
+      def specific?
+        false
+      end
+
       # Compares two atoms and if atom is instance of same class then comparing
       # the name and the lattice. Another cases action is deligate to
       # comparable atom.
@@ -70,7 +76,7 @@ module VersatileDiamond
       #   compare
       # @return [Array] the array of relevants state symbols
       def diff(other)
-        other.is_a?(SpecificAtom) ? other.relevants : []
+        other.relevants
       end
 
       # Simple atom couldn't contain relevant states
@@ -91,13 +97,6 @@ module VersatileDiamond
       # @return [Array] the empty array
       def additional_relations
         []
-      end
-
-      # Atom could not relate to spec
-      # @param [Spec] _ do not used
-      # @return [Boolean] false
-      def reference_to?(_)
-        false
       end
 
       # Gets original valence of atom
