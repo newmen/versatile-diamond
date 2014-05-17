@@ -28,14 +28,14 @@ module VersatileDiamond
 
         it { expect(described_class.contain?(hb, mob)).to be_true }
 
-        describe 'separated_multi_bond: true' do
+        describe 'collaps_multi_bond: true' do
           it { expect(described_class.contain?(
-            hb, mob, separated_multi_bond: true)).to be_false }
+            hb, mob, collaps_multi_bond: true)).to be_false }
         end
       end
 
       describe '#self.intersec' do
-        describe 'separated_multi_bond: false' do
+        describe 'collaps_multi_bond: false' do
           subject { described_class.intersec(hb, mob).first }
 
           it { expect(subject.size).to eq(4) }
@@ -47,9 +47,9 @@ module VersatileDiamond
             ) }
         end
 
-        describe 'separated_multi_bond: true' do
+        describe 'collaps_multi_bond: true' do
           subject do
-            described_class.intersec(hb, mob, separated_multi_bond: true).first
+            described_class.intersec(hb, mob, collaps_multi_bond: true).first
           end
 
           it { expect(subject.size).to eq(3) }

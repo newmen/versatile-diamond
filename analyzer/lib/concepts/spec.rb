@@ -184,7 +184,7 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same?(other)
         return false unless links.size == other.links.size
-        Mcs::SpeciesComparator.contain?(self, other, separated_multi_bond: true)
+        Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
       end
 
       # Gets a number of atoms

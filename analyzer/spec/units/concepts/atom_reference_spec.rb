@@ -74,18 +74,6 @@ module VersatileDiamond
         it { expect(bridge.atom(:cr).additional_relations.size).to eq(2) }
       end
 
-      describe '#update_keyname' do
-        let(:spec) { activated_methyl_on_incoherent_bridge }
-        subject { described_class.new(spec, :cb) }
-        before do
-          subject # instantize subject before
-          spec.replace_base_spec(bridge_base_dup)
-          subject.update_keyname
-        end
-
-        it { expect(subject.keyname).to eq(:t) }
-      end
-
       it_behaves_like '#lattice' do
         let(:target) { c1 }
         let(:reference) { ref }
