@@ -8,13 +8,13 @@ module VersatileDiamond
 
       # Initialize instance by links hash of original spec graph
       # @param [Hash] links the hash of links
-      # @option [Boolean] :separated_multi_bond set to true if need separated
+      # @option [Boolean] :collaps_multi_bond set to true if need separated
       #   instances for double or triple bonds
       # @raise [RuntimeError] if some of separated multi-bonds is invalid
-      def initialize(links, separated_multi_bond: false)
+      def initialize(links, collaps_multi_bond: false)
         dup_result = links.map do |key, list|
           pair = [key]
-          if separated_multi_bond
+          if collaps_multi_bond
             pair << collapse_bonds(list)
           else
             pair << list.dup

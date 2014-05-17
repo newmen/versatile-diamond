@@ -16,12 +16,18 @@ module VersatileDiamond
       # Target settings
       # @param [Concepts::Spec] spec the spec on atom of which will be refered
       # @param [Symbol] atom_keyname the keyname of refered atom
+      # @overload new(spec, atom_keyname)
+      #   @param [Symbol] atom_keyname the keyname of refered atom
+      # @overload new(spec, atom)
+      #   @param [Atom | SpecificAtom] atom of passed specie
       def initialize(spec, atom_keyname)
         @spec = spec
         @keyname = atom_keyname
 
+        @original_atom = atom_keyname.is_a?(Symbol) ?
+          spec.atom(atom_keyname) : atom_keyname
+
         # because atom can be changed by mapping algorithm
-        @original_atom = spec.atom(atom_keyname)
         @atom = @original_atom.dup
       end
 
@@ -30,7 +36,7 @@ module VersatileDiamond
       #
       # @return [Integer] the external valence of refered atom
       def valence
-        spec.external_bonds_for(real_atom)
+        spec.external_bonds_for(@original_atom)
       end
 
       # Finds all relation instances for current atom in passed spec and also
@@ -46,12 +52,7 @@ module VersatileDiamond
       # Gets relations from reference
       # @return [Array] the array of relations
       def additional_relations
-        real_atom.relations_in(@spec)
-      end
-
-      # Updates keyname if it was changed in using specie for original atom
-      def update_keyname
-        @keyname = spec.keyname(@original_atom)
+        @original_atom.relations_in(spec)
       end
 
       def to_s
@@ -60,14 +61,6 @@ module VersatileDiamond
 
       def inspect
         to_s
-      end
-
-    private
-
-      # Gets an atom to which references current instance
-      # @param [Atom] target atom of refered spec
-      def real_atom
-        spec.atom(keyname)
       end
     end
 

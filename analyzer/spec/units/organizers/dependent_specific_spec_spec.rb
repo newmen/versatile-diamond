@@ -152,6 +152,7 @@ module VersatileDiamond
             let(:subtrahend) { wrap(methyl_on_bridge) }
 
             it_behaves_like :rest_has_two_atoms
+            it { expect(subject.empty?).to be_false }
             it { expect(links.values.reduce(:+)).to be_empty }
           end
 

@@ -14,7 +14,7 @@ module VersatileDiamond
         return unless spec_atom[0] == from
 
         intersec = Mcs::SpeciesComparator.intersec(
-          from, to, separated_multi_bond: true).first.to_a
+          from, to, collaps_multi_bond: true).first.to_a
 
         if intersec.size < to.links.size
           raise ArgumentError, 'Intersection less than swapped specs'

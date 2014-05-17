@@ -89,22 +89,6 @@ module VersatileDiamond
         to_s
       end
 
-    protected
-
-      # Provides purge condition for initial minuend instance
-      # @return [Proc] the condition for purging
-      def purge_condition
-        Proc.new { |_, links| links.empty? }
-      end
-
-      # Makes a new residual
-      # @param [Array] links_arr the array that represent relations between atoms
-      # @param [Set] residual_atoms the residual atoms after diff operation
-      # @return [SpecResidual] the new residual
-      def make_residual(links_arr, residual_atoms)
-        SpecResidual.new(Hash[links_arr], residual_atoms)
-      end
-
     private
 
       # Is current spec reactant or not

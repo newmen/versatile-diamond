@@ -26,15 +26,13 @@ module VersatileDiamond
       describe '#same?' do
         describe 'methyl_on_bridge_dup' do
           let(:methyl_on_bridge_dup) do
-            m = c.dup
-            b, l, r = cd.dup, cd.dup, cd.dup
-            s = Concepts::SurfaceSpec.new(:mob_dup, m: m, b: b, l: l, r: r)
-            s.link(m, b, free_bond)
-            s.link(b, l, bond_110_cross)
-            s.link(b, r, bond_110_cross); s
+            s = Concepts::SurfaceSpec.new(:mob_dup, m: c)
+            s.adsorb(bridge_base_dup)
+            s.rename_atom(:t, :b)
+            s.link(s.atom(:m), s.atom(:b), free_bond); s
           end
 
-          let(:another_mob_part) { wrap(methyl_on_bridge_dup) - wrap(bridge_base_dup) }
+          let(:another_mob_part) { wrap(methyl_on_bridge_dup) - wrapped_bridge }
 
           it { expect(methyl_on_bridge_part.same?(another_mob_part)).to be_true }
 
@@ -55,7 +53,7 @@ module VersatileDiamond
         describe 'extended bridge without three bridges' do
           let(:eb) { wrap(extended_bridge_base) }
           subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
-          it { expect(subject.empty?).to be_false }
+          it { expect(subject.empty?).to be_true }
         end
       end
 
@@ -84,6 +82,22 @@ module VersatileDiamond
           it { expect(subject.links.size).to eq(2) }
           it { expect(subject.links.values.map(&:last).map(&:last)).
             to eq([bond_100_front] * 2) }
+        end
+
+        describe 'border atoms have correct relations' do
+          subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
+          let(:eb) { wrap(extended_bridge_base) }
+          let(:atoms) { subject.links.keys }
+          let(:rls) do
+            [bond_110_front, bond_110_cross, bond_110_cross, position_100_front]
+          end
+
+          it { expect(subject.links.size).to eq(2) }
+          it 'both atoms has same relations' do
+            atoms.each do |atom|
+              expect(subject.relations_of(atom)).to match_array(rls)
+            end
+          end
         end
       end
 
