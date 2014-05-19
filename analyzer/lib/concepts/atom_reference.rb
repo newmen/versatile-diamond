@@ -9,7 +9,7 @@ module VersatileDiamond
 
       def_delegators :@atom, :name, :lattice, :lattice=, :same?, :original_same?,
         :actives, :monovalents, :incoherent?, :unfixed?, :diff, :original_valence,
-        :relevants, :specific?
+        :relevants, :specific?, :closed
 
       attr_reader :spec, :keyname
 
@@ -22,10 +22,14 @@ module VersatileDiamond
       #   @param [Atom | SpecificAtom] atom of passed specie
       def initialize(spec, atom_keyname)
         @spec = spec
-        @keyname = atom_keyname
 
-        @original_atom = atom_keyname.is_a?(Symbol) ?
-          spec.atom(atom_keyname) : atom_keyname
+        @original_atom =
+          if atom_keyname.is_a?(Symbol)
+            @keyname = atom_keyname
+            spec.atom(atom_keyname)
+          else
+            atom_keyname
+          end
 
         # because atom can be changed by mapping algorithm
         @atom = @original_atom.dup

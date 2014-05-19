@@ -53,7 +53,7 @@ module VersatileDiamond
         describe 'extended bridge without three bridges' do
           let(:eb) { wrap(extended_bridge_base) }
           subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
-          it { expect(subject.empty?).to be_true }
+          it { expect(subject.empty?).to be_false }
         end
       end
 

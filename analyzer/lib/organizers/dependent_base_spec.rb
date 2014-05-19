@@ -70,6 +70,12 @@ module VersatileDiamond
         end
       end
 
+      # Makes spec from self where each atom reference replaced by simple atom
+      # @return [DependentBaseSpec] the closed base specie
+      def closed
+        self.class.new(spec.closed)
+      end
+
       # Organize dependencies from another specs by dynamic table
       # @param [BaseSpeciesTable] table the dynamic table of species dependencies
       def organize_dependencies!(table)

@@ -297,6 +297,11 @@ module VersatileDiamond
           it { expect(rls.values.reduce(:+).map(&:last)).to eq([free_bond] * 2) }
         end
       end
+
+      describe '#closed' do
+        subject { wrap(bridge_base) }
+        it { should be_a(described_class) }
+      end
     end
 
   end
