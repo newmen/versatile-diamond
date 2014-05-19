@@ -53,14 +53,24 @@ describe Diamond do
 
   describe '#positions_between' do
     describe 'position 100 front' do
+      let(:poss) { [position_100_front, position_100_front] }
       let(:links) do {
         cd0 => [[cd1, bond_110_front]],
         cd1 => [[cd0, bond_110_cross], [cd2, bond_110_cross]],
         cd2 => [[cd1, bond_110_front]]
       } end
 
-      it { expect(diamond.positions_between(cd0, cd2, links)).
-        to match_array([position_100_front, position_100_front]) }
+      it { expect(diamond.positions_between(cd0, cd2, links)).to match_array(poss) }
+      it { expect(diamond.positions_between(cd2, cd0, links)).to match_array(poss) }
+
+      describe 'in three bridges' do
+        let(:links) { three_bridges_base.links }
+        let(:a1) { three_bridges_base.atom(:cc) }
+        let(:a2) { three_bridges_base.atom(:ct) }
+
+        it { expect(diamond.positions_between(a1, a2, links)).to match_array(poss) }
+        it { expect(diamond.positions_between(a2, a1, links)).to match_array(poss) }
+      end
     end
 
     describe 'position 100 cross' do

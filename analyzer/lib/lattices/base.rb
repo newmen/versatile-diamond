@@ -40,27 +40,39 @@ module VersatileDiamond
       # @return [Array] the array with positions in both directions or nil
       def positions_between(first, second, links)
         # TODO: there could be several positions between two atoms
-        rule = inference_rules.find do |path, position|
-          current, prevent = first, nil
-          completion = path.all? do |relation|
-            applicants = links[current].select do |atom, link|
-              atom != prevent && link.it?(relation)
-            end
-            next nil if applicants.size != 1 # ambiguity in the choice
-
-            prevent = current
-            current = applicants.first.first
-          end
-
-          completion && current == second
+        rule = inference_rules.find do |path, _|
+          find_by_path(second, path, first, nil, links)
         end
 
         return unless rule
 
         position = rule.last
-        opposite_position =
-          first.lattice.opposite_relation(second.lattice, position)
+        opposite_position = first.lattice.opposite_relation(second.lattice, position)
         [position, opposite_position]
+      end
+
+    private
+
+      # Recursively algorighm which finds target by path in links
+      # @param [Atom] target the aim of find algorithm
+      # @param [Array] path which is applied to links for find target
+      # @param [Atom] current from which algorithm is begining
+      # @param [Atom] prevent value of visited atom
+      # @param [Hash] links in which path will be found or not
+      # @return [Boolean] is target found or not
+      def find_by_path(target, path, current, prevent, links)
+        if path.empty?
+          target == current
+        else
+          relation = path.first
+          applicants = links[current].select do |atom, link|
+            atom != prevent && link.it?(relation)
+          end
+
+          applicants.any? do |atom, _|
+            find_by_path(target, path[1..-1], atom, current, links)
+          end
+        end
       end
     end
 
