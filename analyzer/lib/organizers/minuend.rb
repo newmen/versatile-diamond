@@ -59,7 +59,7 @@ module VersatileDiamond
         atom.relations_in(self).map(&:last)
       end
 
-    private
+    protected
 
       # Finds first intersec with some spec
       # @param [DependentBaseSpec] spec the checkable specie
@@ -70,6 +70,8 @@ module VersatileDiamond
         first = Mcs::SpeciesComparator.first_general_intersec(self, spec, opts)
         first && Hash[first.to_a]
       end
+
+    private
 
       # Makes pairs of atoms from mirror. If some atoms from current links are not
       # presented in mirror then them will be added to head of pairs.
@@ -162,7 +164,13 @@ module VersatileDiamond
       # @param [Concepts::AtomReference] ref the reference to atom of other specie
       # @return [Concepts::Atom | Concepts::AtomReference] selected concept
       def select_atom(other, own_atom, other_atom, ref)
-        are_atoms_different?(other, own_atom, other_atom) ? ref : own_atom
+        if are_atoms_different?(other, own_atom, other_atom)
+          ref
+        else
+          without_refs = other.closed
+          mirror = other.mirror_to(without_refs)
+          Concepts::AtomReference.new(without_refs, mirror[other_atom])
+        end
       end
     end
 

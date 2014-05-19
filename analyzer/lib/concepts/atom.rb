@@ -105,6 +105,12 @@ module VersatileDiamond
         @valence
       end
 
+      # Makes copy of current instance
+      # @return [Atom] the copy of self
+      def closed
+        dup
+      end
+
       def to_s
         @lattice ? "#{name}%#{@lattice}" : name.to_s
       end
