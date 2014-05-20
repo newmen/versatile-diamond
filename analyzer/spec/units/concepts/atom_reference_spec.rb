@@ -61,6 +61,10 @@ module VersatileDiamond
         it { expect(specific_ref.relevants).to eq([:incoherent]) }
       end
 
+      describe '#reference?' do
+        it { expect(bridge.atom(:cr).reference?).to be_true }
+      end
+
       describe '#specific?' do
         it { expect(bridge.atom(:cr).specific?).to be_false }
         it { expect(specific_ref.specific?).to be_true }

@@ -90,6 +90,13 @@ module VersatileDiamond
         it { expect(cd_extra_hydride.monovalents).to eq([:H, :H]) }
       end
 
+      describe '#reference?' do
+        it { expect(activated_cd.reference?).to be_false }
+
+        let(:ref) { described_class.new(bridge.atom(:cr)) }
+        it { expect(ref.reference?).to be_true }
+      end
+
       describe '#specific?' do
         it { expect(activated_c.specific?).to be_true }
         it { expect(cd_chloride.specific?).to be_true }

@@ -35,6 +35,12 @@ module VersatileDiamond
         @atom = @original_atom.dup
       end
 
+      # Atom reference always is reference
+      # @return [Boolean] true
+      def reference?
+        true
+      end
+
       # Valence of atom with taking into account position of the atom in
       #   structure
       #

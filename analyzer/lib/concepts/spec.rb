@@ -149,9 +149,7 @@ module VersatileDiamond
       # Checks for atom-references
       # @return [Boolean] true if atom-reference exist or false overwise
       def extendable?
-        @extendable ||= atom_instances.any? do |atom|
-          atom.is_a?(AtomReference)
-        end
+        @extendable ||= atom_instances.any?(&:reference?)
       end
 
       # Duplicates current spec and extend it duplicate by atom-references
@@ -253,9 +251,7 @@ module VersatileDiamond
 
       # Extends spec by atom-references
       def extend!
-        atom_references = @atoms.select do |_, atom|
-          atom.is_a?(AtomReference)
-        end
+        atom_references = @atoms.select(&:reference?)
 
         atom_references.each do |original_keyname, ref|
           adsorb(ref.spec) do |keyname, generated_keyname, atom|

@@ -25,7 +25,11 @@ module VersatileDiamond
         end
       end
 
-      describe '#same?' do
+      describe '#reference?' do
+        it { expect(c.reference?).to be_false }
+      end
+
+      describe '#specific?' do
         it { expect(c.specific?).to be_false }
       end
 
