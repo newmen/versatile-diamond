@@ -20,7 +20,7 @@ module VersatileDiamond
       # Counts the atom reference instances
       # @return [Integer] the number of atom references
       def refs_num
-        links.keys.select { |atom| atom.class == Concepts::AtomReference }.size
+        links.keys.select(&:reference?).size
       end
 
       # Makes residual of difference between top and possible parent

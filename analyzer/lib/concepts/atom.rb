@@ -29,6 +29,12 @@ module VersatileDiamond
         @valence = valence
       end
 
+      # Simple atom is not reference
+      # @return [Boolean] false
+      def reference?
+        false
+      end
+
       # Simple atom couldn't be specified
       # @return [Boolean] false
       def specific?

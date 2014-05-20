@@ -20,7 +20,7 @@ module VersatileDiamond
       class NotStated < Stated; end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
-        :original_same?
+        :original_same?, :reference?
 
       attr_reader :monovalents
 
