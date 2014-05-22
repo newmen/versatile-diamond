@@ -32,6 +32,19 @@ module VersatileDiamond
           !different_relations?(other, a, b)
         end
       end
+
+    private
+
+      # Checks that relations of both atom have same sets
+      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
+      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
+      #   spec_atom same as #are_atoms_different? argument
+      # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
+      #   #are_atoms_different? argument
+      # @return [Boolean] are different or not
+      def different_relations?(*args)
+        different_by?(:relations_of, *args)
+      end
     end
 
   end

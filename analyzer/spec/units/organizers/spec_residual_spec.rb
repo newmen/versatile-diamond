@@ -84,7 +84,7 @@ module VersatileDiamond
             to eq([bond_100_front] * 2) }
         end
 
-        describe 'border atoms have correct relations' do
+        describe 'border extended_bridge atoms have correct relations' do
           subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
           let(:eb) { wrap(extended_bridge_base) }
           let(:atoms) { subject.links.keys }
@@ -98,6 +98,27 @@ module VersatileDiamond
               expect(subject.relations_of(atom)).to match_array(rls)
             end
           end
+        end
+
+        describe 'border three_bridges atoms have correct relations' do
+          subject { tbs - wrapped_bridge - wrapped_bridge - wrapped_bridge }
+          let(:tbs) { wrap(three_bridges_base) }
+          let(:atoms) { subject.links.keys }
+
+          let(:center_rls) do
+            [
+              position_100_front, position_100_front,
+              bond_110_front, bond_110_front,
+              bond_110_cross, bond_110_cross,
+            ]
+          end
+          let(:border_rls) do
+            [bond_110_front, bond_110_cross, bond_110_cross, position_100_front]
+          end
+
+          it { expect(subject.links.size).to eq(2) }
+          it { expect(subject.relations_of(atoms.first)).to match_array(center_rls) }
+          it { expect(subject.relations_of(atoms.last)).to match_array(border_rls) }
         end
       end
 
