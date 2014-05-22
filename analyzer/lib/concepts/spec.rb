@@ -251,7 +251,7 @@ module VersatileDiamond
 
       # Extends spec by atom-references
       def extend!
-        atom_references = @atoms.select(&:reference?)
+        atom_references = @atoms.select { |_, atom| atom.reference? }
 
         atom_references.each do |original_keyname, ref|
           adsorb(ref.spec) do |keyname, generated_keyname, atom|

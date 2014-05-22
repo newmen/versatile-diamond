@@ -37,10 +37,6 @@ private
     {
       [front_110, cross_110] => position_front_100,
       [cross_110, front_110] => position_cross_100,
-      [cross_110, cross_100, front_110] => position_front_100,
-      [front_110, front_100, cross_110] => position_cross_100,
-      [cross_110, cross_110, front_110, front_110] => position_front_100,
-      [front_110, front_110, cross_110, cross_110] => position_cross_100,
     }
   end
 
