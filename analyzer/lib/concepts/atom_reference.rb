@@ -9,7 +9,7 @@ module VersatileDiamond
 
       def_delegators :@atom, :name, :lattice, :lattice=, :same?, :original_same?,
         :actives, :monovalents, :incoherent?, :unfixed?, :diff, :original_valence,
-        :relevants, :specific?, :closed
+        :relevants, :specific?
 
       attr_reader :spec, :keyname
 

@@ -58,18 +58,18 @@ module VersatileDiamond
       end
 
       describe '# - ' do
-        it { expect(small_dimer_part.links_size).to eq(2) }
+        it { expect(small_dimer_part.atoms_num).to eq(2) }
 
         it_behaves_like :swap_to_atom_reference do
           subject { big_dimer_part }
           let(:atoms_num) { 1 }
-          let(:refs_num) { 3 }
+          let(:relations_num) { 3 }
         end
 
         it_behaves_like :swap_to_atom_reference do
           subject { small_dimer_part }
           let(:atoms_num) { 0 }
-          let(:refs_num) { 2 }
+          let(:relations_num) { 2 }
         end
 
         describe 'complex difference' do
