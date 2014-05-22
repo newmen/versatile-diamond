@@ -86,13 +86,6 @@ module VersatileDiamond
       describe '#additional_relations' do
         it { expect(cd.additional_relations).to be_empty }
       end
-
-      describe '#closed' do
-        subject { cd.closed }
-        it { should_not eq(cd) }
-        it { expect(subject.name).to eq(:C) }
-        it { expect(subject.valence).to eq(4) }
-      end
     end
 
   end

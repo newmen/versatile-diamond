@@ -88,11 +88,11 @@ module VersatileDiamond
       describe '# - ' do
         subject { wrap(methyl_on_right_bridge_base) - wrap(bridge_base) }
         it { should be_a(SpecResidual) }
-        it { expect(subject.links_size).to eq(2) }
+        it { expect(subject.atoms_num).to eq(2) }
 
         it_behaves_like :swap_to_atom_reference do
           let(:atoms_num) { 1 }
-          let(:refs_num) { 1 }
+          let(:relations_num) { 1 }
         end
 
         describe 'detailed' do
@@ -161,7 +161,7 @@ module VersatileDiamond
           before { subject.organize_dependencies!(table) }
 
           describe '#rest' do
-            it { expect(subject.rest.links_size).to eq(2) }
+            it { expect(subject.rest.atoms_num).to eq(2) }
           end
 
           describe '#parents' do
@@ -296,11 +296,6 @@ module VersatileDiamond
           it { expect(rls.keys.map(&:actives)).to match_array([1, 0]) }
           it { expect(rls.values.reduce(:+).map(&:last)).to eq([free_bond] * 2) }
         end
-      end
-
-      describe '#closed' do
-        subject { wrap(bridge_base) }
-        it { should be_a(described_class) }
       end
     end
 

@@ -78,12 +78,6 @@ module VersatileDiamond
         it { expect(bridge.atom(:cr).additional_relations.size).to eq(2) }
       end
 
-      describe '#closed' do
-        subject { bridge.atom(:cr).closed }
-        it { expect(subject.name).to eq(:C) }
-        it { expect(subject.valence).to eq(4) }
-      end
-
       it_behaves_like '#lattice' do
         let(:target) { c1 }
         let(:reference) { ref }

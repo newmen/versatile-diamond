@@ -2,30 +2,27 @@ module VersatileDiamond
   module Organizers
 
     # Contain some spec and set of dependent specs
-    class DependentBaseSpec < DependentSpec
+    class DependentBaseSpec < DependentWrappedSpec
       include MultiParentsSpec
-      include MultiChildrenSpec
-      include Minuend
-      include ResidualContainerSpec
 
-      def_delegators :@spec, :size, :external_bonds, :links, :gas?
+      def_delegators :@spec, :size, :gas?
 
-      def initialize(spec)
-        super
+    #   def initialize(spec)
+    #     super
 
-        # TODO:
-        # Найти симметричные атомы и несемметричные
-        # - Учесть количество атомов - чётный/нечётный
-        # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
+    #     # TODO:
+    #     # Найти симметричные атомы и несемметричные
+    #     # - Учесть количество атомов - чётный/нечётный
+    #     # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
 
-        # Для нахождения симметричных и несимметричных атомов использовать словарь пересечений. Для этого необходимо минимум два пересечения
-        # {
-        #   Atom => [Atom, Atom]
-        # }
+    #     # Для нахождения симметричных и несимметричных атомов использовать словарь пересечений. Для этого необходимо минимум два пересечения
+    #     # {
+    #     #   Atom => [Atom, Atom]
+    #     # }
 
-        # @symmetrical = []
-        # @asymmetrical = []
-      end
+    #     # @symmetrical = []
+    #     # @asymmetrical = []
+    #   end
 
       # Checks that other spec has same atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
@@ -68,12 +65,6 @@ module VersatileDiamond
         elsif child
           child.remove_parent(self)
         end
-      end
-
-      # Makes spec from self where each atom reference replaced by simple atom
-      # @return [DependentBaseSpec] the closed base specie
-      def closed
-        self.class.new(spec.closed)
       end
 
       # Organize dependencies from another specs by dynamic table

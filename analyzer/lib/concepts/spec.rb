@@ -185,25 +185,6 @@ module VersatileDiamond
         Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
       end
 
-      # Makes closed copy of curret spec where all atom references replaced by atoms
-      # @return [Spec] the closed copy of current specie
-      def closed
-        spec = self.class.new(:"closed_#{name}")
-        spec.adsorb(self)
-
-        mirror = Hash[spec.links.keys.map { |a| [a, a.closed] }]
-        mirror.each do |org, clst|
-          spec.links[clst] = spec.links.delete(org)
-        end
-
-        spec.links.each do |_, relations|
-          relations.map! do |atom, link|
-            [mirror[atom], link]
-          end
-        end
-        spec
-      end
-
       # Gets a number of atoms
       # @return size of current spec
       def size

@@ -165,12 +165,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#closed' do
-        subject { bridge_base.closed }
-        it { expect(subject.name).to eq(:closed_bridge) }
-        it { expect(subject.external_bonds).to eq(8) }
-      end
-
       describe '#size' do
         it { expect(hydrogen_base.size).to eq(1) }
         it { expect(methane_base.size).to eq(1) }

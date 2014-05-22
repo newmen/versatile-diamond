@@ -136,9 +136,9 @@ module VersatileDiamond
       # @param [SpecificSpec] specific_spec the spec in which relations will be
       #   found, must contain current atom
       # @return [Array] the array of relations
-      def relations_in(specific_spec)
-        specific_spec.links[self] + @atom.additional_relations +
-          active_options + monovalents
+      def additional_relations
+        own_links = (active_options + monovalents).map { |state| [self, state] }
+        @atom.additional_relations + own_links
       end
 
       # Gets the relevant size of specific atom

@@ -25,10 +25,10 @@ module VersatileDiamond
       # @param [DependentBaseSpec] other the comparable spec
       # @return [Boolean] same or not
       def same?(other)
-        return false unless links_size == other.links_size
+        return false unless atoms_num == other.atoms_num
         intersec = mirror_to(other)
 
-        intersec.size == links_size && intersec.all? do |a, b|
+        intersec.size == atoms_num && intersec.all? do |a, b|
           !different_relations?(other, a, b)
         end
       end

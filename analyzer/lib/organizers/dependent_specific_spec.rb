@@ -2,14 +2,9 @@ module VersatileDiamond
   module Organizers
 
     # Contain some specific spec and set of dependent specs
-    class DependentSpecificSpec < DependentSpec
-      include Minuend
-      include MultiChildrenSpec
-      include ResidualContainerSpec
+    class DependentSpecificSpec < DependentWrappedSpec
 
-      def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms,
-        :external_bonds, :links, :gas?
-
+      def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms
       attr_reader :parent
 
       # Initializes dependent specific spec by specific spec
