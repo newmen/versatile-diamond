@@ -94,7 +94,7 @@ module VersatileDiamond
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom the second
       #   comparable atom
       # @return [Boolean] are different or not
-      def are_atoms_different?(other, own_atom, other_atom)
+      def atoms_different?(other, own_atom, other_atom)
         different_bonds?(other, own_atom, other_atom) ||
           !other_atom.diff(own_atom).empty?
       end
@@ -103,9 +103,9 @@ module VersatileDiamond
       # @param [Symbol] method name which will called
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #are_atoms_different? argument
+      #   own_atom same as #atoms_different? argument
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #are_atoms_different? argument
+      #   #atoms_different? argument
       # @return [Boolean] are different or not
       def different_by?(method, other, own_atom, other_atom)
         srs, ors = send(method, own_atom), other.send(method, other_atom)
@@ -115,9 +115,9 @@ module VersatileDiamond
       # Checks that bonds of both atom have same relations sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #are_atoms_different? argument
+      #   own_atom same as #atoms_different? argument
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #are_atoms_different? argument
+      #   #atoms_different? argument
       # @return [Boolean] are different or not
       def different_bonds?(*args)
         different_by?(:bonds_of, *args)
