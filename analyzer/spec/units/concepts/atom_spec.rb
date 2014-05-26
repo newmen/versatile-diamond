@@ -25,7 +25,11 @@ module VersatileDiamond
         end
       end
 
-      describe '#same?' do
+      describe '#reference?' do
+        it { expect(c.reference?).to be_false }
+      end
+
+      describe '#specific?' do
         it { expect(c.specific?).to be_false }
       end
 
@@ -71,23 +75,8 @@ module VersatileDiamond
         it { expect(cd.relevants).to be_empty }
       end
 
-      describe '#relations_in' do
-        it { expect(cd.relations_in(bridge)).to eq(bridge.links[cd]) }
-        it { expect(cd.relations_in(bridge).object_id).
-          not_to eq(bridge.links[cd].object_id) }
-
-        it { expect(cd.relations_in(bridge).size).to eq(2) }
-      end
-
       describe '#additional_relations' do
         it { expect(cd.additional_relations).to be_empty }
-      end
-
-      describe '#closed' do
-        subject { cd.closed }
-        it { should_not eq(cd) }
-        it { expect(subject.name).to eq(:C) }
-        it { expect(subject.valence).to eq(4) }
       end
     end
 

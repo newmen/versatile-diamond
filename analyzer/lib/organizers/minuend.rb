@@ -13,14 +13,22 @@ module VersatileDiamond
 
       # The number of links between atoms
       # @return [Integer] the number of links
-      def links_size
+      def atoms_num
         links.size
       end
 
       # Counts the atom reference instances
       # @return [Integer] the number of atom references
-      def refs_num
-        links.keys.select { |atom| atom.class == Concepts::AtomReference }.size
+      def relations_num
+        links.values.map(&:size).reduce(:+)
+      end
+
+      # Provides relations of atom in current resudual
+      # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
+      #   be got
+      # @return [Array] the array of atom relations
+      def relations_of(atom)
+        links[atom].map(&:last)
       end
 
       # Makes residual of difference between top and possible parent
@@ -31,35 +39,26 @@ module VersatileDiamond
         mirror = mirror_to(other)
         return nil if mirror.empty? || other.links.size != mirror.size
 
-        links_hash = {}
-        replaced_atoms = {}
+        result = {}
+        pairs_from(mirror).each do |own_atom, other_atom|
+          if !other_atom || different_bonds?(other, own_atom, other_atom) ||
+            used?(mirror.keys, own_atom)
 
-        # the first pairs should targets on not mapped atoms (if other links size
-        # less than links size of current specie)
-        pairs_from(mirror).each do |curr_atom, other_atom|
-          if replaced_atoms[curr_atom] || !other_atom
-            key =
-              replaced_atoms[curr_atom] ||= replace_atom(other, curr_atom, other_atom)
-            links_hash[key] = ref_to_links_of(other, curr_atom, mirror, replaced_atoms)
-          elsif are_atoms_different?(other, curr_atom, other_atom)
-            key = Concepts::AtomReference.new(self, curr_atom)
-            links_hash[key] = []
+            result[own_atom] = links[own_atom]
           end
         end
 
-        SpecResidual.new(links_hash)
-      end
-
-
-      # Provides relations of atom in current resudual
-      # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
-      #   be got
-      # @return [Array] the array of atom relations
-      def relations_of(atom)
-        atom.relations_in(self).map(&:last)
+        SpecResidual.new(result)
       end
 
     protected
+
+      # Rejects position relations
+      # @param [Atom] atom see at #relations_of same argument
+      # @return [Array] the array of relations without position relations
+      def bonds_of(atom)
+        relations_of(atom).reject { |r| r.is_a?(Concepts::Position) }
+      end
 
       # Finds first intersec with some spec
       # @param [DependentBaseSpec] spec the checkable specie
@@ -91,85 +90,50 @@ module VersatileDiamond
       # Checks that atoms are different
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom the major of comparable atoms
-      # @param [Concepts::Atom | Concepts::AtomReference] base_atom the second
+      #   own_atom the major of comparable atoms
+      # @param [Concepts::Atom | Concepts::AtomReference] other_atom the second
       #   comparable atom
       # @return [Boolean] are different or not
-      def are_atoms_different?(other, spec_atom, base_atom)
-        different_relations?(other, spec_atom, base_atom) ||
-          !base_atom.diff(spec_atom).empty?
+      def atoms_different?(other, own_atom, other_atom)
+        different_bonds?(other, own_atom, other_atom) ||
+          !other_atom.diff(own_atom).empty?
       end
 
-      # Checks that relations of both atom have same relations sets
+      # Checks that relations gotten by method of both atom have same relations sets
+      # @param [Symbol] method name which will called
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom same as #are_atoms_different? argument
-      # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
-      #   #are_atoms_different? argument
+      #   own_atom same as #atoms_different? argument
+      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
+      #   #atoms_different? argument
       # @return [Boolean] are different or not
-      def different_relations?(other, spec_atom, base_atom)
-        self_rel, other_rel = relations_of(spec_atom), other.relations_of(base_atom)
-        !lists_are_identical?(self_rel, other_rel, &:==)
+      def different_by?(method, other, own_atom, other_atom)
+        srs, ors = send(method, own_atom), other.send(method, other_atom)
+        !lists_are_identical?(srs, ors, &:==)
       end
 
-      # Duplicates links of own atom and exchange them to correct correspond atoms
-      # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
+      # Checks that bonds of both atom have same relations sets
+      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
+      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
+      #   own_atom same as #atoms_different? argument
+      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
+      #   #atoms_different? argument
+      # @return [Boolean] are different or not
+      def different_bonds?(*args)
+        different_by?(:bonds_of, *args)
+      end
+
+      # Checks whether the atom used current links
+      # @param [Array] used_in_mirror the atoms which was mapped to atoms of smallest
+      #   spec
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   own_atom the atom from current spec for which links are copied
-      # @param [Hash] mirror of atom from current spec to subtrahend spec
-      # @param [Hash] cache the changable cache of exchanged atoms
-      # @return [Array] the array of copied links of own atoms
-      def ref_to_links_of(other, own_atom, mirror, cache)
-        different_links =
-          if mirror[own_atom]
-            links[own_atom].select do |bonded_atom, _|
-              other_atom = mirror[bonded_atom]
-              !other_atom || are_atoms_different?(other, bonded_atom, other_atom)
-            end
-          else
-            links[own_atom]
+      #   atom the checkable atom
+      # @return [Boolean] is used or not
+      def used?(used_in_mirror, atom)
+        (links.keys - used_in_mirror).any? do |a|
+          links[a].any? do |neighbour, relation|
+            neighbour == atom && !relation.is_a?(Concepts::Position)
           end
-
-        different_links.map do |bonded_atom, link|
-          cache[bonded_atom] ||= replace_atom(other, bonded_atom, mirror[bonded_atom])
-          [cache[bonded_atom], link]
-        end
-      end
-
-      # Checks and replace some atom to correspond reference
-      # @param [DependentBaseSpec | DependentSpecificSpec] other see at
-      #   #ref_to_links_of same argument
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   own_atom see at #ref_to_links_of same argument
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   other_atom the atom from other spec
-      # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   the correspond atom or reference
-      def replace_atom(other, own_atom, other_atom)
-        if !other_atom
-          own_atom
-        else
-          ref = Concepts::AtomReference.new(other, other_atom)
-          select_atom(other, own_atom, other_atom, ref)
-        end
-      end
-
-      # Selects some atom from passed instances
-      # @param [DependentBaseSpec | DependentSpecificSpec] other see at
-      #   #ref_to_links_of same argument
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   own_atom see at #ref_to_links_of same argument
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   other_atom the atom from other spec
-      # @param [Concepts::AtomReference] ref the reference to atom of other specie
-      # @return [Concepts::Atom | Concepts::AtomReference] selected concept
-      def select_atom(other, own_atom, other_atom, ref)
-        if are_atoms_different?(other, own_atom, other_atom)
-          ref
-        else
-          without_refs = other.closed
-          mirror = other.mirror_to(without_refs)
-          Concepts::AtomReference.new(without_refs, mirror[other_atom])
         end
       end
     end

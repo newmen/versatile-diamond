@@ -244,6 +244,17 @@ module VersatileDiamond
           SpecificSpec.new(methyl_on_dimer_base, cm: activated_c)
         end
 
+        set(:three_bridges_base) do
+          s = SurfaceSpec.new(:three_bridges, tt: cd.dup)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :_ct0)
+          s.rename_atom(:cl, :_cl0)
+          s.rename_atom(:cr, :cc)
+          s.adsorb(bridge_base)
+          s.link(s.atom(:tt), s.atom(:cc), bond_110_cross)
+          s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
+        end
+
         # Active bond:
         set(:active_bond) { ActiveBond.new }
 

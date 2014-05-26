@@ -20,9 +20,9 @@ module VersatileDiamond
       # @param [TableCell] other the comparable table cell
       # @return [Integer] the result of comparation
       def <=> (other)
-        links_size == other.links_size ?
+        atoms_num == other.atoms_num ?
           accurate_compare(other) :
-          links_size <=> other.links_size
+          atoms_num <=> other.atoms_num
       end
 
       # Adsorbs the minimal table cell
@@ -35,7 +35,7 @@ module VersatileDiamond
 
     protected
 
-      def_delegators :residual, :links_size, :refs_num
+      def_delegators :residual, :atoms_num, :relations_num
 
       # Counts number of contained species
       # @return [Integer] the number of contained species
@@ -43,13 +43,15 @@ module VersatileDiamond
         specs.size
       end
 
+    private
+
       # Compares two cells if them residuals have equal sizes of links
       # @param [TableCell] other the comparable cell
       # @return [Integer] the result of comparation
       def accurate_compare(other)
-        refs_num == other.refs_num ?
+        relations_num == other.relations_num ?
           specs_size <=> other.specs_size :
-          other.refs_num <=> refs_num
+          other.relations_num <=> relations_num
       end
     end
 
