@@ -28,7 +28,7 @@ module VersatileDiamond
       describe '#best' do
         shared_examples_for :check_cell do
           let(:best) { subject.best(cache[name]) }
-          it { expect(best.residual.links_size).to eq(residue_atoms_num) }
+          it { expect(best.residual.atoms_num).to eq(residue_atoms_num) }
           it { expect(best.specs).to match_array(parts.map { |n| cache[n] }) }
         end
 

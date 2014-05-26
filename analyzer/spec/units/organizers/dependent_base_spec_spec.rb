@@ -45,24 +45,9 @@ module VersatileDiamond
         it { expect(subject.rest).to eq(rest) }
       end
 
-      describe 'delegation' do
+      describe '#size' do
         subject { wrap(bridge_base) }
-
-        describe '#size' do
-          it { expect(subject.size).to eq(subject.spec.size) }
-        end
-
-        describe '#external_bonds' do
-          it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
-        end
-
-        describe '#links' do
-          it { expect(subject.links).to eq(subject.spec.links) }
-        end
-
-        describe '#gas?' do
-          it { expect(subject.gas?).to eq(subject.spec.gas?) }
-        end
+        it { expect(subject.size).to eq(subject.spec.size) }
       end
 
       describe '#same?' do
@@ -87,20 +72,17 @@ module VersatileDiamond
 
       describe '# - ' do
         subject { wrap(methyl_on_right_bridge_base) - wrap(bridge_base) }
-        it { should be_a(SpecResidual) }
-        it { expect(subject.links_size).to eq(2) }
 
-        it_behaves_like :swap_to_atom_reference do
-          let(:atoms_num) { 1 }
-          let(:refs_num) { 1 }
+        it_behaves_like :count_atoms_and_references do
+          let(:atoms_num) { 2 }
+          let(:relations_num) { 6 }
         end
 
         describe 'detailed' do
           let(:atoms) { subject.links.keys }
-          it { expect(atoms.size).to eq(2) }
 
           let(:cm) { atoms.first }
-          it { expect(cm.relations_in(subject).size).to eq(1) }
+          it { expect(subject.relations_of(cm).size).to eq(1) }
 
           let(:cb) { atoms.last }
           let(:rls) do
@@ -161,7 +143,7 @@ module VersatileDiamond
           before { subject.organize_dependencies!(table) }
 
           describe '#rest' do
-            it { expect(subject.rest.links_size).to eq(2) }
+            it { expect(subject.rest.atoms_num).to eq(2) }
           end
 
           describe '#parents' do
@@ -292,15 +274,14 @@ module VersatileDiamond
         it { expect(left.rest).to be_nil }
 
         describe 'rest of right' do
-          let(:rls) { right.rest.links }
-          it { expect(rls.keys.map(&:actives)).to match_array([1, 0]) }
-          it { expect(rls.values.reduce(:+).map(&:last)).to eq([free_bond] * 2) }
-        end
-      end
+          let(:links) { right.rest.links }
+          let(:relations) do
+            [free_bond, free_bond, :active, bond_110_cross, bond_110_cross]
+          end
 
-      describe '#closed' do
-        subject { wrap(bridge_base) }
-        it { should be_a(described_class) }
+          it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
+          it { expect(links.values.reduce(:+).map(&:last)).to match_array(relations) }
+        end
       end
     end
 

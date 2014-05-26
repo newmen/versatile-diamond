@@ -58,46 +58,44 @@ module VersatileDiamond
       end
 
       describe '# - ' do
-        it { expect(small_dimer_part.links_size).to eq(2) }
+        it { expect(small_dimer_part.atoms_num).to eq(2) }
 
-        it_behaves_like :swap_to_atom_reference do
+        it_behaves_like :count_atoms_and_references do
           subject { big_dimer_part }
-          let(:atoms_num) { 1 }
-          let(:refs_num) { 3 }
+          let(:atoms_num) { 4 }
+          let(:relations_num) { 14 }
         end
 
-        it_behaves_like :swap_to_atom_reference do
+        it_behaves_like :count_atoms_and_references do
           subject { small_dimer_part }
-          let(:atoms_num) { 0 }
-          let(:refs_num) { 2 }
+          let(:atoms_num) { 2 }
+          let(:relations_num) { 6 }
         end
 
-        describe 'complex difference' do
+        it_behaves_like :count_atoms_and_references do
           let(:small_spec1) { DependentBaseSpec.new(methyl_on_bridge_base) }
           let(:small_spec2) { DependentBaseSpec.new(bridge_base_dup) }
           let(:big_spec) { DependentBaseSpec.new(methyl_on_dimer_base) }
           subject { big_spec - small_spec1 - small_spec2 }
 
-          it { should be_a(described_class) }
-          it { expect(subject.links.size).to eq(2) }
-          it { expect(subject.links.values.map(&:last).map(&:last)).
-            to eq([bond_100_front] * 2) }
+          let(:atoms_num) { 2 }
+          let(:relations_num) { 7 }
         end
 
-        describe 'border atoms have correct relations' do
-          subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
+        it_behaves_like :count_atoms_and_references do
           let(:eb) { wrap(extended_bridge_base) }
-          let(:atoms) { subject.links.keys }
-          let(:rls) do
-            [bond_110_front, bond_110_cross, bond_110_cross, position_100_front]
-          end
+          subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
 
-          it { expect(subject.links.size).to eq(2) }
-          it 'both atoms has same relations' do
-            atoms.each do |atom|
-              expect(subject.relations_of(atom)).to match_array(rls)
-            end
-          end
+          let(:atoms_num) { 2 }
+          let(:relations_num) { 8 }
+        end
+
+        it_behaves_like :count_atoms_and_references do
+          let(:tbs) { wrap(three_bridges_base) }
+          subject { tbs - wrapped_bridge - wrapped_bridge - wrapped_bridge }
+
+          let(:atoms_num) { 2 }
+          let(:relations_num) { 10 }
         end
       end
 

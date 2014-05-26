@@ -20,7 +20,7 @@ module VersatileDiamond
       class NotStated < Stated; end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
-        :original_same?
+        :original_same?, :reference?
 
       attr_reader :monovalents
 
@@ -132,13 +132,11 @@ module VersatileDiamond
         ((@options - [:active]) + @atom.relevants).uniq
       end
 
-      # Finds all relation instances for current atom in passed spec
-      # @param [SpecificSpec] specific_spec the spec in which relations will be
-      #   found, must contain current atom
+      # Provides additional valence states of current atom
       # @return [Array] the array of relations
-      def relations_in(specific_spec)
-        specific_spec.links[self] + @atom.additional_relations +
-          active_options + monovalents
+      def additional_relations
+        own_links = (@options + monovalents).map { |state| [self, state] }
+        @atom.additional_relations + own_links
       end
 
       # Gets the relevant size of specific atom

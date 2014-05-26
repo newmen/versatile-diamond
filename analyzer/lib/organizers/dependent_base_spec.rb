@@ -2,13 +2,10 @@ module VersatileDiamond
   module Organizers
 
     # Contain some spec and set of dependent specs
-    class DependentBaseSpec < DependentSpec
+    class DependentBaseSpec < DependentWrappedSpec
       include MultiParentsSpec
-      include MultiChildrenSpec
-      include Minuend
-      include ResidualContainerSpec
 
-      def_delegators :@spec, :size, :external_bonds, :links, :gas?
+      def_delegators :@spec, :size
 
       def initialize(spec)
         super
@@ -68,12 +65,6 @@ module VersatileDiamond
         elsif child
           child.remove_parent(self)
         end
-      end
-
-      # Makes spec from self where each atom reference replaced by simple atom
-      # @return [DependentBaseSpec] the closed base specie
-      def closed
-        self.class.new(spec.closed)
       end
 
       # Organize dependencies from another specs by dynamic table

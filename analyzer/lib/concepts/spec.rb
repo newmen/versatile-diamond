@@ -149,9 +149,7 @@ module VersatileDiamond
       # Checks for atom-references
       # @return [Boolean] true if atom-reference exist or false overwise
       def extendable?
-        @extendable ||= atom_instances.any? do |atom|
-          atom.is_a?(AtomReference)
-        end
+        @extendable ||= atom_instances.any?(&:reference?)
       end
 
       # Duplicates current spec and extend it duplicate by atom-references
@@ -185,25 +183,6 @@ module VersatileDiamond
       def same?(other)
         return false unless links.size == other.links.size
         Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
-      end
-
-      # Makes closed copy of curret spec where all atom references replaced by atoms
-      # @return [Spec] the closed copy of current specie
-      def closed
-        spec = self.class.new(:"closed_#{name}")
-        spec.adsorb(self)
-
-        mirror = Hash[spec.links.keys.map { |a| [a, a.closed] }]
-        mirror.each do |org, clst|
-          spec.links[clst] = spec.links.delete(org)
-        end
-
-        spec.links.each do |_, relations|
-          relations.map! do |atom, link|
-            [mirror[atom], link]
-          end
-        end
-        spec
       end
 
       # Gets a number of atoms
@@ -253,9 +232,7 @@ module VersatileDiamond
 
       # Extends spec by atom-references
       def extend!
-        atom_references = @atoms.select do |_, atom|
-          atom.is_a?(AtomReference)
-        end
+        atom_references = @atoms.select { |_, atom| atom.reference? }
 
         atom_references.each do |original_keyname, ref|
           adsorb(ref.spec) do |keyname, generated_keyname, atom|

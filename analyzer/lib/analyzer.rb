@@ -19,7 +19,7 @@ module VersatileDiamond
     def initialize(content, config_path = nil)
       @content = content
       @line_number = 0
-      @line = @content[0]
+      @line = next_line
       @root = nil
 
       @config_path = config_path

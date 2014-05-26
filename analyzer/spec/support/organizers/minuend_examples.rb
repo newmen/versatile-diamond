@@ -12,16 +12,14 @@ module VersatileDiamond
             it { expect(subject.empty?).to be_false }
           end
 
-          describe '#links_size' do
-            it { expect(subject.links_size).to eq(subject.links.size) }
+          describe '#atoms_num' do
+            it { expect(subject.atoms_num).to eq(subject.links.size) }
           end
         end
 
-        shared_examples_for :swap_to_atom_reference do
-          let(:keys) { subject.links.keys }
-
-          it { expect(subject.links_size - subject.refs_num).to eq(atoms_num) }
-          it { expect(subject.refs_num).to eq(refs_num) }
+        shared_examples_for :count_atoms_and_references do
+          it { expect(subject.atoms_num).to eq(atoms_num) }
+          it { expect(subject.relations_num).to eq(relations_num) }
         end
 
       end

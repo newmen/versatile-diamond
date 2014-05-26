@@ -48,7 +48,7 @@ module VersatileDiamond
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec
       def replace_base_spec(new_spec)
-        rename_used_keynames(new_spec)
+        rename_used_keynames_and_update_links(new_spec)
         @spec = new_spec
       end
 
@@ -269,7 +269,7 @@ module VersatileDiamond
 
       # Renames internal used keynames to new keynames from another base spec
       # @param [Spec] other the base spec from which keynames will gotten
-      def rename_used_keynames(other)
+      def rename_used_keynames_and_update_links(other)
         intersec = Mcs::SpeciesComparator.first_general_intersec(@spec, other)
         mirror = Hash[intersec.to_a]
 

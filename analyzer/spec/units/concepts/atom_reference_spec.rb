@@ -61,23 +61,17 @@ module VersatileDiamond
         it { expect(specific_ref.relevants).to eq([:incoherent]) }
       end
 
+      describe '#reference?' do
+        it { expect(bridge.atom(:cr).reference?).to be_true }
+      end
+
       describe '#specific?' do
         it { expect(bridge.atom(:cr).specific?).to be_false }
         it { expect(specific_ref.specific?).to be_true }
       end
 
-      describe '#relations_in' do
-        it { expect(bridge.atom(:cr).relations_in(bridge).size).to eq(4) }
-      end
-
       describe '#additional_relations' do
         it { expect(bridge.atom(:cr).additional_relations.size).to eq(2) }
-      end
-
-      describe '#closed' do
-        subject { bridge.atom(:cr).closed }
-        it { expect(subject.name).to eq(:C) }
-        it { expect(subject.valence).to eq(4) }
       end
 
       it_behaves_like '#lattice' do

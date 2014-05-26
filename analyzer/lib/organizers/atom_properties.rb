@@ -171,8 +171,7 @@ module VersatileDiamond
       def size
         return @size if @size
         @size = valence + (lattice ? 0.5 : 0) +
-          estab_bonds_num + positions_num +
-          danglings.size * 0.34 + relevants.size * 0.13
+          estab_bonds_num + danglings.size * 0.34 + relevants.size * 0.13
       end
 
       # Convert properties to string representation
@@ -187,9 +186,6 @@ module VersatileDiamond
           name = "#{monovalent_atom}#{name}"
         end
 
-        rl = relations.dup
-        name = "#{name}." while rl.delete_one { |r| r.is_a?(Position) }
-
         if relevant?
           relevants.each do |sym|
             suffix = sym.to_s[0]
@@ -199,6 +195,7 @@ module VersatileDiamond
 
         name = "#{name}%#{lattice.name}" if lattice
 
+        rl = relations.dup
         down1 = rl.delete_one(bond_cross_110)
         down2 = rl.delete_one(bond_cross_110)
         if down1 && down2
@@ -346,36 +343,43 @@ module VersatileDiamond
       # @return [Array] relations array
       def relations_for(spec, atom)
         # only bonds without relevat states
-        links = atom.relations_in(spec).reject { |ar| ar.is_a?(Symbol) }
-        relations = []
+        relations = spec.relations_of(atom).reject { |ar| ar.is_a?(Symbol) }
+        result = []
 
-        until links.empty?
-          atom_rel = links.pop
-          same = links.select { |ar| ar == atom_rel }
+        until relations.empty?
+          rel = relations.pop
+          if rel.is_a?(Concepts::Bond) && rel.face
+            # position properties are deprecated
+            result << rel unless rel.is_a?(Concepts::Position)
+            next
+          end
+
+          same = relations.select { |r| r == rel }
 
           if same.empty?
-            relations << atom_rel.last
+            result << rel
           else
             if same.size == 3 && same.size != 4
-              relations << :tbond
-              links.delete_one(atom_rel)
+              result << :tbond
+              relations.delete_one(rel)
             else
-              relations << :dbond
+              result << :dbond
             end
-            links.delete_one(atom_rel)
+            relations.delete_one(rel)
           end
         end
-        relations
+
+        result
       end
 
       # Harvest dangling bonds of atom in spec
-      # @param [Concepts::Spec | Concepts::SpecificSpec] spec see at #new same argument
+      # @param [Minuend] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   spec see at #new same argument
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
-        links = atom.relations_in(spec)
-        links.select { |atom_rel| atom_rel.is_a?(Symbol) }
+        dang_rels = spec.relations_of(atom).select { |rel| rel.is_a?(Symbol) }
+        dang_rels - [:incoherent, :unfixed]
       end
 
       # Drops relevants properties if it exists
@@ -396,15 +400,9 @@ module VersatileDiamond
       # Gets number of established bond relations
       # @return [Integer] the number of established bond relations
       def estab_bonds_num
-        count_relations(Bond) +
+        count_relations(Concepts::Bond) +
           (relations.include?(:dbond) ? 2 : 0) +
           (relations.include?(:tbond) ? 3 : 0)
-      end
-
-      # Gets number of position relations
-      # @return [Integer] the number of position relations
-      def positions_num
-        count_relations(Position)
       end
 
       # Gets number of established and dangling bond relations
