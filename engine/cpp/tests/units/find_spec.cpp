@@ -40,6 +40,7 @@
 #include <generations/reactions/typical/migration_down_in_gap_from_111.h>
 #include <generations/reactions/typical/migration_down_in_gap_from_dimer.h>
 #include <generations/reactions/typical/migration_down_in_gap_from_high_bridge.h>
+#include <generations/reactions/typical/migration_through_dimers_row.h>
 #include <generations/reactions/typical/next_level_bridge_to_high_bridge.h>
 #include <generations/reactions/typical/two_bridges_to_high_bridge.h>
 #include <generations/reactions/ubiquitous/local/methyl_on_dimer_activation.h>
@@ -64,6 +65,9 @@ void assert_rate(double rate)
 #endif // PRINT
 
     assert(abs(delta) < EPS);
+
+    static int counter = 1;
+    cout << (counter++) << "\t" << rate  << "   " << delta << endl;
 }
 
 int main()
@@ -367,6 +371,7 @@ int main()
                 DimerDropInMiddle::RATE +
                 DimerDropAtEnd::RATE +
                 MethylToHighBridge::RATE +
+                MigrationThroughDimersRow::RATE +
                 AdsMethylToDimer::RATE);
 
     // 31

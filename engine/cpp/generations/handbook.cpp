@@ -53,8 +53,6 @@ const bool Handbook::__atomsAccordance[39 * 39] = {
 /* 38 */ false, false, false, false, false, false, false, false, false, false, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true
 };
 
-
-
 // TODO: manualy changed transitions for 25 and 26 types because has same types with H
 // TODO: transition 14 -> 10 is the question (why 25, 26, 27, 35, 36 is not 10?)
 const ushort Handbook::__atomsSpecifing[39] =
@@ -67,7 +65,6 @@ const ushort Handbook::__atomsSpecifing[39] =
 
 const ushort Handbook::__hToActives[39] =
 {
-    // TODO: проверить правила перехода (15 :: C:i=) в (16 :: *C=), в настоящий момент руками изменена цифра!
     28, 2, 2, 1, 5, 5, 5, 8, 8, 8,
     37, 12, 13, 13, 11, 16, 17, 17, 16, 19,
     21, 21, 21, 23, 24, 26, 27, 13, 2, 30,
