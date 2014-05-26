@@ -121,7 +121,9 @@ SOURCES += main.cpp \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
-    tools/scavenger.cpp
+    tools/scavenger.cpp \
+    generations/species/specific/cross_bridge_on_dimers.cpp \
+    generations/reactions/typical/migration_through_dimers_row.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -280,4 +282,6 @@ HEADERS += \
     tools/savers/volume_saver_factory.h \
     tools/scavenger.h \
     tools/typed.h \
-    tools/vector3d.h
+    tools/vector3d.h \
+    generations/species/specific/cross_bridge_on_dimers.h \
+    generations/reactions/typical/migration_through_dimers_row.h

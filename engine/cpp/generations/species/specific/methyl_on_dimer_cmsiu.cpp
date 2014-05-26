@@ -1,6 +1,7 @@
 #include "methyl_on_dimer_cmsiu.h"
 #include "../../reactions/typical/methyl_to_high_bridge.h"
 #include "../../reactions/typical/migration_down_at_dimer_from_dimer.h"
+#include "../../reactions/typical/migration_through_dimers_row.h"
 #include "methyl_on_dimer_cmssiu.h"
 
 const ushort MethylOnDimerCMsiu::__indexes[1] = { 0 };
@@ -36,4 +37,5 @@ void MethylOnDimerCMsiu::findAllTypicalReactions()
 {
     MethylToHighBridge::find(this);
     MigrationDownAtDimerFromDimer::find(this);
+    MigrationThroughDimersRow::find(this);
 }
