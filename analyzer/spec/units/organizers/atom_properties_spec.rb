@@ -407,7 +407,7 @@ module VersatileDiamond
         it { expect(high_cm.size).to eq(6) }
 
         it { expect(bridge_ct.size).to eq(6.5) }
-        it { expect(bridge_cr.size).to eq(8.5) }
+        it { expect(bridge_cr.size).to eq(7.5) }
         it { expect(dimer_cr.size).to eq(7.5) }
 
         it { expect(ab_ct.size).to eq(6.84) }
@@ -419,10 +419,10 @@ module VersatileDiamond
         it { expect(ehb_ct.size).to eq(7.18) }
         it { expect(ahb_ct.size).to eq(7.18) }
 
-        it { expect(ib_cr.size).to eq(8.63) }
-        it { expect(ab_cr.size).to eq(8.84) }
-        it { expect(hb_cr.size).to eq(8.84) }
-        it { expect(clb_cr.size).to eq(8.84) }
+        it { expect(ib_cr.size).to eq(7.63) }
+        it { expect(ab_cr.size).to eq(7.84) }
+        it { expect(hb_cr.size).to eq(7.84) }
+        it { expect(clb_cr.size).to eq(7.84) }
       end
 
       describe '#to_s' do
@@ -430,7 +430,7 @@ module VersatileDiamond
         it { expect(high_cm.to_s).to eq('C=') }
 
         it { expect(bridge_ct.to_s).to eq('C%d<') }
-        it { expect(bridge_cr.to_s).to eq('^C.%d<') }
+        it { expect(bridge_cr.to_s).to eq('^C%d<') }
         it { expect(dimer_cr.to_s).to eq('-C%d<') }
 
         it { expect(ad_cr.to_s).to eq('-*C%d<') }
@@ -443,9 +443,9 @@ module VersatileDiamond
         it { expect(ahb_ct.to_s).to eq('H*C%d<') }
         it { expect(hib_ct.to_s).to eq('HC:i%d<') }
 
-        it { expect(ab_cr.to_s).to eq('^*C.%d<') }
-        it { expect(hb_cr.to_s).to eq('^HC.%d<') }
-        it { expect(ib_cr.to_s).to eq('^C.:i%d<') }
+        it { expect(ab_cr.to_s).to eq('^*C%d<') }
+        it { expect(hb_cr.to_s).to eq('^HC%d<') }
+        it { expect(ib_cr.to_s).to eq('^C:i%d<') }
       end
     end
 

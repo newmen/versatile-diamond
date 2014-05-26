@@ -4,20 +4,21 @@ module VersatileDiamond
   module Organizers
 
     describe DependentWrappedSpec do
+      subject { described_class.new(bridge_base) }
+
       describe '#initialize' do
         describe '#straighten_graph' do
-          subject { described_class.new(bridge_base) }
-
           it { expect(subject.atoms_num).to eq(3) }
           it { expect(subject.relations_num).to eq(10) }
-
-          # let(:positions) do
-          #   all_relations.select { |_, relation| relation.position? }
-          # end
-
-          # it { expect(positions.size).to eq(2) }
-
         end
+      end
+
+      describe '#gas?' do
+        it { expect(subject.gas?).to eq(subject.spec.gas?) }
+      end
+
+      describe '#external_bonds' do
+        it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
       end
     end
 

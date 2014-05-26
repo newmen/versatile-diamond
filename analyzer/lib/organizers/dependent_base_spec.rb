@@ -5,7 +5,7 @@ module VersatileDiamond
     class DependentBaseSpec < DependentWrappedSpec
       include MultiParentsSpec
 
-      def_delegators :@spec, :size, :gas?
+      def_delegators :@spec, :size
 
     #   def initialize(spec)
     #     super
