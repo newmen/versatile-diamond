@@ -68,17 +68,6 @@ module VersatileDiamond
         store_parent(new_parent)
       end
 
-      # Provides relations of atom in current specie
-      # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
-      #   be got
-      # @return [Array] the array of atom relations
-      # @override
-      def relations_of(atom)
-        relations = atom.relations_in(self)
-        syms = relations.select { |r| r.is_a?(Symbol) }
-        (relations - syms).map(&:last) + syms
-      end
-
       # Organize dependencies from another similar species. Dependencies set if
       # similar spec has less specific atoms and existed specific atoms is same
       # in both specs. Moreover, activated atoms have a greater advantage.
@@ -131,8 +120,9 @@ module VersatileDiamond
       # Replaces base specie of current wrapped specific specie
       # @param [DependentBaseSpec] new_base the new base specie
       def replace_base_spec(new_base)
-        children.each { |child| child.replace_base_spec(new_base) }
+        update_links(new_base)
         spec.replace_base_spec(new_base.spec)
+        children.each { |child| child.replace_base_spec(new_base) }
       end
 
     private
@@ -152,22 +142,36 @@ module VersatileDiamond
         Hash[intersec.to_a]
       end
 
-      # Selects some atom from passed instances
-      # @param [DependentBaseSpec | DependentSpecificSpec] other see at
-      #   #ref_to_links_of same argument
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   own_atom see at #ref_to_links_of same argument
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   other_atom the atom from other spec
-      # @param [Concepts::AtomReference] ref the reference to atom of other specie
-      # @return [Concepts::Atom | Concepts::AtomReference] selected concept
-      # @override
-      def select_atom(other, own_atom, other_atom, ref)
-        own_relevant = !own_atom.relevants.empty?
-        if own_relevant && are_atoms_different?(other, own_atom, other_atom)
-          Concepts::SpecificAtom.new(ref, ancestor: own_atom)
-        else
-          ref
+      # Updates links by new base specie. Replaces correspond atoms in internal
+      # links graph
+      #
+      # @param [DependentBaseSpec] new_base the new base specie from which atoms will
+      #   be used instead atoms of old base specie
+      def update_links(new_base)
+        mirror = DependentBaseSpec.new(base_spec).mirror_to(new_base)
+
+        update_atoms(mirror)
+        update_relations(mirror)
+      end
+
+      # Updates keys of internal links graph
+      # @param [Hash] mirror where keys are atoms of old base specie and values are
+      #   atoms of new base specie
+      def update_atoms(mirror)
+        links.keys.each do |atom|
+          other_atom = mirror[atom]
+          links[other_atom] = links.delete(atom) if other_atom
+        end
+      end
+
+      # Updates internal atoms in relations in links graph
+      # @param [Hash] mirror where keys are atoms of old base specie and values are
+      #   atoms of new base specie
+      def update_relations(mirror)
+        links.values.each do |relations|
+          relations.map! do |atom, relation|
+            [mirror[atom] || atom, relation]
+          end
         end
       end
 

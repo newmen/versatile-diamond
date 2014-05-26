@@ -51,18 +51,6 @@ module VersatileDiamond
         it { expect(subject.specific_atoms).to eq(subject.spec.specific_atoms) }
       end
 
-      describe '#external_bonds' do
-        it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
-      end
-
-      describe '#links' do
-        it { expect(subject.links).to eq(subject.spec.links) }
-      end
-
-      describe '#gas?' do
-        it { expect(subject.gas?).to eq(subject.spec.gas?) }
-      end
-
       describe '#name' do
         it { expect(subject.name).to eq(:'dimer(cr: *)') }
       end
@@ -104,29 +92,31 @@ module VersatileDiamond
         end
 
         describe '#replace_parent' do
-          subject { wrap(activated_methyl_on_incoherent_bridge) }
-          let(:old_base) { DependentBaseSpec.new(methyl_on_bridge_base) }
-          let(:new_base) { DependentBaseSpec.new(bridge_base_dup) }
-
-          before do
+          def store_and_restore
             subject.store_parent(old_base)
             subject.replace_parent(new_base)
           end
 
-          it { expect(subject.base_spec).to eq(new_base.spec) }
-          it { expect(subject.name).to eq(:'methyl_on_bridge(cm: *, t: i)') }
+          subject { wrap(activated_methyl_on_incoherent_bridge.dup) }
+          let(:old_base) { DependentBaseSpec.new(methyl_on_bridge_base) }
+          let(:new_base) { DependentBaseSpec.new(bridge_base_dup) }
 
-          describe 'rest setup' do
-            let(:links) { subject.rest.links }
-            it { expect(links.keys.size).to eq(2) }
+          describe 'without children' do
+            before { store_and_restore }
+
+            it { expect(subject.name).to eq(:'methyl_on_bridge(cm: *, t: i)') }
+            it { expect(subject.base_spec).to eq(new_base.spec) }
+            it { expect(subject.rest.atoms_num).to eq(2) }
           end
 
           describe 'children updates too' do
             let(:child1) { wrap(activated_methyl_on_incoherent_bridge.dup) }
             let(:child2) { wrap(activated_methyl_on_incoherent_bridge.dup) }
+
             before do
               subject.store_child(child1)
               subject.store_child(child2)
+              store_and_restore
             end
 
             it { expect(child1.spec.atom(:t)).to_not be_nil }
@@ -142,26 +132,18 @@ module VersatileDiamond
         describe 'target is complex specific spec' do
           let(:minuend) { wrap(activated_methyl_on_incoherent_bridge) }
 
-          shared_examples_for :rest_has_two_atoms do
-            it { should be_a(SpecResidual) }
-            it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
-            it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
-          end
-
-          describe 'other is specific' do
-            let(:subtrahend) { wrap(methyl_on_bridge) }
-
-            it_behaves_like :rest_has_two_atoms
-            it { expect(subject.empty?).to be_false }
-            it { expect(links.values.reduce(:+)).to be_empty }
-          end
-
           describe 'parent links size less than current size' do
             let(:subtrahend) { DependentBaseSpec.new(bridge_base_dup) }
 
-            it_behaves_like :rest_has_two_atoms
-            # one bond in both directions
-            it { expect(links.values.reduce(:+).map(&:last)).to eq([free_bond] * 2) }
+            it { should be_a(SpecResidual) }
+            it { expect(subject.atoms_num).to eq(2) }
+            it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
+            it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
+            it { expect(links.values.reduce(:+).map(&:last)).to match_array([
+                free_bond, free_bond,
+                bond_110_cross, bond_110_cross,
+                :active, :incoherent
+              ]) }
           end
         end
 
@@ -170,9 +152,9 @@ module VersatileDiamond
           let(:subtrahend) { DependentBaseSpec.new(methyl_on_bridge_base) }
 
           it { should be_a(SpecResidual) }
-          it { expect(links.size).to eq(1) }
+          it { expect(subject.atoms_num).to eq(1) }
           it { expect(links.keys.first.actives).to eq(1) }
-          it { expect(links.values).to eq([[]]) }
+          it { expect(subject.relations_num).to eq(2) }
         end
 
         describe 'hidrogenated parent' do

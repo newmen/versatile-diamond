@@ -28,7 +28,7 @@ module VersatileDiamond
       #   be got
       # @return [Array] the array of atom relations
       def relations_of(atom)
-        links[atom].values.map(&:last)
+        links[atom].map(&:last)
       end
 
       # Makes residual of difference between top and possible parent
@@ -42,7 +42,7 @@ module VersatileDiamond
         result = {}
         pairs_from(mirror).each do |own_atom, other_atom|
           if !other_atom || different_bonds?(other, own_atom, other_atom) ||
-            used?(own_atom, mirror.keys)
+            used?(mirror.keys, own_atom)
 
             result[own_atom] = links[own_atom]
           end
@@ -90,33 +90,33 @@ module VersatileDiamond
       # Checks that atoms are different
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom the major of comparable atoms
-      # @param [Concepts::Atom | Concepts::AtomReference] base_atom the second
+      #   own_atom the major of comparable atoms
+      # @param [Concepts::Atom | Concepts::AtomReference] other_atom the second
       #   comparable atom
       # @return [Boolean] are different or not
-      def are_atoms_different?(other, spec_atom, base_atom)
-        different_bonds?(other, spec_atom, base_atom) ||
-          !base_atom.diff(spec_atom).empty?
+      def are_atoms_different?(other, own_atom, other_atom)
+        different_bonds?(other, own_atom, other_atom) ||
+          !other_atom.diff(own_atom).empty?
       end
 
       # Checks that relations gotten by method of both atom have same relations sets
       # @param [Symbol] method name which will called
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom same as #are_atoms_different? argument
-      # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
+      #   own_atom same as #are_atoms_different? argument
+      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
       #   #are_atoms_different? argument
       # @return [Boolean] are different or not
-      def different_by?(method, other, spec_atom, base_atom)
-        srs, ors = send(method, spec_atom), other.send(method, base_atom)
+      def different_by?(method, other, own_atom, other_atom)
+        srs, ors = send(method, own_atom), other.send(method, other_atom)
         !lists_are_identical?(srs, ors, &:==)
       end
 
       # Checks that bonds of both atom have same relations sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom same as #are_atoms_different? argument
-      # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
+      #   own_atom same as #are_atoms_different? argument
+      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
       #   #are_atoms_different? argument
       # @return [Boolean] are different or not
       def different_bonds?(*args)
@@ -124,14 +124,17 @@ module VersatileDiamond
       end
 
       # Checks whether the atom used current links
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   atom the checkable atom
       # @param [Array] used_in_mirror the atoms which was mapped to atoms of smallest
       #   spec
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   atom the checkable atom
       # @return [Boolean] is used or not
-      def used?(atom, used_in_mirror)
-        without = used_in_mirror - [atom]
-        (links.values.map(&:first) - without).include?(atom)
+      def used?(used_in_mirror, atom)
+        (links.keys - used_in_mirror).any? do |a|
+          links[a].any? do |neighbour, relation|
+            neighbour == atom && !relation.is_a?(Concepts::Position)
+          end
+        end
       end
     end
 

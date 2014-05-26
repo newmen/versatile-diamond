@@ -70,10 +70,6 @@ module VersatileDiamond
         it { expect(specific_ref.specific?).to be_true }
       end
 
-      describe '#relations_in' do
-        it { expect(bridge.atom(:cr).relations_in(bridge).size).to eq(4) }
-      end
-
       describe '#additional_relations' do
         it { expect(bridge.atom(:cr).additional_relations.size).to eq(2) }
       end

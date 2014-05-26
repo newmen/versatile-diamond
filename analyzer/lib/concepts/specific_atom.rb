@@ -132,12 +132,10 @@ module VersatileDiamond
         ((@options - [:active]) + @atom.relevants).uniq
       end
 
-      # Finds all relation instances for current atom in passed spec
-      # @param [SpecificSpec] specific_spec the spec in which relations will be
-      #   found, must contain current atom
+      # Provides additional valence states of current atom
       # @return [Array] the array of relations
       def additional_relations
-        own_links = (active_options + monovalents).map { |state| [self, state] }
+        own_links = (@options + monovalents).map { |state| [self, state] }
         @atom.additional_relations + own_links
       end
 

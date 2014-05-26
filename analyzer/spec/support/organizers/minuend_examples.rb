@@ -17,10 +17,8 @@ module VersatileDiamond
           end
         end
 
-        shared_examples_for :swap_to_atom_reference do
-          let(:keys) { subject.links.keys }
-
-          it { expect(subject.atoms_num - subject.relations_num).to eq(atoms_num) }
+        shared_examples_for :count_atoms_and_references do
+          it { expect(subject.atoms_num).to eq(atoms_num) }
           it { expect(subject.relations_num).to eq(relations_num) }
         end
 

@@ -91,14 +91,6 @@ module VersatileDiamond
         []
       end
 
-      # Finds all relation instances for current atom in passed spec
-      # @param [Spec] spec the spec in which relations will be found, must
-      #   contain current atom
-      # @return [Array] the array of relations
-      def relations_in(spec)
-        spec.links[self].dup
-      end
-
       # Simple atom couldn't contain additional relations
       # @return [Array] the empty array
       def additional_relations
@@ -120,6 +112,16 @@ module VersatileDiamond
       end
 
     private
+
+      # Finds all relation instances for current atom in passed spec.
+      # Hidden from around, this method could be called only from atom relation.
+      #
+      # @param [Spec] spec the spec in which relations will be found, must
+      #   contain current atom
+      # @return [Array] the array of relations
+      def relations_in(spec)
+        spec.links[self].map { |a, l| [a.dup, l] }
+      end
 
       # Compares two instances by some method if other instance is object of
       # another class

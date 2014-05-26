@@ -49,20 +49,11 @@ module VersatileDiamond
         spec.external_bonds_for(@original_atom)
       end
 
-      # Finds all relation instances for current atom in passed spec and also
-      # provides relations from refered spec
-      #
-      # @param [Spec] spec the spec in which relations will be found, must
-      #   contain current atom
-      # @return [Array] the array of relations
-      def relations_in(spec)
-        additional_relations + (spec.links[self] || [])
-      end
-
       # Gets relations from reference
       # @return [Array] the array of relations
       def additional_relations
-        @original_atom.relations_in(spec)
+        # friendly private call
+        @original_atom.send(:relations_in, spec)
       end
 
       def to_s

@@ -183,7 +183,7 @@ module VersatileDiamond
                   15 => ['-*C%d<', 1],
                   18 => ['*C~', 1],
                   19 => ['*C:i:u~', 1],
-                  2 => ['^*C.%d<', 1],
+                  2 => ['^*C%d<', 1],
                   20 => ['**C~', 2],
                   21 => ['**C:i:u~', 2],
                   22 => ['***C~', 3],
@@ -202,11 +202,11 @@ module VersatileDiamond
               let(:term) { adsorbed_h }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 1],
-                  1 => ['^C.:i%d<', 1],
+                  0 => ['^C%d<', 1],
+                  1 => ['^C:i%d<', 1],
                   10 => ['H*C%d<', 1],
                   11 => ['HHC%d<', 2],
-                  12 => ['^HC.%d<', 1],
+                  12 => ['^HC%d<', 1],
                   13 => ['-C%d<', 1],
                   14 => ['-C:i%d<', 1],
                   16 => ['C~', 3],
@@ -247,7 +247,7 @@ module VersatileDiamond
               let(:spec) { activated_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 2],
+                  0 => ['^C%d<', 2],
                   3 => ['*C%d<', 1],
                 }
               end
@@ -257,7 +257,7 @@ module VersatileDiamond
               let(:spec) { extra_activated_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 2],
+                  0 => ['^C%d<', 2],
                   5 => ['**C%d<', 1],
                 }
               end
@@ -267,7 +267,7 @@ module VersatileDiamond
               let(:spec) { hydrogenated_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 2],
+                  0 => ['^C%d<', 2],
                   8 => ['HC%d<', 1],
                 }
               end
@@ -277,7 +277,7 @@ module VersatileDiamond
               let(:spec) { extra_hydrogenated_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 2],
+                  0 => ['^C%d<', 2],
                   11 => ['HHC%d<', 1],
                 }
               end
@@ -287,9 +287,9 @@ module VersatileDiamond
               let(:spec) { right_hydrogenated_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 1],
+                  0 => ['^C%d<', 1],
                   6 => ['C%d<', 1],
-                  12 => ['^HC.%d<', 1],
+                  12 => ['^HC%d<', 1],
                 }
               end
             end
@@ -298,7 +298,7 @@ module VersatileDiamond
               let(:spec) { dimer }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 4],
+                  0 => ['^C%d<', 4],
                   13 => ['-C%d<', 2],
                 }
               end
@@ -308,7 +308,7 @@ module VersatileDiamond
               let(:spec) { activated_dimer }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 4],
+                  0 => ['^C%d<', 4],
                   13 => ['-C%d<', 1],
                   15 => ['-*C%d<', 1],
                 }
@@ -319,7 +319,7 @@ module VersatileDiamond
               let(:spec) { methyl_on_incoherent_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 2],
+                  0 => ['^C%d<', 2],
                   16 => ['C~', 1],
                   23 => ['~C:i%d<', 1],
                 }
@@ -330,7 +330,7 @@ module VersatileDiamond
               let(:spec) { high_bridge }
               let(:hash) do
                 {
-                  0 => ['^C.%d<', 2],
+                  0 => ['^C%d<', 2],
                   26 => ['C=', 1],
                   31 => ['=C%d<', 1],
                 }
@@ -380,12 +380,13 @@ module VersatileDiamond
         end
 
         describe '#index' do
+          let(:wbridge) { DependentSpecificSpec.new(bridge) }
+          it { expect(subject.index(wbridge, bridge.atom(:cr))).to eq(0) }
           it { expect(subject.index(bridge_cr)).to eq(0) }
-          it { expect(subject.index(bridge, bridge.atom(:cr))).to eq(0) }
 
+          let(:wabridge) { DependentSpecificSpec.new(activated_bridge) }
+          it { expect(subject.index(wabridge, activated_bridge.atom(:ct))).to eq(3) }
           it { expect(subject.index(ab_ct)).to eq(3) }
-          it { expect(subject.index(activated_bridge, activated_bridge.atom(:ct))).
-            to eq(3) }
         end
 
         describe '#all_types_num' do
