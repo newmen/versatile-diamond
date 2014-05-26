@@ -86,8 +86,8 @@ module VersatileDiamond
     # Iterate next line and cut comments
     # @return [String] the next line of content
     def next_line
-      @line_number += 1
       @line = @content[@line_number]
+      @line_number += 1
       return unless @line
       @line.sub!(/#.+\Z/, '') # drop comments
       @line.rstrip!
