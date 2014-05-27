@@ -75,7 +75,7 @@ void Runner::calculate()
     double timeCounter = 0;
     uint volumeSaveCounter = 0;
 
-    auto storeLambda = [this, surfaceCrystal, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
+    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
         csSaver.writeBySlicesOf(surfaceCrystal, Handbook::mc().totalTime());
 
         if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
