@@ -12,6 +12,10 @@ group :ruby, :test do
   gem 'coveralls', require: false
 end
 
+group :cpp do
+  gem 'gnuplot'
+end
+
 group :cpp, :test do
   gem 'colorize' # for c++ specs
 end
