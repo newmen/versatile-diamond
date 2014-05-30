@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'docopt'
+require 'fileutils'
+require 'pathname'
 
 doc = <<HELP
 Usage:
@@ -16,6 +18,8 @@ Options:
   --composition      Generate graph with dependencies between different atom types
   --overview         Show overal table about used surface specs and their atoms
   --code             Generate code for engine
+
+  --out=PATH         Setup output path into which results will placed [default: results]
 
   --base-specs       Generate some info about base specs
   --spec-specs       Generate some info about specific specs
@@ -50,6 +54,10 @@ I18n.locale = opt['--lang']
 analysis_result = VD::Analyzer.read_config(opt['<path_to_config>'])
 exit unless analysis_result
 
+unless Dir.exist?(opt['--out'])
+  FileUtils.mkdir_p(opt['--out'])
+end
+
 props = %w(base-specs spec-specs term-specs reactions includes transitions
   no-base-specs no-spec-specs no-term-specs no-wheres no-reactions
   no-includes no-transitions)
@@ -65,7 +73,9 @@ define_generator = -> key, generator_class, *args do
   doit[generator_class.new(analysis_result, *args)] if opt[key]
 end
 
-define_generator['--code', Gens::EngineCode]
+out = -> filename { (Pathname.new(opt['--out']) + filename).to_s }
+
 define_generator['--overview', Gens::Overview]
-define_generator['--composition', Gens::AtomsSpeciesTree, 'composition']
-define_generator['--total-tree', Gens::SpeciesReactionsTree, 'total_tree']
+define_generator['--composition', Gens::AtomsSpeciesTree, out['composition']]
+define_generator['--total-tree', Gens::SpeciesReactionsTree, out['total_tree']]
+define_generator['--code', Gens::EngineCode, opt['--out']]
