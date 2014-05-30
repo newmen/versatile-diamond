@@ -1,7 +1,16 @@
 module VersatileDiamond
   module Generators
 
+    # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
+
+      # Initializes code generator
+      # @param [Organizers::AnalysisResult] analysis_result see at super same argument
+      # @param [String] out_path the path where result files will be placed
+      def initialize(analysis_result, out_path)
+        super(analysis_result)
+        @out_path = out_path
+      end
 
       def generate(**params)
         props = classifier.props
