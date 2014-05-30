@@ -10,20 +10,31 @@ FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
 # FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
 # FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
 
+# Provides string by which compilation will do
+# @return [String] the compilation string
 def compile_line(file_in, file_out, additional_args = '')
   "#{CC} #{FLAGS} #{additional_args} #{file_in} -o #{file_out}"
 end
 
+# Makes random sequence of chars
+# @param [Range] range of chars which will be used for random sequence
+# @param [Integer] min_length the minimal length of result sequence
+# @param [Integer] add_length the additional length of result sequence
+# @return [String] the random sequence of characters
 def random_sequence(range, min_length, add_length)
   (min_length + rand(add_length)).times.reduce('') do |acc|
     acc << range.to_a.sample
   end
 end
 
+# Makes random name
+# @return [String] the random name
 def random_name
   random_sequence('a'..'z', 3, 5) + random_sequence('0'..'9', 1, 2)
 end
 
+# Finds all C++ code files and makes Makefile by them, after that do `make` command
+# @return [String] the make command output
 def make
   dirs = Dir["#{ENGINE_DIR}/**/"].map do |dir_name|
     next if dir_name == "#{ENGINE_DIR}/" || dir_name =~ /^#{ENGINE_DIR}\/tests/
@@ -44,6 +55,9 @@ def make
   `make clean; make`
 end
 
+# Compilates test file
+# @param [String] file_name the name of compiling test file
+# @param [String] random_name the name of binary output file
 def compile_test(file_name, random_name)
   if !@maked && ARGV.size == 0
     make
@@ -56,15 +70,21 @@ def compile_test(file_name, random_name)
   compile_line(file_name, random_name, args)
 end
 
+# Counts assert expressions in some file
+# @param [String] file_name the name of scanning file
 def count_asserts(file_name)
   @asserts ||= 0
   @asserts += File.read(file_name).scan(/\bassert/).size
 end
 
+# Gets number of counted asserts
+# @return [Integer] the number of assert expressions
 def asserts
   @asserts
 end
 
+# Runs test
+# @param [String] file_name the name of running test file
 def check(file_name)
   count_asserts(file_name)
 
@@ -91,6 +111,7 @@ ensure
   `rm -f #{rn}`
 end
 
+# Counts asserts in engine source
 def count_asserts_from_engine
   files = %w(h cpp).reduce([]) do |acc, ext|
     acc + Dir["#{ENGINE_DIR}/**/*.#{ext}"]
