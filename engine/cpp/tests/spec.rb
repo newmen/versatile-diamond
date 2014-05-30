@@ -14,9 +14,14 @@ def compile_line(file_in, file_out, additional_args = '')
   "#{CC} #{FLAGS} #{additional_args} #{file_in} -o #{file_out}"
 end
 
+def random_sequence(range, min_length, add_length)
+  (min_length + rand(add_length)).times.reduce('') do |acc|
+    acc << range.to_a.sample
+  end
+end
+
 def random_name
-  (rand(5) + 3).times.reduce('') { |acc| acc << ('a'..'z').to_a.sample } +
-    (rand(2) + 1).times.reduce('') { |acc| acc << ('0'..'9').to_a.sample }
+  random_sequence('a'..'z', 3, 5) + random_sequence('0'..'9', 1, 2)
 end
 
 def make

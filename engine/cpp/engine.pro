@@ -19,7 +19,6 @@ SOURCES += main.cpp \
     atoms/atom.cpp \
     atoms/lattice.cpp \
     generations/atoms/c.cpp \
-    generations/atoms/specified_atom.cpp \
     generations/finder.cpp \
     generations/handbook.cpp \
     generations/phases/diamond.cpp \
