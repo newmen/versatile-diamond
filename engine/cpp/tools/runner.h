@@ -8,8 +8,6 @@
 #include "common.h"
 #include "error.h"
 
-#include "../generations/handbook.h"
-
 namespace vd
 {
 
@@ -30,7 +28,7 @@ public:
     Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr);
     ~Runner();
 
-    template <class SurfaceCrystalType> void calculate();
+    template <class SurfaceCrystalType, class Handbook> void calculate();
 
 private:
     Runner(const Runner &) = delete;
@@ -44,11 +42,13 @@ private:
     void outputMemoryUsage(std::ostream &os) const;
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 
-template <class SCT>
+template <class SCT, class HB>
 void Runner::calculate()
 {
+    // TODO: Предоставить возможность сохранять концентрацию структур
+    // TODO: Вынести отсюда эти циферки
     CrystalSliceSaver csSaver(filename().c_str(), _x * _y, { 0, 2, 4, 5, 20, 21, 24, 28, 32 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -60,15 +60,15 @@ void Runner::calculate()
 
     auto outLambda = [this, surfaceCrystal]() {
         std::cout.width(10);
-        std::cout << 100 * Handbook::mc().totalTime() / _totalTime << " %";
+        std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
         std::cout.width(10);
         std::cout << surfaceCrystal->countAtoms();
         std::cout.width(10);
-        std::cout << Handbook::amorph().countAtoms();
+        std::cout << HB::amorph().countAtoms();
         std::cout.width(20);
-        std::cout << Handbook::mc().totalTime() << " (s)";
+        std::cout << HB::mc().totalTime() << " (s)";
         std::cout.width(20);
-        std::cout << Handbook::mc().totalRate() << " (1/s)" << std::endl;
+        std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
     };
 
     ullong steps = 0;
@@ -76,15 +76,15 @@ void Runner::calculate()
     uint volumeSaveCounter = 0;
 
     auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
-        csSaver.writeBySlicesOf(surfaceCrystal, Handbook::mc().totalTime());
+        csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
 
         if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
         {
-            Handbook::amorph().setUnvisited();
+            HB::amorph().setUnvisited();
             surfaceCrystal->setUnvisited();
-            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), Handbook::mc().totalTime());
+            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), HB::mc().totalTime());
 #ifndef NDEBUG
-            Handbook::amorph().checkAllVisited();
+            HB::amorph().checkAllVisited();
             surfaceCrystal->checkAllVisited();
 #endif // NDEBUG
         }
@@ -96,7 +96,7 @@ void Runner::calculate()
     };
 
     CommonMCData mcData;
-    Handbook::mc().initCounter(&mcData);
+    HB::mc().initCounter(&mcData);
 
 #ifndef NOUT
     outLambda();
@@ -107,14 +107,14 @@ void Runner::calculate()
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-    while (!__stopCalculating && Handbook::mc().totalTime() <= _totalTime)
+    while (!__stopCalculating && HB::mc().totalTime() <= _totalTime)
     {
-        double dt = Handbook::mc().doRandom(&mcData);
+        double dt = HB::mc().doRandom(&mcData);
 
 #ifdef PRINT
         debugPrint([&](std::ostream &os) {
             os << "-----------------------------------------------\n"
-               << steps << ". " << Handbook::mc().totalRate() << "\n";
+               << steps << ". " << HB::mc().totalRate() << "\n";
         });
 #endif // PRINT
 
@@ -151,7 +151,7 @@ void Runner::calculate()
 
     std::cout << std::endl;
     std::cout.precision(5);
-    std::cout << "Elapsed time of process: " << Handbook::mc().totalTime() << " s" << std::endl;
+    std::cout << "Elapsed time of process: " << HB::mc().totalTime() << " s" << std::endl;
     std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
 
     std::cout << std::endl;
@@ -162,7 +162,7 @@ void Runner::calculate()
     std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
     mcData.counter()->printStats(std::cout);
 
-    Handbook::amorph().clear(); // TODO: should not be explicitly!
+    HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
 }
 
