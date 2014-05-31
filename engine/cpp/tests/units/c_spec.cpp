@@ -1,6 +1,6 @@
 #include <set>
-#include <generations/handbook.h>
-#include <generations/atoms/c.h>
+#include <hand-generations/handbook.h>
+#include <hand-generations/atoms/c.h>
 
 using namespace vd;
 

@@ -3,12 +3,14 @@ require 'colorize'
 require 'stringio'
 
 ENGINE_DIR = '..'
+RESULTS_DIR = '../../../results'
+GENERATIONS_DIR = "#{RESULTS_DIR}/hand-generations"
 OBJS_DIR = 'obj'
 
 CC = 'g++'
-FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/"
-# FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
-# FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/"
+FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/"
+# FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/"
+# FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string
@@ -33,20 +35,44 @@ def random_name
   random_sequence('a'..'z', 3, 5) + random_sequence('0'..'9', 1, 2)
 end
 
+# Gets all directories with source files
+# @return [Array] the array of directories
+def all_dirs
+  Dir["#{ENGINE_DIR}/**/"] + Dir["#{GENERATIONS_DIR}/**/"]
+end
+
+# Collects files in directories by pattern
+# @param [Array] dirs directories in which all files will collected by pattern
+# @param [String] pattern by which files will collected
+# @return [Array] collected files
+def collect_files(dirs, pattern)
+  dirs.reduce([]) do |acc, dir|
+    acc + Dir["#{dir}/#{pattern}"].map { |filepath| filepath.gsub('//', '/') }
+  end
+end
+
 # Finds all C++ code files and makes Makefile by them, after that do `make` command
 # @return [String] the make command output
 def make
-  dirs = Dir["#{ENGINE_DIR}/**/"].map do |dir_name|
-    next if dir_name == "#{ENGINE_DIR}/" || dir_name =~ /^#{ENGINE_DIR}\/tests/
-    dir_name.sub(/^#{ENGINE_DIR}\/(.+?)\/$/, '\1')
+  source_dirs = all_dirs.reduce([]) do |acc, dir_name|
+    dir_name =~ /^#{Regexp.escape(ENGINE_DIR)}\/tests/ ?
+      acc :
+      acc << dir_name
+  end
+
+  objects_dirs = source_dirs.map do |dir|
+    rep_dir = dir =~ /^#{Regexp.escape(RESULTS_DIR)}/ ? RESULTS_DIR : ENGINE_DIR
+    dir.sub(rep_dir, OBJS_DIR)
   end
 
   makefile = ERB.new(File.read('Makefile.erb'))
-  compiler = CC
-  flags = FLAGS
-  src_dir = ENGINE_DIR
-  obj_dir = OBJS_DIR
-  source_dirs = dirs.compact.join(' ')
+
+  objects_dirs = objects_dirs.join(' ')
+  header_files = collect_files(source_dirs, '*.h').join(' ')
+  source_files = collect_files(source_dirs, '*.cpp').reject do |filename|
+    filename =~ /main\.cpp$/
+  end
+  source_files = source_files.join(' ')
 
   File.open('Makefile', 'w') do |f|
     f.write(makefile.result(binding))
@@ -114,7 +140,9 @@ end
 # Counts asserts in engine source
 def count_asserts_from_engine
   files = %w(h cpp).reduce([]) do |acc, ext|
-    acc + Dir["#{ENGINE_DIR}/**/*.#{ext}"]
+    acc + [ENGINE_DIR, GENERATIONS_DIR].reduce([]) do |a, dir|
+      a + Dir["#{dir}/**/*.#{ext}"]
+    end
   end
 
   files.each(&method(:count_asserts))
