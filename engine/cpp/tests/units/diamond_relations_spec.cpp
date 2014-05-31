@@ -1,6 +1,6 @@
 #include <vector>
-#include <generations/builders/atom_builder.h>
-#include <generations/phases/diamond.h>
+#include <hand-generations/builders/atom_builder.h>
+#include <hand-generations/phases/diamond.h>
 using namespace vd;
 
 #include "../support/open_diamond.h"

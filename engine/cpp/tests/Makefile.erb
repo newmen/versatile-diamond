@@ -1,31 +1,38 @@
-CXX		:= <%= compiler %>
-CXXFLAGS	:= <%= flags %>
+NAME		:= vd_engine
 
-NAME	:= vd_engine
+CXX		:= <%= CC %>
+CXXFLAGS	:= <%= FLAGS %>
 
-SOURCE_SUBDIRS	:= <%= source_dirs %>
+ENGINE_DIR	:= <%= ENGINE_DIR %>
+RESULTS_DIR	:= <%= RESULTS_DIR %>
+OBJS_DIR	:= <%= OBJS_DIR %>
 
-SRC_DIR := <%= src_dir %>
-OBJ_DIR := <%= obj_dir %>
-
-SOURCE_DIRS			:= $(addprefix $(SRC_DIR)/, $(SOURCE_SUBDIRS))
-OBJECTS_DIRS		:= $(addprefix $(OBJ_DIR)/, $(SOURCE_SUBDIRS))
-
-HEADER_FILES		:= $(wildcard $(addsuffix /*.h, $(SOURCE_DIRS)))
-SOURCE_FILES		:= $(wildcard $(addsuffix /*.cpp, $(SOURCE_DIRS)))
+OBJECTS_DIRS	:= <%= objects_dirs %>
+HEADER_FILES	:= <%= header_files %>
+SOURCE_FILES	:= <%= source_files %>
 SOURCE_OBJECTS	:= $(SOURCE_FILES:%.cpp=%.o)
 
+###################
+
+define compilate_obj
+$(if $(findstring $(RESULTS_DIR), $(1)), \
+	$(CXX) $(CXXFLAGS) -o $(patsubst $(RESULTS_DIR)/%, $(OBJS_DIR)/%, $(1)) -c $(2), \
+	$(CXX) $(CXXFLAGS) -o $(patsubst $(ENGINE_DIR)/%, $(OBJS_DIR)/%, $(1)) -c $(2))
+endef
+
+###################
+
 all:	$(NAME)
-$(NAME): obj_dirs $(SOURCE_OBJECTS)
+$(NAME):	obj_dirs $(SOURCE_OBJECTS)
 
 obj_dirs:
 	mkdir -p $(OBJECTS_DIRS)
 
 .h.o:
-	$(CXX) $(CXXFLAGS) -o $(patsubst $(SRC_DIR)/%, $(OBJ_DIR)/%, $@) -c $<
+	$(call compilate_obj, $@, $<)
 
-.cpp.o: $(HEADER_FILES)
-	$(CXX) $(CXXFLAGS) -o $(patsubst $(SRC_DIR)/%, $(OBJ_DIR)/%, $@) -c $<
+.cpp.o:	$(HEADER_FILES)
+	$(call compilate_obj, $@, $<)
 
 clean:
-	rm -rf obj
+	rm -rf $(OBJS_DIR)
