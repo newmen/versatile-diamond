@@ -4,7 +4,12 @@
 #include "lookers/near_part_of_gap.h"
 
 const char MigrationDownInGapFromDimer::__name[] = "migration down in gap from methyl on dimer";
-const double MigrationDownInGapFromDimer::RATE = 1e10 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
+double MigrationDownInGapFromDimer::RATE()
+{
+    static double value = getRate("MIGRATION_DOWN_IN_GAP_FROM_DIMER");
+    return value;
+}
 
 void MigrationDownInGapFromDimer::find(BridgeCRs *target)
 {

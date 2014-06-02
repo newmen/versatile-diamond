@@ -9,7 +9,7 @@ class AbsHydrogenFromGap : public Typical<ABS_HYDROGEN_FROM_GAP, 2>
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     static void find(BridgeCRh *target);
 
@@ -17,7 +17,7 @@ public:
 
     void doIt() override;
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 
 private:

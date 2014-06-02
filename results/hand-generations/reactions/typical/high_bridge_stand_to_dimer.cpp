@@ -1,7 +1,12 @@
 #include "high_bridge_stand_to_dimer.h"
 
 const char HighBridgeStandToDimer::__name[] = "high bridge stand to dimer";
-const double HighBridgeStandToDimer::RATE = 2.2e9 * std::exp(-14.9e3 / (1.98 * Env::T));
+
+double HighBridgeStandToDimer::RATE()
+{
+    static double value = getRate("HIGH_BRIDGE_STAND_TO_DIMER");
+    return value;
+}
 
 void HighBridgeStandToDimer::find(HighBridge *target)
 {

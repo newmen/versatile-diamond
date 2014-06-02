@@ -3,7 +3,12 @@
 #include "lookers/near_activated_dimer.h"
 
 const char MigrationDownAtDimerFromHighBridge::__name[] = "migration down at activated dimer from high bridge";
-const double MigrationDownAtDimerFromHighBridge::RATE = 5e10 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
+double MigrationDownAtDimerFromHighBridge::RATE()
+{
+    static double value = getRate("MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE");
+    return value;
+}
 
 void MigrationDownAtDimerFromHighBridge::find(DimerCRs *target)
 {

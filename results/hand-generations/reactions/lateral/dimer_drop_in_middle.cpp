@@ -3,7 +3,12 @@
 #include "dimer_drop_at_end.h"
 
 const char DimerDropInMiddle::__name[] = "dimer drop in middle of dimers row";
-const double DimerDropInMiddle::RATE = 2.2e6 * std::exp(-1.2e3 / (1.98 * Env::T));
+
+double DimerDropInMiddle::RATE()
+{
+    static double value = getRate("DIMER_DROP_IN_MIDDLE");
+    return value;
+}
 
 void DimerDropInMiddle::createUnconcreted(LateralSpec *removableSpec)
 {

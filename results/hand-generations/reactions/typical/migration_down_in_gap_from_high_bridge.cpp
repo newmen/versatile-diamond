@@ -4,7 +4,12 @@
 #include "lookers/near_part_of_gap.h"
 
 const char MigrationDownInGapFromHighBridge::__name[] = "migration down in gap from high bridge";
-const double MigrationDownInGapFromHighBridge::RATE = 1e9 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
+double MigrationDownInGapFromHighBridge::RATE()
+{
+    static double value = getRate("MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE");
+    return value;
+}
 
 void MigrationDownInGapFromHighBridge::find(BridgeCRs *target)
 {

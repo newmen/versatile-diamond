@@ -3,7 +3,12 @@
 #include "lookers/near_activated_dimer.h"
 
 const char MigrationDownAtDimer::__name[] = "migration down at activated dimer from methyl on bridge";
-const double MigrationDownAtDimer::RATE = 1e13 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
+double MigrationDownAtDimer::RATE()
+{
+    static double value = getRate("MIGRATION_DOWN_AT_DIMER");
+    return value;
+}
 
 void MigrationDownAtDimer::find(DimerCRs *target)
 {

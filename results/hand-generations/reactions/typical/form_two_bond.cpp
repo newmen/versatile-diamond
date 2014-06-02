@@ -1,7 +1,12 @@
 #include "form_two_bond.h"
 
 const char FormTwoBond::__name[] = "form two bond";
-const double FormTwoBond::RATE = 1e7 * std::exp(-0 / (1.98 * Env::T)); // TODO: imagine
+
+double FormTwoBond::RATE()
+{
+    static double value = getRate("FORM_TWO_BOND");
+    return value;
+}
 
 void FormTwoBond::find(MethylOnBridgeCBsCMsiu *target)
 {

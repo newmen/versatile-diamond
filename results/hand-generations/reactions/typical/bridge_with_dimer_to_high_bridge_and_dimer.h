@@ -9,7 +9,7 @@ class BridgeWithDimerToHighBridgeAndDimer : public Typical<BRIDGE_WITH_DIMER_TO_
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     static void find(BridgeWithDimerCBTiCBRsCDLi *target);
 
@@ -17,7 +17,7 @@ public:
 
     void doIt() override;
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 };
 

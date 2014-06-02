@@ -4,7 +4,12 @@
 #include "../lateral/dimer_drop_in_middle.h"
 
 const char DimerDrop::__name[] = "dimer drop";
-const double DimerDrop::RATE = 2.2e6 * std::exp(-0.8e3 / (1.98 * Env::T));
+
+double DimerDrop::RATE()
+{
+    static double value = getRate("DIMER_DROP");
+    return value;
+}
 
 void DimerDrop::find(DimerCRiCLi *target)
 {

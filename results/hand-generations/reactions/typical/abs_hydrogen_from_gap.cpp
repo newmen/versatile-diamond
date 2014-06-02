@@ -1,7 +1,12 @@
 #include "abs_hydrogen_from_gap.h"
 
 const char AbsHydrogenFromGap::__name[] = "abs hydrogen from gap";
-const double AbsHydrogenFromGap::RATE = 3e5 * std::exp(-35e3 / (1.98 * Env::T));
+
+double AbsHydrogenFromGap::RATE()
+{
+    static double value = getRate("ABS_HYDROGEN_FROM_GAP");
+    return value;
+}
 
 void AbsHydrogenFromGap::find(BridgeCRh *target)
 {

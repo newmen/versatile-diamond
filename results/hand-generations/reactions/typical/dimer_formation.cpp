@@ -4,7 +4,12 @@
 #include "../lateral/dimer_formation_in_middle.h"
 
 const char DimerFormation::__name[] = "dimer formation";
-const double DimerFormation::RATE = 8.9e11 * std::exp(-0.8e3 / (1.98 * Env::T));
+
+double DimerFormation::RATE()
+{
+    static double value = getRate("DIMER_FORMATION");
+    return value;
+}
 
 void DimerFormation::find(BridgeCTsi *target)
 {

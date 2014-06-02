@@ -7,9 +7,10 @@ using namespace vd;
 
 #include "../finder.h"
 #include "../handbook.h"
+#include "rates_reader.h"
 
 template <ushort RT>
-class Ubiquitous : public Typed<UbiquitousReaction, RT>
+class Ubiquitous : public Typed<UbiquitousReaction, RT>, public RatesReader
 {
     typedef Typed<UbiquitousReaction, RT> ParentType;
 

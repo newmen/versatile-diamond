@@ -12,11 +12,11 @@ class MethylOnDimerDeactivation :
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     MethylOnDimerDeactivation(Atom *target) : Local(target) {}
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 
     static void concretize(Atom *anchor) { ParentType::concretize<MethylOnDimerDeactivation>(anchor); }

@@ -2,7 +2,12 @@
 #include "../../handbook.h"
 
 const char MethylOnDimerHydrogenMigration::__name[] = "methyl on dimer hydrogen migration";
-const double MethylOnDimerHydrogenMigration::RATE = 2.1e12 * std::exp(-37.5e3 / (1.98 * Env::T));
+
+double MethylOnDimerHydrogenMigration::RATE()
+{
+    static double value = getRate("METHYL_ON_DIMER_HYDROGEN_MIGRATION");
+    return value;
+}
 
 void MethylOnDimerHydrogenMigration::find(MethylOnDimerCLsCMhiu *target)
 {

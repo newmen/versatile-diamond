@@ -1,7 +1,12 @@
 #include "two_bridges_to_high_bridge.h"
 
 const char TwoBridgesToHighBridge::__name[] = "two bridges to high bridge";
-const double TwoBridgesToHighBridge::RATE = 1.1e8 * std::exp(-3.2e3 / (1.98 * Env::T));
+
+double TwoBridgesToHighBridge::RATE()
+{
+    static double value = getRate("TWO_BRIDGES_TO_HIGH_BRIDGE");
+    return value;
+}
 
 void TwoBridgesToHighBridge::find(TwoBridgesCTRiCBRs *target)
 {

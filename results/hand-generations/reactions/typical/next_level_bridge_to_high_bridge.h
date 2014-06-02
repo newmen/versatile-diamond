@@ -9,7 +9,7 @@ class NextLevelBridgeToHighBridge : public Typical<NEXT_LEVEL_BRIDGE_TO_HIGH_BRI
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     static void find(BridgeCRsCTiCLi *target);
 
@@ -17,7 +17,7 @@ public:
 
     void doIt() override;
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 };
 

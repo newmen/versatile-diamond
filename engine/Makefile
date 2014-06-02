@@ -73,7 +73,8 @@ HEADER_FILES	:= \
 	$(SRC_DIR)/tools/savers/volume_saver_factory.h \
 	$(SRC_DIR)/tools/scavenger.h \
 	$(SRC_DIR)/tools/typed.h \
-	$(SRC_DIR)/tools/vector3d.h
+	$(SRC_DIR)/tools/vector3d.h \
+	$(SRC_DIR)/tools/yaml_config_reader.h
 
 SOURCE_FILES	:= \
 	$(SRC_DIR)/atoms/atom.cpp \
@@ -104,7 +105,8 @@ SOURCE_FILES	:= \
 	$(SRC_DIR)/tools/savers/mol_saver.cpp \
 	$(SRC_DIR)/tools/savers/sdf_saver.cpp \
 	$(SRC_DIR)/tools/savers/volume_saver_factory.cpp \
-	$(SRC_DIR)/tools/scavenger.cpp
+	$(SRC_DIR)/tools/scavenger.cpp \
+	$(SRC_DIR)/tools/yaml_config_reader.cpp
 
 SOURCE_OBJECTS	:= $(SOURCE_FILES:%.cpp=%.o)
 

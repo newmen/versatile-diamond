@@ -1,7 +1,12 @@
 #include "des_methyl_from_dimer.h"
 
 const char DesMethylFromDimer::__name[] = "desorption methyl from dimer";
-const double DesMethylFromDimer::RATE = 5.3e3 * std::exp(-0 / (1.98 * Env::T));
+
+double DesMethylFromDimer::RATE()
+{
+    static double value = getRate("DES_METHYL_FROM_DIMER");
+    return value;
+}
 
 void DesMethylFromDimer::find(MethylOnDimerCMiu *target)
 {

@@ -3,7 +3,12 @@
 #include "../../species/sidepiece/dimer.h"
 
 const char DimerDropAtEnd::__name[] = "dimer drop at end of dimers row";
-const double DimerDropAtEnd::RATE = 2.2e6 * std::exp(-1e3 / (1.98 * Env::T));
+
+double DimerDropAtEnd::RATE()
+{
+    static double value = getRate("DIMER_DROP_AT_END");
+    return value;
+}
 
 void DimerDropAtEnd::createUnconcreted(LateralSpec *removableSpec)
 {

@@ -8,11 +8,11 @@ class DimerFormationInMiddle : public Lateral<DIMER_FORMATION_IN_MIDDLE, 2>
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     template <class... Args> DimerFormationInMiddle(Args... args) : Lateral(args...) {}
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;

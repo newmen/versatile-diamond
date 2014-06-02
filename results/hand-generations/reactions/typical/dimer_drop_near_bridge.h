@@ -9,7 +9,7 @@ class DimerDropNearBridge : public Typical<DIMER_DROP_NEAR_BRIDGE, 1>
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     static void find(BridgeWithDimerCDLi *target);
 
@@ -17,7 +17,7 @@ public:
 
     void doIt() override;
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 };
 

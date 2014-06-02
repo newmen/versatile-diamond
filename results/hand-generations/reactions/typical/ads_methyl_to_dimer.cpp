@@ -2,7 +2,12 @@
 #include "../../builders/atom_builder.h"
 
 const char AdsMethylToDimer::__name[] = "adsorption methyl to dimer";
-const double AdsMethylToDimer::RATE = Env::cCH3 * 1e13 * std::exp(-0 / (1.98 * Env::T));
+
+double AdsMethylToDimer::RATE()
+{
+    static double value = getRate("ADS_METHYL_TO_DIMER") * Env::cCH3();
+    return value;
+}
 
 void AdsMethylToDimer::find(DimerCRs *target)
 {
