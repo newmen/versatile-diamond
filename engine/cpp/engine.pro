@@ -58,7 +58,7 @@ SOURCES += \
     ../../results/hand-generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
     ../../results/hand-generations/reactions/ubiquitous/surface_activation.cpp \
     ../../results/hand-generations/reactions/ubiquitous/surface_deactivation.cpp \
-    ../../results/hand-generations/run.cpp
+    ../../results/hand-generations/run.cpp \
     ../../results/hand-generations/species/base/bridge.cpp \
     ../../results/hand-generations/species/base/bridge_cri.cpp \
     ../../results/hand-generations/species/base/bridge_with_dimer.cpp \
@@ -119,7 +119,7 @@ SOURCES += \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
-    tools/scavenger.cpp \
+    tools/scavenger.cpp
 
 HEADERS += \
     ../../results/hand-generations/atoms/c.h \
@@ -186,7 +186,7 @@ HEADERS += \
     ../../results/hand-generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     ../../results/hand-generations/reactions/ubiquitous/surface_activation.h \
     ../../results/hand-generations/reactions/ubiquitous/surface_deactivation.h \
-    ../../results/hand-generations/run.h
+    ../../results/hand-generations/run.h \
     ../../results/hand-generations/species/base.h \
     ../../results/hand-generations/species/base/bridge.h \
     ../../results/hand-generations/species/base/bridge_cri.h \
