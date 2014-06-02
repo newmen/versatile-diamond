@@ -11,7 +11,7 @@ ICC_PATH	:= /opt/intel/composerxe
 
 CXX		:= $(ICC_PATH)/bin/icpc
 CXXFLAGS	:= -std=c++11 -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259 $(ARKSFLAGS)
-LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64/ -liomp5 -openmp
+LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64/ -liomp5 -openmp -lyaml-cpp
 
 HGEN_SRC_DIR	:= .
 HGEN_OBJS_DIR	:= obj
@@ -54,6 +54,7 @@ HEADER_FILES	:= \
 	$(HGEN_SRC_DIR)/reactions/lateral/dimer_formation_at_end.h \
 	$(HGEN_SRC_DIR)/reactions/lateral/dimer_formation_in_middle.h \
 	$(HGEN_SRC_DIR)/reactions/local.h \
+	$(HGEN_SRC_DIR)/reactions/rates_reader.h \
 	$(HGEN_SRC_DIR)/reactions/registrator.h \
 	$(HGEN_SRC_DIR)/reactions/typical.h \
 	$(HGEN_SRC_DIR)/reactions/typical/abs_hydrogen_from_gap.h \
@@ -140,6 +141,7 @@ HEADER_FILES	:= \
 
 SOURCE_FILES	:= \
 	$(HGEN_SRC_DIR)/atoms/c.cpp \
+	$(HGEN_SRC_DIR)/env.cpp \
 	$(HGEN_SRC_DIR)/finder.cpp \
 	$(HGEN_SRC_DIR)/handbook.cpp \
 	$(HGEN_SRC_DIR)/phases/diamond.cpp \
@@ -148,6 +150,7 @@ SOURCE_FILES	:= \
 	$(HGEN_SRC_DIR)/reactions/lateral/dimer_drop_in_middle.cpp \
 	$(HGEN_SRC_DIR)/reactions/lateral/dimer_formation_at_end.cpp \
 	$(HGEN_SRC_DIR)/reactions/lateral/dimer_formation_in_middle.cpp \
+	$(HGEN_SRC_DIR)/reactions/rates_reader.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/abs_hydrogen_from_gap.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/ads_methyl_to_111.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/ads_methyl_to_dimer.cpp \

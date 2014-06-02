@@ -11,7 +11,7 @@ class HighBridgeToMethyl : public Typical<HIGH_BRIDGE_TO_METHYL, 2>
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     static void find(HighBridge *target);
     static void find(BridgeCTsi *target);
@@ -21,7 +21,7 @@ public:
 
     void doIt() override;
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 
 private:

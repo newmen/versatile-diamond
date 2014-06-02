@@ -9,11 +9,11 @@ class DimerFormationAtEnd : public ConcretizableRole<Lateral, DIMER_FORMATION_AT
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     template <class... Args> DimerFormationAtEnd(Args... args) : ConcretizableRole(args...) {}
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 
     void createUnconcreted(LateralSpec *removableSpec) override;

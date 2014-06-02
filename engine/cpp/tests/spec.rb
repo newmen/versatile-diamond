@@ -8,9 +8,9 @@ GENERATIONS_DIR = "#{RESULTS_DIR}/hand-generations"
 OBJS_DIR = 'obj'
 
 CC = 'g++'
-FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/"
-# FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/"
-# FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/"
+FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/ -lyaml-cpp"
+# FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/ -lyaml-cpp"
+# FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/ -lyaml-cpp"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string

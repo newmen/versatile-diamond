@@ -1,7 +1,12 @@
 #include "high_bridge_to_two_bridges.h"
 
 const char HighBridgeToTwoBridges::__name[] = "high bridge incorporates in crystal lattice near another bridge";
-const double HighBridgeToTwoBridges::RATE = 2.9e11 * std::exp(-3.2e3 / (1.98 * Env::T));
+
+double HighBridgeToTwoBridges::RATE()
+{
+    static double value = getRate("HIGH_BRIDGE_STAND_TO_TWO_BRIDGES");
+    return value;
+}
 
 void HighBridgeToTwoBridges::find(HighBridge *target)
 {

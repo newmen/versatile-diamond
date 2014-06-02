@@ -1,7 +1,12 @@
 #include "next_level_bridge_to_high_bridge.h"
 
 const char NextLevelBridgeToHighBridge::__name[] = "next layer bridge to high bridge";
-const double NextLevelBridgeToHighBridge::RATE = 1.1e12 * std::exp(-12.3e3 / (1.98 * Env::T));
+
+double NextLevelBridgeToHighBridge::RATE()
+{
+    static double value = getRate("NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE");
+    return value;
+}
 
 void NextLevelBridgeToHighBridge::find(BridgeCRsCTiCLi *target)
 {

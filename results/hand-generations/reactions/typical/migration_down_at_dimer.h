@@ -10,7 +10,7 @@ class MigrationDownAtDimer : public Typical<MIGRATION_DOWN_AT_DIMER, 2>
     static const char __name[];
 
 public:
-    static const double RATE;
+    static double RATE();
 
     static void find(DimerCRs *target);
     static void find(MethylOnBridgeCBiCMsiu *target);
@@ -19,7 +19,7 @@ public:
 
     void doIt() override;
 
-    double rate() const override { return RATE; }
+    double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 };
 

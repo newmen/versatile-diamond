@@ -3,7 +3,12 @@
 #include "../../species/sidepiece/dimer.h"
 
 const char DimerFormationAtEnd::__name[] = "dimer formation at end of dimers row";
-const double DimerFormationAtEnd::RATE = 8.9e11 * std::exp(-0.4e3 / (1.98 * Env::T));
+
+double DimerFormationAtEnd::RATE()
+{
+    static double value = getRate("DIMER_FORMATION_AT_END");
+    return value;
+}
 
 void DimerFormationAtEnd::createUnconcreted(LateralSpec *removableSpec)
 {

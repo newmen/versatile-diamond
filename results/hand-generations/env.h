@@ -1,15 +1,19 @@
 #ifndef ENV_H
 #define ENV_H
 
-#include "cmath"
+#include <tools/yaml_config_reader.h>
+using namespace vd;
 
 class Env
 {
-public:
-    static constexpr double T = 1200; // K
+    static YAMLConfigReader __config;
 
-    static constexpr double cH = 1e-9; // mol/cm3
-    static constexpr double cCH3 = 1e-10; // mol/cm3
+public:
+    static double R();
+    static double T();
+
+    static double cH();
+    static double cCH3();
 };
 
 #endif // ENV_H

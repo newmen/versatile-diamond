@@ -1,7 +1,12 @@
 #include "des_methyl_from_111.h"
 
 const char DesMethylFrom111::__name[] = "desorption methyl from 111";
-const double DesMethylFrom111::RATE = 5.4e6 * std::exp(-0 / (1.98 * Env::T));
+
+double DesMethylFrom111::RATE()
+{
+    static double value = getRate("DES_METHYL_FROM_111");
+    return value;
+}
 
 void DesMethylFrom111::find(MethylOn111CMiu *target)
 {

@@ -8,6 +8,7 @@ QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -DTHREADS_NUM=1
+LIBS += -lyaml-cpp
 
 #QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -fopenmp -lstdc++
@@ -17,6 +18,7 @@ QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 
 SOURCES += \
     ../../results/hand-generations/atoms/c.cpp \
+    ../../results/hand-generations/env.cpp \
     ../../results/hand-generations/finder.cpp \
     ../../results/hand-generations/handbook.cpp \
     ../../results/hand-generations/main.cpp \
@@ -26,6 +28,7 @@ SOURCES += \
     ../../results/hand-generations/reactions/lateral/dimer_drop_in_middle.cpp \
     ../../results/hand-generations/reactions/lateral/dimer_formation_at_end.cpp \
     ../../results/hand-generations/reactions/lateral/dimer_formation_in_middle.cpp \
+    ../../results/hand-generations/reactions/rates_reader.cpp \
     ../../results/hand-generations/reactions/typical/abs_hydrogen_from_gap.cpp \
     ../../results/hand-generations/reactions/typical/ads_methyl_to_111.cpp \
     ../../results/hand-generations/reactions/typical/ads_methyl_to_dimer.cpp \
@@ -119,7 +122,8 @@ SOURCES += \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
-    tools/scavenger.cpp
+    tools/scavenger.cpp \
+    tools/yaml_config_reader.cpp
 
 HEADERS += \
     ../../results/hand-generations/atoms/c.h \
@@ -141,6 +145,7 @@ HEADERS += \
     ../../results/hand-generations/reactions/lateral/dimer_formation_at_end.h \
     ../../results/hand-generations/reactions/lateral/dimer_formation_in_middle.h \
     ../../results/hand-generations/reactions/local.h \
+    ../../results/hand-generations/reactions/rates_reader.h \
     ../../results/hand-generations/reactions/registrator.h \
     ../../results/hand-generations/reactions/typical.h \
     ../../results/hand-generations/reactions/typical/abs_hydrogen_from_gap.h \
@@ -277,4 +282,10 @@ HEADERS += \
     tools/savers/volume_saver_factory.h \
     tools/scavenger.h \
     tools/typed.h \
-    tools/vector3d.h
+    tools/vector3d.h \
+    tools/yaml_config_reader.h
+
+OTHER_FILES += \
+    ../../results/hand-generations/configs/env.yml \
+    ../../results/hand-generations/configs/reactions.yml
+

@@ -1,7 +1,12 @@
 #include "bridge_with_dimer_to_high_bridge_and_dimer.h"
 
 const char BridgeWithDimerToHighBridgeAndDimer::__name[] = "bridge with dimer to high bridge and dimer";
-const double BridgeWithDimerToHighBridgeAndDimer::RATE = 4.2e8 * std::exp(-14.9e3 / (1.98 * Env::T));
+
+double BridgeWithDimerToHighBridgeAndDimer::RATE()
+{
+    static double value = getRate("BRIDGE_WITH_DIMER_TO_HIGH_BRIDGE_AND_DIMER");
+    return value;
+}
 
 void BridgeWithDimerToHighBridgeAndDimer::find(BridgeWithDimerCBTiCBRsCDLi *target)
 {

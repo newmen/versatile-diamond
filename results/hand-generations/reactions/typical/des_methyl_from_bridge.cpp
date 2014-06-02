@@ -1,7 +1,12 @@
 #include "des_methyl_from_bridge.h"
 
 const char DesMethylFromBridge::__name[] = "desorption methyl from bridge";
-const double DesMethylFromBridge::RATE = 1.7e7 * std::exp(-0 / (1.98 * Env::T));
+
+double DesMethylFromBridge::RATE()
+{
+    static double value = getRate("DES_METHYL_FROM_BRIDGE");
+    return value;
+}
 
 void DesMethylFromBridge::find(MethylOnBridgeCBiCMiu *target)
 {

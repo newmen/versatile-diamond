@@ -2,10 +2,14 @@
 #include "local/methyl_on_dimer_activation.h"
 
 const char SurfaceActivation::__name[] = "surface activation";
-const double SurfaceActivation::RATE = Env::cH * 5.2e13 * std::exp(-6.65e3 / (1.98 * Env::T));
+
+double SurfaceActivation::RATE()
+{
+    static double value = getRate("SURFACE_ACTIVATION") * Env::cH();
+    return value;
+}
 
 void SurfaceActivation::find(Atom *anchor)
 {
-//    findSelf<SurfaceActivation>(anchor);
     findChild<MethylOnDimerActivation>(anchor);
 }
