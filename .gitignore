@@ -6,6 +6,7 @@ build-*
 Makefile
 obj/
 engine/engine
+results/hand-generations/simple-diamond
 
 engine/results
 *.job
