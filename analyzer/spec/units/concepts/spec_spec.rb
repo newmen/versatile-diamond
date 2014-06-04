@@ -5,17 +5,17 @@ module VersatileDiamond
 
     describe Spec do
       describe 'self#good_for_reduce?' do
-        it { expect(described_class.good_for_reduce?([:cl])).to be_true }
-        it { expect(described_class.good_for_reduce?([:_cl])).to be_false }
+        it { expect(described_class.good_for_reduce?([:cl])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:_cl])).to be_falsey }
       end
 
       describe '#simple?' do
         it { expect(Spec.new(:not_set).simple?).to be_nil }
 
-        it { expect(hydrogen_base.simple?).to be_true }
-        it { expect(methane_base.simple?).not_to be_true }
-        it { expect(ethylene_base.simple?).not_to be_true }
-        it { expect(bridge_base.simple?).not_to be_true }
+        it { expect(hydrogen_base.simple?).to be_truthy }
+        it { expect(methane_base.simple?).not_to be_truthy }
+        it { expect(ethylene_base.simple?).not_to be_truthy }
+        it { expect(bridge_base.simple?).not_to be_truthy }
       end
 
       describe '#atom' do
@@ -110,9 +110,9 @@ module VersatileDiamond
       end
 
       describe '#extendable?' do
-        it { expect(methane_base.extendable?).to be_false }
-        it { expect(ethylene_base.extendable?).to be_false }
-        it { expect(bridge_base.extendable?).to be_true }
+        it { expect(methane_base.extendable?).to be_falsey }
+        it { expect(ethylene_base.extendable?).to be_falsey }
+        it { expect(bridge_base.extendable?).to be_truthy }
       end
 
       describe '#extend_by_references' do
@@ -126,22 +126,22 @@ module VersatileDiamond
       describe '#links_with_replace_by' do
         let(:links) { ethylene_base.links_with_replace_by(c2: o) }
 
-        it { expect(links.include?(o)).to be_true }
+        it { expect(links.include?(o)).to be_truthy }
         it { expect(links[c1].select { |a, _| a == o }.size).to eq(2) }
       end
 
       describe '#has_termination?' do
         describe 'bridge(:ct)' do
           let(:atom) { bridge_base.atom(:ct) }
-          it { expect(bridge_base.has_termination?(atom, adsorbed_h)).to be_true }
-          it { expect(bridge_base.has_termination?(atom, active_bond)).to be_false }
+          it { expect(bridge_base.has_termination?(atom, adsorbed_h)).to be_truthy }
+          it { expect(bridge_base.has_termination?(atom, active_bond)).to be_falsey }
         end
 
         describe 'methyl_on_dimer(:cr)' do
           let(:target) { methyl_on_dimer }
           let(:atom) { target.atom(:cr) }
-          it { expect(target.has_termination?(atom, adsorbed_h)).to be_false }
-          it { expect(target.has_termination?(atom, active_bond)).to be_false }
+          it { expect(target.has_termination?(atom, adsorbed_h)).to be_falsey }
+          it { expect(target.has_termination?(atom, active_bond)).to be_falsey }
         end
       end
 
@@ -150,18 +150,18 @@ module VersatileDiamond
           let(:same_bridge) { bridge_base_dup }
           subject { bridge_base }
 
-          it { expect(subject.same?(same_bridge)).to be_true }
-          it { expect(same_bridge.same?(subject)).to be_true }
+          it { expect(subject.same?(same_bridge)).to be_truthy }
+          it { expect(same_bridge.same?(subject)).to be_truthy }
 
-          it { expect(subject.same?(dimer_base)).to be_false }
+          it { expect(subject.same?(dimer_base)).to be_falsey }
         end
 
         describe 'methyl_on_bridge_base' do
           let(:other) { high_bridge_base }
           subject { methyl_on_bridge_base }
 
-          it { expect(subject.same?(other)).to be_false }
-          it { expect(other.same?(subject)).to be_false }
+          it { expect(subject.same?(other)).to be_falsey }
+          it { expect(other.same?(subject)).to be_falsey }
         end
       end
 

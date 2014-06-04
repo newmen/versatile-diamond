@@ -5,9 +5,9 @@ module VersatileDiamond
 
     describe Environment do
       describe 'targeting' do
-        it { expect(dimers_row.target?(:one)).to be_true }
-        it { expect(dimers_row.target?(:two)).to be_true }
-        it { expect(dimers_row.target?(:wrong)).to be_false }
+        it { expect(dimers_row.target?(:one)).to be_truthy }
+        it { expect(dimers_row.target?(:two)).to be_truthy }
+        it { expect(dimers_row.target?(:wrong)).to be_falsey }
       end
 
       describe '#make_lateral' do

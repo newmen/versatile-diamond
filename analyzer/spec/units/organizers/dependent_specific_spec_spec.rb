@@ -44,7 +44,7 @@ module VersatileDiamond
       end
 
       describe '#could_be_reduced?' do
-        it { expect(subject.could_be_reduced?).to be_false }
+        it { expect(subject.could_be_reduced?).to be_falsey }
       end
 
       describe '#specific_atoms' do
@@ -64,8 +64,8 @@ module VersatileDiamond
       end
 
       describe '#specific?' do
-        it { expect(subject.specific?).to be_true }
-        it { expect(wrap(dimer).specific?).to be_false }
+        it { expect(subject.specific?).to be_truthy }
+        it { expect(wrap(dimer).specific?).to be_falsey }
       end
 
       describe '#parent' do
@@ -170,7 +170,7 @@ module VersatileDiamond
           let(:subtrahend) { DependentBaseSpec.new(methyl_on_bridge_base) }
 
           it { expect(links.size).to eq(1) }
-          it { expect(links.keys.first.incoherent?).to be_true }
+          it { expect(links.keys.first.incoherent?).to be_truthy }
         end
 
         describe 'correct relations after base spec change' do

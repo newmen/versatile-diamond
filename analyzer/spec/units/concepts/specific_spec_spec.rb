@@ -132,31 +132,31 @@ module VersatileDiamond
       end
 
       describe '#gas?' do
-        it { expect(hydrogen.gas?).to be_true }
-        it { expect(hydrogen_ion.gas?).to be_true }
-        it { expect(methane.gas?).to be_true }
-        it { expect(methyl.gas?).to be_true }
-        it { expect(bridge.gas?).to be_false }
-        it { expect(extra_activated_bridge.gas?).to be_false }
+        it { expect(hydrogen.gas?).to be_truthy }
+        it { expect(hydrogen_ion.gas?).to be_truthy }
+        it { expect(methane.gas?).to be_truthy }
+        it { expect(methyl.gas?).to be_truthy }
+        it { expect(bridge.gas?).to be_falsey }
+        it { expect(extra_activated_bridge.gas?).to be_falsey }
       end
 
       describe '#simple?' do
-        it { expect(hydrogen.simple?).to be_true }
-        it { expect(hydrogen_ion.simple?).to be_true }
-        it { expect(methane.simple?).to be_false }
-        it { expect(methyl.simple?).to be_false }
-        it { expect(bridge.simple?).to be_false }
-        it { expect(extra_activated_bridge.simple?).to be_false }
+        it { expect(hydrogen.simple?).to be_truthy }
+        it { expect(hydrogen_ion.simple?).to be_truthy }
+        it { expect(methane.simple?).to be_falsey }
+        it { expect(methyl.simple?).to be_falsey }
+        it { expect(bridge.simple?).to be_falsey }
+        it { expect(extra_activated_bridge.simple?).to be_falsey }
       end
 
       describe '#incoherent!' do
         before { activated_bridge.incoherent!(:ct) }
-        it { expect(activated_cd.incoherent?).to be_true }
+        it { expect(activated_cd.incoherent?).to be_truthy }
       end
 
       describe '#unfixed!' do
         before { activated_methyl_on_bridge.unfixed!(:cm) }
-        it { expect(activated_c.unfixed?).to be_true }
+        it { expect(activated_c.unfixed?).to be_truthy }
       end
 
       describe '#external_bonds_for' do
@@ -188,12 +188,12 @@ module VersatileDiamond
       end
 
       describe '#extended?' do
-        it { expect(bridge.extended?).to be_false }
-        it { expect(dimer.extended?).to be_false }
+        it { expect(bridge.extended?).to be_falsey }
+        it { expect(dimer.extended?).to be_falsey }
 
-        it { expect(activated_methyl_on_extended_bridge.extended?).to be_true }
-        it { expect(right_activated_extended_bridge.extended?).to be_true }
-        it { expect(extended_dimer.extended?).to be_true }
+        it { expect(activated_methyl_on_extended_bridge.extended?).to be_truthy }
+        it { expect(right_activated_extended_bridge.extended?).to be_truthy }
+        it { expect(extended_dimer.extended?).to be_truthy }
       end
 
       describe '#reduced' do
@@ -208,10 +208,10 @@ module VersatileDiamond
       end
 
       describe '#extendable?' do
-        it { expect(methane.extendable?).to be_false }
-        it { expect(methyl.extendable?).to be_false }
-        it { expect(bridge.extendable?).to be_true }
-        it { expect(extra_activated_bridge.extendable?).to be_true }
+        it { expect(methane.extendable?).to be_falsey }
+        it { expect(methyl.extendable?).to be_falsey }
+        it { expect(bridge.extendable?).to be_truthy }
+        it { expect(extra_activated_bridge.extendable?).to be_truthy }
       end
 
       describe '#external_bonds_after_extend' do
@@ -231,36 +231,36 @@ module VersatileDiamond
       end
 
       describe '#could_be_reduced?' do
-        it { expect(activated_methyl_on_extended_bridge.could_be_reduced?).to be_true }
-        it { expect(right_activated_extended_bridge.could_be_reduced?).to be_true }
-        it { expect(extended_dimer.could_be_reduced?).to be_true }
+        it { expect(activated_methyl_on_extended_bridge.could_be_reduced?).to be_truthy }
+        it { expect(right_activated_extended_bridge.could_be_reduced?).to be_truthy }
+        it { expect(extended_dimer.could_be_reduced?).to be_truthy }
       end
 
       describe '#same?' do
-        it { expect(methyl.same?(methyl.dup)).to be_true }
-        it { expect(bridge.same?(bridge.dup)).to be_true }
+        it { expect(methyl.same?(methyl.dup)).to be_truthy }
+        it { expect(bridge.same?(bridge.dup)).to be_truthy }
 
-        it { expect(methyl.same?(active_bond)).to be_false }
-        it { expect(methyl.same?(adsorbed_h)).to be_false }
+        it { expect(methyl.same?(active_bond)).to be_falsey }
+        it { expect(methyl.same?(adsorbed_h)).to be_falsey }
 
-        it { expect(methyl.same?(bridge)).to be_false }
-        it { expect(bridge.same?(activated_bridge)).to be_false }
-        it { expect(activated_bridge.same?(activated_incoherent_bridge)).to be_false }
-        it { expect(activated_bridge.same?(extra_activated_bridge)).to be_false }
+        it { expect(methyl.same?(bridge)).to be_falsey }
+        it { expect(bridge.same?(activated_bridge)).to be_falsey }
+        it { expect(activated_bridge.same?(activated_incoherent_bridge)).to be_falsey }
+        it { expect(activated_bridge.same?(extra_activated_bridge)).to be_falsey }
         it { expect(extra_activated_bridge.same?(activated_incoherent_bridge)).
-          to be_false }
+          to be_falsey }
       end
 
       describe '#has_termination?' do
-        it { expect(bridge.has_termination?(cd, h)).to be_true }
-        it { expect(activated_bridge.has_termination?(activated_cd, h)).to be_true }
+        it { expect(bridge.has_termination?(cd, h)).to be_truthy }
+        it { expect(activated_bridge.has_termination?(activated_cd, h)).to be_truthy }
 
         let(:ea_bridge) { extra_activated_bridge }
-        it { expect(ea_bridge.has_termination?(extra_activated_cd, h)).to be_false }
+        it { expect(ea_bridge.has_termination?(extra_activated_cd, h)).to be_falsey }
 
         let(:cl_bridge) { chlorigenated_bridge }
-        it { expect(cl_bridge.has_termination?(cd_chloride, h)).to be_true }
-        it { expect(cl_bridge.has_termination?(cd_chloride, cl)).to be_true }
+        it { expect(cl_bridge.has_termination?(cd_chloride, h)).to be_truthy }
+        it { expect(cl_bridge.has_termination?(cd_chloride, cl)).to be_truthy }
       end
 
       describe '#active_bonds_num' do

@@ -20,14 +20,14 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(c1.same?(ref)).to be_true }
-        it { expect(ref.same?(c1)).to be_true }
-        it { expect(ref.same?(ref.dup)).to be_true }
+        it { expect(c1.same?(ref)).to be_truthy }
+        it { expect(ref.same?(c1)).to be_truthy }
+        it { expect(ref.same?(ref.dup)).to be_truthy }
       end
 
       describe '#original_same?' do
-        it { expect(c1.original_same?(ref)).to be_true }
-        it { expect(ref.original_same?(c1)).to be_true }
+        it { expect(c1.original_same?(ref)).to be_truthy }
+        it { expect(ref.original_same?(c1)).to be_truthy }
       end
 
       describe '#actives' do
@@ -39,8 +39,8 @@ module VersatileDiamond
       end
 
       describe '#incoherent? and #unfixed?' do
-        it { expect(ref.incoherent?).to be_false }
-        it { expect(ref.unfixed?).to be_false }
+        it { expect(ref.incoherent?).to be_falsey }
+        it { expect(ref.unfixed?).to be_falsey }
       end
 
       describe '#diff' do
@@ -62,12 +62,12 @@ module VersatileDiamond
       end
 
       describe '#reference?' do
-        it { expect(bridge.atom(:cr).reference?).to be_true }
+        it { expect(bridge.atom(:cr).reference?).to be_truthy }
       end
 
       describe '#specific?' do
-        it { expect(bridge.atom(:cr).specific?).to be_false }
-        it { expect(specific_ref.specific?).to be_true }
+        it { expect(bridge.atom(:cr).specific?).to be_falsey }
+        it { expect(specific_ref.specific?).to be_truthy }
       end
 
       describe '#additional_relations' do

@@ -135,18 +135,18 @@ module VersatileDiamond
           end
 
           describe '#is?' do
-            it { expect(subject.is?(hb_cr, ib_cr)).to be_true }
-            it { expect(subject.is?(ib_cr, hb_cr)).to be_false }
+            it { expect(subject.is?(hb_cr, ib_cr)).to be_truthy }
+            it { expect(subject.is?(ib_cr, hb_cr)).to be_falsey }
 
-            it { expect(subject.is?(hb_cr, bridge_ct)).to be_true }
-            it { expect(subject.is?(bridge_ct, hb_cr)).to be_false }
+            it { expect(subject.is?(hb_cr, bridge_ct)).to be_truthy }
+            it { expect(subject.is?(bridge_ct, hb_cr)).to be_falsey }
 
-            it { expect(subject.is?(eab_ct, ab_ct)).to be_true }
-            it { expect(subject.is?(ab_ct, eab_ct)).to be_false }
-            it { expect(subject.is?(eab_ct, aib_ct)).to be_true }
-            it { expect(subject.is?(aib_ct, eab_ct)).to be_false }
-            it { expect(subject.is?(eab_ct, bridge_ct)).to be_true }
-            it { expect(subject.is?(bridge_ct, eab_ct)).to be_false }
+            it { expect(subject.is?(eab_ct, ab_ct)).to be_truthy }
+            it { expect(subject.is?(ab_ct, eab_ct)).to be_falsey }
+            it { expect(subject.is?(eab_ct, aib_ct)).to be_truthy }
+            it { expect(subject.is?(aib_ct, eab_ct)).to be_falsey }
+            it { expect(subject.is?(eab_ct, bridge_ct)).to be_truthy }
+            it { expect(subject.is?(bridge_ct, eab_ct)).to be_falsey }
           end
 
           describe 'generate graph' do
@@ -159,7 +159,7 @@ module VersatileDiamond
 
             describe 'image is not empty' do
               before { graph.generate }
-              it { expect(File.size(image_name) > 200).to be_true }
+              it { expect(File.size(image_name) > 200).to be_truthy }
             end
 
             # Comment line below for draw a graph which could help to inspect
@@ -398,23 +398,23 @@ module VersatileDiamond
         end
 
         describe '#has_relevants?' do
-          it { expect(subject.has_relevants?(4)).to be_true }
-          it { expect(subject.has_relevants?(14)).to be_true }
+          it { expect(subject.has_relevants?(4)).to be_truthy }
+          it { expect(subject.has_relevants?(14)).to be_truthy }
 
-          it { expect(subject.has_relevants?(0)).to be_false }
-          it { expect(subject.has_relevants?(2)).to be_false }
-          it { expect(subject.has_relevants?(6)).to be_false }
-          it { expect(subject.has_relevants?(8)).to be_false }
-          it { expect(subject.has_relevants?(10)).to be_false }
-          it { expect(subject.has_relevants?(12)).to be_false }
-          it { expect(subject.has_relevants?(16)).to be_false }
-          it { expect(subject.has_relevants?(18)).to be_false }
-          it { expect(subject.has_relevants?(20)).to be_false }
-          it { expect(subject.has_relevants?(22)).to be_false }
-          it { expect(subject.has_relevants?(24)).to be_false }
-          it { expect(subject.has_relevants?(26)).to be_false }
-          it { expect(subject.has_relevants?(28)).to be_false }
-          it { expect(subject.has_relevants?(30)).to be_false }
+          it { expect(subject.has_relevants?(0)).to be_falsey }
+          it { expect(subject.has_relevants?(2)).to be_falsey }
+          it { expect(subject.has_relevants?(6)).to be_falsey }
+          it { expect(subject.has_relevants?(8)).to be_falsey }
+          it { expect(subject.has_relevants?(10)).to be_falsey }
+          it { expect(subject.has_relevants?(12)).to be_falsey }
+          it { expect(subject.has_relevants?(16)).to be_falsey }
+          it { expect(subject.has_relevants?(18)).to be_falsey }
+          it { expect(subject.has_relevants?(20)).to be_falsey }
+          it { expect(subject.has_relevants?(22)).to be_falsey }
+          it { expect(subject.has_relevants?(24)).to be_falsey }
+          it { expect(subject.has_relevants?(26)).to be_falsey }
+          it { expect(subject.has_relevants?(28)).to be_falsey }
+          it { expect(subject.has_relevants?(30)).to be_falsey }
         end
       end
     end

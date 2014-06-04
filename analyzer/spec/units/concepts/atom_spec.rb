@@ -5,8 +5,8 @@ module VersatileDiamond
 
     describe Atom do
       describe '#self.hydrogen?' do
-        it { expect(Atom.hydrogen?(h)).to be_true }
-        it { expect(Atom.hydrogen?(c)).to be_false }
+        it { expect(Atom.hydrogen?(h)).to be_truthy }
+        it { expect(Atom.hydrogen?(c)).to be_falsey }
       end
 
       describe '#valence' do
@@ -26,27 +26,27 @@ module VersatileDiamond
       end
 
       describe '#reference?' do
-        it { expect(c.reference?).to be_false }
+        it { expect(c.reference?).to be_falsey }
       end
 
       describe '#specific?' do
-        it { expect(c.specific?).to be_false }
+        it { expect(c.specific?).to be_falsey }
       end
 
       describe '#same?' do
-        it { expect(c.same?(h)).to be_false }
-        it { expect(c.same?(c.dup)).to be_true }
-        it { expect(c.same?(cd)).to be_false }
-        it { expect(cd.same?(cd.dup)).to be_true  }
+        it { expect(c.same?(h)).to be_falsey }
+        it { expect(c.same?(c.dup)).to be_truthy }
+        it { expect(c.same?(cd)).to be_falsey }
+        it { expect(cd.same?(cd.dup)).to be_truthy  }
       end
 
       describe '#original_same?' do
-        it { expect(c.original_same?(n)).to be_false }
-        it { expect(c.original_same?(cd)).to be_false }
+        it { expect(c.original_same?(n)).to be_falsey }
+        it { expect(c.original_same?(cd)).to be_falsey }
 
         let(:other) { c.dup }
-        it { expect(c.original_same?(other)).to be_true }
-        it { expect(other.original_same?(c)).to be_true }
+        it { expect(c.original_same?(other)).to be_truthy }
+        it { expect(other.original_same?(c)).to be_truthy }
       end
 
       describe '#actives' do
@@ -59,8 +59,8 @@ module VersatileDiamond
       end
 
       describe '#incoherent? and #unfixed?' do
-        it { expect(c.incoherent?).to be_false }
-        it { expect(c.unfixed?).to be_false }
+        it { expect(c.incoherent?).to be_falsey }
+        it { expect(c.unfixed?).to be_falsey }
       end
 
       describe '#diff' do

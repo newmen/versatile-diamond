@@ -8,9 +8,9 @@ module VersatileDiamond
 
       describe '#targets' do
         before { environment.interpret('targets :one_atom, :two_atom') }
-        it { expect(dimers_row.target?(:one_atom)).to be_true }
-        it { expect(dimers_row.target?(:two_atom)).to be_true }
-        it { expect(dimers_row.target?(:wrong)).to be_false }
+        it { expect(dimers_row.target?(:one_atom)).to be_truthy }
+        it { expect(dimers_row.target?(:two_atom)).to be_truthy }
+        it { expect(dimers_row.target?(:wrong)).to be_falsey }
       end
 
       describe '#aliases' do

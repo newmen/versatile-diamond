@@ -115,8 +115,8 @@ module VersatileDiamond
 
       describe '#has?' do
         before(:each) { Chest.store(concept) }
-        it { expect(Chest.has?(concept)).to be_true }
-        it { expect(Chest.has?(Concept.new(:wrong))).to be_false }
+        it { expect(Chest.has?(concept)).to be_truthy }
+        it { expect(Chest.has?(Concept.new(:wrong))).to be_falsey }
       end
 
       describe '#all' do

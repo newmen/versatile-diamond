@@ -47,7 +47,7 @@ module VersatileDiamond
 
             describe 'correspond dimer atom is incoherent' do
               before(:each) { df_atom_map } # runs atom mapping
-              it { expect(dimer_dup_ff.atom(:cl).incoherent?).to be_true }
+              it { expect(dimer_dup_ff.atom(:cl).incoherent?).to be_truthy }
               it { expect(dimer_dup_ff.atom(:cr)).to be_a(Concepts::Atom) }
             end
           end

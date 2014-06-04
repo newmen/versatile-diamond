@@ -23,7 +23,7 @@ module VersatileDiamond
       end
 
       describe '#specific?' do
-        it { expect(wrap(active_bond).specific?).to be_false }
+        it { expect(wrap(active_bond).specific?).to be_falsey }
       end
     end
 

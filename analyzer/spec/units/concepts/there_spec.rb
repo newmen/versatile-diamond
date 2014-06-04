@@ -119,16 +119,16 @@ module VersatileDiamond
             two: [dimer, dimer.atom(:cl)], one: [dimer, dimer.atom(:cr)])
         end
 
-        it { expect(on_end.same?(same)).to be_true }
-        it { expect(on_end.same?(on_middle)).to be_false }
-        it { expect(on_middle.same?(on_end)).to be_false }
-        it { expect(on_end.same?(there_methyl)).to be_false }
+        it { expect(on_end.same?(same)).to be_truthy }
+        it { expect(on_end.same?(on_middle)).to be_falsey }
+        it { expect(on_middle.same?(on_end)).to be_falsey }
+        it { expect(on_end.same?(there_methyl)).to be_falsey }
       end
 
       describe '#cover?' do
-        it { expect(on_end.cover?(on_middle)).to be_true }
-        it { expect(on_middle.cover?(on_end)).to be_false }
-        it { expect(there_methyl.cover?(on_end)).to be_false }
+        it { expect(on_end.cover?(on_middle)).to be_truthy }
+        it { expect(on_middle.cover?(on_end)).to be_falsey }
+        it { expect(there_methyl.cover?(on_end)).to be_falsey }
       end
 
       describe '#size' do

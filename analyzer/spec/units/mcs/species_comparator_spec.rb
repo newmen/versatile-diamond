@@ -11,26 +11,26 @@ module VersatileDiamond
       let(:modm) { methyl_on_dimer_base }
 
       describe '#self.contain?' do
-        it { expect(described_class.contain?(mob, br)).to be_true }
-        it { expect(described_class.contain?(br, mob)).to be_false }
+        it { expect(described_class.contain?(mob, br)).to be_truthy }
+        it { expect(described_class.contain?(br, mob)).to be_falsey }
 
-        it { expect(described_class.contain?(br, m)).to be_false }
-        it { expect(described_class.contain?(m, br)).to be_false }
-        it { expect(described_class.contain?(mob, m)).to be_true }
-        it { expect(described_class.contain?(m, mob)).to be_false }
+        it { expect(described_class.contain?(br, m)).to be_falsey }
+        it { expect(described_class.contain?(m, br)).to be_falsey }
+        it { expect(described_class.contain?(mob, m)).to be_truthy }
+        it { expect(described_class.contain?(m, mob)).to be_falsey }
 
-        it { expect(described_class.contain?(modm, br)).to be_true }
-        it { expect(described_class.contain?(br, modm)).to be_false }
-        it { expect(described_class.contain?(modm, mob)).to be_true }
-        it { expect(described_class.contain?(mob, modm)).to be_false }
-        it { expect(described_class.contain?(modm, m)).to be_true }
-        it { expect(described_class.contain?(m, modm)).to be_false }
+        it { expect(described_class.contain?(modm, br)).to be_truthy }
+        it { expect(described_class.contain?(br, modm)).to be_falsey }
+        it { expect(described_class.contain?(modm, mob)).to be_truthy }
+        it { expect(described_class.contain?(mob, modm)).to be_falsey }
+        it { expect(described_class.contain?(modm, m)).to be_truthy }
+        it { expect(described_class.contain?(m, modm)).to be_falsey }
 
-        it { expect(described_class.contain?(hb, mob)).to be_true }
+        it { expect(described_class.contain?(hb, mob)).to be_truthy }
 
         describe 'collaps_multi_bond: true' do
           it { expect(described_class.contain?(
-            hb, mob, collaps_multi_bond: true)).to be_false }
+            hb, mob, collaps_multi_bond: true)).to be_falsey }
         end
       end
 

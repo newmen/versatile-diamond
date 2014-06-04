@@ -5,11 +5,11 @@ module VersatileDiamond
       module MinuendExamples
         shared_examples_for :minuend do
           describe '#same?' do
-            it { expect(subject.same?(subject)).to be_true }
+            it { expect(subject.same?(subject)).to be_truthy }
           end
 
           describe '#empty?' do
-            it { expect(subject.empty?).to be_false }
+            it { expect(subject.empty?).to be_falsey }
           end
 
           describe '#atoms_num' do

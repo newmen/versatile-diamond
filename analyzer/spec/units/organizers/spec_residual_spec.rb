@@ -34,26 +34,26 @@ module VersatileDiamond
 
           let(:another_mob_part) { wrap(methyl_on_bridge_dup) - wrapped_bridge }
 
-          it { expect(methyl_on_bridge_part.same?(another_mob_part)).to be_true }
+          it { expect(methyl_on_bridge_part.same?(another_mob_part)).to be_truthy }
 
-          it { expect(methyl_on_bridge_part.same?(big_dimer_part)).to be_false }
-          it { expect(methyl_on_bridge_part.same?(high_bridge_part)).to be_false }
+          it { expect(methyl_on_bridge_part.same?(big_dimer_part)).to be_falsey }
+          it { expect(methyl_on_bridge_part.same?(high_bridge_part)).to be_falsey }
         end
 
         describe 'rests of (dimer - bridge), (methyl_on_dimer - methyl_on_bridge)' do
           let(:big_mod_part) { wrap(methyl_on_dimer_base) - wrapped_mob }
-          it { expect(big_dimer_part.same?(big_mod_part)).to be_false }
-          it { expect(big_mod_part.same?(big_dimer_part)).to be_false }
+          it { expect(big_dimer_part.same?(big_mod_part)).to be_falsey }
+          it { expect(big_mod_part.same?(big_dimer_part)).to be_falsey }
         end
       end
 
       describe '#empty?' do
-        it { expect(described_class.empty.empty?).to be_true }
+        it { expect(described_class.empty.empty?).to be_truthy }
 
         describe 'extended bridge without three bridges' do
           let(:eb) { wrap(extended_bridge_base) }
           subject { eb - wrapped_bridge - wrapped_bridge - wrapped_bridge }
-          it { expect(subject.empty?).to be_false }
+          it { expect(subject.empty?).to be_falsey }
         end
       end
 

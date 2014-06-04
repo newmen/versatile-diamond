@@ -186,8 +186,8 @@ module VersatileDiamond
             end
 
             shared_examples_for 'for direction' do
-              it { expect(direction.atom(inc_kn).incoherent?).to be_true }
-              it { expect(direction.atom(not_inc_kn).incoherent?).to be_false }
+              it { expect(direction.atom(inc_kn).incoherent?).to be_truthy }
+              it { expect(direction.atom(not_inc_kn).incoherent?).to be_falsey }
             end
 
             it_behaves_like 'for direction' do
@@ -340,16 +340,16 @@ module VersatileDiamond
         end
 
         let(:same) { make_same(:forward) }
-        it { expect(hydrogen_migration.same?(same)).to be_true }
-        it { expect(same.same?(hydrogen_migration)).to be_true }
+        it { expect(hydrogen_migration.same?(same)).to be_truthy }
+        it { expect(same.same?(hydrogen_migration)).to be_truthy }
 
-        it { expect(methyl_activation.same?(methyl_deactivation)).to be_false }
-        it { expect(methyl_desorption.same?(hydrogen_migration)).to be_false }
+        it { expect(methyl_activation.same?(methyl_deactivation)).to be_falsey }
+        it { expect(methyl_desorption.same?(hydrogen_migration)).to be_falsey }
 
         describe 'different types' do
           let(:reverse) { make_same(:reverse) }
-          it { expect(hydrogen_migration.same?(same)).to be_true }
-          it { expect(same.same?(hydrogen_migration)).to be_true }
+          it { expect(hydrogen_migration.same?(same)).to be_truthy }
+          it { expect(same.same?(hydrogen_migration)).to be_truthy }
         end
 
         describe 'positions are different' do
@@ -361,13 +361,13 @@ module VersatileDiamond
             )
           end
 
-          it { expect(hydrogen_migration.same?(same)).to be_false }
-          it { expect(same.same?(hydrogen_migration)).to be_false }
+          it { expect(hydrogen_migration.same?(same)).to be_falsey }
+          it { expect(same.same?(hydrogen_migration)).to be_falsey }
         end
 
         describe 'lateral reaction' do
           subject { dimer_formation.duplicate('dup') }
-          it { expect(subject.same?(end_lateral_df)).to be_true }
+          it { expect(subject.same?(end_lateral_df)).to be_truthy }
         end
       end
 
