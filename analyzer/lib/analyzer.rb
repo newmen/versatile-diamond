@@ -5,11 +5,23 @@ module VersatileDiamond
   class Analyzer < Interpreter::Base
     class << self
       # Self method for reading and analyzing configuration file
+      # If the results already where obtained then using it
+      #
       # @param [String] config_path the path to configuration file
       # @return [Organizers::AnalysisResult] the result of analysis
       def read_config(config_path)
-        content = File.open(config_path).readlines
-        new(content, config_path).analyze
+        # проверяем, что уже есть резульаты анализа
+        # результатов нет: анализируем и сохраняем дамп
+
+        result = Tools::Serializer.load(config_path)
+
+        unless result
+          content = File.open(config_path).readlines
+          result = new(content, config_path).analyze
+          Tools::Serializer.save(config_path, result)
+        end
+
+        result
       end
     end
 

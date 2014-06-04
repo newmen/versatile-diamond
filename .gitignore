@@ -4,6 +4,7 @@ build-*
 *.autosave
 *.swp
 Makefile
+cache/
 obj/
 engine/engine
 results/hand-generations/simple-diamond
