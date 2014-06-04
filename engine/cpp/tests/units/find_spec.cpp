@@ -375,8 +375,16 @@ int main()
                 AdsMethylToDimer::RATE);
 
     // 31
+    Handbook::mc().doOneOfOne(MIGRATION_THROUGH_DIMERS_ROW);
+    assert_rate(13 * SurfaceActivation::RATE +
+            3 * SurfaceDeactivation::RATE +
+            2 * MethylOnDimerActivation::RATE +
+            TwoBridgesToHighBridge::RATE +
+            AdsMethylTo111::RATE +
+            DimerDropAtEnd::RATE);
 
     // 32
+    
 
     // 33
 
