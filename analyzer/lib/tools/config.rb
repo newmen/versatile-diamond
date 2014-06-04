@@ -16,7 +16,7 @@ module VersatileDiamond
         # Initialize internal variables of config
         def init
           @total_time = nil
-          @concs = {}
+          @concs = nil
           #@composition
           @sizes = nil
           @gas_temperature, @surface_temperature = nil
@@ -57,6 +57,7 @@ module VersatileDiamond
         # @param [Float] value of concentration
         # @param [String] dimenstion of concentration
         def gas_concentration(specific_spec, value, dimension = nil)
+          @concs ||= {}
           if @concs[specific_spec.name]
             raise AlreadyDefined.new("concentration of #{specific_spec.name}")
           end
