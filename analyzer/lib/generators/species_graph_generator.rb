@@ -63,8 +63,10 @@ module VersatileDiamond
         specs.each do |spec|
           child_node = spec_node(spec)
           parent_node = spec_node(spec.parent)
-          edge = graph.add_edges(child_node, parent_node)
-          edge.set(&setup_block)
+          if parent_node
+            edge = graph.add_edges(child_node, parent_node)
+            edge.set(&setup_block)
+          end
         end
       end
 
