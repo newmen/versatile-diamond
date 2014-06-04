@@ -19,6 +19,7 @@ Options:
   --overview         Show overal table about used surface specs and their atoms
   --code             Generate code for engine
 
+  --name=NAME        Set the name of output generation file or another entity
   --out=PATH         Setup output path into which results will placed [default: results]
 
   --base-specs       Generate some info about base specs
@@ -73,9 +74,9 @@ define_generator = -> key, generator_class, *args do
   doit[generator_class.new(analysis_result, *args)] if opt[key]
 end
 
-out = -> filename { (Pathname.new(opt['--out']) + filename).to_s }
+out = -> filename { (Pathname.new(opt['--out']) + (opt['--name'] || filename)).to_s }
 
 define_generator['--overview', Gens::Overview]
 define_generator['--composition', Gens::AtomsSpeciesTree, out['composition']]
-define_generator['--total-tree', Gens::SpeciesReactionsTree, out['total_tree']]
-define_generator['--code', Gens::EngineCode, opt['--out']]
+define_generator['--total-tree', Gens::SpeciesReactionsTree, out['total-tree']]
+define_generator['--code', Gens::EngineCode, opt['--out'], opt['--name']]
