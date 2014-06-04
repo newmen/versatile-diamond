@@ -67,5 +67,7 @@ void MigrationThroughDimersRow::doIt()
     else if (a->is(27)) a->changeType(37);
     else a->changeType(10);
 
+    b->changeType(23);
+
     Finder::findAll(atoms, 2);
 }
