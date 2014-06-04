@@ -14,7 +14,7 @@ module VersatileDiamond
 
       subject { SomeVisitableClass.new }
       it { should respond_to(:visit).with(1).argument }
-      it { expect(subject.visit(Visitor.new)).to be_true }
+      it { expect(subject.visit(Visitor.new)).to be_truthy }
     end
 
   end

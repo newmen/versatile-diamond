@@ -85,13 +85,13 @@ module VersatileDiamond
             :forward, 'duplicate', sd_source.shuffle, sd_product)
         end
 
-        it { expect(surface_deactivation.same?(same)).to be_true }
-        it { expect(same.same?(surface_deactivation)).to be_true }
+        it { expect(surface_deactivation.same?(same)).to be_truthy }
+        it { expect(same.same?(surface_deactivation)).to be_truthy }
 
         it { expect(surface_activation.same?(surface_deactivation)).
-          to be_false }
+          to be_falsey }
         it { expect(surface_deactivation.same?(surface_activation)).
-          to be_false }
+          to be_falsey }
       end
 
       describe '#full_rate' do

@@ -33,8 +33,8 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(free_bond.same?(bond_110_front)).to be_true }
-        it { expect(bond_110_front.same?(free_bond)).to be_true }
+        it { expect(free_bond.same?(bond_110_front)).to be_truthy }
+        it { expect(bond_110_front.same?(free_bond)).to be_truthy }
       end
     end
 

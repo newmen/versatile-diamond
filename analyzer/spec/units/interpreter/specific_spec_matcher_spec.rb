@@ -50,12 +50,12 @@ module VersatileDiamond
 
         describe 'incoherent bridge' do
           subject { matcher.match('bridge(ct: i)') }
-          it { expect(subject.atom(:ct).incoherent?).to be_true }
+          it { expect(subject.atom(:ct).incoherent?).to be_truthy }
         end
 
         describe 'unfixed methyl' do
           subject { matcher.match('methyl_on_bridge(cm: u)') }
-          it { expect(subject.atom(:cm).unfixed?).to be_true }
+          it { expect(subject.atom(:cm).unfixed?).to be_truthy }
         end
 
         describe 'right atom of bridge is hydride' do
@@ -72,8 +72,8 @@ module VersatileDiamond
 
           before(:each) { Tools::Chest.store(cl) }
 
-          it { expect(subject.atom(:cb).incoherent?).to be_true }
-          it { expect(subject.atom(:cm).unfixed?).to be_true }
+          it { expect(subject.atom(:cb).incoherent?).to be_truthy }
+          it { expect(subject.atom(:cm).unfixed?).to be_truthy }
           it { expect(subject.atom(:cm).actives).to eq(2) }
           it { expect(subject.atom(:cm).monovalents).to eq([:Cl]) }
         end

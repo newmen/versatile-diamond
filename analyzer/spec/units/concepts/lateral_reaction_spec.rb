@@ -14,11 +14,11 @@ module VersatileDiamond
 
       describe '#theres' do
         it { expect(reaction.theres.size).to eq(1) }
-        it { expect(reaction.theres.first.same?(on_end)).to be_true }
+        it { expect(reaction.theres.first.same?(on_end)).to be_truthy }
 
         it { expect(other.theres.size).to eq(2) }
-        it { expect(other.theres.first.same?(on_end)).to be_true }
-        it { expect(other.theres.last.same?(there_methyl)).to be_true }
+        it { expect(other.theres.first.same?(on_end)).to be_truthy }
+        it { expect(other.theres.last.same?(there_methyl)).to be_truthy }
       end
 
       describe '#reverse' do
@@ -83,16 +83,16 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(reaction.same?(same)).to be_true }
-        it { expect(reaction.same?(middle)).to be_false }
-        it { expect(middle.same?(reaction)).to be_false }
+        it { expect(reaction.same?(same)).to be_truthy }
+        it { expect(reaction.same?(middle)).to be_falsey }
+        it { expect(middle.same?(reaction)).to be_falsey }
 
-        it { expect(reaction.same?(dimer_formation)).to be_false }
+        it { expect(reaction.same?(dimer_formation)).to be_falsey }
       end
 
       describe '#cover?' do
-        it { expect(reaction.cover?(middle)).to be_true }
-        it { expect(reaction.cover?(other)).to be_true }
+        it { expect(reaction.cover?(middle)).to be_truthy }
+        it { expect(reaction.cover?(other)).to be_truthy }
       end
 
       describe '#size' do

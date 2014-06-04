@@ -9,13 +9,13 @@ module VersatileDiamond
       describe '#add and #has?' do
         before(:each) { cache.add(c, n) }
 
-        it { expect(cache.has?(c, n)).to be_true }
-        it { expect(cache.has?(n, c)).to be_true }
+        it { expect(cache.has?(c, n)).to be_truthy }
+        it { expect(cache.has?(n, c)).to be_truthy }
 
-        it { expect(cache.has?(c, o)).to be_false }
-        it { expect(cache.has?(o, c)).to be_false }
-        it { expect(cache.has?(n, o)).to be_false }
-        it { expect(cache.has?(o, n)).to be_false }
+        it { expect(cache.has?(c, o)).to be_falsey }
+        it { expect(cache.has?(o, c)).to be_falsey }
+        it { expect(cache.has?(n, o)).to be_falsey }
+        it { expect(cache.has?(o, n)).to be_falsey }
       end
     end
 

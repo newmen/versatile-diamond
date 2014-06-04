@@ -25,10 +25,10 @@ module VersatileDiamond
       let(:smallest) { described_class.new(small_modm_part, [wb]) }
 
       describe '#<=>' do
-        it { expect((small <=> medium) < 0).to be_true }
-        it { expect((small <=> smallest) > 0).to be_true }
+        it { expect((small <=> medium) < 0).to be_truthy }
+        it { expect((small <=> smallest) > 0).to be_truthy }
 
-        it { expect((small <=> bad) < 0).to be_true }
+        it { expect((small <=> bad) < 0).to be_truthy }
       end
 
       describe '#adsorb' do
@@ -42,8 +42,8 @@ module VersatileDiamond
         let(:empty_cell) { described_class.new(empty_part) }
         let(:not_empty_cell) { described_class.new(medium) }
 
-        it { expect(empty_cell.empty?).to be_true }
-        it { expect(not_empty_cell.empty?).to be_false }
+        it { expect(empty_cell.empty?).to be_truthy }
+        it { expect(not_empty_cell.empty?).to be_falsey }
       end
     end
 

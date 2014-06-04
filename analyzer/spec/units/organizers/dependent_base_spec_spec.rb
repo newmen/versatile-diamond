@@ -55,18 +55,18 @@ module VersatileDiamond
           let(:same_bridge) { wrap(bridge_base_dup) }
           subject { wrap(bridge_base) }
 
-          it { expect(subject.same?(same_bridge)).to be_true }
-          it { expect(same_bridge.same?(subject)).to be_true }
+          it { expect(subject.same?(same_bridge)).to be_truthy }
+          it { expect(same_bridge.same?(subject)).to be_truthy }
 
-          it { expect(subject.same?(wrap(dimer_base))).to be_false }
+          it { expect(subject.same?(wrap(dimer_base))).to be_falsey }
         end
 
         describe 'methyl_on_bridge_base' do
           let(:other) { wrap(high_bridge_base) }
           subject { wrap(methyl_on_bridge_base) }
 
-          it { expect(subject.same?(other)).to be_false }
-          it { expect(other.same?(subject)).to be_false }
+          it { expect(subject.same?(other)).to be_falsey }
+          it { expect(other.same?(subject)).to be_falsey }
         end
       end
 
@@ -153,12 +153,12 @@ module VersatileDiamond
       end
 
       describe '#specific?' do
-        it { expect(wrap(methyl_on_dimer_base).specific?).to be_false }
+        it { expect(wrap(methyl_on_dimer_base).specific?).to be_falsey }
       end
 
       describe '#unused?' do
         describe 'default behavior' do
-          it { expect(wrap(bridge_base)).to be_true }
+          it { expect(wrap(bridge_base)).to be_truthy }
         end
 
         describe 'with children' do
@@ -171,7 +171,7 @@ module VersatileDiamond
             child.store_parent(subject)
           end
 
-          it { expect(subject.unused?).to be_false }
+          it { expect(subject.unused?).to be_falsey }
         end
 
         describe 'with reactions' do
@@ -183,7 +183,7 @@ module VersatileDiamond
             subject.store_parent(parent)
           end
 
-          it { expect(subject.unused?).to be_false }
+          it { expect(subject.unused?).to be_falsey }
         end
 
         describe 'with theres' do
@@ -195,7 +195,7 @@ module VersatileDiamond
             subject.store_parent(parent)
           end
 
-          it { expect(subject.unused?).to be_false }
+          it { expect(subject.unused?).to be_falsey }
         end
       end
 
@@ -203,7 +203,7 @@ module VersatileDiamond
         let(:wrapped_bridge) { wrap(bridge_base) }
 
         describe 'default behavior' do
-          it { expect(wrapped_bridge.excess?).to be_false }
+          it { expect(wrapped_bridge.excess?).to be_falsey }
         end
 
         describe 'source behavior' do
@@ -212,7 +212,7 @@ module VersatileDiamond
           end
 
           before { wrapped_bridge.store_child(wrapped_activated_bridge) }
-          it { expect(wrapped_bridge.excess?).to be_false }
+          it { expect(wrapped_bridge.excess?).to be_falsey }
         end
 
         describe 'intermediated behavior' do
@@ -224,7 +224,7 @@ module VersatileDiamond
             wrapped_methyl_on_bridge.store_child(wrapped_methyl_on_dimer)
           end
 
-          it { expect(wrapped_methyl_on_bridge.excess?).to be_false }
+          it { expect(wrapped_methyl_on_bridge.excess?).to be_falsey }
         end
 
         describe 'border behavior' do
@@ -239,7 +239,7 @@ module VersatileDiamond
             wrapped_dimer.store_child(wrapped_activated_dimer)
           end
 
-          it { expect(wrapped_dimer.excess?).to be_false }
+          it { expect(wrapped_dimer.excess?).to be_falsey }
         end
 
         describe 'excess behavior' do
@@ -253,7 +253,7 @@ module VersatileDiamond
             wrapped_methyl_on_bridge.store_child(wrapped_activated_methyl_on_dimer)
           end
 
-          it { expect(wrapped_methyl_on_bridge.excess?).to be_true }
+          it { expect(wrapped_methyl_on_bridge.excess?).to be_truthy }
         end
       end
 

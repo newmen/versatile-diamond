@@ -6,7 +6,7 @@ module VersatileDiamond
     describe GasSpec do
       describe '#gas?' do
         subject { GasSpec.new(:some_gas).gas? }
-        it { should be_true }
+        it { should be_truthy }
       end
 
       describe '#link' do

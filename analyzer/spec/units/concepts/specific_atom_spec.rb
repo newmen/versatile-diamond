@@ -12,13 +12,13 @@ module VersatileDiamond
             options: [:active, :incoherent], monovalents: [:H])
         end
         it { expect(subject.actives).to eq(1) }
-        it { expect(subject.incoherent?).to be_true }
+        it { expect(subject.incoherent?).to be_truthy }
         it { expect(subject.monovalents).to eq([:H]) }
 
         describe 'from specific atom' do
           let(:child) { described_class.new(cd, ancestor: subject) }
           it { expect(child.actives).to eq(1) }
-          it { expect(child.incoherent?).to be_true }
+          it { expect(child.incoherent?).to be_truthy }
           it { expect(child.monovalents).to eq([:H]) }
         end
       end
@@ -62,7 +62,7 @@ module VersatileDiamond
         describe "##{state}!?" do
           describe 'is set' do
             before { subject.send("#{state}!") }
-            it { expect(subject.send("#{state}?")).to be_true }
+            it { expect(subject.send("#{state}?")).to be_truthy }
 
             describe 'already stated' do
               it { expect { subject.send("#{state}!") }.
@@ -71,12 +71,12 @@ module VersatileDiamond
 
             describe 'reset state' do
               before { subject.send("not_#{state}!") }
-              it { expect(subject.send("#{state}?")).to be_false }
+              it { expect(subject.send("#{state}?")).to be_falsey }
             end
           end
 
           describe 'is not set' do
-            it { expect(subject.send("#{state}?")).to be_false }
+            it { expect(subject.send("#{state}?")).to be_falsey }
             it { expect { subject.send("not_#{state}!") }.
               to raise_error SpecificAtom::NotStated }
           end
@@ -91,23 +91,23 @@ module VersatileDiamond
       end
 
       describe '#reference?' do
-        it { expect(activated_cd.reference?).to be_false }
+        it { expect(activated_cd.reference?).to be_falsey }
 
         let(:ref) { described_class.new(bridge.atom(:cr)) }
-        it { expect(ref.reference?).to be_true }
+        it { expect(ref.reference?).to be_truthy }
       end
 
       describe '#specific?' do
-        it { expect(activated_c.specific?).to be_true }
-        it { expect(cd_chloride.specific?).to be_true }
-        it { expect(incoherent_cd.specific?).to be_true }
+        it { expect(activated_c.specific?).to be_truthy }
+        it { expect(cd_chloride.specific?).to be_truthy }
+        it { expect(incoherent_cd.specific?).to be_truthy }
 
-        it { expect(described_class.new(cd).specific?).to be_false }
+        it { expect(described_class.new(cd).specific?).to be_falsey }
       end
 
       describe '#same?' do
-        it { expect(subject.same?(n)).to be_true }
-        it { expect(n.same?(subject)).to be_true }
+        it { expect(subject.same?(n)).to be_truthy }
+        it { expect(n.same?(subject)).to be_truthy }
 
         describe 'same class instance' do
           let(:other) { SpecificAtom.new(n.dup) }
@@ -116,12 +116,12 @@ module VersatileDiamond
             it 'both atoms' do
               do_with(subject)
               do_with(other)
-              expect(subject.same?(other)).to be_true
+              expect(subject.same?(other)).to be_truthy
             end
 
             it 'just one atom' do
               do_with(other)
-              expect(subject.same?(other)).to be_false
+              expect(subject.same?(other)).to be_falsey
             end
           end
 
@@ -144,13 +144,13 @@ module VersatileDiamond
       end
 
       describe '#original_same?' do
-        it { expect(subject.original_same?(SpecificAtom.new(c))).to be_false }
+        it { expect(subject.original_same?(SpecificAtom.new(c))).to be_falsey }
 
         %w(active! incoherent! unfixed! use!(h)).each do |eval_str|
           let(:other) { subject.dup }
           before { eval("other.#{eval_str}") }
-          it { expect(subject.original_same?(other)).to be_true }
-          it { expect(other.original_same?(subject)).to be_true }
+          it { expect(subject.original_same?(other)).to be_truthy }
+          it { expect(other.original_same?(subject)).to be_truthy }
         end
       end
 
@@ -175,8 +175,8 @@ module VersatileDiamond
 
       describe '#apply_diff' do
         before(:each) { activated_c.apply_diff([:unfixed, :incoherent]) }
-        it { expect(activated_c.incoherent?).to be_true }
-        it { expect(activated_c.unfixed?).to be_true }
+        it { expect(activated_c.incoherent?).to be_truthy }
+        it { expect(activated_c.unfixed?).to be_truthy }
       end
 
       describe '#relevants' do

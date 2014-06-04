@@ -6,7 +6,7 @@ module VersatileDiamond
     describe SurfaceSpec do
       describe '#gas?' do
         subject { SurfaceSpec.new(:some_surface).gas? }
-        it { should be_false }
+        it { should be_falsey }
       end
 
       describe '#link' do

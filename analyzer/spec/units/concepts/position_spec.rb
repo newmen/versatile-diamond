@@ -38,9 +38,9 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(position_100_front.same?(position_100_cross)).to be_false }
-        it { expect(position_100_front.same?(bond_110_front)).to be_false }
-        it { expect(position_100_front.same?(bond_100_front)).to be_true }
+        it { expect(position_100_front.same?(position_100_cross)).to be_falsey }
+        it { expect(position_100_front.same?(bond_110_front)).to be_falsey }
+        it { expect(position_100_front.same?(bond_100_front)).to be_truthy }
       end
     end
 

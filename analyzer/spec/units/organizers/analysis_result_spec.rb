@@ -72,7 +72,7 @@ module VersatileDiamond
 
       shared_examples_for :each_class_dependent do
         it { expect(instances.size).to eq(quant) }
-        it { expect(classes.all? { |c| c == dependent_class }).to be_true }
+        it { expect(classes.all? { |c| c == dependent_class }).to be_truthy }
       end
 
       describe 'reactions' do

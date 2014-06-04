@@ -17,13 +17,13 @@ module VersatileDiamond
         let(:block) { -> v, w { v == w } }
 
         it { expect(subject.lists_are_identical?(list1, list2, &block)).
-          to be_true }
+          to be_truthy }
 
         it { expect(subject.lists_are_identical?(list1, short_list, &block)).
-          to be_false }
+          to be_falsey }
 
         it { expect(subject.lists_are_identical?(list1, another_list, &block)).
-          to be_false }
+          to be_falsey }
       end
     end
 

@@ -29,15 +29,15 @@ module VersatileDiamond
           it { expect(concept.class).to eq(Concepts::UbiquitousReaction) }
 
           describe 'respects' do
-            it { expect(concept.source.one?(&is_active_bond)).to be_true }
-            it { expect(concept.source.one?(&is_specific_spec)).to be_true }
-            it { expect(concept.products.one?(&is_atomic_spec)).to be_true }
+            it { expect(concept.source.one?(&is_active_bond)).to be_truthy }
+            it { expect(concept.source.one?(&is_specific_spec)).to be_truthy }
+            it { expect(concept.products.one?(&is_atomic_spec)).to be_truthy }
           end
 
           describe 'not respects' do
-            it { expect(concept.products.one?(&is_active_bond)).to be_false }
-            it { expect(concept.products.one?(&is_specific_spec)).to be_false }
-            it { expect(concept.source.one?(&is_atomic_spec)).to be_false }
+            it { expect(concept.products.one?(&is_active_bond)).to be_falsey }
+            it { expect(concept.products.one?(&is_specific_spec)).to be_falsey }
+            it { expect(concept.source.one?(&is_atomic_spec)).to be_falsey }
           end
 
           it "don't nest equation interpreter instance" do
@@ -66,8 +66,8 @@ module VersatileDiamond
             it { expect(concept.class).to eq(Concepts::Reaction) }
 
             describe 'all is specific spec' do
-              it { expect(concept.source.all?(&is_specific_spec)).to be_true }
-              it { expect(concept.products.all?(&is_specific_spec)).to be_true }
+              it { expect(concept.source.all?(&is_specific_spec)).to be_truthy }
+              it { expect(concept.products.all?(&is_specific_spec)).to be_truthy }
             end
 
             it 'nest equation interpreter instance' do
@@ -98,7 +98,7 @@ module VersatileDiamond
                 end
 
                 it { expect(concept.products.first.atom(:cf).incoherent?).
-                  to be_true }
+                  to be_truthy }
               end
 
               describe 'by operator' do
@@ -109,24 +109,24 @@ module VersatileDiamond
                 end
 
                 let(:dimer) { concept.products.first }
-                it { expect(dimer.atom(:cr).incoherent?).to be_true }
-                it { expect(dimer.atom(:cl).incoherent?).to be_true }
+                it { expect(dimer.atom(:cr).incoherent?).to be_truthy }
+                it { expect(dimer.atom(:cl).incoherent?).to be_truthy }
               end
             end
 
             describe 'unfixed states' do
               shared_examples_for 'check both unfixed' do
                 it { expect(concept.source.first.atom(:cm).unfixed?).
-                  to be_true }
+                  to be_truthy }
                 it { expect(concept.products.first.atom(:cm).unfixed?).
-                  to be_true }
+                  to be_truthy }
               end
 
               shared_examples_for 'check unfixed only one' do
                 it { expect(concept.source.first.atom(:cm).unfixed?).
-                  to be_true }
+                  to be_truthy }
                 it { expect(concept.products.first.atom(:cm).unfixed?).
-                  to be_false }
+                  to be_falsey }
               end
 
               before(:each) do
@@ -188,7 +188,7 @@ module VersatileDiamond
             end
 
             it { expect(concept.products.first.atom(:cf).incoherent?).
-              to be_true }
+              to be_truthy }
           end
 
           describe 'not initialy balanced reaction' do

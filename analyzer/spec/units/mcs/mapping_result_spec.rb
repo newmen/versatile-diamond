@@ -22,8 +22,8 @@ module VersatileDiamond
         let(:mob) { md_source.first }
         before { md_atom_map } # runs atom mapping
 
-        it { expect(mob.atom(:cm).incoherent?).to be_true }
-        it { expect(mob.atom(:cm).unfixed?).to be_true }
+        it { expect(mob.atom(:cm).incoherent?).to be_truthy }
+        it { expect(mob.atom(:cm).unfixed?).to be_truthy }
       end
 
       describe '#changes' do
@@ -131,7 +131,7 @@ module VersatileDiamond
             [[activated_incoherent_bridge, dimer_dup_ff], []]
           ]) }
 
-        it { expect(dimer_dup_ff.atom(:cr).incoherent?).to be_true }
+        it { expect(dimer_dup_ff.atom(:cr).incoherent?).to be_truthy }
       end
 
       describe '#reverse' do
@@ -252,9 +252,9 @@ module VersatileDiamond
           end
 
           it { expect(df_atom_map.products.first.atom(:cl).incoherent?).
-            to be_true }
+            to be_truthy }
           it { expect(df_atom_map.products.first.atom(:cr).incoherent?).
-            to be_true }
+            to be_truthy }
 
           it_behaves_like 'check exchanges in result'
         end

@@ -76,13 +76,13 @@ module VersatileDiamond
             target.lateral_duplicate('lateral', [on_middle]))
         end
 
-        it { expect(subject.same?(duplicate)).to be_true }
-        it { expect(duplicate.same?(subject)).to be_true }
+        it { expect(subject.same?(duplicate)).to be_truthy }
+        it { expect(duplicate.same?(subject)).to be_truthy }
 
-        it { expect(subject.same?(lateral_subject)).to be_true }
-        it { expect(lateral_subject.same?(subject)).to be_false }
+        it { expect(subject.same?(lateral_subject)).to be_truthy }
+        it { expect(lateral_subject.same?(subject)).to be_falsey }
 
-        it { expect(subject.same?(wrap(methyl_deactivation))).to be_false }
+        it { expect(subject.same?(wrap(methyl_deactivation))).to be_falsey }
       end
 
       describe '#formula' do

@@ -98,117 +98,117 @@ module VersatileDiamond
       end
 
       describe '#contained_in?' do
-        it { expect(ucm.contained_in?(high_cm)).to be_false }
-        it { expect(high_cm.contained_in?(ucm)).to be_false }
+        it { expect(ucm.contained_in?(high_cm)).to be_falsey }
+        it { expect(high_cm.contained_in?(ucm)).to be_falsey }
 
-        it { expect(ucm.contained_in?(bridge_cr)).to be_false }
-        it { expect(bridge_cr.contained_in?(ucm)).to be_false }
+        it { expect(ucm.contained_in?(bridge_cr)).to be_falsey }
+        it { expect(bridge_cr.contained_in?(ucm)).to be_falsey }
 
-        it { expect(bridge_ct.contained_in?(bridge_cr)).to be_true }
-        it { expect(bridge_ct.contained_in?(dimer_cr)).to be_true }
-        it { expect(bridge_ct.contained_in?(ab_ct)).to be_true }
-        it { expect(bridge_ct.contained_in?(aib_ct)).to be_true }
-        it { expect(bridge_ct.contained_in?(hb_ct)).to be_true }
+        it { expect(bridge_ct.contained_in?(bridge_cr)).to be_truthy }
+        it { expect(bridge_ct.contained_in?(dimer_cr)).to be_truthy }
+        it { expect(bridge_ct.contained_in?(ab_ct)).to be_truthy }
+        it { expect(bridge_ct.contained_in?(aib_ct)).to be_truthy }
+        it { expect(bridge_ct.contained_in?(hb_ct)).to be_truthy }
 
-        it { expect(dimer_cr.contained_in?(ad_cr)).to be_true }
-        it { expect(ad_cr.contained_in?(dimer_cr)).to be_false }
+        it { expect(dimer_cr.contained_in?(ad_cr)).to be_truthy }
+        it { expect(ad_cr.contained_in?(dimer_cr)).to be_falsey }
 
-        it { expect(ab_ct.contained_in?(ad_cr)).to be_true }
-        it { expect(ad_cr.contained_in?(ab_ct)).to be_false }
+        it { expect(ab_ct.contained_in?(ad_cr)).to be_truthy }
+        it { expect(ad_cr.contained_in?(ab_ct)).to be_falsey }
 
-        it { expect(ab_ct.contained_in?(eab_ct)).to be_true }
-        it { expect(eab_ct.contained_in?(ab_ct)).to be_false }
-        it { expect(hb_ct.contained_in?(ehb_ct)).to be_true }
-        it { expect(ehb_ct.contained_in?(hb_ct)).to be_false }
+        it { expect(ab_ct.contained_in?(eab_ct)).to be_truthy }
+        it { expect(eab_ct.contained_in?(ab_ct)).to be_falsey }
+        it { expect(hb_ct.contained_in?(ehb_ct)).to be_truthy }
+        it { expect(ehb_ct.contained_in?(hb_ct)).to be_falsey }
 
-        it { expect(dimer_cr.contained_in?(bridge_ct)).to be_false }
-        it { expect(dimer_cr.contained_in?(bridge_cr)).to be_false }
-        it { expect(ab_ct.contained_in?(bridge_cr)).to be_false }
-        it { expect(ab_ct.contained_in?(hb_ct)).to be_false }
-        it { expect(hb_ct.contained_in?(bridge_ct)).to be_false }
-        it { expect(clb_cr.contained_in?(bridge_cr)).to be_false }
-        it { expect(clb_cr.contained_in?(hb_cr)).to be_false }
-        it { expect(bridge_cr.contained_in?(ab_ct)).to be_false }
-        it { expect(bridge_cr.contained_in?(clb_cr)).to be_true }
+        it { expect(dimer_cr.contained_in?(bridge_ct)).to be_falsey }
+        it { expect(dimer_cr.contained_in?(bridge_cr)).to be_falsey }
+        it { expect(ab_ct.contained_in?(bridge_cr)).to be_falsey }
+        it { expect(ab_ct.contained_in?(hb_ct)).to be_falsey }
+        it { expect(hb_ct.contained_in?(bridge_ct)).to be_falsey }
+        it { expect(clb_cr.contained_in?(bridge_cr)).to be_falsey }
+        it { expect(clb_cr.contained_in?(hb_cr)).to be_falsey }
+        it { expect(bridge_cr.contained_in?(ab_ct)).to be_falsey }
+        it { expect(bridge_cr.contained_in?(clb_cr)).to be_truthy }
 
-        it { expect(ab_ct.contained_in?(ahb_ct)).to be_true }
-        it { expect(hb_ct.contained_in?(ahb_ct)).to be_true }
-        it { expect(ahb_ct.contained_in?(ab_ct)).to be_false }
-        it { expect(ahb_ct.contained_in?(hb_ct)).to be_false }
+        it { expect(ab_ct.contained_in?(ahb_ct)).to be_truthy }
+        it { expect(hb_ct.contained_in?(ahb_ct)).to be_truthy }
+        it { expect(ahb_ct.contained_in?(ab_ct)).to be_falsey }
+        it { expect(ahb_ct.contained_in?(hb_ct)).to be_falsey }
 
-        it { expect(ab_ct.contained_in?(aib_ct)).to be_true }
-        it { expect(aib_ct.contained_in?(ab_ct)).to be_false }
-        it { expect(hb_ct.contained_in?(hib_ct)).to be_true }
-        it { expect(hib_ct.contained_in?(hb_ct)).to be_false }
-        it { expect(bridge_cr.contained_in?(ab_cr)).to be_true }
-        it { expect(ab_cr.contained_in?(bridge_cr)).to be_false }
-        it { expect(bridge_cr.contained_in?(hb_cr)).to be_true }
-        it { expect(hb_cr.contained_in?(bridge_cr)).to be_false }
-        it { expect(bridge_cr.contained_in?(ib_cr)).to be_true }
-        it { expect(ib_cr.contained_in?(bridge_cr)).to be_false }
+        it { expect(ab_ct.contained_in?(aib_ct)).to be_truthy }
+        it { expect(aib_ct.contained_in?(ab_ct)).to be_falsey }
+        it { expect(hb_ct.contained_in?(hib_ct)).to be_truthy }
+        it { expect(hib_ct.contained_in?(hb_ct)).to be_falsey }
+        it { expect(bridge_cr.contained_in?(ab_cr)).to be_truthy }
+        it { expect(ab_cr.contained_in?(bridge_cr)).to be_falsey }
+        it { expect(bridge_cr.contained_in?(hb_cr)).to be_truthy }
+        it { expect(hb_cr.contained_in?(bridge_cr)).to be_falsey }
+        it { expect(bridge_cr.contained_in?(ib_cr)).to be_truthy }
+        it { expect(ib_cr.contained_in?(bridge_cr)).to be_falsey }
 
-        it { expect(aib_ct.contained_in?(ahb_ct)).to be_false }
-        it { expect(ib_cr.contained_in?(hb_cr)).to be_false }
-        it { expect(ab_cr.contained_in?(ib_cr)).to be_false }
-        it { expect(hb_cr.contained_in?(ib_cr)).to be_false }
-        it { expect(ahb_ct.contained_in?(aib_ct)).to be_false }
+        it { expect(aib_ct.contained_in?(ahb_ct)).to be_falsey }
+        it { expect(ib_cr.contained_in?(hb_cr)).to be_falsey }
+        it { expect(ab_cr.contained_in?(ib_cr)).to be_falsey }
+        it { expect(hb_cr.contained_in?(ib_cr)).to be_falsey }
+        it { expect(ahb_ct.contained_in?(aib_ct)).to be_falsey }
       end
 
       describe '#same_incoherent?' do
-        it { expect(ab_ct.same_incoherent?(ad_cr)).to be_false }
-        it { expect(ab_ct.same_incoherent?(eab_ct)).to be_false }
-        it { expect(ab_ct.same_incoherent?(aib_ct)).to be_false }
-        it { expect(ad_cr.same_incoherent?(ab_ct)).to be_false }
-        it { expect(eab_ct.same_incoherent?(ab_ct)).to be_false }
-        it { expect(aib_ct.same_incoherent?(eab_ct)).to be_false }
-        it { expect(aib_ct.same_incoherent?(ahb_ct)).to be_false }
-        it { expect(hb_ct.same_incoherent?(ahb_ct)).to be_false }
-        it { expect(hb_ct.same_incoherent?(hib_ct)).to be_false }
-        it { expect(hib_ct.same_incoherent?(ahb_ct)).to be_false }
-        it { expect(hib_ct.same_incoherent?(ehb_ct)).to be_false }
-        it { expect(ib_cr.same_incoherent?(hb_cr)).to be_false }
-        it { expect(ib_cr.same_incoherent?(ab_cr)).to be_false }
-        it { expect(hb_cr.same_incoherent?(ab_cr)).to be_false }
-        it { expect(ab_cr.same_incoherent?(hb_cr)).to be_false }
-        it { expect(clb_cr.same_incoherent?(hb_cr)).to be_false }
+        it { expect(ab_ct.same_incoherent?(ad_cr)).to be_falsey }
+        it { expect(ab_ct.same_incoherent?(eab_ct)).to be_falsey }
+        it { expect(ab_ct.same_incoherent?(aib_ct)).to be_falsey }
+        it { expect(ad_cr.same_incoherent?(ab_ct)).to be_falsey }
+        it { expect(eab_ct.same_incoherent?(ab_ct)).to be_falsey }
+        it { expect(aib_ct.same_incoherent?(eab_ct)).to be_falsey }
+        it { expect(aib_ct.same_incoherent?(ahb_ct)).to be_falsey }
+        it { expect(hb_ct.same_incoherent?(ahb_ct)).to be_falsey }
+        it { expect(hb_ct.same_incoherent?(hib_ct)).to be_falsey }
+        it { expect(hib_ct.same_incoherent?(ahb_ct)).to be_falsey }
+        it { expect(hib_ct.same_incoherent?(ehb_ct)).to be_falsey }
+        it { expect(ib_cr.same_incoherent?(hb_cr)).to be_falsey }
+        it { expect(ib_cr.same_incoherent?(ab_cr)).to be_falsey }
+        it { expect(hb_cr.same_incoherent?(ab_cr)).to be_falsey }
+        it { expect(ab_cr.same_incoherent?(hb_cr)).to be_falsey }
+        it { expect(clb_cr.same_incoherent?(hb_cr)).to be_falsey }
 
-        it { expect(ehb_ct.same_incoherent?(hib_ct)).to be_true }
-        it { expect(eab_ct.same_incoherent?(aib_ct)).to be_true }
-        it { expect(ahb_ct.same_incoherent?(hib_ct)).to be_true }
-        it { expect(ahb_ct.same_incoherent?(aib_ct)).to be_true }
-        it { expect(hb_cr.same_incoherent?(ib_cr)).to be_true }
-        it { expect(ab_cr.same_incoherent?(ib_cr)).to be_true }
-        it { expect(clb_cr.same_incoherent?(ib_cr)).to be_true }
+        it { expect(ehb_ct.same_incoherent?(hib_ct)).to be_truthy }
+        it { expect(eab_ct.same_incoherent?(aib_ct)).to be_truthy }
+        it { expect(ahb_ct.same_incoherent?(hib_ct)).to be_truthy }
+        it { expect(ahb_ct.same_incoherent?(aib_ct)).to be_truthy }
+        it { expect(hb_cr.same_incoherent?(ib_cr)).to be_truthy }
+        it { expect(ab_cr.same_incoherent?(ib_cr)).to be_truthy }
+        it { expect(clb_cr.same_incoherent?(ib_cr)).to be_truthy }
       end
 
       describe '#same_hydrogens?' do
-        it { expect(ab_ct.same_hydrogens?(ad_cr)).to be_false }
-        it { expect(ab_ct.same_hydrogens?(eab_ct)).to be_false }
-        it { expect(ad_cr.same_hydrogens?(ab_ct)).to be_false }
-        it { expect(ahb_ct.same_hydrogens?(hib_ct)).to be_false }
-        it { expect(aib_ct.same_hydrogens?(eab_ct)).to be_false }
-        it { expect(eab_ct.same_hydrogens?(ab_ct)).to be_false }
-        it { expect(eab_ct.same_hydrogens?(aib_ct)).to be_false }
-        it { expect(hb_ct.same_hydrogens?(ahb_ct)).to be_false }
-        it { expect(hib_ct.same_hydrogens?(ahb_ct)).to be_false }
-        it { expect(ab_cr.same_hydrogens?(hb_cr)).to be_false }
-        it { expect(ab_cr.same_hydrogens?(ib_cr)).to be_false }
-        it { expect(hb_cr.same_hydrogens?(ab_cr)).to be_false }
-        it { expect(ib_cr.same_hydrogens?(ab_cr)).to be_false }
-        it { expect(clb_cr.same_hydrogens?(hb_cr)).to be_false }
+        it { expect(ab_ct.same_hydrogens?(ad_cr)).to be_falsey }
+        it { expect(ab_ct.same_hydrogens?(eab_ct)).to be_falsey }
+        it { expect(ad_cr.same_hydrogens?(ab_ct)).to be_falsey }
+        it { expect(ahb_ct.same_hydrogens?(hib_ct)).to be_falsey }
+        it { expect(aib_ct.same_hydrogens?(eab_ct)).to be_falsey }
+        it { expect(eab_ct.same_hydrogens?(ab_ct)).to be_falsey }
+        it { expect(eab_ct.same_hydrogens?(aib_ct)).to be_falsey }
+        it { expect(hb_ct.same_hydrogens?(ahb_ct)).to be_falsey }
+        it { expect(hib_ct.same_hydrogens?(ahb_ct)).to be_falsey }
+        it { expect(ab_cr.same_hydrogens?(hb_cr)).to be_falsey }
+        it { expect(ab_cr.same_hydrogens?(ib_cr)).to be_falsey }
+        it { expect(hb_cr.same_hydrogens?(ab_cr)).to be_falsey }
+        it { expect(ib_cr.same_hydrogens?(ab_cr)).to be_falsey }
+        it { expect(clb_cr.same_hydrogens?(hb_cr)).to be_falsey }
 
-        it { expect(bridge_ct.same_hydrogens?(ehb_ct)).to be_true }
-        it { expect(bridge_ct.same_hydrogens?(hb_ct)).to be_true }
-        it { expect(bridge_ct.same_hydrogens?(hib_ct)).to be_true }
-        it { expect(ab_ct.same_hydrogens?(aib_ct)).to be_true }
-        it { expect(ahb_ct.same_hydrogens?(aib_ct)).to be_true }
-        it { expect(aib_ct.same_hydrogens?(ahb_ct)).to be_true }
-        it { expect(ehb_ct.same_hydrogens?(hib_ct)).to be_true }
-        it { expect(hb_ct.same_hydrogens?(hib_ct)).to be_true }
-        it { expect(hib_ct.same_hydrogens?(ehb_ct)).to be_true }
-        it { expect(hb_cr.same_hydrogens?(ib_cr)).to be_true }
-        it { expect(clb_cr.same_hydrogens?(ab_cr)).to be_true }
-        it { expect(ib_cr.same_hydrogens?(hb_cr)).to be_true }
+        it { expect(bridge_ct.same_hydrogens?(ehb_ct)).to be_truthy }
+        it { expect(bridge_ct.same_hydrogens?(hb_ct)).to be_truthy }
+        it { expect(bridge_ct.same_hydrogens?(hib_ct)).to be_truthy }
+        it { expect(ab_ct.same_hydrogens?(aib_ct)).to be_truthy }
+        it { expect(ahb_ct.same_hydrogens?(aib_ct)).to be_truthy }
+        it { expect(aib_ct.same_hydrogens?(ahb_ct)).to be_truthy }
+        it { expect(ehb_ct.same_hydrogens?(hib_ct)).to be_truthy }
+        it { expect(hb_ct.same_hydrogens?(hib_ct)).to be_truthy }
+        it { expect(hib_ct.same_hydrogens?(ehb_ct)).to be_truthy }
+        it { expect(hb_cr.same_hydrogens?(ib_cr)).to be_truthy }
+        it { expect(clb_cr.same_hydrogens?(ab_cr)).to be_truthy }
+        it { expect(ib_cr.same_hydrogens?(hb_cr)).to be_truthy }
       end
 
       describe '#unrelevanted' do
@@ -228,23 +228,23 @@ module VersatileDiamond
       end
 
       describe '#incoherent?' do
-        it { expect(high_cm.incoherent?).to be_false }
-        it { expect(bridge_ct.incoherent?).to be_false }
-        it { expect(ab_ct.incoherent?).to be_false }
-        it { expect(eab_ct.incoherent?).to be_false }
-        it { expect(ahb_ct.incoherent?).to be_false }
-        it { expect(hb_ct.incoherent?).to be_false }
-        it { expect(ehb_ct.incoherent?).to be_false }
-        it { expect(bridge_cr.incoherent?).to be_false }
-        it { expect(ab_cr.incoherent?).to be_false }
-        it { expect(hb_cr.incoherent?).to be_false }
-        it { expect(clb_cr.incoherent?).to be_false }
-        it { expect(dimer_cr.incoherent?).to be_false }
-        it { expect(ad_cr.incoherent?).to be_false }
+        it { expect(high_cm.incoherent?).to be_falsey }
+        it { expect(bridge_ct.incoherent?).to be_falsey }
+        it { expect(ab_ct.incoherent?).to be_falsey }
+        it { expect(eab_ct.incoherent?).to be_falsey }
+        it { expect(ahb_ct.incoherent?).to be_falsey }
+        it { expect(hb_ct.incoherent?).to be_falsey }
+        it { expect(ehb_ct.incoherent?).to be_falsey }
+        it { expect(bridge_cr.incoherent?).to be_falsey }
+        it { expect(ab_cr.incoherent?).to be_falsey }
+        it { expect(hb_cr.incoherent?).to be_falsey }
+        it { expect(clb_cr.incoherent?).to be_falsey }
+        it { expect(dimer_cr.incoherent?).to be_falsey }
+        it { expect(ad_cr.incoherent?).to be_falsey }
 
-        it { expect(aib_ct.incoherent?).to be_true }
-        it { expect(hib_ct.incoherent?).to be_true }
-        it { expect(ib_cr.incoherent?).to be_true }
+        it { expect(aib_ct.incoherent?).to be_truthy }
+        it { expect(hib_ct.incoherent?).to be_truthy }
+        it { expect(ib_cr.incoherent?).to be_truthy }
       end
 
       describe '#incoherent' do
@@ -271,18 +271,18 @@ module VersatileDiamond
       end
 
       describe '#relevant?' do
-        it { expect(high_cm.relevant?).to be_false }
-        it { expect(bridge_ct.relevant?).to be_false }
-        it { expect(ad_cr.relevant?).to be_false }
-        it { expect(eab_ct.relevant?).to be_false }
-        it { expect(hb_ct.relevant?).to be_false }
-        it { expect(ehb_ct.relevant?).to be_false }
-        it { expect(ahb_ct.relevant?).to be_false }
-        it { expect(clb_cr.relevant?).to be_false }
+        it { expect(high_cm.relevant?).to be_falsey }
+        it { expect(bridge_ct.relevant?).to be_falsey }
+        it { expect(ad_cr.relevant?).to be_falsey }
+        it { expect(eab_ct.relevant?).to be_falsey }
+        it { expect(hb_ct.relevant?).to be_falsey }
+        it { expect(ehb_ct.relevant?).to be_falsey }
+        it { expect(ahb_ct.relevant?).to be_falsey }
+        it { expect(clb_cr.relevant?).to be_falsey }
 
-        it { expect(ucm.relevant?).to be_true }
-        it { expect(aib_ct.relevant?).to be_true }
-        it { expect(hib_ct.relevant?).to be_true }
+        it { expect(ucm.relevant?).to be_truthy }
+        it { expect(aib_ct.relevant?).to be_truthy }
+        it { expect(hib_ct.relevant?).to be_truthy }
       end
 
       describe 'activated' do
