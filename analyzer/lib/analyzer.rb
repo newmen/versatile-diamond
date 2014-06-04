@@ -15,10 +15,15 @@ module VersatileDiamond
 
         result = Tools::Serializer.load(config_path)
 
-        unless result
+        if result
+          Tools::Config.load(config_path)
+        else
+          Tools::Config.init
+
           content = File.open(config_path).readlines
           result = new(content, config_path).analyze
           Tools::Serializer.save(config_path, result)
+          Tools::Config.save(config_path)
         end
 
         result
@@ -40,8 +45,6 @@ module VersatileDiamond
     # Prepare analysis result
     # @return [Organizers::AnalysisResult] the result of analysis
     def analyze
-      Tools::Config.init
-
       read_all_lines
       grab_analysis
     rescue Errors::SyntaxError => e

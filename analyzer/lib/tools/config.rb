@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Configuration singleton which contain params about calculaton runtime
     class Config
+      DUMP_PREFIX = 'config'
 
       # Exception class for cases where setuping value already setuped
       class AlreadyDefined < Errors::Base
@@ -14,7 +15,25 @@ module VersatileDiamond
 
         # Initialize internal variables of config
         def init
+          @total_time = nil
+          @concs = {}
+          #@composition
+          @sizes = nil
           @gas_temperature, @surface_temperature = nil
+        end
+
+        # Loads config from path by it dump
+        # @param [String] path to file which will checked for correct dump
+        def load(path)
+          # internal variables same as dump_data
+          @total_time, @concs, @sizes, @gas_temperature, @surface_temperature =
+            Serializer.load(path, suffix: DUMP_PREFIX)
+        end
+
+        # Saves current instance variables to dump
+        # @param [String] path where dump of variables will be stored
+        def save(path)
+          Serializer.save(path, dump_data, suffix: DUMP_PREFIX)
         end
 
         # Reset all internal values. Used by RSpec only.
@@ -38,7 +57,6 @@ module VersatileDiamond
         # @param [Float] value of concentration
         # @param [String] dimenstion of concentration
         def gas_concentration(specific_spec, value, dimension = nil)
-          @concs ||= {}
           if @concs[specific_spec.name]
             raise AlreadyDefined.new("concentration of #{specific_spec.name}")
           end
@@ -97,6 +115,14 @@ module VersatileDiamond
             reaction.each_source.reduce(arrenius) do |acc, spec|
               spec.gas? ? acc * ((@concs && @concs[spec.name]) || 0) : acc
             end
+        end
+
+      private
+
+        # Provides internal data for dump it
+        # @return [Array] the array of internal data
+        def dump_data
+          [@total_time, @concs, @sizes, @gas_temperature, @surface_temperature]
         end
       end
     end

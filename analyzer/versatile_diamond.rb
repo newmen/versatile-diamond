@@ -3,7 +3,6 @@ require 'pry'
 require 'graphviz'
 
 require 'forwardable'
-require 'singleton'
 require 'set'
 require 'i18n'
 I18n.enforce_available_locales = true
