@@ -8,7 +8,7 @@ namespace vd
 
 class YAMLConfigReader
 {
-    YAML::Node _config;
+    YAML::Node _root;
 
 public:
     explicit YAMLConfigReader(const char *filename);
@@ -29,7 +29,7 @@ private:
 template <typename T, class... Args>
 T YAMLConfigReader::read(const char *key, Args... args) const
 {
-    return recursiveRead<T>(_config, key, args...);
+    return recursiveRead<T>(_root, key, args...);
 }
 
 template <typename T>
