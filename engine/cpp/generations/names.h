@@ -57,10 +57,10 @@ enum SpecificSpecNames : ushort
     TWO_BRIDGES_CTRi_CBRs,
     BRIDGE_WITH_DIMER_CDLi,
     BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi,
-    CROSS_BRIDGE_ON_DIMERS
+    CROSS_BRIDGE_ON_BRIDGES
 };
 
-static_assert(CROSS_BRIDGE_ON_DIMERS + 1 == SPECIFIC_SPECS_NUM + BASE_SPECS_NUM,
+static_assert(CROSS_BRIDGE_ON_BRIDGES + 1 == SPECIFIC_SPECS_NUM + BASE_SPECS_NUM,
               "Incorrect number of specific species");
 
 enum TypicalReactionNames : ushort
