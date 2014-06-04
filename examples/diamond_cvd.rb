@@ -109,7 +109,7 @@ events
 
   reaction 'surface deactivation'
     equation * + hydrogen(h: *) = H
-    activation 0
+    activation 6.31
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
@@ -377,7 +377,7 @@ events
     equation methyl_on_dimer(cm: *, cm: u) + dimer(cr: *) = cross_bridge_on_dimers
 
     enthalpy 3.4
-    activation 30
+    activation 14.1
     # значения скоростей выдуманы
     forward_rate 2.4e8
     reverse_rate 4.4e9
