@@ -3,6 +3,9 @@ require 'pry'
 require 'graphviz'
 
 require 'forwardable'
+require 'fileutils'
+require 'pathname'
+require 'erb'
 require 'set'
 require 'i18n'
 I18n.enforce_available_locales = true
@@ -14,7 +17,10 @@ using VersatileDiamond::Patches::RichString
 
 AUTO_LOADING_DIRS = Dir["#{__dir__}/lib/**/"].map do |dir|
   (m = dir.match(%r{/(\w+)/\Z})) && m[1]
-end.compact
+end.compact +
+  %w(
+    generators/code
+  )
 
 def VersatileDiamond.const_missing(class_name, dir = nil)
   filename = class_name.to_s.underscore

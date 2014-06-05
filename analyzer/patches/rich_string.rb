@@ -15,7 +15,10 @@ module VersatileDiamond
         end
 
         def classify
-          split('_').map(&:capitalize).join
+          names = split('/').map do |part|
+            part.split('_').map(&:capitalize).join
+          end
+          names.join('::')
         end
 
         def constantize

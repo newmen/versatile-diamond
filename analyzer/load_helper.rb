@@ -9,9 +9,9 @@ end
 def find_dir(filename, *pathes)
   pathes.each do |path|
     files_in("#{path}/**/*.rb").each do |full_path|
-      match = full_path.match(/(\w+)\/(\w+).rb\Z/)
+      match = full_path.match(/lib\/((?:\w+\/)*)(\w+).rb\Z/)
       if match[2] == filename
-        return match[1]
+        return match[1][0..-2]
       end
     end
   end
