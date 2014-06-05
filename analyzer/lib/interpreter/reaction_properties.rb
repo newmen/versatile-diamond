@@ -4,6 +4,20 @@ module VersatileDiamond
     # Interprets reaction properties and pass it to concept instance
     module ReactionProperties
 
+      # Arrenius equation:
+      #
+      #   k = A * exp(-Ea/RT)
+      #   A = a * (T ** x)
+      #
+      # where
+      #   RT = R * T,
+      #   R = 8.31 J/(mol * K) - gas constant
+      #   T - environment temperature
+      #   Ea - activation energy (barrier)
+      #   A - frequency factor of the reaction
+      #   a - collisions rate
+      #   x - power of temperature
+
       # Interpret enthalpy line
       # @param [Float] value the value of enthalpy
       # @param [String] dimension the dimension of enthalpy
@@ -40,6 +54,12 @@ module VersatileDiamond
           gases_num = send(dir).gases_num
           send(dir).rate = Tools::Dimension.convert_rate(
             eval_value_if_string(value, gases_num), gases_num, dimension)
+        end
+
+        # Interpret #{dir} power of temperature line
+        # @param [Float] value the value of temperature power
+        define_method("#{dir}_tpow") do |value|
+          send(dir).temp_power = value.to_f
         end
       end
 

@@ -15,47 +15,37 @@ module VersatileDiamond
 
         # ubuqitous[0]
         surface_activation.rate = 0.1
-        surface_activation.activation = 0
         # ubuqitous[1]
         surface_deactivation.rate = 0.2
-        surface_deactivation.activation = 0
 
         # typical[0]
         methyl_activation.rate = 0.3
-        methyl_activation.activation = 0
         # typical[1]
         methyl_deactivation.rate = 0.4
-        methyl_deactivation.activation = 0
 
         # typical[2]
         methyl_desorption.rate = 1
-        methyl_desorption.activation = 0
 
         # typical[3]
         hydrogen_migration.rate = 2
-        hydrogen_migration.activation = 0
         # typical[4]
         hydrogen_migration.reverse.rate = 3
         hydrogen_migration.reverse.activation = 1e3
 
         # typical[5]
         dimer_formation.rate = 4
-        dimer_formation.activation = 0
         # typical[6]
         dimer_formation.reverse.rate = 5
         dimer_formation.reverse.activation = 2e3
 
         # typical[7]
         methyl_incorporation.rate = 6
-        methyl_incorporation.activation = 0
 
         # lateral[0]
         end_lateral_df.rate = 6
-        end_lateral_df.activation = 0
 
         # lateral[1]
         middle_lateral_df.rate = 7
-        middle_lateral_df.activation = 0
 
         [
           surface_activation, surface_deactivation,

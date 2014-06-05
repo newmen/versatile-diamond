@@ -70,13 +70,11 @@ events
 
   reaction 'surface deactivation'
     equation * + hydrogen(h: *) = H
-    activation 0
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
     equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
     enthalpy -73.6
-    activation 0
     forward_rate 1e13, 'cm3/(mol * s)'
     reverse_rate 5.3e3
 
@@ -94,7 +92,6 @@ events
       incoherent methyl_on_dimer(:cm)
       unfixed methyl_on_dimer(:cm)
 
-    activation 0
     forward_rate 4.5e13, 'cm3/(mol * s)'
 
   environment :dimers_row
@@ -152,12 +149,10 @@ events
   # additional reactions for check engine recipes
   reaction 'methyl adsorption to bridge'
     equation bridge(ct: *, ct: i) + methane(c: *) = methyl_on_bridge
-    activation 0
     reverse_rate 1.7e7
 
   reaction 'methyl adsorption to face 111'
     equation bridge(cr: *) + methane(c: *) = methyl_on_111
-    activation 0
     forward_rate 1.2e-1, 'cm3/(mol * s)'
     reverse_rate 5.4e6
 

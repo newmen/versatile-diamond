@@ -69,6 +69,14 @@ module VersatileDiamond
                 to raise_error(*syntax_error('dimension.undefined_value'))
             end
           end
+
+          describe '#forward_tpow && #reverse_tpow' do
+            it 'reverse rate setup should makes reverse target' do
+              target.interpret('forward_tpow 0.5')
+              target.interpret('reverse_tpow 0.2')
+              checks_reverse
+            end
+          end
         end
       end
 
