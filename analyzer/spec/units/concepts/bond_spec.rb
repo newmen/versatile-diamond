@@ -32,6 +32,23 @@ module VersatileDiamond
         it { expect(bond_100_cross.dir).to eq(:cross) }
       end
 
+      describe '#==' do
+        subject { bond_110_front }
+
+        it { expect(subject == Bond.new(110, :front)).to be_truthy }
+
+        it { expect(subject == free_bond).to be_falsey }
+        it { expect(subject == position_110_front).to be_falsey }
+      end
+
+      describe '#it?' do
+        subject { bond_110_front }
+
+        it { expect(subject.it?(face: 110, dir: :front)).to be_truthy }
+        it { expect(subject.it?(face: 100, dir: :front)).to be_falsey }
+        it { expect(subject.it?(face: 110, dir: :cross)).to be_falsey }
+      end
+
       describe '#same?' do
         it { expect(free_bond.same?(bond_110_front)).to be_truthy }
         it { expect(bond_110_front.same?(free_bond)).to be_truthy }
