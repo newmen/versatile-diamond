@@ -18,6 +18,10 @@ module VersatileDiamond
         it { expect(subject.theres.map(&:class)).to eq([DependentThere]) }
       end
 
+      describe '#lateral?' do
+        it { expect(subject.lateral?).to be_truthy }
+      end
+
       describe '#organize_dependencies!' do
         let(:target) { wrap(end_lateral_df) }
         let(:other) do

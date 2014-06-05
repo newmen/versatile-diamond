@@ -26,6 +26,10 @@ module VersatileDiamond
         end
       end
 
+      describe '#lateral?' do
+        it { expect(wrap(dimer_formation).lateral?).to be_falsey }
+      end
+
       describe '#organize_dependencies!' do
         def lateral(reaction)
           DependentLateralReaction.new(end_lateral_df)

@@ -13,6 +13,12 @@ module VersatileDiamond
         not_simple_source.first
       end
 
+      # Ubiquitous reaction isn't lateral
+      # @return [Boolean] false
+      def lateral?
+        false
+      end
+
       # Organize dependencies from another not ubiquitous reactions
       # @param [Array] not_ubiquitous_reactions the possible children
       # @param [Hash] terms_cache the cache of terminations where the keys are names

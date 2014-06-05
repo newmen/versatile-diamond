@@ -14,6 +14,10 @@ module VersatileDiamond
         it { expect(subject.termination).to eq(adsorbed_h) }
       end
 
+      describe '#lateral?' do
+        it { expect(subject.lateral?).to be_falsey }
+      end
+
       describe '#organize_dependencies!' do
         def typical(reaction)
           DependentTypicalReaction.new(reaction)
