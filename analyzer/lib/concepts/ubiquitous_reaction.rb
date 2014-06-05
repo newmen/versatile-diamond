@@ -18,9 +18,13 @@ module VersatileDiamond
       class << self
       private
         # Defines some property getter and setter by adding assertion methods
-        def define_property_setter(*properties)
+        def define_property_acceptor(*properties)
           properties.each do |property|
-            attr_reader property
+            # Defines forward direction property getter
+            # @return [Float] the value of property
+            define_method(property) do
+              instance_variable_get(:"@#{property}") || 0
+            end
 
             # Defines forward direction property setter
             # @raise [UbiquitousReaction::AlreadySet] if property already set
@@ -35,7 +39,7 @@ module VersatileDiamond
         end
       end
 
-      define_property_setter :enthalpy, :activation, :rate
+      define_property_acceptor :enthalpy, :activation, :rate, :temp_power
       attr_reader :source, :products
 
       # Store source and product specs
@@ -120,8 +124,7 @@ module VersatileDiamond
       # Calculate full rate of reaction
       # @return [Float] the full raction rate
       def full_rate
-        return 0 unless @rate && @activation
-        Tools::Config.rate(self)
+        rate == 0 ? 0 : Tools::Config.rate(self)
       end
 
       # Counts size of all source specs

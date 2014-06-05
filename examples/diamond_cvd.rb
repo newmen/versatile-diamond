@@ -115,18 +115,16 @@ events
   reaction 'methyl adsorption to dimer'
     equation dimer(cr: *) + methane(c: *) = methyl_on_dimer
     enthalpy -73.6
-    activation 0
+    # by default activation = 0
     forward_rate 1e13, 'cm3/(mol * s)'
     reverse_rate 5.3e3
 
   reaction 'methyl adsorption to bridge'
     equation bridge(ct: *, ct: i) + methane(c: *) = methyl_on_bridge
-    activation 0
     reverse_rate 1.7e7
 
   reaction 'methyl adsorption to face 111'
     equation bridge(cr: *) + methane(c: *) = methyl_on_111
-    activation 0
     forward_rate 1.2e-1, 'cm3/(mol * s)'
     reverse_rate 5.4e6
 
@@ -137,13 +135,13 @@ events
       unfixed methyl_on_dimer(:cm)
 
     activation 37.5
-    forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
+    forward_rate 2.8e8, 'cm3/(mol * s)'
+    forward_tpow 3.5
 
   reaction 'methyl deactivation'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer(cm: H)
       unfixed methyl_on_dimer(:cm)
 
-    activation 0
     forward_rate 4.5e13, 'cm3/(mol * s)'
 
   reaction 'hydrogen abstraction from gap'
@@ -253,18 +251,15 @@ events
 
       refinement 'not in dimers row'
         enthalpy -36
-        activation 0.8
 
       lateral :dimers_row, one_atom: one(:ct), two_atom: two(:ct)
 
       there :end_row
         enthalpy -39
-        forward_activation 0.4
         reverse_activation 1
 
       there :mid_row
         enthalpy -43
-        forward_activation 0
         reverse_activation 1.2
 
     forward_rate 8.9e11
@@ -282,7 +277,6 @@ events
 
       there :mid_row
         enthalpy -13.6
-        forward_activation 0.7
         reverse_activation 4.2
 
       there :end_row
@@ -367,7 +361,6 @@ events
 
       lateral :high_neighbour, target_atom: high_bridge(:ct)
       there :near_methyl
-        forward_activation 0
         reverse_activation 5.3
 
     forward_rate 2.9e11
@@ -436,13 +429,11 @@ events
 
   reaction 'vinyl desorption'
     equation vinyl_on_bridge(c1: *, c2: *) = bridge(ct: *) + acetylene(c1: *)
-    activation 0
     forward_rate 1.3e2
 
   reaction 'vinyl activation'
     # TODO: есть ещё активация атома c2
     equation vinyl_on_dimer(c1: H) + hydrogen(h: *) = vinyl_on_dimer(c1: *) + hydrogen
-    activation 0
     forward_rate 0.6e13, 'cm3/(mol * s)'
 
   reaction 'vinyl hydrogen migration'

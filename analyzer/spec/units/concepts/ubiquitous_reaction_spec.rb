@@ -6,14 +6,15 @@ module VersatileDiamond
     describe UbiquitousReaction do
       let(:already_set) { UbiquitousReaction::AlreadySet }
 
-      %w(enthalpy activation rate).each do |prop|
+      %w(enthalpy activation rate temp_power).each do |prop|
         describe "##{prop}" do
-          it { expect(surface_deactivation.send(prop)).to be_nil }
+          it { expect(surface_deactivation.send(prop)).to eq(0) }
         end
 
         describe "##{prop}=" do
           it { expect { surface_deactivation.send(:"#{prop}=", 123) }.
             not_to raise_error }
+
           it 'twise setup' do
             surface_deactivation.send(:"#{prop}=", 123)
             expect { surface_deactivation.send(:"#{prop}=", 987) }.

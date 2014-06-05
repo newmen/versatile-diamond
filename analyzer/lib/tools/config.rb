@@ -109,8 +109,10 @@ module VersatileDiamond
         #   calculated
         # @return [Float] the rate of raction
         def rate(reaction)
-          arrenius = reaction.rate * Math.exp(-reaction.activation /
-          (Dimension::R * current_temperature(reaction.gases_num)))
+          temp = current_temperature(reaction.gases_num)
+          arrenius = reaction.rate * (temp ** reaction.temp_power) *
+            Math.exp(-reaction.activation / (Dimension::R * temp))
+
           reaction.gases_num == 0 ?
             arrenius :
             reaction.each_source.reduce(arrenius) do |acc, spec|
