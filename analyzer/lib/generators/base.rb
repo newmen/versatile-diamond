@@ -40,7 +40,7 @@ module VersatileDiamond
 
         @classifier = Organizers::AtomClassifier.new
         surface_specs.each { |spec| @classifier.analyze(spec) }
-        classifier.organize_properties!
+        @classifier.organize_properties!
         @classifier
       end
 

@@ -16,6 +16,12 @@ module VersatileDiamond
         reaction.theres.map { |there| DependentThere.new(there) }
       end
 
+      # Lateral reaction is lateral reaction
+      # @return [Boolean] true
+      def lateral?
+        true
+      end
+
       # Organize dependencies from another lateral reactions
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)

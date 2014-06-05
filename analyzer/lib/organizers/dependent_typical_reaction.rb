@@ -11,6 +11,12 @@ module VersatileDiamond
         termination_spec.cover?(spec, atom) ? spec : nil
       end
 
+      # Typical reaction isn't lateral
+      # @return [Boolean] false
+      def lateral?
+        false
+      end
+
       # Organize dependencies from another lateral reactions
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
