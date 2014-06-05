@@ -33,6 +33,13 @@ module VersatileDiamond
         @face, @dir = face, dir && dir.to_sym
       end
 
+      # Compares two instances
+      # @param [Bond] other relation instance with which comparing will be
+      # @return [Boolean] equal or not
+      def == (other)
+        self.class == other.class && other.it?(face: face, dir: dir)
+      end
+
       # Checks current instances for passed options
       # @option [Symbol] :face the face of instance
       # @option [Symbol] :dir the direction of instance
