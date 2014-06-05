@@ -1,6 +1,3 @@
-require 'pathname'
-require 'fileutils'
-
 module VersatileDiamond
   module Tools
 
