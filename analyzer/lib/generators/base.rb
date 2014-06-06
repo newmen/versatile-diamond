@@ -2,6 +2,7 @@ module VersatileDiamond
   module Generators
 
     # Provides useful methods for get collections of interpreted instances
+    # @abstract
     class Base
       extend Forwardable
 

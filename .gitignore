@@ -8,6 +8,7 @@ cache/
 obj/
 engine/engine
 results/hand-generations/simple-diamond
+results/generations
 
 engine/results
 *.job
