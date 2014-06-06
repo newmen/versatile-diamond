@@ -79,4 +79,4 @@ out = -> filename { (Pathname.new(opt['--out']) + (opt['--name'] || filename)).t
 define_generator['--overview', Gens::Overview]
 define_generator['--composition', Gens::AtomsSpeciesTree, out['composition']]
 define_generator['--total-tree', Gens::SpeciesReactionsTree, out['total-tree']]
-define_generator['--code', Gens::EngineCode, opt['--out'], opt['--name']]
+define_generator['--code', Gens::EngineCode, out['generations']]

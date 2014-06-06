@@ -1,0 +1,83 @@
+#include "handbook.h"
+
+#ifdef PARALLEL
+#include <omp.h>
+#endif // PARALLEL
+
+const ushort Handbook::atomsNum = <%= atoms_num %>;
+const bool Handbook::__atomsAccordance[<%= atoms_num %> * <%= atoms_num %>] =
+{
+<%= atoms_matrix %>
+};
+
+const ushort Handbook::__atomsSpecifing[<%= atoms_num %>] =
+{
+    <%= atoms_specification %>
+};
+
+const ushort Handbook::__hToActives[<%= atoms_num %>] =
+{
+    <%= deactives_to_actives %>
+};
+
+const ushort Handbook::__hOnAtoms[<%= atoms_num %>] =
+{
+    <%= nums_on_atoms[:H] %>
+};
+
+const ushort Handbook::__activesToH[<%= atoms_num %>] =
+{
+    <%= actives_to_deactives %>
+};
+
+const ushort Handbook::__activesOnAtoms[<%= atoms_num %>] =
+{
+    <%= nums_on_atoms[:*] %>
+};
+
+Handbook::DMC Handbook::__mc;
+Handbook::DMC &Handbook::mc()
+{
+    return __mc;
+}
+
+Scavenger Handbook::__scavengers[THREADS_NUM];
+Scavenger &Handbook::scavenger()
+{
+    return selectForThread(__scavengers);
+}
+
+Handbook::SKeeper Handbook::__specificKeepers[THREADS_NUM];
+Handbook::SKeeper &Handbook::specificKeeper()
+{
+    return selectForThread(__specificKeepers);
+}
+
+<% if lateral_exists? %>
+Handbook::LKeeper Handbook::__lateralKeepers[THREADS_NUM];
+Handbook::LKeeper &Handbook::lateralKeeper()
+{
+    return selectForThread(__lateralKeepers);
+}
+<% end %>
+
+<% if amorph_exists? %>
+PhaseBoundary Handbook::__amorph;
+PhaseBoundary &Handbook::amorph()
+{
+    return __amorph;
+}
+<% end %>
+
+bool Handbook::atomIs(ushort complexType, ushort typeOf)
+{
+    assert(atomsNum > complexType);
+    assert(atomsNum > typeOf);
+    return __atomsAccordance[atomsNum * complexType + typeOf];
+}
+
+ushort Handbook::specificate(ushort type)
+{
+    assert(atomsNum > type);
+    return __atomsSpecifing[type];
+}
