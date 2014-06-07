@@ -60,6 +60,18 @@ surface
     bond :ctl, :cl, face: 110, dir: :cross
     bond :ctl, :cc, face: 110, dir: :cross
 
+  spec :cross_bridge_on_bridges
+    atoms ct: C, cl: bridge(:ct), cr: bridge(:ct)
+    bond :ct, :cl
+    bond :ct, :cr
+    position :cl, :cr, face: 100, dir: :cross
+
+  spec :cross_bridge_on_dimers
+    aliases mod: methyl_on_dimer
+    atoms ct: mod(:cm), cl: mod(:cr), cr: dimer(:cr)
+    bond :ct, :cr
+    position :cl, :cr, face: 100, dir: :cross
+
   temperature 1000
 
 events
@@ -195,3 +207,14 @@ events
     equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
     activation 35
     forward_rate 3e5
+
+  reaction 'migration along dimers row'
+    equation methyl_on_dimer(cm: *, cm: u) + dimer(cr: *) = cross_bridge_on_dimers
+    enthalpy 3.4
+    activation 30
+    forward_rate 2.4e8
+
+  reaction 'serpinsky drop'
+    equation cross_bridge_on_bridges = methyl_on_bridge(cm: *, cm: u) + bridge(ct: *)
+    activation 30
+    forward_rate 4.4e9

@@ -343,29 +343,32 @@ module VersatileDiamond
       # @return [Array] relations array
       def relations_for(spec, atom)
         # only bonds without relevat states
-        relations = spec.relations_of(atom).reject { |ar| ar.is_a?(Symbol) }
-        result = []
+        relations = spec.relations_of(atom, with_atoms: true).reject do |_, rel|
+          rel.is_a?(Symbol)
+        end
 
+        result = []
         until relations.empty?
-          rel = relations.pop
+          atwrel = relations.pop
+          nbr, rel = atwrel
           if rel.is_a?(Concepts::Bond) && rel.face
             # position properties are deprecated
             result << rel unless rel.is_a?(Concepts::Position)
             next
           end
 
-          same = relations.select { |r| r == rel }
+          same = relations.select { |a, r| a == nbr && r == rel }
 
           if same.empty?
             result << rel
           else
             if same.size == 3 && same.size != 4
               result << :tbond
-              relations.delete_one(rel)
+              relations.delete_one(atwrel)
             else
               result << :dbond
             end
-            relations.delete_one(rel)
+            relations.delete_one(atwrel)
           end
         end
 
