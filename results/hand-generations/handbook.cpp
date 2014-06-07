@@ -10,8 +10,8 @@
 // 34 :: ^HC%d<
 // 35 :: HC:i:u~
 // 36 :: H*C:i:u~
-const ushort Handbook::atomsNum = 37;
-const bool Handbook::__atomsAccordance[37 * 37] = {
+const ushort Handbook::__atomsNum = 37;
+const bool Handbook::__atomsAccordance[Handbook::__atomsNum * Handbook::__atomsNum] = {
 /*  0 */  true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
 /*  1 */  false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
 /*  2 */  true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false,
@@ -52,7 +52,7 @@ const bool Handbook::__atomsAccordance[37 * 37] = {
 };
 
 // TODO: manualy changed transitions for 25 and 26 types because has same types with H
-const ushort Handbook::__atomsSpecifing[37] =
+const ushort Handbook::__atomsSpecifing[Handbook::__atomsNum] =
 {
     0, 28, 2, 0, 34, 5, 4, 7, 8, 7,
     10, 36, 27, 13, 10, 15, 16, 17, 15, 19,
@@ -60,7 +60,7 @@ const ushort Handbook::__atomsSpecifing[37] =
     27, 35, 32, 33, 34, 35, 36
 };
 
-const ushort Handbook::__hToActives[37] =
+const ushort Handbook::__hToActives[Handbook::__atomsNum] =
 {
     28, 2, 2, 1, 5, 5, 5, 8, 8, 8,
     10, 12, 13, 13, 11, 16, 17, 17, 16, 19,
@@ -68,7 +68,7 @@ const ushort Handbook::__hToActives[37] =
     13, 29, 32, 33, 5, 36, 27
 };
 
-const ushort Handbook::__hOnAtoms[37] =
+const ushort Handbook::__hOnAtoms[Handbook::__atomsNum] =
 {
     2, 1, 0, 2, 1, 0, 1, 1, 0, 1,
     3, 2, 1, 0, 3, 2, 1, 0, 2, 0,
@@ -76,7 +76,7 @@ const ushort Handbook::__hOnAtoms[37] =
     1, 3, 0, 0, 1, 3, 2
 };
 
-const ushort Handbook::__activesToH[37] =
+const ushort Handbook::__activesToH[Handbook::__atomsNum] =
 {
     0, 3, 1, 3, 4, 6, 6, 7, 9, 9,
     10, 14, 11, 12, 14, 15, 18, 16, 18, 19,
@@ -84,7 +84,7 @@ const ushort Handbook::__activesToH[37] =
     29, 31, 32, 33, 34, 35, 35
 };
 
-const ushort Handbook::__activesOnAtoms[37] =
+const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
 {
     0, 1, 2, 0, 0, 1, 0, 0, 1, 0,
     0, 1, 2, 3, 0, 0, 1, 2, 0, 0,
@@ -127,13 +127,13 @@ Scavenger &Handbook::scavenger()
 
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
 {
-    assert(atomsNum > complexType);
-    assert(atomsNum > typeOf);
-    return __atomsAccordance[atomsNum * complexType + typeOf];
+    assert(__atomsNum > complexType);
+    assert(__atomsNum > typeOf);
+    return __atomsAccordance[__atomsNum * complexType + typeOf];
 }
 
 ushort Handbook::specificate(ushort type)
 {
-    assert(atomsNum > type);
+    assert(__atomsNum > type);
     return __atomsSpecifing[type];
 }
