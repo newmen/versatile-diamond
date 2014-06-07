@@ -17,7 +17,7 @@ module VersatileDiamond
         @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
         @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
 
-        @prop_vector.map.with_index do |prop, i|
+        @prop_vector.each.with_index do |prop, i|
           tcR(i, i, *methods)
         end
       end
@@ -26,23 +26,24 @@ module VersatileDiamond
       # @param [AtomProperties] prop the specifing atom properties
       # @result [AtomProperties] the result of maximal specification
       def specification_for(prop)
-        index = @prop_to_index[prop]
+        idx = index(prop)
 
-        source_indexes = source_props.map { |p| @prop_to_index[p] }
+        source_indexes = source_props.map { |p| index(p) }
         curr_source_indexes =
-          @matrix.column(index).map.with_index.select do |b, j|
+          @matrix.column(idx).map.with_index.select do |b, j|
             b && source_indexes.include?(j)
           end
 
         curr_source_indexes.map!(&:last)
+
         result = curr_source_indexes.empty? ?
-          index : select_best_index(prop, curr_source_indexes)
+          idx : select_best_index(prop, curr_source_indexes)
 
         @prop_vector[result]
       end
 
       def [] (prop1, prop2)
-        v, w = @prop_to_index[prop1], @prop_to_index[prop2]
+        v, w = index(prop1), index(prop2)
         @matrix[v, w]
       end
 
@@ -65,7 +66,7 @@ module VersatileDiamond
         end
 
         children.uniq.each do |prop|
-          t = @prop_to_index[prop]
+          t = index(prop)
           tcR(v, t, *methods) unless @matrix[v, t]
         end
       end
@@ -81,6 +82,13 @@ module VersatileDiamond
               (prop.incoherent? || prop.dangling_hydrogens_num > 0) ?
                 acc << prop : acc
           end
+      end
+
+      # Gets the index of atom properties
+      # @param [AtomProperties] prop for which their index will be returned
+      # @return [Integer] the index of properties
+      def index(prop)
+        @prop_to_index[prop]
       end
 
       # Selects the best index of passed prop from presented array
@@ -109,7 +117,7 @@ module VersatileDiamond
       # @param [Array] indexes the filtering array of indexes
       # @return [Array] the filtered indexes of maximal hydrogenated properties
       def select_by_max_hydros(indexes)
-        hydros = indexes.map { |j| [@prop_vector[j].dangling_hydrogens_num, j] }
+        hydros = indexes.map { |j| [@prop_vector[j].total_hydrogens_num, j] }
         max_hydros = hydros.max_by(&:first).first
         hydros.select { |n, _| n == max_hydros }.map(&:last)
       end
@@ -140,7 +148,7 @@ module VersatileDiamond
           end
         end
 
-        raise "Cannot rich #{from} (#{index(from)})] -> [#{to} (#{index(to)})]"
+        raise "Cannot rich [#{from} (#{index(from)})] -> [#{to} (#{index(to)})]"
       end
     end
 

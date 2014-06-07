@@ -84,12 +84,12 @@ module VersatileDiamond
           str.join(",\n")
         end
 
-        # Calcs number of terminated species on each atom
+        # Calculates number of terminated species on each atom
         # @param [DependentTermination] term_spec the termination spec for which
         #   numbers will gotten
         # @param [String] the array of numbers as string
         def term_nums(term_spec)
-          values = Array.new(props.size) { 0 }
+          values = Array.new(atoms_num) { 0 }
           @generator.classifier.classify(term_spec).each do |i, (_, n)|
             values[i] = n
           end
