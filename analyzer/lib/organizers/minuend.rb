@@ -26,9 +26,12 @@ module VersatileDiamond
       # Provides relations of atom in current resudual
       # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
       #   be got
+      # @option [Boolean] :with_atoms if true, then relations will contain neighbour
+      #   atoms too
       # @return [Array] the array of atom relations
-      def relations_of(atom)
-        links[atom].map(&:last)
+      def relations_of(atom, with_atoms: false)
+        relations = links[atom]
+        with_atoms ? relations : relations.map(&:last)
       end
 
       # Makes residual of difference between top and possible parent
