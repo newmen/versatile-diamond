@@ -4,33 +4,33 @@
 #include <omp.h>
 #endif // PARALLEL
 
-const ushort Handbook::atomsNum = <%= atoms_num %>;
-const bool Handbook::__atomsAccordance[<%= atoms_num %> * <%= atoms_num %>] =
+const ushort Handbook::__atomsNum = <%= atoms_num %>;
+const bool Handbook::__atomsAccordance[Handbook::__atomsNum * Handbook::__atomsNum] =
 {
 <%= atoms_matrix %>
 };
 
-const ushort Handbook::__atomsSpecifing[<%= atoms_num %>] =
+const ushort Handbook::__atomsSpecifing[Handbook::__atomsNum] =
 {
     <%= atoms_specification %>
 };
 
-const ushort Handbook::__hToActives[<%= atoms_num %>] =
+const ushort Handbook::__hToActives[Handbook::__atomsNum] =
 {
     <%= deactives_to_actives %>
 };
 
-const ushort Handbook::__hOnAtoms[<%= atoms_num %>] =
+const ushort Handbook::__hOnAtoms[Handbook::__atomsNum] =
 {
     <%= nums_on_atoms[:H] %>
 };
 
-const ushort Handbook::__activesToH[<%= atoms_num %>] =
+const ushort Handbook::__activesToH[Handbook::__atomsNum] =
 {
     <%= actives_to_deactives %>
 };
 
-const ushort Handbook::__activesOnAtoms[<%= atoms_num %>] =
+const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
 {
     <%= nums_on_atoms[:*] %>
 };
