@@ -25,19 +25,19 @@ public:
 template <ushort VALENCE>
 bool SpecifiedAtom<VALENCE>::is(ushort typeOf) const
 {
-    return Atom::type() != NO_VALUE && Handbook::atomIs(Atom::type(), typeOf);
+    return type() != NO_VALUE && Handbook::atomIs(type(), typeOf);
 }
 
 template <ushort VALENCE>
 bool SpecifiedAtom<VALENCE>::prevIs(ushort typeOf) const
 {
-    return Atom::prevType() != NO_VALUE && Handbook::atomIs(Atom::prevType(), typeOf);
+    return prevType() != NO_VALUE && Handbook::atomIs(prevType(), typeOf);
 }
 
 template <ushort VALENCE>
 void SpecifiedAtom<VALENCE>::specifyType()
 {
-    Atom::setType(Handbook::specificate(Atom::type()));
+    Atom::setType(Handbook::specificate(type()));
 }
 
 #endif // SPECIFIED_ATOM_H
