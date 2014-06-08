@@ -126,9 +126,9 @@ SOURCES += \
     tools/yaml_config_reader.cpp
 
 HEADERS += \
+    ../../results/hand-generations/atoms/atom_builder.h \
     ../../results/hand-generations/atoms/c.h \
     ../../results/hand-generations/atoms/specified_atom.h \
-    ../../results/hand-generations/builders/atom_builder.h \
     ../../results/hand-generations/env.h \
     ../../results/hand-generations/finder.h \
     ../../results/hand-generations/handbook.h \

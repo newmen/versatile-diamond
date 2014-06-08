@@ -1,5 +1,5 @@
 #include "ads_methyl_to_dimer.h"
-#include "../../builders/atom_builder.h"
+#include "../../atoms/atom_builder.h"
 
 const char AdsMethylToDimer::__name[] = "adsorption methyl to dimer";
 
