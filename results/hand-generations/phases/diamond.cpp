@@ -1,5 +1,5 @@
 #include "diamond.h"
-#include "../builders/atom_builder.h"
+#include "../atoms/atom_builder.h"
 #include "../finder.h"
 
 Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :

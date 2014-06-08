@@ -1,5 +1,5 @@
 #include "ads_methyl_to_111.h"
-#include "../../builders/atom_builder.h"
+#include "../../atoms/atom_builder.h"
 
 const char AdsMethylTo111::__name[] = "adsorption methyl to 111";
 
