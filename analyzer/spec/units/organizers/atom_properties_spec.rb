@@ -42,12 +42,11 @@ module VersatileDiamond
               it { should_not be_nil }
             end
 
-
             describe 'classification' do
               subject { classifier.classify(target.parent) }
               let(:hash) do
                 {
-                  3 => ['~-C%d<', 1],
+                  3 => ['_~-C%d<', 1],
                   4 => ['-C%d<', 1]
                 }
               end
@@ -95,6 +94,11 @@ module VersatileDiamond
         it { expect(ab_cr).not_to eq(ib_cr) }
         it { expect(hb_cr).not_to eq(ib_cr) }
         it { expect(ib_cr).not_to eq(hb_cr) }
+
+        it { expect(bob).not_to eq(eob) }
+        it { expect(eob).not_to eq(bob) }
+        it { expect(eob).not_to eq(vob) }
+        it { expect(vob).not_to eq(eob) }
       end
 
       describe '#contained_in?' do
@@ -152,6 +156,19 @@ module VersatileDiamond
         it { expect(ab_cr.contained_in?(ib_cr)).to be_falsey }
         it { expect(hb_cr.contained_in?(ib_cr)).to be_falsey }
         it { expect(ahb_ct.contained_in?(aib_ct)).to be_falsey }
+
+        it { expect(ucm.contained_in?(cm)).to be_falsey }
+        it { expect(eob.contained_in?(cm)).to be_falsey }
+        it { expect(vob.contained_in?(cm)).to be_falsey }
+
+        it { expect(cm.contained_in?(ucm)).to be_truthy }
+        it { expect(cm.contained_in?(bob)).to be_truthy }
+        it { expect(cm.contained_in?(eob)).to be_truthy }
+        it { expect(cm.contained_in?(vob)).to be_truthy }
+
+        it { expect(ucm.contained_in?(bob)).to be_falsey }
+        it { expect(ucm.contained_in?(eob)).to be_falsey }
+        it { expect(ucm.contained_in?(vob)).to be_falsey }
       end
 
       describe '#same_incoherent?' do
@@ -209,6 +226,33 @@ module VersatileDiamond
         it { expect(hb_cr.same_hydrogens?(ib_cr)).to be_truthy }
         it { expect(clb_cr.same_hydrogens?(ab_cr)).to be_truthy }
         it { expect(ib_cr.same_hydrogens?(hb_cr)).to be_truthy }
+      end
+
+      describe '#same_unfixed?' do
+        it { expect(cm.same_unfixed?(ucm)).to be_truthy }
+        it { expect(cm.same_unfixed?(bob)).to be_falsey }
+        it { expect(cm.same_unfixed?(eob)).to be_falsey }
+        it { expect(cm.same_unfixed?(vob)).to be_falsey }
+
+        it { expect(ucm.same_unfixed?(cm)).to be_falsey }
+        it { expect(ucm.same_unfixed?(bob)).to be_falsey }
+        it { expect(ucm.same_unfixed?(eob)).to be_falsey }
+        it { expect(ucm.same_unfixed?(vob)).to be_falsey }
+
+        it { expect(bob.same_unfixed?(cm)).to be_falsey }
+        it { expect(bob.same_unfixed?(ucm)).to be_falsey }
+        it { expect(bob.same_unfixed?(eob)).to be_falsey }
+        it { expect(bob.same_unfixed?(vob)).to be_falsey }
+
+        it { expect(eob.same_unfixed?(cm)).to be_falsey }
+        it { expect(eob.same_unfixed?(ucm)).to be_truthy }
+        it { expect(eob.same_unfixed?(bob)).to be_falsey }
+        it { expect(eob.same_unfixed?(vob)).to be_falsey }
+
+        it { expect(vob.same_unfixed?(cm)).to be_falsey }
+        it { expect(vob.same_unfixed?(ucm)).to be_truthy }
+        it { expect(vob.same_unfixed?(bob)).to be_falsey }
+        it { expect(vob.same_unfixed?(eob)).to be_falsey }
       end
 
       describe '#unrelevanted' do
@@ -426,8 +470,8 @@ module VersatileDiamond
       end
 
       describe '#to_s' do
-        it { expect(ucm.to_s).to eq('C:u~') }
-        it { expect(high_cm.to_s).to eq('C=') }
+        it { expect(ucm.to_s).to eq('C:u~%d') }
+        it { expect(high_cm.to_s).to eq('C=%d') }
 
         it { expect(bridge_ct.to_s).to eq('C%d<') }
         it { expect(bridge_cr.to_s).to eq('^C%d<') }

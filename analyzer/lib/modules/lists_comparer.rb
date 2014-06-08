@@ -13,7 +13,7 @@ module VersatileDiamond
         return true if list1.object_id == list2.object_id
 
         list1, list2 = list1.to_a.dup, list2.to_a.dup
-        list1.reduce(true) do |acc, item1|
+        !!list1.reduce(true) do |acc, item1|
           acc && (i = list2.index { |item2| block[item1, item2] }) &&
             (list2.delete_at(i) || item1.nil?)
         end

@@ -67,10 +67,13 @@ module VersatileDiamond
         until current_props_sd.empty?
           smallest = current_props_sd.shift
           current_props_sd.each do |bigger|
-            next unless bigger.same_incoherent?(smallest)
-            if bigger.same_hydrogens?(smallest)
-              bigger.add_smallest(smallest)
-            else
+            if bigger.same_incoherent?(smallest)
+              if bigger.same_hydrogens?(smallest)
+                bigger.add_smallest(smallest)
+              else
+                bigger.add_same(smallest)
+              end
+            elsif bigger.same_unfixed?(smallest)
               bigger.add_same(smallest)
             end
           end

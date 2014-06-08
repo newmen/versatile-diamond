@@ -104,7 +104,7 @@ module VersatileDiamond
       end
 
       def to_s
-        @lattice ? "#{name}%#{@lattice}" : name.to_s
+        "#{name}#{@lattice}"
       end
 
       def inspect

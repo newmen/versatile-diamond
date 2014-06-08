@@ -36,9 +36,6 @@ module VersatileDiamond
           organize_spec_dependencies!(base_cache, specific_species)
         end
 
-        prop(:ucm, :unfixed_methyl_on_bridge, :cm)
-        prop(:high_cm, :high_bridge, :cm)
-
         prop(:bridge_ct, :bridge, :ct)
         prop(:ab_ct, :activated_bridge, :ct)
         prop(:eab_ct, :extra_activated_bridge, :ct)
@@ -61,6 +58,37 @@ module VersatileDiamond
         prop(:mob_cb, :methyl_on_right_bridge_base, :cr)
 
         prop(:pseudo_dimer_cr, :pseudo_dimer_base, :cr)
+
+        prop(:high_cm, :high_bridge, :cm)
+        prop(:cm, :methyl_on_bridge_base, :cm)
+        prop(:ucm, :unfixed_methyl_on_bridge, :cm)
+        prop(:bob, :cross_bridge_on_bridges_base, :cm)
+        prop(:eob, :ethane_on_bridge_base, :c1)
+        prop(:vob, :vinyl_on_bridge_base, :c1)
+
+        # surface species the atom properties of which will checked in tests
+
+        set(:cross_bridge_on_bridges_base) do
+          s = Concepts::SurfaceSpec.new(:cross_bridge_on_bridges)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :ctl)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cb, :ctr)
+          s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
+        end
+
+        set(:ethane_on_bridge_base) do
+          s = Concepts::SurfaceSpec.new(:ethane_on_bridge, c2: c.dup)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cm, :c1)
+          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
+        end
+
+        set(:vinyl_on_bridge_base) do
+          s = Concepts::SurfaceSpec.new(:vinyl_on_bridge)
+          s.adsorb(ethane_on_bridge_base)
+          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
+        end
       end
     end
   end
