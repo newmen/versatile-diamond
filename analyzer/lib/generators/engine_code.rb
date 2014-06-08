@@ -12,7 +12,7 @@ module VersatileDiamond
         @out_path = out_path
       end
 
-      public :classifier, :spec_reactions, :term_specs
+      public :classifier, :spec_reactions, :term_specs, :specific_specs
 
       def generate(**params)
         Code::Handbook.new(self).generate(@out_path)

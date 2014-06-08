@@ -6,10 +6,13 @@ module VersatileDiamond
     class Dimension
 
       # Universal gas constant
-      R = 8.3144621 # J/(mol * K)
+      # Could not be changed!!
+      R = 8.3144621
+      R_DIMENSION = 'J/(mol * K)'.freeze
 
       # These values are using into calculation program on C++ by default
       # On there values bases convert_value methods in this class
+      # Could not be changed!!
       DEFAULT_TEMPERATURE = 'K'.freeze
       DEFAULT_CONCENTRATION = 'mol/cm3'.freeze
       DEFAULT_ENERGY = 'J/mol'.freeze

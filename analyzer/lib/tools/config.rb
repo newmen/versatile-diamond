@@ -13,6 +13,8 @@ module VersatileDiamond
 
       class << self
 
+        attr_reader :concs
+
         # Initialize internal variables of config
         def init
           @total_time = nil
@@ -58,10 +60,10 @@ module VersatileDiamond
         # @param [String] dimenstion of concentration
         def gas_concentration(specific_spec, value, dimension = nil)
           @concs ||= {}
-          if @concs[specific_spec.name]
+          if @concs[specific_spec]
             raise AlreadyDefined.new("concentration of #{specific_spec.name}")
           end
-          @concs[specific_spec.name] =
+          @concs[specific_spec] =
             Dimension.convert_concentration(value, dimension)
         end
 
@@ -91,6 +93,12 @@ module VersatileDiamond
             raise AlreadyDefined.new(name) if instance_variable_get(var)
             instance_variable_set(
               var, Dimension.convert_temperature(value, dimension))
+          end
+
+          # Getter of temperature for both phases
+          # @return [Float] the value of temperature
+          define_method(:"get_#{name}") do
+            instance_variable_get(var)
           end
         end
 
