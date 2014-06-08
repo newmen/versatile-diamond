@@ -5,7 +5,7 @@ module VersatileDiamond
       # The base class for yaml templates generation
       # Provides methods for generates yaml config files through erb templates
       # @abstract
-      class YamlFile < Base
+      class YamlFile
         include TemplateFile
 
         # Generates .h and .cpp files for current instance

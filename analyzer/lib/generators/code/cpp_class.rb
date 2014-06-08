@@ -5,14 +5,8 @@ module VersatileDiamond
       # The base class for cpp class templates generation
       # Provides methods for generates c++ source files through erb templates
       # @abstract
-      class CppClass < Base
+      class CppClass
         include TemplateFile
-
-        # Initializes by engine code generator
-        # @param [EngineCode] generator of engine code
-        def initialize(generator)
-          @generator = generator
-        end
 
         # Generates .h and .cpp files for current instance
         # @param [String] root_dir the generation directory

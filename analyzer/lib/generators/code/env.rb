@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
 
       # Creates Env class and yaml config file
-      class Env < CppClass
+      class Env < CppClassWithGen
 
         # Gets name of file which will be generated
         # @return [String] the name of result file without extention
