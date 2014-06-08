@@ -10,7 +10,9 @@ class Env
 
 public:
     static double R();
-    static double T();
+
+    static double gasT();
+    static double surfaceT();
 
     static double cH();
     static double cCH3();

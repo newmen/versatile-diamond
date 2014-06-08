@@ -5,7 +5,7 @@ const char SurfaceActivation::__name[] = "surface activation";
 
 double SurfaceActivation::RATE()
 {
-    static double value = getRate("SURFACE_ACTIVATION") * Env::cH();
+    static double value = getRate("SURFACE_ACTIVATION", Env::cH());
     return value;
 }
 
