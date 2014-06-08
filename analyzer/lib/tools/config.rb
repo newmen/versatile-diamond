@@ -97,7 +97,7 @@ module VersatileDiamond
 
           # Getter of temperature for both phases
           # @return [Float] the value of temperature
-          define_method(:"get_#{name}") do
+          define_method(:"#{name}_value") do
             instance_variable_get(var)
           end
         end
@@ -124,8 +124,17 @@ module VersatileDiamond
           reaction.gases_num == 0 ?
             arrenius :
             reaction.each_source.reduce(arrenius) do |acc, spec|
-              spec.gas? ? acc * ((@concs && @concs[spec.name]) || 0) : acc
+              spec.gas? ? acc * concentration_value(spec) : acc
             end
+        end
+
+        # Finds concenctration value for some spec
+        # @param [Organizers::DependentSpecificSpec] spec for which concentration value
+        #   will be found
+        # @return [Float] the value of concentration
+        def concentration_value(spec)
+          _, value = @concs.find { |s, _| s.name == spec.name }
+          value || 0
         end
 
       private
