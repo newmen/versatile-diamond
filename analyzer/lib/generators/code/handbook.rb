@@ -2,7 +2,8 @@ module VersatileDiamond
   module Generators
     module Code
 
-      class Handbook < CppClass
+      # Generates major configuration file as c++ source code
+      class Handbook < CppClassWithGen
 
         # Gets name of file which will be generated
         # @return [String] the name of result file without extention
