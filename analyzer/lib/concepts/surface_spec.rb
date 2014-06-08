@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Represents surface structure
     class SurfaceSpec < Spec
+      include Lattices::BasicRelations
       include SurfaceLinker
 
       # Returns that spec is not gas
@@ -32,10 +33,14 @@ module VersatileDiamond
       #   belonging to lattice
       # @override
       def link_together(*atoms, instance)
-        raise Position::UnspecifiedAtoms unless at_least_one_latticed?(atoms)
-
-        super(*sort(atoms), instance)
-        find_positions
+        if instance != undirected_bond
+          raise Position::UnspecifiedAtoms unless at_least_one_latticed?(atoms)
+          super(*sort(atoms), instance)
+          find_positions
+        else
+          raise Position::UnspecifiedAtoms unless at_least_one_latticed?(@atoms.values)
+          super(*atoms, instance)
+        end
       end
 
     private
@@ -50,7 +55,14 @@ module VersatileDiamond
       #   undefined
       # @return [Bond] the opposite relation
       def opposit_relation(first, second, relation)
-        first.lattice.opposite_relation(second.lattice, relation)
+        target_lattice = first.lattice || second.lattice
+        if target_lattice
+          other_lattice = first.lattice == target_lattice ? second.lattice : nil
+          target_lattice.opposite_relation(other_lattice, relation)
+        else
+          raise 'Wrong relation' unless relation == undirected_bond
+          relation
+        end
       end
 
       # Finds and store positions between transitive bonded atoms

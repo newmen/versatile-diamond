@@ -19,6 +19,8 @@ module VersatileDiamond
       #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #     atom the atom for which properties will be stored
       def initialize(*args)
+        @_remake_result = nil
+
         if args.size == 1
           @props = args.first
         elsif args.size == 2
@@ -29,6 +31,7 @@ module VersatileDiamond
             atom.lattice,
             relations_for(spec, atom),
             danglings_for(spec, atom),
+            nbr_lattices_for(spec, atom),
             atom.relevants.dup
           ]
         else
@@ -40,8 +43,10 @@ module VersatileDiamond
       # @param [AtomProperties] other an other atom properties
       # @return [Boolean] equal or not
       def == (other)
-        same_basic_values?(other) && eq_relations?(other) &&
-          eq_danglings?(other) && eq_relevants?(other)
+        same_basic_values?(other) &&
+          [:relations, :danglings, :nbr_lattices, :relevants].all? do |name|
+            eq_by?(other, name)
+          end
       end
 
       # Checks that current properties contained in another properties
@@ -59,7 +64,7 @@ module VersatileDiamond
       def same_incoherent?(other)
         same_basic_values?(other) && !danglings.empty? && other.incoherent? &&
           other.contain_all_danglings?(self) && eq_relations?(other) &&
-          (bonds_num == valence || eq_relevants?(other))
+          eq_nbr_lattices?(other) && (bonds_num == valence || eq_relevants?(other))
       end
 
       # Checks that both properties have same states by hydrogen atoms
@@ -67,6 +72,13 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same_hydrogens?(other)
         total_hydrogens_num == other.total_hydrogens_num
+      end
+
+      def same_unfixed?(other)
+        same_basic_values?(other) &&
+          !unfixed? && unfixed_by_nbrs? && other.unfixed? &&
+          !incoherent? && !other.incoherent? && eq_danglings?(other) &&
+          other.contain_all_nbr_lattices?(self) && other.contain_all_relations?(self)
       end
 
       %w(smallest same).each do |name|
@@ -121,8 +133,8 @@ module VersatileDiamond
       # @return [AtomProperties] activated properties or nil
       def activated
         if valence > bonds_num
-          props = [*static_states, relations, danglings + [:active]]
-          props << (valence > bonds_num + 1 ? relevants.dup : [])
+          props = [*static_states, relations, danglings + [:active], nbr_lattices]
+          props << (valence > bonds_num + 1 ? relevants : [])
           self.class.new(props)
         else
           nil
@@ -134,7 +146,7 @@ module VersatileDiamond
       def deactivated
         dgs = danglings.dup
         if dgs.delete_one(:active)
-          props = [*static_states, relations.dup, dgs, relevants.dup]
+          props = [*static_states, relations, dgs, nbr_lattices, relevants]
           self.class.new(props)
         else
           nil
@@ -195,6 +207,15 @@ module VersatileDiamond
 
         name = "#{name}%#{lattice.name}" if lattice
 
+        nlts = nbr_lattices.dup
+        lattice_symbol = -> rel do
+          frl = nlts.find { |r, _| r == rel }
+          if frl
+            nlts.delete_one(frl)
+            frl.last || '_'
+          end
+        end
+
         rl = relations.dup
         down1 = rl.delete_one(bond_cross_110)
         down2 = rl.delete_one(bond_cross_110)
@@ -203,11 +224,11 @@ module VersatileDiamond
         elsif down1 || down2
           name = "#{name}/"
         elsif rl.delete_one(:tbond)
-          name = "#{name}≡"
+          name = "#{name}≡#{lattice_symbol[:tbond]}"
         elsif rl.delete_one(:dbond)
-          name = "#{name}="
+          name = "#{name}=#{lattice_symbol[:dbond]}"
         elsif rl.delete_one(undirected_bond)
-          name = "#{name}~"
+          name = "#{name}~#{lattice_symbol[undirected_bond]}"
         end
 
         up1 = rl.delete_one(bond_front_110)
@@ -217,11 +238,13 @@ module VersatileDiamond
         elsif up1 || up2
           name = "^#{name}"
         elsif rl.delete_one(:dbond)
-          name = "=#{name}"
+          name = "#{lattice_symbol[:dbond]}=#{name}"
         end
 
         name = "-#{name}" if rl.delete_one(bond_front_100)
-        name = "~#{name}" while rl.delete_one(undirected_bond)
+        while rl.delete_one(undirected_bond)
+          name = "#{lattice_symbol[undirected_bond]}~#{name}"
+        end
 
         name
       end
@@ -241,6 +264,7 @@ module VersatileDiamond
         lattice
         relations
         danglings
+        nbr_lattices
         relevants
       ).each_with_index do |name, i|
         define_method(name) { props[i] }
@@ -255,11 +279,22 @@ module VersatileDiamond
         props[0..2]
       end
 
-      # Checks that other properties contain all current danglings
-      # @param [AtomProperties] other the checking properties
+      # Has unfixed state or not
       # @return [Boolean] contain or not
-      def contain_all_danglings?(other)
-        contain_all_by?(other, :danglings)
+      def unfixed?
+        result = relevants.include?(:unfixed)
+        if result && !unfixed_by_nbrs?
+          raise "Atom could not be unfixed!"
+        end
+        result
+      end
+
+      # Checks that properties have unfixed state by neighbour lattices set
+      # @return [Boolean] unfixed or not?
+      def unfixed_by_nbrs?
+        groups = nbr_lattices.group_by(&:first)
+        atwrels = groups.find { |r, _| r == undirected_bond }
+        atwrels && atwrels.last.map(&:last).compact.size == 1
       end
 
     private
@@ -272,47 +307,22 @@ module VersatileDiamond
         lists_are_identical?(send(method), other.send(method), &:==)
       end
 
-      # Compares current relations with other relations
-      # @param [AtomProperties] other the comparing properties
-      # @return [Boolean] lists are equal or not
-      def eq_relations?(other)
-        eq_by?(other, :relations)
-      end
+      %w(relations danglings nbr_lattices relevants).each do |name|
+        # Compares current #{name} with other #{name}
+        # @param [AtomProperties] other the comparing properties
+        # @return [Boolean] lists are equal or not
+        define_method(:"eq_#{name}?") do |other|
+          eq_by?(other, name.to_sym)
+        end
 
-      # Compares current danglings with other danglings
-      # @param [AtomProperties] other the comparing properties
-      # @return [Boolean] lists are equal or not
-      def eq_danglings?(other)
-        eq_by?(other, :danglings)
-      end
-
-      # Compares current relevant states with other relevant states
-      # @param [AtomProperties] other the comparing properties
-      # @param [Symbol] method by which will be comparing
-      # @return [Boolean] lists are equal or not
-      def eq_relevants?(other)
-        eq_by?(other, :relevants)
-      end
-
-      # Compares basic values of two properties
-      # @peram [AtomProperties] other the comparing properties
-      # @return [Boolean] same or not
-      def same_basic_values?(other)
-        static_states == other.static_states
-      end
-
-      # Checks that other properties contain all bonds from current properties
-      # @param [AtomProperties] other the checking properties
-      # @return [Boolean] contain or not
-      def contain_all_bonds?(other)
-        contain_all_relations?(other) && contain_all_danglings?(other)
-      end
-
-      # Checks that other properties contain all current relations
-      # @param [AtomProperties] other the checking properties
-      # @return [Boolean] contain or not
-      def contain_all_relations?(other)
-        contain_all_by?(other, :relations)
+        # Checks that other properties contain all current #{name}
+        # @param [AtomProperties] other the checking properties
+        # @return [Boolean] contain or not
+        method_name = :"contain_all_#{name}?"
+        define_method(method_name) do |other|
+          contain_all_by?(other, name.to_sym)
+        end
+        protected method_name
       end
 
       # Checks that other properties contain all current states that go by some
@@ -323,6 +333,22 @@ module VersatileDiamond
       def contain_all_by?(other, method)
         oth_stats = other.send(method).dup
         send(method).all? { |rel| oth_stats.delete_one(rel) }
+      end
+
+      # Checks that other properties contain all bonds from current properties
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def contain_all_bonds?(other)
+        [:relations, :danglings, :nbr_lattices].all? do |name|
+          contain_all_by?(other, name)
+        end
+      end
+
+      # Compares basic values of two properties
+      # @peram [AtomProperties] other the comparing properties
+      # @return [Boolean] same or not
+      def same_basic_values?(other)
+        static_states == other.static_states
       end
 
       # Checks that current properties are not incoherent and if unfixed then
@@ -342,6 +368,20 @@ module VersatileDiamond
       #   spec see at #new same argument
       # @return [Array] relations array
       def relations_for(spec, atom)
+        remake_relations(spec, atom).map(&:last)
+      end
+
+      # Gets the relations of atom in spec, but drop positions and replace many
+      # single undirected bonds to correspond values of :dbond as double bound and
+      # :tbond as triple bond
+      #
+      # @param [DependentSpec | SpecResidual] spec see at #new same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   spec see at #new same argument
+      # @return [Array] the array of pairs of atoms and replaced relations
+      def remake_relations(spec, atom)
+        return @_remake_result if @_remake_result
+
         # only bonds without relevat states
         relations = spec.relations_of(atom, with_atoms: true).reject do |_, rel|
           rel.is_a?(Symbol)
@@ -353,26 +393,28 @@ module VersatileDiamond
           nbr, rel = atwrel
           if rel.is_a?(Concepts::Bond) && rel.face
             # position properties are deprecated
-            result << rel unless rel.is_a?(Concepts::Position)
+            result << atwrel unless rel.is_a?(Concepts::Position)
             next
           end
 
-          same = relations.select { |a, r| a == nbr && r == rel }
-
-          if same.empty?
-            result << rel
-          else
-            if same.size == 3 && same.size != 4
-              result << :tbond
-              relations.delete_one(atwrel)
+          same = relations.select { |pair| pair == atwrel }
+          new_relation =
+            if same.empty?
+              rel
             else
-              result << :dbond
+              relations.delete_one(atwrel)
+              if same.size == 3 && same.size != 4
+                relations.delete_one(atwrel)
+                :tbond
+              else
+                :dbond
+              end
             end
-            relations.delete_one(atwrel)
-          end
+
+          result << [nbr, new_relation]
         end
 
-        result
+        @_remake_result = result
       end
 
       # Harvest dangling bonds of atom in spec
@@ -383,6 +425,19 @@ module VersatileDiamond
       def danglings_for(spec, atom)
         dang_rels = spec.relations_of(atom).select { |rel| rel.is_a?(Symbol) }
         dang_rels - [:incoherent, :unfixed]
+      end
+
+      # Collects only lattices which are reacheble through each undirected bond
+      # @param [Minuend] spec see at #new same argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   spec see at #new same argument
+      # @return [Array] the array of achieving lattices and correspond relations
+      def nbr_lattices_for(spec, atom)
+        relations_with_atoms = remake_relations(spec, atom)
+        possible_vals = [undirected_bond, :dbond, :tbond]
+        relations_with_atoms.reduce([]) do |acc, (atom, relation)|
+          possible_vals.include?(relation) ? acc << [relation, atom.lattice] : acc
+        end
       end
 
       # Drops relevants properties if it exists

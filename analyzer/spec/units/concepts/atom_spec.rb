@@ -78,6 +78,11 @@ module VersatileDiamond
       describe '#additional_relations' do
         it { expect(cd.additional_relations).to be_empty }
       end
+
+      describe '#to_s' do
+        it { expect(c.to_s).to eq('C') }
+        it { expect(cd.to_s).to eq('C%d') }
+      end
     end
 
   end

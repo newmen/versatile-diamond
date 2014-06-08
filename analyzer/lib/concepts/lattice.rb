@@ -27,6 +27,14 @@ module VersatileDiamond
         @instance.opposite_relation(other && other.instance, relation)
       end
 
+      def to_s
+        "%#{name}"
+      end
+
+      def inspect
+        to_s
+      end
+
     protected
 
       attr_reader :instance
