@@ -103,8 +103,7 @@ module VersatileDiamond
           surface_deactivation.rate = 2
         end
 
-        it { expect(surface_deactivation.full_rate.round(10)).
-          to eq(0.1773357811) }
+        it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
       end
 
       describe '#size' do
