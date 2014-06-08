@@ -5,7 +5,7 @@ const char AdsMethylToDimer::__name[] = "adsorption methyl to dimer";
 
 double AdsMethylToDimer::RATE()
 {
-    static double value = getRate("ADS_METHYL_TO_DIMER") * Env::cCH3();
+    static double value = getRate("ADS_METHYL_TO_DIMER", Env::cCH3());
     return value;
 }
 

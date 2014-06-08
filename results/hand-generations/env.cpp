@@ -8,9 +8,15 @@ double Env::R()
     return value;
 }
 
-double Env::T()
+double Env::gasT()
 {
-    static double value = __config.read<double>("T");
+    static double value = __config.read<double>("temperature", "gas");
+    return value;
+}
+
+double Env::surfaceT()
+{
+    static double value = __config.read<double>("temperature", "surface");
     return value;
 }
 

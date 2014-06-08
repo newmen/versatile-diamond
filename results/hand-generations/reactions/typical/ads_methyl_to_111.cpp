@@ -5,7 +5,7 @@ const char AdsMethylTo111::__name[] = "adsorption methyl to 111";
 
 double AdsMethylTo111::RATE()
 {
-    static double value = getRate("ADS_METHYL_TO_111") * Env::cCH3();
+    static double value = getRate("ADS_METHYL_TO_111", Env::cCH3());
     return value;
 }
 
