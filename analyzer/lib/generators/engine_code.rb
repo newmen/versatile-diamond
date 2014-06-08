@@ -15,11 +15,18 @@ module VersatileDiamond
       public :classifier, :spec_reactions, :term_specs, :specific_specs
 
       def generate(**params)
-        Code::Handbook.new(self).generate(@out_path)
+        code_elements.each do |class_str|
+          eval("Code::#{class_str}").new(self).generate(@out_path)
+        end
       end
 
     private
 
+      # Provides list of code elements the source code by which will generated
+      # @return [Array] the array of names of code generator classes
+      def code_elements
+        %w(Handbook Env)
+      end
     end
 
   end
