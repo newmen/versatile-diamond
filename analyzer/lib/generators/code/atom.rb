@@ -6,15 +6,13 @@ module VersatileDiamond
       class Atom < CppClass
         extend Forwardable
 
-        def_delegator :@atom, :valence
+        def_delegators :@atom, :name, :valence
 
         # Initializes by concept atom
         # @param [Concepts::Atom] atom as element of Mendeleev's table
         def initialize(atom)
           @atom = atom
         end
-
-      private
 
         # Get the cpp class name
         # @return [String] the class name of atom
@@ -27,6 +25,8 @@ module VersatileDiamond
         def file_name
           class_name.downcase
         end
+
+      private
 
         # Gets define name
         # @return [String] the inclusion warden name

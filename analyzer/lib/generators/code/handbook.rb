@@ -27,7 +27,7 @@ module VersatileDiamond
         # @param [Array] the array of string names of generated dependent entities
         def phases
           used_lattices.map do |lattice|
-            lattice.nil? ? 'phase_bondary' : lattice.class.to_s.underscore
+            lattice ? lattice.class.to_s.underscore : 'phase_bondary'
           end
         end
 
