@@ -12,12 +12,12 @@ class SpecifiedAtom : public Atom
 public:
     SpecifiedAtom(ushort type, ushort actives, Lattice *lattice) : Atom(type, actives, lattice) {}
 
-    bool is(ushort typeOf) const override;
-    bool prevIs(ushort typeOf) const override;
+    bool is(ushort typeOf) const final;
+    bool prevIs(ushort typeOf) const final;
 
-    void specifyType() override;
+    void specifyType() final;
 
-    ushort valence() const override { return VALENCE; }
+    ushort valence() const final { return VALENCE; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

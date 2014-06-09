@@ -19,14 +19,14 @@ public:
     ~Diamond();
 
 protected:
-    const float3 &periods() const override;
-    float3 seeks(const int3 &coords) const override;
+    const float3 &periods() const final;
+    float3 seeks(const int3 &coords) const final;
 
-    void buildAtoms() override;
-    Atom *makeAtom(ushort type, const int3 &coords) override;
-    void bondAllAtoms() override;
+    void buildAtoms() final;
+    Atom *makeAtom(ushort type, const int3 &coords) final;
+    void bondAllAtoms() final;
 
-    void findAll() override;
+    void findAll() final;
 
 private:
 //    void bondWithFront110(Atom *atom);
