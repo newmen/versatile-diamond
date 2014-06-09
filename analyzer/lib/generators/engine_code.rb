@@ -14,22 +14,13 @@ module VersatileDiamond
 
       public :classifier, :spec_reactions, :term_specs, :specific_specs
 
+      # Generates source code and configuration files
       def generate(**params)
         code_elements.each do |class_str|
           eval("Code::#{class_str}").new(self).generate(@out_path)
         end
 
-        unique_pure_atoms.each do |atom|
-          Code::Atom.new(atom).generate(@out_path)
-        end
-      end
-
-    private
-
-      # Provides list of code elements the source code by which will generated
-      # @return [Array] the array of names of code generator classes
-      def code_elements
-        %w(Handbook Env)
+        unique_pure_atoms.each { |atom| atom.generate(@out_path) }
       end
 
       # Collects only unique base atom instances
@@ -40,14 +31,22 @@ module VersatileDiamond
             !atom.reference? && !atom.specific?
           end
 
-          unificate(acc + base_atoms, &:same?)
+          unificate(acc + base_atoms) { |a, b| a.name == b.name }
         end
 
         raise 'No unique atoms found!' if pure_atoms.empty?
-        pure_atoms
+        pure_atoms.map { |atom| Code::Atom.new(atom) }
       end
 
-      # Finds and drops not unique items by which are compares by block
+    private
+
+      # Provides list of code elements the source code of which will generated
+      # @return [Array] the array of names of code generator classes
+      def code_elements
+        %w(Handbook Env AtomBuilder)
+      end
+
+      # Finds and drops not unique items which are compares by block
       # @param [Array] list of unificable elements
       # @yield [Object, Object] compares two elements
       # @return [Array] the array of unique elements
