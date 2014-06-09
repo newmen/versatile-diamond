@@ -41,7 +41,7 @@ module VersatileDiamond
         # @return [String] the method name
         def method_name(atom_class, lattice)
           lattice_name = lattice && lattice.name
-          "build#{atom_class.class_name}#{lattice_name}"
+          "build#{atom_class.class_name}_#{lattice_name}"
         end
 
         # Gets name of file which will be generated
