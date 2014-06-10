@@ -20,6 +20,9 @@ public:
     TN cross_100(const Atom *atom) const;
 
     static int3 front_110_at(const Atom *first, const Atom *second);
+
+protected:
+    void bondAround(Atom *atom);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +146,15 @@ int3 DiamondRelations<B>::front_110_at(const Atom *first, const Atom *second)
             return int3(a.x, std::max(a.y, b.y), a.z + 1);
         }
     }
+}
+
+template <class B>
+void DiamondRelations<B>::bondAround(Atom *atom)
+{
+    auto neighbours = this->cross_110(atom);
+    assert(neighbours.all());
+    atom->bondWith(neighbours[0]);
+    atom->bondWith(neighbours[1]);
 }
 
 #endif // DIAMOND_RELATIONS_H

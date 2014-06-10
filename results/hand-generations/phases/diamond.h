@@ -27,11 +27,6 @@ protected:
     void bondAllAtoms() final;
 
     void findAll() final;
-
-private:
-//    void bondWithFront110(Atom *atom);
-    void bondWithCross110(Atom *atom);
-    void bondWithNeighbours(Atom *atom, DiamondRelations::TN &neighbours);
 };
 
 #endif // DIAMOND_H
