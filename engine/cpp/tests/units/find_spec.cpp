@@ -43,6 +43,7 @@
 #include <generations/reactions/typical/migration_through_dimers_row.h>
 #include <generations/reactions/typical/next_level_bridge_to_high_bridge.h>
 #include <generations/reactions/typical/two_bridges_to_high_bridge.h>
+#include <generations/reactions/typical/serpynsky_drop.h>
 #include <generations/reactions/ubiquitous/local/methyl_on_dimer_activation.h>
 #include <generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h>
 #include <generations/reactions/ubiquitous/surface_activation.h>
@@ -58,16 +59,12 @@ void assert_rate(double rate)
     static const double EPS = 1e-2;
     double delta = Handbook::mc().totalRate() - rate;
 
-#ifdef PRINT
-    cout << "\n\n\n" << endl;
-    cout << delta << endl;
-    cout << "\n\n\n" << endl;
-#endif // PRINT
+	static int counter = 1;
+    cout << (counter++) << "    " << delta << endl;
 
     assert(abs(delta) < EPS);
 
-    static int counter = 1;
-    cout << (counter++) << "\t" << rate  << "   " << delta << endl;
+    cout << rate  << "   " << endl;
 }
 
 int main()
@@ -379,13 +376,21 @@ int main()
     assert_rate(13 * SurfaceActivation::RATE +
             3 * SurfaceDeactivation::RATE +
             2 * MethylOnDimerActivation::RATE +
+            2 * SerpynskyDrop::RATE +
             TwoBridgesToHighBridge::RATE +
             AdsMethylTo111::RATE +
             DimerDropAtEnd::RATE);
 
     // 32
-    
-
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-1, 1, 1);
+    assert_rate(12 * SurfaceActivation::RATE +
+            4 * SurfaceDeactivation::RATE +
+            2 * MethylOnDimerActivation::RATE +
+            2 * SerpynskyDrop::RATE +
+            AdsMethylToDimer::RATE +
+            TwoBridgesToHighBridge::RATE +
+            AdsMethylTo111::RATE +
+            DimerDropAtEnd::RATE);
     // 33
 
     // 34

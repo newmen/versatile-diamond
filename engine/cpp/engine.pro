@@ -123,7 +123,8 @@ SOURCES += main.cpp \
     tools/savers/volume_saver_factory.cpp \
     tools/scavenger.cpp \
     generations/reactions/typical/migration_through_dimers_row.cpp \
-    generations/species/specific/cross_bridge_on_bridges.cpp
+    generations/species/specific/cross_bridge_on_bridges.cpp \
+    generations/reactions/typical/serpynsky_drop.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -284,4 +285,5 @@ HEADERS += \
     tools/typed.h \
     tools/vector3d.h \
     generations/reactions/typical/migration_through_dimers_row.h \
-    generations/species/specific/cross_bridge_on_bridges.h
+    generations/species/specific/cross_bridge_on_bridges.h \
+    generations/reactions/typical/serpynsky_drop.h
