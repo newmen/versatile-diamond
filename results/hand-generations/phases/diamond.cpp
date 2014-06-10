@@ -51,7 +51,7 @@ void Diamond::bondAllAtoms()
         int z = atom->lattice()->coords().z;
         if (z > 0)
         {
-            bondWithCross110(atom);
+            bondAround(atom);
         }
 
     });
@@ -78,23 +78,4 @@ Atom *Diamond::makeAtom(ushort type, const int3 &coords)
 void Diamond::findAll()
 {
     Finder::initFind(atoms().data(), atoms().size());
-}
-
-//void Diamond::bondWithFront110(Atom *atom)
-//{
-//    TN neighbours = this->front_110(this->atoms(), atom);
-//    bondWithNeighbours(atom, neighbours);
-//}
-
-void Diamond::bondWithCross110(Atom *atom)
-{
-    auto neighbours = this->cross_110(atom);
-    bondWithNeighbours(atom, neighbours);
-}
-
-void Diamond::bondWithNeighbours(Atom *atom, DiamondRelations::TN &neighbours)
-{
-    assert(neighbours.all());
-    atom->bondWith(neighbours[0]);
-    atom->bondWith(neighbours[1]);
 }
