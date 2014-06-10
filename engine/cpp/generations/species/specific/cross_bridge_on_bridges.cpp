@@ -1,5 +1,6 @@
 #include "cross_bridge_on_bridges.h"
 #include "../base/methyl_on_bridge.h"
+#include "../../reactions/typical/serpynsky_drop.h"
 
 const ushort CrossBridgeOnBridges::__indexes[1] = { 0 };
 const ushort CrossBridgeOnBridges::__roles[1] = { 10 };
@@ -39,7 +40,7 @@ void CrossBridgeOnBridges::find(Atom *anchor)
 
 void CrossBridgeOnBridges::findAllTypicalReactions()
 {
-
+    SerpynskyDrop::find(this);
 }
 
 void CrossBridgeOnBridges::create(ParentSpec *first, ParentSpec *second)

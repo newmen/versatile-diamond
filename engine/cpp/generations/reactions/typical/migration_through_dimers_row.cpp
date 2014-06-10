@@ -1,6 +1,6 @@
 #include "migration_through_dimers_row.h"
 
-const char MigrationThroughDimersRow::__name[] = "migration through dimers chain";
+const char MigrationThroughDimersRow::__name[] = "migration through dimers row";
 const double MigrationThroughDimersRow::RATE = 2.4e8 * std::exp(-30e3 / (1.98 * Env::T));
 
 void MigrationThroughDimersRow::find(MethylOnDimerCMsiu *target)
