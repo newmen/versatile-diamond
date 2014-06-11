@@ -12,7 +12,7 @@ module VersatileDiamond
       # @raise [Errors::SyntaxError] if lattice haven't class declaration
       def lattice(sign, **options)
         raise syntax_error('lattice.need_define_class') unless options[:class]
-        store(Lattice.new(sign, options[:class]))
+        store(Concepts::Lattice.new(sign, options[:class]))
       end
 
       # Interpret size line, checks passed values and store them to Config
