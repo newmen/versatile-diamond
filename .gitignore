@@ -4,6 +4,7 @@ build-*
 *.autosave
 *.swp
 Makefile
+bin/
 cache/
 obj/
 engine/engine
