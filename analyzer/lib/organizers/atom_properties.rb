@@ -81,6 +81,20 @@ module VersatileDiamond
           other.contain_all_nbr_lattices?(self) && other.contain_all_relations?(self)
       end
 
+      # Checks that current properties correspond to atom, lattice and have same
+      # relations pack
+      #
+      # @param [Hash] info about checkable properties
+      # @return [Boolean] is correspond or not
+      def correspond?(info)
+        info.all? do |key, value|
+          internal_value = send(key)
+          internal_value.is_a?(Array) ?
+            lists_are_identical?(internal_value, value, &:==) :
+            internal_value == value
+        end
+      end
+
       %w(smallest same).each do |name|
         var_name = :"@#{name}s"
 
@@ -164,6 +178,12 @@ module VersatileDiamond
       # @return [Integer] number of active bonds
       def actives_num
         count_danglings(:active)
+      end
+
+      # Gets the number of actives when each established bond replaced to active bond
+      # @return [Integer] number of unbonded actives
+      def unbonded_actives_num
+        estab_bonds_num + actives_num
       end
 
       # Gets number of hydrogen atoms

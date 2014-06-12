@@ -255,6 +255,36 @@ module VersatileDiamond
         it { expect(vob.same_unfixed?(eob)).to be_falsey }
       end
 
+      describe '#correspond?' do
+        let(:lattice) { Concepts::Lattice.new(:d, 'Diamond') }
+        let(:common_info) do
+          {
+            atom_name: :C,
+            valence: 4,
+            lattice: lattice
+          }
+        end
+
+        shared_examples_for :check_that_correspond do
+          it { expect(subject.correspond?(info)).to be_truthy }
+        end
+
+        it_behaves_like :check_that_correspond do
+          subject { bridge_ct }
+          let(:relations) { [bond_110_cross, bond_110_cross] }
+          let(:info) { common_info.merge(relations: relations) }
+        end
+
+        it_behaves_like :check_that_correspond do
+          subject { ab_ct }
+          let(:relations) { [bond_110_cross, bond_110_cross] }
+          let(:danglings) { [:active] }
+          let(:info) do
+            common_info.merge(relations: relations, danglings: danglings)
+          end
+        end
+      end
+
       describe '#unrelevanted' do
         it { expect(bridge_ct.unrelevanted).to eq(bridge_ct) }
         it { expect(bridge_ct).to eq(bridge_ct.unrelevanted) }
@@ -422,6 +452,14 @@ module VersatileDiamond
         it { expect(hb_cr.total_hydrogens_num).to eq(1) }
         it { expect(clb_cr.total_hydrogens_num).to eq(0) }
         it { expect(ad_cr.total_hydrogens_num).to eq(0) }
+      end
+
+      describe '#unbonded_actives_num' do
+        it { expect(bridge_ct.unbonded_actives_num).to eq(2) }
+        it { expect(ab_ct.unbonded_actives_num).to eq(3) }
+        it { expect(ab_cr.unbonded_actives_num).to eq(4) }
+        it { expect(hb_cr.unbonded_actives_num).to eq(3) }
+        it { expect(ad_cr.unbonded_actives_num).to eq(4) }
       end
 
       describe '#smallests' do
