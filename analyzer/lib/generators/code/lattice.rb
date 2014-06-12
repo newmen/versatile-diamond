@@ -5,9 +5,9 @@ module VersatileDiamond
     module Code
 
       # Creates Lattice class
-      class Lattice < CppClassWithGen
-        extend Forwardable
+      class Lattice < CppClass
         include PolynameClass
+        extend Forwardable
 
         def_delegators :instance, :default_surface_height
 
@@ -25,12 +25,19 @@ module VersatileDiamond
           super
           cp_crystal_properties_file_path(root_dir)
           cp_relations_file_path(root_dir)
+          LatticeAtomsIterator.new(self).generate(root_dir)
         end
 
         # Get the cpp class name
         # @return [String] the class name of atom
         def class_name
           instance.class.to_s
+        end
+
+        # Gets name of file which will be generated
+        # @return [String] the name of result file without extention
+        def file_name
+          class_name.underscore
         end
 
       private
@@ -109,12 +116,6 @@ module VersatileDiamond
           full_info[:lattice] = @lattice
           target = @classifier.props.find { |prop| prop.correspond?(full_info) }
           target || raise('Used crystal atom was not found!')
-        end
-
-        # Gets name of file which will be generated
-        # @return [String] the name of result file without extention
-        def file_name
-          class_name.underscore
         end
 
         # Atoms stored in atoms directory

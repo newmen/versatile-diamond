@@ -17,7 +17,7 @@ module VersatileDiamond
         # Gets define name
         # @return [String] the inclusion warden name
         def define_name
-          "#{class_name.upcase}_H"
+          "#{file_name.upcase}_H"
         end
       end
 
