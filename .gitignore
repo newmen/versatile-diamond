@@ -4,6 +4,7 @@ build-*
 *.autosave
 *.swp
 Makefile
+bin/
 cache/
 obj/
 engine/engine
@@ -17,6 +18,7 @@ vde-*s.e*
 
 .idea
 *.dump
+.bundle/
 coverage/
 
 Gemfile.lock
