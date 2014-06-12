@@ -20,13 +20,13 @@ module VersatileDiamond
         # Check that results contain amorph phase
         # @return [Boolean] contain or not
         def amorph_exists?
-          used_lattices.include?(nil)
+          @generator.used_lattices.include?(nil)
         end
 
         # Gets all usable phases of atoms (lattices and amorphous if need)
         # @param [Array] the array of string names of generated dependent entities
         def phases
-          used_lattices.map do |lattice|
+          @generator.used_lattices.map do |lattice|
             lattice ? lattice.class.to_s.underscore : 'phase_bondary'
           end
         end
@@ -66,12 +66,6 @@ module VersatileDiamond
         end
 
       private
-
-        # Gets all used lattices in analysed results
-        # @return [Array] the array of lattice instances
-        def used_lattices
-          @generator.classifier.props.map(&:lattice).uniq
-        end
 
         # Makes string from matrix
         # @param [Array] matrix the original matrix

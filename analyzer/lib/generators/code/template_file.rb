@@ -13,20 +13,37 @@ module VersatileDiamond
         # @param [String] root_dir the out generation dir
         # @param [String] ext the extention of generation file
         def write_file(root_dir, ext)
-          template = template_file(ext)
-          dir_path = Pathname.new(root_dir) + additional_path
-          FileUtils.mkdir_p(dir_path)
+          File.write(out_path(root_dir, ext), template_file(ext).result(binding))
+        end
 
-          full_path = dir_path + "#{file_name}.#{ext}"
-          File.write(full_path, template.result(binding))
+        # Makes out directory if it does not exist. Gets the path to output directory
+        # @param [String] root_dir see at #write_file same argument
+        # @return [Pathname] the path to output directory
+        def out_dir(root_dir)
+          path = Pathname.new(root_dir) + additional_path
+          FileUtils.mkdir_p(path)
+          path
+        end
+
+        # Get full out path to result file
+        # @param [String] root_dir see at #write_file same argument
+        # @param [String] ext see at #write_file same argument
+        # @return [Pathname] the path to output file
+        def out_path(root_dir, ext)
+          out_dir(root_dir) + "#{file_name}.#{ext}"
+        end
+
+        # Get the path to template dir where is stored file
+        # @return [Pathname] the path to template dir
+        def template_dir
+          Pathname.new(File.dirname(__FILE__)) + TEMPLATES_DIR + additional_path
         end
 
         # Gets the path to template
         # @param [String] ext the extention of generation file
         # @return [Pathname] the full path to template
         def template_path(ext)
-          Pathname.new(File.dirname(__FILE__)) +
-            TEMPLATES_DIR + additional_path + "#{template_name}.#{ext}.erb"
+          template_dir + "#{template_name}.#{ext}.erb"
         end
 
         # Gets the template as erb data

@@ -6,7 +6,7 @@ module VersatileDiamond
     class Lattice < Named
       extend Forwardable
 
-      attr_reader :klass
+      attr_reader :klass, :instance
 
       # @param [Symbol] symbol is lattice symbolic name
       # @param [String] klass for generating code
@@ -17,6 +17,13 @@ module VersatileDiamond
       end
 
       def_delegator :@instance, :positions_between
+
+      # Compares two lattice instances
+      # @param [Latice] other the comparable lattice
+      # @return [Boolean] are equal or not
+      def == (other)
+        other && klass == other.klass
+      end
 
       # Deligates calling to lattice instance
       # @param [Lattice] other an other concept of lattice
@@ -34,11 +41,6 @@ module VersatileDiamond
       def inspect
         to_s
       end
-
-    protected
-
-      attr_reader :instance
-
     end
 
   end

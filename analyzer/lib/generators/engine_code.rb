@@ -21,6 +21,15 @@ module VersatileDiamond
         end
 
         unique_pure_atoms.each { |atom| atom.generate(@out_path) }
+        used_lattices.compact.each do |lattice|
+          Code::Lattice.new(lattice, classifier).generate(@out_path)
+        end
+      end
+
+      # Gets all used lattices in analysed results
+      # @return [Array] the array of lattice instances
+      def used_lattices
+        classifier.props.map(&:lattice).uniq
       end
 
       # Collects only unique base atom instances
