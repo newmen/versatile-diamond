@@ -4,9 +4,9 @@
 #include <phases/crystal.h>
 using namespace vd;
 
-#include "diamond_relations.h"
+#include "diamond_crystal_properties.h"
 
-class Diamond : public DiamondRelations<Crystal>
+class Diamond : public DiamondCrystalProperties<Crystal>
 {
     int _defaultSurfaceHeight;
 
@@ -19,11 +19,8 @@ public:
     ~Diamond();
 
 protected:
-    const float3 &periods() const final;
-    float3 seeks(const int3 &coords) const final;
-
     void buildAtoms() final;
-    Atom *makeAtom(ushort type, const int3 &coords) final;
+    Atom *makeAtom(ushort type, ushort actives, const int3 &coords) final;
     void bondAllAtoms() final;
 
     void findAll() final;
