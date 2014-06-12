@@ -3,7 +3,7 @@
 #include "../finder.h"
 
 Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :
-    DiamondRelations<Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+    DiamondCrystalProperties<Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
 {
 }
 
@@ -12,34 +12,13 @@ Diamond::~Diamond()
     Finder::removeAll(atoms().data(), atoms().size());
 }
 
-const float3 &Diamond::periods() const
-{
-    static const float3 periods(2.45, 2.45, 3.57 / 4);
-    return periods;
-}
-
-float3 Diamond::seeks(const int3 &coords) const
-{
-    if (coords.z == 0)
-    {
-        return float3();
-    }
-    else
-    {
-        float px = periods().x / 2, py = periods().y / 2;
-        int cx = (coords.z + 1) / 2, cy = coords.z / 2;
-
-        return float3(cx * px, cy * py);
-    }
-}
-
 void Diamond::buildAtoms()
 {
     for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
     {
-        makeLayer(i, 24);
+        makeLayer(i, 24, 4);
     }
-    makeLayer(_defaultSurfaceHeight - 1, 1);
+    makeLayer(_defaultSurfaceHeight - 1, 1, 3);
 }
 
 void Diamond::bondAllAtoms()
@@ -57,21 +36,10 @@ void Diamond::bondAllAtoms()
     });
 }
 
-Atom *Diamond::makeAtom(ushort type, const int3 &coords)
+Atom *Diamond::makeAtom(ushort type, ushort actives, const int3 &coords)
 {
     AtomBuilder builder;
-    Atom *atom = builder.buildCd(type, 2, this, coords);
-
-    int z = coords.z;
-    if (z > 0 && z < _defaultSurfaceHeight - 1)
-    {
-        atom->activate();
-        atom->activate();
-    } else if (z == _defaultSurfaceHeight - 1)
-    {
-        atom->activate();
-    }
-
+    Atom *atom = builder.buildCd(type, actives, this, coords);
     return atom;
 }
 

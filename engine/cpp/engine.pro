@@ -135,6 +135,7 @@ HEADERS += \
     ../../results/hand-generations/names.h \
     ../../results/hand-generations/phases/diamond.h \
     ../../results/hand-generations/phases/diamond_atoms_iterator.h \
+    ../../results/hand-generations/phases/diamond_crystal_properties.h \
     ../../results/hand-generations/phases/diamond_relations.h \
     ../../results/hand-generations/phases/phase_boundary.h \
     ../../results/hand-generations/reactions/concretizable_role.h \
