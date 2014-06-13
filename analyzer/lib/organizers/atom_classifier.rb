@@ -53,6 +53,8 @@ module VersatileDiamond
 
       # Organizes dependencies between properties
       def organize_properties!
+        add_default_lattices_atoms
+
         current_props = props.sort_by(&:size)
         current_props_sd = current_props.dup
 
@@ -178,6 +180,12 @@ module VersatileDiamond
         collect_transitions(:activated)
       end
 
+      # Gets all used lattices in analysed results
+      # @return [Array] the array of lattice instances
+      def used_lattices
+        props.map(&:lattice).uniq
+      end
+
       # Checks that the first atom properties are the second atom properties
       # @param [AtomProperties] first the bigger atom properties
       # @param [AtomProperties] second the smallest atom properties
@@ -187,6 +195,17 @@ module VersatileDiamond
       end
 
     private
+
+      # Adds default atoms of all used lattices
+      def add_default_lattices_atoms
+        used_lattices.compact.each do |lattice|
+          %w(major surface).each do |name|
+            atom_hash = lattice.instance.send(:"#{name}_crystal_atom")
+            props_hash = atom_hash.merge(lattice: lattice)
+            store_prop(AtomProperties.new(props_hash))
+          end
+        end
+      end
 
       # Gets a new index of adding properties
       # @return [Integer] index of new properties

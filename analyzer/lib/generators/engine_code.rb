@@ -3,6 +3,9 @@ module VersatileDiamond
 
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
+      extend Forwardable
+
+      def_delegator :classifier, :used_lattices
 
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
@@ -12,7 +15,8 @@ module VersatileDiamond
         @out_path = out_path
       end
 
-      public :classifier, :spec_reactions, :term_specs, :specific_specs
+      public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs,
+        :specific_specs
 
       # Generates source code and configuration files
       def generate(**params)
@@ -24,12 +28,6 @@ module VersatileDiamond
         used_lattices.compact.each do |lattice|
           Code::Lattice.new(lattice, classifier).generate(@out_path)
         end
-      end
-
-      # Gets all used lattices in analysed results
-      # @return [Array] the array of lattice instances
-      def used_lattices
-        classifier.props.map(&:lattice).uniq
       end
 
       # Collects only unique base atom instances
