@@ -85,6 +85,18 @@ module VersatileDiamond
         it { expect(subject.same?(wrap(methyl_deactivation))).to be_falsey }
       end
 
+      describe '#local?' do
+        describe 'methyl activation' do
+          subject { DependentTypicalReaction.new(methyl_activation) }
+          it { expect(subject.local?).to be_truthy }
+        end
+
+        describe 'dimer formation' do
+          subject { DependentTypicalReaction.new(dimer_formation) }
+          it { expect(subject.local?).to be_falsey }
+        end
+      end
+
       describe '#formula' do
         let(:formula) { subject.formula }
         it { expect(formula).to match(/dimer\(.+? i\)/) }
