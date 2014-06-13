@@ -20,12 +20,10 @@ void SerpynskyDrop::doIt()
 
     a->unbondFrom(b);
 
-    a->changeType(14);
+    a->changeType(26);
 
-    if (b->is(23))
-        b->changeType(21);
-    else if (b->is(33))
-        b->changeType(5);
+    if (b->is(23)) b->changeType(21);
+    else if (b->is(33)) b->changeType(5);
     else
     {
         assert(a->is(7));
