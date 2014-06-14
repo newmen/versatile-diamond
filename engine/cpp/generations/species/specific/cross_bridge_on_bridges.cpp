@@ -1,6 +1,6 @@
 #include "cross_bridge_on_bridges.h"
 #include "../base/methyl_on_bridge.h"
-#include "../../reactions/typical/serpynsky_drop.h"
+#include "../../reactions/typical/sierpinski_drop.h"
 
 const ushort CrossBridgeOnBridges::__indexes[1] = { 0 };
 const ushort CrossBridgeOnBridges::__roles[1] = { 10 };
@@ -19,32 +19,25 @@ void CrossBridgeOnBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(CROSS_BRIDGE_ON_BRIDGES, 10))
         {
-            ParentSpec *first = nullptr, *second = nullptr;
+            ParentSpec *parents[2] = { nullptr, nullptr };
 
-            anchor->eachSpecByRole<MethylOnBridge>(14, [anchor, &first, &second](MethylOnBridge *target) {
-                if (!first)
+            anchor->eachSpecByRole<MethylOnBridge>(14, [anchor, &parents](MethylOnBridge *target) {
+                if (!parents[0])
                 {
-                    first = target;
+                    parents[0] = target;
                 }
                 else
                 {
-                    second = target;
+                    parents[1] = target;
                 }
             });
 
-            create(first, second);
-            create(second, first);
+            create<CrossBridgeOnBridges>(parents);
         }
     }
 }
 
 void CrossBridgeOnBridges::findAllTypicalReactions()
 {
-    SerpynskyDrop::find(this);
-}
-
-void CrossBridgeOnBridges::create(ParentSpec *first, ParentSpec *second)
-{
-    ParentSpec *parents[2] = { first, second };
-    Creator::create<CrossBridgeOnBridges>(parents);
+    SierpinskiDrop::find(this);
 }

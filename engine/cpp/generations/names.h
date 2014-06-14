@@ -94,10 +94,10 @@ enum TypicalReactionNames : ushort
     MIGRATION_DOWN_IN_GAP_FROM_DIMER,
     ABS_HYDROGEN_FROM_GAP,
     MIGRATION_THROUGH_DIMERS_ROW,
-    SERPYNSKY_DROP
+    SIERPINSKI_DROP
 };
 
-static_assert(SERPYNSKY_DROP + 1 == TYPICAL_REACTIONS_NUM,
+static_assert(SIERPINSKI_DROP + 1 == TYPICAL_REACTIONS_NUM,
               "Incorrect number of typical reactions");
 
 enum LateralReactionNames : ushort

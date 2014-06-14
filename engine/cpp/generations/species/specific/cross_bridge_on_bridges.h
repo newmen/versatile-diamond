@@ -22,8 +22,6 @@ protected:
     const ushort *roles() const override { return __roles; }
 
 private:
-    static void create(ParentSpec *first, ParentSpec *second);
-
     static const ushort __indexes[1];
     static const ushort __roles[1];
 };

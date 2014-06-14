@@ -15,6 +15,8 @@ QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 #QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
+LIBS += -L/home/newmen/gcc/4.8.3/lib -lstdc++
+
 SOURCES += main.cpp \
     atoms/atom.cpp \
     atoms/lattice.cpp \
@@ -55,7 +57,11 @@ SOURCES += main.cpp \
     generations/reactions/typical/migration_down_in_gap_from_111.cpp \
     generations/reactions/typical/migration_down_in_gap_from_dimer.cpp \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
+    generations/reactions/typical/migration_through_dimers_row.cpp \
     generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
+    generations/reactions/typical/sierpinski_drop.cpp \
+    generations/reactions/typical/sierpinski_drop_left.cpp \
+    generations/reactions/typical/sierpinski_drop_right.cpp \
     generations/reactions/typical/two_bridges_to_high_bridge.cpp \
     generations/reactions/ubiquitous/local/methyl_on_dimer_activation.cpp \
     generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
@@ -77,6 +83,7 @@ SOURCES += main.cpp \
     generations/species/specific/bridge_ctsi.cpp \
     generations/species/specific/bridge_with_dimer_cbti_cbrs_cdli.cpp \
     generations/species/specific/bridge_with_dimer_cdli.cpp \
+    generations/species/specific/cross_bridge_on_bridges.cpp \
     generations/species/specific/dimer_cri_cli.cpp \
     generations/species/specific/dimer_crs.cpp \
     generations/species/specific/dimer_crs_cli.cpp \
@@ -121,10 +128,7 @@ SOURCES += main.cpp \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
-    tools/scavenger.cpp \
-    generations/reactions/typical/migration_through_dimers_row.cpp \
-    generations/species/specific/cross_bridge_on_bridges.cpp \
-    generations/reactions/typical/serpynsky_drop.cpp
+    tools/scavenger.cpp
 
 HEADERS += \
     atoms/atom.h \
@@ -185,7 +189,11 @@ HEADERS += \
     generations/reactions/typical/migration_down_in_gap_from_111.h \
     generations/reactions/typical/migration_down_in_gap_from_dimer.h \
     generations/reactions/typical/migration_down_in_gap_from_high_bridge.h \
+    generations/reactions/typical/migration_through_dimers_row.h \
     generations/reactions/typical/next_level_bridge_to_high_bridge.h \
+    generations/reactions/typical/sierpinski_drop.h \
+    generations/reactions/typical/sierpinski_drop_left.h \
+    generations/reactions/typical/sierpinski_drop_right.h \
     generations/reactions/typical/two_bridges_to_high_bridge.h \
     generations/reactions/ubiquitous.h \
     generations/reactions/ubiquitous/data/activation_data.h \
@@ -215,6 +223,7 @@ HEADERS += \
     generations/species/specific/bridge_ctsi.h \
     generations/species/specific/bridge_with_dimer_cbti_cbrs_cdli.h \
     generations/species/specific/bridge_with_dimer_cdli.h \
+    generations/species/specific/cross_bridge_on_bridges.h \
     generations/species/specific/dimer_cri_cli.h \
     generations/species/specific/dimer_crs.h \
     generations/species/specific/dimer_crs_cli.h \
@@ -283,7 +292,4 @@ HEADERS += \
     tools/savers/volume_saver_factory.h \
     tools/scavenger.h \
     tools/typed.h \
-    tools/vector3d.h \
-    generations/reactions/typical/migration_through_dimers_row.h \
-    generations/species/specific/cross_bridge_on_bridges.h \
-    generations/reactions/typical/serpynsky_drop.h
+    tools/vector3d.h

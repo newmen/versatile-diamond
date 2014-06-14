@@ -5,9 +5,9 @@
 #include "../surface_deactivation.h"
 
 class MethylOnDimerDeactivation :
-        public Local<DeactivationData, SurfaceDeactivation, METHYL_ON_DIMER_DEACTIVATION, METHYL_ON_DIMER, 14>
+        public Local<DeactivationData, SurfaceDeactivation, METHYL_ON_DIMER_DEACTIVATION, METHYL_ON_DIMER_CMsiu, 26>
 {
-    typedef Local<DeactivationData, SurfaceDeactivation, METHYL_ON_DIMER_DEACTIVATION, METHYL_ON_DIMER, 14> ParentType;
+    typedef Local<DeactivationData, SurfaceDeactivation, METHYL_ON_DIMER_DEACTIVATION, METHYL_ON_DIMER_CMsiu, 26> ParentType;
 
     static const char __name[];
 

@@ -43,7 +43,7 @@
 #include <generations/reactions/typical/migration_through_dimers_row.h>
 #include <generations/reactions/typical/next_level_bridge_to_high_bridge.h>
 #include <generations/reactions/typical/two_bridges_to_high_bridge.h>
-#include <generations/reactions/typical/serpynsky_drop.h>
+#include <generations/reactions/typical/sierpinski_drop.h>
 #include <generations/reactions/ubiquitous/local/methyl_on_dimer_activation.h>
 #include <generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h>
 #include <generations/reactions/ubiquitous/surface_activation.h>
@@ -371,25 +371,33 @@ int main()
 
     // 31
     Handbook::mc().doOneOfOne(MIGRATION_THROUGH_DIMERS_ROW);
-    assert_rate(13 * SurfaceActivation::RATE +
+    assert_rate(15 * SurfaceActivation::RATE +
             3 * SurfaceDeactivation::RATE +
-            2 * MethylOnDimerActivation::RATE +
-            2 * SerpynskyDrop::RATE +
+            2 * SierpinskiDrop::RATE +
             TwoBridgesToHighBridge::RATE +
             AdsMethylTo111::RATE +
             DimerDropAtEnd::RATE);
 
     // 32
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-1, 1, 1);
-    assert_rate(12 * SurfaceActivation::RATE +
+    assert_rate(14 * SurfaceActivation::RATE +
             4 * SurfaceDeactivation::RATE +
-            2 * MethylOnDimerActivation::RATE +
-            2 * SerpynskyDrop::RATE +
+            2 * SierpinskiDrop::RATE +
             AdsMethylToDimer::RATE +
-            TwoBridgesToHighBridge::RATE +
             AdsMethylTo111::RATE +
+            TwoBridgesToHighBridge::RATE +
             DimerDropAtEnd::RATE);
+
     // 33
+    Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
+    Handbook::mc().doLastOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
+    Handbook::mc().doOneOfOne(METHYL_TO_HIGH_BRIDGE);
+    assert_rate(16 * SurfaceActivation::RATE +
+            4 * SurfaceDeactivation::RATE +
+            2 * SierpinskiDrop::RATE +
+            AdsMethylTo111::RATE +
+            TwoBridgesToHighBridge::RATE +
+            DimerDrop::RATE);
 
     // 34
 
