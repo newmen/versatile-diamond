@@ -1,6 +1,4 @@
 #include "methyl_on_dimer.h"
-#include "../../reactions/ubiquitous/local/methyl_on_dimer_activation.h"
-#include "../../reactions/ubiquitous/local/methyl_on_dimer_deactivation.h"
 #include "../empty/shifted_dimer.h"
 #include "../specific/methyl_on_dimer_cmiu.h"
 
@@ -48,16 +46,4 @@ void MethylOnDimer::find(Dimer *target)
 void MethylOnDimer::findAllChildren()
 {
     MethylOnDimerCMiu::find(this);
-}
-
-void MethylOnDimer::concretizeLocal(Atom *target) const
-{
-    MethylOnDimerActivation::concretize(target);
-    MethylOnDimerDeactivation::concretize(target);
-}
-
-void MethylOnDimer::unconcretizeLocal(Atom *target) const
-{
-    MethylOnDimerActivation::unconcretize(target);
-    MethylOnDimerDeactivation::unconcretize(target);
 }
