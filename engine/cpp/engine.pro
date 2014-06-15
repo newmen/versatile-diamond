@@ -15,8 +15,6 @@ QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 #QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
 #LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
-LIBS += -L/home/newmen/gcc/4.8.3/lib -lstdc++
-
 SOURCES += main.cpp \
     atoms/atom.cpp \
     atoms/lattice.cpp \

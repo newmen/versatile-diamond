@@ -6,7 +6,7 @@ const ushort CrossBridgeOnBridges::__indexes[1] = { 0 };
 const ushort CrossBridgeOnBridges::__roles[1] = { 10 };
 
 #ifdef PRINT
-const char *CrossBridgeOnBriges::name() const
+const char *CrossBridgeOnBridges::name() const
 {
     static const char value[] = "cross bridge on briges";
     return value;
@@ -32,7 +32,10 @@ void CrossBridgeOnBridges::find(Atom *anchor)
                 }
             });
 
-            create<CrossBridgeOnBridges>(parents);
+            if (parents[1])
+            {
+                create<CrossBridgeOnBridges>(parents);
+            }
         }
     }
 }

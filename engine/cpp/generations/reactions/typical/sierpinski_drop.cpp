@@ -24,10 +24,11 @@ void SierpinskiDrop::doItWith(Atom **atoms)
 
     if (b->is(23)) b->changeType(21);
     else if (b->is(33)) b->changeType(5);
+    else if (b->is(8)) b->changeType(2);
     else
     {
-        assert(a->is(7));
-        b->changeType(8);
+        assert(b->is(7));
+        b->changeType(28);
     }
 
     Finder::findAll(atoms, 2);

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<gcp:chemistry xmlns:gcp="http://www.nongnu.org/gchempaint" creation="12/19/2013" revision="05/26/2014">
-  <generator>GChemPaint 0.14.5</generator>
+<gcp:chemistry xmlns:gcp="http://www.nongnu.org/gchempaint" creation="12/19/2013" revision="06/14/2014">
+  <generator>GChemPaint 0.14.2</generator>
   <author name="newmen"/>
   <theme name="GChemPaint" bond-length="140" bond-angle="120" bond-dist="5" bond-width="1" arrow-length="200" arrow-head-a="6" arrow-head-b="8" arrow-head-c="4" arrow-dist="5" arrow-width="1" arrow-padding="16" hash-width="1" hash-dist="2" stereo-bond-width="5" zoom-factor="4" padding="2" stoichiometry-padding="1" object-padding="16" sign-padding="8" charge-sign-size="9" font-family="Bitstream Vera Sans" font-style="normal" font-weight="normal" font-variant="normal" font-stretch="normal" font-size="12288" text-font-family="Bitstream Vera Serif" text-font-style="normal" text-font-weight="normal" text-font-variant="normal" text-font-stretch="normal" text-font-size="12288"/>
   <molecule id="m1">
@@ -4750,80 +4750,80 @@
   </molecule>
   <molecule id="m129">
     <atom id="a2816" element="C">
-      <position x="6418.03846345483" y="978.5197438683881"/>
+      <position x="6419.2069815212362" y="1602.9786672082319"/>
     </atom>
     <atom id="a2817" element="C">
-      <position x="6265.0052024565903" y="980.97009698066449"/>
+      <position x="6266.1737205229965" y="1605.4290203205082"/>
     </atom>
     <atom id="a2818" element="C">
-      <position x="6394.7447493956042" y="891.58641950237143"/>
+      <position x="6395.9132674620105" y="1516.0453428422152"/>
     </atom>
     <atom id="a2819" element="C">
-      <position x="6355.9218926302256" y="1036.4752934457319"/>
+      <position x="6357.0904106966318" y="1660.9342167855757"/>
     </atom>
     <atom id="a2820" element="C">
-      <position x="6241.7114883973627" y="894.03677261464827"/>
+      <position x="6242.880006463769" y="1518.495695954492"/>
       <electron id="el295" position="nw"/>
     </atom>
     <atom id="a2821" element="C">
-      <position x="6202.8886316319858" y="1038.9256465580083"/>
+      <position x="6204.0571496983921" y="1663.3845698978521"/>
     </atom>
     <atom id="a2822" element="C">
-      <position x="6570.6822740364405" y="979.27449296238865"/>
+      <position x="6571.8507921028468" y="1603.7334163022324"/>
     </atom>
     <atom id="a2823" element="C">
-      <position x="6547.3885599772129" y="892.34116859637243"/>
+      <position x="6548.5570780436192" y="1516.8000919362162"/>
     </atom>
     <atom id="a2824" element="C">
-      <position x="6508.5657032118361" y="1037.2300425397325"/>
+      <position x="6509.7342212782423" y="1661.6889658795762"/>
     </atom>
     <atom id="a2825" element="C">
-      <position x="6729.0488683680142" y="976.82413985011272"/>
+      <position x="6730.2173864344204" y="1601.2830631899565"/>
     </atom>
     <atom id="a2826" element="C">
-      <position x="6705.7551543087884" y="889.89081548409604"/>
+      <position x="6706.9236723751947" y="1514.3497388239398"/>
     </atom>
     <atom id="a2827" element="C">
-      <position x="6666.9322975434097" y="1034.7796894274566"/>
+      <position x="6668.100815609816" y="1659.2386127673003"/>
     </atom>
     <atom id="a2828" element="C">
-      <position x="6318.3159327092617" y="829.75801164599443"/>
+      <position x="6319.4844507756679" y="1454.2169349858382"/>
       <electron id="el296" position="n"/>
     </atom>
     <atom id="a2829" element="C">
-      <position x="6471.3491937075014" y="827.30765853371759"/>
+      <position x="6472.5177117739076" y="1451.7665818735613"/>
       <electron id="el297" position="n"/>
     </atom>
     <atom id="a2830" element="C">
-      <position x="6485.2719891526085" y="950.29671817371673"/>
+      <position x="6486.4405072190148" y="1574.7556415135605"/>
     </atom>
     <atom id="a2831" element="C">
-      <position x="6643.638583484184" y="947.84636506144034"/>
+      <position x="6644.8071015505902" y="1572.3052884012841"/>
       <electron id="el298" position="nw"/>
     </atom>
     <atom id="a2832" element="C">
-      <position x="6446.4491323872317" y="1095.1855921170768"/>
+      <position x="6447.6176504536379" y="1719.6445154569205"/>
     </atom>
     <atom id="a2833" element="C">
-      <position x="6604.8157267188053" y="1092.7352390048009"/>
+      <position x="6605.9842447852116" y="1717.1941623446446"/>
     </atom>
     <atom id="a2834" element="C">
-      <position x="6423.1554183280041" y="1008.2522677510606"/>
+      <position x="6424.3239363944103" y="1632.7111910909043"/>
     </atom>
     <atom id="a2835" element="C">
-      <position x="6581.5220126595777" y="1005.8019146387846"/>
+      <position x="6582.690530725984" y="1630.2608379786284"/>
     </atom>
     <atom id="a2836" element="C">
-      <position x="6384.3325615626272" y="1153.1411416944206"/>
+      <position x="6385.5010796290335" y="1777.6000650342644"/>
     </atom>
     <atom id="a2837" element="C">
-      <position x="6542.6991558942009" y="1150.6907885821447"/>
+      <position x="6543.8676739606071" y="1775.1497119219885"/>
     </atom>
     <atom id="a2838" element="C">
-      <position x="6682.4614402495627" y="802.95749111807936"/>
+      <position x="6683.6299583159689" y="1427.4164144579231"/>
     </atom>
     <atom id="a2839" element="C">
-      <position x="6485.2719891526076" y="840.29671817371673"/>
+      <position x="6486.4405072190139" y="1464.7556415135605"/>
     </atom>
     <bond id="b3052" order="1" begin="a2816" end="a2818" type="down"/>
     <bond id="b3053" order="1" begin="a2818" end="a2819" type="up"/>
@@ -4878,79 +4878,79 @@
   </molecule>
   <molecule id="m130">
     <atom id="a2840" element="C">
-      <position x="6425.8747612015814" y="1572.2491708135051"/>
+      <position x="6419.1395545556443" y="990.63917226775493"/>
     </atom>
     <atom id="a2841" element="C">
-      <position x="6272.8415002033416" y="1574.6995239257815"/>
+      <position x="6266.1062935574046" y="993.08952538003132"/>
     </atom>
     <atom id="a2842" element="C">
-      <position x="6402.5810471423556" y="1485.3158464474884"/>
+      <position x="6395.8458404964185" y="903.70584790173825"/>
     </atom>
     <atom id="a2843" element="C">
-      <position x="6363.7581903769769" y="1630.2047203908489"/>
+      <position x="6357.0229837310399" y="1048.5947218450988"/>
     </atom>
     <atom id="a2844" element="C">
-      <position x="6249.5477861441141" y="1487.7661995597653"/>
+      <position x="6242.8125794981779" y="906.1562010140151"/>
       <electron id="el299" position="nw"/>
     </atom>
     <atom id="a2845" element="C">
-      <position x="6210.7249293787372" y="1632.6550735031253"/>
+      <position x="6203.9897227328001" y="1051.0450749573752"/>
     </atom>
     <atom id="a2846" element="C">
-      <position x="6578.5185717831919" y="1573.0039199075056"/>
+      <position x="6571.7833651372548" y="991.39392136175547"/>
     </atom>
     <atom id="a2847" element="C">
-      <position x="6555.2248577239643" y="1486.0705955414894"/>
+      <position x="6548.4896510780281" y="904.46059699573925"/>
     </atom>
     <atom id="a2848" element="C">
-      <position x="6516.4020009585875" y="1630.9594694848495"/>
+      <position x="6509.6667943126504" y="1049.3494709390993"/>
     </atom>
     <atom id="a2849" element="C">
-      <position x="6736.8851661147655" y="1570.5535667952297"/>
+      <position x="6730.1499594688285" y="988.94356824947954"/>
     </atom>
     <atom id="a2850" element="C">
-      <position x="6713.5914520555398" y="1483.620242429213"/>
+      <position x="6706.8562454096027" y="902.01024388346286"/>
     </atom>
     <atom id="a2851" element="C">
-      <position x="6674.7685952901611" y="1628.5091163725735"/>
+      <position x="6668.033388644224" y="1046.8991178268234"/>
     </atom>
     <atom id="a2852" element="C">
-      <position x="6326.1522304560131" y="1423.4874385911114"/>
+      <position x="6319.417023810076" y="841.87744004536125"/>
       <electron id="el300" position="n"/>
     </atom>
     <atom id="a2853" element="C">
-      <position x="6479.1854914542528" y="1421.0370854788346"/>
+      <position x="6472.4502848083166" y="839.42708693308441"/>
       <electron id="el301" position="n"/>
     </atom>
     <atom id="a2854" element="C">
-      <position x="6494.3977133263043" y="1543.4135568407646"/>
+      <position x="6486.3730802534237" y="962.41614657308355"/>
     </atom>
     <atom id="a2855" element="C">
-      <position x="6650.1854548039901" y="1542.1883802846264"/>
+      <position x="6644.7396745849983" y="959.96579346080716"/>
     </atom>
     <atom id="a2856" element="C">
-      <position x="6454.285430133983" y="1688.9150190621938"/>
+      <position x="6447.550223488046" y="1107.3050205164436"/>
     </atom>
     <atom id="a2857" element="C">
-      <position x="6612.6520244655567" y="1686.4646659499178"/>
+      <position x="6605.9168178196196" y="1104.8546674041677"/>
     </atom>
     <atom id="a2858" element="C">
-      <position x="6430.9917160747555" y="1601.9816946961776"/>
+      <position x="6424.2565094288193" y="1020.3716961504274"/>
     </atom>
     <atom id="a2859" element="C">
-      <position x="6589.3583104063291" y="1599.5313415839016"/>
+      <position x="6582.623103760393" y="1017.9213430381515"/>
     </atom>
     <atom id="a2860" element="C">
-      <position x="6392.1688593093786" y="1746.8705686395376"/>
+      <position x="6385.4336526634415" y="1165.2605700937875"/>
     </atom>
     <atom id="a2861" element="C">
-      <position x="6550.5354536409523" y="1744.4202155272617"/>
+      <position x="6543.8002469950152" y="1162.8102169815115"/>
     </atom>
     <atom id="a2862" element="C">
-      <position x="6690.297737996314" y="1396.6869180631963"/>
+      <position x="6683.562531350377" y="815.07691951744619"/>
     </atom>
     <atom id="a2864" element="C">
-      <position x="6572.2915840651476" y="1478.5222075940417"/>
+      <position x="6498.5748842380963" y="822.94888884023919"/>
     </atom>
     <bond id="b3077" order="1" begin="a2840" end="a2842" type="down"/>
     <bond id="b3078" order="1" begin="a2842" end="a2843" type="up"/>
@@ -4974,112 +4974,12 @@
     <bond id="b3096" order="1" begin="a2857" end="a2859" type="down"/>
     <bond id="b3097" order="1" begin="a2858" end="a2860" type="up"/>
     <bond id="b3098" order="1" begin="a2859" end="a2861" type="up"/>
-    <bond id="b3099" order="1" begin="a2854" end="a2864" level="1"/>
+    <bond id="b3099" order="1" begin="a2854" end="a2855" level="1"/>
     <bond id="b3100" order="1" begin="a2850" end="a2862" type="down"/>
     <bond id="b3101" order="1" begin="a2862" end="a2855" type="up" level="1"/>
-    <bond id="b3102" order="1" begin="a2864" end="a2855" level="1"/>
+    <bond id="b3102" order="1" begin="a2854" end="a2864" level="1"/>
   </molecule>
   <molecule id="m131">
-    <atom id="a2863" element="C">
-      <position x="6436.08533845483" y="2174.5353688683881"/>
-    </atom>
-    <atom id="a2865" element="C">
-      <position x="6283.0520774565903" y="2176.9857219806645"/>
-    </atom>
-    <atom id="a2866" element="C">
-      <position x="6412.7916243956042" y="2087.6020445023714"/>
-    </atom>
-    <atom id="a2867" element="C">
-      <position x="6373.9687676302256" y="2232.4909184457319"/>
-    </atom>
-    <atom id="a2868" element="C">
-      <position x="6259.7583633973636" y="2090.0523976146483"/>
-      <electron id="el302" position="nw"/>
-    </atom>
-    <atom id="a2869" element="C">
-      <position x="6220.9355066319858" y="2234.9412715580083"/>
-    </atom>
-    <atom id="a2870" element="C">
-      <position x="6588.7291490364405" y="2175.2901179623886"/>
-    </atom>
-    <atom id="a2871" element="C">
-      <position x="6565.4354349772138" y="2088.3567935963724"/>
-    </atom>
-    <atom id="a2872" element="C">
-      <position x="6526.6125782118361" y="2233.2456675397325"/>
-    </atom>
-    <atom id="a2873" element="C">
-      <position x="6747.0957433680142" y="2172.8397648501127"/>
-    </atom>
-    <atom id="a2874" element="C">
-      <position x="6723.8020293087884" y="2085.906440484096"/>
-    </atom>
-    <atom id="a2875" element="C">
-      <position x="6684.9791725434097" y="2230.7953144274566"/>
-    </atom>
-    <atom id="a2876" element="C">
-      <position x="6336.3628077092617" y="2025.7736366459944"/>
-      <electron id="el303" position="n"/>
-    </atom>
-    <atom id="a2877" element="C">
-      <position x="6489.3960687075023" y="2023.3232835337176"/>
-      <electron id="el304" position="n"/>
-    </atom>
-    <atom id="a2878" element="C">
-      <position x="6503.3188641526094" y="2146.3123431737167"/>
-      <electron id="el305" position="n"/>
-    </atom>
-    <atom id="a2879" element="C">
-      <position x="6661.685458484184" y="2143.8619900614403"/>
-    </atom>
-    <atom id="a2880" element="C">
-      <position x="6464.4960073872317" y="2291.2012171170768"/>
-    </atom>
-    <atom id="a2881" element="C">
-      <position x="6622.8626017188053" y="2288.7508640048009"/>
-    </atom>
-    <atom id="a2882" element="C">
-      <position x="6441.202293328005" y="2204.2678927510606"/>
-    </atom>
-    <atom id="a2883" element="C">
-      <position x="6599.5688876595786" y="2201.8175396387846"/>
-    </atom>
-    <atom id="a2884" element="C">
-      <position x="6402.3794365626272" y="2349.1567666944206"/>
-    </atom>
-    <atom id="a2885" element="C">
-      <position x="6560.7460308942009" y="2346.7064135821447"/>
-    </atom>
-    <atom id="a2886" element="C">
-      <position x="6700.5083152495627" y="1998.9731161180794"/>
-    </atom>
-    <bond id="b3103" order="1" begin="a2863" end="a2866" type="down"/>
-    <bond id="b3104" order="1" begin="a2866" end="a2867" type="up"/>
-    <bond id="b3105" order="1" begin="a2865" end="a2868" type="down"/>
-    <bond id="b3106" order="1" begin="a2868" end="a2869" type="up"/>
-    <bond id="b3107" order="1" begin="a2870" end="a2871" type="down"/>
-    <bond id="b3108" order="1" begin="a2871" end="a2872" type="up"/>
-    <bond id="b3109" order="1" begin="a2873" end="a2874" type="down"/>
-    <bond id="b3110" order="1" begin="a2874" end="a2875" type="up"/>
-    <bond id="b3111" order="1" begin="a2868" end="a2876"/>
-    <bond id="b3112" order="1" begin="a2866" end="a2876"/>
-    <bond id="b3113" order="1" begin="a2866" end="a2877"/>
-    <bond id="b3114" order="1" begin="a2871" end="a2877"/>
-    <bond id="b3115" order="1" begin="a2871" end="a2874"/>
-    <bond id="b3116" order="1" begin="a2872" end="a2878" type="down"/>
-    <bond id="b3117" order="1" begin="a2875" end="a2879" type="down"/>
-    <bond id="b3118" order="1" begin="a2878" end="a2880" type="up"/>
-    <bond id="b3119" order="1" begin="a2879" end="a2881" type="up"/>
-    <bond id="b3120" order="1" begin="a2882" end="a2883" level="1"/>
-    <bond id="b3121" order="1" begin="a2880" end="a2882" type="down"/>
-    <bond id="b3122" order="1" begin="a2881" end="a2883" type="down"/>
-    <bond id="b3123" order="1" begin="a2882" end="a2884" type="up"/>
-    <bond id="b3124" order="1" begin="a2883" end="a2885" type="up"/>
-    <bond id="b3125" order="1" begin="a2878" end="a2879" level="1"/>
-    <bond id="b3126" order="1" begin="a2874" end="a2886" type="down"/>
-    <bond id="b3127" order="1" begin="a2886" end="a2879" type="up" level="1"/>
-  </molecule>
-  <molecule id="m133">
     <atom id="a2887" element="C">
       <position x="6440.15760407983" y="2739.4358815637006"/>
     </atom>
@@ -5150,10 +5050,6 @@
     <atom id="a2908" element="C">
       <position x="6564.8182965192009" y="2911.6069262774572"/>
     </atom>
-    <atom id="a2909" element="C">
-      <position x="6677.9595280938565" y="2569.2952450239086"/>
-      <electron id="el309" position="n"/>
-    </atom>
     <bond id="b3128" order="1" begin="a2887" end="a2889" type="down"/>
     <bond id="b3129" order="1" begin="a2889" end="a2890" type="up"/>
     <bond id="b3130" order="1" begin="a2888" end="a2891" type="down"/>
@@ -5177,7 +5073,110 @@
     <bond id="b3148" order="1" begin="a2905" end="a2907" type="up"/>
     <bond id="b3149" order="1" begin="a2906" end="a2908" type="up"/>
     <bond id="b3150" order="1" begin="a2901" end="a2902" level="1"/>
-    <bond id="b3151" order="1" begin="a2902" end="a2909" level="1"/>
+  </molecule>
+  <molecule id="m132">
+    <atom id="a2863" element="C">
+      <position x="6441.1623206689255" y="2235.6939992394819"/>
+    </atom>
+    <atom id="a2865" element="C">
+      <position x="6288.1290596706858" y="2238.1443523517582"/>
+    </atom>
+    <atom id="a2866" element="C">
+      <position x="6417.8686066096998" y="2148.7606748734652"/>
+    </atom>
+    <atom id="a2867" element="C">
+      <position x="6379.0457498443211" y="2293.6495488168257"/>
+    </atom>
+    <atom id="a2868" element="C">
+      <position x="6264.8353456114583" y="2151.211027985742"/>
+      <electron id="el302" position="nw"/>
+    </atom>
+    <atom id="a2869" element="C">
+      <position x="6226.0124888460814" y="2296.0999019291021"/>
+    </atom>
+    <atom id="a2870" element="C">
+      <position x="6593.8061312505361" y="2236.4487483334824"/>
+    </atom>
+    <atom id="a2871" element="C">
+      <position x="6570.5124171913085" y="2149.5154239674662"/>
+    </atom>
+    <atom id="a2872" element="C">
+      <position x="6531.6895604259316" y="2294.4042979108262"/>
+    </atom>
+    <atom id="a2873" element="C">
+      <position x="6752.1727255821097" y="2233.9983952212065"/>
+    </atom>
+    <atom id="a2874" element="C">
+      <position x="6728.879011522884" y="2147.0650708551898"/>
+      <electron id="el313" position="n"/>
+    </atom>
+    <atom id="a2875" element="C">
+      <position x="6690.0561547575053" y="2291.9539447985503"/>
+    </atom>
+    <atom id="a2876" element="C">
+      <position x="6341.4397899233572" y="2086.9322670170882"/>
+      <electron id="el303" position="n"/>
+    </atom>
+    <atom id="a2877" element="C">
+      <position x="6494.473050921597" y="2084.4819139048113"/>
+      <electron id="el304" position="n"/>
+    </atom>
+    <atom id="a2878" element="C">
+      <position x="6508.3958463667041" y="2207.4709735448105"/>
+    </atom>
+    <atom id="a2879" element="C">
+      <position x="6666.7624406982795" y="2205.0206204325341"/>
+      <electron id="el305" position="nw"/>
+    </atom>
+    <atom id="a2880" element="C">
+      <position x="6469.5729896013272" y="2352.3598474881705"/>
+    </atom>
+    <atom id="a2881" element="C">
+      <position x="6627.9395839329009" y="2349.9094943758946"/>
+    </atom>
+    <atom id="a2882" element="C">
+      <position x="6446.2792755420996" y="2265.4265231221543"/>
+    </atom>
+    <atom id="a2883" element="C">
+      <position x="6604.6458698736733" y="2262.9761700098784"/>
+    </atom>
+    <atom id="a2884" element="C">
+      <position x="6407.4564187767228" y="2410.3153970655144"/>
+    </atom>
+    <atom id="a2885" element="C">
+      <position x="6565.8230131082964" y="2407.8650439532385"/>
+    </atom>
+    <atom id="a2886" element="C">
+      <position x="6691.0731855716494" y="2067.1475350108249"/>
+      <electron id="el312" position="n"/>
+    </atom>
+    <atom id="a2910" element="C">
+      <position x="6508.3958463667032" y="2097.4709735448105"/>
+    </atom>
+    <bond id="b3103" order="1" begin="a2863" end="a2866" type="down"/>
+    <bond id="b3104" order="1" begin="a2866" end="a2867" type="up"/>
+    <bond id="b3105" order="1" begin="a2865" end="a2868" type="down"/>
+    <bond id="b3106" order="1" begin="a2868" end="a2869" type="up"/>
+    <bond id="b3107" order="1" begin="a2870" end="a2871" type="down"/>
+    <bond id="b3108" order="1" begin="a2871" end="a2872" type="up"/>
+    <bond id="b3109" order="1" begin="a2873" end="a2874" type="down"/>
+    <bond id="b3110" order="1" begin="a2874" end="a2875" type="up"/>
+    <bond id="b3111" order="1" begin="a2868" end="a2876"/>
+    <bond id="b3112" order="1" begin="a2866" end="a2876"/>
+    <bond id="b3113" order="1" begin="a2866" end="a2877"/>
+    <bond id="b3114" order="1" begin="a2871" end="a2877"/>
+    <bond id="b3115" order="1" begin="a2871" end="a2874"/>
+    <bond id="b3116" order="1" begin="a2872" end="a2878" type="down"/>
+    <bond id="b3117" order="1" begin="a2875" end="a2879" type="down"/>
+    <bond id="b3118" order="1" begin="a2878" end="a2880" type="up"/>
+    <bond id="b3119" order="1" begin="a2879" end="a2881" type="up"/>
+    <bond id="b3120" order="1" begin="a2882" end="a2883" level="1"/>
+    <bond id="b3121" order="1" begin="a2880" end="a2882" type="down"/>
+    <bond id="b3122" order="1" begin="a2881" end="a2883" type="down"/>
+    <bond id="b3123" order="1" begin="a2882" end="a2884" type="up"/>
+    <bond id="b3124" order="1" begin="a2883" end="a2885" type="up"/>
+    <bond id="b3125" order="2" begin="a2878" end="a2910"/>
+    <bond id="b3126" order="1" begin="a2879" end="a2886" level="1"/>
   </molecule>
   <molecule id="m14">
     <atom id="a46" element="C">
