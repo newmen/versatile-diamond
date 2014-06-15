@@ -7,7 +7,7 @@ RESULTS_DIR = '../../../results'
 GENERATIONS_DIR = "#{RESULTS_DIR}/hand-generations"
 OBJS_DIR = 'obj'
 
-CC = 'g++'
+CC = "#{GCC_DIR}/bin/g++"
 FLAGS = "--std=c++0x -DPARALLEL -DTHREADS_NUM=3 -fopenmp -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/ -lyaml-cpp"
 # FLAGS = "--std=c++0x -DPRINT -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/ -lyaml-cpp"
 # FLAGS = "--std=c++0x -DTHREADS_NUM=1 -I#{ENGINE_DIR}/ -I#{RESULTS_DIR}/ -lyaml-cpp"
