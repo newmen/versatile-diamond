@@ -55,7 +55,11 @@ SOURCES += \
     ../../results/hand-generations/reactions/typical/migration_down_in_gap_from_111.cpp \
     ../../results/hand-generations/reactions/typical/migration_down_in_gap_from_dimer.cpp \
     ../../results/hand-generations/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
+    ../../results/hand-generations/reactions/typical/migration_through_dimers_row.cpp \
     ../../results/hand-generations/reactions/typical/next_level_bridge_to_high_bridge.cpp \
+    ../../results/hand-generations/reactions/typical/sierpinski_drop.cpp \
+    ../../results/hand-generations/reactions/typical/sierpinski_drop_left.cpp \
+    ../../results/hand-generations/reactions/typical/sierpinski_drop_right.cpp \
     ../../results/hand-generations/reactions/typical/two_bridges_to_high_bridge.cpp \
     ../../results/hand-generations/reactions/ubiquitous/local/methyl_on_dimer_activation.cpp \
     ../../results/hand-generations/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
@@ -77,6 +81,7 @@ SOURCES += \
     ../../results/hand-generations/species/specific/bridge_ctsi.cpp \
     ../../results/hand-generations/species/specific/bridge_with_dimer_cbti_cbrs_cdli.cpp \
     ../../results/hand-generations/species/specific/bridge_with_dimer_cdli.cpp \
+    ../../results/hand-generations/species/specific/cross_bridge_on_bridges.cpp \
     ../../results/hand-generations/species/specific/dimer_cri_cli.cpp \
     ../../results/hand-generations/species/specific/dimer_crs.cpp \
     ../../results/hand-generations/species/specific/dimer_crs_cli.cpp \
@@ -183,7 +188,11 @@ HEADERS += \
     ../../results/hand-generations/reactions/typical/migration_down_in_gap_from_111.h \
     ../../results/hand-generations/reactions/typical/migration_down_in_gap_from_dimer.h \
     ../../results/hand-generations/reactions/typical/migration_down_in_gap_from_high_bridge.h \
+    ../../results/hand-generations/reactions/typical/migration_through_dimers_row.h \
     ../../results/hand-generations/reactions/typical/next_level_bridge_to_high_bridge.h \
+    ../../results/hand-generations/reactions/typical/sierpinski_drop.h \
+    ../../results/hand-generations/reactions/typical/sierpinski_drop_left.h \
+    ../../results/hand-generations/reactions/typical/sierpinski_drop_right.h \
     ../../results/hand-generations/reactions/typical/two_bridges_to_high_bridge.h \
     ../../results/hand-generations/reactions/ubiquitous.h \
     ../../results/hand-generations/reactions/ubiquitous/data/activation_data.h \
@@ -213,6 +222,7 @@ HEADERS += \
     ../../results/hand-generations/species/specific/bridge_ctsi.h \
     ../../results/hand-generations/species/specific/bridge_with_dimer_cbti_cbrs_cdli.h \
     ../../results/hand-generations/species/specific/bridge_with_dimer_cdli.h \
+    ../../results/hand-generations/species/specific/cross_bridge_on_bridges.h \
     ../../results/hand-generations/species/specific/dimer_cri_cli.h \
     ../../results/hand-generations/species/specific/dimer_crs.h \
     ../../results/hand-generations/species/specific/dimer_crs_cli.h \

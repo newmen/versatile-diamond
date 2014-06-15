@@ -3,7 +3,8 @@
 
 #include "methyl_on_dimer_cmiu.h"
 
-class MethylOnDimerCMsiu : public Specific<Base<DependentSpec<ParentSpec>, METHYL_ON_DIMER_CMsiu, 1>>
+class MethylOnDimerCMsiu :
+        public Specific<Base<LocalableRole<DependentSpec<ParentSpec>, 0>, METHYL_ON_DIMER_CMsiu, 1>>
 {
 public:
     static void find(MethylOnDimerCMiu *parent);
@@ -20,6 +21,9 @@ protected:
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }
+
+    void concretizeLocal(Atom *target) const override;
+    void unconcretizeLocal(Atom *target) const override;
 
 private:
     static const ushort __indexes[1];

@@ -5,7 +5,7 @@
 #include "../base.h"
 
 class MethylOnDimer :
-        public Base<LocalableRole<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, 0>, METHYL_ON_DIMER, 2>
+        public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_DIMER, 2>
 {
 public:
     static void find(Dimer *target);
@@ -21,9 +21,6 @@ protected:
 
     const ushort *indexes() const override { return __indexes; }
     const ushort *roles() const override { return __roles; }
-
-    void concretizeLocal(Atom *target) const override;
-    void unconcretizeLocal(Atom *target) const override;
 
 private:
     static const ushort __indexes[2];
