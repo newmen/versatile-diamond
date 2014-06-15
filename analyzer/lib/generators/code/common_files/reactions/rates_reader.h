@@ -4,6 +4,8 @@
 #include <tools/yaml_config_reader.h>
 using namespace vd;
 
+#include "../env.h"
+
 class RatesReader
 {
     static YAMLConfigReader __config;
