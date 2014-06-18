@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Generators
     module Code
 
@@ -9,7 +11,7 @@ module VersatileDiamond
         # Gets the result file name
         # @return [String] the result file name of atom class
         def file_name
-          class_name.downcase
+          class_name.underscore
         end
 
       private
