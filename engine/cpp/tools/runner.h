@@ -51,12 +51,12 @@ void Runner::calculate()
     // TODO: Вынести отсюда эти циферки
     CrystalSliceSaver csSaver(filename().c_str(), _x * _y, { 0, 2, 4, 5, 20, 21, 24, 28, 32 });
 
-// ------------------------------------------------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------------- //
 
     SCT *surfaceCrystal = new SCT(dim3(_x, _y, MAX_HEIGHT));
     surfaceCrystal->initialize();
 
-// ------------------------------------------------------------------------------------------------------------------ //
+// -------------------------------------------------------------------------------- //
 
     auto outLambda = [this, surfaceCrystal]() {
         std::cout.width(10);
@@ -150,7 +150,7 @@ void Runner::calculate()
 #endif // NOUT
 
     std::cout << std::endl;
-    std::cout.precision(5);
+    std::cout.precision(8);
     std::cout << "Elapsed time of process: " << HB::mc().totalTime() << " s" << std::endl;
     std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
 

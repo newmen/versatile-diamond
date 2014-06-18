@@ -5,9 +5,9 @@
 #include "../surface_activation.h"
 
 class MethylOnDimerActivation :
-        public Local<ActivationData, SurfaceActivation, METHYL_ON_DIMER_ACTIVATION, METHYL_ON_DIMER, 14>
+        public Local<ActivationData, SurfaceActivation, METHYL_ON_DIMER_ACTIVATION, METHYL_ON_DIMER_CMiu, 25>
 {
-    typedef Local<ActivationData, SurfaceActivation, METHYL_ON_DIMER_ACTIVATION, METHYL_ON_DIMER, 14> ParentType;
+    typedef Local<ActivationData, SurfaceActivation, METHYL_ON_DIMER_ACTIVATION, METHYL_ON_DIMER_CMiu, 25> ParentType;
 
     static const char __name[];
 

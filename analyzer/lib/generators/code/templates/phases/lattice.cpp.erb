@@ -3,7 +3,7 @@
 #include "../finder.h"
 
 <%= class_name %>::<%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight) :
-    <%= relations_class_name %><Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+    <%= crystal_properties_class_name %><Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
 {
 }
 
@@ -12,34 +12,13 @@
     Finder::removeAll(atoms().data(), atoms().size());
 }
 
-const float3 &<%= class_name %>::periods() const
-{
-    static const float3 periods(<%= periods_sequence %>);
-    return periods;
-}
-
-float3 <%= class_name %>::seeks(const int3 &coords) const
-{
-    if (coords.z == 0)
-    {
-        return float3();
-    }
-    else
-    {
-        float px = periods().x / 2, py = periods().y / 2;
-        int cx = (coords.z + 1) / 2, cy = coords.z / 2;
-
-        return float3(cx * px, cy * py);
-    }
-}
-
 void <%= class_name %>::buildAtoms()
 {
     for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
     {
-        makeLayer(i, <%= major_atom_index %>);
+        makeLayer(i, <%= major_atom_index %>, <%= major_atom_actives %>);
     }
-    makeLayer(_defaultSurfaceHeight - 1, <%= surface_atom_index %>);
+    makeLayer(_defaultSurfaceHeight - 1, <%= surface_atom_index %>, <%= surface_atom_actives %>);
 }
 
 void <%= class_name %>::bondAllAtoms()
@@ -56,21 +35,10 @@ void <%= class_name %>::bondAllAtoms()
     });
 }
 
-Atom *<%= class_name %>::makeAtom(ushort type, const int3 &coords)
+Atom *<%= class_name %>::makeAtom(ushort type, ushort actives, const int3 &coords)
 {
     AtomBuilder builder;
-    Atom *atom = builder.buildCd(type, 2, this, coords);
-
-    int z = coords.z;
-    if (z > 0 && z < _defaultSurfaceHeight - 1)
-    {
-        atom->activate();
-        atom->activate();
-    } else if (z == _defaultSurfaceHeight - 1)
-    {
-        atom->activate();
-    }
-
+    Atom *atom = builder.buildCd(type, actives, this, coords);
     return atom;
 }
 

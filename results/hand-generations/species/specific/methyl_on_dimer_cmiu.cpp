@@ -1,5 +1,6 @@
 #include "methyl_on_dimer_cmiu.h"
 #include "../../reactions/typical/des_methyl_from_dimer.h"
+#include "../../reactions/ubiquitous/local/methyl_on_dimer_activation.h"
 #include "methyl_on_dimer_cmsiu.h"
 #include "methyl_on_dimer_cls_cmhiu.h"
 
@@ -35,4 +36,14 @@ void MethylOnDimerCMiu::findAllChildren()
 void MethylOnDimerCMiu::findAllTypicalReactions()
 {
     DesMethylFromDimer::find(this);
+}
+
+void MethylOnDimerCMiu::concretizeLocal(Atom *target) const
+{
+    MethylOnDimerActivation::concretize(target);
+}
+
+void MethylOnDimerCMiu::unconcretizeLocal(Atom *target) const
+{
+    MethylOnDimerActivation::unconcretize(target);
 }

@@ -14,6 +14,8 @@ module VersatileDiamond
       # Stores all properties of atom
       # @overload new(props)
       #   @param [Array] props the array of default properties
+      # @overload new(props)
+      #   @param [Hash] props the hash of properties where each key is property method
       # @overload new(spec, atom)
       #   @param [DependentSpec | SpecResidual] spec in which atom will find properties
       #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
@@ -22,7 +24,22 @@ module VersatileDiamond
         @_remake_result = nil
 
         if args.size == 1
-          @props = args.first
+          arg = args.first
+          if arg.is_a?(Array)
+            @props = arg
+          elsif arg.is_a?(Hash)
+            @props = [
+              arg[:atom_name] || raise('Undefined atom name'),
+              arg[:valence] || raise('Undefined valence'),
+              arg[:lattice] || raise('Undefined lattice'),
+              arg[:relations] || raise('Undefined relations'),
+              arg[:danglings] || [],
+              arg[:nbr_lattices] || [],
+              arg[:relevants] || []
+            ]
+          else
+            raise ArgumentError, 'Wrong type of argument'
+          end
         elsif args.size == 2
           spec, atom = args
           @props = [
@@ -178,6 +195,12 @@ module VersatileDiamond
       # @return [Integer] number of active bonds
       def actives_num
         count_danglings(:active)
+      end
+
+      # Gets the number of actives when each established bond replaced to active bond
+      # @return [Integer] number of unbonded actives
+      def unbonded_actives_num
+        estab_bonds_num + actives_num
       end
 
       # Gets number of hydrogen atoms

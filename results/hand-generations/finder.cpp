@@ -5,6 +5,7 @@
 #include "species/base/bridge_with_dimer.h"
 #include "species/base/two_bridges.h"
 #include "species/sidepiece/dimer.h"
+#include "species/specific/cross_bridge_on_bridges.h"
 #include "reactions/ubiquitous/surface_activation.h"
 #include "reactions/ubiquitous/surface_deactivation.h"
 
@@ -84,6 +85,11 @@ void Finder::findAll(Atom **atoms, uint n)
     for (uint i = 0; i < n; ++i)
     {
         BridgeWithDimer::find(atoms[i]);
+    }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        CrossBridgeOnBridges::find(atoms[i]);
     }
 
     // ---------------------------------------------------------------------------------------------------------- //

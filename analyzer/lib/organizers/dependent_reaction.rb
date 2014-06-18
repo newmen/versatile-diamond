@@ -7,8 +7,8 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      attr_reader :reaction, :parent
       collector_methods :complex
+      attr_reader :reaction, :parent
       def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of,
         :size, :changes_size
 
@@ -29,6 +29,12 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same?(other)
         reaction.same?(other.reaction)
+      end
+
+      # Check that reaction have gas ion reagent
+      # @return [Boolean] is reaction specific of ubiquitous or not
+      def local?
+        !simple_source.empty?
       end
 
       def formula

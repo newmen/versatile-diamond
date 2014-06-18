@@ -5,6 +5,7 @@
 #include "../../reactions/typical/migration_down_at_dimer_from_111.h"
 #include "../../reactions/typical/migration_down_at_dimer_from_high_bridge.h"
 #include "../../reactions/typical/migration_down_at_dimer_from_dimer.h"
+#include "../../reactions/typical/migration_through_dimers_row.h"
 
 const ushort DimerCRs::__indexes[1] = { 0 };
 const ushort DimerCRs::__roles[1] = { 21 };
@@ -48,4 +49,5 @@ void DimerCRs::findAllTypicalReactions()
     MigrationDownAtDimerFrom111::find(this);
     MigrationDownAtDimerFromHighBridge::find(this);
     MigrationDownAtDimerFromDimer::find(this);
+    MigrationThroughDimersRow::find(this);
 }

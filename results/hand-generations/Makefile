@@ -91,7 +91,11 @@ HEADER_FILES	:= \
 	$(HGEN_SRC_DIR)/reactions/typical/migration_down_in_gap_from_111.h \
 	$(HGEN_SRC_DIR)/reactions/typical/migration_down_in_gap_from_dimer.h \
 	$(HGEN_SRC_DIR)/reactions/typical/migration_down_in_gap_from_high_bridge.h \
+	$(HGEN_SRC_DIR)/reactions/typical/migration_through_dimers_row.h \
 	$(HGEN_SRC_DIR)/reactions/typical/next_level_bridge_to_high_bridge.h \
+	$(HGEN_SRC_DIR)/reactions/typical/sierpinski_drop.h \
+	$(HGEN_SRC_DIR)/reactions/typical/sierpinski_drop_left.h \
+	$(HGEN_SRC_DIR)/reactions/typical/sierpinski_drop_right.h \
 	$(HGEN_SRC_DIR)/reactions/typical/two_bridges_to_high_bridge.h \
 	$(HGEN_SRC_DIR)/reactions/ubiquitous.h \
 	$(HGEN_SRC_DIR)/reactions/ubiquitous/data/activation_data.h \
@@ -121,6 +125,7 @@ HEADER_FILES	:= \
 	$(HGEN_SRC_DIR)/species/specific/bridge_ctsi.h \
 	$(HGEN_SRC_DIR)/species/specific/bridge_with_dimer_cbti_cbrs_cdli.h \
 	$(HGEN_SRC_DIR)/species/specific/bridge_with_dimer_cdli.h \
+	$(HGEN_SRC_DIR)/species/specific/cross_bridge_on_bridges.h \
 	$(HGEN_SRC_DIR)/species/specific/dimer_cri_cli.h \
 	$(HGEN_SRC_DIR)/species/specific/dimer_crs.h \
 	$(HGEN_SRC_DIR)/species/specific/dimer_crs_cli.h \
@@ -177,7 +182,11 @@ SOURCE_FILES	:= \
 	$(HGEN_SRC_DIR)/reactions/typical/migration_down_in_gap_from_111.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/migration_down_in_gap_from_dimer.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/migration_down_in_gap_from_high_bridge.cpp \
+	$(HGEN_SRC_DIR)/reactions/typical/migration_through_dimers_row.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/next_level_bridge_to_high_bridge.cpp \
+	$(HGEN_SRC_DIR)/reactions/typical/sierpinski_drop.cpp \
+	$(HGEN_SRC_DIR)/reactions/typical/sierpinski_drop_left.cpp \
+	$(HGEN_SRC_DIR)/reactions/typical/sierpinski_drop_right.cpp \
 	$(HGEN_SRC_DIR)/reactions/typical/two_bridges_to_high_bridge.cpp \
 	$(HGEN_SRC_DIR)/reactions/ubiquitous/local/methyl_on_dimer_activation.cpp \
 	$(HGEN_SRC_DIR)/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
@@ -199,6 +208,7 @@ SOURCE_FILES	:= \
 	$(HGEN_SRC_DIR)/species/specific/bridge_ctsi.cpp \
 	$(HGEN_SRC_DIR)/species/specific/bridge_with_dimer_cbti_cbrs_cdli.cpp \
 	$(HGEN_SRC_DIR)/species/specific/bridge_with_dimer_cdli.cpp \
+	$(HGEN_SRC_DIR)/species/specific/cross_bridge_on_bridges.cpp \
 	$(HGEN_SRC_DIR)/species/specific/dimer_cri_cli.cpp \
 	$(HGEN_SRC_DIR)/species/specific/dimer_crs.cpp \
 	$(HGEN_SRC_DIR)/species/specific/dimer_crs_cli.cpp \

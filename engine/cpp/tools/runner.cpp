@@ -70,6 +70,7 @@ void Runner::outputMemoryUsage(std::ostream &os) const
 {
     double vm, rss;
     process_mem_usage(vm, rss);
+    os.precision(5);
     os << "Used virtual memory: " << (vm / 1024) << " MB\n"
        << "Used resident set: " << (rss / 1024) << " MB" << std::endl;
 }
