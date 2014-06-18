@@ -58,15 +58,16 @@ private:
     template <class T> static inline T &selectForThread(T *container);
 
     static const ushort __atomsNum;
-
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
 
+<% if ubiquitous_reactions_exists? %>
 public:
     static const ushort __hToActives[];
     static const ushort __hOnAtoms[];
     static const ushort __activesOnAtoms[];
     static const ushort __activesToH[];
+<% end %>
 
 public:
     static bool atomIs(ushort complexType, ushort typeOf);

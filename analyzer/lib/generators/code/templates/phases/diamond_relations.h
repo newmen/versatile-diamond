@@ -1,3 +1,7 @@
+// Provides methods for get an atom neighbours through diamond crystall lattice.
+// This file should be used together with diamond_crystal_properties.h and
+// diamond.rb lattice describer.
+
 #ifndef DIAMOND_RELATIONS_H
 #define DIAMOND_RELATIONS_H
 
@@ -12,8 +16,6 @@ public:
     typedef Neighbours<2> TN;
     typedef TN (DiamondRelations<B>::*RelationsMethod)(const Atom *) const;
 
-    template <class... Args> DiamondRelations(Args... args) : B(args...) {}
-
     TN front_110(const Atom *atom) const;
     TN cross_110(const Atom *atom) const;
     TN front_100(const Atom *atom) const;
@@ -22,7 +24,7 @@ public:
     static int3 front_110_at(const Atom *first, const Atom *second);
 
 protected:
-    void bondAround(Atom *atom);
+    template <class... Args> DiamondRelations(Args... args) : B(args...) {}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -146,15 +148,6 @@ int3 DiamondRelations<B>::front_110_at(const Atom *first, const Atom *second)
             return int3(a.x, std::max(a.y, b.y), a.z + 1);
         }
     }
-}
-
-template <class B>
-void DiamondRelations<B>::bondAround(Atom *atom)
-{
-    auto neighbours = this->cross_110(atom);
-    assert(neighbours.all());
-    atom->bondWith(neighbours[0]);
-    atom->bondWith(neighbours[1]);
 }
 
 #endif // DIAMOND_RELATIONS_H

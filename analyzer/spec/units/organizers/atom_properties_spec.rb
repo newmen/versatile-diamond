@@ -4,6 +4,8 @@ module VersatileDiamond
   module Organizers
     describe AtomProperties, use: :atom_properties do
 
+      let(:lattice) { Concepts::Lattice.new(:d, 'Diamond') }
+
       describe 'initialize' do
         describe 'crystal atom with several dependencies' do
           let(:specific_specs) do
@@ -60,6 +62,28 @@ module VersatileDiamond
             describe '~^C%d< is presented' do
               subject { classifier.index(mob_cb) }
               it { should_not be_nil }
+            end
+          end
+        end
+
+        describe 'first arg is Hash' do
+          let(:hash) do
+            {
+              atom_name: :C,
+              valence: 4,
+              lattice: lattice,
+              relations: [bond_110_cross, bond_110_cross, bond_110_front]
+            }
+          end
+
+          describe 'all good' do
+            it { expect(described_class.new(hash)).to eq(bridge_cr) }
+          end
+
+          [:atom_name, :valence, :lattice, :relations].each do |prop|
+            describe "without #{prop}" do
+              before { hash.delete(prop) }
+              it { expect { described_class.new(hash) }.to raise_error RuntimeError }
             end
           end
         end
@@ -256,7 +280,6 @@ module VersatileDiamond
       end
 
       describe '#correspond?' do
-        let(:lattice) { Concepts::Lattice.new(:d, 'Diamond') }
         let(:common_info) do
           {
             atom_name: :C,
@@ -452,6 +475,14 @@ module VersatileDiamond
         it { expect(hb_cr.total_hydrogens_num).to eq(1) }
         it { expect(clb_cr.total_hydrogens_num).to eq(0) }
         it { expect(ad_cr.total_hydrogens_num).to eq(0) }
+      end
+
+      describe '#unbonded_actives_num' do
+        it { expect(bridge_ct.unbonded_actives_num).to eq(2) }
+        it { expect(ab_ct.unbonded_actives_num).to eq(3) }
+        it { expect(ab_cr.unbonded_actives_num).to eq(4) }
+        it { expect(hb_cr.unbonded_actives_num).to eq(3) }
+        it { expect(ad_cr.unbonded_actives_num).to eq(4) }
       end
 
       describe '#smallests' do

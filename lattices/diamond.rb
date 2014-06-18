@@ -3,8 +3,9 @@
 # Current diamond crystal lattice is directed upwards by face 100
 class Diamond < VersatileDiamond::Lattices::Base
 
-  # Each lattice class should have relations template in common templates directory
-  # which located at /analyzer/lib/generators/code/templates/phases
+  # Each lattice class should have relations source file and crystal properties source
+  # file in common templates directory which located at
+  # /analyzer/lib/generators/code/templates/phases
 
 private
 
@@ -46,13 +47,6 @@ private
     }
   end
 
-  # The periods of crystal lattice as distance values between atoms along each axis
-  # where diamond lattice have top {100} plane
-  # @return [Hash] the periods hash
-  def periods
-    { x: 2.45, y: 2.45, z: 3.57 / 4 }
-  end
-
   # Gets the default height of surface in atom layers
   # For diamond should be at least three layers for bond between each one the all atoms
   # @return [Integer] the number of atomic layers
@@ -86,12 +80,5 @@ private
       atom_name: :C,
       valence: 4
     }
-  end
-
-  # In order to link all atoms of initial crystal surface need to set the binding
-  # face and direction
-  # @return [Hash] the hash with face and direction info
-  def connecting_bond
-    bond_cross_110
   end
 end

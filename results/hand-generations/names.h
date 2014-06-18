@@ -6,10 +6,10 @@
 enum : ushort
 {
     BASE_SPECS_NUM = 8,
-    SPECIFIC_SPECS_NUM = 24,
+    SPECIFIC_SPECS_NUM = 25,
 
     UBIQUITOUS_REACTIONS_NUM = 4,
-    TYPICAL_REACTIONS_NUM = 28,
+    TYPICAL_REACTIONS_NUM = 30,
     LATERAL_REACTIONS_NUM = 4,
 
 //    ALL_SPECS_NUM = BASE_SPECS_NUM + SPECIFIC_SPECS_NUM,
@@ -56,10 +56,11 @@ enum SpecificSpecNames : ushort
     HIGH_BRIDGE_CMs,
     TWO_BRIDGES_CTRi_CBRs,
     BRIDGE_WITH_DIMER_CDLi,
-    BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi
+    BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi,
+    CROSS_BRIDGE_ON_BRIDGES
 };
 
-static_assert(BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi + 1 == SPECIFIC_SPECS_NUM + BASE_SPECS_NUM,
+static_assert(CROSS_BRIDGE_ON_BRIDGES + 1 == SPECIFIC_SPECS_NUM + BASE_SPECS_NUM,
               "Incorrect number of specific species");
 
 enum TypicalReactionNames : ushort
@@ -91,10 +92,12 @@ enum TypicalReactionNames : ushort
     MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE,
     MIGRATION_DOWN_AT_DIMER_FROM_DIMER,
     MIGRATION_DOWN_IN_GAP_FROM_DIMER,
-    ABS_HYDROGEN_FROM_GAP
+    ABS_HYDROGEN_FROM_GAP,
+    MIGRATION_THROUGH_DIMERS_ROW,
+    SIERPINSKI_DROP
 };
 
-static_assert(ABS_HYDROGEN_FROM_GAP + 1 == TYPICAL_REACTIONS_NUM,
+static_assert(SIERPINSKI_DROP + 1 == TYPICAL_REACTIONS_NUM,
               "Incorrect number of typical reactions");
 
 enum LateralReactionNames : ushort

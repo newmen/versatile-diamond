@@ -47,9 +47,9 @@ protected:
     virtual void bondAllAtoms() = 0;
     virtual void findAll() = 0;
 
-    virtual Atom *makeAtom(ushort type, const int3 &coords) = 0;
+    virtual Atom *makeAtom(ushort type, ushort actives, const int3 &coords) = 0;
 
-    void makeLayer(uint z, ushort type);
+    void makeLayer(uint z, ushort type, ushort actives);
 
     const Atoms &atoms() const { return _atoms; }
     Atoms &atoms() { return _atoms; }

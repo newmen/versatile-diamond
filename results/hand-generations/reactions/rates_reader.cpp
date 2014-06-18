@@ -1,6 +1,5 @@
 #include <cmath>
 #include "rates_reader.h"
-#include "../env.h"
 
 YAMLConfigReader RatesReader::__config("configs/reactions.yml");
 
