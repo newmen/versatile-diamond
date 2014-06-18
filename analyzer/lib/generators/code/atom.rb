@@ -18,7 +18,7 @@ module VersatileDiamond
         # Get the cpp class name
         # @return [String] the class name of atom
         def class_name
-          name
+          name.to_s
         end
 
       private

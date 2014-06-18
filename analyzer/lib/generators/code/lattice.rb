@@ -34,12 +34,6 @@ module VersatileDiamond
           instance.class.to_s
         end
 
-        # Gets name of file which will be generated
-        # @return [String] the name of result file without extention
-        def file_name
-          class_name.underscore
-        end
-
       private
 
         def_delegator :@lattice, :instance
