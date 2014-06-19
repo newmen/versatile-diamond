@@ -1,9 +1,9 @@
 #include <omp.h>
 #include <vector>
+#include <atoms/atom_builder.h>
 #include <mc/common_mc_data.h>
-#include <hand-generations/builders/atom_builder.h>
-#include <hand-generations/reactions/ubiquitous/surface_activation.h>
-#include <hand-generations/reactions/ubiquitous/surface_deactivation.h>
+#include <reactions/ubiquitous/surface_activation.h>
+#include <reactions/ubiquitous/surface_deactivation.h>
 using namespace vd;
 
 #include "../support/open_diamond.h"

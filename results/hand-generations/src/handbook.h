@@ -42,10 +42,10 @@ public:
 
     static Scavenger &scavenger();
 
+    static const ushort __atomsNum;
+
 private:
     template <class T> static inline T &selectForThread(T *container);
-
-    static const ushort __atomsNum;
 
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];

@@ -3,16 +3,15 @@ build-*
 *______*
 *.autosave
 *.swp
-Makefile
+*.d
+*.o
+
 bin/
 cache/
 obj/
 engine/engine
 results/hand-generations/simple-diamond
 results/generations
-
-*.d
-*.o
 
 engine/results
 *.job

@@ -13,7 +13,7 @@ ICPCFLAGS	:= $(STANDART) -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-a
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj
 
-SOURCE_DIRS	:= $(shell find $(SRC_DIR) -type d | grep -v tests)
+SOURCE_DIRS	:= $(shell find $(SRC_DIR) -type d)
 OBJECTS_DIRS	:= $(SOURCE_DIRS:$(SRC_DIR)%=$(OBJS_DIR)%)
 
 SOURCE_FILES	:= $(wildcard $(addsuffix /*.cpp, $(SOURCE_DIRS)))

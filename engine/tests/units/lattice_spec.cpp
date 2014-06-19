@@ -1,5 +1,5 @@
 #include <atoms/lattice.h>
-#include <hand-generations/phases/diamond.h>
+#include <phases/diamond.h>
 using namespace vd;
 
 #include "../support/open_diamond.h"
