@@ -11,7 +11,7 @@ public:
     Bridge(Atom **atoms) : Base(atoms) {}
 
 #ifdef PRINT
-    const char *name() const override;
+    const char *name() const final;
 #endif // PRINT
 
 protected:
