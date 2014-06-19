@@ -22,20 +22,15 @@ module VersatileDiamond
         # Gets all used gas species
         # @return [Array] the array of used gas species
         def gas_species
-          config_specs + @generator.specific_specs.select(&:gas?)
+          @generator.specific_gas_species
         end
 
         # Makes yaml concentration name for gas specie
         # @param [Concepts::SpecificSpec | Organizers::DependentSpecificSpec] gas_spec
         #   the gas specie for which name will generated
         # @return [String] the result name
-        # @example generating name
-        #   'hydrogen(h: *)' => 'HydrogenHs'
         def concentration_name(gas_spec)
-          gas_spec.name.to_s.capitalize.
-            gsub('*', 's').
-            gsub(/(\w+):/) { |label| label.upcase }.
-            gsub(/[\(\) :]/, '')
+          @generator.specie_class(gas_spec).class_name
         end
 
         # Combine class scope with concentration method name
@@ -47,12 +42,6 @@ module VersatileDiamond
         end
 
       private
-
-        # Gets the species from configuration tool
-        # @return [Array] the array of gas concept species
-        def config_specs
-          Tools::Config.concs.keys
-        end
 
         # Makes the concentration method name
         # @param [Concepts::SpecificSpec | Organizers::DependentSpecificSpec] gas_spec
