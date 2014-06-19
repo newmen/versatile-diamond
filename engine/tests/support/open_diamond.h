@@ -1,7 +1,7 @@
 #ifndef NDEBUG
 
-#include <hand-generations/atoms/c.h>
-#include <hand-generations/phases/diamond.h>
+#include <atoms/c.h>
+#include <phases/diamond.h>
 #include "../support/corrected_types.h"
 
 class OpenDiamond : public Diamond

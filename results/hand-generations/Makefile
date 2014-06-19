@@ -6,11 +6,12 @@ ENGINE_OBJS_DIR	:= $(ENGINE_DIR)/obj
 ENGINE_OBJECT_DIRS := $(shell find $(ENGINE_OBJS_DIR) -type d)
 ENGINE_OBJECTS	:= $(wildcard $(addsuffix /*.o, $(ENGINE_OBJECT_DIRS)))
 
-ARKSFLAGS	:= -DNDEBUG -DTHREADS_NUM=1 -I$(ENGINE_SRC_DIR)
+ARKSFLAGS	:= -DNDEBUG -DTHREADS_NUM=1
+ARKSWINC	:= $(ARKSFLAGS) -I$(ENGINE_SRC_DIR)
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-STANDART	:= -std=c++11 $(ARKSFLAGS)
+STANDART	:= -std=c++11 $(ARKSWINC)
 
 ICC_PATH	:= /opt/intel/composerxe
 ICPC		:= $(ICC_PATH)/bin/icpc
@@ -27,11 +28,13 @@ SOURCE_FILES    := $(wildcard $(addsuffix /*.cpp, $(SOURCE_DIRS)))
 SOURCE_OBJECTS  := $(patsubst $(HGEN_SRC_DIR)/%, $(HGEN_OBJS_DIR)/%, $(SOURCE_FILES:%.cpp=%.o))
 MD_FILES        := $(SOURCE_OBJECTS:%.o=%.d)
 
-.PHONY: all dirs files exec clean
+.PHONY: all md_objects dirs clean
 
 all:	$(NAME)
-$(NAME):	dirs $(MD_FILES) $(SOURCE_OBJECTS)
+$(NAME):	md_objects
 	$(ICPC) $(LINKFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^
+
+md_objects: dirs $(MD_FILES) $(SOURCE_OBJECTS)
 
 dirs:
 	mkdir -p $(OBJECTS_DIRS)
