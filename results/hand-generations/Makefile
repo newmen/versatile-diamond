@@ -15,7 +15,7 @@ STANDART	:= -std=c++11 $(ARKSFLAGS)
 ICC_PATH	:= /opt/intel/composerxe
 ICPC		:= $(ICC_PATH)/bin/icpc
 ICPCFLAGS	:= $(STANDART) -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259
-LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64/ -liomp5 -openmp -lyaml-cpp
+LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64 -liomp5 -openmp -lyaml-cpp
 
 HGEN_SRC_DIR	:= src
 HGEN_OBJS_DIR	:= obj
@@ -31,7 +31,7 @@ MD_FILES        := $(SOURCE_OBJECTS:%.o=%.d)
 
 all:	$(NAME)
 $(NAME):	dirs $(MD_FILES) $(SOURCE_OBJECTS)
-	$(ICPC) $(LINKFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $(NAME)
+	$(ICPC) $(LINKFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^
 
 dirs:
 	mkdir -p $(OBJECTS_DIRS)
@@ -44,5 +44,6 @@ $(HGEN_OBJS_DIR)/%.o: $(HGEN_SRC_DIR)/%.cpp
 
 clean:
 	rm -rf $(HGEN_OBJS_DIR)
+	rm -f $(NAME)
 
 include $(wildcard $(addsuffix /*.d, $(OBJECTS_DIRS)))
