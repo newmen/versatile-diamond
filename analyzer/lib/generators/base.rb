@@ -45,6 +45,18 @@ module VersatileDiamond
         @classifier
       end
 
+      # Gets the species from configuration tool
+      # @return [Array] the array of gas concept species
+      def config_specs
+        Tools::Config.concs.keys
+      end
+
+      # Gets all used gas species
+      # @return [Array] the array of used gas species
+      def specific_gas_species
+        config_specs + specific_specs.select(&:gas?)
+      end
+
       # Collects all uniq used surface species
       def surface_specs
         @surface_specs ||= base_surface_specs + specific_surface_specs

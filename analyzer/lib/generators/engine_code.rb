@@ -13,10 +13,12 @@ module VersatileDiamond
       def initialize(analysis_result, out_path)
         super(analysis_result)
         @out_path = out_path
+
+        @species = collect_species
       end
 
       public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs,
-        :specific_specs
+        :specific_gas_species
 
       # Generates source code and configuration files
       def generate(**params)
@@ -45,6 +47,14 @@ module VersatileDiamond
         pure_atoms.map { |atom| Code::Atom.new(atom) }
       end
 
+      # Gets specie source files generator by some spec
+      # @param [Organizers::DependentSpec] spec by which code generator will be got
+      # @return [Code::Specie] the correspond code generator instance
+      def specie_class(spec)
+        binding.pry if !@species[spec.name]
+        @species[spec.name]
+      end
+
     private
 
       # Provides list of code elements the source code of which will generated
@@ -66,6 +76,24 @@ module VersatileDiamond
           result << first
         end
         result
+      end
+
+      # Collects all used species from analysis results
+      # @return [Hash] the mirror of dependent specs to spec code generator instances
+      def collect_species
+        mirror = (base_specs + specific_specs).each.with_object({}) do |spec, hash|
+          hash[spec.name] = Code::Specie.new(self, spec)
+        end
+
+        config_specs.each.with_object(mirror) do |concept, hash|
+          unless hash[concept.name]
+            dep_spec = concept.simple? ?
+              Organizers::DependentSimpleSpec.new(concept) :
+              Organizers::DependentSpecificSpec.new(concept)
+
+            hash[concept.name] = Code::Specie.new(self, dep_spec)
+          end
+        end
       end
     end
 
