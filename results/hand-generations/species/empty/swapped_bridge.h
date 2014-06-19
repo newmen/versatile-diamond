@@ -10,7 +10,7 @@ public:
     SwappedBridge(Bridge *parent) : Empty(1, 2, parent) {}
 
 #ifdef PRINT
-    const char *name() const override;
+    const char *name() const final;
 #endif // PRINT
 };
 

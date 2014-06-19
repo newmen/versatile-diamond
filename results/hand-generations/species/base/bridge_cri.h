@@ -11,7 +11,7 @@ public:
     BridgeCRi(ushort fromIndex, ushort toIndex, ParentSpec *parent) : Base(fromIndex, toIndex, parent) {}
 
 #ifdef PRINT
-    const char *name() const override;
+    const char *name() const final;
 #endif // PRINT
 
 protected:

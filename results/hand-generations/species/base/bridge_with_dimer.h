@@ -11,7 +11,7 @@ public:
     BridgeWithDimer(ParentSpec **parents) : Base(parents) {}
 
 #ifdef PRINT
-    const char *name() const override;
+    const char *name() const final;
 #endif // PRINT
 
 protected:

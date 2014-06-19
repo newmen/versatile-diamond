@@ -12,7 +12,7 @@ public:
     TwoBridgesCTRiCBRs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
-    const char *name() const override;
+    const char *name() const final;
 #endif // PRINT
 
 protected:
