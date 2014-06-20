@@ -19,6 +19,9 @@ module VersatileDiamond
       # Error for case if state for atom doesn't exsit
       class NotStated < Stated; end
 
+      # Error for case if unfixed state is stated but incoherent state states now
+      class AlreadyUnfixed; end
+
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
         :original_same?, :reference?
 
@@ -81,15 +84,26 @@ module VersatileDiamond
         @options << :active
       end
 
+      # Changes atom incoherent state
+      # @raise [AlreadyStated] if atom already has incoherent state
+      def incoherent!
+        raise AlreadyStated.new(:incoherent) if incoherent?
+        if unfixed?
+          raise AlreadyUnfixed.new
+          not_unfixed!
+        end
+        @options << :incoherent
+      end
+
+      # Changes atom unfixed state
+      # @raise [AlreadyStated] if atom already has unfixed state
+      def unfixed!
+        raise AlreadyStated.new(:unfixed) if incoherent? || unfixed?
+        @options << :unfixed
+      end
+
       %w(incoherent unfixed).each do |state|
         sym_state = state.to_sym
-        # Defines methods for changing atom state
-        # @raise [AlreadyStated] if atom already has setuping state
-        define_method("#{state}!") do
-          raise AlreadyStated.new(state) if send("#{sym_state}?")
-          @options << sym_state
-        end
-
         # Defines methods for checking atom state
         # @return [Boolean] is atom has state or not
         define_method("#{state}?") do

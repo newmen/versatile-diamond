@@ -67,7 +67,7 @@ en:
     undefined_relation: "Wrong relation %{relation} between atoms of surface specie"
 
   specific_spec:
-    atom_already_has_state: "Atom already has %{state} state"
+    atom_already_has_state: "Atom %{atom} of specie %{spec} already has %{state} state"
     atom_invalid_bonds_num: "Atom \"%{atom}\" of spec \"%{spec}\" number of active bonds cannot be over valence value"
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 

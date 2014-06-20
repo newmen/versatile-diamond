@@ -70,6 +70,9 @@ module VersatileDiamond
         end
 
         atom
+      rescue Concepts::SpecificAtom::AlreadyUnfixed
+        syntax_warning('specific_spec.atom_already_unfixed',
+          spec: spec.name, atom: key)
       rescue Concepts::SpecificAtom::AlreadyStated
         syntax_error('specific_spec.atom_already_has_state',
           spec: spec.name, atom: key, state: value)

@@ -26,6 +26,7 @@ module VersatileDiamond
         if args.size == 1
           arg = args.first
           if arg.is_a?(Array)
+            check_relevants(arg.last)
             @props = arg
           elsif arg.is_a?(Hash)
             @props = [
@@ -35,7 +36,7 @@ module VersatileDiamond
               arg[:relations] || raise('Undefined relations'),
               arg[:danglings] || [],
               arg[:nbr_lattices] || [],
-              arg[:relevants] || []
+              check_relevants(arg[:relevants] || [])
             ]
           else
             raise ArgumentError, 'Wrong type of argument'
@@ -49,7 +50,7 @@ module VersatileDiamond
             relations_for(spec, atom),
             danglings_for(spec, atom),
             nbr_lattices_for(spec, atom),
-            atom.relevants.dup
+            check_relevants(atom.relevants.dup)
           ]
         else
           raise ArgumentError, 'Wrong number of arguments'
@@ -74,16 +75,6 @@ module VersatileDiamond
           same_correspond_relations?(other)
       end
 
-      # Checks that other properties have same incoherent state
-      # @param [AtomProperties] other probably same properties by incoherent
-      #   state
-      # @return [Boolean] same or not
-      def same_incoherent?(other)
-        same_basic_values?(other) && !danglings.empty? && other.incoherent? &&
-          other.contain_all_danglings?(self) && eq_relations?(other) &&
-          eq_nbr_lattices?(other) && (bonds_num == valence || eq_relevants?(other))
-      end
-
       # Checks that both properties have same states by hydrogen atoms
       # @param [AtomProperties] other properties which will be checked
       # @return [Boolean] same or not
@@ -91,10 +82,23 @@ module VersatileDiamond
         total_hydrogens_num == other.total_hydrogens_num
       end
 
+      # Checks that other properties have same incoherent state
+      # @param [AtomProperties] other probably same properties by incoherent state
+      # @return [Boolean] same or not
+      def same_incoherent?(other)
+        same_basic_values?(other) && (((incoherent? || bonds_num == valence) &&
+              other.incoherent? && other.contain_all_danglings?(self)) ||
+            (incoherent? && other.unfixed? && eq_danglings?(other))) &&
+          eq_relations?(other) && eq_nbr_lattices?(other)
+      end
+
+      # Checks that other properties have same unfixed state
+      # @param [AtomProperties] other probably same properties by unfixed state
+      # @return [Boolean] same or not
       def same_unfixed?(other)
         same_basic_values?(other) &&
           !unfixed? && unfixed_by_nbrs? && other.unfixed? &&
-          !incoherent? && !other.incoherent? && eq_danglings?(other) &&
+          !incoherent? && eq_danglings?(other) &&
           other.contain_all_nbr_lattices?(self) && other.contain_all_relations?(self)
       end
 
@@ -145,9 +149,7 @@ module VersatileDiamond
       def incoherent
         if valence > bonds_num && !incoherent?
           props = without_relevants
-          new_rel = [:incoherent]
-          new_rel << :unfixed if estab_bonds_num == 1
-          props[-1] = new_rel
+          props[-1] = [:incoherent]
           self.class.new(props)
         else
           nil
@@ -220,7 +222,8 @@ module VersatileDiamond
       def size
         return @size if @size
         @size = valence + (lattice ? 0.5 : 0) +
-          estab_bonds_num + danglings.size * 0.34 + relevants.size * 0.13
+          estab_bonds_num + danglings.size * 0.34 +
+          (incoherent? ? 0.13 : (unfixed? ? 0.05 : 0))
       end
 
       # Convert properties to string representation
@@ -475,6 +478,16 @@ module VersatileDiamond
         relations_with_atoms.reduce([]) do |acc, (atom, relation)|
           possible_vals.include?(relation) ? acc << [relation, atom.lattice] : acc
         end
+      end
+
+      # Checks that list of relevants is not include both values in same time
+      # @param [Array] rels the array of relevant states
+      # @return [Array] the original relevant states
+      def check_relevants(rels)
+        if rels.include?(:unfixed) && rels.include?(:incoherent)
+          raise 'Unfixed atom already incoherent'
+        end
+        rels
       end
 
       # Drops relevants properties if it exists

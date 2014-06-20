@@ -15,7 +15,7 @@ module VersatileDiamond
         @index_counter = -1
       end
 
-      # Provides the array of all analyzed atom properties
+      # Provides the hash of all analyzed atom properties
       # @return [Hash] the hash with set of atom properties
       def props_hash
         @used_relevants_num == 0 ?
@@ -23,6 +23,7 @@ module VersatileDiamond
           @all_props
       end
 
+      # Provides the array of all analyzed atom properties
       # @return [Array] the array of all presented properties
       def props
         props_hash.values

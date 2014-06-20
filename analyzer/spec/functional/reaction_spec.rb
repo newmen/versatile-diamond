@@ -79,7 +79,7 @@ module VersatileDiamond
               it { expect { reaction.interpret('  incoherent bridge(:ct)') }.
                 not_to raise_error }
               it { expect { reaction.interpret('  unfixed methyl_on_bridge(:cm)') }.
-                not_to raise_error }
+                to raise_error(Concepts::SpecificAtom::AlreadyStated) }
             end
           end
 

@@ -94,7 +94,6 @@ events
     # TODO: need to know that methyl_on_dimer on left side should have H at :cm
     equation methyl_on_dimer(cm: H) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       incoherent methyl_on_dimer(:cm)
-      unfixed methyl_on_dimer(:cm)
 
     activation 37.5
     forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
@@ -102,7 +101,6 @@ events
   reaction 'methyl deactivation'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer(cm: H)
       incoherent methyl_on_dimer(:cm)
-      unfixed methyl_on_dimer(:cm)
 
     forward_rate 4.5e13, 'cm3/(mol * s)'
 

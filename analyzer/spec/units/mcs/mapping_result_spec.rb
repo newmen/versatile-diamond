@@ -23,7 +23,7 @@ module VersatileDiamond
         before { md_atom_map } # runs atom mapping
 
         it { expect(mob.atom(:cm).incoherent?).to be_truthy }
-        it { expect(mob.atom(:cm).unfixed?).to be_truthy }
+        it { expect(mob.atom(:cm).unfixed?).to be_falsey }
       end
 
       describe '#changes' do
