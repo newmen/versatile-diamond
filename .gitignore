@@ -9,11 +9,9 @@ build-*
 bin/
 cache/
 obj/
-engine/engine
-results/hand-generations/simple-diamond
-results/generations
+results/
+engine/hand-generations/simple-diamond
 
-engine/results
 *.job
 vde-*s.o*
 vde-*s.e*
