@@ -6,11 +6,11 @@
 #include <tools/typed.h>
 using namespace vd;
 
-#include "../phases/diamond_atoms_iterator.h"
 #include "../handbook.h"
+#include "rates_reader.h"
 
 template <class B, ushort RT>
-class Registrator : public Typed<B, RT>, public DiamondAtomsIterator
+class Registrator : public Typed<B, RT>, public RatesReader
 {
     typedef Typed<B, RT> ParentType;
 

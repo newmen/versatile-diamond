@@ -10,7 +10,9 @@ namespace vd
 template <class C>
 class CrystalAtomsIterator
 {
-public:
+protected:
+    CrystalAtomsIterator() = default;
+
     static C *crystalBy(Atom *atom);
 
     template <class RL, class AL>
@@ -18,9 +20,6 @@ public:
 
     template <ushort ATOMS_NUM, class RL, class AL>
     static void eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda);
-
-protected:
-    CrystalAtomsIterator() = default;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

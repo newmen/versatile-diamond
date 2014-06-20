@@ -1,11 +1,12 @@
 #ifndef HIGH_BRIDGE_STAND_TO_DIMER_H
 #define HIGH_BRIDGE_STAND_TO_DIMER_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/high_bridge.h"
 #include "../../species/specific/dimer_crs_cli.h"
 #include "../typical.h"
 
-class HighBridgeStandToDimer : public Typical<HIGH_BRIDGE_STAND_TO_DIMER, 2>
+class HighBridgeStandToDimer : public Typical<HIGH_BRIDGE_STAND_TO_DIMER, 2>, public DiamondAtomsIterator
 {
     static const char __name[];
 

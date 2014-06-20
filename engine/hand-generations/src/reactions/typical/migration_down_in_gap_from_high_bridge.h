@@ -1,11 +1,13 @@
 #ifndef MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE_H
 #define MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/bridge_crs.h"
 #include "../../species/specific/high_bridge_cms.h"
 #include "../typical.h"
 
-class MigrationDownInGapFromHighBridge : public Typical<MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE, 3>
+class MigrationDownInGapFromHighBridge :
+        public Typical<MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE, 3>, public DiamondAtomsIterator
 {
     static const char __name[];
 

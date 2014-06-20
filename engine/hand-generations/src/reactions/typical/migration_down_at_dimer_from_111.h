@@ -1,11 +1,12 @@
 #ifndef MIGRATION_DOWN_AT_DIMER_FROM_111_H
 #define MIGRATION_DOWN_AT_DIMER_FROM_111_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/dimer_crs.h"
 #include "../../species/specific/methyl_on_111_cmsiu.h"
 #include "../typical.h"
 
-class MigrationDownAtDimerFrom111 : public Typical<MIGRATION_DOWN_AT_DIMER_FROM_111, 2>
+class MigrationDownAtDimerFrom111 : public Typical<MIGRATION_DOWN_AT_DIMER_FROM_111, 2>, public DiamondAtomsIterator
 {
     static const char __name[];
 

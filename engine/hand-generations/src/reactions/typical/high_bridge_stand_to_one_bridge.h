@@ -1,11 +1,12 @@
 #ifndef HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H
 #define HIGH_BRIDGE_STAND_TO_ONE_BRIDGE_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/high_bridge.h"
 #include "../../species/specific/bridge_ctsi.h"
 #include "../typical.h"
 
-class HighBridgeStandToOneBridge : public Typical<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, 2>
+class HighBridgeStandToOneBridge : public Typical<HIGH_BRIDGE_STAND_TO_ONE_BRIDGE, 2>, public DiamondAtomsIterator
 {
     static const char __name[];
 

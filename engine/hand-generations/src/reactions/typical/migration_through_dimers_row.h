@@ -1,11 +1,12 @@
 #ifndef MIGRATION_THROUGH_DIMERS_ROW_H
 #define MIGRATION_THROUGH_DIMERS_ROW_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/methyl_on_dimer_cmsiu.h"
 #include "../../species/specific/dimer_crs.h"
 #include "../typical.h"
 
-class MigrationThroughDimersRow : public Typical<MIGRATION_THROUGH_DIMERS_ROW, 2>
+class MigrationThroughDimersRow : public Typical<MIGRATION_THROUGH_DIMERS_ROW, 2>, public DiamondAtomsIterator
 {
     static const char __name[];
 

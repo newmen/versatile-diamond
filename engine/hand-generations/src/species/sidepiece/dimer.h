@@ -1,10 +1,11 @@
 #ifndef DIMER_H
 #define DIMER_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../base.h"
 #include "../sidepiece.h"
 
-class Dimer : public Sidepiece<Base<DependentSpec<ParentSpec, 2>, DIMER, 2>>
+class Dimer : public Sidepiece<Base<DependentSpec<ParentSpec, 2>, DIMER, 2>>, public DiamondAtomsIterator
 {
 public:
     static void find(Atom *anchor);
