@@ -11,11 +11,10 @@
 #include <tools/typed.h>
 using namespace vd;
 
-#include "../phases/diamond_atoms_iterator.h"
 #include "../handbook.h"
 
 template <class B, ushort ST>
-class Overall : public Typed<B, ST>, public DiamondAtomsIterator
+class Overall : public Typed<B, ST>
 {
     typedef Typed<B, ST> ParentType;
 

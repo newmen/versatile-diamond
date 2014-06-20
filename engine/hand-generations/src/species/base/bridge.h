@@ -1,9 +1,10 @@
 #ifndef BRIDGE_H
 #define BRIDGE_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../base.h"
 
-class Bridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>
+class Bridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>, public DiamondAtomsIterator
 {
 public:
     static void find(Atom *anchor);

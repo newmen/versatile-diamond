@@ -1,11 +1,12 @@
 #ifndef MIGRATION_DOWN_IN_GAP_FROM_DIMER_H
 #define MIGRATION_DOWN_IN_GAP_FROM_DIMER_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/bridge_crs.h"
 #include "../../species/specific/methyl_on_dimer_cmssiu.h"
 #include "../typical.h"
 
-class MigrationDownInGapFromDimer : public Typical<MIGRATION_DOWN_IN_GAP_FROM_DIMER, 3>
+class MigrationDownInGapFromDimer : public Typical<MIGRATION_DOWN_IN_GAP_FROM_DIMER, 3>, public DiamondAtomsIterator
 {
     static const char __name[];
 

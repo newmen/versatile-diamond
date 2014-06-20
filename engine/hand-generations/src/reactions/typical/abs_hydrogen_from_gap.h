@@ -1,10 +1,11 @@
 #ifndef ABS_HYDROGEN_FROM_GAP_H
 #define ABS_HYDROGEN_FROM_GAP_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/bridge_crh.h"
 #include "../typical.h"
 
-class AbsHydrogenFromGap : public Typical<ABS_HYDROGEN_FROM_GAP, 2>
+class AbsHydrogenFromGap : public Typical<ABS_HYDROGEN_FROM_GAP, 2>, public DiamondAtomsIterator
 {
     static const char __name[];
 

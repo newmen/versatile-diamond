@@ -1,11 +1,13 @@
 #ifndef MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE_H
 #define MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/dimer_crs.h"
 #include "../../species/specific/high_bridge.h"
 #include "../typical.h"
 
-class MigrationDownAtDimerFromHighBridge : public Typical<MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE, 2>
+class MigrationDownAtDimerFromHighBridge :
+        public Typical<MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE, 2>, public DiamondAtomsIterator
 {
     static const char __name[];
 
