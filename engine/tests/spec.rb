@@ -4,7 +4,8 @@ require 'stringio'
 ENGINE_DIR = '..'
 ENGINE_SRC_DIR = "#{ENGINE_DIR}/cpp"
 ENGINE_OBJS_DIR = "#{ENGINE_DIR}/obj"
-HANDG_DIR = '../../results/hand-generations'
+
+HANDG_DIR = '../hand-generations'
 HANDG_SRC_DIR = "#{HANDG_DIR}/src"
 HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
