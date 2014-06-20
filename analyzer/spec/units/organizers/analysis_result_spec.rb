@@ -237,7 +237,7 @@ module VersatileDiamond
                 # :'extended_methyl_on_bridge(cm: *)', # purged
                 # :'methyl_on_bridge()', # purged
                 :'methyl_on_bridge(cm: *)',
-                :'methyl_on_bridge(cm: i, cm: u)',
+                :'methyl_on_bridge(cm: i)',
                 # :'methyl_on_dimer()', # purged
                 :'methyl_on_dimer(cm: *)'
               ]

@@ -99,14 +99,14 @@ module VersatileDiamond
 
           it 'twise incoherent' do
             expect { matcher.match('bridge(ct: i, ct: i)') }.
-              to raise_error(*syntax_error(
-                'specific_spec.atom_already_has_state', state: 'i'))
+              to raise_error(*syntax_error('specific_spec.atom_already_has_state',
+                spec: 'bridge', atom: 'ct', state: 'i'))
           end
 
           it 'twise unfixed' do
             expect { matcher.match('methyl_on_bridge(cm: u, cm: u)') }.
-              to raise_error(*syntax_error(
-                'specific_spec.atom_already_has_state', state: 'u'))
+              to raise_error(*syntax_error('specific_spec.atom_already_has_state',
+                spec: 'methyl_on_bridge', atom: 'cm', state: 'u'))
           end
 
           describe 'wrong value' do

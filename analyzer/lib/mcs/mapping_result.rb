@@ -311,7 +311,7 @@ module VersatileDiamond
           own.not_incoherent! if own.incoherent?
         end
 
-        own.unfixed! if !own.unfixed? &&
+        own.unfixed! if !own.incoherent? && !own.unfixed? &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
           ((other.gas? && !other.simple?) || diff.include?(:unfixed)) &&
           !own.lattice

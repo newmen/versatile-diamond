@@ -146,12 +146,10 @@ module VersatileDiamond
       describe '#original_same?' do
         it { expect(subject.original_same?(SpecificAtom.new(c))).to be_falsey }
 
-        %w(active! incoherent! unfixed! use!(h)).each do |eval_str|
-          let(:other) { subject.dup }
-          before { eval("other.#{eval_str}") }
-          it { expect(subject.original_same?(other)).to be_truthy }
-          it { expect(other.original_same?(subject)).to be_truthy }
-        end
+        let(:other) { subject.dup }
+        before { other.active! }
+        it { expect(subject.original_same?(other)).to be_truthy }
+        it { expect(other.original_same?(subject)).to be_truthy }
       end
 
       describe '#diff' do
@@ -174,8 +172,8 @@ module VersatileDiamond
       end
 
       describe '#apply_diff' do
-        before(:each) { activated_c.apply_diff([:unfixed, :incoherent]) }
-        it { expect(activated_c.incoherent?).to be_truthy }
+        before(:each) { activated_c.apply_diff([:unfixed]) }
+        it { expect(activated_c.incoherent?).to be_falsey }
         it { expect(activated_c.unfixed?).to be_truthy }
       end
 

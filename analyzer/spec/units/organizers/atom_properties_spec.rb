@@ -508,7 +508,7 @@ module VersatileDiamond
       end
 
       describe '#size' do
-        it { expect(ucm.size).to eq(5.13) }
+        it { expect(ucm.size).to eq(5.05) }
         it { expect(high_cm.size).to eq(6) }
 
         it { expect(bridge_ct.size).to eq(6.5) }
