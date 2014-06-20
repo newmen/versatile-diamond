@@ -1,6 +1,6 @@
 NAME		:= simple-diamond
 
-ENGINE_DIR	:= ../../engine
+ENGINE_DIR	:= ..
 ENGINE_SRC_DIR	:= $(ENGINE_DIR)/cpp
 ENGINE_OBJS_DIR	:= $(ENGINE_DIR)/obj
 ENGINE_OBJECT_DIRS := $(shell find $(ENGINE_OBJS_DIR) -type d)
@@ -28,13 +28,13 @@ SOURCE_FILES    := $(wildcard $(addsuffix /*.cpp, $(SOURCE_DIRS)))
 SOURCE_OBJECTS  := $(patsubst $(HGEN_SRC_DIR)/%, $(HGEN_OBJS_DIR)/%, $(SOURCE_FILES:%.cpp=%.o))
 MD_FILES        := $(SOURCE_OBJECTS:%.o=%.d)
 
-.PHONY: all md_objects dirs clean
+.PHONY: all dirs exec clean
 
-all:	$(NAME)
-$(NAME):	md_objects
+all:	exec
+$(NAME):	dirs $(MD_FILES) $(SOURCE_OBJECTS)
+
+exec: $(NAME)
 	$(ICPC) $(LINKFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^
-
-md_objects: dirs $(MD_FILES) $(SOURCE_OBJECTS)
 
 dirs:
 	mkdir -p $(OBJECTS_DIRS)
