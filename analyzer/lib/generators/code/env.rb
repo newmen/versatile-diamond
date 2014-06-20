@@ -5,12 +5,6 @@ module VersatileDiamond
       # Creates Env class and yaml config file
       class Env < CppClassWithGen
 
-        # Gets name of file which will be generated
-        # @return [String] the name of result file without extention
-        def file_name
-          template_name
-        end
-
         # Also generates yaml config file
         # @param [String] root_dir the generation directory
         # @override
