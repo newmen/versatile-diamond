@@ -8,11 +8,23 @@ module VersatileDiamond
       class CppClass
         include TemplateFile
 
+        SRC_DIR_NAME = 'src'
+
+        class << self
+          # Extends root dir path to source dir path
+          # @param [String] root_dir the generation output directory
+          # @return [String] the path to source code directory
+          def src_dir(root_dir)
+            (Pathname.new(root_dir) + SRC_DIR_NAME).to_s
+          end
+        end
+
         # Generates .h and .cpp files for current instance
-        # @param [String] root_dir the generation directory
+        # @param [String] root_dir the generation output directory
         def generate(root_dir)
-          write_file(root_dir, 'h')
-          write_file(root_dir, 'cpp') if File.exist?(template_path('cpp'))
+          sdr = self.class.src_dir(root_dir)
+          write_file(sdr, 'h')
+          write_file(sdr, 'cpp') if File.exist?(template_path('cpp'))
         end
 
       private
