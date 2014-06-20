@@ -27,6 +27,12 @@ module VersatileDiamond
           write_file(sdr, 'cpp') if File.exist?(template_path('cpp'))
         end
 
+        # Gets default name of file which will be generated
+        # @return [String] the default name of result file without extention
+        def file_name
+          template_name
+        end
+
       private
 
         # The additional path for current instance

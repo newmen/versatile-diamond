@@ -7,11 +7,10 @@ module VersatileDiamond
         extend Forwardable
 
         # Also initialize internal atoms_mirror hash
-        # @param [Array] args see at #super arguments
+        # @param [EngineCode] generator see at #super same arguments
         # @override
-        def initialize(*args)
+        def initialize(generator)
           super
-
           @atoms_mirror = Hash[pure_atoms.map(&:name).zip(pure_atoms)]
         end
 
@@ -42,12 +41,6 @@ module VersatileDiamond
         def method_name(atom_class, lattice)
           lattice_name = lattice && lattice.name
           "build#{atom_class.class_name}_#{lattice_name}"
-        end
-
-        # Gets name of file which will be generated
-        # @return [String] the name of result file without extention
-        def file_name
-          template_name
         end
 
         # Atoms stored in atoms directory

@@ -10,6 +10,7 @@ module VersatileDiamond
 
         # Gets the result file name
         # @return [String] the result file name of atom class
+        # @override
         def file_name
           class_name.underscore
         end

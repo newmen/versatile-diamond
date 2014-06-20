@@ -5,12 +5,6 @@ module VersatileDiamond
       # Generates major configuration file as c++ source code
       class Handbook < CppClassWithGen
 
-        # Gets name of file which will be generated
-        # @return [String] the name of result file without extention
-        def file_name
-          template_name
-        end
-
         # Checks that ubiquitous reactions presented in original set
         # @return [Boolean] exists or not
         def ubiquitous_reactions_exists?
