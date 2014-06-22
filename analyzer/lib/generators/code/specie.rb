@@ -15,17 +15,30 @@ module VersatileDiamond
         def initialize(generator, spec)
           super(generator)
           @spec = spec
+          @_class_name = nil
         end
 
         # Makes class name for current specie
         # @return [String] the result class name
         # @example generating name
-        #   'hydrogen(h: *)' => 'HydrogenHs'
+        #   'bridge(ct: *, ct: i)' => 'BridgeCTsi'
         def class_name
-          @spec.name.to_s.capitalize.
-            gsub('*', 's').
-            gsub(/(\w+):/) { |label| label.upcase }.
-            gsub(/[\(\) :]/, '')
+          return @_class_name if @_class_name
+
+          m = @spec.name.to_s.match(/(\w+)(\(.+?\))?/)
+          addition =
+            if m[2]
+              params_str = m[2].scan(/\((.+?)\)/).first.first
+              params = m[2].scan(/\w+: ./)
+              spg = params.map { |p| p.match(/(\w+): (.)/) }
+              groups = spg.group_by { |m| m[1] }
+              strs = groups.map do |k, gs|
+                states = gs.map { |item| item[2] == '*' ? 's' : item[2] }.join
+                "#{k.upcase}#{states}"
+              end
+              strs.join
+            end
+          @_class_name = "#{m[1].classify}#{addition}"
         end
       end
 
