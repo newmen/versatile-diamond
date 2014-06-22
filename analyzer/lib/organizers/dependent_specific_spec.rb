@@ -39,6 +39,7 @@ module VersatileDiamond
       # @raise [RuntimeError] if parent already set
       def store_parent(parent)
         raise 'Parent already exists' if @parent
+        return unless parent # TODO: it's right?
         @parent = parent
         parent.store_child(self)
         store_rest(self - parent)

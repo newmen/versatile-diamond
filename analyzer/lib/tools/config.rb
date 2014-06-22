@@ -18,8 +18,8 @@ module VersatileDiamond
         # Initialize internal variables of config
         def init
           @total_time = nil
-          @concs = nil
-          #@composition
+          @concs = {}
+          @composition = nil
           @sizes = nil
           @gas_temperature, @surface_temperature = nil
         end
@@ -36,13 +36,6 @@ module VersatileDiamond
         # @param [String] path where dump of variables will be stored
         def save(path)
           Serializer.save(path, dump_data, suffix: DUMP_PREFIX)
-        end
-
-        # Reset all internal values. Used by RSpec only.
-        def reset
-          instance_variables.each do |var|
-            instance_variable_set(var, nil)
-          end
         end
 
         # Setup total calculation time
