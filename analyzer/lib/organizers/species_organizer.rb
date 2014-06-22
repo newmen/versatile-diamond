@@ -26,6 +26,7 @@ module VersatileDiamond
       end
 
     private
+
       # Organize dependencies between specific species
       # @param [Hash] base_cache see at #organize_spec_dependencies! same argument
       # @param [Array] specific_specs see at #organize_spec_dependencies! same argument

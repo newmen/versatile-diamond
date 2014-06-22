@@ -15,6 +15,7 @@ RSpec.configure do |config|
   config.include VD::Concepts::Support::Handbook
   config.include VD::Interpreter::Support::Handbook, type: :interpreter
   config.include VD::Organizers::Support::Properties, use: :atom_properties
+  config.include VD::Generators::Support::EngineGenerator, use: :engine_generator
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
@@ -27,7 +28,7 @@ RSpec.configure do |config|
     VD::Interpreter::Support::Handbook.reset
 
     VD::Tools::Chest.reset
-    VD::Tools::Config.reset
+    VD::Tools::Config.init
   end
 
 end

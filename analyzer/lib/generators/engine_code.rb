@@ -14,11 +14,11 @@ module VersatileDiamond
         super(analysis_result)
         @out_path = out_path
 
-        @species = collect_species
+        @_dependent_species = nil
+        @species = collect_code_species
       end
 
-      public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs,
-        :specific_gas_species
+      public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs
 
       # Generates source code and configuration files
       def generate(**params)
@@ -51,8 +51,15 @@ module VersatileDiamond
       # @param [Organizers::DependentSpec] spec by which code generator will be got
       # @return [Code::Specie] the correspond code generator instance
       def specie_class(spec)
-        binding.pry if !@species[spec.name]
         @species[spec.name]
+      end
+
+      def specific_gas_species
+        collect_dependent_species.values.select do |s|
+          s.spec.gas? &&
+            (s.is_a?(Organizers::DependentSimpleSpec) ||
+            s.is_a?(Organizers::DependentSpecificSpec))
+        end
       end
 
     private
@@ -79,21 +86,36 @@ module VersatileDiamond
       end
 
       # Collects all used species from analysis results
-      # @return [Hash] the mirror of dependent specs to spec code generator instances
-      def collect_species
-        mirror = (base_specs + specific_specs).each.with_object({}) do |spec, hash|
-          hash[spec.name] = Code::Specie.new(self, spec)
-        end
+      # @return [Hash] the mirror of specs names to dependent species
+      def collect_dependent_species
+        return @_dependent_species if @_dependent_species
+        @_dependent_species = {}
 
-        config_specs.each.with_object(mirror) do |concept, hash|
-          unless hash[concept.name]
+        all_specs = (base_specs || []) + (specific_specs || [])
+        all_specs.each { |spec| @_dependent_species[spec.name] = spec }
+        config_specs.each do |concept|
+          unless @_dependent_species[concept.name]
             dep_spec = concept.simple? ?
               Organizers::DependentSimpleSpec.new(concept) :
               Organizers::DependentSpecificSpec.new(concept)
 
-            hash[concept.name] = Code::Specie.new(self, dep_spec)
+            @_dependent_species[concept.name] = dep_spec
           end
         end
+      end
+
+      # Wraps all collected species from analysis results
+      # @return [Hash] the mirror of specs names to spec code generator instances
+      def collect_code_species
+        collect_dependent_species.each.with_object({}) do |(name, spec), hash|
+          hash[name] = Code::Specie.new(self, spec)
+        end
+      end
+
+      # Gets the species from configuration tool
+      # @return [Array] the array of gas concept species
+      def config_specs
+        Tools::Config.concs.keys
       end
     end
 

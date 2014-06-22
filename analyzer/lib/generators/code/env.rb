@@ -13,12 +13,6 @@ module VersatileDiamond
           EnvYaml.new(self).generate(root_dir)
         end
 
-        # Gets all used gas species
-        # @return [Array] the array of used gas species
-        def gas_species
-          @generator.specific_gas_species
-        end
-
         # Makes yaml concentration name for gas specie
         # @param [Concepts::SpecificSpec | Organizers::DependentSpecificSpec] gas_spec
         #   the gas specie for which name will generated
@@ -36,6 +30,12 @@ module VersatileDiamond
         end
 
       private
+
+        # Gets all used gas species
+        # @return [Array] the array of used gas species
+        def gas_species
+          @generator.specific_gas_species
+        end
 
         # Makes the concentration method name
         # @param [Concepts::SpecificSpec | Organizers::DependentSpecificSpec] gas_spec
