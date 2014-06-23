@@ -3,9 +3,6 @@ module VersatileDiamond
 
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
-      extend Forwardable
-
-      def_delegator :classifier, :used_lattices
 
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
@@ -16,6 +13,7 @@ module VersatileDiamond
 
         @_dependent_species = nil
         @species = collect_code_species
+        @lattices = collect_code_lattices
       end
 
       public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs
@@ -26,10 +24,8 @@ module VersatileDiamond
           eval("Code::#{class_str}").new(self).generate(@out_path)
         end
 
-        unique_pure_atoms.each { |atom| atom.generate(@out_path) }
-        used_lattices.compact.each do |lattice|
-          Code::Lattice.new(lattice, classifier).generate(@out_path)
-        end
+        unique_pure_atoms.each { |atom_class| atom_class.generate(@out_path) }
+        lattices.compact.each { |lattice_class| lattice_class.generate(@out_path) }
       end
 
       # Collects only unique base atom instances
@@ -45,6 +41,19 @@ module VersatileDiamond
 
         raise 'No unique atoms found!' if pure_atoms.empty?
         pure_atoms.map { |atom| Code::Atom.new(atom) }
+      end
+
+      # Gets all used lattices
+      # @return [Array] the array of used lattices
+      def lattices
+        @lattices.values
+      end
+
+      # Gets lattice source classes code generator
+      # @param [Concepts::Lattice] lattice by which code generator will be got
+      # @return [Code::Lattice] the lattice code generator
+      def lattice_class(lattice)
+        @lattices[lattice]
       end
 
       # Gets specie source files generator by some spec
@@ -111,6 +120,15 @@ module VersatileDiamond
         collect_dependent_species.each.with_object({}) do |(name, spec), hash|
           hash[name] = Code::Specie.new(self, spec)
         end
+      end
+
+      # Collects all used lattices and wraps it by source code generator
+      # @return [Hash] the mirror of lattices to code generator
+      def collect_code_lattices
+        hash = classifier.used_lattices.map do |concept|
+          concept ? [concept, Code::Lattice.new(concept, classifier)] : [nil, nil]
+        end
+        Hash[hash]
       end
 
       # Gets the species from configuration tool
