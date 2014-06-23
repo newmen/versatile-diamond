@@ -16,11 +16,11 @@ public:
 #endif // PRINT
 
 protected:
-    void findAllChildren() override;
-    void findAllTypicalReactions() override;
+    void findAllChildren() final;
+    void findAllTypicalReactions() final;
 
-    const ushort *indexes() const override { return __indexes; }
-    const ushort *roles() const override { return __roles; }
+    const ushort *indexes() const final { return __indexes; }
+    const ushort *roles() const final { return __roles; }
 
     void concretizeLocal(Atom *target) const override;
     void unconcretizeLocal(Atom *target) const override;
