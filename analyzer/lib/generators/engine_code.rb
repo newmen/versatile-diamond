@@ -102,6 +102,7 @@ module VersatileDiamond
             @_dependent_species[concept.name] = dep_spec
           end
         end
+        @_dependent_species
       end
 
       # Wraps all collected species from analysis results

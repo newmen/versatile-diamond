@@ -37,6 +37,21 @@ module VersatileDiamond
           end
         end
 
+        # Gets the result file name
+        # @return [String] the result file name of atom class
+        # @override
+        def file_name
+          enum_name.downcase
+        end
+
+        # Gets number of sceleton atoms used in specie and different from atoms of
+        # parent specie
+        #
+        # @return [Integer] the number of atoms
+        def atoms_num
+          (@spec.rest || @spec).links.size
+        end
+
       private
 
         # Makes suffix of name which is used in name builder methods

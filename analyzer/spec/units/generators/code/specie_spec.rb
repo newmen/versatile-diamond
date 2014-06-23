@@ -55,6 +55,51 @@ module VersatileDiamond
             let(:enum_name) { 'BRIDGE_WITH_DIMER_CTBs' }
           end
         end
+
+        describe '#file_name' do
+          shared_examples_for :check_file_name do
+            subject { described_class.new(empty_generator, concept_spec) }
+            it { expect(subject.file_name).to eq(file_name) }
+          end
+
+          it_behaves_like :check_file_name do
+            let(:concept_spec) { bridge_base }
+            let(:file_name) { 'bridge' }
+          end
+
+          it_behaves_like :check_file_name do
+            let(:concept_spec) { double(name: :'bridge_with_dimer(ctb: *)') }
+            let(:file_name) { 'bridge_with_dimer_ctbs' }
+          end
+        end
+
+        describe '#atoms_num' do
+          let(:bases) { [bridge_base, dimer_base] }
+          let(:specifics) { [activated_dimer] }
+          let(:generator) do
+            stub_generator(base_specs: bases, specific_specs: specifics)
+          end
+
+          shared_examples_for :check_atoms_num do
+            subject { generator.specie_class(concept_spec) }
+            it { expect(subject.atoms_num).to eq(atoms_num) }
+          end
+
+          it_behaves_like :check_atoms_num do
+            let(:concept_spec) { bridge_base }
+            let(:atoms_num) { 3 }
+          end
+
+          it_behaves_like :check_atoms_num do
+            let(:concept_spec) { dimer_base }
+            let(:atoms_num) { 2 }
+          end
+
+          it_behaves_like :check_atoms_num do
+            let(:concept_spec) { activated_dimer }
+            let(:atoms_num) { 1 }
+          end
+        end
       end
 
     end
