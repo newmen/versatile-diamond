@@ -15,10 +15,10 @@ public:
 #endif // PRINT
 
 protected:
-    void findAllTypicalReactions() override;
+    void findAllTypicalReactions() final;
 
-    const ushort *indexes() const override { return __indexes; }
-    const ushort *roles() const override { return __roles; }
+    const ushort *indexes() const final { return __indexes; }
+    const ushort *roles() const final { return __roles; }
 
 private:
     static const ushort __indexes[1];
