@@ -1,0 +1,41 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+<% iterator_files.each do |file_name| %>
+#include "../../phases/<%= file_name %>.h"
+<% end %>
+#include "../<%= outer_base_file %>.h"
+
+class <%= class_name %> :
+    <%= base_classes_str %>
+{
+public:
+    static void find(<%= find_arguments_str %>);
+
+    <%= class_name %>(<%= constructor_arguments_str %>) :
+        <%= outer_base_call %> {}
+
+#ifdef PRINT
+    const char *name() const final;
+#endif // PRINT
+
+protected:
+<% if parent? %>
+    void findAllChildren() final;
+<% end %>
+<% if specific? %>
+    void findAllTypicalReactions() final;
+<% end %>
+<% if lateral? %>
+    void findAllLateralReactions() final;
+<% end %>
+
+    const ushort *indexes() const final { return __indexes; }
+    const ushort *roles() const final { return __roles; }
+
+private:
+    static const ushort __indexes[<%= atoms_num %>];
+    static const ushort __roles[<%= atoms_num %>];
+};
+
+#endif // <%= define_name %>
