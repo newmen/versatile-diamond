@@ -65,9 +65,8 @@ module VersatileDiamond
 
       def specific_gas_species
         collect_dependent_species.values.select do |s|
-          s.spec.gas? &&
-            (s.is_a?(Organizers::DependentSimpleSpec) ||
-            s.is_a?(Organizers::DependentSpecificSpec))
+          s.spec.gas? && (s.class == Organizers::DependentSimpleSpec ||
+            s.class == Organizers::DependentSpecificSpec)
         end
       end
 

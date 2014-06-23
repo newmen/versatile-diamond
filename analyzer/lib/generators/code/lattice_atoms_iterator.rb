@@ -18,13 +18,13 @@ module VersatileDiamond
           "#{@lattice_class.class_name}AtomsIterator"
         end
 
+      private
+
         # Gets name of file where described lattice class
         # @return [String] the lattice class file name
         def lattice_file_name
           "#{@lattice_class.file_name}.h"
         end
-
-      private
 
         # Atoms stored in atoms directory
         # @return [String] the atoms directory

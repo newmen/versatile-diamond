@@ -4,7 +4,6 @@ module VersatileDiamond
 
       # Creates AtomBuilder class
       class AtomBuilder < CppClassWithGen
-        extend Forwardable
 
         # Also initialize internal atoms_mirror hash
         # @param [EngineCode] generator see at #super same arguments

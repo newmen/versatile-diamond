@@ -35,11 +35,13 @@ module VersatileDiamond
         subject { stub_generator(base_specs: [bridge_base]) }
         let(:specie) { subject.specie_class(bridge_base) }
         it { expect(specie).to be_a(Code::Specie) }
-        it { expect(specie.class_name).to be_a('Bridge') }
+        it { expect(specie.class_name).to eq('Bridge') }
       end
 
       describe '#specific_gas_species' do
-        subject { stub_generator(specific_specs: [methyl, activated_bridge]) }
+        let(:bases) { [methane_base] }
+        let(:specifics) { [methyl, activated_bridge] }
+        subject { stub_generator(base_specs: bases, specific_specs: specifics) }
         let(:gas_specs) { subject.specific_gas_species }
         let(:gas_names) { [:"methane(c: *)", :"hydrogen(h: *)"] }
 
