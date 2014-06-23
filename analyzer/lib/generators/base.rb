@@ -53,13 +53,13 @@ module VersatileDiamond
       # Gets all base surface species
       # @return [Array] the array of base specs
       def base_surface_specs
-        base_specs.reject(&:gas?)
+        (base_specs || []).reject(&:gas?)
       end
 
       # Gets all specific surface species
       # @return [Array] the array of specific specs
       def specific_surface_specs
-        specific_specs.reject(&:gas?)
+        (specific_specs || []).reject(&:gas?)
       end
     end
 

@@ -4,6 +4,40 @@ module VersatileDiamond
   module Generators
 
     describe EngineCode, use: :engine_generator do
+      describe '#unique_pure_atoms' do
+        let(:bases) { [methane_base, bridge_base] }
+        let(:specifics) { [chlorigenated_bridge] }
+        subject { stub_generator(base_specs: bases, specific_specs: specifics) }
+
+        it { expect(subject.unique_pure_atoms.map(&:class_name)).to eq(['C']) }
+      end
+
+      describe '#lattices' do
+        subject { stub_generator(base_specs: [methane_base, bridge_base]) }
+        it { expect(subject.lattices.size).to eq(1) }
+
+        let(:lattice) { subject.lattices.first }
+        it { expect(lattice).to be_a(Code::Lattice) }
+        it { expect(lattice.class_name).to eq('Diamond') }
+      end
+
+      describe '#lattice_class' do
+        subject { stub_generator(base_specs: [bridge_base, methyl_on_bridge_base]) }
+
+        let(:lattice) { subject.lattice_class(diamond) }
+        it { expect(lattice).to be_a(Code::Lattice) }
+
+        let(:no_lattice) { subject.lattice_class(nil) }
+        it { expect(no_lattice).to be_nil }
+      end
+
+      describe '#specie_class' do
+        subject { stub_generator(base_specs: [bridge_base]) }
+        let(:specie) { subject.specie_class(bridge_base) }
+        it { expect(specie).to be_a(Code::Specie) }
+        it { expect(specie.class_name).to be_a('Bridge') }
+      end
+
       describe '#specific_gas_species' do
         subject { stub_generator(specific_specs: [methyl, activated_bridge]) }
         let(:gas_specs) { subject.specific_gas_species }
@@ -15,14 +49,6 @@ module VersatileDiamond
         end
 
         it { expect(gas_specs.map(&:name)).to match_array(gas_names) }
-      end
-
-      describe '#unique_pure_atoms' do
-        let(:bases) { [methane_base, bridge_base] }
-        let(:specifics) { [chlorigenated_bridge] }
-        subject { stub_generator(base_specs: bases, specific_specs: specifics) }
-
-        it { expect(subject.unique_pure_atoms.map(&:class_name)).to eq(['C']) }
       end
     end
 
