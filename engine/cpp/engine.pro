@@ -298,5 +298,6 @@ HEADERS += \
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \
-    ../hand-generations/src/configs/reactions.yml
+    ../hand-generations/src/configs/reactions.yml \
+    ../hand-generations/atoms_transitive_graph.png
 
