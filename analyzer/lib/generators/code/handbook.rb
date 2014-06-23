@@ -4,6 +4,7 @@ module VersatileDiamond
 
       # Generates major configuration file as c++ source code
       class Handbook < CppClassWithGen
+      private
 
         # Checks that ubiquitous reactions presented in original set
         # @return [Boolean] exists or not
@@ -64,13 +65,11 @@ module VersatileDiamond
 
         # Gets the mirror of each termination spec to their numbers on atoms
         # @return [Hash] the hash of numbers of terminations on each atom
-        def nums_on_atoms
+        def nums_on_terms
           @generator.term_specs.each.with_object({}) do |term_spec, hash|
             hash[term_spec.name] = term_nums(term_spec)
           end
         end
-
-      private
 
         # Makes string from matrix
         # @param [Array] matrix the original matrix

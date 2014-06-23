@@ -29,13 +29,13 @@ module VersatileDiamond
           "Env::#{concentration_method(gas_spec)}"
         end
 
-      private
-
         # Gets all used gas species
         # @return [Array] the array of used gas species
         def gas_species
           @generator.specific_gas_species
         end
+
+      private
 
         # Makes the concentration method name
         # @param [Concepts::SpecificSpec | Organizers::DependentSpecificSpec] gas_spec

@@ -27,13 +27,19 @@ module VersatileDiamond
           super
           cp_crystal_properties_file_path(root_dir)
           cp_relations_file_path(root_dir)
-          LatticeAtomsIterator.new(self).generate(root_dir)
+          iterator.generate(root_dir)
         end
 
         # Get the cpp class name
         # @return [String] the class name of atom
         def class_name
           instance.class.to_s
+        end
+
+        # Gets iterator for current lattice
+        # @return [LatticeAtomsIterator] the iterator between atoms of current lattice
+        def iterator
+          LatticeAtomsIterator.new(self)
         end
 
       private
