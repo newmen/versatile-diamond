@@ -15,30 +15,46 @@ module VersatileDiamond
         def initialize(generator, spec)
           super(generator)
           @spec = spec
-          @_class_name = nil
+          @_class_name, @_enum_name = nil
         end
 
-        # Makes class name for current specie
-        # @return [String] the result class name
-        # @example generating name
-        #   'bridge(ct: *, ct: i)' => 'BridgeCTsi'
-        def class_name
-          return @_class_name if @_class_name
+        [
+          ['class', :classify, ''],
+          ['enum', :upcase, '_']
+        ].each do |name, method, separator|
+          method_name = :"#{name}_name"
+          var_name = :"@_#{method_name}"
 
-          m = @spec.name.to_s.match(/(\w+)(\(.+?\))?/)
-          addition =
-            if m[2]
-              params_str = m[2].scan(/\((.+?)\)/).first.first
-              params = m[2].scan(/\w+: ./)
-              spg = params.map { |p| p.match(/(\w+): (.)/) }
-              groups = spg.group_by { |m| m[1] }
-              strs = groups.map do |k, gs|
-                states = gs.map { |item| item[2] == '*' ? 's' : item[2] }.join
-                "#{k.upcase}#{states}"
-              end
-              strs.join
-            end
-          @_class_name = "#{m[1].classify}#{addition}"
+          # Makes #{name} name for current specie
+          # @return [String] the result #{name} name
+          define_method(method_name) do
+            var = instance_variable_get(var_name)
+            return var if var
+
+            m = @spec.name.to_s.match(/(\w+)(\(.+?\))?/)
+            addition = "#{separator}#{name_suffix(m[2])}" if m[2]
+            instance_variable_set(var_name, "#{m[1].send(method)}#{addition}")
+          end
+        end
+
+      private
+
+        # Makes suffix of name which is used in name builder methods
+        # @param [String] brackets_str the string which contain brackets and some
+        #   additional params of specie in them
+        # @return [String] the suffix of name
+        # @example generating name
+        #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
+        def name_suffix(brackets_str)
+          params_str = brackets_str.scan(/\((.+?)\)/).first.first
+          params = brackets_str.scan(/\w+: ./)
+          spg = params.map { |p| p.match(/(\w+): (.)/) }
+          groups = spg.group_by { |m| m[1] }
+          strs = groups.map do |k, gs|
+            states = gs.map { |item| item[2] == '*' ? 's' : item[2] }.join
+            "#{k.upcase}#{states}"
+          end
+          strs.join
         end
       end
 
