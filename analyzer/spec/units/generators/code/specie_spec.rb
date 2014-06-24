@@ -32,6 +32,11 @@ module VersatileDiamond
             let(:concept_spec) { double(name: :'extra_ethane(c1: *, c1: *)') }
             let(:class_name) { 'ExtraEthaneC1ss' }
           end
+
+          it_behaves_like :check_class_name do
+            let(:concept_spec) { double(name: :'test01(c1: *, nm: i, c1: *)') }
+            let(:class_name) { 'Test01C1ssNMi' }
+          end
         end
 
         describe '#enum_name' do

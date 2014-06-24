@@ -204,11 +204,10 @@ module VersatileDiamond
         #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
         def name_suffix(brackets_str)
           params_str = brackets_str.scan(/\((.+?)\)/).first.first
-          params = params_str.scan(/\w+: ./)
-          spg = params.map { |p| p.match(/(\w+): (.)/) }
-          groups = spg.group_by { |m| m[1] }
+          params = params_str.scan(/(\w+): (.)/)
+          groups = params.group_by(&:first)
           strs = groups.map do |k, gs|
-            states = gs.map { |item| item[2] == '*' ? 's' : item[2] }.join
+            states = gs.map { |item| item.last == '*' ? 's' : item.last }.join
             "#{k.upcase}#{states}"
           end
           strs.join
