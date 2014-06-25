@@ -1,0 +1,13 @@
+#include "original_bridge.h"
+#include "../empty/symmetric_bridge.h"
+
+const ushort OriginalBridge::__indexes[3] = { 0, 1, 2 };
+const ushort OriginalBridge::__roles[3] = { 3, 6, 6 };
+
+#ifdef PRINT
+const char *OriginalBridge::name() const
+{
+    static const char value[] = "bridge";
+    return value;
+}
+#endif // PRINT

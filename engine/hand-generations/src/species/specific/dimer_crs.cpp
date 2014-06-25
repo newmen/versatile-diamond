@@ -20,21 +20,17 @@ const char *DimerCRs::name() const
 
 void DimerCRs::find(Dimer *parent)
 {
-    const ushort indexes[2] = { 0, 3 };
+    parent->eachSymmetry([](ParentSpec *specie) {
+        Atom *anchor = specie->atom(0);
 
-    for (int i = 0; i < 2; ++i)
-    {
-        Atom *anchor = parent->atom(indexes[i]);
-        if (anchor->isVisited()) continue; // because no children species
-
-        if (anchor->is(21))
+        if (!anchor->isVisited() && anchor->is(21))
         {
             if (!anchor->hasRole(DIMER_CRs, 21))
             {
-                create<DimerCRs>(indexes[i], parent);
+                create<DimerCRs>(specie);
             }
         }
-    }
+    });
 }
 
 void DimerCRs::findAllChildren()

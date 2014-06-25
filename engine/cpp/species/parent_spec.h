@@ -16,7 +16,7 @@ class ParentSpec : public BaseSpec
 
 public:
     void insertChild(BaseSpec *child);
-    virtual void eraseChild(BaseSpec *child);
+    void eraseChild(BaseSpec *child);
 
     void setUnvisited() override;
     void findChildren() override;
@@ -26,8 +26,6 @@ protected:
     ParentSpec() = default;
 
     virtual void findAllChildren() = 0;
-
-    uint childrenNum() const { return _children.size(); }
 };
 
 }

@@ -1,18 +1,20 @@
 #ifndef EMPTY_H
 #define EMPTY_H
 
-#include <species/empty_spec.h>
+#include <species/atoms_swap_wrapper.h>
+#include <species/parents_swap_wrapper.h>
+#include <species/child_spec.h>
 using namespace vd;
 
 #include "overall.h"
 
-template <template <class> class W, ushort ST>
-class Empty : public Overall<W<DependentSpec<EmptySpec>>, ST>
+template <ushort ST>
+class Empty : public Overall<ChildSpec<ParentSpec>, ST>
 {
-    typedef Overall<W<DependentSpec<EmptySpec>>, ST> ParentType;
+    typedef Overall<ChildSpec<ParentSpec>, ST> ParentType;
 
 public:
-    Atom *anchor() const override { return this->parent(0)->anchor(); }
+    Atom *anchor() const override { return this->parent()->anchor(); }
 
     void remove() override;
 
@@ -24,11 +26,10 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <template <class> class W, ushort ST>
-void Empty<W, ST>::remove()
+template <ushort ST>
+void Empty<ST>::remove()
 {
     if (this->isMarked()) return;
-
     ParentType::remove();
 }
 

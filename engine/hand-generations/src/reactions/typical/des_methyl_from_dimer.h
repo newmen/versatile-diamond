@@ -11,7 +11,6 @@ class DesMethylFromDimer : public Typical<DES_METHYL_FROM_DIMER>
 public:
     static double RATE();
 
-    // TODO: methyl_on_dimer(cm: u, cm: i) should be used
     static void find(MethylOnDimerCMiu *target);
 
     DesMethylFromDimer(SpecificSpec *target) : Typical(target) {}

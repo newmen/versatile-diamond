@@ -3,19 +3,6 @@
 #include "../specific/high_bridge.h"
 #include "bridge_cri.h"
 #include "methyl_on_bridge.h"
-#include "two_bridges.h"
-#include "bridge_with_dimer.h"
-
-const ushort Bridge::__indexes[3] = { 0, 1, 2 };
-const ushort Bridge::__roles[3] = { 3, 6, 6 };
-
-#ifdef PRINT
-const char *Bridge::name() const
-{
-    static const char value[] = "bridge";
-    return value;
-}
-#endif // PRINT
 
 void Bridge::find(Atom *anchor)
 {

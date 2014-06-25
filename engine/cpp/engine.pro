@@ -71,10 +71,12 @@ SOURCES += \
     ../hand-generations/src/species/base/bridge_with_dimer.cpp \
     ../hand-generations/src/species/base/methyl_on_bridge.cpp \
     ../hand-generations/src/species/base/methyl_on_dimer.cpp \
+    ../hand-generations/src/species/base/original_bridge.cpp \
     ../hand-generations/src/species/base/two_bridges.cpp \
-    ../hand-generations/src/species/empty/shifted_dimer.cpp \
-    ../hand-generations/src/species/empty/swapped_bridge.cpp \
+    ../hand-generations/src/species/empty/symmetric_bridge.cpp \
+    ../hand-generations/src/species/empty/symmetric_dimer.cpp \
     ../hand-generations/src/species/sidepiece/dimer.cpp \
+    ../hand-generations/src/species/sidepiece/original_dimer.cpp \
     ../hand-generations/src/species/specific/bridge_crh.cpp \
     ../hand-generations/src/species/specific/bridge_crs.cpp \
     ../hand-generations/src/species/specific/bridge_crs_cti_cli.cpp \
@@ -112,7 +114,6 @@ SOURCES += \
     reactions/lateral_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \
-    species/empty_spec.cpp \
     species/lateral_spec.cpp \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
@@ -208,13 +209,15 @@ HEADERS += \
     ../hand-generations/src/species/base/bridge_with_dimer.h \
     ../hand-generations/src/species/base/methyl_on_bridge.h \
     ../hand-generations/src/species/base/methyl_on_dimer.h \
+    ../hand-generations/src/species/base/original_bridge.h \
     ../hand-generations/src/species/base/two_bridges.h \
     ../hand-generations/src/species/empty.h \
-    ../hand-generations/src/species/empty/shifted_dimer.h \
-    ../hand-generations/src/species/empty/swapped_bridge.h \
+    ../hand-generations/src/species/empty/symmetric_bridge.h \
+    ../hand-generations/src/species/empty/symmetric_dimer.h \
     ../hand-generations/src/species/overall.h \
     ../hand-generations/src/species/sidepiece.h \
     ../hand-generations/src/species/sidepiece/dimer.h \
+    ../hand-generations/src/species/sidepiece/original_dimer.h \
     ../hand-generations/src/species/specific.h \
     ../hand-generations/src/species/specific/bridge_crh.h \
     ../hand-generations/src/species/specific/bridge_crs.h \
@@ -262,19 +265,20 @@ HEADERS += \
     reactions/typical_reaction.h \
     reactions/ubiquitous_reaction.h \
     species/additional_atoms_wrapper.h \
-    species/atom_shift_wrapper.h \
     species/atoms_swap_wrapper.h \
     species/base_spec.h \
+    species/child_spec.h \
     species/dependent_spec.h \
-    species/empty_spec.h \
     species/keeper.h \
     species/lateral_spec.h \
     species/localable_role.h \
     species/parent_spec.h \
+    species/parents_swap_wrapper.h \
     species/reactant.h \
     species/sealer.h \
     species/source_spec.h \
     species/specific_spec.h \
+    species/symmetric.h \
     tools/collector.h \
     tools/common.h \
     tools/creator.h \
