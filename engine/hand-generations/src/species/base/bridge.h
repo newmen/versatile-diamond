@@ -2,28 +2,18 @@
 #define BRIDGE_H
 
 #include "../../phases/diamond_atoms_iterator.h"
-#include "../base.h"
+#include "../empty/symmetric_bridge.h"
+#include "original_bridge.h"
 
-class Bridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>, public DiamondAtomsIterator
+class Bridge : public Symmetric<OriginalBridge, SymmetricBridge>, public DiamondAtomsIterator
 {
 public:
     static void find(Atom *anchor);
 
-    Bridge(Atom **atoms) : Base(atoms) {}
-
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+    Bridge(Atom **atoms) : Symmetric(atoms) {}
 
 protected:
     void findAllChildren() final;
-
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[3];
-    static const ushort __roles[3];
 };
 
 #endif // BRIDGE_H

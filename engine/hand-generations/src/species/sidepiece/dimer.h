@@ -2,37 +2,26 @@
 #define DIMER_H
 
 #include "../../phases/diamond_atoms_iterator.h"
-#include "../base.h"
-#include "../sidepiece.h"
+#include "../empty/symmetric_dimer.h"
+#include "original_dimer.h"
 
-class Dimer : public Sidepiece<Base<DependentSpec<ParentSpec, 2>, DIMER, 2>>, public DiamondAtomsIterator
+class Dimer : public Symmetric<OriginalDimer, SymmetricDimer>, public DiamondAtomsIterator
 {
 public:
     static void find(Atom *anchor);
-    template <class L> static void dimersRow(Atom **anchors, const L &lambda);
+    template <class L> static void row(Atom **anchors, const L &lambda);
 
-    Dimer(ParentSpec **parents) : Sidepiece(parents) {}
-
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+    Dimer(ParentSpec **parents) : Symmetric(parents) {}
 
 protected:
     void findAllChildren() final;
     void findAllLateralReactions() final;
-
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[2];
-    static const ushort __roles[2];
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class L>
-void Dimer::dimersRow(Atom **anchors, const L &lambda)
+void Dimer::row(Atom **anchors, const L &lambda)
 {
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&lambda](Atom **neighbours) {
         if (neighbours[0]->is(22) && neighbours[1]->is(22))

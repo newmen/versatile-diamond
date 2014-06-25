@@ -3,12 +3,12 @@
 
 #include "bridge.h"
 
-class BridgeCRi : public Base<AtomsSwapWrapper<DependentSpec<ParentSpec>>, BRIDGE_CRi, 1>
+class BridgeCRi : public Base<DependentSpec<ParentSpec>, BRIDGE_CRi, 1>
 {
 public:
     static void find(Bridge *parent);
 
-    BridgeCRi(ushort fromIndex, ushort toIndex, ParentSpec *parent) : Base(fromIndex, toIndex, parent) {}
+    BridgeCRi(ParentSpec *parent) : Base(parent) {}
 
 #ifdef PRINT
     const char *name() const final;

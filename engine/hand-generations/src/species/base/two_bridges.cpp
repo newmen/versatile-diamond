@@ -1,5 +1,5 @@
 #include "two_bridges.h"
-#include "../empty/swapped_bridge.h"
+#include "../base/bridge.h"
 #include "../specific/two_bridges_ctri_cbrs.h"
 
 const ushort TwoBridges::__indexes[1] = { 5 };
@@ -19,18 +19,17 @@ void TwoBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(TWO_BRIDGES, 24))
         {
-            ParentSpec *topBridges[2];
+            ParentSpec *topBridges[2] = { nullptr, nullptr };
             ushort index = 0;
 
-            anchor->eachSpecByRole<Bridge>(6, [anchor, &topBridges, &index](Bridge *target) {
-                if (target->atom(2) == anchor)
-                {
-                    topBridges[index] = target;
-                }
-                else
-                {
-                    topBridges[index] = create<SwappedBridge>(target);
-                }
+            anchor->eachSpecByRole<Bridge>(6, [&topBridges, &index, anchor](Bridge *target) {
+                target->eachSymmetry([&topBridges, anchor, index](ParentSpec *specie) {
+                    if (specie->atom(2) == anchor)
+                    {
+                        assert(!topBridges[index]);
+                        topBridges[index] = specie;
+                    }
+                });
                 ++index;
             });
 

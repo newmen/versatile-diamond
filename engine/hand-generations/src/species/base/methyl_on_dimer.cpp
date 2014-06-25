@@ -1,5 +1,4 @@
 #include "methyl_on_dimer.h"
-#include "../empty/shifted_dimer.h"
 #include "../specific/methyl_on_dimer_cmiu.h"
 
 const ushort MethylOnDimer::__indexes[2] = { 1, 0 };
@@ -15,11 +14,8 @@ const char *MethylOnDimer::name() const
 
 void MethylOnDimer::find(Dimer *target)
 {
-    const ushort checkingIndexes[2] = { 0, 3 };
-
-    for (int i = 0; i < 2; ++i)
-    {
-        Atom *anchor = target->atom(checkingIndexes[i]);
+    target->eachSymmetry([](ParentSpec *specie) {
+        Atom *anchor = specie->atom(0);
 
         if (anchor->is(23))
         {
@@ -28,19 +24,11 @@ void MethylOnDimer::find(Dimer *target)
                 Atom *amorph = anchor->amorphNeighbour();
                 if (amorph->is(14))
                 {
-                    if (checkingIndexes[i] == 0)
-                    {
-                        create<MethylOnDimer>(amorph, target);
-                    }
-                    else
-                    {
-                        auto shiftedDimer = create<ShiftedDimer>(target);
-                        create<MethylOnDimer>(amorph, shiftedDimer);
-                    }
+                    create<MethylOnDimer>(amorph, specie);
                 }
             }
         }
-    }
+    });
 }
 
 void MethylOnDimer::findAllChildren()

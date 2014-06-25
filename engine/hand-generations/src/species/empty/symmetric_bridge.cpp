@@ -1,7 +1,7 @@
-#include "swapped_bridge.h"
+#include "symmetric_bridge.h"
 
 #ifdef PRINT
-const char *SwappedBridge::name() const
+const char *SymmetricBridge::name() const
 {
     static const char value[] = "swapped bridge";
     return value;

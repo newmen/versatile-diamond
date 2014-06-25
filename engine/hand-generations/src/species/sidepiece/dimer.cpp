@@ -5,22 +5,9 @@
 #include "../../reactions/lateral/dimer_formation_in_middle.h"
 #include "../../reactions/typical/dimer_drop.h"
 #include "../../reactions/typical/dimer_formation.h"
-#include "../base/bridge.h"
 #include "../base/methyl_on_dimer.h"
-#include "../specific/bridge_ctsi.h"
-#include "../specific/dimer_cri_cli.h"
 #include "../specific/dimer_crs.h"
-
-const ushort Dimer::__indexes[2] = { 0, 3 };
-const ushort Dimer::__roles[2] = { 22, 22 };
-
-#ifdef PRINT
-const char *Dimer::name() const
-{
-    static const char value[] = "dimer";
-    return value;
-}
-#endif // PRINT
+#include "../specific/dimer_cri_cli.h"
 
 void Dimer::find(Atom *anchor)
 {
@@ -49,8 +36,8 @@ void Dimer::find(Atom *anchor)
 void Dimer::findAllChildren()
 {
     MethylOnDimer::find(this);
-    DimerCRiCLi::find(this);
     DimerCRs::find(this);
+    DimerCRiCLi::find(this);
 }
 
 void Dimer::findAllLateralReactions()

@@ -37,7 +37,7 @@ LateralReaction *DimerDrop::lookAround()
     LateralSpec *neighbours[2] = { nullptr, nullptr };
     LateralReaction *concreted = nullptr;
 
-    Dimer::dimersRow(atoms, [this, &neighbours, &concreted](LateralSpec *spec) {
+    Dimer::row(atoms, [this, &neighbours, &concreted](LateralSpec *spec) {
         if (neighbours[0])
         {
             neighbours[1] = spec;

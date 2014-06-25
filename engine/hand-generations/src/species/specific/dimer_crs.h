@@ -4,12 +4,12 @@
 #include "../sidepiece/dimer.h"
 #include "../specific.h"
 
-class DimerCRs : public Specific<Base<AtomShiftWrapper<DependentSpec<ParentSpec>>, DIMER_CRs, 1>>
+class DimerCRs : public Specific<Base<DependentSpec<ParentSpec>, DIMER_CRs, 1>>
 {
 public:
     static void find(Dimer *parent);
 
-    DimerCRs(ushort atomsShift, ParentSpec *parent) : Specific(atomsShift, parent) {}
+    DimerCRs(ParentSpec *parent) : Specific(parent) {}
 
 #ifdef PRINT
     const char *name() const final;

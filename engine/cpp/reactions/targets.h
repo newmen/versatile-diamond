@@ -27,7 +27,7 @@ protected:
     Targets(const Targets<S, TARGETS_NUM - 1> *parent, S *additional);
     Targets(const Targets<S, TARGETS_NUM + 1> *parent, S *removable);
 
-    S *target(ushort index = 0) const;
+    inline S *target(ushort index = 0) const;
 
     template <class R> void insert(R *reaction);
     template <class R> void erase(R *reaction);

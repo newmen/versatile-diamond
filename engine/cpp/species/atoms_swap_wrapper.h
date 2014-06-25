@@ -7,13 +7,11 @@
 namespace vd
 {
 
-template <class B>
+template <class B, ushort FROM, ushort TO>
 class AtomsSwapWrapper : public B
 {
-    ushort _from, _to;
-
 protected:
-    template <class... Args> AtomsSwapWrapper(ushort from, ushort to, Args... args);
+    template <class... Args> AtomsSwapWrapper(Args... args) : B(args...) {}
 
 public:
     Atom *atom(ushort index) const override;
@@ -21,27 +19,12 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class B>
-template <class... Args>
-AtomsSwapWrapper<B>::AtomsSwapWrapper(ushort from, ushort to, Args... args) : B(args...), _from(from), _to(to)
+template <class B, ushort FROM, ushort TO>
+Atom *AtomsSwapWrapper<B, FROM, TO>::atom(ushort index) const
 {
-}
-
-template <class B>
-Atom *AtomsSwapWrapper<B>::atom(ushort index) const
-{
-    if (index == _from)
-    {
-        return B::atom(_to);
-    }
-    else if (index == _to)
-    {
-        return B::atom(_from);
-    }
-    else
-    {
-        return B::atom(index);
-    }
+    if (index == FROM) return B::atom(TO);
+    else if (index == TO) return B::atom(FROM);
+    else return B::atom(index);
 }
 
 }

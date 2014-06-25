@@ -15,19 +15,16 @@ const char *BridgeCRi::name() const
 
 void BridgeCRi::find(Bridge *parent)
 {
-    const ushort checkingIndexes[2] = { 1, 2 };
-
-    for (int i = 0; i < 2; ++i)
-    {
-        Atom *anchor = parent->atom(checkingIndexes[i]);
+    parent->eachSymmetry([](ParentSpec *specie) {
+        Atom *anchor = specie->atom(1);
         if (anchor->is(4))
         {
             if (!anchor->checkAndFind(BRIDGE_CRi, 4))
             {
-                create<BridgeCRi>(checkingIndexes[i], 1, parent);
+                create<BridgeCRi>(specie);
             }
         }
-    }
+    });
 }
 
 void BridgeCRi::findAllChildren()
