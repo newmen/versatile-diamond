@@ -7,6 +7,7 @@ module VersatileDiamond
       # Creates Specie class
       class Specie < CppClassWithGen
         include PolynameClass
+        include PartialRenderer
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -16,6 +17,81 @@ module VersatileDiamond
           super(generator)
           @spec = spec
           @_class_name, @_enum_name, @_used_iterators = nil
+
+          @_atoms_delta, @_atoms_sequence, @_symmetric_atoms = nil
+          @symmetrics = collect_symmetrics
+        end
+
+        # Counts delta between atoms num of current specie and sum of atoms num of
+        # all parents
+        #
+        # @return [Integer] the delta between atoms nums
+        def atoms_delta
+          @_atoms_delta ||= links.size - parents.map(&:links).map(&:size).reduce(:+)
+        end
+
+        # Detects additional atoms which are not presented in parent species
+        # @return [Array] the array of additional atoms
+        def addition_atoms
+          original_links = @spec.links
+          all_atoms = original_links.keys
+          atoms = parents.reduce(all_atoms) do |acc, parent|
+            acc - parent.atoms_sequence
+          end
+          atoms.sort_by { |a| original_links[a].size }
+        end
+
+        # Makes general sequence of atoms which will be used for get an atom index
+        # @return [Array] the general sequence of atoms of current specie
+        def atoms_sequence
+          @_atoms_sequence ||=
+            if parents_num == 0
+              @spec.links.to_a.sort_by { |_, l| l.size }.map(&:first)
+            else
+              result = atoms_delta > 0 ? addition_atoms : []
+              parents.reduce(result) { |acc, parent| acc + parent.atoms_sequence }
+            end
+        end
+
+        # Gets an index of some atom
+        # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom for which index will be got from general sequence
+        # @return [Integer] the index of atom in general sequence
+        def atom_index(atom)
+          atoms_sequence.index(atom)
+        end
+
+        # Finds all symmetric intersecs
+        # @return [Array] the array of hashes where each hash contain pointing to
+        #   symmetrical atoms
+        def collect_symmetrics
+          intersec =
+            SpeciesComparator.intersec(target, target, collaps_multi_bond: false)
+          intersec.reject { |isec| isec.all?(&:==) }.map { |isec| Hash[isec] }
+        end
+
+        def other_atoms
+          links.keys
+        end
+
+        # Finds all atoms which have symmetric analogy
+        # @return [Set] the set of atoms
+        def symmetric_atoms
+          return @_symmetric_atoms if @_symmetric_atoms
+          pairs = @symmetrics.reduce([]) do |acc, intersec|
+            acc + intersec.reject(&:==)
+          end
+          @_symmetric_atoms = Set[pairs]
+        end
+
+        # Is symmetric specie? If children species uses same as own atom and it atom
+        # has symmetric analogy
+        #
+        # @return [Boolean] is symmetric specie or not
+        def symmetric?
+          children.any? do |child|
+            other_atoms
+          end
         end
 
         [
@@ -55,10 +131,17 @@ module VersatileDiamond
 
       private
 
+        # Gets target of current generation
+        # @return [Organizers::DependentSpec || Organizers::SpecResidual] the
+        #   minimal rest of current target specie
+        def target
+          @spec.rest || @spec
+        end
+
         # Gets target links between different atoms
         # @return [Hash] the links between atoms
         def links
-          (@spec.rest || @spec).links
+          target.links
         end
 
         # Checks that internal @spec variable is DependentBaseSpec
@@ -73,6 +156,12 @@ module VersatileDiamond
           prs = @spec.is_a?(Organizers::DependentBaseSpec) ?
             @spec.parents : (@spec.parent ? [@spec.parent] : [])
           prs.map { |parent| @generator.specie_class(parent) }
+        end
+
+        # Gets the children specie classes
+        # @return [Array] the array of children specie class generators
+        def children
+          @spec.children.map { |child| @generator.specie_class(child) }
         end
 
         # Checks that specie have children
@@ -109,10 +198,20 @@ module VersatileDiamond
             "DependentSpec<#{base_class}, #{parents_num}>"
         end
 
+        # Checks that specie contain additional atoms and if truth then wraps base
+        # class name
+        #
+        # @return [String] the wrapped or not base engine class name
+        def wrapped_engine_class_name
+          base_class = base_engine_class_name
+          delta = atoms_delta
+          delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
+        end
+
         # Wraps combined base engine class by classes which works with handbook
         # @return [String] full major base class
         def wrapped_base_class
-          base = "Base<#{base_engine_class_name}, #{enum_name}, #{atoms_num}>"
+          base = "Base<#{wrapped_engine_class_name}, #{enum_name}, #{atoms_num}>"
           base = "Specific<#{base}>" if specific?
           base = "Sidepiece<#{base}>" if lateral?
           base
@@ -120,14 +219,14 @@ module VersatileDiamond
 
         # Gets outer template name of base class
         # @return [String] the outer base class name
-        def outer_base_file
-          outer_base_class.underscore
+        def outer_base_class
+          lateral? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
         end
 
         # Gets outer template name of base class
         # @return [String] the outer base class name
-        def outer_base_class
-          lateral? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
+        def outer_base_file
+          outer_base_class.underscore
         end
 
         # Makes string by which base constructor will be called
