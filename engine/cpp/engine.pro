@@ -125,11 +125,11 @@ SOURCES += \
     tools/savers/bond_info.cpp \
     tools/savers/crystal_slice_saver.cpp \
     tools/savers/mol_accumulator.cpp \
-    tools/savers/mol_saver.cpp \
-    tools/savers/sdf_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    tools/savers/all_atoms_detector.cpp \
+    tools/savers/surface_detector.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -298,7 +298,10 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    tools/savers/surface_detector.h \
+    tools/savers/all_atoms_detector.h \
+    tools/savers/named_saver.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \
