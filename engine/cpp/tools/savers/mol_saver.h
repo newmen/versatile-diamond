@@ -14,8 +14,6 @@ namespace vd
 template <class D>
 class MolSaver : public NamedSaver
 {
-    std::string _name;
-
 public:
     MolSaver(const char *name) : NamedSaver(name) {}
 
@@ -23,8 +21,6 @@ public:
 
 protected:
     void writeToFrom(std::ostream &os, Atom *atom, double currentTime);
-
-    const std::string &name() const { return _name; }
 
     virtual const char *ext() const;
     virtual std::string filename() const;
