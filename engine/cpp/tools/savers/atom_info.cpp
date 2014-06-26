@@ -41,27 +41,4 @@ float3 AtomInfo::coords() const
     }
 }
 
-std::string AtomInfo::options() const
-{
-    bool isBottom = _atom->lattice() && _atom->lattice()->coords().z == 0;
-
-    int hc = _atom->hCount();
-    if (hc == 0 || isBottom)
-    {
-        hc = -1;
-    }
-
-    std::stringstream ss;
-    ss << " HCOUNT=" << hc;
-
-    ushort ac = isBottom ? _atom->valence() - _atom->bonds() : _atom->actives();
-    ac += _noBond;
-    if (ac > 0)
-    {
-        ss << " CHG=-" << ac;
-    }
-
-    return ss.str();
-}
-
 }
