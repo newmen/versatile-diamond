@@ -50,7 +50,14 @@ module VersatileDiamond
         # @param [String] ext the extention of generation file
         # @return [ERB] the template as erb data
         def template_file(ext)
-          ERB.new(File.read(template_path(ext)))
+          make_erb(File.read(template_path(ext)))
+        end
+
+        # Makes erb template
+        # @param [String] constent for rendering template
+        # @return [ERB] the template
+        def make_erb(content)
+          ERB.new(content, nil, '<>')
         end
 
         # Gets the name of template file without extention
