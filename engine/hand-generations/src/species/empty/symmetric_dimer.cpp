@@ -3,7 +3,7 @@
 #ifdef PRINT
 const char *SymmetricDimer::name() const
 {
-    static const char value[] = "swapped dimer";
+    static const char value[] = "symmetric dimer";
     return value;
 }
 #endif // PRINT
