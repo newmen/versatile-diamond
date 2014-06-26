@@ -35,42 +35,42 @@ DES_METHYL_FROM_DIMER:
   Tp: 0
 
 DIMER_DROP:
-  A: 2.2e6
+  A: 2.2e3
   Ea: 0.8e3
   Tp: 0
 
 DIMER_DROP_AT_END:
-  A: 2.2e6
+  A: 2.2e3
   Ea: 1e3
   Tp: 0
 
 DIMER_DROP_IN_MIDDLE:
-  A: 2.2e6
+  A: 2.2e3
   Ea: 1.2e3
   Tp: 0
 
 DIMER_DROP_NEAR_BRIDGE:
-  A: 1.2e11
+  A: 1.2e8
   Ea: 4e3
   Tp: 0
 
 DIMER_FORMATION:
-  A: 8.9e11
+  A: 8.9e8
   Ea: 0.8e3
   Tp: 0
 
 DIMER_FORMATION_AT_END:
-  A: 8.9e11
+  A: 8.9e8
   Ea: 0.4e3
   Tp: 0
 
 DIMER_FORMATION_IN_MIDDLE:
-  A: 8.9e11
+  A: 8.9e8
   Ea: 0
   Tp: 0
 
 DIMER_FORMATION_NEAR_BRIDGE:
-  A: 7.5e11
+  A: 7.5e8
   Ea: 4e3
   Tp: 0
 
@@ -90,7 +90,7 @@ HIGH_BRIDGE_STAND_TO_ONE_BRIDGE:
   Tp: 0
 
 HIGH_BRIDGE_TO_METHYL:
-  A: 2.7e11
+  A: 2.7e7
   Ea: 2.9e3
   Tp: 0
 
@@ -115,47 +115,47 @@ METHYL_ON_DIMER_HYDROGEN_MIGRATION:
   Tp: 0
 
 METHYL_TO_HIGH_BRIDGE:
-  A: 9.8e12
+  A: 9.8e8
   Ea: 15.3e3
   Tp: 0
 
 MIGRATION_DOWN_AT_DIMER: # imagine
-  A: 1e13
+  A: 1e2
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_AT_DIMER_FROM_111: # imagine
-  A: 1e13
+  A: 0
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_AT_DIMER_FROM_DIMER: # imagine
-  A: 1e11
+  A: 0
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE: # imagine
-  A: 5e10
+  A: 0
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_IN_GAP: # imagine
-  A: 5e12
+  A: 1e7
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_IN_GAP_FROM_111: # imagine
-  A: 5e12
+  A: 0
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_IN_GAP_FROM_DIMER: # imagine
-  A: 1e10
+  A: 0
   Ea: 0
   Tp: 0
 
 MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE: # imagine
-  A: 1e9
+  A: 0
   Ea: 0
   Tp: 0
 
