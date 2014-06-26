@@ -13,6 +13,8 @@ public:
     NamedSaver(const char *name) : _name(name) {}
     virtual ~NamedSaver() {}
 
+    const std::string &name() const { return _name; }
+
     virtual void writeFrom(Atom *atom, double currentTime) = 0;
 };
 
