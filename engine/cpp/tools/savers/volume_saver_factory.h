@@ -3,12 +3,12 @@
 
 #include <memory>
 #include "../factory.h"
-#include "mol_saver.h"
+#include "named_saver.h"
 
 namespace vd
 {
 
-class VolumeSaverFactory : public Factory<MolSaver, std::string, const char *>
+class VolumeSaverFactory : public Factory<NamedSaver, std::string, const char *>
 {
 public:
     VolumeSaverFactory();

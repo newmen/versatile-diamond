@@ -41,13 +41,6 @@ void MolAccumulator::addBond(const Atom *from, const Atom *to)
     }
 }
 
-void MolAccumulator::writeTo(std::ostream &os, const char *prefix) const
-{
-    writeCounts(os, prefix);
-    writeAtoms(os, prefix);
-    writeBonds(os, prefix);
-}
-
 AtomInfo &MolAccumulator::findAI(const Atom *atom)
 {
     const AtomInfo *result;
@@ -92,29 +85,6 @@ bool MolAccumulator::isNear(const Atom *first, const Atom *second) const
 void MolAccumulator::writeCounts(std::ostream &os, const char *prefix) const
 {
     os << prefix << "COUNTS " << _atomsNum << " " << _bondsNum << " " << "0 0 0" << "\n";
-}
-
-void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix) const
-{
-    os << prefix << "BEGIN ATOM" << "\n";
-
-    std::vector<const AtomInfo *> orderer(_atoms.size());
-    for (auto &pr : _atoms) orderer[pr.second - 1] = &pr.first;
-
-    for (const AtomInfo *ai : orderer)
-    {
-        const float3 &coords = ai->coords();
-
-        os << prefix
-           << aiIndex(*ai) << " "
-           << ai->type() << " "
-           << coords.x << " "
-           << coords.y << " "
-           << coords.z << " "
-           << "0"
-           << ai->options() << "\n";
-    }
-    os << prefix << "END ATOM" << "\n";
 }
 
 void MolAccumulator::writeBonds(std::ostream &os, const char *prefix) const
