@@ -22,6 +22,23 @@ module VersatileDiamond
           @symmetrics = collect_symmetrics
         end
 
+        # таки создать якоря для структуры
+
+        # @override
+        def generate(root_dir)
+          if symmetric?
+            # - три шаблона: original_specie, symmetric_specie, find algorithms
+            # - создавая симметрию проверять нужна ли она, по потомкам
+            # - original_specie полностью делигирует на текущий specie, кроме метода
+            #   render_find_algorithms?
+          else
+            # один шаблон для specie with find algorithms
+          end
+
+          # если в родительской структуре используются симметричные атомы, то в
+          # алгоритмы поиска подставлять итерацию каждой симметрии
+        end
+
         # Counts delta between atoms num of current specie and sum of atoms num of
         # all parents
         #
@@ -70,7 +87,7 @@ module VersatileDiamond
           intersec.reject { |isec| isec.all?(&:==) }.map { |isec| Hash[isec] }
         end
 
-        def other_atoms
+        def anchors
           links.keys
         end
 
@@ -90,7 +107,7 @@ module VersatileDiamond
         # @return [Boolean] is symmetric specie or not
         def symmetric?
           children.any? do |child|
-            other_atoms
+            child.anchors.any? { |atom| symmetric_atoms.include?(atom) }
           end
         end
 
