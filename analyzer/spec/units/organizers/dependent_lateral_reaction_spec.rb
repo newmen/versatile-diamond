@@ -3,12 +3,8 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentLateralReaction do
-      def wrap(reaction)
-        described_class.new(reaction)
-      end
-
-      subject { wrap(middle_lateral_df) }
+    describe DependentLateralReaction, type: :organizer do
+      subject { dept_middle_lateral_df }
 
       describe '#wheres' do
         it { expect(subject.wheres).to match_array([at_middle]) }
@@ -23,9 +19,10 @@ module VersatileDiamond
       end
 
       describe '#organize_dependencies!' do
-        let(:target) { wrap(end_lateral_df) }
-        let(:other) do
-          wrap(dimer_formation.lateral_duplicate('other', [on_end, there_methyl]))
+        let(:target) { dept_end_lateral_df }
+        let(:other) { described_class.new(other_concept) }
+        let(:other_concept) do
+          dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
         end
 
         let(:lateral_reactions) { [target, subject, other] }

@@ -84,7 +84,8 @@ module VersatileDiamond
         def collect_symmetrics
           intersec =
             SpeciesComparator.intersec(target, target, collaps_multi_bond: false)
-          intersec.reject { |isec| isec.all?(&:==) }.map { |isec| Hash[isec] }
+          differents = intersec.reject { |isec| isec.all? { |a, b| a == b } }
+          differents.map { |isec| Hash[isec.to_a] }
         end
 
         def anchors

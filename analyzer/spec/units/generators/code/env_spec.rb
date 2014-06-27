@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       describe Env, use: :engine_generator do
-        let(:generator) { stub_generator(specific_specs: [methyl]) }
+        let(:generator) { stub_generator(specific_specs: [dept_methyl]) }
         subject { described_class.new(generator) }
 
         describe '#file_name' do
@@ -17,7 +17,7 @@ module VersatileDiamond
         end
 
         describe '#full_concentration_method' do
-          let(:name) { subject.full_concentration_method(methyl) }
+          let(:name) { subject.full_concentration_method(dept_methyl) }
           it { expect(name).to eq('Env::cMethaneCs()') }
         end
       end

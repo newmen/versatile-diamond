@@ -5,15 +5,15 @@ module VersatileDiamond
 
     describe EngineCode, use: :engine_generator do
       describe '#unique_pure_atoms' do
-        let(:bases) { [methane_base, bridge_base] }
-        let(:specifics) { [chlorigenated_bridge] }
+        let(:bases) { [dept_methane_base, dept_bridge_base] }
+        let(:specifics) { [dept_chlorigenated_bridge] }
         subject { stub_generator(base_specs: bases, specific_specs: specifics) }
 
         it { expect(subject.unique_pure_atoms.map(&:class_name)).to eq(['C']) }
       end
 
       describe '#lattices' do
-        subject { stub_generator(base_specs: [methane_base, bridge_base]) }
+        subject { stub_generator(base_specs: [dept_methane_base, dept_bridge_base]) }
         it { expect(subject.lattices.size).to eq(1) }
 
         let(:lattice) { subject.lattices.first }
@@ -22,7 +22,9 @@ module VersatileDiamond
       end
 
       describe '#lattice_class' do
-        subject { stub_generator(base_specs: [bridge_base, methyl_on_bridge_base]) }
+        subject do
+          stub_generator(base_specs: [dept_bridge_base, dept_methyl_on_bridge_base])
+        end
 
         let(:lattice) { subject.lattice_class(diamond) }
         it { expect(lattice).to be_a(Code::Lattice) }
@@ -32,15 +34,15 @@ module VersatileDiamond
       end
 
       describe '#specie_class' do
-        subject { stub_generator(base_specs: [bridge_base]) }
-        let(:specie) { subject.specie_class(bridge_base) }
+        subject { stub_generator(base_specs: [dept_bridge_base]) }
+        let(:specie) { subject.specie_class(dept_bridge_base) }
         it { expect(specie).to be_a(Code::Specie) }
         it { expect(specie.class_name).to eq('Bridge') }
       end
 
       describe '#specific_gas_species' do
-        let(:bases) { [methane_base] }
-        let(:specifics) { [methyl, activated_bridge] }
+        let(:bases) { [dept_methane_base] }
+        let(:specifics) { [dept_methyl, dept_activated_bridge] }
         subject { stub_generator(base_specs: bases, specific_specs: specifics) }
         let(:gas_specs) { subject.specific_gas_species }
         let(:gas_names) { [:"methane(c: *)", :"hydrogen(h: *)"] }

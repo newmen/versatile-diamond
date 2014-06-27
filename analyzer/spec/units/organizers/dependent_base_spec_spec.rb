@@ -3,18 +3,14 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentBaseSpec do
-      def wrap(spec)
-        described_class.new(spec)
-      end
-
+    describe DependentBaseSpec, type: :organizer do
       describe '#parents' do
-        it { expect(wrap(bridge_base).parents).to be_empty }
+        it { expect(dept_bridge_base.parents).to be_empty }
       end
 
       describe 'parents <-> children' do
-        let(:parent) { wrap(bridge_base) }
-        let(:child) { wrap(methyl_on_bridge_base) }
+        let(:parent) { dept_bridge_base }
+        let(:child) { dept_methyl_on_bridge_base }
 
         it_behaves_like :multi_parents
         it_behaves_like :multi_children
@@ -31,39 +27,36 @@ module VersatileDiamond
       end
 
       it_behaves_like :minuend do
-        subject { wrap(bridge_base) }
+        subject { dept_bridge_base }
       end
 
       describe '#rest' do
-        it { expect(wrap(bridge_base).rest).to be_nil }
+        it { expect(dept_bridge_base.rest).to be_nil }
       end
 
       describe '#store_rest' do
-        subject { wrap(methyl_on_bridge_base) }
-        let(:rest) { subject - wrap(bridge_base) }
+        subject { dept_methyl_on_bridge_base }
+        let(:rest) { subject - dept_bridge_base }
         before { subject.store_rest(rest) }
         it { expect(subject.rest).to eq(rest) }
       end
 
       describe '#size' do
-        subject { wrap(bridge_base) }
+        subject { dept_bridge_base }
         it { expect(subject.size).to eq(subject.spec.size) }
       end
 
       describe '#same?' do
         describe 'bridge_base' do
-          let(:same_bridge) { wrap(bridge_base_dup) }
-          subject { wrap(bridge_base) }
+          it { expect(dept_bridge_base.same?(dept_bridge_base_dup)).to be_truthy }
+          it { expect(dept_bridge_base_dup.same?(dept_bridge_base)).to be_truthy }
 
-          it { expect(subject.same?(same_bridge)).to be_truthy }
-          it { expect(same_bridge.same?(subject)).to be_truthy }
-
-          it { expect(subject.same?(wrap(dimer_base))).to be_falsey }
+          it { expect(dept_bridge_base.same?(dept_dimer_base)).to be_falsey }
         end
 
         describe 'methyl_on_bridge_base' do
-          let(:other) { wrap(high_bridge_base) }
-          subject { wrap(methyl_on_bridge_base) }
+          let(:other) { dept_high_bridge_base }
+          subject { dept_methyl_on_bridge_base }
 
           it { expect(subject.same?(other)).to be_falsey }
           it { expect(other.same?(subject)).to be_falsey }
@@ -71,7 +64,7 @@ module VersatileDiamond
       end
 
       describe '# - ' do
-        subject { wrap(methyl_on_right_bridge_base) - wrap(bridge_base) }
+        subject { dept_methyl_on_right_bridge_base - dept_bridge_base }
 
         it_behaves_like :count_atoms_and_references do
           let(:atoms_num) { 2 }
@@ -100,33 +93,30 @@ module VersatileDiamond
       end
 
       it_behaves_like :relations_of do
-        let(:spec) { bridge_base }
-        let(:atom) { spec.atom(:cr) }
+        subject { dept_bridge_base }
+        let(:atom) { bridge_base.atom(:cr) }
         let(:rls) do
           [bond_110_front, bond_110_cross, bond_110_cross, position_100_front]
         end
       end
 
       describe '#organize_dependencies!' do
-        let(:specs) do
+        let(:table) { BaseSpeciesTable.new(dependent_base_species) }
+        let(:dependent_base_species) do
           [
-            bridge_base,
-            dimer_base,
-            high_bridge_base,
-            methyl_on_bridge_base,
-            methyl_on_dimer_base,
-            extended_bridge_base,
-            extended_dimer_base,
-            methyl_on_extended_bridge_base,
+            dept_bridge_base,
+            dept_dimer_base,
+            dept_high_bridge_base,
+            dept_methyl_on_bridge_base,
+            dept_methyl_on_dimer_base,
+            dept_extended_bridge_base,
+            dept_extended_dimer_base,
+            dept_methyl_on_extended_bridge_base,
           ]
         end
 
-        let(:wrapped_specs) { specs.map { |spec| wrap(spec) } }
-        let(:cache) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] }
-        let(:table) { BaseSpeciesTable.new(wrapped_specs) }
-
         describe 'bridge' do
-          subject { cache[:bridge] }
+          subject { dept_bridge_base }
           before { subject.organize_dependencies!(table) }
 
           describe '#rest' do
@@ -139,7 +129,7 @@ module VersatileDiamond
         end
 
         describe 'methyl_on_bridge' do
-          subject { cache[:methyl_on_bridge] }
+          subject { dept_methyl_on_bridge_base }
           before { subject.organize_dependencies!(table) }
 
           describe '#rest' do
@@ -147,24 +137,24 @@ module VersatileDiamond
           end
 
           describe '#parents' do
-            it { expect(subject.parents).to eq([cache[:bridge]]) }
+            it { expect(subject.parents).to eq([dept_bridge_base]) }
           end
         end
       end
 
       describe '#specific?' do
-        it { expect(wrap(methyl_on_dimer_base).specific?).to be_falsey }
+        it { expect(dept_methyl_on_dimer_base.specific?).to be_falsey }
       end
 
       describe '#unused?' do
         describe 'default behavior' do
-          it { expect(wrap(bridge_base)).to be_truthy }
+          it { expect(dept_bridge_base).to be_truthy }
         end
 
         describe 'with children' do
-          subject { wrap(methyl_on_bridge_base) }
-          let(:parent) { wrap(bridge_base) }
-          let(:child) { wrap(methyl_on_dimer_base) }
+          subject { dept_methyl_on_bridge_base }
+          let(:parent) { dept_bridge_base }
+          let(:child) { dept_methyl_on_dimer_base }
 
           before do
             subject.store_parent(parent)
@@ -175,8 +165,8 @@ module VersatileDiamond
         end
 
         describe 'with reactions' do
-          let(:parent) { wrap(bridge_base) }
-          subject { wrap(methyl_on_bridge_base) }
+          let(:parent) { dept_bridge_base }
+          subject { dept_methyl_on_bridge_base }
 
           before do
             subject.store_reaction(methyl_activation)
@@ -187,8 +177,8 @@ module VersatileDiamond
         end
 
         describe 'with theres' do
-          let(:parent) { wrap(bridge_base) }
-          subject { wrap(methyl_on_bridge_base) }
+          let(:parent) { dept_bridge_base }
+          subject { dept_methyl_on_bridge_base }
 
           before do
             subject.store_there(there_methyl)
@@ -200,67 +190,48 @@ module VersatileDiamond
       end
 
       describe '#excess?' do
-        let(:wrapped_bridge) { wrap(bridge_base) }
-
         describe 'default behavior' do
-          it { expect(wrapped_bridge.excess?).to be_falsey }
+          it { expect(dept_bridge_base.excess?).to be_falsey }
         end
 
         describe 'source behavior' do
-          let(:wrapped_activated_bridge) do
-            DependentSpecificSpec.new(activated_bridge)
-          end
-
-          before { wrapped_bridge.store_child(wrapped_activated_bridge) }
-          it { expect(wrapped_bridge.excess?).to be_falsey }
+          before { dept_bridge_base.store_child(dept_activated_bridge) }
+          it { expect(dept_bridge_base.excess?).to be_falsey }
         end
 
         describe 'intermediated behavior' do
-          let(:wrapped_methyl_on_bridge) { described_class.new(methyl_on_bridge_base) }
-          let(:wrapped_methyl_on_dimer) { described_class.new(methyl_on_dimer_base) }
-
           before do
-            wrapped_methyl_on_bridge.store_parent(wrapped_bridge)
-            wrapped_methyl_on_bridge.store_child(wrapped_methyl_on_dimer)
+            dept_methyl_on_bridge_base.store_parent(dept_bridge_base)
+            dept_methyl_on_bridge_base.store_child(dept_methyl_on_dimer_base)
           end
 
-          it { expect(wrapped_methyl_on_bridge.excess?).to be_falsey }
+          it { expect(dept_methyl_on_bridge_base.excess?).to be_falsey }
         end
 
         describe 'border behavior' do
-          let(:wrapped_dimer) { wrap(dimer_base) }
-          let(:wrapped_activated_dimer) do
-            DependentSpecificSpec.new(activated_dimer)
-          end
-
           before do
-            wrapped_dimer.store_parent(wrapped_bridge)
-            wrapped_dimer.store_parent(wrapped_bridge)
-            wrapped_dimer.store_child(wrapped_activated_dimer)
+            dept_dimer_base.store_parent(dept_bridge_base)
+            dept_dimer_base.store_parent(dept_bridge_base)
+            dept_dimer_base.store_child(dept_activated_dimer)
           end
 
-          it { expect(wrapped_dimer.excess?).to be_falsey }
+          it { expect(dept_dimer_base.excess?).to be_falsey }
         end
 
         describe 'excess behavior' do
-          let(:wrapped_methyl_on_bridge) { wrap(methyl_on_bridge_base) }
-          let(:wrapped_activated_methyl_on_dimer) do
-            DependentSpecificSpec.new(activated_methyl_on_dimer)
-          end
-
           before do
-            wrapped_methyl_on_bridge.store_parent(wrapped_bridge)
-            wrapped_methyl_on_bridge.store_child(wrapped_activated_methyl_on_dimer)
+            dept_methyl_on_bridge_base.store_parent(dept_bridge_base)
+            dept_methyl_on_bridge_base.store_child(dept_activated_methyl_on_dimer)
           end
 
-          it { expect(wrapped_methyl_on_bridge.excess?).to be_truthy }
+          it { expect(dept_methyl_on_bridge_base.excess?).to be_truthy }
         end
       end
 
       describe '#exclude' do
-        let(:left) { wrap(bridge_base) }
-        let(:middle) { wrap(methyl_on_bridge_base) }
-        let(:right) { DependentSpecificSpec.new(activated_methyl_on_bridge) }
+        let(:left) { dept_bridge_base }
+        let(:middle) { dept_methyl_on_bridge_base }
+        let(:right) { dept_activated_methyl_on_bridge }
 
         before do
           middle.store_rest(middle - left)

@@ -17,6 +17,17 @@ module VersatileDiamond
         @spec = spec
       end
 
+      # Simple spec does not have links
+      # @return [Hash] the empty hash
+      def links
+        {}
+      end
+
+      # Simple spec does not have residual
+      # @return [NilClass] nil
+      def rest
+        nil
+      end
     end
 
   end
