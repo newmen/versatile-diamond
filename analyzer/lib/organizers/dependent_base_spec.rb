@@ -7,23 +7,6 @@ module VersatileDiamond
 
       def_delegators :@spec, :size
 
-      def initialize(spec)
-        super
-
-        # TODO:
-        # Найти симметричные атомы и несемметричные
-        # - Учесть количество атомов - чётный/нечётный
-        # - Проверяет, что если симметричные атомы различаются по типам в оставшемся куске, то запоминаем что родитель симметричный.
-
-        # Для нахождения симметричных и несимметричных атомов использовать словарь пересечений. Для этого необходимо минимум два пересечения
-        # {
-        #   Atom => [Atom, Atom]
-        # }
-
-        # @symmetrical = []
-        # @asymmetrical = []
-      end
-
       # Checks that other spec has same atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
       # @return [Boolean] same or not

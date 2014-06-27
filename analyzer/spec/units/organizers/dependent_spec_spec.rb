@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentSpec do
+    describe DependentSpec, type: :organizer do
       subject { described_class.new(activated_dimer) }
 
       describe 'default' do
@@ -17,13 +17,13 @@ module VersatileDiamond
       end
 
       describe '#store_reaction' do
-        let(:reaction) { DependentReaction.new(dimer_formation) }
+        let(:reaction) { dept_dimer_formation }
         before { subject.store_reaction(reaction) }
         it { expect(subject.reactions).to eq([reaction]) }
       end
 
       describe '#store_there' do
-        let(:there) { DependentThere.new(on_end) }
+        let(:there) { dept_on_end }
         before { subject.store_there(there) }
         it { expect(subject.theres).to eq([there]) }
       end

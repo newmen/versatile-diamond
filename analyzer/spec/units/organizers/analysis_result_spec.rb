@@ -98,10 +98,10 @@ module VersatileDiamond
         let(:mono_method) { method.to_s[0..-2].to_sym }
 
         shared_examples_for :each_spec_dependent do
+          let(:quant) { names.size }
           it_behaves_like :each_class_dependent
 
           it { expect(instances.map(&:name)).to match_array(names) }
-          it { expect(names.size).to eq(quant) }
 
           it 'all names are good keys' do
             names.each do |name|
@@ -126,7 +126,6 @@ module VersatileDiamond
           it_behaves_like :each_reactant_dependent do
             let(:dependent_class) { DependentTermination }
             let(:method) { :term_specs }
-            let(:quant) { 2 }
             let(:names) { [:*, :H] }
           end
         end
@@ -148,7 +147,6 @@ module VersatileDiamond
             end
 
             it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 0 }
               let(:names) do
                 [
                   # :bridge, # purged
@@ -166,7 +164,6 @@ module VersatileDiamond
             before { store_reactions }
 
             it_behaves_like :all_dependent_base_specs do
-              let(:quant) { 4 }
               let(:names) do
                 [
                   :bridge,
@@ -226,7 +223,6 @@ module VersatileDiamond
           it_behaves_like :each_reactant_dependent do
             let(:dependent_class) { DependentSpecificSpec }
             let(:method) { :specific_specs }
-            let(:quant) { 7 }
             let(:names) do
               [
                 :'bridge(ct: *)',

@@ -14,7 +14,11 @@ RSpec.configure do |config|
 
   config.include VD::Concepts::Support::Handbook
   config.include VD::Interpreter::Support::Handbook, type: :interpreter
+
+  config.include VD::Organizers::Support::Handbook, type: :organizer
   config.include VD::Organizers::Support::Properties, use: :atom_properties
+
+  config.include VD::Organizers::Support::Handbook, use: :engine_generator
   config.include VD::Generators::Support::EngineGenerator, use: :engine_generator
 
   # Run specs in random order to surface order dependencies. If you find an

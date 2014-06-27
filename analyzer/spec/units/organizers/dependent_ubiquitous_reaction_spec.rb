@@ -3,12 +3,8 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentUbiquitousReaction do
-      def wrap(reaction)
-        described_class.new(reaction)
-      end
-
-      subject { wrap(surface_activation) }
+    describe DependentUbiquitousReaction, type: :organizer do
+      subject { dept_surface_activation }
 
       describe '#termination' do
         it { expect(subject.termination).to eq(adsorbed_h) }
@@ -19,18 +15,14 @@ module VersatileDiamond
       end
 
       describe '#organize_dependencies!' do
-        def typical(reaction)
-          DependentTypicalReaction.new(reaction)
-        end
-
         shared_examples_for :cover_just_one do
           let(:all_reactions) { another_reactions + [complex] }
           let(:another_reactions) do
             [
-              methyl_desorption,
-              dimer_formation,
-              hydrogen_migration
-            ].map { |r| typical(r) }
+              dept_methyl_desorption,
+              dept_dimer_formation,
+              dept_hydrogen_migration
+            ]
           end
 
           let(:terms_cache) do
@@ -71,14 +63,14 @@ module VersatileDiamond
 
         it_behaves_like :cover_just_one do
           let(:target) { subject }
-          let(:complex) { typical(methyl_activation) }
+          let(:complex) { dept_methyl_activation }
           let(:term_name) { :H }
           let(:specific_name) { :'methyl_on_bridge()' }
         end
 
         it_behaves_like :cover_just_one do
-          let(:target) { wrap(surface_deactivation) }
-          let(:complex) { typical(methyl_deactivation) }
+          let(:target) { dept_surface_deactivation }
+          let(:complex) { dept_methyl_deactivation }
           let(:term_name) { :* }
           let(:specific_name) { :'methyl_on_bridge(cm: *)' }
         end

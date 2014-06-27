@@ -3,25 +3,21 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentReaction do
-      def wrap(reaction)
-        described_class.new(reaction)
-      end
-
+    describe DependentReaction, type: :organizer do
+      subject { dept_dimer_formation }
       let(:target) { dimer_formation }
       let(:ai_bridge) { activated_incoherent_bridge }
-      let(:duplicate) { wrap(dimer_formation.duplicate('dup')) }
-
-      subject { wrap(target) }
+      let(:duplicate) do
+        DependentTypicalReaction.new(dimer_formation.duplicate('dup'))
+      end
 
       describe '#complexes' do
         it { expect(subject.complexes).to be_empty }
       end
 
       describe '#store_complex' do
-        let(:complex) { DependentLateralReaction.new(end_lateral_df) }
-        before { subject.store_complex(complex) }
-        it { expect(subject.complexes).to eq([complex]) }
+        before { subject.store_complex(dept_end_lateral_df) }
+        it { expect(subject.complexes).to eq([dept_end_lateral_df]) }
       end
 
       describe '#reaction' do
@@ -50,7 +46,7 @@ module VersatileDiamond
         it { expect(subject.each_source.to_a).
           to match_array([activated_bridge, ai_bridge]) }
 
-        it { expect(wrap(methyl_deactivation).each_source.to_a).
+        it { expect(dept_methyl_deactivation.each_source.to_a).
           to match_array([dm_source.first]) }
       end
 
@@ -82,18 +78,16 @@ module VersatileDiamond
         it { expect(subject.same?(lateral_subject)).to be_truthy }
         it { expect(lateral_subject.same?(subject)).to be_falsey }
 
-        it { expect(subject.same?(wrap(methyl_deactivation))).to be_falsey }
+        it { expect(subject.same?(dept_methyl_deactivation)).to be_falsey }
       end
 
       describe '#local?' do
         describe 'methyl activation' do
-          subject { DependentTypicalReaction.new(methyl_activation) }
-          it { expect(subject.local?).to be_truthy }
+          it { expect(dept_methyl_activation.local?).to be_truthy }
         end
 
         describe 'dimer formation' do
-          subject { DependentTypicalReaction.new(dimer_formation) }
-          it { expect(subject.local?).to be_falsey }
+          it { expect(dept_dimer_formation.local?).to be_falsey }
         end
       end
 
