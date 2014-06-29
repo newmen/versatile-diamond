@@ -2,6 +2,7 @@
 #define NAMED_SAVER_H
 
 #include "../../atoms/atom.h"
+#include "detector.h"
 
 namespace vd {
 
@@ -15,7 +16,7 @@ public:
 
     const std::string &name() const { return _name; }
 
-    virtual void writeFrom(Atom *atom, double currentTime) = 0;
+    virtual void writeFrom(Atom *atom, double currentTime, const Detector *detector) = 0;
 };
 
 }
