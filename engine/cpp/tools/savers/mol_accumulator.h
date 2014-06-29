@@ -24,9 +24,7 @@ public:
     MolAccumulator();
 
     void addBond(const Atom *from, const Atom *to);
-
-    template <class D>
-    void writeTo(std::ostream &os, const char *prefix) const;
+    void writeTo(std::ostream &os, const char *prefix, const Detector *detector) const;
 
 private:
     AtomInfo &findAI(const Atom *atom);
@@ -34,48 +32,10 @@ private:
     uint biIndex(const BondInfo &bi) const;
 
     bool isNear(const Atom *first, const Atom *second) const;
-
     void writeCounts(std::ostream &os, const char *prefix) const;
-
-    template <class D>
-    void writeAtoms(std::ostream &os, const char *prefix) const;
-
+    void writeAtoms(std::ostream &os, const char *prefix, const Detector *detector) const;
     void writeBonds(std::ostream &os, const char *prefix) const;
 };
-
-////////////////////////////////////////////////////////////////////////////
-
-template <class D>
-void MolAccumulator::writeTo(std::ostream &os, const char *prefix) const
-{
-    writeCounts(os, prefix);
-    writeAtoms<D>(os, prefix);
-    writeBonds(os, prefix);
-}
-
-template <class D>
-void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix) const
-{
-    os << prefix << "BEGIN ATOM" << "\n";
-
-    std::vector<const AtomInfo *> orderer(_atoms.size());
-    for (auto &pr : _atoms) orderer[pr.second - 1] = &pr.first;
-
-    for (const AtomInfo *ai : orderer)
-    {
-        const float3 &coords = ai->coords();
-
-        os << prefix
-           << aiIndex(*ai) << " "
-           << ai->type() << " "
-           << coords.x << " "
-           << coords.y << " "
-           << coords.z << " "
-           << "0"
-           << ai->options<D>() << "\n";
-    }
-    os << prefix << "END ATOM" << "\n";
-}
 
 }
 
