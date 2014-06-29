@@ -129,7 +129,9 @@ SOURCES += \
     tools/scavenger.cpp \
     tools/yaml_config_reader.cpp \
     tools/savers/all_atoms_detector.cpp \
-    tools/savers/surface_detector.cpp
+    tools/savers/surface_detector.cpp \
+    tools/savers/mol_saver.cpp \
+    tools/savers/sdf_saver.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -301,7 +303,8 @@ HEADERS += \
     tools/yaml_config_reader.h \
     tools/savers/surface_detector.h \
     tools/savers/all_atoms_detector.h \
-    tools/savers/named_saver.h
+    tools/savers/named_saver.h \
+    tools/savers/detector.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

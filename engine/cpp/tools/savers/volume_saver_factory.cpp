@@ -7,8 +7,8 @@ namespace vd
 
 VolumeSaverFactory::VolumeSaverFactory()
 {
-    registerNewType<MolSaver<SurfaceDetector>>("mol");
-    registerNewType<SdfSaver<SurfaceDetector>>("sdf");
+    registerNewType<MolSaver>("mol");
+    registerNewType<SdfSaver>("sdf");
 }
 
 }

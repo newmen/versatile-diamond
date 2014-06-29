@@ -41,4 +41,27 @@ float3 AtomInfo::coords() const
     }
 }
 
+std::string AtomInfo::options(const Detector *detector) const
+{
+    bool isBtm = detector->isBottom(_atom);
+
+    int hc = _atom->hCount();
+    if (hc == 0 || isBtm)
+    {
+        hc = -1;
+    }
+
+    std::stringstream ss;
+    ss << " HCOUNT=" << hc;
+
+    ushort ac = isBtm ? _atom->valence() - _atom->bonds() : _atom->actives();
+    ac += _noBond;
+    if (ac > 0)
+    {
+        ss << " CHG=-" << ac;
+    }
+
+    return ss.str();
+}
+
 }
