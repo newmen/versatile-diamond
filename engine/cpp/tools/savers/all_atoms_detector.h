@@ -10,7 +10,9 @@ class AllAtomsDetector : public Detector
 {
 public:
     AllAtomsDetector() = default;
-    bool isBottom(const Atom *atom) const;
+
+    bool isBottom(const Atom *atom) const override;
+    bool isShown(const Atom *) const override;
 };
 
 }

@@ -136,5 +136,4 @@ void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix, const Dete
     os << prefix << "END ATOM" << "\n";
 }
 
-
 }

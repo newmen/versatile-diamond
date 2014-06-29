@@ -121,17 +121,17 @@ SOURCES += \
     tools/lockable.cpp \
     tools/process_mem_usage.cpp \
     tools/runner.cpp \
+    tools/savers/all_atoms_detector.cpp \
     tools/savers/atom_info.cpp \
     tools/savers/bond_info.cpp \
     tools/savers/crystal_slice_saver.cpp \
     tools/savers/mol_accumulator.cpp \
+    tools/savers/mol_saver.cpp \
+    tools/savers/sdf_saver.cpp \
+    tools/savers/surface_detector.cpp \
     tools/savers/volume_saver_factory.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp \
-    tools/savers/all_atoms_detector.cpp \
-    tools/savers/surface_detector.cpp \
-    tools/savers/mol_saver.cpp \
-    tools/savers/sdf_saver.cpp
+    tools/yaml_config_reader.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -290,21 +290,21 @@ HEADERS += \
     tools/lockable.h \
     tools/process_mem_usage.h \
     tools/runner.h \
+    tools/savers/all_atoms_detector.h \
     tools/savers/atom_info.h \
     tools/savers/bond_info.h \
     tools/savers/crystal_slice_saver.h \
+    tools/savers/detector.h \
     tools/savers/mol_accumulator.h \
     tools/savers/mol_saver.h \
     tools/savers/sdf_saver.h \
+    tools/savers/surface_detector.h \
+    tools/savers/volume_saver.h \
     tools/savers/volume_saver_factory.h \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h \
-    tools/savers/surface_detector.h \
-    tools/savers/all_atoms_detector.h \
-    tools/savers/named_saver.h \
-    tools/savers/detector.h
+    tools/yaml_config_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

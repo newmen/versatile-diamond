@@ -4,8 +4,7 @@
 #include <iostream>
 #include "../mc/common_mc_data.h"
 #include "savers/crystal_slice_saver.h"
-#include "savers/named_saver.h"
-#include "tools/savers/mol_saver.h"
+#include "savers/volume_saver.h"
 #include "common.h"
 #include "error.h"
 
@@ -21,7 +20,7 @@ class Runner
     const std::string _name;
     const uint _x, _y;
     const double _totalTime, _eachTime;
-    MolSaver *_volumeSaver = nullptr;
+    VolumeSaver *_volumeSaver = nullptr;
 
 public:
     static void stop();

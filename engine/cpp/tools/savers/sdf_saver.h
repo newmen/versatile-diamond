@@ -14,7 +14,7 @@ class SdfSaver : public MolSaver
 public:
     SdfSaver(const char *name) : MolSaver(name), _out(filename()) {}
 
-    void writeFrom(Atom *atom, double currentTime, const Detector *detector);
+    void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
 
 protected:
     const char *ext() const override;

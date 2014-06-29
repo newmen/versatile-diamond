@@ -11,7 +11,8 @@ protected:
     Detector() = default;
 
 public:
-    virtual bool isBottom(const Atom* atom) const = 0;
+    virtual bool isBottom(const Atom *atom) const = 0;
+    virtual bool isShown(const Atom *atom) const = 0;
 };
 
 }

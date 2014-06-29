@@ -1,18 +1,18 @@
-#ifndef NAMED_SAVER_H
-#define NAMED_SAVER_H
+#ifndef VOLUME_SAVER_H
+#define VOLUME_SAVER_H
 
 #include "../../atoms/atom.h"
 #include "detector.h"
 
 namespace vd {
 
-class NamedSaver
+class VolumeSaver
 {
     std::string _name;
 
 public:
-    NamedSaver(const char *name) : _name(name) {}
-    virtual ~NamedSaver() {}
+    VolumeSaver(const char *name) : _name(name) {}
+    virtual ~VolumeSaver() {}
 
     const std::string &name() const { return _name; }
 
@@ -21,4 +21,4 @@ public:
 
 }
 
-#endif // NAMED_SAVER_H
+#endif // VOLUME_SAVER_H
