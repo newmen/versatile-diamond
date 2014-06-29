@@ -36,7 +36,7 @@ float3 AtomInfo::coords() const
 
         auto crystal = crystAtom->lattice()->crystal();
         auto crds = crystal->translate(crystAtom->lattice()->coords());
-        crds.z += crystal->periods().z * 1.618;
+        crds.z += crystal->periods().z * 1.618; // because so near to bottom layer
         return crds;
     }
 }
