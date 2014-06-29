@@ -6,17 +6,17 @@
 #include <ctime>
 #include <sstream>
 #include "mol_accumulator.h"
-#include "named_saver.h"
+#include "volume_saver.h"
 
 namespace vd
 {
 
-class MolSaver : public NamedSaver
+class MolSaver : public VolumeSaver
 {
 public:
-    MolSaver(const char *name) : NamedSaver(name) {}
+    MolSaver(const char *name) : VolumeSaver(name) {}
 
-    void writeFrom(Atom *atom, double currentTime, const Detector *detector);
+    void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
 
 protected:
     void writeToFrom(std::ostream &os, Atom *atom, double currentTime, const Detector *detector);
@@ -31,7 +31,7 @@ private:
     const char *mainPrefix() const;
     std::string timestamp() const;
 
-    void accumulateToFrom(MolAccumulator &acc, Atom *atom) const;
+    void accumulateToFrom(MolAccumulator &acc, const Detector *detector, Atom *atom) const;
 };
 
 }

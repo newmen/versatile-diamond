@@ -11,7 +11,9 @@ class SurfaceDetector : public Detector
 {
 public:
     SurfaceDetector() = default;
-    bool isBottom(const Atom *atom) const;
+
+    bool isBottom(const Atom *atom) const override;
+    bool isShown(const Atom *atom) const override;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -19,17 +21,20 @@ public:
 template<ushort AT>
 bool SurfaceDetector<AT>::isBottom(const Atom *atom) const
 {
-    if (!atom->is(AT)) return false;
+    return atom->is(AT);
+}
 
-    bool b = false;
+template<ushort AT>
+bool SurfaceDetector<AT>::isShown(const Atom *atom) const
+{
+    if (!atom->is(AT)) return true;
+
+    bool b = true;
     atom->eachNeighbour([&b](Atom *nbr) {
-        if (!nbr->is(AT))
-        {
-            b = true;
-        }
+        b &= nbr->is(AT);
     });
 
-    return b;
+    return !b;
 }
 
 }
