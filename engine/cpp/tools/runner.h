@@ -5,6 +5,7 @@
 #include "../mc/common_mc_data.h"
 #include "savers/crystal_slice_saver.h"
 #include "savers/named_saver.h"
+#include "tools/savers/mol_saver.h"
 #include "common.h"
 #include "error.h"
 
@@ -20,7 +21,7 @@ class Runner
     const std::string _name;
     const uint _x, _y;
     const double _totalTime, _eachTime;
-    NamedSaver *_volumeSaver = nullptr;
+    MolSaver *_volumeSaver = nullptr;
 
 public:
     static void stop();
@@ -28,7 +29,8 @@ public:
     Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr);
     ~Runner();
 
-    template <class SurfaceCrystalType, class Handbook> void calculate();
+    template <class SurfaceCrystalType, class Handbook>
+    void calculate(const Detector *detector, const std::initializer_list<ushort> &types);
 
 private:
     Runner(const Runner &) = delete;
@@ -45,11 +47,11 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class SCT, class HB>
-void Runner::calculate()
+void Runner::calculate(const Detector *detector, const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
     // TODO: Вынести отсюда эти циферки
-    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, { 0, 2, 4, 5, 20, 21, 24, 28, 32 });
+    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
 
 // -------------------------------------------------------------------------------- //
 
@@ -75,14 +77,14 @@ void Runner::calculate()
     double timeCounter = 0;
     uint volumeSaveCounter = 0;
 
-    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
+    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver, detector](bool forseSaveVolume) {
         csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
 
         if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
         {
             HB::amorph().setUnvisited();
             surfaceCrystal->setUnvisited();
-            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), HB::mc().totalTime());
+            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), HB::mc().totalTime(), detector);
 #ifndef NDEBUG
             HB::amorph().checkAllVisited();
             surfaceCrystal->checkAllVisited();
