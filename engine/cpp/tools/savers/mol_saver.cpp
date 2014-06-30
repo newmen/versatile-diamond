@@ -28,9 +28,9 @@ void MolSaver::writeToFrom(std::ostream &os, Atom *atom, double currentTime, con
 {
     writeHeader(os, currentTime);
 
-    MolAccumulator acc;
-    accumulateToFrom(acc, detector, atom);
-    acc.writeTo(os, mainPrefix(), detector);
+    MolAccumulator acc(detector);
+    accumulateToFrom(acc, atom);
+    acc.writeTo(os, mainPrefix());
 
     writeFooter(os);
 }
@@ -70,19 +70,16 @@ std::string MolSaver::timestamp() const
     return buffer;
 }
 
-void MolSaver::accumulateToFrom(MolAccumulator &acc, const Detector *detector, Atom *atom) const
+void MolSaver::accumulateToFrom(MolAccumulator &acc, Atom *atom) const
 {
     atom->setVisited();
-    atom->eachNeighbour([this, &acc, detector, atom](Atom *nbr) {
+    atom->eachNeighbour([this, &acc, atom](Atom *nbr) {
         if (!nbr->isVisited())
         {
-            accumulateToFrom(acc, detector, nbr);
+            accumulateToFrom(acc, nbr);
         }
 
-        if (detector->isShown(atom) && detector->isShown(nbr))
-        {
-            acc.addBond(atom, nbr);
-        }
+        acc.addBond(atom, nbr);
     });
 }
 

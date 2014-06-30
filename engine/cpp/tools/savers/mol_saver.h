@@ -31,7 +31,7 @@ private:
     const char *mainPrefix() const;
     std::string timestamp() const;
 
-    void accumulateToFrom(MolAccumulator &acc, const Detector *detector, Atom *atom) const;
+    void accumulateToFrom(MolAccumulator &acc, Atom *atom) const;
 };
 
 }
