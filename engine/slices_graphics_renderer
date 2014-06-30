@@ -93,7 +93,7 @@ def read_slices
     lines.each do |original_line|
       line = original_line.strip
       next if line.empty?
-      if m = line.match(/\= (\d(?:\.\d+(?:e-?\d+)?)?)/)
+      if m = line.match(/\= (\d+(?:\.\d+(?:e-?\d+)?)?)/)
         curr_time = m[1].to_f
         curr_slice = 0
       else
