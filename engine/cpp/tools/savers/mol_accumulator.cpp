@@ -5,21 +5,34 @@
 namespace vd
 {
 
-MolAccumulator::MolAccumulator()
-{
-}
-
 void MolAccumulator::addBond(const Atom *from, const Atom *to)
 {
     assert(from != to);
 
-    AtomInfo &fai = findAI(from);
-    AtomInfo &sai = findAI(to);
+    if (!_detector->isShown(from) || !_detector->isShown(to))
+    {
+        if (!_detector->isShown(from) && _detector->isShown(to))
+        {
+            findOrCreateAI(to).incNoBond();
+        }
+        else if (!_detector->isShown(to) && _detector->isShown(from))
+        {
+            findOrCreateAI(from).incNoBond();
+        }
+
+        return;
+    }
+
+    AtomInfo &fai = findOrCreateAI(from);
+    AtomInfo &sai = findOrCreateAI(to);
 
     uint first = aiIndex(fai);
     uint second = aiIndex(sai);
 
-    if (first > second) return;
+    if (first > second)
+    {
+        return;
+    }
 
     if (!isNear(from, to))
     {
@@ -41,7 +54,7 @@ void MolAccumulator::addBond(const Atom *from, const Atom *to)
     }
 }
 
-AtomInfo &MolAccumulator::findAI(const Atom *atom)
+AtomInfo &MolAccumulator::findOrCreateAI(const Atom *atom)
 {
     const AtomInfo *result;
 
@@ -106,14 +119,14 @@ void MolAccumulator::writeBonds(std::ostream &os, const char *prefix) const
     os << prefix << "END BOND" << "\n";
 }
 
-void MolAccumulator::writeTo(std::ostream &os, const char *prefix, const Detector *detector) const
+void MolAccumulator::writeTo(std::ostream &os, const char *prefix) const
 {
     writeCounts(os, prefix);
-    writeAtoms(os, prefix, detector);
+    writeAtoms(os, prefix);
     writeBonds(os, prefix);
 }
 
-void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix, const Detector *detector) const
+void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix) const
 {
     os << prefix << "BEGIN ATOM" << "\n";
 
@@ -131,7 +144,7 @@ void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix, const Dete
            << coords.y << " "
            << coords.z << " "
            << "0"
-           << ai->options(detector) << "\n";
+           << ai->options(_detector) << "\n";
     }
     os << prefix << "END ATOM" << "\n";
 }
