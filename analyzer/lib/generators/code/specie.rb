@@ -6,8 +6,9 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < CppClassWithGen
-        include PolynameClass
         include PartialRenderer
+        include PolynameClass
+        include EnumerableOutFile # should be after PolynameClass
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -22,35 +23,34 @@ module VersatileDiamond
           @symmetrics = collect_symmetrics
         end
 
-        # таки создать якоря для структуры
-
         # @override
         def generate(root_dir)
           if symmetric?
+            original = OriginalSpecie.new(@generator, self)
+            symmetrics = @symmetrics.map do |indexes_hash|
+
+              SymmetricSpecie.new(@generator, original)
+            end
+
+            original.generate(root_dir)
             # - три шаблона: original_specie, symmetric_specie, find algorithms
             # - создавая симметрию проверять нужна ли она, по потомкам
             # - original_specie полностью делигирует на текущий specie, кроме метода
             #   render_find_algorithms?
           else
-            # один шаблон для specie with find algorithms
+            super
           end
 
           # если в родительской структуре используются симметричные атомы, то в
           # алгоритмы поиска подставлять итерацию каждой симметрии
         end
 
-        # Counts delta between atoms num of current specie and sum of atoms num of
-        # all parents
-        #
-        # @return [Integer] the delta between atoms nums
-        def atoms_delta
-          @_atoms_delta ||= links.size - parents.map(&:links).map(&:size).reduce(:+)
-        end
+# FROM HERE <<<<<<<<<<<<<<<<<<<<<<<<<
 
         # Detects additional atoms which are not presented in parent species
         # @return [Array] the array of additional atoms
         def addition_atoms
-          original_links = @spec.links
+          original_links = spec.links
           all_atoms = original_links.keys
           atoms = parents.reduce(all_atoms) do |acc, parent|
             acc - parent.atoms_sequence
@@ -62,8 +62,8 @@ module VersatileDiamond
         # @return [Array] the general sequence of atoms of current specie
         def atoms_sequence
           @_atoms_sequence ||=
-            if parents_num == 0
-              @spec.links.to_a.sort_by { |_, l| l.size }.map(&:first)
+            if parents.size == 0
+              spec.links.to_a.sort_by { |_, l| l.size }.map(&:first)
             else
               result = atoms_delta > 0 ? addition_atoms : []
               parents.reduce(result) { |acc, parent| acc + parent.atoms_sequence }
@@ -78,39 +78,11 @@ module VersatileDiamond
           atoms_sequence.index(atom)
         end
 
-        # Finds all symmetric intersecs
-        # @return [Array] the array of hashes where each hash contain pointing to
-        #   symmetrical atoms
-        def collect_symmetrics
-          intersec =
-            SpeciesComparator.intersec(target, target, collaps_multi_bond: false)
-          differents = intersec.reject { |isec| isec.all? { |a, b| a == b } }
-          differents.map { |isec| Hash[isec.to_a] }
-        end
-
         def anchors
           links.keys
         end
 
-        # Finds all atoms which have symmetric analogy
-        # @return [Set] the set of atoms
-        def symmetric_atoms
-          return @_symmetric_atoms if @_symmetric_atoms
-          pairs = @symmetrics.reduce([]) do |acc, intersec|
-            acc + intersec.reject(&:==)
-          end
-          @_symmetric_atoms = Set[pairs]
-        end
-
-        # Is symmetric specie? If children species uses same as own atom and it atom
-        # has symmetric analogy
-        #
-        # @return [Boolean] is symmetric specie or not
-        def symmetric?
-          children.any? do |child|
-            child.anchors.any? { |atom| symmetric_atoms.include?(atom) }
-          end
-        end
+# TO HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         [
           ['class', :classify, ''],
@@ -125,17 +97,16 @@ module VersatileDiamond
             var = instance_variable_get(var_name)
             return var if var
 
-            m = @spec.name.to_s.match(/(\w+)(\(.+?\))?/)
-            addition = "#{separator}#{name_suffix(m[2])}" if m[2]
+            m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
+            addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
             instance_variable_set(var_name, "#{m[1].send(method)}#{addition}")
           end
         end
 
-        # Gets the result file name
-        # @return [String] the result file name of atom class
-        # @override
-        def file_name
-          enum_name.downcase
+        # Gets the name of dependent specie
+        # @return [Symbol] the name of dependent specie
+        def spec_name
+          spec.name
         end
 
         # Gets number of sceleton atoms used in specie and different from atoms of
@@ -147,13 +118,50 @@ module VersatileDiamond
           links.size
         end
 
+        # Is symmetric specie? If children species uses same as own atom and it atom
+        # has symmetric analogy
+        #
+        # @return [Boolean] is symmetric specie or not
+        def symmetric?
+          binding.pry
+          children.any? do |child|
+            # TODO: through atom properties?
+            child.anchors.any? { |atom| symmetric_atoms.include?(atom.original_atom) }
+          end
+        end
+
+      protected
+
+        attr_reader :spec
+
+        # Finds all atoms which have symmetric analogy
+        # @return [Set] the set of atoms
+        def symmetric_atoms
+          return @_symmetric_atoms if @_symmetric_atoms
+
+          pairs = @symmetrics.reduce([]) do |acc, intersec|
+            acc + intersec.reject(&:==).to_a
+          end
+
+          @_symmetric_atoms =
+            Set[*pairs.map(&:first)] + parents.reduce(Set.new) do |acc, parent|
+              acc + parent.symmetric_atoms
+            end
+        end
+
       private
+
+        # Specie class has find algorithms by default
+        # @return [Boolean] true
+        def render_find_algorithms?
+          return true
+        end
 
         # Gets target of current generation
         # @return [Organizers::DependentSpec || Organizers::SpecResidual] the
         #   minimal rest of current target specie
         def target
-          @spec.rest || @spec
+          spec.rest || spec
         end
 
         # Gets target links between different atoms
@@ -162,42 +170,55 @@ module VersatileDiamond
           target.links
         end
 
-        # Checks that internal @spec variable is DependentBaseSpec
-        # @return [Boolean] internal variable is dependent base spec or not
-        def dependent_base?
-          @spec.is_a?(Organizers::DependentBaseSpec)
+        # Counts delta between atoms num of current specie and sum of atoms num of
+        # all parents
+        #
+        # @return [Integer] the delta between atoms nums
+        def atoms_delta
+          return @_atoms_delta if @_atoms_delta
+          plss = parents.map { |pr| pr.spec }.map(&:links).map(&:size).reduce(:+)
+          @_atoms_delta = spec.links.size - (plss || 0)
+        end
+
+        # Finds all symmetric intersecs
+        # @return [Array] the array of hashes where each hash contain pointing to
+        #   symmetrical atoms
+        def collect_symmetrics
+          intersec = SpeciesComparator.intersec(target, target)
+          differents = intersec.reject { |isec| isec.all? { |a, b| a == b } }
+          differents.map { |isec| Hash[isec.to_a] }
         end
 
         # Gets the parent specie classes
         # @return [Array] the array of parent specie class generators
         def parents
-          prs = @spec.is_a?(Organizers::DependentBaseSpec) ?
-            @spec.parents : (@spec.parent ? [@spec.parent] : [])
-          prs.map { |parent| @generator.specie_class(parent) }
+          prs = spec.is_a?(Organizers::DependentBaseSpec) ?
+            spec.parents : (spec.parent ? [spec.parent] : [])
+          prs.map(&method(:specie_class))
         end
 
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
-          @spec.children.map { |child| @generator.specie_class(child) }
+          spec.children.uniq.reject(&:termination?).map(&method(:specie_class))
         end
 
         # Checks that specie have children
         # @return [Boolean] is parent or not
         def parent?
-          !@spec.children.empty?
+          !spec.children.empty?
         end
 
         # Checks that specie have reactions
         # @return [Boolean] is specific or not
         def specific?
-          !@spec.reactions.empty?
+          !spec.reactions.empty?
         end
 
         # Checks that specie have there objects
         # @return [Boolean] is lateral or not
         def lateral?
-          !@spec.theres.empty?
+          !spec.theres.empty?
         end
 
         # Makes base classes string for current specie class instance
@@ -264,7 +285,7 @@ module VersatileDiamond
           end
 
           @_used_iterators = lattices.to_a.compact.map do |lattice|
-            generator.lattice_class(lattice).iterator
+            @generator.lattice_class(lattice).iterator
           end
         end
 
@@ -319,15 +340,37 @@ module VersatileDiamond
         # @return [String] the suffix of name
         # @example generating name
         #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
-        def name_suffix(brackets_str)
+        def name_suffixes(brackets_str)
           params_str = brackets_str.scan(/\((.+?)\)/).first.first
           params = params_str.scan(/(\w+): (.)/)
-          groups = params.group_by(&:first)
-          strs = groups.map do |k, gs|
+          strs = params.group_by(&:first).map do |k, gs|
             states = gs.map { |item| item.last == '*' ? 's' : item.last }.join
             "#{k.upcase}#{states}"
           end
-          strs.join
+          strs.sort
+        end
+
+        # Gets the specie class code generator
+        # @param [Organizers::DependentSpec] dept_spec dependent specie the code
+        #   generator of which will be got
+        # @return [Specie]
+        def specie_class(dept_spec)
+          @generator.specie_class(dept_spec.name)
+        end
+
+        # Makes output directory path where generating file will be created
+        # @param [String] root_dir see at #super same argument
+        # @return [Pathname] the path to output directory
+        # @override
+        def out_dir_path(root_dir)
+          super + outer_base_file
+        end
+
+        # The additional path for current instance
+        # @return [String] the additional directories path
+        # @override
+        def additional_path
+          'species'
         end
       end
 

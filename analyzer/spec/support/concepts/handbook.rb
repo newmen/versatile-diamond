@@ -231,6 +231,7 @@ module VersatileDiamond
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
+          s.rename_atom(:cl, :clb)
           s.rename_atom(:ct, :cl)
           s.link(s.atom(:cr), s.atom(:cl), bond_100_front); s
         end
@@ -241,6 +242,9 @@ module VersatileDiamond
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd)
+        end
+        set(:bottom_hydrogenated_activated_dimer) do
+          SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }

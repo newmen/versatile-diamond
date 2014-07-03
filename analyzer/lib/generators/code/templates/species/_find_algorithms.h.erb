@@ -1,0 +1,13 @@
+public:
+    static void find(<%= find_arguments_str %>);
+
+protected:
+<% if parent? %>
+    void findAllChildren() final;
+<% end %>
+<% if specific? %>
+    void findAllTypicalReactions() final;
+<% end %>
+<% if lateral? %>
+    void findAllLateralReactions() final;
+<% end %>

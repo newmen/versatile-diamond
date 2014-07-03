@@ -35,7 +35,7 @@ module VersatileDiamond
 
       describe '#specie_class' do
         subject { stub_generator(base_specs: [dept_bridge_base]) }
-        let(:specie) { subject.specie_class(dept_bridge_base) }
+        let(:specie) { subject.specie_class(dept_bridge_base.name) }
         it { expect(specie).to be_a(Code::Specie) }
         it { expect(specie.class_name).to eq('Bridge') }
       end

@@ -14,7 +14,7 @@ module VersatileDiamond
       attr_reader :spec, :keyname
 
       # Target settings
-      # @param [Concepts::Spec] spec the spec on atom of which will be refered
+      # @param [Spec] spec on atom of which the current instance will be refered
       # @param [Symbol] atom_keyname the keyname of refered atom
       # @overload new(spec, atom_keyname)
       #   @param [Symbol] atom_keyname the keyname of refered atom
@@ -33,6 +33,15 @@ module VersatileDiamond
 
         # because atom can be changed by mapping algorithm
         @atom = @original_atom.dup
+      end
+
+      # Duplicates passed instance
+      # @param [AtomReference] ref the atom reference which will be duplicated
+      def initialize_copy(ref)
+        @spec = ref.spec
+        @keyname = ref.keyname
+        @original_atom = ref.original_atom
+        @atom = ref.atom.dup
       end
 
       # Atom reference always is reference
@@ -63,6 +72,11 @@ module VersatileDiamond
       def inspect
         to_s
       end
+
+    protected
+
+      attr_reader :atom, :original_atom
+
     end
 
   end

@@ -14,17 +14,6 @@ module VersatileDiamond
           end
         end
 
-        # Organize dependenceis between passed specific species and base species
-        # of them
-        #
-        # @param [Array] specific_species the array of organizing species
-        def organize(specific_species)
-          original_bases = specific_species.map(&:base_spec)
-          wrapped_bases = original_bases.map { |s| DependentBaseSpec.new(s) }
-          base_cache = make_cache(wrapped_bases)
-          organize_spec_dependencies!(base_cache, specific_species)
-        end
-
         define_dependents(DependentTermination, [
           :active_bond,
           :adsorbed_h,
@@ -60,6 +49,7 @@ module VersatileDiamond
           :activated_methyl_on_dimer,
           :activated_methyl_on_incoherent_bridge,
           :activated_methyl_on_right_bridge,
+          :bottom_hydrogenated_activated_dimer,
           :bridge,
           :chlorigenated_bridge,
           :dimer,

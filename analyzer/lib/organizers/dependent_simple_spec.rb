@@ -28,6 +28,24 @@ module VersatileDiamond
       def rest
         nil
       end
+
+      # All species is not termination by default
+      # @return [Boolean] false
+      def termination?
+        false
+      end
+
+      # All species is not termination by default
+      # @return [Boolean] false
+      def simple?
+        true
+      end
+
+      # All species is not termination by default
+      # @return [Boolean] false
+      def specific?
+        true
+      end
     end
 
   end
