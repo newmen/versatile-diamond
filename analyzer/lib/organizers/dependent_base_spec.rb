@@ -14,12 +14,6 @@ module VersatileDiamond
         other.is_a?(DependentSpec) ? spec.same?(other.spec) : other.same?(self)
       end
 
-      # Base spec could not be specific
-      # @return [Boolean] false
-      def specific?
-        false
-      end
-
       # Is unused spec or not
       # @return [Boolean] is unused or not
       def unused?
@@ -39,14 +33,16 @@ module VersatileDiamond
       def exclude
         raise 'Unexcess spec could be exclude or unused' unless excess? || unused?
 
-        parent = parents.first
-        child = children.first
+        parents.uniq.each { |parent| parent.remove_child(self) }
 
-        if parent
-          parent.remove_child(self)
-          child.replace_parent(parent) if child
-        elsif child
-          child.remove_parent(self)
+        return if children.empty?
+        if parents.size > 1
+          raise 'Excluding specie has more that one parent and many children'
+        end
+
+        parent = parents.first
+        children.each do |child|
+          parent ? child.replace_parent(parent) : child.remove_parent(self)
         end
       end
 

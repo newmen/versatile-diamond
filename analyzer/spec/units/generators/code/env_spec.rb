@@ -8,6 +8,10 @@ module VersatileDiamond
         let(:generator) { stub_generator(specific_specs: [dept_methyl]) }
         subject { described_class.new(generator) }
 
+        describe '#template_name' do
+          it { expect(subject.template_name).to eq('env') }
+        end
+
         describe '#file_name' do
           it { expect(subject.file_name).to eq('env') }
         end

@@ -67,11 +67,16 @@ module VersatileDiamond
           end
       end
 
+      # def include?(other)
+      #   same_basic_values?(other) && contain_all_bonds?(other) &&
+      #     contain_all_relevants?(other)
+      # end
+
       # Checks that current properties contained in another properties
       # @param [AtomProperties] other probably parent atom properties
       # @return [Boolean] contained or not
       def contained_in?(other)
-        same_basic_values?(other) && contain_all_bonds?(other) &&
+        same_basic_values?(other) && other.contain_all_bonds?(self) &&
           same_correspond_relations?(other)
       end
 
@@ -87,7 +92,7 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same_incoherent?(other)
         same_basic_values?(other) && (((incoherent? || bonds_num == valence) &&
-              other.incoherent? && other.contain_all_danglings?(self)) ||
+              other.incoherent? && contain_all_danglings?(other)) ||
             (incoherent? && other.unfixed? && eq_danglings?(other))) &&
           eq_relations?(other) && eq_nbr_lattices?(other)
       end
@@ -99,7 +104,7 @@ module VersatileDiamond
         same_basic_values?(other) &&
           !unfixed? && unfixed_by_nbrs? && other.unfixed? &&
           !incoherent? && eq_danglings?(other) &&
-          other.contain_all_nbr_lattices?(self) && other.contain_all_relations?(self)
+          contain_all_nbr_lattices?(other) && contain_all_relations?(other)
       end
 
       # Checks that current properties correspond to atom, lattice and have same
@@ -337,6 +342,15 @@ module VersatileDiamond
         atwrels && atwrels.last.map(&:last).compact.size == 1
       end
 
+      # Checks that other properties contain all bonds from current properties
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] contain or not
+      def contain_all_bonds?(other)
+        [:relations, :danglings, :nbr_lattices].all? do |name|
+          contain_all_by?(other, name)
+        end
+      end
+
     private
 
       # Compares with other properties by some method which returns list
@@ -362,7 +376,6 @@ module VersatileDiamond
         define_method(method_name) do |other|
           contain_all_by?(other, name.to_sym)
         end
-        protected method_name
       end
 
       # Checks that other properties contain all current states that go by some
@@ -371,17 +384,8 @@ module VersatileDiamond
       # @param [AtomProperties] other the checking properties
       # @return [Boolean] contain or not
       def contain_all_by?(other, method)
-        oth_stats = other.send(method).dup
-        send(method).all? { |rel| oth_stats.delete_one(rel) }
-      end
-
-      # Checks that other properties contain all bonds from current properties
-      # @param [AtomProperties] other the checking properties
-      # @return [Boolean] contain or not
-      def contain_all_bonds?(other)
-        [:relations, :danglings, :nbr_lattices].all? do |name|
-          contain_all_by?(other, name)
-        end
+        stats = send(method).dup
+        other.send(method).all? { |rel| stats.delete_one(rel) }
       end
 
       # Compares basic values of two properties

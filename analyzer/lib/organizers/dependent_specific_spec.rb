@@ -29,6 +29,7 @@ module VersatileDiamond
 
       # Contain specific atoms or not
       # @return [Boolean] contain or not
+      # @override
       def specific?
         !specific_atoms.empty?
       end

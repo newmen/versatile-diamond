@@ -7,6 +7,12 @@ module VersatileDiamond
 
         TEMPLATES_DIR = 'templates'
 
+        # Gets the name of template file without extention
+        # @return [String] the underscored name of current class instance
+        def template_name
+          self.class.to_s.split('::').last.underscore
+        end
+
       private
 
         # Writes file to passed dir
@@ -16,11 +22,18 @@ module VersatileDiamond
           File.write(out_path(root_dir, ext), template_file(ext).result(binding))
         end
 
-        # Makes out directory if it does not exist. Gets the path to output directory
+        # Makes out directory path for override it in derived classes if need
         # @param [String] root_dir see at #write_file same argument
         # @return [Pathname] the path to output directory
+        def out_dir_path(root_dir)
+          Pathname.new(root_dir) + additional_path
+        end
+
+        # Makes out directory if it does not exist
+        # @param [String] root_dir see at #write_file same argument
+        # @return [Pathname] see at #out_dir_path same result
         def out_dir(root_dir)
-          path = Pathname.new(root_dir) + additional_path
+          path = out_dir_path(root_dir)
           FileUtils.mkdir_p(path)
           path
         end
@@ -58,12 +71,6 @@ module VersatileDiamond
         # @return [ERB] the template
         def make_erb(content)
           ERB.new(content, nil, '<>')
-        end
-
-        # Gets the name of template file without extention
-        # @return [String] the underscored name of current class instance
-        def template_name
-          self.class.to_s.split('::').last.underscore
         end
       end
 

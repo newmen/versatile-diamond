@@ -1,0 +1,13 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+#include "../<%= outer_base_file %>.h"
+
+class <%= class_name %> :
+    <%= base_classes_str %>
+{
+protected:
+<%= render_partial('common_methods') %>
+};
+
+#endif // <%= define_name %>

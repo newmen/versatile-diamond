@@ -20,7 +20,7 @@ module VersatileDiamond
         # @param [String] path see at #render_partial same argument
         # @return [Pathname] the correct pathname to partial, with partial prefix
         def partial_path(path)
-          pname = Pathnmae.new(path)
+          pname = Pathname.new(path)
           template_dir + "#{pname.dirname}/#{PARTIAL_PREFIX}#{pname.basename}.erb"
         end
       end
