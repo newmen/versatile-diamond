@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../../atoms/atom.h"
+#include "detector.h"
 
 namespace vd
 {
@@ -23,34 +24,8 @@ public:
 
     const char *type() const;
     float3 coords() const;
-    template <class D> std::string options() const;
+    std::string options(const Detector *detector) const;
 };
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-template <class D>
-std::string AtomInfo::options() const
-{
-    bool isBtm = D::isBottom(_atom);
-
-    int hc = _atom->hCount();
-    if (hc == 0 || isBtm)
-    {
-        hc = -1;
-    }
-
-    std::stringstream ss;
-    ss << " HCOUNT=" << hc;
-
-    ushort ac = isBtm ? _atom->valence() - _atom->bonds() : _atom->actives();
-    ac += _noBond;
-    if (ac > 0)
-    {
-        ss << " CHG=-" << ac;
-    }
-
-    return ss.str();
-}
 
 }
 
