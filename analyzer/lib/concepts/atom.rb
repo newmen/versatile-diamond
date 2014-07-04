@@ -29,6 +29,12 @@ module VersatileDiamond
         @valence = valence
       end
 
+      # Simple concept atom can not contain link to some specie
+      # @return [NilClass] nil
+      def spec
+        nil
+      end
+
       # Simple atom is not reference
       # @return [Boolean] false
       def reference?
@@ -120,7 +126,7 @@ module VersatileDiamond
       #   contain current atom
       # @return [Array] the array of relations
       def relations_in(spec)
-        spec.links[self].map { |a, l| [a.dup, l] }
+        spec.links[self] #.map { |a, l| [a.dup, l] }
       end
 
       # Compares two instances by some method if other instance is object of

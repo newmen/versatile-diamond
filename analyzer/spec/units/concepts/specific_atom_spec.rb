@@ -90,6 +90,15 @@ module VersatileDiamond
         it { expect(cd_extra_hydride.monovalents).to eq([:H, :H]) }
       end
 
+      describe '#spec' do
+        it { expect(activated_cd.spec).to be_nil }
+
+        describe 'reference' do
+          subject { right_activated_bridge.atom(:cr) }
+          it { expect(subject.spec).to_not be_nil }
+        end
+      end
+
       describe '#reference?' do
         it { expect(activated_cd.reference?).to be_falsey }
 

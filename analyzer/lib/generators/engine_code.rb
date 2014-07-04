@@ -16,19 +16,21 @@ module VersatileDiamond
         @lattices = collect_code_lattices
       end
 
+      # provides methods from base generator class
       public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs
 
       # Generates source code and configuration files
       def generate(**params)
-        code_elements.each do |class_str|
-          eval("Code::#{class_str}").new(self).generate(@out_path)
+        species.each(&:find_self_symmetric!)
+
+        [
+          major_code_instances,
+          unique_pure_atoms,
+          lattices.compact,
+          species
+        ].each do |collection|
+          collection.each { |code_class| code_class.generate(@out_path) }
         end
-
-        gen_lambda = -> code_class { code_class.generate(@out_path) }
-
-        unique_pure_atoms.each(&gen_lambda)
-        lattices.compact.each(&gen_lambda)
-        species.each(&gen_lambda)
       end
 
       # Collects only unique base atom instances
@@ -79,6 +81,12 @@ module VersatileDiamond
       # @return [Array] the array of names of code generator classes
       def code_elements
         %w(Handbook Env AtomBuilder)
+      end
+
+      # Gets the instances of major code elements
+      # @return [Array] the array of instances
+      def major_code_instances
+        code_elements.map { |class_str| eval("Code::#{class_str}").new(self) }
       end
 
       # Finds and drops not unique items which are compares by block
@@ -142,7 +150,7 @@ module VersatileDiamond
         deps_hash = collect_dependent_species
         surface_species = @species.reject do |name, _|
           dep_spec = deps_hash[name]
-          dep_spec.simple? || dep_spec.gas?
+          dep_spec.simple? || (dep_spec.gas? && dep_spec.links.size == 1)
         end
 
         surface_species.values

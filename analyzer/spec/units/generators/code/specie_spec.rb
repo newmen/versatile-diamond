@@ -7,6 +7,11 @@ module VersatileDiamond
       describe Specie, use: :engine_generator do
         let(:empty_generator) { stub_generator({}) }
 
+        describe '#spec' do
+          subject { described_class.new(empty_generator, dept_bridge_base) }
+          it { expect(subject.spec).to eq(dept_bridge_base) }
+        end
+
         describe '#template_name' do
           subject { described_class.new(empty_generator, dept_bridge_base) }
           it { expect(subject.template_name).to eq('specie') }
@@ -123,8 +128,13 @@ module VersatileDiamond
             generator.specie_class(name)
           end
 
+          let(:all_species) { bases + specifics }
           let(:generator) do
             stub_generator(base_specs: bases, specific_specs: specifics)
+          end
+
+          before do
+            all_species.each { |spec| sc(spec.name).find_self_symmetrics! }
           end
 
           describe 'bridges' do

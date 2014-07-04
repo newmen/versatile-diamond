@@ -22,7 +22,7 @@ module VersatileDiamond
             return @_prefix if @_prefix
 
             @_prefix = default_prefix
-            original_name = @specie.spec_name
+            original_name = @specie.spec.name
             loop do
               full_name = "#{@_prefix}_#{original_name}".to_sym
               break unless @generator.specie_class(full_name)
