@@ -20,17 +20,17 @@ BRIDGE_WITH_DIMER_TO_HIGH_BRIDGE_AND_DIMER:
   Tp: 0
 
 DES_METHYL_FROM_111:
-  A: 5.4e6
+  A: 5.4e13
   Ea: 0
   Tp: 0
 
 DES_METHYL_FROM_BRIDGE:
-  A: 1.7e7
+  A: 1.7e14
   Ea: 0
   Tp: 0
 
 DES_METHYL_FROM_DIMER:
-  A: 5.3e3
+  A: 5.3e12
   Ea: 0
   Tp: 0
 
