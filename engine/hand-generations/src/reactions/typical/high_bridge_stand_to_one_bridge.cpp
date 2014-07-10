@@ -70,7 +70,11 @@ void HighBridgeStandToOneBridge::doIt()
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);
-    else a->changeType(3);
+    else
+    {
+        assert(a->actives() == 0);
+        a->changeType(3);
+    }
 
     b->changeType(5);
 
