@@ -36,6 +36,7 @@ void Atom::bondWith(Atom *neighbour, int depth)
 {
     assert(_actives > 0);
     assert(_relatives.size() + _actives <= valence());
+    // TODO: there is bug for activation of *C=C%d<
 
 #ifndef NDEBUG
     // latticed atom cannot be bonded twise with another latticed atom

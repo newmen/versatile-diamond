@@ -4,7 +4,7 @@ const char DesMethylFrom111::__name[] = "desorption methyl from 111";
 
 double DesMethylFrom111::RATE()
 {
-    static double value = getRate("DES_METHYL_FROM_111");
+    static double value = getRate("DES_METHYL_FROM_111", Env::cH());
     return value;
 }
 
