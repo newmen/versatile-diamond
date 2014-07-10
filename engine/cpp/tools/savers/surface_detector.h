@@ -2,17 +2,40 @@
 #define SURFACE_DETECTOR_H
 
 #include "../../atoms/atom.h"
+#include "detector.h"
 
 namespace vd {
 
-class SurfaceDetector
+template <ushort AT>
+class SurfaceDetector : public Detector
 {
 public:
-    static bool isBottom(const Atom* atom);
-
-protected:
     SurfaceDetector() = default;
+
+    bool isBottom(const Atom *atom) const override;
+    bool isShown(const Atom *atom) const override;
 };
+
+//////////////////////////////////////////////////////////////////
+
+template<ushort AT>
+bool SurfaceDetector<AT>::isBottom(const Atom *atom) const
+{
+    return atom->is(AT);
+}
+
+template<ushort AT>
+bool SurfaceDetector<AT>::isShown(const Atom *atom) const
+{
+    if (!atom->is(AT)) return true;
+
+    bool b = true;
+    atom->eachNeighbour([&b](Atom *nbr) {
+        b &= nbr->is(AT);
+    });
+
+    return !b;
+}
 
 }
 

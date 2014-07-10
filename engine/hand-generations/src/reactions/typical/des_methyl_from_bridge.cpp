@@ -4,7 +4,7 @@ const char DesMethylFromBridge::__name[] = "desorption methyl from bridge";
 
 double DesMethylFromBridge::RATE()
 {
-    static double value = getRate("DES_METHYL_FROM_BRIDGE");
+    static double value = getRate("DES_METHYL_FROM_BRIDGE", Env::cH());
     return value;
 }
 
