@@ -26,10 +26,13 @@ void NearMethylOnBridge::look(ushort bridgeAtomType, Atom **atoms, const L &lamb
             if (bridgeCT && bridgeCT->is(bridgeAtomType))
             {
                 auto semiSpec = bridgeCT->specByRole<S>(bridgeAtomType);
-                assert(semiSpec);
 
-                Atom *methyl = semiSpec->atom(0);
-                lambda(methyl);
+                // if atom index is used then need condition
+                if (semiSpec)
+                {
+                    Atom *methyl = semiSpec->atom(0);
+                    lambda(methyl);
+                }
             }
         }
     });
