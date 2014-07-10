@@ -6,7 +6,7 @@
 namespace vd {
 
 class Detector
-{    
+{
 protected:
     Detector() = default;
 
