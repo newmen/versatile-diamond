@@ -49,7 +49,6 @@ template <class SCT, class HB>
 void Runner::calculate(const Detector *detector, const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
-    // TODO: Вынести отсюда эти циферки
     CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
 
 // -------------------------------------------------------------------------------- //

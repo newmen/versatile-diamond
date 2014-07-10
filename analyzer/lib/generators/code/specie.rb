@@ -109,10 +109,20 @@ module VersatileDiamond
             "DependentSpec<#{base_class}, #{parents_num}>"
         end
 
+        # Checks that specie contain additional atoms and if truth then wraps base
+        # class name
+        #
+        # @return [String] the wrapped or not base engine class name
+        def wrapped_engine_class_name
+          base_class = base_engine_class_name
+          delta = links.size - parents.map(&:links).map(&:size).reduce(:+)
+          delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
+        end
+
         # Wraps combined base engine class by classes which works with handbook
         # @return [String] full major base class
         def wrapped_base_class
-          base = "Base<#{base_engine_class_name}, #{enum_name}, #{atoms_num}>"
+          base = "Base<#{wrapped_engine_class_name}, #{enum_name}, #{atoms_num}>"
           base = "Specific<#{base}>" if specific?
           base = "Sidepiece<#{base}>" if lateral?
           base

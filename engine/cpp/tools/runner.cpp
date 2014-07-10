@@ -55,7 +55,7 @@ Runner::~Runner()
 std::string Runner::filename() const
 {
     std::stringstream ss;
-    ss << _name << "_" << _x << "x" << _y << "_" << _totalTime << "s";
+    ss << _name << "-" << _x << "x" << _y << "-" << _totalTime << "s";
     return ss.str();
 }
 
