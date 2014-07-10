@@ -25,7 +25,9 @@ void SierpinskiDrop::doItWith(Atom **atoms)
 
     a->unbondFrom(b);
 
-    a->changeType(26);
+    if (a->is(38)) a->changeType(13);
+    else if (a->is(37)) a->changeType(27);
+    else a->changeType(26);
 
     if (b->is(23)) b->changeType(21);
     else if (b->is(33)) b->changeType(5);
