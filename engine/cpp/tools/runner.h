@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "../mc/common_mc_data.h"
+#include "savers/actives_portion_counter.h"
 #include "savers/crystal_slice_saver.h"
 #include "savers/volume_saver.h"
 #include "common.h"
@@ -29,13 +30,16 @@ public:
     ~Runner();
 
     template <class SurfaceCrystalType, class Handbook>
-    void calculate(const Detector *detector, const std::initializer_list<ushort> &types);
+    void calculate(const ActivesPortionCounter *apCounter, const Detector *detector, const std::initializer_list<ushort> &types);
 
 private:
     Runner(const Runner &) = delete;
     Runner(Runner &&) = delete;
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
+
+    template <class Handbook, class Lambda>
+    void eachAtom(Crystal *crystal, const Lambda &lambda) const;
 
     std::string filename() const;
     double timestamp() const;
@@ -46,7 +50,7 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class SCT, class HB>
-void Runner::calculate(const Detector *detector, const std::initializer_list<ushort> &types)
+void Runner::calculate(const ActivesPortionCounter *apCounter, const Detector *detector, const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
     CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
@@ -58,13 +62,20 @@ void Runner::calculate(const Detector *detector, const std::initializer_list<ush
 
 // -------------------------------------------------------------------------------- //
 
-    auto outLambda = [this, surfaceCrystal]() {
+    auto outLambda = [this, surfaceCrystal, apCounter]() {
+        double activesRatio = 0;
+        eachAtom<HB>(surfaceCrystal, [&activesRatio, apCounter](Atom *firstAtom) {
+            activesRatio = apCounter->countFrom(firstAtom);
+        });
+
         std::cout.width(10);
         std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
         std::cout.width(10);
         std::cout << surfaceCrystal->countAtoms();
         std::cout.width(10);
         std::cout << HB::amorph().countAtoms();
+        std::cout.width(10);
+        std::cout << 100 * activesRatio << " %";
         std::cout.width(20);
         std::cout << HB::mc().totalTime() << " (s)";
         std::cout.width(20);
@@ -80,13 +91,9 @@ void Runner::calculate(const Detector *detector, const std::initializer_list<ush
 
         if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
         {
-            HB::amorph().setUnvisited();
-            surfaceCrystal->setUnvisited();
-            _volumeSaver->writeFrom(surfaceCrystal->firstAtom(), HB::mc().totalTime(), detector);
-#ifndef NDEBUG
-            HB::amorph().checkAllVisited();
-            surfaceCrystal->checkAllVisited();
-#endif // NDEBUG
+            eachAtom<HB>(surfaceCrystal, [this, detector](Atom *firstAtom) {
+                _volumeSaver->writeFrom(firstAtom, HB::mc().totalTime(), detector);
+            });
         }
 
         if (++volumeSaveCounter == 10)
@@ -164,6 +171,20 @@ void Runner::calculate(const Detector *detector, const std::initializer_list<ush
 
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
+}
+
+template <class HB, class L>
+void Runner::eachAtom(Crystal *crystal, const L &lambda) const
+{
+    HB::amorph().setUnvisited();
+    crystal->setUnvisited();
+
+    lambda(crystal->firstAtom());
+
+#ifndef NDEBUG
+    HB::amorph().checkAllVisited();
+    crystal->checkAllVisited();
+#endif // NDEBUG
 }
 
 }
