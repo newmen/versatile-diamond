@@ -10,11 +10,11 @@ double MigrationThroughDimersRow::RATE()
 
 void MigrationThroughDimersRow::find(MethylOnDimerCMsiu *target)
 {
-    Atom *anchor = target->atom(1);
-    eachNeighbour(anchor, &Diamond::cross_100, [target](Atom *neighbour) {
-        if (neighbour->is(21))
+    Atom *anchors[2] = { target->atom(1), target->atom(4) };
+    eachNeighbours<2>(anchors, &Diamond::cross_100, [target](Atom **neighbours) {
+        if (neighbours[0]->is(21) && neighbours[0]->hasBondWith(neighbours[1]))
         {
-            auto neighbourSpec = neighbour->specByRole<DimerCRs>(21);
+            auto neighbourSpec = neighbours[0]->specByRole<DimerCRs>(21);
             if (neighbourSpec)
             {
                 SpecificSpec *targets[2] = {
@@ -30,11 +30,11 @@ void MigrationThroughDimersRow::find(MethylOnDimerCMsiu *target)
 
 void MigrationThroughDimersRow::find(DimerCRs *target)
 {
-    Atom *anchor = target->anchor();
-    eachNeighbour(anchor, &Diamond::cross_100, [target](Atom *neighbour) {
-        if (neighbour->is(23))
+    Atom *anchors[2] = { target->atom(0), target->atom(3) };
+    eachNeighbours<2>(anchors, &Diamond::cross_100, [target](Atom **neighbours) {
+        if (neighbours[0]->is(23) && neighbours[0]->hasBondWith(neighbours[1]))
         {
-            auto neighbourSpec = neighbour->specByRole<MethylOnDimerCMsiu>(23);
+            auto neighbourSpec = neighbours[0]->specByRole<MethylOnDimerCMsiu>(23);
             if (neighbourSpec)
             {
                 SpecificSpec *targets[2] = {
