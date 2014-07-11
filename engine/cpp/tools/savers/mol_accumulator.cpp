@@ -1,38 +1,27 @@
 #include "mol_accumulator.h"
 #include <cmath>
-#include <vector>
+#include "mol_format.h"
 
 namespace vd
 {
 
-void MolAccumulator::addBond(const Atom *from, const Atom *to)
+void MolAccumulator::treatHidden(const Atom *first, const Atom *second)
 {
-    assert(from != to);
-
-    if (!_detector->isShown(from) || !_detector->isShown(to))
+    if (!detector()->isShown(first) && detector()->isShown(second))
     {
-        if (!_detector->isShown(from) && _detector->isShown(to))
-        {
-            findOrCreateAI(to).incNoBond();
-        }
-        else if (!_detector->isShown(to) && _detector->isShown(from))
-        {
-            findOrCreateAI(from).incNoBond();
-        }
-
-        return;
+        findOrCreateAI(second).incNoBond();
     }
+}
 
+void MolAccumulator::pushPair(const Atom *from, const Atom *to)
+{
     AtomInfo &fai = findOrCreateAI(from);
     AtomInfo &sai = findOrCreateAI(to);
 
     uint first = aiIndex(fai);
     uint second = aiIndex(sai);
 
-    if (first > second)
-    {
-        return;
-    }
+    if (first > second) return;
 
     if (!isNear(from, to))
     {
@@ -66,7 +55,7 @@ AtomInfo &MolAccumulator::findOrCreateAI(const Atom *atom)
     }
     else
     {
-        result = &_atoms.insert(AtomInfos::value_type(ai, ++_atomsNum)).first->first;
+        result = &_atoms.insert(AtomInfos::value_type(ai, incAtomsNum())).first->first;
     }
 
     return const_cast<AtomInfo &>(*result);
@@ -93,60 +82,6 @@ bool MolAccumulator::isNear(const Atom *first, const Atom *second) const
         }
     }
     return true;
-}
-
-void MolAccumulator::writeCounts(std::ostream &os, const char *prefix) const
-{
-    os << prefix << "COUNTS " << _atomsNum << " " << _bondsNum << " " << "0 0 0" << "\n";
-}
-
-void MolAccumulator::writeBonds(std::ostream &os, const char *prefix) const
-{
-    os << prefix << "BEGIN BOND" << "\n";
-
-    std::vector<const BondInfo *> orderer(_bonds.size());
-    for (auto &pr : _bonds) orderer[pr.second - 1] = &pr.first;
-
-    for (const BondInfo *bi : orderer)
-    {
-        os << prefix
-           << biIndex(*bi) << " "
-           << bi->type() << " "
-           << bi->from() << " "
-           << bi->to()
-           << bi->options() << "\n";
-    }
-    os << prefix << "END BOND" << "\n";
-}
-
-void MolAccumulator::writeTo(std::ostream &os, const char *prefix) const
-{
-    writeCounts(os, prefix);
-    writeAtoms(os, prefix);
-    writeBonds(os, prefix);
-}
-
-void MolAccumulator::writeAtoms(std::ostream &os, const char *prefix) const
-{
-    os << prefix << "BEGIN ATOM" << "\n";
-
-    std::vector<const AtomInfo *> orderer(_atoms.size());
-    for (auto &pr : _atoms) orderer[pr.second - 1] = &pr.first;
-
-    for (const AtomInfo *ai : orderer)
-    {
-        const float3 &coords = ai->coords();
-
-        os << prefix
-           << aiIndex(*ai) << " "
-           << ai->type() << " "
-           << coords.x << " "
-           << coords.y << " "
-           << coords.z << " "
-           << "0"
-           << ai->options(_detector) << "\n";
-    }
-    os << prefix << "END ATOM" << "\n";
 }
 
 }
