@@ -1,7 +1,6 @@
 #ifndef ACTIVES_PORTION_COUNTER_H
 #define ACTIVES_PORTION_COUNTER_H
 
-#include <vector>
 #include "../../atoms/atom.h"
 #include "../common.h"
 
@@ -10,8 +9,6 @@ namespace vd
 
 class ActivesPortionCounter
 {
-    const std::vector<ushort> _regularAtomTypes;
-
     struct HydroActs
     {
         uint actives, hydrogens;
@@ -25,12 +22,10 @@ class ActivesPortionCounter
     };
 
 public:
-    ActivesPortionCounter(const std::initializer_list<ushort> &regularAtomTypes);
-
     double countFrom(Atom *atom) const;
 
 private:
-    bool isRegular(const Atom *atom) const;
+    bool isBottom(const Atom *atom) const;
     HydroActs recursiveCount(Atom *atom) const;
 };
 
