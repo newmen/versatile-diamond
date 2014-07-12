@@ -13,7 +13,11 @@ namespace vd
 template <class B>
 class OneFile : public B
 {
+    std::ofstream *_out = nullptr;
+
 public:
+    ~OneFile() { delete _out; }
+
     void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
 
 protected:
@@ -21,9 +25,25 @@ protected:
 
     virtual const char *separator() const = 0;
     std::string filename() const override;
+
+private:
+    std::ofstream &out();
 };
 
 ///////////////////////////////////////////////////////////////
+
+template <class B>
+void OneFile<B>::writeFrom(Atom *atom, double currentTime, const Detector *detector)
+{
+    static uint counter = 0;
+    if (counter > 0)
+    {
+        out() << separator();
+    }
+    ++counter;
+
+    this->writeToFrom(out(), atom, currentTime, detector);
+}
 
 template <class B>
 std::string OneFile<B>::filename() const
@@ -34,18 +54,13 @@ std::string OneFile<B>::filename() const
 }
 
 template <class B>
-void OneFile<B>::writeFrom(Atom *atom, double currentTime, const Detector *detector)
+std::ofstream &OneFile<B>::out()
 {
-    std::ofstream out(filename());
-
-    static uint counter = 0;
-    if (counter > 0)
+    if (_out == nullptr)
     {
-        out << separator();
+        _out = new std::ofstream(filename());
     }
-    ++counter;
-
-    this->writeToFrom(out, atom, currentTime, detector);
+    return *_out;
 }
 
 }
