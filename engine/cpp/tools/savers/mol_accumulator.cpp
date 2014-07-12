@@ -73,15 +73,29 @@ uint MolAccumulator::biIndex(const BondInfo &bi) const
 
 bool MolAccumulator::isNear(const Atom *first, const Atom *second) const
 {
-    if (first->lattice() && second->lattice())
+    Lattice *fl = latticeFor(first), *sl = latticeFor(second);
+    if (fl && sl)
     {
-        auto &fc = first->lattice()->coords(), &sc = second->lattice()->coords();
-        if (std::fabs(fc.x - sc.x) > 1 || std::fabs(fc.y - sc.y) > 1)
+        int3 diff = fl->coords() - sl->coords();
+        if (!diff.isUnit())
         {
             return false;
         }
     }
     return true;
+}
+
+Lattice *MolAccumulator::latticeFor(const Atom *atom) const
+{
+    if (atom->lattice())
+    {
+        return atom->lattice();
+    }
+    else
+    {
+        const Atom *nbr = atom->firstCrystalNeighbour();
+        return nbr ? nbr->lattice() : nullptr;
+    }
 }
 
 }

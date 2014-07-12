@@ -94,6 +94,8 @@ protected:
 private:
     BaseSpec *specByRole(ushort sid, ushort role);
 
+    float3 relativePosition() const;
+
     uint hash(ushort first, ushort second) const
     {
         uint at = first;
