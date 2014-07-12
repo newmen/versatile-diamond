@@ -3,32 +3,21 @@
 namespace vd
 {
 
-ActivesPortionCounter::ActivesPortionCounter(const std::initializer_list<ushort> &regularAtomTypes) : _regularAtomTypes(regularAtomTypes)
-{
-}
-
 double ActivesPortionCounter::countFrom(Atom *atom) const
 {
     HydroActs ha = recursiveCount(atom);
     return (double)ha.actives / (ha.actives + ha.hydrogens);
 }
 
-bool ActivesPortionCounter::isRegular(const Atom *atom) const
+bool ActivesPortionCounter::isBottom(const Atom *atom) const
 {
-    bool result = false;
-    for (ushort type : _regularAtomTypes)
-    {
-        result = atom->is(type);
-        if (result) break;
-    }
-
-    return result;
+    return atom->lattice() && atom->lattice()->coords().z == 0;
 }
 
 ActivesPortionCounter::HydroActs ActivesPortionCounter::recursiveCount(Atom *atom) const
 {
     HydroActs result;
-    if (!isRegular(atom))
+    if (!isBottom(atom))
     {
         result.actives += atom->actives();
         result.hydrogens += atom->hCount();
