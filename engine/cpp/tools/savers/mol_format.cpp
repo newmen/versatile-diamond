@@ -51,10 +51,12 @@ void MolFormat::writeBonds(std::ostream &os) const
     std::vector<const BondInfo *> orderer(acc().bonds().size());
     for (auto &pr : acc().bonds()) orderer[pr.second - 1] = &pr.first;
 
-    for (const BondInfo *bi : orderer)
+    for (uint i = 0; i < orderer.size(); ++i)
     {
+        const BondInfo *bi = orderer[i];
+
         os << prefix()
-           << acc().biIndex(*bi) << " "
+           << (i + 1) << " "
            << bi->type() << " "
            << bi->from() << " "
            << bi->to() << "\n";
@@ -69,12 +71,13 @@ void MolFormat::writeAtoms(std::ostream &os) const
     std::vector<const AtomInfo *> orderer(acc().atoms().size());
     for (auto &pr : acc().atoms()) orderer[pr.second - 1] = &pr.first;
 
-    for (const AtomInfo *ai : orderer)
+    for (uint i = 0; i < orderer.size(); ++i)
     {
+        const AtomInfo *ai = orderer[i];
         const float3 &coords = ai->coords();
 
         os << prefix()
-           << acc().aiIndex(*ai) << " "
+           << (i + 1) << " "
            << ai->type() << " "
            << coords.x << " "
            << coords.y << " "

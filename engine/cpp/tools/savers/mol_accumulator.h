@@ -23,9 +23,6 @@ public:
     const BondInfos &bonds() const { return _bonds; }
     const AtomInfos &atoms() const { return _atoms; }
 
-    uint aiIndex(const AtomInfo &ai) const;
-    uint biIndex(const BondInfo &bi) const;
-
 protected:
     void treatHidden(const Atom *first, const Atom *second) override;
     void pushPair(const Atom *from, const Atom *to) override;
@@ -33,8 +30,10 @@ protected:
 private:
     AtomInfo &findOrCreateAI(const Atom *atom);
 
+    uint aiIndex(const AtomInfo &ai) const;
+    uint biIndex(const BondInfo &bi) const;
+
     bool isNear(const Atom *first, const Atom *second) const;
-    uint incAtomsNum() { return ++_atomsNum; }
 };
 
 }

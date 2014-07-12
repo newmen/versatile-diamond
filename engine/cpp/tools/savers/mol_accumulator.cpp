@@ -55,7 +55,7 @@ AtomInfo &MolAccumulator::findOrCreateAI(const Atom *atom)
     }
     else
     {
-        result = &_atoms.insert(AtomInfos::value_type(ai, incAtomsNum())).first->first;
+        result = &_atoms.insert(AtomInfos::value_type(ai, ++_atomsNum)).first->first;
     }
 
     return const_cast<AtomInfo &>(*result);
