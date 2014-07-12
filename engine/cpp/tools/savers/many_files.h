@@ -24,6 +24,13 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+template <class B>
+void ManyFiles<B>::writeFrom(Atom *atom, double currentTime, const Detector *detector)
+{
+    std::ofstream out(filename());
+    this->writeToFrom(out, atom, currentTime, detector);
+}
+
 template<class B>
 std::string ManyFiles<B>::filename() const
 {
@@ -32,13 +39,6 @@ std::string ManyFiles<B>::filename() const
     std::stringstream ss;
     ss << this->name() << "_" << (n++) << this->ext();
     return ss.str();
-}
-
-template <class B>
-void ManyFiles<B>::writeFrom(Atom *atom, double currentTime, const Detector *detector)
-{
-    std::ofstream out(filename());
-    this->writeToFrom(out, atom, currentTime, detector);
 }
 
 }
