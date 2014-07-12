@@ -38,6 +38,7 @@ public:
     Atom *firstAtom() const { return _atoms.data()[0]; }
     float3 translate(const int3 &coords) const;
 
+    virtual float3 correct(const Atom *atom) const = 0;
     virtual const float3 &periods() const = 0;
 
 protected:

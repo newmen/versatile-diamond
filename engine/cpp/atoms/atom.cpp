@@ -94,14 +94,12 @@ Atom *Atom::amorphNeighbour() const
 
 Atom *Atom::firstCrystalNeighbour() const
 {
-    if (!_relatives.empty())
+    for (Atom *nbr : _relatives)
     {
-        return *_relatives.begin();
+        if (nbr->lattice()) return nbr;
     }
-    else
-    {
-        return nullptr;
-    }
+
+    return nullptr;
 }
 
 void Atom::setLattice(Crystal *crystal, const int3 &coords)
@@ -276,17 +274,47 @@ float3 Atom::realPosition() const
 {
     if (lattice())
     {
+        return relativePosition() + lattice()->crystal()->correct(this);
+    }
+    else
+    {
+        return relativePosition();
+    }
+}
+
+float3 Atom::relativePosition() const
+{
+    if (lattice())
+    {
         return lattice()->crystal()->translate(lattice()->coords());
     }
     else
     {
-        const Atom *crystAtom = firstCrystalNeighbour();
-        assert(crystAtom->lattice());
+        const int3 *crystalCrds = nullptr;
+        uint counter = 0;
+        float3 crdsAcc;
+        for (const Atom *nbr : _relatives)
+        {
+            if (nbr->lattice())
+            {
+                if (!crystalCrds)
+                {
+                    crystalCrds = &nbr->lattice()->coords();
+                }
+                else
+                {
+                    int3 diff = *crystalCrds - nbr->lattice()->coords();
+                    if (!diff.isUnit()) break;
+                }
+            }
 
-        auto crystal = crystAtom->lattice()->crystal();
-        auto crds = crystal->translate(crystAtom->lattice()->coords());
-        crds.z += crystal->periods().z * 1.618; // because current amorph atom so near to bottom layer
-        return crds;
+            crdsAcc += nbr->relativePosition();
+            ++counter;
+        }
+
+        crdsAcc /= counter;
+        crdsAcc.z += 1.7; // because current amorph atom so near to bottom layer
+        return crdsAcc;
     }
 }
 

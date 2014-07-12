@@ -34,6 +34,7 @@ private:
     uint biIndex(const BondInfo &bi) const;
 
     bool isNear(const Atom *first, const Atom *second) const;
+    Lattice *latticeFor(const Atom *atom) const;
 };
 
 }
