@@ -2,26 +2,26 @@
 #define ATOM_INFO_H
 
 #include <string>
-#include "volume_atom.h"
 #include "detector.h"
 
 namespace vd
 {
 
-class AtomInfo : public VolumeAtom
+class AtomInfo
 {
+    const Atom *_atom;
     uint _noBond = 0;
 
     friend class std::hash<AtomInfo>;
 
 public:
-    explicit AtomInfo(const Atom *atom) : VolumeAtom(atom) {}
+    explicit AtomInfo(const Atom *atom) : _atom(atom) {}
 
-    bool operator == (const AtomInfo &other) const;
+    bool operator == (const AtomInfo &other) const { return _atom == other._atom; }
 
-    void incNoBond();
+    const Atom *atom() const { return _atom; }
     uint noBond() const { return _noBond; }
-    const char *type() const;
+    void incNoBond() { ++_noBond; }
 };
 
 }

@@ -79,6 +79,8 @@ public:
     ushort actives() const { return _actives; }
     ushort hCount() const;
 
+    float3 realPosition() const;
+
 #ifdef PRINT
     void info(std::ostream &os);
     void pos(std::ostream &os);
