@@ -12,11 +12,16 @@ namespace vd
 class MolSaver : public ManyFiles<BundleSaver<MolAccumulator, MolFormat>>
 {
 public:
-    MolSaver(const char *name) : ManyFiles(name) {}
+    explicit MolSaver(const char *name) : ManyFiles(name) {}
 
 protected:
     const char *ext() const override;
 
+private:
+    MolSaver(const MolSaver &) = delete;
+    MolSaver(MolSaver &&) = delete;
+    MolSaver &operator = (const MolSaver &) = delete;
+    MolSaver &operator = (MolSaver &&) = delete;
 };
 
 }

@@ -12,10 +12,16 @@ namespace vd
 class XYZSaver : public ManyFiles<BundleSaver<XYZAccumulator, XYZFormat>>
 {
 public:
-    XYZSaver(const char *name): ManyFiles(name) {}
+    explicit XYZSaver(const char *name): ManyFiles(name) {}
 
 protected:
     const char *ext() const override;
+
+private:
+    XYZSaver(const XYZSaver &) = delete;
+    XYZSaver(XYZSaver &&) = delete;
+    XYZSaver &operator = (const XYZSaver &) = delete;
+    XYZSaver &operator = (XYZSaver &&) = delete;
 };
 
 }

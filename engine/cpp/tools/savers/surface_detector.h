@@ -10,10 +10,16 @@ template <ushort AT>
 class SurfaceDetector : public Detector
 {
 public:
-    SurfaceDetector() = default;
+    SurfaceDetector() {}
 
     bool isBottom(const Atom *atom) const override;
     bool isShown(const Atom *atom) const override;
+
+private:
+    SurfaceDetector(const SurfaceDetector &) = delete;
+    SurfaceDetector(SurfaceDetector &&) = delete;
+    SurfaceDetector &operator = (const SurfaceDetector &) = delete;
+    SurfaceDetector &operator = (SurfaceDetector &&) = delete;
 };
 
 //////////////////////////////////////////////////////////////////

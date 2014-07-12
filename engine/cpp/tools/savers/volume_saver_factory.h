@@ -12,6 +12,12 @@ class VolumeSaverFactory : public Factory<VolumeSaver, std::string, const char *
 {
 public:
     VolumeSaverFactory();
+
+private:
+    VolumeSaverFactory(const VolumeSaverFactory &) = delete;
+    VolumeSaverFactory(VolumeSaverFactory &&) = delete;
+    VolumeSaverFactory &operator = (const VolumeSaverFactory &) = delete;
+    VolumeSaverFactory &operator = (VolumeSaverFactory &&) = delete;
 };
 
 }

@@ -16,6 +16,7 @@ class BondInfo
 
 public:
     BondInfo(uint from, uint to) : _from(from), _to(to) {}
+    BondInfo(const BondInfo &) = default;
 
     bool operator == (const BondInfo &other) const;
 
@@ -24,6 +25,11 @@ public:
     uint type() const;
     uint from() const;
     uint to() const;
+
+private:
+    BondInfo(BondInfo &&) = delete;
+    BondInfo &operator = (const BondInfo &) = delete;
+    BondInfo &operator = (BondInfo &&) = delete;
 };
 
 }

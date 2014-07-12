@@ -16,6 +16,11 @@ public:
     void render(std::ostream &os, double currentTime) const;
 
 private:
+    MolFormat(const MolFormat &) = delete;
+    MolFormat(MolFormat &&) = delete;
+    MolFormat &operator = (const MolFormat &) = delete;
+    MolFormat &operator = (MolFormat &&) = delete;
+
     const char *prefix() const;
     void writeHeader(std::ostream &os, double currentTime) const;
     void writeBegin(std::ostream &os) const;

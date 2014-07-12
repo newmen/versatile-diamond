@@ -16,6 +16,11 @@ public:
     void render(std::ostream &os, double currentTime) const;
 
 private:
+    XYZFormat(const XYZFormat &) = delete;
+    XYZFormat(XYZFormat &&) = delete;
+    XYZFormat &operator = (const XYZFormat &) = delete;
+    XYZFormat &operator = (XYZFormat &&) = delete;
+
     void writeHead(std::ostream &os, double currentTime) const;
     void writeAtoms(std::ostream &os) const;
 };

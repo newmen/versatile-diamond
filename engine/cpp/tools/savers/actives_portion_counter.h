@@ -22,9 +22,16 @@ class ActivesPortionCounter
     };
 
 public:
+    ActivesPortionCounter() {}
+
     double countFrom(Atom *atom) const;
 
 private:
+    ActivesPortionCounter(const ActivesPortionCounter &) = delete;
+    ActivesPortionCounter(ActivesPortionCounter &&) = delete;
+    ActivesPortionCounter &operator = (const ActivesPortionCounter &) = delete;
+    ActivesPortionCounter &operator = (ActivesPortionCounter &&) = delete;
+
     bool isBottom(const Atom *atom) const;
     HydroActs recursiveCount(Atom *atom) const;
 };

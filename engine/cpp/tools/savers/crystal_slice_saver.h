@@ -28,6 +28,11 @@ public:
     void writeBySlicesOf(const Crystal *crystal, double currentTime);
 
 private:
+    CrystalSliceSaver(const CrystalSliceSaver &) = delete;
+    CrystalSliceSaver(CrystalSliceSaver &&) = delete;
+    CrystalSliceSaver &operator = (const CrystalSliceSaver &) = delete;
+    CrystalSliceSaver &operator = (CrystalSliceSaver &&) = delete;
+
     void writeHeader();
     void writeSlice(const CounterType &counter);
 

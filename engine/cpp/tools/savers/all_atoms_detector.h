@@ -9,10 +9,16 @@ namespace vd {
 class AllAtomsDetector : public Detector
 {
 public:
-    AllAtomsDetector() = default;
+    AllAtomsDetector() {}
 
     bool isBottom(const Atom *atom) const override;
     bool isShown(const Atom *) const override;
+
+private:
+    AllAtomsDetector(const AllAtomsDetector &) = delete;
+    AllAtomsDetector(AllAtomsDetector &&) = delete;
+    AllAtomsDetector &operator = (const AllAtomsDetector &) = delete;
+    AllAtomsDetector &operator = (AllAtomsDetector &&) = delete;
 };
 
 }
