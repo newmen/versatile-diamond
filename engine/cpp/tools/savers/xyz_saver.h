@@ -19,4 +19,5 @@ protected:
 };
 
 }
+
 #endif // XYZ_SAVER_H

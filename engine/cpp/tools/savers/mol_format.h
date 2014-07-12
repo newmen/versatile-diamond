@@ -2,19 +2,17 @@
 #define MOL_FORMAT_H
 
 #include <ostream>
+#include "format.h"
 #include "mol_accumulator.h"
-#include "volume_saver.h"
 
 namespace vd
 {
 
-class MolFormat
+class MolFormat : public Format<MolAccumulator>
 {
-    const VolumeSaver &_saver;
-    const MolAccumulator &_acc;
-
 public:
-    MolFormat(const VolumeSaver &saver, const MolAccumulator &acc) : _saver(saver), _acc(acc) {}
+    MolFormat(const VolumeSaver &saver, const MolAccumulator &acc) : Format(saver, acc) {}
+
     void render(std::ostream &os, double currentTime) const;
 
 private:
@@ -26,9 +24,9 @@ private:
     void writeBonds(std::ostream &os) const;
     void writeAtoms(std::ostream &os) const;
 
-    std::string timestamp() const;
     std::string atomsOptions(const AtomInfo *ai) const;
 };
 
 }
+
 #endif // MOL_FORMAT_H

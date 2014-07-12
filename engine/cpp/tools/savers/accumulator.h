@@ -26,4 +26,5 @@ protected:
 };
 
 }
+
 #endif // ACCUMULATOR_H

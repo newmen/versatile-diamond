@@ -14,11 +14,11 @@ template <class B>
 class ManyFiles : public B
 {
 public:
-    template <class... Args> ManyFiles(Args... args) : B(args...) {}
-
     void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
 
 protected:
+    template <class... Args> ManyFiles(Args... args) : B(args...) {}
+
     std::string filename() const override;
 };
 
