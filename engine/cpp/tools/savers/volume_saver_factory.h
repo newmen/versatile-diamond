@@ -8,7 +8,7 @@
 namespace vd
 {
 
-class VolumeSaverFactory : public Factory<MolSaver, std::string, const char *>
+class VolumeSaverFactory : public Factory<VolumeSaver, std::string, const char *>
 {
 public:
     VolumeSaverFactory();

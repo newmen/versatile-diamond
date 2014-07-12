@@ -4,13 +4,9 @@
 namespace vd
 {
 
-AtomInfo::AtomInfo(const Atom *atom) : _atom(atom)
-{
-}
-
 bool AtomInfo::operator == (const AtomInfo &other) const
 {
-    return _atom == other._atom;
+    return atom() == other.atom();
 }
 
 void AtomInfo::incNoBond()
@@ -20,48 +16,7 @@ void AtomInfo::incNoBond()
 
 const char *AtomInfo::type() const
 {
-    return _atom->name();
-}
-
-float3 AtomInfo::coords() const
-{
-    if (_atom->lattice())
-    {
-        return _atom->lattice()->crystal()->translate(_atom->lattice()->coords());
-    }
-    else
-    {
-        const Atom *crystAtom = _atom->firstCrystalNeighbour();
-        assert(crystAtom->lattice());
-
-        auto crystal = crystAtom->lattice()->crystal();
-        auto crds = crystal->translate(crystAtom->lattice()->coords());
-        crds.z += crystal->periods().z * 1.618; // because so near to bottom layer
-        return crds;
-    }
-}
-
-std::string AtomInfo::options(const Detector *detector) const
-{
-    bool isBtm = detector->isBottom(_atom);
-
-    int hc = _atom->hCount();
-    if (hc == 0 || isBtm)
-    {
-        hc = -1;
-    }
-
-    std::stringstream ss;
-    ss << " HCOUNT=" << hc;
-
-    ushort ac = isBtm ? _atom->valence() - _atom->bonds() : _atom->actives();
-    ac += _noBond;
-    if (ac > 0)
-    {
-        ss << " CHG=-" << ac;
-    }
-
-    return ss.str();
+    return atom()->name();
 }
 
 }

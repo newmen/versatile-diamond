@@ -2,29 +2,26 @@
 #define ATOM_INFO_H
 
 #include <string>
-#include "../../atoms/atom.h"
+#include "volume_atom.h"
 #include "detector.h"
 
 namespace vd
 {
 
-class AtomInfo
+class AtomInfo : public VolumeAtom
 {
-    const Atom *const _atom;
     uint _noBond = 0;
 
     friend class std::hash<AtomInfo>;
 
 public:
-    explicit AtomInfo(const Atom *atom);
+    explicit AtomInfo(const Atom *atom) : VolumeAtom(atom) {}
 
     bool operator == (const AtomInfo &other) const;
 
     void incNoBond();
-
+    uint noBond() const { return _noBond; }
     const char *type() const;
-    float3 coords() const;
-    std::string options(const Detector *detector) const;
 };
 
 }
@@ -34,14 +31,12 @@ public:
 namespace std
 {
 
-using namespace vd;
-
 template <>
-struct hash<AtomInfo>
+struct hash<vd::AtomInfo>
 {
-    std::size_t operator () (const AtomInfo &ai) const
+    size_t operator () (const vd::AtomInfo &ai) const
     {
-        return reinterpret_cast<std::size_t>(ai._atom);
+        return reinterpret_cast<size_t>(ai.atom());
     }
 };
 

@@ -122,15 +122,21 @@ SOURCES += \
     tools/process_mem_usage.cpp \
     tools/runner.cpp \
     tools/savers/actives_portion_counter.cpp \
+    tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
     tools/savers/atom_info.cpp \
     tools/savers/bond_info.cpp \
     tools/savers/crystal_slice_saver.cpp \
     tools/savers/mol_accumulator.cpp \
+    tools/savers/mol_format.cpp \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
-    tools/savers/surface_detector.cpp \
+    tools/savers/volume_atom.cpp \
+    tools/savers/volume_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
+    tools/savers/xyz_accumulator.cpp \
+    tools/savers/xyz_format.cpp \
+    tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
     tools/yaml_config_reader.cpp
 
@@ -292,17 +298,27 @@ HEADERS += \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/savers/actives_portion_counter.h \
+    tools/savers/accumulator.h \
     tools/savers/all_atoms_detector.h \
     tools/savers/atom_info.h \
     tools/savers/bond_info.h \
+    tools/savers/bundle_saver.h \
     tools/savers/crystal_slice_saver.h \
     tools/savers/detector.h \
+    tools/savers/detector.h \
+    tools/savers/many_files.h \
     tools/savers/mol_accumulator.h \
+    tools/savers/mol_format.h \
     tools/savers/mol_saver.h \
+    tools/savers/one_file.h \
     tools/savers/sdf_saver.h \
     tools/savers/surface_detector.h \
+    tools/savers/volume_atom.h \
     tools/savers/volume_saver.h \
     tools/savers/volume_saver_factory.h \
+    tools/savers/xyz_accumulator.h \
+    tools/savers/xyz_format.h \
+    tools/savers/xyz_saver.h \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
@@ -312,4 +328,3 @@ OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \
     ../hand-generations/src/configs/reactions.yml \
     ../hand-generations/atoms_transitive_graph.png
-
