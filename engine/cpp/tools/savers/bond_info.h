@@ -24,7 +24,6 @@ public:
     uint type() const;
     uint from() const;
     uint to() const;
-    std::string options() const;
 };
 
 }

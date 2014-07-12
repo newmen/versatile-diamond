@@ -28,9 +28,4 @@ uint BondInfo::to() const
     return _to;
 }
 
-std::string BondInfo::options() const
-{
-    return "";
-}
-
 }

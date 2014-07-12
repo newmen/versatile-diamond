@@ -1,6 +1,7 @@
 #include "all_atoms_detector.h"
 
-namespace vd {
+namespace vd
+{
 
 bool AllAtomsDetector::isBottom(const Atom *atom) const
 {

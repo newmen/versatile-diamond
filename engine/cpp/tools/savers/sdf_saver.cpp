@@ -1,18 +1,7 @@
 #include "sdf_saver.h"
 
-namespace vd {
-
-void SdfSaver::writeFrom(Atom *atom, double currentTime, const Detector *detector)
+namespace vd
 {
-    static uint counter = 0;
-    if (counter > 0)
-    {
-        _out << "$$$$" << "\n";
-    }
-    ++counter;
-
-    this->writeToFrom(_out, atom, currentTime, detector);
-}
 
 const char *SdfSaver::ext() const
 {
@@ -20,11 +9,9 @@ const char *SdfSaver::ext() const
     return value;
 }
 
-std::string SdfSaver::filename() const
+std::string SdfSaver::separator() const
 {
-    std::stringstream ss;
-    ss << this->name() << ext();
-    return ss.str();
+    return "$$$$\n";
 }
 
 }

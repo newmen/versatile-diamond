@@ -1,24 +1,22 @@
 #ifndef SDF_SAVER_H
 #define SDF_SAVER_H
 
-#include "mol_saver.h"
-#include <sstream>
+#include "one_file.h"
+#include "mol_accumulator.h"
+#include "mol_format.h"
+#include "bundle_saver.h"
 
 namespace vd
 {
 
-class SdfSaver : public MolSaver
+class SdfSaver : public OneFile<BundleSaver<MolAccumulator, MolFormat>>
 {
-    std::ofstream _out;
-
 public:
-    SdfSaver(const char *name) : MolSaver(name), _out(filename()) {}
-
-    void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
+    SdfSaver(const char *name) : OneFile(name) {}
 
 protected:
     const char *ext() const override;
-    std::string filename() const override;
+    std::string separator() const;
 };
 
 }
