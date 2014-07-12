@@ -2,19 +2,16 @@
 #define XYZ_FORMAT_H
 
 #include <ostream>
-#include "volume_saver.h"
+#include "format.h"
 #include "xyz_accumulator.h"
 
 namespace vd
 {
 
-class XYZFormat
+class XYZFormat : public Format<XYZAccumulator>
 {
-    const VolumeSaver &_saver;
-    const XYZAccumulator &_acc;
-
 public:
-    XYZFormat(const VolumeSaver &saver, const XYZAccumulator &acc) : _saver(saver), _acc(acc) {}
+    XYZFormat(const VolumeSaver &saver, const XYZAccumulator &acc) : Format(saver, acc) {}
 
     void render(std::ostream &os, double currentTime) const;
 
@@ -24,4 +21,5 @@ private:
 };
 
 }
+
 #endif // XYZ_FORMAT_H

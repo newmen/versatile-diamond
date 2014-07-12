@@ -14,14 +14,13 @@ template <class B>
 class OneFile : public B
 {
 public:
-    template <class... Args> OneFile(Args... args) : B(args...) {}
-
     void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
 
 protected:
-    std::string filename() const override;
+    template <class... Args> OneFile(Args... args) : B(args...) {}
 
-    virtual std::string separator() const = 0;
+    virtual const char *separator() const = 0;
+    std::string filename() const override;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -50,4 +49,5 @@ void OneFile<B>::writeFrom(Atom *atom, double currentTime, const Detector *detec
 }
 
 }
+
 #endif // ONE_FILE_H

@@ -16,4 +16,5 @@ public:
 };
 
 }
+
 #endif // DETECTOR_H

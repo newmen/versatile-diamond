@@ -12,19 +12,19 @@ void XYZFormat::render(std::ostream &os, double currentTime) const
 
 void XYZFormat::writeHead(std::ostream &os, double currentTime) const
 {
-    os << _acc.atomsNum() << "\n"
+    os << acc().atomsNum() << "\n"
          << "Name: "
-         << _saver.name()
+         << saver().name()
          << " Current time: "
          << currentTime << "s" << "\n";
 }
 
 void XYZFormat::writeAtoms(std::ostream &os) const
 {
-    for (auto &pr : _acc.atoms())
+    for (auto &pr : acc().atoms())
     {
         const VolumeAtom &atom = pr.second;
-        auto const &crd = atom.coords();
+        const auto &crd = atom.coords();
         os << atom.atom()->name() << " "
            << crd.x << " "
            << crd.y << " "

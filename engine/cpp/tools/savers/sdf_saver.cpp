@@ -9,9 +9,10 @@ const char *SdfSaver::ext() const
     return value;
 }
 
-std::string SdfSaver::separator() const
+const char *SdfSaver::separator() const
 {
-    return "$$$$\n";
+    static const char value[] = "$$$$\n";
+    return value;
 }
 
 }

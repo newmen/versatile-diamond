@@ -306,6 +306,7 @@ HEADERS += \
     tools/savers/crystal_slice_saver.h \
     tools/savers/detector.h \
     tools/savers/detector.h \
+    tools/savers/format.h \
     tools/savers/many_files.h \
     tools/savers/mol_accumulator.h \
     tools/savers/mol_format.h \
