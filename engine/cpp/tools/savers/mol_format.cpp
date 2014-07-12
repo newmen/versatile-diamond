@@ -74,11 +74,11 @@ void MolFormat::writeAtoms(std::ostream &os) const
     for (uint i = 0; i < orderer.size(); ++i)
     {
         const AtomInfo *ai = orderer[i];
-        const float3 &coords = ai->coords();
+        const float3 &coords = ai->atom()->realPosition();
 
         os << prefix()
            << (i + 1) << " "
-           << ai->type() << " "
+           << ai->atom()->name() << " "
            << coords.x << " "
            << coords.y << " "
            << coords.z << " "

@@ -272,6 +272,24 @@ ushort Atom::hCount() const
     return (ushort)hc;
 }
 
+float3 Atom::realPosition() const
+{
+    if (lattice())
+    {
+        return lattice()->crystal()->translate(lattice()->coords());
+    }
+    else
+    {
+        const Atom *crystAtom = firstCrystalNeighbour();
+        assert(crystAtom->lattice());
+
+        auto crystal = crystAtom->lattice()->crystal();
+        auto crds = crystal->translate(crystAtom->lattice()->coords());
+        crds.z += crystal->periods().z * 1.618; // because current amorph atom so near to bottom layer
+        return crds;
+    }
+}
+
 #ifdef PRINT
 void Atom::info(std::ostream &os)
 {

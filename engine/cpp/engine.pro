@@ -124,14 +124,12 @@ SOURCES += \
     tools/savers/actives_portion_counter.cpp \
     tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
-    tools/savers/atom_info.cpp \
     tools/savers/bond_info.cpp \
     tools/savers/crystal_slice_saver.cpp \
     tools/savers/mol_accumulator.cpp \
     tools/savers/mol_format.cpp \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
-    tools/savers/volume_atom.cpp \
     tools/savers/volume_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
     tools/savers/xyz_accumulator.cpp \
@@ -314,7 +312,6 @@ HEADERS += \
     tools/savers/one_file.h \
     tools/savers/sdf_saver.h \
     tools/savers/surface_detector.h \
-    tools/savers/volume_atom.h \
     tools/savers/volume_saver.h \
     tools/savers/volume_saver_factory.h \
     tools/savers/xyz_accumulator.h \

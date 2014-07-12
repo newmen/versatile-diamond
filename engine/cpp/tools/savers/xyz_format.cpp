@@ -1,5 +1,4 @@
 #include "xyz_format.h"
-#include "volume_atom.h"
 
 namespace vd
 {
@@ -12,7 +11,7 @@ void XYZFormat::render(std::ostream &os, double currentTime) const
 
 void XYZFormat::writeHead(std::ostream &os, double currentTime) const
 {
-    os << acc().atomsNum() << "\n"
+    os << acc().atoms().size() << "\n"
          << "Name: "
          << saver().name()
          << " Current time: "
@@ -21,11 +20,10 @@ void XYZFormat::writeHead(std::ostream &os, double currentTime) const
 
 void XYZFormat::writeAtoms(std::ostream &os) const
 {
-    for (auto &pr : acc().atoms())
+    for (const Atom *atom : acc().atoms())
     {
-        const VolumeAtom &atom = pr.second;
-        const auto &crd = atom.coords();
-        os << atom.atom()->name() << " "
+        const float3 &crd = atom->realPosition();
+        os << atom->name() << " "
            << crd.x << " "
            << crd.y << " "
            << crd.z << "\n";
