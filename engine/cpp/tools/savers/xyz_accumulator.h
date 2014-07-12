@@ -21,6 +21,12 @@ public:
 protected:
     void treatHidden(const Atom *first, const Atom *second) override;
     void pushPair(const Atom *first, const Atom *second) override;
+
+private:
+    XYZAccumulator(const XYZAccumulator &) = delete;
+    XYZAccumulator(XYZAccumulator &&) = delete;
+    XYZAccumulator &operator = (const XYZAccumulator &) = delete;
+    XYZAccumulator &operator = (XYZAccumulator &&) = delete;
 };
 
 }

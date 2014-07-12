@@ -28,6 +28,11 @@ protected:
     void pushPair(const Atom *from, const Atom *to) override;
 
 private:
+    MolAccumulator(const MolAccumulator &) = delete;
+    MolAccumulator(MolAccumulator &&) = delete;
+    MolAccumulator &operator = (const MolAccumulator &) = delete;
+    MolAccumulator &operator = (MolAccumulator &&) = delete;
+
     AtomInfo &findOrCreateAI(const Atom *atom);
 
     uint aiIndex(const AtomInfo &ai) const;

@@ -10,11 +10,17 @@ namespace vd
 class SdfSaver : public OneFile<MolSaver>
 {
 public:
-    SdfSaver(const char *name) : OneFile(name) {}
+    explicit SdfSaver(const char *name) : OneFile(name) {}
 
 protected:
     const char *ext() const override;
     const char *separator() const override;
+
+private:
+    SdfSaver(const SdfSaver &) = delete;
+    SdfSaver(SdfSaver &&) = delete;
+    SdfSaver &operator = (const SdfSaver &) = delete;
+    SdfSaver &operator = (SdfSaver &&) = delete;
 };
 
 }
