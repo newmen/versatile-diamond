@@ -4,12 +4,11 @@ module VersatileDiamond
 
       # Provides methods for specie which is used when it is simmetric
       module SubSpecie
+        include Code::PolynameClass
 
         # Defines name methods which are targeted to some prefix
         # @param [String] default_prefix the prefix which will be used by default
         def use_prefix(default_prefix)
-          include PolynameClass
-
           # Gets the class name of current specie
           # @return [String] the class name
           define_method(:class_name) do

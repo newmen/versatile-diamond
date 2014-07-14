@@ -14,7 +14,6 @@ module VersatileDiamond
         include EnumerableOutFile # should be after PolynameClass
 
         attr_reader :spec, :anchors
-        attr_reader :spec_links # for species comparator
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -25,13 +24,10 @@ module VersatileDiamond
           @spec = spec
           @_class_name, @_enum_name, @_used_iterators = nil
 
-          @spec_links = propertize_links(spec)
-          @all_props = spec_links.keys
+          @all_props = propertize(spec_links.keys)
+          @anchors = propertize(links.keys)
 
-          @rest_links = spec.rest && propertize_links(spec.rest)
-          @anchors = links.keys
-
-          @_atoms_delta, @_props_sequence = nil
+          @_atoms_delta, @_atoms_sequence = nil
         end
 
         # @override
@@ -56,74 +52,9 @@ module VersatileDiamond
           # алгоритмы поиска подставлять итерацию каждой симметрии
         end
 
-        # Finds self symmetrics by children species which are uses symmetric atoms of
-        # current specie. Should be called from generator after than all specie class
-        # renderers will be created.
-        def find_self_symmetrics!
-          @symmetrics = []
-          children.each do |child|
-            intersec = intersec_with(child)
-binding.pry
-
-            # intersec must be found in any case
-            unless intersec.first.size == spec_links.size
-              raise "Correct intersec wasn't found"
-            end
-
-            filtered_intersec = child.filter_intersections(intersec)
-            next if filtered_intersec.size == 1
-
-            binding.pry if spec.name == :bridge
-
-            major_intersec = filtered_intersec.shift
-            reset_all_atoms(major_intersec.map(&:first))
-
-            filtered_intersec.each do |insec|
-              @symmetrics << insec unless @symmetrics.include?(insec)
-            end
-          end
+        def target
+          spec.rest || spec
         end
-
-        # Is symmetric specie? If children species uses same as own atom and it atom
-        # has symmetric analogy
-        #
-        # @return [Boolean] is symmetric specie or not
-        def symmetric?
-          !@symmetrics.empty?
-        end
-
-# FROM HERE <<<<<<<<<<<<<<<<<<<<<<<<<
-
-        # Detects additional atoms which are not presented in parent species
-        # @return [Array] the array of additional atoms
-        def addition_props
-          adds = parents.reduce(@all_props) do |acc, parent|
-            acc - parent.props_sequence
-          end
-          sort_props(adds)
-        end
-
-        # Makes general sequence of atoms which will be used for get an atom index
-        # @return [Array] the general sequence of atoms of current specie
-        def props_sequence
-          @_props_sequence ||=
-            if parents.size == 0
-              sort_props(@all_props)
-            else
-              result = atoms_delta > 0 ? addition_props : []
-              parents.reduce(result) { |acc, parent| acc + parent.props_sequence }
-            end
-        end
-
-        # Gets an index of some atom
-        # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-        #   atom for which index will be got from general sequence
-        # @return [Integer] the index of atom in general sequence
-        def atom_index(atom)
-          props_sequence.index(atom)
-        end
-
-# TO HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         [
           ['class', :classify, ''],
@@ -153,112 +84,12 @@ binding.pry
           links.size
         end
 
-      protected
-
-        # Filters intersections with parent specie. Checks that anchors points to
-        # different atoms of parent specie.
-        #
-        # @param [Array] intersec the array of intersections with parent specie
-        # @return [Array] the array of filtered intersections
-        def filter_intersections(intersec)
-          result = []
-          collector = [] # stores unique pairs of anchors from intersec
-          intersec.each do |insec|
-            mirror = insec.invert
-            new_collection = Set.new
-
-            anchors.each do |atom|
-              parent_atom = mirror[atom]
-              unless new_collection.include?(parent_atom)
-                new_collection << [atom, parent_atom]
-              end
-            end
-
-            unless collector.include?(new_collection)
-              collector << new_collection
-              result << insec
-            end
-          end
-          result
-        end
-
-        # Resets the internal atom sequence
-        def reset_sequence
-          @_props_sequence = nil
-          children.each { |c| c.reset_sequence }
-        end
-
       private
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
         def render_find_algorithms?
           return true
-        end
-
-        # Gets target links between different atoms
-        # @return [Hash] the links between atoms
-        def links
-          @rest_links || spec_links
-        end
-
-        # Remakes the links and exchanges all atoms to correspond atom properties
-        # @param [Organizers::DependentBaseSpec | Organizers::DependentSpecificSpec |
-        #   Organizers::SpecResidual] spec links of which will be propertized
-        # @return [Hash] the links between atom properties
-        def propertize_links(spec)
-          result = spec.links.map do |atom, list|
-            prop = Organizers::AtomProperties.new(spec, atom)
-            updated_list = list.map do |a, relation|
-              pr = spec.links[a] && Organizers::AtomProperties.new(spec, a)
-              if !pr && atom.reference?
-                dep_spec = Organizers::DependentBaseSpec.new(atom.spec)
-                binding.pry
-                pr = Organizers::AtomProperties.new(dep_spec, a)
-              end
-              raise 'Incorrect property' unless pr
-              [pr, relation]
-            end
-            [prop, updated_list]
-          end
-          Hash[result]
-        end
-
-        # Finds intersec with some another specie
-        # @param [Specie] child of current specie with which intersec will be found
-        # @return [Array] the array of all possible intersec
-        def intersec_with(child)
-          args = [self, child, { collaps_multi_bond: true, method: :spec_links }]
-          insec = SpeciesComparator.intersec(*args) do |_, _, self_prop, child_prop|
-            self_prop.contained_in?(child_prop) ? (puts 'yes'; true) : false
-          end
-          binding.pry
-          insec.map { |ins| Hash[ins.to_a] }
-        end
-
-        # Sets the atoms from passed list and drops the internal cache
-        # @param [Array] atoms the list of all atoms where new anchors of specie
-        #   renderer will be selected
-        def reset_all_atoms(atoms)
-          @all_props = atoms
-          reset_sequence
-        end
-
-        # Reverse sorts the props by number of their relations
-        # @param [Array] props the array of sorting props
-        # @return [Array] sorted array of props
-        def sort_props(props)
-          props.sort_by { |pr| -spec_links[pr].size }
-        end
-
-        # Counts delta between atoms num of current specie and sum of atoms num of
-        # all parents
-        #
-        # @return [Integer] the delta between atoms nums
-        def atoms_delta
-          return @_atoms_delta if @_atoms_delta
-          plss = parents.map(&:spec).map(&:links).map(&:size).reduce(:+)
-          @_atoms_delta = spec.links.size - (plss || 0)
         end
 
         # Gets the parent specie classes
@@ -352,8 +183,8 @@ binding.pry
         def used_iterators
           return @_used_iterators if @_used_iterators
 
-          lattices = links.reduce(Set.new) do |acc, (props, list)|
-            list.empty? ? acc : (acc << props.lattice)
+          lattices = links.reduce(Set.new) do |acc, (atoms, list)|
+            list.empty? ? acc : (acc << atoms.lattice)
           end
 
           @_used_iterators = lattices.to_a.compact.map do |lattice|
