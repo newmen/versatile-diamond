@@ -15,8 +15,8 @@ module VersatileDiamond
         # Finds self symmetrics by children species which are uses symmetric atoms of
         # current specie. Should be called from generator after than all specie class
         # renderers will be created.
-        def find_self_symmetrics!
-          @symmetrics = []
+        def find_symmetrics(chidlren)
+          symmetrics = []
           children.each do |child|
             intersec = intersec_with(child)
 binding.pry
@@ -37,9 +37,11 @@ binding.pry
             # TODO: remakes to atom properties
             filtered_intersec.each do |insec|
               proped_sec = insec.map { |pair| propertize(pair, [spec, child.spec]) }
-              @symmetrics << proped_sec unless @symmetrics.include?(proped_sec)
+              symmetrics << proped_sec unless @symmetrics.include?(proped_sec)
             end
           end
+
+          symmetrics
         end
 
         # Is symmetric specie? If children species uses same as own atom and it atom
@@ -141,7 +143,7 @@ binding.pry
         def intersec_with(child)
           args = [self, child, { collaps_multi_bond: true }]
           insec = SpeciesComparator.intersec(*args) do |_, _, self_atom, child_atom|
-            self_atom.contained_in?(child_atom) ? (puts 'yes'; true) : false
+            self_atom.contained_in?(child_atom)
           end
           binding.pry
           insec.map { |ins| Hash[ins.to_a] }

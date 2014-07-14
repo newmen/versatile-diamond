@@ -28,15 +28,14 @@ module VersatileDiamond
         # @return [Array] the array of all possible intersections
         def intersec(first, second, **opts, &ver_comp_block)
           smb = opts[:collaps_multi_bond] || false
-          method = opts[:method] || :links
 
           @@_intersec_cache ||= {}
-          key = [first, second, smb, method]
+          key = [first, second, smb, ver_comp_block]
 
           return @@_intersec_cache[key] if @@_intersec_cache[key]
 
-          large_graph = Graph.new(first.public_send(method), collaps_multi_bond: smb)
-          small_graph = Graph.new(second.public_send(method), collaps_multi_bond: smb)
+          large_graph = Graph.new(first.links, collaps_multi_bond: smb)
+          small_graph = Graph.new(second.links, collaps_multi_bond: smb)
           assoc_graph =
             AssocGraph.new(large_graph, small_graph, comparer: ver_comp_block)
 
