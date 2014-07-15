@@ -7,7 +7,7 @@ void stopSignalHandler(int)
 #ifdef PARALLEL
 #pragma omp master
 #endif // PARALLEL
-    Runner::stop();
+    Runner<Handbook>::stop();
 }
 
 void segfaultSignalHandler(int)
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
     std::cout.precision(3);
 
-    if (argc < 6 || argc > 7)
+    if (argc < 7 || argc > 8)
     {
         std::cerr << "Wrong number of run arguments!" << std::endl;
         std::cout << "Try: " << argv[0] << " run_name X Y total_time save_each_time [out_format]" << std::endl;
@@ -49,8 +49,9 @@ int main(int argc, char *argv[])
 
     try
     {
-        const char *volumeSaverType = (argc == 7) ? argv[6] : nullptr;
-        Runner runner(argv[1], atoi(argv[2]), atoi(argv[3]), atof(argv[4]), atof(argv[5]), volumeSaverType);
+        const char *volumeSaverType = (argc == 8) ? argv[6] : nullptr;
+        const char *detectorType = (argc == 8) ? argv[7] : nullptr;
+        Runner<Handbook> runner(argv[1], atoi(argv[2]), atoi(argv[3]), atof(argv[4]), atof(argv[5]), volumeSaverType, detectorType);
         run(runner);
     }
     catch (Error error)
