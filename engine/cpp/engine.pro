@@ -120,7 +120,6 @@ SOURCES += \
     tools/common.cpp \
     tools/lockable.cpp \
     tools/process_mem_usage.cpp \
-    tools/savers/actives_portion_counter.cpp \
     tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
     tools/savers/bond_info.cpp \

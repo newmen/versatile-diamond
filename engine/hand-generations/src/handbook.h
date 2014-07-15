@@ -45,6 +45,9 @@ public:
 
     static bool isRegular(const Atom *atom);
 
+    static ushort activiesFor(const Atom *atom);
+    static ushort hydrogensFor(const Atom *atom);
+
 private:
     template <class T> static inline T &selectForThread(T *container);
 
@@ -65,6 +68,8 @@ public:
 public:
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
+
+    typedef Diamond SurfaceCrystal;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

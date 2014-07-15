@@ -27,8 +27,8 @@ class Runner
     const uint _x, _y;
     const double _totalTime, _eachTime;
     const ActivesPortionCounter<HB> *_apCounter;
+    const Detector *_detector = nullptr;
     VolumeSaver *_volumeSaver = nullptr;
-    Detector *_detector = nullptr;
 
 public:
     static void stop();
@@ -36,7 +36,6 @@ public:
     Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr, const char *detector = nullptr);
     ~Runner();
 
-    template <class SurfaceCrystalType>
     void calculate(const std::initializer_list<ushort> &types);
 
 private:
@@ -95,6 +94,9 @@ Runner<HB>::Runner(const char *name, uint x, uint y, double totalTime, double ea
         }
 
         _volumeSaver = vsFactory.create(volumeSaverType, filename().c_str());
+
+        if (!detector)
+            detector = "surf";
     }
 
     if (detector)
@@ -108,6 +110,7 @@ Runner<HB>::Runner(const char *name, uint x, uint y, double totalTime, double ea
         _detector = detFactory.create(detector);
     }
 }
+
 template <class HB>
 Runner<HB>::~Runner()
 {
@@ -142,7 +145,6 @@ void Runner<HB>::outputMemoryUsage(std::ostream &os) const
 }
 
 template <class HB>
-template <class SCT>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
@@ -150,7 +152,8 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 
 // -------------------------------------------------------------------------------- //
 
-    SCT *surfaceCrystal = new SCT(dim3(_x, _y, MAX_HEIGHT));
+    typedef typename HB::SurfaceCrystal SC;
+    SC *surfaceCrystal = new SC(dim3(_x, _y, MAX_HEIGHT));
     surfaceCrystal->initialize();
 
 // -------------------------------------------------------------------------------- //

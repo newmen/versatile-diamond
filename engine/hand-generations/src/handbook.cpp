@@ -143,6 +143,16 @@ bool Handbook::isRegular(const Atom *atom)
     return b;
 }
 
+ushort Handbook::activiesFor(const Atom *atom)
+{
+    return __activesOnAtoms[atom->type()];
+}
+
+ushort Handbook::hydrogensFor(const Atom *atom)
+{
+    return __hOnAtoms[atom->type()];
+}
+
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
 {
     assert(__atomsNum > complexType);
