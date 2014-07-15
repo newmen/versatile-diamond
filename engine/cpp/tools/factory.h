@@ -7,7 +7,7 @@
 namespace vd
 {
 
-// Factory create objects of abstakt type AbstractType by key type KeyType.
+// Factory create objects of AbstractType by key type KeyType.
 // Constructors of all types should have a signature corresponding to CreatingArgs.
 template
 <
