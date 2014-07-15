@@ -23,11 +23,6 @@ module VersatileDiamond
           super(generator)
           @spec = spec
           @_class_name, @_enum_name, @_used_iterators = nil
-
-          @all_props = propertize(spec_links.keys)
-          @anchors = propertize(links.keys)
-
-          @_atoms_delta, @_atoms_sequence = nil
         end
 
         # @override
@@ -52,8 +47,32 @@ module VersatileDiamond
           # алгоритмы поиска подставлять итерацию каждой симметрии
         end
 
+        # Finds self symmetrics by children species which are uses symmetric atoms of
+        # current specie. Should be called from generator after than all specie class
+        # renderers will be created.
+        def find_self_symmetrics!
+          @symmetrics = AtomSequence.new(spec, target).find_symmetrics
+        end
+
+        # Is symmetric specie? If children species uses same as own atom and it atom
+        # has symmetric analogy
+        #
+        # @return [Boolean] is symmetric specie or not
+        def symmetric?
+          !@symmetrics.empty?
+        end
+
         def target
           spec.rest || spec
+        end
+
+        # Gets number of sceleton atoms used in specie and different from atoms of
+        # parent specie
+        #
+        # @return [Integer] the number of atoms
+        # TODO: must be private
+        def atoms_num
+          target.links.size
         end
 
         [
@@ -73,15 +92,6 @@ module VersatileDiamond
             addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
             instance_variable_set(var_name, "#{m[1].send(method)}#{addition}")
           end
-        end
-
-        # Gets number of sceleton atoms used in specie and different from atoms of
-        # parent specie
-        #
-        # @return [Integer] the number of atoms
-        # TODO: must be private
-        def atoms_num
-          links.size
         end
 
       private
