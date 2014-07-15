@@ -6,23 +6,26 @@ module VersatileDiamond
       class AtomSequence
 
         # Makes sequence from some specie
-        # @param [Specie] specie code generator the atom sequence for which will be
-        #   calculated
-        def initialize(specie)
-          @specie = specie
+        # @param [Organizers::DependentSpec] spec the atom sequence for which will
+        #   be calculated
+        # @param [Organizers::DependentSpec | Organizers::SpecResidual] target by
+        #   which atom sequence will be gotten
+        def initialize(spec, target)
+          @spec = spec
+          @target = target
+
+          @_atoms_delta, @_atoms_sequence = nil
         end
 
-        # Finds self symmetrics by children species which are uses symmetric atoms of
-        # current specie. Should be called from generator after than all specie class
-        # renderers will be created.
-        def find_symmetrics(chidlren)
-          symmetrics = []
-          children.each do |child|
+        # Finds symmetrics of internal specie by children of them
+        def find_symmetrics
+          symmetrics = Set.new
+          @spec.children.each do |child|
             intersec = intersec_with(child)
 binding.pry
 
             # intersec must be found in any case
-            unless intersec.first.size == spec_links.size
+            unless intersec.first.size == @spec.links.size
               raise "Correct intersec wasn't found"
             end
 
@@ -37,19 +40,11 @@ binding.pry
             # TODO: remakes to atom properties
             filtered_intersec.each do |insec|
               proped_sec = insec.map { |pair| propertize(pair, [spec, child.spec]) }
-              symmetrics << proped_sec unless @symmetrics.include?(proped_sec)
+              symmetrics << proped_sec
             end
           end
 
-          symmetrics
-        end
-
-        # Is symmetric specie? If children species uses same as own atom and it atom
-        # has symmetric analogy
-        #
-        # @return [Boolean] is symmetric specie or not
-        def symmetric?
-          !@symmetrics.empty?
+          symmetrics.to_a
         end
 
 # FROM HERE <<<<<<<<<<<<<<<<<<<<<<<<<
@@ -138,14 +133,16 @@ binding.pry
         end
 
         # Finds intersec with some another specie
-        # @param [Specie] child of current specie with which intersec will be found
+        # @param [Organizers::DependentSpec] child of internal spec with which
+        #   intersec will be found
         # @return [Array] the array of all possible intersec
         def intersec_with(child)
-          args = [self, child, { collaps_multi_bond: true }]
+          args = [@spec, child, { collaps_multi_bond: true }]
           insec = SpeciesComparator.intersec(*args) do |_, _, self_atom, child_atom|
-            self_atom.contained_in?(child_atom)
+            self_prop = Organizers::AtomProperties(@spec, self_atom)
+            child_prop = Organizers::AtomProperties(child, child_atom)
+            self_prop.contained_in?(child_prop)
           end
-          binding.pry
           insec.map { |ins| Hash[ins.to_a] }
         end
 
