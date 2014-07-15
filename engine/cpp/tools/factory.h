@@ -7,6 +7,8 @@
 namespace vd
 {
 
+// Factory create objects of abstakt type AbstractType by key type KeyType.
+// Constructors of all types should have a signature corresponding to CreatingArgs.
 template
 <
         class AbstractType,
@@ -15,12 +17,14 @@ template
 >
 class Factory
 {
+    // Provides the base interface function that creates objects.
     struct CreatorFunc
     {
         virtual ~CreatorFunc() {}
         virtual AbstractType *operator () (CreatingArgs... args) = 0;
     };
 
+    // The structure is designed to create an object of a concrete type.
     template <class NewType>
     struct ConcreteCreatorFunc : public CreatorFunc
     {
@@ -30,16 +34,19 @@ class Factory
         }
     };
 
+    // Store a pointer to a function that will create objects.
     typedef std::unordered_map<KeyType, CreatorFunc *> MapType;
-
     MapType _map;
 
 public:
     Factory() = default;
     virtual ~Factory();
 
+    // Associates the key with some type.
     template <class NewType> void registerNewType(const KeyType &id);
+    // Check whether this object is registered.
     bool isRegistered(const KeyType &id) const;
+    // Create object.
     AbstractType *create(const KeyType &id, CreatingArgs... args) const;
 
 private:

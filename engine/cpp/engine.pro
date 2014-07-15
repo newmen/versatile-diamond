@@ -120,7 +120,6 @@ SOURCES += \
     tools/common.cpp \
     tools/lockable.cpp \
     tools/process_mem_usage.cpp \
-    tools/runner.cpp \
     tools/savers/actives_portion_counter.cpp \
     tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
@@ -320,7 +319,8 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    tools/savers/detector_factory.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

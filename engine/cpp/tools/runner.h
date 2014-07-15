@@ -2,16 +2,21 @@
 #define RUNNER_H
 
 #include <iostream>
+#include <sys/time.h>
 #include "../mc/common_mc_data.h"
+#include "process_mem_usage.h"
 #include "savers/actives_portion_counter.h"
 #include "savers/crystal_slice_saver.h"
 #include "savers/volume_saver.h"
+#include "savers/volume_saver_factory.h"
+#include "savers/detector_factory.h"
 #include "common.h"
 #include "error.h"
 
 namespace vd
 {
 
+template <class HB>
 class Runner
 {
     enum : ushort { MAX_HEIGHT = 100 };
@@ -21,16 +26,18 @@ class Runner
     const std::string _name;
     const uint _x, _y;
     const double _totalTime, _eachTime;
+    const ActivesPortionCounter<HB> *_apCounter;
     VolumeSaver *_volumeSaver = nullptr;
+    Detector *_detector = nullptr;
 
 public:
     static void stop();
 
-    Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr);
+    Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr, const char *detector = nullptr);
     ~Runner();
 
-    template <class SurfaceCrystalType, class Handbook>
-    void calculate(const ActivesPortionCounter *apCounter, const Detector *detector, const std::initializer_list<ushort> &types);
+    template <class SurfaceCrystalType>
+    void calculate(const std::initializer_list<ushort> &types);
 
 private:
     Runner(const Runner &) = delete;
@@ -38,8 +45,8 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
-    template <class Handbook, class Lambda>
-    void eachAtom(Crystal *crystal, const Lambda &lambda) const;
+    template <class Lambda>
+    void visitAtoms(Crystal *crystal, const Lambda &lambda) const;
 
     std::string filename() const;
     double timestamp() const;
@@ -49,8 +56,94 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class SCT, class HB>
-void Runner::calculate(const ActivesPortionCounter *apCounter, const Detector *detector, const std::initializer_list<ushort> &types)
+template <class HB>
+volatile bool Runner<HB>::__stopCalculating = false;
+
+template <class HB>
+void Runner<HB>::stop()
+{
+    __stopCalculating = true;
+}
+
+template <class HB>
+Runner<HB>::Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType, const char *detector) :
+    _name(name), _x(x), _y(y), _totalTime(totalTime), _eachTime(eachTime)
+{
+    if (_name.size() == 0)
+    {
+        throw Error("Name should not be empty");
+    }
+    else if (x == 0 || y == 0)
+    {
+        throw Error("X and Y sizes should be grater than 0");
+    }
+    else if (_totalTime <= 0)
+    {
+        throw Error("Total process time should be grater than 0 seconds");
+    }
+    else if (_eachTime <= 0)
+    {
+        throw Error("Each time value should be grater than 0 seconds");
+    }
+
+    if (volumeSaverType)
+    {
+        VolumeSaverFactory vsFactory;
+        if (!vsFactory.isRegistered(volumeSaverType))
+        {
+            throw Error("Undefined type of volume file saver");
+        }
+
+        _volumeSaver = vsFactory.create(volumeSaverType, filename().c_str());
+    }
+
+    if (detector)
+    {
+        DetectorFactory<HB> detFactory;
+        if (!detFactory.isRegistered(detector))
+        {
+            throw Error("Undefined type of detector");
+        }
+
+        _detector = detFactory.create(detector);
+    }
+}
+template <class HB>
+Runner<HB>::~Runner()
+{
+    delete _volumeSaver;
+    delete _detector;
+}
+
+template <class HB>
+std::string Runner<HB>::filename() const
+{
+    std::stringstream ss;
+    ss << _name << "-" << _x << "x" << _y << "-" << _totalTime << "s";
+    return ss.str();
+}
+
+template <class HB>
+double Runner<HB>::timestamp() const
+{
+    timeval tv;
+    gettimeofday(&tv, 0);
+    return tv.tv_sec + tv.tv_usec / 1e6;
+}
+
+template <class HB>
+void Runner<HB>::outputMemoryUsage(std::ostream &os) const
+{
+    double vm, rss;
+    process_mem_usage(vm, rss);
+    os.precision(5);
+    os << "Used virtual memory: " << (vm / 1024) << " MB\n"
+       << "Used resident set: " << (rss / 1024) << " MB" << std::endl;
+}
+
+template <class HB>
+template <class SCT>
+void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
     CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
@@ -62,10 +155,10 @@ void Runner::calculate(const ActivesPortionCounter *apCounter, const Detector *d
 
 // -------------------------------------------------------------------------------- //
 
-    auto outLambda = [this, surfaceCrystal, apCounter]() {
+    auto outLambda = [this, surfaceCrystal]() {
         double activesRatio = 0;
-        eachAtom<HB>(surfaceCrystal, [&activesRatio, apCounter](Atom *firstAtom) {
-            activesRatio = apCounter->countFrom(firstAtom);
+        visitAtoms(surfaceCrystal, [this, &activesRatio](Atom *firstAtom) {
+            activesRatio = _apCounter->countFrom(firstAtom);
         });
 
         std::cout.width(10);
@@ -86,13 +179,13 @@ void Runner::calculate(const ActivesPortionCounter *apCounter, const Detector *d
     double timeCounter = 0;
     uint volumeSaveCounter = 0;
 
-    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver, detector](bool forseSaveVolume) {
+    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
         csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
 
         if (_volumeSaver && (volumeSaveCounter == 0 || forseSaveVolume))
         {
-            eachAtom<HB>(surfaceCrystal, [this, detector](Atom *firstAtom) {
-                _volumeSaver->writeFrom(firstAtom, HB::mc().totalTime(), detector);
+            visitAtoms(surfaceCrystal, [this](Atom *firstAtom) {
+                _volumeSaver->writeFrom(firstAtom, HB::mc().totalTime(), _detector);
             });
         }
 
@@ -101,6 +194,8 @@ void Runner::calculate(const ActivesPortionCounter *apCounter, const Detector *d
             volumeSaveCounter = 0;
         }
     };
+
+    RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
 
     CommonMCData mcData;
     HB::mc().initCounter(&mcData);
@@ -173,8 +268,9 @@ void Runner::calculate(const ActivesPortionCounter *apCounter, const Detector *d
     delete surfaceCrystal;
 }
 
-template <class HB, class L>
-void Runner::eachAtom(Crystal *crystal, const L &lambda) const
+template <class HB>
+template <class L>
+void Runner<HB>::visitAtoms(Crystal *crystal, const L &lambda) const
 {
     HB::amorph().setUnvisited();
     crystal->setUnvisited();
