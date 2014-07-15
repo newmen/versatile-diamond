@@ -49,8 +49,8 @@ template <class HB>
 ActivesPortionCounter<HB>::HydroActs ActivesPortionCounter<HB>::recursiveCount(Atom *atom) const
 {
     HydroActs result;
-    result.actives += HB::__activesOnAtoms[atom->type()];
-    result.hydrogens += HB::__hOnAtoms[atom->type()];
+    result.actives += HB::activiesFor(atom);
+    result.hydrogens += HB::hydrogensFor(atom);
 
     atom->setVisited();
     atom->eachNeighbour([this, &result, atom](Atom *nbr) {

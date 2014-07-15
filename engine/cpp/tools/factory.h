@@ -7,7 +7,7 @@
 namespace vd
 {
 
-// Factory create objects of abstakt type AbstractType by key type KeyType.
+// Factory create objects of AbstractType by key type KeyType.
 // Constructors of all types should have a signature corresponding to CreatingArgs.
 template
 <
@@ -44,9 +44,9 @@ public:
 
     // Associates the key with some type.
     template <class NewType> void registerNewType(const KeyType &id);
-    // Check whether this object is registered.
+    // Checks whether this object is registered.
     bool isRegistered(const KeyType &id) const;
-    // Create object.
+    // Creates object.
     AbstractType *create(const KeyType &id, CreatingArgs... args) const;
 
 private:
