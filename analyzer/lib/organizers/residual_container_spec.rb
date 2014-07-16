@@ -13,6 +13,12 @@ module VersatileDiamond
         raise 'Residual already set' if @rest
         @rest = rest
       end
+
+      # Gets the target of current specie. It is self specie or residual if it exists
+      # @return [DependentWrappedSpec | SpecResidual] the target of current specie
+      def target
+        rest || self
+      end
     end
 
   end

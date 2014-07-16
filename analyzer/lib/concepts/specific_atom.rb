@@ -23,7 +23,7 @@ module VersatileDiamond
       class AlreadyUnfixed; end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
-        :original_same?, :reference?, :spec
+        :original_same?, :reference?
 
       attr_reader :monovalents
 

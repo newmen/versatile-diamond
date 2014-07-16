@@ -21,13 +21,12 @@ module VersatileDiamond
         # @param [Hash] second links that search will be carried out
         # @option [Boolean] :collaps_multi_bond set to true if need separated
         #   instances for double or triple bonds
-        # @option [Symbol] :method name for get the links of compared species
         # @yeild [Graph, Graph, Concepts::Atom, Concepts::Atom] if presented compares
         #   two atoms of comparable species
         # @raise [RuntimeError] if some of separated multi-bonds is invalid
         # @return [Array] the array of all possible intersections
-        def intersec(first, second, **opts, &ver_comp_block)
-          smb = opts[:collaps_multi_bond] || false
+        def intersec(first, second, collaps_multi_bond: false, &ver_comp_block)
+          smb = collaps_multi_bond
 
           @@_intersec_cache ||= {}
           key = [first, second, smb, ver_comp_block]

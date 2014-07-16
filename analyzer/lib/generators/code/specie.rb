@@ -13,7 +13,7 @@ module VersatileDiamond
         include PolynameClass
         include EnumerableOutFile # should be after PolynameClass
 
-        attr_reader :spec, :anchors
+        attr_reader :spec
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -22,6 +22,7 @@ module VersatileDiamond
         def initialize(generator, spec)
           super(generator)
           @spec = spec
+          @sequence = AtomSequence.new(spec)
           @_class_name, @_enum_name, @_used_iterators = nil
         end
 
@@ -51,7 +52,7 @@ module VersatileDiamond
         # current specie. Should be called from generator after than all specie class
         # renderers will be created.
         def find_self_symmetrics!
-          @symmetrics = AtomSequence.new(spec, target).find_symmetrics
+          @symmetrics = @sequence.find_symmetrics
         end
 
         # Is symmetric specie? If children species uses same as own atom and it atom
@@ -60,19 +61,6 @@ module VersatileDiamond
         # @return [Boolean] is symmetric specie or not
         def symmetric?
           !@symmetrics.empty?
-        end
-
-        def target
-          spec.rest || spec
-        end
-
-        # Gets number of sceleton atoms used in specie and different from atoms of
-        # parent specie
-        #
-        # @return [Integer] the number of atoms
-        # TODO: must be private
-        def atoms_num
-          target.links.size
         end
 
         [
@@ -92,6 +80,15 @@ module VersatileDiamond
             addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
             instance_variable_set(var_name, "#{m[1].send(method)}#{addition}")
           end
+        end
+
+        # Gets number of sceleton atoms used in specie and different from atoms of
+        # parent specie
+        #
+        # @return [Integer] the number of atoms
+        # TODO: must be private
+        def atoms_num
+          spec.target.links.size
         end
 
       private
