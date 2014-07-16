@@ -26,19 +26,13 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like :minuend do
-        subject { dept_bridge_base }
-      end
-
-      describe '#rest' do
-        it { expect(dept_bridge_base.rest).to be_nil }
-      end
-
-      describe '#store_rest' do
+      describe 'residual behavior' do
         subject { dept_methyl_on_bridge_base }
-        let(:rest) { subject - dept_bridge_base }
-        before { subject.store_rest(rest) }
-        it { expect(subject.rest).to eq(rest) }
+
+        it_behaves_like :minuend
+        it_behaves_like :residual_container do
+          let(:subtrahend) { dept_bridge_base }
+        end
       end
 
       describe '#size' do

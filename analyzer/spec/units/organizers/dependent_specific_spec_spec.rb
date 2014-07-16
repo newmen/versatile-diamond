@@ -21,19 +21,12 @@ module VersatileDiamond
         end
       end
 
-      subject { dept_activated_dimer }
-
-      describe '#rest' do
-        it { expect(subject.rest).to be_nil }
-      end
-
-      describe '#store_rest' do
+      it_behaves_like :residual_container do
         subject { dept_activated_methyl_on_bridge }
-        let(:parent) { dept_methyl_on_bridge }
-        let(:rest) { subject - parent }
-        before { subject.store_rest(rest) }
-        it { expect(subject.rest).to eq(rest) }
+        let(:subtrahend) { dept_methyl_on_bridge }
       end
+
+      subject { dept_activated_dimer }
 
       describe '#reduced' do
         it { expect(subject.reduced).to be_nil }

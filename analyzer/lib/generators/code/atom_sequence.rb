@@ -8,12 +8,8 @@ module VersatileDiamond
         # Makes sequence from some specie
         # @param [Organizers::DependentSpec] spec the atom sequence for which will
         #   be calculated
-        # @param [Organizers::DependentSpec | Organizers::SpecResidual] target by
-        #   which atom sequence will be gotten
-        def initialize(spec, target)
+        def initialize(spec)
           @spec = spec
-          @target = target
-
           @_atoms_delta, @_atoms_sequence = nil
         end
 
@@ -139,8 +135,8 @@ binding.pry
         def intersec_with(child)
           args = [@spec, child, { collaps_multi_bond: true }]
           insec = SpeciesComparator.intersec(*args) do |_, _, self_atom, child_atom|
-            self_prop = Organizers::AtomProperties(@spec, self_atom)
-            child_prop = Organizers::AtomProperties(child, child_atom)
+            self_prop = Organizers::AtomProperties.new(@spec, self_atom)
+            child_prop = Organizers::AtomProperties.new(child, child_atom)
             self_prop.contained_in?(child_prop)
           end
           insec.map { |ins| Hash[ins.to_a] }

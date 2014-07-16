@@ -87,8 +87,8 @@ module VersatileDiamond
       # and values is number of atoms in spec with same properties
       #
       # @param [DependentSpec | SpecResidual] spec the analyzing spec
-      # @option [DependentBaseSpec | DependentSpecificSpec] :without do not classify
-      #   atoms like as from passed spec (not using when spec is termination spec)
+      # @option [DependentWrappedSpec] :without do not classify atoms like as from
+      #   passed spec (not using when spec is termination spec)
       # @return [Hash] result of classification
       def classify(spec)
         if spec.is_a?(DependentTermination)
@@ -100,7 +100,7 @@ module VersatileDiamond
             hash[index] = [image, spec.terminations_num(prop)]
           end
         else
-          target = spec.rest || spec
+          target = spec.target
           atoms = target.links.keys
 
           atoms.each_with_object({}) do |atom, hash|
