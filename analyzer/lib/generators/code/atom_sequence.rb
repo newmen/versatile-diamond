@@ -8,28 +8,35 @@ module VersatileDiamond
       class AtomSequence
 
         # Makes sequence from some specie
+        # @param [SequenceCacher] cacher will be used for get anoter atom sequence
+        #   instances
         # @param [Organizers::DependentSpec] spec the atom sequence for which will
         #   be calculated
-        def initialize(spec)
+        def initialize(cacher, spec)
+          @cacher = cacher
           @spec = spec
+          @_original_sequence = nil
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
         # @return [Array] the original sequence of atoms of current specie
         def original
+          return @_original_sequence if @_original_sequence
+
           rest = spec.rest
-          if spec.rest
-            back_twins = anchors.map { |atom| [rest.twin(atom), atom] }
-            spec.parents.reduce(addition_atoms) do |acc, parent|
-              acc + wrap(parent).original.map do |parent_atom|
-                pair = back_twins.delete_one { |a, _| parent_atom == a }
-                own_atom = pair && pair.last
-                own_atom || parent_atom
+          @_original_sequence =
+            if spec.rest
+              back_twins = anchors.map { |atom| [rest.twin(atom), atom] }
+              spec.parents.reduce(addition_atoms) do |acc, parent|
+                acc + get(parent).original.map do |parent_atom|
+                  pair = back_twins.delete_one { |a, _| parent_atom == a }
+                  own_atom = pair && pair.last
+                  own_atom || parent_atom
+                end
               end
+            else
+              sort_atoms(anchors)
             end
-          else
-            sort_atoms(anchors)
-          end
         end
 
         # Gets short sequence of atoms. The atoms belongs to spec residual
@@ -106,13 +113,13 @@ module VersatileDiamond
 
       private
 
-        attr_reader :spec
+        attr_reader :spec, :cacher
 
         # Wraps dependent spec to atom sequence instance
         # @param [Organizers::DependentWrappedSpec] spec which will be wrapped
         # @return [AtomSequence] the instance with passed specie
-        def wrap(spec)
-          self.class.new(spec)
+        def get(spec)
+          cacher.get(spec)
         end
 
         # Reverse sorts the atoms by number of their relations
