@@ -17,12 +17,13 @@ module VersatileDiamond
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
+        # @param [SequencesCacher] seq_cacher used for get sequence instance
         # @param [Organizers::DependentSpec] spec source file for which will be
         #   generated
-        def initialize(generator, spec)
+        def initialize(generator, seq_cacher, spec)
           super(generator)
           @spec = spec
-          @sequence = AtomSequence.new(spec)
+          @sequence = seq_cacher.get(spec)
           @_class_name, @_enum_name, @_used_iterators = nil
         end
 

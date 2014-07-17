@@ -14,18 +14,19 @@ module VersatileDiamond
 
           before { analysis_results }
 
-          let(:seq_spec) { described_class.new(subject) }
+          let(:cache) { SequencesCacher.new }
+          let(:sequence) { cache.get(subject) }
 
           it '#original' do
-            expect(seq_spec.original).to eq(original)
+            expect(sequence.original).to eq(original)
           end
 
           it '#short' do
-            expect(seq_spec.short).to eq(short)
+            expect(sequence.short).to eq(short)
           end
 
           it '#delta' do
-            expect(seq_spec.delta).to eq(delta)
+            expect(sequence.delta).to eq(delta)
           end
         end
 

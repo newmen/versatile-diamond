@@ -11,6 +11,8 @@ module VersatileDiamond
         super(analysis_result)
         @out_path = out_path
 
+        @sequences_cacher = SequencesCacher.new
+
         @_dependent_species = nil
         @species = collect_code_species
         @lattices = collect_code_lattices
@@ -121,7 +123,7 @@ module VersatileDiamond
       # @return [Hash] the mirror of specs names to spec code generator instances
       def collect_code_species
         collect_dependent_species.each.with_object({}) do |(name, spec), hash|
-          hash[name] = Code::Specie.new(self, spec)
+          hash[name] = Code::Specie.new(self, @sequences_cacher, spec)
         end
       end
 
