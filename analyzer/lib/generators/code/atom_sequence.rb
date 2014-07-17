@@ -27,7 +27,8 @@ module VersatileDiamond
           @_original_sequence =
             if spec.rest
               back_twins = anchors.map { |atom| [rest.twin(atom), atom] }
-              spec.parents.reduce(addition_atoms) do |acc, parent|
+              sorted_parents = spec.parents.sort_by { |p| -p.size }
+              sorted_parents.reduce(addition_atoms) do |acc, parent|
                 acc + get(parent).original.map do |parent_atom|
                   pair = back_twins.delete_one { |a, _| parent_atom == a }
                   own_atom = pair && pair.last
@@ -39,7 +40,7 @@ module VersatileDiamond
             end
         end
 
-        # Gets short sequence of atoms. The atoms belongs to spec residual
+        # Gets short sequence of anchors
         # @return [Array] the short sequence of different atoms
         def short
           sort_atoms(anchors)
@@ -84,10 +85,10 @@ module VersatileDiamond
         # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
         #   atom for which index will be got from original sequence
         # @return [Integer] the index of atom in original sequence
+        # TODO: rspec
         def atom_index(atom)
           original.index(atom)
         end
-
 
       protected
 
@@ -135,7 +136,10 @@ module VersatileDiamond
             elsif b.lattice && !a.lattice
               1
             else
-              spec.links[a].size <=> spec.links[b].size
+              a_size, b_size = spec.spec.links[a].size, spec.spec.links[b].size
+              a_size == b_size ?
+                spec.links[a].size <=> spec.links[b].size :
+                b_size <=> a_size
             end
           end
         end
