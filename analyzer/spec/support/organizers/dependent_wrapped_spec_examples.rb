@@ -4,16 +4,6 @@ module VersatileDiamond
 
       module DependentWrappedSpecExamples
         shared_examples_for :wrapped_spec do
-          describe '#parents?' do
-            it { expect(parent.parents?).to be_falsey }
-
-            describe 'with parent' do
-              let(:super_parent) { dept_bridge_base_dup }
-              before { parent.store_parent(parent) }
-              it { expect(parent.parents?).to be_truthy }
-            end
-          end
-
           describe '#non_term_children' do
             before do
               parent.store_child(dept_active_bond)
