@@ -62,7 +62,6 @@ module VersatileDiamond
               bridge_base.atom(:cr),
             ]
           end
-
           let(:short) do
             [
               dimer_base.atom(:cr),
@@ -89,6 +88,31 @@ module VersatileDiamond
             [
               methyl_on_bridge_base.atom(:cb),
               methyl_on_bridge_base.atom(:cm),
+            ]
+          end
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_methyl_on_dimer_base }
+          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:specifics) { [dept_activated_methyl_on_dimer] }
+
+          let(:delta) { 0 }
+          let(:original) do
+            [
+              methyl_on_dimer_base.atom(:cm),
+              methyl_on_dimer_base.atom(:cr),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+              methyl_on_dimer_base.atom(:cl),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+            ]
+          end
+          let(:short) do
+            [
+              methyl_on_dimer_base.atom(:cr),
+              methyl_on_dimer_base.atom(:cl),
             ]
           end
         end
