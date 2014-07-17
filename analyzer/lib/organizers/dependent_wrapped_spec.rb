@@ -18,12 +18,6 @@ module VersatileDiamond
         @links = straighten_graph(spec.links)
       end
 
-      # Checks that parents presents
-      # @return [Boolean] are presented or not
-      def parents?
-        !parents.empty?
-      end
-
       # Gets the children specie classes
       # @return [Array] the array of children specie class generators
       def non_term_children

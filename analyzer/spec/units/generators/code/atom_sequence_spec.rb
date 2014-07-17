@@ -17,15 +17,15 @@ module VersatileDiamond
           let(:seq_spec) { described_class.new(subject) }
 
           it '#original' do
-            expect(seq_spec.original).to eq(sequence)
+            expect(seq_spec.original).to eq(original)
+          end
+
+          it '#short' do
+            expect(seq_spec.short).to eq(short)
           end
 
           it '#delta' do
             expect(seq_spec.delta).to eq(delta)
-          end
-
-          it '#addition_atoms' do
-            expect(seq_spec.addition_atoms).to eq(additions)
           end
         end
 
@@ -34,15 +34,15 @@ module VersatileDiamond
           let(:bases) { [dept_dimer_base, dept_methyl_on_bridge_base] }
           let(:specifics) { [dept_activated_bridge] }
 
-          let(:additions) { [] }
           let(:delta) { 0 }
-          let(:sequence) do
+          let(:original) do
             [
               bridge_base.atom(:ct),
               bridge_base.atom(:cl),
               bridge_base.atom(:cr),
             ]
           end
+          let(:short) { original }
         end
 
         it_behaves_like :apply_all do
@@ -50,12 +50,44 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base] }
           let(:specifics) { [dept_activated_dimer] }
 
-          let(:additions) { [] }
           let(:delta) { 0 }
-          let(:sequence) do
+          let(:original) do
             [
-              dimer.atom(:cl),
-              dimer.atom(:cr),
+              dimer_base.atom(:cr),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+              dimer_base.atom(:cl),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+            ]
+          end
+
+          let(:short) do
+            [
+              dimer_base.atom(:cr),
+              dimer_base.atom(:cl),
+            ]
+          end
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_methyl_on_bridge_base }
+          let(:bases) { [dept_bridge_base] }
+          let(:specifics) { [dept_activated_methyl_on_bridge] }
+
+          let(:delta) { 1 }
+          let(:original) do
+            [
+              methyl_on_bridge_base.atom(:cm),
+              methyl_on_bridge_base.atom(:cb),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+            ]
+          end
+          let(:short) do
+            [
+              methyl_on_bridge_base.atom(:cb),
+              methyl_on_bridge_base.atom(:cm),
             ]
           end
         end

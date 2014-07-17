@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
 
@@ -10,20 +12,30 @@ module VersatileDiamond
         #   be calculated
         def initialize(spec)
           @spec = spec
-          @_delta, @_sequence, @_additions = nil
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
         # @return [Array] the original sequence of atoms of current specie
         def original
-          @_sequence ||=
-            if spec.parents?
-              spec.parents.reduce(addition_atoms) do |acc, parent|
-                acc + wrap(parent).original
+          rest = spec.rest
+          if spec.rest
+            back_twins = anchors.map { |atom| [rest.twin(atom), atom] }
+            spec.parents.reduce(addition_atoms) do |acc, parent|
+              acc + wrap(parent).original.map do |parent_atom|
+                pair = back_twins.delete_one { |a, _| parent_atom == a }
+                own_atom = pair && pair.last
+                own_atom || parent_atom
               end
-            else
-              sort_atoms(anchors)
             end
+          else
+            sort_atoms(anchors)
+          end
+        end
+
+        # Gets short sequence of atoms. The atoms belongs to spec residual
+        # @return [Array] the short sequence of different atoms
+        def short
+          sort_atoms(anchors)
         end
 
         # Counts delta between atoms num of current specie and sum of atoms num of
@@ -31,27 +43,7 @@ module VersatileDiamond
         #
         # @return [Integer] the delta between atoms nums
         def delta
-          @_delta ||=
-            if spec.parents?
-              plss = spec.parents.map(&:links).map(&:size).reduce(:+)
-              spec.links.size - plss
-            else
-              0
-            end
-        end
-
-        # Detects additional atoms which are not presented in parent species
-        # @return [Array] the array of additional atoms
-        def addition_atoms
-          @_additions ||=
-            if spec.parents?
-              adds = spec.parents.reduce(anchors) do |acc, parent|
-                acc - wrap(parent).anchors
-              end
-              sort_atoms(adds)
-            else
-              []
-            end
+          addition_atoms.size
         end
 
         # Finds symmetrics of internal specie by children of them
@@ -127,7 +119,30 @@ module VersatileDiamond
         # @param [Array] atoms the array of sorting atoms
         # @return [Array] sorted array of atoms
         def sort_atoms(atoms)
-          atoms.sort_by { |pr| spec.links[pr].size }
+          atoms.sort do |a, b|
+            # a < b => -1
+            # a == b => 0
+            # a > b => 1
+            if a.lattice && !b.lattice
+              -1
+            elsif b.lattice && !a.lattice
+              1
+            else
+              spec.links[a].size <=> spec.links[b].size
+            end
+          end
+        end
+
+        # Detects additional atoms which are not presented in parent species
+        # @return [Array] the array of additional atoms
+        def addition_atoms
+          rest = spec.rest
+          if rest
+            adds = anchors.reject { |atom| rest.twin(atom) }
+            sort_atoms(adds)
+          else
+            []
+          end
         end
 
         #
