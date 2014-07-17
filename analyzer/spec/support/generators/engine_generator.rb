@@ -6,6 +6,22 @@ module VersatileDiamond
       module EngineGenerator
         include Organizers::SpeciesOrganizer
 
+        # Stubs analysis results and allow to call methods with same names as keys of
+        # passed hash
+        #
+        # @param [Hash] depts see at #stub_generator same argument
+        # @return [RSpec::Mocks::Double] same as original analysis results
+        def stub_results(depts)
+          results = double('analysis_results')
+          default_depts.merge(depts).each do |method_name, list|
+            allow(results).to receive(method_name).and_return(list)
+          end
+
+          depts.each { |method_name, _| send(:"organize_#{method_name}", results) }
+
+          results
+        end
+
         # Iterates all dependents, analyse them, stub generator by omitted analysis
         # results and get it
         #
@@ -13,14 +29,7 @@ module VersatileDiamond
         #   and values are arrays of wrapping concepts
         # @return [EngineCode] the engine code generator
         def stub_generator(depts)
-          res = double('analysis_results')
-          default_depts.merge(depts).each do |method_name, list|
-            allow(res).to receive(method_name).and_return(list)
-          end
-
-          depts.each { |method_name, _| send(:"organize_#{method_name}", res) }
-
-          EngineCode.new(res, '/tmp')
+          EngineCode.new(stub_results(depts), '/tmp')
         end
 
       private

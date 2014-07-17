@@ -38,20 +38,32 @@ module VersatileDiamond
       # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
       # @return [SpecResidual] the residual of diference between arguments or nil if
       #   it doesn't exist
-      def - (other)
+      def - (other, prev_refs = {})
         mirror = mirror_to(other)
         return nil if mirror.empty? || other.links.size != mirror.size
 
-        result = {}
+        residuals = {}
+        references = {}
         pairs_from(mirror).each do |own_atom, other_atom|
-          if !other_atom || different_bonds?(other, own_atom, other_atom) ||
+          unless other_atom
+            residuals[own_atom] = links[own_atom] # <-- same as bottom
+            next
+          end
+
+          is_diff = different_bonds?(other, own_atom, other_atom) ||
             used?(mirror.keys, own_atom)
 
-            result[own_atom] = links[own_atom]
+          if is_diff
+            residuals[own_atom] = links[own_atom] # <-- same as top
+
+            if other_atom
+              references[own_atom] = other_atom
+            end
           end
+
         end
 
-        SpecResidual.new(result)
+        SpecResidual.new(residuals, references.merge(prev_refs))
       end
 
     protected

@@ -9,7 +9,7 @@ module VersatileDiamond
         # Gets empty residual instance
         # @return [SpecResidual] the empty residual instance
         def empty
-          new({})
+          new({}, {})
         end
       end
 
@@ -17,8 +17,28 @@ module VersatileDiamond
 
       # Initialize residual by hash of links and residual border atoms
       # @param [Hash] links the links between some atoms
-      def initialize(links)
+      # @param [hash] references to atoms of parent species
+      def initialize(links, references)
         @links = links
+        @references = references
+      end
+
+      # Pass to super method current references for accumulate them all in minimal
+      # residual
+      #
+      # @param [DependentBaseSpec | DependentSpecificSpec] other see at #super same arg
+      # @override
+      def - (other)
+        super(other, @references)
+      end
+
+      # Gets instance of twin atom from parent spec
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] atom
+      #   the atom of current instance for which twin was found
+      # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   the correspond atom from parent specie
+      def twin(atom)
+        @references[atom]
       end
 
       # Checks that other spec has same border atoms and links between them

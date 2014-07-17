@@ -102,15 +102,13 @@ module VersatileDiamond
         # Gets the parent specie classes
         # @return [Array] the array of parent specie class generators
         def parents
-          prs = spec.is_a?(Organizers::DependentBaseSpec) ?
-            spec.parents : (spec.parent ? [spec.parent] : [])
-          prs.map(&method(:specie_class))
+          spec.parents.map(&method(:specie_class))
         end
 
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
-          spec.children.uniq.reject(&:termination?).map(&method(:specie_class))
+          spec.non_term_children.map(&method(:specie_class))
         end
 
         # Checks that specie have children
@@ -153,7 +151,7 @@ module VersatileDiamond
         # @return [String] the wrapped or not base engine class name
         def wrapped_engine_class_name
           base_class = base_engine_class_name
-          delta = atoms_delta
+          delta = @sequence.delta
           delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
         end
 

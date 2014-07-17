@@ -34,6 +34,12 @@ module VersatileDiamond
         !specific_atoms.empty?
       end
 
+      # Provides compatibility with dependent base spec
+      # @return [Array] the array with one item which is current parent if it presented
+      def parents
+        parent ? [parent] : []
+      end
+
       # Sets the parent of spec and store self to it parent
       # @param [DependentBaseSpec | DependentSpecificSpec] parent the real parent of
       #   current spec

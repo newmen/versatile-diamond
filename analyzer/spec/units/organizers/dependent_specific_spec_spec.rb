@@ -9,6 +9,7 @@ module VersatileDiamond
         let(:child) { dept_activated_dimer }
 
         it_behaves_like :multi_children
+        it_behaves_like :wrapped_spec
 
         describe '#remove_child' do
           before do
@@ -59,6 +60,15 @@ module VersatileDiamond
 
       describe '#parent' do
         it { expect(subject.parent).to be_nil }
+      end
+
+      describe '#parents' do
+        it { expect(subject.parents).to be_empty }
+
+        describe 'parent presented' do
+          before { subject.store_parent(dept_dimer) }
+          it { expect(subject.parents).to eq([dept_dimer]) }
+        end
       end
 
       describe 'parent operations' do

@@ -10,25 +10,63 @@ module VersatileDiamond
         #   be calculated
         def initialize(spec)
           @spec = spec
-          @_atoms_delta, @_atoms_sequence = nil
+          @_delta, @_sequence, @_additions = nil
+        end
+
+        # Makes original sequence of atoms which will be used for get an atom index
+        # @return [Array] the original sequence of atoms of current specie
+        def original
+          @_sequence ||=
+            if spec.parents?
+              spec.parents.reduce(addition_atoms) do |acc, parent|
+                acc + wrap(parent).original
+              end
+            else
+              sort_atoms(anchors)
+            end
+        end
+
+        # Counts delta between atoms num of current specie and sum of atoms num of
+        # all parents
+        #
+        # @return [Integer] the delta between atoms nums
+        def delta
+          @_delta ||=
+            if spec.parents?
+              plss = spec.parents.map(&:links).map(&:size).reduce(:+)
+              spec.links.size - plss
+            else
+              0
+            end
+        end
+
+        # Detects additional atoms which are not presented in parent species
+        # @return [Array] the array of additional atoms
+        def addition_atoms
+          @_additions ||=
+            if spec.parents?
+              adds = spec.parents.reduce(anchors) do |acc, parent|
+                acc - wrap(parent).anchors
+              end
+              sort_atoms(adds)
+            else
+              []
+            end
         end
 
         # Finds symmetrics of internal specie by children of them
         def find_symmetrics
           symmetrics = Set.new
-          @spec.children.each do |child|
+          spec.non_term_children.each do |child|
             intersec = intersec_with(child)
-binding.pry
 
             # intersec must be found in any case
             unless intersec.first.size == @spec.links.size
               raise "Correct intersec wasn't found"
             end
 
-            filtered_intersec = child.filter_intersections(intersec)
+            filtered_intersec = filter_intersections(child, intersec)
             next if filtered_intersec.size == 1
-
-            binding.pry if spec.name == :bridge
 
             major_intersec = filtered_intersec.shift
             reset_all_props(major_intersec.map(&:first))
@@ -43,81 +81,57 @@ binding.pry
           symmetrics.to_a
         end
 
-# FROM HERE <<<<<<<<<<<<<<<<<<<<<<<<<
-
-        # Detects additional atoms which are not presented in parent species
-        # @return [Array] the array of additional atoms
-        def addition_atoms
-          adds = parents.reduce(@all_props) do |acc, parent|
-            acc - parent.atoms_sequence
-          end
-          sort_atoms(adds)
-        end
-
-        # Makes general sequence of atoms which will be used for get an atom index
-        # @return [Array] the general sequence of atoms of current specie
-        def atoms_sequence
-          @_atoms_sequence ||=
-            if parents.size == 0
-              sort_atoms(@all_props)
-            else
-              result = atoms_delta > 0 ? addition_atoms : []
-              parents.reduce(result) { |acc, parent| acc + parent.atoms_sequence }
-            end
-        end
-
         # Gets an index of some atom
         # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-        #   atom for which index will be got from general sequence
-        # @return [Integer] the index of atom in general sequence
+        #   atom for which index will be got from original sequence
+        # @return [Integer] the index of atom in original sequence
         def atom_index(atom)
-          atoms_sequence.index(atom)
+          original.index(atom)
         end
 
-# TO HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
       protected
 
-        # Filters intersections with parent specie. Checks that anchors points to
-        # different atoms of parent specie.
-        #
-        # @param [Array] intersec the array of intersections with parent specie
-        # @return [Array] the array of filtered intersections
-        def filter_intersections(intersec)
-          result = []
-          collector = Set.new # stores unique pairs of anchors from intersec
-          intersec.each do |insec|
-            mirror = insec.invert
-            new_collection = Set.new
+        # Gets anchors of internal specie
+        # @return [Array] the array of anchor atoms
+        def anchors
+          spec.target.links.keys
+        end
 
-            anchors.each do |atom|
-              parent_atom = mirror[atom]
-              unless new_collection.include?(parent_atom)
-                new_collection << [atom, parent_atom]
-              end
-            end
-
-            unless collector.include?(new_collection)
-              collector << new_collection
-              result << insec
-            end
-          end
-          result
+        # Gets the all atoms of internal specie
+        # @param [Organizers::DependentWrappedSpec] spec the anchors of which will be
+        #   returned
+        # @return [Array] the array of atoms
+        def atoms
+          spec.links.keys
         end
 
         # Resets the internal atom sequence
         def reset_sequence
-          @_atoms_sequence = nil
+          @_sequence = nil
           children.each { |c| c.reset_sequence }
         end
 
       private
 
-        # Remakes the links and exchanges all atoms to correspond atoms
-        # @param [Organizers::DependentBaseSpec | Organizers::DependentSpecificSpec |
-        #   Organizers::SpecResidual] spec links of which will be atomertized
-        # @return [Hash] the links between atoms
-        def atomertize_links(spec)
+        attr_reader :spec
+
+        # Wraps dependent spec to atom sequence instance
+        # @param [Organizers::DependentWrappedSpec] spec which will be wrapped
+        # @return [AtomSequence] the instance with passed specie
+        def wrap(spec)
+          self.class.new(spec)
+        end
+
+        # Reverse sorts the atoms by number of their relations
+        # @param [Array] atoms the array of sorting atoms
+        # @return [Array] sorted array of atoms
+        def sort_atoms(atoms)
+          atoms.sort_by { |pr| spec.links[pr].size }
+        end
+
+        #
+        def propertize_anchors(spec)
           result = spec.links.map do |atom, list|
             atom = Organizers::AtomProperties.new(spec, atom)
             updated_list = list.map do |a, relation|
@@ -142,29 +156,40 @@ binding.pry
           insec.map { |ins| Hash[ins.to_a] }
         end
 
+        # Filters intersections with parent specie. Checks that anchors points to
+        # different atoms of parent specie.
+        #
+        # @param [Organizers::DependentWrappedSpec] child of internal specie
+        # @param [Array] intersec the array of intersections with child specie
+        # @return [Array] the array of filtered intersections
+        def filter_intersections(child, intersec)
+          result = []
+          collector = Set.new # stores unique pairs of anchors from intersec
+          intersec.each do |insec|
+            mirror = insec.invert
+            new_collection = Set.new
+
+            anchors_of(child).each do |atom|
+              parent_atom = mirror[atom]
+              unless new_collection.include?(parent_atom)
+                new_collection << [atom, parent_atom]
+              end
+            end
+
+            unless collector.include?(new_collection)
+              collector << new_collection
+              result << insec
+            end
+          end
+          result
+        end
+
         # Sets the atoms from passed list and drops the internal cache
         # @param [Array] atoms the list of all atoms where new anchors of specie
         #   renderer will be selected
         def reset_all_props(atoms)
           @all_props = propertize(atoms)
           reset_sequence
-        end
-
-        # Reverse sorts the atoms by number of their relations
-        # @param [Array] atoms the array of sorting atoms
-        # @return [Array] sorted array of atoms
-        def sort_atoms(atoms)
-          atoms.sort_by { |pr| -spec_links[pr].size }
-        end
-
-        # Counts delta between atoms num of current specie and sum of atoms num of
-        # all parents
-        #
-        # @return [Integer] the delta between atoms nums
-        def atoms_delta
-          return @_atoms_delta if @_atoms_delta
-          plss = parents.map(&:spec).map(&:links).map(&:size).reduce(:+) || 0
-          @_atoms_delta = spec.links.size - plss
         end
       end
 
