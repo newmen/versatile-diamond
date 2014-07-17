@@ -15,6 +15,43 @@ module VersatileDiamond
 
       describe '#self.empty' do
         it { expect(described_class.empty.links).to be_empty }
+
+      end
+
+      describe '#twin' do
+        shared_examples_for :check_twin do
+          it { expect(part.twin(own_atom)).to eq(parent_atom) }
+        end
+
+        describe 'dimer' do
+          let(:part) { small_dimer_part }
+          let(:parent_atom) { bridge_base.atom(:ct) }
+
+          it_behaves_like :check_twin do
+            let(:own_atom) { dimer_base.atom(:cl) }
+          end
+
+          it_behaves_like :check_twin do
+            let(:own_atom) { dimer_base.atom(:cr) }
+          end
+        end
+
+        describe 'methyl_on_bridge && high_bridge' do
+          %w(methyl_on_bridge high_bridge).each do |name|
+            let(:spec) { send(name.to_sym) }
+            let(:part) { send(:"#{name}_part") }
+
+            it_behaves_like :check_twin do
+              let(:parent_atom) { bridge_base.atom(:ct) }
+              let(:own_atom) { spec.atom(:cb) }
+            end
+
+            it_behaves_like :check_twin do
+              let(:parent_atom) { nil }
+              let(:own_atom) { spec.atom(:cm) }
+            end
+          end
+        end
       end
 
       describe '#same?' do

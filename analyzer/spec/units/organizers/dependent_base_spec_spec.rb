@@ -14,6 +14,7 @@ module VersatileDiamond
 
         it_behaves_like :multi_parents
         it_behaves_like :multi_children
+        it_behaves_like :wrapped_spec
 
         describe '#remove_child' do
           before do
