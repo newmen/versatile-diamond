@@ -301,7 +301,7 @@ HEADERS += \
     tools/savers/bundle_saver.h \
     tools/savers/crystal_slice_saver.h \
     tools/savers/detector.h \
-    tools/savers/detector.h \
+    tools/savers/detector_factory.h \
     tools/savers/format.h \
     tools/savers/many_files.h \
     tools/savers/mol_accumulator.h \
@@ -318,8 +318,7 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h \
-    tools/savers/detector_factory.h
+    tools/yaml_config_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \
