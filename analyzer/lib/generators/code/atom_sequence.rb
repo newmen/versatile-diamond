@@ -23,14 +23,13 @@ module VersatileDiamond
         def original
           return @_original_sequence if @_original_sequence
 
-          rest = spec.rest
           @_original_sequence =
             if spec.rest
-              back_twins = anchors.map { |atom| [rest.twin(atom), atom] }
+              twins = back_twins
               sorted_parents = spec.parents.sort_by { |p| -p.size }
               sorted_parents.reduce(addition_atoms) do |acc, parent|
                 acc + get(parent).original.map do |parent_atom|
-                  pair = back_twins.delete_one { |a, _| parent_atom == a }
+                  pair = twins.delete_one { |a, _| parent_atom == a }
                   own_atom = pair && pair.last
                   own_atom || parent_atom
                 end
@@ -121,6 +120,12 @@ module VersatileDiamond
         # @return [AtomSequence] the instance with passed specie
         def get(spec)
           cacher.get(spec)
+        end
+
+        # Gets the array of twin pairs
+        # @return [Array] the array of twin pairs
+        def back_twins
+          anchors.map { |atom| [spec.rest.twin(atom), atom] }
         end
 
         # Reverse sorts the atoms by number of their relations
