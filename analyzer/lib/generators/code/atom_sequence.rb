@@ -54,30 +54,29 @@ module VersatileDiamond
         end
 
         # Finds symmetrics of internal specie by children of them
-        def find_symmetrics
-          symmetrics = Set.new
+        def symmetrics
+          result = Set.new
           spec.non_term_children.each do |child|
             intersec = intersec_with(child)
 
             # intersec must be found in any case
-            unless intersec.first.size == @spec.links.size
+            unless intersec.first.size == spec.links.size
               raise "Correct intersec wasn't found"
             end
 
             filtered_intersec = filter_intersections(child, intersec)
             next if filtered_intersec.size == 1
 
-            major_intersec = filtered_intersec.shift
-            reset_all_props(major_intersec.map(&:first))
+            filtered_intersec.shift # drops one intersec because it already as original
 
             # TODO: remakes to atom properties
             filtered_intersec.each do |insec|
               proped_sec = insec.map { |pair| propertize(pair, [spec, child.spec]) }
-              symmetrics << proped_sec
+              result << proped_sec
             end
           end
 
-          symmetrics.to_a
+          result.to_a
         end
 
         # Gets an index of some atom
@@ -103,12 +102,6 @@ module VersatileDiamond
         # @return [Array] the array of atoms
         def atoms
           spec.links.keys
-        end
-
-        # Resets the internal atom sequence
-        def reset_sequence
-          @_sequence = nil
-          children.each { |c| c.reset_sequence }
         end
 
       private
@@ -161,18 +154,6 @@ module VersatileDiamond
           end
         end
 
-        #
-        def propertize_anchors(spec)
-          result = spec.links.map do |atom, list|
-            atom = Organizers::AtomProperties.new(spec, atom)
-            updated_list = list.map do |a, relation|
-              [spec.links[a] || make_cap, relation]
-            end
-            [atom, updated_list]
-          end
-          Hash[result]
-        end
-
         # Finds intersec with some another specie
         # @param [Organizers::DependentSpec] child of internal spec with which
         #   intersec will be found
@@ -200,7 +181,7 @@ module VersatileDiamond
             mirror = insec.invert
             new_collection = Set.new
 
-            anchors_of(child).each do |atom|
+            get(child).anchors.each do |atom|
               parent_atom = mirror[atom]
               unless new_collection.include?(parent_atom)
                 new_collection << [atom, parent_atom]
@@ -213,14 +194,6 @@ module VersatileDiamond
             end
           end
           result
-        end
-
-        # Sets the atoms from passed list and drops the internal cache
-        # @param [Array] atoms the list of all atoms where new anchors of specie
-        #   renderer will be selected
-        def reset_all_props(atoms)
-          @all_props = propertize(atoms)
-          reset_sequence
         end
       end
 

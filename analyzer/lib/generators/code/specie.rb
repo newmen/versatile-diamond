@@ -32,7 +32,6 @@ module VersatileDiamond
           if symmetric?
             original = OriginalSpecie.new(@generator, self)
             symmetrics = @symmetrics.map do |indexes_hash|
-
               SymmetricSpecie.new(@generator, original)
             end
 
