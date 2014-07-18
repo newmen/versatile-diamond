@@ -28,7 +28,9 @@ module VersatileDiamond
         # @param [Symbol] method_name which was not found
         # @param [Array] args the arguments of missed method
         def method_missing(method_name, *args)
-          @specie.public_send(method_name, *args)
+          @specie.respond_to?(method_name) ?
+            @specie.public_send(method_name, *args) :
+            super
         end
 
       private
