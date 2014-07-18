@@ -313,7 +313,7 @@ float3 Atom::relativePosition() const
         }
 
         crdsAcc /= counter;
-        crdsAcc.z += 1.7; // because current amorph atom so near to bottom layer
+        crdsAcc.z += 1.56; // because current amorph atom so near to bottom layer
         return crdsAcc;
     }
 }

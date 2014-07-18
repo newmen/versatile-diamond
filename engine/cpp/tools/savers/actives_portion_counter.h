@@ -7,6 +7,7 @@
 namespace vd
 {
 
+template <class HB>
 class ActivesPortionCounter
 {
     struct HydroActs
@@ -14,7 +15,7 @@ class ActivesPortionCounter
         uint actives, hydrogens;
         HydroActs(uint actives = 0, uint hydrogens = 0) : actives(actives), hydrogens(hydrogens) {}
 
-        void adsort(const HydroActs &ha)
+        void adsorb(const HydroActs &ha)
         {
             actives += ha.actives;
             hydrogens += ha.hydrogens;
@@ -32,9 +33,35 @@ private:
     ActivesPortionCounter &operator = (const ActivesPortionCounter &) = delete;
     ActivesPortionCounter &operator = (ActivesPortionCounter &&) = delete;
 
-    bool isBottom(const Atom *atom) const;
     HydroActs recursiveCount(Atom *atom) const;
 };
+
+//////////////////////////////////////////////////////////////////////////////
+
+template <class HB>
+double ActivesPortionCounter<HB>::countFrom(Atom *atom) const
+{
+    HydroActs ha = recursiveCount(atom);
+    return (double)ha.actives / (ha.actives + ha.hydrogens);
+}
+
+template <class HB>
+ActivesPortionCounter<HB>::HydroActs ActivesPortionCounter<HB>::recursiveCount(Atom *atom) const
+{
+    HydroActs result;
+    result.actives += HB::activiesFor(atom);
+    result.hydrogens += HB::hydrogensFor(atom);
+
+    atom->setVisited();
+    atom->eachNeighbour([this, &result, atom](Atom *nbr) {
+        if (!nbr->isVisited())
+        {
+            result.adsorb(recursiveCount(nbr));
+        }
+    });
+
+    return result;
+}
 
 }
 

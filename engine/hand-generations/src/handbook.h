@@ -14,6 +14,7 @@ using namespace vd;
 #include "names.h"
 #include "phases/diamond.h"
 #include "phases/phase_boundary.h"
+#include "atoms/atom.h"
 
 class Handbook
 {
@@ -42,7 +43,10 @@ public:
 
     static Scavenger &scavenger();
 
-    static const ushort __atomsNum;
+    static bool isRegular(const Atom *atom);
+
+    static ushort activiesFor(const Atom *atom);
+    static ushort hydrogensFor(const Atom *atom);
 
 private:
     template <class T> static inline T &selectForThread(T *container);
@@ -50,7 +54,12 @@ private:
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
 
+    static const ushort __regularAtomsTypes[];
+    static const ushort __regularAtomsNum;
+
 public:
+    static const ushort __atomsNum;
+
     static const ushort __hToActives[];
     static const ushort __hOnAtoms[];
     static const ushort __activesOnAtoms[];
@@ -59,6 +68,8 @@ public:
 public:
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
+
+    typedef Diamond SurfaceCrystal;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

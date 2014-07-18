@@ -120,8 +120,6 @@ SOURCES += \
     tools/common.cpp \
     tools/lockable.cpp \
     tools/process_mem_usage.cpp \
-    tools/runner.cpp \
-    tools/savers/actives_portion_counter.cpp \
     tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
     tools/savers/bond_info.cpp \
@@ -303,7 +301,7 @@ HEADERS += \
     tools/savers/bundle_saver.h \
     tools/savers/crystal_slice_saver.h \
     tools/savers/detector.h \
-    tools/savers/detector.h \
+    tools/savers/detector_factory.h \
     tools/savers/format.h \
     tools/savers/many_files.h \
     tools/savers/mol_accumulator.h \

@@ -6,7 +6,7 @@
 
 namespace vd {
 
-template <ushort AT>
+template <class HB>
 class SurfaceDetector : public Detector
 {
 public:
@@ -24,20 +24,20 @@ private:
 
 //////////////////////////////////////////////////////////////////
 
-template<ushort AT>
-bool SurfaceDetector<AT>::isBottom(const Atom *atom) const
+template <class HB>
+bool SurfaceDetector<HB>::isBottom(const Atom *atom) const
 {
-    return atom->is(AT);
+    return HB::isRegular(atom);
 }
 
-template<ushort AT>
-bool SurfaceDetector<AT>::isShown(const Atom *atom) const
+template <class HB>
+bool SurfaceDetector<HB>::isShown(const Atom *atom) const
 {
-    if (!atom->is(AT)) return true;
+    if (!HB::isRegular(atom)) return true;
 
     bool b = true;
-    atom->eachNeighbour([&b](Atom *nbr) {
-        b &= nbr->is(AT);
+    atom->eachNeighbour([&b, atom](Atom *nbr) {
+        b &= HB::isRegular(nbr) & (atom->lattice()->crystal() == nbr->lattice()->crystal()) ;
     });
 
     return !b;
