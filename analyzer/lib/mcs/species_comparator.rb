@@ -28,17 +28,20 @@ module VersatileDiamond
         def intersec(first, second, collaps_multi_bond: false, &ver_comp_block)
           smb = collaps_multi_bond
 
-          @@_intersec_cache ||= {}
-          key = [first, second, smb, ver_comp_block]
-
-          return @@_intersec_cache[key] if @@_intersec_cache[key]
+          unless block_given?
+            @@_intersec_cache ||= {}
+            key = [first, second, smb]
+            return @@_intersec_cache[key] if @@_intersec_cache[key]
+          end
 
           large_graph = Graph.new(first.links, collaps_multi_bond: smb)
           small_graph = Graph.new(second.links, collaps_multi_bond: smb)
           assoc_graph =
             AssocGraph.new(large_graph, small_graph, comparer: ver_comp_block)
 
-          @@_intersec_cache[key] = HanserRecursiveAlgorithm.new(assoc_graph).intersec
+          result = HanserRecursiveAlgorithm.new(assoc_graph).intersec
+          @@_intersec_cache[key] = result unless block_given?
+          result
         end
 
         # Gets first full possible intersec between two species
