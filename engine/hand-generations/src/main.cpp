@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        const char *volumeSaverType = (argc == 7 || argc == 8) ? argv[6] : nullptr;
+        const char *volumeSaverType = (argc >= 7) ? argv[6] : nullptr;
         const char *detectorType = (argc == 8) ? argv[7] : nullptr;
         Runner<Handbook> runner(argv[1], atoi(argv[2]), atoi(argv[3]), atof(argv[4]), atof(argv[5]), volumeSaverType, detectorType);
         run(runner);
