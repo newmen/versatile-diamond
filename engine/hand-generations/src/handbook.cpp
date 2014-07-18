@@ -129,6 +129,32 @@ Scavenger &Handbook::scavenger()
     return selectForThread(__scavengers);
 }
 
+const ushort Handbook::__regularAtomsNum = 1;
+const ushort Handbook::__regularAtomsTypes[Handbook::__regularAtomsNum] = { 24 };
+bool Handbook::isRegular(const Atom *atom)
+{
+    ushort type = atom->type();
+    bool b = false;
+    for (int i = 0; i < __regularAtomsNum; ++i)
+    {
+        b |= type == __regularAtomsTypes[i];
+    }
+
+    return b;
+}
+
+ushort Handbook::activiesFor(const Atom *atom)
+{
+    assert(atom->type() < __atomsNum);
+    return __activesOnAtoms[atom->type()];
+}
+
+ushort Handbook::hydrogensFor(const Atom *atom)
+{
+    assert(atom->type() < __atomsNum);
+    return __hOnAtoms[atom->type()];
+}
+
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
 {
     assert(__atomsNum > complexType);
