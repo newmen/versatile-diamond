@@ -94,20 +94,21 @@ Runner<HB>::Runner(const char *name, uint x, uint y, double totalTime, double ea
         }
 
         _volumeSaver = vsFactory.create(volumeSaverType, filename().c_str());
-
-        if (!detector)
-            detector = "surf";
     }
 
+    DetectorFactory<HB> detFactory;
     if (detector)
     {
-        DetectorFactory<HB> detFactory;
         if (!detFactory.isRegistered(detector))
         {
             throw Error("Undefined type of detector");
         }
 
         _detector = detFactory.create(detector);
+    }
+    else if (volumeSaverType)
+    {
+         _detector = detFactory.create("surf");
     }
 }
 
