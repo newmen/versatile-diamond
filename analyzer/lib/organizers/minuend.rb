@@ -40,7 +40,7 @@ module VersatileDiamond
       #   it doesn't exist
       def - (other, prev_refs = {})
         mirror = mirror_to(other)
-        return nil if mirror.empty? || other.links.size != mirror.size
+        return nil if other.links.size != mirror.size
 
         residuals = {}
         references = {}
@@ -55,12 +55,8 @@ module VersatileDiamond
 
           if is_diff
             residuals[own_atom] = links[own_atom] # <-- same as top
-
-            if other_atom
-              references[own_atom] = other_atom
-            end
+            references[own_atom] = other_atom
           end
-
         end
 
         SpecResidual.new(residuals, references.merge(prev_refs))
