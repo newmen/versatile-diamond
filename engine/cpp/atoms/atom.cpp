@@ -1,4 +1,5 @@
 #include "atom.h"
+#include <algorithm>
 #include "lattice.h"
 
 namespace vd
@@ -100,6 +101,17 @@ Atom *Atom::firstCrystalNeighbour() const
     }
 
     return nullptr;
+}
+
+ushort Atom::crystalNeighboursNum() const
+{
+    ushort result = lattice() ? 1 : 0;
+    for (const Atom *nbr : _relatives)
+    {
+        if (nbr->lattice()) ++result;
+    }
+
+    return result;
 }
 
 void Atom::setLattice(Crystal *crystal, const int3 &coords)
@@ -290,32 +302,99 @@ float3 Atom::relativePosition() const
     }
     else
     {
-        const int3 *crystalCrds = nullptr;
-        uint counter = 0;
-        float3 crdsAcc;
-        for (const Atom *nbr : _relatives)
-        {
-            if (nbr->lattice())
-            {
-                if (!crystalCrds)
-                {
-                    crystalCrds = &nbr->lattice()->coords();
-                }
-                else
-                {
-                    int3 diff = *crystalCrds - nbr->lattice()->coords();
-                    if (!diff.isUnit()) break;
-                }
-            }
+        return correctAmorphPos();
+    }
+}
 
-            crdsAcc += nbr->relativePosition();
-            ++counter;
+float3 Atom::correctAmorphPos() const
+{
+    const float amorphBondLength = 1.7;
+
+    float3 position;
+    auto goodRelatives = anchorRelatives();
+    uint counter = goodRelatives.size();
+
+    for (const Atom *nbr : goodRelatives)
+    {
+        position += nbr->relativePosition(); // should be used realPosition() if correct behavior of additionHeight() for case when counter == 1;
+    }
+
+    if (counter == 1)
+    {
+        // TODO: targets to another atoms of...
+        position.z += amorphBondLength;
+    }
+    else if (counter == 2)
+    {
+        position /= 2;
+
+        const float3 frl = goodRelatives[0]->relativePosition();
+        const float3 srl = goodRelatives[1]->relativePosition();
+
+        double l = frl.length(srl);
+        double halfL = l * 0.5;
+        assert(halfL < amorphBondLength);
+
+        double diffZ = frl.z - srl.z;
+        double smallXY = amorphBondLength * diffZ / l;
+        double angleXY = std::atan((frl.y - srl.y) / (frl.x - srl.x));
+        position.x += smallXY / std::cos(angleXY);
+        position.y += smallXY / std::sin(angleXY);
+
+        double tiltedH = std::sqrt(amorphBondLength * amorphBondLength - halfL * halfL);
+        double angleH = (std::abs(diffZ) < 1e-3) ? std::asin(l / diffZ) : 0;
+        position.z += tiltedH / std::cos(angleH);
+    }
+    else
+    {
+        assert(goodRelatives.size() > 2);
+
+        const float3 &frl = goodRelatives[0]->relativePosition();
+        const float3 &srl = goodRelatives[1]->relativePosition();
+        const float3 &trl = goodRelatives[2]->relativePosition();
+
+        double a = frl.length(srl);
+        double b = frl.length(trl);
+        double c = srl.length(trl);
+        double p = (a + b + c) * 0.5;
+
+        double r = 0.25 * a * b * c / std::sqrt(p * (p - a) * (p - b) * (p - c));
+        assert(r < amorphBondLength);
+
+        double tiltedH = std::sqrt(amorphBondLength * amorphBondLength - r * r);
+        // ...
+        assert(false); // there should be juicy code
+    }
+
+    return position;
+}
+
+std::vector<const Atom *> Atom::anchorRelatives() const
+{
+    const ushort crystNNs = crystalNeighboursNum();
+    const int3 *crystalCrds = nullptr;
+    if (lattice())
+    {
+        crystalCrds = &lattice()->coords();
+    }
+
+    std::vector<const Atom *> result;
+    for (const Atom *nbr : _relatives)
+    {
+        if (crystalCrds && nbr->lattice())
+        {
+            int3 diff = *crystalCrds - nbr->lattice()->coords();
+            if (!diff.isUnit()) continue;
         }
 
-        crdsAcc /= counter;
-        crdsAcc.z += 1.56; // because current amorph atom so near to bottom layer
-        return crdsAcc;
+        ushort nbrCrystNNs = nbr->crystalNeighboursNum();
+        if (crystNNs < nbrCrystNNs || (crystNNs == nbrCrystNNs && bonds() < nbr->bonds()))
+        {
+            result.push_back(nbr);
+        }
     }
+
+    return result;
 }
 
 #ifdef PRINT

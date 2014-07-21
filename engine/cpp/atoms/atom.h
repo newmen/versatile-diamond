@@ -52,6 +52,7 @@ public:
 
     Atom *amorphNeighbour() const;
     Atom *firstCrystalNeighbour() const;
+    ushort crystalNeighboursNum() const;
 
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
@@ -95,6 +96,8 @@ private:
     BaseSpec *specByRole(ushort sid, ushort role);
 
     float3 relativePosition() const;
+    float3 correctAmorphPos() const;
+    std::vector<const Atom *> anchorRelatives() const;
 
     uint hash(ushort first, ushort second) const
     {

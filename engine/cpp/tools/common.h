@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <cmath>
 #include <ostream>
 
 // below includes is not used there, but they very useful everywhere where used it
@@ -17,7 +18,7 @@ namespace common
 {
 
 #define DVOP(OPR, OPEQ) \
-    template <class U> \
+    template <typename U> \
     auto operator OPR (const dv3<U, DEFAULT_VALUE> &other) const \
         -> dv3<decltype(this->x OPR other.x), DEFAULT_VALUE> \
     { \
@@ -83,20 +84,40 @@ public:
 #endif // NDEBUG
 };
 
+template <typename T>
+struct dl3 : public dv3<T, 0>
+{
+    template <class... Args> dl3(Args... args) : dv3<T, 0>(args...) {}
+
+    template <typename U>
+    double length(const dl3<U> &other) const
+    {
+        double dx = this->x - other.x;
+        double dy = this->y - other.y;
+        double dz = this->z - other.z;
+        return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+};
+
 }
 
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long long ullong;
 
-struct uint3 : public common::dv3<uint, 0>
+struct float3 : public common::dl3<float>
 {
-    template <class... Args> uint3(Args... args) : dv3(args...) {}
+    template <class... Args> float3(Args... args) : dl3(args...) {}
 };
 
-struct int3 : public common::dv3<int, 0>
+struct uint3 : public common::dl3<uint>
 {
-    template <class... Args> int3(Args... args) : dv3(args...) {}
+    template <class... Args> uint3(Args... args) : dl3(args...) {}
+};
+
+struct int3 : public common::dl3<int>
+{
+    template <class... Args> int3(Args... args) : dl3(args...) {}
 
     bool isUnit() const
     {
@@ -112,11 +133,6 @@ struct dim3 : public common::dv3<uint, 1>
     {
         return x * y * z;
     }
-};
-
-struct float3 : public common::dv3<float, 0>
-{
-    template <class... Args> float3(Args... args) : dv3(args...) {}
 };
 
 }
