@@ -11,7 +11,7 @@ module VersatileDiamond
         super(analysis_result)
         @out_path = out_path
 
-        @sequences_cacher = SequencesCacher.new
+        @sequences_cacher = Code::SequencesCacher.new
 
         @_dependent_species = nil
         @species = collect_code_species

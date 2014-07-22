@@ -4,93 +4,85 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe Specie, use: :engine_generator do
-        let(:empty_generator) { stub_generator({}) }
-
+      describe Specie, type: :code do
         describe '#spec' do
-          subject { described_class.new(empty_generator, dept_bridge_base) }
-          it { expect(subject.spec).to eq(dept_bridge_base) }
+          it { expect(code_bridge_base.spec).to eq(dept_bridge_base) }
         end
 
         describe '#template_name' do
-          subject { described_class.new(empty_generator, dept_bridge_base) }
-          it { expect(subject.template_name).to eq('specie') }
+          it { expect(code_bridge_base.template_name).to eq('specie') }
         end
 
         describe '#define_name' do
           shared_examples_for :check_define_name do
-            subject { described_class.new(empty_generator, dept_spec) }
             it { expect(subject.define_name).to eq(define_name) }
           end
 
           it_behaves_like :check_define_name do
-            let(:dept_spec) { dept_bridge_base }
+            subject { code_bridge_base }
             let(:define_name) { 'BRIDGE_H' }
           end
 
           it_behaves_like :check_define_name do
-            let(:dept_spec) { dept_activated_incoherent_bridge }
+            subject { code_activated_incoherent_bridge }
             let(:define_name) { 'BRIDGE_CTSI_H' }
           end
 
           it_behaves_like :check_define_name do
-            let(:dept_spec) { dept_activated_methyl_on_incoherent_bridge }
+            subject { code_activated_methyl_on_incoherent_bridge }
             let(:define_name) { 'METHYL_ON_BRIDGE_CBI_CMS_H' }
           end
         end
 
         describe '#file_name' do
           shared_examples_for :check_file_name do
-            subject { described_class.new(empty_generator, dept_spec) }
             it { expect(subject.file_name).to eq(file_name) }
           end
 
           it_behaves_like :check_file_name do
-            let(:dept_spec) { dept_activated_methyl_on_incoherent_bridge }
+            subject { code_activated_methyl_on_incoherent_bridge }
             let(:file_name) { 'methyl_on_bridge_cbi_cms' }
           end
 
           it_behaves_like :check_file_name do
-            let(:dept_spec) { dept_cross_bridge_on_bridges_base }
+            subject { code_cross_bridge_on_bridges_base }
             let(:file_name) { 'cross_bridge_on_bridges' }
           end
         end
 
         describe '#class_name' do
           shared_examples_for :check_class_name do
-            subject { described_class.new(empty_generator, dept_spec) }
             it { expect(subject.class_name).to eq(class_name) }
           end
 
           it_behaves_like :check_class_name do
-            let(:dept_spec) { dept_hydrogen_ion }
+            subject { code_hydrogen_ion }
             let(:class_name) { 'HydrogenHs' }
           end
 
           it_behaves_like :check_class_name do
-            let(:dept_spec) { dept_bridge_base }
+            subject { code_bridge_base }
             let(:class_name) { 'Bridge' }
           end
 
           it_behaves_like :check_class_name do
-            let(:dept_spec) { dept_activated_incoherent_bridge }
+            subject { code_activated_incoherent_bridge }
             let(:class_name) { 'BridgeCTsi' }
           end
         end
 
         describe '#enum_name' do
           shared_examples_for :check_enum_name do
-            subject { described_class.new(empty_generator, dept_spec) }
             it { expect(subject.enum_name).to eq(enum_name) }
           end
 
           it_behaves_like :check_enum_name do
-            let(:dept_spec) { dept_bridge_base }
+            subject { code_bridge_base }
             let(:enum_name) { 'BRIDGE' }
           end
 
           it_behaves_like :check_enum_name do
-            let(:dept_spec) { dept_activated_incoherent_bridge }
+            subject { code_activated_incoherent_bridge }
             let(:enum_name) { 'BRIDGE_CTsi' }
           end
         end
