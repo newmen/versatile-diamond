@@ -64,15 +64,16 @@ module VersatileDiamond
               raise "Correct intersec wasn't found"
             end
 
-            filtered_intersec = filter_intersections(child, intersec)
+            child_seq = get(child)
+            filtered_intersec = filter_intersections(child_seq, intersec)
             next if filtered_intersec.size == 1
 
-            filtered_intersec.shift # drops one intersec because it already as original
+            # drops one intersec because it's already as original
+            major = filtered_intersec.shift
 
-            # TODO: remakes to atom properties
             filtered_intersec.each do |insec|
-              proped_sec = insec.map { |pair| propertize(pair, [spec, child.spec]) }
-              result << proped_sec
+              diff = insec.select { |from, to| major[from] != to }
+              result << diff.map(&:first)
             end
           end
 
@@ -171,17 +172,17 @@ module VersatileDiamond
         # Filters intersections with parent specie. Checks that anchors points to
         # different atoms of parent specie.
         #
-        # @param [Organizers::DependentWrappedSpec] child of internal specie
+        # @param [AtomsSequence] child_seq the sequence of child specie
         # @param [Array] intersec the array of intersections with child specie
         # @return [Array] the array of filtered intersections
-        def filter_intersections(child, intersec)
+        def filter_intersections(child_seq, intersec)
           result = []
           collector = Set.new # stores unique pairs of anchors from intersec
           intersec.each do |insec|
             mirror = insec.invert
             new_collection = Set.new
 
-            get(child).anchors.each do |atom|
+            child_seq.anchors.each do |atom|
               parent_atom = mirror[atom]
               unless new_collection.include?(parent_atom)
                 new_collection << [atom, parent_atom]
@@ -194,6 +195,11 @@ module VersatileDiamond
             end
           end
           result
+        end
+
+        # Makes symmetrics for each instance of passed array
+        def makes_symmetrics(symmetrics)
+
         end
       end
 

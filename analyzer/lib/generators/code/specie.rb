@@ -22,8 +22,11 @@ module VersatileDiamond
         #   generated
         def initialize(generator, seq_cacher, spec)
           super(generator)
+
           @spec = spec
           @sequence = seq_cacher.get(spec)
+          @symmetrics = @sequence.symmetrics(generator)
+
           @_class_name, @_enum_name, @_used_iterators = nil
         end
 
@@ -46,13 +49,6 @@ module VersatileDiamond
 
           # если в родительской структуре используются симметричные атомы, то в
           # алгоритмы поиска подставлять итерацию каждой симметрии
-        end
-
-        # Finds self symmetrics by children species which are uses symmetric atoms of
-        # current specie. Should be called from generator after than all specie class
-        # renderers will be created.
-        def find_self_symmetrics!
-          @symmetrics = @sequence.find_symmetrics
         end
 
         # Is symmetric specie? If children species uses same as own atom and it atom
