@@ -24,8 +24,17 @@ module VersatileDiamond
           super(generator)
 
           @spec = spec
-          @sequence = seq_cacher.get(spec)
-          @symmetrics = @sequence.symmetrics(generator)
+          if spec.simple?
+            # for this species should not be called methods that dependent from these
+            # instance variables
+            # TODO: separate for AbstractSpecie which will contain methods for getting
+            # class name of simple species, because class name using in env.yml config
+            # file
+            @sequence, @symmetrics = nil
+          else
+            @sequence = seq_cacher.get(spec)
+            @symmetrics = @sequence.symmetrics#(generator)
+          end
 
           @_class_name, @_enum_name, @_used_iterators = nil
         end

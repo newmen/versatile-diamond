@@ -53,31 +53,12 @@ module VersatileDiamond
           addition_atoms.size
         end
 
-        # Finds symmetrics of internal specie by children of them
+        # Gets symmetric instances of some original code specie
+        # @return [Array] the array of symmetric instances
         def symmetrics
-          result = Set.new
-          spec.non_term_children.each do |child|
-            intersec = intersec_with(child)
-
-            # intersec must be found in any case
-            unless intersec.first.size == spec.links.size
-              raise "Correct intersec wasn't found"
-            end
-
-            child_seq = get(child)
-            filtered_intersec = filter_intersections(child_seq, intersec)
-            next if filtered_intersec.size == 1
-
-            # drops one intersec because it's already as original
-            major = filtered_intersec.shift
-
-            filtered_intersec.each do |insec|
-              diff = insec.select { |from, to| major[from] != to }
-              result << diff.map(&:first)
-            end
+          symmetric_atoms.map do |atoms|
+            atoms.all? { |a| anchors.include?(a) }
           end
-
-          result.to_a
         end
 
         # Gets an index of some atom
@@ -197,9 +178,31 @@ module VersatileDiamond
           result
         end
 
-        # Makes symmetrics for each instance of passed array
-        def makes_symmetrics(symmetrics)
+        # Finds symmetric atoms of internal specie by children of them
+        def symmetric_atoms
+          result = Set.new
+          spec.non_term_children.each do |child|
+            intersec = intersec_with(child)
 
+            # intersec must be found in any case
+            unless intersec.first.size == spec.links.size
+              raise "Correct intersec wasn't found"
+            end
+
+            child_seq = get(child)
+            filtered_intersec = filter_intersections(child_seq, intersec)
+            next if filtered_intersec.size == 1
+
+            # drops one intersec because it's already as original sequence
+            major = filtered_intersec.shift
+
+            filtered_intersec.each do |insec|
+              diff = insec.select { |from, to| major[from] != to }
+              result << diff.map(&:first)
+            end
+          end
+
+          result.to_a
         end
       end
 
