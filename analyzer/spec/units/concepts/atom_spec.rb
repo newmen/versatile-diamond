@@ -25,10 +25,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#spec' do
-        it { expect(cd.spec).to be_nil }
-      end
-
       describe '#reference?' do
         it { expect(c.reference?).to be_falsey }
       end
