@@ -1,0 +1,19 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+#include "../base/original_bridge.h"
+#include "../empty.h"
+
+class <%= class_name %> :
+    <%= base_class_name %>
+{
+public:
+    <%= class_name %>(<%= original_class_name %> *parent) :
+        <%= wrapper_class_name %>(parent) {}
+
+#ifdef PRINT
+    const char *name() const final;
+#endif // PRINT
+};
+
+#endif // <%= define_name %>
