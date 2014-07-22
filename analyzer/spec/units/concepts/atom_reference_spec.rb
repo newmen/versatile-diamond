@@ -12,7 +12,6 @@ module VersatileDiamond
         it { expect(subject).to_not eq(ref) }
         it { expect(subject.spec).to eq(ref.spec) }
         it { expect(subject.keyname).to eq(ref.keyname) }
-        it { expect(subject.original_atom).to eq(ref.original_atom) }
       end
 
       describe '#name' do
