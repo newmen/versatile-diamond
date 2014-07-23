@@ -7,7 +7,7 @@ module VersatileDiamond
         # Defines name methods which are targeted to some prefix
         # @param [String] default_prefix the prefix which will be used by default
         def use_prefix(default_prefix)
-          Specie::PREF_METD_SEPS.each do |name, method, separator|
+          BaseSpecie::PREF_METD_SEPS.each do |name, method, separator|
             method_name = :"#{name}_name"
             # Gets the #{name} name of current specie
             # @return [String] the #{name} name

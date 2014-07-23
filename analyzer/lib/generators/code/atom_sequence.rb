@@ -59,8 +59,22 @@ module VersatileDiamond
         #   instanced
         # @return [Array] the array of symmetric instances
         def symmetrics(generator, original_specie)
-          symmetric_atoms.map do |atoms|
+          symmetric_atoms.map do |reverse_mirror|
+            symc_atoms = reverse_mirror.keys
+            indexes = symc_atoms.map(&method(:atom_index))
 
+            binding.pry if reverse_mirror.size != 2
+            raise 'Too small reverse mirror' if reverse_mirror.size < 2
+            raise 'Too large reverse mirror' if reverse_mirror.size > 2
+
+            klass =
+              if symc_atoms.all? { |a| anchors.include?(a) }
+                ParentsSwappedSpecie
+              else
+                AtomsSwappedSpecie
+              end
+
+            klass.new(generator, original_specie, *indexes)
           end
         end
 
@@ -198,13 +212,15 @@ module VersatileDiamond
 
             # drops one intersec because it's already as original sequence
             major = filtered_intersec.shift
+            invert_major = major.invert
 
             filtered_intersec.each do |insec|
               diff = insec.select { |from, to| major[from] != to }
-              own_atoms = diff.map(&:first)
-              if own_atoms.any? { |a| anchors.include?(a) }
-                result << own_atoms
+              reverse_mirror = diff.map { |from, to| [from, invert_major[to]] }
+              if reverse_mirror.any? { |a, b| a == b }
+                raise 'Reverse mirror to same atom'
               end
+              result << Hash[reverse_mirror]
             end
           end
 
