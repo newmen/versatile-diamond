@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       describe SymmetricSpecie, type: :code do
-        subject { described_class.new(empty_generator, original_class) }
+        subject { described_class.new(empty_generator, original_class, 1, 2) }
         let(:original_class) { OriginalSpecie.new(empty_generator, code_bridge_base) }
 
         describe '#template_name' do

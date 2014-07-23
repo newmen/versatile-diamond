@@ -5,6 +5,16 @@ module VersatileDiamond
     module Code
 
       describe Specie, type: :code do
+        let(:base_specs) { [] }
+        let(:specific_specs) { [] }
+        let(:generator) do
+          stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+        end
+
+        def code_for(base_spec)
+          generator.specie_class(base_spec.name)
+        end
+
         describe '#spec' do
           it { expect(code_bridge_base.spec).to eq(dept_bridge_base) }
         end
@@ -116,16 +126,6 @@ module VersatileDiamond
         end
 
         describe '#wrapped_base_class_name' do
-          let(:base_specs) { [] }
-          let(:specific_specs) { [] }
-          let(:generator) do
-            stub_generator(base_specs: base_specs, specific_specs: specific_specs)
-          end
-
-          def code_for(base_spec)
-            generator.specie_class(base_spec.name)
-          end
-
           before { generator }
 
           shared_examples_for :parent_bridge_name do
@@ -190,34 +190,26 @@ module VersatileDiamond
           end
         end
 
-        # describe '#symmetric?' do
-        #   let(:all_species) { bases + specifics }
-        #   let(:generator) do
-        #     stub_generator(base_specs: bases, specific_specs: specifics)
-        #   end
+        describe '#symmetric?' do
+          describe 'bridges' do
+            let(:base_specs) { [dept_bridge_base] }
+            let(:specific_specs) { [dept_right_hydrogenated_bridge] }
+            it { expect(code_for(bridge_base).symmetric?).to be_truthy }
+            it { expect(code_for(right_hydrogenated_bridge).symmetric?).to be_falsey }
+          end
 
-        #   before do
-        #     all_species.each { |spec| sc(spec.name).find_self_symmetrics! }
-        #   end
-
-        #   describe 'bridges' do
-        #     let(:bases) { [dept_bridge_base] }
-        #     let(:specifics) { [dept_right_hydrogenated_bridge] }
-        #     it { expect(sc(:bridge).symmetric?).to be_truthy }
-        #     it { expect(sc(:'bridge(cr: H)').symmetric?).to be_falsey }
-        #   end
-
-        #   describe 'dimers' do
-        #     let(:bases) { [dept_bridge_base, dept_dimer_base] }
-        #     let(:specifics) do
-        #       [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]
-        #     end
-        #     it { expect(sc(:bridge).symmetric?).to be_falsey }
-        #     it { expect(sc(:dimer).symmetric?).to be_truthy }
-        #     it { expect(sc(:'dimer(cr: *)').symmetric?).to be_truthy }
-        #     it { expect(sc(:'dimer(clb: H, cr: *)').symmetric?).to be_falsey }
-        #   end
-        # end
+          describe 'dimers' do
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+            let(:specific_specs) do
+              [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]
+            end
+            it { expect(code_for(bridge_base).symmetric?).to be_falsey }
+            it { expect(code_for(dimer_base).symmetric?).to be_truthy }
+            it { expect(code_for(activated_dimer).symmetric?).to be_truthy }
+            it { expect(code_for(bottom_hydrogenated_activated_dimer).symmetric?).to
+              be_falsey }
+          end
+        end
       end
 
     end
