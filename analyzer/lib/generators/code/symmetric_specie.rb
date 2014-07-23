@@ -17,22 +17,44 @@ module VersatileDiamond
           @_prefix = nil
         end
 
+        # Gets the template file name
+        # @return [String] the name of template file
+        # @override
+        def template_name
+          'symmetric_specie'
+        end
+
+      private
+
         # Gets the main specie to which all undefined methods are redirects
         # @return [Specie] the main original specie
-        # TODO: should be private
         def main_specie
           @specie.main_specie
         end
 
         # Gets the base class of cpp class of symmetric specie
         # @return [String] the name of base class
-        # TODO: should be private
         def base_class_name
           "Empty<#{enum_name}>"
         end
 
-      private
+        # Gets class name of original specie
+        # @return [String] the original specie class name
+        def original_class_name
+          @specie.class_name
+        end
 
+        # Gets the path to original specie header file without extension
+        # @return [String] the path to original specie header file
+        def original_file_path
+          "#{@specie.outer_base_file}/#{@specie.file_name}"
+        end
+
+        # Gets the name to outer class header file without extension
+        # @return [String] the name of outer class header file
+        def outer_base_file
+          'empty'
+        end
       end
 
     end
