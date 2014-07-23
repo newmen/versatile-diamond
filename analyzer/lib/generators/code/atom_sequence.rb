@@ -54,10 +54,13 @@ module VersatileDiamond
         end
 
         # Gets symmetric instances of some original code specie
+        # @param [EngineCode] generator the general generator of engine code
+        # @param [OriginalSpecie] original_specie for which symmetric species will be
+        #   instanced
         # @return [Array] the array of symmetric instances
-        def symmetrics
+        def symmetrics(generator, original_specie)
           symmetric_atoms.map do |atoms|
-            atoms.all? { |a| anchors.include?(a) }
+
           end
         end
 
@@ -79,8 +82,6 @@ module VersatileDiamond
         end
 
         # Gets the all atoms of internal specie
-        # @param [Organizers::DependentWrappedSpec] spec the anchors of which will be
-        #   returned
         # @return [Array] the array of atoms
         def atoms
           spec.links.keys
@@ -157,17 +158,18 @@ module VersatileDiamond
         # @param [Array] intersec the array of intersections with child specie
         # @return [Array] the array of filtered intersections
         def filter_intersections(child_seq, intersec)
+          child_anchors = child_seq.anchors
+
           result = []
           collector = Set.new # stores unique pairs of anchors from intersec
+
           intersec.each do |insec|
             mirror = insec.invert
             new_collection = Set.new
 
-            child_seq.anchors.each do |atom|
+            child_anchors.each do |atom|
               parent_atom = mirror[atom]
-              unless new_collection.include?(parent_atom)
-                new_collection << [atom, parent_atom]
-              end
+              new_collection << [parent_atom, atom]
             end
 
             unless collector.include?(new_collection)
@@ -175,6 +177,7 @@ module VersatileDiamond
               result << insec
             end
           end
+
           result
         end
 
@@ -198,7 +201,10 @@ module VersatileDiamond
 
             filtered_intersec.each do |insec|
               diff = insec.select { |from, to| major[from] != to }
-              result << diff.map(&:first)
+              own_atoms = diff.map(&:first)
+              if own_atoms.any? { |a| anchors.include?(a) }
+                result << own_atoms
+              end
             end
           end
 

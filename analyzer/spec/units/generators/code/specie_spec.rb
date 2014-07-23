@@ -115,7 +115,7 @@ module VersatileDiamond
           end
         end
 
-        describe '#wrapped_base_class' do
+        describe '#wrapped_base_class_name' do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:generator) do
@@ -130,13 +130,13 @@ module VersatileDiamond
 
           shared_examples_for :parent_bridge_name do
             let(:pb_name) { 'Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>' }
-            it { expect(code_bridge_base.wrapped_base_class).to eq(pb_name) }
+            it { expect(code_bridge_base.wrapped_base_class_name).to eq(pb_name) }
           end
 
           describe 'empty base specie' do
             let(:base_specs) { [dept_bridge_base] }
             let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
-            it { expect(code_for(bridge_base).wrapped_base_class).to eq(name) }
+            it { expect(code_for(bridge_base).wrapped_base_class_name).to eq(name) }
 
             describe '#base_classes' do
               let(:base_classes) { [name, 'DiamondAtomsIterator'] }
@@ -156,7 +156,7 @@ module VersatileDiamond
                 'Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, ' \
                   'METHYL_ON_BRIDGE, 2>'
               end
-              it { expect(subject.wrapped_base_class).to eq(name) }
+              it { expect(subject.wrapped_base_class_name).to eq(name) }
               it { expect(subject.base_classes).to eq(base_classes) }
             end
           end
@@ -169,7 +169,7 @@ module VersatileDiamond
             describe 'child base specie' do
               let(:base_classes) { [name, 'DiamondAtomsIterator'] }
               let(:name) { 'Base<DependentSpec<BaseSpec, 2>, DIMER, 2>' }
-              it { expect(code_for(dimer_base).wrapped_base_class).to eq(name) }
+              it { expect(code_for(dimer_base).wrapped_base_class_name).to eq(name) }
               it { expect(code_for(dimer_base).base_classes).to eq(base_classes) }
             end
           end
@@ -178,7 +178,7 @@ module VersatileDiamond
             subject { code_for(activated_incoherent_bridge) }
             let(:specific_specs) { [dept_activated_incoherent_bridge] }
             let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE_CTsi, 3>' }
-            it { expect(subject.wrapped_base_class).to eq(name) }
+            it { expect(subject.wrapped_base_class_name).to eq(name) }
           end
 
           describe 'specific parent specie' do

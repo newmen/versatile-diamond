@@ -8,6 +8,10 @@ module VersatileDiamond
         subject { described_class.new(empty_generator, specie_class) }
         let(:specie_class) { code_bridge_base }
 
+        describe '#main_specie' do
+          it { expect(subject.main_specie).to eq(code_bridge_base) }
+        end
+
         describe '#template_name' do
           it { expect(subject.template_name).to eq(specie_class.template_name) }
         end
