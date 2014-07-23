@@ -9,7 +9,7 @@ class <%= class_name %> :
 {
 public:
     <%= class_name %>(<%= original_class_name %> *parent) :
-        <%= wrapper_class_name %>(parent) {}
+        <%= base_class_name %>(parent) {}
 
 #ifdef PRINT
     const char *name() const final;

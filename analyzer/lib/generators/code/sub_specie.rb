@@ -7,15 +7,12 @@ module VersatileDiamond
         # Defines name methods which are targeted to some prefix
         # @param [String] default_prefix the prefix which will be used by default
         def use_prefix(default_prefix)
-          [
-            ['class', :classify, ''],
-            ['enum', :upcase, '_']
-          ].each do |name, method, separator|
+          Specie::PREF_METD_SEPS.each do |name, method, separator|
             method_name = :"#{name}_name"
             # Gets the #{name} name of current specie
             # @return [String] the #{name} name
             define_method(method_name) do
-              value = @specie.public_send(method_name)
+              value = main_specie.public_send(method_name)
               "#{prefix.public_send(method)}#{separator}#{value}"
             end
           end
@@ -26,7 +23,7 @@ module VersatileDiamond
             return @_prefix if @_prefix
 
             @_prefix = default_prefix
-            original_name = @specie.spec.name
+            original_name = main_specie.spec.name
             loop do
               full_name = "#{@_prefix}_#{original_name}".to_sym
               break unless @generator.specie_class(full_name)
