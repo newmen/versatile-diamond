@@ -18,13 +18,6 @@ module VersatileDiamond
           @_prefix = nil
         end
 
-        # Gets the enum name of current specie
-        # @return [String] the enum name
-        def enum_name
-          "#{prefix.upcase}_#{@specie.enum_name}"
-        end
-
-
       private
 
       end

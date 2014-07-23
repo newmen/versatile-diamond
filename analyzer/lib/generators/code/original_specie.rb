@@ -5,6 +5,7 @@ module VersatileDiamond
       # Creates Original Specie class which is used when specie is simmetric
       class OriginalSpecie < CppClassWithGen
         extend SubSpecie
+        include PolynameClass
 
         use_prefix 'original'
 
