@@ -27,10 +27,6 @@ module VersatileDiamond
         describe '#enum_name' do
           it { expect(subject.enum_name).to eq('SYMMETRIC_BRIDGE') }
         end
-
-        describe '#base_class_name' do
-          it { expect(subject.base_class_name).to eq('Empty<SYMMETRIC_BRIDGE>') }
-        end
       end
 
     end

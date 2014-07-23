@@ -105,6 +105,12 @@ module VersatileDiamond
           [base_class] + iterator_classes
         end
 
+        # Gets outer template name of base class
+        # @return [String] the outer base class name
+        def outer_base_file
+          outer_base_class.underscore
+        end
+
       private
 
         # Specie class has find algorithms by default
@@ -180,12 +186,6 @@ module VersatileDiamond
         # @return [String] the outer base class name
         def outer_base_class
           lateral? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
-        end
-
-        # Gets outer template name of base class
-        # @return [String] the outer base class name
-        def outer_base_file
-          outer_base_class.underscore
         end
 
         # Makes string by which base constructor will be called
@@ -294,14 +294,6 @@ module VersatileDiamond
         # @return [Specie]
         def specie_class(dept_spec)
           @generator.specie_class(dept_spec.name)
-        end
-
-        # Makes output directory path where generating file will be created
-        # @param [String] root_dir see at #super same argument
-        # @return [Pathname] the path to output directory
-        # @override
-        def out_dir_path(root_dir)
-          super + outer_base_file
         end
 
         # The additional path for current instance
