@@ -115,11 +115,82 @@ module VersatileDiamond
           end
         end
 
-        # describe '#symmetric?' do
-        #   def sc(name)
-        #     generator.specie_class(name)
-        #   end
+        describe '#wrapped_base_class' do
+          let(:base_specs) { [] }
+          let(:specific_specs) { [] }
+          let(:generator) do
+            stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+          end
 
+          def code_for(base_spec)
+            generator.specie_class(base_spec.name)
+          end
+
+          before { generator }
+
+          shared_examples_for :parent_bridge_name do
+            let(:pb_name) { 'Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>' }
+            it { expect(code_bridge_base.wrapped_base_class).to eq(pb_name) }
+          end
+
+          describe 'empty base specie' do
+            let(:base_specs) { [dept_bridge_base] }
+            let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
+            it { expect(code_for(bridge_base).wrapped_base_class).to eq(name) }
+
+            describe '#base_classes' do
+              let(:base_classes) { [name, 'DiamondAtomsIterator'] }
+              it { expect(code_for(bridge_base).base_classes).to eq(base_classes) }
+            end
+          end
+
+          describe 'only one child spec' do
+            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+
+            it_behaves_like :parent_bridge_name
+
+            describe 'child base specie' do
+              subject { code_for(methyl_on_bridge_base) }
+              let(:base_classes) { [name] }
+              let(:name) do
+                'Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, ' \
+                  'METHYL_ON_BRIDGE, 2>'
+              end
+              it { expect(subject.wrapped_base_class).to eq(name) }
+              it { expect(subject.base_classes).to eq(base_classes) }
+            end
+          end
+
+          describe 'multi same spec' do
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+
+            it_behaves_like :parent_bridge_name
+
+            describe 'child base specie' do
+              let(:base_classes) { [name, 'DiamondAtomsIterator'] }
+              let(:name) { 'Base<DependentSpec<BaseSpec, 2>, DIMER, 2>' }
+              it { expect(code_for(dimer_base).wrapped_base_class).to eq(name) }
+              it { expect(code_for(dimer_base).base_classes).to eq(base_classes) }
+            end
+          end
+
+          describe 'specific as base' do
+            subject { code_for(activated_incoherent_bridge) }
+            let(:specific_specs) { [dept_activated_incoherent_bridge] }
+            let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE_CTsi, 3>' }
+            it { expect(subject.wrapped_base_class).to eq(name) }
+          end
+
+          describe 'specific parent specie' do
+            pending 'asdf'
+          end
+
+          describe 'specific leaf specie' do
+            pending 'asdf'
+          end
+        end
+
+        # describe '#symmetric?' do
         #   let(:all_species) { bases + specifics }
         #   let(:generator) do
         #     stub_generator(base_specs: bases, specific_specs: specifics)

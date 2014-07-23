@@ -96,6 +96,22 @@ module VersatileDiamond
           spec.target.links.size
         end
 
+        # Wraps combined base engine class by classes which works with handbook
+        # @return [String] full major base class
+        def wrapped_base_class
+          base = "Base<#{wrapped_engine_class_name}, #{enum_name}, #{atoms_num}>"
+          base = "Specific<#{base}>" if specific?
+          base = "Sidepiece<#{base}>" if lateral?
+          base
+        end
+
+        # Provides classes list from which occur inheritance when template renders
+        # @return [Array] the array of cpp class names
+        # TODO: must be private
+        def base_classes
+          [base_class] + iterator_classes
+        end
+
       private
 
         # Specie class has find algorithms by default
@@ -134,10 +150,17 @@ module VersatileDiamond
           !spec.theres.empty?
         end
 
-        # Makes base classes string for current specie class instance
+        # Combines public inheritance string
+        # @param [Array] classes the array of string names of cpp classes
+        # @return [String] the string which could be used for inheritance
+        def public_inheritance(classes)
+          classes.map { |klass| "public #{klass}" }.join(', ')
+        end
+
+        # Makes base classes for current specie class instance
         # @return [String] combined base classes of engine framework
-        def base_classes_str
-          "public #{wrapped_base_class}#{iterator_classes_str}"
+        def base_class
+          symmetric? ? generalized_class : wrapped_base_class
         end
 
         # Combines base engine templated specie classes
@@ -158,15 +181,6 @@ module VersatileDiamond
           base_class = base_engine_class_name
           delta = @sequence.delta
           delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
-        end
-
-        # Wraps combined base engine class by classes which works with handbook
-        # @return [String] full major base class
-        def wrapped_base_class
-          base = "Base<#{wrapped_engine_class_name}, #{enum_name}, #{atoms_num}>"
-          base = "Specific<#{base}>" if specific?
-          base = "Sidepiece<#{base}>" if lateral?
-          base
         end
 
         # Gets outer template name of base class
@@ -193,8 +207,16 @@ module VersatileDiamond
         def used_iterators
           return @_used_iterators if @_used_iterators
 
-          lattices = links.reduce(Set.new) do |acc, (atoms, list)|
-            list.empty? ? acc : (acc << atoms.lattice)
+          rest_links = spec.target.links
+          anchors = rest_links.keys
+          lattices = rest_links.reduce(Set.new) do |acc, (atom, list)|
+            next acc if list.empty? || !atom.lattice
+
+            crystal_nbr_exist = list.map(&:first).any? do |a|
+              a.lattice && anchors.include?(a)
+            end
+
+            crystal_nbr_exist ? (acc << atom.lattice) : acc
           end
 
           @_used_iterators = lattices.to_a.compact.map do |lattice|
@@ -203,17 +225,27 @@ module VersatileDiamond
         end
 
         # Combines used iterators for using them as parent classes
-        # @return [String] the string that correspond to parent classes from which
+        # @return [Array] the array that contain parent class names from which
         #   specie class instance will be inheritance in source code
-        def iterator_classes_str
-          class_names = used_iterators.map { |iter| "public #{iter.class_name}" }
-          class_names.empty? ? '' : ", #{class_names.join(', ')}"
+        def iterator_classes
+          used_iterators.map(&:class_name)
         end
 
         # Gets list of used iterator files
         # @return [Array] the array of file names
         def iterator_files
           used_iterators.map(&:file_name)
+        end
+
+        # Gets classes from which current code instance will be inherited if specie is
+        # symmetric
+        #
+        # @return [Array] the array of class names where one of which used original
+        # and symmetric instances
+        def generalized_class
+          original_class = @original.class_name
+          symmetric_classes = @symmetrics.map(&:class_name).join(', ')
+          "Symmetric<#{original_class}, #{symmetric_classes}>"
         end
 
         # Makes arguments string for static find method
