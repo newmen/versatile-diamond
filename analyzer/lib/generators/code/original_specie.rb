@@ -25,6 +25,12 @@ module VersatileDiamond
           "#{prefix}_#{@specie.enum_name}".downcase
         end
 
+        # Substitute base classes list for original specie template rendering
+        # @return [Array] the array with base engine class name
+        def base_classes
+          [@specie.wrapped_base_class]
+        end
+
         # Deligates all method calls to main specie class generator
         # @param [Symbol] method_name which was not found
         # @param [Array] args the arguments of missed method

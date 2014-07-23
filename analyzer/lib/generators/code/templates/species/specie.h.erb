@@ -7,7 +7,7 @@
 #include "../<%= outer_base_file %>.h"
 
 class <%= class_name %> :
-    <%= base_classes_str %>
+    <%= public_inheritance(base_classes) %>
 {
 <% if render_find_algorithms? %>
 <%= render_partial('find_algorithms.h') %>

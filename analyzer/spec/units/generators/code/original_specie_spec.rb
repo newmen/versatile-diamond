@@ -9,7 +9,7 @@ module VersatileDiamond
         let(:specie_class) { code_bridge_base }
 
         describe '#template_name' do
-          it { expect(subject.template_name).to eq('specie') }
+          it { expect(subject.template_name).to eq(specie_class.template_name) }
         end
 
         describe '#define_name' do
@@ -31,6 +31,11 @@ module VersatileDiamond
 
         describe '#enum_name' do
           it { expect(subject.enum_name).to eq('ORIGINAL_BRIDGE') }
+        end
+
+        describe '#base_classes' do
+          let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
+          it { expect(subject.base_classes).to eq([name]) }
         end
       end
 
