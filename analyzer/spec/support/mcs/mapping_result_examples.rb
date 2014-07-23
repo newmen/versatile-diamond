@@ -13,7 +13,6 @@ module VersatileDiamond
           before(:each) { subject } # do atom mapping
 
           it 'map and associate all' do
-            binding.pry
             expect(mapping_result.full).to eq(full)
           end
 
