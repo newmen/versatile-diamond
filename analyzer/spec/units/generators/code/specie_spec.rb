@@ -200,10 +200,17 @@ module VersatileDiamond
 
           describe 'dimers' do
             let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+            let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
+            it { expect(code_for(bridge_base).symmetric?).to be_falsey }
+            it { expect(code_for(dimer_base).symmetric?).to be_truthy }
+            it { expect(code_for(activated_dimer).symmetric?).to be_falsey }
+          end
+
+          describe 'two symmetric dimer' do
+            let(:base_specs) { [dept_dimer_base] }
             let(:specific_specs) do
               [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]
             end
-            it { expect(code_for(bridge_base).symmetric?).to be_falsey }
             it { expect(code_for(dimer_base).symmetric?).to be_truthy }
             it { expect(code_for(activated_dimer).symmetric?).to be_truthy }
             it { expect(code_for(bottom_hydrogenated_activated_dimer).symmetric?).to
