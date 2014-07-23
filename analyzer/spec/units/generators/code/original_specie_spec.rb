@@ -17,8 +17,12 @@ module VersatileDiamond
         end
 
         describe '#file_name' do
-          let(:specie_class) { code_activated_methyl_on_incoherent_bridge }
-          it { expect(subject.file_name).to eq('original_methyl_on_bridge_cbi_cms') }
+          it { expect(subject.file_name).to eq('original_bridge') }
+
+          describe 'more complex name' do
+            let(:specie_class) { code_activated_methyl_on_incoherent_bridge }
+            it { expect(subject.file_name).to eq('original_methyl_on_bridge_cbi_cms') }
+          end
         end
 
         describe '#class_name' do
