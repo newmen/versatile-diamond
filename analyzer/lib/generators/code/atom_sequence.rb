@@ -59,22 +59,23 @@ module VersatileDiamond
         #   instanced
         # @return [Array] the array of symmetric instances
         def symmetrics(generator, original_specie)
-          symmetric_atoms.map do |reverse_mirror|
-            symc_atoms = reverse_mirror.keys
+          symmetric_atoms.map do |twins_mirror|
+            symc_atoms = twins_mirror.keys
             indexes = symc_atoms.map(&method(:atom_index))
+            rest_indexes = indexes.compact
 
-            binding.pry if reverse_mirror.size != 2
-            raise 'Too small reverse mirror' if reverse_mirror.size < 2
-            raise 'Too large reverse mirror' if reverse_mirror.size > 2
+            binding.pry if rest_indexes.size != 2
+            raise 'Too small twins mirror' if rest_indexes.size < 2
+            raise 'Too large twins mirror' if rest_indexes.size > 2
 
-            klass =
-              if symc_atoms.all? { |a| anchors.include?(a) }
-                ParentsSwappedSpecie
-              else
-                AtomsSwappedSpecie
+            if symc_atoms.all? { |a| anchors.include?(a) }
+              parent_indexes = rest_indexes.map do |index|
+                anchors.index(original[index])
               end
-
-            klass.new(generator, original_specie, *indexes)
+              ParentsSwappedSpecie.new(generator, original_specie, *parent_indexes)
+            else
+              AtomsSwappedSpecie.new(generator, original_specie, *rest_indexes)
+            end
           end
         end
 
@@ -198,7 +199,7 @@ module VersatileDiamond
         # Finds symmetric atoms of internal specie by children of them
         def symmetric_atoms
           result = Set.new
-          spec.non_term_children.each do |child|
+          symmetric_child_candidates.each do |child|
             intersec = intersec_with(child)
 
             # intersec must be found in any case
@@ -225,6 +226,14 @@ module VersatileDiamond
           end
 
           result.to_a
+        end
+
+        # Gets the children which have dependency from internal specie only one time
+        # @return [Array] the array of single dependent child species
+        def symmetric_child_candidates
+          surfspecs = spec.non_term_children
+          groups = surfspecs.group_by(&:object_id)
+          groups.select { |_, g| g.size == 1 }.map(&:last).map(&:last)
         end
       end
 

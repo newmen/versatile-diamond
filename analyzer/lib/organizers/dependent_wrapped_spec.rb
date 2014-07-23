@@ -21,7 +21,7 @@ module VersatileDiamond
       # Gets the children specie classes
       # @return [Array] the array of children specie class generators
       def non_term_children
-        children.uniq.reject(&:termination?)
+        children.reject(&:termination?)
       end
 
     private
