@@ -16,7 +16,7 @@ public:
     Lattice(Crystal *crystal, const int3 &coords) : _crystal(crystal), _coords(coords) {}
 
     Crystal *crystal() { return _crystal; }
-    const Crystal *crystal() const { return _crystal; }
+
     const int3 &coords() const { return _coords; }
     void updateCoords(const int3 &coords) { _coords = coords; }
 

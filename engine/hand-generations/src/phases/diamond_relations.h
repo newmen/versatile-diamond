@@ -12,10 +12,10 @@ public:
     typedef Neighbours<2> TN;
     typedef TN (DiamondRelations<B>::*RelationsMethod)(const Atom *) const;
 
-    TN front_110(const Atom *atom) const;
-    TN cross_110(const Atom *atom) const;
-    TN front_100(const Atom *atom) const;
-    TN cross_100(const Atom *atom) const;
+    TN front_110(const Atom *atom);
+    TN cross_110(const Atom *atom);
+    TN front_100(const Atom *atom);
+    TN cross_100(const Atom *atom);
 
     static int3 front_110_at(const Atom *first, const Atom *second);
 
@@ -26,7 +26,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class B>
-typename DiamondRelations<B>::TN DiamondRelations<B>::front_110(const Atom *atom) const
+typename DiamondRelations<B>::TN DiamondRelations<B>::front_110(const Atom *atom)
 {
     assert(atom->lattice());
     const int3 &coords = atom->lattice()->coords();
@@ -46,7 +46,7 @@ typename DiamondRelations<B>::TN DiamondRelations<B>::front_110(const Atom *atom
 }
 
 template <class B>
-typename DiamondRelations<B>::TN DiamondRelations<B>::cross_110(const Atom *atom) const
+typename DiamondRelations<B>::TN DiamondRelations<B>::cross_110(const Atom *atom)
 {
     assert(atom->lattice());
     const int3 &coords = atom->lattice()->coords();
@@ -67,7 +67,7 @@ typename DiamondRelations<B>::TN DiamondRelations<B>::cross_110(const Atom *atom
 }
 
 template <class B>
-typename DiamondRelations<B>::TN DiamondRelations<B>::front_100(const Atom *atom) const
+typename DiamondRelations<B>::TN DiamondRelations<B>::front_100(const Atom *atom)
 {
     assert(atom->lattice());
     const int3 &coords = atom->lattice()->coords();
@@ -87,7 +87,7 @@ typename DiamondRelations<B>::TN DiamondRelations<B>::front_100(const Atom *atom
 }
 
 template <class B>
-typename DiamondRelations<B>::TN DiamondRelations<B>::cross_100(const Atom *atom) const
+typename DiamondRelations<B>::TN DiamondRelations<B>::cross_100(const Atom *atom)
 {
     assert(atom->lattice());
     const int3 &coords = atom->lattice()->coords();
