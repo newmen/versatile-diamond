@@ -2,8 +2,8 @@
 #include "../atoms/atom_builder.h"
 #include "../finder.h"
 
-Diamond::Diamond(const dim3 &sizes, int defaultSurfaceHeight) :
-    DiamondCrystalProperties<Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+Diamond::Diamond(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight) :
+    DiamondCrystalProperties<Crystal>(sizes, behavior), _defaultSurfaceHeight(defaultSurfaceHeight)
 {
 }
 

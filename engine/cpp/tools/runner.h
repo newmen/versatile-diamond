@@ -5,11 +5,13 @@
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
 #include "process_mem_usage.h"
+#include "../phases/behavior_factory.h"
 #include "savers/actives_portion_counter.h"
 #include "savers/crystal_slice_saver.h"
 #include "savers/volume_saver.h"
 #include "savers/volume_saver_factory.h"
 #include "savers/detector_factory.h"
+#include "init_config.h"
 #include "common.h"
 #include "error.h"
 
@@ -28,12 +30,13 @@ class Runner
     const double _totalTime, _eachTime;
     const ActivesPortionCounter<HB> *_apCounter;
     const Detector *_detector = nullptr;
+    const Behavior *_behavior = nullptr;
     VolumeSaver *_volumeSaver = nullptr;
 
 public:
     static void stop();
 
-    Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType = nullptr, const char *detector = nullptr);
+    Runner(const InitConfig init);
     ~Runner();
 
     void calculate(const std::initializer_list<ushort> &types);
@@ -65,14 +68,14 @@ void Runner<HB>::stop()
 }
 
 template <class HB>
-Runner<HB>::Runner(const char *name, uint x, uint y, double totalTime, double eachTime, const char *volumeSaverType, const char *detector) :
-    _name(name), _x(x), _y(y), _totalTime(totalTime), _eachTime(eachTime)
+Runner<HB>::Runner(const InitConfig init) :
+    _name(init.name), _x(init.x), _y(init.y), _totalTime(init.totalTime), _eachTime(init.eachTime)
 {
     if (_name.size() == 0)
     {
         throw Error("Name should not be empty");
     }
-    else if (x == 0 || y == 0)
+    else if (_x == 0 || _y == 0)
     {
         throw Error("X and Y sizes should be grater than 0");
     }
@@ -85,30 +88,45 @@ Runner<HB>::Runner(const char *name, uint x, uint y, double totalTime, double ea
         throw Error("Each time value should be grater than 0 seconds");
     }
 
-    if (volumeSaverType)
+    if (init.volumeSaverType)
     {
         VolumeSaverFactory vsFactory;
-        if (!vsFactory.isRegistered(volumeSaverType))
+        if (!vsFactory.isRegistered(init.volumeSaverType))
         {
             throw Error("Undefined type of volume file saver");
         }
 
-        _volumeSaver = vsFactory.create(volumeSaverType, filename().c_str());
+        _volumeSaver = vsFactory.create(init.volumeSaverType, filename().c_str());
     }
 
     DetectorFactory<HB> detFactory;
-    if (detector)
+    if (init.detectorType)
     {
-        if (!detFactory.isRegistered(detector))
+        if (!detFactory.isRegistered(init.detectorType))
         {
             throw Error("Undefined type of detector");
         }
 
-        _detector = detFactory.create(detector);
+        _detector = detFactory.create(init.detectorType);
     }
-    else if (volumeSaverType)
+    else if (init.volumeSaverType)
     {
          _detector = detFactory.create("surf");
+    }
+
+    BehaviorFactory bhvrFactory;
+    if (init.behavior)
+    {
+        if (!bhvrFactory.isRegistered(init.behavior))
+        {
+            throw Error("Undefined type of behavior");
+        }
+
+        _behavior = bhvrFactory.create(init.behavior);
+    }
+    else
+    {
+        _behavior = bhvrFactory.create("plane");
     }
 }
 
@@ -117,6 +135,7 @@ Runner<HB>::~Runner()
 {
     delete _volumeSaver;
     delete _detector;
+    delete _behavior;
 }
 
 template <class HB>
@@ -153,9 +172,12 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 
 // -------------------------------------------------------------------------------- //
 
+    const BehaviorFactory bhvrFactory;
+    const Behavior *initBhv = bhvrFactory.create("tor");
     typedef typename HB::SurfaceCrystal SC;
-    SC *surfaceCrystal = new SC(dim3(_x, _y, MAX_HEIGHT));
+    SC *surfaceCrystal = new SC(dim3(_x, _y, MAX_HEIGHT), initBhv);
     surfaceCrystal->initialize();
+    surfaceCrystal->changeBehavior(_behavior);
 
 // -------------------------------------------------------------------------------- //
 
