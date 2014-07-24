@@ -47,6 +47,8 @@ public:
 
     static ushort activiesFor(const Atom *atom);
     static ushort hydrogensFor(const Atom *atom);
+    static ushort hToActivesFor(const Atom *atom);
+    static ushort activesToHFor(const Atom *atom);
 
 private:
     template <class T> static inline T &selectForThread(T *container);
@@ -57,15 +59,15 @@ private:
     static const ushort __regularAtomsTypes[];
     static const ushort __regularAtomsNum;
 
-public:
-    static const ushort __atomsNum;
-
     static const ushort __hToActives[];
-    static const ushort __hOnAtoms[];
-    static const ushort __activesOnAtoms[];
     static const ushort __activesToH[];
 
 public:
+    static const ushort __atomsNum;
+
+    static const ushort __hOnAtoms[];
+    static const ushort __activesOnAtoms[];
+
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
 
