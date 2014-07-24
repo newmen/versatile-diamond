@@ -36,7 +36,7 @@ class Runner
 public:
     static void stop();
 
-    Runner(const InitConfig init);
+    Runner(const InitConfig &init);
     ~Runner();
 
     void calculate(const std::initializer_list<ushort> &types);
@@ -68,7 +68,7 @@ void Runner<HB>::stop()
 }
 
 template <class HB>
-Runner<HB>::Runner(const InitConfig init) :
+Runner<HB>::Runner(const InitConfig &init) :
     _name(init.name), _x(init.x), _y(init.y), _totalTime(init.totalTime), _eachTime(init.eachTime)
 {
     if (_name.size() == 0)
