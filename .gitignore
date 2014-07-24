@@ -5,6 +5,7 @@ build-*
 *.swp
 *.d
 *.o
+*~
 
 bin/
 cache/
