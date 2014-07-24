@@ -35,9 +35,10 @@ bool SurfaceDetector<HB>::isShown(const Atom *atom) const
 {
     if (!HB::isRegular(atom)) return true;
 
+    Crystal *crystal = atom->lattice()->crystal();
     bool b = true;
-    atom->eachNeighbour([&b, atom](Atom *nbr) {
-        b &= HB::isRegular(nbr) & (atom->lattice()->crystal() == nbr->lattice()->crystal()) ;
+    atom->eachNeighbour([&b, crystal](Atom *nbr) {
+        b = b && HB::isRegular(nbr) && crystal == nbr->lattice()->crystal();
     });
 
     return !b;
