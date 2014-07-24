@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     if (argc < 6 || argc > 9)
     {
         std::cerr << "Wrong number of run arguments!" << std::endl;
-        std::cout << "Try: " << argv[0] << " run_name X Y total_time save_each_time [out_format]" << std::endl;
+        std::cout << "Try: " << argv[0] << " run_name X Y total_time save_each_time [out_format] [detector_type] [behaviour_type]" << std::endl;
         return 1;
     }
 
