@@ -169,12 +169,10 @@ module VersatileDiamond
         # Filters intersections with parent specie. Checks that anchors points to
         # different atoms of parent specie.
         #
-        # @param [AtomsSequence] child_seq the sequence of child specie
+        # @param [Array] child_anchors the list of atom anchors
         # @param [Array] intersec the array of intersections with child specie
         # @return [Array] the array of filtered intersections
-        def filter_intersections(child_seq, intersec)
-          child_anchors = child_seq.anchors
-
+        def filter_intersections(child_anchors, intersec)
           result = []
           collector = Set.new # stores unique pairs of anchors from intersec
 
@@ -207,8 +205,8 @@ module VersatileDiamond
               raise "Correct intersec wasn't found"
             end
 
-            child_seq = get(child)
-            filtered_intersec = filter_intersections(child_seq, intersec)
+            child_anchors = get(child).anchors
+            filtered_intersec = filter_intersections(child_anchors, intersec)
             next if filtered_intersec.size == 1
 
             # drops one intersec because it's already as original sequence
@@ -216,11 +214,15 @@ module VersatileDiamond
             invert_major = major.invert
 
             filtered_intersec.each do |insec|
-              diff = insec.select { |from, to| major[from] != to }
+              diff = insec.select do |from, to|
+                major[from] != to && child_anchors.include?(to)
+              end
+
               reverse_mirror = diff.map { |from, to| [from, invert_major[to]] }
               if reverse_mirror.any? { |a, b| a == b }
                 raise 'Reverse mirror to same atom'
               end
+
               result << Hash[reverse_mirror]
             end
           end
