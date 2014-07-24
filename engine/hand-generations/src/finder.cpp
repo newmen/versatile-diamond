@@ -47,14 +47,6 @@ void Finder::findAll(Atom **atoms, uint n)
     for (uint i = 0; i < n; ++i)
     {
         assert(atoms[i]);
-
-        bool correctTyped = atoms[i]->type() != NO_VALUE;
-        bool correctLatticed = !atoms[i]->lattice() || (atoms[i]->lattice() && atoms[i]->lattice()->coords().z > 0);
-        if (correctTyped && correctLatticed)
-        {
-            assert(atoms[i]->actives() == Handbook::__activesOnAtoms[atoms[i]->type()]);
-            assert(atoms[i]->hCount() == Handbook::__hOnAtoms[atoms[i]->type()]);
-        }
     }
 #endif // NDEBUG
 

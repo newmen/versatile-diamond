@@ -29,7 +29,7 @@ const ushort *ActivationData<RT>::nums()
 template <ushort RT>
 ushort ActivationData<RT>::toType() const
 {
-    return Handbook::__hToActives[this->target()->type()];
+    return Handbook::hToActivesFor(this->target());
 }
 
 template <ushort RT>
