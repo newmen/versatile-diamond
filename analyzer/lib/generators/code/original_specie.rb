@@ -4,9 +4,11 @@ module VersatileDiamond
 
       # Creates Original Specie class which is used when specie is simmetric
       class OriginalSpecie < BaseSpecie
+        extend TotalDelegator
         extend SubSpecie
 
         use_prefix 'original'
+        deligate_to :@specie
 
         # Initialize original specie class code generator
         # @param [EngineCode] generator see at #super same argument
@@ -16,6 +18,10 @@ module VersatileDiamond
           @specie = specie
           @_prefix = nil
         end
+
+        # Doesn't be automaticaly deligated because current instance already
+        # have #template_name method
+        undef :template_name
 
         # Gets the main specie to which all undefined methods are redirects
         # @return [Specie] the main original specie
@@ -27,15 +33,6 @@ module VersatileDiamond
         # @return [Array] the array with base engine class name
         def base_classes
           [target_specie.wrapped_base_class_name]
-        end
-
-        # Deligates all method calls to main specie class generator
-        # @param [Symbol] method_name which was not found
-        # @param [Array] args the arguments of missed method
-        def method_missing(method_name, *args)
-          target_specie.respond_to?(method_name) ?
-            target_specie.public_send(method_name, *args) :
-            super
         end
 
       private

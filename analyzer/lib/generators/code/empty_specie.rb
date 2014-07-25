@@ -5,9 +5,11 @@ module VersatileDiamond
       # Creates Symmetric Specie class which is used when specie is simmetric
       # @abstract
       class EmptySpecie < BaseSpecie
+        extend TotalDelegator
         extend SubSpecie
 
         use_prefix 'symmetric'
+        deligate_to :@specie
 
         # Initialize original specie class code generator
         # @param [EngineCode] generator see at #super same argument
@@ -16,14 +18,6 @@ module VersatileDiamond
           super(generator)
           @specie = original_specie
           @_prefix = nil
-        end
-
-      private
-
-        # Gets the main specie to which all undefined methods are redirects
-        # @return [Specie] the main original specie
-        def target_specie
-          @specie.target_specie
         end
 
         # Gets the base empty class of cpp class of symmetric specie
@@ -48,6 +42,14 @@ module VersatileDiamond
         # @return [String] the name of outer class header file
         def outer_base_file
           'empty'
+        end
+
+      private
+
+        # Gets the main specie to which all undefined methods are redirects
+        # @return [Specie] the main original specie
+        def target_specie
+          @specie.target_specie
         end
       end
 
