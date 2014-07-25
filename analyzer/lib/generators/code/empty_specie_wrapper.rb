@@ -12,16 +12,19 @@ module VersatileDiamond
         # Remembers empty specie which will be wrapped
         # @param [EmptySpecie | SpecieWrapper] empty_specie the specie which will be
         #   wrapped
-        def initialize(empty_specie)
+        # @param [EmptySpeciesCounter] counter of empty species
+        def initialize(counter, empty_specie)
+          @counter = counter
           @specie = empty_specie
-          @index = inc_specie_index
+
+          @index = @counter.next_index(self)
         end
 
         # Gets the class name of current specie code instance
         # @return [String] the class name of specie code instance
         def class_name
           result = @specie.class_name
-          @@_counter[spec.name] > 1 ? "#{result}#{@index}" : result
+          @counter.many_symmetrics?(self) ? "#{result}#{@index}" : result
         end
 
         # Gets the base class of cpp class of symmetric specie

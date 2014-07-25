@@ -11,13 +11,14 @@ module VersatileDiamond
           def self.define_code_instances(concept_names)
             concept_names.each do |name|
               set(:"code_#{name}") do
-                Specie.new(empty_generator, cacher, send(:"dept_#{name}"))
+                Specie.new(empty_generator, seqs_cacher, send(:"dept_#{name}"))
               end
             end
           end
 
           set(:empty_generator) { stub_generator({}) }
-          set(:cacher) { SequencesCacher.new }
+          set(:seqs_cacher) { SequencesCacher.new }
+          set(:empties_counter) { EmptySpeciesCounter.new }
 
           define_code_instances([
             :hydrogen_ion,

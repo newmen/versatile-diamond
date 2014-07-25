@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       describe AtomsSwappedSpecie, type: :code do
-        subject { described_class.new(empty_class, 1, 2) }
+        subject { described_class.new(empties_counter, empty_class, 1, 2) }
         let(:original_class) { OriginalSpecie.new(empty_generator, code_bridge_base) }
         let(:empty_class) { EmptySpecie.new(empty_generator, original_class) }
 
@@ -21,8 +21,10 @@ module VersatileDiamond
         end
 
         describe 'with index' do
-          # creates another symmetric instance for get an index
-          before { described_class.new(empty_class, 0, 1) } # <- fake indexes
+          before do
+            # creates another symmetric instance for get an index in names
+            described_class.new(empties_counter, empty_class, 0, 1) # <- fake indexes
+          end
 
           describe '#define_name' do
             it { expect(subject.define_name).to eq('SYMMETRIC_BRIDGE1_H') }
