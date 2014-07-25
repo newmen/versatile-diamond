@@ -196,8 +196,7 @@ module VersatileDiamond
 
         # Finds symmetric atoms of internal specie by children of them
         def symmetric_atoms
-          result = Set.new
-          symmetric_child_candidates.each do |child|
+          symmetric_child_candidates.each.with_object([]) do |child, result|
             intersec = intersec_with(child)
 
             # intersec must be found in any case
@@ -223,11 +222,16 @@ module VersatileDiamond
                 raise 'Reverse mirror to same atom'
               end
 
-              result << Hash[reverse_mirror]
+              reverse_mirror = Hash[reverse_mirror]
+              already_present = result.any? do |rh|
+                rh == reverse_mirror || rh == reverse_mirror.invert
+              end
+
+              unless already_present
+                result << reverse_mirror
+              end
             end
           end
-
-          result.to_a
         end
 
         # Gets the children which have dependency from internal specie only one time

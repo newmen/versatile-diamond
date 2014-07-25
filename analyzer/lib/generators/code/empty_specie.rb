@@ -4,7 +4,7 @@ module VersatileDiamond
 
       # Creates Symmetric Specie class which is used when specie is simmetric
       # @abstract
-      class SymmetricSpecie < BaseSpecie
+      class EmptySpecie < BaseSpecie
         extend SubSpecie
 
         use_prefix 'symmetric'
@@ -12,32 +12,24 @@ module VersatileDiamond
         # Initialize original specie class code generator
         # @param [EngineCode] generator see at #super same argument
         # @param [Specie] original specie which is main original specie_class generator
-        def initialize(generator, original_specie, from_index, to_index)
+        def initialize(generator, original_specie)
           super(generator)
           @specie = original_specie
-          @from_index, @to_index = from_index, to_index
           @_prefix = nil
-        end
-
-        # Gets the same template file name for each derived classes
-        # @return [String] the name of template file
-        # @override
-        def template_name
-          'symmetric_specie'
         end
 
       private
 
         # Gets the main specie to which all undefined methods are redirects
         # @return [Specie] the main original specie
-        def main_specie
-          @specie.main_specie
+        def target_specie
+          @specie.target_specie
         end
 
-        # Gets the base class of cpp class of symmetric specie
+        # Gets the base empty class of cpp class of symmetric specie
         # @return [String] the name of base class
         def base_class_name
-          "#{wrapper_class}<Empty<#{enum_name}>, #{@from_index}, #{@to_index}>"
+          "Empty<#{enum_name}>"
         end
 
         # Gets class name of original specie
