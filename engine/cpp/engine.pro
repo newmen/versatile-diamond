@@ -110,6 +110,9 @@ SOURCES += \
     mc/multi_events_container.cpp \
     mc/random_generator.cpp \
     phases/amorph.cpp \
+    phases/behavior_factory.cpp \
+    phases/behavior_plane.cpp \
+    phases/behavior_tor.cpp \
     phases/crystal.cpp \
     reactions/lateral_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
@@ -259,6 +262,11 @@ HEADERS += \
     mc/multi_events_container.h \
     mc/random_generator.h \
     phases/amorph.h \
+    phases/atoms_vector3d.h \
+    phases/behavior.h \
+    phases/behavior_factory.h \
+    phases/behavior_plane.h \
+    phases/behavior_tor.h \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
     reactions/concrete_lateral_reaction.h \
@@ -293,8 +301,8 @@ HEADERS += \
     tools/lockable.h \
     tools/process_mem_usage.h \
     tools/runner.h \
-    tools/savers/actives_portion_counter.h \
     tools/savers/accumulator.h \
+    tools/savers/actives_portion_counter.h \
     tools/savers/all_atoms_detector.h \
     tools/savers/atom_info.h \
     tools/savers/bond_info.h \
@@ -318,7 +326,8 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    tools/init_config.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

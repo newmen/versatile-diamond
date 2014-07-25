@@ -311,7 +311,7 @@ float3 Atom::correctAmorphPos() const
     const float amorphBondLength = 1.7;
 
     float3 position;
-    auto goodRelatives = anchorRelatives();
+    auto goodRelatives = goodCrystalRelatives();
     uint counter = goodRelatives.size();
 
     for (const Atom *nbr : goodRelatives)
@@ -332,6 +332,7 @@ float3 Atom::correctAmorphPos() const
         const float3 srl = goodRelatives[1]->relativePosition();
 
         double l = frl.length(srl);
+        assert(l > 0);
         double halfL = l * 0.5;
         assert(halfL < amorphBondLength);
 
@@ -342,7 +343,7 @@ float3 Atom::correctAmorphPos() const
         position.y += smallXY / std::sin(angleXY);
 
         double tiltedH = std::sqrt(amorphBondLength * amorphBondLength - halfL * halfL);
-        double angleH = (std::abs(diffZ) < 1e-3) ? std::asin(l / diffZ) : 0;
+        double angleH = (std::abs(diffZ) < 1e-3) ? 0 : std::asin(l / diffZ);
         position.z += tiltedH / std::cos(angleH);
     }
     else
@@ -369,19 +370,21 @@ float3 Atom::correctAmorphPos() const
     return position;
 }
 
-std::vector<const Atom *> Atom::anchorRelatives() const
+std::vector<const Atom *> Atom::goodCrystalRelatives() const
 {
+    assert(!lattice());
+
     const ushort crystNNs = crystalNeighboursNum();
     const int3 *crystalCrds = nullptr;
-    if (lattice())
-    {
-        crystalCrds = &lattice()->coords();
-    }
 
     std::vector<const Atom *> result;
     for (const Atom *nbr : _relatives)
     {
-        if (crystalCrds && nbr->lattice())
+        if (!crystalCrds && nbr->lattice())
+        {
+            crystalCrds = &nbr->lattice()->coords();
+        }
+        else if (nbr->lattice())
         {
             int3 diff = *crystalCrds - nbr->lattice()->coords();
             if (!diff.isUnit()) continue;
@@ -390,7 +393,10 @@ std::vector<const Atom *> Atom::anchorRelatives() const
         ushort nbrCrystNNs = nbr->crystalNeighboursNum();
         if (crystNNs < nbrCrystNNs || (crystNNs == nbrCrystNNs && bonds() < nbr->bonds()))
         {
-            result.push_back(nbr);
+            if (std::find(result.cbegin(), result.cend(), nbr) == result.cend())
+            {
+                result.push_back(nbr);
+            }
         }
     }
 

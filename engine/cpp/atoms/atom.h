@@ -76,9 +76,9 @@ public:
     virtual const char *name() const = 0;
 
     virtual ushort valence() const = 0;
+    virtual ushort hCount() const;
+    virtual ushort actives() const { return _actives; }
     ushort bonds() const { return _relatives.size(); }
-    ushort actives() const { return _actives; }
-    ushort hCount() const;
 
     float3 realPosition() const;
 
@@ -97,7 +97,7 @@ private:
 
     float3 relativePosition() const;
     float3 correctAmorphPos() const;
-    std::vector<const Atom *> anchorRelatives() const;
+    std::vector<const Atom *> goodCrystalRelatives() const;
 
     uint hash(ushort first, ushort second) const
     {

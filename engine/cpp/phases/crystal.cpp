@@ -1,13 +1,12 @@
 #include "crystal.h"
 #include "../atoms/atom.h"
-#include "../atoms/lattice.h"
 
 //#include <iostream>
 
 namespace vd
 {
 
-Crystal::Crystal(const dim3 &sizes) : _atoms(sizes, (Atom *)nullptr)
+Crystal::Crystal(const dim3 &sizes, const Behavior *behavior) : _atoms(behavior, sizes)
 {
 }
 
@@ -24,6 +23,11 @@ void Crystal::initialize()
     bondAllAtoms();
 
     findAll();
+}
+
+void Crystal::changeBehavior(const Behavior *behavior)
+{
+    _atoms.changeBehavior(behavior);
 }
 
 void Crystal::insert(Atom *atom, const int3 &coords)
