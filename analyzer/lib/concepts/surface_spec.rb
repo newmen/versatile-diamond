@@ -54,7 +54,7 @@ module VersatileDiamond
       # @raise [Lattices::Base::UndefinedRelation] when passed relation is
       #   undefined
       # @return [Bond] the opposite relation
-      def opposit_relation(first, second, relation)
+      def opposite_relation(first, second, relation)
         target_lattice = first.lattice || second.lattice
         if target_lattice
           other_lattice = first.lattice == target_lattice ? second.lattice : nil
