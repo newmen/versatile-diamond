@@ -3,8 +3,7 @@ module VersatileDiamond
     module Code
 
       # Creates Original Specie class which is used when specie is simmetric
-      class OriginalSpecie < CppClassWithGen
-        include PolynameClass
+      class OriginalSpecie < BaseSpecie
         extend SubSpecie
 
         use_prefix 'original'
@@ -20,29 +19,22 @@ module VersatileDiamond
 
         # Gets the main specie to which all undefined methods are redirects
         # @return [Specie] the main original specie
-        def main_specie
+        def target_specie
           @specie
-        end
-
-        # Gets the file name of current specie
-        # @return [String] the file name
-        # @override
-        def file_name
-          "#{prefix}_#{@specie.enum_name}".downcase
         end
 
         # Substitute base classes list for original specie template rendering
         # @return [Array] the array with base engine class name
         def base_classes
-          [main_specie.wrapped_base_class_name]
+          [target_specie.wrapped_base_class_name]
         end
 
         # Deligates all method calls to main specie class generator
         # @param [Symbol] method_name which was not found
         # @param [Array] args the arguments of missed method
         def method_missing(method_name, *args)
-          main_specie.respond_to?(method_name) ?
-            main_specie.public_send(method_name, *args) :
+          target_specie.respond_to?(method_name) ?
+            target_specie.public_send(method_name, *args) :
             super
         end
 
@@ -52,13 +44,6 @@ module VersatileDiamond
         # @return [Boolean] false
         def render_find_algorithms?
           return false
-        end
-
-        # Gets the name of template file
-        # @return [String] the name of template file
-        # @override
-        def template_name
-          main_specie.template_name
         end
       end
 

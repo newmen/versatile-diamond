@@ -12,7 +12,7 @@ module VersatileDiamond
             # Gets the #{name} name of current specie
             # @return [String] the #{name} name
             define_method(method_name) do
-              value = main_specie.public_send(method_name)
+              value = target_specie.public_send(method_name)
               "#{prefix.public_send(method)}#{separator}#{value}"
             end
           end
@@ -23,7 +23,7 @@ module VersatileDiamond
             return @_prefix if @_prefix
 
             @_prefix = default_prefix
-            original_name = main_specie.spec.name
+            original_name = target_specie.spec.name
             loop do
               full_name = "#{@_prefix}_#{original_name}".to_sym
               break unless @generator.specie_class(full_name)
