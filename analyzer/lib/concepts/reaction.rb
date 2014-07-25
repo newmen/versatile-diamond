@@ -214,7 +214,7 @@ module VersatileDiamond
       # @raise [Lattices::Base::UndefinedRelation] when passed relation is
       #   undefined
       # @return [Position] the opposite position relation
-      def opposit_relation(first, second, relation)
+      def opposite_relation(first, second, relation)
         _, first_atom = first
         _, second_atom = second
         first_atom.lattice.opposite_relation(second_atom.lattice, relation)

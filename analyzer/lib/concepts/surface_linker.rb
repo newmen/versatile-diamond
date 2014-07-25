@@ -16,7 +16,7 @@ module VersatileDiamond
       #   wrong for current lattice
       # @raise [Position::Duplicate] if same position already exist
       def link_together(first, second, relation)
-        orel = opposit_relation(first, second, relation)
+        orel = opposite_relation(first, second, relation)
 
         raise Position::Duplicate, relation if relation.class == Position &&
           has_positions?(first, second, relation, orel)
