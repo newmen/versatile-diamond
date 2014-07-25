@@ -5,6 +5,7 @@
 using namespace vd;
 
 #include "diamond_crystal_properties.h"
+#include "../cpp/phases/behavior.h"
 
 class Diamond : public DiamondCrystalProperties<Crystal>
 {
@@ -15,7 +16,7 @@ public:
     typedef DiamondRelations<Crystal> Relations;
 #endif // NDEBUG
 
-    Diamond(const dim3 &sizes, int defaultSurfaceHeight = 3);
+    Diamond(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight = 3);
     ~Diamond();
 
 protected:

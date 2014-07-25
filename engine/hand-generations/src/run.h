@@ -2,7 +2,7 @@
 #define RUN_H
 
 #include <tools/runner.h>
-#include "../src/handbook.h"
+#include "handbook.h"
 using namespace vd;
 
 void run(Runner<Handbook> &runner);

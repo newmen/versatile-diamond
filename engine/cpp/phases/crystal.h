@@ -2,7 +2,7 @@
 #define CRYSTAL_H
 
 #include "../tools/common.h"
-#include "../tools/vector3d.h"
+#include "atoms_vector3d.h"
 
 namespace vd
 {
@@ -11,19 +11,20 @@ class Atom;
 
 class Crystal
 {
-    typedef vector3d<Atom *> Atoms;
-    Atoms _atoms;
+    AtomsVector3d _atoms;
 
 public:
-    Crystal(const dim3 &sizes);
+    Crystal(const dim3 &sizes, const Behavior *behavior);
     virtual ~Crystal();
 
     void initialize();
 
+    void changeBehavior (const Behavior *behavior);
+
     void insert(Atom *atom, const int3 &coords);
     void erase(Atom *atom);
 
-    Atom *atom(const int3 &coords) const { return _atoms[coords]; }
+    Atom *atom(const int3 &coords) { return _atoms[coords]; }
 
     uint countAtoms() const;
     const dim3 &sizes() const { return _atoms.sizes(); }
@@ -52,8 +53,8 @@ protected:
 
     void makeLayer(uint z, ushort type, ushort actives);
 
-    const Atoms &atoms() const { return _atoms; }
-    Atoms &atoms() { return _atoms; }
+    const AtomsVector3d &atoms() const { return _atoms; }
+    AtomsVector3d &atoms() { return _atoms; }
 
 private:
     Crystal(const Crystal &) = delete;
