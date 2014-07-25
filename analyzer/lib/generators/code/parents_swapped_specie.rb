@@ -3,12 +3,12 @@ module VersatileDiamond
     module Code
 
       # Creates parents swapped symmetric specie
-      class ParentsSwappedSpecie < SymmetricSpecie
+      class ParentsSwappedSpecie < SwappedSpecie
       private
 
         # Defines wrapper class name
         # @return [String] the engine wrapper class name
-        def wrapper_class
+        def wrapper_class_name
           'ParentsSwapWrapper'
         end
       end

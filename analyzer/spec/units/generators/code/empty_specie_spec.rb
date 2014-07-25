@@ -8,24 +8,11 @@ module VersatileDiamond
         subject { described_class.new(empty_generator, original_class) }
         let(:original_class) { OriginalSpecie.new(empty_generator, code_bridge_base) }
 
-        describe '#template_name' do
-          it { expect(subject.template_name).to eq('symmetric_specie') }
-        end
+        it_behaves_like :empty_bridge_template_methods
+        it_behaves_like :empty_bridge_name_methods
 
-        describe '#define_name' do
-          it { expect(subject.define_name).to eq('SYMMETRIC_BRIDGE_H') }
-        end
-
-        describe '#file_name' do
-          it { expect(subject.file_name).to eq('symmetric_bridge') }
-        end
-
-        describe '#class_name' do
-          it { expect(subject.class_name).to eq('SymmetricBridge') }
-        end
-
-        describe '#enum_name' do
-          it { expect(subject.enum_name).to eq('SYMMETRIC_BRIDGE') }
+        describe '#base_class_name' do
+          it { expect(subject.base_class_name).to eq('Empty<SYMMETRIC_BRIDGE>') }
         end
       end
 
