@@ -7,12 +7,13 @@ module VersatileDiamond
       class SwappedSpecie < EmptySpecieWrapper
 
         # Also remembers indexes of swapped atoms
+        # @param [EmptySpeciesCounter] counter see at #super same argument
         # @param [EmptySpecie | SpecieWrapper] empty_specie see at #super same argument
         # @param [Integer] from_index the atom index which will be swapped
         # @param [Integer] to_index the atom index to which will be swapped
         # @override
-        def initialize(empty_specie, from_index, to_index)
-          super(empty_specie)
+        def initialize(counter, empty_specie, from_index, to_index)
+          super(counter, empty_specie)
           @from_index, @to_index = from_index, to_index
         end
 
