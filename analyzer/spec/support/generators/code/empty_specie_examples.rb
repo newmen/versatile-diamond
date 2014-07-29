@@ -3,7 +3,7 @@ module VersatileDiamond
     module Support
 
       module EmptySpecieExamples
-        shared_examples_for :empty_bridge_template_methods do
+        shared_examples_for :empty_specie_template_methods do
           describe '#counter_key' do
             it { expect(subject.counter_key).to eq(:bridge) }
           end
@@ -13,11 +13,12 @@ module VersatileDiamond
           end
 
           describe '#original_class_name' do
-            it { expect(subject.original_class_name).to eq('OriginalBridge') }
+            it { expect(subject.original_class_name).to eq("Original#{cap_name}") }
           end
 
           describe '#original_file_path' do
-            it { expect(subject.original_file_path).to eq('base/original_bridge') }
+            let(:value) { "base/original_#{cap_name.downcase}" }
+            it { expect(subject.original_file_path).to eq(value) }
           end
 
           describe '#outer_base_file' do
@@ -25,44 +26,57 @@ module VersatileDiamond
           end
         end
 
-        shared_examples_for :empty_bridge_name_methods do
+        shared_examples_for :empty_specie_name_methods do
           describe '#define_name' do
-            it { expect(subject.define_name).to eq('SYMMETRIC_BRIDGE_H') }
+            it { expect(subject.define_name).to eq("SYMMETRIC_#{cap_name.upcase}_H") }
           end
 
           describe '#file_name' do
-            it { expect(subject.file_name).to eq('symmetric_bridge') }
+            it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}") }
           end
 
           describe '#class_name' do
-            it { expect(subject.class_name).to eq('SymmetricBridge') }
+            it { expect(subject.class_name).to eq("Symmetric#{cap_name}") }
           end
 
           describe '#enum_name' do
-            it { expect(subject.enum_name).to eq('SYMMETRIC_BRIDGE') }
+            it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
           end
         end
 
-        shared_examples_for :twise_bridge_name_methods do
+        shared_examples_for :twise_specie_name_methods do
           before do
             subject # creates subject
+            another # creates another symmetric instance for get an index in names
           end
 
           describe '#define_name' do
-            it { expect(subject.define_name).to eq('SYMMETRIC_BRIDGE1_H') }
+            it { expect(subject.define_name).to eq("SYMMETRIC_#{cap_name.upcase}1_H") }
           end
 
           describe '#file_name' do
-            it { expect(subject.file_name).to eq('symmetric_bridge1') }
+            it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}1") }
           end
 
           describe '#class_name' do
-            it { expect(subject.class_name).to eq('SymmetricBridge1') }
+            it { expect(subject.class_name).to eq("Symmetric#{cap_name}1") }
           end
 
           describe '#enum_name' do
             # without index any time
-            it { expect(subject.enum_name).to eq('SYMMETRIC_BRIDGE') }
+            it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
+          end
+        end
+
+        shared_examples_for :all_common_empty_specie_checks do
+          let(:cap_name) { 'Bridge' }
+
+          it_behaves_like :empty_specie_template_methods
+          it_behaves_like :empty_specie_name_methods
+          it_behaves_like :twise_specie_name_methods do
+            let(:another) do
+              described_class.new(empty_generator, original_class, 0, 1) # fake indexes
+            end
           end
         end
       end

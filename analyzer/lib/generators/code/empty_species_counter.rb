@@ -24,8 +24,8 @@ module VersatileDiamond
         # @param [EmptySpecie] empty_specie the specie by which the number will be
         #   gotten
         # @return [Boolean] many or one
-        def many_symmetrics?(empty_specie)
-          @counter[empty_specie.counter_key] > 1
+        def has_symmetrics?(empty_specie)
+          @counter[empty_specie.counter_key] && @counter[empty_specie.counter_key] > 1
         end
       end
 
