@@ -97,9 +97,6 @@ module VersatileDiamond
         end
         set(:vinyl) { SpecificSpec.new(ethylene_base, c1: activated_c) }
 
-        def make_bridge_base(name)
-        end
-
         set(:bridge_base) do
           s = DuppableSurfaceSpec.new(:bridge, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)

@@ -113,7 +113,9 @@ module VersatileDiamond
           cacher.get(spec)
         end
 
-        # Gets the array of twin pairs
+        # Gets the array of twin pairs where each first elemeint is twin atom from
+        # child specie and each second element is atom from current specie
+        #
         # @return [Array] the array of twin pairs
         def back_twins
           anchors.map { |atom| [spec.rest.twin(atom), atom] }
@@ -227,9 +229,7 @@ module VersatileDiamond
                 rh == reverse_mirror || rh == reverse_mirror.invert
               end
 
-              unless already_present
-                result << reverse_mirror
-              end
+              result << reverse_mirror unless already_present
             end
           end
         end
