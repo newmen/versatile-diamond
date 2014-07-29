@@ -21,13 +21,13 @@ module VersatileDiamond
           end
         end
 
-        describe '#many_symmetrics?' do
+        describe '#has_symmetrics?' do
           before { do_next }
-          it { expect(empties_counter.many_symmetrics?(empty_specie)).to be_falsey }
+          it { expect(empties_counter.has_symmetrics?(empty_specie)).to be_falsey }
 
           describe 'twise' do
             before { do_next }
-            it { expect(empties_counter.many_symmetrics?(empty_specie)).to be_truthy }
+            it { expect(empties_counter.has_symmetrics?(empty_specie)).to be_truthy }
           end
         end
       end

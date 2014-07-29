@@ -12,10 +12,12 @@ module VersatileDiamond
         # Initialize original specie class code generator
         # @param [EngineCode] generator see at #super same argument
         # @param [BaseSpecie] specie which is wrapped specie class generator
-        def initialize(generator, specie)
+        # @option [Boolean] :registrate setup creation or not specific index for
+        #   current empty symmetric specie
+        def initialize(generator, specie, registrate: true)
           super(generator)
           @specie = specie
-          @index = counter.next_index(self)
+          @index = registrate && counter.next_index(self)
 
           @_prefix = nil
         end
@@ -38,8 +40,8 @@ module VersatileDiamond
         # @return [String] the class name of specie code instance
         alias_method :super_class_name, :class_name
         def class_name
-          super_result = super_class_name
-          counter.many_symmetrics?(self) ? "#{super_result}#{@index}" : super_result
+          counter.has_symmetrics?(self) ?
+            "#{super_class_name}#{@index}" : super_class_name
         end
 
         # Gets the base class for cpp class of symmetric specie
@@ -70,13 +72,15 @@ module VersatileDiamond
           'empty'
         end
 
-      private
+      protected
 
         # Gets the main specie to which all undefined methods are redirects
         # @return [Specie] the main original specie
         def target_specie
           @specie.target_specie
         end
+
+      private
 
         # Gets the original specie of target specie
         # @return [OriginalSpecie] the original specie which is wrapping

@@ -11,9 +11,10 @@ module VersatileDiamond
         # @param [BaseSpecie] specie see at #super same argument
         # @param [Integer] from_index the atom index which will be swapped
         # @param [Integer] to_index the atom index to which will be swapped
+        # @option [Boolean] :registrate see at #super same argument
         # @override
-        def initialize(generator, specie, from_index, to_index)
-          super(generator, specie)
+        def initialize(generator, specie, from_index, to_index, registrate: true)
+          super(generator, specie, registrate: registrate)
           @from_index, @to_index = from_index, to_index
         end
 
