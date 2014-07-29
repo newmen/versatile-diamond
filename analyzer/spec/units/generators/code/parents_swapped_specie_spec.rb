@@ -4,7 +4,7 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe AtomsSwappedSpecie, type: :code do
+      describe ParentsSwappedSpecie, type: :code do
         subject { described_class.new(empty_generator, original_class, 1, 2) }
         let(:original_class) { OriginalSpecie.new(empty_generator, code_bridge_base) }
 
@@ -18,7 +18,7 @@ module VersatileDiamond
         end
 
         describe '#base_class_name' do
-          let(:base_class_name) { 'AtomsSwapWrapper<Empty<SYMMETRIC_BRIDGE>, 1, 2>' }
+          let(:base_class_name) { 'ParentsSwapWrapper<Empty<SYMMETRIC_BRIDGE>, 1, 2>' }
           it { expect(subject.base_class_name).to eq(base_class_name) }
         end
       end

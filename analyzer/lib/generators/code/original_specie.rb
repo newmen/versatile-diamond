@@ -4,11 +4,10 @@ module VersatileDiamond
 
       # Creates Original Specie class which is used when specie is simmetric
       class OriginalSpecie < BaseSpecie
-        extend TotalDelegator
+        include EnumerableFileName
         extend SubSpecie
 
         use_prefix 'original'
-        deligate_to :@specie
 
         # Initialize original specie class code generator
         # @param [EngineCode] generator see at #super same argument
@@ -19,7 +18,7 @@ module VersatileDiamond
           @_prefix = nil
         end
 
-        # Doesn't be automaticaly deligated because current instance already
+        # Doesn't be automaticaly delegated because current instance already
         # have #template_name method
         undef :template_name
 
@@ -33,6 +32,20 @@ module VersatileDiamond
         # @return [Array] the array with base engine class name
         def base_classes
           [target_specie.wrapped_base_class_name]
+        end
+
+        # Gets full path to specie header file
+        # @return [String] the path to specie header file
+        def full_file_path
+          "#{outer_base_file}/#{file_name}"
+        end
+
+        # Delegates all missed methods to target specie for correct rendering source
+        # code template
+        #
+        # @param [Array] args the arguments of missed method
+        def method_missing(*args, &block)
+          target_specie.public_send(*args, &block)
         end
 
       private

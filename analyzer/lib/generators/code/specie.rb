@@ -9,9 +9,10 @@ module VersatileDiamond
       # sorted, because in method #generate builds all necessary symmetric presentation
       # of specie
       class Specie < BaseSpecie
+        include EnumerableFileName
         include PartialRenderer
 
-        attr_reader :spec
+        attr_reader :spec, :original
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -109,6 +110,12 @@ module VersatileDiamond
         # @return [String] the outer base class name
         def outer_base_file
           outer_base_class.underscore
+        end
+
+        # Gets full path to specie header file
+        # @return [String] the path to specie header file
+        def full_file_path
+          "#{outer_base_file}/#{file_name}"
         end
 
       private

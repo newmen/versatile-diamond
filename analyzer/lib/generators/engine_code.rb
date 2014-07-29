@@ -4,6 +4,8 @@ module VersatileDiamond
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
 
+      attr_reader :empties_counter
+
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
       # @param [String] out_path the path where result files will be placed
@@ -12,6 +14,7 @@ module VersatileDiamond
         @out_path = out_path
 
         @sequences_cacher = Code::SequencesCacher.new
+        @empties_counter = Code::EmptySpeciesCounter.new
 
         @_dependent_species = nil
         @species = collect_code_species

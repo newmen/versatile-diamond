@@ -49,7 +49,7 @@ module VersatileDiamond
       end
 
       # Approximate compares two instances. If their classes is same then
-      # instances is the same. Else deligate comparing to other instance.
+      # instances is the same. Else delegate comparing to other instance.
       #
       # @param [Concepts::Bond] other an other comparing instances
       # @return [Boolean] same or not
