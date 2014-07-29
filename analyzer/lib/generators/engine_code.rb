@@ -4,7 +4,7 @@ module VersatileDiamond
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
 
-      attr_reader :empties_counter
+      attr_reader :empties_counter, :sequences_cacher
 
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument

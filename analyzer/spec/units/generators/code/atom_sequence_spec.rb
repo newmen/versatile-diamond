@@ -8,14 +8,13 @@ module VersatileDiamond
         shared_examples_for :apply_all do
           let(:base_specs) { bases + (subject.specific? ? [] : [subject]) }
           let(:specific_specs) { specifics + (subject.specific? ? [subject] : []) }
-          let(:analysis_results) do
-            stub_results(base_specs: base_specs, specific_specs: specific_specs)
+          let(:generator) do
+            stub_generator(base_specs: base_specs, specific_specs: specific_specs)
           end
 
-          before { analysis_results }
+          before { generator }
 
-          let(:cache) { SequencesCacher.new }
-          let(:sequence) { cache.get(subject) }
+          let(:sequence) { generator.sequences_cacher.get(subject) }
 
           it '#original' do
             expect(sequence.original).to eq(original)
@@ -28,6 +27,14 @@ module VersatileDiamond
           it '#delta' do
             expect(sequence.delta).to eq(delta)
           end
+
+          let(:code_specie) { generator.specie_class(subject) }
+          let(:original_specie) { OriginalSpecie.new(generator, code_specie) }
+
+          it '#symmetrics' do
+            sbcs = sequence.symmetrics(generator, original_specie)
+            expect(sbcs.map(&:base_class_name)).to match_array(symmetric_base_classes)
+          end
         end
 
         it_behaves_like :apply_all do
@@ -35,7 +42,6 @@ module VersatileDiamond
           let(:bases) { [dept_dimer_base, dept_methyl_on_bridge_base] }
           let(:specifics) { [dept_activated_bridge] }
 
-          let(:delta) { 0 }
           let(:original) do
             [
               bridge_base.atom(:ct),
@@ -44,6 +50,8 @@ module VersatileDiamond
             ]
           end
           let(:short) { original }
+          let(:delta) { 0 }
+          let(:symmetric_base_classes) { [] }
         end
 
         it_behaves_like :apply_all do
@@ -51,7 +59,6 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base] }
           let(:specifics) { [dept_activated_dimer] }
 
-          let(:delta) { 0 }
           let(:original) do
             [
               dimer_base.atom(:cr),
@@ -67,6 +74,10 @@ module VersatileDiamond
               dimer_base.atom(:cr),
               dimer_base.atom(:cl),
             ]
+          end
+          let(:delta) { 0 }
+          let(:symmetric_base_classes) do
+            ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
           end
         end
 
@@ -75,7 +86,6 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
 
-          let(:delta) { 1 }
           let(:original) do
             [
               methyl_on_bridge_base.atom(:cm),
@@ -90,6 +100,8 @@ module VersatileDiamond
               methyl_on_bridge_base.atom(:cm),
             ]
           end
+          let(:delta) { 1 }
+          let(:symmetric_base_classes) { [] }
         end
 
         it_behaves_like :apply_all do
@@ -97,7 +109,6 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
           let(:specifics) { [dept_activated_methyl_on_dimer] }
 
-          let(:delta) { 0 }
           let(:original) do
             [
               methyl_on_dimer_base.atom(:cm),
@@ -115,6 +126,8 @@ module VersatileDiamond
               methyl_on_dimer_base.atom(:cl),
             ]
           end
+          let(:delta) { 0 }
+          let(:symmetric_base_classes) { [] }
         end
       end
 
