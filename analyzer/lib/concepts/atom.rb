@@ -42,7 +42,7 @@ module VersatileDiamond
       end
 
       # Compares two atoms and if atom is instance of same class then comparing
-      # the name and the lattice. Another cases action is deligate to
+      # the name and the lattice. Another cases action is delegate to
       # comparable atom.
       #
       # @param [Atom | AtomReference | SpecificAtom] other the other atom with

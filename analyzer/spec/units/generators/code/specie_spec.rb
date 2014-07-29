@@ -19,6 +19,10 @@ module VersatileDiamond
           it { expect(code_bridge_base.spec).to eq(dept_bridge_base) }
         end
 
+        describe '#original' do
+          it { expect(code_bridge_base.original).to be_a(OriginalSpecie) }
+        end
+
         describe '#template_name' do
           it { expect(code_bridge_base.template_name).to eq('specie') }
         end
@@ -188,6 +192,14 @@ module VersatileDiamond
           describe 'specific leaf specie' do
             pending 'asdf'
           end
+        end
+
+        describe '#outer_base_file' do
+          it { expect(code_bridge_base.outer_base_file).to eq('base') }
+        end
+
+        describe '#full_file_path' do
+          it { expect(code_bridge_base.full_file_path).to eq('base/bridge') }
         end
 
         describe '#symmetric?' do

@@ -4,16 +4,16 @@ module VersatileDiamond
 
       # Wraps swapped symmetric specie
       # @abstract
-      class SwappedSpecie < EmptySpecieWrapper
+      class SwappedSpecie < EmptySpecie
 
         # Also remembers indexes of swapped atoms
-        # @param [EmptySpeciesCounter] counter see at #super same argument
-        # @param [EmptySpecie | SpecieWrapper] empty_specie see at #super same argument
+        # @param [EngineCode] generator see at #super same argument
+        # @param [BaseSpecie] specie see at #super same argument
         # @param [Integer] from_index the atom index which will be swapped
         # @param [Integer] to_index the atom index to which will be swapped
         # @override
-        def initialize(counter, empty_specie, from_index, to_index)
-          super(counter, empty_specie)
+        def initialize(generator, specie, from_index, to_index)
+          super(generator, specie)
           @from_index, @to_index = from_index, to_index
         end
 

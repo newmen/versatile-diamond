@@ -41,6 +41,10 @@ module VersatileDiamond
           let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
           it { expect(subject.base_classes).to eq([name]) }
         end
+
+        describe '#full_file_path' do
+          it { expect(subject.full_file_path).to eq('base/original_bridge') }
+        end
       end
 
     end
