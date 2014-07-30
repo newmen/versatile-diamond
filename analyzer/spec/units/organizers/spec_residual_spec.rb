@@ -17,9 +17,9 @@ module VersatileDiamond
         it { expect(described_class.empty.links).to be_empty }
       end
 
-      describe '#first_twin' do
+      describe '#twin' do
         shared_examples_for :check_twin do
-          it { expect(part.first_twin(own_atom)).to eq(parent_atom) }
+          it { expect(part.twin(own_atom)).to eq(parent_atom) }
         end
 
         describe 'dimer' do
@@ -50,24 +50,6 @@ module VersatileDiamond
               let(:own_atom) { spec.atom(:cm) }
             end
           end
-        end
-      end
-
-      describe '#all_twins' do
-        shared_examples_for :check_twins do
-          subject { eb - dept_bridge_base - dept_bridge_base - dept_bridge_base }
-          let(:eb) { dept_extended_bridge_base }
-          it { expect(subject.all_twins(own_atom)).to match_array(twins) }
-        end
-
-        it_behaves_like :check_twins do
-          let(:own_atom) { extended_bridge_base.atom(:cr) }
-          let(:twins) { [bridge_base.atom(:cr), bridge_base.atom(:ct)] }
-        end
-
-        it_behaves_like :check_twins do
-          let(:own_atom) { extended_bridge_base.atom(:cl) }
-          let(:twins) { [bridge_base.atom(:cl), bridge_base.atom(:ct)] }
         end
       end
 

@@ -15,7 +15,7 @@ module VersatileDiamond
         def initialize(cacher, spec)
           @cacher = cacher
           @spec = spec
-          @_original_sequence = nil
+          @_original_sequence, @_parents_sequence = nil
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
@@ -26,8 +26,8 @@ module VersatileDiamond
           @_original_sequence =
             if spec.rest
               twins = back_twins
-              sorted_parents.reduce(addition_atoms) do |acc, parent|
-                acc + get(parent).original.map do |parent_atom|
+              parents_sequence.reduce(addition_atoms) do |acc, parent|
+                acc + parent.original.map do |parent_atom|
                   pair = twins.delete_one { |a, _| parent_atom == a }
                   own_atom = pair && pair.last
                   own_atom || parent_atom
@@ -59,21 +59,30 @@ module VersatileDiamond
         # @return [Array] the array of symmetric instances
         def symmetrics(generator, original_specie)
           symmetric_atoms.map do |twins_mirror|
-            symc_atoms = twins_mirror.keys
-            indexes = symc_atoms.map(&method(:atom_index))
-            rest_indexes = indexes.compact
+            pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
 
-            binding.pry if rest_indexes.size != 2
-            raise 'Too small twins mirror' if rest_indexes.size < 2
-            raise 'Too large twins mirror' if rest_indexes.size > 2
+            wrapped_species_num = pairs.size
+            wraps_counter = 0
 
-            if symc_atoms.all? { |a| anchors.include?(a) }
-              parent_indexes = rest_indexes.map do |index|
-                anchors.index(original[index])
+            pairs.reduce(original_specie) do |acc, indexes|
+              wraps_counter += 1
+              regs = { registrate: wrapped_species_num == wraps_counter }
+
+              if spec.rest
+                pa_indexes = indexes.map(&method(:parent_index))
+                parent_indexes, atom_indexes = pa_indexes.transpose
+
+                parents_eq = parent_indexes[0] == parent_indexes[1]
+                atoms_eq = atom_indexes[0] == atom_indexes[1]
+
+                if parents_eq || !atoms_eq
+                  AtomsSwappedSpecie.new(generator, acc, *atom_indexes, regs)
+                else
+                  ParentsSwappedSpecie.new(generator, acc, *parent_indexes, regs)
+                end
+              else
+                AtomsSwappedSpecie.new(generator, acc, *indexes, regs)
               end
-              ParentsSwappedSpecie.new(generator, original_specie, *parent_indexes)
-            else
-              AtomsSwappedSpecie.new(generator, original_specie, *rest_indexes)
             end
           end
         end
@@ -117,13 +126,13 @@ module VersatileDiamond
         #
         # @return [Array] the array of twin pairs
         def back_twins
-          anchors.map { |atom| [spec.rest.first_twin(atom), atom] }
+          anchors.map { |atom| [spec.rest.twin(atom), atom] }
         end
 
         # Gets sorted parents of target specie
-        # @return [Array] the array of sorted parents
-        def sorted_parents
-          spec.parents.sort_by(&:relations_num)
+        # @return [Array] the sorted array of parent seqeucnes
+        def parents_sequence
+          spec.parents.sort_by { |p| -p.relations_num }.map(&method(:get))
         end
 
         # Reverse sorts the atoms by number of their relations
@@ -245,6 +254,25 @@ module VersatileDiamond
           surfspecs = spec.non_term_children
           groups = surfspecs.group_by(&:object_id)
           groups.select { |_, g| g.size == 1 }.map(&:last).map(&:last)
+        end
+
+        # Finds parent index and atom index in it
+        # @param [Integer] atom_index the index of atom in original sequence
+        # @return [Array] two values where the first is parent index and second is
+        #   atom index in it
+        def parent_index(atom_index)
+          pi = nil
+          ai = atom_index - delta
+          parents_sequence.each_with_index do |parent, parent_index|
+            panum = parent.atoms.size
+            if ai < panum
+              pi = parent_index
+              break
+            else
+              ai -= panum
+            end
+          end
+          [pi, ai]
         end
       end
 

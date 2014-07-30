@@ -28,7 +28,7 @@ module VersatileDiamond
             expect(sequence.delta).to eq(delta)
           end
 
-          let(:code_specie) { generator.specie_class(subject) }
+          let(:code_specie) { generator.specie_class(subject.name) }
           let(:original_specie) { OriginalSpecie.new(generator, code_specie) }
 
           it '#symmetrics' do
