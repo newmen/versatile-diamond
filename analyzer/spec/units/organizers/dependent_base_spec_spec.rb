@@ -107,6 +107,7 @@ module VersatileDiamond
             dept_extended_bridge_base,
             dept_extended_dimer_base,
             dept_methyl_on_extended_bridge_base,
+            dept_cross_bridge_on_bridges_base,
           ]
         end
 
@@ -133,6 +134,19 @@ module VersatileDiamond
 
           describe '#parents' do
             it { expect(subject.parents).to eq([dept_bridge_base]) }
+          end
+        end
+
+        describe 'cross_bridge_on_bridges' do
+          subject { dept_cross_bridge_on_bridges_base }
+          before { subject.organize_dependencies!(table) }
+
+          describe '#rest' do
+            it { expect(subject.rest.atoms_num).to eq(1) }
+          end
+
+          describe '#parents' do
+            it { expect(subject.parents).to eq([dept_methyl_on_bridge_base] * 2) }
           end
         end
       end

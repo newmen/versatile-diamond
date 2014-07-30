@@ -15,7 +15,6 @@ module VersatileDiamond
 
       describe '#self.empty' do
         it { expect(described_class.empty.links).to be_empty }
-
       end
 
       describe '#twin' do
@@ -121,6 +120,23 @@ module VersatileDiamond
 
           let(:atoms_num) { 2 }
           let(:relations_num) { 10 }
+        end
+
+        describe 'cross_bridge_on_bridges' do
+          let(:cbobs) { dept_cross_bridge_on_bridges_base }
+          let(:cbobs_part) { cbobs - dept_methyl_on_bridge_base }
+
+          it_behaves_like :count_atoms_and_references do
+            subject { cbobs_part }
+            let(:atoms_num) { 4 }
+            let(:relations_num) { 13 }
+          end
+
+          it_behaves_like :count_atoms_and_references do
+            subject { cbobs_part - dept_methyl_on_bridge_base }
+            let(:atoms_num) { 1 }
+            let(:relations_num) { 2 }
+          end
         end
       end
 
