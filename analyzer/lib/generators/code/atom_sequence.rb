@@ -58,16 +58,13 @@ module VersatileDiamond
         #   instanced
         # @return [Array] the array of symmetric instances
         def symmetrics(generator, original_specie)
-          symmetric_atoms.map do |twins_mirror|
+          sym_atoms = symmetric_atoms
+          adds_suffix = sym_atoms.size > 1
+
+          sym_atoms.map.with_index do |twins_mirror, summ_suff|
             pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
 
-            wrapped_species_num = pairs.size
-            wraps_counter = 0
-
-            pairs.reduce(original_specie) do |acc, indexes|
-              wraps_counter += 1
-              regs = { registrate: wrapped_species_num == wraps_counter }
-
+            symmetric = pairs.reduce(original_specie) do |acc, indexes|
               if spec.rest
                 pa_indexes = indexes.map(&method(:parent_index))
                 parent_indexes, atom_indexes = pa_indexes.transpose
@@ -76,14 +73,17 @@ module VersatileDiamond
                 atoms_eq = atom_indexes[0] == atom_indexes[1]
 
                 if parents_eq || !atoms_eq
-                  AtomsSwappedSpecie.new(generator, acc, *atom_indexes, regs)
+                  AtomsSwappedSpecie.new(generator, acc, *atom_indexes)
                 else
-                  ParentsSwappedSpecie.new(generator, acc, *parent_indexes, regs)
+                  ParentsSwappedSpecie.new(generator, acc, *parent_indexes)
                 end
               else
-                AtomsSwappedSpecie.new(generator, acc, *indexes, regs)
+                AtomsSwappedSpecie.new(generator, acc, *indexes)
               end
             end
+
+            symmetric.set_suffix(summ_suff + 1) if adds_suffix
+            symmetric
           end
         end
 

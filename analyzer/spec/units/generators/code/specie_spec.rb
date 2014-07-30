@@ -225,8 +225,9 @@ module VersatileDiamond
             end
             it { expect(code_for(dimer_base).symmetric?).to be_truthy }
             it { expect(code_for(activated_dimer).symmetric?).to be_truthy }
-            it { expect(code_for(bottom_hydrogenated_activated_dimer).symmetric?).to
-              be_falsey }
+
+            let(:bhad) { code_for(bottom_hydrogenated_activated_dimer) }
+            it { expect(bhad.symmetric?).to be_falsey }
           end
         end
       end

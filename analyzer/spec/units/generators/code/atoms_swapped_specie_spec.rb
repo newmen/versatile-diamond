@@ -19,15 +19,11 @@ module VersatileDiamond
           subject { described_class.new(empty_generator, empty_class, 1, 2) }
           let(:original_class) { OriginalSpecie.new(empty_generator, code_dimer_base) }
           let(:empty_class) do
-            args = [empty_generator, original_class, 0, 1]
-            ParentsSwappedSpecie.new(*args, registrate: false)
+            ParentsSwappedSpecie.new(empty_generator, original_class, 0, 1)
           end
           let(:cap_name) { 'Dimer' }
-  
+
           it_behaves_like :empty_specie_name_methods
-          it_behaves_like :twise_specie_name_methods do
-            let(:another) { described_class.new(empty_generator, empty_class, 4, 5) }
-          end
         end
       end
 
