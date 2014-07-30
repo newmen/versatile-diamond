@@ -26,7 +26,6 @@ module VersatileDiamond
           @_original_sequence =
             if spec.rest
               twins = back_twins
-              sorted_parents = spec.parents.sort_by { |p| -p.size }
               sorted_parents.reduce(addition_atoms) do |acc, parent|
                 acc + get(parent).original.map do |parent_atom|
                   pair = twins.delete_one { |a, _| parent_atom == a }
@@ -35,7 +34,7 @@ module VersatileDiamond
                 end
               end
             else
-              sort_atoms(anchors)
+              sort_atoms(atoms)
             end
         end
 
@@ -118,7 +117,13 @@ module VersatileDiamond
         #
         # @return [Array] the array of twin pairs
         def back_twins
-          anchors.map { |atom| [spec.rest.twin(atom), atom] }
+          anchors.map { |atom| [spec.rest.first_twin(atom), atom] }
+        end
+
+        # Gets sorted parents of target specie
+        # @return [Array] the array of sorted parents
+        def sorted_parents
+          spec.parents.sort_by(&:relations_num)
         end
 
         # Reverse sorts the atoms by number of their relations

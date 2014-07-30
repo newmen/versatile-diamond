@@ -43,7 +43,7 @@ module VersatileDiamond
         return nil if other.links.size != mirror.size
 
         residuals = {}
-        references = {}
+        collected_refs = {}
         pairs_from(mirror).each do |own_atom, other_atom|
           unless other_atom
             residuals[own_atom] = links[own_atom] # <-- same as bottom
@@ -55,11 +55,11 @@ module VersatileDiamond
 
           if is_diff
             residuals[own_atom] = links[own_atom] # <-- same as top
-            references[own_atom] = other_atom
+            collected_refs[own_atom] = other_atom
           end
         end
 
-        SpecResidual.new(residuals, references.merge(prev_refs))
+        SpecResidual.new(residuals, merge(prev_refs, collected_refs))
       end
 
     protected
@@ -146,6 +146,25 @@ module VersatileDiamond
             neighbour == atom && !relation.is_a?(Concepts::Position)
           end
         end
+      end
+
+      # Merges collected references to previous references
+      # @param [Hash] prev_refs the previous collected references from some spec
+      #   residual; each value of hash should be an array
+      # @return [Hash] collected_refs the references which was collecected in
+      #   difference operation
+      # @return [Hash] the merging result where each value is list of possible values
+      def merge(prev_refs, collected_refs)
+        result = prev_refs.dup
+        collected_refs.each do |k, v|
+          if result[k]
+            result[k] << v
+          else
+            result[k] = [v]
+          end
+        end
+
+        result
       end
     end
 
