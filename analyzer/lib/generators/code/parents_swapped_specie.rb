@@ -11,6 +11,13 @@ module VersatileDiamond
         def wrapper_class_name
           'ParentsSwapWrapper'
         end
+
+        # Also add original specie class name
+        # @return [Array] the array of additional template arguments
+        # @override
+        def additional_template_args
+          [original_specie.class_name] + super
+        end
       end
 
     end

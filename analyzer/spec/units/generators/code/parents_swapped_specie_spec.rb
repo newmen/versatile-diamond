@@ -11,7 +11,9 @@ module VersatileDiamond
         it_behaves_like :all_common_empty_specie_checks
 
         describe '#base_class_name' do
-          let(:base_class_name) { 'ParentsSwapWrapper<Empty<SYMMETRIC_BRIDGE>, 1, 2>' }
+          let(:base_class_name) do
+            'ParentsSwapWrapper<Empty<SYMMETRIC_BRIDGE>, OriginalBridge, 1, 2>'
+          end
           it { expect(subject.base_class_name).to eq(base_class_name) }
         end
       end

@@ -37,16 +37,8 @@ module VersatileDiamond
       #   the atom of current instance for which twin was found
       # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   the correspond atom from parent specie
-      def first_twin(atom)
+      def twin(atom)
         all_twins(atom).first
-      end
-
-      # Gets all twin instances of atom from parent spec
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] atom
-      #   see at #first_twin same argument
-      # @return [Array] the array of twin instances
-      def all_twins(atom)
-        @references[atom] || []
       end
 
       # Checks that other spec has same border atoms and links between them
@@ -72,6 +64,14 @@ module VersatileDiamond
       # @return [Boolean] are different or not
       def different_relations?(*args)
         different_by?(:relations_of, *args)
+      end
+
+      # Gets all twin instances of atom from parent spec
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] atom
+      #   see at #first_twin same argument
+      # @return [Array] the array of twin instances
+      def all_twins(atom)
+        @references[atom] || []
       end
     end
 
