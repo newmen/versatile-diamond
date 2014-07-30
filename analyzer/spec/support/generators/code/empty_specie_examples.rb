@@ -4,10 +4,6 @@ module VersatileDiamond
 
       module EmptySpecieExamples
         shared_examples_for :empty_specie_template_methods do
-          describe '#counter_key' do
-            it { expect(subject.counter_key).to eq(:bridge) }
-          end
-
           describe '#template_name' do
             it { expect(subject.template_name).to eq('empty_specie') }
           end
@@ -27,44 +23,44 @@ module VersatileDiamond
         end
 
         shared_examples_for :empty_specie_name_methods do
-          describe '#define_name' do
-            it { expect(subject.define_name).to eq("SYMMETRIC_#{cap_name.upcase}_H") }
+          describe 'without suffix' do
+            describe '#define_name' do
+              let(:value) { "SYMMETRIC_#{cap_name.upcase}_H" }
+              it { expect(subject.define_name).to eq(value) }
+            end
+
+            describe '#file_name' do
+              it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}") }
+            end
+
+            describe '#class_name' do
+              it { expect(subject.class_name).to eq("Symmetric#{cap_name}") }
+            end
+
+            describe '#enum_name' do
+              it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
+            end
           end
 
-          describe '#file_name' do
-            it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}") }
-          end
+          describe 'with suffix' do
+            before { subject.set_suffix(1) }
 
-          describe '#class_name' do
-            it { expect(subject.class_name).to eq("Symmetric#{cap_name}") }
-          end
+            describe '#define_name' do
+              it { expect(subject.define_name).to eq("SYMMETRIC_#{cap_name.upcase}1_H") }
+            end
 
-          describe '#enum_name' do
-            it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
-          end
-        end
+            describe '#file_name' do
+              it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}1") }
+            end
 
-        shared_examples_for :twise_specie_name_methods do
-          before do
-            subject # creates subject
-            another # creates another symmetric instance for get an index in names
-          end
+            describe '#class_name' do
+              it { expect(subject.class_name).to eq("Symmetric#{cap_name}1") }
+            end
 
-          describe '#define_name' do
-            it { expect(subject.define_name).to eq("SYMMETRIC_#{cap_name.upcase}1_H") }
-          end
-
-          describe '#file_name' do
-            it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}1") }
-          end
-
-          describe '#class_name' do
-            it { expect(subject.class_name).to eq("Symmetric#{cap_name}1") }
-          end
-
-          describe '#enum_name' do
-            # without index any time
-            it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
+            describe '#enum_name' do
+              # without suffix any time
+              it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
+            end
           end
         end
 
@@ -73,11 +69,6 @@ module VersatileDiamond
 
           it_behaves_like :empty_specie_template_methods
           it_behaves_like :empty_specie_name_methods
-          it_behaves_like :twise_specie_name_methods do
-            let(:another) do
-              described_class.new(empty_generator, original_class, 0, 1) # fake indexes
-            end
-          end
         end
       end
 

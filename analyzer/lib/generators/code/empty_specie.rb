@@ -12,22 +12,17 @@ module VersatileDiamond
         # Initialize original specie class code generator
         # @param [EngineCode] generator see at #super same argument
         # @param [BaseSpecie] specie which is wrapped specie class generator
-        # @option [Boolean] :registrate setup creation or not specific index for
-        #   current empty symmetric specie
-        def initialize(generator, specie, registrate: true)
+        def initialize(generator, specie)
           super(generator)
           @specie = specie
-          @index = registrate && counter.next_index(self)
-
+          @suffix = nil # by default each specie has only one symmetric analog
           @_prefix = nil
         end
 
-        # Gets the key which will be used by counter for enumerate all analogies
-        # symmetric species
-        #
-        # @return [Symbol] unique key for count analogies symmetric specie
-        def counter_key
-          target_specie.spec.name
+        # Sets the suffix of current symmetric instance
+        # @param [Integer] suffix index of symmetric specie
+        def set_suffix(suffix)
+          @suffix = suffix
         end
 
         # Gets the template file name
@@ -40,8 +35,7 @@ module VersatileDiamond
         # @return [String] the class name of specie code instance
         alias_method :super_class_name, :class_name
         def class_name
-          counter.has_symmetrics?(self) ?
-            "#{super_class_name}#{@index}" : super_class_name
+          "#{super_class_name}#{@suffix}"
         end
 
         # Gets the base class for cpp class of symmetric specie
@@ -86,14 +80,6 @@ module VersatileDiamond
         # @return [OriginalSpecie] the original specie which is wrapping
         def original_specie
           target_specie.original
-        end
-
-        # Gets the empty species counter for get an index or checks that has many
-        # empty species
-        #
-        # @return [EmptySpeciesCounter] the counter of empty species
-        def counter
-          @generator.empties_counter
         end
       end
 
