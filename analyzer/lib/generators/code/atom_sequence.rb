@@ -15,7 +15,7 @@ module VersatileDiamond
         def initialize(cacher, spec)
           @cacher = cacher
           @spec = spec
-          @_original_sequence, @_parents_sequence = nil
+          @_original_sequence = nil
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
@@ -27,10 +27,10 @@ module VersatileDiamond
             if spec.rest
               dynamic_rest = spec
               sorted_parents.reduce(addition_atoms) do |acc, parent|
-                own_atoms = dynamic_rest.mirror_to(parent).keys
+                mirror = dynamic_rest.mirror_to(parent).invert
                 dynamic_rest -= parent
 
-                acc + sort_atoms(own_atoms)
+                acc + get(parent).original.map { |atom| mirror[atom] }
               end
             else
               sort_atoms(atoms)
@@ -277,7 +277,7 @@ module VersatileDiamond
           # TODO: there could be more simple sorting (by used klass value)
           creation_values = sort_indexes_pairs(pairs).map do |indexes|
             pa_indexes = indexes.map(&method(:parent_index))
-            parent_indexes, atom_indexes = pa_indexes.transpose
+            parent_indexes, atom_indexes = pa_indexes.transpose.map(&:sort)
 
             parents_eq = parent_indexes[0] == parent_indexes[1]
             atoms_eq = atom_indexes[0] == atom_indexes[1]
