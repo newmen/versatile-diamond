@@ -126,7 +126,7 @@ module VersatileDiamond
       # @return [Hash] the mirror of specs names to spec code generator instances
       def collect_code_species
         collect_dependent_species.each.with_object({}) do |(name, spec), hash|
-          hash[name] = Code::Specie.new(self, @sequences_cacher, spec)
+          hash[name] = Code::Specie.new(self, spec)
         end
       end
 
