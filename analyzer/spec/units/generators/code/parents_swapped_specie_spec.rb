@@ -4,9 +4,13 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe ParentsSwappedSpecie, type: :code do
-        subject { described_class.new(empty_generator, original_class, 1, 2) }
-        let(:original_class) { OriginalSpecie.new(empty_generator, code_bridge_base) }
+      describe ParentsSwappedSpecie, use: :engine_generator do
+        subject { described_class.new(generator, original_class, 1, 2) }
+        let(:original_class) { code_specie.original }
+        let(:code_specie) { generator.specie_class(:bridge) }
+        let(:generator) do
+          stub_generator(base_specs: [dept_bridge_base], specific_specs: [])
+        end
 
         it_behaves_like :all_common_empty_specie_checks
 
