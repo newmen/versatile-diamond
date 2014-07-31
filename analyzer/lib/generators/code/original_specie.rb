@@ -53,7 +53,7 @@ module VersatileDiamond
         # Original specie class haven't find algorithms by default
         # @return [Boolean] false
         def render_find_algorithms?
-          return false
+          false
         end
       end
 
