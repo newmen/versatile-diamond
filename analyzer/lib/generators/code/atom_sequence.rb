@@ -58,29 +58,30 @@ module VersatileDiamond
         #   instanced
         # @return [Array] the array of symmetric instances
         def symmetrics(generator, original_specie)
-          sym_atoms = symmetric_atoms
+          sym_atoms = filter_atom_mirrors(symmetric_atoms)
           adds_suffix = sym_atoms.size > 1
 
           sym_atoms.map.with_index do |twins_mirror, summ_suff|
             pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
 
-            symmetric = pairs.reduce(original_specie) do |acc, indexes|
-              if spec.rest
-                pa_indexes = indexes.map(&method(:parent_index))
-                parent_indexes, atom_indexes = pa_indexes.transpose
+            symmetric =
+              sort_indexes_pairs(pairs).reduce(original_specie) do |acc, indexes|
+                if spec.rest
+                  pa_indexes = indexes.map(&method(:parent_index))
+                  parent_indexes, atom_indexes = pa_indexes.transpose
 
-                parents_eq = parent_indexes[0] == parent_indexes[1]
-                atoms_eq = atom_indexes[0] == atom_indexes[1]
+                  parents_eq = parent_indexes[0] == parent_indexes[1]
+                  atoms_eq = atom_indexes[0] == atom_indexes[1]
 
-                if parents_eq || !atoms_eq
-                  AtomsSwappedSpecie.new(generator, acc, *atom_indexes)
+                  if parents_eq || !atoms_eq
+                    AtomsSwappedSpecie.new(generator, acc, *atom_indexes)
+                  else
+                    ParentsSwappedSpecie.new(generator, acc, *parent_indexes)
+                  end
                 else
-                  ParentsSwappedSpecie.new(generator, acc, *parent_indexes)
+                  AtomsSwappedSpecie.new(generator, acc, *indexes)
                 end
-              else
-                AtomsSwappedSpecie.new(generator, acc, *indexes)
               end
-            end
 
             symmetric.set_suffix(summ_suff + 1) if adds_suffix
             symmetric
@@ -256,6 +257,14 @@ module VersatileDiamond
           groups.select { |_, g| g.size == 1 }.map(&:last).map(&:last)
         end
 
+        # Filters mirrors by select only biggest mirrors
+        # @param [Array] mirrors the array of hashes of atoms mirror
+        # @return [Array] filtered mirrors set
+        def filter_atom_mirrors(mirrors)
+          max_size = mirrors.map(&:size).max
+          mirrors.select { |mirror| mirror.size == max_size }
+        end
+
         # Finds parent index and atom index in it
         # @param [Integer] atom_index the index of atom in original sequence
         # @return [Array] two values where the first is parent index and second is
@@ -273,6 +282,30 @@ module VersatileDiamond
             end
           end
           [pi, ai]
+        end
+
+        # Sorts pairs of indexes. The first indexes is indexes that belongs to
+        # different parents, and last indexes is indexes of atom of similar parents.
+        #
+        # @param [Array] pairs of atom indexes which will be sorted by correspond
+        #   using parent sequences
+        # @return [Array] the array of sorted pairs
+        def sort_indexes_pairs(pairs)
+          pairs.sort do |pair_of_pairs|
+            pq = pair_of_pairs.map { |pair| pair.map(&method(:parent_index)) }
+            a, b = pq.map { |p| p.map(&:first) }
+
+            a_diff = a[0] == a[1]
+            b_diff = b[0] == b[1]
+
+            if a_diff == b_diff
+              0
+            elsif !a_diff && b_diff
+              -1
+            else
+              1
+            end
+          end
         end
       end
 

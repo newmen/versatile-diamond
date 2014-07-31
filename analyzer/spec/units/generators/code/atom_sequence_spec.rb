@@ -55,33 +55,6 @@ module VersatileDiamond
         end
 
         it_behaves_like :apply_all do
-          subject { dept_dimer_base }
-          let(:bases) { [dept_bridge_base] }
-          let(:specifics) { [dept_activated_dimer] }
-
-          let(:original) do
-            [
-              dimer_base.atom(:cr),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
-              dimer_base.atom(:cl),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
-            ]
-          end
-          let(:short) do
-            [
-              dimer_base.atom(:cr),
-              dimer_base.atom(:cl),
-            ]
-          end
-          let(:delta) { 0 }
-          let(:symmetric_base_classes) do
-            ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
-          end
-        end
-
-        it_behaves_like :apply_all do
           subject { dept_methyl_on_bridge_base }
           let(:bases) { [dept_bridge_base] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
@@ -128,6 +101,45 @@ module VersatileDiamond
           end
           let(:delta) { 0 }
           let(:symmetric_base_classes) { [] }
+        end
+
+        describe 'symmetric dimers' do
+          subject { dept_dimer_base }
+          let(:bases) { [dept_bridge_base] }
+
+          let(:original) do
+            [
+              dimer_base.atom(:cr),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+              dimer_base.atom(:cl),
+              bridge_base.atom(:cl),
+              bridge_base.atom(:cr),
+            ]
+          end
+          let(:short) do
+            [
+              dimer_base.atom(:cr),
+              dimer_base.atom(:cl),
+            ]
+          end
+          let(:delta) { 0 }
+
+          it_behaves_like :apply_all do
+            let(:specifics) { [dept_activated_dimer] }
+
+            let(:symmetric_base_classes) do
+              ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
+            end
+          end
+
+          it_behaves_like :apply_all do
+            let(:specifics) { [dept_bottom_hydrogenated_activated_dimer] }
+
+            let(:symmetric_base_classes) do
+              ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
+            end
+          end
         end
       end
 
