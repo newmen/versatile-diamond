@@ -47,7 +47,7 @@ module VersatileDiamond
       def find(key, record)
         if key.same?(record)
           return TableCell.new(SpecResidual.empty, [key])
-        elsif key.atoms_num < record.atoms_num
+        elsif key.atoms_num <= record.atoms_num
           rest = record - key
           if rest && rest.atoms_num < record.atoms_num
             row = row_for(rest)

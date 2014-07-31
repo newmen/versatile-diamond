@@ -54,8 +54,8 @@ module VersatileDiamond
         end
 
         describe 'surface spec' do
-          before { Chest.store(methyl_on_bridge_base) }
-          it { expect(Chest.spec(:methyl_on_bridge)).to eq(methyl_on_bridge_base) }
+          before { Chest.store(methyl_on_dimer_base) }
+          it { expect(Chest.spec(:methyl_on_dimer)).to eq(methyl_on_dimer_base) }
         end
       end
 
@@ -122,11 +122,11 @@ module VersatileDiamond
       describe '#all' do
         before(:each) do
           Chest.store(methane_base)
-          Chest.store(methyl_on_bridge_base)
+          Chest.store(methyl_on_dimer_base)
         end
 
         it { expect(Chest.all(:gas_spec, :surface_spec)).
-          to match_array([methane_base, methyl_on_bridge_base]) }
+          to match_array([methane_base, methyl_on_dimer_base]) }
       end
     end
 

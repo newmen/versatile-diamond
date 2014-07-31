@@ -16,9 +16,10 @@ module VersatileDiamond
       # valence value
       #
       # @param [Spec] spec the base spec instance
-      # @param [Hash] specific_atoms references to specific atoms
+      # @param [Hash] specific_atoms references to specific atoms. Uses only for easy
+      #   setup from rspec tests
       def initialize(spec, specific_atoms = {})
-        specific_atoms.each do |atom_keyname, specific_atom|
+        spatoms = specific_atoms.map do |atom_keyname, specific_atom|
           atom = spec.atom(atom_keyname)
           unused_bonds = spec.external_bonds_for(atom) -
             specific_atom.actives - specific_atom.monovalents.size
@@ -26,12 +27,21 @@ module VersatileDiamond
           if unused_bonds < 0
             raise Atom::IncorrectValence.new(atom_keyname)
           end
+
+          correct_atom =
+            # references should have same incident relations
+            if atom.reference? && !specific_atom.reference?
+              SpecificAtom.new(atom, ancestor: specific_atom)
+            else
+              specific_atom
+            end
+
+          [atom_keyname, correct_atom]
         end
 
+        @specific_atoms = Hash[spatoms]
         @spec = spec
         @original_name = spec.name
-
-        @specific_atoms = specific_atoms
 
         @external_bonds_after_extend = nil
         @reduced, @correct_reduced = nil

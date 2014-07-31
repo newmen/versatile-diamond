@@ -38,20 +38,40 @@ module VersatileDiamond
       # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
       # @return [SpecResidual] the residual of diference between arguments or nil if
       #   it doesn't exist
-      def - (other)
+      def - (other, prev_refs = {})
         mirror = mirror_to(other)
-        return nil if mirror.empty? || other.links.size != mirror.size
+        return nil if other.links.size != mirror.size
 
-        result = {}
+        residuals = {}
+        collected_refs = {}
         pairs_from(mirror).each do |own_atom, other_atom|
-          if !other_atom || different_bonds?(other, own_atom, other_atom) ||
+          unless other_atom
+            residuals[own_atom] = links[own_atom] # <-- same as bottom
+            next
+          end
+
+          is_diff = different_bonds?(other, own_atom, other_atom) ||
             used?(mirror.keys, own_atom)
 
-            result[own_atom] = links[own_atom]
+          if is_diff
+            residuals[own_atom] = links[own_atom] # <-- same as top
+            collected_refs[own_atom] = other_atom
           end
         end
 
-        SpecResidual.new(result)
+        # TODO: prev_refs could be a simple hash with only one value (not with arrays)
+        # TODO: now it's only overenginiring
+        SpecResidual.new(residuals, merge(prev_refs, collected_refs))
+      end
+
+      # Finds first intersec with some spec
+      # @param [DependentBaseSpec] spec the checkable specie
+      # @return [Array] the array of each pair of intersection or nil if intersection
+      #   have not fond
+      def mirror_to(spec)
+        args = [self, spec, { collaps_multi_bond: true }]
+        first = Mcs::SpeciesComparator.first_general_intersec(*args)
+        first && Hash[first.to_a]
       end
 
     protected
@@ -61,16 +81,6 @@ module VersatileDiamond
       # @return [Array] the array of relations without position relations
       def bonds_of(atom)
         relations_of(atom).reject { |r| r.is_a?(Concepts::Position) }
-      end
-
-      # Finds first intersec with some spec
-      # @param [DependentBaseSpec] spec the checkable specie
-      # @return [Array] the array of each pair of intersection or nil if intersection
-      #   have not fond
-      def mirror_to(spec)
-        opts = { collaps_multi_bond: true }
-        first = Mcs::SpeciesComparator.first_general_intersec(self, spec, opts)
-        first && Hash[first.to_a]
       end
 
     private
@@ -138,6 +148,25 @@ module VersatileDiamond
             neighbour == atom && !relation.is_a?(Concepts::Position)
           end
         end
+      end
+
+      # Merges collected references to previous references
+      # @param [Hash] prev_refs the previous collected references from some spec
+      #   residual; each value of hash should be an array
+      # @return [Hash] collected_refs the references which was collecected in
+      #   difference operation
+      # @return [Hash] the merging result where each value is list of possible values
+      def merge(prev_refs, collected_refs)
+        result = prev_refs.dup
+        collected_refs.each do |k, v|
+          if result[k]
+            result[k] << v
+          else
+            result[k] = [v]
+          end
+        end
+
+        result
       end
     end
 

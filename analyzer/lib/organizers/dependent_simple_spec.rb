@@ -17,6 +17,35 @@ module VersatileDiamond
         @spec = spec
       end
 
+      # Simple spec does not have links
+      # @return [Hash] the empty hash
+      def links
+        {}
+      end
+
+      # Simple spec does not have residual
+      # @return [NilClass] nil
+      def rest
+        nil
+      end
+
+      # All species is not termination by default
+      # @return [Boolean] false
+      def termination?
+        false
+      end
+
+      # All species is not termination by default
+      # @return [Boolean] false
+      def simple?
+        true
+      end
+
+      # All species is not termination by default
+      # @return [Boolean] false
+      def specific?
+        true
+      end
     end
 
   end

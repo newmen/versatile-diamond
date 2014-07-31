@@ -18,7 +18,7 @@ module VersatileDiamond
         #   the gas specie for which name will generated
         # @return [String] the result name
         def concentration_name(gas_spec)
-          @generator.specie_class(gas_spec).class_name
+          @generator.specie_class(gas_spec.name).class_name
         end
 
         # Combine class scope with concentration method name

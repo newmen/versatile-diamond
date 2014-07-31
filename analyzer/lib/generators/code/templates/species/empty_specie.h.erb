@@ -1,0 +1,19 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+#include "../<%= original_file_path %>.h"
+#include "../<%= outer_base_file %>.h"
+
+class <%= class_name %> :
+    <%= base_class_name %>
+{
+public:
+    <%= class_name %>(<%= original_class_name %> *parent) :
+        <%= base_class_name %>(parent) {}
+
+#ifdef PRINT
+    const char *name() const final;
+#endif // PRINT
+};
+
+#endif // <%= define_name %>

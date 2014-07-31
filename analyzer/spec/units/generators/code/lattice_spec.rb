@@ -8,8 +8,16 @@ module VersatileDiamond
         let(:empty_generator) { stub_generator({}) }
         subject { described_class.new(diamond, empty_generator) }
 
+        describe '#template_name' do
+          it { expect(subject.template_name).to eq('lattice') }
+        end
+
         describe '#file_name' do
           it { expect(subject.file_name).to eq('diamond') }
+        end
+
+        describe '#define_name' do
+          it { expect(subject.define_name).to eq('DIAMOND_H') }
         end
 
         describe '#class_name' do
@@ -19,8 +27,6 @@ module VersatileDiamond
         describe '#iterator' do
           let(:iterator) { subject.iterator }
           it { expect(iterator).to be_a(LatticeAtomsIterator) }
-          it { expect(iterator.class_name).to eq('DiamondAtomsIterator') }
-          it { expect(iterator.file_name).to eq('diamond_atoms_iterator') }
         end
       end
 

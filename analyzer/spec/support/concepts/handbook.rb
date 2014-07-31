@@ -97,9 +97,6 @@ module VersatileDiamond
         end
         set(:vinyl) { SpecificSpec.new(ethylene_base, c1: activated_c) }
 
-        def make_bridge_base(name)
-        end
-
         set(:bridge_base) do
           s = DuppableSurfaceSpec.new(:bridge, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
@@ -159,10 +156,14 @@ module VersatileDiamond
         end
 
         set(:methyl_on_bridge_base) do
-          s = SurfaceSpec.new(:methyl_on_bridge, cm: c)
+          s = DuppableSurfaceSpec.new(:methyl_on_bridge, cm: c)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cb)
           s.link(c, s.atom(:cb), free_bond); s
+        end
+        set(:methyl_on_bridge_base_dup) do
+          methyl_on_bridge_base.dup(:methyl_on_bridge_dup,
+            [[:cm, :m], [:ct, :b], [:cr, :r], [:cl, :l]])
         end
         set(:methyl_on_bridge) { SpecificSpec.new(methyl_on_bridge_base) }
         set(:activated_methyl_on_bridge) do
@@ -202,6 +203,19 @@ module VersatileDiamond
           SpecificSpec.new(methyl_on_right_bridge_base, cm: activated_c)
         end
 
+        set(:ethane_on_bridge_base) do
+          s = Concepts::SurfaceSpec.new(:ethane_on_bridge, c2: c.dup)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cm, :c1)
+          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
+        end
+
+        set(:vinyl_on_bridge_base) do
+          s = Concepts::SurfaceSpec.new(:vinyl_on_bridge)
+          s.adsorb(ethane_on_bridge_base)
+          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
+        end
+
         set(:high_bridge_base) do
           s = SurfaceSpec.new(:high_bridge)
           s.adsorb(methyl_on_bridge_base)
@@ -214,6 +228,7 @@ module VersatileDiamond
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
+          s.rename_atom(:cl, :clb)
           s.rename_atom(:ct, :cl)
           s.link(s.atom(:cr), s.atom(:cl), bond_100_front); s
         end
@@ -224,6 +239,9 @@ module VersatileDiamond
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd)
+        end
+        set(:bottom_hydrogenated_activated_dimer) do
+          SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }
@@ -253,6 +271,15 @@ module VersatileDiamond
           s.adsorb(bridge_base)
           s.link(s.atom(:tt), s.atom(:cc), bond_110_cross)
           s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
+        end
+
+        set(:cross_bridge_on_bridges_base) do
+          s = Concepts::SurfaceSpec.new(:cross_bridge_on_bridges)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :ctl)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cb, :ctr)
+          s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end
 
         # Active bond:

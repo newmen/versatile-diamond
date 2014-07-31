@@ -4,6 +4,8 @@ module VersatileDiamond
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
 
+      attr_reader :sequences_cacher
+
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
       # @param [String] out_path the path where result files will be placed
@@ -11,21 +13,29 @@ module VersatileDiamond
         super(analysis_result)
         @out_path = out_path
 
-        @_dependent_species = nil
+        @sequences_cacher = Code::SequencesCacher.new
+
         @species = collect_code_species
         @lattices = collect_code_lattices
+
+        @_dependent_species = nil
       end
 
+      # provides methods from base generator class
       public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs
 
       # Generates source code and configuration files
       def generate(**params)
-        code_elements.each do |class_str|
-          eval("Code::#{class_str}").new(self).generate(@out_path)
-        end
+        species.each(&:find_self_symmetric!)
 
-        unique_pure_atoms.each { |atom_class| atom_class.generate(@out_path) }
-        lattices.compact.each { |lattice_class| lattice_class.generate(@out_path) }
+        [
+          major_code_instances,
+          unique_pure_atoms,
+          lattices.compact,
+          species
+        ].each do |collection|
+          collection.each { |code_class| code_class.generate(@out_path) }
+        end
       end
 
       # Collects only unique base atom instances
@@ -56,11 +66,11 @@ module VersatileDiamond
         @lattices[lattice]
       end
 
-      # Gets specie source files generator by some spec
-      # @param [Organizers::DependentSpec] spec by which code generator will be got
+      # Gets specie source files generator by some specie name
+      # @param [Symbol] spec_name by which code generator will be got
       # @return [Code::Specie] the correspond code generator instance
-      def specie_class(spec)
-        @species[spec.name]
+      def specie_class(spec_name)
+        @species[spec_name]
       end
 
       def specific_gas_species
@@ -76,6 +86,12 @@ module VersatileDiamond
       # @return [Array] the array of names of code generator classes
       def code_elements
         %w(Handbook Env AtomBuilder)
+      end
+
+      # Gets the instances of major code elements
+      # @return [Array] the array of instances
+      def major_code_instances
+        code_elements.map { |class_str| eval("Code::#{class_str}").new(self) }
       end
 
       # Finds and drops not unique items which are compares by block
@@ -101,23 +117,16 @@ module VersatileDiamond
 
         all_specs = (base_specs || []) + (specific_specs || [])
         all_specs.each { |spec| @_dependent_species[spec.name] = spec }
-        config_specs.each do |concept|
-          unless @_dependent_species[concept.name]
-            dep_spec = concept.simple? ?
-              Organizers::DependentSimpleSpec.new(concept) :
-              Organizers::DependentSpecificSpec.new(concept)
-
-            @_dependent_species[concept.name] = dep_spec
-          end
+        config_specs.each.with_object(@_dependent_species) do |dep_spec, hash|
+          hash[dep_spec.name] ||= dep_spec
         end
-        @_dependent_species
       end
 
       # Wraps all collected species from analysis results
       # @return [Hash] the mirror of specs names to spec code generator instances
       def collect_code_species
         collect_dependent_species.each.with_object({}) do |(name, spec), hash|
-          hash[name] = Code::Specie.new(self, spec)
+          hash[name] = Code::Specie.new(self, @sequences_cacher, spec)
         end
       end
 
@@ -131,9 +140,25 @@ module VersatileDiamond
       end
 
       # Gets the species from configuration tool
-      # @return [Array] the array of gas concept species
+      # @return [Array] the array of gas species code generators
       def config_specs
-        Tools::Config.concs.keys
+        Tools::Config.concs.keys.map do |concept|
+          concept.simple? ?
+            Organizers::DependentSimpleSpec.new(concept) :
+            Organizers::DependentSpecificSpec.new(concept)
+        end
+      end
+
+      # Gets all collected species
+      # @return [Array] the array of collected species
+      def species
+        deps_hash = collect_dependent_species
+        surface_species = @species.reject do |name, _|
+          dep_spec = deps_hash[name]
+          dep_spec.simple? || (dep_spec.gas? && dep_spec.links.size == 1)
+        end
+
+        surface_species.values
       end
     end
 

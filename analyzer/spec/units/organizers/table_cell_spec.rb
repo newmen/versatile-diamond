@@ -3,15 +3,11 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe TableCell do
-      def wrap(spec)
-        DependentBaseSpec.new(spec)
-      end
-
-      let(:wb) { wrap(bridge_base) }
-      let(:wdm) { wrap(dimer_base) }
-      let(:wmob) { wrap(methyl_on_bridge_base) }
-      let(:wmodm) { wrap(methyl_on_dimer_base) }
+    describe TableCell, type: :organizer do
+      let(:wb) { dept_bridge_base }
+      let(:wdm) { dept_dimer_base }
+      let(:wmob) { dept_methyl_on_bridge_base }
+      let(:wmodm) { dept_methyl_on_dimer_base }
 
       let(:bad_modm_part) { wmodm - wdm }
       let(:big_modm_part) { wmodm - wmob }

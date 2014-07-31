@@ -7,6 +7,13 @@ module VersatileDiamond
       let(:ref) { described_class.new(ethylene_base, :c1) }
       let(:specific_ref) { described_class.new(methyl_on_incoherent_bridge, :cb) }
 
+      describe '#dup' do
+        subject { ref.dup }
+        it { expect(subject).to_not eq(ref) }
+        it { expect(subject.spec).to eq(ref.spec) }
+        it { expect(subject.keyname).to eq(ref.keyname) }
+      end
+
       describe '#name' do
         it { expect(ref.name).to eq(:C) }
       end
