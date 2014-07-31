@@ -118,7 +118,7 @@ module VersatileDiamond
         # Specie class has find algorithms by default
         # @return [Boolean] true
         def render_find_algorithms?
-          return true
+          true
         end
 
         # Gets the parent specie classes

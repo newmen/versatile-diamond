@@ -427,7 +427,6 @@ module VersatileDiamond
         return @_remake_result if @_remake_result
 
         # only bonds without relevat states
-        binding.pry if !spec.relations_of(atom, with_atoms: true)
         relations = spec.relations_of(atom, with_atoms: true).reject do |_, rel|
           rel.is_a?(Symbol)
         end

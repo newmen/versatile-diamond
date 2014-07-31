@@ -22,4 +22,3 @@ module VersatileDiamond
     end
   end
 end
-
