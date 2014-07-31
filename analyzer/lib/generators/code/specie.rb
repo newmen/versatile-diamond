@@ -40,21 +40,16 @@ module VersatileDiamond
           @_class_name, @_enum_name, @_used_iterators = nil
         end
 
+        # Generates source code for specie
+        # @param [String] root_dir see at #super same argument
         # @override
         def generate(root_dir)
           if symmetric?
             @original.generate(root_dir)
             @symmetrics.each { |symmetric| symmetric.generate(root_dir) }
-            # - три шаблона: original_specie, symmetric_specie, find algorithms
-            # - создавая симметрию проверять нужна ли она, по потомкам
-            # - original_specie полностью делигирует на текущий specie, кроме метода
-            #   render_find_algorithms?
           else
             super
           end
-
-          # если в родительской структуре используются симметричные атомы, то в
-          # алгоритмы поиска подставлять итерацию каждой симметрии
         end
 
         # Is symmetric specie? If children species uses same as own atom and it atom
