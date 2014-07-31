@@ -103,14 +103,6 @@ module VersatileDiamond
           cacher.get(spec)
         end
 
-        # Gets the array of twin pairs where each first elemeint is twin atom from
-        # child specie and each second element is atom from current specie
-        #
-        # @return [Array] the array of twin pairs
-        def back_twins
-          anchors.map { |atom| [spec.rest.twin(atom), atom] }
-        end
-
         # Gets sorted parents of target specie
         # @return [Array] the sorted array of parent seqeucnes
         def sorted_parents

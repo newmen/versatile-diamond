@@ -59,6 +59,8 @@ module VersatileDiamond
           end
         end
 
+        # TODO: prev_refs could be a simple hash with only one value (not with arrays)
+        # TODO: now it's only overenginiring
         SpecResidual.new(residuals, merge(prev_refs, collected_refs))
       end
 

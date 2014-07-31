@@ -38,6 +38,7 @@ module VersatileDiamond
       # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   the correspond atom from parent specie
       def twin(atom)
+        # TODO: now #twin used only for detect additional atoms in atom sequence logic
         all_twins(atom).first
       end
 
