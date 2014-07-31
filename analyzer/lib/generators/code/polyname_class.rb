@@ -15,8 +15,6 @@ module VersatileDiamond
           class_name.underscore
         end
 
-      private
-
         # Gets define name
         # @return [String] the inclusion warden name
         def define_name

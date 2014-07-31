@@ -4,7 +4,6 @@ module VersatileDiamond
 
       module AtomRelationsExamples
         shared_examples_for :relations_of do
-          subject { wrap(spec) }
           it { expect(subject.relations_of(atom)).to match_array(rls) }
         end
       end

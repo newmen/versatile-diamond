@@ -3,27 +3,23 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe AtomClassifier, use: :atom_properties do
-      def wrap_specific(spec)
-        DependentSpecificSpec.new(spec)
-      end
-
+    describe AtomClassifier, type: :organizer, use: :atom_properties do
       subject { described_class.new }
 
       describe '#analyze' do
         before do
           [
-            activated_bridge,
-            extra_activated_bridge,
-            hydrogenated_bridge,
-            extra_hydrogenated_bridge,
-            right_hydrogenated_bridge,
-            dimer,
-            activated_dimer,
-            methyl_on_incoherent_bridge,
-            high_bridge,
+            dept_activated_bridge,
+            dept_extra_activated_bridge,
+            dept_hydrogenated_bridge,
+            dept_extra_hydrogenated_bridge,
+            dept_right_hydrogenated_bridge,
+            dept_dimer,
+            dept_activated_dimer,
+            dept_methyl_on_incoherent_bridge,
+            dept_high_bridge,
           ].each do |spec|
-            subject.analyze(wrap_specific(spec))
+            subject.analyze(spec)
           end
         end
 
@@ -170,12 +166,12 @@ module VersatileDiamond
         describe '#classify' do
           describe 'termination spec' do
             shared_examples_for :termination_classify do
-              let(:result) { subject.classify(DependentTermination.new(term)) }
+              let(:result) { subject.classify(term) }
               it { expect(result).to eq(hash) }
             end
 
             it_behaves_like :termination_classify do
-              let(:term) { active_bond }
+              let(:term) { dept_active_bond }
               let(:hash) do
                 {
                   10 => ['H*C%d<', 1],
@@ -198,7 +194,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :termination_classify do
-              let(:term) { adsorbed_h }
+              let(:term) { dept_adsorbed_h }
               let(:hash) do
                 {
                   0 => ['^C%d<', 1],
@@ -231,19 +227,18 @@ module VersatileDiamond
             end
 
             it_behaves_like :termination_classify do
-              let(:term) { adsorbed_cl }
+              let(:term) { dept_adsorbed_cl }
               let(:hash) { {} }
             end
           end
 
           describe 'not termination spec' do
             shared_examples_for :specific_classify do
-              let(:result) { subject.classify(wrap_specific(spec)) }
-              it { expect(result).to eq(hash) }
+              it { expect(subject.classify(spec)).to eq(hash) }
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { activated_bridge }
+              let(:spec) { dept_activated_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 2],
@@ -253,7 +248,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { extra_activated_bridge }
+              let(:spec) { dept_extra_activated_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 2],
@@ -263,7 +258,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { hydrogenated_bridge }
+              let(:spec) { dept_hydrogenated_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 2],
@@ -273,7 +268,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { extra_hydrogenated_bridge }
+              let(:spec) { dept_extra_hydrogenated_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 2],
@@ -283,7 +278,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { right_hydrogenated_bridge }
+              let(:spec) { dept_right_hydrogenated_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 1],
@@ -294,7 +289,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { dimer }
+              let(:spec) { dept_dimer }
               let(:hash) do
                 {
                   0 => ['^C%d<', 4],
@@ -304,7 +299,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { activated_dimer }
+              let(:spec) { dept_activated_dimer }
               let(:hash) do
                 {
                   0 => ['^C%d<', 4],
@@ -315,7 +310,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { methyl_on_incoherent_bridge }
+              let(:spec) { dept_methyl_on_incoherent_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 2],
@@ -326,7 +321,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { high_bridge }
+              let(:spec) { dept_high_bridge }
               let(:hash) do
                 {
                   0 => ['^C%d<', 2],
@@ -344,29 +339,30 @@ module VersatileDiamond
               end
 
               it_behaves_like :organized_specific_classify do
-                let(:target_spec) { wrap_specific(activated_bridge) }
-                let(:all_specific) { [target_spec] }
+                let(:target_spec) { dept_activated_bridge }
+                let(:all_specific) { [dept_activated_bridge] }
                 let(:hash) do
                   { 3 => ['*C%d<', 1] }
                 end
               end
 
               it_behaves_like :organized_specific_classify do
-                let(:one) { wrap_specific(bridge) }
-                let(:two) { wrap_specific(dimer) }
-                let(:target_spec) { two.parent }
-                let(:all_specific) { [one, two] }
+                let(:target_spec) { dept_dimer.parent }
+                let(:all_specific) { [dept_bridge, dept_dimer] }
                 let(:hash) do
                   { 13 => ['-C%d<', 2] }
                 end
               end
 
               it_behaves_like :organized_specific_classify do
-                let(:one) { wrap_specific(activated_bridge) }
-                let(:two) { wrap_specific(activated_dimer) }
-                let(:three) { wrap_specific(activated_methyl_on_incoherent_bridge) }
-                let(:target_spec) { three }
-                let(:all_specific) { [one, two, three] }
+                let(:target_spec) { dept_activated_methyl_on_incoherent_bridge }
+                let(:all_specific) do
+                  [
+                    dept_activated_bridge,
+                    dept_activated_dimer,
+                    dept_activated_methyl_on_incoherent_bridge
+                  ]
+                end
                 let(:hash) do
                   {
                     18 => ['*C~%d', 1],
@@ -379,12 +375,11 @@ module VersatileDiamond
         end
 
         describe '#index' do
-          let(:wbridge) { DependentSpecificSpec.new(bridge) }
-          it { expect(subject.index(wbridge, bridge.atom(:cr))).to eq(0) }
+          it { expect(subject.index(dept_bridge, bridge.atom(:cr))).to eq(0) }
           it { expect(subject.index(bridge_cr)).to eq(0) }
 
-          let(:wabridge) { DependentSpecificSpec.new(activated_bridge) }
-          it { expect(subject.index(wabridge, activated_bridge.atom(:ct))).to eq(3) }
+          let(:atom) { activated_bridge.atom(:ct) }
+          it { expect(subject.index(dept_activated_bridge, atom)).to eq(3) }
           it { expect(subject.index(ab_ct)).to eq(3) }
         end
 

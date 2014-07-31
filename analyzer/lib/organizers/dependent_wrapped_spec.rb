@@ -18,6 +18,12 @@ module VersatileDiamond
         @links = straighten_graph(spec.links)
       end
 
+      # Gets the children specie classes
+      # @return [Array] the array of children specie class generators
+      def non_term_children
+        children.reject(&:termination?)
+      end
+
     private
 
       # Replaces internal atom references to original atom and inject references of it

@@ -3,7 +3,7 @@
 #ifdef PRINT
 const char *SymmetricBridge::name() const
 {
-    static const char value[] = "swapped bridge";
+    static const char value[] = "symmetric bridge";
     return value;
 }
 #endif // PRINT

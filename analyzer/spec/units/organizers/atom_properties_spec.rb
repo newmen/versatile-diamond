@@ -2,42 +2,34 @@ require 'spec_helper'
 
 module VersatileDiamond
   module Organizers
-    describe AtomProperties, use: :atom_properties do
-
-      let(:lattice) { Concepts::Lattice.new(:d, 'Diamond') }
+    describe AtomProperties, type: :organizer, use: :atom_properties do
 
       describe 'initialize' do
         describe 'crystal atom with several dependencies' do
-          let(:specific_specs) do
+          let(:classifier) { AtomClassifier.new }
+          let(:dependent_specific_species) do
             [
-              activated_bridge,
-              activated_incoherent_bridge,
-              hydrogenated_incoherent_bridge,
-              extra_activated_bridge,
-              methyl_on_incoherent_bridge,
-              methyl_on_activated_bridge,
-              activated_methyl_on_right_bridge,
-              activated_dimer,
-              activated_methyl_on_bridge,
-              activated_methyl_on_incoherent_bridge,
-              activated_methyl_on_dimer
+              dept_activated_bridge,
+              dept_activated_incoherent_bridge,
+              dept_hydrogenated_incoherent_bridge,
+              dept_extra_activated_bridge,
+              dept_methyl_on_incoherent_bridge,
+              dept_methyl_on_activated_bridge,
+              dept_activated_methyl_on_right_bridge,
+              dept_activated_dimer,
+              dept_activated_methyl_on_bridge,
+              dept_activated_methyl_on_incoherent_bridge,
+              dept_activated_methyl_on_dimer
             ]
           end
 
-          let(:mirror) { Hash[wrapped_specs.map(&:name).zip(wrapped_specs)] }
-          let(:wrapped_specs) do
-            specific_specs.map { |s| DependentSpecificSpec.new(s) }
-          end
-
-          let(:classifier) { AtomClassifier.new }
-
           before do
-            organize(wrapped_specs)
+            organize(dependent_specific_species)
             classifier.analyze(target)
           end
 
           describe 'activated_methyl_on_dimer' do
-            let(:target) { mirror[:'methyl_on_dimer(cm: *)'] }
+            let(:target) { dept_activated_methyl_on_dimer }
 
             describe '~-C%d< is presented' do
               subject { classifier.index(mod_cr) }
@@ -58,7 +50,8 @@ module VersatileDiamond
           end
 
           describe 'activated_methyl_on_right_bridge' do
-            let(:target) { mirror[:'methyl_on_right_bridge(cm: *)'] }
+            let(:target) { dept_activated_methyl_on_right_bridge }
+
             describe '~^C%d< is presented' do
               subject { classifier.index(mob_cb) }
               it { should_not be_nil }
@@ -71,7 +64,7 @@ module VersatileDiamond
             {
               atom_name: :C,
               valence: 4,
-              lattice: lattice,
+              lattice: diamond,
               relations: [bond_110_cross, bond_110_cross, bond_110_front]
             }
           end
@@ -284,7 +277,7 @@ module VersatileDiamond
           {
             atom_name: :C,
             valence: 4,
-            lattice: lattice
+            lattice: diamond
           }
         end
 

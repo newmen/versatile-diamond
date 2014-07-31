@@ -172,8 +172,11 @@ module VersatileDiamond
       # @raise [RuntimeError] if collapsed bond is invalid
       # @return [Array] duplicated collapsed list of bonds
       def collapse_bonds(list)
-        groups = list.group_by { |atom, _| atom }
-        groups.map do |atom, group|
+        states_detector = -> pair { pair.last.is_a?(Symbol) }
+        states = list.select(&states_detector)
+        relations = list.reject(&states_detector)
+        groups = relations.group_by { |atom, _| atom }
+        pairs = groups.map do |atom, group|
           if group.size == 1
             group.first
           else
@@ -192,6 +195,8 @@ module VersatileDiamond
             pair
           end
         end
+
+        pairs + states
       end
 
       # Checks that list contain same item few times
@@ -213,7 +218,7 @@ module VersatileDiamond
       # @param [Bond] bond the checking bond
       # @raise [RuntimeError] if bond is incorrect
       def check_bond_is_correct(bond)
-        if bond.is_a?(Position) || bond.face || bond.dir
+        if bond.is_a?(Position) || (bond.face && bond.dir)
           raise 'Incorrect multi-bond'
         end
       end

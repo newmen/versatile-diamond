@@ -7,7 +7,6 @@ module VersatileDiamond
       # Provides atom properties instances for RSpec
       module Properties
         include Tools::Handbook
-        include SpeciesOrganizer
 
         # Creates properties of atom with some name by dependent specific specie and
         # atom of it
@@ -65,30 +64,6 @@ module VersatileDiamond
         prop(:bob, :cross_bridge_on_bridges_base, :cm)
         prop(:eob, :ethane_on_bridge_base, :c1)
         prop(:vob, :vinyl_on_bridge_base, :c1)
-
-        # surface species the atom properties of which will checked in tests
-
-        set(:cross_bridge_on_bridges_base) do
-          s = Concepts::SurfaceSpec.new(:cross_bridge_on_bridges)
-          s.adsorb(bridge_base)
-          s.rename_atom(:ct, :ctl)
-          s.adsorb(methyl_on_bridge_base)
-          s.rename_atom(:cb, :ctr)
-          s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
-        end
-
-        set(:ethane_on_bridge_base) do
-          s = Concepts::SurfaceSpec.new(:ethane_on_bridge, c2: c.dup)
-          s.adsorb(methyl_on_bridge_base)
-          s.rename_atom(:cm, :c1)
-          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
-        end
-
-        set(:vinyl_on_bridge_base) do
-          s = Concepts::SurfaceSpec.new(:vinyl_on_bridge)
-          s.adsorb(ethane_on_bridge_base)
-          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
-        end
       end
     end
   end

@@ -7,10 +7,11 @@ module VersatileDiamond
 
       def_delegators :spec, :terminations_num
 
-      # Termination spec could not be a specific spec
-      # @return [Boolean] false
-      def specific?
-        false
+      # Termination spec always is termination
+      # @return [Boolean] true
+      # @override
+      def termination?
+        true
       end
 
       def to_s

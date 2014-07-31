@@ -6,9 +6,9 @@ module VersatileDiamond
 
       # Creates Lattice class
       class Lattice < CppClass
-        include PolynameClass
-        extend SourceFileCopier
         extend Forwardable
+        extend SourceFileCopier
+        include PolynameClass
 
         def_delegators :instance, :default_surface_height
         copy_source :crystal_properties, :relations
