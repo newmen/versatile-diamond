@@ -62,15 +62,6 @@ module VersatileDiamond
         SpecResidual.new(residuals, merge(prev_refs, collected_refs))
       end
 
-    protected
-
-      # Rejects position relations
-      # @param [Atom] atom see at #relations_of same argument
-      # @return [Array] the array of relations without position relations
-      def bonds_of(atom)
-        relations_of(atom).reject { |r| r.is_a?(Concepts::Position) }
-      end
-
       # Finds first intersec with some spec
       # @param [DependentBaseSpec] spec the checkable specie
       # @return [Array] the array of each pair of intersection or nil if intersection
@@ -79,6 +70,15 @@ module VersatileDiamond
         args = [self, spec, { collaps_multi_bond: true }]
         first = Mcs::SpeciesComparator.first_general_intersec(*args)
         first && Hash[first.to_a]
+      end
+
+    protected
+
+      # Rejects position relations
+      # @param [Atom] atom see at #relations_of same argument
+      # @return [Array] the array of relations without position relations
+      def bonds_of(atom)
+        relations_of(atom).reject { |r| r.is_a?(Concepts::Position) }
       end
 
     private

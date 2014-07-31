@@ -42,7 +42,7 @@ module VersatileDiamond
         # @return [String] the name of base class
         def base_class_name
           wbcn = @specie == original_specie ?
-            @specie.base_class_name : "Empty<#{enum_name}>"
+            "Empty<#{enum_name}>" : @specie.base_class_name
 
           add_args = additional_template_args.map { |arg| ", #{arg}" }.join
           "#{wrapper_class_name}<#{wbcn}#{add_args}>"

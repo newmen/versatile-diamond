@@ -15,9 +15,10 @@ module VersatileDiamond
 
         @sequences_cacher = Code::SequencesCacher.new
 
-        @_dependent_species = nil
         @species = collect_code_species
         @lattices = collect_code_lattices
+
+        @_dependent_species = nil
       end
 
       # provides methods from base generator class

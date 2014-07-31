@@ -25,13 +25,12 @@ module VersatileDiamond
 
           @_original_sequence =
             if spec.rest
-              twins = back_twins
-              parents_sequence.reduce(addition_atoms) do |acc, parent|
-                acc + parent.original.map do |parent_atom|
-                  pair = twins.delete_one { |a, _| parent_atom == a }
-                  own_atom = pair && pair.last
-                  own_atom || parent_atom
-                end
+              dynamic_rest = spec
+              sorted_parents.reduce(addition_atoms) do |acc, parent|
+                own_atoms = dynamic_rest.mirror_to(parent).keys
+                dynamic_rest -= parent
+
+                acc + sort_atoms(own_atoms)
               end
             else
               sort_atoms(atoms)
@@ -41,7 +40,7 @@ module VersatileDiamond
         # Gets short sequence of anchors
         # @return [Array] the short sequence of different atoms
         def short
-          sort_atoms(anchors)
+          sort_atoms(anchors, amorph_before: false)
         end
 
         # Counts delta between atoms num of current specie and sum of atoms num of
@@ -58,30 +57,12 @@ module VersatileDiamond
         #   instanced
         # @return [Array] the array of symmetric instances
         def symmetrics(generator, original_specie)
-          sym_atoms = filter_atom_mirrors(symmetric_atoms)
+          sym_atoms = symmetric_atoms
           adds_suffix = sym_atoms.size > 1
 
           sym_atoms.map.with_index do |twins_mirror, summ_suff|
             pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
-
-            symmetric =
-              sort_indexes_pairs(pairs).reduce(original_specie) do |acc, indexes|
-                if spec.rest
-                  pa_indexes = indexes.map(&method(:parent_index))
-                  parent_indexes, atom_indexes = pa_indexes.transpose
-
-                  parents_eq = parent_indexes[0] == parent_indexes[1]
-                  atoms_eq = atom_indexes[0] == atom_indexes[1]
-
-                  if parents_eq || !atoms_eq
-                    AtomsSwappedSpecie.new(generator, acc, *atom_indexes)
-                  else
-                    ParentsSwappedSpecie.new(generator, acc, *parent_indexes)
-                  end
-                else
-                  AtomsSwappedSpecie.new(generator, acc, *indexes)
-                end
-              end
+            symmetric = combine_symmetric(generator, original_specie, pairs)
 
             symmetric.set_suffix(summ_suff + 1) if adds_suffix
             symmetric
@@ -132,27 +113,29 @@ module VersatileDiamond
 
         # Gets sorted parents of target specie
         # @return [Array] the sorted array of parent seqeucnes
-        def parents_sequence
-          spec.parents.sort_by { |p| -p.relations_num }.map(&method(:get))
+        def sorted_parents
+          spec.parents.sort_by { |p| -p.relations_num }
         end
 
         # Reverse sorts the atoms by number of their relations
         # @param [Array] atoms the array of sorting atoms
+        # @option [Boolean] :amorph_before if true then latticed atoms will be at end
+        #   in returned sequence
         # @return [Array] sorted array of atoms
-        def sort_atoms(atoms)
+        def sort_atoms(atoms, amorph_before: true)
           atoms.sort do |a, b|
             # a < b => -1
             # a == b => 0
             # a > b => 1
-            if a.lattice && !b.lattice
-              -1
-            elsif b.lattice && !a.lattice
-              1
-            else
+            if a.lattice == b.lattice
               a_size, b_size = spec.spec.links[a].size, spec.spec.links[b].size
               a_size == b_size ?
                 spec.links[a].size <=> spec.links[b].size :
                 b_size <=> a_size
+            elsif amorph_before && !a.lattice && b.lattice
+              -1
+            else
+              1
             end
           end
         end
@@ -183,7 +166,7 @@ module VersatileDiamond
           insec.map { |ins| Hash[ins.to_a] }
         end
 
-        # Filters intersections with parent specie. Checks that anchors points to
+        # Filters intersections with parent specie. Checks that child anchors points to
         # different atoms of parent specie.
         #
         # @param [Array] child_anchors the list of atom anchors
@@ -257,14 +240,6 @@ module VersatileDiamond
           groups.select { |_, g| g.size == 1 }.map(&:last).map(&:last)
         end
 
-        # Filters mirrors by select only biggest mirrors
-        # @param [Array] mirrors the array of hashes of atoms mirror
-        # @return [Array] filtered mirrors set
-        def filter_atom_mirrors(mirrors)
-          max_size = mirrors.map(&:size).max
-          mirrors.select { |mirror| mirror.size == max_size }
-        end
-
         # Finds parent index and atom index in it
         # @param [Integer] atom_index the index of atom in original sequence
         # @return [Array] two values where the first is parent index and second is
@@ -272,8 +247,8 @@ module VersatileDiamond
         def parent_index(atom_index)
           pi = nil
           ai = atom_index - delta
-          parents_sequence.each_with_index do |parent, parent_index|
-            panum = parent.atoms.size
+          sorted_parents.each_with_index do |parent, parent_index|
+            panum = parent.atoms_num
             if ai < panum
               pi = parent_index
               break
@@ -284,6 +259,51 @@ module VersatileDiamond
           [pi, ai]
         end
 
+        # Makes empty symmetric code generator instance
+        # @param [EngineCode] generator see at #symmetrics same argument
+        # @param [OriginalSpecie] original_specie see at #symmetrics same argument
+        # @param [Array] pairs of indexes of symmetric atoms
+        # @return [EmptySpecie] the symmetric specie code generator
+        def combine_symmetric(generator, original_specie, pairs)
+          if spec.rest
+            parentable_symmetric(generator, original_specie, pairs)
+          else
+            pairs.reduce(original_specie) do |acc, indexes|
+              AtomsSwappedSpecie.new(generator, acc, *indexes)
+            end
+          end
+        end
+
+        # Makes empty symmetric code generator for case when current specie have
+        # parent specie(s)
+        #
+        # @param [EngineCode] generator see at #combine_symmetric same argument
+        # @param [OriginalSpecie] original_specie see at #combine_symmetric same arg
+        # @param [Array] pairs see at #combine_symmetric same argument
+        # @return [EmptySpecie] the symmetric specie code generator
+        def parentable_symmetric(generator, original_specie, pairs)
+          # TODO: there could be more simple sorting (by used klass value)
+          creation_values = sort_indexes_pairs(pairs).map do |indexes|
+            pa_indexes = indexes.map(&method(:parent_index))
+            parent_indexes, atom_indexes = pa_indexes.transpose
+
+            parents_eq = parent_indexes[0] == parent_indexes[1]
+            atoms_eq = atom_indexes[0] == atom_indexes[1]
+
+            if parents_eq || !atoms_eq
+              [AtomsSwappedSpecie, atom_indexes]
+            else
+              [ParentsSwappedSpecie, parent_indexes]
+            end
+          end
+
+          creation_values.uniq! # like a f@%k
+
+          creation_values.reduce(original_specie) do |acc, (klass, indexes)|
+            klass.new(generator, acc, *indexes)
+          end
+        end
+
         # Sorts pairs of indexes. The first indexes is indexes that belongs to
         # different parents, and last indexes is indexes of atom of similar parents.
         #
@@ -291,12 +311,12 @@ module VersatileDiamond
         #   using parent sequences
         # @return [Array] the array of sorted pairs
         def sort_indexes_pairs(pairs)
-          pairs.sort do |pair_of_pairs|
-            pq = pair_of_pairs.map { |pair| pair.map(&method(:parent_index)) }
-            a, b = pq.map { |p| p.map(&:first) }
+          pairs.sort do |as, bs|
+            pq = [as, bs].map { |pair| pair.map(&method(:parent_index)) }
+            pa, pb = pq.map { |p| p.map(&:first) }
 
-            a_diff = a[0] == a[1]
-            b_diff = b[0] == b[1]
+            a_diff = pa[0] == pa[1]
+            b_diff = pb[0] == pb[1]
 
             if a_diff == b_diff
               0

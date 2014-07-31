@@ -101,6 +101,21 @@ module VersatileDiamond
         store_parent(parent || base_cache[base_name])
       end
 
+      # Gets a mirror to another dependent spec
+      # @param [DependentBaseSpec | DependentSpecificSpec] other the specie atom of
+      #   which will be mirrored from current spec atoms
+      # @return [Hash] the mirror
+      # @override
+      def mirror_to(other)
+        spec_atoms_comparer = -> _, _, a1, a2 { a1.original_same?(a2) }
+        intersec = Mcs::SpeciesComparator.first_general_intersec(
+          spec, other.spec, &spec_atoms_comparer)
+        raise 'Intersec is not full' if other.links.size != intersec.size
+        # the raise should be because this situation can't be presented
+
+        Hash[intersec.to_a]
+      end
+
       # Counts number of specific atoms
       # @return [Integer] the number of specific atoms
       def size
@@ -134,21 +149,6 @@ module VersatileDiamond
       end
 
     private
-
-      # Gets a mirror to another dependent spec
-      # @param [DependentBaseSpec | DependentSpecificSpec] other the specie atom of
-      #   which will be mirrored from current spec atoms
-      # @return [Hash] the mirror
-      # @override
-      def mirror_to(other)
-        spec_atoms_comparer = -> _, _, a1, a2 { a1.original_same?(a2) }
-        intersec = Mcs::SpeciesComparator.first_general_intersec(
-          spec, other.spec, &spec_atoms_comparer)
-        raise 'Intersec is not full' if other.links.size != intersec.size
-        # the raise should be because this situation can't be presented
-
-        Hash[intersec.to_a]
-      end
 
       # Updates links by new base specie. Replaces correspond atoms in internal
       # links graph

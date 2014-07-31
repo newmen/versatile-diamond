@@ -29,7 +29,7 @@ module VersatileDiamond
           end
 
           let(:code_specie) { generator.specie_class(subject.name) }
-          let(:original_specie) { OriginalSpecie.new(generator, code_specie) }
+          let(:original_specie) { code_specie.original }
 
           it '#symmetrics' do
             sbcs = sequence.symmetrics(generator, original_specie)
@@ -63,8 +63,8 @@ module VersatileDiamond
             [
               methyl_on_bridge_base.atom(:cm),
               methyl_on_bridge_base.atom(:cb),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
+              methyl_on_bridge_base.atom(:cl),
+              methyl_on_bridge_base.atom(:cr),
             ]
           end
           let(:short) do
@@ -86,11 +86,11 @@ module VersatileDiamond
             [
               methyl_on_dimer_base.atom(:cm),
               methyl_on_dimer_base.atom(:cr),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
+              methyl_on_dimer_base.atom(:_cr0),
+              methyl_on_dimer_base.atom(:clb),
               methyl_on_dimer_base.atom(:cl),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
+              methyl_on_dimer_base.atom(:_cr1),
+              methyl_on_dimer_base.atom(:_cl0),
             ]
           end
           let(:short) do
@@ -110,11 +110,11 @@ module VersatileDiamond
           let(:original) do
             [
               dimer_base.atom(:cr),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
+              dimer_base.atom(:clb),
+              dimer_base.atom(:_cr0),
               dimer_base.atom(:cl),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
+              dimer_base.atom(:_cl0),
+              dimer_base.atom(:_cr1),
             ]
           end
           let(:short) do
@@ -137,7 +137,11 @@ module VersatileDiamond
             let(:specifics) { [dept_bottom_hydrogenated_activated_dimer] }
 
             let(:symmetric_base_classes) do
-              ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
+              [
+                'AtomsSwapWrapper<Empty<SYMMETRIC_DIMER>, 1, 2>',
+                'ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>',
+                'AtomsSwapWrapper<ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>, 1, 2>'
+              ]
             end
           end
         end
