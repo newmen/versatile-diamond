@@ -15,13 +15,6 @@ module VersatileDiamond
         let(:original_specie) { code_specie.original }
         let(:sequence) { generator.sequences_cacher.get(subject) }
 
-        shared_examples_for :check_symmetric_base_classes do
-          it '#symmetrics' do
-            sbcs = sequence.symmetrics(generator, original_specie)
-            expect(sbcs.map(&:base_class_name)).to match_array(symmetric_base_classes)
-          end
-        end
-
         shared_examples_for :apply_all do
           before { generator }
 
@@ -37,7 +30,10 @@ module VersatileDiamond
             expect(sequence.delta).to eq(delta)
           end
 
-          it_behaves_like :check_symmetric_base_classes
+          it '#symmetrics' do
+            sbcs = sequence.symmetrics(generator, original_specie)
+            expect(sbcs.map(&:base_class_name)).to match_array(symmetric_base_classes)
+          end
         end
 
         it_behaves_like :apply_all do
@@ -149,15 +145,29 @@ module VersatileDiamond
           end
         end
 
-        describe 'symmetric activated dimer' do
+        it_behaves_like :apply_all do
           subject { dept_activated_dimer }
           let(:bases) { [dept_bridge_base, dept_dimer_base] }
           let(:specifics) { [dept_bottom_hydrogenated_activated_dimer] }
 
-          it_behaves_like :check_symmetric_base_classes do
-            let(:symmetric_base_classes) do
-              ['AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 1, 2>']
-            end
+          let(:original) do
+            [
+              activated_dimer.atom(:cr),
+              activated_dimer.atom(:clb),
+              activated_dimer.atom(:_cr0),
+              activated_dimer.atom(:cl),
+              activated_dimer.atom(:_cr1),
+              activated_dimer.atom(:_cl0),
+            ]
+          end
+          let(:short) do
+            [
+              activated_dimer.atom(:cr),
+            ]
+          end
+          let(:delta) { 0 }
+          let(:symmetric_base_classes) do
+            ['AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 1, 2>']
           end
         end
       end
