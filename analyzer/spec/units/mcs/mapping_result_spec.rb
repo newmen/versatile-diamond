@@ -45,8 +45,8 @@ module VersatileDiamond
                   extended_dimer.atom(:cl)],
               ]],
               [[activated_dimer, extended_dimer], [
-                [activated_dimer.atom(:cl), extended_dimer.atom(:_cr0)],
-                [activated_dimer.atom(:cr), extended_dimer.atom(:clb)],
+                [activated_dimer.atom(:cl), extended_dimer.atom(:crb)],
+                [activated_dimer.atom(:cr), extended_dimer.atom(:_cr0)],
               ]]
             ]) }
         end

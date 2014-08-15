@@ -85,11 +85,11 @@ module VersatileDiamond
             [
               methyl_on_dimer_base.atom(:cm),
               methyl_on_dimer_base.atom(:cr),
+              methyl_on_dimer_base.atom(:crb),
               methyl_on_dimer_base.atom(:_cr0),
-              methyl_on_dimer_base.atom(:clb),
               methyl_on_dimer_base.atom(:cl),
+              methyl_on_dimer_base.atom(:clb),
               methyl_on_dimer_base.atom(:_cr1),
-              methyl_on_dimer_base.atom(:_cl0),
             ]
           end
           let(:short) do
@@ -109,11 +109,11 @@ module VersatileDiamond
           let(:original) do
             [
               dimer_base.atom(:cr),
-              dimer_base.atom(:clb),
+              dimer_base.atom(:crb),
               dimer_base.atom(:_cr0),
               dimer_base.atom(:cl),
               dimer_base.atom(:_cr1),
-              dimer_base.atom(:_cl0),
+              dimer_base.atom(:clb),
             ]
           end
           let(:short) do
@@ -145,30 +145,40 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like :apply_all do
-          subject { dept_activated_dimer }
-          let(:bases) { [dept_bridge_base, dept_dimer_base] }
-          let(:specifics) { [dept_bottom_hydrogenated_activated_dimer] }
+        shared_examples_for :apply_all_for_bottom do
+          it_behaves_like :apply_all do
+            subject { dept_activated_dimer }
+            let(:bases) { [dept_bridge_base, dept_dimer_base] }
+            let(:specifics) { [bottom] }
 
-          let(:original) do
-            [
-              activated_dimer.atom(:cr),
-              activated_dimer.atom(:clb),
-              activated_dimer.atom(:_cr0),
-              activated_dimer.atom(:cl),
-              activated_dimer.atom(:_cr1),
-              activated_dimer.atom(:_cl0),
-            ]
+            let(:original) do
+              [
+                activated_dimer.atom(:cr),
+                activated_dimer.atom(:crb),
+                activated_dimer.atom(:_cr0),
+                activated_dimer.atom(:cl),
+                activated_dimer.atom(:_cr1),
+                activated_dimer.atom(:clb),
+              ]
+            end
+            let(:short) do
+              [
+                activated_dimer.atom(:cr),
+              ]
+            end
+            let(:delta) { 0 }
+            let(:symmetric_base_classes) { [empty_class] }
           end
-          let(:short) do
-            [
-              activated_dimer.atom(:cr),
-            ]
-          end
-          let(:delta) { 0 }
-          let(:symmetric_base_classes) do
-            ['AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 1, 2>']
-          end
+        end
+
+        it_behaves_like :apply_all_for_bottom do
+          let(:bottom) { dept_bottom_hydrogenated_activated_dimer }
+          let(:empty_class) { 'AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 4, 5>' }
+        end
+
+        it_behaves_like :apply_all_for_bottom do
+          let(:bottom) { dept_right_bottom_hydrogenated_activated_dimer }
+          let(:empty_class) { 'AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 1, 2>' }
         end
       end
 
