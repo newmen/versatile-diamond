@@ -48,19 +48,19 @@ module VersatileDiamond
             [
               [[spec1, spec3], [
                 [spec1.atom(:cm), spec3.atom(:cm)],
+                [spec1.atom(:crb), spec3.atom(:crb)],
                 [spec1.atom(:_cr0), spec3.atom(:_cr0)],
                 [spec1.atom(:cr), spec3.atom(:cr)],
-                [spec1.atom(:_cl0), spec3.atom(:_cl0)],
                 [spec1.atom(:_cr1), spec3.atom(:_cr1)],
                 [spec1.atom(:clb), spec3.atom(:clb)],
                 [spec1.atom(:cl), spec3.atom(:cl)],
               ]],
               [[spec2, spec4], [
                 [spec2.atom(:cr), spec4.atom(:cr)],
-                [spec2.atom(:clb), spec4.atom(:clb)],
+                [spec2.atom(:crb), spec4.atom(:crb)],
                 [spec2.atom(:_cr0), spec4.atom(:_cr0)],
                 [spec2.atom(:cl), spec4.atom(:cl)],
-                [spec2.atom(:_cl0), spec4.atom(:_cl0)],
+                [spec2.atom(:clb), spec4.atom(:clb)],
                 [spec2.atom(:_cr1), spec4.atom(:_cr1)],
               ]],
             ]

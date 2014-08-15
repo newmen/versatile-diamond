@@ -226,6 +226,7 @@ module VersatileDiamond
         set(:dimer_base) do
           s = DuppableSurfaceSpec.new(:dimer)
           s.adsorb(bridge_base)
+          s.rename_atom(:cl, :crb)
           s.rename_atom(:ct, :cr)
           s.adsorb(bridge_base)
           s.rename_atom(:cl, :clb)
@@ -242,6 +243,9 @@ module VersatileDiamond
         end
         set(:bottom_hydrogenated_activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
+        end
+        set(:right_bottom_hydrogenated_activated_dimer) do
+          SpecificSpec.new(dimer_base, cr: activated_cd, crb: cd_hydride)
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }
