@@ -56,7 +56,7 @@ module VersatileDiamond
 
         before(:each) { subject.swap_source(activated_bridge, bridge_dup) }
 
-        it { expect(source).to_not include(activated_bridge) }
+        it { expect(source).not_to include(activated_bridge) }
         it { expect(source).to include(bridge_dup) }
         it { expect(source).to include(ai_bridge) }
       end

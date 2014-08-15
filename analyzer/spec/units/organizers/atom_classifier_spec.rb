@@ -150,7 +150,7 @@ module VersatileDiamond
             let(:graph) do
               Generators::ClassifierResultGraph.new(subject, filename)
             end
-            it { expect { graph.generate }.to_not raise_error }
+            it { expect { graph.generate }.not_to raise_error }
 
             describe 'image is not empty' do
               before { graph.generate }

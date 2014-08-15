@@ -27,7 +27,7 @@ module VersatileDiamond
 
           it { expect {
               spec.interpret('position :c1, :c2, face: 100, dir: :front')
-            }.to_not raise_error }
+            }.not_to raise_error }
         end
 
         describe 'only one atom has lattice' do

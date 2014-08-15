@@ -105,7 +105,7 @@ module VersatileDiamond
 
           it 'all names are good keys' do
             names.each do |name|
-              expect(subject.public_send(mono_method, name)).to_not be_nil
+              expect(subject.public_send(mono_method, name)).not_to be_nil
             end
           end
         end
@@ -115,7 +115,7 @@ module VersatileDiamond
 
           it 'all specs have reactions' do
             instances.each do |instance|
-              expect(instance.reactions).to_not be_empty
+              expect(instance.reactions).not_to be_empty
             end
           end
         end
@@ -206,8 +206,8 @@ module VersatileDiamond
                 it { expect(reactions_for(:dimer).map(&:reaction)).
                   to eq([hydrogen_migration.reverse]) }
 
-                it { expect(reactions_for(:methyl_on_bridge)).to_not be_empty }
-                it { expect(reactions_for(:methyl_on_dimer)).to_not be_empty }
+                it { expect(reactions_for(:methyl_on_bridge)).not_to be_empty }
+                it { expect(reactions_for(:methyl_on_dimer)).not_to be_empty }
               end
             end
           end
@@ -261,7 +261,7 @@ module VersatileDiamond
           before { store_reactions }
 
           it { expect(subject.spec_reactions).
-            to_not include(*subject.ubiquitous_reactions) }
+            not_to include(*subject.ubiquitous_reactions) }
         end
 
         describe '#organize_dependecies!' do
