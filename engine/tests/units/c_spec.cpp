@@ -7,6 +7,8 @@ using namespace vd;
 #include <iostream>
 using namespace std;
 
+#include "../support/open_diamond.h"
+
 void assertIs(C *c, std::initializer_list<uint> types)
 {
     std::set<uint> ts(types);
@@ -19,7 +21,7 @@ void assertIs(C *c, std::initializer_list<uint> types)
 
 int main(int argc, char const *argv[])
 {
-    Crystal *diamond = new Diamond(dim3(10, 10, 5));
+    Crystal *diamond = new OpenDiamond(dim3(10, 10, 5));
     Lattice *lattice = new Lattice(diamond, int3(1, 1, 1));
 
     C c8(8, 1, lattice);

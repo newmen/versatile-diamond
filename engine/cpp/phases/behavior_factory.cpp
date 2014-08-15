@@ -1,5 +1,4 @@
 #include "behavior_factory.h"
-
 #include "behavior_plane.h"
 #include "behavior_tor.h"
 

@@ -1,8 +1,8 @@
 #include "methyl_on_dimer.h"
 #include "../specific/methyl_on_dimer_cmiu.h"
 
-const ushort MethylOnDimer::__indexes[2] = { 1, 0 };
-const ushort MethylOnDimer::__roles[2] = { 23, 14 };
+const ushort MethylOnDimer::__indexes[2] = { 1, 4 };
+const ushort MethylOnDimer::__roles[2] = { 23, 22 };
 
 #ifdef PRINT
 const char *MethylOnDimer::name() const
@@ -12,23 +12,48 @@ const char *MethylOnDimer::name() const
 }
 #endif // PRINT
 
-void MethylOnDimer::find(Dimer *target)
+void MethylOnDimer::find(Atom *anchor)
 {
-    target->eachSymmetry([](ParentSpec *specie) {
-        Atom *anchor = specie->atom(0);
-
-        if (anchor->is(23))
+    if (anchor->is(23))
+    {
+        if (!anchor->checkAndFind(METHYL_ON_DIMER, 23))
         {
-            if (!anchor->checkAndFind(METHYL_ON_DIMER, 23) && !anchor->isVisited())
-            {
-                Atom *amorph = anchor->amorphNeighbour();
-                if (amorph->is(14))
+            eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
+                if (neighbour->is(22) && anchor->hasBondWith(neighbour))
                 {
-                    create<MethylOnDimer>(amorph, specie);
+                    assert(neighbour->hasRole(BRIDGE, 3));
+                    assert(neighbour->lattice());
+
+                    ParentSpec *parents[2] = {
+                        anchor->specByRole<MethylOnBridge>(9),
+                        neighbour->specByRole<Bridge>(3)
+                    };
+
+                    create<MethylOnDimer>(parents);
                 }
-            }
+            });
         }
-    });
+    }
+    else if (anchor->is(22))
+    {
+        if (!anchor->checkAndFind(METHYL_ON_DIMER, 22))
+        {
+            eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
+                if (neighbour->is(23) && anchor->hasBondWith(neighbour))
+                {
+                    assert(neighbour->hasRole(METHYL_ON_BRIDGE, 9));
+                    assert(neighbour->lattice());
+
+                    ParentSpec *parents[2] = {
+                        neighbour->specByRole<MethylOnBridge>(9),
+                        anchor->specByRole<Bridge>(3)
+                    };
+
+                    create<MethylOnDimer>(parents);
+                }
+            });
+        }
+    }
 }
 
 void MethylOnDimer::findAllChildren()

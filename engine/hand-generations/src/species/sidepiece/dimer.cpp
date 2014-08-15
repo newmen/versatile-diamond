@@ -35,7 +35,6 @@ void Dimer::find(Atom *anchor)
 
 void Dimer::findAllChildren()
 {
-    MethylOnDimer::find(this);
     DimerCRs::find(this);
     DimerCRiCLi::find(this);
 }

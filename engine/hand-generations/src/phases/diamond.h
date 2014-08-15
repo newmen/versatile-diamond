@@ -2,10 +2,10 @@
 #define DIAMOND_H
 
 #include <phases/crystal.h>
+#include <phases/behavior.h>
 using namespace vd;
 
 #include "diamond_crystal_properties.h"
-#include "../cpp/phases/behavior.h"
 
 class Diamond : public DiamondCrystalProperties<Crystal>
 {

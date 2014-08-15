@@ -2,6 +2,7 @@
 #include "handbook.h"
 
 #include "species/base/bridge.h"
+#include "species/base/methyl_on_dimer.h"
 #include "species/base/bridge_with_dimer.h"
 #include "species/base/two_bridges.h"
 #include "species/sidepiece/dimer.h"
@@ -75,6 +76,11 @@ void Finder::findAll(Atom **atoms, uint n)
     for (uint i = 0; i < n; ++i)
     {
         Dimer::find(atoms[i]);
+    }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        MethylOnDimer::find(atoms[i]);
     }
 
     for (uint i = 0; i < n; ++i)

@@ -2,6 +2,7 @@
 
 #include <atoms/c.h>
 #include <phases/diamond.h>
+#include <phases/behavior_tor.h>
 #include "../support/corrected_types.h"
 
 class OpenDiamond : public Diamond
@@ -12,8 +13,8 @@ public:
     typedef Neighbours<4> FN;
 
     static const dim3 SIZES;
-    OpenDiamond(uint height = DEFAULT_HEIGHT) : Diamond(SIZES, height) {}
-    OpenDiamond(const dim3 &sizes, uint height = DEFAULT_HEIGHT) : Diamond(sizes, height) {}
+    OpenDiamond(uint height = DEFAULT_HEIGHT) : OpenDiamond(SIZES, height) {}
+    OpenDiamond(const dim3 &sizes, uint height = DEFAULT_HEIGHT) : Diamond(sizes, new BehaviorTor, height) {}
 
     Atom *atom(const int3 &coords) { return atoms()[coords]; }
 
