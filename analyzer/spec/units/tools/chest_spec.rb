@@ -27,7 +27,7 @@ module VersatileDiamond
           describe 'another concept' do
             before { Chest.store(*dups) }
             it { expect { Chest.store(*another.map(&:dup)) }.
-              to_not raise_error }
+              not_to raise_error }
           end
         end
 

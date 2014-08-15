@@ -80,7 +80,7 @@ module VersatileDiamond
           it { expect(parent.children).to eq([child]) }
           it { expect(child.parent).to eq(parent) }
 
-          it { expect(child.rest).to_not be_nil }
+          it { expect(child.rest).not_to be_nil }
         end
 
         describe '#remove_parent' do
@@ -122,8 +122,8 @@ module VersatileDiamond
               store_and_restore
             end
 
-            it { expect(child1.spec.atom(:t)).to_not be_nil }
-            it { expect(child2.spec.atom(:cm)).to_not be_nil }
+            it { expect(child1.spec.atom(:t)).not_to be_nil }
+            it { expect(child2.spec.atom(:cm)).not_to be_nil }
           end
         end
       end

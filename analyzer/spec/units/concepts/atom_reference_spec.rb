@@ -9,7 +9,7 @@ module VersatileDiamond
 
       describe '#dup' do
         subject { ref.dup }
-        it { expect(subject).to_not eq(ref) }
+        it { expect(subject).not_to eq(ref) }
         it { expect(subject.spec).to eq(ref.spec) }
         it { expect(subject.keyname).to eq(ref.keyname) }
       end
