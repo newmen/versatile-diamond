@@ -4,8 +4,8 @@
 #include <iostream>
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
-#include "process_mem_usage.h"
 #include "../phases/behavior_factory.h"
+#include "process_mem_usage.h"
 #include "savers/actives_portion_counter.h"
 #include "savers/crystal_slice_saver.h"
 #include "savers/volume_saver.h"
@@ -135,7 +135,6 @@ Runner<HB>::~Runner()
 {
     delete _volumeSaver;
     delete _detector;
-    delete _behavior;
 }
 
 template <class HB>

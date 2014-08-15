@@ -14,6 +14,10 @@ public:
     typedef vector3d<Atom *> ParentType;
 
     AtomsVector3d(const Behavior *bhvr, const dim3 &sizes) : _behavior(bhvr), vector3d(sizes, (Atom *)nullptr) {}
+    ~AtomsVector3d()
+    {
+        delete _behavior;
+    }
 
     void changeBehavior (const Behavior *behavior)
     {

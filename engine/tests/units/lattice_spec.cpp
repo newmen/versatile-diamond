@@ -1,8 +1,5 @@
-#include <atoms/lattice.h>
-#include <phases/diamond.h>
-using namespace vd;
-
 #include "../support/open_diamond.h"
+using namespace vd;
 
 int main(int argc, char const *argv[])
 {
@@ -13,7 +10,7 @@ int main(int argc, char const *argv[])
     assert(lattice.coords().y == 2);
     assert(lattice.coords().z == 3);
 
-    Crystal *other = new Diamond(dim3(3, 3, 3));
+    Crystal *other = new OpenDiamond(dim3(3, 3, 3));
     assert(lattice.crystal() != other);
 
     lattice.updateCoords(int3(3, 2, 1));

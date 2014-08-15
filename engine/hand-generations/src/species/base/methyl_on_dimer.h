@@ -1,16 +1,17 @@
 #ifndef METHYL_ON_DIMER_H
 #define METHYL_ON_DIMER_H
 
-#include "../sidepiece/dimer.h"
-#include "../base.h"
+#include "bridge.h"
+#include "methyl_on_bridge.h"
 
 class MethylOnDimer :
-        public Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec>, 1>, METHYL_ON_DIMER, 2>
+        public Base<DependentSpec<ParentSpec, 2>, METHYL_ON_DIMER, 2>,
+        public DiamondAtomsIterator
 {
 public:
-    static void find(Dimer *target);
+    static void find(Atom *anchor);
 
-    MethylOnDimer(Atom *additionalAtom, ParentSpec *parent) : Base(additionalAtom, parent) {}
+    MethylOnDimer(ParentSpec **parents) : Base(parents) {}
 
 #ifdef PRINT
     const char *name() const final;
