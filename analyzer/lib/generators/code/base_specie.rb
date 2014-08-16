@@ -13,6 +13,12 @@ module VersatileDiamond
           ['enum', :upcase, '_']
         ].freeze
 
+        # Gets full path to specie header file
+        # @return [String] the path to specie header file
+        def full_file_path
+          "#{outer_base_file}/#{file_name}"
+        end
+
       private
 
         # Makes output directory path where generating file will be created

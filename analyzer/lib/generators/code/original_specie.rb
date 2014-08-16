@@ -34,13 +34,6 @@ module VersatileDiamond
           [target_specie.wrapped_base_class_name]
         end
 
-        # Gets full path to specie header file
-        # @return [String] the path to specie header file
-        def full_file_path
-          # same as Specie#full_file_path because has own #file_name
-          "#{outer_base_file}/#{file_name}"
-        end
-
         # Delegates all missed methods to target specie for correct rendering source
         # code template
         #
@@ -55,6 +48,18 @@ module VersatileDiamond
         # @return [Boolean] false
         def render_find_algorithms?
           false
+        end
+
+        # Gets a list of parent species
+        # @return [Array] the array of parent specie code generators
+        def header_species_dependencies
+          target_specie.header_parents_dependencies
+        end
+
+        # Original specie doesn't have dependencies from species in source file
+        # @return [Array] the empty array
+        def source_species_dependencies
+          []
         end
       end
 

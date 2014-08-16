@@ -29,8 +29,14 @@ module VersatileDiamond
               it { expect(subject.define_name).to eq(value) }
             end
 
+            let(:file_name) { "symmetric_#{cap_name.downcase}" }
             describe '#file_name' do
-              it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}") }
+              it { expect(subject.file_name).to eq(file_name) }
+            end
+
+            describe '#full_file_path' do
+              let(:ffp) { "empty/#{file_name}" }
+              it { expect(subject.full_file_path).to eq(ffp) }
             end
 
             describe '#class_name' do
@@ -53,8 +59,14 @@ module VersatileDiamond
               it { expect(subject.define_name).to eq("SYMMETRIC_#{cap_name.upcase}1_H") }
             end
 
+            let(:file_name) { "symmetric_#{cap_name.downcase}1" }
             describe '#file_name' do
-              it { expect(subject.file_name).to eq("symmetric_#{cap_name.downcase}1") }
+              it { expect(subject.file_name).to eq(file_name) }
+            end
+
+            describe '#full_file_path' do
+              let(:ffp) { "empty/#{file_name}" }
+              it { expect(subject.full_file_path).to eq(ffp) }
             end
 
             describe '#class_name' do

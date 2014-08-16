@@ -102,16 +102,18 @@ module VersatileDiamond
           outer_base_class.underscore
         end
 
-        # Gets full path to specie header file
-        # @return [String] the path to specie header file
-        def full_file_path
-          "#{outer_base_file}/#{file_name}"
-        end
-
         # Checks that current specie is find algorithm root
         # @return [Boolean] is find algorithm root or not
         def find_root?
           parents.size != 1
+        end
+
+        # Gets a list of parents species full header file path of which will be
+        # included in header file of current specie if it isn't find algorithm root
+        #
+        # @return [Array] the array of parent specie code generators
+        def header_parents_dependencies
+          find_root? ? [] : parents
         end
 
         # The printable name which will be shown when debug calculation output
@@ -233,10 +235,30 @@ module VersatileDiamond
           used_iterators.map(&:class_name)
         end
 
-        # Gets list of used iterator files
+        # Gets a list of used iterator files
         # @return [Array] the array of file names
         def iterator_files
           used_iterators.map(&:file_name)
+        end
+
+        # Gets a list of species full header file path of which will be included in
+        # header file of current specie
+        #
+        # @return [Array] the array of species which should be included in header file
+        def header_species_dependencies
+          if symmetric?
+            [@original] + @symmetrics
+          else
+            header_parents_dependencies
+          end
+        end
+
+        # Gets a list of species full header file path of which will be included in
+        # source file of current specie
+        #
+        # @return [Array] the array of species which should be included in source file
+        def source_species_dependencies
+          parents + children
         end
 
         # Gets classes from which current code instance will be inherited if specie is
