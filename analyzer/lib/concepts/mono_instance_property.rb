@@ -12,7 +12,7 @@ module VersatileDiamond
 
         module ClassMethods
           # Gets an instance of current class
-          # @return [ActiveBond] an active bond instance
+          # @return [MonoInstanceProperty] an instance of monoinstance property
           def property
             # TODO: maybe more properly to use Singleton module
             @__instance ||= new
