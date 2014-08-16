@@ -273,6 +273,7 @@ module VersatileDiamond
           s.rename_atom(:ct, :ctl)
           s.adsorb(methyl_on_bridge_base)
           s.rename_atom(:cb, :ctr)
+          s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end
 

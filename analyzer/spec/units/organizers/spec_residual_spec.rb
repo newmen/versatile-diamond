@@ -129,7 +129,7 @@ module VersatileDiamond
           it_behaves_like :count_atoms_and_references do
             subject { cbobs_part }
             let(:atoms_num) { 4 }
-            let(:relations_num) { 13 }
+            let(:relations_num) { 14 }
           end
 
           it_behaves_like :count_atoms_and_references do
