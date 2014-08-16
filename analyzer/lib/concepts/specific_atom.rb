@@ -146,7 +146,9 @@ module VersatileDiamond
       # Gets only relevant states
       # @return [Array] the array of relevant states
       def relevants
-        ((options - [ActiveBond.property]) + atom.relevants).uniq
+        opts_without_actives = options.dup
+        opts_without_actives.delete(ActiveBond.property)
+        (opts_without_actives + atom.relevants).uniq
       end
 
       # Provides additional valence states of current atom

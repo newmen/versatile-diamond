@@ -463,7 +463,10 @@ module VersatileDiamond
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
         dang_rels = spec.relations_of(atom).reject(&:relation?)
-        dang_rels - [Incoherent, Unfixed].map(&:property)
+        [Incoherent, Unfixed].map(&:property).reduce(dang_rels) do |acc, rel_prop|
+          acc.delete(rel_prop)
+          acc
+        end
       end
 
       # Collects only lattices which are reacheble through each undirected bond
