@@ -4,7 +4,12 @@
 <% iterator_files.each do |file_name| %>
 #include "../../phases/<%= file_name %>.h"
 <% end %>
+<% header_species_dependencies.each do |specie| %>
+#include "../<%= specie.full_file_path %>.h"
+<% end %>
+<% unless symmetric? %>
 #include "../<%= outer_base_file %>.h"
+<% end %>
 
 class <%= class_name %> :
     <%= public_inheritance(base_classes) %>

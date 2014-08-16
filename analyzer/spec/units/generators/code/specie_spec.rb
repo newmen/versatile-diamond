@@ -241,6 +241,16 @@ module VersatileDiamond
           it { expect(code_for(activated_dimer).find_root?).to be_falsey }
         end
 
+        describe '#header_parents_dependencies' do
+          let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+          let(:specific_specs) { [dept_activated_dimer] }
+
+          it { expect(code_for(bridge_base).header_parents_dependencies).to be_empty }
+          it { expect(code_for(dimer_base).header_parents_dependencies).to be_empty }
+          it { expect(code_for(activated_dimer).header_parents_dependencies).
+            to eq([code_for(dimer_base)]) }
+        end
+
         describe '#print_name' do
           it { expect(code_bridge_base.print_name).to eq('bridge') }
           it { expect(code_activated_bridge.print_name).to eq('bridge(ct: *)') }
