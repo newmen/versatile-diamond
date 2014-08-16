@@ -1,0 +1,7 @@
+#ifdef PRINT
+const char *<%= class_name %>::name() const
+{
+    static const char value[] = "<%= print_name %>";
+    return value;
+}
+#endif // PRINT

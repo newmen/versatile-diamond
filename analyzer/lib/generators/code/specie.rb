@@ -7,7 +7,6 @@ module VersatileDiamond
       # Creates Specie class
       class Specie < BaseSpecie
         include EnumerableFileName
-        include PartialRenderer
 
         attr_reader :spec, :original
 
@@ -113,6 +112,12 @@ module VersatileDiamond
         # @return [Boolean] is find algorithm root or not
         def find_root?
           parents.size != 1
+        end
+
+        # The printable name which will be shown when debug calculation output
+        # @return [String] the name of specie which used by user in DSL config file
+        def print_name
+          @spec.name.to_s
         end
 
       private

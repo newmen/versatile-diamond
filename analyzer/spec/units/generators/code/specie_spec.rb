@@ -240,6 +240,11 @@ module VersatileDiamond
           it { expect(code_for(activated_bridge).find_root?).to be_falsey }
           it { expect(code_for(activated_dimer).find_root?).to be_falsey }
         end
+
+        describe '#print_name' do
+          it { expect(code_bridge_base.print_name).to eq('bridge') }
+          it { expect(code_activated_bridge.print_name).to eq('bridge(ct: *)') }
+        end
       end
 
     end

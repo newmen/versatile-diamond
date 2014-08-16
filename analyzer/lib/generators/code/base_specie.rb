@@ -5,6 +5,7 @@ module VersatileDiamond
       # Extends cpp class with generator
       # @abstract
       class BaseSpecie < CppClassWithGen
+        include PartialRenderer
         include PolynameClass
 
         PREF_METD_SEPS = [

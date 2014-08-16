@@ -37,6 +37,7 @@ module VersatileDiamond
         # Gets full path to specie header file
         # @return [String] the path to specie header file
         def full_file_path
+          # same as Specie#full_file_path because has own #file_name
           "#{outer_base_file}/#{file_name}"
         end
 
