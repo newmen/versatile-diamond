@@ -26,8 +26,6 @@ module VersatileDiamond
 
       # Generates source code and configuration files
       def generate(**params)
-        species.each(&:find_self_symmetric!)
-
         [
           major_code_instances,
           unique_pure_atoms,
@@ -149,7 +147,7 @@ module VersatileDiamond
         end
       end
 
-      # Gets all collected species
+      # Gets non simple collected species
       # @return [Array] the array of collected species
       def species
         deps_hash = collect_dependent_species

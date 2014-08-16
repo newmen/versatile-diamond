@@ -109,6 +109,12 @@ module VersatileDiamond
           "#{outer_base_file}/#{file_name}"
         end
 
+        # Checks that current specie is find algorithm root
+        # @return [Boolean] is find algorithm root or not
+        def find_root?
+          parents.size != 1
+        end
+
       private
 
         # Specie class has find algorithms by default
@@ -242,7 +248,7 @@ module VersatileDiamond
         # Makes arguments string for static find method
         # @return [String] the arguments string of find method
         def find_arguments_str
-          parents.size == 1 ? "#{parents.first.class_name} *target" : 'Atom *anchor'
+          find_root? ? 'Atom *anchor' : "#{parents.first.class_name} *target"
         end
 
         # Makes arguments string for constructor method
