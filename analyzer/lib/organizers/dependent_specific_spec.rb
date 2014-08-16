@@ -220,7 +220,7 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def same_relevants?(bigger, smallest)
         diff = smallest.relevants - bigger.relevants
-        diff.empty? || (diff == [:incoherent] && bigger.size > smallest.size &&
+        diff.empty? || (diff == [Incoherent.property] && bigger.size > smallest.size &&
           (!bigger.monovalents.empty? || bigger.actives > 0))
       end
     end

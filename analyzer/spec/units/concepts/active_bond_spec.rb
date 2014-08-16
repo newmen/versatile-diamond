@@ -4,6 +4,10 @@ module VersatileDiamond
   module Concepts
 
     describe ActiveBond, use: :atom_properties do
+      it_behaves_like :mono_instance_no_bond do
+        subject { active_bond }
+      end
+
       describe '#name' do
         it { expect(active_bond.name).to eq(:*) }
       end
@@ -18,8 +22,18 @@ module VersatileDiamond
         it { expect(active_bond.terminations_num(eab_ct)).to eq(2) }
       end
 
+      describe '#apply_to' do
+        let(:atom) { SpecificAtom.new(cd) }
+        before { subject.apply_to(atom) }
+        it { expect(atom.actives).to eq(1) }
+      end
+
+      describe '#hydrogen?' do
+        it { expect(active_bond.hydrogen?).to be_falsey }
+      end
+
       describe '#same?' do
-        it { expect(active_bond.same?(ActiveBond.new)).to be_truthy }
+        it { expect(active_bond.same?(described_class.new)).to be_truthy }
         it { expect(active_bond.same?(adsorbed_h)).to be_falsey }
         it { expect(active_bond.same?(bridge)).to be_falsey }
       end

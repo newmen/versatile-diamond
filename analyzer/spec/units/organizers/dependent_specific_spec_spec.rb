@@ -145,7 +145,7 @@ module VersatileDiamond
             it { expect(links.values.reduce(:+).map(&:last)).to match_array([
                 free_bond, free_bond,
                 bond_110_cross, bond_110_cross,
-                :active, :incoherent
+                active_bond, incoherent
               ]) }
           end
         end
@@ -165,7 +165,7 @@ module VersatileDiamond
           let(:subtrahend) { dept_bridge_base_dup }
 
           it { expect(links.size).to eq(1) }
-          it { expect(links.keys.first.monovalents).to eq([:H]) }
+          it { expect(links.keys.first.monovalents).to eq([adsorbed_h]) }
         end
 
         describe 'resudue contain atoms with relevant states' do

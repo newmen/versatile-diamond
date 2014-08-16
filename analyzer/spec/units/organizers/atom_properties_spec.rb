@@ -294,7 +294,7 @@ module VersatileDiamond
         it_behaves_like :check_that_correspond do
           subject { ab_ct }
           let(:relations) { [bond_110_cross, bond_110_cross] }
-          let(:danglings) { [:active] }
+          let(:danglings) { [active_bond] }
           let(:info) do
             common_info.merge(relations: relations, danglings: danglings)
           end
@@ -415,11 +415,11 @@ module VersatileDiamond
       end
 
       describe '#count_danglings' do
-        it { expect(bridge_ct.count_danglings(:Cl)).to eq(0) }
-        it { expect(ib_cr.count_danglings(:Cl)).to eq(0) }
-        it { expect(hb_cr.count_danglings(:Cl)).to eq(0) }
-        it { expect(clb_cr.count_danglings(:Cl)).to eq(1) }
-        it { expect(ad_cr.count_danglings(:Cl)).to eq(0) }
+        it { expect(bridge_ct.count_danglings(adsorbed_cl)).to eq(0) }
+        it { expect(ib_cr.count_danglings(adsorbed_cl)).to eq(0) }
+        it { expect(hb_cr.count_danglings(adsorbed_cl)).to eq(0) }
+        it { expect(clb_cr.count_danglings(adsorbed_cl)).to eq(1) }
+        it { expect(ad_cr.count_danglings(adsorbed_cl)).to eq(0) }
       end
 
       describe '#actives_num' do

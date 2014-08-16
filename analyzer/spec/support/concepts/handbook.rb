@@ -10,7 +10,7 @@ module VersatileDiamond
         set(:diamond) { Lattice.new(:d, 'Diamond') }
 
         # Atoms:
-        set(:h) { Atom.new('H', 1) }
+        set(:h) { Atom.hydrogen }
         set(:cl) { Atom.new('Cl', 1) }
         set(:o) { Atom.new('O', 2) }
         set(:n) { Atom.new('N', 3) }
@@ -23,7 +23,7 @@ module VersatileDiamond
         # Specific atoms:
         %w(h n c c0 cd).each do |name|
           set(:"activated_#{name}") do
-            SpecificAtom.new(send(name), options: [:active])
+            SpecificAtom.new(send(name), options: [active_bond])
           end
         end
         set(:extra_activated_cd) do
@@ -34,25 +34,25 @@ module VersatileDiamond
           a = activated_cd.dup
           a.incoherent!; a
         end
-        set(:incoherent_c) { SpecificAtom.new(c, options: [:incoherent]) }
-        set(:incoherent_cd) { SpecificAtom.new(cd, options: [:incoherent]) }
+        set(:incoherent_c) { SpecificAtom.new(c, options: [incoherent]) }
+        set(:incoherent_cd) { SpecificAtom.new(cd, options: [incoherent]) }
         set(:incoherent_activated_cd) do
-          SpecificAtom.new(cd, options: [:incoherent, :active])
+          SpecificAtom.new(cd, options: [incoherent, active_bond])
         end
-        set(:unfixed_c) { SpecificAtom.new(c, options: [:unfixed]) }
+        set(:unfixed_c) { SpecificAtom.new(c, options: [unfixed]) }
         set(:unfixed_activated_c) do
-          SpecificAtom.new(c, options: [:unfixed, :active])
+          SpecificAtom.new(c, options: [unfixed, active_bond])
         end
 
-        set(:c_hydride) { SpecificAtom.new(c, monovalents: [:H]) }
-        set(:cd_chloride) { SpecificAtom.new(cd, monovalents: [:Cl]) }
-        set(:cd_hydride) { SpecificAtom.new(cd, monovalents: [:H]) }
-        set(:cd_extra_hydride) { SpecificAtom.new(cd, monovalents: [:H] * 2) }
+        set(:c_hydride) { SpecificAtom.new(c, monovalents: [adsorbed_h]) }
+        set(:cd_chloride) { SpecificAtom.new(cd, monovalents: [adsorbed_cl]) }
+        set(:cd_hydride) { SpecificAtom.new(cd, monovalents: [adsorbed_h]) }
+        set(:cd_extra_hydride) { SpecificAtom.new(cd, monovalents: [adsorbed_h] * 2) }
         set(:activated_cd_hydride) do
-          SpecificAtom.new(cd, options: [:active], monovalents: [:H])
+          SpecificAtom.new(cd, options: [active_bond], monovalents: [adsorbed_h])
         end
         set(:incoherent_cd_hydride) do
-          SpecificAtom.new(cd, options: [:incoherent], monovalents: [:H])
+          SpecificAtom.new(cd, options: [incoherent], monovalents: [adsorbed_h])
         end
 
         # Few atoms for different cases
@@ -80,15 +80,11 @@ module VersatileDiamond
         # Specs and specific specs:
         set(:hydrogen_base) { GasSpec.new(:hydrogen, h: h) }
         set(:hydrogen) { SpecificSpec.new(hydrogen_base) }
-        set(:hydrogen_ion) do
-          SpecificSpec.new(hydrogen_base, h: activated_h)
-        end
+        set(:hydrogen_ion) { SpecificSpec.new(hydrogen_base, h: activated_h) }
 
         set(:methane_base) { GasSpec.new(:methane, c: c) }
         set(:methane) { SpecificSpec.new(methane_base) }
-        set(:methyl) do
-          SpecificSpec.new(methane_base, c: activated_c)
-        end
+        set(:methyl) { SpecificSpec.new(methane_base, c: activated_c) }
 
         set(:ethylene_base) do
           s = GasSpec.new(:ethylene, c1: c1, c2: c2)
@@ -110,12 +106,8 @@ module VersatileDiamond
         end
 
         set(:bridge) { SpecificSpec.new(bridge_base) }
-        set(:activated_bridge) do
-          SpecificSpec.new(bridge_base, ct: activated_cd)
-        end
-        set(:hydrogenated_bridge) do
-          SpecificSpec.new(bridge_base, ct: cd_hydride)
-        end
+        set(:activated_bridge) { SpecificSpec.new(bridge_base, ct: activated_cd) }
+        set(:hydrogenated_bridge) { SpecificSpec.new(bridge_base, ct: cd_hydride) }
         set(:activated_hydrogenated_bridge) do
           SpecificSpec.new(bridge_base, ct: activated_cd_hydride)
         end
@@ -135,19 +127,19 @@ module VersatileDiamond
           SpecificSpec.new(bridge_base, ct: cd_chloride)
         end
         set(:right_activated_bridge) do
-          a = SpecificAtom.new(bridge_base.atom(:cr), options: [:active])
+          a = SpecificAtom.new(bridge_base.atom(:cr), options: [active_bond])
           SpecificSpec.new(bridge_base, cr: a)
         end
         set(:right_incoherent_bridge) do
-          a = SpecificAtom.new(bridge_base.atom(:cr), options: [:incoherent])
+          a = SpecificAtom.new(bridge_base.atom(:cr), options: [incoherent])
           SpecificSpec.new(bridge_base, cr: a)
         end
         set(:right_hydrogenated_bridge) do
-          a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [:H])
+          a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [adsorbed_h])
           SpecificSpec.new(bridge_base, cr: a)
         end
         set(:right_chlorigenated_bridge) do
-          a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [:Cl])
+          a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [adsorbed_cl])
           SpecificSpec.new(bridge_base, cr: a)
         end
         set(:extended_bridge_base) { bridge_base.extend_by_references }
@@ -238,9 +230,7 @@ module VersatileDiamond
         end
 
         set(:dimer) { SpecificSpec.new(dimer_base) }
-        set(:activated_dimer) do
-          SpecificSpec.new(dimer_base, cr: activated_cd)
-        end
+        set(:activated_dimer) { SpecificSpec.new(dimer_base, cr: activated_cd) }
         set(:bottom_hydrogenated_activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
         end
@@ -286,8 +276,12 @@ module VersatileDiamond
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end
 
+        # Relevant states:
+        set(:incoherent) { Incoherent.property }
+        set(:unfixed) { Unfixed.property }
+
         # Active bond:
-        set(:active_bond) { ActiveBond.new }
+        set(:active_bond) { ActiveBond.property }
 
         # Atomic specs:
         set(:adsorbed_h) { AtomicSpec.new(h) }

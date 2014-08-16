@@ -230,12 +230,11 @@ module VersatileDiamond
       # Checks termination atom at the inner atom which belongs to current spec
       # @param [Atom | SpecificAtom] internal_atom the atom which belongs to
       #   current spec
-      # @param [Atom] term_atom the termination atom
+      # @param [AtomicSpec] term_spec the termination specie with monovalent atom
       # @return [Boolean] has termination atom or not
-      def has_termination?(internal_atom, term_atom)
-        (Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0) ||
-          has_monovalent_in_links?(internal_atom, term_atom) ||
-          internal_atom.monovalents.include?(term_atom.name)
+      def has_termination?(internal_atom, term_spec)
+        (term_spec.hydrogen? && external_bonds_for(internal_atom) > 0) ||
+          internal_atom.monovalents.include?(term_spec)
       end
 
       # Gets a number of atoms with number of active bonds, but if spec is gas
@@ -243,8 +242,7 @@ module VersatileDiamond
       #
       # @return [Float] size of current specific spec
       def size
-        gas? ?
-          0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
+        gas? ? 0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
       end
 
       # Counts the sum of active bonds
@@ -346,17 +344,6 @@ module VersatileDiamond
             state_str = state_method ? eval("state.#{state_method}") : state
             "#{atom_keyname}: #{state_str}"
           end
-      end
-
-      # Finds monovalent termination atom in links of spec
-      # @param [Atom | SpecificAtom | AtomReference] internal_atom the atom for
-      #   which will check that it have monovalent atom
-      # @param [Atom] term_atom the monovalent atom which will be found or not
-      # @return [Boolean] has or not
-      def has_monovalent_in_links?(internal_atom, term_atom)
-        !!links[internal_atom].find do |spec_atom, link|
-          link.class == Bond && spec_atom.same?(term_atom)
-        end
       end
 
       # Verifies that the passed instance is correspond to the current, by

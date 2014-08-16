@@ -11,11 +11,17 @@ module VersatileDiamond
       end
 
       class << self
+        # Gets a hydrogen atom instance
+        # @return [Atom] the hydrogen atom
+        def hydrogen
+          @_hydrogen ||= Atom.new('H', 1)
+        end
+
         # Checks passed atom to hydrogen
         # @param [Atom] atom is checking atom
         # @return [Boolean] is it?
         def hydrogen?(atom)
-          atom.name == :H
+          atom.name == hydrogen.name
         end
       end
 

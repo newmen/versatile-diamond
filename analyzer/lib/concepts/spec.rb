@@ -95,7 +95,7 @@ module VersatileDiamond
         first, second = atoms
         block[first, second] if block_given?
 
-        if instance.class == Bond
+        if instance.bond?
           atoms.each do |atom|
             if external_bonds_for(atom) == 0
               raise Atom::IncorrectValence.new(atom)
