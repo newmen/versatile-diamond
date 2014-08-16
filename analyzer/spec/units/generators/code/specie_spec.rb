@@ -230,6 +230,16 @@ module VersatileDiamond
             it { expect(bhad.symmetric?).to be_falsey }
           end
         end
+
+        describe '#find_root?' do
+          let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+          let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
+
+          it { expect(code_for(bridge_base).find_root?).to be_truthy }
+          it { expect(code_for(dimer_base).find_root?).to be_truthy }
+          it { expect(code_for(activated_bridge).find_root?).to be_falsey }
+          it { expect(code_for(activated_dimer).find_root?).to be_falsey }
+        end
       end
 
     end
