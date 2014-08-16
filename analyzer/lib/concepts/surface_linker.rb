@@ -18,8 +18,9 @@ module VersatileDiamond
       def link_together(first, second, relation)
         orel = opposite_relation(first, second, relation)
 
-        raise Position::Duplicate, relation if relation.class == Position &&
-          has_positions?(first, second, relation, orel)
+        if !relation.bond? && has_positions?(first, second, relation, orel)
+          raise Position::Duplicate, relation
+        end
 
         link_with_other(first, second, relation, orel)
       end

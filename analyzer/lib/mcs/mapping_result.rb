@@ -305,7 +305,7 @@ module VersatileDiamond
 
         extb = target.external_bonds_for(original_own)
         if extb > 0
-          if !own.incoherent? && (other.gas? || diff.include?(:incoherent))
+          if !own.incoherent? && (other.gas? || diff.include?(Incoherent.property))
             own.incoherent!
           end
         elsif extb == 0
@@ -314,7 +314,7 @@ module VersatileDiamond
 
         own.unfixed! if !own.incoherent? && !own.unfixed? &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
-          ((other.gas? && !other.simple?) || diff.include?(:unfixed)) &&
+          ((other.gas? && !other.simple?) || diff.include?(Unfixed.property)) &&
           !own.lattice
 
         # return own specific atom if atom was a simple atom

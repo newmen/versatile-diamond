@@ -80,7 +80,7 @@ module VersatileDiamond
       # @param [Atom] atom see at #relations_of same argument
       # @return [Array] the array of relations without position relations
       def bonds_of(atom)
-        relations_of(atom).reject { |r| r.is_a?(Concepts::Position) }
+        relations_of(atom).select(&method(:no_position?))
       end
 
     private
@@ -136,6 +136,13 @@ module VersatileDiamond
         different_by?(:bonds_of, *args)
       end
 
+      # Checks that passed relation is not position
+      # @param [Concepts::Bond | Concepts::NoBond] relation which will be checked
+      # @return [Boolean] is relation a position or not
+      def no_position?(relation)
+        relation.bond? || !relation.relation?
+      end
+
       # Checks whether the atom used current links
       # @param [Array] used_in_mirror the atoms which was mapped to atoms of smallest
       #   spec
@@ -145,7 +152,7 @@ module VersatileDiamond
       def used?(used_in_mirror, atom)
         (links.keys - used_in_mirror).any? do |a|
           links[a].any? do |neighbour, relation|
-            neighbour == atom && !relation.is_a?(Concepts::Position)
+            neighbour == atom && no_position?(relation)
           end
         end
       end

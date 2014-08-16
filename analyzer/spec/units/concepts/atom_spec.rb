@@ -4,6 +4,12 @@ module VersatileDiamond
   module Concepts
 
     describe Atom do
+      describe '#self.hydrogen' do
+        it { expect(Atom.hydrogen).to be_a(Atom) }
+        it { expect(Atom.hydrogen.name).to eq(:H) }
+        it { expect(Atom.hydrogen.valence).to eq(1) }
+      end
+
       describe '#self.hydrogen?' do
         it { expect(Atom.hydrogen?(h)).to be_truthy }
         it { expect(Atom.hydrogen?(c)).to be_falsey }
@@ -65,10 +71,10 @@ module VersatileDiamond
 
       describe '#diff' do
         it { expect(c.diff(c.dup)).to be_empty }
-        it { expect(c.diff(unfixed_c)).to eq([:unfixed]) }
-        it { expect(c.diff(unfixed_activated_c)).to eq([:unfixed]) }
-        it { expect(cd.diff(incoherent_cd)).to eq([:incoherent]) }
-        it { expect(cd.diff(activated_incoherent_cd)).to eq([:incoherent]) }
+        it { expect(c.diff(unfixed_c)).to eq([unfixed]) }
+        it { expect(c.diff(unfixed_activated_c)).to eq([unfixed]) }
+        it { expect(cd.diff(incoherent_cd)).to eq([incoherent]) }
+        it { expect(cd.diff(activated_incoherent_cd)).to eq([incoherent]) }
       end
 
       describe '#relevants' do

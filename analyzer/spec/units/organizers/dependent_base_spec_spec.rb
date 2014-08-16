@@ -256,7 +256,7 @@ module VersatileDiamond
         describe 'rest of right' do
           let(:links) { right.rest.links }
           let(:relations) do
-            [free_bond, free_bond, :active, bond_110_cross, bond_110_cross]
+            [free_bond, free_bond, active_bond, bond_110_cross, bond_110_cross]
           end
 
           it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }

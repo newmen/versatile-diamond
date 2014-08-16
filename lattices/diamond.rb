@@ -69,7 +69,7 @@ private
   def surface_crystal_atom
     crystal_atom.merge({
       relations: [bond_cross_110, bond_cross_110],
-      danglings: [:active]
+      danglings: [ActiveBond.property]
     })
   end
 

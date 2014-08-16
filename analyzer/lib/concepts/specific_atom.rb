@@ -4,6 +4,7 @@ module VersatileDiamond
     # Specified atom class, contain additional atom states like incoherentness,
     # unfixness and activeness
     class SpecificAtom
+      include ListsComparer
       extend Forwardable
 
       # Error for case when something wrong with atom state
@@ -51,13 +52,13 @@ module VersatileDiamond
       # Gets valence of specific atom
       # @return [Integer] the number of valence bonds
       def valence
-        @atom.valence - actives - monovalents.size
+        atom.valence - actives - monovalents.size
       end
 
       # Specific atom could be not specified
       # @return [Boolean] is specified or not
       def specific?
-        !(@options.empty? && @monovalents.empty?)
+        !(options.empty? && monovalents.empty?)
       end
 
       # Compares current instance with other
@@ -66,55 +67,57 @@ module VersatileDiamond
       # @return [Boolean] is the same atom or not
       def same?(other)
         if self.class == other.class
-          @atom.same?(other.atom) && @options.sort == other.options.sort &&
-            monovalents.sort == other.monovalents.sort
+          atom.same?(other.atom) &&
+            lists_are_identical?(options, other.options, &:==) &&
+            lists_are_identical?(monovalents, other.monovalents, &:==)
         else
-          @options.empty? && @monovalents.empty? && @atom.same?(other)
+          options.empty? && monovalents.empty? && atom.same?(other)
         end
       end
 
       # Setup monovalent atom for using it
       # @param [Atom] atom the monovalent atom which is used as one of bond
       def use!(atom)
-        @monovalents << atom.name
+        @monovalents << AtomicSpec.new(atom)
       end
 
       # Activates atom instance
       def active!
-        @options << :active
+        @options << ActiveBond.property
       end
 
       # Changes atom incoherent state
       # @raise [AlreadyStated] if atom already has incoherent state
       def incoherent!
-        raise AlreadyStated.new(:incoherent) if incoherent?
+        raise AlreadyStated.new('incoherent') if incoherent?
         if unfixed?
           raise AlreadyUnfixed.new
           not_unfixed!
         end
-        @options << :incoherent
+        @options << Incoherent.property
       end
 
       # Changes atom unfixed state
       # @raise [AlreadyStated] if atom already has unfixed state
       def unfixed!
-        raise AlreadyStated.new(:unfixed) if incoherent? || unfixed?
-        @options << :unfixed
+        raise AlreadyStated.new('unfixed') if incoherent? || unfixed?
+        @options << Unfixed.property
       end
 
-      %w(incoherent unfixed).each do |state|
-        sym_state = state.to_sym
+      [Incoherent, Unfixed].each do |klass|
+        state = klass.to_s.split('::').last.downcase
+        relevant_property = klass.property
         # Defines methods for checking atom state
         # @return [Boolean] is atom has state or not
-        define_method("#{state}?") do
-          @options.include?(sym_state)
+        define_method(:"#{state}?") do
+          options.include?(relevant_property)
         end
 
         # Defines methods for unsetup atom state
         # @raise [NotStated] if atom doesn't have target state
-        define_method("not_#{state}!") do
-          raise NotStated.new(state) unless send("#{sym_state}?")
-          @options.delete(sym_state)
+        define_method(:"not_#{state}!") do
+          raise NotStated.new(state) unless send(:"#{state}?")
+          options.delete(relevant_property)
         end
       end
 
@@ -137,20 +140,20 @@ module VersatileDiamond
       # Applies diff to current options
       # @param [Array] diff the array which contain adsorbing states
       def apply_diff(diff)
-        diff.each { |state| send(:"#{state}!") }
+        diff.each { |property| property.apply_to(self) }
       end
 
       # Gets only relevant states
       # @return [Array] the array of relevant states
       def relevants
-        ((@options - [:active]) + @atom.relevants).uniq
+        ((options - [ActiveBond.property]) + atom.relevants).uniq
       end
 
       # Provides additional valence states of current atom
       # @return [Array] the array of relations
       def additional_relations
-        own_links = (@options + monovalents).map { |state| [self, state] }
-        @atom.additional_relations + own_links
+        own_links = (options + monovalents).map { |state| [self, state] }
+        atom.additional_relations + own_links
       end
 
       # Gets the relevant size of specific atom
@@ -160,15 +163,8 @@ module VersatileDiamond
       end
 
       def to_s
-        chars = @options.map do |value|
-          case value
-          when :active then '*'
-          when :incoherent then 'i'
-          when :unfixed then 'u'
-          end
-        end
-        chars += monovalents.map(&:to_s)
-        "#{@atom}[#{chars.sort.join(', ')}]"
+        chars = (options + monovalents).map(&:to_s)
+        "#{atom}[#{chars.sort.join(', ')}]"
       end
 
       def inspect
@@ -181,10 +177,11 @@ module VersatileDiamond
 
     private
 
-      # Selects only :active options
-      # @return [Array] array of :active options
+      # Selects from options only active bonds
+      # @return [Array] array of active bonds
       def active_options
-        @options.select { |o| o == :active }
+        active_bond = ActiveBond.property
+        options.select { |o| o == active_bond }
       end
     end
 

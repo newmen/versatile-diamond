@@ -3,7 +3,10 @@ module VersatileDiamond
 
     # Represents a spec which contain just one unovalence atom
     class AtomicSpec < TerminationSpec
+      include NoBond
       extend Forwardable
+
+      def_delegators :@atom, :name, :to_s
 
       # Store unovalence atom instance
       # @param [Atom] atom the atom which behaves like spec
@@ -11,7 +14,13 @@ module VersatileDiamond
         @atom = atom
       end
 
-      def_delegator :@atom, :name
+      # Compares other instance with current
+      # @param [TerminationSpec | SpecificSpec] other object with which comparation
+      #   will be complete
+      # @return [Boolean] is other a instance of same class or not
+      def == (other)
+        self.class == other.class && name == other.name
+      end
 
       # Is hydrogen or not?
       # @return [Boolean]
@@ -39,7 +48,7 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] is specs same or not
       def same?(other)
-        self.class == other.class && name == other.name
+        self == other
       end
 
       # Verifies that passed specific spec is covered by the current
@@ -47,11 +56,7 @@ module VersatileDiamond
       # @param [Atom | SpecificAtom] atom the verifying atom
       # @return [Boolean] is cover or not
       def cover?(specific_spec, atom)
-        !specific_spec.gas? && specific_spec.has_termination?(atom, @atom)
-      end
-
-      def to_s
-        "[#{@atom}]"
+        !specific_spec.gas? && specific_spec.has_termination?(atom, self)
       end
     end
 

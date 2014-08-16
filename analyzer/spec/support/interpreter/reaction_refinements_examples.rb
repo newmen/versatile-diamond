@@ -16,6 +16,7 @@ module VersatileDiamond
               it { expect { subject.interpret("#{state} wrong(:c)") }.
                 to raise_error(*syntax_error(
                   'matcher.undefined_used_atom', name: :'wrong(:c)')) }
+
               it { expect { subject.interpret("#{state} mob(:wrong)") }.
                 to raise_error(*syntax_error(
                   'matcher.undefined_used_atom', name: :'mob(:wrong)')) }
@@ -36,9 +37,9 @@ module VersatileDiamond
 
             describe '#incoherent' do
               it_behaves_like 'check state' do
-                let(:state) { :incoherent }
-                let(:name) { :d }
-                let(:keyname) { :cl }
+                let(:state) { 'incoherent' }
+                let(:name) { 'd' }
+                let(:keyname) { 'cl' }
               end
 
               describe 'property is realy state' do
@@ -51,9 +52,9 @@ module VersatileDiamond
 
             describe '#unfixed' do
               it_behaves_like 'check state' do
-                let(:state) { :unfixed }
-                let(:name) { :mod }
-                let(:keyname) { :cm }
+                let(:state) { 'unfixed' }
+                let(:name) { 'mod' }
+                let(:keyname) { 'cm' }
               end
 
               describe 'property is realy state' do

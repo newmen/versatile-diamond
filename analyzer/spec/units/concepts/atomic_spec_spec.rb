@@ -4,6 +4,10 @@ module VersatileDiamond
   module Concepts
 
     describe AtomicSpec, use: :atom_properties do
+      describe 'bond?' do
+        it { expect(adsorbed_h.bond?).to be_falsey }
+      end
+
       describe '#name' do
         it { expect(adsorbed_h.name).to eq(:H) }
       end
@@ -22,10 +26,12 @@ module VersatileDiamond
         it { expect(adsorbed_h.terminations_num(ehb_ct)).to eq(2) }
       end
 
-      describe '#same?' do
-        it { expect(adsorbed_h.same?(AtomicSpec.new(h.dup))).to be_truthy }
-        it { expect(adsorbed_h.same?(active_bond)).to be_falsey }
-        it { expect(adsorbed_h.same?(bridge)).to be_falsey }
+      describe '#== && #same?' do
+        [:==, :same?].each do |method|
+          it { expect(adsorbed_h.send(method, AtomicSpec.new(h.dup))).to be_truthy }
+          it { expect(adsorbed_h.send(method, active_bond)).to be_falsey }
+          it { expect(adsorbed_h.send(method, bridge)).to be_falsey }
+        end
       end
 
       describe '#cover?' do
@@ -54,7 +60,7 @@ module VersatileDiamond
           to be_falsey }
 
         it { expect(adsorbed_cl.cover?(bridge, bridge.atom(:ct))).to be_falsey }
-        it { expect(adsorbed_cl.cover?(chlorigenated_bridge,cd_chloride)).
+        it { expect(adsorbed_cl.cover?(chlorigenated_bridge, cd_chloride)).
           to be_truthy }
       end
 

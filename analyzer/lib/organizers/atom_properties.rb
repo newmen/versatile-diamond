@@ -146,7 +146,7 @@ module VersatileDiamond
       # Has incoherent state or not
       # @return [Boolean] contain or not
       def incoherent?
-        relevants.include?(:incoherent)
+        relevants.include?(Incoherent.property)
       end
 
       # Makes incoherent copy of self
@@ -154,7 +154,7 @@ module VersatileDiamond
       def incoherent
         if valence > bonds_num && !incoherent?
           props = without_relevants
-          props[-1] = [:incoherent]
+          props[-1] = [Incoherent.property]
           self.class.new(props)
         else
           nil
@@ -171,7 +171,8 @@ module VersatileDiamond
       # @return [AtomProperties] activated properties or nil
       def activated
         if valence > bonds_num
-          props = [*static_states, relations, danglings + [:active], nbr_lattices]
+          ext_dangs = danglings + [ActiveBond.property]
+          props = [*static_states, relations, ext_dangs, nbr_lattices]
           props << (valence > bonds_num + 1 ? relevants : [])
           self.class.new(props)
         else
@@ -183,7 +184,7 @@ module VersatileDiamond
       # @return [AtomProperties] deactivated properties or nil
       def deactivated
         dgs = danglings.dup
-        if dgs.delete_one(:active)
+        if dgs.delete_one(ActiveBond.property)
           props = [*static_states, relations, dgs, nbr_lattices, relevants]
           self.class.new(props)
         else
@@ -201,7 +202,7 @@ module VersatileDiamond
       # Gets number of active bonds
       # @return [Integer] number of active bonds
       def actives_num
-        count_danglings(:active)
+        count_danglings(ActiveBond.property)
       end
 
       # Gets the number of actives when each established bond replaced to active bond
@@ -213,7 +214,7 @@ module VersatileDiamond
       # Gets number of hydrogen atoms
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
-        count_danglings(:H)
+        count_danglings(AtomicSpec.new(Atom.hydrogen))
       end
 
       # Counts total number of hydrogen atoms
@@ -237,15 +238,14 @@ module VersatileDiamond
         name = atom_name.to_s
 
         dg = danglings.dup
-        name = "*#{name}" while dg.delete_one(:active)
+        name = "*#{name}" while dg.delete_one(ActiveBond.property)
 
         while (monovalent_atom = dg.pop)
           name = "#{monovalent_atom}#{name}"
         end
 
         if relevant?
-          relevants.each do |sym|
-            suffix = sym.to_s[0]
+          relevants.each do |suffix|
             name = "#{name}:#{suffix}"
           end
         end
@@ -327,10 +327,8 @@ module VersatileDiamond
       # Has unfixed state or not
       # @return [Boolean] contain or not
       def unfixed?
-        result = relevants.include?(:unfixed)
-        if result && !unfixed_by_nbrs?
-          raise "Atom could not be unfixed!"
-        end
+        result = relevants.include?(Unfixed.property)
+        raise 'Atom could not be unfixed!' if result && !unfixed_by_nbrs?
         result
       end
 
@@ -403,7 +401,7 @@ module VersatileDiamond
       def same_correspond_relations?(other)
         return false if relevant? && !other.relevant?
         return true unless relevant?
-        !relevants.include?(:incoherent) && other.relevants.include?(:unfixed)
+        !incoherent? && other.unfixed?
       end
 
       # Harvest relations of atom in spec
@@ -426,29 +424,26 @@ module VersatileDiamond
       def remake_relations(spec, atom)
         return @_remake_result if @_remake_result
 
-        # only bonds without relevat states
-        relations = spec.relations_of(atom, with_atoms: true).reject do |_, rel|
-          rel.is_a?(Symbol)
-        end
+        # only bonds without relevat states and positions
+        bonds = spec.relations_of(atom, with_atoms: true).select { |_, r| r.bond? }
 
         result = []
-        until relations.empty?
-          atwrel = relations.pop
+        until bonds.empty?
+          atwrel = bonds.pop
           nbr, rel = atwrel
-          if rel.is_a?(Concepts::Bond) && rel.face
-            # position properties are deprecated
-            result << atwrel unless rel.is_a?(Concepts::Position)
+          if rel.face
+            result << atwrel
             next
           end
 
-          same = relations.select { |pair| pair == atwrel }
+          same = bonds.select { |pair| pair == atwrel }
           new_relation =
             if same.empty?
               rel
             else
-              relations.delete_one(atwrel)
+              bonds.delete_one(atwrel)
               if same.size == 3 && same.size != 4
-                relations.delete_one(atwrel)
+                bonds.delete_one(atwrel)
                 :tbond
               else
                 :dbond
@@ -467,8 +462,8 @@ module VersatileDiamond
       #   spec see at #new same argument
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
-        dang_rels = spec.relations_of(atom).select { |rel| rel.is_a?(Symbol) }
-        dang_rels - [:incoherent, :unfixed]
+        dang_rels = spec.relations_of(atom).reject(&:relation?)
+        dang_rels - [Incoherent, Unfixed].map(&:property)
       end
 
       # Collects only lattices which are reacheble through each undirected bond
@@ -488,7 +483,7 @@ module VersatileDiamond
       # @param [Array] rels the array of relevant states
       # @return [Array] the original relevant states
       def check_relevants(rels)
-        if rels.include?(:unfixed) && rels.include?(:incoherent)
+        if rels.include?(Unfixed.property) && rels.include?(Incoherent.property)
           raise 'Unfixed atom already incoherent'
         end
         rels

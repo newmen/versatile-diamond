@@ -17,8 +17,7 @@ module VersatileDiamond
       # @param [Atom] atom the atom for wtich need to count bonds
       # @return [Integer] number of bonds
       def internal_bonds_for(atom)
-        bonds = links[atom].select { |_, link| link.class == Bond }
-        bonds.size
+        links[atom].map(&:last).select(&:bond?).size
       end
 
     end

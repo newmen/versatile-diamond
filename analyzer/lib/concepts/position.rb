@@ -47,6 +47,12 @@ module VersatileDiamond
         face == other.face && dir == other.dir
       end
 
+      # Checks that current position is not a bond
+      # @return [Boolean] false
+      def bond?
+        false
+      end
+
       def to_s
         symbol = ':'
         "#{symbol}#{@face}#{symbol}#{@dir}#{symbol}#{symbol}"

@@ -57,6 +57,18 @@ module VersatileDiamond
         self.class == other.class || other.same?(self)
       end
 
+      # Checks that current bond is really bond
+      # @return [Boolean] true
+      def bond?
+        true
+      end
+
+      # Checks that current instance is really relation
+      # @return [Boolean] true
+      def relation?
+        true
+      end
+
       def to_s
         symbol = '-'
         str = symbol.dup

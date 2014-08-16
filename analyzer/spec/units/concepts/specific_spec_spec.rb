@@ -252,15 +252,18 @@ module VersatileDiamond
       end
 
       describe '#has_termination?' do
-        it { expect(bridge.has_termination?(cd, h)).to be_truthy }
-        it { expect(activated_bridge.has_termination?(activated_cd, h)).to be_truthy }
+        it { expect(bridge.has_termination?(cd, adsorbed_h)).to be_truthy }
+        it { expect(activated_bridge.has_termination?(activated_cd, adsorbed_h)).
+          to be_truthy }
 
         let(:ea_bridge) { extra_activated_bridge }
-        it { expect(ea_bridge.has_termination?(extra_activated_cd, h)).to be_falsey }
+        it { expect(ea_bridge.has_termination?(extra_activated_cd, adsorbed_h)).
+          to be_falsey }
 
         let(:cl_bridge) { chlorigenated_bridge }
-        it { expect(cl_bridge.has_termination?(cd_chloride, h)).to be_truthy }
-        it { expect(cl_bridge.has_termination?(cd_chloride, cl)).to be_truthy }
+        it { expect(cl_bridge.has_termination?(cd_chloride, adsorbed_h)).to be_truthy }
+        it { expect(cl_bridge.has_termination?(cd_chloride, adsorbed_cl)).
+          to be_truthy }
       end
 
       describe '#active_bonds_num' do

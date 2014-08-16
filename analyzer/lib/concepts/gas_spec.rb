@@ -17,14 +17,14 @@ module VersatileDiamond
       #
       # @param [Atom] first the first linking atom
       # @param [Atom] second the second linking atom
-      # @param [Bond] bond the used bond for linking
-      # @raise [Lattices::Base::UndefinedRelation] if bond isn't free
-      def link_together(first, second, bond)
-        unless bond.class == Bond && bond.face.nil?
-          raise Lattices::Base::UndefinedRelation.new(bond)
+      # @param [Bond] relation the used bond for linking
+      # @raise [Lattices::Base::UndefinedRelation] if relation isn't free
+      def link_together(first, second, relation)
+        unless relation.bond? && relation.face.nil?
+          raise Lattices::Base::UndefinedRelation.new(relation)
         end
 
-        link_with_other(first, second, bond, bond)
+        link_with_other(first, second, relation, relation)
       end
     end
 
