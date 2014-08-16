@@ -23,6 +23,7 @@ module VersatileDiamond
             :bridge_base,
             :dimer_base,
             :methyl_on_bridge_base,
+            :activated_bridge,
             :activated_incoherent_bridge,
             :activated_methyl_on_incoherent_bridge,
             :activated_methyl_on_incoherent_bridge,

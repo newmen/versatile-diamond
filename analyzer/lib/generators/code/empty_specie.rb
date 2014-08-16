@@ -66,6 +66,12 @@ module VersatileDiamond
           'empty'
         end
 
+        # The decorated printable name of major specie
+        # @return [String] the printable name of specie with prefix
+        def print_name
+          "#{prefix}_#{target_specie.print_name}"
+        end
+
       protected
 
         # Gets the main specie to which all undefined methods are redirects
