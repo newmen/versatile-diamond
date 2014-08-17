@@ -28,8 +28,8 @@ module VersatileDiamond
           else
             @original = OriginalSpecie.new(@generator, self)
 
-            @sequence = generator.sequences_cacher.get(spec)
-            @symmetrics = @sequence.symmetrics(generator, @original)
+            @sequence = @generator.sequences_cacher.get(spec)
+            @symmetrics = @sequence.symmetrics(@generator, @original)
           end
 
           @_class_name, @_enum_name, @_used_iterators = nil
@@ -317,6 +317,34 @@ module VersatileDiamond
             "#{k.upcase}#{states}"
           end
           strs.sort
+        end
+
+        # Gets sorted anchors to atom sequence
+        # @return [Array] the array of anchor atoms
+        def anchors
+          @sequence.short
+        end
+
+        # Delegates classification to atom classifier from engine code generator
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be classificated
+        # @return [Integer] an index of classificated atom
+        def role(atom)
+          @generator.classifier.index(@spec, atom)
+        end
+
+        # Gets a sequence of indexes of anchor atoms
+        # @return [String] the sequence of indexes joined by comma
+        def indexes_sequence
+          anchors.map { |a| @sequence.atom_index(a) }.join(', ')
+        end
+
+        # Gets a list of anchor atoms roles where each role is atom properties index
+        # in atom classification
+        #
+        # @return [Array] the list of anchors roles
+        def roles_sequence
+          anchors.map(&method(:role)).join(', ')
         end
 
         # Gets the specie class code generator

@@ -7,7 +7,7 @@
 <% header_species_dependencies.each do |specie| %>
 #include "../<%= specie.full_file_path %>.h"
 <% end %>
-<% unless symmetric? %>
+<% unless symmetric? && render_find_algorithms? %>
 #include "../<%= outer_base_file %>.h"
 <% end %>
 
@@ -23,6 +23,7 @@ protected:
     <%= class_name %>(<%= constructor_arguments_str %>) :
         <%= outer_base_call %> {}
 
+<% unless symmetric? && render_find_algorithms? %>
 public:
 #ifdef PRINT
     const char *name() const final;
@@ -35,6 +36,7 @@ protected:
 private:
     static const ushort __indexes[<%= atoms_num %>];
     static const ushort __roles[<%= atoms_num %>];
+<% end %>
 };
 
 #endif // <%= define_name %>
