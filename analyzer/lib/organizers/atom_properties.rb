@@ -214,7 +214,7 @@ module VersatileDiamond
       # Gets number of hydrogen atoms
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
-        count_danglings(AtomicSpec.new(Atom.hydrogen))
+        count_danglings(AtomicSpec.new(Concepts::Atom.hydrogen))
       end
 
       # Counts total number of hydrogen atoms
