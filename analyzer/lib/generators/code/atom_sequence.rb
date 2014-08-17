@@ -20,6 +20,7 @@ module VersatileDiamond
 
         # Makes original sequence of atoms which will be used for get an atom index
         # @return [Array] the original sequence of atoms of current specie
+        # TODO: should be protected
         def original
           return @_original_sequence if @_original_sequence
 
