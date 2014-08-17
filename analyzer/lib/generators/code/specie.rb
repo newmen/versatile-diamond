@@ -258,7 +258,7 @@ module VersatileDiamond
         #
         # @return [Array] the array of species which should be included in source file
         def source_species_dependencies
-          parents + children
+          ((symmetric? || find_root?) ? parents : []) + children
         end
 
         # Gets classes from which current code instance will be inherited if specie is
