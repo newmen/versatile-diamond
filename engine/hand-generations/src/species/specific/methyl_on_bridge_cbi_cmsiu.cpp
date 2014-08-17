@@ -19,7 +19,7 @@ void MethylOnBridgeCBiCMsiu::find(MethylOnBridgeCBiCMiu *parent)
     Atom *anchor = parent->atom(0);
     if (anchor->is(26))
     {
-        if (!anchor->hasRole(METHYL_ON_BRIDGE_CBi_CMsiu, 26))
+        if (!anchor->checkAndFind(METHYL_ON_BRIDGE_CBi_CMsiu, 26))
         {
             create<MethylOnBridgeCBiCMsiu>(parent);
         }

@@ -25,7 +25,7 @@ void DimerCRs::find(Dimer *parent)
 
         if (!anchor->isVisited() && anchor->is(21))
         {
-            if (!anchor->hasRole(DIMER_CRs, 21))
+            if (!anchor->checkAndFind(DIMER_CRs, 21))
             {
                 create<DimerCRs>(specie);
             }

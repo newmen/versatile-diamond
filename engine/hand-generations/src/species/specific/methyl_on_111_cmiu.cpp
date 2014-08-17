@@ -18,7 +18,8 @@ void MethylOn111CMiu::find(MethylOnBridge *parent)
     Atom *anchors[2] = { parent->atom(0), parent->atom(1) };
     if (anchors[0]->is(25) && anchors[1]->is(33))
     {
-        if (!anchors[0]->hasRole(METHYL_ON_111_CMiu, 25) && !anchors[1]->hasRole(METHYL_ON_111_CMiu, 33))
+        if (!anchors[0]->checkAndFind(METHYL_ON_111_CMiu, 25) &&
+                !anchors[1]->checkAndFind(METHYL_ON_111_CMiu, 33))
         {
             create<MethylOn111CMiu>(parent);
         }

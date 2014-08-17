@@ -22,7 +22,7 @@ void MethylOnDimerCMsiu::find(MethylOnDimerCMiu *parent)
 
     if (anchor->is(26))
     {
-        if (!anchor->hasRole(METHYL_ON_DIMER_CMsiu, 26))
+        if (!anchor->checkAndFind(METHYL_ON_DIMER_CMsiu, 26))
         {
             create<MethylOnDimerCMsiu>(parent);
         }

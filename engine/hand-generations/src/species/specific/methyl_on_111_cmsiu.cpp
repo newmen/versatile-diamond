@@ -18,7 +18,7 @@ void MethylOn111CMsiu::find(MethylOn111CMiu *parent)
     Atom *anchor = parent->atom(0);
     if (anchor->is(26))
     {
-        if (!anchor->hasRole(METHYL_ON_111_CMsiu, 26))
+        if (!anchor->checkAndFind(METHYL_ON_111_CMsiu, 26))
         {
             create<MethylOn111CMsiu>(parent);
         }

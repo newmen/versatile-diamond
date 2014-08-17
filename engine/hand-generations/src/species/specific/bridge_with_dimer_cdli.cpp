@@ -20,7 +20,7 @@ void BridgeWithDimerCDLi::find(BridgeWithDimer *parent)
 
     if (anchor->is(20))
     {
-        if (!anchor->hasRole(BRIDGE_WITH_DIMER_CDLi, 20))
+        if (!anchor->checkAndFind(BRIDGE_WITH_DIMER_CDLi, 20))
         {
             create<BridgeWithDimerCDLi>(parent);
         }
