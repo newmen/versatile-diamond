@@ -126,7 +126,7 @@ Runner<HB>::Runner(const InitConfig &init) :
     }
     else
     {
-        _behavior = bhvrFactory.create("plane");
+        _behavior = bhvrFactory.create("tor");
     }
 }
 
