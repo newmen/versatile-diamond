@@ -21,7 +21,7 @@ module VersatileDiamond
         # @param [Atom] atom is checking atom
         # @return [Boolean] is it?
         def hydrogen?(atom)
-          atom.name == hydrogen.name
+          atom.same?(hydrogen)
         end
       end
 
@@ -138,7 +138,7 @@ module VersatileDiamond
       # @return [Boolean] comparation result
       def compare_by_method(method, other)
         if self.class == other.class
-          name == other.name && lattice == other.lattice
+          name == other.name && valence == other.valence && lattice == other.lattice
         else
           other.public_send(method, self)
         end
