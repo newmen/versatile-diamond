@@ -119,7 +119,7 @@ module VersatileDiamond
         # The printable name which will be shown when debug calculation output
         # @return [String] the name of specie which used by user in DSL config file
         def print_name
-          @spec.name.to_s
+          spec.name.to_s
         end
 
       private
@@ -140,6 +140,13 @@ module VersatileDiamond
         # @return [Array] the array of children specie class generators
         def children
           spec.non_term_children.map(&method(:specie_class))
+        end
+
+        # Gets children species without species which are find algorithm roots
+        # @return [Array] the array of children specie code generators without find
+        #   algorithm roots
+        def non_root_children
+          children.reject(&:find_root?)
         end
 
         # Checks that specie have children
@@ -258,7 +265,7 @@ module VersatileDiamond
         #
         # @return [Array] the array of species which should be included in source file
         def source_species_dependencies
-          ((symmetric? || find_root?) ? parents : []) + children
+          ((symmetric? || find_root?) ? parents : []) + non_root_children
         end
 
         # Gets classes from which current code instance will be inherited if specie is
@@ -330,7 +337,7 @@ module VersatileDiamond
         #   atom which will be classificated
         # @return [Integer] an index of classificated atom
         def role(atom)
-          @generator.classifier.index(@spec, atom)
+          @generator.classifier.index(spec, atom)
         end
 
         # Gets a sequence of indexes of anchor atoms
