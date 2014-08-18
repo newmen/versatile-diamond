@@ -69,8 +69,7 @@ module VersatileDiamond
       # @param [Atom] atom2 the second atom
       # @return [Position] nil or positions between atoms in both directions
       def position_between(atom1, atom2)
-        @spec.position_between(
-          @spec.atom(keyname(atom1)), @spec.atom(keyname(atom2)))
+        spec.position_between(base_atom(atom1), base_atom(atom2))
       end
 
       # Builds the full name of specific spec (with specificied atom info)
@@ -92,14 +91,14 @@ module VersatileDiamond
       # @param [Symbol] keyname the atom keyname
       # @return [Atom | SpecificAtom] the corresponding atom
       def atom(keyname)
-        @specific_atoms[keyname] || @spec.atom(keyname)
+        @specific_atoms[keyname] || spec.atom(keyname)
       end
 
       # Returns a keyname of passed atom
       # @param [Atom] atom the atom for which keyname will be found
       # @return [Symbol] the keyname of atom
       def keyname(atom)
-        @specific_atoms.invert[atom] || @spec.keyname(atom)
+        @specific_atoms.invert[atom] || spec.keyname(atom)
       end
 
       # Describes atom by storing it to specific atoms hash
@@ -128,7 +127,7 @@ module VersatileDiamond
       #
       # @return [Hash] cached hash of all links between atoms
       def links
-        @links ||= @spec.links_with_replace_by(@specific_atoms)
+        @links ||= spec.links_with_replace_by(@specific_atoms)
       end
 
       %w(incoherent unfixed).each do |state|
@@ -140,7 +139,7 @@ module VersatileDiamond
         define_method("#{state}!") do |atom_keyname|
           atom = @specific_atoms[atom_keyname]
           unless atom
-            atom = SpecificAtom.new(@spec.atom(atom_keyname))
+            atom = SpecificAtom.new(spec.atom(atom_keyname))
             @specific_atoms[atom_keyname] = atom
             reset_caches
           end
@@ -151,7 +150,7 @@ module VersatileDiamond
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
       def external_bonds
-        @spec.external_bonds - active_bonds_num #- monovalents_num
+        spec.external_bonds - active_bonds_num #- monovalents_num
       end
 
       # Extends originial spec by atom-references and store it to temp variable
@@ -160,7 +159,7 @@ module VersatileDiamond
       # @return [Integer] the number of external bonds for extended spec
       def external_bonds_after_extend
         return @external_bonds_after_extend if @external_bonds_after_extend
-        @extended_spec = @spec.extend_by_references
+        @extended_spec = spec.extend_by_references
         @external_bonds_after_extend =
           @extended_spec.external_bonds - active_bonds_num
       end
@@ -224,7 +223,7 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] the same or not
       def same?(other)
-        self.class == other.class && @spec == other.spec && correspond?(other)
+        self.class == other.class && spec == other.spec && correspond?(other)
       end
 
       # Checks termination atom at the inner atom which belongs to current spec
@@ -242,7 +241,7 @@ module VersatileDiamond
       #
       # @return [Float] size of current specific spec
       def size
-        gas? ? 0 : @spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
+        gas? ? 0 : spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
       end
 
       # Counts the sum of active bonds
@@ -257,12 +256,11 @@ module VersatileDiamond
       # @override
       def visit(visitor)
         super
-        @spec.visit(visitor)
+        spec.visit(visitor)
       end
 
       def to_s
-        # @spec.to_s(@spec.atoms.merge(@specific_atoms), links)
-        @spec.to_s
+        spec.to_s
       end
 
       def inspect
@@ -275,15 +273,22 @@ module VersatileDiamond
 
     private
 
+      # Gets analog atom from base spec
+      # @param [Atom] atom from current or from base spec
+      # @return [Atom] the atom from base spec
+      def base_atom(atom)
+        spec.atom(keyname(atom))
+      end
+
       # Renames internal used keynames to new keynames from another base spec
       # @param [Spec] other the base spec from which keynames will gotten
       def rename_used_keynames_and_update_links(other)
-        intersec = Mcs::SpeciesComparator.first_general_intersec(@spec, other)
+        intersec = Mcs::SpeciesComparator.first_general_intersec(spec, other)
         mirror = Hash[intersec.to_a]
 
         new_specific_atoms = {}
         @specific_atoms.each do |old_keyname, atom|
-          base_atom = @spec.atom(old_keyname)
+          base_atom = spec.atom(old_keyname)
           other_atom = mirror[base_atom]
           new_keyname = other_atom ? other.keyname(other_atom) : old_keyname
 
