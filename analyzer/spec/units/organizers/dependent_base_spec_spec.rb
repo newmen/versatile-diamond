@@ -96,57 +96,100 @@ module VersatileDiamond
       end
 
       describe '#organize_dependencies!' do
-        let(:table) { BaseSpeciesTable.new(dependent_base_species) }
-        let(:dependent_base_species) do
-          [
-            dept_bridge_base,
-            dept_dimer_base,
-            dept_high_bridge_base,
-            dept_methyl_on_bridge_base,
-            dept_methyl_on_dimer_base,
-            dept_extended_bridge_base,
-            dept_extended_dimer_base,
-            dept_methyl_on_extended_bridge_base,
-            dept_cross_bridge_on_bridges_base,
-          ]
+        shared_examples_for :check_organized_dependencies do
+          let(:table) { BaseSpeciesTable.new(species) }
+
+          before { subject.organize_dependencies!(table) }
+
+          describe '#rest' do
+            it { expect(subject.rest && subject.rest.atoms_num).to eq(rest_atoms_num) }
+            it { expect(subject.rest && subject.rest.relations_num).
+              to eq(rest_relations_num) }
+          end
+
+          describe '#parents' do
+            it { expect(subject.parents).to eq(parents) }
+          end
+
+          describe '#essence' do
+            it { expect(subject.essence).to eq(essence) }
+          end
         end
 
-        describe 'bridge' do
+
+        it_behaves_like :check_organized_dependencies do
           subject { dept_bridge_base }
-          before { subject.organize_dependencies!(table) }
-
-          describe '#rest' do
-            it { expect(subject.rest).to be_nil }
+          let(:species) do
+            [
+              dept_bridge_base,
+              dept_dimer_base,
+              dept_methyl_on_bridge_base,
+            ]
           end
 
-          describe '#parents' do
-            it { expect(subject.parents).to be_empty }
-          end
+          let(:rest_atoms_num) { nil }
+          let(:rest_relations_num) { nil }
+          let(:parents) { [] }
+          let(:essence) { bridge_base.links }
         end
 
-        describe 'methyl_on_bridge' do
+        it_behaves_like :check_organized_dependencies do
           subject { dept_methyl_on_bridge_base }
-          before { subject.organize_dependencies!(table) }
-
-          describe '#rest' do
-            it { expect(subject.rest.atoms_num).to eq(2) }
+          let(:species) do
+            [
+              dept_bridge_base,
+              dept_high_bridge_base,
+              dept_methyl_on_bridge_base,
+            ]
           end
 
-          describe '#parents' do
-            it { expect(subject.parents).to eq([dept_bridge_base]) }
+          let(:rest_atoms_num) { 2 }
+          let(:rest_relations_num) { 4 }
+          let(:parents) { [dept_bridge_base] }
+
+          let(:cm) { methyl_on_bridge_base.atom(:cm) }
+          let(:cb) { methyl_on_bridge_base.atom(:cb) }
+          let(:essence) do
+            { cm => [[cb, free_bond]], cb => [[cm, free_bond]] }
           end
         end
 
-        describe 'cross_bridge_on_bridges' do
-          subject { dept_cross_bridge_on_bridges_base }
-          before { subject.organize_dependencies!(table) }
-
-          describe '#rest' do
-            it { expect(subject.rest.atoms_num).to eq(1) }
+        it_behaves_like :check_organized_dependencies do
+          subject { dept_dimer_base }
+          let(:species) do
+            [
+              dept_bridge_base,
+              dept_dimer_base,
+              dept_methyl_on_bridge_base,
+            ]
           end
 
-          describe '#parents' do
-            it { expect(subject.parents).to eq([dept_methyl_on_bridge_base] * 2) }
+          let(:rest_atoms_num) { 2 }
+          let(:rest_relations_num) { 6 }
+          let(:parents) { [dept_bridge_base] * 2 }
+
+          let(:cr) { dimer_base.atom(:cr) }
+          let(:cl) { dimer_base.atom(:cl) }
+          let(:essence) do
+            { cr => [[cl, bond_100_front]], cl => [[cr, bond_100_front]] }
+          end
+        end
+
+        it_behaves_like :check_organized_dependencies do
+          subject { dept_cross_bridge_on_bridges_base }
+          let(:species) do
+            [
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_cross_bridge_on_bridges_base,
+            ]
+          end
+
+          let(:rest_atoms_num) { 1 }
+          let(:rest_relations_num) { 2 }
+          let(:parents) { [dept_methyl_on_bridge_base] * 2 }
+          let(:essence) do
+            { cross_bridge_on_bridges_base.atom(:cm) => [] }
           end
         end
       end

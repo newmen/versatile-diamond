@@ -132,22 +132,18 @@ module VersatileDiamond
         subject { minuend - subtrahend }
         let(:links) { subject.links }
 
-        describe 'target is complex specific spec' do
+        describe 'parent links size less than current size' do
           let(:minuend) { dept_activated_methyl_on_incoherent_bridge }
+          let(:subtrahend) { dept_bridge_base_dup }
 
-          describe 'parent links size less than current size' do
-            let(:subtrahend) { dept_bridge_base_dup }
-
-            it { should be_a(SpecResidual) }
-            it { expect(subject.atoms_num).to eq(2) }
-            it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
-            it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
-            it { expect(links.values.reduce(:+).map(&:last)).to match_array([
-                free_bond, free_bond,
-                bond_110_cross, bond_110_cross,
-                active_bond, incoherent
-              ]) }
-          end
+          it { should be_a(SpecResidual) }
+          it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
+          it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
+          it { expect(links.values.reduce(:+).map(&:last)).to match_array([
+              free_bond, free_bond,
+              bond_110_cross, bond_110_cross,
+              active_bond, incoherent
+            ]) }
         end
 
         describe 'other is base with same links size' do
@@ -224,11 +220,16 @@ module VersatileDiamond
 
           it { expect(target.parent).to eq(parent) }
           it { expect(target.children).to match_array(children) }
+
+          describe '#essence' do
+            it { expect(target.essence).to eq(essence) }
+          end
         end
 
         shared_examples_for :organize_and_check_base_parent do
           it_behaves_like :organize_and_check do
             let(:addition) { [] }
+            let(:essence) { {} }
           end
         end
 
@@ -254,22 +255,26 @@ module VersatileDiamond
             let(:children) { [dept_activated_bridge] }
           end
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_activated_bridge }
-            let(:parent) { dept_bridge }
-            let(:children) { [dept_activated_incoherent_bridge] }
-          end
+          describe 'essence have only :ct' do
+            let(:essence) { { target.spec.atom(:ct) => [] } }
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_activated_incoherent_bridge }
-            let(:parent) { dept_activated_bridge }
-            let(:children) { [dept_extra_activated_bridge] }
-          end
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_activated_bridge }
+              let(:parent) { dept_bridge }
+              let(:children) { [dept_activated_incoherent_bridge] }
+            end
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_extra_activated_bridge }
-            let(:parent) { dept_activated_incoherent_bridge }
-            let(:children) { [] }
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_activated_incoherent_bridge }
+              let(:parent) { dept_activated_bridge }
+              let(:children) { [dept_extra_activated_bridge] }
+            end
+
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_extra_activated_bridge }
+              let(:parent) { dept_activated_incoherent_bridge }
+              let(:children) { [] }
+            end
           end
         end
 
@@ -298,40 +303,48 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_activated_methyl_on_bridge }
-            let(:parent) { dept_methyl_on_bridge }
-            let(:children) { [dept_activated_methyl_on_incoherent_bridge] }
+          describe 'essence have only :cm' do
+            let(:essence) { { target.spec.atom(:cm) => [] } }
+
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_activated_methyl_on_bridge }
+              let(:parent) { dept_methyl_on_bridge }
+              let(:children) { [dept_activated_methyl_on_incoherent_bridge] }
+            end
+
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_unfixed_activated_methyl_on_incoherent_bridge }
+              let(:parent) { dept_activated_methyl_on_incoherent_bridge }
+              let(:children) { [] }
+            end
+
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_unfixed_methyl_on_bridge }
+              let(:parent) { dept_methyl_on_bridge }
+              let(:children) { [] }
+            end
           end
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_activated_methyl_on_incoherent_bridge }
-            let(:parent) { dept_activated_methyl_on_bridge }
-            let(:children) { [dept_unfixed_activated_methyl_on_incoherent_bridge] }
-          end
+          describe 'essence have only :cm' do
+            let(:essence) { { target.spec.atom(:cb) => [] } }
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_unfixed_activated_methyl_on_incoherent_bridge }
-            let(:parent) { dept_activated_methyl_on_incoherent_bridge }
-            let(:children) { [] }
-          end
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_activated_methyl_on_incoherent_bridge }
+              let(:parent) { dept_activated_methyl_on_bridge }
+              let(:children) { [dept_unfixed_activated_methyl_on_incoherent_bridge] }
+            end
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_methyl_on_incoherent_bridge }
-            let(:parent) { dept_methyl_on_bridge }
-            let(:children) { [dept_methyl_on_activated_bridge] }
-          end
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_methyl_on_incoherent_bridge }
+              let(:parent) { dept_methyl_on_bridge }
+              let(:children) { [dept_methyl_on_activated_bridge] }
+            end
 
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_methyl_on_activated_bridge }
-            let(:parent) { dept_methyl_on_incoherent_bridge }
-            let(:children) { [] }
-          end
-
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_unfixed_methyl_on_bridge }
-            let(:parent) { dept_methyl_on_bridge }
-            let(:children) { [] }
+            it_behaves_like :organize_and_check_specific_parent do
+              let(:target) { dept_methyl_on_activated_bridge }
+              let(:parent) { dept_methyl_on_incoherent_bridge }
+              let(:children) { [] }
+            end
           end
         end
 
@@ -348,6 +361,7 @@ module VersatileDiamond
             let(:target) { dept_activated_dimer }
             let(:parent) { dept_dimer }
             let(:children) { [] }
+            let(:essence) { { target.spec.atom(:cr) => [] } }
           end
         end
       end
