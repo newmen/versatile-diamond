@@ -171,10 +171,10 @@ module VersatileDiamond
       # Checks termination atom at the inner atom which belongs to current spec
       # @param [Atom | SpecificAtom] internal_atom the atom which belongs to
       #   current spec
-      # @param [Atom] term_atom the termination atom
+      # @param [TerminationSpec] term_spec the termination specie
       # @return [Boolean] has termination atom or not
-      def has_termination?(internal_atom, term_atom)
-        Atom.hydrogen?(term_atom) && external_bonds_for(internal_atom) > 0
+      def has_termination?(internal_atom, term_spec)
+        term_spec.hydrogen? && external_bonds_for(internal_atom) > 0
       end
 
       # Checks that other spec has same atoms and links between them
