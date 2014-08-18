@@ -1,0 +1,27 @@
+void <%= class_name %>::find(<%= find_arguments_str %>)
+{
+
+}
+
+<% if parent? %>
+void <%= class_name %>::findAllChildren()
+{
+<% non_root_children.each do |child| %>
+    <%= child.class_name %>::find(this);
+<% end %>
+}
+<% end %>
+
+<% if specific? %>
+void <%= class_name %>::findAllTypicalReactions()
+{
+
+}
+<% end %>
+
+<% if lateral? %>
+void <%= class_name %>::findAllLateralReactions()
+{
+
+}
+<% end %>
