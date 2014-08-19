@@ -35,6 +35,12 @@ module VersatileDiamond
           a.incoherent!; a
         end
         set(:incoherent_c) { SpecificAtom.new(c, options: [incoherent]) }
+        set(:incoherent_activated_c) do
+          SpecificAtom.new(c, options: [incoherent, active_bond])
+        end
+        set(:incoherent_c_hydride) do
+          SpecificAtom.new(c, options: [incoherent], monovalents: [adsorbed_h])
+        end
         set(:incoherent_cd) { SpecificAtom.new(cd, options: [incoherent]) }
         set(:incoherent_activated_cd) do
           SpecificAtom.new(cd, options: [incoherent, active_bond])
@@ -173,6 +179,15 @@ module VersatileDiamond
         end
         set(:unfixed_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: unfixed_c)
+        end
+        set(:incoherent_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: incoherent_c)
+        end
+        set(:incoherent_activated_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: incoherent_activated_c)
+        end
+        set(:incoherent_hydrogenated_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: incoherent_c_hydride)
         end
         set(:unfixed_activated_methyl_on_incoherent_bridge) do
           SpecificSpec.new(methyl_on_bridge_base,

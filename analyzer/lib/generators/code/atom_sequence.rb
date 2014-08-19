@@ -154,7 +154,7 @@ module VersatileDiamond
           insec = SpeciesComparator.intersec(*args) do |_, _, self_atom, child_atom|
             self_prop = Organizers::AtomProperties.new(@spec, self_atom)
             child_prop = Organizers::AtomProperties.new(child, child_atom)
-            self_prop.contained_in?(child_prop)
+            child_prop.include?(self_prop)
           end
           insec.map { |ins| Hash[ins.to_a] }
         end

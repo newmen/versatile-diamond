@@ -118,6 +118,13 @@ module VersatileDiamond
         it { expect(vob).not_to eq(eob) }
       end
 
+      describe '#include?' do
+        it { expect(iamob.include?(imob)).to be_truthy }
+        it { expect(ihmob.include?(imob)).to be_truthy }
+        it { expect(iamob.include?(ihmob)).to be_falsey }
+        it { expect(ihmob.include?(iamob)).to be_falsey }
+      end
+
       describe '#contained_in?' do
         it { expect(ucm.contained_in?(high_cm)).to be_falsey }
         it { expect(high_cm.contained_in?(ucm)).to be_falsey }
