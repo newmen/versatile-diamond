@@ -255,6 +255,57 @@ module VersatileDiamond
           it { expect(code_bridge_base.print_name).to eq('bridge') }
           it { expect(code_activated_bridge.print_name).to eq('bridge(ct: *)') }
         end
+
+        describe '#pure_essence' do
+          describe 'bridge' do
+            let(:base_specs) { [dept_bridge_base] }
+            let(:ct) { bridge_base.atom(:ct) }
+            let(:cr) { bridge_base.atom(:cr) }
+            let(:cl) { bridge_base.atom(:cl) }
+            let(:essence) do
+              { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] }
+            end
+            it { expect(code_for(bridge_base).pure_essence).to eq(essence) }
+          end
+
+          describe 'dimer' do
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+            let(:cr) { dimer_base.atom(:cr) }
+            let(:cl) { dimer_base.atom(:cl) }
+            let(:essence) do
+              { cr => [[cl, bond_100_front]] }
+            end
+            it { expect(code_for(dimer_base).pure_essence).to eq(essence) }
+          end
+
+          describe 'methyl_on_dimer' do
+            let(:base_specs) do
+              [
+                dept_bridge_base,
+                dept_methyl_on_bridge_base,
+                dept_methyl_on_dimer_base
+              ]
+            end
+            let(:cr) { methyl_on_dimer_base.atom(:cr) }
+            let(:cl) { methyl_on_dimer_base.atom(:cl) }
+            let(:essence) do
+              {
+                cr => [[cl, bond_100_front]],
+                cl => [[cr, bond_100_front]]
+              }
+            end
+            it { expect(code_for(methyl_on_dimer_base).pure_essence).to eq(essence) }
+          end
+
+          describe 'bridge(ct: *)' do
+            let(:base_specs) { [dept_bridge_base] }
+            let(:specific_specs) { [dept_activated_bridge] }
+            let(:essence) do
+              { activated_bridge.atom(:ct) => [] }
+            end
+            it { expect(code_for(activated_bridge).pure_essence).to eq(essence) }
+          end
+        end
       end
 
     end

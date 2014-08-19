@@ -7,6 +7,20 @@ class Diamond < VersatileDiamond::Lattices::Base
   # file in common templates directory which located at
   # /analyzer/lib/generators/code/templates/phases
 
+  # Provides information on the maximum possible number of relations of crystal lattice
+  # for each individual atom
+  #
+  # @return [Hash] the hash where keys are relation options and values are maximum
+  #   numbers of correspond relations
+  def relations_limit
+    {
+      front_110 => 2,
+      cross_110 => 2,
+      front_100 => 2,
+      cross_100 => 2,
+    }
+  end
+
 private
 
   # Detects opposite relation on same lattice
@@ -75,6 +89,8 @@ private
 
   # Setups common crystal atom of diamond lattice. Atom should presents in config file
   # (or need to use internal periodic table).
+  #
+  # @return [Hash] the hash of properties of crystal atom
   def crystal_atom
     {
       atom_name: :C,

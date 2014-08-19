@@ -44,7 +44,8 @@ module VersatileDiamond
             clear_rels = rels.reject do |a, r|
               pas = twins[a]
               !pas.empty? && parent_atoms.any? do |p|
-                parent_links[p].any? { |q, y| r == y && pas.include?(q) }
+                ppls = parent_links[p]
+                ppls && ppls.any? { |q, y| r == y && pas.include?(q) }
               end
             end
 

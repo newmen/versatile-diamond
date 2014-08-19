@@ -121,6 +121,73 @@ module VersatileDiamond
           spec.name.to_s
         end
 
+        # Gets an essence of wrapped dependent spec but without reverse relations.
+        # The nearer to top of achchors sequence, have more relations in essence.
+        #
+        # @return [Hash] the links hash without reverse relations
+        # TODO: must be private
+        def pure_essence
+          # для кажого атома:
+          # группируем отношения по фейсу и диру
+          # одинаковые ненаправленные связи - отбрасываем
+          #
+          # для каждой группы:
+          # проверяем по кристаллу максимальное количество отношений такого рода, и
+          #   если количество соответствует - удаляем обратные связи, заодно удаляя из
+          #   хеша и атомы, если у них более не остаётся отношений
+          # если меньше - проверяем тип связанного атома, и если он соответствует
+          #   текущему атому - удаляем обратную связь, заодно удаляя из хеша и сам
+          #   атом, если у него более не остаётся отношений
+          # если больше - кидаем эксепшн
+          #
+          # между всеми атомами, что участвовали в отчистке удаляем позишины, и так же
+          # если у атома в таком случае не остаётся отношений - удаляем его из эссенции
+
+          clearing_atoms = Set.new
+          essence = spec.essence
+          clear_reverse = -> reverse_atom, from_atom do
+            clearing_atoms << from_atom << reverse_atom
+            essence = clear_reverse_from(essence, reverse_atom, from_atom)
+          end
+
+          # in accordance with the order
+          short_seq.each do |atom|
+            next unless essence[atom]
+
+            clear_reverse_relations = -> pair { clear_reverse[pair.first, atom] }
+
+            groups = essence[atom].group_by do |_, r|
+              { face: r.face, dir: r.dir }
+            end
+
+            amorph_rels = groups.delete({ face: nil, dir: nil })
+            if amorph_rels
+              amorph_rels.each(&clear_reverse_relations)
+              crystal_rels = essence[atom].seject { |_, r| r.face && r.dir }
+              essence[atom] = crystal_rels + amorph_rels.uniq(&:first)
+            end
+
+            next unless atom.lattice
+            limits = atom.lattice.instance.relations_limit
+
+            groups.each do |rel_opts, group_rels|
+              if limits[rel_opts] < group_rels.size
+                raise 'Atom has too more relations'
+              elsif limits[rel_opts] == group_rels.size
+                group_rels.each(&clear_reverse_relations)
+              else
+                first_prop = Organizers::AtomProperties.new(spec, atom)
+                group_rels.each do |a, _|
+                  second_prop = Organizers::AtomProperties.new(spec, a)
+                  clear_reverse[a, atom] if first_prop == second_prop
+                end
+              end
+            end
+          end
+
+          clear_excess_positions(essence, clearing_atoms)
+        end
+
       private
 
         # Specie class has find algorithms by default
@@ -325,9 +392,9 @@ module VersatileDiamond
           strs.sort
         end
 
-        # Gets sorted anchors to atom sequence
+        # Gets sorted anchors from atom sequence
         # @return [Array] the array of anchor atoms
-        def anchors
+        def short_seq
           @sequence.short
         end
 
@@ -342,7 +409,7 @@ module VersatileDiamond
         # Gets a sequence of indexes of anchor atoms
         # @return [String] the sequence of indexes joined by comma
         def indexes_sequence
-          anchors.map { |a| @sequence.atom_index(a) }.join(', ')
+          short_seq.map { |a| @sequence.atom_index(a) }.join(', ')
         end
 
         # Gets a list of anchor atoms roles where each role is atom properties index
@@ -350,7 +417,51 @@ module VersatileDiamond
         #
         # @return [Array] the list of anchors roles
         def roles_sequence
-          anchors.map(&method(:role)).join(', ')
+          short_seq.map(&method(:role)).join(', ')
+        end
+
+        # Clears reverse relations from links hash between reverse_atom and from_atom.
+        # If revese_atom has no relations after clearing then reverse_atom removes too.
+        #
+        # @param [Hash] links which will be cleared
+        # @param [Concepts::Atom] reverse_atom the atom whose relations will be erased
+        # @param [Concepts::Atom] from_atom the atom to which relations will be erased
+        # @return [Hash] the links without correspond relations and reverse_atom if it
+        #   necessary
+        def clear_reverse_from(links, reverse_atom, from_atom)
+          reject_lambda = -> pair { pair.first == from_atom }
+          clear_links(links, reject_lambda) { |a| a == reverse_atom }
+        end
+
+        # Clears position relations which are between atom from clearing_atoms
+        # @param [Hash] links which will be cleared
+        # @param [Set] clearing_atoms the atoms between which positions will be erased
+        # @return [Hash] the links without erased positions
+        def clear_excess_positions(links, clearing_atoms)
+          # there is could be only realy bonds and positions
+          reject_lambda = -> pair do
+            !pair.last.bond? && clearing_atoms.include?(pair.first)
+          end
+          clear_links(links, reject_lambda) { |a| clearing_atoms.include?(a) }
+        end
+
+        # Clears relations from links hash where each purging relatoins list selected
+        # by condition lambda and purification doing by reject_lambda
+        #
+        # @param [Hash] links which will be cleared
+        # @param [Proc] reject_lambda the function of two arguments which doing for
+        #   reject excess relations
+        # @yield [Atom] by it condition checks that erasing should to be
+        # @return [Hash] the links without erased relations
+        def clear_links(links, reject_lambda, &condition_lambda)
+          links.each_with_object({}) do |(atom, rels), result|
+            if condition_lambda[atom]
+              new_rels = rels.reject(&reject_lambda)
+              result[atom] = new_rels unless new_rels.empty?
+            else
+              result[atom] = rels
+            end
+          end
         end
 
         # Gets the specie class code generator
