@@ -56,15 +56,6 @@ module VersatileDiamond
         end
       end
 
-      def to_s
-        "(#{name}, [#{parents.map(&:name).join(' ')}], " +
-          "[#{children.map(&:to_s).join(' ')}])"
-      end
-
-      def inspect
-        to_s
-      end
-
     private
 
       # Is current spec reactant or not
