@@ -39,7 +39,8 @@ module VersatileDiamond
         #
         # @param [Array] args the arguments of missed method
         def method_missing(*args, &block)
-          target_specie.public_send(*args, &block)
+          # friend call of specie methods
+          target_specie.send(*args, &block)
         end
 
       private

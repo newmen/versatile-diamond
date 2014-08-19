@@ -28,6 +28,13 @@ module VersatileDiamond
         def out_dir_path(root_dir)
           super + outer_base_file
         end
+
+        # The additional path for current instance
+        # @return [String] the additional directories path
+        # @override
+        def additional_path
+          'species'
+        end
       end
 
     end
