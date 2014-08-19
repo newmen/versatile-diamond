@@ -122,16 +122,6 @@ module VersatileDiamond
         specific_atoms.size * 8 + dangling_bonds_num * 2 + relevants_num
       end
 
-      def to_s
-        result = "(#{name}, "
-        result += parent ? "[#{parent.name}], " : '[], '
-        result + "[#{children.map(&:to_s).join(' ')}])"
-      end
-
-      def inspect
-        to_s
-      end
-
     protected
 
       # Counts the sum of active bonds and monovalent atoms

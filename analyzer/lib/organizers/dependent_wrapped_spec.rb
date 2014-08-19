@@ -55,6 +55,15 @@ module VersatileDiamond
         Hash[result]
       end
 
+      def to_s
+        "(#{name}, [#{parents.map(&:name).join(' ')}], " +
+          "[#{children.map(&:name).join(' ')}])"
+      end
+
+      def inspect
+        to_s
+      end
+
     private
 
       # Replaces internal atom references to original atom and inject references of it
