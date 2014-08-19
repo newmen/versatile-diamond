@@ -4,7 +4,7 @@ module VersatileDiamond
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentWrappedSpec
 
-      def_delegators :@spec, :reduced, :could_be_reduced?, :specific_atoms
+      def_delegators :@spec, :reduced, :could_be_reduced?
       attr_reader :parent
 
       # Initializes dependent specific spec by specific spec
@@ -85,16 +85,13 @@ module VersatileDiamond
       # @param [Array] similar_specs the array of specs where each spec has
       #   same basic spec
       def organize_dependencies!(base_cache, similar_specs)
-        similar_specs = similar_specs.reject do |s|
-          s == self || s.size > size
-        end
-
+        similar_specs = similar_specs.reject { |s| s == self || s.size > size }
         similar_specs.sort_by! { |ss| -ss.size }
 
-        parent = similar_specs.find do |ss|
-          ss.specific_atoms.all? do |keyname, atom|
-            a = specific_atoms[keyname]
-            a && is?(a, atom)
+        parent = similar_specs.find do |possible_parent|
+          possible_parent.specific_atoms.all? do |keyname, parent_atom|
+            child_atom = specific_atoms[keyname]
+            child_atom && is?(possible_parent, child_atom, parent_atom)
           end
         end
 
@@ -123,6 +120,8 @@ module VersatileDiamond
       end
 
     protected
+
+      def_delegator :@spec, :specific_atoms
 
       # Counts the sum of active bonds and monovalent atoms
       # @return [Integer] sum of dangling bonds
@@ -185,33 +184,15 @@ module VersatileDiamond
         specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.relevants.size }
       end
 
-      # Compares two specific atoms and checks that smallest is less than
-      # bigger
-      #
-      # @param [Concepts::SpecificAtom] bigger probably the bigger atom
-      # @param [Concepts::SpecificAtom] smallest probably the smallest atom
-      # @return [Boolean] smallest is less or not
-      def is?(bigger, smallest)
-        same_danglings?(bigger, smallest) && same_relevants?(bigger, smallest)
-      end
-
-      # Checks that smallest atom contain less dangling states than bigger
-      # @param [Concepts::SpecificAtom] bigger see at #is? same argument
-      # @param [Concepts::SpecificAtom] smallest see at #is? same argument
-      # @return [Boolean] contain or not
-      def same_danglings?(bigger, smallest)
-        smallest.actives <= bigger.actives &&
-          (smallest.monovalents - bigger.monovalents).empty?
-      end
-
-      # Checks that smallest atom contain less relevant states than bigger
-      # @param [Concepts::SpecificAtom] bigger see at #is? same argument
-      # @param [Concepts::SpecificAtom] smallest see at #is? same argument
-      # @return [Boolean] contain or not
-      def same_relevants?(bigger, smallest)
-        diff = smallest.relevants - bigger.relevants
-        diff.empty? || (diff == [Incoherent.property] && bigger.size > smallest.size &&
-          (!bigger.monovalents.empty? || bigger.actives > 0))
+      # Compares two specific atoms and checks that own atom could include other atom
+      # @param [DependentSpecificSpec] other
+      # @param [Concepts::SpecificAtom] own_atom of current spec
+      # @param [Concepts::SpecificAtom] other_atom of passed spec
+      # @return [Boolean] is own include other or not
+      def is?(other, own_atom, other_atom)
+        own_prop = AtomProperties.new(self, own_atom)
+        other_prop = AtomProperties.new(other, other_atom)
+        own_prop.include?(other_prop)
       end
     end
 

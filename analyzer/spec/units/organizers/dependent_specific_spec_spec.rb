@@ -37,10 +37,6 @@ module VersatileDiamond
         it { expect(subject.could_be_reduced?).to be_falsey }
       end
 
-      describe '#specific_atoms' do
-        it { expect(subject.specific_atoms).to eq(subject.spec.specific_atoms) }
-      end
-
       describe '#name' do
         it { expect(subject.name).to eq(:'dimer(cr: *)') }
       end
