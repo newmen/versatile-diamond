@@ -75,7 +75,6 @@ module VersatileDiamond
         # parent specie
         #
         # @return [Integer] the number of atoms
-        # TODO: must be private
         def atoms_num
           spec.target.links.size
         end
@@ -360,13 +359,6 @@ module VersatileDiamond
         # @return [Specie]
         def specie_class(dept_spec)
           @generator.specie_class(dept_spec.name)
-        end
-
-        # The additional path for current instance
-        # @return [String] the additional directories path
-        # @override
-        def additional_path
-          'species'
         end
       end
 

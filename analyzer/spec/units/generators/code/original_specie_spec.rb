@@ -9,7 +9,7 @@ module VersatileDiamond
         let(:specie_class) { code_bridge_base }
 
         describe '#template_name' do
-          it { expect(subject.template_name).to eq(specie_class.template_name) }
+          it { expect(subject.template_name).to eq('specie') }
         end
 
         describe '#define_name' do
