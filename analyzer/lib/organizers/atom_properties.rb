@@ -67,17 +67,19 @@ module VersatileDiamond
           end
       end
 
-      # def include?(other)
-      #   same_basic_values?(other) && contain_all_bonds?(other) &&
-      #     contain_all_relevants?(other)
-      # end
+      # Checks that current properties includes another properties
+      # @param [AtomProperties] other probably child atom properties
+      # @return [Boolean] includes or not
+      def include?(other)
+        other.contained_in?(self) || same_incoherent?(other) || same_unfixed?(other)
+      end
 
       # Checks that current properties contained in another properties
       # @param [AtomProperties] other probably parent atom properties
       # @return [Boolean] contained or not
       def contained_in?(other)
         same_basic_values?(other) && other.contain_all_bonds?(self) &&
-          same_correspond_relations?(other)
+          same_correspond_relevants?(other)
       end
 
       # Checks that both properties have same states by hydrogen atoms
@@ -398,7 +400,7 @@ module VersatileDiamond
       #
       # @param [AtomProperties] other the checking properties
       # @return [Boolean] contain or not
-      def same_correspond_relations?(other)
+      def same_correspond_relevants?(other)
         return false if relevant? && !other.relevant?
         return true unless relevant?
         !incoherent? && other.unfixed?
