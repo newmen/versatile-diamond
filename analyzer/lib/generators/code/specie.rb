@@ -154,7 +154,7 @@ module VersatileDiamond
           short_seq.each do |atom|
             next unless essence[atom]
 
-            clear_reverse_relations = -> pair { clear_reverse[pair.first, atom] }
+            clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
 
             groups = essence[atom].group_by do |_, r|
               { face: r.face, dir: r.dir }
@@ -429,8 +429,8 @@ module VersatileDiamond
         # @return [Hash] the links without correspond relations and reverse_atom if it
         #   necessary
         def clear_reverse_from(links, reverse_atom, from_atom)
-          reject_lambda = -> pair { pair.first == from_atom }
-          clear_links(links, reject_lambda) { |a| a == reverse_atom }
+          reject_proc = proc { |a, _| a == from_atom }
+          clear_links(links, reject_proc) { |a| a == reverse_atom }
         end
 
         # Clears position relations which are between atom from clearing_atoms
@@ -439,24 +439,22 @@ module VersatileDiamond
         # @return [Hash] the links without erased positions
         def clear_excess_positions(links, clearing_atoms)
           # there is could be only realy bonds and positions
-          reject_lambda = -> pair do
-            !pair.last.bond? && clearing_atoms.include?(pair.first)
-          end
-          clear_links(links, reject_lambda) { |a| clearing_atoms.include?(a) }
+          reject_proc = proc { |a, r| !r.bond? && clearing_atoms.include?(a) }
+          clear_links(links, reject_proc) { |a| clearing_atoms.include?(a) }
         end
 
         # Clears relations from links hash where each purging relatoins list selected
-        # by condition lambda and purification doing by reject_lambda
+        # by condition lambda and purification doing by reject_proc
         #
         # @param [Hash] links which will be cleared
-        # @param [Proc] reject_lambda the function of two arguments which doing for
+        # @param [Proc] reject_proc the function of two arguments which doing for
         #   reject excess relations
         # @yield [Atom] by it condition checks that erasing should to be
         # @return [Hash] the links without erased relations
-        def clear_links(links, reject_lambda, &condition_lambda)
+        def clear_links(links, reject_proc, &condition_proc)
           links.each_with_object({}) do |(atom, rels), result|
-            if condition_lambda[atom]
-              new_rels = rels.reject(&reject_lambda)
+            if condition_proc[atom]
+              new_rels = rels.reject(&reject_proc)
               result[atom] = new_rels unless new_rels.empty?
             else
               result[atom] = rels
