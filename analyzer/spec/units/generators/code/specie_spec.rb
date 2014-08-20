@@ -297,6 +297,17 @@ module VersatileDiamond
             it { expect(code_for(methyl_on_dimer_base).pure_essence).to eq(essence) }
           end
 
+          describe 'three_bridge' do
+            let(:base_specs) { [dept_bridge_base, dept_three_bridges_base] }
+            let(:essence) do
+              {
+                three_bridges_base.atom(:ct) => [],
+                three_bridges_base.atom(:cc) => []
+              }
+            end
+            it { expect(code_for(three_bridges_base).pure_essence).to eq(essence) }
+          end
+
           describe 'bridge(ct: *)' do
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [dept_activated_bridge] }
