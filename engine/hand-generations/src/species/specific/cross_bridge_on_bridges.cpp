@@ -19,21 +19,10 @@ void CrossBridgeOnBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(CROSS_BRIDGE_ON_BRIDGES, 10))
         {
-            ParentSpec *parents[2] = { nullptr, nullptr };
-
-            anchor->eachSpecByRole<MethylOnBridge>(14, [anchor, &parents](MethylOnBridge *target) {
-                if (!parents[0])
-                {
-                    parents[0] = target;
-                }
-                else
-                {
-                    parents[1] = target;
-                }
-            });
-
-            if (parents[1])
+            auto species = anchor->specsByRole<MethylOnBridge, 2>(14);
+            if (species.all())
             {
+                ParentSpec *parents[2] = { species[0], species[1] };
                 create<CrossBridgeOnBridges>(parents);
             }
         }

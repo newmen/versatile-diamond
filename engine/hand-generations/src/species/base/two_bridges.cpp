@@ -2,8 +2,8 @@
 #include "../base/bridge.h"
 #include "../specific/two_bridges_ctri_cbrs.h"
 
-const ushort TwoBridges::Base::__indexes[1] = { 5 };
-const ushort TwoBridges::Base::__roles[1] = { 24 };
+const ushort TwoBridges::Base::__indexes[2] = { 5, 0 };
+const ushort TwoBridges::Base::__roles[2] = { 24, 6 };
 
 #ifdef PRINT
 const char *TwoBridges::name() const
@@ -19,27 +19,32 @@ void TwoBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(TWO_BRIDGES, 24))
         {
-            ParentSpec *topBridges[2] = { nullptr, nullptr };
-            ushort index = 0;
+            anchor->eachSpecByRole<Bridge>(6, [anchor](Bridge *target) {
+                target->eachSymmetry([anchor, target](ParentSpec *specie) {
+                    if (specie->atom(2) == anchor)
+                    {
+                        Atom *secondAnchor = specie->atom(1);
+                        if (secondAnchor->is(6))
+                        {
+                            Bridge *externalLast = anchor->selectSpecByRole<Bridge>(6, [target](Bridge *other) {
+                                return other == target;
+                            });
 
-            anchor->eachSpecByRole<Bridge>(6, [&topBridges, &index, anchor](Bridge *target) {
-                topBridges[index] = target->selectSymmetry([anchor](ParentSpec *specie) {
-                    return specie->atom(2) == anchor;
+                            ParentSpec *last = externalLast->selectSymmetry([anchor](ParentSpec *other) {
+                                return other->atom(1) == anchor;
+                            });
+
+                            ParentSpec *parents[3] = {
+                                secondAnchor->specByRole<Bridge>(3),
+                                specie,
+                                last
+                            };
+
+                            create<TwoBridges>(parents);
+                        }
+                    }
                 });
-                ++index;
             });
-
-            for (uint i = 0; i < 2; ++i)
-            {
-                uint o = 1 - i;
-                ParentSpec *targets[3] = {
-                    topBridges[i]->atom(1)->specByRole<Bridge>(3),
-                    topBridges[i],
-                    topBridges[o]
-                };
-
-                create<TwoBridges>(targets);
-            }
         }
     }
 }

@@ -252,6 +252,7 @@ HEADERS += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.h \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.h \
     atoms/atom.h \
+    atoms/contained_species.h \
     atoms/lattice.h \
     atoms/neighbours.h \
     mc/base_events_container.h \
@@ -298,7 +299,9 @@ HEADERS += \
     tools/debug_print.h \
     tools/error.h \
     tools/factory.h \
+    tools/init_config.h \
     tools/lockable.h \
+    tools/many_items_result.h \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/savers/accumulator.h \
@@ -326,8 +329,7 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h \
-    tools/init_config.h
+    tools/yaml_config_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \
