@@ -3,8 +3,8 @@
 #include "../sidepiece/dimer.h"
 #include "../specific/bridge_with_dimer_cdli.h"
 
-const ushort BridgeWithDimer::Base::__indexes[1] = { 5 };
-const ushort BridgeWithDimer::Base::__roles[1] = { 32 };
+const ushort BridgeWithDimer::Base::__indexes[2] = { 5, 0 };
+const ushort BridgeWithDimer::Base::__roles[2] = { 32, 6 };
 
 #ifdef PRINT
 const char *BridgeWithDimer::name() const

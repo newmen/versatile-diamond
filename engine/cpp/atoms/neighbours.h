@@ -1,57 +1,19 @@
 #ifndef NEIGHBOURS_H
 #define NEIGHBOURS_H
 
-#include "../tools/common.h"
+#include "../tools/many_items_result.h"
 #include "atom.h"
 
 namespace vd
 {
 
 template <ushort NUM>
-class Neighbours
+class Neighbours : public ManyItemsResult<Atom, NUM>
 {
-    Atom *_atoms[NUM];
+    typedef ManyItemsResult<Atom, NUM> ParentType;
 
 public:
-    enum : ushort { QUANTITY = NUM };
-
-    Neighbours()
-    {
-        for (int i = 0; i < NUM; ++i)
-        {
-            _atoms[i] = nullptr;
-        }
-    }
-
-    Neighbours(Atom *atoms[NUM])
-    {
-        for (int i = 0; i < NUM; ++i)
-        {
-            _atoms[i] = atoms[i];
-        }
-    }
-
-    Neighbours(Neighbours<NUM> &&) = default;
-    Neighbours<NUM>& operator = (Neighbours<NUM> &&) = default;
-
-    Atom *operator [] (uint i)
-    {
-        return _atoms[i];
-    }
-
-    bool all()
-    {
-        bool result = true;
-        for (int i = 0; i < NUM; ++i)
-        {
-            result = result && (_atoms[i] != nullptr);
-        }
-        return result;
-    }
-
-private:
-    Neighbours(const Neighbours<NUM> &) = delete;
-    Neighbours<NUM>& operator = (const Neighbours<NUM> &) = delete;
+    template <class... Args> Neighbours(Args... args) : ParentType(args...) {}
 };
 
 }

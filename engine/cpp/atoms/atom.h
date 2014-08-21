@@ -7,6 +7,7 @@
 #include "../species/base_spec.h"
 #include "../tools/common.h"
 #include "lattice.h"
+#include "contained_species.h"
 
 namespace vd
 {
@@ -65,7 +66,9 @@ public:
     bool hasRole(ushort sid, ushort role) const;
     bool checkAndFind(ushort sid, ushort role);
     template <class S> S *specByRole(ushort role);
+    template <class S, ushort NUM> ContainedSpecies<S, NUM> specsByRole(ushort role);
     template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
+    template <class S, class L> S *selectSpecByRole(ushort role, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -121,6 +124,25 @@ S *Atom::specByRole(ushort role)
     return static_cast<S *>(result);
 }
 
+template <class S, ushort NUM>
+ContainedSpecies<S, NUM> Atom::specsByRole(ushort role)
+{
+    const uint key = hash(role, S::ID);
+    auto range = _specs.equal_range(key);
+    uint distance = std::distance(range.first, range.second);
+
+    // there could be permutaion if assert failed,
+    // and method should iterate "typles" of specs
+    assert(distance <= NUM);
+
+    S *specs[NUM] = { nullptr, nullptr };
+    for (int i = 0; range.first != range.second; ++range.first, ++i)
+    {
+        specs[i] = static_cast<S *>(range.first->second);
+    }
+    return ContainedSpecies<S, NUM>(specs);
+}
+
 template <class S, class L>
 void Atom::eachSpecByRole(ushort role, const L &lambda)
 {
@@ -131,6 +153,20 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
         BaseSpec *spec = range.first->second;
         lambda(static_cast<S *>(spec));
     }
+}
+
+template <class S, class L>
+S *Atom::selectSpecByRole(ushort role, const L &lambda)
+{
+    S *result = nullptr;
+    eachSpecByRole<S>(role, [&result, lambda](S *specie) {
+        if (lambda(specie))
+        {
+            assert(!result);
+            result = specie;
+        }
+    });
+    return result;
 }
 
 }

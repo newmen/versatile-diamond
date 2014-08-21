@@ -3,7 +3,7 @@
 
 #include "../base.h"
 
-class BridgeWithDimer : public Base<DependentSpec<ParentSpec, 3>, BRIDGE_WITH_DIMER, 1>
+class BridgeWithDimer : public Base<DependentSpec<ParentSpec, 3>, BRIDGE_WITH_DIMER, 2>
 {
 public:
     static void find(Atom *anchor);

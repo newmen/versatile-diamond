@@ -3,7 +3,7 @@
 
 #include "../base.h"
 
-class TwoBridges : public Base<DependentSpec<ParentSpec, 3>, TWO_BRIDGES, 1>
+class TwoBridges : public Base<DependentSpec<ParentSpec, 3>, TWO_BRIDGES, 2>
 {
 public:
     static void find(Atom *anchor);
