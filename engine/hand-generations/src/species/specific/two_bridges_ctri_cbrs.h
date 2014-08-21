@@ -17,13 +17,6 @@ public:
 
 protected:
     void findAllTypicalReactions() final;
-
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[2];
-    static const ushort __roles[2];
 };
 
 #endif // TWO_BRIDGES_CTRI_CBRS_H

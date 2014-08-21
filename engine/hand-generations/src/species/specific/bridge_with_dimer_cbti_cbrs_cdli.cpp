@@ -1,8 +1,8 @@
 #include "bridge_with_dimer_cbti_cbrs_cdli.h"
 #include "../../reactions/typical/bridge_with_dimer_to_high_bridge_and_dimer.h"
 
-const ushort BridgeWithDimerCBTiCBRsCDLi::__indexes[2] = { 0, 3 };
-const ushort BridgeWithDimerCBTiCBRsCDLi::__roles[2] = { 5, 0 };
+const ushort BridgeWithDimerCBTiCBRsCDLi::Base::__indexes[2] = { 0, 3 };
+const ushort BridgeWithDimerCBTiCBRsCDLi::Base::__roles[2] = { 5, 0 };
 
 #ifdef PRINT
 const char *BridgeWithDimerCBTiCBRsCDLi::name() const

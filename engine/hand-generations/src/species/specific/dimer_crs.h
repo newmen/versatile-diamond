@@ -18,13 +18,6 @@ public:
 protected:
     void findAllChildren() final;
     void findAllTypicalReactions() final;
-
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[1];
-    static const ushort __roles[1];
 };
 
 #endif // DIMER_CRS_H

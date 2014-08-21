@@ -16,13 +16,6 @@ public:
 
 protected:
     void findAllChildren() final;
-
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[2];
-    static const ushort __roles[2];
 };
 
 #endif // METHYL_ON_BRIDGE_H

@@ -12,13 +12,6 @@ public:
 
 protected:
     OriginalBridge(Atom **atoms) : Base(atoms) {}
-
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[3];
-    static const ushort __roles[3];
 };
 
 #endif // ORIGINAL_BRIDGE_H

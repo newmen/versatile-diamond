@@ -1,8 +1,8 @@
 #include "methyl_on_dimer_cmssiu.h"
 #include "../../reactions/typical/migration_down_in_gap_from_dimer.h"
 
-const ushort MethylOnDimerCMssiu::__indexes[1] = { 0 };
-const ushort MethylOnDimerCMssiu::__roles[1] = { 27 };
+const ushort MethylOnDimerCMssiu::Base::__indexes[1] = { 0 };
+const ushort MethylOnDimerCMssiu::Base::__roles[1] = { 27 };
 
 #ifdef PRINT
 const char *MethylOnDimerCMssiu::name() const

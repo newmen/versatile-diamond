@@ -11,17 +11,18 @@ class Base : public Overall<B, ST>
 {
     typedef Overall<B, ST> ParentType;
 
+protected:
+    static const ushort __indexes[USED_ATOMS_NUM];
+    static const ushort __roles[USED_ATOMS_NUM];
+
 public:
-    Atom *anchor() const override { return this->atom(indexes()[0]); }
+    Atom *anchor() const override { return this->atom(__indexes[0]); }
 
     void store() override;
     void remove() override;
 
 protected:
     template <class... Args> Base(Args... args) : ParentType(args...) {}
-
-    virtual const ushort *indexes() const = 0;
-    virtual const ushort *roles() const = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -29,12 +30,9 @@ protected:
 template <class B, ushort ST, ushort USED_ATOMS_NUM>
 void Base<B, ST, USED_ATOMS_NUM>::store()
 {
-    const ushort *idxs = this->indexes();
-    const ushort *rls = this->roles();
-
     for (uint i = 0; i < USED_ATOMS_NUM; ++i)
     {
-        this->atom(idxs[i])->describe(rls[i], this);
+        this->atom(__indexes[i])->describe(__roles[i], this);
     }
 
     ParentType::store();
@@ -45,12 +43,9 @@ void Base<B, ST, USED_ATOMS_NUM>::remove()
 {
     if (this->isMarked()) return;
 
-    const ushort *idxs = this->indexes();
-    const ushort *rls = this->roles();
-
     for (uint i = 0; i < USED_ATOMS_NUM; ++i)
     {
-        this->atom(idxs[i])->forget(rls[i], this);
+        this->atom(__indexes[i])->forget(__roles[i], this);
     }
 
     ParentType::remove();

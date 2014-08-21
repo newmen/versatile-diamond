@@ -1,8 +1,8 @@
 #include "dimer_crs_cli.h"
 #include "../../reactions/typical/high_bridge_stand_to_dimer.h"
 
-const ushort DimerCRsCLi::__indexes[2] = { 0, 3 };
-const ushort DimerCRsCLi::__roles[2] = { 21, 20 };
+const ushort DimerCRsCLi::Base::__indexes[2] = { 0, 3 };
+const ushort DimerCRsCLi::Base::__roles[2] = { 21, 20 };
 
 #ifdef PRINT
 const char *DimerCRsCLi::name() const
