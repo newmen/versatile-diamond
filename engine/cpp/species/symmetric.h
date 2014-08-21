@@ -24,6 +24,7 @@ public:
     void remove() override;
 
     template <class L> void eachSymmetry(const L &lambda);
+    template <class L> ParentSpec *selectSymmetry(const L &lambda);
 
 private:
     template <class HeadS> void createSymmetrics(ushort index);
@@ -78,6 +79,21 @@ void Symmetric<OS, SSS...>::eachSymmetry(const L &lambda)
     {
         lambda(_symmetrics[i]);
     }
+}
+
+template <class OS, class... SSS>
+template <class L>
+ParentSpec *Symmetric<OS, SSS...>::selectSymmetry(const L &lambda)
+{
+    ParentSpec *result = nullptr;
+    eachSymmetry([&result, lambda](ParentSpec *specie) {
+        if (lambda(specie))
+        {
+            assert(!result);
+            result = specie;
+        }
+    });
+    return result;
 }
 
 template <class OS, class... SSS>

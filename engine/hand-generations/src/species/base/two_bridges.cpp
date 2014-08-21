@@ -23,12 +23,8 @@ void TwoBridges::find(Atom *anchor)
             ushort index = 0;
 
             anchor->eachSpecByRole<Bridge>(6, [&topBridges, &index, anchor](Bridge *target) {
-                target->eachSymmetry([&topBridges, anchor, index](ParentSpec *specie) {
-                    if (specie->atom(2) == anchor)
-                    {
-                        assert(!topBridges[index]);
-                        topBridges[index] = specie;
-                    }
+                topBridges[index] = target->selectSymmetry([anchor](ParentSpec *specie) {
+                    return specie->atom(2) == anchor;
                 });
                 ++index;
             });
