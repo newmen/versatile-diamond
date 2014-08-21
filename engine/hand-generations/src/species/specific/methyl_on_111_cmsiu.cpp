@@ -2,8 +2,8 @@
 #include "../../reactions/typical/migration_down_at_dimer_from_111.h"
 #include "methyl_on_111_cmssiu.h"
 
-const ushort MethylOn111CMsiu::__indexes[1] = { 0 };
-const ushort MethylOn111CMsiu::__roles[1] = { 26 };
+const ushort MethylOn111CMsiu::Base::__indexes[1] = { 0 };
+const ushort MethylOn111CMsiu::Base::__roles[1] = { 26 };
 
 #ifdef PRINT
 const char *MethylOn111CMsiu::name() const

@@ -28,14 +28,6 @@ public:
 #ifdef PRINT
     const char *name() const final;
 #endif // PRINT
-
-protected:
-    const ushort *indexes() const final { return __indexes; }
-    const ushort *roles() const final { return __roles; }
-
-private:
-    static const ushort __indexes[<%= atoms_num %>];
-    static const ushort __roles[<%= atoms_num %>];
 <% end %>
 };
 

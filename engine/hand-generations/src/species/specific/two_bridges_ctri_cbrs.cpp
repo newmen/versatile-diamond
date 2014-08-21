@@ -1,8 +1,8 @@
 #include "two_bridges_ctri_cbrs.h"
 #include "../../reactions/typical/two_bridges_to_high_bridge.h"
 
-const ushort TwoBridgesCTRiCBRs::__indexes[2] = { 0, 3 };
-const ushort TwoBridgesCTRiCBRs::__roles[2] = { 5, 0 };
+const ushort TwoBridgesCTRiCBRs::Base::__indexes[2] = { 0, 3 };
+const ushort TwoBridgesCTRiCBRs::Base::__roles[2] = { 5, 0 };
 
 #ifdef PRINT
 const char *TwoBridgesCTRiCBRs::name() const
