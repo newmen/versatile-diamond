@@ -4,7 +4,6 @@ module VersatileDiamond
 
       # Creates Original Specie class which is used when specie is simmetric
       class OriginalSpecie < BaseSpecie
-        include EnumerableFileName
         extend SubSpecie
 
         use_prefix 'original'

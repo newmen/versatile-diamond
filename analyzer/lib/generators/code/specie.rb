@@ -6,7 +6,6 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
-        include EnumerableFileName
 
         attr_reader :spec, :original
 
@@ -43,9 +42,8 @@ module VersatileDiamond
           if symmetric?
             @original.generate(root_dir)
             @symmetrics.each { |symmetric| symmetric.generate(root_dir) }
-          else
-            super
           end
+          super
         end
 
         # Is symmetric specie? If children species uses same as own atom and it atom

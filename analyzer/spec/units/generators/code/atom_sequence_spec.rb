@@ -27,7 +27,7 @@ module VersatileDiamond
           end
 
           it '#major_atoms' do
-            expect(sequence.major_atoms.size).to eq(major_atoms)
+            expect(sequence.major_atoms).to eq(major_atoms)
           end
 
           it '#delta' do
@@ -42,7 +42,9 @@ module VersatileDiamond
 
         it_behaves_like :apply_all do
           subject { dept_bridge_base }
-          let(:bases) { [dept_dimer_base, dept_methyl_on_bridge_base] }
+          let(:bases) do
+            [dept_dimer_base, dept_methyl_on_bridge_base, dept_methyl_on_dimer_base]
+          end
           let(:specifics) { [dept_activated_bridge] }
 
           let(:original) do

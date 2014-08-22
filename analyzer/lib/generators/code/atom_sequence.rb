@@ -218,10 +218,12 @@ module VersatileDiamond
               end
 
               reverse_mirror = diff.map { |from, to| [from, invert_major[to]] }
+              next if reverse_mirror.any? { |_, a| a.nil? }
               if reverse_mirror.any? { |a, b| a == b }
                 raise 'Reverse mirror to same atom'
               end
 
+              reverse_mirror = erase_reverse_references(reverse_mirror)
               reverse_mirror = Hash[reverse_mirror]
               already_present = result.any? do |rh|
                 rh == reverse_mirror || rh == reverse_mirror.invert
@@ -238,6 +240,20 @@ module VersatileDiamond
           surfspecs = spec.non_term_children
           groups = surfspecs.group_by(&:object_id)
           groups.select { |_, g| g.size == 1 }.map(&:last).map(&:last)
+        end
+
+        # Erases reverse references from mirror
+        # @param [Hash] mirror of atoms
+        # @return [Hash] mirror without reverse references
+        def erase_reverse_references(mirror)
+          unique_pairs = []
+          mirror.each do |f, s|
+            forward, reverse = [f, s], [s, f]
+            unless unique_pairs.include?(forward) || unique_pairs.include?(reverse)
+              unique_pairs << forward
+            end
+          end
+          Hash[unique_pairs]
         end
 
         # Finds parent index and atom index in it

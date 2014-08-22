@@ -7,6 +7,7 @@ module VersatileDiamond
       class BaseSpecie < CppClassWithGen
         include PartialRenderer
         include PolynameClass
+        include EnumerableFileName # must be included after PolynameClass
 
         PREF_METD_SEPS = [
           ['class', :classify, ''],
