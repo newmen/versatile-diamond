@@ -121,8 +121,9 @@ module VersatileDiamond
           spec.name.to_s
         end
 
-        # Gets an essence of wrapped dependent spec but without reverse relations.
-        # The nearer to top of achchors sequence, have more relations in essence.
+        # Gets an essence of wrapped dependent spec but without reverse relations if
+        # related atoms is similar. The nearer to top of achchors sequence, have more
+        # relations in essence.
         #
         # @return [Hash] the links hash without reverse relations
         # TODO: must be private
@@ -163,7 +164,7 @@ module VersatileDiamond
             amorph_rels = groups.delete({ face: nil, dir: nil })
             if amorph_rels
               amorph_rels.each(&clear_reverse_relations)
-              crystal_rels = essence[atom].seject { |_, r| r.face && r.dir }
+              crystal_rels = essence[atom].select { |_, r| r.face && r.dir }
               essence[atom] = crystal_rels + amorph_rels.uniq(&:first)
             end
 
