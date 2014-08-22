@@ -44,6 +44,12 @@ module VersatileDiamond
           sort_atoms(anchors, amorph_before: false)
         end
 
+        # Gets a atoms list of short sequence without addition atoms
+        # @return [Array] the array of major anchor atoms
+        def major_atoms
+          short - addition_atoms
+        end
+
         # Counts delta between atoms num of current specie and sum of atoms num of
         # all parents
         #

@@ -1,9 +1,20 @@
 void <%= class_name %>::find(<%= find_arguments_str %>)
 {
+<% unless find_root? %>
+    <%= define_anchor_variables %>
+<% end %>
+<% central_anchors_with_elses.each do |atoms, else_prefix| %>
+    <%= else_prefix %>if (<%= check_role_condition(atoms) %>)
+    {
+        if (<%= check_specie_condition(atoms) %>)
+        {
 
+        }
+    }
+<% end %>
 }
-
 <% if parent? %>
+
 void <%= class_name %>::findAllChildren()
 {
 <% non_root_children.each do |child| %>
@@ -11,15 +22,15 @@ void <%= class_name %>::findAllChildren()
 <% end %>
 }
 <% end %>
-
 <% if specific? %>
+
 void <%= class_name %>::findAllTypicalReactions()
 {
 
 }
 <% end %>
-
 <% if lateral? %>
+
 void <%= class_name %>::findAllLateralReactions()
 {
 

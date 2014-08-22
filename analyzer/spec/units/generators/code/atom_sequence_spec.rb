@@ -26,6 +26,10 @@ module VersatileDiamond
             expect(sequence.short).to eq(short)
           end
 
+          it '#major_atoms' do
+            expect(sequence.major_atoms.size).to eq(major_atoms)
+          end
+
           it '#delta' do
             expect(sequence.delta).to eq(delta)
           end
@@ -49,6 +53,7 @@ module VersatileDiamond
             ]
           end
           let(:short) { original }
+          let(:major_atoms) { original }
           let(:delta) { 0 }
           let(:symmetric_base_classes) { [] }
         end
@@ -72,6 +77,7 @@ module VersatileDiamond
               methyl_on_bridge_base.atom(:cm),
             ]
           end
+          let(:major_atoms) { [methyl_on_bridge_base.atom(:cb)] }
           let(:delta) { 1 }
           let(:symmetric_base_classes) { [] }
         end
@@ -98,6 +104,7 @@ module VersatileDiamond
               methyl_on_dimer_base.atom(:cl),
             ]
           end
+          let(:major_atoms) { short }
           let(:delta) { 0 }
           let(:symmetric_base_classes) { [] }
         end
@@ -122,6 +129,7 @@ module VersatileDiamond
               dimer_base.atom(:cl),
             ]
           end
+          let(:major_atoms) { short }
           let(:delta) { 0 }
 
           it_behaves_like :apply_all do
@@ -166,6 +174,7 @@ module VersatileDiamond
                 activated_dimer.atom(:cr),
               ]
             end
+            let(:major_atoms) { short }
             let(:delta) { 0 }
             let(:symmetric_base_classes) { [empty_class] }
           end

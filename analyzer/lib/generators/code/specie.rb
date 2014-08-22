@@ -33,6 +33,7 @@ module VersatileDiamond
           end
 
           @_class_name, @_enum_name, @_used_iterators = nil
+          @_pure_essence = nil
         end
 
         # Generates source code for specie
@@ -128,6 +129,8 @@ module VersatileDiamond
         # @return [Hash] the links hash without reverse relations
         # TODO: must be private
         def pure_essence
+          return @_pure_essence if @_pure_essence
+
           # для кажого атома:
           # группируем отношения по фейсу и диру
           # одинаковые ненаправленные связи - отбрасываем
@@ -186,7 +189,24 @@ module VersatileDiamond
             end
           end
 
-          clear_excess_positions(essence, clearing_atoms)
+          @_pure_essence = clear_excess_positions(essence, clearing_atoms)
+        end
+
+        # Gets anchors by which will be first check of find algorithm
+        # @return [Array] the major anchors of current specie
+        def central_anchors
+          tras = together_related_anchors
+          scas = tras.empty? ? root_related_anchors : tras
+          scas.empty? ? [major_anchors] : scas.map { |a| [a] }
+        end
+
+      protected
+
+        # Delegates indexation to atoms sequence
+        # @param [Concepts::Atom] atom which will be indexed
+        # @return [Integer] the index of atom in atoms sequence
+        def atom_index(atom)
+          @sequence.atom_index(atom)
         end
 
       private
@@ -349,7 +369,7 @@ module VersatileDiamond
         # Makes arguments string for static find method
         # @return [String] the arguments string of find method
         def find_arguments_str
-          find_root? ? 'Atom *anchor' : "#{parents.first.class_name} *target"
+          find_root? ? 'Atom *anchor' : "#{parents.first.class_name} *parent"
         end
 
         # Makes arguments string for constructor method
@@ -393,7 +413,7 @@ module VersatileDiamond
           strs.sort
         end
 
-        # Gets sorted anchors from atom sequence
+        # Gets sorted anchors from atoms sequence
         # @return [Array] the array of anchor atoms
         def short_seq
           @sequence.short
@@ -410,7 +430,7 @@ module VersatileDiamond
         # Gets a sequence of indexes of anchor atoms
         # @return [String] the sequence of indexes joined by comma
         def indexes_sequence
-          short_seq.map { |a| @sequence.atom_index(a) }.join(', ')
+          short_seq.map(&method(:atom_index)).join(', ')
         end
 
         # Gets a list of anchor atoms roles where each role is atom properties index
@@ -419,6 +439,101 @@ module VersatileDiamond
         # @return [Array] the list of anchors roles
         def roles_sequence
           short_seq.map(&method(:role)).join(', ')
+        end
+
+        # Filters major anchors from atom sequence
+        # @return [Array] the realy major anchors of current specie
+        def major_anchors
+          mas = @sequence.major_atoms
+          find_root? ? [mas.first] : mas
+        end
+
+        # Gets a cpp code that correspond to defining anchor(s) variable(s)
+        # @return [String] the string of cpp code
+        def define_anchor_variables
+          mas = @sequence.major_atoms
+          if mas.size == 1
+            'Atom *anchor = parent->atom(0)'
+          else
+            items = mas.map { |a| "parent->atom(#{atom_index(a)})" }.join(', ')
+            "Atom *anchors[#{mas.size}] = { #{items} };"
+          end
+        end
+
+        # Gets anchors which have relations
+        # @return [Array] the array of atoms with relations in pure essence
+        def bonded_anchors
+          pure_essence.reject { |_, links| links.empty? }.map(&:first)
+        end
+
+        # Selects atoms from pure essence which have mutual relations
+        # @return [Array] the array of together related atoms
+        def together_related_anchors
+          bonded_anchors.select do |atom|
+            pels = pure_essence[atom]
+            pels && pels.any? do |a, _|
+              rels = pure_essence[a]
+              rels && rels.any? { |q, _| q == a }
+            end
+          end
+        end
+
+        # Selects atoms with relations to which not related to by any other atoms
+        # @return [Array] the array of root related atoms
+        def root_related_anchors
+          roots = bonded_anchors.reject do |atom|
+            pels = pure_essence[atom]
+            pels && pels.any? { |a, _| a == atom }
+          end
+          roots.select do |atom|
+            pels = pure_essence[atom]
+            pels && !pels.empty?
+          end
+        end
+
+        # Gets central anchors zipped with else prefixes for many ways condition
+        # @return [Array] major anchors zipped with else prefixes
+        def central_anchors_with_elses
+          mas = central_anchors
+          elses = [''] + ['else '] * (mas.size - 1)
+          mas.zip(elses)
+        end
+
+        # Makes a condition which will be placed to cpp code template
+        # @param [Array] items which zipped with variable names and iterates by block
+        # @param [String] var_name the name of variable which also will be iterated
+        # @param [String] operator which use for combine condition
+        # @yield [String, Object] the block should returns cpp code method call
+        # @return [String] the cpp code string for condition in template
+        def combine_condition(items, var_name, operator, &block)
+          vars = items.size == 1 ?
+            [var_name] :
+            items.size.times.map { |i| "#{var_name}s[#{i}]" }
+
+          vars.zip(items).map(&block).join(" #{operator} ")
+        end
+
+        # Gets a cpp code string that contain call a method for check atom role
+        # @param [Array] atoms which role will be checked in code
+        # @param [String] var_name the name of variable for which method will be called
+        # @return [String] the string with cpp condition
+        def check_role_condition(atoms, var_name = 'anchor')
+          combine_condition(atoms, var_name, '&&') do |var, atom|
+            "#{var}->is(#{role(atom)})"
+          end
+        end
+
+        # Gets a cpp code string that contain call a method for check existing current
+        # specie in atom
+        #
+        # @param [Array] atoms which role will be checked in code
+        # @param [String] var_name the name of variable for which method will be called
+        # @return [String] the string with cpp condition
+        def check_specie_condition(atoms, var_name = 'anchor')
+          method_name = non_root_children.empty? ? 'hasRole' : 'checkAndFind'
+          combine_condition(atoms, var_name, '||') do |var, atom|
+            "!#{var}->#{method_name}(#{enum_name}, #{role(atom)})"
+          end
         end
 
         # Clears reverse relations from links hash between reverse_atom and from_atom.
