@@ -125,7 +125,8 @@ module VersatileDiamond
               a_size == b_size ?
                 spec.links[a].size <=> spec.links[b].size :
                 b_size <=> a_size
-            elsif amorph_before && !a.lattice && b.lattice
+            elsif (amorph_before && !a.lattice && b.lattice) ||
+                (!amorph_before && a.lattice && !b.lattice)
               -1
             else
               1
