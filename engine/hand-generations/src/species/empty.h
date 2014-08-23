@@ -3,6 +3,7 @@
 
 #include <species/atoms_swap_wrapper.h>
 #include <species/parents_swap_wrapper.h>
+#include <species/parent_proxy.h>
 #include <species/child_spec.h>
 using namespace vd;
 

@@ -6,7 +6,7 @@
 enum : ushort
 {
     BASE_SPECS_NUM = 8,
-    SPECIFIC_SPECS_NUM = 25,
+    SPECIFIC_SPECS_NUM = 26,
 
     UBIQUITOUS_REACTIONS_NUM = 4,
     TYPICAL_REACTIONS_NUM = 30,
@@ -38,6 +38,7 @@ enum SpecificSpecNames : ushort
     BRIDGE_CRh,
     BRIDGE_CRs,
     BRIDGE_CRs_CTi_CLi,
+    SYMMETRIC_DIMER_CRi_CLi,
     DIMER_CRi_CLi,
     DIMER_CRs,
     DIMER_CRs_CLi,

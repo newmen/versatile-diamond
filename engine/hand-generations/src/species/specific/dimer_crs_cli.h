@@ -1,12 +1,12 @@
 #ifndef DIMER_CRS_CLI_H
 #define DIMER_CRS_CLI_H
 
-#include "dimer_crs.h"
+#include "dimer_cri_cli.h"
 
-class DimerCRsCLi : public Specific<Base<DependentSpec<BaseSpec>, DIMER_CRs_CLi, 2>>
+class DimerCRsCLi : public Specific<Base<DependentSpec<BaseSpec>, DIMER_CRs_CLi, 1>>
 {
 public:
-    static void find(DimerCRs *parent);
+    static void find(DimerCRiCLi *parent);
 
     DimerCRsCLi(ParentSpec *parent) : Specific(parent) {}
 
