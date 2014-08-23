@@ -1,8 +1,8 @@
 #include "dimer_crs_cli.h"
 #include "../../reactions/typical/high_bridge_stand_to_dimer.h"
 
-const ushort DimerCRsCLi::Base::__indexes[2] = { 0, 3 };
-const ushort DimerCRsCLi::Base::__roles[2] = { 21, 20 };
+const ushort DimerCRsCLi::Base::__indexes[1] = { 0 };
+const ushort DimerCRsCLi::Base::__roles[1] = { 21 };
 
 #ifdef PRINT
 const char *DimerCRsCLi::name() const
@@ -12,16 +12,18 @@ const char *DimerCRsCLi::name() const
 }
 #endif // PRINT
 
-void DimerCRsCLi::find(DimerCRs *parent)
+void DimerCRsCLi::find(DimerCRiCLi *parent)
 {
-    Atom *anchor = parent->atom(3);
-    if (anchor->is(20))
-    {
-        if (!anchor->hasRole(DIMER_CRs_CLi, 20))
+    parent->eachSymmetry([](ParentSpec *specie) {
+        Atom *anchor = specie->atom(0);
+        if (anchor->is(21))
         {
-            create<DimerCRsCLi>(parent);
+            if (!anchor->hasRole(DIMER_CRs_CLi, 21))
+            {
+                create<DimerCRsCLi>(specie);
+            }
         }
-    }
+    });
 }
 
 void DimerCRsCLi::findAllTypicalReactions()

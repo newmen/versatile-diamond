@@ -75,6 +75,7 @@ SOURCES += \
     ../hand-generations/src/species/base/two_bridges.cpp \
     ../hand-generations/src/species/empty/symmetric_bridge.cpp \
     ../hand-generations/src/species/empty/symmetric_dimer.cpp \
+    ../hand-generations/src/species/empty/symmetric_dimer_cri_cli.cpp \
     ../hand-generations/src/species/sidepiece/dimer.cpp \
     ../hand-generations/src/species/sidepiece/original_dimer.cpp \
     ../hand-generations/src/species/specific/bridge_crh.cpp \
@@ -100,6 +101,7 @@ SOURCES += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmiu.cpp \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmsiu.cpp \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.cpp \
+    ../hand-generations/src/species/specific/original_dimer_cri_cli.cpp \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
     atoms/atom.cpp \
     atoms/lattice.cpp \
@@ -222,6 +224,7 @@ HEADERS += \
     ../hand-generations/src/species/empty.h \
     ../hand-generations/src/species/empty/symmetric_bridge.h \
     ../hand-generations/src/species/empty/symmetric_dimer.h \
+    ../hand-generations/src/species/empty/symmetric_dimer_cri_cli.h \
     ../hand-generations/src/species/overall.h \
     ../hand-generations/src/species/sidepiece.h \
     ../hand-generations/src/species/sidepiece/dimer.h \
@@ -250,6 +253,7 @@ HEADERS += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmiu.h \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmsiu.h \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.h \
+    ../hand-generations/src/species/specific/original_dimer_cri_cli.h \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.h \
     atoms/atom.h \
     atoms/contained_species.h \
@@ -286,6 +290,7 @@ HEADERS += \
     species/keeper.h \
     species/lateral_spec.h \
     species/localable_role.h \
+    species/parent_proxy.h \
     species/parent_spec.h \
     species/parents_swap_wrapper.h \
     species/reactant.h \

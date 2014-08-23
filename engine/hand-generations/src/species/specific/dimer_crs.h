@@ -4,7 +4,7 @@
 #include "../sidepiece/dimer.h"
 #include "../specific.h"
 
-class DimerCRs : public Specific<Base<DependentSpec<ParentSpec>, DIMER_CRs, 1>>
+class DimerCRs : public Specific<Base<DependentSpec<BaseSpec>, DIMER_CRs, 1>>
 {
 public:
     static void find(Dimer *parent);
@@ -16,7 +16,6 @@ public:
 #endif // PRINT
 
 protected:
-    void findAllChildren() final;
     void findAllTypicalReactions() final;
 };
 
