@@ -1103,15 +1103,68 @@ int main()
 
     // 76
     Handbook::mc().doOneOfOne(DIMER_FORMATION);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, s.y-1, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 2, 1);
+    assert_rate(25 * SurfaceActivation::RATE() +
+                5 * SurfaceDeactivation::RATE() +
+                5 * AdsMethylTo111::RATE() +
+                4 * NextLevelBridgeToHighBridge::RATE() +
+                DimerDrop::RATE());
+    assert_atom(s.x-1, s.y-1, 3, 3, 0);
+    assert_atom(s.x-1, 0, 3, 3, 0);
+    assert_atom(s.x-2, s.y-1, 1, 3, 1);
+    assert_atom(s.x-2, 2, 1, 3, 1);
+
+    // 77
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 1, 1);
+    Handbook::mc().doOneOfOne(NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE);
+    Handbook::mc().doOneOfOne(NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE);
+    Handbook::mc().doOneOfOne(DIMER_FORMATION);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 1, 1);
+    assert_rate(25 * SurfaceActivation::RATE() +
+                3 * SurfaceDeactivation::RATE() +
+                2 * HighBridgeStandToDimer::RATE() +
+                2 * DimerDrop::RATE() +
+                2 * AdsMethylToDimer::RATE() +
+                AdsMethylTo111::RATE());
+    assert_atom(s.x-2, s.y-1, 1, 4, 0);
+    assert_atom(s.x-2, 0, 1, 3, 1);
+    assert_atom(s.x-2, 1, 1, 3, 1);
+    assert_atom(s.x-2, 2, 1, 4, 0);
+
+    // 78
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 1, 1);
+    Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_DIMER);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 1, 1);
+    assert_rate(25 * SurfaceActivation::RATE() +
+                3 * SurfaceDeactivation::RATE() +
+                2 * AdsMethylTo111::RATE() +
+                AdsMethylToDimer::RATE() +
+                BridgeWithDimerToHighBridgeAndDimer::RATE() +
+                DimerDropNearBridge::RATE() +
+                DimerDrop::RATE());
+    assert_atom(s.x-2, s.y-1, 1, 3, 1);
+    assert_atom(s.x-2, 0, 1, 4, 0);
+    assert_atom(s.x-2, 1, 1, 3, 1);
+
+    // 79
+    Handbook::mc().doOneOfOne(DIMER_DROP_NEAR_BRIDGE);
+    Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, s.y-1, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 2, 1);
     assert_rate(27 * SurfaceActivation::RATE() +
                 3 * SurfaceDeactivation::RATE() +
                 3 * AdsMethylTo111::RATE() +
                 2 * NextLevelBridgeToHighBridge::RATE() +
                 DimerDrop::RATE());
-    assert_atom(s.x-1, s.y-1, 3, 3, 0);
-    assert_atom(s.x-1, 0, 3, 3, 0);
+    assert_atom(s.x-2, s.y-1, 1, 3, 0);
+    assert_atom(s.x-2, 0, 1, 3, 1);
+    assert_atom(s.x-2, 1, 1, 3, 1);
+    assert_atom(s.x-2, 2, 1, 3, 0);
 
-    // 77
+    // 80
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 0, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 1, 1);
     Handbook::mc().doOneOfOne(ADS_METHYL_TO_111);
@@ -1131,7 +1184,7 @@ int main()
     assert_atom(s.x-1, 0, 2, 4, 0);
     assert_amorph_atom(s.x-1, 0, 2, 1, 2);
 
-    // 78
+    // 81
     Handbook::mc().doOneOfOne(MIGRATION_DOWN_IN_GAP_FROM_111);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, s.y-1, 1);
     assert_rate(27 * SurfaceActivation::RATE() +
@@ -1146,7 +1199,7 @@ int main()
     assert_atom(s.x-1, 0, 2, 4, 0);
     assert_atom(s.x-2, s.y-1, 1, 3, 1);
 
-    // 79
+    // 82
     Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
     assert_rate(27 * SurfaceActivation::RATE() +
                 SurfaceDeactivation::RATE() +
@@ -1159,7 +1212,7 @@ int main()
     assert_atom(s.x-2, s.y-1, 1, 4, 0);
     assert_amorph_atom(s.x-2, s.y-1, 1, 2, 0);
 
-    // 80
+    // 83
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
     Handbook::mc().doOneOfOne(DIMER_DROP_NEAR_BRIDGE);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-1, 0, 2);
@@ -1176,7 +1229,7 @@ int main()
     assert_atom(s.x-2, s.y-1, 1, 4, 0);
     assert_amorph_atom(s.x-2, s.y-1, 1, 1, 1);
 
-    // 81
+    // 84
     Handbook::mc().doOneOfOne(DES_METHYL_FROM_DIMER);
     assert_rate(27 * SurfaceActivation::RATE() +
                 SurfaceDeactivation::RATE() +
@@ -1185,7 +1238,7 @@ int main()
                 DimerDrop::RATE());
     assert_atom(s.x-2, s.y-1, 1, 3, 1);
 
-    // 82
+    // 85
     Handbook::mc().doOneOfOne(DIMER_DROP_NEAR_BRIDGE);
     assert_rate(27 * SurfaceActivation::RATE() +
                 3 * SurfaceDeactivation::RATE() +
@@ -1196,7 +1249,7 @@ int main()
     assert_atom(s.x-2, s.y-1, 1, 2, 2);
     assert_atom(s.x-2, 0, 1, 3, 1);
 
-    // 83
+    // 86
     Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, s.y-1, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 1, 1);
@@ -1210,7 +1263,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 4, 0);
     assert_amorph_atom(s.x-2, 0, 1, 2, 0);
 
-    // 84
+    // 87
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);
     Handbook::mc().doOneOfOne(DIMER_DROP);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-1, s.y-1, 3);
@@ -1224,7 +1277,7 @@ int main()
     assert_atom(s.x-2, s.y-1, 1, 3, 0);
     assert_atom(s.x-2, 0, 1, 3, 1);
 
-    // 85
+    // 88
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 1, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-1, 0, 2);
     assert_rate(28 * SurfaceActivation::RATE() +
@@ -1234,7 +1287,7 @@ int main()
     assert_atom(s.x-2, 1, 1, 3, 1);
     assert_atom(s.x-1, 0, 2, 3, 1);
 
-    // 86
+    // 89
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 0, 1);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 1, 1);
     Handbook::mc().doOneOfOne(NEXT_LEVEL_BRIDGE_TO_HIGH_BRIDGE);
@@ -1252,7 +1305,7 @@ int main()
     assert_amorph_atom(s.x-1, 0, 2, 2, 1);
     assert_atom(0, 0, 2, 2, 0);
 
-    // 87
+    // 90
     Handbook::mc().doOneOfOne(MIGRATION_DOWN_IN_GAP_FROM_HIGH_BRIDGE);
     assert_rate(29 * SurfaceActivation::RATE() +
                 SurfaceDeactivation::RATE() +
@@ -1263,7 +1316,7 @@ int main()
     assert_atom(s.x-2, 0, 2, 3, 0);
     assert_atom(s.x-1, 0, 2, 3, 1);
 
-    // 88
+    // 91
     Handbook::mc().doOneOfOne(DIMER_DROP);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 0, 2);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-1, 0, 2);
@@ -1284,7 +1337,7 @@ int main()
     assert_atom(s.x-1, 0, 2, 2, 1);
     assert_atom(0, 0, 2, 2, 1);
 
-    // 89
+    // 92
     Handbook::mc().doOneOfOne(DIMER_FORMATION);
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
     Handbook::mc().doOneOfOne(DES_METHYL_FROM_DIMER);
@@ -1298,7 +1351,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 4, 0);
     assert_atom(s.x-2, s.y-1, 1, 3, 1);
 
-    // 90
+    // 93
     Handbook::mc().doOneOfOne(DIMER_DROP_NEAR_BRIDGE);
     Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, s.y-1, 1);
@@ -1318,7 +1371,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 4, 0);
     assert_atom(s.x-2, s.y-1, 1, 2, 1);
 
-    // 91
+    // 94
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_ONE_BRIDGE);
     Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
     Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
@@ -1337,7 +1390,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 3, 1);
     assert_atom(s.x-2, s.y-1, 1, 3, 0);
 
-    // 92
+    // 95
     Handbook::mc().doOneOfOne(MIGRATION_DOWN_IN_GAP_FROM_DIMER);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, s.y-1, 1);
     assert_rate(27 * SurfaceActivation::RATE() +
@@ -1353,7 +1406,7 @@ int main()
     assert_atom(s.x-2, 1, 1, 4, 0);
     assert_atom(s.x-2, s.y-1, 1, 3, 1);
 
-    // 93
+    // 96
     Handbook::mc().doOneOfOne(DIMER_DROP);
     Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
     assert_rate(27 * SurfaceActivation::RATE() +
@@ -1369,7 +1422,7 @@ int main()
     assert_atom(s.x-2, s.y-1, 1, 4, 0);
     assert_amorph_atom(s.x-2, s.y-1, 1, 2, 0);
 
-    // 94
+    // 97
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
     Handbook::mc().doOneOfOne(DES_METHYL_FROM_DIMER);
     Handbook::mc().doOneOfOne(DIMER_DROP_NEAR_BRIDGE);
@@ -1391,7 +1444,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 4, 0);
     assert_amorph_atom(s.x-2, 0, 1, 2, 1);
 
-    // 95
+    // 98
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, s.y-1, 1);
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
     Handbook::mc().doOneOfOne(DES_METHYL_FROM_DIMER);
@@ -1414,7 +1467,7 @@ int main()
     assert_atom(s.x-1, 0, 2, 4, 0);
     assert_amorph_atom(s.x-1, 0, 2, 1, 1);
 
-    // 96
+    // 99
     Handbook::mc().doOneOfOne(MIGRATION_DOWN_AT_DIMER_FROM_DIMER);
     assert_rate(27 * SurfaceActivation::RATE() +
                 3 * SurfaceDeactivation::RATE() +
@@ -1426,7 +1479,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 3, 0);
     assert_atom(s.x-2, 1, 1, 4, 0);
 
-    // 97
+    // 100
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 0, 1);
     Handbook::mc().doOneOfOne(DIMER_DROP);
     Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
@@ -1446,7 +1499,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 4, 0);
     assert_amorph_atom(s.x-2, 0, 1, 2, 1);
 
-    // 98
+    // 101
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, s.y-1, 1);
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, s.y-1, 1);
@@ -1470,7 +1523,7 @@ int main()
     assert_atom(s.x-1, 0, 2, 4, 0);
     assert_amorph_atom(s.x-1, 0, 2, 1, 1);
 
-    // 99
+    // 102
     Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
     Handbook::mc().doLastOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 0, 1);
@@ -1487,7 +1540,7 @@ int main()
     assert_atom(0, 0, 2, 4, 0);
     assert_amorph_atom(0, 0, 2, 1, 1);
 
-    // 100
+    // 103
     Handbook::mc().doLastOfOne(METHYL_TO_HIGH_BRIDGE);
     assert_rate(28 * SurfaceActivation::RATE() +
                 4 * SurfaceDeactivation::RATE() +
@@ -1500,7 +1553,7 @@ int main()
     assert_atom(0, 0, 2, 4, 0);
     assert_amorph_atom(0, 0, 2, 2, 0);
 
-    // 101
+    // 104
     Handbook::mc().doOneOfOne(MIGRATION_DOWN_AT_DIMER);
     assert_rate(28 * SurfaceActivation::RATE() +
                 2 * SurfaceDeactivation::RATE() +
@@ -1512,7 +1565,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 3, 0);
     assert_atom(s.x-2, 1, 1, 4, 0);
 
-    // 102
+    // 105
     Handbook::mc().doOneOfOne(DIMER_DROP);
     Handbook::mc().doOneOfMul(CORR_SURFACE_ACTIVATION, s.x-2, 0, 1);
     assert_rate(27 * SurfaceActivation::RATE() +
@@ -1527,7 +1580,7 @@ int main()
     assert_atom(s.x-2, 0, 2, 2, 1);
     assert_atom(s.x-2, 0, 1, 3, 1);
 
-    // 103
+    // 106
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_TO_METHYL);
     Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_ACTIVATION);
     Handbook::mc().doOneOfOne(TWO_BRIDGES_TO_HIGH_BRIDGE);
@@ -1548,7 +1601,7 @@ int main()
     assert_atom(0, 0, 2, 4, 0);
     assert_amorph_atom(0, 0, 2, 1, 2);
 
-    // 104
+    // 107
     Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, s.y-1, 2);
     Handbook::mc().doOneOfMul(CORR_METHYL_ON_DIMER_DEACTIVATION);
     Handbook::mc().doOneOfOne(ADS_METHYL_TO_DIMER);
@@ -1568,7 +1621,7 @@ int main()
     assert_atom(s.x-1, 0, 2, 4, 0);
     assert_amorph_atom(s.x-1, 0, 2, 1, 2);
 
-    // 105
+    // 108
     Handbook::mc().doOneOfOne(METHYL_TO_HIGH_BRIDGE);
     assert_rate(29 * SurfaceActivation::RATE() +
                 5 * SurfaceDeactivation::RATE() +
@@ -1581,7 +1634,7 @@ int main()
     assert_atom(0, 0, 2, 4, 0);
     assert_amorph_atom(0, 0, 2, 2, 0);
 
-    // 106
+    // 109
     Handbook::mc().doOneOfOne(MIGRATION_DOWN_IN_GAP);
     assert_rate(29 * SurfaceActivation::RATE() +
                 SurfaceDeactivation::RATE() +
@@ -1593,7 +1646,7 @@ int main()
     assert_atom(s.x-2, 0, 1, 4, 0);
     assert_atom(s.x-2, 1, 1, 4, 0);
 
-    // 107
+    // 110
     Handbook::mc().doOneOfOne(HIGH_BRIDGE_STAND_TO_DIMER);
     assert_rate(29 * SurfaceActivation::RATE() +
                 SurfaceDeactivation::RATE() +
