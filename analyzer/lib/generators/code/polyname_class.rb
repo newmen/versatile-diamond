@@ -9,7 +9,7 @@ module VersatileDiamond
       module PolynameClass
 
         # Gets the result file name
-        # @return [String] the result file name of atom class
+        # @return [String] the result file name
         # @override
         def file_name
           class_name.underscore
