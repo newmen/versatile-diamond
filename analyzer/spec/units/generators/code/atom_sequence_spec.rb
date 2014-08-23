@@ -135,7 +135,7 @@ module VersatileDiamond
           let(:delta) { 0 }
 
           it_behaves_like :apply_all do
-            let(:specifics) { [dept_activated_dimer] }
+            let(:specifics) { [dept_activated_dimer, dept_twise_incoherent_dimer] }
 
             let(:symmetric_base_classes) do
               ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']

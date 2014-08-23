@@ -246,6 +246,9 @@ module VersatileDiamond
 
         set(:dimer) { SpecificSpec.new(dimer_base) }
         set(:activated_dimer) { SpecificSpec.new(dimer_base, cr: activated_cd) }
+        set(:twise_incoherent_dimer) do
+          SpecificSpec.new(dimer_base, cr: incoherent_cd.dup, cl: incoherent_cd.dup)
+        end
         set(:bottom_hydrogenated_activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
         end
