@@ -7,12 +7,18 @@ module VersatileDiamond
       class BaseSpecie < CppClassWithGen
         include PartialRenderer
         include PolynameClass
-        include EnumerableFileName # must be included after PolynameClass
 
         PREF_METD_SEPS = [
           ['class', :classify, ''],
           ['enum', :upcase, '_']
         ].freeze
+
+        # Makes correct file name
+        # @return [String] the file name for generation result
+        # @override
+        def file_name
+          enum_name.downcase
+        end
 
         # Gets full path to specie header file
         # @return [String] the path to specie header file

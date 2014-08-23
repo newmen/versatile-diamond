@@ -38,6 +38,13 @@ module VersatileDiamond
           "#{super_class_name}#{@suffix}"
         end
 
+        # Gets a name of output file with suffix
+        # @return [String] correct name of file
+        # @override
+        def file_name
+          "#{super}#{@suffix}"
+        end
+
         # Gets the base class for cpp class of symmetric specie
         # @return [String] the name of base class
         def base_class_name
