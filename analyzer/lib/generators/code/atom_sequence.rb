@@ -15,7 +15,53 @@ module VersatileDiamond
         def initialize(cacher, spec)
           @cacher = cacher
           @spec = spec
-          @_original_sequence = nil
+
+          @self_insec = spec.non_term_children.empty? ? [{}] : intersec_with_itself
+          @symmetric_atoms = []
+
+          @_already_collected = false
+          @_original_sequence, @_symmetrics = nil
+        end
+
+        # Collects symmetric atoms by children of internal specie
+        def collect_symmetrics
+          spec.non_term_children.each { |child| get(child).collect_symmetrics }
+          return if !spec.rest || @_already_collected
+
+          atoms_for_parents = Hash[spec.parents.map { |p| [p, []] }]
+          anchors.each do |atom|
+            spec.rest.all_twins(atom).each do |twin|
+              spec.parents.each do |parent|
+                if get(parent).atoms.include?(twin)
+                  atoms_for_parents[parent] << twin
+                end
+              end
+            end
+          end
+
+          atoms_for_parents.each do |parent, atoms|
+            get(parent).add_symmetries_for(atoms)
+          end
+
+          @_already_collected = true
+        end
+
+        # Gets symmetric instances of some original code specie
+        # @param [EngineCode] generator the general generator of engine code
+        # @param [OriginalSpecie] original_specie for which symmetric species will be
+        #   instanced
+        # @return [Array] the array of symmetric instances
+        def symmetrics(generator, original_specie)
+          return @_symmetrics if @_symmetrics
+
+          adds_suffix = @symmetric_atoms.size > 1
+          @_symmetrics = @symmetric_atoms.map.with_index do |twins_mirror, summ_suff|
+            pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
+            symmetric = combine_symmetric(generator, original_specie, pairs)
+
+            symmetric.set_suffix(summ_suff + 1) if adds_suffix
+            symmetric
+          end
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
@@ -58,24 +104,6 @@ module VersatileDiamond
           addition_atoms.size
         end
 
-        # Gets symmetric instances of some original code specie
-        # @param [EngineCode] generator the general generator of engine code
-        # @param [OriginalSpecie] original_specie for which symmetric species will be
-        #   instanced
-        # @return [Array] the array of symmetric instances
-        def symmetrics(generator, original_specie)
-          sym_atoms = symmetric_atoms
-          adds_suffix = sym_atoms.size > 1
-
-          sym_atoms.map.with_index do |twins_mirror, summ_suff|
-            pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
-            symmetric = combine_symmetric(generator, original_specie, pairs)
-
-            symmetric.set_suffix(summ_suff + 1) if adds_suffix
-            symmetric
-          end
-        end
-
         # Gets an index of some atom
         # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
         #   atom for which index will be got from original sequence
@@ -99,6 +127,33 @@ module VersatileDiamond
           spec.links.keys
         end
 
+        # Adds symmetric atoms pairs
+        # @param [Array] atoms which symmetries will be stored if them exists
+        def add_symmetries_for(atoms)
+          all_overlaps = []
+          @self_insec.each do |intersec|
+            overlap = []
+            atoms.each do |atom|
+              other_atom = intersec[atom]
+              next if other_atom == atom
+              pair = [atom, other_atom]
+              next if overlap.include?(pair) || overlap.include?([other_atom, atom])
+              overlap << pair
+            end
+
+            all_overlaps << overlap unless overlap.empty?
+          end
+
+          all_overlaps.each do |pairs|
+            next if @symmetric_atoms.any? do |hash|
+              pairs.all? { |a, b| hash[a] == b || hash[b] == a }
+            end
+
+            hash = pairs.each.with_object({}) { |(a, b), acc| acc[a] = b }
+            @symmetric_atoms << hash
+          end
+        end
+
       private
 
         attr_reader :spec, :cacher
@@ -108,6 +163,13 @@ module VersatileDiamond
         # @return [AtomSequence] the instance with passed specie
         def get(spec)
           cacher.get(spec)
+        end
+
+        # Finds intersec with itself
+        # @return [Array] the array of all possible intersec
+        def intersec_with_itself
+          args = [spec.spec, spec.spec, { collaps_multi_bond: true }]
+          SpeciesComparator.intersec(*args).map { |ins| Hash[ins.to_a] }
         end
 
         # Gets sorted parents of target specie
@@ -152,110 +214,6 @@ module VersatileDiamond
           end
         end
 
-        # Finds intersec with some another specie
-        # @param [Organizers::DependentSpec] child of internal spec with which
-        #   intersec will be found
-        # @return [Array] the array of all possible intersec
-        def intersec_with(child)
-          args = [@spec, child, { collaps_multi_bond: true }]
-          insec = SpeciesComparator.intersec(*args) do |_, _, self_atom, child_atom|
-            self_prop = Organizers::AtomProperties.new(@spec, self_atom)
-            child_prop = Organizers::AtomProperties.new(child, child_atom)
-            child_prop.include?(self_prop)
-          end
-          insec.map { |ins| Hash[ins.to_a] }
-        end
-
-        # Filters intersections with parent specie. Checks that child anchors points to
-        # different atoms of parent specie.
-        #
-        # @param [Array] child_anchors the list of atom anchors
-        # @param [Array] intersec the array of intersections with child specie
-        # @return [Array] the array of filtered intersections
-        def filter_intersections(child_anchors, intersec)
-          result = []
-          collector = Set.new # stores unique pairs of anchors from intersec
-
-          intersec.each do |insec|
-            mirror = insec.invert
-            new_collection = Set.new
-
-            child_anchors.each do |atom|
-              parent_atom = mirror[atom]
-              new_collection << [parent_atom, atom]
-            end
-
-            unless collector.include?(new_collection)
-              collector << new_collection
-              result << insec
-            end
-          end
-
-          result
-        end
-
-        # Finds symmetric atoms of internal specie by children of them
-        def symmetric_atoms
-          symmetric_child_candidates.each.with_object([]) do |child, result|
-            intersec = intersec_with(child)
-
-            # intersec must be found in any case
-            unless intersec.first.size == atoms.size
-              raise "Correct intersec wasn't found"
-            end
-
-            child_anchors = get(child).anchors
-            filtered_intersec = filter_intersections(child_anchors, intersec)
-            next if filtered_intersec.size == 1
-
-            # drops one intersec because it's already as original sequence
-            major = filtered_intersec.shift
-            invert_major = major.invert
-
-            filtered_intersec.each do |insec|
-              diff = insec.select do |from, to|
-                major[from] != to && child_anchors.include?(to)
-              end
-
-              reverse_mirror = diff.map { |from, to| [from, invert_major[to]] }
-              next if reverse_mirror.any? { |_, a| a.nil? }
-              if reverse_mirror.any? { |a, b| a == b }
-                raise 'Reverse mirror to same atom'
-              end
-
-              reverse_mirror = erase_reverse_references(reverse_mirror)
-              reverse_mirror = Hash[reverse_mirror]
-              already_present = result.any? do |rh|
-                rh == reverse_mirror || rh == reverse_mirror.invert
-              end
-
-              result << reverse_mirror unless already_present
-            end
-          end
-        end
-
-        # Gets the children which have dependency from internal specie only one time
-        # @return [Array] the array of single dependent child species
-        def symmetric_child_candidates
-          surfspecs = spec.non_term_children
-          groups = surfspecs.group_by(&:object_id)
-          groups.select { |_, g| g.size == 1 }.map(&:last).map(&:last)
-        end
-
-        # Erases reverse references from mirror
-        # @param [Hash] mirror of atoms
-        # @return [Hash] mirror without reverse references
-        def erase_reverse_references(mirror)
-          unique_pairs = []
-          mirror.each do |f, s|
-            forward, reverse = [f, s], [s, f]
-            unless unique_pairs.include?(forward) || unique_pairs.include?(reverse)
-              unique_pairs << forward
-            end
-          end
-          Hash[unique_pairs]
-        end
-
         # Finds parent index and atom index in it
         # @param [Integer] atom_index the index of atom in original sequence
         # @return [Array] two values where the first is parent index and second is
@@ -263,10 +221,10 @@ module VersatileDiamond
         def parent_index(atom_index)
           pi = nil
           ai = atom_index - delta
-          sorted_parents.each_with_index do |parent, parent_index|
+          sorted_parents.each_with_index do |parent, i|
             panum = parent.atoms_num
             if ai < panum
-              pi = parent_index
+              pi = i
               break
             else
               ai -= panum
