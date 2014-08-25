@@ -200,7 +200,7 @@ module VersatileDiamond
             intersec = intersec_with(child)
 
             # intersec must be found in any case
-            unless intersec.first.size == spec.links.size
+            unless intersec.first.size == atoms.size
               raise "Correct intersec wasn't found"
             end
 
