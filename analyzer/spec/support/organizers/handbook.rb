@@ -45,6 +45,7 @@ module VersatileDiamond
           :activated_bridge,
           :activated_dimer,
           :activated_incoherent_bridge,
+          :activated_incoherent_dimer,
           :activated_methyl_on_bridge,
           :activated_methyl_on_dimer,
           :activated_methyl_on_incoherent_bridge,
