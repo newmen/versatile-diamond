@@ -16,7 +16,7 @@ module VersatileDiamond
 
         describe '#base_class_name' do
           let(:base_class_name) do
-            'ParentsSwapWrapper<Empty<SYMMETRIC_BRIDGE>, OriginalBridge, 1, 2>'
+            'ParentsSwapWrapper<Empty<BRIDGE>, OriginalBridge, 1, 2>'
           end
           it { expect(subject.base_class_name).to eq(base_class_name) }
         end

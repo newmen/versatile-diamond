@@ -4,7 +4,7 @@
 #include "../sidepiece/original_dimer.h"
 #include "../empty.h"
 
-class SymmetricDimer : public ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>
+class SymmetricDimer : public ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>
 {
 public:
     SymmetricDimer(OriginalDimer *parent) : ParentsSwapWrapper(parent) {}

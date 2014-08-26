@@ -4,7 +4,7 @@
 #include "../base/original_bridge.h"
 #include "../empty.h"
 
-class SymmetricBridge : public AtomsSwapWrapper<Empty<SYMMETRIC_BRIDGE>, 1, 2>
+class SymmetricBridge : public AtomsSwapWrapper<Empty<BRIDGE>, 1, 2>
 {
 public:
     SymmetricBridge(OriginalBridge *parent) : AtomsSwapWrapper(parent) {}

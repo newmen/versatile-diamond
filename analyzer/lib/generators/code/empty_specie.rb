@@ -31,18 +31,21 @@ module VersatileDiamond
           'empty_specie' # because current class is abstract
         end
 
-        # Gets the class name of current specie code instance
-        # @return [String] the class name of specie code instance
-        alias_method :super_class_name, :class_name
-        def class_name
-          "#{super_class_name}#{@suffix}"
+        %w(class file).each do |name|
+          method_name = :"#{name}_name"
+          super_method_name = :"super_#{method_name}"
+          # Gets the #{name} name of current specie code instance
+          # @return [String] the #{name} name of specie code instance
+          alias_method super_method_name, method_name
+          define_method(method_name) do
+            "#{send(super_method_name)}#{@suffix}"
+          end
         end
 
-        # Gets a name of output file with suffix
-        # @return [String] correct name of file
-        # @override
-        def file_name
-          "#{super}#{@suffix}"
+        # Delegates getting enum name to major specie code generator
+        # @return [String] the enum name which will be used in code templates
+        def enum_name
+          target_specie.enum_name
         end
 
         # Gets the base class for cpp class of symmetric specie

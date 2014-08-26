@@ -44,7 +44,7 @@ module VersatileDiamond
             end
 
             describe '#enum_name' do
-              it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
+              it { expect(subject.enum_name).to eq(cap_name.upcase) }
             end
 
             describe '#print_name' do
@@ -75,7 +75,7 @@ module VersatileDiamond
 
             describe '#enum_name' do
               # without suffix any time
-              it { expect(subject.enum_name).to eq("SYMMETRIC_#{cap_name.upcase}") }
+              it { expect(subject.enum_name).to eq(cap_name.upcase) }
             end
 
             describe '#print_name' do

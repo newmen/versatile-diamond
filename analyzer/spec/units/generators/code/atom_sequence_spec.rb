@@ -144,7 +144,7 @@ module VersatileDiamond
             let(:specifics) { [dept_activated_dimer, dept_twise_incoherent_dimer] }
 
             let(:symmetric_base_classes) do
-              ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
+              ['ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>']
             end
           end
 
@@ -153,7 +153,7 @@ module VersatileDiamond
               [dept_twise_incoherent_dimer, dept_activated_incoherent_dimer]
             end
             let(:symmetric_base_classes) do
-              ['ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>']
+              ['ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>']
             end
           end
 
@@ -162,9 +162,9 @@ module VersatileDiamond
 
             let(:symmetric_base_classes) do
               [
-                'AtomsSwapWrapper<Empty<SYMMETRIC_DIMER>, 1, 2>',
-                'ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>',
-                'AtomsSwapWrapper<ParentsSwapWrapper<Empty<SYMMETRIC_DIMER>, OriginalDimer, 0, 1>, 1, 2>'
+                'AtomsSwapWrapper<Empty<DIMER>, 1, 2>',
+                'ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>',
+                'AtomsSwapWrapper<ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>, 1, 2>'
               ]
             end
           end
@@ -183,7 +183,7 @@ module VersatileDiamond
               let(:specific) { dept_activated_incoherent_dimer }
               let(:short) { [concept.atom(:cr), concept.atom(:cl)] }
               let(:empty_class) do
-                'ParentProxy<OriginalDimer, SymmetricDimer, SYMMETRIC_DIMER_CRi_CLi>'
+                'ParentProxy<OriginalDimer, SymmetricDimer, DIMER_CRi_CLi>'
               end
             end
 
@@ -196,12 +196,12 @@ module VersatileDiamond
 
             it_behaves_like :apply_all_for_bottom do
               let(:specific) { dept_bottom_hydrogenated_activated_dimer }
-              let(:empty_class) { 'AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 4, 5>' }
+              let(:empty_class) { 'AtomsSwapWrapper<Empty<DIMER_CRs>, 4, 5>' }
             end
 
             it_behaves_like :apply_all_for_bottom do
               let(:specific) { dept_right_bottom_hydrogenated_activated_dimer }
-              let(:empty_class) { 'AtomsSwapWrapper<Empty<SYMMETRIC_DIMER_CRs>, 1, 2>' }
+              let(:empty_class) { 'AtomsSwapWrapper<Empty<DIMER_CRs>, 1, 2>' }
             end
           end
         end
