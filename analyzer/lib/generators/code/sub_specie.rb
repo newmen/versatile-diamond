@@ -8,12 +8,13 @@ module VersatileDiamond
         # @param [String] default_prefix the prefix which will be used by default
         def use_prefix(default_prefix)
           Code::BaseSpecie::PREF_METD_SEPS.each do |name, method, separator|
+            next if name == 'enum'
             method_name = :"#{name}_name"
             # Gets the #{name} name of current specie
             # @return [String] the #{name} name
             define_method(method_name) do
               value = target_specie.public_send(method_name)
-              "#{prefix.public_send(method)}#{separator}#{value}"
+              "#{prefix}#{separator}#{value}".public_send(method)
             end
           end
 

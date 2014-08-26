@@ -4,7 +4,7 @@
 #include "../specific/original_dimer_cri_cli.h"
 
 class SymmetricDimerCRiCLi :
-        public ParentProxy<OriginalDimer, SymmetricDimer, SYMMETRIC_DIMER_CRi_CLi>
+        public ParentProxy<OriginalDimer, SymmetricDimer, DIMER_CRi_CLi>
 {
 public:
     SymmetricDimerCRiCLi(OriginalDimerCRiCLi *parent) : ParentProxy(parent) {}

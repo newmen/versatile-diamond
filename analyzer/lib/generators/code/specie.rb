@@ -66,7 +66,8 @@ module VersatileDiamond
 
             m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
             addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            instance_variable_set(var_name, "#{m[1].send(method)}#{addition}")
+            addition = addition.public_send(method) if name == 'file'
+            instance_variable_set(var_name, "#{m[1].public_send(method)}#{addition}")
           end
         end
 

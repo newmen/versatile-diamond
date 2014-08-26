@@ -30,7 +30,7 @@ module VersatileDiamond
         end
 
         describe '#enum_name' do
-          it { expect(subject.enum_name).to eq('ORIGINAL_BRIDGE') }
+          it { expect(subject.enum_name).to eq('BRIDGE') }
         end
 
         describe '#target_specie' do
