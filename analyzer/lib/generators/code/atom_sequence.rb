@@ -1,11 +1,10 @@
 module VersatileDiamond
-  using Patches::RichArray
-
   module Generators
     module Code
 
       # Contain specie as sorted atom sequence
       class AtomSequence
+        include SymmetryHelper
 
         # Makes sequence from some specie
         # @param [SequenceCacher] cacher will be used for get anoter atom sequence
@@ -16,52 +15,7 @@ module VersatileDiamond
           @cacher = cacher
           @spec = spec
 
-          @self_insec = spec.non_term_children.empty? ? [{}] : intersec_with_itself
-          @symmetric_atoms = []
-
-          @_already_collected = false
-          @_original_sequence, @_symmetrics = nil
-        end
-
-        # Collects symmetric atoms by children of internal specie
-        def collect_symmetrics
-          spec.non_term_children.each { |child| get(child).collect_symmetrics }
-          return if !spec.rest || @_already_collected
-
-          atoms_for_parents = Hash[spec.parents.map { |p| [p, []] }]
-          anchors.each do |atom|
-            spec.rest.all_twins(atom).each do |twin|
-              spec.parents.each do |parent|
-                if get(parent).atoms.include?(twin)
-                  atoms_for_parents[parent] << twin
-                end
-              end
-            end
-          end
-
-          atoms_for_parents.each do |parent, atoms|
-            get(parent).add_symmetries_for(atoms)
-          end
-
-          @_already_collected = true
-        end
-
-        # Gets symmetric instances of some original code specie
-        # @param [EngineCode] generator the general generator of engine code
-        # @param [OriginalSpecie] original_specie for which symmetric species will be
-        #   instanced
-        # @return [Array] the array of symmetric instances
-        def symmetrics(generator, original_specie)
-          return @_symmetrics if @_symmetrics
-
-          adds_suffix = @symmetric_atoms.size > 1
-          @_symmetrics = @symmetric_atoms.map.with_index do |twins_mirror, summ_suff|
-            pairs = twins_mirror.map { |pair| pair.map(&method(:atom_index)) }
-            symmetric = combine_symmetric(generator, original_specie, pairs)
-
-            symmetric.set_suffix(summ_suff + 1) if adds_suffix
-            symmetric
-          end
+          @_original_sequence = nil
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
@@ -115,68 +69,7 @@ module VersatileDiamond
 
       protected
 
-        # Gets anchors of internal specie
-        # @return [Array] the array of anchor atoms
-        def anchors
-          spec.target.links.keys
-        end
-
-        # Gets the all atoms of internal specie
-        # @return [Array] the array of atoms
-        def atoms
-          spec.links.keys
-        end
-
-        # Adds symmetric atoms pairs
-        # @param [Array] atoms which symmetries will be stored if them exists
-        def add_symmetries_for(atoms)
-          all_overlaps = []
-          @self_insec.each do |intersec|
-            overlap = []
-            atoms.each do |atom|
-              other_atom = intersec[atom]
-              next if other_atom == atom
-              pair = [atom, other_atom]
-              next if overlap.include?(pair) || overlap.include?([other_atom, atom])
-              overlap << pair
-            end
-
-            all_overlaps << overlap unless overlap.empty?
-          end
-
-          all_overlaps.each do |pairs|
-            next if @symmetric_atoms.any? do |hash|
-              pairs.all? { |a, b| hash[a] == b || hash[b] == a }
-            end
-
-            hash = pairs.each.with_object({}) { |(a, b), acc| acc[a] = b }
-            @symmetric_atoms << hash
-          end
-        end
-
-      private
-
         attr_reader :spec, :cacher
-
-        # Wraps dependent spec to atom sequence instance
-        # @param [Organizers::DependentWrappedSpec] spec which will be wrapped
-        # @return [AtomSequence] the instance with passed specie
-        def get(spec)
-          cacher.get(spec)
-        end
-
-        # Finds intersec with itself
-        # @return [Array] the array of all possible intersec
-        def intersec_with_itself
-          args = [spec.spec, spec.spec, { collaps_multi_bond: true }]
-          SpeciesComparator.intersec(*args).map { |ins| Hash[ins.to_a] }
-        end
-
-        # Gets sorted parents of target specie
-        # @return [Array] the sorted array of parent seqeucnes
-        def sorted_parents
-          spec.parents.sort_by { |p| -p.relations_num }
-        end
 
         # Reverse sorts the atoms by number of their relations
         # @param [Array] atoms the array of sorting atoms
@@ -211,94 +104,6 @@ module VersatileDiamond
             sort_atoms(adds)
           else
             []
-          end
-        end
-
-        # Finds parent index and atom index in it
-        # @param [Integer] atom_index the index of atom in original sequence
-        # @return [Array] two values where the first is parent index and second is
-        #   atom index in it
-        def parent_index(atom_index)
-          pi = nil
-          ai = atom_index - delta
-          sorted_parents.each_with_index do |parent, i|
-            panum = parent.atoms_num
-            if ai < panum
-              pi = i
-              break
-            else
-              ai -= panum
-            end
-          end
-          [pi, ai]
-        end
-
-        # Makes empty symmetric code generator instance
-        # @param [EngineCode] generator see at #symmetrics same argument
-        # @param [OriginalSpecie] original_specie see at #symmetrics same argument
-        # @param [Array] pairs of indexes of symmetric atoms
-        # @return [EmptySpecie] the symmetric specie code generator
-        def combine_symmetric(generator, original_specie, pairs)
-          if spec.rest
-            parentable_symmetric(generator, original_specie, pairs)
-          else
-            pairs.reduce(original_specie) do |acc, indexes|
-              AtomsSwappedSpecie.new(generator, acc, *indexes)
-            end
-          end
-        end
-
-        # Makes empty symmetric code generator for case when current specie have
-        # parent specie(s)
-        #
-        # @param [EngineCode] generator see at #combine_symmetric same argument
-        # @param [OriginalSpecie] original_specie see at #combine_symmetric same arg
-        # @param [Array] pairs see at #combine_symmetric same argument
-        # @return [EmptySpecie] the symmetric specie code generator
-        def parentable_symmetric(generator, original_specie, pairs)
-          # TODO: there could be more simple sorting (by used klass value)
-          creation_values = sort_indexes_pairs(pairs).map do |indexes|
-            pa_indexes = indexes.map(&method(:parent_index))
-            parent_indexes, atom_indexes = pa_indexes.transpose.map(&:sort)
-
-            parents_eq = parent_indexes[0] == parent_indexes[1]
-            atoms_eq = atom_indexes[0] == atom_indexes[1]
-
-            if parents_eq || !atoms_eq
-              [AtomsSwappedSpecie, atom_indexes]
-            else
-              [ParentsSwappedSpecie, parent_indexes]
-            end
-          end
-
-          creation_values.uniq! # like a f@%k
-
-          creation_values.reduce(original_specie) do |acc, (klass, indexes)|
-            klass.new(generator, acc, *indexes)
-          end
-        end
-
-        # Sorts pairs of indexes. The first indexes is indexes that belongs to
-        # different parents, and last indexes is indexes of atom of similar parents.
-        #
-        # @param [Array] pairs of atom indexes which will be sorted by correspond
-        #   using parent sequences
-        # @return [Array] the array of sorted pairs
-        def sort_indexes_pairs(pairs)
-          pairs.sort do |as, bs|
-            pq = [as, bs].map { |pair| pair.map(&method(:parent_index)) }
-            pa, pb = pq.map { |p| p.map(&:first) }
-
-            a_diff = pa[0] == pa[1]
-            b_diff = pb[0] == pb[1]
-
-            if a_diff == b_diff
-              0
-            elsif !a_diff && b_diff
-              -1
-            else
-              1
-            end
           end
         end
       end

@@ -15,11 +15,7 @@ module VersatileDiamond
         #   gotten
         # @return [AtomSequence] the correspond atom sequence instance
         def get(spec)
-          unless @sequences[spec]
-            @sequences[spec] = AtomSequence.new(self, spec)
-            @sequences[spec].collect_symmetrics
-          end
-          @sequences[spec]
+          @sequences[spec] ||= AtomSequence.new(self, spec)
         end
       end
 
