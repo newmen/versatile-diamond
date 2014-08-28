@@ -4,7 +4,7 @@ module VersatileDiamond
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
 
-      attr_reader :sequences_cacher
+      attr_reader :sequences_cacher, :detectors_cacher
 
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
@@ -14,9 +14,10 @@ module VersatileDiamond
         @out_path = out_path
 
         @sequences_cacher = Code::SequencesCacher.new
+        @detectors_cacher = Code::DetectorsCacher.new(self)
 
-        @species = collect_code_species
-        @lattices = collect_code_lattices
+        collect_code_species
+        collect_code_lattices
 
         @_dependent_species = nil
       end
@@ -123,9 +124,12 @@ module VersatileDiamond
       # Wraps all collected species from analysis results
       # @return [Hash] the mirror of specs names to spec code generator instances
       def collect_code_species
-        collect_dependent_species.each.with_object({}) do |(name, spec), hash|
-          hash[name] = Code::Specie.new(self, spec)
+        @species = {}
+        collect_dependent_species.each do |name, spec|
+          @species[name] = Code::Specie.new(self, spec)
         end
+
+        @species.values.each(&:find_symmetries!)
       end
 
       # Collects all used lattices and wraps it by source code generator
@@ -134,7 +138,7 @@ module VersatileDiamond
         hash = classifier.used_lattices.map do |concept|
           concept ? [concept, Code::Lattice.new(concept, classifier)] : [nil, nil]
         end
-        Hash[hash]
+        @lattices = Hash[hash]
       end
 
       # Gets the species from configuration tool

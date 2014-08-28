@@ -6,8 +6,9 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
+        extend Forwardable
 
-        attr_reader :spec, :original
+        attr_reader :spec, :original, :sequence
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -23,16 +24,20 @@ module VersatileDiamond
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config
             # file
-            @original, @symmetrics = nil
+            @original, @symmetrics, @sequence = nil
           else
             @original = OriginalSpecie.new(@generator, self)
-
             @sequence = @generator.sequences_cacher.get(spec)
-            @symmetrics = @sequence.symmetrics(@generator, @original)
           end
 
           @_class_name, @_enum_name, @_used_iterators = nil
           @_pure_essence = nil
+        end
+
+        def find_symmetries!
+          unless spec.simple?
+            @symmetrics = @generator.detectors_cacher.get(spec).symmetry_classes
+          end
         end
 
         # Generates source code for specie
@@ -66,7 +71,7 @@ module VersatileDiamond
 
             m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
             addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            addition = addition.public_send(method) if name == 'file'
+            addition = addition.public_send(method) if addition && name == 'file'
             instance_variable_set(var_name, "#{m[1].public_send(method)}#{addition}")
           end
         end
@@ -201,12 +206,7 @@ module VersatileDiamond
 
       protected
 
-        # Delegates indexation to atoms sequence
-        # @param [Concepts::Atom] atom which will be indexed
-        # @return [Integer] the index of atom in atoms sequence
-        def atom_index(atom)
-          @sequence.atom_index(atom)
-        end
+        def_delegator :sequence, :atom_index
 
       private
 

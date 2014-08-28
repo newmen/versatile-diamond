@@ -11,7 +11,14 @@ module VersatileDiamond
           def self.define_code_instances(concept_names)
             concept_names.each do |name|
               set(:"code_#{name}") do
-                Specie.new(empty_generator, send(:"dept_#{name}"))
+                dept_spec = send(:"dept_#{name}")
+                if dept_spec.simple?
+                  Specie.new(empty_generator, dept_spec)
+                else
+                  key = dept_spec.specific? ? :specific_specs : :base_specs
+                  generator = stub_generator({ key => [dept_spec] })
+                  generator.specie_class(dept_spec.name)
+                end
               end
             end
           end

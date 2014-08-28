@@ -9,7 +9,7 @@ module VersatileDiamond
 
         use_prefix 'symmetric'
 
-        # Initialize original specie class code generator
+        # Initialize empty specie class code generator
         # @param [EngineCode] generator see at #super same argument
         # @param [BaseSpecie] specie which is wrapped specie class generator
         def initialize(generator, specie)
@@ -49,7 +49,7 @@ module VersatileDiamond
         end
 
         # Gets the base class for cpp class of symmetric specie
-        # @return [String] the name of base class
+        # @return [String] the full name of base class
         def base_class_name
           wbcn = @specie == original_specie ?
             "Empty<#{enum_name}>" : @specie.base_class_name
@@ -89,8 +89,6 @@ module VersatileDiamond
         def target_specie
           @specie.target_specie
         end
-
-      private
 
         # Gets the original specie of target specie
         # @return [OriginalSpecie] the original specie which is wrapping
