@@ -4,6 +4,14 @@ module VersatileDiamond
 
       # Creates parents swapped symmetric specie
       class ParentsSwappedSpecie < SwappedSpecie
+
+        # Gets a empty proxy specie
+        # @param [Specie] specie the target specie for proxy
+        # @return [ParentProxySpecie] the specie which proxing to current specie
+        def proxy(specie)
+          ParentProxySpecie.new(@generator, specie, self)
+        end
+
       private
 
         # Defines wrapper class name

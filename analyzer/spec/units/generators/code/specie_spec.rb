@@ -109,7 +109,7 @@ module VersatileDiamond
           end
 
           shared_examples_for :check_atoms_num do
-            subject { generator.specie_class(dept_spec.name) }
+            subject { code_for(dept_spec) }
             it { expect(subject.atoms_num).to eq(atoms_num) }
           end
 
@@ -133,8 +133,9 @@ module VersatileDiamond
           before { generator }
 
           shared_examples_for :parent_bridge_name do
+            subject { code_for(bridge_base) }
             let(:pb_name) { 'Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>' }
-            it { expect(code_bridge_base.wrapped_base_class_name).to eq(pb_name) }
+            it { expect(subject.wrapped_base_class_name).to eq(pb_name) }
           end
 
           describe 'empty base specie' do

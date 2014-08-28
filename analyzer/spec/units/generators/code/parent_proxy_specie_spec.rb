@@ -4,9 +4,13 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe ParentsSwappedSpecie, use: :engine_generator do
-        subject { described_class.new(generator, original_class, 1, 2) }
+      # Fully syntetic test
+      describe ParentProxySpecie, use: :engine_generator do
+        subject { described_class.new(generator, original_class, symmetric_class) }
         let(:original_class) { code_specie.original }
+        let(:symmetric_class) do
+          ParentsSwappedSpecie.new(generator, original_class, 1, 2)
+        end
         let(:code_specie) { generator.specie_class(:bridge) }
         let(:generator) do
           stub_generator(base_specs: [dept_bridge_base], specific_specs: [])
@@ -16,13 +20,9 @@ module VersatileDiamond
 
         describe '#base_class_name' do
           let(:base_class_name) do
-            'ParentsSwapWrapper<Empty<BRIDGE>, OriginalBridge, 1, 2>'
+            'ParentProxy<OriginalBridge, SymmetricBridge, BRIDGE>'
           end
           it { expect(subject.base_class_name).to eq(base_class_name) }
-        end
-
-        describe '#proxy' do
-          it { expect(subject.proxy(original_class)).to be_a(ParentProxySpecie) }
         end
       end
 
