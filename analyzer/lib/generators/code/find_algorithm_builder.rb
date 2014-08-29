@@ -265,7 +265,7 @@ module VersatileDiamond
         # @param [String] var_name the name of variable for which method will be called
         # @return [String] the string with cpp condition
         def check_specie_condition(atoms, var_name = 'anchor')
-          method_name = non_root_children.empty? ? 'hasRole' : 'checkAndFind'
+          method_name = @specie.non_root_children.empty? ? 'hasRole' : 'checkAndFind'
           combine_condition(atoms, var_name, '||') do |var, atom|
             "!#{var}->#{method_name}(#{enum_name}, #{role(atom)})"
           end

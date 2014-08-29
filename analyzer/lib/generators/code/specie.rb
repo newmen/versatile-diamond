@@ -119,6 +119,13 @@ module VersatileDiamond
           find_root? ? [] : parents
         end
 
+        # Gets children species without species which are find algorithm roots
+        # @return [Array] the array of children specie code generators without find
+        #   algorithm roots
+        def non_root_children
+          children.reject(&:find_root?)
+        end
+
         # The printable name which will be shown when debug calculation output
         # @return [String] the name of specie which used by user in DSL config file
         def print_name
@@ -143,13 +150,6 @@ module VersatileDiamond
         # @return [Array] the array of children specie class generators
         def children
           spec.non_term_children.map(&method(:specie_class))
-        end
-
-        # Gets children species without species which are find algorithm roots
-        # @return [Array] the array of children specie code generators without find
-        #   algorithm roots
-        def non_root_children
-          children.reject(&:find_root?)
         end
 
         # Checks that specie have children

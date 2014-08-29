@@ -252,6 +252,36 @@ module VersatileDiamond
             to eq([code_for(dimer_base)]) }
         end
 
+        describe '#non_root_children' do
+          let(:base_specs) do
+            [dept_bridge_base, dept_dimer_base, dept_methyl_on_bridge_base]
+          end
+          let(:specific_specs) { [dept_activated_dimer] }
+
+          shared_examples_for :check_non_root_children do
+            let(:code_specie) { code_for(subject) }
+            let(:code_childs) { children.map(&method(:code_for)) }
+            it { expect(code_specie.non_root_children). to match_array(code_childs) }
+          end
+
+          it_behaves_like :check_non_root_children do
+            subject { bridge_base }
+            let(:children) { [methyl_on_bridge_base] }
+          end
+
+          it_behaves_like :check_non_root_children do
+            subject { dimer_base }
+            let(:children) { [activated_dimer] }
+          end
+
+          %w(methyl_on_bridge_base activated_dimer).each do |var_name|
+            it_behaves_like :check_non_root_children do
+              subject { send(var_name.to_sym) }
+              let(:children) { [] }
+            end
+          end
+        end
+
         describe '#print_name' do
           it { expect(code_bridge_base.print_name).to eq('bridge') }
           it { expect(code_activated_bridge.print_name).to eq('bridge(ct: *)') }
