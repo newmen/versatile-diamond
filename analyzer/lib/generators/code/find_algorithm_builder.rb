@@ -74,11 +74,16 @@ module VersatileDiamond
               { face: r.face, dir: r.dir }
             end
 
-            amorph_rels = groups.delete({ face: nil, dir: nil })
+            amorph_rels = groups.delete(Concepts::Bond::AMORPH_PROPS)
             if amorph_rels
               amorph_rels.each(&clear_reverse_relations)
               crystal_rels = essence[atom].select { |_, r| r.face && r.dir }
-              essence[atom] = crystal_rels + amorph_rels.uniq(&:first)
+              amorph_rels.uniq!(&:first)
+              if amorph_rels.size > 1
+                # see comment in Lattices::Base#relations_limit method
+                raise 'Atom could not have more than one amorph neighbour'
+              end
+              essence[atom] = crystal_rels + amorph_rels
             end
 
             next unless atom.lattice

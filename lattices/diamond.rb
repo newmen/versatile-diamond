@@ -7,20 +7,6 @@ class Diamond < VersatileDiamond::Lattices::Base
   # file in common templates directory which located at
   # /analyzer/lib/generators/code/templates/phases
 
-  # Provides information on the maximum possible number of relations of crystal lattice
-  # for each individual atom
-  #
-  # @return [Hash] the hash where keys are relation options and values are maximum
-  #   numbers of correspond relations
-  def relations_limit
-    {
-      front_110 => 2,
-      cross_110 => 2,
-      front_100 => 2,
-      cross_100 => 2,
-    }
-  end
-
 private
 
   # Detects opposite relation on same lattice
@@ -58,6 +44,20 @@ private
       [cross_110, front_110] => position_cross_100,
       # [front_110, front_110] => position_111,
       # [cross_110, cross_110] => position_111,
+    }
+  end
+
+  # Provides information on the maximum possible number of relations of diamond crystal
+  # lattice for each individual atom
+  #
+  # @return [Hash] the hash where keys are relation options and values are maximum
+  #   numbers of correspond relations
+  def crystal_relations_limit
+    {
+      front_110 => 2,
+      cross_110 => 2,
+      front_100 => 2,
+      cross_100 => 2,
     }
   end
 

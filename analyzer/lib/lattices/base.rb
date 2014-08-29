@@ -51,6 +51,17 @@ module VersatileDiamond
         [position, opposite_position]
       end
 
+      # Provides information on the maximum possible number of relations of crystal
+      # lattice and bondary layer for each individual atom
+      #
+      # @return [Hash] the hash where keys are relation options and values are maximum
+      #   numbers of correspond relations
+      def relations_limit
+        # this limit because engine framework provides just method #amorphNeighbour
+        # which has assert to check that number of amorph atom neighbour is equal 1
+        { Concepts::Bond::AMORPH_PROPS => 1 }.merge(crystal_relations_limit)
+      end
+
     private
 
       # Recursively algorighm which finds target by path in links

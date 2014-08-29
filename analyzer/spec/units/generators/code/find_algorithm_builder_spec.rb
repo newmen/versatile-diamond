@@ -50,6 +50,14 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_essence_and_anchors do
+            subject { high_bridge_base }
+            let(:base_specs) { [dept_bridge_base, dept_high_bridge_base] }
+
+            let(:essence) { { cb => [[cm, free_bond]] } }
+            let(:central_anchors) { [[cb]] }
+          end
+
+          it_behaves_like :check_essence_and_anchors do
             subject { dimer_base }
             let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
 
