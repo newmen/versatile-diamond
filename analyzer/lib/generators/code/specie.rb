@@ -6,7 +6,6 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
-        extend Forwardable
 
         attr_reader :spec, :original, :sequence
 
@@ -31,9 +30,9 @@ module VersatileDiamond
           end
 
           @_class_name, @_enum_name, @_used_iterators = nil
-          @_pure_essence = nil
         end
 
+        # Runs find symmetries algorithm by detector
         def find_symmetries!
           unless spec.simple?
             @symmetrics = @generator.detectors_cacher.get(spec).symmetry_classes
@@ -126,88 +125,6 @@ module VersatileDiamond
           spec.name.to_s
         end
 
-        # Gets an essence of wrapped dependent spec but without reverse relations if
-        # related atoms is similar. The nearer to top of achchors sequence, have more
-        # relations in essence.
-        #
-        # @return [Hash] the links hash without reverse relations
-        # TODO: must be private
-        def pure_essence
-          return @_pure_essence if @_pure_essence
-
-          # для кажого атома:
-          # группируем отношения по фейсу и диру
-          # одинаковые ненаправленные связи - отбрасываем
-          #
-          # для каждой группы:
-          # проверяем по кристаллу максимальное количество отношений такого рода, и
-          #   если количество соответствует - удаляем обратные связи, заодно удаляя из
-          #   хеша и атомы, если у них более не остаётся отношений
-          # если меньше - проверяем тип связанного атома, и если он соответствует
-          #   текущему атому - удаляем обратную связь, заодно удаляя из хеша и сам
-          #   атом, если у него более не остаётся отношений
-          # если больше - кидаем эксепшн
-          #
-          # между всеми атомами, что участвовали в отчистке удаляем позишины, и так же
-          # если у атома в таком случае не остаётся отношений - удаляем его из эссенции
-
-          clearing_atoms = Set.new
-          essence = spec.essence
-          clear_reverse = -> reverse_atom, from_atom do
-            clearing_atoms << from_atom << reverse_atom
-            essence = clear_reverse_from(essence, reverse_atom, from_atom)
-          end
-
-          # in accordance with the order
-          short_seq.each do |atom|
-            next unless essence[atom]
-
-            clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
-
-            groups = essence[atom].group_by do |_, r|
-              { face: r.face, dir: r.dir }
-            end
-
-            amorph_rels = groups.delete({ face: nil, dir: nil })
-            if amorph_rels
-              amorph_rels.each(&clear_reverse_relations)
-              crystal_rels = essence[atom].select { |_, r| r.face && r.dir }
-              essence[atom] = crystal_rels + amorph_rels.uniq(&:first)
-            end
-
-            next unless atom.lattice
-            limits = atom.lattice.instance.relations_limit
-
-            groups.each do |rel_opts, group_rels|
-              if limits[rel_opts] < group_rels.size
-                raise 'Atom has too more relations'
-              elsif limits[rel_opts] == group_rels.size
-                group_rels.each(&clear_reverse_relations)
-              else
-                first_prop = Organizers::AtomProperties.new(spec, atom)
-                group_rels.each do |a, _|
-                  second_prop = Organizers::AtomProperties.new(spec, a)
-                  clear_reverse[a, atom] if first_prop == second_prop
-                end
-              end
-            end
-          end
-
-          @_pure_essence = clear_excess_positions(essence, clearing_atoms)
-        end
-
-        # Gets anchors by which will be first check of find algorithm
-        # @return [Array] the major anchors of current specie
-        def central_anchors
-          tras = together_related_anchors
-          scas = tras.empty? ? root_related_anchors : tras
-          scas.empty? ? [major_anchors] : scas.map { |a| [a] }
-        end
-
-      protected
-
-        def_delegator :sequence, :atom_index
-
       private
 
         # Specie class has find algorithms by default
@@ -295,8 +212,7 @@ module VersatileDiamond
         # Makes string by which base constructor will be called
         # @return [String] the string with calling base constructor
         def outer_base_call
-          params = constructor_arguments.map(&:last).join(', ')
-          "#{outer_base_class}(#{params})"
+          "#{outer_base_class}(#{constructor_variables_str})"
         end
 
         # Gets the collection of used crystal atom iterator classes
@@ -371,8 +287,14 @@ module VersatileDiamond
           find_root? ? 'Atom *anchor' : "#{parents.first.class_name} *parent"
         end
 
+        # Makes string with constructor signature variables
+        # @return [String] the string with constructor variables sequence
+        def constructor_variables_str
+          constructor_arguments.map(&:last).join(', ')
+        end
+
         # Makes arguments string for constructor method
-        # @return [Array] the arguments string of constructor method
+        # @return [String] the arguments string of constructor method
         def constructor_arguments_str
           constructor_arguments.map(&:join).join(', ')
         end
@@ -380,7 +302,10 @@ module VersatileDiamond
         # Makes arguments for constructor method
         # @return [Array] the arguments of constructor method
         def constructor_arguments
-          [major_constructor_argument]
+          additional_arguments = additional_constructor_argument
+          arguments = []
+          arguments << additional_arguments unless additional_arguments.empty?
+          arguments << major_constructor_argument
         end
 
         # Selects major constructor argument by number of specie parents
@@ -393,6 +318,23 @@ module VersatileDiamond
             ['ParentSpec *', 'parent']
           else # parents_num > 1
             ['ParentSpec **', 'parents']
+          end
+        end
+
+        # Checks that if specie has addition atoms then them should be plased to
+        # constructor signature. Same name of additional atom(s) variable used in
+        # FindAlgorithmBuilder.
+        #
+        # @return [Array] if addition atoms is not presented then empty array returned,
+        #   and the first item is type and the second is variable name overwise
+        def additional_constructor_argument
+          delta = @sequence.delta
+          if delta == 0
+            []
+          elsif delta == 1
+            ['Atom *', 'additionalAtom']
+          else # delta > 1
+            ['Atom **', 'additionalAtoms']
           end
         end
 
@@ -414,7 +356,7 @@ module VersatileDiamond
 
         # Gets sorted anchors from atoms sequence
         # @return [Array] the array of anchor atoms
-        def short_seq
+        def ordered_anchors
           @sequence.short
         end
 
@@ -429,7 +371,7 @@ module VersatileDiamond
         # Gets a sequence of indexes of anchor atoms
         # @return [String] the sequence of indexes joined by comma
         def indexes_sequence
-          short_seq.map(&method(:atom_index)).join(', ')
+          ordered_anchors.map { |atom| @sequence.atom_index(atom) }.join(', ')
         end
 
         # Gets a list of anchor atoms roles where each role is atom properties index
@@ -437,144 +379,13 @@ module VersatileDiamond
         #
         # @return [Array] the list of anchors roles
         def roles_sequence
-          short_seq.map(&method(:role)).join(', ')
+          ordered_anchors.map(&method(:role)).join(', ')
         end
 
-        # Filters major anchors from atom sequence
-        # @return [Array] the realy major anchors of current specie
-        def major_anchors
-          mas = @sequence.major_atoms
-          find_root? ? [mas.first] : mas
-        end
-
-        # Gets a cpp code that correspond to defining anchor(s) variable(s)
-        # @return [String] the string of cpp code
-        def define_anchor_variables
-          mas = @sequence.major_atoms
-          if mas.size == 1
-            'Atom *anchor = parent->atom(0)'
-          else
-            items = mas.map { |a| "parent->atom(#{atom_index(a)})" }.join(', ')
-            "Atom *anchors[#{mas.size}] = { #{items} };"
-          end
-        end
-
-        # Gets anchors which have relations
-        # @return [Array] the array of atoms with relations in pure essence
-        def bonded_anchors
-          pure_essence.reject { |_, links| links.empty? }.map(&:first)
-        end
-
-        # Selects atoms from pure essence which have mutual relations
-        # @return [Array] the array of together related atoms
-        def together_related_anchors
-          bonded_anchors.select do |atom|
-            pels = pure_essence[atom]
-            pels && pels.any? do |a, _|
-              rels = pure_essence[a]
-              rels && rels.any? { |q, _| q == a }
-            end
-          end
-        end
-
-        # Selects atoms with relations to which not related to by any other atoms
-        # @return [Array] the array of root related atoms
-        def root_related_anchors
-          roots = bonded_anchors.reject do |atom|
-            pels = pure_essence[atom]
-            pels && pels.any? { |a, _| a == atom }
-          end
-          roots.select do |atom|
-            pels = pure_essence[atom]
-            pels && !pels.empty?
-          end
-        end
-
-        # Gets central anchors zipped with else prefixes for many ways condition
-        # @return [Array] major anchors zipped with else prefixes
-        def central_anchors_with_elses
-          mas = central_anchors
-          elses = [''] + ['else '] * (mas.size - 1)
-          mas.zip(elses)
-        end
-
-        # Makes a condition which will be placed to cpp code template
-        # @param [Array] items which zipped with variable names and iterates by block
-        # @param [String] var_name the name of variable which also will be iterated
-        # @param [String] operator which use for combine condition
-        # @yield [String, Object] the block should returns cpp code method call
-        # @return [String] the cpp code string for condition in template
-        def combine_condition(items, var_name, operator, &block)
-          vars = items.size == 1 ?
-            [var_name] :
-            items.size.times.map { |i| "#{var_name}s[#{i}]" }
-
-          vars.zip(items).map(&block).join(" #{operator} ")
-        end
-
-        # Gets a cpp code string that contain call a method for check atom role
-        # @param [Array] atoms which role will be checked in code
-        # @param [String] var_name the name of variable for which method will be called
-        # @return [String] the string with cpp condition
-        def check_role_condition(atoms, var_name = 'anchor')
-          combine_condition(atoms, var_name, '&&') do |var, atom|
-            "#{var}->is(#{role(atom)})"
-          end
-        end
-
-        # Gets a cpp code string that contain call a method for check existing current
-        # specie in atom
-        #
-        # @param [Array] atoms which role will be checked in code
-        # @param [String] var_name the name of variable for which method will be called
-        # @return [String] the string with cpp condition
-        def check_specie_condition(atoms, var_name = 'anchor')
-          method_name = non_root_children.empty? ? 'hasRole' : 'checkAndFind'
-          combine_condition(atoms, var_name, '||') do |var, atom|
-            "!#{var}->#{method_name}(#{enum_name}, #{role(atom)})"
-          end
-        end
-
-        # Clears reverse relations from links hash between reverse_atom and from_atom.
-        # If revese_atom has no relations after clearing then reverse_atom removes too.
-        #
-        # @param [Hash] links which will be cleared
-        # @param [Concepts::Atom] reverse_atom the atom whose relations will be erased
-        # @param [Concepts::Atom] from_atom the atom to which relations will be erased
-        # @return [Hash] the links without correspond relations and reverse_atom if it
-        #   necessary
-        def clear_reverse_from(links, reverse_atom, from_atom)
-          reject_proc = proc { |a, _| a == from_atom }
-          clear_links(links, reject_proc) { |a| a == reverse_atom }
-        end
-
-        # Clears position relations which are between atom from clearing_atoms
-        # @param [Hash] links which will be cleared
-        # @param [Set] clearing_atoms the atoms between which positions will be erased
-        # @return [Hash] the links without erased positions
-        def clear_excess_positions(links, clearing_atoms)
-          # there is could be only realy bonds and positions
-          reject_proc = proc { |a, r| !r.bond? && clearing_atoms.include?(a) }
-          clear_links(links, reject_proc) { |a| clearing_atoms.include?(a) }
-        end
-
-        # Clears relations from links hash where each purging relatoins list selected
-        # by condition lambda and purification doing by reject_proc
-        #
-        # @param [Hash] links which will be cleared
-        # @param [Proc] reject_proc the function of two arguments which doing for
-        #   reject excess relations
-        # @yield [Atom] by it condition checks that erasing should to be
-        # @return [Hash] the links without erased relations
-        def clear_links(links, reject_proc, &condition_proc)
-          links.each_with_object({}) do |(atom, rels), result|
-            if condition_proc[atom]
-              new_rels = rels.reject(&reject_proc)
-              result[atom] = new_rels unless new_rels.empty?
-            else
-              result[atom] = rels
-            end
-          end
+        # Gets a cpp code by which specie will be found when simulation doing
+        # @return [String] the multilined string with cpp code
+        def find_algorithm
+          FindAlgorithmBuilder.new(@generator, self).build
         end
 
         # Gets the specie class code generator
