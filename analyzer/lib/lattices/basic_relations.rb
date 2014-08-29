@@ -26,7 +26,7 @@ module VersatileDiamond
 
       # Undirected bond
       def undirected_bond
-        Concepts::Bond[face: nil, dir: nil]
+        Concepts::Bond.amorph
       end
     end
 

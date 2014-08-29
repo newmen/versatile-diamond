@@ -69,7 +69,7 @@ module VersatileDiamond
         end
 
         # Bonds and positions:
-        set(:free_bond) { Bond[face: nil, dir: nil] }
+        set(:free_bond) { Bond.amorph }
         [:front, :cross].each do |dir|
           [100, 110].each do |face|
             set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }

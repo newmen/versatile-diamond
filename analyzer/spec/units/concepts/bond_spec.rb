@@ -16,6 +16,11 @@ module VersatileDiamond
         end
       end
 
+      describe '#self.amorph' do
+        it { expect(Bond.amorph.face).to be_nil }
+        it { expect(Bond.amorph.dir).to be_nil }
+      end
+
       describe '#face' do
         it { expect(free_bond.face).to be_nil }
         it { expect(bond_110_front.face).to eq(110) }

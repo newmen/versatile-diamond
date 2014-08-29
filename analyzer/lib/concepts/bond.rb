@@ -4,6 +4,8 @@ module VersatileDiamond
     # Class for bond instance. The bond can be without face and direction.
     class Bond
 
+      AMORPH_PROPS = { face: nil, dir: nil }.freeze
+
       attr_reader :face, :dir
 
       class << self
@@ -18,6 +20,12 @@ module VersatileDiamond
           key << "_#{dir}" if dir
           @consts ||= {}
           @consts[key] ||= new(face, dir)
+        end
+
+        # Gets an amorph bond
+        # @param [Bond] the amorph bond
+        def amorph
+          self[AMORPH_PROPS]
         end
 
         # Resets internal cache for RSpec

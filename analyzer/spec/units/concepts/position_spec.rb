@@ -10,8 +10,7 @@ module VersatileDiamond
         end
 
         it 'if no has face or dir then raise error' do
-          expect { Position[face: nil, dir: nil] }.
-            to raise_error Position::Incomplete
+          expect { Position[Bond::AMORPH_PROPS] }.to raise_error Position::Incomplete
         end
       end
 
