@@ -5,6 +5,7 @@ module VersatileDiamond
       # Contain logic for building find specie algorithm
       class FindAlgorithmBuilder
         extend Forwardable
+        include SpecieInside
 
         TAB_SIZE = 4 # always so for cpp
 
@@ -118,8 +119,8 @@ module VersatileDiamond
 
       private
 
+        attr_reader :generator
         def_delegators :@specie, :spec, :sequence, :find_root?
-        def_delegator :sequence, :atom_index
 
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
@@ -190,7 +191,7 @@ module VersatileDiamond
           if mas.size == 1
             'Atom *anchor = parent->atom(0)'
           else
-            items = mas.map { |a| "parent->atom(#{atom_index(a)})" }.join(', ')
+            items = mas.map { |a| "parent->atom(#{index(a)})" }.join(', ')
             "Atom *anchors[#{mas.size}] = { #{items} };"
           end
         end

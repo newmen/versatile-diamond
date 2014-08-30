@@ -6,6 +6,7 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
+        include SpecieInside
 
         attr_reader :spec, :original, :sequence
 
@@ -25,8 +26,8 @@ module VersatileDiamond
             # file
             @original, @symmetrics, @sequence = nil
           else
-            @original = OriginalSpecie.new(@generator, self)
-            @sequence = @generator.sequences_cacher.get(spec)
+            @original = OriginalSpecie.new(generator, self)
+            @sequence = generator.sequences_cacher.get(spec)
           end
 
           @_class_name, @_enum_name, @_used_iterators = nil
@@ -35,7 +36,7 @@ module VersatileDiamond
         # Runs find symmetries algorithm by detector
         def find_symmetries!
           unless spec.simple?
-            @symmetrics = @generator.detectors_cacher.get(spec).symmetry_classes
+            @symmetrics = generator.detectors_cacher.get(spec).symmetry_classes
           end
         end
 
@@ -199,7 +200,6 @@ module VersatileDiamond
         # @return [String] the wrapped or not base engine class name
         def wrapped_engine_class_name
           base_class = base_engine_class_name
-          delta = @sequence.delta
           delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
         end
 
@@ -233,7 +233,7 @@ module VersatileDiamond
           end
 
           @_used_iterators = lattices.to_a.compact.map do |lattice|
-            @generator.lattice_class(lattice).iterator
+            generator.lattice_class(lattice).iterator
           end
         end
 
@@ -328,7 +328,6 @@ module VersatileDiamond
         # @return [Array] if addition atoms is not presented then empty array returned,
         #   and the first item is type and the second is variable name overwise
         def additional_constructor_argument
-          delta = @sequence.delta
           if delta == 0
             []
           elsif delta == 1
@@ -357,21 +356,13 @@ module VersatileDiamond
         # Gets sorted anchors from atoms sequence
         # @return [Array] the array of anchor atoms
         def ordered_anchors
-          @sequence.short
-        end
-
-        # Delegates classification to atom classifier from engine code generator
-        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
-        #   atom which will be classificated
-        # @return [Integer] an index of classificated atom
-        def role(atom)
-          @generator.classifier.index(spec, atom)
+          sequence.short
         end
 
         # Gets a sequence of indexes of anchor atoms
         # @return [String] the sequence of indexes joined by comma
         def indexes_sequence
-          ordered_anchors.map { |atom| @sequence.atom_index(atom) }.join(', ')
+          ordered_anchors.map(&method(:index)).join(', ')
         end
 
         # Gets a list of anchor atoms roles where each role is atom properties index
@@ -385,15 +376,7 @@ module VersatileDiamond
         # Gets a cpp code by which specie will be found when simulation doing
         # @return [String] the multilined string with cpp code
         def find_algorithm
-          FindAlgorithmBuilder.new(@generator, self).build
-        end
-
-        # Gets the specie class code generator
-        # @param [Organizers::DependentSpec] dept_spec dependent specie the code
-        #   generator of which will be got
-        # @return [Specie]
-        def specie_class(dept_spec)
-          @generator.specie_class(dept_spec.name)
+          FindAlgorithmBuilder.new(generator, self).build
         end
       end
 
