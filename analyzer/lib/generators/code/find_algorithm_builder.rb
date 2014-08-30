@@ -22,15 +22,15 @@ module VersatileDiamond
         # Generates cpp code by which target specie will be found when simulation doing
         # @return [String] the string with cpp code of find specie algorithm
         def build
-          result = ''
-          result << code_line(define_anchor_variables) unless find_root?
-
-          body = central_atoms_conditions_with_body
-          result << find_root? ?
-            body :
-            symmetry_lambda('parent', [], 'specie', body)
-
-          result
+          body = central_anchors_conditions_with_body
+          if !find_root? && use_parent_symmetry?
+            body = code_line(define_anchor_variables('specie')) + body
+            symmetry_lambda('parent', [], body)
+          elsif !find_root?
+            code_line(define_anchor_variables('parent')) + body
+          else
+            body
+          end
         end
 
         # Gets an essence of wrapped dependent spec but without reverse relations if
@@ -120,7 +120,7 @@ module VersatileDiamond
       private
 
         attr_reader :generator
-        def_delegators :@specie, :spec, :sequence, :find_root?
+        def_delegators :@specie, :spec, :sequence, :find_root?, :use_parent_symmetry?
 
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
@@ -170,9 +170,11 @@ module VersatileDiamond
           clojure_args_str = clojure_args.join(separator)
           lambda_args_str = lambda_args.join(separator)
 
-          lambda_head = "[#{clojure_args_str}](#{lambda_args_str})"
+          args_wo_lambda_body = ''
+          args_wo_lambda_body << method_args_str unless method_args.empty?
+          args_wo_lambda_body << "[#{clojure_args_str}](#{lambda_args_str})"
 
-          code_line("#{method_name}(#{method_args_str}, #{lambda_head} {") +
+          code_line("#{method_name}(#{args_wo_lambda_body} {") +
             increase_spaces(block_str) +
             code_line('});')
         end
@@ -185,13 +187,15 @@ module VersatileDiamond
         end
 
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
+        # @param [String] specie_var_name tha name of variable from which atoms will
+        #   get
         # @return [String] the string of cpp code
-        def define_anchor_variables
+        def define_anchor_variables(specie_var_name)
           mas = sequence.major_atoms
           if mas.size == 1
-            'Atom *anchor = parent->atom(0)'
+            "Atom *anchor = #{specie_var_name}->atom(0);"
           else
-            items = mas.map { |a| "parent->atom(#{index(a)})" }.join(', ')
+            items = mas.map { |a| "#{specie_var_name}->atom(#{index(a)})" }.join(', ')
             "Atom *anchors[#{mas.size}] = { #{items} };"
           end
         end
@@ -230,9 +234,9 @@ module VersatileDiamond
         # Gets central anchors zipped with else prefixes for many ways condition
         # @return [Array] major anchors zipped with else prefixes
         def central_anchors_with_elses
-          mas = central_anchors
-          elses = [''] + ['else '] * (mas.size - 1)
-          mas.zip(elses)
+          cas = central_anchors
+          elses = [''] + ['else '] * (cas.size - 1)
+          cas.zip(elses)
         end
 
         # Makes a condition which will be placed to cpp code template
@@ -268,13 +272,13 @@ module VersatileDiamond
         def check_specie_condition(atoms, var_name = 'anchor')
           method_name = @specie.non_root_children.empty? ? 'hasRole' : 'checkAndFind'
           combine_condition(atoms, var_name, '||') do |var, atom|
-            "!#{var}->#{method_name}(#{enum_name}, #{role(atom)})"
+            "!#{var}->#{method_name}(#{@specie.enum_name}, #{role(atom)})"
           end
         end
 
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
-        def central_atoms_conditions_with_body
+        def central_anchors_conditions_with_body
           result = ''
           central_anchors_with_elses.each do |atoms, else_prefix|
             block_str = body_for(atoms)
@@ -289,14 +293,66 @@ module VersatileDiamond
         #   will be called
         # @param [Array] clojure_args the arguments which will be passed to lambda
         #   through clojure
-        # @param [String] lambda_arg_var the name of variable which passes into lambda
-        #   as argument
         # @param [String] block_str the code which is lambda body
         # @return [String] the code with symmetries iteration
-        def symmetry_lambda(receiver_var, clojure_args, lambda_arg_var, block_str)
+        def symmetry_lambda(receiver_var, clojure_args, block_str)
           method_name = "#{receiver_var}->eachSymmetry"
-          lambda_args = ["ParentSpec *#{lambda_arg_var}"]
+          lambda_args = ["ParentSpec *specie"]
           code_lambda(method_name, [], clojure_args, lambda_args, block_str)
+        end
+
+        # Makes body of find algorithm where atoms is passed anchors
+        # @param [Array] anchors the atoms for which body find algorithm will builded
+        # @return [String] the code with some actions and creation finding specie at
+        #   end if every think okay
+        def body_for(anchors)
+          if find_root? && anchors.size > 1
+            raise 'Undefined find body for many atoms. Please contact the developer'
+          end
+
+          find_root? ? find_root_body_for(anchors) : mono_parent_body_for(anchors)
+        end
+
+        def mono_parent_body_for(anchors)
+          linked_anchors = anchors.reject { |atom| pure_essence[atom].empty? }
+          with_amorphs = linked_anchors.select do |atom|
+            pure_essence[atom].any? { |a, _| !a.lattice }
+          end
+
+          mono_parent_creation_str # fake
+        end
+
+        def find_root_body_for(anchors)
+          find_root_creation_str # fake
+        end
+
+        # Gets a code string with creation of mono parent specie
+        # @return [String] the cpp code with creation calling
+        def mono_parent_creation_str
+          args = []
+          delta = sequence.delta
+          if delta > 1
+            args << 'additionalAtoms'
+          elsif delta == 1
+            args << 'additionalAtom'
+          end
+          args << (use_parent_symmetry? ? 'specie' : 'parent')
+          creation_str(args)
+        end
+
+        # Gets a code string with creation of multi parents or no parents specie
+        # @return [String] the cpp code with creation calling
+        def find_root_creation_str
+          args = [spec.parents.empty? ? 'atoms' : 'parents']
+          creation_str(args)
+        end
+
+        # Gets a string with finding specie creation
+        # @param [Array] args the arguments which will be passed to creation method
+        # @return [String] the cpp code string with creation of finding specie
+        def creation_str(args)
+          args_str = args.join(', ')
+          code_line("create<#{@specie.class_name}>(#{args_str});")
         end
 
         # Clears reverse relations from links hash between reverse_atom and from_atom.
