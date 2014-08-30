@@ -30,19 +30,8 @@ module VersatileDiamond
           spec.non_term_children.each { |child| get(child).collect_symmetries }
           return unless spec.rest
 
-          atoms_for_parents = Hash[spec.parents.map { |p| [p, []] }]
-          anchors.each do |atom|
-            spec.rest.all_twins(atom).each do |twin|
-              spec.parents.each do |parent|
-                if get(parent).atoms.include?(twin)
-                  atoms_for_parents[parent] << twin
-                end
-              end
-            end
-          end
-
-          atoms_for_parents.each do |parent, atoms|
-            get(parent).add_symmetries_for(atoms)
+          parents_with_twins_for(anchors).each do |parent, atoms|
+            parent.add_symmetries_for(atoms)
           end
         end
 
@@ -61,7 +50,23 @@ module VersatileDiamond
           @symmetries.values
         end
 
+        # Checks that internal specie uses symmetric atom in parent specie
+        # @return [Boolean] use or not
+        def use_parent_symmetry?
+          !!spec.rest && parents_with_twins_for(uniq_anchors).any? do |parent, twins|
+            twins.any? { |atom| parent.symmetric_atom?(atom) }
+          end
+        end
+
       protected
+
+        # Checks that atom is a symmetric atom in internal specie
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom which will be checked
+        # @return [Boolean] is symmetric atom in internal specie or not
+        def symmetric_atom?(atom)
+          @symmetries.keys.any? { |hash| hash.flatten.include?(atom) }
+        end
 
         # Adds symmetric atoms pairs
         # @param [Array] atoms which symmetries will be stored if them exists
@@ -161,6 +166,46 @@ module VersatileDiamond
         # @return [Array] the twins of passed atoms
         def twins_of(pair)
           pair.map { |a| spec.rest.twin(a) }
+        end
+
+        # Distributes twins to their parents
+        # @param [Array] atoms for which parents ant their twins will be collected
+        # @result [Hash] the hash where keys are parent detectors and values are arrays
+        #   of correspond twins
+        def parents_with_twins_for(atoms)
+          collector = Hash[spec.parents.map { |p| [get(p), []] }]
+          atoms.each.with_object(collector) do |atom, result|
+            spec.rest.all_twins(atom).each do |twin|
+              spec.parents.each do |parent|
+                parent_detector = get(parent)
+                if parent_detector.atoms.include?(twin)
+                  result[parent_detector] << twin
+                end
+              end
+            end
+          end
+        end
+
+        # Gets an unique anchors
+        # @return [Array] the array of unique anchors
+        def uniq_anchors
+          anchor_users = @symmetries.keys.select do |hash|
+            hash.flatten.any? { |a| anchors.include?(a) }
+          end
+
+          if anchor_users.empty?
+            anchors
+          else
+            hashes_with_diff_kv = anchor_users.select do |hash|
+              hash.all? do |k, v|
+                a = Organizers::AtomProperties.new(spec, k)
+                b = Organizers::AtomProperties.new(spec, v)
+                a != b
+              end
+            end
+            uniq_atoms = hashes_with_diff_kv.map(&:flatten).flatten.uniq
+            anchors.select { |a| uniq_atoms.include?(a) }
+          end
         end
 
         # Delegates getting atom index to specie atom sequence
