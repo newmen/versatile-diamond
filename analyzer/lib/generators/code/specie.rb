@@ -24,7 +24,7 @@ module VersatileDiamond
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config
             # file
-            @original, @symmetrics, @sequence = nil
+            @original, @symmetrics, @sequence, @detector = nil
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
@@ -34,9 +34,11 @@ module VersatileDiamond
         end
 
         # Runs find symmetries algorithm by detector
+        # Should be called after specie created
         def find_symmetries!
           unless spec.simple?
-            @symmetrics = generator.detectors_cacher.get(spec).symmetry_classes
+            @detector = generator.detectors_cacher.get(spec)
+            @symmetrics = @detector.symmetry_classes
           end
         end
 
@@ -110,6 +112,12 @@ module VersatileDiamond
         # @return [Boolean] is find algorithm root or not
         def find_root?
           parents.size != 1
+        end
+
+        # Delegates parent symmetry using detection to symmetry detector
+        # @return [Boolean] use or not
+        def use_parent_symmetry?
+          @detector.use_parent_symmetry?
         end
 
         # Gets a list of parents species full header file path of which will be
@@ -322,8 +330,7 @@ module VersatileDiamond
         end
 
         # Checks that if specie has addition atoms then them should be plased to
-        # constructor signature. Same name of additional atom(s) variable used in
-        # FindAlgorithmBuilder.
+        # constructor signature
         #
         # @return [Array] if addition atoms is not presented then empty array returned,
         #   and the first item is type and the second is variable name overwise
