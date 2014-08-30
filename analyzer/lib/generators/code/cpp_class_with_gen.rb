@@ -11,6 +11,11 @@ module VersatileDiamond
         def initialize(generator)
           @generator = generator
         end
+
+      private
+
+        attr_reader :generator
+
       end
 
     end
