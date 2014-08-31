@@ -56,7 +56,7 @@ module VersatileDiamond
               row = @table[rest]
             end
 
-            return TableCell.new(rest, [key]).adsorb(min(row))
+            return TableCell.new(rest, [key]).adsorb_if_more_optimal(min(row))
           end
         end
 
