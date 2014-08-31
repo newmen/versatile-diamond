@@ -27,8 +27,8 @@ module VersatileDiamond
         it { expect((small <=> bad) < 0).to be_truthy }
       end
 
-      describe '#adsorb' do
-        subject { big.adsorb(smallest) }
+      describe '#adsorb_if_more_optimal' do
+        subject { big.adsorb_if_more_optimal(smallest) }
         it { expect(subject.residual).to eq(small_modm_part) }
         it { expect(subject.specs).to match_array([wmob, wb]) }
       end

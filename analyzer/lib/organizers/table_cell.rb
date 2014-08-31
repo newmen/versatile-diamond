@@ -11,7 +11,7 @@ module VersatileDiamond
 
       # Inits the new table cell
       # @param [DependentBaseSpec | SpecResidual] residual the minimal possible rest
-      # @param [Array] specs the optimal array of contained species
+      # @param [Array] specs the array of optimal contained species
       def initialize(residual, specs = [])
         @residual, @specs = residual, specs
       end
@@ -25,12 +25,16 @@ module VersatileDiamond
           atoms_num <=> other.atoms_num
       end
 
-      # Adsorbs the minimal table cell
+      # Adsorbs the minimal table cell if it more optimal
       # @param [TableCell] min the adsorbing table cell which should be more optimal
       #   than current table cell
-      # @return [TableCell] the new more complete optimal table cell
-      def adsorb(min)
-        self.class.new(min.residual, specs + min.specs)
+      # @return [TableCell] the more complete optimal table cell
+      def adsorb_if_more_optimal(min)
+        if !min.specs.empty? && min.relations_num < relations_num
+          self.class.new(min.residual, specs + min.specs)
+        else
+          self
+        end
       end
 
     protected
