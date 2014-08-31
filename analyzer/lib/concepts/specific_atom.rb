@@ -4,7 +4,7 @@ module VersatileDiamond
     # Specified atom class, contain additional atom states like incoherentness,
     # unfixness and activeness
     class SpecificAtom
-      include ListsComparer
+      include Modules::ListsComparer
       extend Forwardable
 
       # Error for case when something wrong with atom state

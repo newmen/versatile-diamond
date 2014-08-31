@@ -4,8 +4,9 @@ module VersatileDiamond
 
       # Contain logic for building find specie algorithm
       class FindAlgorithmBuilder
-        extend Forwardable
+        include Modules::ListsComparer
         include SpecieInside
+        extend Forwardable
 
         TAB_SIZE = 4 # always so for cpp
 
@@ -114,7 +115,11 @@ module VersatileDiamond
         def central_anchors
           tras = together_related_anchors
           scas = tras.empty? ? root_related_anchors : tras
-          scas.empty? ? [major_anchors] : scas.map { |a| [a] }
+          if scas.empty? || lists_are_identical?(scas, major_anchors, &:==)
+            [major_anchors]
+          else
+            scas.map { |a| [a] }
+          end
         end
 
       private
@@ -195,8 +200,17 @@ module VersatileDiamond
           if mas.size == 1
             "Atom *anchor = #{specie_var_name}->atom(0);"
           else
-            items = mas.map { |a| "#{specie_var_name}->atom(#{index(a)})" }.join(', ')
-            "Atom *anchors[#{mas.size}] = { #{items} };"
+            if spec.parents.size > 1
+              raise 'Too many parents for defining anchor variables'
+            end
+
+            parent_sequence = specie_class(spec.parents.first).sequence
+            items = mas.map do |atom|
+              twin = spec.rest.twin(atom)
+              "#{specie_var_name}->atom(#{parent_sequence.atom_index(twin)})"
+            end
+            items_str = items.join(', ')
+            "Atom *anchors[#{mas.size}] = { #{items_str} };"
           end
         end
 
@@ -210,24 +224,21 @@ module VersatileDiamond
         # @return [Array] the array of together related atoms
         def together_related_anchors
           bonded_anchors.select do |atom|
-            pels = pure_essence[atom]
-            pels && pels.any? do |a, _|
-              rels = pure_essence[a]
-              rels && rels.any? { |q, _| q == a }
+            pure_essence[atom].any? do |a, _|
+              pels = pure_essence[a]
+              pels && pels.any? { |q, _| q == atom }
             end
           end
         end
 
-        # Selects atoms with relations to which not related to by any other atoms
+        # Selects those atoms with links that are not related any other atoms are
         # @return [Array] the array of root related atoms
         def root_related_anchors
-          roots = bonded_anchors.reject do |atom|
-            pels = pure_essence[atom]
-            pels && pels.any? { |a, _| a == atom }
-          end
-          roots.select do |atom|
-            pels = pure_essence[atom]
-            pels && !pels.empty?
+          bonded_anchors.reject do |atom|
+            comp_proc = proc { |a, _| a == atom }
+            pure_essence.reject(&comp_proc).any? do |_, links|
+              links.any?(&comp_proc)
+            end
           end
         end
 
@@ -313,6 +324,9 @@ module VersatileDiamond
           find_root? ? find_root_body_for(anchors) : mono_parent_body_for(anchors)
         end
 
+        # Gest a code string for find dependent specie
+        # @param [Array] anchors by which find will occured
+        # @return [String] the cpp code with check anchors and specie creation
         def mono_parent_body_for(anchors)
           linked_anchors = anchors.reject { |atom| pure_essence[atom].empty? }
           with_amorphs = linked_anchors.select do |atom|
@@ -322,6 +336,9 @@ module VersatileDiamond
           mono_parent_creation_str # fake
         end
 
+        # Gets a code string for find undependent or many dependent specie
+        # @param [Array] anchors by which find will occured
+        # @return [String] the cpp code with check anchors and specie creation
         def find_root_body_for(anchors)
           find_root_creation_str # fake
         end

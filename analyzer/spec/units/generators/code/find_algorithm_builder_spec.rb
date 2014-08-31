@@ -20,7 +20,7 @@ module VersatileDiamond
             classifier.index(spec, spec.spec.atom(keyname))
           end
 
-          [:ct, :cr, :cl, :cb, :cm, :cc].each do |keyname|
+          [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2].each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
             let(:"role_#{keyname}") { role(subject, keyname) }
           end
@@ -155,6 +155,34 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_essence_and_anchors do
+            subject { dept_vinyl_on_bridge_base }
+            let(:base_specs) { [dept_bridge_base, subject] }
+
+            let(:essence) { { cb => [[c1, free_bond]], c1 => [[c2, free_bond]] } }
+            let(:central_anchors) { [[cb]] }
+            let(:find_algorithm) do
+              <<-CODE
+    Atom *anchor = parent->atom(0);
+    if (anchor->is(#{role_cb}))
+    {
+        if (!anchor->hasRole(VINYL_ON_BRIDGE, #{role_cb}))
+        {
+            Atom *additionalAtoms[2] = { anchor->amorphNeighbour(), nullptr };
+            if (additionalAtoms[0]->is(#{role_c1}))
+            {
+                additionalAtoms[1] = additionalAtoms[0]->amorphNeighbour();
+                if (additionalAtoms[1]->is(#{role_c2}))
+                {
+                    create<VinylOnBridge>(additionalAtoms, parent);
+                }
+            }
+        }
+    }
+              CODE
+            end
+          end
+
+          it_behaves_like :check_essence_and_anchors do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
@@ -220,6 +248,30 @@ module VersatileDiamond
                     create<MethylOnDimer>(parents);
                 }
             });
+        }
+    }
+              CODE
+            end
+          end
+
+          it_behaves_like :check_essence_and_anchors do
+            subject { dept_two_methyls_on_dimer_base }
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+
+            let(:essence) { { cr => [[c1, free_bond]], cl => [[c2, free_bond]] } }
+            let(:central_anchors) { [[cl, cr]] }
+            let(:find_algorithm) do
+              <<-CODE
+    Atom *anchors[2] = { parent->atom(3), parent->atom(0) };
+    if (anchors[0]->is(#{role_cr}) && anchors[1]->is(#{role_cl}))
+    {
+        if (!anchors[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}) || !anchors[1]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cl}))
+        {
+            Atom *additionalAtoms[2] = { anchors[0]->amorphNeighbour(), anchors[1]->amorphNeighbour() };
+            if (additionalAtoms[0]->is(#{role_c1}) && additionalAtoms[1]->is(#{role_c2}))
+            {
+                create<TwoMethylsOnDimer>(additionalAtoms, parent);
+            }
         }
     }
               CODE
