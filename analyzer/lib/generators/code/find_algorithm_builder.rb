@@ -290,13 +290,11 @@ module VersatileDiamond
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
         def central_anchors_conditions_with_body
-          result = ''
-          central_anchors_with_elses.each do |atoms, else_prefix|
+          central_anchors_with_elses.reduce('') do |acc, (atoms, else_prefix)|
             block_str = body_for(atoms)
             cs_cond = code_condition(check_specie_condition(atoms), block_str)
-            result << code_condition(check_role_condition(atoms), cs_cond, else_prefix)
+            acc << code_condition(check_role_condition(atoms), cs_cond, else_prefix)
           end
-          result
         end
 
         # Gets a code which uses eachSymmetry method of engine framework
@@ -317,10 +315,6 @@ module VersatileDiamond
         # @return [String] the code with some actions and creation finding specie at
         #   end if every think okay
         def body_for(anchors)
-          if find_root? && anchors.size > 1
-            raise 'Undefined find body for many atoms. Please contact the developer'
-          end
-
           find_root? ? find_root_body_for(anchors) : mono_parent_body_for(anchors)
         end
 
@@ -340,6 +334,10 @@ module VersatileDiamond
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
         def find_root_body_for(anchors)
+          if anchors.size > 1
+            raise 'Undefined find body for many atoms. Please contact the developer'
+          end
+
           find_root_creation_str # fake
         end
 
