@@ -212,6 +212,26 @@ module VersatileDiamond
           end
         end
 
+        # Gets cpp code string with defining additional atoms variable by passed atoms
+        # @param [Array] from_atoms the array of atoms from which value(s) will gotten
+        #   for initiate defining variable
+        # @return [String] the string with defining additional atom(s) variable
+        def define_additional_atoms_variable(from_atoms)
+          raise 'Wrong length of passed array' unless delta == from_atoms.size
+
+          if delta == 1
+            links = pure_essence[from_atoms.first]
+            raise 'Wrong number of relations' unless links.size == 1
+
+            relation = links.first.last
+            raise 'Wrong relation type' if relation.face || relation.dir
+
+            "Atom *additionalAtom = anchor->amorphNeighbour();"
+          else # delta > 1
+
+          end
+        end
+
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
         def body
