@@ -149,12 +149,6 @@ module VersatileDiamond
           true
         end
 
-        # Gets the parent specie classes
-        # @return [Array] the array of parent specie class generators
-        def parents
-          spec.parents.map(&method(:specie_class))
-        end
-
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
@@ -164,7 +158,7 @@ module VersatileDiamond
         # Checks that specie have children
         # @return [Boolean] is parent or not
         def parent?
-          !spec.children.empty?
+          !children.empty?
         end
 
         # Checks that specie have reactions

@@ -6,6 +6,12 @@ module VersatileDiamond
       module SpecieInside
       private
 
+        # Gets the parent specie classes
+        # @return [Array] the array of parent specie class generators
+        def parents
+          spec.parents.map(&method(:specie_class))
+        end
+
         # Delegates getting delta to atom sequence instance
         # @return [Integer] the delta of addition atoms in atom sequence
         def delta

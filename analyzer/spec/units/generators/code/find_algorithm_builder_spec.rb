@@ -39,7 +39,6 @@ module VersatileDiamond
 
             let(:essence) { { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] } }
             let(:central_anchors) { [[ct]] }
-
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_ct}))

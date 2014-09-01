@@ -10,103 +10,32 @@ module VersatileDiamond
 
         TAB_SIZE = 4 # always so for cpp
 
+        attr_reader :pure_essence
+
         # Inits builder by target specie and main engine code generator
         # @param [EngineCode] generator the major engine code generator
         # @param [Specie] specie the target specie code generator
         def initialize(generator, specie)
           @generator = generator
           @specie = specie
-
-          @_pure_essence = nil
+          @pure_essence = EssenceCleaner.pure_essence_for(specie)
+          @namer = Namer.new
         end
 
         # Generates cpp code by which target specie will be found when simulation doing
         # @return [String] the string with cpp code of find specie algorithm
         def build
-          body = central_anchors_conditions_with_body
+          @namer.assign('parent', parents) unless find_root?
+
           if !find_root? && use_parent_symmetry?
-            body = code_line(define_anchor_variables('specie')) + body
-            symmetry_lambda('parent', [], body)
+            symmetry_lambda(parents.first, []) do
+              code_line(define_anchor_variables) + body
+            end
           elsif !find_root?
-            code_line(define_anchor_variables('parent')) + body
+            code_line(define_anchor_variables) + body
           else
             body
           end
-        end
-
-        # Gets an essence of wrapped dependent spec but without reverse relations if
-        # related atoms is similar. The nearer to top of achchors sequence, have more
-        # relations in essence.
-        #
-        # @return [Hash] the links hash without reverse relations
-        # TODO: must be private
-        def pure_essence
-          return @_pure_essence if @_pure_essence
-
-          # для кажого атома:
-          # группируем отношения по фейсу и диру
-          # одинаковые ненаправленные связи - отбрасываем
-          #
-          # для каждой группы:
-          # проверяем по кристаллу максимальное количество отношений такого рода, и
-          #   если количество соответствует - удаляем обратные связи, заодно удаляя из
-          #   хеша и атомы, если у них более не остаётся отношений
-          # если меньше - проверяем тип связанного атома, и если он соответствует
-          #   текущему атому - удаляем обратную связь, заодно удаляя из хеша и сам
-          #   атом, если у него более не остаётся отношений
-          # если больше - кидаем эксепшн
-          #
-          # между всеми атомами, что участвовали в отчистке удаляем позишины, и так же
-          # если у атома в таком случае не остаётся отношений - удаляем его из эссенции
-
-          clearing_atoms = Set.new
-          essence = spec.essence
-          clear_reverse = -> reverse_atom, from_atom do
-            clearing_atoms << from_atom << reverse_atom
-            essence = clear_reverse_from(essence, reverse_atom, from_atom)
-          end
-
-          # in accordance with the order
-          sequence.short.each do |atom|
-            next unless essence[atom]
-
-            clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
-
-            groups = essence[atom].group_by do |_, r|
-              { face: r.face, dir: r.dir }
-            end
-
-            amorph_rels = groups.delete(Concepts::Bond::AMORPH_PROPS)
-            if amorph_rels
-              amorph_rels.each(&clear_reverse_relations)
-              crystal_rels = essence[atom].select { |_, r| r.face && r.dir }
-              amorph_rels.uniq!(&:first)
-              if amorph_rels.size > 1
-                # see comment in Lattices::Base#relations_limit method
-                raise 'Atom could not have more than one amorph neighbour'
-              end
-              essence[atom] = crystal_rels + amorph_rels
-            end
-
-            next unless atom.lattice
-            limits = atom.lattice.instance.relations_limit
-
-            groups.each do |rel_opts, group_rels|
-              if limits[rel_opts] < group_rels.size
-                raise 'Atom has too more relations'
-              elsif limits[rel_opts] == group_rels.size
-                group_rels.each(&clear_reverse_relations)
-              else
-                first_prop = Organizers::AtomProperties.new(spec, atom)
-                group_rels.each do |a, _|
-                  second_prop = Organizers::AtomProperties.new(spec, a)
-                  clear_reverse[a, atom] if first_prop == second_prop
-                end
-              end
-            end
-          end
-
-          @_pure_essence = clear_excess_positions(essence, clearing_atoms)
         end
 
         # Gets anchors by which will be first check of find algorithm
@@ -150,14 +79,14 @@ module VersatileDiamond
 
         # Gets a code with cpp condition block
         # @param [String] condition_str the cpp code string with some condition
-        # @param [String] block_str the cpp code with several lines which will placed
-        #   into condition block
         # @param [String] else_prefix the prefix which places before `if` keyword
+        # @yield should return cpp code with several lines which will placed into
+        #   condition block
         # @return [String] the code with condition
-        def code_condition(condition_str, block_str, else_prefix = '')
+        def code_condition(condition_str, else_prefix = '', &block)
           code_line("#{else_prefix}if (#{condition_str})") +
             code_line('{') +
-            increase_spaces(block_str) +
+            increase_spaces(block.call) +
             code_line('}')
         end
 
@@ -166,10 +95,10 @@ module VersatileDiamond
         # @param [Array] method_args the typed arguments of method call
         # @param [Array] clojure_args the arguments which passed to lambda
         # @param [Array] lambda_args the typed arguments of lambda call
-        # @param [String] block_str the cpp code with several lines which will be used
-        #   in lambda body
+        # @yield should return cpp code with several lines which will be plased in
+        #   lambda body
         # @return [String] the code with method call
-        def code_lambda(method_name, method_args, clojure_args, lambda_args, block_str)
+        def code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
           separator = ', '
           method_args_str = method_args.join(separator)
           clojure_args_str = clojure_args.join(separator)
@@ -180,7 +109,7 @@ module VersatileDiamond
           args_wo_lambda_body << "[#{clojure_args_str}](#{lambda_args_str})"
 
           code_line("#{method_name}(#{args_wo_lambda_body} {") +
-            increase_spaces(block_str) +
+            increase_spaces(block.call) +
             code_line('});')
         end
 
@@ -189,29 +118,6 @@ module VersatileDiamond
         def major_anchors
           mas = sequence.major_atoms
           find_root? ? [mas.first] : mas
-        end
-
-        # Gets a cpp code that correspond to defining anchor(s) variable(s)
-        # @param [String] specie_var_name tha name of variable from which atoms will
-        #   get
-        # @return [String] the string of cpp code
-        def define_anchor_variables(specie_var_name)
-          mas = sequence.major_atoms
-          if mas.size == 1
-            "Atom *anchor = #{specie_var_name}->atom(0);"
-          else
-            if spec.parents.size > 1
-              raise 'Too many parents for defining anchor variables'
-            end
-
-            parent_sequence = specie_class(spec.parents.first).sequence
-            items = mas.map do |atom|
-              twin = spec.rest.twin(atom)
-              "#{specie_var_name}->atom(#{parent_sequence.atom_index(twin)})"
-            end
-            items_str = items.join(', ')
-            "Atom *anchors[#{mas.size}] = { #{items_str} };"
-          end
         end
 
         # Gets anchors which have relations
@@ -252,24 +158,19 @@ module VersatileDiamond
 
         # Makes a condition which will be placed to cpp code template
         # @param [Array] items which zipped with variable names and iterates by block
-        # @param [String] var_name the name of variable which also will be iterated
         # @param [String] operator which use for combine condition
         # @yield [String, Object] the block should returns cpp code method call
         # @return [String] the cpp code string for condition in template
-        def combine_condition(items, var_name, operator, &block)
-          vars = items.size == 1 ?
-            [var_name] :
-            items.size.times.map { |i| "#{var_name}s[#{i}]" }
-
-          vars.zip(items).map(&block).join(" #{operator} ")
+        def combine_condition(items, operator, &block)
+          names = items.map { |item| @namer.get(item) }
+          names.zip(items).map(&block).join(" #{operator} ")
         end
 
         # Gets a cpp code string that contain call a method for check atom role
         # @param [Array] atoms which role will be checked in code
-        # @param [String] var_name the name of variable for which method will be called
         # @return [String] the string with cpp condition
-        def check_role_condition(atoms, var_name = 'anchor')
-          combine_condition(atoms, var_name, '&&') do |var, atom|
+        def check_role_condition(atoms)
+          combine_condition(atoms, '&&') do |var, atom|
             "#{var}->is(#{role(atom)})"
           end
         end
@@ -278,56 +179,87 @@ module VersatileDiamond
         # specie in atom
         #
         # @param [Array] atoms which role will be checked in code
-        # @param [String] var_name the name of variable for which method will be called
         # @return [String] the string with cpp condition
-        def check_specie_condition(atoms, var_name = 'anchor')
+        def check_specie_condition(atoms)
           method_name = @specie.non_root_children.empty? ? 'hasRole' : 'checkAndFind'
-          combine_condition(atoms, var_name, '||') do |var, atom|
+          combine_condition(atoms, '||') do |var, atom|
             "!#{var}->#{method_name}(#{@specie.enum_name}, #{role(atom)})"
+          end
+        end
+
+        # Gets a cpp code that correspond to defining anchor(s) variable(s)
+        # @return [String] the string of cpp code
+        def define_anchor_variables
+          parent = parents.first
+          specie_var_name = @namer.get(parent)
+
+          atoms = sequence.major_atoms
+          @namer.assign('anchor', atoms)
+
+          if atoms.size == 1
+            atom_name = @namer.get(atoms.first)
+            "Atom *#{atom_name} = #{specie_var_name}->atom(0);"
+          else
+            parent_sequence = parent.sequence
+            items = atoms.map do |atom|
+              twin = spec.rest.twin(atom)
+              "#{specie_var_name}->atom(#{parent_sequence.atom_index(twin)})"
+            end
+
+            items_str = items.join(', ')
+            array_name = @namer.array_name_for(atoms)
+            "Atom *#{array_name}[#{atoms.size}] = { #{items_str} };"
           end
         end
 
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
-        def central_anchors_conditions_with_body
+        def body
           central_anchors_with_elses.reduce('') do |acc, (atoms, else_prefix)|
-            block_str = body_for(atoms)
-            cs_cond = code_condition(check_specie_condition(atoms), block_str)
-            acc << code_condition(check_role_condition(atoms), cs_cond, else_prefix)
+            if find_root?
+              method_name = else_prefix.empty? ? :assign : :reassign
+              @namer.public_send(method_name, 'anchor', atoms)
+            end
+
+            acc << code_condition(check_role_condition(atoms), else_prefix) do
+              code_condition(check_specie_condition(atoms)) do
+                find_root? ? find_root_body_for(atoms) : mono_parent_body_for(atoms)
+              end
+            end
           end
         end
 
         # Gets a code which uses eachSymmetry method of engine framework
-        # @param [String] receiver_var the specie variable name for which target method
-        #   will be called
+        # @param [Specie] specie by variable name of which the target method will be
+        #   called
         # @param [Array] clojure_args the arguments which will be passed to lambda
         #   through clojure
-        # @param [String] block_str the code which is lambda body
+        # @yield should return string of lambda body
         # @return [String] the code with symmetries iteration
-        def symmetry_lambda(receiver_var, clojure_args, block_str)
+        def symmetry_lambda(parent, clojure_args, &block)
+          receiver_var = @namer.get(parent)
           method_name = "#{receiver_var}->eachSymmetry"
-          lambda_args = ["ParentSpec *specie"]
-          code_lambda(method_name, [], clojure_args, lambda_args, block_str)
-        end
 
-        # Makes body of find algorithm where atoms is passed anchors
-        # @param [Array] anchors the atoms for which body find algorithm will builded
-        # @return [String] the code with some actions and creation finding specie at
-        #   end if every think okay
-        def body_for(anchors)
-          find_root? ? find_root_body_for(anchors) : mono_parent_body_for(anchors)
+          @namer.reassign('specie', [parent])
+          lambda_args = ["ParentSpec *specie"]
+
+          code_lambda(method_name, [], clojure_args, lambda_args, &block)
         end
 
         # Gest a code string for find dependent specie
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
         def mono_parent_body_for(anchors)
-          linked_anchors = anchors.reject { |atom| pure_essence[atom].empty? }
-          with_amorphs = linked_anchors.select do |atom|
-            pure_essence[atom].any? { |a, _| !a.lattice }
-          end
+          if delta > 0
+            anchors_with_links = anchors.reject { |atom| pure_essence[atom].empty? }
+            with_amorphs = anchors_with_links.select do |atom|
+              pure_essence[atom].any? { |a, _| !a.lattice }
+            end
 
-          mono_parent_creation_str # fake
+            ''
+          else
+            creation_str
+          end
         end
 
         # Gets a code string for find undependent or many dependent specie
@@ -338,78 +270,34 @@ module VersatileDiamond
             raise 'Undefined find body for many atoms. Please contact the developer'
           end
 
-          find_root_creation_str # fake
-        end
-
-        # Gets a code string with creation of mono parent specie
-        # @return [String] the cpp code with creation calling
-        def mono_parent_creation_str
-          args = []
-          delta = sequence.delta
-          if delta > 1
-            args << 'additionalAtoms'
-          elsif delta == 1
-            args << 'additionalAtom'
-          end
-          args << (use_parent_symmetry? ? 'specie' : 'parent')
-          creation_str(args)
-        end
-
-        # Gets a code string with creation of multi parents or no parents specie
-        # @return [String] the cpp code with creation calling
-        def find_root_creation_str
-          args = [spec.parents.empty? ? 'atoms' : 'parents']
-          creation_str(args)
+          creation_str
         end
 
         # Gets a string with finding specie creation
         # @param [Array] args the arguments which will be passed to creation method
         # @return [String] the cpp code string with creation of finding specie
-        def creation_str(args)
+        def creation_str
+          args = []
+
+          if delta > 1
+            args << @namer.array_name_for(sequence.addition_atoms)
+          elsif delta == 1
+            args << @namer.get(sequence.addition_atoms.first)
+          end
+
+          if spec.parents.size > 1
+            args << @namer.array_name_for(parents)
+          elsif spec.parents.size == 1
+            args << @namer.get(parents.first)
+          else
+            unless args.empty?
+              raise 'Arguments should contain only atoms if specie havent parents'
+            end
+            args << 'atoms'
+          end
+
           args_str = args.join(', ')
           code_line("create<#{@specie.class_name}>(#{args_str});")
-        end
-
-        # Clears reverse relations from links hash between reverse_atom and from_atom.
-        # If revese_atom has no relations after clearing then reverse_atom removes too.
-        #
-        # @param [Hash] links which will be cleared
-        # @param [Concepts::Atom] reverse_atom the atom whose relations will be erased
-        # @param [Concepts::Atom] from_atom the atom to which relations will be erased
-        # @return [Hash] the links without correspond relations and reverse_atom if it
-        #   necessary
-        def clear_reverse_from(links, reverse_atom, from_atom)
-          reject_proc = proc { |a, _| a == from_atom }
-          clear_links(links, reject_proc) { |a| a == reverse_atom }
-        end
-
-        # Clears position relations which are between atom from clearing_atoms
-        # @param [Hash] links which will be cleared
-        # @param [Set] clearing_atoms the atoms between which positions will be erased
-        # @return [Hash] the links without erased positions
-        def clear_excess_positions(links, clearing_atoms)
-          # there is could be only realy bonds and positions
-          reject_proc = proc { |a, r| !r.bond? && clearing_atoms.include?(a) }
-          clear_links(links, reject_proc) { |a| clearing_atoms.include?(a) }
-        end
-
-        # Clears relations from links hash where each purging relatoins list selected
-        # by condition lambda and purification doing by reject_proc
-        #
-        # @param [Hash] links which will be cleared
-        # @param [Proc] reject_proc the function of two arguments which doing for
-        #   reject excess relations
-        # @yield [Atom] by it condition checks that erasing should to be
-        # @return [Hash] the links without erased relations
-        def clear_links(links, reject_proc, &condition_proc)
-          links.each_with_object({}) do |(atom, rels), result|
-            if condition_proc[atom]
-              new_rels = rels.reject(&reject_proc)
-              result[atom] = new_rels unless new_rels.empty?
-            else
-              result[atom] = rels
-            end
-          end
         end
       end
 
