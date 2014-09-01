@@ -2,8 +2,8 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Accumulates the names of variables for generation cpp code
-      class Namer
+      # Accumulates the names of variables for generation algorithms in cpp code
+      class NameRemember
         # Initializes internal store for all using names
         def initialize
           @names = {}

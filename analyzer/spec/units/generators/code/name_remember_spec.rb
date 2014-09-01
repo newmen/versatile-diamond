@@ -4,7 +4,7 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe Namer do
+      describe NameRemember do
         subject { described_class.new }
 
         describe '#assign' do

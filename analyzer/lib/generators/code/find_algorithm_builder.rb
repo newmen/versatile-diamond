@@ -19,7 +19,7 @@ module VersatileDiamond
           @generator = generator
           @specie = specie
           @pure_essence = EssenceCleaner.pure_essence_for(specie)
-          @namer = Namer.new
+          @namer = NameRemember.new
         end
 
         # Generates cpp code by which target specie will be found when simulation doing
