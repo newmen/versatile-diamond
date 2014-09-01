@@ -25,6 +25,10 @@ module VersatileDiamond
             expect(sequence.major_atoms).to eq(major_atoms)
           end
 
+          it '#addition_atoms' do
+            expect(sequence.addition_atoms).to eq(addition_atoms)
+          end
+
           it '#delta' do
             expect(sequence.delta).to eq(delta)
           end
@@ -51,6 +55,7 @@ module VersatileDiamond
           end
           let(:short) { original }
           let(:major_atoms) { original }
+          let(:addition_atoms) { [] }
           let(:delta) { 0 }
         end
 
@@ -74,6 +79,7 @@ module VersatileDiamond
             ]
           end
           let(:major_atoms) { [methyl_on_bridge_base.atom(:cb)] }
+          let(:addition_atoms) { [methyl_on_bridge_base.atom(:cm)] }
           let(:delta) { 1 }
         end
 
@@ -102,6 +108,7 @@ module VersatileDiamond
             ]
           end
           let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
           let(:delta) { 0 }
         end
 
@@ -120,6 +127,7 @@ module VersatileDiamond
             ]
           end
           let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
           let(:delta) { 0 }
 
           it_behaves_like :apply_all do

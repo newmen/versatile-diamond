@@ -50,6 +50,18 @@ module VersatileDiamond
           short - addition_atoms
         end
 
+        # Detects additional atoms which are not presented in parent species
+        # @return [Array] the array of additional atoms
+        def addition_atoms
+          rest = spec.rest
+          if rest
+            adds = anchors.reject { |atom| rest.twin(atom) }
+            sort_atoms(adds)
+          else
+            []
+          end
+        end
+
         # Counts delta between atoms num of current specie and sum of atoms num of
         # all parents
         #
@@ -92,18 +104,6 @@ module VersatileDiamond
             else
               1
             end
-          end
-        end
-
-        # Detects additional atoms which are not presented in parent species
-        # @return [Array] the array of additional atoms
-        def addition_atoms
-          rest = spec.rest
-          if rest
-            adds = anchors.reject { |atom| rest.twin(atom) }
-            sort_atoms(adds)
-          else
-            []
           end
         end
       end
