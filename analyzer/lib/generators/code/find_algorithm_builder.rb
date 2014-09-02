@@ -55,6 +55,7 @@ module VersatileDiamond
 
         attr_reader :generator
         def_delegators :@specie, :spec, :sequence, :find_root?, :use_parent_symmetry?
+        def_delegator :sequence, :addition_atoms
 
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
@@ -187,6 +188,89 @@ module VersatileDiamond
           end
         end
 
+        # Gets a code which uses eachSymmetry method of engine framework
+        # @param [Specie] specie by variable name of which the target method will be
+        #   called
+        # @param [Array] clojure_args the arguments which will be passed to lambda
+        #   through clojure
+        # @yield should return string of lambda body
+        # @return [String] the code with symmetries iteration
+        def symmetry_lambda(parent, clojure_args, &block)
+          receiver_var = @namer.get(parent)
+          method_name = "#{receiver_var}->eachSymmetry"
+
+          parent_var_name = 'specie'
+          @namer.reassign(parent_var_name, [parent])
+          lambda_args = ["ParentSpec *#{parent_var_name}"]
+
+          code_lambda(method_name, [], clojure_args, lambda_args, &block)
+        end
+
+        # Gets a code which uses eachNeighbour method of engine framework and checks
+        # role of iterated neighbour atom
+        #
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor the atom from which iteration will run
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   neighbour which will be checked in iteration lambda body
+        # @param [Array] clojure_args the list of variables which should be passed to
+        #   lambda body through clojure
+        # @yield should return cpp code string of lambda body
+        # @return [String]
+        def neighbours_lambda(anchor, neighbour, clojure_args, &block)
+          method_name = 'eachNeighbour'
+          anchor_var_name = @namer.get(anchor)
+          method_args = [anchor_var_name, full_relation_name(anchor, neighbour)]
+
+          relation_is_bond = relation_between(anchor, neighbour).bond?
+          clojure_args += [anchor_var_name] if relation_is_bond
+
+          neighbour_var_name = 'neighbour'
+          @namer.reassign(neighbour_var_name, [neighbour])
+          lambda_args = ["Atom *#{neighbour_var_name}"]
+
+          code_lambda(method_name, method_args, clojure_args, lambda_args) do
+            condition = check_role_condition([neighbour])
+            if relation_is_bond
+              condition << " && #{anchor_var_name}->hasBondWith(#{neighbour_var_name})"
+            end
+
+            code_condition(condition, &block)
+          end
+        end
+
+        # Gets a relation between passed atoms
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor the atom which should be a key in pure essence
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   neighbour the atom which should be related from passed anchor atom
+        # @return [Concepts::Bond] the relation between passed anchors
+        def relation_between(anchor, neighbour)
+          pure_essence[anchor].select { |a, _| a == anchor }.first.last
+        end
+
+        # Gets the short name of relation for get neighbour atoms
+        # @param [Concepts::Bond] relation from which short name will be gotten
+        # @return [String] the short name of relation between passed atoms
+        def short_relation_name(relation)
+          "#{relation.dir}_#{relation.face}"
+        end
+
+        # Gets the full name of relation between passed atoms which could be used for
+        # iterate neighbour atoms
+        #
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   see at #relatoin_between same argument
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   see at #relatoin_between same argument
+        # @return [String] the full name relation of between passed atoms
+        def full_relation_name(anchor, neighbour)
+          lattice_class_name = generator.lattice_class(anchor.lattice).class_name
+          relation = relation_between(anchor, neighbour)
+          internal_name = short_relation_name(relation)
+          "&#{lattice_class_name}::#{internal_name}"
+        end
+
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
         # @return [String] the string of cpp code
         def define_anchor_variables
@@ -249,23 +333,6 @@ module VersatileDiamond
           end
         end
 
-        # Gets a code which uses eachSymmetry method of engine framework
-        # @param [Specie] specie by variable name of which the target method will be
-        #   called
-        # @param [Array] clojure_args the arguments which will be passed to lambda
-        #   through clojure
-        # @yield should return string of lambda body
-        # @return [String] the code with symmetries iteration
-        def symmetry_lambda(parent, clojure_args, &block)
-          receiver_var = @namer.get(parent)
-          method_name = "#{receiver_var}->eachSymmetry"
-
-          @namer.reassign('specie', [parent])
-          lambda_args = ["ParentSpec *specie"]
-
-          code_lambda(method_name, [], clojure_args, lambda_args, &block)
-        end
-
         # Gest a code string for find dependent specie
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
@@ -300,9 +367,9 @@ module VersatileDiamond
           args = []
 
           if delta > 1
-            args << @namer.array_name_for(sequence.addition_atoms)
+            args << @namer.array_name_for(addition_atoms)
           elsif delta == 1
-            args << @namer.get(sequence.addition_atoms.first)
+            args << @namer.get(addition_atoms.first)
           end
 
           if spec.parents.size > 1
