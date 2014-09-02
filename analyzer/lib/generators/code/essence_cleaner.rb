@@ -4,7 +4,6 @@ module VersatileDiamond
 
       # Contain logic for clean dependent specie essence
       class EssenceCleaner
-
         class << self
           # Gets an essence of wrapped dependent spec but without reverse relations if
           # related atoms is similar. The nearer to top of achchors sequence, have more
@@ -29,9 +28,9 @@ module VersatileDiamond
             #   атом, если у него более не остаётся отношений
             # если больше - кидаем эксепшн
             #
-            # между всеми атомами, что участвовали в отчистке удаляем позишины, и так
-            # же если у атома в таком случае не остаётся отношений - удаляем его из
-            # эссенции
+            # между всеми атомами, что участвовали в отчистке, удаляем позишины, и
+            # также, если у атома в таком случае не остаётся отношений, - удаляем его
+            # из эссенции
 
             clearing_atoms = Set.new
             essence = spec.essence
