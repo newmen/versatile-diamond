@@ -47,9 +47,7 @@ module VersatileDiamond
         {
             auto crystal = crystalBy(anchor);
             auto neighbours = crystal->cross_110(anchor);
-            if (neighbours.all() &&
-                    neighbours[0]->is(#{role_cr}) && anchor->hasBondWith(neighbours[0]) &&
-                    neighbours[1]->is(#{role_cr}) && anchor->hasBondWith(neighbours[1]))
+            if (neighbours.all() && neighbours[0]->is(#{role_cr}) && neighbours[1]->is(#{role_cr}) && anchor->hasBondWith(neighbours[0]) && anchor->hasBondWith(neighbours[1]))
             {
                 Atom *atoms[3] = { anchor, neighbours[0], neighbours[1] };
                 create<Bridge>(atoms);
