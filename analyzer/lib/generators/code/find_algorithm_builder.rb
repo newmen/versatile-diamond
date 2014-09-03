@@ -254,6 +254,48 @@ module VersatileDiamond
           end
         end
 
+        # Gets a code with checking neighbours of passed anchors that available through
+        # passed relation
+        #
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor the atom from neighbours will be gotten
+        # @param [Concepts::Bond] relation through which neighbours will be gotten
+        # @yield should return cpp code string for condition body
+        def all_neighbour_condition(anchor, relation, &block)
+          anchor_var_name = @namer.get(anchor)
+          neighbours =
+            pure_essence[anchor].select { |_, r| r == relation }.map(&:first)
+
+          define_str, condition_str = nil
+
+          if relation.face && relation.dir
+            @namer.assign('neighbour', neighbours)
+
+            neighbours_var_name = @namer.array_name_for(neighbours)
+            relation_name = short_relation_name(relation)
+            define_str = "auto #{neighbours_var_name} = crystalBy" \
+              "(#{anchor_var_name})->#{short_relation_name}(#{anchor_var_name});"
+
+            condition_str = "#{neighbours_var_name}.all() && "
+            condition_str << check_role_condition(neighbours)
+            if relation.bond?
+              pairs = ([anchor] * neighbours.size).zip(neighbours)
+              condition_str = append_check_bond_condition(condition_str, pairs)
+            end
+          else
+            neighbour = neighbours.first
+            @namer.assign_next('amorph', neighbour)
+
+            neighbour_var_name = @namer.get(neighbour)
+            define_str = "Atom *#{neighbour_var_name} = " \
+              "#{anchor_var_name}->amorphNeighbour();"
+
+            condition_str = check_role_condition(neighbours)
+          end
+
+          code_line(define_str) + code_condition(condition_str, &block)
+        end
+
         # Gets a relation between passed atoms
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   anchor the atom which should be a key in pure essence
@@ -311,24 +353,13 @@ module VersatileDiamond
           end
         end
 
-        # Gets cpp code string with defining additional atoms variable by passed atoms
-        # @param [Array] from_atoms the array of atoms from which value(s) will gotten
-        #   for initiate defining variable
-        # @return [String] the string with defining additional atom(s) variable
-        def define_additional_atoms_variable(from_atoms)
-          raise 'Wrong length of passed array' unless delta == from_atoms.size
-
-          if delta == 1
-            links = pure_essence[from_atoms.first]
-            raise 'Wrong number of relations' unless links.size == 1
-
-            relation = links.first.last
-            raise 'Wrong relation type' if relation.face || relation.dir
-
-            "Atom *additionalAtom = anchor->amorphNeighbour();"
-          else # delta > 1
-
-          end
+        # Gets cpp code string with defining additional atoms variable
+        # @return [String] the string with defining additional atoms variable
+        def define_additional_atoms_variable
+          items_str = addition_atoms.map { |a| @namer.get(a) }.join(', ')
+          @namer.reassign('additionalAtom', additional_atoms)
+          additional_atoms_var_name = @namer.array_name_for(addition_atoms)
+          "Atom *#{additional_atoms_var_name} = { #{items_str} };"
         end
 
         # Gets a main embedded conditions for specie find algorithm

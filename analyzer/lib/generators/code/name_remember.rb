@@ -24,7 +24,7 @@ module VersatileDiamond
           same_names = names.select { |_, n| n =~ /^#{name}\d+$/ }.map(&:last)
           last_name = same_names.sort.last
           max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
-          assign("#{name}#{max_index + 1}", [var])
+          assign("#{name}#{max_index.next}", [var])
         end
 
         # Assign unique names for each variables with duplicate error checking
