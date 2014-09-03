@@ -188,6 +188,21 @@ module VersatileDiamond
           end
         end
 
+        # Appends condition of checking bond exsistance between each atoms in passed
+        # pairs array
+        #
+        # @param [String] original_condition to which new conditions will be appended
+        # @param [Array] pairs of atoms between which bond existatnce will be checked
+        # @return [String] the extended condition
+        def append_check_bond_condition(original_condition, pairs)
+          parts = pairs.map do |*atoms|
+            a_var, b_var = atoms.map { |atom| @namer.get(atom) }
+            " && #{a_var}->hasBondWith(#{b_var})"
+          end
+
+          "#{original_condition}#{parts.join}"
+        end
+
         # Gets a code which uses eachSymmetry method of engine framework
         # @param [Specie] specie by variable name of which the target method will be
         #   called
@@ -232,7 +247,7 @@ module VersatileDiamond
           code_lambda(method_name, method_args, clojure_args, lambda_args) do
             condition = check_role_condition([neighbour])
             if relation_is_bond
-              condition << " && #{anchor_var_name}->hasBondWith(#{neighbour_var_name})"
+              condition = append_check_bond_condition(condition, [[anchor, neighbour]])
             end
 
             code_condition(condition, &block)
