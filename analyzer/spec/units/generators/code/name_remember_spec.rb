@@ -28,6 +28,37 @@ module VersatileDiamond
           end
         end
 
+        describe '#assign_next' do
+          describe 'with number one' do
+            let(:var) { 'value' }
+            before { subject.assign_next('var', var) }
+            it { expect(subject.get(var)).to eq('var1') }
+          end
+
+          describe 'with number two' do
+            let(:var1) { 'value' }
+            let(:var2) { 'other' }
+            before do
+              subject.assign_next('var', var1)
+              subject.assign_next('var', var2)
+            end
+            it { expect(subject.get(var2)).to eq('var2') }
+          end
+
+          describe 'duplicate variable' do
+            let(:var) { 'value' }
+            before { subject.assign_next('var', var) }
+
+            it 'with same var name' do
+              expect { subject.assign_next('var', var) }.to raise_error
+            end
+
+            it 'with another var name' do
+              expect { subject.assign_next('other', var) }.to raise_error
+            end
+          end
+        end
+
         describe '#reassign' do
           before do
             subject.assign('var', [1])
