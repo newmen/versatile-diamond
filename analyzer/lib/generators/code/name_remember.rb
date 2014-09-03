@@ -16,6 +16,17 @@ module VersatileDiamond
           store_variables(:check_and_store, single_name, vars)
         end
 
+        # Assign next unique name for variable
+        # @param [String] name without additional index what will using for make a new
+        #   next name of variable
+        # @param [Object] var the variable for which name will assigned
+        def assign_next(name, var)
+          same_names = names.select { |_, n| n =~ /^#{name}\d+$/ }.map(&:last)
+          last_name = same_names.sort.last
+          max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
+          assign("#{name}#{max_index + 1}", [var])
+        end
+
         # Assign unique names for each variables with duplicate error checking
         # @param [String] single_name the singular name of one variable
         # @param [Array] vars the list of remembing variables
