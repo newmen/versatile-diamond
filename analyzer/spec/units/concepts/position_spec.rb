@@ -43,6 +43,11 @@ module VersatileDiamond
         it { expect(subject == position_100_front).to be_falsey }
       end
 
+      describe '#params' do
+        it { expect(position_110_front.params).to eq({ face: 110, dir: :front }) }
+        it { expect(position_100_cross.params).to eq({ face: 100, dir: :cross }) }
+      end
+
       describe '#it?' do
         subject { position_110_front }
 
@@ -55,6 +60,10 @@ module VersatileDiamond
         it { expect(position_100_front.same?(position_100_cross)).to be_falsey }
         it { expect(position_100_front.same?(bond_110_front)).to be_falsey }
         it { expect(position_100_front.same?(bond_100_front)).to be_truthy }
+      end
+
+      describe '#belongs_to_crystal?' do
+        it { expect(position_100_cross.belongs_to_crystal?).to be_truthy }
       end
     end
 

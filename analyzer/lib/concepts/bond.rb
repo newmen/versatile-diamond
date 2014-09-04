@@ -45,7 +45,13 @@ module VersatileDiamond
       # @param [Bond] other relation instance with which comparing will be
       # @return [Boolean] equal or not
       def == (other)
-        self.class == other.class && other.it?(face: face, dir: dir)
+        self.class == other.class && other.it?(params)
+      end
+
+      # Gets parameters of relation
+      # @return [Hash] the hash of relation perameters
+      def params
+        { face: face, dir: dir }
       end
 
       # Checks current instances for passed options
@@ -77,11 +83,17 @@ module VersatileDiamond
         true
       end
 
+      # Checks that current bond belongs to crystal
+      # @return [Boolean] is have face and direction or not
+      def belongs_to_crystal?
+        face && dir
+      end
+
       def to_s
         symbol = '-'
         str = symbol.dup
-        str << "#{@face}#{symbol}" if @face
-        str << "#{@dir}#{symbol}" if @dir
+        str << "#{face}#{symbol}" if face
+        str << "#{dir}#{symbol}" if dir
         "#{str}#{symbol}"
       end
 
