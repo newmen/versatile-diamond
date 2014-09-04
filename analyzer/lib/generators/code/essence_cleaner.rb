@@ -44,15 +44,12 @@ module VersatileDiamond
               next unless essence[atom]
 
               clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
-
-              groups = essence[atom].group_by do |_, r|
-                { face: r.face, dir: r.dir }
-              end
+              groups = essence[atom].group_by { |_, r| r.params }
 
               amorph_rels = groups.delete(Concepts::Bond::AMORPH_PROPS)
               if amorph_rels
                 amorph_rels.each(&clear_reverse_relations)
-                crystal_rels = essence[atom].select { |_, r| r.face && r.dir }
+                crystal_rels = essence[atom].select { |_, r| r.belongs_to_crystal? }
                 amorph_rels.uniq!(&:first)
                 if amorph_rels.size > 1
                   # see comment in Lattices::Base#relations_limit method

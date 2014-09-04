@@ -268,7 +268,7 @@ module VersatileDiamond
 
           define_str, condition_str = nil
 
-          if relation.face && relation.dir
+          if relation.belongs_to_crystal?
             @namer.assign('neighbour', neighbours)
 
             neighbours_var_name = @namer.array_name_for(neighbours)
@@ -359,7 +359,7 @@ module VersatileDiamond
           items_str = addition_atoms.map { |a| @namer.get(a) }.join(', ')
           @namer.reassign('additionalAtom', additional_atoms)
           additional_atoms_var_name = @namer.array_name_for(addition_atoms)
-          "Atom *#{additional_atoms_var_name} = { #{items_str} };"
+          "Atom *#{additional_atoms_var_name}[#{delta}] = { #{items_str} };"
         end
 
         # Gets a main embedded conditions for specie find algorithm

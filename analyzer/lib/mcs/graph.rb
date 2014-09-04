@@ -218,7 +218,7 @@ module VersatileDiamond
       # @param [Bond] relation the checking bond
       # @raise [RuntimeError] if bond is incorrect
       def check_bond_is_correct(relation)
-        if !relation.bond? || (relation.face && relation.dir)
+        if !relation.bond? || relation.belongs_to_crystal?
           raise 'Incorrect multi-bond'
         end
       end

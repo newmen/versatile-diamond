@@ -433,7 +433,7 @@ module VersatileDiamond
         until bonds.empty?
           atwrel = bonds.pop
           nbr, rel = atwrel
-          if rel.face
+          if rel.belongs_to_crystal?
             result << atwrel
             next
           end

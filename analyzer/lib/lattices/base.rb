@@ -23,7 +23,7 @@ module VersatileDiamond
       def opposite_relation(other, relation)
         if self.class == other.class
           same_lattice(relation)
-        elsif relation.face.nil?
+        elsif !relation.belongs_to_crystal?
           relation # there relation is a bond without face and direction
         else
           other_lattice(relation)
