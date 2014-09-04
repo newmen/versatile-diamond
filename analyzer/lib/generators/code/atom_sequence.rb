@@ -15,7 +15,7 @@ module VersatileDiamond
           @cacher = cacher
           @spec = spec
 
-          @_original_sequence = nil
+          @_original_sequence, @_short_sequence, @_major_atoms, @_addition_atoms = nil
         end
 
         # Makes original sequence of atoms which will be used for get an atom index
@@ -41,25 +41,28 @@ module VersatileDiamond
         # Gets short sequence of anchors
         # @return [Array] the short sequence of different atoms
         def short
-          sort_atoms(anchors, amorph_before: false)
+          @_short_sequence ||= sort_atoms(anchors, amorph_before: false)
         end
 
         # Gets a atoms list of short sequence without addition atoms
         # @return [Array] the array of major anchor atoms
         def major_atoms
-          short - addition_atoms
+          @_major_atoms ||= short - addition_atoms
         end
 
         # Detects additional atoms which are not presented in parent species
         # @return [Array] the array of additional atoms
         def addition_atoms
+          return @_addition_atoms if @_addition_atoms
+
           rest = spec.rest
-          if rest
-            adds = anchors.reject { |atom| rest.twin(atom) }
-            sort_atoms(adds)
-          else
-            []
-          end
+          @_addition_atoms =
+            if rest
+              adds = anchors.reject { |atom| rest.twin(atom) }
+              sort_atoms(adds)
+            else
+              []
+            end
         end
 
         # Counts delta between atoms num of current specie and sum of atoms num of
