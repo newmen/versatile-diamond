@@ -78,14 +78,6 @@ module VersatileDiamond
           end
         end
 
-        # Gets number of sceleton atoms used in specie and different from atoms of
-        # parent specie
-        #
-        # @return [Integer] the number of atoms
-        def atoms_num
-          spec.target.links.size
-        end
-
         # Wraps combined base engine class by classes which works with handbook
         # @return [String] full major base class
         def wrapped_base_class_name

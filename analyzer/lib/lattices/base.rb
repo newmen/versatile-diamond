@@ -12,6 +12,15 @@ module VersatileDiamond
         def initialize(relation); @relation = relation end
       end
 
+      class << self
+        # Gets a limit for amorph relation
+        # @return [Hash] the hash where key is hash of amorph bond properties and value
+        #   is a limit of relations number
+        def amorph_relations_limit
+          { Concepts::Bond::AMORPH_PROPS => 1 }
+        end
+      end
+
       # Checks other lattice and gives an edge corresponding to inverse
       # relation between atoms in the lattice
       #
@@ -59,7 +68,7 @@ module VersatileDiamond
       def relations_limit
         # this limit because engine framework provides just method #amorphNeighbour
         # which has assert to check that number of amorph atom neighbour is equal 1
-        { Concepts::Bond::AMORPH_PROPS => 1 }.merge(crystal_relations_limit)
+        self.class.amorph_relations_limit.merge(crystal_relations_limit)
       end
 
     private
