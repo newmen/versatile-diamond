@@ -226,19 +226,21 @@ module VersatileDiamond
         #
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   anchor the atom from which iteration will run
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   neighbour which will be checked in iteration lambda body
+        # @param [Hash] rel_params the relation parameters through which neighbours
+        #   will be gotten
         # @param [Array] clojure_args the list of variables which should be passed to
         #   lambda body through clojure
         # @yield should return cpp code string of lambda body
         # @return [String]
-        def neighbours_lambda(anchor, neighbour, clojure_args, &block)
+        def each_neighbours_lambda(anchor, rel_params, clojure_args, &block)
+          pairs = pure_essence[anchor].select { |_, r| r.it?(rel_params) }
+          neighbour, relation = pairs.first
+
           method_name = 'eachNeighbour'
           anchor_var_name = @namer.get(anchor)
-          method_args = [anchor_var_name, full_relation_name(anchor, neighbour)]
+          method_args = [anchor_var_name, full_relation_name(anchor, rel_params)]
 
-          relation_is_bond = relation_between(anchor, neighbour).bond?
-          clojure_args += [anchor_var_name] if relation_is_bond
+          clojure_args += [anchor_var_name] if relation.bond?
 
           neighbour_var_name = 'neighbour'
           @namer.reassign(neighbour_var_name, [neighbour])
@@ -246,7 +248,7 @@ module VersatileDiamond
 
           code_lambda(method_name, method_args, clojure_args, lambda_args) do
             condition = check_role_condition([neighbour])
-            if relation_is_bond
+            if relation.bond?
               condition = append_check_bond_condition(condition, [[anchor, neighbour]])
             end
 
@@ -254,63 +256,64 @@ module VersatileDiamond
           end
         end
 
-        # Gets a code with checking neighbours of passed anchors that available through
-        # passed relation
-        #
+        # Gets a code with checking all crystal neighbours of anchor
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   anchor the atom from neighbours will be gotten
-        # @param [Concepts::Bond] relation through which neighbours will be gotten
+        # @param [Hash] rel_params the relation parameters through which neighbours
+        #   will be gotten
         # @yield should return cpp code string for condition body
-        def all_neighbour_condition(anchor, relation, &block)
+        # @return [String] the string with cpp code
+        def all_neighbours_condition(anchor, rel_params, &block)
+          pairs = pure_essence[anchor].select { |_, r| r.it?(rel_params) }
+          neighbours = pairs.map(&:first)
+          @namer.assign('neighbour', neighbours)
+
           anchor_var_name = @namer.get(anchor)
-          neighbours =
-            pure_essence[anchor].select { |_, r| r == relation }.map(&:first)
+          neighbours_var_name = @namer.array_name_for(neighbours)
+          relation_name = short_relation_name(rel_params)
+          define_str = "auto #{neighbours_var_name} = crystalBy" \
+            "(#{anchor_var_name})->#{relation_name}(#{anchor_var_name});"
 
-          define_str, condition_str = nil
+          condition_str = "#{neighbours_var_name}.all() && "
+          condition_str << check_role_condition(neighbours)
 
-          if relation.belongs_to_crystal?
-            @namer.assign('neighbour', neighbours)
+          with_bonds = pairs.reduce([]) do |acc, (atom, rel)|
+            rel.bond? ? (acc << [anchor, atom]) : acc
+          end
 
-            neighbours_var_name = @namer.array_name_for(neighbours)
-            relation_name = short_relation_name(relation)
-            define_str = "auto #{neighbours_var_name} = crystalBy" \
-              "(#{anchor_var_name})->#{short_relation_name}(#{anchor_var_name});"
-
-            condition_str = "#{neighbours_var_name}.all() && "
-            condition_str << check_role_condition(neighbours)
-            if relation.bond?
-              pairs = ([anchor] * neighbours.size).zip(neighbours)
-              condition_str = append_check_bond_condition(condition_str, pairs)
-            end
-          else
-            neighbour = neighbours.first
-            @namer.assign_next('amorph', neighbour)
-
-            neighbour_var_name = @namer.get(neighbour)
-            define_str = "Atom *#{neighbour_var_name} = " \
-              "#{anchor_var_name}->amorphNeighbour();"
-
-            condition_str = check_role_condition(neighbours)
+          unless with_bonds.empty?
+            condition_str = append_check_bond_condition(condition_str, with_bonds)
           end
 
           code_line(define_str) + code_condition(condition_str, &block)
         end
 
-        # Gets a relation between passed atoms
+        # Gets a code with checking amorph neighbour of anchor
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   anchor the atom which should be a key in pure essence
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   neighbour the atom which should be related from passed anchor atom
-        # @return [Concepts::Bond] the relation between passed anchors
-        def relation_between(anchor, neighbour)
-          pure_essence[anchor].select { |a, _| a == anchor }.first.last
+        #   anchor the atom from neighbours will be gotten
+        # @param [Hash] rel_params the relation parameters through which neighbours
+        #   will be gotten
+        # @yield should return cpp code string for condition body
+        # @return [String] the string with cpp code
+        def amorph_neighbour_condition(anchor, pairs, &block)
+          pairs = pure_essence[anchor].select { |_, r| r.it?(rel_params) }
+          neighbour = pairs.first.first
+          @namer.assign_next('amorph', neighbour)
+
+          anchor_var_name = @namer.get(anchor)
+          neighbour_var_name = @namer.get(neighbour)
+          define_str =
+            "Atom *#{neighbour_var_name} = #{anchor_var_name}->amorphNeighbour();"
+
+          code_line(define_str) + code_condition(check_role_condition([neighbour]))
         end
 
         # Gets the short name of relation for get neighbour atoms
-        # @param [Concepts::Bond] relation from which short name will be gotten
-        # @return [String] the short name of relation between passed atoms
-        def short_relation_name(relation)
-          "#{relation.dir}_#{relation.face}"
+        # @param [Hash] rel_params the relation parameters by which short name will be
+        #   gotten
+        # @return [String] the short name of relation
+        def short_relation_name(rel_params)
+          "#{rel_params[:dir]}_#{rel_params[:face]}"
         end
 
         # Gets the full name of relation between passed atoms which could be used for
@@ -318,14 +321,13 @@ module VersatileDiamond
         #
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   see at #relatoin_between same argument
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   see at #relatoin_between same argument
+        # @param [Hash] rel_params the relation parameters by which full name will be
+        #   gotten
         # @return [String] the full name relation of between passed atoms
-        def full_relation_name(anchor, neighbour)
+        def full_relation_name(anchor, relation)
           lattice_class_name = generator.lattice_class(anchor.lattice).class_name
-          relation = relation_between(anchor, neighbour)
-          internal_name = short_relation_name(relation)
-          "&#{lattice_class_name}::#{internal_name}"
+          short_name = short_relation_name(rel_params)
+          "&#{lattice_class_name}::#{short_name}"
         end
 
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
@@ -399,10 +401,6 @@ module VersatileDiamond
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
         def find_root_body_for(anchors)
-          if anchors.size > 1
-            raise 'Undefined find body for many atoms. Please contact the developer'
-          end
-
           creation_str
         end
 
