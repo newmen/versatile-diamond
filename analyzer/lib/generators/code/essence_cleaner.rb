@@ -43,32 +43,31 @@ module VersatileDiamond
             sequence.short.each do |atom|
               next unless essence[atom]
 
-              clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
+              limits = limits_for(atom)
               groups = essence[atom].group_by { |_, r| r.params }
+              groups.each do |rel_params, group|
+                if limits[rel_params] < group.uniq.size
+                  raise 'Atom has too more relations'
+                end
+              end
+
+              clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
 
               amorph_rels = groups.delete(Concepts::Bond::AMORPH_PROPS)
               if amorph_rels
                 amorph_rels.each(&clear_reverse_relations)
                 crystal_rels = essence[atom].select { |_, r| r.belongs_to_crystal? }
-                amorph_rels.uniq!(&:first)
-                if amorph_rels.size > 1
-                  # see comment in Lattices::Base#relations_limit method
-                  raise 'Atom could not have more than one amorph neighbour'
-                end
-                essence[atom] = crystal_rels + amorph_rels
+                essence[atom] = crystal_rels + amorph_rels.uniq
               end
 
               next unless atom.lattice
-              limits = atom.lattice.instance.relations_limit
 
-              groups.each do |rel_opts, group_rels|
-                if limits[rel_opts] < group_rels.size
-                  raise 'Atom has too more relations'
-                elsif limits[rel_opts] == group_rels.size
-                  group_rels.each(&clear_reverse_relations)
+              groups.each do |rel_params, group|
+                if limits[rel_params] == group.size
+                  group.each(&clear_reverse_relations)
                 else
                   first_prop = Organizers::AtomProperties.new(spec, atom)
-                  group_rels.each do |a, _|
+                  group.each do |a, _|
                     second_prop = Organizers::AtomProperties.new(spec, a)
                     clear_reverse[a, atom] if first_prop == second_prop
                   end
@@ -77,6 +76,18 @@ module VersatileDiamond
             end
 
             clear_excess_positions(essence, clearing_atoms)
+          end
+
+          # Gets the relations limits for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which relations limits will be gotten
+          # @return [Hash] the hash of limits of relations
+          def limits_for(atom)
+            if atom.lattice
+              atom.lattice.instance.relations_limit
+            else
+              Lattices::Base.amorph_relations_limit
+            end
           end
 
         private

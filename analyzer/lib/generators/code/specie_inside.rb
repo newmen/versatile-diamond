@@ -4,6 +4,15 @@ module VersatileDiamond
 
       # Provides method that characterize the inside of specie
       module SpecieInside
+
+        # Gets number of sceleton atoms used in specie and different from atoms of
+        # parent specie
+        #
+        # @return [Integer] the number of atoms
+        def atoms_num
+          spec.target.links.size
+        end
+
       private
 
         # Gets the parent specie classes

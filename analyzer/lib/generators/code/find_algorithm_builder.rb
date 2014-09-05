@@ -29,10 +29,10 @@ module VersatileDiamond
 
           if !find_root? && use_parent_symmetry?
             symmetry_lambda(parents.first, []) do
-              code_line(define_anchor_variables) + body
+              code_line(define_anchor_variable) + body
             end
           elsif !find_root?
-            code_line(define_anchor_variables) + body
+            code_line(define_anchor_variable) + body
           else
             body
           end
@@ -56,6 +56,12 @@ module VersatileDiamond
         attr_reader :generator
         def_delegators :@specie, :spec, :sequence, :find_root?, :use_parent_symmetry?
         def_delegator :sequence, :addition_atoms
+
+        # Checks that finding specie is source specie
+        # @return [Boolean] is source specie or not
+        def source?
+          spec.parents.size == 0
+        end
 
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
@@ -228,19 +234,16 @@ module VersatileDiamond
         #   anchor the atom from which iteration will run
         # @param [Hash] rel_params the relation parameters through which neighbours
         #   will be gotten
-        # @param [Array] clojure_args the list of variables which should be passed to
-        #   lambda body through clojure
         # @yield should return cpp code string of lambda body
         # @return [String]
-        def each_neighbours_lambda(anchor, rel_params, clojure_args, &block)
+        def each_neighbours_lambda(anchor, rel_params, &block)
           pairs = pure_essence[anchor].select { |_, r| r.it?(rel_params) }
           neighbour, relation = pairs.first
 
           method_name = 'eachNeighbour'
           anchor_var_name = @namer.get(anchor)
           method_args = [anchor_var_name, full_relation_name(anchor, rel_params)]
-
-          clojure_args += [anchor_var_name] if relation.bond?
+          clojure_args = ['=']
 
           neighbour_var_name = 'neighbour'
           @namer.reassign(neighbour_var_name, [neighbour])
@@ -320,7 +323,7 @@ module VersatileDiamond
         # iterate neighbour atoms
         #
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   see at #relatoin_between same argument
+        #   anchor see at #relatoin_between same argument
         # @param [Hash] rel_params the relation parameters by which full name will be
         #   gotten
         # @return [String] the full name relation of between passed atoms
@@ -332,7 +335,7 @@ module VersatileDiamond
 
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
         # @return [String] the string of cpp code
-        def define_anchor_variables
+        def define_anchor_variable
           parent = parents.first
           specie_var_name = @namer.get(parent)
 
@@ -364,6 +367,15 @@ module VersatileDiamond
           "Atom *#{additional_atoms_var_name}[#{delta}] = { #{items_str} };"
         end
 
+        # Gets a code string with defining atoms variable for creating source specie
+        # when simulation do
+        #
+        # @return [String] the string with defined atoms variable
+        def define_atoms_variable
+          items_str = sequence.short.map { |a| @namer.get(a) }.join(', ')
+          "Atom *atoms[#{atoms_num}] = { #{items_str} };"
+        end
+
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
         def body
@@ -385,15 +397,12 @@ module VersatileDiamond
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
         def mono_parent_body_for(anchors)
-          if delta > 0
-            anchors_with_links = anchors.reject { |atom| pure_essence[atom].empty? }
-            with_amorphs = anchors_with_links.select do |atom|
-              pure_essence[atom].any? { |a, _| !a.lattice }
+          combine_algorithm(anchors) do
+            if delta > 0
+              code_line(define_additional_atoms_variable) + creation_line
+            else
+              creation_line
             end
-
-            ''
-          else
-            creation_str
           end
         end
 
@@ -401,13 +410,80 @@ module VersatileDiamond
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
         def find_root_body_for(anchors)
-          creation_str
+          if source?
+            combine_algorithm(anchors) do
+              code_line(define_atoms_variable) + creation_line
+            end
+          else
+            '' # fake
+          end
+        end
+
+        # @param [Array] anchors by which the algorithm will be combined
+        # @return [String] the cpp code of combined find algorithm
+        def combine_algorithm(anchors, &block)
+          ext_proc = collect_procs(anchors).reverse.reduce(block) do |acc, prc|
+            -> { prc[&acc] }
+          end
+
+          ext_proc.call
+        end
+
+        # Collects procs of conditions or lambdas for body of find algorithm
+        # @param [Array] anchors by which procs will be collected
+        # @return [Array] the array of procs which will combined later
+        def collect_procs(anchors)
+          collect_atoms_procs(anchors, anchors).last
+        end
+
+        # Recursive collects used atoms and procs
+        # @param [Array] anchors by which atoms and procs will be collected
+        # @param [Array] except_atoms the array of atoms to which relations not will
+        #   observed
+        # @return [Array] the array with two items where first item is used atoms and
+        #   the second item is collected procs
+        def collect_atoms_procs(anchors, except_atoms)
+          used_atoms, used_procs = anchors.reduce([[], []]) do |atoms_procs, anchor|
+            if pure_essence[anchor]
+              limits = EssenceCleaner.limits_for(anchor)
+              groups = pure_essence[anchor].group_by { |_, r| r.params }
+              groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
+                clean_group = group.reject { |a, _| except_atoms.include?(a) }
+                if !clean_group.empty? && clean_group.size != group.size
+                  raise 'Wrong walking on pure essence graph'
+                elsif clean_group.empty?
+                  [atoms, procs]
+                else
+                  lazy_method = -> method_name do
+                    -> &block { send(method_name, anchor, rel_params, &block) }
+                  end
+
+                  procs <<
+                    if !group.first.last.belongs_to_crystal?
+                      lazy_method[:amorph_neighbour_condition]
+                    elsif limits[rel_params] == group.size
+                      lazy_method[:all_neighbours_condition]
+                    else
+                      lazy_method[:each_neighbours_lambda]
+                    end
+
+                  [atoms + group.map(&:first), procs]
+                end
+              end
+            else
+              atoms_procs
+            end
+          end
+
+          without_atoms = except_atoms + used_atoms
+          next_atoms, next_procs = collect_atoms_procs(used_atoms, without_atoms)
+          [used_atoms + next_atoms, used_procs + next_procs]
         end
 
         # Gets a string with finding specie creation
         # @param [Array] args the arguments which will be passed to creation method
         # @return [String] the cpp code string with creation of finding specie
-        def creation_str
+        def creation_line
           args = []
 
           if delta > 1
