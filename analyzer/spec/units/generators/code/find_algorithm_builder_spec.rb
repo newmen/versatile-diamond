@@ -270,7 +270,7 @@ module VersatileDiamond
                 Atom *amorph2 = anchors[1]->amorphNeighbour();
                 if (amorph2->is(#{role_c2}))
                 {
-                    Atom *additionalAtoms[2] = { amorph1, amorph2 };
+                    Atom *additionalAtoms[2] = { amorph2, amorph1 };
                     create<TwoMethylsOnDimer>(additionalAtoms, parent);
                 }
             }
