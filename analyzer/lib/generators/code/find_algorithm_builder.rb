@@ -201,7 +201,7 @@ module VersatileDiamond
         # @param [Array] pairs of atoms between which bond existatnce will be checked
         # @return [String] the extended condition
         def append_check_bond_condition(original_condition, pairs)
-          parts = pairs.map do |*atoms|
+          parts = pairs.map do |atoms|
             a_var, b_var = atoms.map { |atom| @namer.get(atom) }
             " && #{a_var}->hasBondWith(#{b_var})"
           end
@@ -298,7 +298,7 @@ module VersatileDiamond
         #   will be gotten
         # @yield should return cpp code string for condition body
         # @return [String] the string with cpp code
-        def amorph_neighbour_condition(anchor, pairs, &block)
+        def amorph_neighbour_condition(anchor, rel_params, &block)
           pairs = pure_essence[anchor].select { |_, r| r.it?(rel_params) }
           neighbour = pairs.first.first
           @namer.assign_next('amorph', neighbour)
@@ -308,7 +308,8 @@ module VersatileDiamond
           define_str =
             "Atom *#{neighbour_var_name} = #{anchor_var_name}->amorphNeighbour();"
 
-          code_line(define_str) + code_condition(check_role_condition([neighbour]))
+          condition_str = check_role_condition([neighbour])
+          code_line(define_str) + code_condition(condition_str, &block)
         end
 
         # Gets the short name of relation for get neighbour atoms
@@ -362,7 +363,7 @@ module VersatileDiamond
         # @return [String] the string with defining additional atoms variable
         def define_additional_atoms_variable
           items_str = addition_atoms.map { |a| @namer.get(a) }.join(', ')
-          @namer.reassign('additionalAtom', additional_atoms)
+          @namer.reassign('additionalAtom', addition_atoms)
           additional_atoms_var_name = @namer.array_name_for(addition_atoms)
           "Atom *#{additional_atoms_var_name}[#{delta}] = { #{items_str} };"
         end
@@ -398,7 +399,7 @@ module VersatileDiamond
         # @return [String] the cpp code with check anchors and specie creation
         def mono_parent_body_for(anchors)
           combine_algorithm(anchors) do
-            if delta > 0
+            if delta > 1
               code_line(define_additional_atoms_variable) + creation_line
             else
               creation_line
@@ -419,8 +420,11 @@ module VersatileDiamond
           end
         end
 
-        # @param [Array] anchors by which the algorithm will be combined
-        # @return [String] the cpp code of combined find algorithm
+        # Build find algorithm by combining procs that occured by walking on pure
+        # essence graph from anchors
+        #
+        # @param [Array] anchors from which walking will occure
+        # @return [String] the cpp code find algorithm
         def combine_algorithm(anchors, &block)
           ext_proc = collect_procs(anchors).reverse.reduce(block) do |acc, prc|
             -> { prc[&acc] }
@@ -443,7 +447,10 @@ module VersatileDiamond
         # @return [Array] the array with two items where first item is used atoms and
         #   the second item is collected procs
         def collect_atoms_procs(anchors, except_atoms)
-          used_atoms, used_procs = anchors.reduce([[], []]) do |atoms_procs, anchor|
+          eap = [[], []]
+          return eap if anchors.empty?
+
+          used_atoms, used_procs = anchors.reduce(eap) do |atoms_procs, anchor|
             if pure_essence[anchor]
               limits = EssenceCleaner.limits_for(anchor)
               groups = pure_essence[anchor].group_by { |_, r| r.params }
@@ -475,7 +482,7 @@ module VersatileDiamond
             end
           end
 
-          without_atoms = except_atoms + used_atoms
+          without_atoms = (except_atoms + used_atoms).uniq
           next_atoms, next_procs = collect_atoms_procs(used_atoms, without_atoms)
           [used_atoms + next_atoms, used_procs + next_procs]
         end
