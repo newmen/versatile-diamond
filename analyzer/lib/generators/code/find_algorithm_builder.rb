@@ -454,6 +454,8 @@ module VersatileDiamond
             if pure_essence[anchor]
               limits = EssenceCleaner.limits_for(anchor)
               groups = pure_essence[anchor].group_by { |_, r| r.params }
+              # TODO: there groups should be sorted so that group which contains not
+              # maximum relations has been at end
               groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
                 clean_group = group.reject { |a, _| except_atoms.include?(a) }
                 if !clean_group.empty? && clean_group.size != group.size
