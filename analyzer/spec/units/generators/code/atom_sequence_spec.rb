@@ -30,7 +30,7 @@ module VersatileDiamond
           end
 
           it '#delta' do
-            expect(sequence.delta).to eq(delta)
+            expect(sequence.delta).to eq(addition_atoms.size)
           end
         end
 
@@ -38,7 +38,7 @@ module VersatileDiamond
           subject { dept_bridge_base }
           let(:bases) do
             [
-              dept_bridge_base,
+              subject,
               dept_dimer_base,
               dept_methyl_on_bridge_base,
               dept_methyl_on_dimer_base
@@ -56,12 +56,11 @@ module VersatileDiamond
           let(:short) { original }
           let(:major_atoms) { original }
           let(:addition_atoms) { [] }
-          let(:delta) { 0 }
         end
 
         it_behaves_like :apply_all do
           subject { dept_methyl_on_bridge_base }
-          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
 
           let(:original) do
@@ -80,14 +79,11 @@ module VersatileDiamond
           end
           let(:major_atoms) { [methyl_on_bridge_base.atom(:cb)] }
           let(:addition_atoms) { [methyl_on_bridge_base.atom(:cm)] }
-          let(:delta) { 1 }
         end
 
         it_behaves_like :apply_all do
           subject { dept_methyl_on_dimer_base }
-          let(:bases) do
-            [dept_bridge_base, dept_methyl_on_bridge_base, dept_methyl_on_dimer_base]
-          end
+          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_dimer] }
 
           let(:original) do
@@ -109,7 +105,34 @@ module VersatileDiamond
           end
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
-          let(:delta) { 0 }
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_three_bridges_base }
+          let(:bases) { [dept_bridge_base, subject] }
+          let(:specifics) { [] }
+
+          let(:original) do
+            [
+              three_bridges_base.atom(:tt),
+              three_bridges_base.atom(:cc),
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:cr),
+              three_bridges_base.atom(:cl),
+              three_bridges_base.atom(:_ct0),
+              three_bridges_base.atom(:cc),
+              three_bridges_base.atom(:_cl0),
+            ]
+          end
+          let(:short) do
+            [
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:cc),
+            ]
+          end
+          let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
         end
 
         describe 'symmetric dimers' do
@@ -128,7 +151,6 @@ module VersatileDiamond
           end
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
-          let(:delta) { 0 }
 
           it_behaves_like :apply_all do
             subject { dept_dimer_base }
