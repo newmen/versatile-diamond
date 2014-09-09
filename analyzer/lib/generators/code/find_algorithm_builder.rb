@@ -63,6 +63,12 @@ module VersatileDiamond
           spec.parents.size == 0
         end
 
+        # Checks that finding specie have more than one parent
+        # @return [Boolean] have many parents or not
+        def complex?
+          spec.parents.size > 1
+        end
+
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
         # @return [String] the string with spaces before
@@ -501,9 +507,9 @@ module VersatileDiamond
             args << @namer.get(addition_atoms.first)
           end
 
-          if spec.parents.size > 1
+          if complex?
             args << @namer.array_name_for(parents)
-          elsif spec.parents.size == 1
+          elsif !source?
             args << @namer.get(parents.first)
           else
             unless args.empty?
