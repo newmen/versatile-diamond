@@ -116,16 +116,9 @@ module VersatileDiamond
           end
         end
 
-
         it_behaves_like :check_organized_dependencies do
           subject { dept_bridge_base }
-          let(:species) do
-            [
-              dept_bridge_base,
-              dept_dimer_base,
-              dept_methyl_on_bridge_base,
-            ]
-          end
+          let(:species) { [subject, dept_dimer_base, dept_methyl_on_bridge_base] }
 
           let(:rest_atoms_num) { nil }
           let(:rest_relations_num) { nil }
@@ -135,13 +128,7 @@ module VersatileDiamond
 
         it_behaves_like :check_organized_dependencies do
           subject { dept_methyl_on_bridge_base }
-          let(:species) do
-            [
-              dept_bridge_base,
-              dept_high_bridge_base,
-              dept_methyl_on_bridge_base,
-            ]
-          end
+          let(:species) { [dept_bridge_base, dept_high_bridge_base, subject] }
 
           let(:rest_atoms_num) { 2 }
           let(:rest_relations_num) { 4 }
@@ -156,13 +143,7 @@ module VersatileDiamond
 
         it_behaves_like :check_organized_dependencies do
           subject { dept_dimer_base }
-          let(:species) do
-            [
-              dept_bridge_base,
-              dept_dimer_base,
-              dept_methyl_on_bridge_base,
-            ]
-          end
+          let(:species) { [dept_bridge_base, subject, dept_methyl_on_bridge_base] }
 
           let(:rest_atoms_num) { 2 }
           let(:rest_relations_num) { 6 }
@@ -177,19 +158,21 @@ module VersatileDiamond
 
         it_behaves_like :check_organized_dependencies do
           subject { dept_cross_bridge_on_bridges_base }
-          let(:species) do
-            [
-              dept_bridge_base,
-              dept_methyl_on_bridge_base,
-              dept_cross_bridge_on_bridges_base,
-            ]
-          end
+          let(:species) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
 
-          let(:rest_atoms_num) { 1 }
-          let(:rest_relations_num) { 2 }
+          let(:rest_atoms_num) { 3 }
+          let(:rest_relations_num) { 10 }
           let(:parents) { [dept_methyl_on_bridge_base] * 2 }
+
+          let(:cm) { cross_bridge_on_bridges_base.atom(:cm) }
+          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
+          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
           let(:essence) do
-            { cross_bridge_on_bridges_base.atom(:cm) => [] }
+            {
+              cm => [],
+              ctr => [[ctl, position_100_cross]],
+              ctl => [[ctr, position_100_cross]],
+            }
           end
         end
       end
