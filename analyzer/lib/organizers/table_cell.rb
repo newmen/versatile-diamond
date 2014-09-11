@@ -20,9 +20,11 @@ module VersatileDiamond
       # @param [TableCell] other the comparable table cell
       # @return [Integer] the result of comparation
       def <=> (other)
-        atoms_num == other.atoms_num ?
-          accurate_compare(other) :
+        if atoms_num == other.atoms_num
+          accurate_compare(other)
+        else
           atoms_num <=> other.atoms_num
+        end
       end
 
       # Adsorbs the minimal table cell if it more optimal
@@ -47,15 +49,34 @@ module VersatileDiamond
         specs.size
       end
 
+      # Counts the total number of atoms in all contained species
+      # @return [Integer] the total number of all atoms
+      def specs_atoms_num
+        specs.map(&:atoms_num).reduce(:+)
+      end
+
     private
 
       # Compares two cells if them residuals have equal sizes of links
       # @param [TableCell] other the comparable cell
       # @return [Integer] the result of comparation
       def accurate_compare(other)
-        relations_num == other.relations_num ?
-          specs_size <=> other.specs_size :
+        if relations_num == other.relations_num
+          specs_compare(other)
+        else
           other.relations_num <=> relations_num
+        end
+      end
+
+      # Compares two cells by internal spec atoms number
+      # @param [TableCell] other the comparable cell
+      # @return [Integer] the comparation result
+      def specs_compare(other)
+        if specs_size == other.specs_size
+          other.specs_atoms_num <=> specs_atoms_num
+        else
+          specs_size <=> other.specs_size
+        end
       end
     end
 

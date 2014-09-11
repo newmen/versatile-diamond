@@ -128,14 +128,14 @@ module VersatileDiamond
 
           it_behaves_like :count_atoms_and_references do
             subject { cbobs_part }
-            let(:atoms_num) { 4 }
-            let(:relations_num) { 14 }
+            let(:atoms_num) { 5 }
+            let(:relations_num) { 18 }
           end
 
           it_behaves_like :count_atoms_and_references do
             subject { cbobs_part - dept_methyl_on_bridge_base }
-            let(:atoms_num) { 1 }
-            let(:relations_num) { 2 }
+            let(:atoms_num) { 3 }
+            let(:relations_num) { 10 }
           end
         end
       end

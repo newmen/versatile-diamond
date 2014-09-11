@@ -74,11 +74,18 @@ module VersatileDiamond
 
     protected
 
-      # Rejects position relations
+      # Checks that atom have amorph bond and if it is true then relations returns else
+      # only bonds will returned
+      #
       # @param [Atom] atom see at #relations_of same argument
       # @return [Array] the array of relations without position relations
-      def bonds_of(atom)
-        relations_of(atom).select(&method(:no_position?))
+      def anchor_relations_of(atom)
+        rels = relations_of(atom)
+        if rels.any? { |r| r.relation? && !r.belongs_to_crystal? }
+          rels
+        else
+          rels.select(&method(:no_position?))
+        end
       end
 
     private
@@ -131,7 +138,7 @@ module VersatileDiamond
       #   #atoms_different? argument
       # @return [Boolean] are different or not
       def different_bonds?(*args)
-        different_by?(:bonds_of, *args)
+        different_by?(:anchor_relations_of, *args)
       end
 
       # Checks that passed relation is not position
