@@ -86,9 +86,9 @@ module VersatileDiamond
       def sort(base_specs)
         base_specs.sort do |a, b|
           if a.size == b.size
-            b.external_bonds <=> a.external_bonds
+            a.external_bonds <=> b.external_bonds
           else
-            a.size <=> b.size
+            b.size <=> a.size
           end
         end
       end
