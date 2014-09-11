@@ -79,10 +79,10 @@ module VersatileDiamond
       #
       # @param [Atom] atom see at #relations_of same argument
       # @return [Array] the array of relations without position relations
-      def bonds_of(atom)
+      def anchor_relations_of(atom)
         rels = relations_of(atom)
-        if rels.any? { |r| !r.belongs_to_crystal? }
-          rels.select(&:relation?)
+        if rels.any? { |r| r.relation? && !r.belongs_to_crystal? }
+          rels
         else
           rels.select(&method(:no_position?))
         end
@@ -138,7 +138,7 @@ module VersatileDiamond
       #   #atoms_different? argument
       # @return [Boolean] are different or not
       def different_bonds?(*args)
-        different_by?(:bonds_of, *args)
+        different_by?(:anchor_relations_of, *args)
       end
 
       # Checks that passed relation is not position
