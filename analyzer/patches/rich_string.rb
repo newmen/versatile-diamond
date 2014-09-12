@@ -1,4 +1,4 @@
-require 'active_support/inflector'
+require 'active_support/inflector/methods'
 
 module VersatileDiamond
   module Patches
@@ -15,9 +15,7 @@ module VersatileDiamond
         end
 
         def classify
-          names = split('/').map do |part|
-            part.split('_').map(&:capitalize).join
-          end
+          names = split('/').map { |part| part.split('_').map(&:capitalize).join }
           names.join('::')
         end
 
