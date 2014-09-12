@@ -18,7 +18,8 @@ module VersatileDiamond
         def initialize(generator, specie)
           @generator = generator
           @specie = specie
-          @pure_essence = EssenceCleaner.pure_essence_for(specie)
+
+          @pure_essence = EssenceCleaner.new(specie).essence
           @namer = NameRemember.new
         end
 

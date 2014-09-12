@@ -20,12 +20,13 @@ module VersatileDiamond
             classifier.index(spec, spec.spec.atom(keyname))
           end
 
-          [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2].each do |keyname|
+          [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr].each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
             let(:"role_#{keyname}") { role(subject, keyname) }
           end
 
           let(:b_ct) { role(dept_bridge_base, :ct) }
+          let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
 
           shared_examples_for :check_essence_and_anchors do
             it { expect(builder.pure_essence).to match_graph(essence) }
@@ -191,7 +192,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(DIMER, #{role_cr}))
         {
-            eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
+            eachNeighbour(anchor, &Diamond::front_100, [=](Atom *neighbour) {
                 if (neighbour->is(#{role_cr}) && anchor->hasBondWith(neighbour))
                 {
                     ParentSpec *parents[2] = { anchor->specByRole<Bridge>(#{b_ct}), neighbour->specByRole<Bridge>(#{b_ct}) };
@@ -218,14 +219,13 @@ module VersatileDiamond
             end
             let(:central_anchors) { [[cr], [cl]] }
 
-            let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_cr}))
     {
         if (!anchor->hasRole(METHYL_ON_DIMER, #{role_cr}))
         {
-            eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
+            eachNeighbour(anchor, &Diamond::front_100, [=](Atom *neighbour) {
                 if (neighbour->is(#{role_cl}) && anchor->hasBondWith(neighbour))
                 {
                     ParentSpec *parents[2] = { anchor->specByRole<MethylOnBridge>(#{mob_cb}), neighbour->specByRole<Bridge>(#{b_ct}) };
@@ -238,7 +238,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(METHYL_ON_DIMER, #{role_cl}))
         {
-            eachNeighbour(anchor, &Diamond::front_100, [anchor](Atom *neighbour) {
+            eachNeighbour(anchor, &Diamond::front_100, [=](Atom *neighbour) {
                 if (neighbour->is(#{role_cr}) && anchor->hasBondWith(neighbour))
                 {
                     ParentSpec *parents[2] = { neighbour->specByRole<MethylOnBridge>(#{mob_cb}), anchor->specByRole<Bridge>(#{b_ct}) };
@@ -281,6 +281,81 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_essence_and_anchors do
+            subject { dept_cross_bridge_on_bridges_base }
+            let(:base_specs) { [dept_bridge_base, subject] }
+
+            let(:essence) do
+              {
+                ctr => [[cm, free_bond]],
+                ctl => [[cm, free_bond], [ctr, position_100_cross]]
+              }
+            end
+            let(:central_anchors) { [[ctl]] }
+            let(:find_algorithm) do
+              <<-CODE
+    if (anchor->is(#{role_ctr}))
+    {
+        if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_ctr}))
+        {
+            Atom *amorph1 = anchor->amorphNeighbour();
+            if (amorph1->is(#{role_cm}))
+            {
+                eachNeighbour(anchor, &Diamond::cross_100, [=](Atom *neighbour) {
+                    if (neighbour->is(#{role_ctr}) && amorph1->hasBondWith(neighbour))
+                    {
+                        ParentSpec *parents[2] = { anchor->specByRole<Bridge>(#{b_ct}), neighbour->specByRole<Bridge>(#{b_ct}) };
+                        create<CrossBridgeOnBridges>(amorph1, parents);
+                    }
+                });
+            }
+        }
+    }
+              CODE
+            end
+          end
+
+          it_behaves_like :check_essence_and_anchors do
+            subject { dept_cross_bridge_on_bridges_base }
+            let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+            end
+
+            let(:essence) do
+              {
+                cm => [],
+                ctl => [[ctr, position_100_cross]],
+              }
+            end
+            let(:central_anchors) { [[ctl]] }
+            let(:find_algorithm) do
+              <<-CODE
+    if (anchor->is(#{role_ctr}))
+    {
+        if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_ctr}))
+        {
+            ParentSpec *parent1 = anchor->specByRole<MethylOnBridge>(#{mob_cb});
+            Atom *atom1 = parent1->atom(0);
+            if (atom1->is(#{role_cm}))
+            {
+                eachNeighbour(anchor, &Diamond::cross_100, [=](Atom *neighbour) {
+                    if (neighbour->is(#{role_ctr}))
+                    {
+                        ParentSpec *parent2 = neighbour->specByRole<MethylOnBridge>(#{mob_cb});
+                        if (atom1 == parent2->atom(0))
+                        {
+                            ParentSpec *parents[2] = { parent1, parent2 };
+                            create<CrossBridgeOnBridges>(parents);
+                        }
+                    }
+                });
+            }
+        }
+    }
+              CODE
+            end
+          end
+
+          it_behaves_like :check_essence_and_anchors do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
@@ -294,7 +369,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(THREE_BRIDGES, #{role_cc}))
         {
-            anchor->eachSpecByRole<Bridge>(#{b_cr}, [anchor](Bridge *target) {
+            anchor->eachSpecByRole<Bridge>(#{b_cr}, [=](Bridge *target) {
                 target->eachSymmetry([anchor, target](ParentSpec *specie) {
                     if (specie->atom(2) == anchor)
                     {
