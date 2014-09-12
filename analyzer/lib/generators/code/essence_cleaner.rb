@@ -9,6 +9,7 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom for which relations limits will be gotten
           # @return [Hash] the hash of limits of relations
+          # TODO: move method to Atom?
           def limits_for(atom)
             if atom.lattice
               atom.lattice.instance.relations_limit
