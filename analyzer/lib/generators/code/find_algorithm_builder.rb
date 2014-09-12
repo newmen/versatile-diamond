@@ -127,11 +127,89 @@ module VersatileDiamond
             code_line('});')
         end
 
+        # Counts relations of atom which selecting by block
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom for which relations will be counted
+        # @yield [Concepts::Bond | Concepts::TerminationSpec] iterates inspectable
+        #   relations if given
+        # @return [Integer] the number of selected relations
+        def count_relations(atom, &block)
+          rels = spec.relations_of(a)
+          rels = rels.select(&block) if block_given?
+          rels.size
+        end
+
+        # Counts twins of atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom for which twins will be counted
+        # @return [Integer] the number of twins
+        def count_twins(atom)
+          spec.rest.all_twins(atom).size
+        end
+
+        # Compares two atoms by method name and order it descending
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   a is first atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   b is second atom
+        # @param [Symbol] method_name by which atoms will be compared
+        # @param [Symbol] detect_method if passed ten will passed as block in
+        #   comparation method
+        # @yield calling when atoms is same by used method
+        # @return [Integer] the order of atoms
+        def order(a, b, method_name, detect_method = nil, &block)
+          if detect_method
+            ca = send(method_name, a, &detect_method)
+            cb = send(method_name, b, &detect_method)
+          else
+            ca = send(method_name, a)
+            cb = send(method_name, b)
+          end
+
+          if ca == cb
+            block.call
+          else
+            ca <=> cb
+          end
+        end
+
+        # Gives the largest atom that has the most number of links in a complex specie,
+        # and hence it is closer to specie center
+        #
+        # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   the largest atom of specie
+        def big_anchor
+          sequence.major_atoms.max do |a, b|
+            pa = Organizers::AtomProperties.new(spec, a)
+            pb = Organizers::AtomProperties.new(spec, b)
+            if pa == pb
+              0
+            elsif !pa.include?(pb) && !pb.include?(pa)
+              order(a, b, :count_twins) do
+                order(a, b, :count_relations, :relations?) do
+                  order(a, b, :count_relations, :bond?) do
+                    order(a, b, :count_relations) { 0 }
+                  end
+                end
+              end
+            elsif pa.include?(pb)
+              1
+            else # pb.include?(pa)
+              -1
+            end
+          end
+        end
+
         # Filters major anchors from atom sequence
         # @return [Array] the realy major anchors of current specie
         def major_anchors
-          mas = sequence.major_atoms
-          find_root? ? [mas.first] : mas
+          if source?
+            [sequence.major_atoms.first]
+          elsif complex?
+            [big_anchor]
+          else
+            sequence.major_atoms
+          end
         end
 
         # Gets anchors which have relations
