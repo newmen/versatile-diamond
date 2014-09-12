@@ -218,7 +218,7 @@ module VersatileDiamond
           it { expect(target.children).to match_array(children) }
 
           describe '#essence' do
-            it { expect(target.essence).to eq(essence) }
+            it { expect(target.essence).to match_graph(essence) }
           end
         end
 

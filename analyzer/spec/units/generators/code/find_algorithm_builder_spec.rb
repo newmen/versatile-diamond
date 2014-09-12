@@ -28,7 +28,7 @@ module VersatileDiamond
           let(:b_ct) { role(dept_bridge_base, :ct) }
 
           shared_examples_for :check_essence_and_anchors do
-            it { expect(builder.pure_essence).to eq(essence) }
+            it { expect(builder.pure_essence).to match_graph(essence) }
             it { expect(builder.central_anchors).to eq(central_anchors) }
             it { expect(builder.build).to eq(find_algorithm) }
           end

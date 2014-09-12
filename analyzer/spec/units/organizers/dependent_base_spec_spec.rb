@@ -112,7 +112,7 @@ module VersatileDiamond
           end
 
           describe '#essence' do
-            it { expect(subject.essence).to eq(essence) }
+            it { expect(subject.essence).to match_graph(essence) }
           end
         end
 

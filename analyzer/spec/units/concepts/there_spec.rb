@@ -46,7 +46,7 @@ module VersatileDiamond
       end
 
       describe '#positions' do
-        it { expect(on_end.positions).to eq({
+        it { expect(on_end.positions).to match_graph({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cl)], position_100_cross]
             ],
@@ -55,7 +55,7 @@ module VersatileDiamond
             ]
           }) }
 
-        it { expect(on_middle.positions).to eq({
+        it { expect(on_middle.positions).to match_graph({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cl)], position_100_cross],
               [[dimer, dimer.atom(:cl)], position_100_cross],
@@ -66,7 +66,7 @@ module VersatileDiamond
             ]
           }) }
 
-        it { expect(there_methyl.positions).to eq({
+        it { expect(there_methyl.positions).to match_graph({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [
                 [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
@@ -84,7 +84,7 @@ module VersatileDiamond
 
       describe '#swap_source' do
         before { on_end.swap_source(dimer, dimer_dup_ff) }
-        it { expect(on_end.positions).to eq({
+        it { expect(on_end.positions).to match_graph({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer_dup_ff, dimer_dup_ff.atom(:cl)], position_100_cross]
             ],
@@ -97,7 +97,7 @@ module VersatileDiamond
       describe '#swap_target' do
         before { on_end.swap_target(ai_bridge, ai_bridge_dup) }
 
-        it { expect(on_end.positions).to eq({
+        it { expect(on_end.positions).to match_graph({
             [activated_bridge, activated_bridge.atom(:ct)] => [
               [[dimer, dimer.atom(:cl)], position_100_cross]
             ],
