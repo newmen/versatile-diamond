@@ -125,8 +125,8 @@ module VersatileDiamond
       end
 
       describe '#links' do
-        it { expect(methyl.links).to eq({ activated_c => [] }) }
-        it { expect(vinyl.links).to eq({
+        it { expect(methyl.links).to match_graph({ activated_c => [] }) }
+        it { expect(vinyl.links).to match_graph({
           activated_c => [[c2, free_bond], [c2, free_bond]],
           c2 => [[activated_c, free_bond], [activated_c, free_bond]] }) }
       end

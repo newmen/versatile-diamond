@@ -51,8 +51,8 @@ module VersatileDiamond
       end
 
       describe '#links' do
-        it { expect(methane_base.links).to eq({ c => [] }) }
-        it { expect(ethylene_base.links).to eq({
+        it { expect(methane_base.links).to match_graph({ c => [] }) }
+        it { expect(ethylene_base.links).to match_graph({
           c1 => [[c2, free_bond], [c2, free_bond]],
           c2 => [[c1, free_bond], [c1, free_bond]] }) }
       end

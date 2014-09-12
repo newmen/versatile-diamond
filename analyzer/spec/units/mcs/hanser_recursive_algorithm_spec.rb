@@ -8,8 +8,7 @@ module VersatileDiamond
       let(:methyl_on_bridge_links) { methyl_on_bridge_base.links }
 
       let(:assoc) do
-        AssocGraph.new(
-          Graph.new(bridge_links), Graph.new(methyl_on_bridge_links))
+        AssocGraph.new(Graph.new(bridge_links), Graph.new(methyl_on_bridge_links))
       end
 
       describe '#self.first_intersec' do
