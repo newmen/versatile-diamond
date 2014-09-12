@@ -83,6 +83,11 @@ module VersatileDiamond
             subject { code_activated_incoherent_bridge }
             let(:class_name) { 'BridgeCTsi' }
           end
+
+          it_behaves_like :check_class_name do
+            subject { code_cross_bridge_on_bridges_base }
+            let(:class_name) { 'CrossBridgeOnBridges' }
+          end
         end
 
         describe '#enum_name' do

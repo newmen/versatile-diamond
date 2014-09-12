@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Generators
     module Code
 
@@ -13,8 +15,9 @@ module VersatileDiamond
             # Gets the #{name} name of current specie
             # @return [String] the #{name} name
             define_method(method_name) do
+              correct_prefix = eval("prefix.#{method}")
               value = target_specie.public_send(method_name)
-              "#{prefix}#{separator}#{value}".public_send(method)
+              "#{correct_prefix}#{separator}#{value}"
             end
           end
 
