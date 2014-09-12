@@ -113,6 +113,19 @@ module VersatileDiamond
             end
           end
         end
+
+        describe '#assigned?' do
+          let(:var) { :value }
+
+          describe 'yes' do
+            before { subject.assign('var', [var]) }
+            it { expect(subject.assigned?(var)).to be_truthy }
+          end
+
+          describe 'no' do
+            it { expect(subject.assigned?(var)).to be_falsey }
+          end
+        end
       end
 
     end
