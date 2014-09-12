@@ -360,7 +360,7 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base, subject] }
 
             let(:essence) { { ct => [], cc => [] } }
-            let(:central_anchors) { [[ct]] }
+            let(:central_anchors) { [[cc]] }
 
             let(:b_cr) { role(dept_bridge_base, :cr) }
             let(:find_algorithm) do
@@ -376,16 +376,20 @@ module VersatileDiamond
                         Atom *atom1 = specie->atom(1);
                         if (atom1->is(#{b_cr}))
                         {
-                            Bridge *external = anchor->selectSpecByRole<Bridge>(#{b_cr}, [target](Bridge *other) {
-                                return other == target;
-                            });
+                            ParentSpec *parent1 = atom1->specByRole<Bridge>(3);
+                            if (parent1)
+                            {
+                                Bridge *external = anchor->selectSpecByRole<Bridge>(#{b_cr}, [target](Bridge *other) {
+                                    return other != target;
+                                });
 
-                            ParentSpec *last = external->selectSymmetry([anchor](ParentSpec *other) {
-                                return other->atom(1) == anchor;
-                            });
+                                ParentSpec *last = external->selectSymmetry([anchor](ParentSpec *other) {
+                                    return other->atom(1) == anchor;
+                                });
 
-                            ParentSpec *parents[3] = { atom1->specByRole<Bridge>(#{b_ct}), specie, last };
-                            create<TwoBridges>(parents);
+                                ParentSpec *parents[3] = { parent1, specie, last };
+                                create<TwoBridges>(parents);
+                            }
                         }
                     }
                 });

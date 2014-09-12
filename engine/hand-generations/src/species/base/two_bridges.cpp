@@ -15,32 +15,31 @@ const char *TwoBridges::name() const
 
 void TwoBridges::find(Atom *anchor)
 {
-    if (anchor->is(24) && anchor->lattice()->coords().z > 0)
+    if (anchor->is(24))
     {
         if (!anchor->checkAndFind(TWO_BRIDGES, 24))
         {
-            anchor->eachSpecByRole<Bridge>(6, [anchor](Bridge *target) {
-                target->eachSymmetry([anchor, target](ParentSpec *specie) {
+            anchor->eachSpecByRole<Bridge>(6, [=](Bridge *target) {
+                target->eachSymmetry([=](ParentSpec *specie) {
                     if (specie->atom(2) == anchor)
                     {
-                        Atom *secondAnchor = specie->atom(1);
-                        if (secondAnchor->is(6))
+                        Atom *atom1 = specie->atom(1);
+                        if (atom1->is(6))
                         {
-                            Bridge *externalLast = anchor->selectSpecByRole<Bridge>(6, [target](Bridge *other) {
-                                return other == target;
-                            });
+                            ParentSpec *parent1 = atom1->specByRole<Bridge>(3);
+                            if (parent1)
+                            {
+                                Bridge *externalLast = anchor->selectSpecByRole<Bridge>(6, [target](Bridge *other) {
+                                    return other != target;
+                                });
 
-                            ParentSpec *last = externalLast->selectSymmetry([anchor](ParentSpec *other) {
-                                return other->atom(1) == anchor;
-                            });
+                                ParentSpec *last = externalLast->selectSymmetry([anchor](ParentSpec *other) {
+                                    return other->atom(1) == anchor;
+                                });
 
-                            ParentSpec *parents[3] = {
-                                secondAnchor->specByRole<Bridge>(3),
-                                specie,
-                                last
-                            };
-
-                            create<TwoBridges>(parents);
+                                ParentSpec *parents[3] = { parent1, specie, last };
+                                create<TwoBridges>(parents);
+                            }
                         }
                     }
                 });
