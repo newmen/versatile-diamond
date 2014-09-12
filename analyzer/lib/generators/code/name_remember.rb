@@ -38,7 +38,7 @@ module VersatileDiamond
         # @param [Object] var the variable for which name will be gotten
         # @return [String] the name of passed variable
         def get(var)
-          raise 'Variable is undefined' unless names[var]
+          raise 'Variable is undefined' unless assigned?(var)
           names[var]
         end
 
@@ -57,6 +57,13 @@ module VersatileDiamond
           end
 
           array_name
+        end
+
+        # Checks that passed variable already has name or not
+        # @param [Object] var the variable which will be checked
+        # @return [Boolean] assigned or not
+        def assigned?(var)
+          !!names[var]
         end
 
       private
@@ -90,7 +97,7 @@ module VersatileDiamond
         # @param [String] name the name of storing variable
         # @param [Object] var the storing variable
         def check_and_store(name, var)
-          raise "Variable #{name} already exists" if names[var]
+          raise "Variable #{name} already exists" if assigned?(var)
           raise "Name #{name} already used" if variables[name]
           names[var] = name
         end
