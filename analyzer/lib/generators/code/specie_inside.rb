@@ -13,19 +13,7 @@ module VersatileDiamond
           spec.target.links.size
         end
 
-      private
-
-        # Gets the parent specie classes
-        # @return [Array] the array of parent specie class generators
-        def parents
-          spec.parents.map(&method(:specie_class))
-        end
-
-        # Delegates getting delta to atom sequence instance
-        # @return [Integer] the delta of addition atoms in atom sequence
-        def delta
-          sequence.delta
-        end
+      protected
 
         # Delegates indexation of atom to atom sequence instance
         # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
@@ -41,6 +29,20 @@ module VersatileDiamond
         # @return [Integer] an index of classificated atom
         def role(atom)
           generator.classifier.index(spec, atom)
+        end
+
+      private
+
+        # Gets the parent specie classes
+        # @return [Array] the array of parent specie class generators
+        def parents
+          spec.parents.map(&method(:specie_class))
+        end
+
+        # Delegates getting delta to atom sequence instance
+        # @return [Integer] the delta of addition atoms in atom sequence
+        def delta
+          sequence.delta
         end
 
         # Gets the specie class code generator

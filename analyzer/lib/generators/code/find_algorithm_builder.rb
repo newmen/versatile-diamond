@@ -306,8 +306,8 @@ module VersatileDiamond
         def spec_by_role_call(atom)
           parent, twin = parent_with_twin_for(atom)
           atom_var_name = @namer.get(atom)
-          twin_index = parent.sequence.atom_index(twin)
-          "#{atom_var_name}->specByRole<#{parent.class_name}>(#{twin_index})"
+          twin_role = parent.role(twin)
+          "#{atom_var_name}->specByRole<#{parent.class_name}>(#{twin_role})"
         end
 
         # Gets a code which uses eachSymmetry method of engine framework
@@ -448,10 +448,9 @@ module VersatileDiamond
             atom_name = @namer.get(atoms.first)
             "Atom *#{atom_name} = #{specie_var_name}->atom(0);"
           else
-            parent_sequence = parent.sequence
             items = atoms.map do |atom|
               twin = spec.rest.twin(atom)
-              "#{specie_var_name}->atom(#{parent_sequence.atom_index(twin)})"
+              "#{specie_var_name}->atom(#{parent.index(twin)})"
             end
 
             items_str = items.join(', ')
