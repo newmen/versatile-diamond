@@ -10,7 +10,7 @@ module VersatileDiamond
 
         TAB_SIZE = 4 # always so for cpp
 
-        attr_reader :pure_essence
+        attr_reader :pure_essence # TODO: should be private
 
         # Inits builder by target specie and main engine code generator
         # @param [EngineCode] generator the major engine code generator
@@ -328,6 +328,20 @@ module VersatileDiamond
           code_lambda(method_name, [], clojure_args, lambda_args, &block)
         end
 
+        # Gets the list of also checkable atoms which already available in some context
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom by which available these also checkable atoms
+        # @return [Array] the atoms which already used and which have more than one
+        #   twin
+        def also_checkable(atom)
+          rels = pure_essence[atom]
+          if rels
+            rels.select { |a, r| r.bond? && addition_atoms.include?(a) }.map(&:first)
+          else
+            []
+          end
+        end
+
         # Gets a code which uses eachNeighbour method of engine framework and checks
         # role of iterated neighbour atom
         #
@@ -354,6 +368,12 @@ module VersatileDiamond
             condition = check_role_condition([neighbour])
             if relation.bond?
               condition = append_check_bond_condition(condition, [[anchor, neighbour]])
+            end
+
+            phantom_atoms = also_checkable(neighbour)
+            unless phantom_atoms.empty?
+              bonded_neighbours = phantom_atoms.zip([neighbour] * phantom_atoms.size)
+              condition = append_check_bond_condition(condition, bonded_neighbours)
             end
 
             code_condition(condition, &block)
