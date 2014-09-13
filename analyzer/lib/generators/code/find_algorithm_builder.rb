@@ -70,6 +70,13 @@ module VersatileDiamond
           spec.parents.size > 1
         end
 
+        # Sorts original parents by relations number each of them
+        # @return [Array] the sorted array of parents
+        # @override
+        def parents
+          super.sort_by { |parent| -parent.spec.relations_num }
+        end
+
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
         # @return [String] the string with spaces before
@@ -114,13 +121,11 @@ module VersatileDiamond
         # @return [String] the code with method call
         def code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
           separator = ', '
-          method_args_str = method_args.join(separator)
           clojure_args_str = clojure_args.join(separator)
           lambda_args_str = lambda_args.join(separator)
 
-          args_wo_lambda_body = ''
-          args_wo_lambda_body << method_args_str unless method_args.empty?
-          args_wo_lambda_body << "[#{clojure_args_str}](#{lambda_args_str})"
+          lambda_head = "[#{clojure_args_str}](#{lambda_args_str})"
+          args_wo_lambda_body = (method_args + [lambda_head]).join(separator)
 
           code_line("#{method_name}(#{args_wo_lambda_body} {") +
             increase_spaces(block.call) +
@@ -294,6 +299,17 @@ module VersatileDiamond
           "#{original_condition}#{parts.join}"
         end
 
+        # Makes code string with calling of engine method that names specByRole
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom from which specie will be gotten in cpp code
+        # @return [String] the string of cpp code with specByRole call
+        def spec_by_role_call(atom)
+          parent, twin = parent_with_twin_for(atom)
+          atom_var_name = @namer.get(atom)
+          twin_index = parent.sequence.atom_index(twin)
+          "#{atom_var_name}->specByRole<#{parent.class_name}>(#{twin_index})"
+        end
+
         # Gets a code which uses eachSymmetry method of engine framework
         # @param [Specie] specie by variable name of which the target method will be
         #   called
@@ -413,7 +429,7 @@ module VersatileDiamond
         # @param [Hash] rel_params the relation parameters by which full name will be
         #   gotten
         # @return [String] the full name relation of between passed atoms
-        def full_relation_name(anchor, relation)
+        def full_relation_name(anchor, rel_params)
           lattice_class_name = generator.lattice_class(anchor.lattice).class_name
           short_name = short_relation_name(rel_params)
           "&#{lattice_class_name}::#{short_name}"
@@ -462,46 +478,92 @@ module VersatileDiamond
           "Atom *atoms[#{atoms_num}] = { #{items_str} };"
         end
 
+        # Gets a code with defining parents variable for creating complex specie
+        # when simulation do
+        #
+        # @return [String] the string with defined parents variable
+        def define_parents_variable
+          anchors = spec.rest.links.keys
+          pairs = anchors.map { |atom| [atom, parent_for(atom)] }.select { |_, p| p }
+          sorted_pairs = pairs.sort_by { |_, parent| parents.index(parent) }
+          items = sorted_pairs.map do |atom, parent|
+            @namer.assigned?(parent) ? @namer.get(parent) : spec_by_role_call(atom)
+          end
+
+          @namer.reassign('parent', parents)
+          parents_var_name = @namer.array_name_for(parents)
+          num = spec.parents.size
+          items_str = items.join(', ')
+          "ParentSpec *#{parents_var_name}[#{num}] = { #{items_str} };"
+        end
+
+        # Finds parent specie by atom the twin of which belongs to this parent
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom by which specie will be found
+        # @yield [Specie, Concepts::Atom...] calling when need to form result
+        # @return [Object] the result of block calculation
+        def find_parent(atom, &block)
+          spec.rest.all_twins(atom).each do |twin|
+            parent = parents.find do |parent|
+              parent.spec.links.any? { |a, _| a == twin }
+            end
+            return block[parent, twin]
+          end
+          nil
+        end
+
+        # Finds parent specie and correspond twin atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom see at #find_parent same argument
+        # @return [Array] the array where first item is parent specie and second item
+        #   is twin atom of passed atom
+        def parent_with_twin_for(atom)
+          find_parent(atom) { |parent, twin| [parent, twin] }
+        end
+
+        # Finds parent specie
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom see at #find_parent same argument
+        # @return [Specie] the specie which uses twin of passed atom
+        def parent_for(atom)
+          find_parent(atom) { |parent, _| parent }
+        end
+
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
         def body
           central_anchors_with_elses.reduce('') do |acc, (atoms, else_prefix)|
             if find_root?
-              method_name = else_prefix.empty? ? :assign : :reassign
-              @namer.public_send(method_name, 'anchor', atoms)
+              @namer.erase(sequence.short + parents)
+              @namer.assign('anchor', atoms)
             end
 
             acc << code_condition(check_role_condition(atoms), else_prefix) do
               code_condition(check_specie_condition(atoms)) do
-                find_root? ? find_root_body_for(atoms) : mono_parent_body_for(atoms)
+                heart(atoms)
               end
             end
           end
         end
 
-        # Gest a code string for find dependent specie
+        # Gest a code string which contain the heart of find algorithm
         # @param [Array] anchors by which find will occured
         # @return [String] the cpp code with check anchors and specie creation
-        def mono_parent_body_for(anchors)
+        def heart(anchors)
           combine_algorithm(anchors) do
-            if delta > 1
-              code_line(define_additional_atoms_variable) + creation_line
+            additional_lines = ''
+            if source?
+              additional_lines << code_line(define_atoms_variable)
             else
-              creation_line
+              if delta > 1
+                additional_lines << code_line(define_additional_atoms_variable)
+              end
+              if complex?
+                additional_lines << code_line(define_parents_variable)
+              end
             end
-          end
-        end
 
-        # Gets a code string for find undependent or many dependent specie
-        # @param [Array] anchors by which find will occured
-        # @return [String] the cpp code with check anchors and specie creation
-        def find_root_body_for(anchors)
-          if source?
-            combine_algorithm(anchors) do
-              code_line(define_atoms_variable) + creation_line
-            end
-          else
-            '' # fake
+            additional_lines + creation_line
           end
         end
 
@@ -538,9 +600,8 @@ module VersatileDiamond
           used_atoms, used_procs = anchors.reduce(eap) do |atoms_procs, anchor|
             if pure_essence[anchor]
               limits = EssenceCleaner.limits_for(anchor)
-              groups = pure_essence[anchor].group_by { |_, r| r.params }
-              # TODO: there groups should be sorted so that group which contains not
-              # maximum relations has been at end
+              groups = pure_essence[anchor].group_by { |_, r| r.params }.to_a
+              groups = groups.sort_by { |k, rels| limits[k] - rels.size }
               groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
                 clean_group = group.reject { |a, _| except_atoms.include?(a) }
                 if !clean_group.empty? && clean_group.size != group.size
