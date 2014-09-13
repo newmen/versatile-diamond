@@ -30,10 +30,10 @@ module VersatileDiamond
 
           if !find_root? && use_parent_symmetry?
             symmetry_lambda(parents.first, []) do
-              code_line(define_anchor_variable) + body
+              define_anchor_variable_line + body
             end
           elsif !find_root?
-            code_line(define_anchor_variable) + body
+            define_anchor_variable_line + body
           else
             body
           end
@@ -437,7 +437,7 @@ module VersatileDiamond
 
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
         # @return [String] the string of cpp code
-        def define_anchor_variable
+        def define_anchor_variable_line
           parent = parents.first
           specie_var_name = @namer.get(parent)
 
@@ -446,7 +446,7 @@ module VersatileDiamond
 
           if atoms.size == 1
             atom_name = @namer.get(atoms.first)
-            "Atom *#{atom_name} = #{specie_var_name}->atom(0);"
+            code_line("Atom *#{atom_name} = #{specie_var_name}->atom(0);")
           else
             items = atoms.map do |atom|
               twin = spec.rest.twin(atom)
@@ -455,33 +455,33 @@ module VersatileDiamond
 
             items_str = items.join(', ')
             array_name = @namer.array_name_for(atoms)
-            "Atom *#{array_name}[#{atoms.size}] = { #{items_str} };"
+            code_line("Atom *#{array_name}[#{atoms.size}] = { #{items_str} };")
           end
         end
 
         # Gets cpp code string with defining additional atoms variable
         # @return [String] the string with defining additional atoms variable
-        def define_additional_atoms_variable
+        def define_additional_atoms_variable_line
           items_str = addition_atoms.map { |a| @namer.get(a) }.join(', ')
           @namer.reassign('additionalAtom', addition_atoms)
           additional_atoms_var_name = @namer.array_name_for(addition_atoms)
-          "Atom *#{additional_atoms_var_name}[#{delta}] = { #{items_str} };"
+          code_line("Atom *#{additional_atoms_var_name}[#{delta}] = { #{items_str} };")
         end
 
         # Gets a code string with defining atoms variable for creating source specie
         # when simulation do
         #
         # @return [String] the string with defined atoms variable
-        def define_atoms_variable
+        def define_atoms_variable_line
           items_str = sequence.short.map { |a| @namer.get(a) }.join(', ')
-          "Atom *atoms[#{atoms_num}] = { #{items_str} };"
+          code_line("Atom *atoms[#{atoms_num}] = { #{items_str} };")
         end
 
         # Gets a code with defining parents variable for creating complex specie
         # when simulation do
         #
         # @return [String] the string with defined parents variable
-        def define_parents_variable
+        def define_parents_variable_line
           anchors = spec.rest.links.keys
           pairs = anchors.map { |atom| [atom, parent_for(atom)] }.select { |_, p| p }
           sorted_pairs = pairs.sort_by { |_, parent| parents.index(parent) }
@@ -493,7 +493,7 @@ module VersatileDiamond
           parents_var_name = @namer.array_name_for(parents)
           num = spec.parents.size
           items_str = items.join(', ')
-          "ParentSpec *#{parents_var_name}[#{num}] = { #{items_str} };"
+          code_line("ParentSpec *#{parents_var_name}[#{num}] = { #{items_str} };")
         end
 
         # Finds parent specie by atom the twin of which belongs to this parent
@@ -552,13 +552,13 @@ module VersatileDiamond
           combine_algorithm(anchors) do
             additional_lines = ''
             if source?
-              additional_lines << code_line(define_atoms_variable)
+              additional_lines << define_atoms_variable_line
             else
               if delta > 1
-                additional_lines << code_line(define_additional_atoms_variable)
+                additional_lines << define_additional_atoms_variable_line
               end
               if complex?
-                additional_lines << code_line(define_parents_variable)
+                additional_lines << define_parents_variable_line
               end
             end
 
