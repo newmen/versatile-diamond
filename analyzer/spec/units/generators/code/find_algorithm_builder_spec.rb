@@ -15,7 +15,7 @@ module VersatileDiamond
         let(:code_specie) { generator.specie_class(subject.name) }
         let(:builder) { described_class.new(generator, code_specie) }
 
-        describe '#pure_essence && #central_anchors' do
+        describe '#pure_essence && #central_anchors && #build' do
           def role(spec, keyname)
             classifier.index(spec, spec.spec.atom(keyname))
           end
