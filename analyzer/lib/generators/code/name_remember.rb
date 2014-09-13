@@ -59,6 +59,12 @@ module VersatileDiamond
           array_name
         end
 
+        # Removes records about passed variables
+        # @param [Array] vars the variables which will be removed from internal cache
+        def erase(vars)
+          vars.each { |var| names.delete(var) }
+        end
+
         # Checks that passed variable already has name or not
         # @param [Object] var the variable which will be checked
         # @return [Boolean] assigned or not
@@ -97,8 +103,8 @@ module VersatileDiamond
         # @param [String] name the name of storing variable
         # @param [Object] var the storing variable
         def check_and_store(name, var)
-          raise "Variable #{name} already exists" if assigned?(var)
-          raise "Name #{name} already used" if variables[name]
+          raise "Variable \"#{name}\" already exists" if assigned?(var)
+          raise "Name \"#{name}\" already used" if variables[name]
           names[var] = name
         end
 
