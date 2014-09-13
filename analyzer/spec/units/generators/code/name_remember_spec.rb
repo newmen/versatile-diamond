@@ -114,6 +114,19 @@ module VersatileDiamond
           end
         end
 
+        describe '#erase' do
+          let(:vars) { [1, 2] }
+          let(:other) { :other }
+          before do
+            subject.assign('other', [other])
+            subject.assign('var', vars)
+            subject.erase(vars)
+          end
+          it { expect(subject.assigned?(vars.first)).to be_falsey }
+          it { expect(subject.assigned?(vars.last)).to be_falsey }
+          it { expect(subject.assigned?(other)).to be_truthy }
+        end
+
         describe '#assigned?' do
           let(:var) { :value }
 
