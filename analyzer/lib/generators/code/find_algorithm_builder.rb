@@ -599,8 +599,7 @@ module VersatileDiamond
           used_atoms, used_procs = anchors.reduce(eap) do |atoms_procs, anchor|
             if pure_essence[anchor]
               limits = EssenceCleaner.limits_for(anchor)
-              groups = pure_essence[anchor].group_by { |_, r| r.params }.to_a
-              groups = groups.sort_by { |k, rels| limits[k] - rels.size }
+              groups = relation_groups_for(anchor)
               groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
                 clean_group = group.reject { |a, _| except_atoms.include?(a) }
                 if !clean_group.empty? && clean_group.size != group.size
@@ -632,6 +631,18 @@ module VersatileDiamond
           without_atoms = (except_atoms + used_atoms).uniq
           next_atoms, next_procs = collect_atoms_procs(used_atoms, without_atoms)
           [used_atoms + next_atoms, used_procs + next_procs]
+        end
+
+        # Groups available to the atom relations and sorts them in most optimal manner
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom for which groups will be collected and sorted
+        # @return [Array] the array of grouped relations
+        def relation_groups_for(atom)
+          limits = EssenceCleaner.limits_for(atom)
+          groups = pure_essence[atom].group_by { |_, r| r.params }.to_a
+          groups.sort_by do |k, rels|
+            limits[k] == rels.size ? limits[k] : 1000 + limits[k] - rels.size
+          end
         end
 
         # Gets a string with finding specie creation
