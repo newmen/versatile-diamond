@@ -108,6 +108,34 @@ module VersatileDiamond
         end
 
         it_behaves_like :apply_all do
+          subject { dept_cross_bridge_on_bridges_base }
+          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
+          let(:specifics) { [] }
+
+          let(:original) do
+            [
+              cross_bridge_on_bridges_base.atom(:cm),
+              cross_bridge_on_bridges_base.atom(:ctl),
+              cross_bridge_on_bridges_base.atom(:cl),
+              cross_bridge_on_bridges_base.atom(:cr),
+              cross_bridge_on_bridges_base.atom(:cm),
+              cross_bridge_on_bridges_base.atom(:ctr),
+              cross_bridge_on_bridges_base.atom(:_cr0),
+              cross_bridge_on_bridges_base.atom(:_cl0),
+            ]
+          end
+          let(:short) do
+            [
+              cross_bridge_on_bridges_base.atom(:ctl),
+              cross_bridge_on_bridges_base.atom(:ctr),
+              cross_bridge_on_bridges_base.atom(:cm),
+            ]
+          end
+          let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
+        end
+
+        it_behaves_like :apply_all do
           subject { dept_three_bridges_base }
           let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [] }
