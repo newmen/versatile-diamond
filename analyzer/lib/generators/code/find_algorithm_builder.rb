@@ -299,6 +299,16 @@ module VersatileDiamond
           "#{original_condition}#{parts.join}"
         end
 
+        # Makes code string with provides atom from parent specie when simulation do
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom which will be got from parent specie
+        # @return [String] code where atom getting from parent specie
+        def atom_from_parent_call(atom)
+          parent, twin = parent_with_twin_for(atom)
+          parent_var_name = @namer.get(parent)
+          "#{parent_var_name}->atom(#{parent.index(twin)})"
+        end
+
         # Makes code string with calling of engine method that names specByRole
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom from which specie will be gotten in cpp code
@@ -459,21 +469,15 @@ module VersatileDiamond
         # @return [String] the string of cpp code
         def define_anchor_variable_line
           parent = parents.first
-          specie_var_name = @namer.get(parent)
-
           atoms = sequence.major_atoms
           @namer.assign('anchor', atoms)
 
           if atoms.size == 1
-            atom_name = @namer.get(atoms.first)
-            code_line("Atom *#{atom_name} = #{specie_var_name}->atom(0);")
+            atom_var_name = @namer.get(atoms.first)
+            specie_var_name = @namer.get(parent)
+            code_line("Atom *#{atom_var_name} = #{specie_var_name}->atom(0);")
           else
-            items = atoms.map do |atom|
-              twin = spec.rest.twin(atom)
-              "#{specie_var_name}->atom(#{parent.index(twin)})"
-            end
-
-            items_str = items.join(', ')
+            items_str = atoms.map(&method(:atom_from_parent_call)).join(', ')
             array_name = @namer.array_name_for(atoms)
             code_line("Atom *#{array_name}[#{atoms.size}] = { #{items_str} };")
           end
