@@ -368,7 +368,7 @@ module VersatileDiamond
           method_name = 'eachNeighbour'
           anchor_var_name = @namer.get(anchor)
           method_args = [anchor_var_name, full_relation_name(anchor, rel_params)]
-          clojure_args = ['=']
+          clojure_args = ['&']
 
           neighbour_var_name = 'neighbour'
           @namer.reassign(neighbour_var_name, [neighbour])
