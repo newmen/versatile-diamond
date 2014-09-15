@@ -98,6 +98,11 @@ module VersatileDiamond
         it { expect(ref.reference?).to be_truthy }
       end
 
+      describe '#relations_limits' do
+        it { expect(activated_c.relations_limits).to eq(c.relations_limits) }
+        it { expect(activated_cd.relations_limits).to eq(cd.relations_limits) }
+      end
+
       describe '#specific?' do
         it { expect(activated_c.specific?).to be_truthy }
         it { expect(cd_chloride.specific?).to be_truthy }

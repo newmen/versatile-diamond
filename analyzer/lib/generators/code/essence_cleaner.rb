@@ -4,20 +4,6 @@ module VersatileDiamond
 
       # Contain logic for clean dependent specie essence
       class EssenceCleaner
-        class << self
-          # Gets the relations limits for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom for which relations limits will be gotten
-          # @return [Hash] the hash of limits of relations
-          # TODO: move method to Atom?
-          def limits_for(atom)
-            if atom.lattice
-              atom.lattice.instance.relations_limit
-            else
-              { Concepts::Bond::AMORPH_PROPS => atom.valence }
-            end
-          end
-        end
 
         # Initizalize cleaner by specie class code generator
         # @param [Specie] specie from which pure essence will be gotten
@@ -61,7 +47,7 @@ module VersatileDiamond
           sequence.short.each do |atom|
             next unless essence[atom]
 
-            limits = self.class.limits_for(atom)
+            limits = atom.relations_limits
             groups = essence[atom].group_by { |_, r| r.params }
             groups.each do |rel_params, group|
               if limits[rel_params] < unificate(group).size
