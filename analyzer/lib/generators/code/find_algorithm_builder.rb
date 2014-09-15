@@ -637,30 +637,12 @@ module VersatileDiamond
           return eap if anchors.empty?
 
           used_atoms, used_procs = anchors.reduce(eap) do |atoms_procs, anchor|
-            if pure_essence[anchor]
-              groups = relation_groups_for(anchor)
-              groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
-                clean_group = group.reject { |a, _| except_atoms.include?(a) }
-                if !clean_group.empty? && clean_group.size != group.size
-                  raise 'Wrong walking on pure essence graph'
-                elsif clean_group.empty?
-                  [atoms, procs]
-                else
-                  lazy_method = -> method_name do
-                    -> &block { send(method_name, anchor, rel_params, &block) }
-                  end
-
-                  procs <<
-                    if !group.first.last.belongs_to_crystal?
-                      lazy_method[:amorph_neighbour_condition]
-                    elsif anchor.relations_limits[rel_params] == group.size
-                      lazy_method[:all_neighbours_condition]
-                    else
-                      lazy_method[:each_neighbours_lambda]
-                    end
-
-                  [atoms + group.map(&:first), procs]
-                end
+            if (rels = pure_essence[anchor])
+              if rels.empty? && complex?
+                raise 'So strange anchor' unless count_twins(anchor) > 1
+                collect_by_specie_parts(atoms_procs, anchor)
+              else
+                collect_by_relations(atoms_procs, anchor, except_atoms)
               end
             else
               atoms_procs
@@ -670,6 +652,50 @@ module VersatileDiamond
           without_atoms = (except_atoms + used_atoms).uniq
           next_atoms, next_procs = collect_atoms_procs(used_atoms, without_atoms)
           [used_atoms + next_atoms, used_procs + next_procs]
+        end
+
+        # Collects atoms and procs by species from which consits current complex specie
+        # @param [Array] atoms_procs the default value which will be extended
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor which have more than one twin in source species
+        # @return [Array] the extended atoms_procs value
+        def collect_by_specie_parts(atoms_procs, anchor)
+          atoms_procs
+        end
+
+        # Collects atoms and procs by relations of anchor
+        # @param [Array] atoms_procs the default value of reduce accumulator
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor by relations of which procs will collected
+        # @param [Array] except_atoms the list of atoms relations to which should be
+        #   skiped
+        # @return [Array] the array where first item is atoms which available from
+        #   anchor and second item is procs which will combined to find algorithm
+        def collect_by_relations(atoms_procs, anchor, except_atoms)
+          groups = relation_groups_for(anchor)
+          groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
+            clean_group = group.reject { |a, _| except_atoms.include?(a) }
+            if !clean_group.empty? && clean_group.size != group.size
+              raise 'Wrong walking on pure essence graph'
+            elsif clean_group.empty?
+              [atoms, procs]
+            else
+              lazy_method = -> method_name do
+                -> &block { send(method_name, anchor, rel_params, &block) }
+              end
+
+              procs <<
+                if !group.first.last.belongs_to_crystal?
+                  lazy_method[:amorph_neighbour_condition]
+                elsif anchor.relations_limits[rel_params] == group.size
+                  lazy_method[:all_neighbours_condition]
+                else
+                  lazy_method[:each_neighbours_lambda]
+                end
+
+              [atoms + group.map(&:first), procs]
+            end
+          end
         end
 
         # Groups available to the atom relations and sorts them in most optimal manner
