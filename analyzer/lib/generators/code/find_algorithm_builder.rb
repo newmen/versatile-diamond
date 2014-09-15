@@ -43,8 +43,14 @@ module VersatileDiamond
         # @return [Array] the major anchors of current specie
         # TODO: must be private
         def central_anchors
-          tras = together_related_anchors
-          scas = tras.empty? ? root_related_anchors : tras
+          scas =
+            if complex? && (muas = most_used_anchor)
+              muas
+            else
+              tras = together_related_anchors
+              tras.empty? ? root_related_anchors : tras
+            end
+
           if scas.empty? || lists_are_identical?(scas, major_anchors, &:==)
             [major_anchors]
           else
@@ -203,6 +209,16 @@ module VersatileDiamond
               -1
             end
           end
+        end
+
+        # Selects most used anchor which have the bigger number of twins
+        # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   the most used anchor of specie
+        def most_used_anchor
+          ctn_mas = sequence.major_atoms.map { |a| [a, count_twins(a)] }
+          max_twins_num = ctn_mas.reduce(0) { |acc, (_, ctn)| ctn > acc ? ctn : acc }
+          all_max = ctn_mas.select { |_, ctn| ctn == max_twins_num }.map(&:first)
+          all_max.size == 1 ? all_max : nil
         end
 
         # Filters major anchors from atom sequence
