@@ -638,7 +638,6 @@ module VersatileDiamond
 
           used_atoms, used_procs = anchors.reduce(eap) do |atoms_procs, anchor|
             if pure_essence[anchor]
-              limits = EssenceCleaner.limits_for(anchor)
               groups = relation_groups_for(anchor)
               groups.reduce(atoms_procs) do |(atoms, procs), (rel_params, group)|
                 clean_group = group.reject { |a, _| except_atoms.include?(a) }
@@ -654,7 +653,7 @@ module VersatileDiamond
                   procs <<
                     if !group.first.last.belongs_to_crystal?
                       lazy_method[:amorph_neighbour_condition]
-                    elsif limits[rel_params] == group.size
+                    elsif anchor.relations_limits[rel_params] == group.size
                       lazy_method[:all_neighbours_condition]
                     else
                       lazy_method[:each_neighbours_lambda]
@@ -678,7 +677,7 @@ module VersatileDiamond
         #   atom for which groups will be collected and sorted
         # @return [Array] the array of grouped relations
         def relation_groups_for(atom)
-          limits = EssenceCleaner.limits_for(atom)
+          limits = atom.relations_limits
           groups = pure_essence[atom].group_by { |_, r| r.params }.to_a
           groups.sort_by do |k, rels|
             limits[k] == rels.size ? limits[k] : 1000 + limits[k] - rels.size
