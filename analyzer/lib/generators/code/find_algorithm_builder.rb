@@ -28,7 +28,7 @@ module VersatileDiamond
         def build
           @namer.assign('parent', parents) unless find_root?
 
-          if !find_root? && use_parent_symmetry?
+          if !find_root? && central_symmetric?
             symmetry_lambda(parents.first, []) do
               define_anchor_variable_line + body
             end
@@ -61,7 +61,7 @@ module VersatileDiamond
       private
 
         attr_reader :generator
-        def_delegators :@specie, :spec, :sequence, :find_root?, :use_parent_symmetry?
+        def_delegators :@specie, :spec, :sequence, :find_root?
         def_delegator :sequence, :addition_atoms
 
         # Checks that finding specie is source specie
@@ -81,6 +81,18 @@ module VersatileDiamond
         # @override
         def parents
           super.sort_by { |parent| -parent.spec.relations_num }
+        end
+
+        # Checks that any of central anchors of not find root specie is symmetric
+        # atom in parent specie
+        #
+        # @return [Boolean] is any of central anchors symmetric atom in parent specie
+        #   or not
+        def central_symmetric?
+          central_anchors.first.any? do |a|
+            parent, twin = parent_with_twin_for(a)
+            parent.symmetric_atom?(twin)
+          end
         end
 
         # Adds spaces (like one tab size) before passed string

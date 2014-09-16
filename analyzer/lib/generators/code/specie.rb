@@ -107,10 +107,10 @@ module VersatileDiamond
           parents.size != 1
         end
 
-        # Delegates parent symmetry using detection to symmetry detector
-        # @return [Boolean] use or not
-        def use_parent_symmetry?
-          @detector.use_parent_symmetry?
+        # Delegates detecting of symmetric atom to symmetry detector
+        # @return [Boolean] is symmetric or not
+        def symmetric_atom?(atom)
+          @detector.symmetric_atom?(atom)
         end
 
         # Gets a list of parents species full header file path of which will be

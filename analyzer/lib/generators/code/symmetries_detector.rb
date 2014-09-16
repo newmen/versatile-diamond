@@ -50,16 +50,6 @@ module VersatileDiamond
           @symmetries.values
         end
 
-        # Checks that internal specie uses symmetric atom in parent specie
-        # @return [Boolean] use or not
-        def use_parent_symmetry?
-          !!spec.rest && parents_with_twins_for(uniq_anchors).any? do |parent, twins|
-            twins.any? { |atom| parent.symmetric_atom?(atom) }
-          end
-        end
-
-      protected
-
         # Checks that atom is a symmetric atom in internal specie
         # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
         #   atom which will be checked
@@ -67,6 +57,8 @@ module VersatileDiamond
         def symmetric_atom?(atom)
           @symmetries.keys.any? { |hash| hash.flatten.include?(atom) }
         end
+
+      protected
 
         # Adds symmetric atoms pairs
         # @param [Array] atoms which symmetries will be stored if them exists
