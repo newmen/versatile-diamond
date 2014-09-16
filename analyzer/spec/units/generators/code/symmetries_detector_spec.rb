@@ -17,7 +17,13 @@ module VersatileDiamond
           before { generator }
 
           it { expect(symmetry_classes_names).to match_array(symmetry_classes) }
-          it { expect(detector.use_parent_symmetry?).to eq(use_parent_symmetry) }
+          it 'check keynames of symmetric atoms' do
+            concept = subject.spec
+            atoms = concept.links.keys
+            symmetric_atoms = atoms.select { |a| detector.symmetric_atom?(a) }
+            keynames = symmetric_atoms.map { |a| concept.keyname(a) }
+            expect(keynames).to match_array(symmetric_keynames)
+          end
         end
 
         it_behaves_like :check_symmetry do
@@ -32,7 +38,7 @@ module VersatileDiamond
           end
           let(:specifics) { [dept_activated_bridge] }
           let(:symmetry_classes) { [] }
-          let(:use_parent_symmetry) { false }
+          let(:symmetric_keynames) { [] }
         end
 
         it_behaves_like :check_symmetry do
@@ -40,7 +46,7 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
           let(:symmetry_classes) { [] }
-          let(:use_parent_symmetry) { false }
+          let(:symmetric_keynames) { [] }
         end
 
         it_behaves_like :check_symmetry do
@@ -50,17 +56,17 @@ module VersatileDiamond
           end
           let(:specifics) { [dept_activated_methyl_on_dimer] }
           let(:symmetry_classes) { [] }
-          let(:use_parent_symmetry) { false }
+          let(:symmetric_keynames) { [] }
         end
 
         describe 'symmetric dimers' do
           subject { dept_dimer_base }
           let(:bases) { [dept_bridge_base, dept_dimer_base] }
-          let(:use_parent_symmetry) { false }
 
           it_behaves_like :check_symmetry do
             let(:specifics) { [dept_twise_incoherent_dimer] }
             let(:symmetry_classes) { [] }
+            let(:symmetric_keynames) { [] }
           end
 
           it_behaves_like :check_symmetry do
@@ -68,6 +74,7 @@ module VersatileDiamond
             let(:symmetry_classes) do
               ['ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>']
             end
+            let(:symmetric_keynames) { [:cr, :cl] }
           end
 
           it_behaves_like :check_symmetry do
@@ -77,6 +84,7 @@ module VersatileDiamond
             let(:symmetry_classes) do
               ['ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>']
             end
+            let(:symmetric_keynames) { [:cr, :cl] }
           end
 
           it_behaves_like :check_symmetry do
@@ -88,6 +96,7 @@ module VersatileDiamond
                 'AtomsSwapWrapper<ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>, 1, 2>'
               ]
             end
+            let(:symmetric_keynames) { [:cr, :cl, :crb, :clb, :_cr0, :_cr1] }
           end
         end
 
@@ -104,13 +113,13 @@ module VersatileDiamond
               let(:symmetry_classes) do
                 ['ParentProxy<OriginalDimer, SymmetricDimer, DIMER_CLi_CRi>']
               end
-              let(:use_parent_symmetry) { false }
+              let(:symmetric_keynames) { [:cr, :cl] }
             end
 
             it_behaves_like :check_symmetry do
               subject { dept_activated_incoherent_dimer }
               let(:symmetry_classes) { [] }
-              let(:use_parent_symmetry) { true }
+              let(:symmetric_keynames) { [] }
             end
           end
 
@@ -122,11 +131,13 @@ module VersatileDiamond
             it_behaves_like :check_symmetry do
               let(:specific) { dept_bottom_hydrogenated_activated_dimer }
               let(:symmetry_classes) { ['AtomsSwapWrapper<Empty<DIMER_CRs>, 4, 5>'] }
+              let(:symmetric_keynames) { [:_cr1, :clb] }
             end
 
             it_behaves_like :check_symmetry do
               let(:specific) { dept_right_bottom_hydrogenated_activated_dimer }
               let(:symmetry_classes) { ['AtomsSwapWrapper<Empty<DIMER_CRs>, 1, 2>'] }
+              let(:symmetric_keynames) { [:_cr0, :crb] }
             end
           end
         end
