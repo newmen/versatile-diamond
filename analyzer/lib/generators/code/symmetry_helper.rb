@@ -30,6 +30,7 @@ module VersatileDiamond
         # Gets sorted parents of target specie
         # @return [Array] the sorted array of parent seqeucnes
         def sorted_parents
+          # TODO: same as in FindAlgorithmBuilder#parents
           spec.parents.sort_by { |p| -p.relations_num }
         end
       end
