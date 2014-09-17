@@ -80,6 +80,7 @@ module VersatileDiamond
         # @return [Array] the sorted array of parents
         # @override
         def parents
+          # TODO: same as in SymmetryHelper#sorted_parents
           super.sort_by { |parent| -parent.spec.relations_num }
         end
 
@@ -602,18 +603,6 @@ module VersatileDiamond
         # @return [String] the cpp code with check anchors and specie creation
         def heart(anchors)
           combine_algorithm(anchors) do
-            additional_lines = ''
-            if source?
-              additional_lines << define_atoms_variable_line
-            else
-              if delta > 1
-                additional_lines << define_additional_atoms_variable_line
-              end
-              if complex?
-                additional_lines << define_parents_variable_line
-              end
-            end
-
             additional_lines + creation_line
           end
         end
@@ -720,6 +709,23 @@ module VersatileDiamond
           groups.sort_by do |k, rels|
             limits[k] == rels.size ? limits[k] : 1000 + limits[k] - rels.size
           end
+        end
+
+        # Combine additional lines which needs for create specie when simulation do
+        # @return [String] the cpp code string with defining necessary variables
+        def additional_lines
+          lines = ''
+          if source?
+            lines << define_atoms_variable_line
+          else
+            if delta > 1
+              lines << define_additional_atoms_variable_line
+            end
+            if complex?
+              lines << define_parents_variable_line
+            end
+          end
+          lines
         end
 
         # Gets a string with finding specie creation
