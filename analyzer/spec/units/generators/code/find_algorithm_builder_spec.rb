@@ -301,7 +301,7 @@ module VersatileDiamond
             if (amorph1->is(#{role_cm}))
             {
                 eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (neighbour->is(#{role_ctr}) && amorph1->hasBondWith(neighbour))
+                    if (neighbour->is(#{role_ctr}) && !anchor->hasBondWith(neighbour) && amorph1->hasBondWith(neighbour))
                     {
                         ParentSpec *parents[2] = { anchor->specByRole<Bridge>(#{b_ct}), neighbour->specByRole<Bridge>(#{b_ct}) };
                         create<CrossBridgeOnBridges>(amorph1, parents);
