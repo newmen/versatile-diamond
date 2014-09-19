@@ -599,14 +599,6 @@ module VersatileDiamond
           end
         end
 
-        # Finds parent species which uses twin of passed atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom see at #parents_with_twins_for same argument
-        # @return [Array] the list of parents which uses twin of passed atom
-        def parents_for(atom)
-          parents_with_twins_for(atom).map(&:first)
-        end
-
         # Finds parent specie and correspond twin atom
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom see at #parents_with_twins_for same argument
@@ -636,18 +628,9 @@ module VersatileDiamond
 
             acc << code_condition(check_role_condition(atoms), else_prefix) do
               code_condition(check_specie_condition(atoms)) do
-                heart(atoms)
+                combine_algorithm(atoms) { creation_lines }
               end
             end
-          end
-        end
-
-        # Gest a code string which contain the heart of find algorithm
-        # @param [Array] anchors by which find will occured
-        # @return [String] the cpp code with check anchors and specie creation
-        def heart(anchors)
-          combine_algorithm(anchors) do
-            additional_lines + creation_line
           end
         end
 
@@ -705,10 +688,13 @@ module VersatileDiamond
         #   anchor which have more than one twin in source species
         # @return [Array] the extended atoms_procs value
         def collect_by_specie_parts(atoms_procs, anchor)
-          available_parents = parents_for(anchor)
-          uniq_parents = available_parents.uniq
-          if uniq_parents.size == 1 && !uniq_parents.first.symmetric_atom?(anchor)
-
+          pwts = parents_with_twins_for(anchor)
+          uniq_pwts = pwts.uniq
+          if uniq_pwts.size == 1 && !uniq_pwts.first.first.symmetric_atom?(anchor)
+            lazy_method = -> &block { all_species_condition(anchor, &block) }
+            [root_related_anchors, [lazy_method]]
+          else
+            atoms_procs
 
 # когда из атома несколько кусков
 # - атом не симметричный в кусках
@@ -718,11 +704,14 @@ module VersatileDiamond
 # ---- но если, какой-либо из атомов куска симметричен, то изначально дефайним только тот который симетрии не имеет, а потом гуляем симметрией по симметричной структуре, и определяем внутри второй атом и т.д.
 # ----- возвращаем в качестве первого элемента - эти самые атомы, а в качестве второго - лямбду с параметром-блоком в соотвествии с условием выше
 
-
-
+# рефакторим:
+# сущность работы с эссенцией содержит все методы отчистки графа структуры до финальной супер чистой эссенции
+# чистая эссенция должна учитывать возможность итерации соседей сразу от двух и более атомов, на тот случай, если между исходными атомами есть соответствующее отношение (добавить в кристалл)
+# в момент построяения эссенции, среди неоднозначности в том, какие атомы брать исходными - брать те, которые принадлежат одной структуре
+# перефаршмачить функцию генерирующую вызов итерации соседей, на случай получения сразу двух атомов
+# учесть возможность сохранения в нэймере массива, в котором есть несколько одинаковых элементов
 
           end
-          atoms_procs
         end
 
         # Collects atoms and procs by relations of anchor
@@ -772,48 +761,34 @@ module VersatileDiamond
           end
         end
 
-        # Combine additional lines which needs for create specie when simulation do
-        # @return [String] the cpp code string with defining necessary variables
-        def additional_lines
-          lines = ''
-          if source?
-            lines << define_atoms_variable_line
-          else
-            if delta > 1
-              lines << define_additional_atoms_variable_line
-            end
-            if complex?
-              lines << define_parents_variable_line
-            end
-          end
-          lines
-        end
-
         # Gets a string with finding specie creation
         # @param [Array] args the arguments which will be passed to creation method
         # @return [String] the cpp code string with creation of finding specie
-        def creation_line
-          args = []
+        def creation_lines
+          additional_lines = ''
+          creation_args = []
 
-          if delta > 1
-            args << @namer.array_name_for(sequence.addition_atoms)
-          elsif delta == 1
-            args << @namer.get(sequence.addition_atoms.first)
-          end
-
-          if complex?
-            args << @namer.array_name_for(parents)
-          elsif !source?
-            args << @namer.get(parents.first)
+          if source?
+            additional_lines << define_atoms_variable_line
+            creation_args << 'atoms'
           else
-            unless args.empty?
-              raise 'Arguments should contain only atoms if specie havent parents'
+            if delta > 1
+              additional_lines << define_additional_atoms_variable_line
+              creation_args << @namer.array_name_for(sequence.addition_atoms)
+            elsif delta == 1
+              creation_args << @namer.get(sequence.addition_atoms.first)
             end
-            args << 'atoms'
+
+            if complex?
+              additional_lines << define_parents_variable_line
+              creation_args << @namer.array_name_for(parents)
+            else
+              creation_args << @namer.get(parents.first)
+            end
           end
 
-          args_str = args.join(', ')
-          code_line("create<#{@specie.class_name}>(#{args_str});")
+          args_str = creation_args.join(', ')
+          additional_lines + code_line("create<#{@specie.class_name}>(#{args_str});")
         end
       end
 
