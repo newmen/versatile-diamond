@@ -17,13 +17,7 @@ class Counter
         double rate;
 
         Record(const char *name, double rate) : name(name), rate(rate) {}
-        void inc()
-        {
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
-            ++counter;
-        }
+        void inc() { ++counter; }
 
     private:
         Record(const Record &) = delete;

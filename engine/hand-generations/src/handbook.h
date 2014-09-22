@@ -26,10 +26,9 @@ class Handbook
     static DMC __mc;
     static PhaseBoundary __amorph;
 
-    static LKeeper __lateralKeepers[THREADS_NUM];
-    static SKeeper __specificKeepers[THREADS_NUM];
-
-    static Scavenger __scavengers[THREADS_NUM];
+    static LKeeper __lateralKeeper;
+    static SKeeper __specificKeeper;
+    static Scavenger __scavenger;
 
 public:
     ~Handbook();
@@ -51,8 +50,6 @@ public:
     static ushort activesToHFor(const Atom *atom);
 
 private:
-    template <class T> static inline T &selectForThread(T *container);
-
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
 
@@ -73,17 +70,5 @@ public:
 
     typedef Diamond SurfaceCrystal;
 };
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-template <class T>
-T &Handbook::selectForThread(T *container)
-{
-#ifdef PARALLEL
-    return container[omp_get_thread_num()];
-#else
-    return container[0];
-#endif // PARALLEL
-}
 
 #endif // HANDBOOK_H
