@@ -7,14 +7,7 @@ QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS += -DTHREADS_NUM=1
 LIBS += -lyaml-cpp
-
-#QMAKE_CXXFLAGS += -fopenmp -DPARALLEL -DTHREADS_NUM=3
-#LIBS += -fopenmp -lstdc++
-
-#QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
-#LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
 
 SOURCES += \
     ../hand-generations/src/atoms/c.cpp \
@@ -123,7 +116,6 @@ SOURCES += \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
     tools/common.cpp \
-    tools/lockable.cpp \
     tools/process_mem_usage.cpp \
     tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
@@ -304,7 +296,6 @@ HEADERS += \
     tools/error.h \
     tools/factory.h \
     tools/init_config.h \
-    tools/lockable.h \
     tools/many_items_result.h \
     tools/process_mem_usage.h \
     tools/runner.h \
