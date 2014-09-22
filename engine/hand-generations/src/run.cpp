@@ -1,5 +1,4 @@
 #include "run.h"
-#include <tools/savers/actives_portion_counter.h>
 #include <tools/savers/surface_detector.h>
 #include "phases/diamond.h"
 #include "handbook.h"

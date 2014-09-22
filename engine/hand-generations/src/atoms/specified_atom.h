@@ -57,7 +57,7 @@ ushort SpecifiedAtom<VALENCE>::hCount() const
 template <ushort VALENCE>
 ushort SpecifiedAtom<VALENCE>::actives() const
 {
-    ushort result = Handbook::activiesFor(this);
+    ushort result = Handbook::activesFor(this);
     assert(Atom::actives() == result);
     return result;
 }

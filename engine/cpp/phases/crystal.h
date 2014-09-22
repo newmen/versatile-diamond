@@ -27,16 +27,11 @@ public:
     Atom *atom(const int3 &coords) { return _atoms[coords]; }
 
     uint countAtoms() const;
+    template <class L> void eachAtom(const L &lambda) const;
+
     const dim3 &sizes() const { return _atoms.sizes(); }
 
-    void setUnvisited();
-#ifndef NDEBUG
-    void checkAllVisited();
-#endif // NDEBUG
-
     template <class L> void eachSlice(const L &lambda) const;
-
-    Atom *firstAtom() const { return _atoms.data()[0]; }
     float3 translate(const int3 &coords) const;
 
     virtual float3 correct(const Atom *atom) const = 0;
@@ -64,6 +59,14 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
+
+template <class L>
+void Crystal::eachAtom(const L &lambda) const
+{
+    _atoms.each([&lambda](Atom *atom) {
+        if (atom) lambda(atom);
+    });
+}
 
 template <class L>
 void Crystal::eachSlice(const L &lambda) const

@@ -133,7 +133,6 @@ SOURCES += \
     tools/savers/mol_format.cpp \
     tools/savers/mol_saver.cpp \
     tools/savers/sdf_saver.cpp \
-    tools/savers/volume_saver.cpp \
     tools/savers/volume_saver_factory.cpp \
     tools/savers/xyz_accumulator.cpp \
     tools/savers/xyz_format.cpp \

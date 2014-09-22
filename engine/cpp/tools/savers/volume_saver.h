@@ -1,9 +1,9 @@
 #ifndef VOLUME_SAVER_H
 #define VOLUME_SAVER_H
 
-#include "../../atoms/atom.h"
+#include "../../phases/amorph.h"
+#include "../../phases/crystal.h"
 #include "detector.h"
-#include "accumulator.h"
 
 namespace vd
 {
@@ -14,7 +14,7 @@ class VolumeSaver
 
 public:
     virtual ~VolumeSaver() {}
-    virtual void writeFrom(Atom *atom, double currentTime, const Detector *detector) = 0;
+    virtual void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) = 0;
 
     const std::string &name() const { return _name; }
 
@@ -23,8 +23,6 @@ protected:
 
     virtual std::string filename() const = 0;
     virtual const char *ext() const = 0;
-
-    void accumulateToFrom(Accumulator *acc, Atom *atom) const;
 };
 
 }

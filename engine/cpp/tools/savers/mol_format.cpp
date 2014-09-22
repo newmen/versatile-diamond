@@ -41,41 +41,27 @@ void MolFormat::writeEnd(std::ostream &os) const
 
 void MolFormat::writeCounts(std::ostream &os) const
 {
-    os << prefix() << "COUNTS " << acc().atoms().size() << " " << acc().bonds().size() << " " << "0 0 0" << "\n";
+    os << prefix() << "COUNTS " << acc().atomsNum() << " " << acc().bondsNum() << " " << "0 0 0" << "\n";
 }
 
 void MolFormat::writeBonds(std::ostream &os) const
 {
     os << prefix() << "BEGIN BOND" << "\n";
-
-    std::vector<const BondInfo *> orderer(acc().bonds().size());
-    for (auto &pr : acc().bonds()) orderer[pr.second - 1] = &pr.first;
-
-    for (uint i = 0; i < orderer.size(); ++i)
-    {
-        const BondInfo *bi = orderer[i];
-
+    acc().orderedEachBondInfo([&os, this](uint i, const BondInfo *bi) {
         os << prefix()
            << (i + 1) << " "
            << bi->type() << " "
            << bi->from() << " "
            << bi->to() << "\n";
-    }
+    });
     os << prefix() << "END BOND" << "\n";
 }
 
 void MolFormat::writeAtoms(std::ostream &os) const
 {
     os << prefix() << "BEGIN ATOM" << "\n";
-
-    std::vector<const AtomInfo *> orderer(acc().atoms().size());
-    for (auto &pr : acc().atoms()) orderer[pr.second - 1] = &pr.first;
-
-    for (uint i = 0; i < orderer.size(); ++i)
-    {
-        const AtomInfo *ai = orderer[i];
+    acc().orderedEachAtomInfo([&os, this](uint i, const AtomInfo *ai) {
         const float3 &coords = ai->atom()->realPosition();
-
         os << prefix()
            << (i + 1) << " "
            << ai->atom()->name() << " "
@@ -84,7 +70,7 @@ void MolFormat::writeAtoms(std::ostream &os) const
            << coords.z << " "
            << "0"
            << atomsOptions(ai) << "\n";
-    }
+    });
     os << prefix() << "END ATOM" << "\n";
 }
 

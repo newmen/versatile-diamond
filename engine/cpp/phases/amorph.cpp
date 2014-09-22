@@ -17,9 +17,6 @@ void Amorph::insert(Atom *atom)
     assert(atom);
     assert(!atom->lattice());
 
-#ifdef PARALLEL
-#pragma omp critical (amorph_atoms)
-#endif // PARALLEL
     _atoms.insert(atom);
 }
 
@@ -28,40 +25,12 @@ void Amorph::erase(Atom *atom)
     assert(atom);
     assert(!atom->lattice());
 
-#ifdef PARALLEL
-#pragma omp critical (amorph_atoms)
-#endif // PARALLEL
     _atoms.erase(atom);
 }
 
 uint Amorph::countAtoms() const
 {
-    uint n = 0;
-
-#ifdef PARALLEL
-#pragma omp critical (amorph_atoms)
-#endif // PARALLEL
-    n = _atoms.size();
-
-    return n;
+    return _atoms.size();
 }
-
-void Amorph::setUnvisited()
-{
-    for (Atom *atom : _atoms)
-    {
-        atom->setUnvisited();
-    }
-}
-
-#ifndef NDEBUG
-void Amorph::checkAllVisited()
-{
-    for (Atom *atom : _atoms)
-    {
-        assert(atom->isVisited());
-    }
-}
-#endif // NDEBUG
 
 }

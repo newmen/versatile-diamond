@@ -23,16 +23,13 @@ void Diamond::buildAtoms()
 
 void Diamond::bondAllAtoms()
 {
-    atoms().ompParallelEach([this](Atom *atom) {
-        if (!atom) return;
+    eachAtom([this](Atom *atom) {
         assert(atom->lattice());
-
         int z = atom->lattice()->coords().z;
         if (z > 0)
         {
             bondAround(atom);
         }
-
     });
 }
 
