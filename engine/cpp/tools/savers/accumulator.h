@@ -16,10 +16,12 @@ class Accumulator
 
 public:
     const Detector *detector() const { return _detector; }
+
     void addBondedPair(const Atom *from, const Atom *to);
 
 protected:
     Accumulator(const Detector *detector) : _detector(detector) {}
+    virtual ~Accumulator() {}
 
     virtual void treatHidden(const Atom *first, const Atom *second) = 0;
     virtual void pushPair(const Atom *first, const Atom *second) = 0;

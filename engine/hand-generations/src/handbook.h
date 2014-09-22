@@ -45,7 +45,7 @@ public:
 
     static bool isRegular(const Atom *atom);
 
-    static ushort activiesFor(const Atom *atom);
+    static ushort activesFor(const Atom *atom);
     static ushort hydrogensFor(const Atom *atom);
     static ushort hToActivesFor(const Atom *atom);
     static ushort activesToHFor(const Atom *atom);

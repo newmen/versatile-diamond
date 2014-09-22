@@ -19,7 +19,7 @@ public:
         delete _behavior;
     }
 
-    void changeBehavior (const Behavior *behavior)
+    void changeBehavior(const Behavior *behavior)
     {
         delete _behavior;
         _behavior = behavior;

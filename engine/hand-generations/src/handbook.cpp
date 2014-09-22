@@ -143,7 +143,7 @@ bool Handbook::isRegular(const Atom *atom)
     return b;
 }
 
-ushort Handbook::activiesFor(const Atom *atom)
+ushort Handbook::activesFor(const Atom *atom)
 {
     assert(atom->type() < __atomsNum);
     return __activesOnAtoms[atom->type()];

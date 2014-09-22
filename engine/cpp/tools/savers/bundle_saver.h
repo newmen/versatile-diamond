@@ -12,16 +12,24 @@ class BundleSaver : public VolumeSaver
 protected:
     template <class... Args> BundleSaver(Args... args) : VolumeSaver(args...) {}
 
-    void writeToFrom(std::ostream &os, Atom *atom, double currentTime, const Detector *detector) const;
+    void saveTo(std::ostream &os, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) const;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template <class A, class F>
-void BundleSaver<A, F>::writeToFrom(std::ostream &os, Atom *atom, double currentTime, const Detector *detector) const
+void BundleSaver<A, F>::saveTo(std::ostream &os, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) const
 {
     A acc(detector);
-    accumulateToFrom(&acc, atom);
+    auto lambda = [&acc](const Atom *atom) {
+        atom->eachNeighbour([&acc, atom](Atom *nbr) {
+            acc.addBondedPair(atom, nbr);
+        });
+    };
+
+    amorph->eachAtom(lambda);
+    crystal->eachAtom(lambda);
+
     const F format(*this, acc);
     format.render(os, currentTime);
 }
