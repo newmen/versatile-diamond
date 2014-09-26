@@ -3,7 +3,8 @@
 
 #include "concretizable_role.h"
 
-template <template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM> class LaterableRole;
+template <template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM>
+class LaterableRole;
 
 template <ushort RT, ushort TARGETS_NUM>
 class LaterableRole<Typical, RT, TARGETS_NUM> : public ConcretizableRole<Typical, RT, TARGETS_NUM>

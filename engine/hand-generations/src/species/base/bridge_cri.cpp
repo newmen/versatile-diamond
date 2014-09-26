@@ -2,8 +2,8 @@
 #include "../specific/bridge_crh.h"
 #include "../specific/bridge_crs.h"
 
-const ushort BridgeCRi::Base::__indexes[1] = { 1 };
-const ushort BridgeCRi::Base::__roles[1] = { 4 };
+template <> const ushort BridgeCRi::Base::__indexes[1] = { 1 };
+template <> const ushort BridgeCRi::Base::__roles[1] = { 4 };
 
 #ifdef PRINT
 const char *BridgeCRi::name() const

@@ -2,8 +2,8 @@
 #include "../../reactions/typical/des_methyl_from_111.h"
 #include "methyl_on_111_cmsiu.h"
 
-const ushort MethylOn111CMiu::Base::__indexes[2] = { 1, 0 };
-const ushort MethylOn111CMiu::Base::__roles[2] = { 33, 25 };
+template <> const ushort MethylOn111CMiu::Base::__indexes[2] = { 1, 0 };
+template <> const ushort MethylOn111CMiu::Base::__roles[2] = { 33, 25 };
 
 #ifdef PRINT
 const char *MethylOn111CMiu::name() const

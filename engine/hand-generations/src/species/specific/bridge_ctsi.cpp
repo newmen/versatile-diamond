@@ -4,8 +4,8 @@
 #include "../../reactions/typical/high_bridge_stand_to_one_bridge.h"
 #include "../../reactions/typical/high_bridge_to_methyl.h"
 
-const ushort BridgeCTsi::Base::__indexes[1] = { 0 };
-const ushort BridgeCTsi::Base::__roles[1] = { 28 };
+template <> const ushort BridgeCTsi::Base::__indexes[1] = { 0 };
+template <> const ushort BridgeCTsi::Base::__roles[1] = { 28 };
 
 #ifdef PRINT
 const char *BridgeCTsi::name() const

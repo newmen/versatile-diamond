@@ -2,8 +2,8 @@
 #include "../base/bridge.h"
 #include "../specific/two_bridges_ctri_cbrs.h"
 
-const ushort TwoBridges::Base::__indexes[2] = { 5, 0 };
-const ushort TwoBridges::Base::__roles[2] = { 24, 6 };
+template <> const ushort TwoBridges::Base::__indexes[2] = { 5, 0 };
+template <> const ushort TwoBridges::Base::__roles[2] = { 24, 6 };
 
 #ifdef PRINT
 const char *TwoBridges::name() const

@@ -3,8 +3,8 @@
 #include "methyl_on_bridge_cbi_cmssiu.h"
 #include "methyl_on_bridge_cbs_cmsiu.h"
 
-const ushort MethylOnBridgeCBiCMsiu::Base::__indexes[1] = { 0 };
-const ushort MethylOnBridgeCBiCMsiu::Base::__roles[1] = { 26 };
+template <> const ushort MethylOnBridgeCBiCMsiu::Base::__indexes[1] = { 0 };
+template <> const ushort MethylOnBridgeCBiCMsiu::Base::__roles[1] = { 26 };
 
 #ifdef PRINT
 const char *MethylOnBridgeCBiCMsiu::name() const

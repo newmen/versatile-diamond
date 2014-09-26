@@ -4,8 +4,8 @@
 #include "methyl_on_dimer_cmsiu.h"
 #include "methyl_on_dimer_cls_cmhiu.h"
 
-const ushort MethylOnDimerCMiu::Base::__indexes[1] = { 0 };
-const ushort MethylOnDimerCMiu::Base::__roles[1] = { 25 };
+template <> const ushort MethylOnDimerCMiu::Base::__indexes[1] = { 0 };
+template <> const ushort MethylOnDimerCMiu::Base::__roles[1] = { 25 };
 
 #ifdef PRINT
 const char *MethylOnDimerCMiu::name() const

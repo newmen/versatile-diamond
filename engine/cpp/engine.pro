@@ -97,7 +97,6 @@ SOURCES += \
     ../hand-generations/src/species/specific/original_dimer_cri_cli.cpp \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
     atoms/atom.cpp \
-    atoms/lattice.cpp \
     mc/base_events_container.cpp \
     mc/common_mc_data.cpp \
     mc/counter.cpp \
