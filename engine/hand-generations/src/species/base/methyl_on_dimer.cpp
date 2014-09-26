@@ -1,8 +1,8 @@
 #include "methyl_on_dimer.h"
 #include "../specific/methyl_on_dimer_cmiu.h"
 
-const ushort MethylOnDimer::Base::__indexes[2] = { 1, 4 };
-const ushort MethylOnDimer::Base::__roles[2] = { 23, 22 };
+template <> const ushort MethylOnDimer::Base::__indexes[2] = { 1, 4 };
+template <> const ushort MethylOnDimer::Base::__roles[2] = { 23, 22 };
 
 #ifdef PRINT
 const char *MethylOnDimer::name() const

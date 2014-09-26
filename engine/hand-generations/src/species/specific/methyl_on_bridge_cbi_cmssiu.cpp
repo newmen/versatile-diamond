@@ -1,8 +1,8 @@
 #include "methyl_on_bridge_cbi_cmssiu.h"
 #include "../../reactions/typical/migration_down_in_gap.h"
 
-const ushort MethylOnBridgeCBiCMssiu::Base::__indexes[1] = { 0 };
-const ushort MethylOnBridgeCBiCMssiu::Base::__roles[1] = { 27 };
+template <> const ushort MethylOnBridgeCBiCMssiu::Base::__indexes[1] = { 0 };
+template <> const ushort MethylOnBridgeCBiCMssiu::Base::__roles[1] = { 27 };
 
 #ifdef PRINT
 const char *MethylOnBridgeCBiCMssiu::name() const
