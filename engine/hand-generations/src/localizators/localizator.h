@@ -7,11 +7,15 @@
 // Базовый класс для любого рода анализатора событий в моделируемой системе.
 class Localizator
 {
+protected:
+    Localizator() = default;
+
 public:
-    Localizator();
     virtual ~Localizator() {}
 
     virtual void adsorb(const StudyUnit *unit) = 0;
+
+    void registrate();
 };
 
 #endif // LOCALIZATOR_H

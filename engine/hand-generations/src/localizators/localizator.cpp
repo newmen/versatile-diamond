@@ -1,7 +1,7 @@
 #include "localizator.h"
 #include "../handbook.h"
 
-Localizator::Localizator()
+void Localizator::registrate()
 {
     Handbook::addLocalizator(this);
 }

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     signal(SIGTERM, stopSignalHandler);
 
 #ifdef NEYRON
-    std::vector<Localizator *> localizators = createLocalizators();
+    registerLocalizators();
 #endif // NEYRON
 
     try
@@ -42,10 +42,9 @@ int main(int argc, char *argv[])
     }
 
 #ifdef NEYRON
-    for (Localizator *localizator : localizators)
-    {
+    Handbook::eachLocalizator([](Localizator *localizator) {
         delete localizator;
-    }
+    });
 #endif // NEYRON
 
     return 0;
