@@ -19,6 +19,9 @@ public:
 
     double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
+
+protected:
+    void changeAtoms(Atom **atoms) final;
 };
 
 #endif // TWO_BRIDGES_TO_HIGH_BRIDGE_H

@@ -18,6 +18,12 @@ void DimerDropNearBridge::doIt()
     assert(target()->type() == BridgeWithDimerCDLi::ID);
 
     Atom *atoms[2] = { target()->atom(6), atoms[1] = target()->atom(9) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void DimerDropNearBridge::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(20));
@@ -29,6 +35,4 @@ void DimerDropNearBridge::doIt()
     else a->changeType(28);
 
     b->changeType(5);
-
-    Finder::findAll(atoms, 2);
 }

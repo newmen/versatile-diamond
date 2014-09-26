@@ -19,6 +19,10 @@ public:
 
     static int3 front_110_at(const Atom *first, const Atom *second);
 
+#ifdef NEYRON
+    Neighbours<4> angles_100(const Atom *atom);
+#endif // NEYRON
+
 protected:
     template <class... Args> DiamondRelations(Args... args) : B(args...) {}
 };
@@ -145,5 +149,21 @@ int3 DiamondRelations<B>::front_110_at(const Atom *first, const Atom *second)
         }
     }
 }
+
+#ifdef NEYRON
+template <class B>
+Neighbours<4> DiamondRelations<B>::angles_100(const Atom *atom)
+{
+    assert(atom->lattice());
+    const int3 &coords = atom->lattice()->coords();
+
+    Atom *fourAtoms[4];
+    fourAtoms[0] = this->atom(int3(coords.x - 1, coords.y - 1, coords.z));
+    fourAtoms[1] = this->atom(int3(coords.x + 1, coords.y - 1, coords.z));
+    fourAtoms[2] = this->atom(int3(coords.x - 1, coords.y + 1, coords.z));
+    fourAtoms[3] = this->atom(int3(coords.x + 1, coords.y + 1, coords.z));
+    return Neighbours<4>(fourAtoms);
+}
+#endif // NEYRON
 
 #endif // DIAMOND_RELATIONS_H

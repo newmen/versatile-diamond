@@ -20,6 +20,12 @@ void AdsMethylTo111::doIt()
 
     AtomBuilder builder;
     Atom *atoms[2] = { target()->atom(1), builder.buildC(25, 1) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void AdsMethylTo111::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
     Handbook::amorph().insert(b);
 
@@ -28,6 +34,4 @@ void AdsMethylTo111::doIt()
     a->bondWith(b);
 
     a->changeType(33);
-
-    Finder::findAll(atoms, 2);
 }

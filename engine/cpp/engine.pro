@@ -6,6 +6,8 @@ QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 #QMAKE_CXXFLAGS += -DPRINT
 
+QMAKE_CXXFLAGS += -DNEYRON -I. -I../hand-generations/src -I../neyron/src
+
 QMAKE_CXXFLAGS += -std=c++11
 LIBS += -lyaml-cpp
 
@@ -14,6 +16,10 @@ SOURCES += \
     ../hand-generations/src/env.cpp \
     ../hand-generations/src/finder.cpp \
     ../hand-generations/src/handbook.cpp \
+    ../hand-generations/src/localizators/localizator.cpp \
+    ../hand-generations/src/localizators/localizators_pack.cpp \
+    ../hand-generations/src/localizators/study_unit.cpp \
+    ../hand-generations/src/localizators/tails_translator.cpp \
     ../hand-generations/src/main.cpp \
     ../hand-generations/src/phases/diamond.cpp \
     ../hand-generations/src/phases/phase_boundary.cpp \
@@ -96,6 +102,8 @@ SOURCES += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.cpp \
     ../hand-generations/src/species/specific/original_dimer_cri_cli.cpp \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
+    ../neyron/src/init.cpp \
+    ../neyron/src/sample.cpp \
     atoms/atom.cpp \
     mc/base_events_container.cpp \
     mc/common_mc_data.cpp \
@@ -138,6 +146,10 @@ HEADERS += \
     ../hand-generations/src/env.h \
     ../hand-generations/src/finder.h \
     ../hand-generations/src/handbook.h \
+    ../hand-generations/src/localizators/localizator.h \
+    ../hand-generations/src/localizators/localizators_pack.h \
+    ../hand-generations/src/localizators/study_unit.h \
+    ../hand-generations/src/localizators/tails_translator.h \
     ../hand-generations/src/names.h \
     ../hand-generations/src/phases/diamond.h \
     ../hand-generations/src/phases/diamond_atoms_iterator.h \
@@ -154,6 +166,7 @@ HEADERS += \
     ../hand-generations/src/reactions/local.h \
     ../hand-generations/src/reactions/rates_reader.h \
     ../hand-generations/src/reactions/registrator.h \
+    ../hand-generations/src/reactions/typed_reaction.h \
     ../hand-generations/src/reactions/typical.h \
     ../hand-generations/src/reactions/typical/abs_hydrogen_from_gap.h \
     ../hand-generations/src/reactions/typical/ads_methyl_to_111.h \
@@ -245,6 +258,8 @@ HEADERS += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.h \
     ../hand-generations/src/species/specific/original_dimer_cri_cli.h \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.h \
+    ../neyron/src/init.h \
+    ../neyron/src/sample.h \
     atoms/atom.h \
     atoms/contained_species.h \
     atoms/lattice.h \

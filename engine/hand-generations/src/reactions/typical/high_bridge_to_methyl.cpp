@@ -80,6 +80,12 @@ void HighBridgeToMethyl::doIt()
         highBridge->atom(1),
         bridgeCTs->atom((bridgeCTs->type() == BridgeCTsi::ID) ? 0 : 1)
     };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void HighBridgeToMethyl::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(18));
@@ -98,6 +104,4 @@ void HighBridgeToMethyl::doIt()
     if (c->is(5)) c->changeType(32);
     else if (c->is(2)) c->changeType(21);
     else c->changeType(20);
-
-    Finder::findAll(atoms, 3);
 }

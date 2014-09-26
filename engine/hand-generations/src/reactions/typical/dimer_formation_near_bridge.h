@@ -22,6 +22,9 @@ public:
 
     double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
+
+protected:
+    void changeAtoms(Atom **atoms) final;
 };
 
 #endif // DIMER_FORMATION_NEAR_BRIDGE_H

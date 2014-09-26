@@ -20,6 +20,7 @@ public:
 
 protected:
     void doItWith(Atom **atoms);
+    void changeAtoms(Atom **atoms) final;
 };
 
 #endif // SIERPINSKI_DROP_H

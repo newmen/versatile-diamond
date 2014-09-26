@@ -21,14 +21,18 @@ void DimerDrop::doIt()
     assert(target()->type() == DimerCRiCLi::ID);
 
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void DimerDrop::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     a->unbondFrom(b);
 
     changeAtom(a);
     changeAtom(b);
-
-    Finder::findAll(atoms, 2);
 }
 
 LateralReaction *DimerDrop::lookAround()

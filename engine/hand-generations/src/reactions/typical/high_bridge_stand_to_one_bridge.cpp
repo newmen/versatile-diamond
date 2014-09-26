@@ -55,6 +55,12 @@ void HighBridgeStandToOneBridge::doIt()
     assert(bridgeCTsi->type() == BridgeCTsi::ID);
 
     Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), bridgeCTsi->atom(0) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void HighBridgeStandToOneBridge::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(18));
@@ -80,6 +86,4 @@ void HighBridgeStandToOneBridge::doIt()
 
     if (c->is(2)) c->changeType(5);
     else c->changeType(4);
-
-    Finder::findAll(atoms, 3);
 }

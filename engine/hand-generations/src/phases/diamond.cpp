@@ -44,3 +44,40 @@ void Diamond::findAll()
 {
     Finder::initFind(atoms().data(), atoms().size());
 }
+
+#ifdef NEYRON
+void Diamond::eachAround(const Atom *atom, const std::function<void (Atom *)> &block)
+{
+    assert(atom->lattice());
+    const int3 &coords = atom->lattice()->coords();
+
+    cross_110(atom).each(block);
+    if (coords.z % 2 == 0)
+    {
+        front_100(atom).each(block);
+        cross_100(atom).each(block);
+    }
+    else
+    {
+        cross_100(atom).each(block);
+        front_100(atom).each(block);
+    }
+    angles_100(atom).each(block);
+
+    bool wasAmorph = false;
+    front_110(atom).each([&wasAmorph, atom, block](Atom *a) {
+        if (a)
+        {
+            block(a);
+        }
+        else if (!wasAmorph)
+        {
+            if (atom->hasAmorphNeighbour())
+            {
+                block(atom->amorphNeighbour());
+            }
+            wasAmorph = true;
+        }
+    });
+}
+#endif // NEYRON

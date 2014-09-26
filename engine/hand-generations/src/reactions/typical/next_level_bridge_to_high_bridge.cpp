@@ -18,6 +18,12 @@ void NextLevelBridgeToHighBridge::doIt()
     assert(target()->type() == BridgeCRsCTiCLi::ID);
 
     Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(2) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void NextLevelBridgeToHighBridge::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(0));
@@ -39,6 +45,4 @@ void NextLevelBridgeToHighBridge::doIt()
 
     if (c->is(5)) c->changeType(2);
     else c->changeType(28);
-
-    Finder::findAll(atoms, 3);
 }

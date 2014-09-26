@@ -46,6 +46,12 @@ void MigrationDownInGapFromDimer::doIt()
         bridges[0]->atom(1),
         bridges[1]->atom(1)
     };
+    analyzeAndChangeAtoms(atoms, 5);
+    Finder::findAll(atoms, 5);
+}
+
+void MigrationDownInGapFromDimer::changeAtoms(Atom **atoms)
+{
     Atom *x = atoms[0], *z = atoms[1], *a = atoms[2], *b = atoms[3], *c = atoms[4];
 
     assert(x->is(22));
@@ -78,6 +84,4 @@ void MigrationDownInGapFromDimer::doIt()
 
     b->changeType(24);
     c->changeType(24);
-
-    Finder::findAll(atoms, 5);
 }

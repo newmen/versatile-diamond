@@ -18,6 +18,12 @@ void TwoBridgesToHighBridge::doIt()
     assert(target()->type() == TwoBridgesCTRiCBRs::ID);
 
     Atom *atoms[3] = { target()->atom(3), target()->atom(4), target()->atom(5) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void TwoBridgesToHighBridge::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(0));
@@ -37,6 +43,4 @@ void TwoBridgesToHighBridge::doIt()
 
     b->changeType(19);
     c->changeType(5);
-
-    Finder::findAll(atoms, 3);
 }

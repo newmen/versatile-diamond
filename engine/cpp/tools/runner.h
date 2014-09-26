@@ -164,8 +164,10 @@ void Runner<HB>::outputMemoryUsage(std::ostream &os) const
 template <class HB>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
+#ifndef NOUT
     // TODO: Предоставить возможность сохранять концентрацию структур
     CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
+#endif // NOUT
 
 // -------------------------------------------------------------------------------- //
 
@@ -197,6 +199,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     double timeCounter = 0;
     uint volumeSaveCounter = 0;
 
+#ifndef NOUT
     auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
         csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
 
@@ -212,6 +215,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
             }
         }
     };
+#endif // NOUT
 
     RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
 

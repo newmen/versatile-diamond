@@ -23,6 +23,7 @@ public:
     const char *name() const override { return __name; }
 
 protected:
+    void changeAtoms(Atom **atoms) final;
     LateralReaction *lookAround() override;
 
 private:

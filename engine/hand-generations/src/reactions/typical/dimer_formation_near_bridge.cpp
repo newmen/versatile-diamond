@@ -55,6 +55,12 @@ void DimerFormationNearBridge::doIt()
     assert(bridgeCRs->type() == BridgeCRs::ID);
 
     Atom *atoms[2] = { bridgeCTsi->atom(0), bridgeCRs->atom(1) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void DimerFormationNearBridge::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(28));
@@ -66,6 +72,4 @@ void DimerFormationNearBridge::doIt()
     else a->changeType(20);
 
     b->changeType(32);
-
-    Finder::findAll(atoms, 2);
 }

@@ -39,14 +39,18 @@ void DimerFormation::doIt()
     assert(target(1)->type() == BridgeCTsi::ID);
 
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void DimerFormation::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     a->bondWith(b);
 
     changeAtom(a);
     changeAtom(b);
-
-    Finder::findAll(atoms, 2);
 }
 
 LateralReaction *DimerFormation::lookAround()

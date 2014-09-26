@@ -61,6 +61,12 @@ void MigrationThroughDimersRow::doIt()
         methylOnDimer->atom(0),
         dimer->atom(0)
     };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void MigrationThroughDimersRow::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(26));
@@ -73,6 +79,4 @@ void MigrationThroughDimersRow::doIt()
     else a->changeType(10);
 
     b->changeType(23);
-
-    Finder::findAll(atoms, 2);
 }

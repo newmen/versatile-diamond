@@ -55,6 +55,12 @@ void HighBridgeToTwoBridges::doIt()
     assert(bridgeCRs->type() == BridgeCRs::ID);
 
     Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), bridgeCRs->atom(1) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void HighBridgeToTwoBridges::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(18));
@@ -74,6 +80,4 @@ void HighBridgeToTwoBridges::doIt()
 
     b->changeType(5);
     c->changeType(24);
-
-    Finder::findAll(atoms, 3);
 }

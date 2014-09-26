@@ -22,13 +22,13 @@ public:
     const Atom *target() const { return _target; } // should be replaced to .anchor() call everywhere
 
     Atom *anchor() const override;
-    void doIt() override;
 
 #ifdef PRINT
     void info(std::ostream &os) override;
 #endif // PRINT
 
 protected:
+    virtual void changeAtoms(Atom **) override;
     virtual ushort toType() const = 0;
     virtual void action() = 0;
 };

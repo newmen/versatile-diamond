@@ -33,6 +33,12 @@ void AbsHydrogenFromGap::doIt()
     assert(target(1)->type() == BridgeCRh::ID);
 
     Atom *atoms[2] = { target(0)->atom(1), target(1)->atom(1) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void AbsHydrogenFromGap::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->lattice()->crystal() == b->lattice()->crystal());
@@ -40,8 +46,6 @@ void AbsHydrogenFromGap::doIt()
 
     changeAtom(a);
     changeAtom(b);
-
-    Finder::findAll(atoms, 2);
 }
 
 void AbsHydrogenFromGap::changeAtom(Atom *atom) const

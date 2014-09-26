@@ -18,6 +18,12 @@ void FormTwoBond::doIt()
     assert(target()->type() == MethylOnBridgeCBsCMsiu::ID);
 
     Atom *atoms[2] = { target()->atom(0), atoms[1] = target()->atom(1) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void FormTwoBond::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(26));
@@ -30,6 +36,4 @@ void FormTwoBond::doIt()
     else a->changeType(18);
 
     b->changeType(19);
-
-    Finder::findAll(atoms, 2);
 }

@@ -92,6 +92,21 @@ const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
     2, 0, 0, 0, 0, 0, 1, 1, 2
 };
 
+#ifdef NEYRON
+LocalizatorsPack Handbook::__localizators;
+void Handbook::addLocalizator(Localizator *localizator)
+{
+    __localizators.add(localizator);
+}
+
+const ushort Handbook::__atomsClusterSize = Diamond::maxNeighboursNum() + 1;
+const ushort Handbook::__tailStatesNum = 25;
+const ushort Handbook::__tailStates[Handbook::__tailStatesNum] =
+{
+    0, 2, 4, 5, 7, 8, 10, 13, 15, 16, 17, 19, 20, 21, 23, 24, 27, 28, 32, 33, 34, 35, 36, 37, 38
+};
+#endif // NEYRON
+
 Handbook::DMC Handbook::__mc;
 
 PhaseBoundary Handbook::__amorph;

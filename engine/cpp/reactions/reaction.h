@@ -25,6 +25,9 @@ public:
 
 protected:
     Reaction() = default;
+
+    virtual void analyzeAndChangeAtoms(Atom **atoms, ushort) { changeAtoms(atoms); }
+    virtual void changeAtoms(Atom **atoms) = 0;
 };
 
 }

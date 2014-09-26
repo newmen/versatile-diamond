@@ -45,6 +45,12 @@ void MigrationDownInGap::doIt()
         bridges[0]->atom(1),
         bridges[1]->atom(1)
     };
+    analyzeAndChangeAtoms(atoms, 4);
+    Finder::findAll(atoms, 4);
+}
+
+void MigrationDownInGap::changeAtoms(Atom **atoms)
+{
     Atom *z = atoms[0], *a = atoms[1], *b = atoms[2], *c = atoms[3];
 
     assert(z->is(7));
@@ -67,6 +73,4 @@ void MigrationDownInGap::doIt()
 
     b->changeType(24);
     c->changeType(24);
-
-    Finder::findAll(atoms, 4);
 }

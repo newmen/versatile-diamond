@@ -18,6 +18,12 @@ void DesMethylFrom111::doIt()
     assert(target()->type() == MethylOn111CMiu::ID);
 
     Atom *atoms[2] = { target()->atom(1), target()->atom(0) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void DesMethylFrom111::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(33));
@@ -30,6 +36,4 @@ void DesMethylFrom111::doIt()
     b->prepareToRemove();
     Handbook::amorph().erase(b);
     Handbook::scavenger().markAtom(b);
-
-    Finder::findAll(atoms, 2);
 }

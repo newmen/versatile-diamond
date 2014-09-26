@@ -45,13 +45,10 @@ Atom *UbiquitousReaction::anchor() const
     }
 }
 
-void UbiquitousReaction::doIt()
+void UbiquitousReaction::changeAtoms(Atom **)
 {
-    uint type = toType();
-    assert(type != target()->type());
-
     action();
-    target()->changeType(type);
+    target()->changeType(toType());
 }
 
 #ifdef PRINT

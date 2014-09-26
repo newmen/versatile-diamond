@@ -16,6 +16,12 @@ void MethylToHighBridge::find(MethylOnDimerCMsiu *target)
 void MethylToHighBridge::doIt()
 {
     Atom *atoms[3] = { target()->atom(0), target()->atom(1), target()->atom(4) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void MethylToHighBridge::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(29));
@@ -35,6 +41,4 @@ void MethylToHighBridge::doIt()
     else if (c->is(23)) c->changeType(8);
     else if (c->is(32)) c->changeType(5);
     else c->changeType(28);
-
-    Finder::findAll(atoms, 3);
 }

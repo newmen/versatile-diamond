@@ -23,6 +23,9 @@ public:
 
     double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
+
+protected:
+    void changeAtoms(Atom **atoms) final;
 };
 
 #endif // MIGRATION_DOWN_AT_DIMER_FROM_HIGH_BRIDGE_H

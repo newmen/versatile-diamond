@@ -2,17 +2,15 @@
 #define UBIQUITOUS_H
 
 #include <reactions/ubiquitous_reaction.h>
-#include <tools/typed.h>
 using namespace vd;
 
 #include "../finder.h"
-#include "../handbook.h"
-#include "rates_reader.h"
+#include "typed_reaction.h"
 
 template <ushort RT>
-class Ubiquitous : public Typed<UbiquitousReaction, RT>, public RatesReader
+class Ubiquitous : public TypedReaction<UbiquitousReaction, RT>
 {
-    typedef Typed<UbiquitousReaction, RT> ParentType;
+    typedef TypedReaction<UbiquitousReaction, RT> ParentType;
 
 public:
     enum : ushort { MC_INDEX = RT - SURFACE_ACTIVATION }; // must used first ID of ubiquitous reactions names
@@ -121,9 +119,10 @@ void Ubiquitous<RT>::removeAll(Atom *anchor)
 template <ushort RT>
 void Ubiquitous<RT>::doIt()
 {
-    ParentType::doIt();
+    assert(this->toType() != this->target()->type());
 
     Atom *atom[1] = { this->target() };
+    this->analyzeAndChangeAtoms(atom, 1);
     Finder::findAll(atom, 1);
 }
 

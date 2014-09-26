@@ -3,16 +3,14 @@
 
 #include <reactions/concrete_typical_reaction.h>
 #include <reactions/concrete_lateral_reaction.h>
-#include <tools/typed.h>
 using namespace vd;
 
-#include "../handbook.h"
-#include "rates_reader.h"
+#include "typed_reaction.h"
 
 template <class B, ushort RT>
-class Registrator : public Typed<B, RT>, public RatesReader
+class Registrator : public TypedReaction<B, RT>
 {
-    typedef Typed<B, RT> ParentType;
+    typedef TypedReaction<B, RT> ParentType;
 
 public:
     void store() override;

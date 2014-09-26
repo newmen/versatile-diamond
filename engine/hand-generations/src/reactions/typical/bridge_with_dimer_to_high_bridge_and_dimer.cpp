@@ -18,6 +18,12 @@ void BridgeWithDimerToHighBridgeAndDimer::doIt()
     assert(target()->type() == BridgeWithDimerCBTiCBRsCDLi::ID);
 
     Atom *atoms[3] = { target()->atom(3), target()->atom(4), target()->atom(5) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void BridgeWithDimerToHighBridgeAndDimer::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(0));
@@ -37,6 +43,4 @@ void BridgeWithDimerToHighBridgeAndDimer::doIt()
 
     b->changeType(19);
     c->changeType(21);
-
-    Finder::findAll(atoms, 3);
 }

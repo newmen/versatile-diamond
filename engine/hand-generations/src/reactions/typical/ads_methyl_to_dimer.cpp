@@ -20,6 +20,12 @@ void AdsMethylToDimer::doIt()
 
     AtomBuilder builder;
     Atom *atoms[2] = { target()->atom(0), builder.buildC(25, 1) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void AdsMethylToDimer::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
     Handbook::amorph().insert(b);
 
@@ -28,6 +34,4 @@ void AdsMethylToDimer::doIt()
     a->bondWith(b);
 
     a->changeType(23);
-
-    Finder::findAll(atoms, 2);
 }

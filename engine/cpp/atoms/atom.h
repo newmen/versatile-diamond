@@ -9,6 +9,10 @@
 #include "lattice.h"
 #include "contained_species.h"
 
+#ifdef NEYRON
+#include <functional>
+#endif // NEYRON
+
 namespace vd
 {
 
@@ -90,6 +94,11 @@ public:
     void pos(std::ostream &os);
 #endif // PRINT
 
+#ifdef NEYRON
+    bool hasAmorphNeighbour() const;
+    void eachAroundAtom(const std::function<void (Atom *)> &block);
+#endif // NEYRON
+
 protected:
     Atom(ushort type, ushort actives, Lattice *lattice);
 
@@ -97,6 +106,8 @@ protected:
 
 private:
     BaseSpec *specByRole(ushort sid, ushort role);
+
+    Atom *unsafeAmorphNeighbour() const;
 
     float3 relativePosition() const;
     float3 correctAmorphPos() const;

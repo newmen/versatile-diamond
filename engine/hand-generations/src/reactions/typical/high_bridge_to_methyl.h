@@ -25,6 +25,9 @@ public:
     double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
 
+protected:
+    void changeAtoms(Atom **atoms) final;
+
 private:
     static void findByBridge(SpecificSpec *target);
 };

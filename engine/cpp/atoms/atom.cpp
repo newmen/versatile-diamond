@@ -67,7 +67,7 @@ bool Atom::hasBondWith(Atom *neighbour) const
     return _relatives.find(neighbour) != _relatives.cend();
 }
 
-Atom *Atom::amorphNeighbour() const
+Atom *Atom::unsafeAmorphNeighbour() const
 {
     Atom *neighbour = nullptr;
     for (Atom *relative : _relatives)
@@ -78,7 +78,12 @@ Atom *Atom::amorphNeighbour() const
             break;
         }
     }
+    return neighbour;
+}
 
+Atom *Atom::amorphNeighbour() const
+{
+    Atom *neighbour = unsafeAmorphNeighbour();
     assert(neighbour);
 #ifndef NDEBUG
     for (Atom *relative : _relatives)
@@ -478,5 +483,31 @@ BaseSpec *Atom::specByRole(ushort sid, ushort role)
 
     return result;
 }
+
+#ifdef NEYRON
+bool Atom::hasAmorphNeighbour() const
+{
+    return unsafeAmorphNeighbour() != nullptr;
+}
+
+void Atom::eachAroundAtom(const std::function<void (Atom *)> &block)
+{
+    if (lattice())
+    {
+        lattice()->crystal()->eachAround(this, block);
+    }
+    else
+    {
+        std::unordered_set<Atom *> uniqRelatives;
+        for (Atom *neighbour: _relatives)
+        {
+            if (uniqRelatives.find(neighbour) != uniqRelatives.cend()) continue;
+            uniqRelatives.insert(neighbour);
+            block(neighbour);
+        }
+    }
+}
+
+#endif // NEYRON
 
 }

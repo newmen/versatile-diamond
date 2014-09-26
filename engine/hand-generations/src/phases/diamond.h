@@ -19,6 +19,11 @@ public:
     Diamond(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight = 3);
     ~Diamond();
 
+#ifdef NEYRON
+    static ushort maxNeighboursNum() { return 12; }
+    void eachAround(const Atom *atom, const std::function<void (Atom *)> &block) final;
+#endif // NEYRON
+
 protected:
     void buildAtoms() final;
     Atom *makeAtom(ushort type, ushort actives, const int3 &coords) final;

@@ -12,6 +12,7 @@ cache/
 obj/
 results/
 engine/hand-generations/simple-diamond
+engine/neyron/vd-neyron
 
 *.job
 vde-*s.o*

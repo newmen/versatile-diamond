@@ -16,6 +16,10 @@ using namespace vd;
 #include "phases/phase_boundary.h"
 #include "atoms/atom.h"
 
+#ifdef NEYRON
+#include "localizators/localizators_pack.h"
+#endif // NEYRON
+
 class Handbook
 {
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
@@ -59,6 +63,17 @@ private:
     static const ushort __hToActives[];
     static const ushort __activesToH[];
 
+#ifdef NEYRON
+    static LocalizatorsPack __localizators;
+public:
+    static void addLocalizator(Localizator *localizator);
+    template <class L> static void eachLocalizator(const L &lambda);
+
+    static const ushort __atomsClusterSize;
+    static const ushort __tailStatesNum;
+    static const ushort __tailStates[];
+#endif // NEYRON
+
 public:
     static const ushort __atomsNum;
 
@@ -70,5 +85,14 @@ public:
 
     typedef Diamond SurfaceCrystal;
 };
+
+#ifdef NEYRON
+template <class L>
+void Handbook::eachLocalizator(const L &lambda)
+{
+    __localizators.each(lambda);
+}
+#endif // NEYRON
+
 
 #endif // HANDBOOK_H

@@ -47,6 +47,10 @@ protected:
     ManyItemsResult(ManyItemsResult<T, NUM> &&) = default;
     ManyItemsResult<T, NUM>& operator = (ManyItemsResult<T, NUM> &&) = default;
 
+#ifdef NEYRON
+    T *item(uint index) { return _items[index]; }
+#endif // NEYRON
+
 private:
     ManyItemsResult(const ManyItemsResult<T, NUM> &) = delete;
     ManyItemsResult<T, NUM>& operator = (const ManyItemsResult<T, NUM> &) = delete;

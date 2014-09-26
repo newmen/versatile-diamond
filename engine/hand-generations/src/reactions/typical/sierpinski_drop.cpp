@@ -18,6 +18,12 @@ void SierpinskiDrop::find(CrossBridgeOnBridges *target)
 
 void SierpinskiDrop::doItWith(Atom **atoms)
 {
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void SierpinskiDrop::changeAtoms(Atom **atoms)
+{
     assert(target()->type() == CrossBridgeOnBridges::ID);
 
     Atom *a = atoms[0], *b = atoms[1];
@@ -37,6 +43,4 @@ void SierpinskiDrop::doItWith(Atom **atoms)
         assert(b->is(7));
         b->changeType(28);
     }
-
-    Finder::findAll(atoms, 2);
 }

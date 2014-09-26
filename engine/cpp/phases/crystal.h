@@ -4,6 +4,10 @@
 #include "../tools/common.h"
 #include "atoms_vector3d.h"
 
+#ifdef NEYRON
+#include <functional>
+#endif // NEYRON
+
 namespace vd
 {
 
@@ -36,6 +40,10 @@ public:
 
     virtual float3 correct(const Atom *atom) const = 0;
     virtual const float3 &periods() const = 0;
+
+#ifdef NEYRON
+    virtual void eachAround(const Atom *atom, const std::function<void (Atom *)> &block) = 0;
+#endif // NEYRON
 
 protected:
     virtual float3 seeks(const int3 &coords) const = 0;

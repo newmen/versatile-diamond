@@ -14,6 +14,16 @@ class Neighbours : public ManyItemsResult<Atom, NUM>
 
 public:
     template <class... Args> Neighbours(Args... args) : ParentType(args...) {}
+
+#ifdef NEYRON
+    template <class L> void each(const L &lambda)
+    {
+        for (uint i = 0; i < NUM; ++i)
+        {
+            lambda(this->item(i));
+        }
+    }
+#endif // NEYRON
 };
 
 }

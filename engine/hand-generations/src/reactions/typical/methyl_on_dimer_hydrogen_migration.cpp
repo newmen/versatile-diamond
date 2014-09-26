@@ -18,7 +18,13 @@ void MethylOnDimerHydrogenMigration::doIt()
 {
     assert(target()->type() == MethylOnDimerCLsCMhiu::ID);
 
-    Atom *atoms[3] = { target()->atom(0), target()->atom(4) };
+    Atom *atoms[2] = { target()->atom(0), target()->atom(4) };
+    analyzeAndChangeAtoms(atoms, 2);
+    Finder::findAll(atoms, 2);
+}
+
+void MethylOnDimerHydrogenMigration::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1];
 
     assert(a->is(35));
@@ -33,6 +39,4 @@ void MethylOnDimerHydrogenMigration::doIt()
     else a->changeType(26);
 
     b->changeType(20);
-
-    Finder::findAll(atoms, 2);
 }

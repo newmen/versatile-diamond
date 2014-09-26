@@ -26,6 +26,8 @@ public:
     virtual void unconcretizeBy(LateralSpec *spec) = 0;
 
 protected:
+    void changeAtoms(Atom **) final {}
+
     virtual void insertToTargets(LateralReaction *reaction) = 0;
     virtual void eraseFromTargets(LateralReaction *reaction) = 0;
 

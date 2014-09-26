@@ -38,6 +38,12 @@ void MigrationDownAtDimerFrom111::doIt()
         dimerCRs->atom(0),
         dimerCRs->atom(3)
     };
+    analyzeAndChangeAtoms(atoms, 4);
+    Finder::findAll(atoms, 4);
+}
+
+void MigrationDownAtDimerFrom111::changeAtoms(Atom **atoms)
+{
     Atom *z = atoms[0], *a = atoms[1], *b = atoms[2], *c = atoms[3];
 
     assert(z->is(33));
@@ -82,6 +88,4 @@ void MigrationDownAtDimerFrom111::doIt()
         assert(c->type() == 23);
         c->changeType(33);
     }
-
-    Finder::findAll(atoms, 4);
 }

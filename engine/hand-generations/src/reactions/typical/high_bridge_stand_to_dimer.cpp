@@ -57,6 +57,12 @@ void HighBridgeStandToDimer::doIt()
     assert(dimerCRsCLi->type() == DimerCRsCLi::ID);
 
     Atom *atoms[3] = { highBridge->atom(0), highBridge->atom(1), dimerCRsCLi->atom(0) };
+    analyzeAndChangeAtoms(atoms, 3);
+    Finder::findAll(atoms, 3);
+}
+
+void HighBridgeStandToDimer::changeAtoms(Atom **atoms)
+{
     Atom *a = atoms[0], *b = atoms[1], *c = atoms[2];
 
     assert(a->is(18));
@@ -76,6 +82,4 @@ void HighBridgeStandToDimer::doIt()
 
     b->changeType(5);
     c->changeType(32);
-
-    Finder::findAll(atoms, 3);
 }
