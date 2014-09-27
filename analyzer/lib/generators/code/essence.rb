@@ -2,8 +2,8 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Contain logic for clean dependent specie essence
-      class EssenceCleaner
+      # Contain logic for clean dependent specie and get essence of specie graph
+      class Essence
 
         # Initizalize cleaner by specie class code generator
         # @param [Specie] specie from which pure essence will be gotten
@@ -12,13 +12,48 @@ module VersatileDiamond
           @sequence = specie.sequence
         end
 
+        # Gets a links of current specie without links of parent species
+        # @return [Hash] the links between atoms without links of parent species
+        # TODO: must be private
+        def cut_graph
+          rest = spec.rest
+          return spec.spec.links unless rest
+
+          atoms = rest.links.keys
+          clear_links = rest.links.map do |atom, rels|
+            [atom, rels.select { |a, _| atom != a && atoms.include?(a) }]
+          end
+
+          twins = atoms.map { |atom| rest.all_twins(atom).dup }
+          twins = Hash[atoms.zip(twins)]
+
+          result = spec.parents.reduce(clear_links) do |acc, parent|
+            acc.map do |atom, rels|
+              parent_links = parent.links
+              parent_atoms = twins[atom]
+              clear_rels = rels.reject do |a, r|
+                pas = twins[a]
+                !pas.empty? && parent_atoms.any? do |p|
+                  ppls = parent_links[p]
+                  ppls && ppls.any? { |q, y| r == y && pas.include?(q) }
+                end
+              end
+
+              [atom, clear_rels]
+            end
+          end
+
+          Hash[result]
+        end
+
         # Gets an essence of wrapped dependent spec but without reverse relations if
         # related atoms is similar. The nearer to top of achchors sequence, have more
         # relations in essence.
         #
         # @param [Specie] specie for which pure essence will be gotten
         # @return [Hash] the links hash without reverse relations
-        def essence
+        # TODO: must be private
+        def clean_graph
           # для кажого атома:
           # группируем отношения по фейсу и диру
           # одинаковые ненаправленные связи - отбрасываем
@@ -36,19 +71,19 @@ module VersatileDiamond
           # также, если у атома в таком случае не остаётся отношений, - удаляем его
           # из эссенции
 
+          result = cut_graph
           clearing_atoms = Set.new
-          essence = spec.essence
           clear_reverse = -> reverse_atom, from_atom do
             clearing_atoms << from_atom << reverse_atom
-            essence = clear_reverse_from(essence, reverse_atom, from_atom)
+            result = clear_reverse_from(result, reverse_atom, from_atom)
           end
 
           # in accordance with the order
           sequence.short.each do |atom|
-            next unless essence[atom]
+            next unless result[atom]
 
             limits = atom.relations_limits
-            groups = essence[atom].group_by { |_, r| r.params }
+            groups = result[atom].group_by { |_, r| r.params }
             groups.each do |rel_params, group|
               if limits[rel_params] < unificate(group).size
                 raise 'Atom has too more relations'
@@ -60,8 +95,8 @@ module VersatileDiamond
             amorph_rels = groups.delete(Concepts::Bond::AMORPH_PROPS)
             if amorph_rels
               amorph_rels.each(&clear_reverse_relations)
-              crystal_rels = essence[atom].select { |_, r| r.belongs_to_crystal? }
-              essence[atom] = crystal_rels + unificate(amorph_rels)
+              crystal_rels = result[atom].select { |_, r| r.belongs_to_crystal? }
+              result[atom] = crystal_rels + unificate(amorph_rels)
             end
 
             next unless atom.lattice
@@ -79,7 +114,7 @@ module VersatileDiamond
             end
           end
 
-          clear_excess_positions(essence, clearing_atoms)
+          clear_excess_positions(result, clearing_atoms)
         end
 
       private

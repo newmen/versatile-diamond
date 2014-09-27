@@ -30,8 +30,8 @@ module VersatileDiamond
           spec.non_term_children.each { |child| get(child).collect_symmetries }
           return unless spec.rest
 
-          parents_with_twins_for(anchors).each do |parent, atoms|
-            parent.add_symmetries_for(atoms)
+          parents_with_twins_for(anchors).each do |parent, twins|
+            parent.add_symmetries_for(twins)
           end
         end
 

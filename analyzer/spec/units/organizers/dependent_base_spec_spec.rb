@@ -110,10 +110,6 @@ module VersatileDiamond
           describe '#parents' do
             it { expect(subject.parents).to eq(parents) }
           end
-
-          describe '#essence' do
-            it { expect(subject.essence).to match_graph(essence) }
-          end
         end
 
         it_behaves_like :check_organized_dependencies do
@@ -123,7 +119,6 @@ module VersatileDiamond
           let(:rest_atoms_num) { nil }
           let(:rest_relations_num) { nil }
           let(:parents) { [] }
-          let(:essence) { bridge_base.links }
         end
 
         it_behaves_like :check_organized_dependencies do
@@ -133,12 +128,6 @@ module VersatileDiamond
           let(:rest_atoms_num) { 2 }
           let(:rest_relations_num) { 4 }
           let(:parents) { [dept_bridge_base] }
-
-          let(:cm) { methyl_on_bridge_base.atom(:cm) }
-          let(:cb) { methyl_on_bridge_base.atom(:cb) }
-          let(:essence) do
-            { cm => [[cb, free_bond]], cb => [[cm, free_bond]] }
-          end
         end
 
         it_behaves_like :check_organized_dependencies do
@@ -148,12 +137,6 @@ module VersatileDiamond
           let(:rest_atoms_num) { 2 }
           let(:rest_relations_num) { 6 }
           let(:parents) { [dept_bridge_base] * 2 }
-
-          let(:cr) { dimer_base.atom(:cr) }
-          let(:cl) { dimer_base.atom(:cl) }
-          let(:essence) do
-            { cr => [[cl, bond_100_front]], cl => [[cr, bond_100_front]] }
-          end
         end
 
         it_behaves_like :check_organized_dependencies do
@@ -163,17 +146,6 @@ module VersatileDiamond
           let(:rest_atoms_num) { 3 }
           let(:rest_relations_num) { 10 }
           let(:parents) { [dept_methyl_on_bridge_base] * 2 }
-
-          let(:cm) { cross_bridge_on_bridges_base.atom(:cm) }
-          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
-          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
-          let(:essence) do
-            {
-              cm => [],
-              ctr => [[ctl, position_100_cross]],
-              ctl => [[ctr, position_100_cross]],
-            }
-          end
         end
       end
 
