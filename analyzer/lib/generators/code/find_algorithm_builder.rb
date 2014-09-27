@@ -19,7 +19,7 @@ module VersatileDiamond
           @generator = generator
           @specie = specie
 
-          @pure_essence = EssenceCleaner.new(specie).essence
+          @pure_essence = Essence.new(specie).essence
           @namer = NameRemember.new
         end
 
@@ -536,9 +536,9 @@ module VersatileDiamond
         # @return [String] the string with defined parents variable
         def define_parents_variable_line
           anchors = spec.rest.links.keys
-          pairs = anchors.map { |atom| [atom, parent_for(atom)] }.select { |_, p| p }
-          sorted_pairs = pairs.sort_by { |_, parent| parents.index(parent) }
-          items = sorted_pairs.map do |atom, parent|
+          atps = anchors.map { |atom| [atom, parent_for(atom)] }.select { |_, p| p }
+          sorted_atps = atps.sort_by { |_, parent| parents.index(parent) }
+          items = sorted_atps.map do |atom, parent|
             @namer.assigned?(parent) ? @namer.get(parent) : spec_by_role_call(atom)
           end
 

@@ -15,7 +15,7 @@ module VersatileDiamond
         let(:code_specie) { generator.specie_class(subject.name) }
         let(:builder) { described_class.new(generator, code_specie) }
 
-        describe '#pure_essence && #central_anchors && #build' do
+        describe '#central_anchors && #build' do
           def role(spec, keyname)
             classifier.index(spec, spec.spec.atom(keyname))
           end
@@ -28,17 +28,15 @@ module VersatileDiamond
           let(:b_ct) { role(dept_bridge_base, :ct) }
           let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
 
-          shared_examples_for :check_essence_and_anchors do
-            it { expect(builder.pure_essence).to match_graph(essence) }
+          shared_examples_for :check_code do
             it { expect(builder.central_anchors).to eq(central_anchors) }
             it { expect(builder.build).to eq(find_algorithm) }
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_bridge_base }
             let(:base_specs) { [subject, dept_dimer_base] }
 
-            let(:essence) { { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] } }
             let(:central_anchors) { [[ct]] }
             let(:find_algorithm) do
               <<-CODE
@@ -58,12 +56,11 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_right_hydrogenated_bridge }
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [subject] }
 
-            let(:essence) { { cr => [] } }
             let(:central_anchors) { [[cr]] }
             let(:find_algorithm) do
               <<-CODE
@@ -81,12 +78,11 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_methyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:specific_specs) { [dept_activated_methyl_on_bridge] }
 
-            let(:essence) { { cb => [[cm, free_bond]] } }
             let(:central_anchors) { [[cb]] }
             let(:find_algorithm) do
               <<-CODE
@@ -106,12 +102,11 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_activated_methyl_on_incoherent_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
 
-            let(:essence) { { cb => [], cm => [] } }
             let(:central_anchors) { [[cb, cm]] }
             let(:find_algorithm) do
               <<-CODE
@@ -127,11 +122,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_high_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
-            let(:essence) { { cb => [[cm, free_bond]] } }
             let(:central_anchors) { [[cb]] }
             let(:find_algorithm) do
               <<-CODE
@@ -151,11 +145,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_vinyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
-            let(:essence) { { cb => [[c1, free_bond]], c1 => [[c2, free_bond]] } }
             let(:central_anchors) { [[cb]] }
             let(:find_algorithm) do
               <<-CODE
@@ -180,11 +173,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
-            let(:essence) { { cr => [[cl, bond_100_front]] } }
             let(:central_anchors) { [[cr]] }
             let(:find_algorithm) do
               <<-CODE
@@ -205,20 +197,13 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_methyl_on_dimer_base }
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
 
-            let(:essence) do
-              {
-                cr => [[cl, bond_100_front]],
-                cl => [[cr, bond_100_front]]
-              }
-            end
             let(:central_anchors) { [[cr], [cl]] }
-
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_cr}))
@@ -251,11 +236,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_two_methyls_on_dimer_base }
             let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
 
-            let(:essence) { { cr => [[c1, free_bond]], cl => [[c2, free_bond]] } }
             let(:central_anchors) { [[cl, cr]] }
             let(:find_algorithm) do
               <<-CODE
@@ -280,16 +264,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_cross_bridge_on_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
-            let(:essence) do
-              {
-                ctr => [[cm, free_bond]],
-                ctl => [[cm, free_bond], [ctr, position_100_cross]]
-              }
-            end
             let(:central_anchors) { [[ctl]] }
             let(:find_algorithm) do
               <<-CODE
@@ -314,18 +292,12 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_cross_bridge_on_bridges_base }
             let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
 
-            let(:essence) do
-              {
-                cm => [],
-                ctl => [[ctr, position_100_cross]],
-              }
-            end
             let(:central_anchors) { [[cm]] }
 
             let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
@@ -353,11 +325,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_essence_and_anchors do
+          it_behaves_like :check_code do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
-            let(:essence) { { ct => [], cc => [] } }
             let(:central_anchors) { [[cc]] }
 
             let(:b_cr) { role(dept_bridge_base, :cr) }

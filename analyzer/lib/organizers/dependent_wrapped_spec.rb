@@ -24,38 +24,6 @@ module VersatileDiamond
         children.reject(&:termination?)
       end
 
-      # Gets a links of current specie without links of parent species
-      # @return [Hash] the links between atoms without links of parent species
-      def essence
-        return spec.links unless rest
-
-        atoms = rest.links.keys
-        clear_links = rest.links.map do |atom, rels|
-          [atom, rels.select { |a, _| atom != a && atoms.include?(a) }]
-        end
-
-        twins = atoms.map { |atom| rest.all_twins(atom).dup }
-        twins = Hash[atoms.zip(twins)]
-
-        result = parents.reduce(clear_links) do |acc, parent|
-          acc.map do |atom, rels|
-            parent_links = parent.links
-            parent_atoms = twins[atom]
-            clear_rels = rels.reject do |a, r|
-              pas = twins[a]
-              !pas.empty? && parent_atoms.any? do |p|
-                ppls = parent_links[p]
-                ppls && ppls.any? { |q, y| r == y && pas.include?(q) }
-              end
-            end
-
-            [atom, clear_rels]
-          end
-        end
-
-        Hash[result]
-      end
-
       def to_s
         "(#{name}, [#{parents.map(&:name).join(' ')}], " +
           "[#{children.map(&:name).join(' ')}])"
