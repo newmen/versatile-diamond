@@ -4,7 +4,6 @@ module VersatileDiamond
 
       # Contain logic for building find specie algorithm
       class FindAlgorithmBuilder
-        include Modules::ListsComparer
         include SpecieInside
         extend Forwardable
 
@@ -39,42 +38,11 @@ module VersatileDiamond
           end
         end
 
-        # Gets anchors by which will be first check of find algorithm
-        # @return [Array] the major anchors of current specie
-        # TODO: must be private
-        def central_anchors
-          scas =
-            if complex? && (muas = most_used_anchor)
-              muas
-            else
-              tras = together_related_anchors
-              tras.empty? ? root_related_anchors : tras
-            end
-
-          if scas.empty? || lists_are_identical?(scas, major_anchors, &:==)
-            [major_anchors]
-          else
-            scas.map { |a| [a] }
-          end
-        end
-
       private
 
         attr_reader :generator
         def_delegators :@specie, :spec, :sequence, :find_root?
         def_delegator :sequence, :addition_atoms
-
-        # Checks that finding specie is source specie
-        # @return [Boolean] is source specie or not
-        def source?
-          spec.parents.size == 0
-        end
-
-        # Checks that finding specie have more than one parent
-        # @return [Boolean] have many parents or not
-        def complex?
-          spec.parents.size > 1
-        end
 
         # Sorts original parents by relations number each of them
         # @return [Array] the sorted array of parents
@@ -149,129 +117,6 @@ module VersatileDiamond
           code_line("#{method_name}(#{args_wo_lambda_body} {") +
             increase_spaces(block.call) +
             code_line('});')
-        end
-
-        # Counts relations of atom which selecting by block
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom for which relations will be counted
-        # @yield [Concepts::Bond | Concepts::TerminationSpec] iterates inspectable
-        #   relations if given
-        # @return [Integer] the number of selected relations
-        def count_relations(atom, &block)
-          rels = spec.relations_of(a)
-          rels = rels.select(&block) if block_given?
-          rels.size
-        end
-
-        # Counts twins of atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom for which twins will be counted
-        # @return [Integer] the number of twins
-        def count_twins(atom)
-          spec.rest.all_twins(atom).size
-        end
-
-        # Compares two atoms by method name and order it descending
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   a is first atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   b is second atom
-        # @param [Symbol] method_name by which atoms will be compared
-        # @param [Symbol] detect_method if passed ten will passed as block in
-        #   comparation method
-        # @yield calling when atoms is same by used method
-        # @return [Integer] the order of atoms
-        def order(a, b, method_name, detect_method = nil, &block)
-          if detect_method
-            ca = send(method_name, a, &detect_method)
-            cb = send(method_name, b, &detect_method)
-          else
-            ca = send(method_name, a)
-            cb = send(method_name, b)
-          end
-
-          if ca == cb
-            block.call
-          else
-            ca <=> cb
-          end
-        end
-
-        # Gives the largest atom that has the most number of links in a complex specie,
-        # and hence it is closer to specie center
-        #
-        # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   the largest atom of specie
-        def big_anchor
-          sequence.major_atoms.max do |a, b|
-            pa = Organizers::AtomProperties.new(spec, a)
-            pb = Organizers::AtomProperties.new(spec, b)
-            if pa == pb
-              0
-            elsif !pa.include?(pb) && !pb.include?(pa)
-              order(a, b, :count_twins) do
-                order(a, b, :count_relations, :relations?) do
-                  order(a, b, :count_relations, :bond?) do
-                    order(a, b, :count_relations) { 0 }
-                  end
-                end
-              end
-            elsif pa.include?(pb)
-              1
-            else # pb.include?(pa)
-              -1
-            end
-          end
-        end
-
-        # Selects most used anchor which have the bigger number of twins
-        # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   the most used anchor of specie
-        def most_used_anchor
-          ctn_mas = sequence.major_atoms.map { |a| [a, count_twins(a)] }
-          max_twins_num = ctn_mas.reduce(0) { |acc, (_, ctn)| ctn > acc ? ctn : acc }
-          all_max = ctn_mas.select { |_, ctn| ctn == max_twins_num }.map(&:first)
-          all_max.size == 1 ? all_max : nil
-        end
-
-        # Filters major anchors from atom sequence
-        # @return [Array] the realy major anchors of current specie
-        def major_anchors
-          if source?
-            [sequence.major_atoms.first]
-          elsif complex?
-            [big_anchor]
-          else
-            sequence.major_atoms
-          end
-        end
-
-        # Gets anchors which have relations
-        # @return [Array] the array of atoms with relations in pure essence
-        def bonded_anchors
-          pure_essence.reject { |_, links| links.empty? }.map(&:first)
-        end
-
-        # Selects atoms from pure essence which have mutual relations
-        # @return [Array] the array of together related atoms
-        def together_related_anchors
-          bonded_anchors.select do |atom|
-            pure_essence[atom].any? do |a, _|
-              pels = pure_essence[a]
-              pels && pels.any? { |q, _| q == atom }
-            end
-          end
-        end
-
-        # Selects those atoms with links that are not related any other atoms are
-        # @return [Array] the array of root related atoms
-        def root_related_anchors
-          bonded_anchors.reject do |atom|
-            comp_proc = proc { |a, _| a == atom }
-            pure_essence.reject(&comp_proc).any? do |_, links|
-              links.any?(&comp_proc)
-            end
-          end
         end
 
         # Gets central anchors zipped with else prefixes for many ways condition
