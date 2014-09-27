@@ -29,15 +29,12 @@ module VersatileDiamond
           let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
 
           shared_examples_for :check_code do
-            it { expect(builder.central_anchors).to eq(central_anchors) }
             it { expect(builder.build).to eq(find_algorithm) }
           end
 
           it_behaves_like :check_code do
             subject { dept_bridge_base }
             let(:base_specs) { [subject, dept_dimer_base] }
-
-            let(:central_anchors) { [[ct]] }
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_ct}))
@@ -60,8 +57,6 @@ module VersatileDiamond
             subject { dept_right_hydrogenated_bridge }
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [subject] }
-
-            let(:central_anchors) { [[cr]] }
             let(:find_algorithm) do
               <<-CODE
     parent->eachSymmetry([](ParentSpec *specie) {
@@ -82,8 +77,6 @@ module VersatileDiamond
             subject { dept_methyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:specific_specs) { [dept_activated_methyl_on_bridge] }
-
-            let(:central_anchors) { [[cb]] }
             let(:find_algorithm) do
               <<-CODE
     Atom *anchor = parent->atom(0);
@@ -106,8 +99,6 @@ module VersatileDiamond
             subject { dept_activated_methyl_on_incoherent_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
-
-            let(:central_anchors) { [[cb, cm]] }
             let(:find_algorithm) do
               <<-CODE
     Atom *anchors[2] = { parent->atom(1), parent->atom(0) };
@@ -125,8 +116,6 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_high_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-
-            let(:central_anchors) { [[cb]] }
             let(:find_algorithm) do
               <<-CODE
     Atom *anchor = parent->atom(0);
@@ -148,8 +137,6 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_vinyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-
-            let(:central_anchors) { [[cb]] }
             let(:find_algorithm) do
               <<-CODE
     Atom *anchor = parent->atom(0);
@@ -176,8 +163,6 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-
-            let(:central_anchors) { [[cr]] }
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_cr}))
@@ -202,8 +187,6 @@ module VersatileDiamond
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
-
-            let(:central_anchors) { [[cr], [cl]] }
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_cr}))
@@ -239,8 +222,6 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_two_methyls_on_dimer_base }
             let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-
-            let(:central_anchors) { [[cl, cr]] }
             let(:find_algorithm) do
               <<-CODE
     Atom *anchors[2] = { parent->atom(3), parent->atom(0) };
@@ -267,8 +248,6 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_cross_bridge_on_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-
-            let(:central_anchors) { [[ctl]] }
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_ctr}))
@@ -298,8 +277,6 @@ module VersatileDiamond
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
 
-            let(:central_anchors) { [[cm]] }
-
             let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
             let(:find_algorithm) do
               <<-CODE
@@ -328,8 +305,6 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-
-            let(:central_anchors) { [[cc]] }
 
             let(:b_cr) { role(dept_bridge_base, :cr) }
             let(:find_algorithm) do
