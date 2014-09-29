@@ -2,8 +2,8 @@
 #include "../base/methyl_on_bridge.h"
 #include "../../reactions/typical/sierpinski_drop.h"
 
-const ushort CrossBridgeOnBridges::Base::__indexes[1] = { 0 };
-const ushort CrossBridgeOnBridges::Base::__roles[1] = { 10 };
+template <> const ushort CrossBridgeOnBridges::Base::__indexes[1] = { 0 };
+template <> const ushort CrossBridgeOnBridges::Base::__roles[1] = { 10 };
 
 #ifdef PRINT
 const char *CrossBridgeOnBridges::name() const

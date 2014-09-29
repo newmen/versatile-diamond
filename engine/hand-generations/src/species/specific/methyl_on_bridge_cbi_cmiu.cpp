@@ -2,8 +2,8 @@
 #include "../../reactions/typical/des_methyl_from_bridge.h"
 #include "methyl_on_bridge_cbi_cmsiu.h"
 
-const ushort MethylOnBridgeCBiCMiu::Base::__indexes[2] = { 1, 0 };
-const ushort MethylOnBridgeCBiCMiu::Base::__roles[2] = { 7, 25 };
+template <> const ushort MethylOnBridgeCBiCMiu::Base::__indexes[2] = { 1, 0 };
+template <> const ushort MethylOnBridgeCBiCMiu::Base::__roles[2] = { 7, 25 };
 
 #ifdef PRINT
 const char *MethylOnBridgeCBiCMiu::name() const

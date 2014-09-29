@@ -1,8 +1,8 @@
 #include "high_bridge_cms.h"
 #include "../../reactions/typical/migration_down_in_gap_from_high_bridge.h"
 
-const ushort HighBridgeCMs::Base::__indexes[1] = { 0 };
-const ushort HighBridgeCMs::Base::__roles[1] = { 16 };
+template <> const ushort HighBridgeCMs::Base::__indexes[1] = { 0 };
+template <> const ushort HighBridgeCMs::Base::__roles[1] = { 16 };
 
 #ifdef PRINT
 const char *HighBridgeCMs::name() const

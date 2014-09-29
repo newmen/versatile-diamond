@@ -1,8 +1,8 @@
 #include "methyl_on_dimer_cls_cmhiu.h"
 #include "../../reactions/typical/methyl_on_dimer_hydrogen_migration.h"
 
-const ushort MethylOnDimerCLsCMhiu::Base::__indexes[2] = { 4, 0 };
-const ushort MethylOnDimerCLsCMhiu::Base::__roles[2] = { 21, 35 };
+template <> const ushort MethylOnDimerCLsCMhiu::Base::__indexes[2] = { 4, 0 };
+template <> const ushort MethylOnDimerCLsCMhiu::Base::__roles[2] = { 21, 35 };
 
 #ifdef PRINT
 const char *MethylOnDimerCLsCMhiu::name() const

@@ -1,6 +1,6 @@
 #include <signal.h>
 #include <omp.h>
-#include "../cpp/tools/init_config.h"
+#include <tools/init_config.h>
 #include "run.h"
 
 void stopSignalHandler(int)
