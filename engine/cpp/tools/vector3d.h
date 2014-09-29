@@ -1,7 +1,6 @@
 #ifndef VECTOR3D_H
 #define VECTOR3D_H
 
-#include <vector>
 #include "common.h"
 
 namespace vd

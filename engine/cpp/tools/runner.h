@@ -298,7 +298,7 @@ double Runner<HB>::activesRatio(const Crystal *crystal) const
 
     HB::amorph().eachAtom(lambda);
     crystal->eachAtom(lambda);
-    return (double)actives / hydrogens;
+    return (double)actives / (actives + hydrogens);
 }
 
 template <class HB>
