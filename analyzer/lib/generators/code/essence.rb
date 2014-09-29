@@ -5,6 +5,7 @@ module VersatileDiamond
       # Contain logic for clean dependent specie and get essence of specie graph
       class Essence
         include Modules::ListsComparer
+        include TwinsHelper
 
         # Initizalize cleaner by specie class code generator
         # @param [Specie] specie from which pure essence will be gotten
@@ -12,18 +13,6 @@ module VersatileDiamond
           @spec = specie.spec
           @sequence = specie.sequence
           @essence = clean_graph
-        end
-
-        # Checks that finding specie is source specie
-        # @return [Boolean] is source specie or not
-        def source?
-          spec.parents.size == 0
-        end
-
-        # Checks that finding specie have more than one parent
-        # @return [Boolean] have many parents or not
-        def complex?
-          spec.parents.size > 1
         end
 
         # Gets a links of current specie without links of parent species
@@ -208,6 +197,24 @@ module VersatileDiamond
           end
         end
 
+        # Finds parent specie and correspond twin atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom see at #parents_with_twins_for same argument
+        # @return [Array] the array where first item is parent specie and second item
+        #   is twin atom of passed atom
+        def parent_with_twin_for(atom)
+          parents_with_twins_for(atom).first
+        end
+
+        # Finds parent specie
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom see at #parents_with_twins_for same argument
+        # @return [Specie] the specie which uses twin of passed atom
+        def parent_for(atom)
+          pwt = parent_with_twin_for(atom)
+          pwt && pwt.first
+        end
+
         # Counts relations of atom which selecting by block
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom for which relations will be counted
@@ -218,14 +225,6 @@ module VersatileDiamond
           rels = spec.relations_of(a)
           rels = rels.select(&block) if block_given?
           rels.size
-        end
-
-        # Counts twins of atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom for which twins will be counted
-        # @return [Integer] the number of twins
-        def count_twins(atom)
-          spec.rest.all_twins(atom).size
         end
 
         # Compares two atoms by method name and order it descending

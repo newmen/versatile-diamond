@@ -14,27 +14,6 @@ module VersatileDiamond
         let(:specie) { generator.specie_class(subject.name) }
         let(:essence) { described_class.new(specie) }
 
-        describe 'parents dependent properties' do
-          subject { dept_dimer_base }
-
-          describe '#source?' do
-            let(:base_specs) { [subject] }
-            it { expect(essence.source?).to be_truthy }
-          end
-
-          describe '#complex?' do
-            let(:base_specs) { [dept_bridge_base, subject] }
-            it { expect(essence.complex?).to be_truthy }
-          end
-
-          describe 'not source and complex' do
-            subject { dept_methyl_on_bridge_base }
-            let(:base_specs) { [dept_bridge_base, subject] }
-            it { expect(essence.source?).to be_falsey }
-            it { expect(essence.complex?).to be_falsey }
-          end
-        end
-
         describe 'graphs' do
           [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr].each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }

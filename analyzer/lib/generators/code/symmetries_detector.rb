@@ -6,6 +6,7 @@ module VersatileDiamond
       class SymmetriesDetector
         include Modules::ListsComparer
         include SymmetryHelper
+        include TwinsHelper
 
         # Initializes symmetries detector
         # @param [EngineCode] generator the general engine code generator
@@ -30,8 +31,8 @@ module VersatileDiamond
           spec.non_term_children.each { |child| get(child).collect_symmetries }
           return unless spec.rest
 
-          parents_with_twins_for(anchors).each do |parent, twins|
-            parent.add_symmetries_for(twins)
+          distrib_twins_to_parents(anchors).each do |parent, twins|
+            get(parent).add_symmetries_for(twins)
           end
         end
 
@@ -68,7 +69,7 @@ module VersatileDiamond
               pairs.all?(&presented_in(overlap))
             end
 
-            overlap.size == 1 && spec.parents.size == 1 &&
+            overlap.size == 1 && !source? && !complex? &&
               (dps = deep_parents_swapper(overlap.to_a.first))
 
             if dps
@@ -85,16 +86,15 @@ module VersatileDiamond
         # @param [Array] pair of atoms which will be checked
         # @return [AtomSequence] the parent sequence or nil
         def deep_parents_swapper(pair)
-          ps = spec.parents.size
-          if ps == 1
+          if complex?
+            if pair.all? { |a| count_twins(a) == 1 }
+              twins = twins_of(pair)
+              return store_symmetry(Hash[[pair]]) if twins.first == twins.last
+            end
+          elsif !source?
             parent = get(spec.parents.first)
             if parent.atoms.size == atoms.size
               return parent.deep_parents_swapper(twins_of(pair))
-            end
-          elsif ps > 1
-            if pair.all? { |a| spec.rest.all_twins(a).size == 1 }
-              twins = twins_of(pair)
-              return store_symmetry(Hash[[pair]]) if twins.first == twins.last
             end
           end
           nil
@@ -162,18 +162,13 @@ module VersatileDiamond
 
         # Distributes twins to their parents
         # @param [Array] atoms for which parents ant their twins will be collected
-        # @result [Hash] the hash where keys are parent detectors and values are arrays
+        # @result [Hash] the hash where keys are parent specie and values are arrays
         #   of correspond twins
-        def parents_with_twins_for(atoms)
-          collector = Hash[spec.parents.map { |p| [get(p), []] }]
-          atoms.each.with_object(collector) do |atom, result|
-            spec.rest.all_twins(atom).each do |twin|
-              spec.parents.each do |parent|
-                parent_detector = get(parent)
-                if parent_detector.atoms.include?(twin)
-                  result[parent_detector] << twin
-                end
-              end
+        def distrib_twins_to_parents(atoms)
+          atoms.each.with_object({}) do |atom, result|
+            parents_with_twins_for(atom).each do |parent, twin|
+              result[parent] ||= []
+              result[parent] << twin
             end
           end
         end

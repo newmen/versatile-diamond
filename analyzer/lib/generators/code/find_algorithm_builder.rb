@@ -430,38 +430,6 @@ module VersatileDiamond
           code_line("ParentSpec *#{parents_var_name}[#{num}] = { #{items_str} };")
         end
 
-        # Finds parent specie by atom the twin of which belongs to this parent
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom by which specie will be found
-        # @return [Array] the list of pairs where each pair contain parent and twin
-        #   atom
-        def parents_with_twins_for(atom)
-          spec.rest.all_twins(atom).reduce([]) do |acc, twin|
-            parent = parents.find do |parent|
-              parent.spec.links.any? { |a, _| a == twin }
-            end
-            acc << [parent, twin]
-          end
-        end
-
-        # Finds parent specie and correspond twin atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom see at #parents_with_twins_for same argument
-        # @return [Array] the array where first item is parent specie and second item
-        #   is twin atom of passed atom
-        def parent_with_twin_for(atom)
-          parents_with_twins_for(atom).first
-        end
-
-        # Finds parent specie
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom see at #parents_with_twins_for same argument
-        # @return [Specie] the specie which uses twin of passed atom
-        def parent_for(atom)
-          pwt = parent_with_twin_for(atom)
-          pwt && pwt.first
-        end
-
         # Gets a main embedded conditions for specie find algorithm
         # @param [String] the cpp code with conditions
         def body
