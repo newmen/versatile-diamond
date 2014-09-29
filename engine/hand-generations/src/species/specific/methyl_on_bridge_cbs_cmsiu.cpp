@@ -1,8 +1,8 @@
 #include "methyl_on_bridge_cbs_cmsiu.h"
 #include "../../reactions/typical/form_two_bond.h"
 
-const ushort MethylOnBridgeCBsCMsiu::Base::__indexes[1] = { 1 };
-const ushort MethylOnBridgeCBsCMsiu::Base::__roles[1] = { 8 };
+template <> const ushort MethylOnBridgeCBsCMsiu::Base::__indexes[1] = { 1 };
+template <> const ushort MethylOnBridgeCBsCMsiu::Base::__roles[1] = { 8 };
 
 #ifdef PRINT
 const char *MethylOnBridgeCBsCMsiu::name() const

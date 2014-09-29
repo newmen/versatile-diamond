@@ -5,8 +5,8 @@
 #include "../../reactions/ubiquitous/local/methyl_on_dimer_deactivation.h"
 #include "methyl_on_dimer_cmssiu.h"
 
-const ushort MethylOnDimerCMsiu::Base::__indexes[1] = { 0 };
-const ushort MethylOnDimerCMsiu::Base::__roles[1] = { 26 };
+template <> const ushort MethylOnDimerCMsiu::Base::__indexes[1] = { 0 };
+template <> const ushort MethylOnDimerCMsiu::Base::__roles[1] = { 26 };
 
 #ifdef PRINT
 const char *MethylOnDimerCMsiu::name() const
