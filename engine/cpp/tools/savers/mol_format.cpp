@@ -49,7 +49,7 @@ void MolFormat::writeBonds(std::ostream &os) const
     os << prefix() << "BEGIN BOND" << "\n";
     acc().orderedEachBondInfo([&os, this](uint i, const BondInfo *bi) {
         os << prefix()
-           << (i + 1) << " "
+           << i << " "
            << bi->type() << " "
            << bi->from() << " "
            << bi->to() << "\n";
@@ -63,7 +63,7 @@ void MolFormat::writeAtoms(std::ostream &os) const
     acc().orderedEachAtomInfo([&os, this](uint i, const AtomInfo *ai) {
         const float3 &coords = ai->atom()->realPosition();
         os << prefix()
-           << (i + 1) << " "
+           << i << " "
            << ai->atom()->name() << " "
            << coords.x << " "
            << coords.y << " "

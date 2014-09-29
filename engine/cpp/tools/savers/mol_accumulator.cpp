@@ -55,7 +55,7 @@ void MolAccumulator::checkOrAddAtom(const Atom *atom)
     {
         assert(_atomsToInfos.find(atom) == _atomsToInfos.cend());
 
-        _atomsToNums.insert(AtomsToNums::value_type(atom, _atomsToNums.size()));
+        _atomsToNums.insert(AtomsToNums::value_type(atom, _atomsToNums.size() + 1));
         _atomsToInfos.insert(AtomsToInfos::value_type(atom, new AtomInfo(atom)));
     }
 }
@@ -68,7 +68,7 @@ void MolAccumulator::checkOrIncBond(uint fi, uint ti)
     {
         assert(_bondKeysToNums.find(bk) == _bondKeysToNums.cend());
 
-        _bondKeysToNums.insert(BondKeysToNums::value_type(bk, _bondKeysToNums.size()));
+        _bondKeysToNums.insert(BondKeysToNums::value_type(bk, _bondKeysToNums.size() + 1));
         _bondKeysToInfos.insert(BondKeysToInfos::value_type(bk, new BondInfo(fi, ti)));
     }
     else
