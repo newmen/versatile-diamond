@@ -74,11 +74,11 @@ void MolAccumulator::orderedEach(const std::unordered_map<KT, uint> &toNums, con
     std::vector<const IT *> ordered(n);
     for (auto &pair : toNums)
     {
-        ordered[pair.second] = toInfos.find(pair.first)->second;
+        ordered[pair.second - 1] = toInfos.find(pair.first)->second;
     }
     for (uint i = 0; i < n; ++i)
     {
-        lambda(i, ordered[i]);
+        lambda(i + 1, ordered[i]);
     }
 }
 
