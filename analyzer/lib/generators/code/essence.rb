@@ -65,10 +65,10 @@ module VersatileDiamond
           # для каждой группы:
           # проверяем по кристаллу максимальное количество отношений такого рода, и
           #   если количество соответствует - удаляем обратные связи, заодно удаляя
-          #   из хеша и атомы, если у них более не остаётся отношений
+          #   из ключей хеша и атомы, если у них более не остаётся отношений
           # если меньше - проверяем тип связанного атома, и если он соответствует
-          #   текущему атому - удаляем обратную связь, заодно удаляя из хеша и сам
-          #   атом, если у него более не остаётся отношений
+          #   текущему атому - удаляем обратную связь (симметричный димер), заодно
+          #   удаляя из ключей хеша и сам атом, если у него более не остаётся отношений
           # если больше - кидаем эксепшн
           #
           # между всеми атомами, что участвовали в отчистке, удаляем позишины, и
@@ -166,7 +166,7 @@ module VersatileDiamond
           clear_links(links, reject_proc) { |a| a == reverse_atom }
         end
 
-        # Clears position relations which are between atom from clearing_atoms
+        # Clears position relations which are between atoms from clearing_atoms
         # @param [Hash] links which will be cleared
         # @param [Set] clearing_atoms the atoms between which positions will be erased
         # @return [Hash] the links without erased positions
