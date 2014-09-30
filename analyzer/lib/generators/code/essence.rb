@@ -125,7 +125,7 @@ module VersatileDiamond
         # TODO: must be private
         def central_anchors
           scas =
-            if complex? && (mua = most_used_anchor)
+            if spec.complex? && (mua = most_used_anchor)
               [mua]
             else
               tras = together_related_anchors
@@ -227,6 +227,14 @@ module VersatileDiamond
           rels.size
         end
 
+        # Counts twins of atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom for which twins will be counted
+        # @return [Integer] the number of twins
+        def count_twins(atom)
+          spec.rest ? spec.rest.twins_num(atom) : 0
+        end
+
         # Compares two atoms by method name and order it descending
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   a is first atom
@@ -293,9 +301,9 @@ module VersatileDiamond
         # Filters major anchors from atom sequence
         # @return [Array] the realy major anchors of current specie
         def major_anchors
-          if source?
+          if spec.source?
             [sequence.major_atoms.first]
-          elsif complex?
+          elsif spec.complex?
             [big_anchor]
           else
             sequence.major_atoms

@@ -69,7 +69,7 @@ module VersatileDiamond
               pairs.all?(&presented_in(overlap))
             end
 
-            overlap.size == 1 && !source? && !complex? &&
+            overlap.size == 1 && !spec.source? && !spec.complex? &&
               (dps = deep_parents_swapper(overlap.to_a.first))
 
             if dps
@@ -86,12 +86,12 @@ module VersatileDiamond
         # @param [Array] pair of atoms which will be checked
         # @return [AtomSequence] the parent sequence or nil
         def deep_parents_swapper(pair)
-          if complex?
-            if pair.all? { |a| count_twins(a) == 1 }
+          if spec.complex?
+            if pair.all? { |a| spec.rest.twins_num(a) == 1 }
               twins = twins_of(pair)
               return store_symmetry(Hash[[pair]]) if twins.first == twins.last
             end
-          elsif !source?
+          elsif !spec.source?
             parent = get(spec.parents.first)
             if parent.atoms.size == atoms.size
               return parent.deep_parents_swapper(twins_of(pair))

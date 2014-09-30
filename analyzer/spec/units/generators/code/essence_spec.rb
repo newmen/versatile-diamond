@@ -15,7 +15,9 @@ module VersatileDiamond
         let(:essence) { described_class.new(specie) }
 
         describe 'graphs' do
-          [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr].each do |keyname|
+          [
+            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
+          ].each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
 
@@ -207,7 +209,53 @@ module VersatileDiamond
                 }
               end
               let(:central_anchors) { [[cm]] }
+            end
           end
+
+          describe 'different dept_cross_bridge_on_dimers_base' do
+            subject { dept_cross_bridge_on_dimers_base }
+
+            it_behaves_like :check_graphs do
+              let(:base_specs) { [dept_dimer_base, subject] }
+              let(:cut_graph) do
+                {
+                  cm => [[ctl, free_bond], [ctr, free_bond]],
+                  ctr => [[ctl, position_100_cross], [cm, free_bond]],
+                  ctl => [[ctr, position_100_cross], [cm, free_bond]],
+                  csr => [[csl, position_100_cross]],
+                  csl => [[csr, position_100_cross]],
+                }
+              end
+              let(:clean_graph) do
+                {
+                  ctr => [[cm, free_bond]],
+                  ctl => [[cm, free_bond], [ctr, position_100_cross]],
+                  csl => [[csr, position_100_cross]],
+                }
+              end
+              let(:central_anchors) { [[ctr]] }
+            end
+
+            it_behaves_like :check_graphs do
+              let(:base_specs) { [dept_dimer_base, dept_methyl_on_dimer_base, subject] }
+              let(:cut_graph) do
+                {
+                  cm => [],
+                  ctr => [[ctl, position_100_cross]],
+                  ctl => [[ctr, position_100_cross]],
+                  csr => [[csl, position_100_cross]],
+                  csl => [[csr, position_100_cross]],
+                }
+              end
+              let(:clean_graph) do
+                {
+                  cm => [],
+                  ctl => [[ctr, position_100_cross]],
+                  csl => [[csr, position_100_cross]],
+                }
+              end
+              let(:central_anchors) { [[cm]] }
+            end
           end
         end
       end

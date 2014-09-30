@@ -305,6 +305,19 @@ module VersatileDiamond
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end
 
+        set(:cross_bridge_on_dimers_base) do
+          s = Concepts::SurfaceSpec.new(:cross_bridge_on_dimers)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :csl)
+          s.rename_atom(:cr, :ctl)
+          s.adsorb(methyl_on_dimer_base)
+          s.rename_atom(:cl, :csr)
+          s.rename_atom(:cr, :ctr)
+          s.link(s.atom(:csl), s.atom(:csr), position_100_cross)
+          s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
+        end
+
         # Relevant states:
         set(:incoherent) { Incoherent.property }
         set(:unfixed) { Unfixed.property }

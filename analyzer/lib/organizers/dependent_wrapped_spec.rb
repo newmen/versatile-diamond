@@ -24,6 +24,18 @@ module VersatileDiamond
         children.reject(&:termination?)
       end
 
+      # Checks that finding specie is source specie
+      # @return [Boolean] is source specie or not
+      def source?
+        parents.size == 0
+      end
+
+      # Checks that finding specie have more than one parent
+      # @return [Boolean] have many parents or not
+      def complex?
+        parents.size > 1
+      end
+
       def to_s
         "(#{name}, [#{parents.map(&:name).join(' ')}], " +
           "[#{children.map(&:name).join(' ')}])"

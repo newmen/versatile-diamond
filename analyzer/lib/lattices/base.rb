@@ -39,23 +39,35 @@ module VersatileDiamond
         end
       end
 
+      # Finds position relation between passed atoms
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] from
+      #   which atom position will be found
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] to
+      #   which atom position will be found
+      # @param [Hash] links the sparse graph that contain relations between atoms
+      # @return [Concepts::Position] the detected position between atoms or nil
+      def position_between(from, to, links)
+        # TODO: there could be several positions between two atoms
+        rule = inference_rules.find do |path, _|
+          find_by_path(to, path, from, nil, links)
+        end
+
+        rule && rule.last
+      end
+
       # Finds position relations between passed in crystal lattice limited by
       # relations container
       #
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @param [Hash] links the container of relations between atoms (is a
-      #   sparse graph)
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] from
+      #   which atom position will be found
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] to
+      #   which atom position will be found
+      # @param [Hash] links the sparse graph that contain relations between atoms
       # @return [Array] the array with positions in both directions or nil
       def positions_between(first, second, links)
-        # TODO: there could be several positions between two atoms
-        rule = inference_rules.find do |path, _|
-          find_by_path(second, path, first, nil, links)
-        end
+        position = position_between(first, second, links)
+        return unless position
 
-        return unless rule
-
-        position = rule.last
         opposite_position = first.lattice.opposite_relation(second.lattice, position)
         [position, opposite_position]
       end
@@ -84,9 +96,12 @@ module VersatileDiamond
         if path.empty?
           target == current
         else
-          relation = path.first
-          applicants = links[current].select do |atom, link|
-            atom != prevent && link.it?(relation)
+          relation_props = path.first
+          rels = links[current]
+          return false unless rels
+
+          applicants = rels.select do |atom, link|
+            atom != current && atom != prevent && link.it?(relation_props)
           end
 
           applicants.any? do |atom, _|
