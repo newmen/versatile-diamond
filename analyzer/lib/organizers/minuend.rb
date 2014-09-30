@@ -50,7 +50,7 @@ module VersatileDiamond
             next
           end
 
-          is_diff = different_bonds?(other, own_atom, other_atom) ||
+          is_diff = different_used_relations?(other, own_atom, other_atom) ||
             used?(mirror.keys, own_atom)
 
           if is_diff
@@ -79,13 +79,11 @@ module VersatileDiamond
       #
       # @param [Atom] atom see at #relations_of same argument
       # @return [Array] the array of relations without position relations
-      def anchor_relations_of(atom)
-        rels = relations_of(atom)
-        if rels.any? { |r| r.relation? && !r.belongs_to_crystal? }
-          rels
-        else
-          rels.select(&method(:no_position?))
+      def used_relations_of(atom)
+        pairs = relations_of(atom, with_atoms: true).reject do |a, r|
+          r.relation? && !r.bond? && excess_position?(atom, a)
         end
+        pairs.map(&:last)
       end
 
     private
@@ -105,25 +103,13 @@ module VersatileDiamond
         pairs
       end
 
-      # Checks that atoms are different
+      # Checks that relations gotten by method of both atom have same relations sets
+      # @param [Symbol] method name which will called
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
       #   own_atom the major of comparable atoms
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom the second
       #   comparable atom
-      # @return [Boolean] are different or not
-      def atoms_different?(other, own_atom, other_atom)
-        different_bonds?(other, own_atom, other_atom) ||
-          !other_atom.diff(own_atom).empty?
-      end
-
-      # Checks that relations gotten by method of both atom have same relations sets
-      # @param [Symbol] method name which will called
-      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
-      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #atoms_different? argument
-      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #atoms_different? argument
       # @return [Boolean] are different or not
       def different_by?(method, other, own_atom, other_atom)
         srs, ors = send(method, own_atom), other.send(method, other_atom)
@@ -133,22 +119,15 @@ module VersatileDiamond
       # Checks that bonds of both atom have same relations sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #atoms_different? argument
+      #   own_atom same as #different_by? argument
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #atoms_different? argument
+      #   #different_by? argument
       # @return [Boolean] are different or not
-      def different_bonds?(*args)
-        different_by?(:anchor_relations_of, *args)
+      def different_used_relations?(*args)
+        different_by?(:used_relations_of, *args)
       end
 
-      # Checks that passed relation is not position
-      # @param [Concepts::Bond | Concepts::NoBond] relation which will be checked
-      # @return [Boolean] is relation a position or not
-      def no_position?(relation)
-        relation.bond? || !relation.relation?
-      end
-
-      # Checks whether the atom used current links
+      # Checks whether the atom is used in current links
       # @param [Array] used_in_mirror the atoms which was mapped to atoms of smallest
       #   spec
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
@@ -156,10 +135,31 @@ module VersatileDiamond
       # @return [Boolean] is used or not
       def used?(used_in_mirror, atom)
         (links.keys - used_in_mirror).any? do |a|
-          links[a].any? do |neighbour, relation|
-            neighbour == atom && no_position?(relation)
+          links[a].any? do |neighbour, r|
+            neighbour == atom &&
+              (!r.relation? || r.bond? || !excess_position?(atom, a))
           end
         end
+      end
+
+      # Checks that current specie have excess position between passed atoms
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   first checking atom
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   second checking atom
+      # @return [Boolean] has excess poosition or not
+      def excess_position?(first, second)
+        @@_eps_cache ||= {}
+        key = [first, second]
+        return @@_eps_cache[key] if @@_eps_cache.include?(key)
+
+        unless first.lattice == second.lattice
+          raise 'Wrong position between atoms that belongs to different lattices'
+        end
+
+        crystal = first.lattice.instance
+        result = !!crystal.position_between(first, second, links)
+        @@_eps_cache[key] = @@_eps_cache[[second, first]] = result
       end
 
       # Merges collected references to previous references

@@ -147,6 +147,15 @@ module VersatileDiamond
           let(:rest_relations_num) { 10 }
           let(:parents) { [dept_methyl_on_bridge_base] * 2 }
         end
+
+        it_behaves_like :check_organized_dependencies do
+          subject { dept_three_bridges_base }
+          let(:species) { [dept_bridge_base, subject] }
+
+          let(:rest_atoms_num) { 2 }
+          let(:rest_relations_num) { 10 }
+          let(:parents) { [dept_bridge_base] * 3 }
+        end
       end
 
       describe '#specific?' do

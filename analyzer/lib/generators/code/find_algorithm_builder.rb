@@ -480,7 +480,7 @@ module VersatileDiamond
           used_atoms, used_procs = anchors.reduce(eap) do |atoms_procs, anchor|
             if (rels = pure_essence[anchor])
               if rels.empty? && complex?
-                raise 'So strange anchor' unless count_twins(anchor) > 1
+                raise 'So strange anchor' unless spec.rest.twins_num(anchor) > 1
                 collect_by_specie_parts(atoms_procs, anchor)
               else
                 collect_by_relations(atoms_procs, anchor, except_atoms)

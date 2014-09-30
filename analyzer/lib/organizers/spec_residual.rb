@@ -49,6 +49,14 @@ module VersatileDiamond
         @references[atom] || []
       end
 
+      # Counts twins of atom
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom for which twins will be counted
+      # @return [Integer] the number of twins
+      def twins_num(atom)
+        all_twins(atom).size
+      end
+
       # Checks that other spec has same border atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
       # @return [Boolean] same or not
@@ -66,9 +74,9 @@ module VersatileDiamond
       # Checks that relations of both atom have same sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom same as #are_atoms_different? argument
+      #   spec_atom same as Minuend#different_by? argument
       # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
-      #   #are_atoms_different? argument
+      #   Minuend#different_by? argument
       # @return [Boolean] are different or not
       def different_relations?(*args)
         different_by?(:relations_of, *args)

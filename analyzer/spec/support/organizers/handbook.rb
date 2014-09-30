@@ -40,6 +40,7 @@ module VersatileDiamond
           :methyl_on_extended_bridge_base,
           :methyl_on_right_bridge_base,
           :cross_bridge_on_bridges_base,
+          :cross_bridge_on_dimers_base,
           :three_bridges_base
         ])
 
