@@ -12,7 +12,7 @@ module VersatileDiamond
         def initialize(specie)
           @spec = specie.spec
           @sequence = specie.sequence
-          @essence = clean_graph
+          @essence = algorithm_graph
         end
 
         # Gets a links of current specie without links of parent species
@@ -56,7 +56,8 @@ module VersatileDiamond
         # @param [Specie] specie for which pure essence will be gotten
         # @return [Hash] the links hash without reverse relations
         # TODO: must be private
-        def clean_graph
+        def algorithm_graph
+          #
           # для кажого атома:
           # группируем отношения по фейсу и диру
           # одинаковые ненаправленные связи - отбрасываем
