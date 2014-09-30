@@ -26,8 +26,8 @@ module VersatileDiamond
               it { expect(essence.cut_graph).to match_graph(cut_graph) }
             end
 
-            describe '#clean_graph' do
-              it { expect(essence.clean_graph).to match_graph(clean_graph) }
+            describe '#algorithm_graph' do
+              it { expect(essence.algorithm_graph).to match_graph(algorithm_graph) }
             end
 
             describe '#central_anchors' do
@@ -39,7 +39,9 @@ module VersatileDiamond
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
             let(:cut_graph) { bridge_base.links }
-            let(:clean_graph) { { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] } }
+            let(:algorithm_graph) do
+              { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] }
+            end
             let(:central_anchors) { [[ct]] }
           end
 
@@ -47,7 +49,7 @@ module VersatileDiamond
             subject { dept_methyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:cut_graph) { { cm => [[cb, free_bond]], cb => [[cm, free_bond]] } }
-            let(:clean_graph) { { cb => [[cm, free_bond]] } }
+            let(:algorithm_graph) { { cb => [[cm, free_bond]] } }
             let(:central_anchors) { [[cb]] }
           end
 
@@ -60,7 +62,7 @@ module VersatileDiamond
                 cb => [[cm, free_bond], [cm, free_bond]],
               }
             end
-            let(:clean_graph) { { cb => [[cm, free_bond]] } }
+            let(:algorithm_graph) { { cb => [[cm, free_bond]] } }
             let(:central_anchors) { [[cb]] }
           end
 
@@ -74,7 +76,7 @@ module VersatileDiamond
                 c2 => [[c1, free_bond], [c1, free_bond]]
               }
             end
-            let(:clean_graph) { { cb => [[c1, free_bond]], c1 => [[c2, free_bond]] } }
+            let(:algorithm_graph) { { cb => [[c1, free_bond]], c1 => [[c2, free_bond]] } }
             let(:central_anchors) { [[cb]] }
           end
 
@@ -84,7 +86,7 @@ module VersatileDiamond
             let(:cut_graph) do
               { cr => [[cl, bond_100_front]], cl => [[cr, bond_100_front]] }
             end
-            let(:clean_graph) { { cr => [[cl, bond_100_front]] } }
+            let(:algorithm_graph) { { cr => [[cl, bond_100_front]] } }
             let(:central_anchors) { [[cr]] }
           end
 
@@ -99,13 +101,13 @@ module VersatileDiamond
                 cl => [[c2, free_bond]]
               }
             end
-            let(:clean_graph) { { cr => [[c1, free_bond]], cl => [[c2, free_bond]] } }
+            let(:algorithm_graph) { { cr => [[c1, free_bond]], cl => [[c2, free_bond]] } }
             let(:central_anchors) { [[cl, cr]] }
           end
 
           shared_examples_for :check_same_graphs do
             it_behaves_like :check_graphs do
-              let(:clean_graph) { cut_graph }
+              let(:algorithm_graph) { cut_graph }
             end
           end
 
@@ -184,7 +186,7 @@ module VersatileDiamond
                   ctl => [[ctr, position_100_cross], [cm, free_bond]],
                 }
               end
-              let(:clean_graph) do
+              let(:algorithm_graph) do
                 {
                   ctr => [[cm, free_bond]],
                   ctl => [[cm, free_bond], [ctr, position_100_cross]]
@@ -202,7 +204,7 @@ module VersatileDiamond
                   ctl => [[ctr, position_100_cross]],
                 }
               end
-              let(:clean_graph) do
+              let(:algorithm_graph) do
                 {
                   cm => [],
                   ctl => [[ctr, position_100_cross]],
@@ -226,14 +228,14 @@ module VersatileDiamond
                   csl => [[csr, position_100_cross]],
                 }
               end
-              let(:clean_graph) do
+              let(:algorithm_graph) do
                 {
-                  ctr => [[cm, free_bond]],
-                  ctl => [[cm, free_bond], [ctr, position_100_cross]],
-                  csl => [[csr, position_100_cross]],
+                  ctl => [[cm, free_bond]],
+                  ctr => [[cm, free_bond], [ctl, position_100_cross]],
+                  csr => [[csl, position_100_cross]],
                 }
               end
-              let(:central_anchors) { [[ctr]] }
+              let(:central_anchors) { [[csr], [ctr]] }
             end
 
             it_behaves_like :check_graphs do
@@ -247,11 +249,11 @@ module VersatileDiamond
                   csl => [[csr, position_100_cross]],
                 }
               end
-              let(:clean_graph) do
+              let(:algorithm_graph) do
                 {
                   cm => [],
-                  ctl => [[ctr, position_100_cross]],
-                  csl => [[csr, position_100_cross]],
+                  ctr => [[ctl, position_100_cross]],
+                  csr => [[csl, position_100_cross]],
                 }
               end
               let(:central_anchors) { [[cm]] }
