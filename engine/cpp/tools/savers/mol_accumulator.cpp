@@ -5,70 +5,76 @@
 namespace vd
 {
 
+MolAccumulator::~MolAccumulator()
+{
+    for (auto &pair : _atomsToInfos)
+    {
+        delete pair.second;
+    }
+
+    for (auto &pair : _bondKeysToInfos)
+    {
+        delete pair.second;
+    }
+}
+
 void MolAccumulator::treatHidden(const Atom *first, const Atom *second)
 {
     if (!detector()->isShown(first) && detector()->isShown(second))
     {
-        findOrCreateAI(second).incNoBond();
+        checkOrAddAtom(second);
+        _atomsToInfos[second]->incNoBond();
     }
 }
 
 void MolAccumulator::pushPair(const Atom *from, const Atom *to)
 {
-    AtomInfo &fai = findOrCreateAI(from);
-    AtomInfo &sai = findOrCreateAI(to);
+    checkOrAddAtom(from);
+    checkOrAddAtom(to);
 
-    uint first = aiIndex(fai);
-    uint second = aiIndex(sai);
+    uint fi = _atomsToNums.find(from)->second;
+    uint ti = _atomsToNums.find(to)->second;
 
-    if (first > second) return;
+    assert(fi != ti);
+    if (fi > ti) return;
 
     if (!isNear(from, to))
     {
-        fai.incNoBond();
-        sai.incNoBond();
+        _atomsToInfos[from]->incNoBond();
+        _atomsToInfos[to]->incNoBond();
     }
     else
     {
-        BondInfo bond(first, second);
-        auto it = _bonds.find(bond);
-        if (it != _bonds.cend())
-        {
-            const_cast<BondInfo &>(it->first).incArity();
-        }
-        else
-        {
-            _bonds.insert(BondInfos::value_type(bond, ++_bondsNum));
-        }
+        checkOrIncBond(fi, ti);
     }
 }
 
-AtomInfo &MolAccumulator::findOrCreateAI(const Atom *atom)
+void MolAccumulator::checkOrAddAtom(const Atom *atom)
 {
-    const AtomInfo *result;
-
-    AtomInfo ai(atom);
-    auto it = _atoms.find(ai);
-    if (it != _atoms.cend())
+    if (_atomsToNums.find(atom) == _atomsToNums.cend())
     {
-        result = &it->first;
+        assert(_atomsToInfos.find(atom) == _atomsToInfos.cend());
+
+        _atomsToNums.insert(AtomsToNums::value_type(atom, _atomsToNums.size() + 1));
+        _atomsToInfos.insert(AtomsToInfos::value_type(atom, new AtomInfo(atom)));
+    }
+}
+
+void MolAccumulator::checkOrIncBond(uint fi, uint ti)
+{
+    BondKey bk = makeBondKey(fi, ti);
+    auto it = _bondKeysToInfos.find(bk);
+    if (it == _bondKeysToInfos.cend())
+    {
+        assert(_bondKeysToNums.find(bk) == _bondKeysToNums.cend());
+
+        _bondKeysToNums.insert(BondKeysToNums::value_type(bk, _bondKeysToNums.size() + 1));
+        _bondKeysToInfos.insert(BondKeysToInfos::value_type(bk, new BondInfo(fi, ti)));
     }
     else
     {
-        result = &_atoms.insert(AtomInfos::value_type(ai, ++_atomsNum)).first->first;
+        it->second->incArity();
     }
-
-    return const_cast<AtomInfo &>(*result);
-}
-
-uint MolAccumulator::aiIndex(const AtomInfo &ai) const
-{
-    return _atoms.find(ai)->second;
-}
-
-uint MolAccumulator::biIndex(const BondInfo &bi) const
-{
-    return _bonds.find(bi)->second;
 }
 
 bool MolAccumulator::isNear(const Atom *first, const Atom *second) const

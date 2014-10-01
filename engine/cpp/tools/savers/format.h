@@ -27,7 +27,7 @@ template <class A>
 std::string Format<A>::timestamp() const
 {
     time_t rawtime;
-    struct tm *timeinfo;
+    struct tm *timeinfo = nullptr;
     char buffer[80];
 
     time(&rawtime);

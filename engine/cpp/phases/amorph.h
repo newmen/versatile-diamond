@@ -1,6 +1,7 @@
 #ifndef AMORPH_H
 #define AMORPH_H
 
+#include <algorithm>
 #include <unordered_set>
 #include "../atoms/atom.h"
 #include "../tools/common.h"
@@ -21,11 +22,7 @@ public:
     void erase(Atom *atom);
 
     uint countAtoms() const;
-
-    void setUnvisited();
-#ifndef NDEBUG
-    void checkAllVisited();
-#endif // NDEBUG
+    template <class L> void eachAtom(const L &lambda) const;
 
 protected:
     Atoms &atoms() { return _atoms; }
@@ -36,6 +33,14 @@ private:
     Amorph &operator = (const Amorph &) = delete;
     Amorph &operator = (Amorph &&) = delete;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+template <class L>
+void Amorph::eachAtom(const L &lambda) const
+{
+    std::for_each(_atoms.cbegin(), _atoms.cend(), lambda);
+}
 
 }
 

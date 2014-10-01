@@ -4,7 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../../atoms/atom.h"
+#include "../../phases/amorph.h"
+#include "../../phases/crystal.h"
 #include "detector.h"
 
 namespace vd
@@ -18,7 +19,7 @@ class OneFile : public B
 public:
     ~OneFile() { delete _out; }
 
-    void writeFrom(Atom *atom, double currentTime, const Detector *detector) override;
+    void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) override;
 
 protected:
     template <class... Args> OneFile(Args... args) : B(args...) {}
@@ -33,7 +34,7 @@ private:
 ///////////////////////////////////////////////////////////////
 
 template <class B>
-void OneFile<B>::writeFrom(Atom *atom, double currentTime, const Detector *detector)
+void OneFile<B>::save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
 {
     static uint counter = 0;
     if (counter > 0)
@@ -42,7 +43,7 @@ void OneFile<B>::writeFrom(Atom *atom, double currentTime, const Detector *detec
     }
     ++counter;
 
-    this->writeToFrom(out(), atom, currentTime, detector);
+    this->saveTo(out(), currentTime, amorph, crystal, detector);
 }
 
 template <class B>
