@@ -81,7 +81,7 @@ module VersatileDiamond
       # @return [Array] the array of relations without position relations
       def used_relations_of(atom)
         pairs = relations_of(atom, with_atoms: true).reject do |a, r|
-          r.relation? && !r.bond? && excess_position?(atom, a)
+          excess_position?(r, atom, a)
         end
         pairs.map(&:last)
       end
@@ -136,10 +136,20 @@ module VersatileDiamond
       def used?(used_in_mirror, atom)
         (links.keys - used_in_mirror).any? do |a|
           links[a].any? do |neighbour, r|
-            neighbour == atom &&
-              (!r.relation? || r.bond? || !excess_position?(atom, a))
+            neighbour == atom && !excess_position?(r, atom, a)
           end
         end
+      end
+
+      # Checks that passed relation is position and that it is excess
+      # @param [Concepts::Bond | Concepts::NoBond] relation which will checked
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   first checking atom
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   second checking atom
+      def excess_position?(relation, first, second)
+        relation.relation? && !relation.bond? &&
+          excess_position_between?(first, second)
       end
 
       # Checks that current specie have excess position between passed atoms
@@ -148,7 +158,7 @@ module VersatileDiamond
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   second checking atom
       # @return [Boolean] has excess poosition or not
-      def excess_position?(first, second)
+      def excess_position_between?(first, second)
         @@_eps_cache ||= {}
         key = [first, second]
         return @@_eps_cache[key] if @@_eps_cache.include?(key)

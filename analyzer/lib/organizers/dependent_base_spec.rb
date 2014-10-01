@@ -23,8 +23,8 @@ module VersatileDiamond
       # Is excess spec or not
       # @return [Boolean] is excess spec or not
       def excess?
-        parents.size == 1 && children.size == 1 && children.first.specific? &&
-          !reactant?
+        !source? && !complex? &&
+          children.size == 1 && children.first.specific? && !reactant?
       end
 
       # Excludes current spec. Instead of the current spec replaces the parent to the
@@ -36,7 +36,7 @@ module VersatileDiamond
         parents.uniq.each { |parent| parent.remove_child(self) }
 
         return if children.empty?
-        if parents.size > 1
+        if complex?
           raise 'Excluding specie has more that one parent and many children'
         end
 
