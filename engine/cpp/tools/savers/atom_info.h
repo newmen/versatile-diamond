@@ -1,7 +1,6 @@
 #ifndef ATOM_INFO_H
 #define ATOM_INFO_H
 
-#include <string>
 #include "detector.h"
 
 namespace vd
@@ -11,8 +10,6 @@ class AtomInfo
 {
     const Atom *_atom;
     uint _noBond = 0;
-
-    friend class std::hash<AtomInfo>;
 
 public:
     explicit AtomInfo(const Atom *atom) : _atom(atom) {}
@@ -28,22 +25,6 @@ private:
     AtomInfo(AtomInfo &&) = delete;
     AtomInfo &operator = (const AtomInfo &) = delete;
     AtomInfo &operator = (AtomInfo &&) = delete;
-};
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-namespace std
-{
-
-template <>
-struct hash<vd::AtomInfo>
-{
-    size_t operator () (const vd::AtomInfo &ai) const
-    {
-        return reinterpret_cast<size_t>(ai.atom());
-    }
 };
 
 }

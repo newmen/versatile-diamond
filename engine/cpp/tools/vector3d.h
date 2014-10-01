@@ -1,7 +1,6 @@
 #ifndef VECTOR3D_H
 #define VECTOR3D_H
 
-#include <vector>
 #include "common.h"
 
 namespace vd
@@ -27,10 +26,8 @@ public:
         return _data[index(coords)];
     }
 
-    template <class Lambda> void each(const Lambda &lambda) const;
-    template <class Lambda> void ompParallelEach(const Lambda &lambda) const;
-
-    template <typename R, class Lambda> R ompParallelReducePlus(R initValue, const Lambda &lambda) const;
+    template <class Lambda>
+    void each(const Lambda &lambda) const;
 
 private:
     vector3d(const vector3d<T> &) = delete;
@@ -67,34 +64,6 @@ void vector3d<T>::each(const Lambda &lambda) const
     {
         lambda(_data[i]);
     }
-}
-
-template <typename T>
-template <class Lambda>
-void vector3d<T>::ompParallelEach(const Lambda &lambda) const
-{
-#ifdef PARALLEL
-#pragma omp parallel for shared(lambda)
-#endif // PARALLEL
-    for (int i = 0; i < _sizes.N(); ++i)
-    {
-        lambda(_data[i]);
-    }
-}
-
-template <typename T>
-template <typename R, class Lambda>
-R vector3d<T>::ompParallelReducePlus(R initValue, const Lambda &lambda) const
-{
-    R sum = initValue;
-#ifdef PARALLEL
-#pragma omp parallel for reduction(+:sum) shared(lambda)
-#endif // PARALLEL
-    for (int i = 0; i < _sizes.N(); ++i)
-    {
-        sum += lambda(_data[i]);
-    }
-    return sum;
 }
 
 }
