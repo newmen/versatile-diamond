@@ -38,7 +38,13 @@ module VersatileDiamond
           it_behaves_like :check_graphs do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
-            let(:cut_graph) { bridge_base.links }
+            let(:cut_graph) do
+              {
+                ct => [[cl, bond_110_cross], [cr, bond_110_cross]],
+                cr => [[ct, bond_110_front]],
+                cl => [[ct, bond_110_front]],
+              }
+            end
             let(:algorithm_graph) do
               { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] }
             end

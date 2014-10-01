@@ -20,7 +20,7 @@ module VersatileDiamond
         # TODO: must be private
         def cut_graph
           rest = spec.rest
-          return spec.spec.links unless rest
+          return spec.clean_links unless rest
 
           atoms = rest.links.keys
           clear_links = rest.links.map do |atom, rels|
@@ -118,7 +118,7 @@ module VersatileDiamond
             end
           end
 
-          clear_excess_positions(result, clearing_atoms)
+          result
         end
 
         # Gets anchors by which will be first check of find algorithm
@@ -164,19 +164,6 @@ module VersatileDiamond
         def clear_reverse_from(links, reverse_atom, from_atom)
           reject_proc = proc { |a, _| a == from_atom }
           clear_links(links, reject_proc) { |a| a == reverse_atom }
-        end
-
-        # Clears position relations which are between atoms from clearing_atoms
-        # @param [Hash] links which will be cleared
-        # @param [Set] clearing_atoms the atoms between which positions will be erased
-        # @return [Hash] the links without erased positions
-        def clear_excess_positions(links, clearing_atoms)
-          # there is could be only realy bonds and positions
-          reject_proc = proc do |a, r|
-            spec.relations_of(a).select(&:bond?).all?(&:belongs_to_crystal?) &&
-              !r.bond? && clearing_atoms.include?(a)
-          end
-          clear_links(links, reject_proc) { |a| clearing_atoms.include?(a) }
         end
 
         # Clears relations from links hash where each purging relatoins list selected
