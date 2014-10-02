@@ -22,24 +22,25 @@ def image_filename(fname, name_maxlength):
 
 def save_image(spath, name_maxlength, prefix = ''):
     fname = spath.split('/')[-1].split('.')[0]
-
-    cmd.delete('all')
-
-    cmd.load(spath, fname)
-    cmd.disable('all')
-    cmd.enable(fname)
-
-    cmd.color('green', fname)
-    cmd.h_add('(all)')
-    cmd.show('surface')
-
-    cmd.rotate([-1, 0.5, 0.5], 60)
-    cmd.zoom(fname, -7.0, 0, 1)
-
     image_name = prefix + image_filename(fname, name_maxlength)
-    cmd.png(image_name)
+    if exists(image_name):
+        print 'Skip: ' + fname
+    else:
+        cmd.delete('all')
 
-    time.sleep(1)
+        cmd.load(spath, fname)
+        cmd.disable('all')
+        cmd.enable(fname)
+
+        cmd.color('green', fname)
+        cmd.h_add('(all)')
+        cmd.show('surface')
+
+        cmd.rotate([-1, 0.5, 0.5], 60)
+        cmd.zoom(fname, -7.0, 0, 1)
+
+        cmd.png(image_name)
+        time.sleep(1)
 
 # Call the function below before using any PyMOL modules.
 pymol.finish_launching()
