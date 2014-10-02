@@ -26,6 +26,27 @@ module VersatileDiamond
         end
       end
 
+      RSpec::Matchers.define :match_multidim_array do |expected|
+        match do |actual|
+          lists_are_identical?(actual, expected) do |a, b|
+            lists_are_identical?(a, b, &:==)
+          end
+        end
+        failure_message do |actual|
+          "expected that\n#{multidim_array_to_s(actual)}\n" \
+            "should be like\n#{multidim_array_to_s(expected)}"
+        end
+
+        # Transforms matrix to string
+        # @param [Hash] matrix the transforming matrix
+        # @return [String] the multiline string
+        def multidim_array_to_s(matrix)
+          lines = matrix.map { |values| "    #{values.inspect}" }
+          content = lines.join("\n")
+          "[\n#{content}\n]"
+        end
+      end
+
     end
   end
 end

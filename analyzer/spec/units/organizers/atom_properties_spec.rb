@@ -118,6 +118,11 @@ module VersatileDiamond
         it { expect(vob).not_to eq(eob) }
       end
 
+      describe '#eql?' do
+        it { expect(dimer_cl.eql?(dimer_cr)).to be_truthy }
+        it { expect(ab_ct.eql?(aib_ct)).to be_falsey }
+      end
+
       describe '#include?' do
         it { expect(iamob.include?(imob)).to be_truthy }
         it { expect(ihmob.include?(imob)).to be_truthy }
