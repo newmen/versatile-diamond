@@ -18,14 +18,6 @@ module VersatileDiamond
         @links = straighten_graph(spec.links)
       end
 
-      # Removes excess positions from current links graph
-      # @return [Hash] the links of concept specie without excess positions
-      def clean_links
-        spec.links.each.with_object({}) do |(atom, rels), result|
-          result[atom] = rels.reject { |a, r| excess_position?(r, atom, a) }
-        end
-      end
-
       # Gets the children specie classes
       # @return [Array] the array of children specie class generators
       def non_term_children
@@ -65,6 +57,12 @@ module VersatileDiamond
         links.each.with_object({}) do |(atom, relations), result|
           result[atom] = relations + atom.additional_relations
         end
+      end
+
+      # Provides links that will be cleaned by #clean_links
+      # @return [Hash] the links which will be cleaned
+      def cleanable_links
+        spec.links
       end
     end
 

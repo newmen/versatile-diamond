@@ -82,7 +82,9 @@ module VersatileDiamond
                 c2 => [[c1, free_bond], [c1, free_bond]]
               }
             end
-            let(:algorithm_graph) { { cb => [[c1, free_bond]], c1 => [[c2, free_bond]] } }
+            let(:algorithm_graph) do
+              { cb => [[c1, free_bond]], c1 => [[c2, free_bond]] }
+            end
             let(:central_anchors) { [[cb]] }
           end
 
@@ -107,7 +109,9 @@ module VersatileDiamond
                 cl => [[c2, free_bond]]
               }
             end
-            let(:algorithm_graph) { { cr => [[c1, free_bond]], cl => [[c2, free_bond]] } }
+            let(:algorithm_graph) do
+              { cr => [[c1, free_bond]], cl => [[c2, free_bond]] }
+            end
             let(:central_anchors) { [[cl, cr]] }
           end
 
@@ -166,7 +170,9 @@ module VersatileDiamond
 
           it_behaves_like :check_same_graphs do
             subject { dept_methyl_on_dimer_base }
-            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
+            let(:base_specs) do
+              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+            end
             let(:cut_graph) do
               { cr => [[cl, bond_100_front]], cl => [[cr, bond_100_front]] }
             end
@@ -202,7 +208,9 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_graphs do
-              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
               let(:cut_graph) do
                 {
                   cm => [],
@@ -245,7 +253,9 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_graphs do
-              let(:base_specs) { [dept_dimer_base, dept_methyl_on_dimer_base, subject] }
+              let(:base_specs) do
+                [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+              end
               let(:cut_graph) do
                 {
                   cm => [],

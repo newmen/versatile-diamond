@@ -18,9 +18,7 @@ private
       relation.dir == :front ?
         relation.class[face: 110, dir: :cross] :
         relation.class[face: 110, dir: :front]
-    elsif relation.face == 100 &&
-      !(relation.class == Bond && relation.dir == :cross)
-
+    elsif relation.face == 100
       relation.class[face: 100, dir: relation.dir]
     else
       raise UndefinedRelation, relation

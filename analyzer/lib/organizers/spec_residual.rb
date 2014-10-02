@@ -81,6 +81,12 @@ module VersatileDiamond
       def different_relations?(*args)
         different_by?(:relations_of, *args)
       end
+
+      # Provides links that will be cleaned by #clean_links
+      # @return [Hash] the links which will be cleaned
+      def cleanable_links
+        links
+      end
     end
 
   end
