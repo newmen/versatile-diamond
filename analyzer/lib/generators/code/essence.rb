@@ -23,7 +23,7 @@ module VersatileDiamond
           return spec.clean_links unless rest
 
           atoms = rest.links.keys
-          clear_links = rest.links.map do |atom, rels|
+          clear_links = rest.clean_links.map do |atom, rels|
             [atom, rels.select { |a, _| atom != a && atoms.include?(a) }]
           end
 
