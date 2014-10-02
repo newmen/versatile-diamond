@@ -55,6 +55,14 @@ module VersatileDiamond
         #
         # @param [Specie] specie for which pure essence will be gotten
         # @return [Hash] the links hash without reverse relations
+        # @example
+        #   [
+        #     [[a, b], [[[c, d], some_position]]],
+        #     [[m], []]]
+        #   ],
+        # where _a_, _b_ - atoms that belongs to one face of crystal on which can be
+        # applied one multistep operation when each neighbour atoms checing; each
+        # neighbour atoms compares with _c_ and _d_; _m_ is additional checking atom.
         # TODO: must be private
         def algorithm_graph
           #
