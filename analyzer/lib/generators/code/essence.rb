@@ -84,9 +84,7 @@ module VersatileDiamond
           # из эссенции
 
           result = cut_graph
-          clearing_atoms = Set.new
           clear_reverse = -> reverse_atom, from_atom do
-            clearing_atoms << from_atom << reverse_atom
             result = clear_reverse_from(result, reverse_atom, from_atom)
           end
 
