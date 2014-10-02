@@ -83,6 +83,13 @@ module VersatileDiamond
         self.class.amorph_relations_limit.merge(crystal_relations_limit)
       end
 
+      # Checks that relation belongs to flatten face of crystal
+      # @param [Concepts::Bond] relation that will be checked
+      # @return [Boolean] is belongs to flatten face or not
+      def flatten?(relation)
+        flatten_faces.include?(relation.face)
+      end
+
     private
 
       # Recursively algorighm which finds target by path in links

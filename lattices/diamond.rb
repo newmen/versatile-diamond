@@ -59,6 +59,12 @@ private
     }
   end
 
+  # Gets faces of crystal along that direction does not change
+  # @return [Array] the array of faces that are flatten
+  def flatten_faces
+    [100]
+  end
+
   # Gets the default height of surface in atom layers
   # For diamond should be at least three layers for bond between each one the all atoms
   # @return [Integer] the number of atomic layers
