@@ -26,9 +26,8 @@ module VersatileDiamond
       end
 
       describe '#lattice' do
-        it 'set and get lattice' do
-          expect(cd.lattice).to eq(diamond)
-        end
+        it { expect(c.lattice).to be_nil }
+        it { expect(cd.lattice).to eq(diamond) }
       end
 
       describe '#reference?' do
