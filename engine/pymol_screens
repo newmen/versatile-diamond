@@ -26,8 +26,7 @@ def save_image(spath, name_maxlength, prefix = ''):
     if exists(image_name):
         print 'Skip: ' + fname
     else:
-        cmd.delete('all')
-
+        print 'Process: ' + fname
         cmd.load(spath, fname)
         cmd.disable('all')
         cmd.enable(fname)
@@ -40,7 +39,8 @@ def save_image(spath, name_maxlength, prefix = ''):
         cmd.zoom(fname, -7.0, 0, 1)
 
         cmd.png(image_name)
-        time.sleep(1)
+        time.sleep(3) # wtf?!
+        cmd.delete('all')
 
 # Call the function below before using any PyMOL modules.
 pymol.finish_launching()
