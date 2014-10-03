@@ -27,7 +27,7 @@ module VersatileDiamond
           @_original_sequence =
             if spec.rest
               dynamic_rest = spec
-              sorted_parents.reduce(addition_atoms) do |acc, parent|
+              spec.sorted_parents.reduce(addition_atoms) do |acc, parent|
                 mirror = dynamic_rest.mirror_to(parent).invert
                 dynamic_rest -= parent
 
@@ -41,7 +41,7 @@ module VersatileDiamond
         # Gets short sequence of anchors
         # @return [Array] the short sequence of different atoms
         def short
-          @_short_sequence ||= sort_atoms(anchors, amorph_before: false)
+          @_short_sequence ||= sort_atoms(spec.anchors, amorph_before: false)
         end
 
         # Gets a atoms list of short sequence without addition atoms
@@ -58,7 +58,7 @@ module VersatileDiamond
           rest = spec.rest
           @_addition_atoms =
             if rest
-              adds = anchors.reject { |atom| rest.twin(atom) }
+              adds = spec.anchors.reject { |atom| rest.twin(atom) }
               sort_atoms(adds)
             else
               []

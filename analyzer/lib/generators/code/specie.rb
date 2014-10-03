@@ -104,7 +104,7 @@ module VersatileDiamond
         # Checks that current specie is find algorithm root
         # @return [Boolean] is find algorithm root or not
         def find_root?
-          parents.size != 1
+          spec.source? || spec.complex?
         end
 
         # Delegates detecting of symmetric atom to symmetry detector
