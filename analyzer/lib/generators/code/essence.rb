@@ -14,7 +14,7 @@ module VersatileDiamond
           @sequence = specie.sequence
           @essence = algorithm_graph
 
-          @_cut_links = nil
+          @_cut_links, @_raw_algorithm_graph = nil
         end
 
         # Gets a links of current specie without links of parent species
@@ -63,6 +63,8 @@ module VersatileDiamond
         #   which have similar relations with neighbour atoms and values are wrapped
         #   to arrays other side "vertex" and relation to it vertex
         def raw_algorithm_graph
+          return @_raw_algorithm_graph if @_raw_algorithm_graph
+
           flatten_groups, non_flatten_groups = split_grouped_atoms
           result = {}
 
@@ -80,7 +82,7 @@ module VersatileDiamond
             end
           end
 
-          result
+          @_raw_algorithm_graph = result
         end
 
         # Gets an essence of wrapped dependent spec but without reverse relations if
@@ -90,13 +92,15 @@ module VersatileDiamond
         # @param [Specie] specie for which pure essence will be gotten
         # @return [Hash] the links hash without reverse relations
         # @example
-        #   [
-        #     [[a, b], [[[c, d], some_position]]],
-        #     [[m], []]]
-        #   ],
+        #   {
+        #     [a, b] => [[[c, d], [flatten_relation, flatten_relation]]],
+        #     [a] => [[e], [typical_relation]]
+        #     [m] => []
+        #   },
         # where _a_, _b_ - atoms that belongs to one face of crystal on which can be
         # applied one multistep operation when each neighbour atoms checing; each
-        # neighbour atoms compares with _c_ and _d_; _m_ is additional checking atom.
+        # neighbour atoms compares with _c_ and _d_; _m_ and _e_ are additional
+        # checking atoms.
         # TODO: must be private
         def algorithm_graph
           #

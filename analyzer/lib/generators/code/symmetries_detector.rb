@@ -31,7 +31,7 @@ module VersatileDiamond
           spec.non_term_children.each { |child| get(child).collect_symmetries }
           return unless spec.rest
 
-          distrib_twins_to_parents(anchors).each do |parent, twins|
+          distrib_twins_to_parents(spec.anchors).each do |parent, twins|
             get(parent).add_symmetries_for(twins)
           end
         end
@@ -176,6 +176,7 @@ module VersatileDiamond
         # Gets an unique anchors
         # @return [Array] the array of unique anchors
         def uniq_anchors
+          anchors = spec.anchors
           anchor_users = @symmetries.keys.select do |hash|
             hash.flatten.any? { |a| anchors.include?(a) }
           end
@@ -259,7 +260,7 @@ module VersatileDiamond
         def parent_atom_index(index)
           pi = nil
           ai = index - @specie.sequence.delta
-          sorted_parents.each_with_index do |parent, i|
+          spec.sorted_parents.each_with_index do |parent, i|
             panum = parent.atoms_num
             if ai < panum
               pi = i

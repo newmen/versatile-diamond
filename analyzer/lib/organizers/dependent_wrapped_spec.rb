@@ -18,6 +18,18 @@ module VersatileDiamond
         @links = straighten_graph(spec.links)
       end
 
+      # Gets anchors of internal specie
+      # @return [Array] the array of anchor atoms
+      def anchors
+        target.links.keys
+      end
+
+      # Gets sorted parents of target specie
+      # @return [Array] the sorted array of parent seqeucnes
+      def sorted_parents
+        parents.sort_by { |p| -p.relations_num }
+      end
+
       # Gets the children specie classes
       # @return [Array] the array of children specie class generators
       def non_term_children
