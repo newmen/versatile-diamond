@@ -6,7 +6,7 @@ module VersatileDiamond
       module TwinsHelper
       private
 
-        # Finds parent specie by atom the twin of which belongs to this parent
+        # Finds parent species by atom the twins of which belongs to this parents
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom by which specie will be found
         # @return [Array] the list of pairs where each pair contain parent and twin

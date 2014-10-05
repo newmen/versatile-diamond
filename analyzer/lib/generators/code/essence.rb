@@ -6,12 +6,12 @@ module VersatileDiamond
       class Essence
         include Modules::ListsComparer
         include TwinsHelper
+        extend Forwardable
 
         # Initizalize cleaner by specie class code generator
         # @param [Specie] specie from which pure essence will be gotten
         def initialize(specie)
-          @spec = specie.spec
-          @sequence = specie.sequence
+          @specie = specie
           @essence = algorithm_graph
 
           @_cut_links, @_raw_algorithm_graph = nil
@@ -200,7 +200,7 @@ module VersatileDiamond
 
       private
 
-        attr_reader :spec, :sequence
+        def_delegators :@specie, :spec, :sequence
 
         # Unificate list of relations by checking that each relation is unique or not
         # @param [rels]
