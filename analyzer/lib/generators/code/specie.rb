@@ -183,7 +183,7 @@ module VersatileDiamond
         # @return [String] unwrapped combined base engine template classes
         def base_engine_class_name
           base_class = parent? ? 'ParentSpec' : 'BaseSpec'
-          parents_num = parents.size
+          parents_num = spec.parents.size
           parents_num == 0 ?
             "SourceSpec<#{base_class}, #{atoms_num}>" :
             "DependentSpec<#{base_class}, #{parents_num}>"
