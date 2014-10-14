@@ -7,7 +7,9 @@ module VersatileDiamond
       # Creates Specie class
       class Specie < BaseSpecie
         include SpecieInside
+        extend Forwardable
 
+        def_delegator :@detector, :symmetric_atom?
         attr_reader :spec, :original, :sequence
 
         # Initialize specie code generator
@@ -105,12 +107,6 @@ module VersatileDiamond
         # @return [Boolean] is find algorithm root or not
         def find_root?
           spec.source? || spec.complex?
-        end
-
-        # Delegates detecting of symmetric atom to symmetry detector
-        # @return [Boolean] is symmetric or not
-        def symmetric_atom?(atom)
-          @detector.symmetric_atom?(atom)
         end
 
         # Gets a list of parents species full header file path of which will be
