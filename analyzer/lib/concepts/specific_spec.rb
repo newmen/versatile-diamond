@@ -8,6 +8,7 @@ module VersatileDiamond
 
       include Visitors::Visitable
       include BondsCounter
+      include RelationBetweenAtomsChecker
 
       def_delegators :@spec, :extendable?, :gas?, :simple?
       attr_reader :spec, :specific_atoms

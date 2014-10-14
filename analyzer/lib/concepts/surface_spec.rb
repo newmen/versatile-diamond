@@ -93,17 +93,6 @@ module VersatileDiamond
         first = atoms.delete_at(index)
         [first, atoms.pop]
       end
-
-      # Checks that atoms is related
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @return [Boolean] related or not
-      # TODO: move to super?
-      def relation_between(first, second)
-        links[first] &&
-          (atom_with_rel = links[first].find { |atom, _| atom == second }) &&
-          ((_, rel) = atom_with_rel) && rel
-      end
     end
 
   end

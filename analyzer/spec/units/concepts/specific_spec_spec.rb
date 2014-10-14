@@ -159,6 +159,13 @@ module VersatileDiamond
         it { expect(activated_c.unfixed?).to be_truthy }
       end
 
+      describe '#relation_between' do
+        let(:ct) { activated_bridge.atom(:ct) }
+        let(:cr) { activated_bridge.atom(:cr) }
+        it { expect(activated_bridge.relation_between(ct, cr)).to eq(bond_110_cross) }
+        it { expect(activated_bridge.relation_between(cr, ct)).to eq(bond_110_front) }
+      end
+
       describe '#external_bonds_for' do
         it { expect(methane.external_bonds_for(c)).to eq(4) }
         it { expect(methyl.external_bonds_for(activated_c)).to eq(3) }

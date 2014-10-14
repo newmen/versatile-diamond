@@ -7,6 +7,7 @@ module VersatileDiamond
       include Visitors::Visitable
       include Linker
       include BondsCounter
+      include RelationBetweenAtomsChecker
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
