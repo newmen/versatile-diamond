@@ -60,7 +60,7 @@ module VersatileDiamond
           classifier.specification.join(', ')
         end
 
-        # Deligates the methods to classifier
+        # Delegates the methods to classifier
         # TODO: if not hydrogen used in system then not be generated methods with
         #   hydrogen in source
         %w(actives_to_deactives deactives_to_actives).each do |name|

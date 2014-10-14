@@ -25,7 +25,7 @@ module VersatileDiamond
         other && klass == other.klass
       end
 
-      # Deligates calling to lattice instance
+      # Delegates calling to lattice instance
       # @param [Lattice] other an other concept of lattice
       # @param [Bond] relation the forward relation for which will be found
       #   opposite relation
