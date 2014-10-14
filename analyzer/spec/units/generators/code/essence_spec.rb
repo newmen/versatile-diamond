@@ -22,24 +22,12 @@ module VersatileDiamond
           end
 
           shared_examples_for :check_graphs do
-            it '#cut_links' do
+            # each method should not change the state of essence
+            it 'all public methods' do
               expect(essence.cut_links).to match_graph(cut_links)
-            end
-
-            it '#raw_algorithm_graph' do
-              expect(essence.raw_algorithm_graph).to match_graph(raw_algorithm_graph)
-            end
-
-            it '#algorithm_graph' do
-              expect(essence.algorithm_graph).to match_graph(algorithm_graph)
-            end
-
-            it '#grouped_anchors' do
-              expect(essence.grouped_anchors).to match_multidim_array(grouped_anchors)
-            end
-
-            it '#central_anchors' do
-              expect(essence.central_anchors).to eq(central_anchors)
+              expect(essence.grouped_graph).to match_graph(grouped_graph)
+              expect(essence.face_grouped_anchors).
+                to match_multidim_array(face_grouped_anchors)
             end
           end
 
@@ -53,68 +41,40 @@ module VersatileDiamond
                 cl => [[ct, bond_110_front]]
               }
             end
-            let(:raw_algorithm_graph) do
+            let(:face_grouped_anchors) { [[ct], [cr], [cl]] }
+            let(:grouped_graph) do
               {
-                [ct] => [[[cl, cr], [bond_110_cross, bond_110_cross]]],
-                [cr] => [[[ct], [bond_110_front]]],
-                [cl] => [[[ct], [bond_110_front]]]
+                [ct] => [[[cl, cr], param_110_cross]],
+                [cr] => [[[ct], param_110_front]],
+                [cl] => [[[ct], param_110_front]]
               }
             end
-            let(:algorithm_graph) do
-              {
-                ct => [[cl, bond_110_cross], [cr, bond_110_cross]]
-              }
-            end
-            let(:grouped_anchors) { [[ct], [cr], [cl]] }
-            let(:central_anchors) { [[ct]] }
           end
 
-          it_behaves_like :check_graphs do
-            subject { dept_methyl_on_bridge_base }
-            let(:base_specs) { [dept_bridge_base, subject] }
+          describe 'like methyl on bridge' do
             let(:cut_links) do
               {
                 cm => [[cb, free_bond]],
                 cb => [[cm, free_bond]]
               }
-              end
-            let(:raw_algorithm_graph) do
+            end
+            let(:face_grouped_anchors) { [[cb], [cm]] }
+            let(:grouped_graph) do
               {
-                [cm] => [[[cb], [free_bond]]],
-                [cb] => [[[cm], [free_bond]]]
+                [cm] => [[[cb], param_amorph]],
+                [cb] => [[[cm], param_amorph]]
               }
             end
-            let(:algorithm_graph) do
-              {
-                cb => [[cm, free_bond]]
-              }
-            end
-            let(:grouped_anchors) { [[cb], [cm]] }
-            let(:central_anchors) { [[cb]] }
-          end
 
-          it_behaves_like :check_graphs do
-            subject { dept_high_bridge_base }
-            let(:base_specs) { [dept_bridge_base, subject] }
-            let(:cut_links) do
-              {
-                cm => [[cb, free_bond]],
-                cb => [[cm, free_bond]],
-              }
+            it_behaves_like :check_graphs do
+              subject { dept_methyl_on_bridge_base }
+              let(:base_specs) { [dept_bridge_base, subject] }
             end
-            let(:raw_algorithm_graph) do
-              {
-                [cm] => [[[cb], [free_bond]]],
-                [cb] => [[[cm], [free_bond]]]
-              }
+
+            it_behaves_like :check_graphs do
+              subject { dept_high_bridge_base }
+              let(:base_specs) { [dept_bridge_base, subject] }
             end
-            let(:algorithm_graph) do
-              {
-                cb => [[cm, free_bond]]
-              }
-            end
-            let(:grouped_anchors) { [[cb], [cm]] }
-            let(:central_anchors) { [[cb]] }
           end
 
           it_behaves_like :check_graphs do
@@ -127,21 +87,14 @@ module VersatileDiamond
                 c2 => [[c1, free_bond]]
               }
             end
-            let(:raw_algorithm_graph) do
+            let(:face_grouped_anchors) { [[cb], [c1], [c2]] }
+            let(:grouped_graph) do
               {
-                [cb] => [[[c1], [free_bond]]],
-                [c1] => [[[cb], [free_bond]], [[c2], [free_bond]]],
-                [c2] => [[[c1], [free_bond]]]
+                [cb] => [[[c1], param_amorph]],
+                [c1] => [[[cb], param_amorph], [[c2], param_amorph]],
+                [c2] => [[[c1], param_amorph]]
               }
             end
-            let(:algorithm_graph) do
-              {
-                cb => [[c1, free_bond]],
-                c1 => [[c2, free_bond]]
-              }
-            end
-            let(:grouped_anchors) { [[cb], [c1], [c2]] }
-            let(:central_anchors) { [[cb]] }
           end
 
           it_behaves_like :check_graphs do
@@ -153,19 +106,13 @@ module VersatileDiamond
                 cl => [[cr, bond_100_front]]
               }
             end
-            let(:raw_algorithm_graph) do
+            let(:face_grouped_anchors) { [[cr, cl]] }
+            let(:grouped_graph) do
               {
-                [cr] => [[[cl], [bond_100_front]]],
-                [cl] => [[[cr], [bond_100_front]]]
+                [cr] => [[[cl], param_100_front]],
+                [cl] => [[[cr], param_100_front]]
               }
             end
-            let(:algorithm_graph) do
-              {
-                cr => [[cl, bond_100_front]]
-              }
-            end
-            let(:grouped_anchors) { [[cr, cl]] }
-            let(:central_anchors) { [[cr]] }
           end
 
           it_behaves_like :check_graphs do
@@ -179,27 +126,32 @@ module VersatileDiamond
                 cl => [[c2, free_bond]]
               }
             end
-            let(:raw_algorithm_graph) do
+            let(:face_grouped_anchors) { [[cr, cl], [c1], [c2]] }
+            let(:grouped_graph) do
               {
-                [c1] => [[[cr], [free_bond]]],
-                [c2] => [[[cl], [free_bond]]],
-                [cr] => [[[c1], [free_bond]]],
-                [cl] => [[[c2], [free_bond]]]
+                [c1] => [[[cr], param_amorph]],
+                [c2] => [[[cl], param_amorph]],
+                [cr] => [[[c1], param_amorph]],
+                [cl] => [[[c2], param_amorph]]
               }
             end
-            let(:algorithm_graph) do
-              {
-                cr => [[c1, free_bond]],
-                cl => [[c2, free_bond]]
-              }
-            end
-            let(:grouped_anchors) { [[cr, cl], [c1], [c2]] }
-            let(:central_anchors) { [[cl, cr]] }
           end
 
           shared_examples_for :check_same_graphs do
             it_behaves_like :check_graphs do
-              let(:algorithm_graph) { cut_links }
+              let(:grouped_graph) do
+                wrapped_rels = cut_links.map do |k, v|
+                  rels =
+                    if v.empty?
+                      []
+                    else
+                      params = v.first.last.params
+                      v.map { |a, r| [[a], params] }
+                    end
+                  [[k], rels]
+                end
+                Hash[wrapped_rels]
+              end
             end
           end
 
@@ -213,14 +165,7 @@ module VersatileDiamond
                 cm => []
               }
             end
-            let(:raw_algorithm_graph) do
-              {
-                [cb] => [],
-                [cm] => []
-              }
-            end
-            let(:grouped_anchors) { [[cb], [cm]] }
-            let(:central_anchors) { [[cb, cm]] }
+            let(:face_grouped_anchors) { [[cb], [cm]] }
           end
 
           it_behaves_like :check_same_graphs do
@@ -234,14 +179,7 @@ module VersatileDiamond
                 cl => [[cr, bond_100_front]]
               }
             end
-            let(:raw_algorithm_graph) do
-              {
-                [cr] => [[[cl], [bond_100_front]]],
-                [cl] => [[[cr], [bond_100_front]]]
-              }
-            end
-            let(:grouped_anchors) { [[cr, cl]] }
-            let(:central_anchors) { [[cr], [cl]] }
+            let(:face_grouped_anchors) { [[cr, cl]] }
           end
 
           it_behaves_like :check_same_graphs do
@@ -253,23 +191,12 @@ module VersatileDiamond
                 cc => []
               }
             end
-            let(:raw_algorithm_graph) do
-              {
-                [ct] => [],
-                [cc] => []
-              }
-            end
-            let(:grouped_anchors) { [[ct], [cc]] }
-            let(:central_anchors) { [[cc]] }
+            let(:face_grouped_anchors) { [[ct], [cc]] }
           end
 
           shared_examples_for :check_same_graphs_and_anchors do
             it_behaves_like :check_same_graphs do
-              let(:raw_algorithm_graph) do
-                Hash[cut_links.map { |k, v| [[k], v] }]
-              end
-              let(:grouped_anchors) { central_anchors }
-              let(:central_anchors) { [cut_links.keys] }
+              let(:face_grouped_anchors) { [cut_links.keys] }
             end
           end
 
@@ -329,7 +256,7 @@ module VersatileDiamond
 
           describe 'different dept_cross_bridge_on_bridges_base' do
             subject { dept_cross_bridge_on_bridges_base }
-            let(:grouped_anchors) { [[ctl, ctr], [cm]] }
+            let(:face_grouped_anchors) { [[ctl, ctr], [cm]] }
 
             it_behaves_like :check_graphs do
               let(:base_specs) { [dept_bridge_base, subject] }
@@ -340,20 +267,13 @@ module VersatileDiamond
                   ctl => [[ctr, position_100_cross], [cm, free_bond]],
                 }
               end
-              let(:raw_algorithm_graph) do
+              let(:grouped_graph) do
                 {
-                  [cm] => [[[ctr, ctl], [free_bond, free_bond]]],
-                  [ctr] => [[[ctl], [position_100_cross]], [[cm], [free_bond]]],
-                  [ctl] => [[[ctr], [position_100_cross]], [[cm], [free_bond]]],
+                  [cm] => [[[ctr, ctl], param_amorph]],
+                  [ctr] => [[[ctl], param_100_cross], [[cm], param_amorph]],
+                  [ctl] => [[[ctr], param_100_cross], [[cm], param_amorph]],
                 }
               end
-              let(:algorithm_graph) do
-                {
-                  ctr => [[cm, free_bond]],
-                  ctl => [[cm, free_bond], [ctr, position_100_cross]]
-                }
-              end
-              let(:central_anchors) { [[ctl]] }
             end
 
             it_behaves_like :check_graphs do
@@ -367,26 +287,19 @@ module VersatileDiamond
                   ctl => [[ctr, position_100_cross]],
                 }
               end
-              let(:raw_algorithm_graph) do
+              let(:grouped_graph) do
                 {
                   [cm] => [],
-                  [ctr] => [[[ctl], [position_100_cross]]],
-                  [ctl] => [[[ctr], [position_100_cross]]],
+                  [ctr] => [[[ctl], param_100_cross]],
+                  [ctl] => [[[ctr], param_100_cross]],
                 }
               end
-              let(:algorithm_graph) do
-                {
-                  cm => [],
-                  ctl => [[ctr, position_100_cross]],
-                }
-              end
-              let(:central_anchors) { [[cm]] }
             end
           end
 
           describe 'different dept_cross_bridge_on_dimers_base' do
             subject { dept_cross_bridge_on_dimers_base }
-            let(:grouped_anchors) { [[ctr, csr], [ctl, csl], [cm]] }
+            let(:face_grouped_anchors) { [[ctr, csr], [ctl, csl], [cm]] }
 
             it_behaves_like :check_graphs do
               let(:base_specs) { [dept_dimer_base, subject] }
@@ -399,25 +312,15 @@ module VersatileDiamond
                   csl => [[csr, position_100_cross]],
                 }
               end
-              let(:raw_algorithm_graph) do
+              let(:grouped_graph) do
                 {
-                  [cm] => [[[ctr, ctl], [free_bond, free_bond]]],
-                  [ctl] => [[[cm], [free_bond]]],
-                  [ctr] => [[[cm], [free_bond]]],
-                  [csr, ctr] => [
-                    [[csl, ctl], [position_100_cross, position_100_cross]]],
-                  [csl, ctl] => [
-                    [[csr, ctr], [position_100_cross, position_100_cross]]]
+                  [cm] => [[[ctr, ctl], param_amorph]],
+                  [ctl] => [[[cm], param_amorph]],
+                  [ctr] => [[[cm], param_amorph]],
+                  [csr, ctr] => [[[csl, ctl], param_100_cross]],
+                  [csl, ctl] => [[[csr, ctr], param_100_cross]]
                 }
               end
-              let(:algorithm_graph) do
-                {
-                  ctl => [[cm, free_bond]],
-                  ctr => [[cm, free_bond], [ctl, position_100_cross]],
-                  csr => [[csl, position_100_cross]],
-                }
-              end
-              let(:central_anchors) { [[csr], [ctr]] }
             end
 
             it_behaves_like :check_graphs do
@@ -433,23 +336,13 @@ module VersatileDiamond
                   csl => [[csr, position_100_cross]],
                 }
               end
-              let(:raw_algorithm_graph) do
+              let(:grouped_graph) do
                 {
                   [cm] => [],
-                  [csr, ctr] => [
-                    [[csl, ctl], [position_100_cross, position_100_cross]]],
-                  [csl, ctl] => [
-                    [[csr, ctr], [position_100_cross, position_100_cross]]]
+                  [csr, ctr] => [[[csl, ctl], param_100_cross]],
+                  [csl, ctl] => [[[csr, ctr], param_100_cross]]
                 }
               end
-              let(:algorithm_graph) do
-                {
-                  cm => [],
-                  ctr => [[ctl, position_100_cross]],
-                  csr => [[csl, position_100_cross]],
-                }
-              end
-              let(:central_anchors) { [[cm]] }
             end
           end
         end
