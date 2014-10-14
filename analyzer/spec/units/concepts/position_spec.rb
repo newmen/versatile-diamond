@@ -6,11 +6,11 @@ module VersatileDiamond
     describe Position do
       describe '#self.[]' do
         it 'if face and dir the same then returns the same instance' do
-          expect(Position[face: 100, dir: :front]).to eq(position_100_front)
+          expect(Position[param_100_front]).to eq(position_100_front)
         end
 
         it 'if no has face or dir then raise error' do
-          expect { Position[Bond::AMORPH_PROPS] }.to raise_error Position::Incomplete
+          expect { Position[param_amorph] }.to raise_error Position::Incomplete
         end
       end
 
@@ -44,8 +44,8 @@ module VersatileDiamond
       end
 
       describe '#params' do
-        it { expect(position_110_front.params).to eq({ face: 110, dir: :front }) }
-        it { expect(position_100_cross.params).to eq({ face: 100, dir: :cross }) }
+        it { expect(position_110_front.params).to eq(param_110_front) }
+        it { expect(position_100_cross.params).to eq(param_100_cross) }
       end
 
       describe '#it?' do
@@ -53,7 +53,8 @@ module VersatileDiamond
 
         it { expect(subject.it?(face: 110, dir: :front)).to be_truthy }
         it { expect(subject.it?(face: 100, dir: :front)).to be_falsey }
-        it { expect(subject.it?(face: 110, dir: :cross)).to be_falsey }
+        it { expect(subject.it?(param_110_front)).to be_truthy }
+        it { expect(subject.it?(param_110_cross)).to be_falsey }
       end
 
       describe '#same?' do
