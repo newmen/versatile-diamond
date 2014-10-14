@@ -15,7 +15,7 @@ module VersatileDiamond
 
       private
 
-        # Deligates getting collection of unique pure atoms
+        # Delegates getting collection of unique pure atoms
         # @return [Array] the uniq pure atoms
         def pure_atoms
           generator.unique_pure_atoms
