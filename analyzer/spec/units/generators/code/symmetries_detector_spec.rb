@@ -10,13 +10,14 @@ module VersatileDiamond
           let(:generator) do
             stub_generator(base_specs: bases, specific_specs: specifics)
           end
-          let(:symmetry_classes_names) do
-            detector.symmetry_classes.map(&:base_class_name)
-          end
 
           before { generator }
 
-          it { expect(symmetry_classes_names).to match_array(symmetry_classes) }
+          it '#symmetry_classes' do
+            scns = detector.symmetry_classes.map(&:base_class_name)
+            expect(scns).to match_array(symmetry_classes)
+          end
+
           it 'check keynames of symmetric atoms' do
             concept = subject.spec
             atoms = concept.links.keys
