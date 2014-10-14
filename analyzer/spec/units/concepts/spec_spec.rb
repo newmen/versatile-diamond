@@ -67,6 +67,13 @@ module VersatileDiamond
         end
       end
 
+      describe '#relation_between' do
+        let(:ct) { bridge_base.atom(:ct) }
+        let(:cr) { bridge_base.atom(:cr) }
+        it { expect(bridge_base.relation_between(ct, cr)).to eq(bond_110_cross) }
+        it { expect(bridge_base.relation_between(cr, ct)).to eq(bond_110_front) }
+      end
+
       describe '#external_bonds_for' do
         describe 'methane' do
           subject { methane_base }
