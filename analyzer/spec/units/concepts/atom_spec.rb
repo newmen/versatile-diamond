@@ -87,16 +87,16 @@ module VersatileDiamond
       describe '#relations_limits' do
         let(:diamond_relations_limits) do
           {
-            Bond::AMORPH_PROPS => 1,
-            { face: 100, dir: :front } => 2,
-            { face: 100, dir: :cross } => 2,
-            { face: 110, dir: :front } => 2,
-            { face: 110, dir: :cross } => 2,
+            param_amorph => 1,
+            param_100_front => 2,
+            param_100_cross => 2,
+            param_110_front => 2,
+            param_110_cross => 2,
           }
         end
         it { expect(cd.relations_limits).to eq(diamond_relations_limits) }
-        it { expect(c.relations_limits).to eq({ Bond::AMORPH_PROPS => 4 }) }
-        it { expect(n.relations_limits).to eq({ Bond::AMORPH_PROPS => 3 }) }
+        it { expect(c.relations_limits).to eq({ param_amorph => 4 }) }
+        it { expect(n.relations_limits).to eq({ param_amorph => 3 }) }
       end
 
       describe '#to_s' do

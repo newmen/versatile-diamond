@@ -68,12 +68,15 @@ module VersatileDiamond
           set(:"activated_cd#{i}") { activated_cd.dup }
         end
 
-        # Bonds and positions:
+        # Relation parameters, bonds and positions:
+        set(:param_amorph) { Bond::AMORPH_PROPS }
         set(:free_bond) { Bond.amorph }
         [:front, :cross].each do |dir|
           [100, 110].each do |face|
-            set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }
-            set(:"position_#{face}_#{dir}") { Position[face: face, dir: dir] }
+            param_hash = { face: face, dir: dir }
+            set(:"param_#{face}_#{dir}") { param_hash }
+            set(:"bond_#{face}_#{dir}") { Bond[param_hash] }
+            set(:"position_#{face}_#{dir}") { Position[param_hash] }
           end
         end
 
