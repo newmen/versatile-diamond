@@ -8,7 +8,7 @@ module VersatileDiamond
       include MultiChildrenSpec
       include ResidualContainerSpec
 
-      def_delegators :@spec, :external_bonds, :gas?
+      def_delegators :@spec, :external_bonds, :gas?, :relation_between
       attr_reader :links
 
       # Also stores internal graph of links between used atoms
