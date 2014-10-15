@@ -5,6 +5,7 @@ module VersatileDiamond
       # Provides logic for selecting entry points of find specie algorithm
       class EntryPoints
         extend Forwardable
+        include AtomPropertiesUser
         include TwinsHelper
 
         # Initializes entry points detector by specie
@@ -95,8 +96,7 @@ module VersatileDiamond
         #   belongs to different parent species
         def most_different_connection_atoms
           diff_pairs = connection_atoms.reject do |a, b|
-            pa = Organizers::AtomProperties.new(spec, a)
-            pb = Organizers::AtomProperties.new(spec, b)
+            pa, pb = aps_from(a, b)
             pa == pb
           end
 
@@ -168,8 +168,7 @@ module VersatileDiamond
         #   the largest atom of specie
         def big_anchor
           sequence.major_atoms.max do |a, b|
-            pa = Organizers::AtomProperties.new(spec, a)
-            pb = Organizers::AtomProperties.new(spec, b)
+            pa, pb = aps_from(a, b)
             if pa == pb
               0
             elsif !pa.include?(pb) && !pb.include?(pa)
