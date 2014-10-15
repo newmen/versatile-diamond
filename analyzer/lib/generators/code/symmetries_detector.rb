@@ -186,8 +186,7 @@ module VersatileDiamond
           else
             hashes_with_diff_kv = anchor_users.select do |hash|
               hash.all? do |k, v|
-                a = Organizers::AtomProperties.new(spec, k)
-                b = Organizers::AtomProperties.new(spec, v)
+                a, b = aps_from(k, v)
                 a != b
               end
             end

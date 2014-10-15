@@ -5,6 +5,7 @@ module VersatileDiamond
       # Provides logic for generation the find specie algorithm
       class Algorithm
         include Modules::ListsComparer
+        include AtomPropertiesUser
         extend Forwardable
 
         # Initializes algorithm by specie and essence of it
@@ -33,7 +34,7 @@ module VersatileDiamond
                 could_be_cleared =
                   !anchor.lattice ||
                   limits[rp] == num ||
-                  lists_are_identical?(aps_from(gkey), aps_from(nbrs.flatten), &:==)
+                  lists_are_identical?(aps_from(*gkey), aps_from(*nbrs.flatten), &:==)
 
                 could_be_cleared ? without_reverse(g, gkey) : g
               end
@@ -70,13 +71,6 @@ module VersatileDiamond
           graph[gkey].group_by(&:last).map do |rp, group|
             [rp, group.map(&:first)]
           end
-        end
-
-        # Makes list of atom properties from passed atoms list
-        # @param [Array] atoms each of which will be converted to atom property
-        # @return [Array] the array of atom properties
-        def aps_from(atoms)
-          atoms.map { |a| Organizers::AtomProperties.new(spec, a) }
         end
 
         # Removes reverse relations to atoms which using in key
