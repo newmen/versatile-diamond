@@ -69,7 +69,7 @@ module VersatileDiamond
         end
 
         # Relation parameters, bonds and positions:
-        set(:param_amorph) { Bond::AMORPH_PROPS }
+        set(:param_amorph) { Bond::AMORPH_PARAMS }
         set(:free_bond) { Bond.amorph }
         [:front, :cross].each do |dir|
           [100, 110].each do |face|
