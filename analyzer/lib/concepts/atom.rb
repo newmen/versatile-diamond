@@ -117,7 +117,7 @@ module VersatileDiamond
         if lattice
           lattice.instance.relations_limit
         else
-          { Bond::AMORPH_PROPS => valence }
+          { Bond::AMORPH_PARAMS => valence }
         end
       end
 

@@ -17,7 +17,7 @@ module VersatileDiamond
         # @return [Hash] the hash where key is hash of amorph bond properties and value
         #   is a limit of relations number
         def amorph_relations_limit
-          { Concepts::Bond::AMORPH_PROPS => 1 }
+          { Concepts::Bond::AMORPH_PARAMS => 1 }
         end
       end
 
@@ -103,12 +103,12 @@ module VersatileDiamond
         if path.empty?
           target == current
         else
-          relation_props = path.first
+          relation_params = path.first
           rels = links[current]
           return false unless rels
 
           applicants = rels.select do |atom, link|
-            atom != current && atom != prevent && link.it?(relation_props)
+            atom != current && atom != prevent && link.it?(relation_params)
           end
 
           applicants.any? do |atom, _|
