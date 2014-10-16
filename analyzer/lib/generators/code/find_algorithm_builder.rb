@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
 
@@ -47,6 +49,14 @@ module VersatileDiamond
           super(atom).map { |parent, twin| [specie_class(parent), twin] }
         end
 
+        # Finds all parents specie of passed atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom see at #parents_with_twins_for same argument
+        # @return [Array] the array of found parents
+        def parents_for(atom)
+          parents_with_twins_for(atom).map(&:first)
+        end
+
         # Finds parent specie and correspond twin atom
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom see at #parents_with_twins_for same argument
@@ -56,13 +66,25 @@ module VersatileDiamond
           parents_with_twins_for(atom).first
         end
 
-        # Finds parent specie
+        # Finds parent specie of passed atom
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom see at #parents_with_twins_for same argument
         # @return [Specie] the specie which uses twin of passed atom
         def parent_for(atom)
           pwt = parent_with_twin_for(atom)
           pwt && pwt.first
+        end
+
+        # Finds atoms that has twin in passed parent
+        # @param [Specie] parent for which atom will be found
+        # @param [Array] except_atoms the list of atoms which should be excepted
+        # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom the twin of that belongs to passed parent
+        def atom_of(parent, except_atoms)
+          spec.anchors.find do |atom|
+            next if except_atoms.include?(atom)
+            parents_for(atom).any? { |pr| pr == parent }
+          end
         end
 
         # Checks that any of entry points uses symmetric of parent specie
@@ -150,6 +172,21 @@ module VersatileDiamond
           "#{atom_var_name}->specByRole<#{parent.class_name}>(#{twin_role})"
         end
 
+        # Makes code string with calling of engine method that names specsByRole
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom from which similar species will be gotten in cpp code
+        # @return [String] the string of cpp code with specByRole call
+        def specs_by_role_call(atom)
+          pwts = parents_with_twins_for(atom)
+          parent, twin = pwts.uniq.first
+
+          atom_var_name = namer.name_of(atom)
+          species_num = pwts.size
+          twin_role = parent.role(twin)
+          "#{atom_var_name}->" \
+            "specsByRole<#{parent.class_name}, #{species_num}>(#{twin_role})"
+        end
+
         # Gets a code which uses eachSymmetry method of engine framework
         # @param [Specie] specie by variable name of which the target method will be
         #   called
@@ -207,7 +244,7 @@ module VersatileDiamond
         #   was gotten
         # @yield should return cpp code string for condition body
         # @return [String] the string with cpp code
-        def all_nbrs_cond(anchor, nbrs, rel_params, &block)
+        def all_nbrs_condition(anchor, nbrs, rel_params, &block)
           unless anchor.relations_limits[rel_params] == nbrs.size
             raise 'Wrong number of neighbour atoms'
           end
@@ -241,7 +278,7 @@ module VersatileDiamond
         #   nbr the amorph atom which is available from anchor
         # @yield should return cpp code string for condition body
         # @return [String] the string with cpp code
-        def amorph_nbr_cond(anchor, nbr, &block)
+        def amorph_nbr_condition(anchor, nbr, &block)
           if namer.name_of(nbr)
             condition_str = check_bond_call(anchor, nbr)
             code_condition(condition_str, &block)
@@ -264,22 +301,14 @@ module VersatileDiamond
         # @yield should return cpp code string for condition body
         # @return [String] the string with cpp code
         def all_species_condition(anchor, &block)
-          pwts = parents_with_twins_for(anchor)
-          parent, twin = pwts.uniq.first
+          checking_parents = parents_for(anchor)
+          namer.assign('specie', checking_parents)
+          species_var_name = namer.name_of(checking_parents)
 
-          anchor_var_name = namer.name_of(anchor)
-          species_num = pwts.size
-          twin_role = parent.role(twin)
-          method_call = "#{anchor_var_name}->specsByRole" \
-            "<#{parent.class_name}, #{species_num}>(#{twin_role})"
+          define_str = "auto #{species_var_name} = #{specs_by_role_call(anchor)};"
+          condition_str = "#{species_var_name}.all()"
 
-          same_species_var_name = 'species'
-          namer.assign(same_species_var_name, parent)
-          define_species_str = "auto #{same_species_var_name} = #{method_call};"
-          define_species_line = code_line(define_species_str)
-          condition = "#{same_species_var_name}.all()"
-
-          define_species_line + code_condition(condition, &block)
+          code_line(define_str) + code_condition(condition_str, &block)
         end
 
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
@@ -324,10 +353,17 @@ module VersatileDiamond
         #
         # @return [String] the string with defined parents variable
         def define_parents_variable_line
-          atps = spec.anchors.map { |atom| [atom, parent_for(atom)] }.select(&:last)
-          sorted_atps = atps.sort_by { |_, parent| parents.index(parent) }
-          items = sorted_atps.map do |atom, parent|
-            namer.name_of(parent) || spec_by_role_call(atom)
+          parents_to_names = parents.zip(namer.names_for(parents))
+
+          used_atoms = []
+          items = parents_to_names.map do |parent, name|
+            if name
+              name
+            else
+              atom = atom_of(parent, used_atoms)
+              used_atoms << atom
+              spec_by_role_call(atom)
+            end
           end
 
           namer.reassign('parent', parents)
@@ -396,9 +432,9 @@ module VersatileDiamond
             raise 'Wrong sizes of iterable atoms arrays'
           elsif anchors.size < nbrs.size
             raise 'Wrong number of anchors' if anchors.size > 1
-            -> &block { all_nbrs_cond(anchors.first, nbrs, rel_params, &block) }
+            -> &block { all_nbrs_condition(anchors.first, nbrs, rel_params, &block) }
           elsif anchors.size == 1 && !nbrs.first.lattice
-            -> &block { amorph_nbr_cond(anchors.first, nbrs.first, &block) }
+            -> &block { amorph_nbr_condition(anchors.first, nbrs.first, &block) }
           else
             -> &block { each_nbrs_lambda(anchors, nbrs, rel_params, &block) }
           end
