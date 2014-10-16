@@ -12,23 +12,25 @@ module VersatileDiamond
         # @param [Specie] specie for which find algorithm will builded
         def initialize(specie)
           @specie = specie
+          @_list = nil
         end
 
         # Gets entry points of find algorithm
         # @return [Array] the ordered entry points, each point as array of specie atoms
         def list
-          if spec.source?
-            [atom_point(sequence.major_atoms.first)]
-          elsif spec.complex?
-            uniq_cas = most_different_connection_atoms
-            if uniq_cas # is edge connected graph?
-              uniq_cas.map(&method(:atom_point))
-            else
-              [atom_point(most_used_anchor || big_anchor)]
+          @_list ||=
+            if spec.source?
+              [atom_point(sequence.major_atoms.first)]
+            elsif spec.complex?
+              uniq_cas = most_different_connection_atoms
+              if uniq_cas # is edge connected graph?
+                uniq_cas.map(&method(:atom_point))
+              else
+                [atom_point(most_used_anchor || big_anchor)]
+              end
+            else # there is just one parent specie
+              [parent_specie_points]
             end
-          else # there is just one parent specie
-            [parent_specie_points]
-          end
         end
 
       private

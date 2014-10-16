@@ -23,26 +23,26 @@ module VersatileDiamond
           @_cut_links =
             if rest
               atoms = rest.links.keys
-              clear_links = rest.clean_links.map do |atom, rels|
+              clean_links = rest.clean_links.map do |atom, rels|
                 [atom, rels.select { |a, _| atom != a && atoms.include?(a) }]
               end
 
-              twins = atoms.map { |atom| rest.all_twins(atom).dup }
-              twins = Hash[atoms.zip(twins)]
+              twins = atoms.map { |atom| rest.all_twins(atom) }
+              atoms_to_twins = Hash[atoms.zip(twins)]
 
-              result = spec.parents.reduce(clear_links) do |acc, parent|
+              result = spec.parents.reduce(clean_links) do |acc, parent|
                 acc.map do |atom, rels|
                   parent_links = parent.clean_links
-                  parent_atoms = twins[atom]
-                  clear_rels = rels.reject do |a, r|
-                    pas = twins[a]
+                  parent_atoms = atoms_to_twins[atom]
+                  clean_rels = rels.reject do |a, r|
+                    pas = atoms_to_twins[a]
                     !pas.empty? && parent_atoms.any? do |p|
                       ppls = parent_links[p]
                       ppls && ppls.any? { |q, y| r == y && pas.include?(q) }
                     end
                   end
 
-                  [atom, clear_rels.uniq]
+                  [atom, clean_rels.uniq]
                 end
               end
               Hash[result]

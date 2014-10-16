@@ -10,19 +10,21 @@ module VersatileDiamond
 
         # Initializes algorithm by specie and essence of it
         # @param [Specie] specie for which algorithm will builded
-        # @param [Essence] essence by which algorithm will builded
-        def initialize(specie, essence)
-          @specie, @essence = specie, essence
+        def initialize(specie)
+          @specie = specie
+          @essence = Essence.new(specie)
+
+          @_finite_graph, @_anchors_to_grouped_keys = nil
         end
 
         # Makes algorithm graph by which code of algorithm will be generated
         # @return [Hash] the grouped graph without reverse relations if them could be
         #   excepted
+        # TODO: must be private
         def finite_graph
-          anchors_to_gkeys = anchors_to_grouped_keys
-          sequence.short.reduce(grouped_graph) do |acc, anchor|
+          @_finite_graph ||= sequence.short.reduce(grouped_graph) do |acc, anchor|
             limits = anchor.relations_limits
-            gkey = anchors_to_gkeys[anchor]
+            gkey = anchors_to_grouped_keys[anchor]
 
             if acc[gkey]
               group_again(acc, gkey).reduce(acc) do |g, (rp, nbrs)|
@@ -44,6 +46,64 @@ module VersatileDiamond
           end
         end
 
+        # Makes directed graph for walking find algorithm builder
+        # @param [Array] anchors from wich reverse relations of finite_graph will
+        #   be rejected
+        # @param [Hash] directed graph without loops
+        # TODO: must be private
+        def ordered_graph_from(anchors)
+          result = []
+          directed_graph = finite_graph
+          anchors_queue = anchors.dup
+          visited_keys = Set.new
+
+          until anchors_queue.empty?
+            anchor = anchors_queue.shift
+            gkey = anchors_to_grouped_keys[anchor]
+            next if visited_keys.include?(gkey)
+
+            visited_keys << gkey
+            rels = directed_graph[gkey]
+            next unless rels
+
+            result << [gkey, sort_rels_by_limits_of(gkey, rels)]
+            next if rels.empty?
+
+            directed_graph = without_reverse(directed_graph, gkey)
+            anchors_queue += rels.map(&:first).flatten
+          end
+
+          unconnected_keys_from(directed_graph).each do |gkey|
+            result << [gkey, []] unless visited_keys.include?(gkey)
+          end
+
+          result
+        end
+
+        # Reduces directed graph maked from passed atoms
+        # @param [Object] init_value for reduce operation
+        # @param [Array] atoms see at #ordered_graph_from same argument
+        # @param [Proc] relations_proc do for each anchors and their neighbour atoms
+        #   with using a relation parameters between them
+        # @param [Proc] complex_proc do for each single anchor which no have neighbour
+        #   atoms
+        def reduce_directed_graph_from(init_value, atoms, relations_proc, complex_proc)
+          ordered_graph_from(atoms).reduce(init_value) do |ext_acc, (anchors, rels)|
+            if rels.empty?
+              anchor = anchors.first
+              if spec.rest.twins_num(anchor) > 1
+                complex_proc[ext_acc, anchor]
+              else
+                ext_acc
+              end
+            else
+              rels.reduce(ext_acc) do |int_acc, (nbrs, relation_params)|
+                relations_proc[int_acc, anchors, nbrs, relation_params]
+              end
+            end
+          end
+        end
+
       private
 
         def_delegators :@specie, :spec, :sequence
@@ -52,13 +112,16 @@ module VersatileDiamond
         # Makes mirror from anchors to correspond keys of grouped graph
         # @return [Hash] the mirror from anchors to grouped graph keys
         def anchors_to_grouped_keys
+          return @_anchors_to_grouped_keys if @_anchors_to_grouped_keys
+
           sorted_keys = grouped_graph.keys.sort_by(&:size)
-          sorted_keys.each_with_object({}) do |key, result|
-            key.each do |anchor|
-              next if result[anchor]
-              result[anchor] = key
+          @_anchors_to_grouped_keys =
+            sorted_keys.each_with_object({}) do |key, result|
+              key.each do |anchor|
+                next if result[anchor]
+                result[anchor] = key
+              end
             end
-          end
         end
 
         # Collects similar relations that available by key of grouped graph
@@ -110,6 +173,29 @@ module VersatileDiamond
               result[key] = rels
             end
           end
+        end
+
+        # Sorts passed relations list by relation limits of passed anchors
+        # @param [Array] anchors from which relation limits will be gotten
+        # @param [Array] rels the relations list of passed anchors
+        # @return [Array] the sorted list of relations
+        def sort_rels_by_limits_of(anchors, rels)
+          rels.sort_by do |nbrs, rel_params|
+            rel_ratio = nbrs.size / anchors.size
+            max_limit = anchors.map { |a| a.relations_limits[rel_params] }.max
+            max_limit == rel_ratio ? max_limit : 1000 + max_limit - rel_ratio
+          end
+        end
+
+        # Gets the sorted list of unconnected keys-vertices from passed graph
+        # @param [Hash] graph in which unconnected keys will be found
+        # @return [Array] the sorted list of unconnected keys-vertices
+        def unconnected_keys_from(graph)
+          keys = graph.select { |_, rels| rels.empty? }.map(&:first)
+          keys.each do |k|
+            raise 'Invalid unconnected key' unless k.size == 1
+          end
+          keys
         end
       end
 

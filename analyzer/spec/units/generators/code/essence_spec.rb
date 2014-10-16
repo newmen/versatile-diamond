@@ -212,38 +212,6 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_same_graphs_and_anchors do
-            subject { dept_activated_bridge }
-            let(:base_specs) { [dept_bridge_base] }
-            let(:specific_specs) { [subject] }
-            let(:cut_links) do
-              {
-                ct => []
-              }
-            end
-          end
-
-          it_behaves_like :check_same_graphs_and_anchors do
-            subject { dept_activated_methyl_on_bridge }
-            let(:base_specs) { [dept_methyl_on_bridge_base] }
-            let(:specific_specs) { [subject] }
-            let(:cut_links) do
-              {
-                cm => []
-              }
-            end
-          end
-
-          it_behaves_like :check_same_graphs_and_anchors do
-            subject { dept_activated_methyl_on_incoherent_bridge }
-            let(:specific_specs) { [dept_activated_methyl_on_bridge, subject] }
-            let(:cut_links) do
-              {
-                cb => []
-              }
-            end
-          end
-
-          it_behaves_like :check_same_graphs_and_anchors do
             subject { dept_activated_dimer }
             let(:base_specs) { [dept_dimer_base] }
             let(:specific_specs) { [subject] }

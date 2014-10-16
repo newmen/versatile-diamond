@@ -36,7 +36,7 @@ module VersatileDiamond
         # Gets the parent specie classes
         # @return [Array] the array of parent specie class generators
         def parents
-          spec.parents.map(&method(:specie_class))
+          spec.sorted_parents.map(&method(:specie_class))
         end
 
         # Delegates getting delta to atom sequence instance
