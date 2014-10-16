@@ -16,7 +16,7 @@ const char *BridgeWithDimer::name() const
 
 void BridgeWithDimer::find(Atom *anchor)
 {
-    if (anchor->is(32) && anchor->lattice()->coords().z > 0)
+    if (anchor->is(32))
     {
         if (!anchor->checkAndFind(BRIDGE_WITH_DIMER, 32))
         {
