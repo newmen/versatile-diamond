@@ -18,7 +18,7 @@ module VersatileDiamond
         # @param [Array | Object] vars the list of remembing variables or single
         #   variable
         def reassign(single_name, vars)
-          vars.not_uniq.each { |var| @similar_vars_indexes.delete(var) }
+          as_arr(vars).not_uniq.each { |var| @similar_vars_indexes.delete(var) }
           store_variables(:replace, single_name, vars)
         end
 
@@ -87,9 +87,10 @@ module VersatileDiamond
         end
 
         # Removes records about passed variables
-        # @param [Array] vars the variables which will be removed from internal cache
+        # @param [Array | Object] vars the variables or single variable which will be
+        #   removed from internal cache
         def erase(vars)
-          vars.each { |var| names.delete(var) }
+          as_arr(vars).each { |var| names.delete(var) }
         end
 
       private
@@ -100,6 +101,13 @@ module VersatileDiamond
         # @return [Hash] the inverted names hash
         def variables
           names.invert
+        end
+
+        # Wraps passed variable to array if it not an array
+        # @param [Array | Object] vars the cheking and may be wrapping variable
+        # @return [Array] the original array or wrapped to array variable
+        def as_arr(vars)
+          vars.is_a?(Array) ? vars : [vars]
         end
 
         # Checks that passed variable is single
