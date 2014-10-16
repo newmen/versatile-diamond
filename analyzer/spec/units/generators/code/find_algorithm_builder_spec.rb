@@ -60,7 +60,7 @@ module VersatileDiamond
             let(:find_algorithm) do
               <<-CODE
     parent->eachSymmetry([](ParentSpec *specie) {
-        Atom *anchor = specie->atom(0);
+        Atom *anchor = specie->atom(2);
         if (anchor->is(#{role_cr}))
         {
             if (!anchor->hasRole(BRIDGE_CRH, #{role_cr}))
@@ -224,7 +224,7 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
             let(:find_algorithm) do
               <<-CODE
-    Atom *anchors[2] = { parent->atom(3), parent->atom(0) };
+    Atom *anchors[2] = { parent->atom(0), parent->atom(3) };
     if (anchors[0]->is(#{role_cr}) && anchors[1]->is(#{role_cl}))
     {
         if (!anchors[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}) || !anchors[1]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cl}))
@@ -235,7 +235,7 @@ module VersatileDiamond
                 Atom *amorph2 = anchors[1]->amorphNeighbour();
                 if (amorph2->is(#{role_c2}))
                 {
-                    Atom *additionalAtoms[2] = { amorph2, amorph1 };
+                    Atom *additionalAtoms[2] = { amorph1, amorph2 };
                     create<TwoMethylsOnDimer>(additionalAtoms, parent);
                 }
             }
@@ -258,10 +258,13 @@ module VersatileDiamond
             if (amorph1->is(#{role_cm}))
             {
                 eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (neighbour->is(#{role_ctr}) && !anchor->hasBondWith(neighbour) && amorph1->hasBondWith(neighbour))
+                    if (neighbour->is(#{role_ctr}) && !anchor->hasBondWith(neighbour))
                     {
-                        ParentSpec *parents[2] = { anchor->specByRole<Bridge>(#{b_ct}), neighbour->specByRole<Bridge>(#{b_ct}) };
-                        create<CrossBridgeOnBridges>(amorph1, parents);
+                        if (neighbour->hasBondWith(amorph1))
+                        {
+                            ParentSpec *parents[2] = { anchor->specByRole<Bridge>(#{b_ct}), neighbour->specByRole<Bridge>(#{b_ct}) };
+                            create<CrossBridgeOnBridges>(amorph1, parents);
+                        }
                     }
                 });
             }
