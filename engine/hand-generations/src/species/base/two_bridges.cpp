@@ -19,28 +19,21 @@ void TwoBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(TWO_BRIDGES, 24))
         {
-            anchor->eachSpecByRole<Bridge>(6, [=](Bridge *target) {
-                target->eachSymmetry([=](ParentSpec *specie) {
-                    if (specie->atom(2) == anchor)
+            anchor->eachSpecByRole<Bridge>(6, [=](Bridge *target1) {
+                target1->eachSymmetry([=](ParentSpec *specie1) {
+                    if (specie1->atom(2) == anchor)
                     {
-                        Atom *atom1 = specie->atom(1);
-                        if (atom1->is(6))
-                        {
-                            ParentSpec *parent1 = atom1->specByRole<Bridge>(3);
-                            if (parent1)
-                            {
-                                Bridge *externalLast = anchor->selectSpecByRole<Bridge>(6, [target](Bridge *other) {
-                                    return other != target;
-                                });
+                        Bridge *target2 = anchor->selectSpecByRole<Bridge>(6, [target1](Bridge *other) {
+                            return other != target1;
+                        });
 
-                                ParentSpec *last = externalLast->selectSymmetry([anchor](ParentSpec *other) {
-                                    return other->atom(1) == anchor;
-                                });
+                        ParentSpec *specie2 = target2->selectSymmetry([anchor](ParentSpec *other) {
+                            return other->atom(1) == anchor;
+                        });
 
-                                ParentSpec *parents[3] = { parent1, specie, last };
-                                create<TwoBridges>(parents);
-                            }
-                        }
+                        Atom *atom1 = specie1->atom(1);
+                        ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie1, specie2 };
+                        create<TwoBridges>(parents);
                     }
                 });
             });
