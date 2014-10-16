@@ -1,4 +1,5 @@
 module VersatileDiamond
+  using Patches::RichArray
   using Patches::RichString
 
   module Generators
@@ -9,6 +10,7 @@ module VersatileDiamond
         # Initializes internal store for all using names
         def initialize
           @names = {}
+          @similar_vars_indexes = {}
         end
 
         # Assign unique names for each variables with duplicate error checking
@@ -44,7 +46,12 @@ module VersatileDiamond
         # @return [String] the name of passed variable or nil
         def name_of(vars)
           if single?(vars)
-            names[single_value(vars)]
+            single_var = single_value(vars)
+            if @similar_vars_indexes[single_var]
+              raise 'Variable has many names'
+            else
+              names[single_var]
+            end
           else
             check_proc = proc { |var| names[var] }
             if vars.all?(&check_proc)
@@ -53,6 +60,27 @@ module VersatileDiamond
               raise 'Not for all variables in passed set the name is presented'
             else
               nil
+            end
+          end
+        end
+
+        # Gets all stored names for passed vars
+        # @param [Array] vars for which names will be gotten
+        # @return [Array] the list of names where each name is unique
+        def names_for(vars)
+          curr_vars_similar_indexes =
+            @similar_vars_indexes.each_with_object({}) do |(var, indexes), acc|
+              next unless vars.include?(var)
+              acc[var] = indexes.dup
+            end
+
+          vars.map do |var|
+            if (indexes = curr_vars_similar_indexes[var])
+              # except stored unique value (see comment in #store_variables method)
+              name, _ = names[var]
+              "#{name}[#{indexes.shift}]"
+            else
+              names[var]
             end
           end
         end
@@ -92,7 +120,7 @@ module VersatileDiamond
         # @param [Array] vars the variables for which array name will be gotten
         # @return [String] the name of array that respond to passed variables
         def array_name_for(vars)
-          stored_names = vars.map { |var| names[var] }
+          stored_names = names_for(vars)
           array_name = stored_names.first.scan(/^\w+/).first
 
           # checking
@@ -116,8 +144,22 @@ module VersatileDiamond
             send(method_name, single_name, single_value(vars))
           else
             plur_name = single_name.pluralize
+            not_uniq_vars = vars.select { |var| vars.count(var) > 1 }.uniq
+
             vars.each_with_index do |var, i|
-              send(method_name, "#{plur_name}[#{i}]", var)
+              if not_uniq_vars.include?(var)
+                if @similar_vars_indexes[var]
+                  @similar_vars_indexes[var] << i
+                else
+                  # there name stored not as string but as array, where the second item
+                  # of it array is some unique value that necessary for except names
+                  # collision
+                  send(method_name, [plur_name, i], var)
+                  @similar_vars_indexes[var] = [i]
+                end
+              else
+                send(method_name, "#{plur_name}[#{i}]", var)
+              end
             end
           end
         end
