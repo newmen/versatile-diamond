@@ -255,19 +255,35 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_ordered_graph do
+          describe 'different dept_cross_bridge_on_bridges_base' do
             subject { dept_cross_bridge_on_bridges_base }
-            let(:base_specs) { [dept_bridge_base, subject] }
-            let(:anchors) { [ctl] }
-            let(:ordered_graph) do
-              [
-                [[ctl], [[[cm], param_amorph], [[ctr], param_100_cross]]],
-                [[ctr], [[[cm], param_amorph]]]
-              ]
+
+            it_behaves_like :check_ordered_graph do
+              let(:base_specs) { [dept_bridge_base, subject] }
+              let(:anchors) { [ctl] }
+              let(:ordered_graph) do
+                [
+                  [[ctl], [[[cm], param_amorph], [[ctr], param_100_cross]]],
+                  [[ctr], [[[cm], param_amorph]]]
+                ]
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+              let(:anchors) { [cm] }
+              let(:ordered_graph) do
+                [
+                  [[cm], []],
+                  [[ctl], [[[ctr], param_100_cross]]]
+                ]
+              end
             end
           end
 
-          describe 'different anchors' do
+          describe 'different anchors of dept_methyl_on_dimer_base' do
             subject { dept_methyl_on_dimer_base }
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
