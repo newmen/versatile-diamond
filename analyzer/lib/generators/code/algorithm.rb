@@ -50,12 +50,17 @@ module VersatileDiamond
         # @param [Array] anchors from wich reverse relations of finite_graph will
         #   be rejected
         # @param [Hash] directed graph without loops
+        # @option [Hash] :init_graph the graph which uses as initial value for
+        #   internal purging graph
+        # @option [Set] :visited_keys the set of visited vertices of internal purging
+        #   graph
+        # @return [Array] the ordered list that contains the ordered relations from
+        #   finite graph
         # TODO: must be private
-        def ordered_graph_from(anchors)
+        def ordered_graph_from(anchors, init_graph: nil, visited_keys: Set.new)
           result = []
-          directed_graph = finite_graph
+          directed_graph = init_graph || finite_graph
           anchors_queue = anchors.dup
-          visited_keys = Set.new
 
           until anchors_queue.empty?
             anchor = anchors_queue.shift
@@ -71,6 +76,12 @@ module VersatileDiamond
 
             directed_graph = without_reverse(directed_graph, gkey)
             anchors_queue += rels.map(&:first).flatten
+          end
+
+          connected_keys_from(directed_graph).each do |gkey|
+            next if visited_keys.include?(gkey)
+            params = { init_graph: directed_graph, visited_keys: visited_keys }
+            result += ordered_graph_from(gkey, params)
           end
 
           unconnected_keys_from(directed_graph).each do |gkey|
@@ -187,9 +198,16 @@ module VersatileDiamond
           end
         end
 
-        # Gets the sorted list of unconnected keys-vertices from passed graph
+        # Gets the list of keys-vertices which with relations list from passed graph
+        # @param [Hash] graph in which connected keys will be found
+        # @return [Array] the list of connected keys-vertices
+        def connected_keys_from(graph)
+          graph.reject { |_, rels| rels.empty? }.map(&:first)
+        end
+
+        # Gets the list of unconnected keys-vertices from passed graph
         # @param [Hash] graph in which unconnected keys will be found
-        # @return [Array] the sorted list of unconnected keys-vertices
+        # @return [Array] the list of unconnected keys-vertices
         def unconnected_keys_from(graph)
           keys = graph.select { |_, rels| rels.empty? }.map(&:first)
           keys.each do |k|
