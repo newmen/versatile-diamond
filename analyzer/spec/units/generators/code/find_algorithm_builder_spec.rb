@@ -292,7 +292,7 @@ module VersatileDiamond
             {
                 Atom *atoms[2] = { species[0]->atom(1), species[1]->atom(1) };
                 eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (atoms[1] == neighbour)
+                    if (atoms[1] == neighbour && !atoms[0]->hasBondWith(neighbour))
                     {
                         ParentSpec *parents[2] = { species[0], species[1] };
                         create<CrossBridgeOnBridges>(parents);

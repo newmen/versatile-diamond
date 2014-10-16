@@ -26,10 +26,10 @@ module VersatileDiamond
 
           if !find_root? && entry_symmetric?
             symmetry_lambda(parents.first, []) do
-              define_anchors_variable_line + body
+              define_all_anchors_variable_line + body
             end
           elsif !find_root?
-            define_anchors_variable_line + body
+            define_all_anchors_variable_line + body
           else
             body
           end
@@ -158,6 +158,16 @@ module VersatileDiamond
         def atom_from_parent_call(atom)
           parent, twin = parent_with_twin_for(atom)
           parent_var_name = namer.name_of(parent)
+          atom_from_parent_call_by(parent_var_name, parent, twin)
+        end
+
+        # Gets code string with call getting atom from parent specie
+        # @param [String] parent_var_name the name of parent variable
+        # @param [Specie] parent from which will get index of twin
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   twin which index will be got from parent specie
+        # @return [String] code where atom getting from parent specie
+        def atom_from_parent_call_by(parent_var_name, parent, twin)
           "#{parent_var_name}->atom(#{parent.index(twin)})"
         end
 
@@ -308,12 +318,14 @@ module VersatileDiamond
           define_str = "auto #{species_var_name} = #{specs_by_role_call(anchor)};"
           condition_str = "#{species_var_name}.all()"
 
-          code_line(define_str) + code_condition(condition_str, &block)
+          code_line(define_str) + code_condition(condition_str) do
+            define_avail_anchors_variable_line(checking_parents, anchor) + block.call
+          end
         end
 
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
         # @return [String] the string of cpp code
-        def define_anchors_variable_line
+        def define_all_anchors_variable_line
           anchors = spec.anchors.select(&method(:parent_for))
           namer.assign('anchor', anchors)
 
@@ -321,12 +333,52 @@ module VersatileDiamond
           if anchors.size == 1
             value_str = atom_from_parent_call(anchors.first)
           else
-            var_name << "[#{anchors.size}]"
+            var_name += "[#{anchors.size}]"
             items_str = anchors.map(&method(:atom_from_parent_call)).join(', ')
             value_str = "{ #{items_str} }"
           end
 
           code_line("Atom *#{var_name} = #{value_str};")
+        end
+
+        # Gets a cpp code that defines all anchors available from passed species
+        # @param [Array] species from which defining atoms will be gotten
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   except_atom the atom which will be skiped when set of available atoms
+        #   collecting
+        # @return [String] the string of cpp code
+        def define_avail_anchors_variable_line(species, except_atom)
+          atoms_with_pwts = spec.anchors.each_with_object([]) do |atom, acc|
+            next if atom == except_atom
+            pwt = parents_with_twins_for(atom).find { |pr, _| species.include?(pr) }
+            acc << [atom, *pwt]
+          end
+
+          atoms = atoms_with_pwts.map(&:first)
+          namer.assign('atom', atoms)
+          anchors_var_name = namer.name_of(atoms)
+
+          grouped_awpwts = atoms_with_pwts.group_by { |_, pr, _| pr }
+          grouped_twins = grouped_awpwts.map { |pr, group| [pr, group.map(&:last)] }
+          parent_to_twins = grouped_twins.each_with_object({}) do |(pr, twins), acc|
+            acc[pr] = twins.uniq
+          end
+
+          parents_with_names = species.zip(namer.names_for(species))
+          parent_calls =
+            parents_with_names.each_with_object([]) do |(parent, var_name), acc|
+              parent_to_twins[parent].each do |twin|
+                acc << atom_from_parent_call_by(var_name, parent, twin)
+              end
+            end
+
+          value_str = parent_calls.join(', ')
+          if parent_calls.size > 1
+            anchors_var_name += "[#{parent_calls.size}]"
+            value_str = "{ #{value_str} }"
+          end
+
+          code_line("Atom *#{anchors_var_name} = #{value_str};")
         end
 
         # Gets cpp code string with defining additional atoms variable

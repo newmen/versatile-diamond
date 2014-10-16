@@ -18,6 +18,7 @@ module VersatileDiamond
         # @param [Array | Object] vars the list of remembing variables or single
         #   variable
         def reassign(single_name, vars)
+          vars.not_uniq.each { |var| @similar_vars_indexes.delete(var) }
           store_variables(:replace, single_name, vars)
         end
 
@@ -144,7 +145,7 @@ module VersatileDiamond
             send(method_name, single_name, single_value(vars))
           else
             plur_name = single_name.pluralize
-            not_uniq_vars = vars.select { |var| vars.count(var) > 1 }.uniq
+            not_uniq_vars = vars.not_uniq
 
             vars.each_with_index do |var, i|
               if not_uniq_vars.include?(var)

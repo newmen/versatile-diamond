@@ -14,6 +14,12 @@ module VersatileDiamond
 
           delete_at(index || size)
         end
+
+        # Gets not unique items of array
+        # @return [Array] the not unique items of original sequence
+        def not_uniq
+          select { |item| count(item) > 1 }.uniq
+        end
       end
     end
 
