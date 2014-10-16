@@ -193,17 +193,29 @@ module VersatileDiamond
         end
 
         describe '#erase' do
-          let(:vars) { [1, 2] }
-          let(:other) { :other }
-          before do
-            subject.assign('other', other)
-            subject.assign('var', vars)
-            subject.erase(vars)
+          shared_examples_for :check_erase do
+            let(:other) { :other }
+            before do
+              subject.assign('other', other)
+              subject.assign('var', vars)
+              subject.erase(vars)
+            end
+
+            it { expect(subject.name_of(vars)).to be_nil }
+            it { expect(subject.name_of(other)).not_to be_nil }
           end
 
-          it { expect(subject.name_of(vars.first)).to be_nil }
-          it { expect(subject.name_of(vars.last)).to be_nil }
-          it { expect(subject.name_of(other)).not_to be_nil }
+          it_behaves_like :check_erase do
+            let(:vars) { 'value' }
+          end
+
+          it_behaves_like :check_erase do
+            let(:vars) { ['value'] }
+          end
+
+          it_behaves_like :check_erase do
+            let(:vars) { [1, 2] }
+          end
         end
       end
 
