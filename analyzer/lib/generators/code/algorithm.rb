@@ -109,6 +109,15 @@ module VersatileDiamond
               end
             else
               rels.reduce(ext_acc) do |int_acc, (nbrs, relation_params)|
+                if anchors.size < nbrs.size
+                  if anchors.size != 1
+                    raise 'Wrong number of anchors'
+                  elsif anchors.first.relations_limits[relation_params] != nbrs.size
+                    # dependent from logic of algorithm building
+                    raise 'Wrong number of neighbour atoms'
+                  end
+                end
+
                 relations_proc[int_acc, anchors, nbrs, relation_params]
               end
             end
