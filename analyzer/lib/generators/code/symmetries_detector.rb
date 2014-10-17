@@ -51,12 +51,21 @@ module VersatileDiamond
           @symmetries.values
         end
 
+        # Gets the list of symmetric atoms thats is analog of passed atom
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom for which list of symmetric atoms will be gotten
+        # @return [Array] the list of symmetric atoms
+        def symmetric_atoms(atom)
+          paired = all_paired_atoms_with(atom)
+          paired.reduce(paired) { |acc, a| acc + all_paired_atoms_with(a) }.to_a
+        end
+
         # Checks that atom is a symmetric atom in internal specie
         # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
         #   atom which will be checked
         # @return [Boolean] is symmetric atom in internal specie or not
         def symmetric_atom?(atom)
-          @symmetries.keys.any? { |hash| hash.flatten.include?(atom) }
+          !select_symmetric_keys_for(atom).empty?
         end
 
       protected
@@ -201,6 +210,26 @@ module VersatileDiamond
         # @return [Integer] the index of atom
         def atom_index(atom)
           @specie.sequence.atom_index(atom)
+        end
+
+        # Selects all available pairs where passed atom is presented
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom by which symmetric keys will be found
+        # @return [Array] the list of symmetric atom pairs
+        def select_symmetric_keys_for(atom)
+          @symmetries.keys.select { |hash| hash.flatten.include?(atom) }
+        end
+
+        # Collects all paired atoms of passed atom from symmetric keys
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom see at #symmetric_atoms same argument
+        # @return [Set] the set of paired atoms
+        def all_paired_atoms_with(atom)
+          select_symmetric_keys_for(atom).each_with_object(Set.new) do |hash, acc|
+            hash.each do |pair|
+              pair.each { |a| acc << a } if pair.include?(atom)
+            end
+          end
         end
 
         # Stores symmetric empty class to internal hash of symmetric instances

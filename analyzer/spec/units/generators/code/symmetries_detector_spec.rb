@@ -64,6 +64,13 @@ module VersatileDiamond
           subject { dept_dimer_base }
           let(:bases) { [dept_bridge_base, dept_dimer_base] }
 
+          let(:cl) { dimer_base.atom(:cl) }
+          let(:cr) { dimer_base.atom(:cr) }
+          let(:crb) { dimer_base.atom(:crb) }
+          let(:_cr0) { dimer_base.atom(:_cr0) }
+          let(:clb) { dimer_base.atom(:clb) }
+          let(:_cr1) { dimer_base.atom(:_cr1) }
+
           it_behaves_like :check_symmetry do
             let(:specifics) { [dept_twise_incoherent_dimer] }
             let(:symmetry_classes) { [] }
@@ -76,6 +83,13 @@ module VersatileDiamond
               ['ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>']
             end
             let(:symmetric_keynames) { [:cr, :cl] }
+
+            it { expect(detector.symmetric_atoms(cr)).to match_array([cr, cl]) }
+            it { expect(detector.symmetric_atoms(cl)).to match_array([cr, cl]) }
+            it { expect(detector.symmetric_atoms(crb)).to be_empty }
+            it { expect(detector.symmetric_atoms(_cr0)).to be_empty }
+            it { expect(detector.symmetric_atoms(clb)).to be_empty }
+            it { expect(detector.symmetric_atoms(_cr1)).to be_empty }
           end
 
           it_behaves_like :check_symmetry do
@@ -98,6 +112,15 @@ module VersatileDiamond
               ]
             end
             let(:symmetric_keynames) { [:cr, :cl, :crb, :clb, :_cr0, :_cr1] }
+
+            it { expect(detector.symmetric_atoms(cl)).to match_array([cr, cl]) }
+            it { expect(detector.symmetric_atoms(cr)).to match_array([cr, cl]) }
+
+            let(:all_bottom) { [crb, _cr0, _cr1, clb] }
+            it { expect(detector.symmetric_atoms(crb)).to match_array(all_bottom) }
+            it { expect(detector.symmetric_atoms(_cr0)).to match_array(all_bottom) }
+            it { expect(detector.symmetric_atoms(clb)).to match_array(all_bottom) }
+            it { expect(detector.symmetric_atoms(_cr1)).to match_array(all_bottom) }
           end
         end
 
@@ -133,12 +156,22 @@ module VersatileDiamond
               let(:specific) { dept_bottom_hydrogenated_activated_dimer }
               let(:symmetry_classes) { ['AtomsSwapWrapper<Empty<DIMER_CRs>, 4, 5>'] }
               let(:symmetric_keynames) { [:_cr1, :clb] }
+
+              let(:clb) { activated_dimer.atom(:clb) }
+              let(:_cr1) { activated_dimer.atom(:_cr1) }
+              it { expect(detector.symmetric_atoms(clb)).to match_array([clb, _cr1]) }
+              it { expect(detector.symmetric_atoms(_cr1)).to match_array([clb, _cr1]) }
             end
 
             it_behaves_like :check_symmetry do
               let(:specific) { dept_right_bottom_hydrogenated_activated_dimer }
               let(:symmetry_classes) { ['AtomsSwapWrapper<Empty<DIMER_CRs>, 1, 2>'] }
               let(:symmetric_keynames) { [:_cr0, :crb] }
+
+              let(:crb) { activated_dimer.atom(:crb) }
+              let(:_cr0) { activated_dimer.atom(:_cr0) }
+              it { expect(detector.symmetric_atoms(crb)).to match_array([crb, _cr0]) }
+              it { expect(detector.symmetric_atoms(_cr0)).to match_array([crb, _cr0]) }
             end
           end
         end
