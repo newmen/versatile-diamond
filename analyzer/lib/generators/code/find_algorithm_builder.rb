@@ -255,10 +255,6 @@ module VersatileDiamond
         # @yield should return cpp code string for condition body
         # @return [String] the string with cpp code
         def all_nbrs_condition(anchor, nbrs, rel_params, &block)
-          unless anchor.relations_limits[rel_params] == nbrs.size
-            raise 'Wrong number of neighbour atoms'
-          end
-
           namer.assign('neighbour', nbrs)
 
           anchor_var_name = namer.name_of(anchor)
@@ -483,7 +479,6 @@ module VersatileDiamond
           if anchors.size > nbrs.size
             raise 'Wrong sizes of iterable atoms arrays'
           elsif anchors.size < nbrs.size
-            raise 'Wrong number of anchors' if anchors.size > 1
             -> &block { all_nbrs_condition(anchors.first, nbrs, rel_params, &block) }
           elsif anchors.size == 1 && !nbrs.first.lattice
             -> &block { amorph_nbr_condition(anchors.first, nbrs.first, &block) }
@@ -499,26 +494,33 @@ module VersatileDiamond
         def proc_by_specie_parts(anchor)
           pwts = parents_with_twins_for(anchor)
           uniq_pwts = pwts.uniq
-          if uniq_pwts.size == 1 && !uniq_pwts.first.first.symmetric_atom?(anchor)
-            -> &block { all_species_condition(anchor, &block) }
+          not_uniq_pwts = pwts.not_uniq
+          if uniq_pwts.size == 1 && not_uniq_pwts.size == 1 && max_specs_from?(anchor)
+            parent, twin = uniq_pwts.first
+            unless parent.symmetric_atom?(twin)
+              return -> &block { all_species_condition(anchor, &block) }
+            end
           else
             -> &block { block.call }
+          end
+        end
 
-# когда из атома несколько кусков
-# - атом не симметричный в кусках
-# -- куски одинаковые = проверяем через specsByRole
-# -- куски разные = создаём массив ParentSpec, где каждый элемент - кусок через specByRole
-# --- если в эссенции используются атомы из этих кусков и атомы имеют отношения друг к другу, то создаём массив атомов, где каждый атом получаем из соответствующего куска
-# ---- но если, какой-либо из атомов куска симметричен, то изначально дефайним только тот который симетрии не имеет, а потом гуляем симметрией по симметричной структуре, и определяем внутри второй атом и т.д.
-# ----- возвращаем в качестве первого элемента - эти самые атомы, а в качестве второго - лямбду с параметром-блоком в соотвествии с условием выше
+        # Checks that in atom could contain the maximal number of parent species
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom which will be checked
+        # @return [Boolean] is maximal number or not
+        def max_specs_from?(atom, target_rel_params = nil)
+          groups = spec.links[atom].group_by { |_, r| r.params }
+          rp_to_as = Hash[groups.map { |rp, group| [rp, group.map(&:first).uniq] }]
 
-# рефакторим:
-# сущность работы с эссенцией содержит все методы отчистки графа структуры до финальной супер чистой эссенции
-# чистая эссенция должна учитывать возможность итерации соседей сразу от двух и более атомов, на тот случай, если между исходными атомами есть соответствующее отношение (добавить в кристалл)
-# в момент построяения эссенции, среди неоднозначности в том, какие атомы брать исходными - брать те, которые принадлежат одной структуре
-# перефаршмачить функцию генерирующую вызов итерации соседей, на случай получения сразу двух атомов
-# учесть возможность сохранения в нэймере массива, в котором есть несколько одинаковых элементов
-
+          limits = atom.relations_limits
+          if target_rel_params
+            limits[target_rel_params] == rp_to_as[target_rel_params].size
+          else
+            rp_to_as.all? { |rp, atoms| limits[rp] == atoms.size } ||
+              rp_to_as.all? do |rp, atoms|
+                atoms.all? { |a| max_specs_from?(a, rp) }
+              end
           end
         end
 
