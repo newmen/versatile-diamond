@@ -224,7 +224,7 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] the same or not
       def same?(other)
-        self.class == other.class && spec == other.spec && correspond?(other)
+        self.class == other.class && correspond?(other)
       end
 
       # Checks termination atom at the inner atom which belongs to current spec
@@ -358,7 +358,7 @@ module VersatileDiamond
       # @param [SpecificSpec] other see at #same? same argument
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
-        Mcs::SpeciesComparator.contain?(self, other)
+        links.size == other.links.size && Mcs::SpeciesComparator.contain?(self, other)
       end
 
       # Resets internal caches

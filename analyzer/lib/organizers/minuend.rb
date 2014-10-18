@@ -189,16 +189,13 @@ module VersatileDiamond
       #   difference operation
       # @return [Hash] the merging result where each value is list of possible values
       def merge(prev_refs, collected_refs)
-        result = prev_refs.dup
-        collected_refs.each do |k, v|
+        collected_refs.each_with_object(prev_refs.dup) do |(k, v), result|
           if result[k]
             result[k] << v
           else
             result[k] = [v]
           end
         end
-
-        result
       end
     end
 

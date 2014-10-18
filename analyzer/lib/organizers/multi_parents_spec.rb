@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Also conatins parents
     module MultiParentsSpec
-      extend Organizers::DisposedCollector
+      extend Organizers::Collector
 
       collector_methods :parent
 

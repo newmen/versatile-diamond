@@ -62,18 +62,22 @@ module VersatileDiamond
         @parent = @rest = nil
       end
 
-      # Reassigns parent and accumulate the residual between old parent and new parent
-      # @param [DependentBaseSpec] new_parent the new parent which will be stored
-      def replace_parent(new_parent)
-        raise 'Previous parent is not exists' unless @parent
-
-        unless new_parent.is_a?(DependentBaseSpec)
-          raise ArgumentError, 'Passed parent is not DependentBaseSpec'
+      # Replaces base specie of current wrapped specific specie
+      # @param [DependentBaseSpec] new_base the new base specie
+      def replace_base_spec(new_base)
+        parent_was_removed = false
+        if @parent && !@parent.specific?
+          remove_parent(@parent)
+          parent_was_removed = true
         end
-        replace_base_spec(new_parent)
 
-        remove_parent(parent)
-        store_parent(new_parent)
+        update_links(new_base)
+        spec.replace_base_spec(new_base.spec)
+
+        if parent_was_removed
+          store_parent(new_base)
+          children.each { |child| child.replace_base_spec(new_base) }
+        end
       end
 
       # Organize dependencies from another similar species. Dependencies set if
@@ -127,14 +131,6 @@ module VersatileDiamond
       # @return [Integer] sum of dangling bonds
       def dangling_bonds_num
         spec.active_bonds_num + monovalents_num
-      end
-
-      # Replaces base specie of current wrapped specific specie
-      # @param [DependentBaseSpec] new_base the new base specie
-      def replace_base_spec(new_base)
-        update_links(new_base)
-        spec.replace_base_spec(new_base.spec)
-        children.each { |child| child.replace_base_spec(new_base) }
       end
 
     private
