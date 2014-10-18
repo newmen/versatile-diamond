@@ -27,7 +27,15 @@ module VersatileDiamond
       # Gets sorted parents of target specie
       # @return [Array] the sorted array of parent seqeucnes
       def sorted_parents
-        parents.sort_by { |p| -p.relations_num }
+        parents.sort do |*prs|
+          acln, bcln = prs.map(&:clean_relations_num)
+          if acln == bcln
+            aln, bln = prs.map(&:relations_num)
+            bln <=> aln
+          else
+            bcln <=> acln
+          end
+        end
       end
 
       # Gets the children specie classes

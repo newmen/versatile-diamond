@@ -17,10 +17,12 @@ module VersatileDiamond
         links.size
       end
 
-      # Counts the atom reference instances
-      # @return [Integer] the number of atom references
-      def relations_num
-        links.values.map(&:size).reduce(:+)
+      ['', 'clean_'].each do |prefix|
+        # Counts the atom reference instances
+        # @return [Integer] the number of atom references
+        define_method(:"#{prefix}relations_num") do
+          send("#{prefix}links").values.map(&:size).reduce(:+)
+        end
       end
 
       # Provides relations of atom in current resudual

@@ -23,11 +23,13 @@ module VersatileDiamond
         other.class == self.class ? super(other) : @target == other
       end
 
-      # Counts the atom references in child spec
-      # @return [Integer] the number of atom references
-      def relations_num
-        @child.links.reduce(0) do |acc, (a, rs)|
-          @atoms.include?(a) ? (acc + rs.size) : acc
+      ['', 'clean_'].each do |prefix|
+        # Counts the atom references in child spec
+        # @return [Integer] the number of atom references
+        define_method(:"#{prefix}relations_num") do
+          @child.send("#{prefix}links").reduce(0) do |acc, (a, rs)|
+            @atoms.include?(a) ? (acc + rs.size) : acc
+          end
         end
       end
 
