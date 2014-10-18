@@ -86,10 +86,10 @@ module VersatileDiamond
           it { expect(child.parent).to be_nil }
         end
 
-        describe '#replace_parent' do
+        describe '#replace_base_spec' do
           def store_and_restore
             subject.store_parent(old_base)
-            subject.replace_parent(new_base)
+            subject.replace_base_spec(new_base)
           end
 
           def dept_amoib_dup
@@ -113,6 +113,8 @@ module VersatileDiamond
             let(:child2) { dept_amoib_dup }
 
             before do
+              child1.store_parent(old_base)
+              child2.store_parent(old_base)
               subject.store_child(child1)
               subject.store_child(child2)
               store_and_restore

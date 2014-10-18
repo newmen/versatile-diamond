@@ -77,7 +77,7 @@ module VersatileDiamond
 
         parent = parents.first
         children.each do |child|
-          parent ? child.replace_parent(parent) : child.remove_parent(self)
+          parent ? child.replace_base_spec(parent) : child.remove_parent(self)
         end
       end
 

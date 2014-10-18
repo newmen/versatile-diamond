@@ -116,8 +116,12 @@ module VersatileDiamond
           concepts.each do |concept|
             concept.each_source do |specific_spec|
               name = specific_spec.name
-              if cache[name]
-                concept.swap_source(specific_spec, cache[name].spec)
+              cached_dept_spec = cache[name] || cache.values.find do |dss|
+                dss.spec.same?(specific_spec)
+              end
+
+              if cached_dept_spec
+                concept.swap_source(specific_spec, cached_dept_spec.spec)
               else
                 cache[name] = DependentSpecificSpec.new(specific_spec)
               end
