@@ -36,6 +36,32 @@ module VersatileDiamond
         end
       end
 
+      describe 'wrap parents if they are not unique' do
+        let(:first) { subject.parents[0] }
+        let(:second) { subject.parents[1] }
+
+        describe 'edge connection' do
+          subject { dept_dimer_base }
+          before do
+            2.times { subject.store_parent(dept_bridge_base) }
+          end
+
+          it { expect(first).not_to eq(second) }
+        end
+
+        describe 'vertex connection' do
+          subject { dept_three_bridges_base }
+          before do
+            3.times { subject.store_parent(dept_bridge_base) }
+          end
+
+          let(:third) { subject.parents[2] }
+          it { expect(first).not_to eq(second) }
+          it { expect(first).not_to eq(third) }
+          it { expect(second).not_to eq(third) }
+        end
+      end
+
       describe '#size' do
         subject { dept_bridge_base }
         it { expect(subject.size).to eq(subject.spec.size) }

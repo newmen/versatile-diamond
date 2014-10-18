@@ -20,6 +20,12 @@ module VersatileDiamond
         def not_uniq
           select { |item| count(item) > 1 }.uniq
         end
+
+        # Groups identical items
+        # @return [Array] where each item is array of grouped items
+        def groups
+          group_by { |x| x }.values
+        end
       end
     end
 

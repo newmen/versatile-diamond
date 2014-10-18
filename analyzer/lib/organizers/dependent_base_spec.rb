@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Contain some spec and set of dependent specs
@@ -6,6 +8,39 @@ module VersatileDiamond
       include MultiParentsSpec
 
       def_delegators :@spec, :size
+
+      # Initializes dependent base spec
+      # @param [Array] args the arguments of DependentWrappedSpec constructor
+      def initialize(*args)
+        super(*args)
+        @_parents_are_replaced = false
+        @parents = nil # using by MultiParentsSpec module
+      end
+
+      # Gets sorted parents of target specie
+      # @return [Array] the sorted array of parent seqeucnes
+      # @override
+      def parents
+        original_parents = super
+
+        return original_parents if @_parents_are_replaced
+        @_parents_are_replaced = true
+
+        return original_parents if original_parents.not_uniq.empty?
+
+        shared_atoms = links.keys
+        reducing_rest = self
+        @parents = original_parents.map do |parent|
+          is_uniq_parent = original_parents.count(parent) == 1
+
+          unless is_uniq_parent
+            self_atoms = reducing_rest.mirror_to(parent).map(&:first)
+          end
+          reducing_rest -= parent
+
+          is_uniq_parent ? parent : ProxyParentSpec.new(parent, self, self_atoms)
+        end
+      end
 
       # Checks that other spec has same atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec

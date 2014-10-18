@@ -26,13 +26,14 @@ module VersatileDiamond
       end
 
       describe '#sorted_parents' do
+        subject { dept_methyl_on_dimer_base }
         let(:sorted_parents) { [dept_methyl_on_bridge_base, dept_bridge_base] }
         before do
           sorted_parents.shuffle.each do |parent|
-            dept_methyl_on_dimer_base.store_parent(parent)
+            subject.store_parent(parent)
           end
         end
-        it { expect(dept_methyl_on_dimer_base.sorted_parents).to eq(sorted_parents) }
+        it { expect(subject.sorted_parents).to eq(sorted_parents) }
       end
 
       describe 'dependency tree position properties' do
