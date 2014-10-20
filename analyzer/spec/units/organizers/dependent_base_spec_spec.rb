@@ -38,6 +38,18 @@ module VersatileDiamond
         let(:child) { dept_methyl_on_bridge_base }
       end
 
+      it_behaves_like :parents_with_twins do
+        subject { dept_three_bridges_base }
+        let(:others) { [dept_bridge_base] }
+        let(:atom) { three_bridges_base.atom(:ct) }
+        let(:parents_with_twins) do
+          [
+            [dept_bridge_base, bridge_base.atom(:ct)],
+            [dept_bridge_base, bridge_base.atom(:cr)]
+          ]
+        end
+      end
+
       describe '#same?' do
         describe 'bridge_base' do
           it { expect(dept_bridge_base.same?(dept_bridge_base_dup)).to be_truthy }

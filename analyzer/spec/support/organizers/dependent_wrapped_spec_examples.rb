@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
     module Support
 
@@ -45,6 +47,29 @@ module VersatileDiamond
 
             unless specifics.empty?
               organize_specific_specs_dependencies!(make_cache(bases), specifics)
+            end
+          end
+
+          it 'parents are always unique' do
+            expect(subject.parents.not_uniq).to be_empty
+          end
+        end
+
+        shared_examples_for :parents_with_twins do
+          it_behaves_like :organize_dependencies do
+            it '#parents_with_twins_for' do
+              expect(subject.parents_with_twins_for(atom)).
+                to match_array(parents_with_twins)
+            end
+
+            it '#parents_of' do
+              expect(subject.parents_of(atom)).
+                to match_array(parents_with_twins.map(&:first))
+            end
+
+            it '#twins_of' do
+              expect(subject.twins_of(atom)).
+                to match_array(parents_with_twins.map(&:last))
             end
           end
         end
