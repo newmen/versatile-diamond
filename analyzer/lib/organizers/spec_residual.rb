@@ -46,31 +46,6 @@ module VersatileDiamond
         result ? result.uniq : []
       end
 
-      # Gets instance of twin atom from parent spec
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] atom
-      #   the atom of current instance for which twin was found
-      # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   the correspond atom from parent specie
-      def twin(atom)
-        all_twins(atom).first
-      end
-
-      # Gets all twin instances of atom from parent spec
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom] atom
-      #   see at #first_twin same argument
-      # @return [Array] the array of twin instances
-      def all_twins(atom)
-        @references[atom] || []
-      end
-
-      # Counts twins of atom
-      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-      #   atom for which twins will be counted
-      # @return [Integer] the number of twins
-      def twins_num(atom)
-        all_twins(atom).size
-      end
-
       # Checks that other spec has same border atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
       # @return [Boolean] same or not

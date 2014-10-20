@@ -25,6 +25,15 @@ module VersatileDiamond
         end
       end
 
+      # Gets the twin of passed atom
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom of child spec by which the twin in original spec will be gotten
+      # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   the twin of passed atom or nil
+      def twin_of(atom)
+        @mirror[atom]
+      end
+
     private
 
       ['', 'clean_'].each do |prefix|

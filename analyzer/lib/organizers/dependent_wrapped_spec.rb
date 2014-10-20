@@ -36,6 +36,34 @@ module VersatileDiamond
         @rest ? @rest.parents : []
       end
 
+      # Finds parent species by atom the twins of which belongs to this parents
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom by which parent specs with twins will be found
+      # @return [Array] the list of pairs where each pair contain parent and twin
+      #   atom
+      def parents_with_twins_for(atom)
+        parents.each_with_object([]) do |pr, result|
+          twin = pr.twin_of(atom)
+          result << [pr, twin] if twin
+        end
+      end
+
+      # Gets the parent specs of passed atom
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom by which parent specs will be found
+      # @return [Array] the list of parent specs
+      def parents_of(atom)
+        parents_with_twins_for(atom).map(&:first)
+      end
+
+      # Gets all twins of passed atom
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom for which twin atoms will be found
+      # @return [Array] the list of twin atoms
+      def twins_of(atom)
+        parents_with_twins_for(atom).map(&:last)
+      end
+
       # Gets the children specie classes
       # @return [Array] the array of children specie class generators
       def non_term_children

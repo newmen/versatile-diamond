@@ -28,6 +28,17 @@ module VersatileDiamond
         it { expect(proxies.reverse.sort).to eq(proxies) }
       end
 
+      describe '#twin_of' do
+        [:cl, :cr, :crb, :_cr0].each do |kn|
+          let(kn) { dimer_base.atom(kn) }
+        end
+
+        it { expect(subject.twin_of(cl)).to be_nil }
+        it { expect(subject.twin_of(cr)).to eq(bridge_base.atom(:ct)) }
+        it { expect(subject.twin_of(crb)).to eq(bridge_base.atom(:cl)) }
+        it { expect(subject.twin_of(_cr0)).to eq(bridge_base.atom(:cr)) }
+      end
+
       describe '#method_missing' do
         describe '#same?' do
           it { expect(subject.same?(dept_bridge_base)).to be_truthy }

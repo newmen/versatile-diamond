@@ -40,6 +40,17 @@ module VersatileDiamond
         it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
       end
 
+      it_behaves_like :parents_with_twins do
+        subject { dept_activated_methyl_on_incoherent_bridge }
+        let(:others) { [dept_methyl_on_bridge_base, dept_activated_methyl_on_bridge] }
+        let(:atom) { activated_methyl_on_incoherent_bridge.atom(:cb) }
+        let(:parents_with_twins) do
+          [
+            [dept_activated_methyl_on_bridge, activated_methyl_on_bridge.atom(:cb)]
+          ]
+        end
+      end
+
       describe '#reduced' do
         it { expect(dept_activated_dimer.reduced).to be_nil }
       end
@@ -73,17 +84,16 @@ module VersatileDiamond
         end
 
         it_behaves_like :organize_dependencies do
+          let(:others) { [old_base] }
           it_behaves_like :check_replacing do
-            let(:others) { [old_base] }
             it { expect(subject.name).to eq(:'methyl_on_bridge(cm: *, t: i)') }
           end
         end
 
         it_behaves_like :organize_dependencies do
+          let(:others) { [old_base, child] }
+          let(:child) { dept_unfixed_activated_methyl_on_incoherent_bridge }
           it_behaves_like :check_replacing do
-            let(:others) { [old_base, child] }
-            let(:child) { dept_unfixed_activated_methyl_on_incoherent_bridge }
-
             it { expect(child.spec.atom(:t)).not_to be_nil }
             it { expect(child.spec.atom(:cm)).not_to be_nil }
           end
