@@ -5,6 +5,21 @@ module VersatileDiamond
     # target instance
     class TransparentProxy
 
+      class << self
+        # Available unpublic methods could be defined through it singleton method
+        # @param [Array] methods the list of available methods
+        def avail_unpublic_methods(*methods)
+          @avail_unpublic_methods = methods.to_set
+        end
+
+        # Checks that some method is available
+        # @param [Symbol] method name
+        # @return [Boolean] is available or not
+        def avail_method?(method)
+          @avail_unpublic_methods && @avail_unpublic_methods.include?(method)
+        end
+      end
+
       attr_reader :original
 
       # Initializes proxy instance
@@ -22,7 +37,12 @@ module VersatileDiamond
 
       # Delegates all available another calls to original spec
       def method_missing(*args)
-        @original.public_send(*args)
+        method_name = args.first
+        if self.class.avail_method?(method_name)
+          @original.send(*args)
+        else
+          @original.public_send(*args)
+        end
       end
 
       def inspect
