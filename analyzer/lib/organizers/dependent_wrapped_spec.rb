@@ -64,6 +64,15 @@ module VersatileDiamond
         parents_with_twins_for(atom).map(&:last)
       end
 
+      # Gets number of all twins of passed atom
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom for which twin atoms will be counted
+      # @return [Integer] the number of twin atoms
+      def twins_num(atom)
+        # TODO: for more optimal could be achived from spec residual
+        parents_with_twins_for(atom).size
+      end
+
       # Gets the children specie classes
       # @return [Array] the array of children specie class generators
       def non_term_children
@@ -73,7 +82,7 @@ module VersatileDiamond
       # Checks that finding specie is source specie
       # @return [Boolean] is source specie or not
       def source?
-        parents.size == 0
+        parents.empty?
       end
 
       # Checks that finding specie have more than one parent

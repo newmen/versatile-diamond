@@ -6,7 +6,6 @@ module VersatileDiamond
       class EntryPoints
         include Modules::OrderProvider
         include AtomPropertiesUser
-        include TwinsHelper
         extend Forwardable
 
         # Initializes entry points detector by specie
@@ -37,6 +36,7 @@ module VersatileDiamond
       private
 
         def_delegators :@specie, :spec, :sequence
+        def_delegator :spec, :twins_num
 
         # Collects atoms which are have relation between each collected pair of atoms
         # @return [Array] the array of pairs of connected atoms which are belongs to
@@ -73,11 +73,14 @@ module VersatileDiamond
         # @return [Array] the two elements array of sorted parents with twins or nil
         #   if parent specie for some atom was not found
         def find_and_sort_parents(*pair)
-          sorted_parents = spec.parents.sort
-          parents_with_twins_for_both = pair.map(&method(:parents_with_twins_for))
+          parents_with_twins_for_both = pair.map do |atom|
+            spec.parents_with_twins_for(atom)
+          end
+
           real_pwts = parents_with_twins_for_both.reject(&:empty?)
           return nil unless real_pwts.size == 2
 
+          sorted_parents = spec.parents.sort
           real_pwts.sort_by do |pwts|
             pwts.map { |p, _| sorted_parents.index(p) }.min
           end
@@ -89,7 +92,7 @@ module VersatileDiamond
         # @return [Boolean] are have common atom or not
         def vertex_connected?(firsts, seconds)
           spec.anchors.any? do |atom|
-            prs = parents_for(atom)
+            prs = spec.parents_of(atom)
             prs.size > 1 && !(prs & firsts).empty? && !(prs & seconds).empty?
           end
         end
@@ -110,14 +113,6 @@ module VersatileDiamond
           sorted_pairs.first
         end
 
-        # Collects parent species in which using the passed atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom see at #parents_with_twins_for same argument
-        # @return [Array] the array of parent species which using passed atom
-        def parents_for(atom)
-          parents_with_twins_for(atom).map(&:first)
-        end
-
         # Counts relations of atom which selecting by block
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom for which relations will be counted
@@ -128,14 +123,6 @@ module VersatileDiamond
           rels = spec.relations_of(a)
           rels = rels.select(&block) if block_given?
           rels.size
-        end
-
-        # Counts twins of atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom for which twins will be counted
-        # @return [Integer] the number of twins
-        def count_twins(atom)
-          spec.rest ? spec.rest.twins_num(atom) : 0
         end
 
         # Gives the largest atom that has the most number of links in a complex specie,
@@ -149,7 +136,7 @@ module VersatileDiamond
             if pa == pb
               0
             elsif !pa.include?(pb) && !pb.include?(pa)
-              order(a, b, :count_twins) do
+              order(a, b, :twins_num) do
                 order(a, b, :count_relations, first_method_block: :relations?) do
                   order(a, b, :count_relations, first_method_block: :bond?) do
                     order(a, b, :count_relations)
@@ -168,7 +155,7 @@ module VersatileDiamond
         # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   the most used anchor of specie or nil
         def most_used_anchor
-          ctn_mas = sequence.major_atoms.map { |a| [a, count_twins(a)] }
+          ctn_mas = sequence.major_atoms.map { |a| [a, twins_num(a)] }
           max_twins_num = ctn_mas.reduce(0) { |acc, (_, ctn)| ctn > acc ? ctn : acc }
           all_max = ctn_mas.select { |_, ctn| ctn == max_twins_num }.map(&:first)
           all_max.size == 1 ? all_max.first : nil
@@ -187,7 +174,7 @@ module VersatileDiamond
         #
         # @return [Array] the atoms which could be gotten from single parent specie
         def parent_specie_points
-          spec.anchors.reject { |a| parents_for(a).empty? }
+          spec.anchors.reject { |a| spec.twins_num(a) == 0 }
         end
       end
 

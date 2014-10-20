@@ -39,6 +39,16 @@ module VersatileDiamond
         it { expect(subject.twin_of(_cr0)).to eq(bridge_base.atom(:cr)) }
       end
 
+      describe '#atom_by' do
+        [:ct, :cl, :cr].each do |kn|
+          let(kn) { bridge_base.atom(kn) }
+        end
+
+        it { expect(subject.atom_by(ct)).to eq(dimer_base.atom(:cr)) }
+        it { expect(subject.atom_by(cl)).to eq(dimer_base.atom(:crb)) }
+        it { expect(subject.atom_by(cr)).to eq(dimer_base.atom(:_cr0)) }
+      end
+
       describe '#method_missing' do
         describe '#same?' do
           it { expect(subject.same?(dept_bridge_base)).to be_truthy }

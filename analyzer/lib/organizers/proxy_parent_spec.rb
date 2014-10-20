@@ -34,6 +34,15 @@ module VersatileDiamond
         @mirror[atom]
       end
 
+      # Gets the atom of child spec by twin atom of original spec
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   twin by which should be gotten atom of child spec
+      # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   the atom of child spec
+      def atom_by(twin)
+        @mirror.invert[twin]
+      end
+
     private
 
       ['', 'clean_'].each do |prefix|

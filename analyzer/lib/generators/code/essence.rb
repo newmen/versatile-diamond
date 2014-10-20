@@ -19,15 +19,16 @@ module VersatileDiamond
         def cut_links
           return @_cut_links if @_cut_links
 
-          rest = spec.rest
           @_cut_links =
-            if rest
-              atoms = rest.links.keys
-              clean_links = rest.clean_links.map do |atom, rels|
+            if spec.source?
+              spec.clean_links
+            else
+              atoms = spec.anchors
+              clean_links = spec.target.clean_links.map do |atom, rels|
                 [atom, rels.select { |a, _| atom != a && atoms.include?(a) }]
               end
 
-              twins = atoms.map { |atom| rest.all_twins(atom) }
+              twins = atoms.map { |atom| spec.twins_of(atom) }
               atoms_to_twins = Hash[atoms.zip(twins)]
 
               result = spec.parents.reduce(clean_links) do |acc, parent|
@@ -46,8 +47,6 @@ module VersatileDiamond
                 end
               end
               Hash[result]
-            else
-              spec.clean_links
             end
         end
 

@@ -25,10 +25,8 @@ module VersatileDiamond
         update_links(new_base)
         spec.replace_base_spec(new_base.spec)
 
-        if @rest
-          store_rest(self - new_base)
-          children.each { |child| child.replace_base_spec(new_base) }
-        end
+        store_rest(self - new_base)
+        children.each { |child| child.replace_base_spec(new_base) }
       end
 
       # Organize dependencies from another similar species. Dependencies set if
@@ -50,7 +48,8 @@ module VersatileDiamond
           end
         end
 
-        store_rest(self - (parent || base_cache[base_name]))
+        parent ||= base_cache[base_name]
+        store_rest(self - parent) if parent
       end
 
       # Gets a mirror to another dependent spec

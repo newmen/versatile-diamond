@@ -4,7 +4,6 @@ module VersatileDiamond
     # Represent the table of dynamic programming for organization of dependencies
     # between all wrapped base species
     class BaseSpeciesTable
-      include Modules::OrderProvider
 
       # Initialize table by array of species for which the table will be builded
       # @param [Array] base_specs the array of species
