@@ -5,9 +5,8 @@ module VersatileDiamond
     # @abstract
     class DependentWrappedSpec < DependentSpec
       include Minuend
-      include MultiChildrenSpec
-      include ResidualContainerSpec
 
+      collector_methods :child
       def_delegators :@spec, :external_bonds, :gas?, :relation_between
       attr_reader :links
 
@@ -16,6 +15,7 @@ module VersatileDiamond
       def initialize(*_args)
         super
         @links = straighten_graph(spec.links)
+        @rest, @children, @reaction, @there = nil
       end
 
       # Gets anchors of internal specie
@@ -24,18 +24,16 @@ module VersatileDiamond
         target.links.keys
       end
 
-      # Gets sorted parents of target specie
-      # @return [Array] the sorted array of parent seqeucnes
-      def sorted_parents
-        parents.sort do |*prs|
-          acln, bcln = prs.map(&:clean_relations_num)
-          if acln == bcln
-            aln, bln = prs.map(&:relations_num)
-            bln <=> aln
-          else
-            bcln <=> acln
-          end
-        end
+      # Gets the target of current specie. It is self specie or residual if it exists
+      # @return [DependentWrappedSpec | SpecResidual] the target of current specie
+      def target
+        @rest || self
+      end
+
+      # Gets the parent specs of current instance
+      # @return [Array] the list of parent specs
+      def parents
+        @rest ? @rest.parents : []
       end
 
       # Gets the children specie classes
@@ -65,7 +63,21 @@ module VersatileDiamond
         to_s
       end
 
+    protected
+
+      # Removes child from set of children specs
+      # @param [DependentWrappedSpec] child which will be deleted
+      def remove_child(child)
+        @children.delete(child)
+      end
+
     private
+
+      # Provides instance for difference operation
+      # @return [DependentWrappedSpec] self instance
+      def owner
+        self
+      end
 
       # Replaces internal atom references to original atom and inject references of it
       # to result graph
@@ -77,6 +89,16 @@ module VersatileDiamond
         links.each.with_object({}) do |(atom, relations), result|
           result[atom] = relations + atom.additional_relations
         end
+      end
+
+      # Stores the residual of atom difference operation
+      # @param [SpecResidual] rest the residual of difference
+      # @raise [RuntimeError] if residual already set
+      def store_rest(rest)
+        @rest.parents.map(&:original).uniq.each { |pr| pr.remove_child(self) } if @rest
+
+        @rest = rest
+        @rest.parents.each { |pr| pr.store_child(self) }
       end
 
       # Provides links that will be cleaned by #clean_links

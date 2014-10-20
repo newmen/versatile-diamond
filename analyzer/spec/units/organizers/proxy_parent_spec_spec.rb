@@ -4,12 +4,10 @@ module VersatileDiamond
   module Organizers
 
     describe ProxyParentSpec, type: :organizer do
-      let(:fb_dimer_atoms) do
-        [:cr, :crb, :_cr0].map { |kn| dimer_base.atom(kn) }
-      end
+      subject { (dept_dimer_base - dept_bridge_base).parents.first }
 
-      subject do
-        described_class.new(dept_bridge_base, dept_dimer_base, fb_dimer_atoms)
+      describe '#original' do
+        it { expect(subject.original).to eq(dept_bridge_base) }
       end
 
       describe '#==' do
@@ -20,8 +18,14 @@ module VersatileDiamond
         it { expect([subject] * 2).to eq([dept_bridge_base] * 2) }
       end
 
-      describe '#relations_num' do
-        it { expect(subject.relations_num).to eq(11) }
+      describe '#<=>' do
+        let(:child) { dept_methyl_on_dimer_base }
+        let(:parents) { [dept_methyl_on_bridge_base, dept_bridge_base] }
+        let(:proxies) do
+          parents.reduce(child) { |acc, pr| acc - pr }.parents
+        end
+
+        it { expect(proxies.reverse.sort).to eq(proxies) }
       end
 
       describe '#method_missing' do
@@ -35,8 +39,11 @@ module VersatileDiamond
 
         describe 'hierarchy dependent' do
           before do
-            2.times { dept_dimer_base.store_parent(dept_bridge_base) }
+            organize_base_specs_dependencies!([dept_bridge_base, dept_dimer_base])
           end
+
+          subject { dept_dimer_base.parents.first }
+          it { expect(subject).to be_a(described_class) }
 
           describe '#parents' do
             it { expect(subject.parents).to be_empty }

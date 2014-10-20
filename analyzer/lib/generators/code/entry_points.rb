@@ -4,9 +4,10 @@ module VersatileDiamond
 
       # Provides logic for selecting entry points of find specie algorithm
       class EntryPoints
-        extend Forwardable
+        include Modules::OrderProvider
         include AtomPropertiesUser
         include TwinsHelper
+        extend Forwardable
 
         # Initializes entry points detector by specie
         # @param [Specie] specie for which find algorithm will builded
@@ -72,7 +73,7 @@ module VersatileDiamond
         # @return [Array] the two elements array of sorted parents with twins or nil
         #   if parent specie for some atom was not found
         def find_and_sort_parents(*pair)
-          sorted_parents = spec.sorted_parents
+          sorted_parents = spec.parents.sort
           parents_with_twins_for_both = pair.map(&method(:parents_with_twins_for))
           real_pwts = parents_with_twins_for_both.reject(&:empty?)
           return nil unless real_pwts.size == 2
@@ -137,32 +138,6 @@ module VersatileDiamond
           spec.rest ? spec.rest.twins_num(atom) : 0
         end
 
-        # Compares two atoms by method name and order it descending
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   a is first atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   b is second atom
-        # @param [Symbol] method_name by which atoms will be compared
-        # @param [Symbol] detect_method if passed ten will passed as block in
-        #   comparation method
-        # @yield calling when atoms is same by used method
-        # @return [Integer] the order of atoms
-        def order(a, b, method_name, detect_method = nil, &block)
-          if detect_method
-            ca = send(method_name, a, &detect_method)
-            cb = send(method_name, b, &detect_method)
-          else
-            ca = send(method_name, a)
-            cb = send(method_name, b)
-          end
-
-          if ca == cb
-            block.call
-          else
-            ca <=> cb
-          end
-        end
-
         # Gives the largest atom that has the most number of links in a complex specie,
         # and hence it is closer to specie center
         #
@@ -177,7 +152,7 @@ module VersatileDiamond
               order(a, b, :count_twins) do
                 order(a, b, :count_relations, :relations?) do
                   order(a, b, :count_relations, :bond?) do
-                    order(a, b, :count_relations) { 0 }
+                    order(a, b, :count_relations)
                   end
                 end
               end

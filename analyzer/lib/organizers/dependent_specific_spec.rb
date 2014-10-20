@@ -5,26 +5,11 @@ module VersatileDiamond
     class DependentSpecificSpec < DependentWrappedSpec
 
       def_delegators :@spec, :reduced, :could_be_reduced?
-      attr_reader :parent
-
-      # Initializes dependent specific spec by specific spec
-      # @param [Concepts::SpecificSpec] specific_spec
-      def initialize(specific_spec)
-        super
-        @parent = nil
-        @child, @reaction, @there = nil
-      end
-
-      # Gets base spec for wrapped specific spec
-      # @return [Concepts::Spec] the base spec
-      def base_spec
-        spec.spec
-      end
 
       # Gets name of base spec
       # @return [Symbol] the name of base spec
       def base_name
-        base_spec.name
+        spec.spec.name
       end
 
       # Contain specific atoms or not
@@ -34,48 +19,14 @@ module VersatileDiamond
         !specific_atoms.empty?
       end
 
-      # Provides compatibility with dependent base spec
-      # @return [Array] the array with one item which is current parent if it presented
-      def parents
-        parent ? [parent] : []
-      end
-
-      # Sets the parent of spec and store self to it parent
-      # @param [DependentBaseSpec | DependentSpecificSpec] parent the real parent of
-      #   current spec
-      # @raise [RuntimeError] if parent already set
-      def store_parent(parent)
-        raise 'Parent already exists' if @parent
-        return unless parent # TODO: it's right?
-        @parent = parent
-        parent.store_child(self)
-        store_rest(self - parent)
-      end
-
-      # Clears the parent of spec
-      # @param [DependentBaseSpec | DependentSpecificSpec] parent the real parent of
-      #   current spec
-      # @raise [RuntimeError] if parent is not set
-      def remove_parent(parent)
-        raise 'Parent is not exists' unless @parent
-        raise 'Removable parent is not same as passed' unless @parent == parent
-        @parent = @rest = nil
-      end
-
       # Replaces base specie of current wrapped specific specie
       # @param [DependentBaseSpec] new_base the new base specie
       def replace_base_spec(new_base)
-        parent_was_removed = false
-        if @parent && !@parent.specific?
-          remove_parent(@parent)
-          parent_was_removed = true
-        end
-
         update_links(new_base)
         spec.replace_base_spec(new_base.spec)
 
-        if parent_was_removed
-          store_parent(new_base)
+        if @rest
+          store_rest(self - new_base)
           children.each { |child| child.replace_base_spec(new_base) }
         end
       end
@@ -99,7 +50,7 @@ module VersatileDiamond
           end
         end
 
-        store_parent(parent || base_cache[base_name])
+        store_rest(self - (parent || base_cache[base_name]))
       end
 
       # Gets a mirror to another dependent spec
@@ -141,7 +92,7 @@ module VersatileDiamond
       # @param [DependentBaseSpec] new_base the new base specie from which atoms will
       #   be used instead atoms of old base specie
       def update_links(new_base)
-        mirror = DependentBaseSpec.new(base_spec).mirror_to(new_base)
+        mirror = DependentBaseSpec.new(spec.spec).mirror_to(new_base)
 
         update_atoms(mirror)
         update_relations(mirror)

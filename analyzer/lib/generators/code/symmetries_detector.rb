@@ -288,8 +288,8 @@ module VersatileDiamond
         def parent_atom_index(index)
           pi = nil
           ai = index - @specie.sequence.delta
-          spec.sorted_parents.each_with_index do |parent, i|
-            panum = parent.atoms_num
+          spec.parents.sort.each_with_index do |parent, i|
+            panum = parent.links.size
             if ai < panum
               pi = i
               break

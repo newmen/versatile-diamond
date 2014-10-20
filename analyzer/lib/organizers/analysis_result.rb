@@ -111,8 +111,7 @@ module VersatileDiamond
       # @return [Hash] the hash of collected specific species where keys are
       #   full names of each specific spec
       def collect_specific_specs
-        cache = {}
-        (spec_reactions + [theres]).each do |concepts|
+        (spec_reactions + [theres]).each_with_object({}) do |concepts, cache|
           concepts.each do |concept|
             concept.each_source do |specific_spec|
               name = specific_spec.name
@@ -130,8 +129,6 @@ module VersatileDiamond
             end
           end
         end
-
-        purge_unused_extended_specs(cache)
       end
 
       # Checks type of concept and store it to spec by correspond method
@@ -153,12 +150,14 @@ module VersatileDiamond
       # Purges extended spec if atoms of each one can be used as same in
       # reduced spec
       #
+      # @param [Hash] base_specs_cache the cache of base speces where keys are
+      #   names of specs and values are wrapped base specs
       # @param [Hash] specific_specs_cache the cache of specific specs where
       #   keys is full names of specs
       # @return [Hash] resulted cache of specific specs
-      def purge_unused_extended_specs(specific_specs_cache)
+      def purge_unused_extended_specs(base_specs_cache, specific_specs_cache)
         extended_specs = specific_specs_cache.select do |_, spec|
-          spec.reduced && spec.could_be_reduced?
+          spec.could_be_reduced?
         end
 
         extended_specs.each do |_, wrapped_ext|
@@ -175,9 +174,10 @@ module VersatileDiamond
             specific_specs_cache[rd_spec.name] ||= DependentSpecificSpec.new(rd_spec)
 
           exchange_specs(specific_specs_cache, wrapped_ext, wrapped_rd)
+          base_specs_cache.delete(wrapped_ext.base_name)
         end
 
-        specific_specs_cache
+        [base_specs_cache, specific_specs_cache]
       end
 
       # Purges all specific specs if some of doesn't have specific atoms and
@@ -190,13 +190,10 @@ module VersatileDiamond
       # @return [Array] the array where first item is base specs hash and
       #   second item is specific specs hash
       def purge_unspecified_specs(base_specs_cache, specific_specs_cache)
-        specific_specs = specific_specs_cache.values
-        specific_specs.each do |wrapped_specific|
-          spec = wrapped_specific.base_spec
-          base_specs_cache[spec.name] ||= DependentBaseSpec.new(spec)
-        end
+        base_specs_cache, specific_specs_cache =
+          purge_unused_extended_specs(base_specs_cache, specific_specs_cache)
 
-        unspecified_specs = specific_specs.reject(&:specific?)
+        unspecified_specs = specific_specs_cache.values.reject(&:specific?)
         unspecified_specs.each do |wrapped_specific|
           wrapped_base = base_specs_cache[wrapped_specific.base_name]
           exchange_specs(specific_specs_cache, wrapped_specific, wrapped_base)

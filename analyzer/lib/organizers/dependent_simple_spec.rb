@@ -23,12 +23,6 @@ module VersatileDiamond
         {}
       end
 
-      # Simple spec does not have residual
-      # @return [NilClass] nil
-      def rest
-        nil
-      end
-
       # All species is not termination by default
       # @return [Boolean] false
       def termination?
