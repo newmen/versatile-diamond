@@ -73,11 +73,7 @@ module VersatileDiamond
       # @param [Array] base_specs the array of sorting species
       # @return [Array] the sorted array of base species
       def sort(base_specs)
-        base_specs.sort do |a, b|
-          order(b, a) do
-            order(a, b, :external_bonds)
-          end
-        end
+        base_specs.sort { |a, b| b <=> a }
       end
     end
 
