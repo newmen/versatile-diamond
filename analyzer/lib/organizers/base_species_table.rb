@@ -4,6 +4,7 @@ module VersatileDiamond
     # Represent the table of dynamic programming for organization of dependencies
     # between all wrapped base species
     class BaseSpeciesTable
+      include Modules::OrderProvider
 
       # Initialize table by array of species for which the table will be builded
       # @param [Array] base_specs the array of species
@@ -73,10 +74,8 @@ module VersatileDiamond
       # @return [Array] the sorted array of base species
       def sort(base_specs)
         base_specs.sort do |a, b|
-          if a.size == b.size
-            a.external_bonds <=> b.external_bonds
-          else
-            b.size <=> a.size
+          order(b, a) do
+            order(a, b, :external_bonds)
           end
         end
       end

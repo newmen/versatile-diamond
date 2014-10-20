@@ -6,8 +6,6 @@ module VersatileDiamond
     # Contain some spec and set of dependent specs
     class DependentBaseSpec < DependentWrappedSpec
 
-      def_delegator :@spec, :size
-
       # Checks that other spec has same atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
       # @return [Boolean] same or not
