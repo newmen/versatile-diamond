@@ -101,23 +101,9 @@ module VersatileDiamond
         def reduce_directed_graph_from(init_value, atoms, relations_proc, complex_proc)
           ordered_graph_from(atoms).reduce(init_value) do |ext_acc, (anchors, rels)|
             if rels.empty?
-              anchor = anchors.first
-              if spec.rest.twins_num(anchor) > 1
-                complex_proc[ext_acc, anchor]
-              else
-                ext_acc
-              end
+              complex_proc[ext_acc, anchors.first]
             else
               rels.reduce(ext_acc) do |int_acc, (nbrs, relation_params)|
-                if anchors.size < nbrs.size
-                  if anchors.size != 1
-                    raise 'Wrong number of anchors'
-                  elsif anchors.first.relations_limits[relation_params] != nbrs.size
-                    # dependent from logic of algorithm building
-                    raise 'Wrong number of neighbour atoms'
-                  end
-                end
-
                 relations_proc[int_acc, anchors, nbrs, relation_params]
               end
             end

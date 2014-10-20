@@ -71,6 +71,10 @@ module VersatileDiamond
               expect(subject.twins_of(atom)).
                 to match_array(parents_with_twins.map(&:last))
             end
+
+            it '#twins_num' do
+              expect(subject.twins_num(atom)).to eq(parents_with_twins.size)
+            end
           end
         end
       end
