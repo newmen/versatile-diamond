@@ -90,11 +90,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#size' do
-        it { expect(dept_activated_dimer.size).to eq(10) }
-        it { expect(dept_activated_incoherent_bridge.size).to eq(11) }
-      end
-
       describe '#organize_dependencies!' do
         shared_examples_for :organize_and_check do
           it_behaves_like :organize_dependencies do

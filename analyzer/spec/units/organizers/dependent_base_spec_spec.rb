@@ -38,11 +38,6 @@ module VersatileDiamond
         let(:child) { dept_methyl_on_bridge_base }
       end
 
-      describe '#size' do
-        subject { dept_bridge_base }
-        it { expect(subject.size).to eq(subject.spec.size) }
-      end
-
       describe '#same?' do
         describe 'bridge_base' do
           it { expect(dept_bridge_base.same?(dept_bridge_base_dup)).to be_truthy }
