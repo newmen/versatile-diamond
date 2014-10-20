@@ -14,7 +14,7 @@ module VersatileDiamond
             dept_hydrogenated_bridge,
             dept_extra_hydrogenated_bridge,
             dept_right_hydrogenated_bridge,
-            dept_dimer,
+            dept_dimer_base,
             dept_activated_dimer,
             dept_methyl_on_incoherent_bridge,
             dept_high_bridge,
@@ -289,7 +289,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :specific_classify do
-              let(:spec) { dept_dimer }
+              let(:spec) { dept_dimer_base }
               let(:hash) do
                 {
                   0 => ['^C%d<', 4],
@@ -334,21 +334,21 @@ module VersatileDiamond
             describe 'organize species dependencies' do
               shared_examples_for :organized_specific_classify do
                 let(:result) { subject.classify(target_spec) }
-                before { organize(all_specific) }
+                before { organize(all_species) }
                 it { expect(result).to eq(hash) }
               end
 
               it_behaves_like :organized_specific_classify do
                 let(:target_spec) { dept_activated_bridge }
-                let(:all_specific) { [dept_activated_bridge] }
+                let(:all_species) { [dept_activated_bridge] }
                 let(:hash) do
                   { 3 => ['*C%d<', 1] }
                 end
               end
 
               it_behaves_like :organized_specific_classify do
-                let(:target_spec) { dept_dimer.parent }
-                let(:all_specific) { [dept_bridge, dept_dimer] }
+                let(:target_spec) { dept_dimer_base }
+                let(:all_species) { [dept_bridge_base, dept_dimer_base] }
                 let(:hash) do
                   { 13 => ['-C%d<', 2] }
                 end
@@ -356,7 +356,7 @@ module VersatileDiamond
 
               it_behaves_like :organized_specific_classify do
                 let(:target_spec) { dept_activated_methyl_on_incoherent_bridge }
-                let(:all_specific) do
+                let(:all_species) do
                   [
                     dept_activated_bridge,
                     dept_activated_dimer,

@@ -19,52 +19,44 @@ module VersatileDiamond
       end
 
       describe '#best' do
-        shared_examples_for :check_cell do
+        shared_examples_for :check_optimal_parents do
           let(:best) { subject.best(spec) }
-          it { expect(best.residual.atoms_num).to eq(residue_atoms_num) }
-          it { expect(best.specs).to match_array(parts) }
+          it { expect(best.parents).to match_array(parents) }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_methane_base }
-          let(:residue_atoms_num) { 1 }
-          let(:parts) { [] }
+          let(:parents) { [] }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_bridge_base }
-          let(:residue_atoms_num) { 3 }
-          let(:parts) { [] }
+          let(:parents) { [] }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_methyl_on_bridge_base }
-          let(:residue_atoms_num) { 2 }
-          let(:parts) { [dept_bridge_base] }
+          let(:parents) { [dept_bridge_base] }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_high_bridge_base }
-          let(:residue_atoms_num) { 2 }
-          let(:parts) { [dept_bridge_base] }
+          let(:parents) { [dept_bridge_base] }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_dimer_base }
-          let(:residue_atoms_num) { 2 }
-          let(:parts) { [dept_bridge_base, dept_bridge_base] }
+          let(:parents) { [dept_bridge_base, dept_bridge_base] }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_methyl_on_dimer_base }
-          let(:residue_atoms_num) { 2 }
-          let(:parts) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:parents) { [dept_bridge_base, dept_methyl_on_bridge_base] }
         end
 
-        it_behaves_like :check_cell do
+        it_behaves_like :check_optimal_parents do
           let(:spec) { dept_extended_bridge_base }
-          let(:residue_atoms_num) { 2 }
-          let(:parts) { [dept_bridge_base] * 3 }
+          let(:parents) { [dept_bridge_base] * 3 }
         end
       end
     end

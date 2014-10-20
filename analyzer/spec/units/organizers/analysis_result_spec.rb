@@ -8,6 +8,13 @@ module VersatileDiamond
       subject { described_class.new }
       let(:keyname_error) { Chest::KeyNameError }
 
+      def store_base_specs(specific_specs)
+        specific_specs.each do |specific_spec|
+          base_spec = specific_spec.spec
+          Tools::Chest.store(base_spec) unless Tools::Chest.has?(base_spec)
+        end
+      end
+
       def store_reactions
         Tools::Config.gas_concentration(hydrogen_ion, 1, 'mol/l')
         Tools::Config.gas_temperature(1000, 'K')
@@ -47,14 +54,28 @@ module VersatileDiamond
         # lateral[1]
         middle_lateral_df.rate = 7
 
-        [
-          surface_activation, surface_deactivation,
-          methyl_activation, methyl_deactivation, methyl_desorption,
-          methyl_desorption.reverse, # synthetics
+        ubiquitous = [surface_activation, surface_deactivation]
+
+        typicals = [methyl_activation, methyl_deactivation,
+          methyl_desorption, methyl_desorption.reverse, # synthetics
           hydrogen_migration, hydrogen_migration.reverse,
-          dimer_formation, dimer_formation.reverse,
-          end_lateral_df, middle_lateral_df, methyl_incorporation
-        ].each { |reaction| Tools::Chest.store(reaction) }
+          dimer_formation, dimer_formation.reverse, methyl_incorporation]
+
+        laterals = [end_lateral_df, middle_lateral_df]
+
+        (typicals + laterals).each do |reaction|
+          store_base_specs(reaction.source)
+        end
+
+        laterals.each do |reaction|
+          reaction.theres.each do |there|
+            store_base_specs(there.where.specs)
+          end
+        end
+
+        (ubiquitous + typicals + laterals).each do |reaction|
+          Tools::Chest.store(reaction)
+        end
       end
 
       let(:instances) { subject.public_send(method) }
@@ -265,7 +286,7 @@ module VersatileDiamond
         end
 
         describe '#organize_dependecies!' do
-          describe '#organize_specific_spec_dependencies!' do
+          describe '#organize_specific_specs_dependencies!' do
             before { store_reactions }
 
             let(:wrapped_specific) { subject.specific_spec(:'bridge(ct: *)') }
@@ -273,7 +294,7 @@ module VersatileDiamond
             let(:parent) { subject.base_spec(:bridge) }
 
             it { expect(wrapped_specific.children).to match_array(children) }
-            it { expect(wrapped_specific.parent).to eq(parent) }
+            it { expect(wrapped_specific.parents.first).to eq(parent) }
           end
 
           describe '#check_reactions_for_duplicates' do
@@ -323,11 +344,15 @@ module VersatileDiamond
             it_behaves_like :duplicate_or_not do
               let(:reaction) { dimer_formation }
               let(:same) { reaction.duplicate('same') }
+
+              before { store_base_specs(df_source + df_products) }
             end
 
             it_behaves_like :duplicate_or_not do
               let(:reaction) { end_lateral_df }
               let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
+
+              before { store_base_specs(df_source + df_products + at_middle.specs) }
             end
           end
 

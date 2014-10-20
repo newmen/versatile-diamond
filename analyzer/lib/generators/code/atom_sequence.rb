@@ -27,7 +27,7 @@ module VersatileDiamond
           @_original_sequence =
             if spec.rest
               dynamic_rest = spec
-              spec.sorted_parents.reduce(addition_atoms) do |acc, parent|
+              spec.parents.sort.reduce(addition_atoms) do |acc, parent|
                 mirror = dynamic_rest.mirror_to(parent).invert
                 dynamic_rest -= parent
 

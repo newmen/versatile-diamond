@@ -42,8 +42,6 @@ module VersatileDiamond
         #   is exist
         # @return [Chest] self
         def store(*concepts, method: :name)
-          @sac ||= {}
-
           find_bottom(concepts, method) do |key, bottom, name|
             if bottom[name]
               raise Chest::KeyNameError.new(key, name, :duplication)
@@ -159,11 +157,13 @@ module VersatileDiamond
         # @yeild [Symbol, Hash, Symbol] do for current key, found bottom and
         #   name of last concept
         def find_bottom(concepts, method, &block)
+          @sac ||= {}
+
           key = concepts.last.class.to_s.underscore.to_sym
           bottom = (@sac[key] ||= {})
 
           concepts = concepts.dup
-          begin
+          until concepts.empty?
             concept = concepts.shift
             name = concept.send(method).to_sym
 
@@ -172,7 +172,7 @@ module VersatileDiamond
             else
               bottom = (bottom[name] ||= {})
             end
-          end until concepts.empty?
+          end
         end
 
         # Finds concept in sac by initial key (which is concept type) and
