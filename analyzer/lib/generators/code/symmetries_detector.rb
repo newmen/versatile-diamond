@@ -6,7 +6,6 @@ module VersatileDiamond
       class SymmetriesDetector
         include Modules::ListsComparer
         include SymmetryHelper
-        include TwinsHelper
 
         # Initializes symmetries detector
         # @param [EngineCode] generator the general engine code generator
@@ -29,7 +28,7 @@ module VersatileDiamond
           @_children_collected = true
 
           spec.non_term_children.each { |child| get(child).collect_symmetries }
-          return unless spec.rest
+          return if spec.source?
 
           distrib_twins_to_parents(spec.anchors).each do |parent, twins|
             get(parent).add_symmetries_for(twins)
@@ -96,12 +95,12 @@ module VersatileDiamond
         # @return [AtomSequence] the parent sequence or nil
         def deep_parents_swapper(pair)
           if spec.complex?
-            if pair.all? { |a| spec.rest.twins_num(a) == 1 }
+            if pair.all? { |a| spec.twins_num(a) == 1 }
               twins = twins_of(pair)
               return store_symmetry(Hash[[pair]]) if twins.first == twins.last
             end
           elsif !spec.source?
-            parent = get(spec.parents.first)
+            parent = get(spec.parents.first.original)
             if parent.atoms.size == atoms.size
               return parent.deep_parents_swapper(twins_of(pair))
             end
@@ -166,7 +165,7 @@ module VersatileDiamond
         # @param [Array] pair of atoms
         # @return [Array] the twins of passed atoms
         def twins_of(pair)
-          pair.map { |a| spec.rest.twin(a) }
+          pair.map { |a| spec.twins_of(a).first }
         end
 
         # Distributes twins to their parents
@@ -175,9 +174,9 @@ module VersatileDiamond
         #   of correspond twins
         def distrib_twins_to_parents(atoms)
           atoms.each.with_object({}) do |atom, result|
-            parents_with_twins_for(atom).each do |parent, twin|
-              result[parent] ||= []
-              result[parent] << twin
+            spec.parents_with_twins_for(atom).each do |parent, twin|
+              result[parent.original] ||= []
+              result[parent.original] << twin
             end
           end
         end
@@ -244,12 +243,12 @@ module VersatileDiamond
         # @param [Array] pairs of indexes of symmetric atoms
         # @return [EmptySpecie] the symmetric specie code generator
         def combine_symmetric(pairs)
-          if spec.rest
-            parentable_symmetric(pairs)
-          else
+          if spec.source?
             pairs.reduce(@specie.original) do |acc, indexes|
               AtomsSwappedSpecie.new(@generator, acc, *indexes)
             end
+          else
+            parentable_symmetric(pairs)
           end
         end
 
@@ -288,8 +287,8 @@ module VersatileDiamond
         def parent_atom_index(index)
           pi = nil
           ai = index - @specie.sequence.delta
-          spec.sorted_parents.each_with_index do |parent, i|
-            panum = parent.atoms_num
+          spec.parents.sort.each_with_index do |parent, i|
+            panum = parent.links.size
             if ai < panum
               pi = i
               break

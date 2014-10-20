@@ -8,9 +8,13 @@ module VersatileDiamond
         it { expect(dept_active_bond.parents).to be_empty }
       end
 
-      it_behaves_like :multi_parents do
+      describe '#store_parent' do
         let(:parent) { dept_activated_bridge }
         let(:child) { dept_active_bond }
+        before { child.store_parent(parent) }
+
+        it { expect(parent.children).to eq([child]) }
+        it { expect(child.parents).to eq([parent]) }
       end
 
       describe '#terminations_num' do

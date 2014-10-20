@@ -4,12 +4,10 @@ module VersatileDiamond
   module Organizers
 
     describe ProxyParentSpec, type: :organizer do
-      let(:fb_dimer_atoms) do
-        [:cr, :crb, :_cr0].map { |kn| dimer_base.atom(kn) }
-      end
+      subject { (dept_dimer_base - dept_bridge_base).parents.first }
 
-      subject do
-        described_class.new(dept_bridge_base, dept_dimer_base, fb_dimer_atoms)
+      describe '#original' do
+        it { expect(subject.original).to eq(dept_bridge_base) }
       end
 
       describe '#==' do
@@ -20,8 +18,35 @@ module VersatileDiamond
         it { expect([subject] * 2).to eq([dept_bridge_base] * 2) }
       end
 
-      describe '#relations_num' do
-        it { expect(subject.relations_num).to eq(11) }
+      describe '#<=>' do
+        let(:child) { dept_methyl_on_dimer_base }
+        let(:parents) { [dept_methyl_on_bridge_base, dept_bridge_base] }
+        let(:proxies) do
+          parents.reduce(child) { |acc, pr| acc - pr }.parents
+        end
+
+        it { expect(proxies.reverse.sort).to eq(proxies) }
+      end
+
+      describe '#twin_of' do
+        [:cl, :cr, :crb, :_cr0].each do |kn|
+          let(kn) { dimer_base.atom(kn) }
+        end
+
+        it { expect(subject.twin_of(cl)).to be_nil }
+        it { expect(subject.twin_of(cr)).to eq(bridge_base.atom(:ct)) }
+        it { expect(subject.twin_of(crb)).to eq(bridge_base.atom(:cl)) }
+        it { expect(subject.twin_of(_cr0)).to eq(bridge_base.atom(:cr)) }
+      end
+
+      describe '#atom_by' do
+        [:ct, :cl, :cr].each do |kn|
+          let(kn) { bridge_base.atom(kn) }
+        end
+
+        it { expect(subject.atom_by(ct)).to eq(dimer_base.atom(:cr)) }
+        it { expect(subject.atom_by(cl)).to eq(dimer_base.atom(:crb)) }
+        it { expect(subject.atom_by(cr)).to eq(dimer_base.atom(:_cr0)) }
       end
 
       describe '#method_missing' do
@@ -35,8 +60,11 @@ module VersatileDiamond
 
         describe 'hierarchy dependent' do
           before do
-            2.times { dept_dimer_base.store_parent(dept_bridge_base) }
+            organize_base_specs_dependencies!([dept_bridge_base, dept_dimer_base])
           end
+
+          subject { dept_dimer_base.parents.first }
+          it { expect(subject).to be_a(described_class) }
 
           describe '#parents' do
             it { expect(subject.parents).to be_empty }

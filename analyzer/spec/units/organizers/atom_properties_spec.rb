@@ -37,7 +37,7 @@ module VersatileDiamond
             end
 
             describe 'classification' do
-              subject { classifier.classify(target.parent) }
+              subject { classifier.classify(target.parents.first.original) }
               let(:hash) do
                 {
                   3 => ['_~-C%d<', 1],

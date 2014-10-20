@@ -20,7 +20,7 @@ module VersatileDiamond
       def organize_spec_dependencies!(base_cache, specific_specs)
         # order of organization is important!
         purge_same_base_specs!(base_cache, specific_specs)
-        organize_specific_spec_dependencies!(base_cache, specific_specs)
+        organize_specific_specs_dependencies!(base_cache, specific_specs)
         organize_base_specs_dependencies!(base_cache.values)
         purge_unused_base_specs!(base_cache)
       end
@@ -30,7 +30,7 @@ module VersatileDiamond
       # Organize dependencies between specific species
       # @param [Hash] base_cache see at #organize_spec_dependencies! same argument
       # @param [Array] specific_specs see at #organize_spec_dependencies! same argument
-      def organize_specific_spec_dependencies!(base_cache, specific_specs)
+      def organize_specific_specs_dependencies!(base_cache, specific_specs)
         specific_specs.each_with_object({}) do |wrapped_specific, specs|
           base_name = wrapped_specific.base_name
           specs[base_name] ||= specific_specs.select do |s|
