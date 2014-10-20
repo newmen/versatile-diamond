@@ -26,6 +26,8 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
+
+        @@_extended_specs_cache ||= {}
       end
 
       # If spec is simple (H2 or HCl for example) then true or false overwise
@@ -158,15 +160,14 @@ module VersatileDiamond
       # TODO: necessary to consider crystal lattice
       def extend_by_references
         extended_name = "extended_#{@name}".to_sym
-        begin # caching
-          Tools::Chest.spec(extended_name).dup
-        rescue Tools::Chest::KeyNameError
+        unless @@_extended_specs_cache[extended_name]
           extendable_spec = self.class.new(extended_name)
           extendable_spec.adsorb(self)
           extendable_spec.extend!
-          Tools::Chest.store(extendable_spec)
-          extendable_spec
+          @@_extended_specs_cache[extended_name] = extendable_spec
         end
+
+        @@_extended_specs_cache[extended_name].dup
       end
 
       # Checks termination atom at the inner atom which belongs to current spec

@@ -25,16 +25,14 @@ module VersatileDiamond
           return @_original_sequence if @_original_sequence
 
           @_original_sequence =
-            if spec.rest
-              dynamic_rest = spec
-              spec.sorted_parents.reduce(addition_atoms) do |acc, parent|
-                mirror = dynamic_rest.mirror_to(parent).invert
-                dynamic_rest -= parent
-
-                acc + get(parent).original.map { |atom| mirror[atom] }
-              end
-            else
+            if spec.source?
               sort_atoms(atoms)
+            else
+              spec.parents.sort.reduce(addition_atoms) do |acc, parent|
+                acc + get(parent.original).original.map do |atom|
+                  parent.atom_by(atom)
+                end
+              end
             end
         end
 
@@ -55,13 +53,12 @@ module VersatileDiamond
         def addition_atoms
           return @_addition_atoms if @_addition_atoms
 
-          rest = spec.rest
           @_addition_atoms =
-            if rest
-              adds = spec.anchors.reject { |atom| rest.twin(atom) }
-              sort_atoms(adds)
-            else
+            if spec.source?
               []
+            else
+              adds = spec.anchors.select { |atom| spec.twins_of(atom).empty? }
+              sort_atoms(adds)
             end
         end
 

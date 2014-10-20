@@ -10,47 +10,41 @@ module VersatileDiamond
       let(:small_dimer_part) { big_dimer_part - dept_bridge_base }
 
       it_behaves_like :minuend do
-        subject { methyl_on_bridge_part }
+        subject do
+          dept_methyl_on_dimer_base - dept_methyl_on_bridge_base - dept_bridge_base
+        end
+        let(:bigger) { dept_methyl_on_dimer_base - dept_dimer_base }
+
+        [:cm, :cr, :crb, :_cr0, :cl, :clb, :_cr1].each do |kn|
+          let(kn) { methyl_on_dimer_base.atom(kn) }
+        end
+
+        let(:atom) { cr }
+        let(:atom_relations) do
+          [free_bond, bond_100_front, bond_110_cross, bond_110_cross]
+        end
+
+        let(:clean_links) do
+          {
+            cr => [
+              [cm, free_bond],
+              [cl, bond_100_front],
+              [crb, bond_110_cross],
+              [_cr0, bond_110_cross]
+            ],
+            cl => [
+              [cr, bond_100_front],
+              [clb, bond_110_cross],
+              [_cr1, bond_110_cross]
+            ],
+          }
+        end
       end
 
       describe '#self.empty' do
-        it { expect(described_class.empty.links).to be_empty }
-      end
-
-      describe '#twin' do
-        shared_examples_for :check_twin do
-          it { expect(part.twin(own_atom)).to eq(parent_atom) }
-        end
-
-        describe 'dimer' do
-          let(:part) { small_dimer_part }
-          let(:parent_atom) { bridge_base.atom(:ct) }
-
-          it_behaves_like :check_twin do
-            let(:own_atom) { dimer_base.atom(:cl) }
-          end
-
-          it_behaves_like :check_twin do
-            let(:own_atom) { dimer_base.atom(:cr) }
-          end
-        end
-
-        describe 'methyl_on_bridge && high_bridge' do
-          %w(methyl_on_bridge high_bridge).each do |name|
-            let(:spec) { send(name.to_sym) }
-            let(:part) { send(:"#{name}_part") }
-
-            it_behaves_like :check_twin do
-              let(:parent_atom) { bridge_base.atom(:ct) }
-              let(:own_atom) { spec.atom(:cb) }
-            end
-
-            it_behaves_like :check_twin do
-              let(:parent_atom) { nil }
-              let(:own_atom) { spec.atom(:cm) }
-            end
-          end
-        end
+        subject { described_class.empty(dept_bridge_base) }
+        it { expect(subject.links).to eq(dept_bridge_base.links) }
+        it { expect(subject.parents).to be_empty }
       end
 
       describe '#same?' do
@@ -71,32 +65,22 @@ module VersatileDiamond
         end
       end
 
-      describe '#empty?' do
-        it { expect(described_class.empty.empty?).to be_truthy }
-
-        describe 'extended bridge without three bridges' do
-          let(:eb) { dept_extended_bridge_base }
-          subject { eb - dept_bridge_base - dept_bridge_base - dept_bridge_base }
-          it { expect(subject.empty?).to be_falsey }
-        end
-      end
-
       describe '# - ' do
-        it { expect(small_dimer_part.atoms_num).to eq(2) }
-
-        it_behaves_like :count_atoms_and_references do
+        it_behaves_like :count_atoms_and_relations_and_parents do
           subject { big_dimer_part }
           let(:atoms_num) { 4 }
           let(:relations_num) { 14 }
+          let(:parents_num) { 1 }
         end
 
-        it_behaves_like :count_atoms_and_references do
+        it_behaves_like :count_atoms_and_relations_and_parents do
           subject { small_dimer_part }
           let(:atoms_num) { 2 }
           let(:relations_num) { 6 }
+          let(:parents_num) { 2 }
         end
 
-        it_behaves_like :count_atoms_and_references do
+        it_behaves_like :count_atoms_and_relations_and_parents do
           let(:small_spec1) { dept_methyl_on_bridge_base }
           let(:small_spec2) { dept_bridge_base_dup }
           let(:big_spec) { dept_methyl_on_dimer_base }
@@ -104,47 +88,44 @@ module VersatileDiamond
 
           let(:atoms_num) { 2 }
           let(:relations_num) { 7 }
+          let(:parents_num) { 2 }
         end
 
-        it_behaves_like :count_atoms_and_references do
+        it_behaves_like :count_atoms_and_relations_and_parents do
           let(:eb) { dept_extended_bridge_base }
           subject { eb - dept_bridge_base - dept_bridge_base - dept_bridge_base }
 
           let(:atoms_num) { 2 }
           let(:relations_num) { 8 }
+          let(:parents_num) { 3 }
         end
 
-        it_behaves_like :count_atoms_and_references do
+        it_behaves_like :count_atoms_and_relations_and_parents do
           let(:tbs) { dept_three_bridges_base }
           subject { tbs - dept_bridge_base - dept_bridge_base - dept_bridge_base }
 
           let(:atoms_num) { 2 }
           let(:relations_num) { 10 }
+          let(:parents_num) { 3 }
         end
 
         describe 'cross_bridge_on_bridges' do
           let(:cbobs) { dept_cross_bridge_on_bridges_base }
           let(:cbobs_part) { cbobs - dept_methyl_on_bridge_base }
 
-          it_behaves_like :count_atoms_and_references do
+          it_behaves_like :count_atoms_and_relations_and_parents do
             subject { cbobs_part }
             let(:atoms_num) { 5 }
             let(:relations_num) { 18 }
+            let(:parents_num) { 1 }
           end
 
-          it_behaves_like :count_atoms_and_references do
+          it_behaves_like :count_atoms_and_relations_and_parents do
             subject { cbobs_part - dept_methyl_on_bridge_base }
             let(:atoms_num) { 3 }
             let(:relations_num) { 10 }
+            let(:parents_num) { 2 }
           end
-        end
-      end
-
-      it_behaves_like :relations_of do
-        subject { dept_methyl_on_dimer_base }
-        let(:atom) { methyl_on_dimer_base.atom(:cr) }
-        let(:rls) do
-          [bond_100_front, bond_110_cross, bond_110_cross, free_bond]
         end
       end
     end

@@ -9,8 +9,8 @@ describe Diamond do
         it { expect { diamond.opposite_relation(diamond, free_bond) }.
           to raise_error undefined_relation }
 
-        it { expect { diamond.opposite_relation(diamond, bond_100_cross) }.
-          to raise_error undefined_relation }
+        it { expect(diamond.opposite_relation(diamond, bond_100_cross)).
+          to eq(bond_100_cross) }
         it { expect(diamond.opposite_relation(diamond, bond_100_front)).
           to eq(bond_100_front) }
         it { expect(diamond.opposite_relation(diamond, bond_110_front)).

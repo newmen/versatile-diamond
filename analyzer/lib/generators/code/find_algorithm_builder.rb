@@ -7,7 +7,6 @@ module VersatileDiamond
       # Contain logic for building find specie algorithm
       class FindAlgorithmBuilder < BaseAlgorithmsBuilder
         include SpecieInside
-        include TwinsHelper
         extend Forwardable
 
         # Inits builder by target specie and main engine code generator
@@ -46,7 +45,9 @@ module VersatileDiamond
         #   generator and correspond twin atom in it parent specie
         # @override
         def parents_with_twins_for(atom)
-          super(atom).map { |parent, twin| [specie_class(parent), twin] }
+          spec.parents_with_twins_for(atom).map do |parent, twin|
+            [specie_class(parent), twin]
+          end
         end
 
         # Finds all parents specie of passed atom
@@ -459,14 +460,28 @@ module VersatileDiamond
             [], atoms, method(:relations_block), method(:complex_block))
         end
 
+        # @raise SystemError if algorithm builder isn't support passed arguments
         # @return [Array] the list of all collected procs
         def relations_block(acc, anchors, nbrs, rel_params)
+          if anchors.size < nbrs.size
+            # dependent from logic of algorithm building
+            if anchors.size != 1
+              raise 'Wrong number of anchors'
+            elsif anchors.first.relations_limits[rel_params] != nbrs.size
+              raise 'Wrong number of neighbour atoms'
+            end
+          end
+
           acc << proc_by_relations(anchors, nbrs, rel_params)
         end
 
         # @return [Array] the list of all collected procs
         def complex_block(acc, anchor)
-          acc << proc_by_specie_parts(anchor)
+          if spec.twins_num(anchor) > 1
+            acc << proc_by_specie_parts(anchor)
+          else
+            acc
+          end
         end
 
         # Gets the lambda by relations between passed atoms

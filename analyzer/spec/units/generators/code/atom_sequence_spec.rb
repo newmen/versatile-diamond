@@ -170,12 +170,12 @@ module VersatileDiamond
               three_bridges_base.atom(:tt),
               three_bridges_base.atom(:cc),
               three_bridges_base.atom(:ct),
-              three_bridges_base.atom(:ct),
-              three_bridges_base.atom(:cr),
-              three_bridges_base.atom(:cl),
               three_bridges_base.atom(:_ct0),
               three_bridges_base.atom(:cc),
               three_bridges_base.atom(:_cl0),
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:cr),
+              three_bridges_base.atom(:cl),
             ]
           end
           let(:short) do
