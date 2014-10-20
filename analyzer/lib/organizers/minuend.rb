@@ -12,9 +12,11 @@ module VersatileDiamond
       # @param [Minuend] other the comparable minuend instance
       # @return [Integer] the result of comparation
       def <=> (other)
-        order(self, other, :links, :size, nil) do
-          order_relations(other) do
-            parents.size <=> other.parents.size
+        order(self, other, :links, :size) do
+          order_classes(other) do
+            order_relations(other) do
+              parents.size <=> other.parents.size
+            end
           end
         end
       end
@@ -114,6 +116,21 @@ module VersatileDiamond
       end
 
     private
+
+      # Provides comparison by class of each instance
+      # @param [Minuend] other see at #<=> same argument
+      # @return [Integer] the result of comparation
+      def order_classes(other, &block)
+        if self.class == other.class
+          block.call
+        else
+          if self.is_a?(SpecResidual) || other.is_a?(DependentSpecificSpec)
+            -1
+          elsif other.is_a?(SpecResidual) || self.is_a?(DependentSpecificSpec)
+            1
+          end
+        end
+      end
 
       # Provides comparison by number of relations
       # @param [Minuend] other see at #<=> same argument

@@ -92,7 +92,7 @@ module VersatileDiamond
       # @override
       def order_relations(other, &block)
         super(other) do
-          order(self, other, :specific_atoms, :size, nil) do
+          order(self, other, :specific_atoms, :size) do
             order(self, other, :dangling_bonds_num) do
               order(self, other, :relevants_num, &block)
             end

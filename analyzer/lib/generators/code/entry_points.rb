@@ -150,8 +150,8 @@ module VersatileDiamond
               0
             elsif !pa.include?(pb) && !pb.include?(pa)
               order(a, b, :count_twins) do
-                order(a, b, :count_relations, :relations?) do
-                  order(a, b, :count_relations, :bond?) do
+                order(a, b, :count_relations, first_method_block: :relations?) do
+                  order(a, b, :count_relations, first_method_block: :bond?) do
                     order(a, b, :count_relations)
                   end
                 end

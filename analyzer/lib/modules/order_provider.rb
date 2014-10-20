@@ -8,22 +8,14 @@ module VersatileDiamond
       # Compares two objects by method name and next methods chain or detect block
       # @param [Object] a is first object
       # @param [Object] b is second object
-      # @param [Array] methods_chain by which value for comparison will gotten;
-      #   the last value of it list (not first) interpret as block which will be
-      #   applied to call of first method in chain
+      # @param [Array] methods_chain by which value for comparison will gotten
+      # @option [Proc] :first_method_block the block which will be applied to call of
+      #   first method in chain
       # @yield if passed then calling when objects is same by used method
       # @return [Integer] the order of objects
-      def order(a, b, *methods_chain, &block)
-        if methods_chain.size > 1
-          detect_block = methods_chain.last
-          correct_chain = methods_chain[0..-2]
-        else
-          detect_block = nil
-          correct_chain = methods_chain
-        end
-
-        va = value_by_chain(a, correct_chain.dup, detect_block)
-        vb = value_by_chain(b, correct_chain.dup, detect_block)
+      def order(a, b, *methods_chain, first_method_block: nil, &block)
+        va = value_by_chain(a, methods_chain.dup, first_method_block)
+        vb = value_by_chain(b, methods_chain.dup, first_method_block)
 
         if va == vb
           block_given? ? block.call : 0

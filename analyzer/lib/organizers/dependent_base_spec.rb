@@ -51,6 +51,15 @@ module VersatileDiamond
 
     private
 
+      # Provides comparison by number of relations
+      # @param [Minuend] other see at #<=> same argument
+      # @return [Integer] the result of comparation
+      def order_relations(other, &block)
+        super(other) do
+          order(self, other, :external_bonds, &block)
+        end
+      end
+
       # Is current spec reactant or not
       # @return [Boolean] is reactant or not
       def reactant?
