@@ -9,7 +9,7 @@ module VersatileDiamond
         include SpecieInside
         extend Forwardable
 
-        def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
+        def_delegators :@detector, :symmetric_atom? #, :symmetric_atoms
         attr_reader :spec, :original, :sequence
 
         # Initialize specie code generator

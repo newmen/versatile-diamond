@@ -321,7 +321,7 @@ module VersatileDiamond
                     if (anchor == specie1->atom(1))
                     {
                         anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
-                            if (target1 != target2)
+                            if (target2 != target1)
                             {
                                 target2->eachSymmetry([&](ParentSpec *specie2) {
                                     if (anchor == specie2->atom(2))
