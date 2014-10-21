@@ -52,6 +52,16 @@ module VersatileDiamond
             it { expect(subject.name_of(var)).to eq('var1') }
           end
 
+          describe 'remember index and get next' do
+            let(:var) { 'value' }
+            before do
+              subject.assign_next('var', var)
+              subject.erase(var)
+              subject.assign_next('var', var)
+            end
+            it { expect(subject.name_of(var)).to eq('var2') }
+          end
+
           describe 'with number two' do
             let(:var1) { 'value' }
             let(:var2) { 'other' }
