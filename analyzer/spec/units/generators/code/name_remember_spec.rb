@@ -11,8 +11,6 @@ module VersatileDiamond
           describe 'no raise error' do
             it { expect { subject.assign('var', 'value') }.not_to raise_error }
             it { expect { subject.assign('var', ['value']) }.not_to raise_error }
-            it { expect { subject.assign('var', [1, 1]) }.not_to raise_error }
-            it { expect { subject.assign('var', [2, 1, 1]) }.not_to raise_error }
           end
 
           describe 'duplicate variable' do
@@ -131,20 +129,6 @@ module VersatileDiamond
               it { expect(subject.name_of(vars)).to eq('vars') }
             end
 
-            describe 'array has similar items' do
-              let(:uniq_var) { 'a' }
-              let(:not_uniq_var) { 'b' }
-              let(:vars) { [not_uniq_var, uniq_var, not_uniq_var] }
-              before { subject.assign('var', vars) }
-
-              it { expect(subject.name_of(vars)).to eq('vars') }
-              it { expect(subject.name_of(uniq_var)).to eq('vars[1]') }
-
-              it 'incorrect getting name of not uniq var' do
-                expect { subject.name_of(not_uniq_var) }.to raise_error
-              end
-            end
-
             describe 'incorrect vars set' do
               let(:vars) { ['a', 'b'] }
               let(:excess_var) { 'c' }
@@ -167,38 +151,6 @@ module VersatileDiamond
             it 'undefined variable' do
               expect(subject.name_of(['not', 'defined', 'array'])).to be_nil
             end
-          end
-        end
-
-        describe '#names_for' do
-          describe 'single variable' do
-            let(:var) { 123 }
-            before { subject.assign('var', var) }
-            it { expect(subject.names_for([var])).to eq(['var']) }
-          end
-
-          describe 'array with similar items' do
-            let(:vars) { [1, 2, 1, 3, 2] }
-            before { subject.assign('var', vars) }
-
-            it 'correct sequence of names' do
-              names = vars.size.times.map { |i| "vars[#{i}]" }
-              expect(subject.names_for(vars)).to eq(names)
-            end
-          end
-
-          describe 'one var of sequence is not defined' do
-            before { subject.assign('var', [1, 1, 2]) }
-
-            it 'nil between names' do
-              names = 3.times.map { |i| "vars[#{i}]" }
-              names.insert(1, nil)
-              expect(subject.names_for([1, nil, 1, 2])).to eq(names)
-            end
-          end
-
-          it 'all variables is undefined' do
-            expect(subject.names_for([1, 2])).to eq([nil, nil])
           end
         end
 
