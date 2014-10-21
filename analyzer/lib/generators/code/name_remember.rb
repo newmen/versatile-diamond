@@ -11,6 +11,7 @@ module VersatileDiamond
         def initialize
           @names = {}
           @similar_vars_indexes = {}
+          @next_names = []
         end
 
         # Assign unique names for each variables with duplicate error checking
@@ -35,10 +36,11 @@ module VersatileDiamond
         #   next name of variable
         # @param [Object] var the variable for which name will assigned
         def assign_next(name, var)
-          same_names = names.select { |_, n| n =~ /^#{name}\d+$/ }.map(&:last)
-          last_name = same_names.max
+          last_name = @next_names.find { |n| n =~ /^#{name}\d+$/ }
           max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
-          assign("#{name}#{max_index.next}", var)
+          next_name = "#{name}#{max_index.next}"
+          @next_names.unshift(next_name)
+          assign(next_name, var)
         end
 
         # Gets a name of variable

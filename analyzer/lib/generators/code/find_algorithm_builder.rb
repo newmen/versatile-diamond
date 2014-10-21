@@ -9,6 +9,12 @@ module VersatileDiamond
         include SpecieInside
         extend Forwardable
 
+        # Wraps each real specie code generator for difference naming the parents
+        # species
+        class UniqueSpecie < Modules::TransparentProxy
+          avail_unpublic_methods :index, :role
+        end
+
         # Inits builder by target specie and main engine code generator
         # @param [EngineCode] generator the major engine code generator
         # @param [Specie] specie the target specie code generator
@@ -16,6 +22,13 @@ module VersatileDiamond
           super(generator)
           @specie = specie
           @entry_points = EntryPoints.new(specie)
+
+          parents_to_species = spec.parents.map do |parent|
+            [parent, UniqueSpecie.new(specie_class(parent.original))]
+          end
+          @parents_to_species = Hash[parents_to_species]
+
+          @_parents, @_parents_with_twins = nil
         end
 
         # Generates cpp code by which target specie will be found when simulation doing
@@ -24,7 +37,7 @@ module VersatileDiamond
           namer.assign('parent', parents) unless find_root?
 
           if !find_root? && entry_symmetric?
-            symmetry_lambda(parents.first, []) do
+            each_symmetry_lambda(parents.first, clojure_on_scope: false) do
               define_all_anchors_variable_line + body
             end
           elsif !find_root?
@@ -38,6 +51,16 @@ module VersatileDiamond
 
         def_delegators :@specie, :spec, :sequence, :find_root?
 
+        # Gets the unique parent specie classes
+        # @return [Array] the array of unique parent specie class generators
+        def parents
+          return @_parents if @_parents
+
+          sorted_parents = spec.parents.sort
+          sps = @parents_to_species.to_a.sort_by { |pr, _| sorted_parents.index(pr) }
+          @_parents = sps.map(&:last)
+        end
+
         # Gets parent specie code generators with their twins
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom see at #super same argument
@@ -45,47 +68,44 @@ module VersatileDiamond
         #   generator and correspond twin atom in it parent specie
         # @override
         def parents_with_twins_for(atom)
-          spec.parents_with_twins_for(atom).map do |parent, twin|
-            [specie_class(parent), twin]
-          end
-        end
-
-        # Finds all parents specie of passed atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom see at #parents_with_twins_for same argument
-        # @return [Array] the array of found parents
-        def parents_for(atom)
-          parents_with_twins_for(atom).map(&:first)
+          @_parents_with_twins ||=
+            spec.parents_with_twins_for(atom).map do |parent, twin|
+              [@parents_to_species[parent], twin]
+            end
         end
 
         # Finds parent specie and correspond twin atom
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   atom see at #parents_with_twins_for same argument
+        # @yield [Specie, Atom] if given then by it parent with twin will be found
         # @return [Array] the array where first item is parent specie and second item
         #   is twin atom of passed atom
-        def parent_with_twin_for(atom)
-          parents_with_twins_for(atom).first
-        end
-
-        # Finds parent specie of passed atom
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom see at #parents_with_twins_for same argument
-        # @return [Specie] the specie which uses twin of passed atom
-        def parent_for(atom)
-          pwt = parent_with_twin_for(atom)
-          pwt && pwt.first
+        def parent_with_twin_for(atom, &block)
+          pwts = parents_with_twins_for(atom)
+          block_given? ? pwts.find(&block) : pwts.first
         end
 
         # Finds atoms that has twin in passed parent
         # @param [Specie] parent for which atom will be found
-        # @param [Array] except_atoms the list of atoms which should be excepted
+        # @param [Set] except_atoms the set of atoms which should be excepted
         # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom the twin of that belongs to passed parent
+        #   atom the twin that belongs to passed parent
         def atom_of(parent, except_atoms)
           spec.anchors.find do |atom|
             next if except_atoms.include?(atom)
-            parents_for(atom).any? { |pr| pr == parent }
+            parent_with_twin_for(atom) { |pr, _| pr == parent }
           end
+        end
+
+        # Finds twin of passed atom that correspond to passed parent
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom see at #parents_with_twins_for same argument
+        # @param [Specie] parent for which twin will be found
+        # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   the twin of atom that belongs to passed parent
+        def twin_of(atom, parent)
+          pwt = parent_with_twin_for(atom) { |pr, _| pr == parent }
+          pwt && pwt.last
         end
 
         # Checks that any of entry points uses symmetric of parent specie
@@ -189,13 +209,14 @@ module VersatileDiamond
         # @return [String] the string of cpp code with specByRole call
         def specs_by_role_call(atom)
           pwts = parents_with_twins_for(atom)
-          parent, twin = pwts.uniq.first
+          parent, twin = pwts.not_uniq.first
 
           atom_var_name = namer.name_of(atom)
           species_num = pwts.size
           twin_role = parent.role(twin)
-          "#{atom_var_name}->" \
-            "specsByRole<#{parent.class_name}, #{species_num}>(#{twin_role})"
+
+          method_name = "specsByRole<#{parent.class_name}, #{species_num}>"
+          "#{atom_var_name}->#{method_name}(#{twin_role})"
         end
 
         # Gets a code which uses eachSymmetry method of engine framework
@@ -203,14 +224,16 @@ module VersatileDiamond
         #   called
         # @param [Array] clojure_args the arguments which will be passed to lambda
         #   through clojure
-        # @yield should return string of lambda body
+        # @yield should return cpp code string
         # @return [String] the code with symmetries iteration
-        def symmetry_lambda(parent, clojure_args, &block)
+        def each_symmetry_lambda(parent, clojure_on_scope: true, &block)
           receiver_var = namer.name_of(parent)
           method_name = "#{receiver_var}->eachSymmetry"
 
-          parent_var_name = 'specie'
-          namer.reassign(parent_var_name, [parent])
+          namer.erase(parent)
+          namer.assign_next('specie', parent)
+          parent_var_name = namer.name_of(parent)
+          clojure_args = clojure_on_scope ? ['&'] : []
           lambda_args = ["ParentSpec *#{parent_var_name}"]
 
           code_lambda(method_name, [], clojure_args, lambda_args, &block)
@@ -223,7 +246,7 @@ module VersatileDiamond
         # @param [Array] nbrs the neighbour atoms to which iteration will do
         # @param [Hash] rel_params the relation parameters through which neighbours
         #   was gotten
-        # @yield should return cpp code string of lambda body
+        # @yield should return cpp code string
         # @return [String]
         # @override
         def each_nbrs_lambda(anchors, nbrs, rel_params, &block)
@@ -294,12 +317,27 @@ module VersatileDiamond
 
             anchor_var_name = namer.name_of(anchor)
             nbr_var_name = namer.name_of(nbr)
-            define_str =
-              "Atom *#{nbr_var_name} = #{anchor_var_name}->amorphNeighbour();"
+            method_name = "#{anchor_var_name}->amorphNeighbour()"
+            define_str = "Atom *#{nbr_var_name} = #{method_name};"
 
             condition_str = check_role_condition([nbr])
             code_line(define_str) + code_condition(condition_str, &block)
           end
+        end
+
+        # Gets condition with checking that symmetric atom of parent is passed atom
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom which will be compared with symmetric atom of parent specie
+        # @param [Specie] parent which symmetric atom will be compared
+        # @yield should return cpp code string for condition body
+        # @return [String] the string with cpp code
+        def symmetric_atom_condition(atom, parent, &block)
+          atom_var_name = namer.name_of(atom)
+          parent_var_name = namer.name_of(parent)
+          twin = twin_of(atom, parent)
+          parent_call = atom_from_parent_call_by(parent_var_name, parent, twin)
+
+          code_condition("#{atom_var_name} == #{parent_call}", &block)
         end
 
         # Gets a code with checking all same species from anchor
@@ -323,7 +361,7 @@ module VersatileDiamond
         # Gets a cpp code that correspond to defining anchor(s) variable(s)
         # @return [String] the string of cpp code
         def define_all_anchors_variable_line
-          anchors = spec.anchors.select(&method(:parent_for))
+          anchors = spec.anchors.select { |a| spec.twins_num(a) > 0 }
           namer.assign('anchor', anchors)
 
           var_name = namer.name_of(anchors)
@@ -347,7 +385,7 @@ module VersatileDiamond
         def define_avail_anchors_variable_line(species, except_atom)
           atoms_with_pwts = spec.anchors.each_with_object([]) do |atom, acc|
             next if atom == except_atom
-            pwt = parents_with_twins_for(atom).find { |pr, _| species.include?(pr) }
+            pwt = parent_with_twin_for(atom) { |pr, _| species.include?(pr) }
             acc << [atom, *pwt]
           end
 
@@ -404,15 +442,13 @@ module VersatileDiamond
         def define_parents_variable_line
           parents_to_names = parents.zip(namer.names_for(parents))
 
-          used_atoms = []
+          used_atoms = Set.new
           items = parents_to_names.map do |parent, name|
-            if name
-              name
-            else
-              atom = atom_of(parent, used_atoms)
-              used_atoms << atom
-              spec_by_role_call(atom)
-            end
+            next name if name
+
+            atom = atom_of(parent, used_atoms)
+            used_atoms << atom
+            spec_by_role_call(atom)
           end
 
           namer.reassign('parent', parents)
@@ -443,13 +479,10 @@ module VersatileDiamond
         # essence graph from anchors
         #
         # @param [Array] anchors from which walking will occure
+        # @yield should return cpp code string
         # @return [String] the cpp code find algorithm
         def combine_algorithm(anchors, &block)
-          ext_proc = collect_procs(anchors).reverse.reduce(block) do |acc, prc|
-            -> { prc[&acc] }
-          end
-
-          ext_proc.call
+          reduce_procs(collect_procs(anchors), &block).call
         end
 
         # Collects procs of conditions for body of find algorithm
@@ -502,22 +535,164 @@ module VersatileDiamond
           end
         end
 
+        # Provides condition block which checks that first argument parent with twin is
+        # not any of second argument parents with twins
+        #
+        # @param [Array] checkable_pwt the parent with twin which will be compared with
+        #   each available parents with twins
+        # @param [Array] available_pwts the list of parents with twins with which will
+        #   be compared checkable parent with twin
+        # @yield should return cpp code string for condition body
+        # @return [String] the string with cpp code
+        def another_parents_condition(checkable_pwt, available_pwts, &block)
+          comparisons = available_pwts.map do |apwt|
+            first, second =
+              [checkable_pwt, apwt].map(&method(:get_symmetric_parent_var_name))
+            "#{first} != #{second}"
+          end
+
+          code_condition(comparisons.join(' && '), &block)
+        end
+
+        # Gets the code with algorithm which finds symmetric species that contained in
+        # anchor variable when simulation do
+        #
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor in which variable will be found symmetric species
+        # @param [Array] symmetric_parents_with_twins list which should be found in
+        #   anchor variable
+        # @yield should return cpp code string which will be nested in lambda call
+        # @return [String] the code with find symmetric species algorithm
+        def combine_find_symmetric_specs(anchor, symmetric_parents_with_twins, &block)
+          collecting_procs = []
+          visited_pwts = []
+
+          symmetric_parents_with_twins.each do |spwt|
+            check_proc = nil
+
+            unless visited_pwts.empty?
+              check_proc = -> &prc do
+                another_parents_condition(spwt, visited_pwts, &prc)
+              end
+            end
+
+            visited_pwts << spwt
+            collecting_procs << -> &prc do
+              find_symmetric_spec_lambda(anchor, spwt, check_proc, &prc)
+            end
+          end
+
+          reduce_procs(collecting_procs, &block).call
+        end
+
+        # Gets a combined code for finding symmetric specie by atom when simulation do
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor for which each spec will be checked when simulation do
+        # @param [Specie] parent the specie each instance of which will be checked
+        # @yield should return cpp code string which will be nested in lambda call
+        # @return [String] the code with each contained specie iteration
+        def find_symmetric_spec_lambda(anchor, parent, pr_var_name, check_proc, &block)
+          internal_proc = -> do
+            each_symmetry_lambda(parent) do
+              symmetric_atom_condition(anchor, parent, &block)
+            end
+          end
+
+          internal_block =
+            if check_proc
+              -> { check_proc[&internal_proc] }
+            else
+              internal_proc
+            end
+
+          each_spec_by_role_lambda(anchor, parent, pr_var_name, &internal_block)
+        end
+
+        # Gets a code which uses eachSpecByRole method of engine framework
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   anchor for which each spec will be iterated when simulation do
+        # @param [Specie] parent the specie each instance of which will be iterated in
+        #   anchor
+        # @yield should return cpp code string
+        # @return [String] the code with each specie iteration
+        def each_spec_by_role_lambda(anchor, parent, parent_var_name, &block)
+          namer.erase(parent)
+          namer.assign(parent_var_name, parent)
+
+          anchor_var_name = namer.name_of(anchor)
+          parent_class = parent.class_name
+          twin = twin_of(anchor, parent)
+
+          method_name = "#{anchor_var_name}->eachSpecByRole<#{parent_class}>"
+          method_args = [parent.role(twin)]
+          clojure_args = ['&']
+          lambda_args = ["#{parent_class} *#{parent_var_name}"]
+
+          code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
+        end
+
         # Gets the lambda by species from which consits current complex specie
         # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
         #   anchor which have more than one twin in source species
         # @return [Proc] the lazy proc which will generate code when will be called
         def proc_by_specie_parts(anchor)
-          pwts = parents_with_twins_for(anchor)
-          uniq_pwts = pwts.uniq
-          not_uniq_pwts = pwts.not_uniq
-          if uniq_pwts.size == 1 && not_uniq_pwts.size == 1 && max_specs_from?(anchor)
-            parent, twin = uniq_pwts.first
-            unless parent.symmetric_atom?(twin)
-              return -> &block { all_species_condition(anchor, &block) }
-            end
+          if max_unsymmetric_specs?(anchor)
+            -> &block { all_species_condition(anchor, &block) }
           else
-            -> &block { block.call }
+            undef_spwts = undefined_symmetric_parents_with_twins(anchor)
+            if undef_spwts.empty?
+              -> &block { block.call }
+            else
+              -> &block { combine_find_symmetric_specs(anchor, undef_spwts, &block) }
+            end
           end
+        end
+
+        # Collects and sorts correct undefined symmetric parents with twins
+        # @param [Array] parents_with_twins from which correct undefined symmetric
+        #   parents with twins will be gotten
+        # @return [Array] the list of sorted correct undefined symmetric parents with
+        #   correspond (different) twins
+        def undefined_symmetric_parents_with_twins(atom)
+          symmetric_pwts = parents_with_twins_for(atom).select do |pr, tw|
+            pr.symmetric_atom?(tw)
+          end
+
+          gs_pwts = symmetric_pwts.group_by { |x| x }.values.map do |group|
+            if group.size == 1
+              group
+            else
+              parent, twin = group.first
+              all_symmetric_twins = parent.symmetric_atoms(twin)
+              unless all_symmetric_twins.size == group.size
+                raise 'Incorrect number of twins for current group'
+              end
+              all_symmetric_twins.map { |tw| [parent, tw] }
+            end
+          end
+
+          spwts = gs_pwts.reduce(:+)
+          undef_pwts = spwts
+          # undef_pwts = spwts.reject(&method(:get_symmetric_parent_var_name))
+          undef_pwts.sort_by { |pr, _| parents.index(pr) }
+        end
+
+        # Cheks that in passed atom contains several same unsymmetric species and
+        # them number is maximal
+        #
+        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+        #   atom which will be checked
+        # @return [Boolean] is contain maximum number of similar unsymmetric species
+        def max_unsymmetric_specs?(atom)
+          pwts = parents_with_twins_for(atom)
+          twins = pwts.map(&:last)
+          uniq_twins = twins.uniq
+          not_uniq_twins = twins.not_uniq
+          return false unless uniq_twins.size == 1 && not_uniq_twins.size == 1
+
+          not_uniq_twin = not_uniq_twins.first
+          parent, twin = pwts.find { |_, tw| tw == not_uniq_twin }
+          !parent.symmetric_atom?(twin) && max_specs_from?(atom)
         end
 
         # Checks that in atom could contain the maximal number of parent species

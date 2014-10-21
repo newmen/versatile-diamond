@@ -19,21 +19,23 @@ void TwoBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(TWO_BRIDGES, 24))
         {
-            anchor->eachSpecByRole<Bridge>(6, [=](Bridge *target1) {
-                target1->eachSymmetry([=](ParentSpec *specie1) {
-                    if (specie1->atom(2) == anchor)
+            anchor->eachSpecByRole<Bridge>(6, [&](Bridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (specie1->atom(1) == anchor)
                     {
-                        Bridge *target2 = anchor->selectSpecByRole<Bridge>(6, [target1](Bridge *other) {
-                            return other != target1;
+                        anchor->eachSpecByRole<Bridge>(6, [&](Bridge *target2) {
+                            if (target2 != target1)
+                            {
+                                target2->eachSymmetry([&](ParentSpec *specie2) {
+                                    if (specie2->atom(2) == anchor)
+                                    {
+                                        Atom *atom1 = specie2->atom(1);
+                                        ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie2, specie1 };
+                                        create<TwoBridges>(parents);
+                                    }
+                                });
+                            }
                         });
-
-                        ParentSpec *specie2 = target2->selectSymmetry([anchor](ParentSpec *other) {
-                            return other->atom(1) == anchor;
-                        });
-
-                        Atom *atom1 = specie1->atom(1);
-                        ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie1, specie2 };
-                        create<TwoBridges>(parents);
                     }
                 });
             });

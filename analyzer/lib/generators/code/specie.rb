@@ -9,7 +9,7 @@ module VersatileDiamond
         include SpecieInside
         extend Forwardable
 
-        def_delegator :@detector, :symmetric_atom?
+        def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
         attr_reader :spec, :original, :sequence
 
         # Initialize specie code generator
@@ -130,12 +130,22 @@ module VersatileDiamond
           spec.name.to_s
         end
 
+        def inspect
+          class_name
+        end
+
       private
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
         def render_find_algorithms?
           true
+        end
+
+        # Gets the parent specie classes
+        # @return [Array] the array of parent specie class generators
+        def parents
+          spec.parents.map { |parent| specie_class(parent.original) }
         end
 
         # Gets the children specie classes

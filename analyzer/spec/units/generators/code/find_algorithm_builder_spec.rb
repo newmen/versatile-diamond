@@ -15,7 +15,7 @@ module VersatileDiamond
         let(:code_specie) { generator.specie_class(subject.name) }
         let(:builder) { described_class.new(generator, code_specie) }
 
-        describe '#central_anchors && #build' do
+        describe '#build' do
           def role(spec, keyname)
             classifier.index(spec, spec.spec.atom(keyname))
           end
@@ -59,13 +59,13 @@ module VersatileDiamond
             let(:specific_specs) { [subject] }
             let(:find_algorithm) do
               <<-CODE
-    parent->eachSymmetry([](ParentSpec *specie) {
-        Atom *anchor = specie->atom(2);
+    parent->eachSymmetry([](ParentSpec *specie1) {
+        Atom *anchor = specie1->atom(2);
         if (anchor->is(#{role_cr}))
         {
             if (!anchor->hasRole(BRIDGE_CRH, #{role_cr}))
             {
-                create<BridgeCRH>(specie);
+                create<BridgeCRH>(specie1);
             }
         }
     });
@@ -316,28 +316,23 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(THREE_BRIDGES, #{role_cc}))
         {
-            anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target) {
-                target->eachSymmetry([anchor, target](ParentSpec *specie) {
-                    if (specie->atom(2) == anchor)
+            anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (anchor == specie1->atom(1))
                     {
-                        Atom *atom1 = specie->atom(1);
-                        if (atom1->is(#{b_cr}))
-                        {
-                            ParentSpec *parent1 = atom1->specByRole<Bridge>(3);
-                            if (parent1)
+                        anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
+                            if (target1 != target2)
                             {
-                                Bridge *external = anchor->selectSpecByRole<Bridge>(#{b_cr}, [target](Bridge *other) {
-                                    return other != target;
+                                target2->eachSymmetry([&](ParentSpec *specie2) {
+                                    if (anchor == specie2->atom(2))
+                                    {
+                                        Atom *atom1 = specie2->atom(1);
+                                        ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie2, specie1 };
+                                        create<TwoBridges>(parents);
+                                    {
                                 });
-
-                                ParentSpec *last = external->selectSymmetry([anchor](ParentSpec *other) {
-                                    return other->atom(1) == anchor;
-                                });
-
-                                ParentSpec *parents[3] = { parent1, specie, last };
-                                create<TwoBridges>(parents);
                             }
-                        }
+                        });
                     }
                 });
             });

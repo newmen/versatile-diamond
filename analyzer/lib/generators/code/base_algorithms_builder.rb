@@ -19,6 +19,16 @@ module VersatileDiamond
 
         attr_reader :generator, :namer
 
+        # Combines passed procs to one function
+        # @param [Array] procs which will be combined
+        # @yield returns heart of combination result
+        # @return [Proc] the general function which contains calls of all other nested
+        def reduce_procs(procs, &deepest_block)
+          procs.reverse.reduce(deepest_block) do |acc, block|
+            -> { block[&acc] }
+          end
+        end
+
         # Adds spaces (like one tab size) before passed string
         # @param [String] code_str the string before which spaces will be added
         # @return [String] the string with spaces before
