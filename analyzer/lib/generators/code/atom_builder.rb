@@ -15,16 +15,16 @@ module VersatileDiamond
 
       private
 
-        # Deligates getting collection of unique pure atoms
+        # Delegates getting collection of unique pure atoms
         # @return [Array] the uniq pure atoms
         def pure_atoms
-          @generator.unique_pure_atoms
+          generator.unique_pure_atoms
         end
 
         # Collects all possible combinations of atom name and lattice
         # @return [Array] the list of all combinations
         def combinations
-          pairs_set = @generator.classifier.props.reduce(Set.new) do |acc, prop|
+          pairs_set = generator.classifier.props.reduce(Set.new) do |acc, prop|
             acc << [prop.atom_name, prop.lattice]
           end
 

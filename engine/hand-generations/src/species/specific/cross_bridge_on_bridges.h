@@ -1,10 +1,12 @@
 #ifndef CROSS_BRIDGE_ON_BRIDGES_H
 #define CROSS_BRIDGE_ON_BRIDGES_H
 
+#include "../../phases/diamond_atoms_iterator.h"
 #include "../base.h"
 #include "../specific.h"
 
-class CrossBridgeOnBridges : public Specific<Base<DependentSpec<BaseSpec, 2>, CROSS_BRIDGE_ON_BRIDGES, 1>>
+class CrossBridgeOnBridges :
+        public Specific<Base<DependentSpec<BaseSpec, 2>, CROSS_BRIDGE_ON_BRIDGES, 3>>, public DiamondAtomsIterator
 {
 public:
     static void find(Atom *anchor);

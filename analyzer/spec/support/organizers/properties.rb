@@ -24,14 +24,18 @@ module VersatileDiamond
           end
         end
 
-        # Organize dependenceis between passed specific species and base species
-        # of them
-        #
+        # Organize dependenceis between passed species
         # @param [Array] specific_species the array of organizing species
-        def organize(specific_species)
-          original_bases = specific_species.map(&:base_spec)
-          wrapped_bases = original_bases.map { |s| DependentBaseSpec.new(s) }
+        def organize(species)
+          specific_species = species.select(&:specific?)
+          wrapped_bases = species - specific_species
+
           base_cache = make_cache(wrapped_bases)
+          specific_species.each do |wrapped_specific|
+            base_cache[wrapped_specific.base_name] ||=
+              DependentBaseSpec.new(wrapped_specific.spec.spec)
+          end
+
           organize_spec_dependencies!(base_cache, specific_species)
         end
 

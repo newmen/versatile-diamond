@@ -7,20 +7,6 @@ class Diamond < VersatileDiamond::Lattices::Base
   # file in common templates directory which located at
   # /analyzer/lib/generators/code/templates/phases
 
-  # Provides information on the maximum possible number of relations of crystal lattice
-  # for each individual atom
-  #
-  # @return [Hash] the hash where keys are relation options and values are maximum
-  #   numbers of correspond relations
-  def relations_limit
-    {
-      front_110 => 2,
-      cross_110 => 2,
-      front_100 => 2,
-      cross_100 => 2,
-    }
-  end
-
 private
 
   # Detects opposite relation on same lattice
@@ -32,9 +18,7 @@ private
       relation.dir == :front ?
         relation.class[face: 110, dir: :cross] :
         relation.class[face: 110, dir: :front]
-    elsif relation.face == 100 &&
-      !(relation.class == Bond && relation.dir == :cross)
-
+    elsif relation.face == 100
       relation.class[face: 100, dir: relation.dir]
     else
       raise UndefinedRelation, relation
@@ -59,6 +43,26 @@ private
       # [front_110, front_110] => position_111,
       # [cross_110, cross_110] => position_111,
     }
+  end
+
+  # Provides information on the maximum possible number of relations of diamond crystal
+  # lattice for each individual atom
+  #
+  # @return [Hash] the hash where keys are relation options and values are maximum
+  #   numbers of correspond relations
+  def crystal_relations_limit
+    {
+      front_110 => 2,
+      cross_110 => 2,
+      front_100 => 2,
+      cross_100 => 2,
+    }
+  end
+
+  # Gets faces of crystal along that direction does not change
+  # @return [Array] the array of faces that are flatten
+  def flatten_faces
+    [100]
   end
 
   # Gets the default height of surface in atom layers

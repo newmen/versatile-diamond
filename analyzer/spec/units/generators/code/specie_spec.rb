@@ -83,6 +83,11 @@ module VersatileDiamond
             subject { code_activated_incoherent_bridge }
             let(:class_name) { 'BridgeCTsi' }
           end
+
+          it_behaves_like :check_class_name do
+            subject { code_cross_bridge_on_bridges_base }
+            let(:class_name) { 'CrossBridgeOnBridges' }
+          end
         end
 
         describe '#enum_name' do
@@ -252,90 +257,39 @@ module VersatileDiamond
             to eq([code_for(dimer_base)]) }
         end
 
+        describe '#non_root_children' do
+          let(:base_specs) do
+            [dept_bridge_base, dept_dimer_base, dept_methyl_on_bridge_base]
+          end
+          let(:specific_specs) { [dept_activated_dimer] }
+
+          shared_examples_for :check_non_root_children do
+            let(:code_specie) { code_for(subject) }
+            let(:code_childs) { children.map(&method(:code_for)) }
+            it { expect(code_specie.non_root_children). to match_array(code_childs) }
+          end
+
+          it_behaves_like :check_non_root_children do
+            subject { bridge_base }
+            let(:children) { [methyl_on_bridge_base] }
+          end
+
+          it_behaves_like :check_non_root_children do
+            subject { dimer_base }
+            let(:children) { [activated_dimer] }
+          end
+
+          %w(methyl_on_bridge_base activated_dimer).each do |var_name|
+            it_behaves_like :check_non_root_children do
+              subject { send(var_name.to_sym) }
+              let(:children) { [] }
+            end
+          end
+        end
+
         describe '#print_name' do
           it { expect(code_bridge_base.print_name).to eq('bridge') }
           it { expect(code_activated_bridge.print_name).to eq('bridge(ct: *)') }
-        end
-
-        describe '#pure_essence && #central_anchors' do
-          [:ct, :cr, :cl, :cb, :cm, :cc].each do |keyname|
-            let(keyname) { subject.atom(keyname) }
-          end
-
-          shared_examples_for :check_essence_and_anchors do
-            let(:code_specie) { code_for(subject) }
-            it { expect(code_specie.pure_essence).to eq(essence) }
-            it { expect(code_specie.central_anchors).to eq(central_anchors) }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { bridge_base }
-            let(:base_specs) { [dept_bridge_base] }
-
-            let(:essence) { { ct => [[cl, bond_110_cross], [cr, bond_110_cross]] } }
-            let(:central_anchors) { [[ct]] }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { methyl_on_bridge_base }
-            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-
-            let(:essence) { { cb => [[cm, free_bond]] } }
-            let(:central_anchors) { [[cb]] }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { activated_methyl_on_incoherent_bridge }
-            let(:base_specs) { [dept_methyl_on_bridge_base] }
-            let(:specific_specs) { [dept_activated_methyl_on_incoherent_bridge] }
-
-            let(:essence) { { cb => [], cm => [] } }
-            let(:central_anchors) { [[cb, cm]] }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { dimer_base }
-            let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-
-            let(:essence) { { cr => [[cl, bond_100_front]] } }
-            let(:central_anchors) { [[cr]] }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { methyl_on_dimer_base }
-            let(:base_specs) do
-              [
-                dept_bridge_base,
-                dept_methyl_on_bridge_base,
-                dept_methyl_on_dimer_base
-              ]
-            end
-
-            let(:essence) do
-              {
-                cr => [[cl, bond_100_front]],
-                cl => [[cr, bond_100_front]]
-              }
-            end
-            let(:central_anchors) { [[cr], [cl]] }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { three_bridges_base }
-            let(:base_specs) { [dept_bridge_base, dept_three_bridges_base] }
-
-            let(:essence) { { ct => [], cc => [] } }
-            let(:central_anchors) { [[ct]] }
-          end
-
-          it_behaves_like :check_essence_and_anchors do
-            subject { activated_bridge }
-            let(:base_specs) { [dept_bridge_base] }
-            let(:specific_specs) { [dept_activated_bridge] }
-
-            let(:essence) { { ct => [] } }
-            let(:central_anchors) { [[ct]] }
-          end
         end
       end
 

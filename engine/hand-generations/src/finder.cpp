@@ -18,6 +18,7 @@ void Finder::initFind(Atom **atoms, uint n)
     {
         Atom *atom = atoms[i];
         if (!atom) continue;
+        if (atom->lattice() && atom->lattice()->coords().z == 0) continue;
 
         dup[index++] = atom;
     }

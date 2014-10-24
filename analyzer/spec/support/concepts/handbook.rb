@@ -68,12 +68,15 @@ module VersatileDiamond
           set(:"activated_cd#{i}") { activated_cd.dup }
         end
 
-        # Bonds and positions:
-        set(:free_bond) { Bond[face: nil, dir: nil] }
+        # Relation parameters, bonds and positions:
+        set(:param_amorph) { Bond::AMORPH_PARAMS }
+        set(:free_bond) { Bond.amorph }
         [:front, :cross].each do |dir|
           [100, 110].each do |face|
-            set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }
-            set(:"position_#{face}_#{dir}") { Position[face: face, dir: dir] }
+            param_hash = { face: face, dir: dir }
+            set(:"param_#{face}_#{dir}") { param_hash }
+            set(:"bond_#{face}_#{dir}") { Bond[param_hash] }
+            set(:"position_#{face}_#{dir}") { Position[param_hash] }
           end
         end
 
@@ -277,6 +280,13 @@ module VersatileDiamond
           SpecificSpec.new(methyl_on_dimer_base, cm: activated_c)
         end
 
+        set(:two_methyls_on_dimer_base) do
+          s = SurfaceSpec.new(:two_methyls_on_dimer, c2: c.dup)
+          s.adsorb(methyl_on_dimer_base)
+          s.rename_atom(:cm, :c1)
+          s.link(s.atom(:cl), s.atom(:c2), free_bond); s
+        end
+
         set(:three_bridges_base) do
           s = SurfaceSpec.new(:three_bridges, tt: cd.dup)
           s.adsorb(bridge_base)
@@ -288,12 +298,33 @@ module VersatileDiamond
           s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
         end
 
+        set(:bridge_with_dimer_base) do
+          s = SurfaceSpec.new(:bridge_with_dimer, tt: cd.dup)
+          s.adsorb(dimer_base)
+          s.adsorb(bridge_base)
+          s.link(s.atom(:tt), s.atom(:cr), bond_110_cross)
+          s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
+        end
+
         set(:cross_bridge_on_bridges_base) do
           s = Concepts::SurfaceSpec.new(:cross_bridge_on_bridges)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :ctl)
           s.adsorb(methyl_on_bridge_base)
           s.rename_atom(:cb, :ctr)
+          s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
+        end
+
+        set(:cross_bridge_on_dimers_base) do
+          s = Concepts::SurfaceSpec.new(:cross_bridge_on_dimers)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :csl)
+          s.rename_atom(:cr, :ctl)
+          s.adsorb(methyl_on_dimer_base)
+          s.rename_atom(:cl, :csr)
+          s.rename_atom(:cr, :ctr)
+          s.link(s.atom(:csl), s.atom(:csr), position_100_cross)
           s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end

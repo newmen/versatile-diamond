@@ -12,8 +12,7 @@ module VersatileDiamond
       rescue Concepts::Position::Incomplete
         syntax_error('position.incomplete')
       rescue Concepts::Position::Duplicate => e
-        pos = e.position
-        syntax_warning('position.duplicate', face: pos.face, dir: pos.dir)
+        syntax_warning('position.duplicate', e.position.params)
       rescue Concepts::Position::UnspecifiedAtoms
         syntax_error('position.unspecified_atoms')
       end

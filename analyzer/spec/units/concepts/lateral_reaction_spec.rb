@@ -28,7 +28,7 @@ module VersatileDiamond
         it { should be_a(described_class) }
 
         describe 'theres reversed too' do
-          it { expect(there.positions).to eq({
+          it { expect(there.positions).to match_graph({
               [target_dimer, target_dimer.atom(:cr)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
               ],
@@ -51,7 +51,7 @@ module VersatileDiamond
           let(:moeb) { subject.source.first }
           let(:dim) { subject.source.last }
 
-          it { expect(there.positions).to eq({
+          it { expect(there.positions).to match_graph({
               [moeb, moeb.atom(:cb)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross],
                 [[dimer, dimer.atom(:cl)], position_100_cross],

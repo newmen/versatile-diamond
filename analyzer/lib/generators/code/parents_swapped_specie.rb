@@ -9,7 +9,7 @@ module VersatileDiamond
         # @param [Specie] specie the target specie for proxy
         # @return [ParentProxySpecie] the specie which proxing to current specie
         def proxy(specie)
-          ParentProxySpecie.new(@generator, specie, self)
+          ParentProxySpecie.new(generator, specie, self)
         end
 
       private

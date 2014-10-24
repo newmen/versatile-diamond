@@ -66,6 +66,13 @@ module VersatileDiamond
             eq_by?(other, name)
           end
       end
+      alias :eql? :==
+
+      # Calculates the hash of current instance for using it as key values in Hashes
+      # @return [Integer] the hash of current instance
+      def hash
+        @props.hash
+      end
 
       # Checks that current properties includes another properties
       # @param [AtomProperties] other probably child atom properties
@@ -433,7 +440,7 @@ module VersatileDiamond
         until bonds.empty?
           atwrel = bonds.pop
           nbr, rel = atwrel
-          if rel.face
+          if rel.belongs_to_crystal?
             result << atwrel
             next
           end

@@ -1,11 +1,10 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Contain some spec and set of dependent specs
     class DependentBaseSpec < DependentWrappedSpec
-      include MultiParentsSpec
-
-      def_delegators :@spec, :size
 
       # Checks that other spec has same atoms and links between them
       # @param [DependentBaseSpec] other the comparable spec
@@ -14,49 +13,52 @@ module VersatileDiamond
         other.is_a?(DependentSpec) ? spec.same?(other.spec) : other.same?(self)
       end
 
-      # Is unused spec or not
+      # Checks that spec is unused
       # @return [Boolean] is unused or not
       def unused?
         children.empty? && !reactant?
       end
 
-      # Is excess spec or not
+      # Checks that spec is excess
       # @return [Boolean] is excess spec or not
       def excess?
-        parents.size == 1 && children.size == 1 && children.first.specific? &&
-          !reactant?
+        !source? && !complex? &&
+          children.size == 1 && children.first.specific? && !reactant?
       end
 
       # Excludes current spec. Instead of the current spec replaces the parent to the
       # child and vice versa. Should have only one parent and only one child.
       # @raise [RuntimeError] if spec is not excess and not unused
       def exclude
-        raise 'Unexcess spec could be exclude or unused' unless excess? || unused?
+        raise 'Excluding spec could be excess or unused' unless excess? || unused?
 
-        parents.uniq.each { |parent| parent.remove_child(self) }
+        parents.map(&:original).uniq.each { |parent| parent.remove_child(self) }
 
         return if children.empty?
-        if parents.size > 1
-          raise 'Excluding specie has more that one parent and many children'
-        end
 
-        parent = parents.first
+        parent = parents.first.original
         children.each do |child|
-          parent ? child.replace_parent(parent) : child.remove_parent(self)
+          parent ? child.replace_base_spec(parent) : child.remove_parent(self)
         end
       end
 
       # Organize dependencies from another specs by dynamic table
       # @param [BaseSpeciesTable] table the dynamic table of species dependencies
       def organize_dependencies!(table)
-        cell = table.best(self)
-        if cell # if not only one specie in table
-          store_rest(cell.residual) unless self == cell.residual
-          cell.specs.each { |spec| store_parent(spec) }
-        end
+        rest = table.best(self)
+        store_rest(rest) unless rest == self
       end
 
     private
+
+      # Provides comparison by number of relations
+      # @param [Minuend] other see at #<=> same argument
+      # @return [Integer] the result of comparation
+      def order_relations(other, &block)
+        super(other) do
+          order(self, other, :external_bonds, &block)
+        end
+      end
 
       # Is current spec reactant or not
       # @return [Boolean] is reactant or not

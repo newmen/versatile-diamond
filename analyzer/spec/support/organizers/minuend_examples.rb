@@ -4,24 +4,33 @@ module VersatileDiamond
 
       module MinuendExamples
         shared_examples_for :minuend do
-          describe '#same?' do
-            it { expect(subject.same?(subject)).to be_truthy }
+          describe '#<' do
+            it { expect(subject < subject).to be_falsey }
+            it { expect(subject < bigger).to be_truthy }
+            it { expect(bigger < subject).to be_falsey }
           end
 
-          describe '#empty?' do
-            it { expect(subject.empty?).to be_falsey }
+          describe '#<=' do
+            it { expect(subject <= subject).to be_truthy }
+            it { expect(subject <= bigger).to be_truthy }
+            it { expect(bigger <= subject).to be_falsey }
           end
 
-          describe '#atoms_num' do
-            it { expect(subject.atoms_num).to eq(subject.links.size) }
+          describe '#relations_of' do
+            it { expect(subject.relations_of(atom)).to match_array(atom_relations) }
+          end
+
+          describe '#clean_links' do
+            it { expect(subject.clean_links).to match_graph(clean_links) }
           end
         end
 
-        shared_examples_for :count_atoms_and_references do
-          it { expect(subject.atoms_num).to eq(atoms_num) }
-          it { expect(subject.relations_num).to eq(relations_num) }
+        shared_examples_for :count_atoms_and_relations_and_parents do
+          let(:slinks) { subject.links }
+          it { expect(slinks.size).to eq(atoms_num) }
+          it { expect(slinks.values.map(&:size).reduce(:+)).to eq(relations_num) }
+          it { expect(subject.parents.size).to eq(parents_num) }
         end
-
       end
 
     end

@@ -24,6 +24,7 @@ coverage/
 
 Gemfile.lock
 
+*.mp4
 *.png
 *.mol
 *.sdf
