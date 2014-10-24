@@ -25,7 +25,9 @@ module VersatileDiamond
             let(:"role_#{keyname}") { role(subject, keyname) }
           end
 
-          let(:b_ct) { role(dept_bridge_base, :ct) }
+          [:ct, :cr].each do |keyname|
+            let(:"b_#{keyname}") { role(dept_bridge_base, keyname) }
+          end
           let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
 
           shared_examples_for :check_code do
@@ -277,7 +279,7 @@ module VersatileDiamond
           it_behaves_like :check_code do
             subject { dept_cross_bridge_on_bridges_base }
             let(:base_specs) do
-                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
 
             let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
@@ -306,10 +308,39 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_code do
+            subject { dept_cross_bridge_on_dimers_base }
+            let(:base_specs) { [dept_bridge_base, dept_methyl_on_dimer_base, subject] }
+
+            let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
+            let(:find_algorithm) do
+              <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
+        {
+            auto species = anchor->specsByRole<MethylOnDimer, 2>(#{mod_cm});
+            if (species.all())
+            {
+                Atom *atoms[4] = { species[0]->atom(4), species[0]->atom(1), species[1]->atom(4), species[1]->atom(1) };
+                Atom *anchors[2] = { atoms[2], atoms[3] };
+                eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                    if (atoms[0] == neighbours[0] && atoms[1] == neighbours[1] && !anchors[0]->hasBondWith(neighbours[0]) && !anchors[1]->hasBondWith(neighbours[1]))
+                    {
+                        ParentSpec *parents[2] = { species[0], species[1] };
+                        create<CrossBridgeOnDimers>(parents);
+                    }
+                });
+            }
+        }
+    }
+              CODE
+            end
+          end
+
+          it_behaves_like :check_code do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
 
-            let(:b_cr) { role(dept_bridge_base, :cr) }
             let(:find_algorithm) do
               <<-CODE
     if (anchor->is(#{role_cc}))
@@ -333,6 +364,41 @@ module VersatileDiamond
                                     }
                                 });
                             }
+                        });
+                    }
+                });
+            });
+        }
+    }
+              CODE
+            end
+          end
+
+          it_behaves_like :check_code do
+            subject { dept_bridge_with_dimer_base }
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+
+            let(:d_cr) { role(dept_dimer_base, :cr) }
+            let(:find_algorithm) do
+              <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
+        {
+            anchor->eachSpecByRole<Dimer>(#{d_cr}, [&](Dimer *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (anchor == specie1->atom(3))
+                    {
+                        anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
+                            target2->eachSymmetry([&](ParentSpec *specie2) {
+                                if (anchor == specie2->atom(1))
+                                {
+                                    Atom *atom1 = specie2->atom(2);
+                                    ParentSpec *specie3 = atom1->specByRole<Bridge>(#{b_ct});
+                                    ParentSpec *parents[3] = { specie1, specie2, specie3 };
+                                    create<BridgeWithDimer>(parents);
+                                }
+                            });
                         });
                     }
                 });

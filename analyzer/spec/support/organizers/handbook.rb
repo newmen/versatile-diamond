@@ -41,7 +41,8 @@ module VersatileDiamond
           :methyl_on_right_bridge_base,
           :cross_bridge_on_bridges_base,
           :cross_bridge_on_dimers_base,
-          :three_bridges_base
+          :three_bridges_base,
+          :bridge_with_dimer_base
         ])
 
         define_dependents(DependentSpecificSpec, [
