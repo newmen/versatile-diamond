@@ -125,8 +125,8 @@ module VersatileDiamond
       end
 
       describe '#links' do
-        it { expect(methyl.links).to eq({ activated_c => [] }) }
-        it { expect(vinyl.links).to eq({
+        it { expect(methyl.links).to match_graph({ activated_c => [] }) }
+        it { expect(vinyl.links).to match_graph({
           activated_c => [[c2, free_bond], [c2, free_bond]],
           c2 => [[activated_c, free_bond], [activated_c, free_bond]] }) }
       end
@@ -157,6 +157,13 @@ module VersatileDiamond
       describe '#unfixed!' do
         before { activated_methyl_on_bridge.unfixed!(:cm) }
         it { expect(activated_c.unfixed?).to be_truthy }
+      end
+
+      describe '#relation_between' do
+        let(:ct) { activated_bridge.atom(:ct) }
+        let(:cr) { activated_bridge.atom(:cr) }
+        it { expect(activated_bridge.relation_between(ct, cr)).to eq(bond_110_cross) }
+        it { expect(activated_bridge.relation_between(cr, ct)).to eq(bond_110_front) }
       end
 
       describe '#external_bonds_for' do

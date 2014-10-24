@@ -34,7 +34,7 @@ module VersatileDiamond
         # @param [Bond] relation the relation from which position will be maked
         # @return [Position] a position with same face and dir as relation
         def make_from(relation)
-          self.[](face: relation.face, dir: relation.dir)
+          self[relation.params]
         end
       end
 
@@ -51,6 +51,12 @@ module VersatileDiamond
       # @return [Boolean] false
       def bond?
         false
+      end
+
+      # Position always belongs to crystal
+      # @return [Boolean] true
+      def belongs_to_crystal?
+        true
       end
 
       def to_s

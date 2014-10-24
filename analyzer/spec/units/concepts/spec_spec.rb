@@ -51,8 +51,8 @@ module VersatileDiamond
       end
 
       describe '#links' do
-        it { expect(methane_base.links).to eq({ c => [] }) }
-        it { expect(ethylene_base.links).to eq({
+        it { expect(methane_base.links).to match_graph({ c => [] }) }
+        it { expect(ethylene_base.links).to match_graph({
           c1 => [[c2, free_bond], [c2, free_bond]],
           c2 => [[c1, free_bond], [c1, free_bond]] }) }
       end
@@ -65,6 +65,13 @@ module VersatileDiamond
           it { expect(subject.external_bonds_for(subject.atom(:c1))).to eq(2) }
           it { expect(subject.external_bonds_for(subject.atom(:c2))).to eq(2) }
         end
+      end
+
+      describe '#relation_between' do
+        let(:ct) { bridge_base.atom(:ct) }
+        let(:cr) { bridge_base.atom(:cr) }
+        it { expect(bridge_base.relation_between(ct, cr)).to eq(bond_110_cross) }
+        it { expect(bridge_base.relation_between(cr, ct)).to eq(bond_110_front) }
       end
 
       describe '#external_bonds_for' do

@@ -12,7 +12,7 @@ module VersatileDiamond
         false
       end
 
-      # Finds position relation between two atoms, where first atom is atom of
+      # Finds position relation between two atoms, where first atom belongs to
       # largest structure (specie) and relation has direction from atom of
       # first spec to atom of second spec
       #
@@ -21,8 +21,7 @@ module VersatileDiamond
       # @return [Position] the position relation or nil
       def position_between(first, second)
         relation = relation_between(first, second)
-        relation && relation.face &&
-          Position[face: relation.face, dir: relation.dir]
+        relation && relation.belongs_to_crystal? && Position.make_from(relation)
       end
 
     protected
@@ -93,17 +92,6 @@ module VersatileDiamond
         index = atoms.index(&method(:has_lattice?))
         first = atoms.delete_at(index)
         [first, atoms.pop]
-      end
-
-      # Checks that atoms is related
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @return [Boolean] related or not
-      # TODO: move to super?
-      def relation_between(first, second)
-        links[first] &&
-          (atom_with_rel = links[first].find { |atom, _| atom == second }) &&
-          ((_, rel) = atom_with_rel) && rel
       end
     end
 

@@ -37,7 +37,7 @@ module VersatileDiamond
             end
 
             describe 'classification' do
-              subject { classifier.classify(target.parent) }
+              subject { classifier.classify(target.parents.first.original) }
               let(:hash) do
                 {
                   3 => ['_~-C%d<', 1],
@@ -116,6 +116,11 @@ module VersatileDiamond
         it { expect(eob).not_to eq(bob) }
         it { expect(eob).not_to eq(vob) }
         it { expect(vob).not_to eq(eob) }
+      end
+
+      describe '#eql?' do
+        it { expect(dimer_cl.eql?(dimer_cr)).to be_truthy }
+        it { expect(ab_ct.eql?(aib_ct)).to be_falsey }
       end
 
       describe '#include?' do

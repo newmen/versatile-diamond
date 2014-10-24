@@ -1,26 +1,68 @@
+require 'benchmark'
+
 module VersatileDiamond
   module Organizers
 
     # Provides method for minuend behavior
     module Minuend
-      include Module::ListsComparer
+      include Modules::ListsComparer
+      include Modules::OrderProvider
 
-      # Checks that current minuend instance is empty or not
-      # @return [Boolean] empty or not
-      def empty?
-        links.empty?
+      # Compares two minuend instances
+      # @param [Minuend] other the comparable minuend instance
+      # @return [Integer] the result of comparation
+      def <=> (other)
+        order(self, other, :links, :size) do
+          order_classes(other) do
+            order_relations(other) do
+              parents.size <=> other.parents.size
+            end
+          end
+        end
       end
 
-      # The number of links between atoms
-      # @return [Integer] the number of links
-      def atoms_num
-        links.size
+      # Checks that current instance is less than other
+      # @param [Minuend] other the comparable minuend instance
+      # @return [Boolean] is less or not
+      def < (other)
+        (self <=> other) < 0
       end
 
-      # Counts the atom reference instances
-      # @return [Integer] the number of atom references
-      def relations_num
-        links.values.map(&:size).reduce(:+)
+      # Checks that current instance is less than other or equal
+      # @param [Minuend] other the comparable minuend instance
+      # @return [Boolean] is less or equal or not
+      def <= (other)
+        self == other || self < other
+      end
+
+      # Makes residual of difference between top and possible parent
+      # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
+      # @return [SpecResidual] the residual of diference between arguments or nil if
+      #   it doesn't exist
+      def - (other)
+        mirror = mirror_to(other)
+        return nil if other.links.size != mirror.size
+
+        proxy = ProxyParentSpec.new(other, owner, mirror)
+
+        residuals = {}
+        atoms_to_parents = {}
+        pairs_from(mirror).each do |own_atom, other_atom|
+          unless other_atom
+            residuals[own_atom] = links[own_atom] # <-- same as bottom
+            next
+          end
+
+          is_diff = different_used_relations?(other, own_atom, other_atom) ||
+            used?(mirror.keys, own_atom)
+
+          if is_diff
+            residuals[own_atom] = links[own_atom] # <-- same as top
+            atoms_to_parents[own_atom] = [proxy]
+          end
+        end
+
+        SpecResidual.new(owner, residuals, atoms_to_parents)
       end
 
       # Provides relations of atom in current resudual
@@ -34,34 +76,13 @@ module VersatileDiamond
         with_atoms ? relations : relations.map(&:last)
       end
 
-      # Makes residual of difference between top and possible parent
-      # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
-      # @return [SpecResidual] the residual of diference between arguments or nil if
-      #   it doesn't exist
-      def - (other, prev_refs = {})
-        mirror = mirror_to(other)
-        return nil if other.links.size != mirror.size
-
-        residuals = {}
-        collected_refs = {}
-        pairs_from(mirror).each do |own_atom, other_atom|
-          unless other_atom
-            residuals[own_atom] = links[own_atom] # <-- same as bottom
-            next
+      # Removes excess positions from current links graph
+      # @return [Hash] the links of concept specie without excess positions
+      def clean_links
+        @_clean_links ||=
+          cleanable_links.each.with_object({}) do |(atom, rels), result|
+            result[atom] = rels.reject { |a, r| excess_position?(r, atom, a) }
           end
-
-          is_diff = different_bonds?(other, own_atom, other_atom) ||
-            used?(mirror.keys, own_atom)
-
-          if is_diff
-            residuals[own_atom] = links[own_atom] # <-- same as top
-            collected_refs[own_atom] = other_atom
-          end
-        end
-
-        # TODO: prev_refs could be a simple hash with only one value (not with arrays)
-        # TODO: now it's only overenginiring
-        SpecResidual.new(residuals, merge(prev_refs, collected_refs))
       end
 
       # Finds first intersec with some spec
@@ -76,14 +97,47 @@ module VersatileDiamond
 
     protected
 
-      # Rejects position relations
+      # Counts the relations number in current links
+      # @return [Integer] the number of relations
+      def relations_num
+        links.values.map(&:size).reduce(:+)
+      end
+
+      # Checks that atom have amorph bond and if it is true then relations returns else
+      # only bonds will returned
+      #
       # @param [Atom] atom see at #relations_of same argument
       # @return [Array] the array of relations without position relations
-      def bonds_of(atom)
-        relations_of(atom).select(&method(:no_position?))
+      def used_relations_of(atom)
+        pairs = relations_of(atom, with_atoms: true).reject do |a, r|
+          excess_position?(r, atom, a)
+        end
+        pairs.map(&:last)
       end
 
     private
+
+      # Provides comparison by class of each instance
+      # @param [Minuend] other see at #<=> same argument
+      # @return [Integer] the result of comparation
+      def order_classes(other, &block)
+        if self.class == other.class
+          block.call
+        else
+          if self.is_a?(SpecResidual) || other.is_a?(DependentSpecificSpec)
+            -1
+          elsif other.is_a?(SpecResidual) || self.is_a?(DependentSpecificSpec)
+            1
+          end
+        end
+      end
+
+      # Provides comparison by number of relations
+      # @param [Minuend] other see at #<=> same argument
+      # @return [Integer] the result of comparation
+      def order_relations(other, &block)
+        order(self, other, :relations_num, &block)
+      end
 
       # Makes pairs of atoms from mirror. If some atoms from current links are not
       # presented in mirror then them will be added to head of pairs.
@@ -100,25 +154,13 @@ module VersatileDiamond
         pairs
       end
 
-      # Checks that atoms are different
+      # Checks that relations gotten by method of both atom have same relations sets
+      # @param [Symbol] method name which will called
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
       #   own_atom the major of comparable atoms
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom the second
       #   comparable atom
-      # @return [Boolean] are different or not
-      def atoms_different?(other, own_atom, other_atom)
-        different_bonds?(other, own_atom, other_atom) ||
-          !other_atom.diff(own_atom).empty?
-      end
-
-      # Checks that relations gotten by method of both atom have same relations sets
-      # @param [Symbol] method name which will called
-      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
-      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #atoms_different? argument
-      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #atoms_different? argument
       # @return [Boolean] are different or not
       def different_by?(method, other, own_atom, other_atom)
         srs, ors = send(method, own_atom), other.send(method, other_atom)
@@ -128,22 +170,15 @@ module VersatileDiamond
       # Checks that bonds of both atom have same relations sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #atoms_different? argument
+      #   own_atom same as #different_by? argument
       # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #atoms_different? argument
+      #   #different_by? argument
       # @return [Boolean] are different or not
-      def different_bonds?(*args)
-        different_by?(:bonds_of, *args)
+      def different_used_relations?(*args)
+        different_by?(:used_relations_of, *args)
       end
 
-      # Checks that passed relation is not position
-      # @param [Concepts::Bond | Concepts::NoBond] relation which will be checked
-      # @return [Boolean] is relation a position or not
-      def no_position?(relation)
-        relation.bond? || !relation.relation?
-      end
-
-      # Checks whether the atom used current links
+      # Checks whether the atom is used in current links
       # @param [Array] used_in_mirror the atoms which was mapped to atoms of smallest
       #   spec
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
@@ -151,29 +186,41 @@ module VersatileDiamond
       # @return [Boolean] is used or not
       def used?(used_in_mirror, atom)
         (links.keys - used_in_mirror).any? do |a|
-          links[a].any? do |neighbour, relation|
-            neighbour == atom && no_position?(relation)
+          links[a].any? do |neighbour, r|
+            neighbour == atom && !excess_position?(r, atom, a)
           end
         end
       end
 
-      # Merges collected references to previous references
-      # @param [Hash] prev_refs the previous collected references from some spec
-      #   residual; each value of hash should be an array
-      # @return [Hash] collected_refs the references which was collecected in
-      #   difference operation
-      # @return [Hash] the merging result where each value is list of possible values
-      def merge(prev_refs, collected_refs)
-        result = prev_refs.dup
-        collected_refs.each do |k, v|
-          if result[k]
-            result[k] << v
-          else
-            result[k] = [v]
-          end
+      # Checks that passed relation is position and that it is excess
+      # @param [Concepts::Bond | Concepts::NoBond] relation which will checked
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   first checking atom
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   second checking atom
+      def excess_position?(relation, first, second)
+        relation.relation? && !relation.bond? &&
+          excess_position_between?(first, second)
+      end
+
+      # Checks that current specie have excess position between passed atoms
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   first checking atom
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   second checking atom
+      # @return [Boolean] has excess poosition or not
+      def excess_position_between?(first, second)
+        @@_eps_cache ||= {}
+        key = [first, second]
+        return @@_eps_cache[key] if @@_eps_cache.include?(key)
+
+        unless first.lattice == second.lattice
+          raise 'Wrong position between atoms that belongs to different lattices'
         end
 
-        result
+        crystal = first.lattice.instance
+        result = !!crystal.position_between(first, second, links)
+        @@_eps_cache[key] = @@_eps_cache[[second, first]] = result
       end
     end
 

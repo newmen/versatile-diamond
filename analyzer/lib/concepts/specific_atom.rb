@@ -4,7 +4,7 @@ module VersatileDiamond
     # Specified atom class, contain additional atom states like incoherentness,
     # unfixness and activeness
     class SpecificAtom
-      include ListsComparer
+      include Modules::ListsComparer
       extend Forwardable
 
       # Error for case when something wrong with atom state
@@ -24,7 +24,7 @@ module VersatileDiamond
       class AlreadyUnfixed; end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
-        :original_same?, :reference?
+        :original_same?, :reference?, :relations_limits
 
       attr_reader :monovalents
 

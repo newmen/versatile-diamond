@@ -12,6 +12,8 @@ Dir['./spec/support/**/*.rb'].each { |f| require f }
 RSpec.configure do |config|
   VD = VersatileDiamond
 
+  config.include VD::Support::Matchers
+
   config.include VD::Concepts::Support::Handbook
   config.include VD::Interpreter::Support::Handbook, type: :interpreter
 

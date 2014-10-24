@@ -13,20 +13,13 @@ module VersatileDiamond
 
           before { generator }
 
-          it '#original' do
+          # each method should not change the state of sequence
+          it '#original && #short && #major_atoms && #addition_atoms && #delta' do
             expect(sequence.original).to eq(original)
-          end
-
-          it '#short' do
             expect(sequence.short).to eq(short)
-          end
-
-          it '#major_atoms' do
             expect(sequence.major_atoms).to eq(major_atoms)
-          end
-
-          it '#delta' do
-            expect(sequence.delta).to eq(delta)
+            expect(sequence.addition_atoms).to eq(addition_atoms)
+            expect(sequence.delta).to eq(addition_atoms.size)
           end
         end
 
@@ -34,7 +27,7 @@ module VersatileDiamond
           subject { dept_bridge_base }
           let(:bases) do
             [
-              dept_bridge_base,
+              subject,
               dept_dimer_base,
               dept_methyl_on_bridge_base,
               dept_methyl_on_dimer_base
@@ -51,12 +44,12 @@ module VersatileDiamond
           end
           let(:short) { original }
           let(:major_atoms) { original }
-          let(:delta) { 0 }
+          let(:addition_atoms) { [] }
         end
 
         it_behaves_like :apply_all do
           subject { dept_methyl_on_bridge_base }
-          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
 
           let(:original) do
@@ -74,14 +67,12 @@ module VersatileDiamond
             ]
           end
           let(:major_atoms) { [methyl_on_bridge_base.atom(:cb)] }
-          let(:delta) { 1 }
+          let(:addition_atoms) { [methyl_on_bridge_base.atom(:cm)] }
         end
 
         it_behaves_like :apply_all do
           subject { dept_methyl_on_dimer_base }
-          let(:bases) do
-            [dept_bridge_base, dept_methyl_on_bridge_base, dept_methyl_on_dimer_base]
-          end
+          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_dimer] }
 
           let(:original) do
@@ -102,7 +93,99 @@ module VersatileDiamond
             ]
           end
           let(:major_atoms) { short }
-          let(:delta) { 0 }
+          let(:addition_atoms) { [] }
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_cross_bridge_on_bridges_base }
+          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
+          let(:specifics) { [] }
+
+          let(:original) do
+            [
+              cross_bridge_on_bridges_base.atom(:cm),
+              cross_bridge_on_bridges_base.atom(:ctl),
+              cross_bridge_on_bridges_base.atom(:cl),
+              cross_bridge_on_bridges_base.atom(:cr),
+              cross_bridge_on_bridges_base.atom(:cm),
+              cross_bridge_on_bridges_base.atom(:ctr),
+              cross_bridge_on_bridges_base.atom(:_cr0),
+              cross_bridge_on_bridges_base.atom(:_cl0),
+            ]
+          end
+          let(:short) do
+            [
+              cross_bridge_on_bridges_base.atom(:ctl),
+              cross_bridge_on_bridges_base.atom(:ctr),
+              cross_bridge_on_bridges_base.atom(:cm),
+            ]
+          end
+          let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_cross_bridge_on_dimers_base }
+          let(:bases) { [dept_methyl_on_dimer_base, subject] }
+          let(:specifics) { [] }
+
+          let(:original) do
+            [
+              cross_bridge_on_dimers_base.atom(:cm),
+              cross_bridge_on_dimers_base.atom(:ctl),
+              cross_bridge_on_dimers_base.atom(:csl),
+              cross_bridge_on_dimers_base.atom(:_cr1),
+              cross_bridge_on_dimers_base.atom(:crb),
+              cross_bridge_on_dimers_base.atom(:clb),
+              cross_bridge_on_dimers_base.atom(:_cr0),
+              cross_bridge_on_dimers_base.atom(:cm),
+              cross_bridge_on_dimers_base.atom(:ctr),
+              cross_bridge_on_dimers_base.atom(:csr),
+              cross_bridge_on_dimers_base.atom(:_clb0),
+              cross_bridge_on_dimers_base.atom(:_cr2),
+              cross_bridge_on_dimers_base.atom(:_cr3),
+              cross_bridge_on_dimers_base.atom(:_crb0),
+            ]
+          end
+          let(:short) do
+            [
+              cross_bridge_on_dimers_base.atom(:ctr),
+              cross_bridge_on_dimers_base.atom(:ctl),
+              cross_bridge_on_dimers_base.atom(:csl),
+              cross_bridge_on_dimers_base.atom(:csr),
+              cross_bridge_on_dimers_base.atom(:cm),
+            ]
+          end
+          let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_three_bridges_base }
+          let(:bases) { [dept_bridge_base, subject] }
+          let(:specifics) { [] }
+
+          let(:original) do
+            [
+              three_bridges_base.atom(:tt),
+              three_bridges_base.atom(:cc),
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:_ct0),
+              three_bridges_base.atom(:cc),
+              three_bridges_base.atom(:_cl0),
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:cr),
+              three_bridges_base.atom(:cl),
+            ]
+          end
+          let(:short) do
+            [
+              three_bridges_base.atom(:ct),
+              three_bridges_base.atom(:cc),
+            ]
+          end
+          let(:major_atoms) { short }
+          let(:addition_atoms) { [] }
         end
 
         describe 'symmetric dimers' do
@@ -120,7 +203,7 @@ module VersatileDiamond
             ]
           end
           let(:major_atoms) { short }
-          let(:delta) { 0 }
+          let(:addition_atoms) { [] }
 
           it_behaves_like :apply_all do
             subject { dept_dimer_base }

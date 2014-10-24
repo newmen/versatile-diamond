@@ -68,7 +68,6 @@ public:
     template <class S> S *specByRole(ushort role);
     template <class S, ushort NUM> ContainedSpecies<S, NUM> specsByRole(ushort role);
     template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
-    template <class S, class L> S *selectSpecByRole(ushort role, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -153,20 +152,6 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
         BaseSpec *spec = range.first->second;
         lambda(static_cast<S *>(spec));
     }
-}
-
-template <class S, class L>
-S *Atom::selectSpecByRole(ushort role, const L &lambda)
-{
-    S *result = nullptr;
-    eachSpecByRole<S>(role, [&result, lambda](S *specie) {
-        if (lambda(specie))
-        {
-            assert(!result);
-            result = specie;
-        }
-    });
-    return result;
 }
 
 }

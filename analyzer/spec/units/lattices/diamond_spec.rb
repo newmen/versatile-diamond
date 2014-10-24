@@ -9,8 +9,8 @@ describe Diamond do
         it { expect { diamond.opposite_relation(diamond, free_bond) }.
           to raise_error undefined_relation }
 
-        it { expect { diamond.opposite_relation(diamond, bond_100_cross) }.
-          to raise_error undefined_relation }
+        it { expect(diamond.opposite_relation(diamond, bond_100_cross)).
+          to eq(bond_100_cross) }
         it { expect(diamond.opposite_relation(diamond, bond_100_front)).
           to eq(bond_100_front) }
         it { expect(diamond.opposite_relation(diamond, bond_110_front)).
@@ -92,14 +92,10 @@ describe Diamond do
 
         let(:links) do {
           cd0 => [[cd1, bond_110_front], [cd3, position_100_cross]],
-          cd1 => [
-            [cd0, bond_110_cross], [cd2, bond_110_cross], [cd4, bond_100_front]
-          ],
+          cd1 => [[cd0, bond_110_cross], [cd2, bond_110_cross], [cd4, bond_100_front]],
           cd2 => [[cd1, bond_110_front]],
           cd3 => [[cd4, bond_110_front], [cd3, position_100_cross]],
-          cd4 => [
-            [cd3, bond_110_cross], [cd5, bond_110_cross], [cd1, bond_100_front]
-          ],
+          cd4 => [[cd3, bond_110_cross], [cd5, bond_110_cross], [cd1, bond_100_front]],
           cd5 => [[cd4, bond_110_front]],
         } end
 

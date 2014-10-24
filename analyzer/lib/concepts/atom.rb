@@ -109,6 +109,18 @@ module VersatileDiamond
         @valence
       end
 
+      # Gets the relations limits of current atom. Used for build bulk structures or to
+      # make the find specie algorithm.
+      #
+      # @return [Hash] the hash of limits of relations
+      def relations_limits
+        if lattice
+          lattice.instance.relations_limit
+        else
+          { Bond::AMORPH_PARAMS => valence }
+        end
+      end
+
       def to_s
         "#{name}#{@lattice}"
       end

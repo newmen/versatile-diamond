@@ -36,7 +36,7 @@ module VersatileDiamond
       # Draw atoms for passed spec with edges from spec to each atom with
       # passed color
       #
-      # @param [DependentSpec | Specresidual] spec  atoms of which will be shown
+      # @param [DependentSpec | SpecResidual] spec atoms of which will be shown
       # @param [String] color the color of edges
       def draw_atoms_for(spec, color)
         classification = classifier.classify(spec)
