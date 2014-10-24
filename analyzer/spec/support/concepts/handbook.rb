@@ -298,6 +298,14 @@ module VersatileDiamond
           s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
         end
 
+        set(:bridge_with_dimer_base) do
+          s = SurfaceSpec.new(:bridge_with_dimer, tt: cd.dup)
+          s.adsorb(dimer_base)
+          s.adsorb(bridge_base)
+          s.link(s.atom(:tt), s.atom(:cr), bond_110_cross)
+          s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
+        end
+
         set(:cross_bridge_on_bridges_base) do
           s = Concepts::SurfaceSpec.new(:cross_bridge_on_bridges)
           s.adsorb(bridge_base)

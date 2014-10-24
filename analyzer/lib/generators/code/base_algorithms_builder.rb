@@ -125,15 +125,25 @@ module VersatileDiamond
         # @return [String]
         def each_nbrs_lambda(anchors, nbrs, rel_params, &block)
           namer.assign('neighbour', nbrs)
-
-          anchors_var_name = namer.name_of(anchors)
           nbrs_var_name = namer.name_of(nbrs)
 
           if anchors.size == 1
+            anchors_var_name = namer.name_of(anchors)
+            anchors_define_line = ''
+
             method_name = 'eachNeighbour'
             lambda_args = ["Atom *#{nbrs_var_name}"]
           else
-            method_name = "eachNeighbours<#{anchors.size}>"
+            items_str = anchors.map { |a| namer.name_of(a) }.join(', ')
+            namer.erase(anchors)
+            namer.assign('anchor', anchors)
+            anchors_var_name = namer.name_of(anchors)
+
+            num = anchors.size
+            define_str = "Atom *#{anchors_var_name}[#{num}] = { #{items_str} };"
+            anchors_define_line = code_line(define_str)
+
+            method_name = "eachNeighbours<#{num}>"
             lambda_args = ["Atom **#{nbrs_var_name}"]
           end
 
@@ -142,7 +152,8 @@ module VersatileDiamond
             anchors_var_name, full_relation_name(anchors.first, rel_params)
           ]
 
-          code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
+          anchors_define_line +
+            code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
         end
       end
 
