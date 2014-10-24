@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Generators
     module Code
 

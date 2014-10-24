@@ -120,7 +120,7 @@ module VersatileDiamond
         #   relations if given
         # @return [Integer] the number of selected relations
         def count_relations(atom, &block)
-          rels = spec.relations_of(a)
+          rels = spec.relations_of(atom)
           rels = rels.select(&block) if block_given?
           rels.size
         end
