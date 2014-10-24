@@ -326,10 +326,11 @@ module VersatileDiamond
                                 target2->eachSymmetry([&](ParentSpec *specie2) {
                                     if (anchor == specie2->atom(2))
                                     {
-                                        Atom *atom1 = specie2->atom(1);
-                                        ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie2, specie1 };
-                                        create<TwoBridges>(parents);
-                                    {
+                                        Atom *atom1 = specie1->atom(2);
+                                        ParentSpec *specie3 = atom1->specByRole<Bridge>(#{b_ct});
+                                        ParentSpec *parents[3] = { specie1, specie2, specie3 };
+                                        create<ThreeBridges>(parents);
+                                    }
                                 });
                             }
                         });
