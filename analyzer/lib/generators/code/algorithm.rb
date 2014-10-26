@@ -12,8 +12,6 @@ module VersatileDiamond
         # @param [Specie] specie for which algorithm will builded
         def initialize(specie)
           @specie = specie
-          @essence = Essence.new(specie)
-
           @_finite_graph, @_anchors_to_grouped_keys = nil
         end
 
@@ -112,8 +110,8 @@ module VersatileDiamond
 
       private
 
-        def_delegators :@specie, :spec, :sequence
-        def_delegator :@essence, :grouped_graph
+        def_delegators :@specie, :spec, :sequence, :essence
+        def_delegator :essence, :grouped_graph
 
         # Makes mirror from anchors to correspond keys of grouped graph
         # @return [Hash] the mirror from anchors to grouped graph keys
