@@ -85,6 +85,8 @@ module VersatileDiamond
           end
       end
 
+    protected
+
       # Finds first intersec with some spec
       # @param [DependentBaseSpec] spec the checkable specie
       # @return [Array] the array of each pair of intersection or nil if intersection
@@ -94,8 +96,6 @@ module VersatileDiamond
         first = Mcs::SpeciesComparator.first_general_intersec(*args)
         first && Hash[first.to_a]
       end
-
-    protected
 
       # Counts the relations number in current links
       # @return [Integer] the number of relations
