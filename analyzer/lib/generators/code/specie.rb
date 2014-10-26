@@ -10,7 +10,7 @@ module VersatileDiamond
         extend Forwardable
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
-        attr_reader :spec, :original, :sequence
+        attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -26,10 +26,11 @@ module VersatileDiamond
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config
             # file
-            @original, @symmetrics, @sequence, @detector = nil
+            @original, @symmetrics, @sequence, @detector, @essence = nil
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
+            @essence = Essence.new(self)
           end
 
           @_class_name, @_enum_name, @_used_iterators = nil
@@ -221,17 +222,12 @@ module VersatileDiamond
         def used_iterators
           return @_used_iterators if @_used_iterators
 
-          rest_links = spec.target.links
-          anchors = rest_links.keys
-          lattices = rest_links.reduce(Set.new) do |acc, (atom, list)|
-            next acc if list.empty? || !atom.lattice
-
-            crystal_nbr_exist = list.map(&:first).any? do |a|
-              a.lattice && anchors.include?(a)
+          lattices =
+            @essence.cut_links.each_with_object(Set.new) do |(atom, rels), acc|
+              if !rels.empty? && atom.lattice && rels.map(&:first).any?(&:lattice)
+                acc << atom.lattice
+              end
             end
-
-            crystal_nbr_exist ? (acc << atom.lattice) : acc
-          end
 
           @_used_iterators = lattices.to_a.compact.map do |lattice|
             generator.lattice_class(lattice).iterator
