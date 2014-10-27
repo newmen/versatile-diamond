@@ -17,7 +17,7 @@ module VersatileDiamond
         @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
         @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
 
-        @prop_vector.each.with_index do |prop, i|
+        @prop_vector.each_with_index do |prop, i|
           tcR(i, i, *methods)
         end
       end

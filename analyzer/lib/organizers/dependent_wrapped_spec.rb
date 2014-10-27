@@ -129,7 +129,7 @@ module VersatileDiamond
       #   edges are bonds or positions between them
       # @return [Hash] the rectified graph
       def straighten_graph(links)
-        links.each.with_object({}) do |(atom, relations), result|
+        links.each_with_object({}) do |(atom, relations), result|
           result[atom] = relations + atom.additional_relations
         end
       end

@@ -80,7 +80,7 @@ module VersatileDiamond
       # @return [Hash] the links of concept specie without excess positions
       def clean_links
         @_clean_links ||=
-          cleanable_links.each.with_object({}) do |(atom, rels), result|
+          cleanable_links.each_with_object({}) do |(atom, rels), result|
             result[atom] = rels.reject { |a, r| excess_position?(r, atom, a) }
           end
       end

@@ -72,7 +72,7 @@ module VersatileDiamond
         # Gets the mirror of each termination spec to their numbers on atoms
         # @return [Hash] the hash of numbers of terminations on each atom
         def nums_on_terms
-          generator.term_specs.each.with_object({}) do |term_spec, hash|
+          generator.term_specs.each_with_object({}) do |term_spec, hash|
             hash[term_spec.name] = term_nums(term_spec)
           end
         end
