@@ -83,7 +83,7 @@ module VersatileDiamond
       # @return [Hash] the hash where keys are names of specs and wrapped
       #    termination species as values
       def collect_termination_specs
-        ubiquitous_reactions.each.with_object({}) do |reaction, cache|
+        ubiquitous_reactions.each_with_object({}) do |reaction, cache|
           term = reaction.termination
           cache[term.name] ||= DependentTermination.new(term)
           store_concept_to(reaction, cache[term.name])

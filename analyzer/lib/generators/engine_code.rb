@@ -116,7 +116,7 @@ module VersatileDiamond
 
         all_specs = (base_specs || []) + (specific_specs || [])
         all_specs.each { |spec| @_dependent_species[spec.name] = spec }
-        config_specs.each.with_object(@_dependent_species) do |dep_spec, hash|
+        config_specs.each_with_object(@_dependent_species) do |dep_spec, hash|
           hash[dep_spec.name] ||= dep_spec
         end
       end

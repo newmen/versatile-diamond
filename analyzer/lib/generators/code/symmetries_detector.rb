@@ -143,7 +143,7 @@ module VersatileDiamond
         # @param [Array] atoms which will be checked for existing symmetric pair
         # @return [Array] the array of all unique overlaps
         def overlaps_for(atoms)
-          @self_insec.each.with_object([]) do |intersec, all_overlaps|
+          @self_insec.each_with_object([]) do |intersec, all_overlaps|
             overlap = {}
             is_present = presented_in(overlap)
 
@@ -173,7 +173,7 @@ module VersatileDiamond
         # @result [Hash] the hash where keys are parent specie and values are arrays
         #   of correspond twins
         def distrib_twins_to_parents(atoms)
-          atoms.each.with_object({}) do |atom, result|
+          atoms.each_with_object({}) do |atom, result|
             spec.parents_with_twins_for(atom).each do |parent, twin|
               result[parent.original] ||= []
               result[parent.original] << twin

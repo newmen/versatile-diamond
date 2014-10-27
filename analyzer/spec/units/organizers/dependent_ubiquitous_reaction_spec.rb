@@ -31,7 +31,7 @@ module VersatileDiamond
           end
 
           let(:specs_cache) do
-            all_reactions.each.with_object({}) do |reaction, cache|
+            all_reactions.each_with_object({}) do |reaction, cache|
               reaction.each_source do |spec|
                 cache[spec.name] = DependentSpecificSpec.new(spec)
               end
