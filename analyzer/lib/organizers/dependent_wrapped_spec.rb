@@ -91,6 +91,12 @@ module VersatileDiamond
         parents.size > 1
       end
 
+      # Provides links of original spec
+      # @return [Hash] the links between atoms of spec
+      def original_links
+        spec.links
+      end
+
       def to_s
         "(#{name}, [#{parents.map(&:name).join(' ')}], " +
           "[#{children.map(&:name).join(' ')}])"
@@ -141,7 +147,7 @@ module VersatileDiamond
       # Provides links that will be cleaned by #clean_links
       # @return [Hash] the links which will be cleaned
       def cleanable_links
-        spec.links
+        original_links
       end
     end
 

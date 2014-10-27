@@ -103,10 +103,10 @@ module VersatileDiamond
         if path.empty?
           target == current
         else
-          relation_params = path.first
           rels = links[current]
           return false unless rels
 
+          relation_params = path.first
           applicants = rels.select do |atom, link|
             atom != current && atom != prevent && link.it?(relation_params)
           end

@@ -210,17 +210,12 @@ module VersatileDiamond
       #   second checking atom
       # @return [Boolean] has excess poosition or not
       def excess_position_between?(first, second)
-        @@_eps_cache ||= {}
-        key = [first, second]
-        return @@_eps_cache[key] if @@_eps_cache.include?(key)
-
         unless first.lattice == second.lattice
           raise 'Wrong position between atoms that belongs to different lattices'
         end
 
         crystal = first.lattice.instance
-        result = !!crystal.position_between(first, second, links)
-        @@_eps_cache[key] = @@_eps_cache[[second, first]] = result
+        !!crystal.position_between(first, second, original_links)
       end
     end
 
