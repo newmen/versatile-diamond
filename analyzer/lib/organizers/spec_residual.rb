@@ -100,6 +100,12 @@ module VersatileDiamond
         end
       end
 
+      # Delegates to original links of owner spec
+      # @return [Hash] the links between atoms of owner spec
+      def original_links
+        owner.original_links
+      end
+
       # Provides links that will be cleaned by #clean_links
       # @return [Hash] the links which will be cleaned
       def cleanable_links

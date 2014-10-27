@@ -35,6 +35,10 @@ module VersatileDiamond
               it { expect(subject.non_term_children).to eq([child]) }
             end
           end
+
+          describe '#original_links' do
+            it { expect(subject.original_links).to eq(subject.spec.links) }
+          end
         end
 
         shared_examples_for :organize_dependencies do
