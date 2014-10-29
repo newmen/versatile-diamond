@@ -6,7 +6,7 @@
 #include <tools/common.h>
 #include <tools/scavenger.h>
 #include <species/keeper.h>
-<% if lateral_exists? %>
+<% if lateral_reactions_exists? %>
 #include <species/lateral_spec.h>
 <% end %>
 #include <species/specific_spec.h>
@@ -24,7 +24,7 @@ class Handbook
 {
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
-<% if lateral_exists? %>
+<% if lateral_reactions_exists? %>
 private:
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     static LKeeper __lateralKeepers[THREADS_NUM];
@@ -38,7 +38,7 @@ private:
 public:
     static SKeeper &specificKeeper();
 
-<% if amorph_exists? %>
+<% if amorph_phase_exists? %>
 private:
     static PhaseBoundary __amorph;
 public:

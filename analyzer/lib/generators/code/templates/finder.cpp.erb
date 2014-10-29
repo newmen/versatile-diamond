@@ -1,0 +1,122 @@
+#include "finder.h"
+#include "handbook.h"
+
+<% including_files.each do |file_name| %>
+#include "<%= file_name %>.h"
+<% end %>
+
+void Finder::initFind(Atom **atoms, uint n)
+{
+    uint index = 0;
+    Atom **dup = new Atom *[n];
+    for (uint i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+        if (atom->lattice() && atom->lattice()->coords().z == 0) continue;
+
+        dup[index++] = atom;
+    }
+
+    findAll(dup, index);
+
+    delete [] dup;
+
+    finalize();
+
+    Handbook::mc().sort();
+}
+
+void Finder::findAll(Atom **atoms, uint n)
+{
+#ifdef PRINT
+    debugPrint([&](std::ostream &os) {
+        os << " ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+        os << "Find by " << n << " atoms";
+        for (uint i = 0; i < n; ++i)
+        {
+            os << " [" << atoms[i] << "]";
+        }
+    });
+#endif // PRINT
+
+#ifndef NDEBUG
+    for (uint i = 0; i < n; ++i)
+    {
+        assert(atoms[i]);
+    }
+#endif // NDEBUG
+
+    for (uint i = 0; i < n; ++i)
+    {
+        atoms[i]->setUnvisited();
+    }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        atoms[i]->removeUnsupportedSpecies();
+    }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        atoms[i]->setSpecsUnvisited();
+    }
+
+    // ---------------------------------------------------------------------------------------------------------- //
+
+<% root_species.each do |specie| %>
+    for (uint i = 0; i < n; ++i)
+    {
+        <%= specie.class_name %>::find(atoms[i]);
+    }
+
+<% end %>
+    // ---------------------------------------------------------------------------------------------------------- //
+
+    for (uint i = 0; i < n; ++i)
+    {
+        atoms[i]->findUnvisitedChildren();
+    }
+
+<% if ubiquitous_reactions_exists? %>
+    for (uint i = 0; i < n; ++i)
+    {
+<% ubiquitous_reactions.each do |reaction| %>
+        <%= reaction.class_name %>::find(atoms[i]);
+<% end %>
+    }
+
+<% end %>
+    // order is important
+    Handbook::specificKeeper().find();
+    Handbook::lateralKeeper().find();
+
+    for (uint i = 0; i < n; ++i)
+    {
+        atoms[i]->setVisited();
+    }
+
+    finalize();
+}
+
+void Finder::removeAll(Atom **atoms, uint n)
+{
+    for (uint i = 0; i < n; ++i)
+    {
+        Atom *atom = atoms[i];
+        if (!atom) continue;
+        atom->prepareToRemove();
+    }
+
+    initFind(atoms, n);
+}
+
+void Finder::finalize()
+{
+    Handbook::specificKeeper().clear();
+<% if lateral_reactions_exists? %>
+    Handbook::lateralKeeper().clear();
+<% end %>
+
+    Handbook::scavenger().clear();
+}

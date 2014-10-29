@@ -7,7 +7,7 @@ module VersatileDiamond
       include Minuend
 
       collector_methods :child
-      def_delegators :@spec, :external_bonds, :gas?, :relation_between
+      def_delegators :@spec, :external_bonds, :relation_between
       attr_reader :links
 
       # Also stores internal graph of links between used atoms

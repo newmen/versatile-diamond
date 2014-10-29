@@ -267,6 +267,12 @@ module VersatileDiamond
           ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children
         end
 
+        # Provides the list of including files
+        # @return [Array] the list of files which should be included
+        def including_files
+          source_species_dependencies.map { |s| "../#{s.full_file_path}" }.sort
+        end
+
         # Gets classes from which current code instance will be inherited if specie is
         # symmetric
         #

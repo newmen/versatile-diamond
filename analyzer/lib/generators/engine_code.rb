@@ -72,25 +72,39 @@ module VersatileDiamond
         @species[spec_name]
       end
 
+      # Gets non simple and non gas collected species
+      # @return [Array] the array of collected specie class code generators
+      def species
+        deps_hash = collect_dependent_species
+        surface_species = @species.reject do |name, _|
+          dep_spec = deps_hash[name]
+          # TODO: is simple always gas?
+          dep_spec.simple? || dep_spec.gas?
+        end
+
+        surface_species.values
+      end
+
+      # Gets the list of specific species which are gas molecules
+      # @return [Array] the list of dependent specific gas species
       def specific_gas_species
         collect_dependent_species.values.select do |s|
-          s.spec.gas? && (s.class == Organizers::DependentSimpleSpec ||
-            s.class == Organizers::DependentSpecificSpec)
+          s.gas? && (s.simple? || s.specific?)
         end
       end
 
     private
 
-      # Provides list of code elements the source code of which will generated
-      # @return [Array] the array of names of code generator classes
-      def code_elements
-        %w(Handbook Env AtomBuilder)
-      end
-
       # Gets the instances of major code elements
       # @return [Array] the array of instances
       def major_code_instances
-        code_elements.map { |class_str| eval("Code::#{class_str}").new(self) }
+        handbook = Code::Handbook.new(self)
+        [
+          handbook,
+          Code::Finder.new(self, handbook),
+          Code::Env.new(self),
+          Code::AtomBuilder.new(self)
+        ]
       end
 
       # Finds and drops not unique items which are compares by block
@@ -149,19 +163,6 @@ module VersatileDiamond
             Organizers::DependentSimpleSpec.new(concept) :
             Organizers::DependentSpecificSpec.new(concept)
         end
-      end
-
-      # Gets non simple collected species
-      # @return [Array] the array of collected species
-      def species
-        deps_hash = collect_dependent_species
-        surface_species = @species.reject do |name, _|
-          dep_spec = deps_hash[name]
-          # TODO: is simple always gas?
-          dep_spec.simple? || dep_spec.gas?
-        end
-
-        surface_species.values
       end
     end
 
