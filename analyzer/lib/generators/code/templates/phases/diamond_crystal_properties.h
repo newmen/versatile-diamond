@@ -16,6 +16,7 @@ class DiamondCrystalProperties : public DiamondRelations<B>
 {
 public:
     // The virtual keyname required by compiler (why?)
+    virtual float3 correct(const Atom *atom) const final;
     virtual const float3 &periods() const final;
 
 protected:
@@ -24,9 +25,48 @@ protected:
     // The virtual keyname required by compiler (why?)
     virtual float3 seeks(const int3 &coords) const final;
     void bondAround(Atom *atom);
+
+private:
+    float dimerBondLength() const { return 1.62; }
+    float oneAtomDimerDelta() const { return 0.5 * (periods().x - dimerBondLength()); }
+    float dimerHeightDelta() const
+    {
+        float oadd = oneAtomDimerDelta();
+        float h = std::sqrt(periods().z * periods().z - oadd * oadd);
+        return periods().z - h;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
+
+template <class B>
+float3 DiamondCrystalProperties<B>::correct(const Atom *atom) const
+{
+    assert(atom->lattice());
+    const int3 &crds = atom->lattice()->coords();
+    const Atom *otherDimerPart = nullptr;
+
+    atom->eachNeighbour([&crds, &otherDimerPart](const Atom *nbr) {
+        if (nbr->lattice() && nbr->lattice()->coords().z == crds.z)
+        {
+            assert(!otherDimerPart);
+            otherDimerPart = nbr;
+        }
+    });
+
+    if (otherDimerPart)
+    {
+        int3 diff = otherDimerPart->lattice()->coords() - crds;
+        if (diff.isUnit())
+        {
+            float3 result = diff * oneAtomDimerDelta();
+            result.z -= dimerHeightDelta();
+            return result;
+        }
+    }
+
+    return float3();
+}
 
 template <class B>
 const float3 &DiamondCrystalProperties<B>::periods() const
