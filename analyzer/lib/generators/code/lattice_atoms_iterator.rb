@@ -15,15 +15,21 @@ module VersatileDiamond
         # Get the cpp class name
         # @return [String] the class name of atom
         def class_name
-          "#{@lattice_class.class_name}AtomsIterator"
+          "#{lattice_class_name}AtomsIterator"
         end
 
       private
 
+        # Gets the name of lattice class
+        # @return [String] the name of lattice class
+        def lattice_class_name
+          @lattice_class.class_name
+        end
+
         # Gets name of file where described lattice class
         # @return [String] the lattice class file name
         def lattice_file_name
-          "#{@lattice_class.file_name}.h"
+          @lattice_class.file_name
         end
 
         # Atoms stored in atoms directory
