@@ -121,13 +121,9 @@ module VersatileDiamond
       # @param [Minuend] other see at #<=> same argument
       # @return [Integer] the result of comparation
       def order_classes(other, &block)
-        if self.class == other.class
-          block.call
-        else
-          if self.is_a?(SpecResidual) || other.is_a?(DependentSpecificSpec)
-            -1
-          elsif other.is_a?(SpecResidual) || self.is_a?(DependentSpecificSpec)
-            1
+        typed_order(self, other, DependentSpecificSpec) do
+          typed_order(self, other, DependentBaseSpec) do
+            typed_order(self, other, SpecResidual, &block)
           end
         end
       end
