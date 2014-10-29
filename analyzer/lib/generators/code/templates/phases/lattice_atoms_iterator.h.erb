@@ -4,7 +4,7 @@
 #include <phases/crystal_atoms_iterator.h>
 using namespace vd;
 
-#include "<%= lattice_file_name %>.h"
+<%= head_includes %>
 
 class <%= class_name %> : public CrystalAtomsIterator<<%= lattice_class_name %>>
 {

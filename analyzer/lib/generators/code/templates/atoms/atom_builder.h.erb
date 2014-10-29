@@ -5,9 +5,7 @@
 #include <atoms/lattice.h>
 using namespace vd;
 
-<% pure_atoms.each do |atom| %>
-#include "../atoms/<%= atom.file_name %>.h"
-<% end %>
+<%= head_includes %>
 
 class AtomBuilder
 {

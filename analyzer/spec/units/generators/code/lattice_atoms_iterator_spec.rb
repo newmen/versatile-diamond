@@ -6,7 +6,7 @@ module VersatileDiamond
 
       describe LatticeAtomsIterator, use: :engine_generator do
         let(:empty_generator) { stub_generator({}) }
-        let(:lattice) { Lattice.new(diamond, empty_generator) }
+        let(:lattice) { Lattice.new(empty_generator, diamond) }
         subject { described_class.new(lattice) }
 
         describe '#template_name' do

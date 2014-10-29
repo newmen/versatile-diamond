@@ -12,13 +12,7 @@
 #include <species/specific_spec.h>
 using namespace vd;
 
-#include "env.h"
-#include "finder.h"
-#include "names.h"
-
-<% phases.each do |phase| %>
-#include "phases/<%= phase %>.h"
-<% end %>
+<%= head_includes %>
 
 class Handbook
 {

@@ -43,7 +43,8 @@ module VersatileDiamond
         end
 
         describe '#full_file_path' do
-          it { expect(subject.full_file_path).to eq('base/original_bridge') }
+          let(:ffp) { 'species/base/original_bridge.h' }
+          it { expect(subject.full_file_path.to_s).to eq(ffp) }
         end
       end
 

@@ -53,7 +53,8 @@ module VersatileDiamond
             # @param [String] root_dir the directory of generation results
             cnfp = define_method(:"cp_#{name}_file_path") do |root_dir|
               FileUtils.cp(
-                send(:"src_#{name}_file_path"), send(:"dst_#{name}_file_path", root_dir))
+                send(:"src_#{name}_file_path"),
+                send(:"dst_#{name}_file_path", root_dir))
             end
             private cnfp
           end

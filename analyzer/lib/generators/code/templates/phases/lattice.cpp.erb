@@ -1,6 +1,5 @@
 #include "<%= file_name %>.h"
-#include "../atoms/atom_builder.h"
-#include "../finder.h"
+<%= body_includes %>
 
 <%= class_name %>::<%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight) :
     <%= crystal_properties_class_name %><Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)

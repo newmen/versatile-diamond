@@ -5,7 +5,6 @@ module VersatileDiamond
       # Extends cpp class with generator
       # @abstract
       class BaseSpecie < CppClassWithGen
-        include PartialRenderer
         include PolynameClass
 
         PREF_METD_SEPS = [
@@ -14,27 +13,26 @@ module VersatileDiamond
           ['file', :downcase, '_'],
         ].freeze
 
-        # Gets full path to specie header file
-        # @return [String] the path to specie header file
-        def full_file_path
-          "#{outer_base_file}/#{file_name}"
-        end
-
       private
 
-        # Makes output directory path where generating file will be created
-        # @param [String] root_dir see at #super same argument
-        # @return [Pathname] the path to output directory
-        # @override
-        def out_dir_path(root_dir)
-          super + outer_base_file
+        # Provides common file which is base class for current instance
+        # @return [CommonFile] the common file for current specie
+        def common_base_class_file
+          CommonFile.new("species/#{outer_base_file}.h")
         end
 
         # The additional path for current instance
         # @return [String] the additional directories path
         # @override
-        def additional_path
+        def template_additional_path
           'species'
+        end
+
+        # The additional path of current instance generation result
+        # @return [Pathname] the directory when will be stored result of generation
+        # @override
+        def result_additional_path
+          super + outer_base_file
         end
       end
 

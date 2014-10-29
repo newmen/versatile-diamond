@@ -23,11 +23,13 @@ module VersatileDiamond
       # @param [UbiquitousReaction] other comparing reaction
       # @return [Integer] the comparing result
       def <=> (other)
-        typed_order(self, other, DependentLateralReaction) do
-          typed_order(self, other, DependentTypicalReaction) do
-            typed_order(self, other, DependentUbiquitousReaction) do
-              order(self, other, :source, :size) do
-                order(self, other, :changes_num)
+        order(self, other, :changes_num) do
+          order(self, other, :source, :size) do
+            order(self, other, :products, :size) do
+              typed_order(self, other, DependentLateralReaction) do
+                typed_order(self, other, DependentTypicalReaction) do
+                  typed_order(self, other, DependentUbiquitousReaction)
+                end
               end
             end
           end

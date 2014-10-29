@@ -6,8 +6,7 @@ module VersatileDiamond
 
       describe Lattice, use: :engine_generator do
         let(:empty_generator) { stub_generator({}) }
-        let(:classifier) { empty_generator.classifier }
-        subject { described_class.new(diamond, classifier) }
+        subject { described_class.new(empty_generator, diamond) }
 
         describe '#template_name' do
           it { expect(subject.template_name).to eq('lattice') }
@@ -31,7 +30,7 @@ module VersatileDiamond
         end
 
         describe '#major_atom_index' do
-          before { classifier.analyze(dept_three_bridges_base) }
+          before { empty_generator.classifier.analyze(dept_three_bridges_base) }
           it { expect { subject.major_atom_index }.not_to raise_error }
         end
       end

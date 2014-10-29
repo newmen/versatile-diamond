@@ -35,14 +35,6 @@ module VersatileDiamond
           lattices.include?(nil)
         end
 
-        # Gets all usable phases of atoms (lattices and amorphous if need)
-        # @param [Array] the array of string names of generated dependent entities
-        def phases
-          lattices.map do |lattice|
-            lattice ? lattice.class.to_s.underscore : 'phase_bondary'
-          end
-        end
-
         # Gets the list of used crystal lattices
         # @return [Array] the list of crystal lattices
         def crystal_lattices
@@ -117,6 +109,21 @@ module VersatileDiamond
             values[i] = n
           end
           values.join(', ')
+        end
+
+        # Gets all usable phases of atoms (lattices and amorphous if need)
+        # @param [Array] the array of string names of generated dependent entities
+        def phases
+          lattices.map do |lattice|
+            lattice || CommonFile.new('phases/phase_boundary.h')
+          end
+        end
+
+        # Gets the list of objects which headers should be included in header file
+        # @return [Array] the list of including objects
+        # @override
+        def head_include_objects
+          phases + [generator.major_class(:env), generator.major_class(:finder)]
         end
       end
 

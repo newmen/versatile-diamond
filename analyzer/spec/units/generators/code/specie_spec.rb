@@ -205,7 +205,8 @@ module VersatileDiamond
         end
 
         describe '#full_file_path' do
-          it { expect(code_bridge_base.full_file_path).to eq('base/bridge') }
+          let(:ffp) { 'species/base/bridge.h' }
+          it { expect(code_bridge_base.full_file_path.to_s).to eq(ffp) }
         end
 
         describe '#symmetric?' do
