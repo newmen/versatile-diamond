@@ -69,10 +69,6 @@ module VersatileDiamond
       it_behaves_like 'termination spec' do
         subject { active_bond }
       end
-
-      it_behaves_like 'visitable' do
-        subject { active_bond }
-      end
     end
 
   end

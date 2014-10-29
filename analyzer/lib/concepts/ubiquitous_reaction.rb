@@ -7,7 +7,6 @@ module VersatileDiamond
     # corresponding instance assertion methods.
     class UbiquitousReaction < Named
       include Modules::ListsComparer
-      include Visitors::Visitable
 
       # Exception class for cases when property already setted
       class AlreadySet < Errors::Base
@@ -130,15 +129,6 @@ module VersatileDiamond
       # @return [Integer] 1
       def changes_num
         1
-      end
-
-      # Also visit target source spec
-      # @param [Visitors::Visitor] visitor the object that will accumulate
-      #   state of current instance
-      # @override
-      def visit(visitor)
-        super
-        @source.each { |spec| spec.visit(visitor) }
       end
 
       def to_s

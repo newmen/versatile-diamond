@@ -4,8 +4,6 @@ module VersatileDiamond
     # Represents a some "termination" spec which can be involved to ubiquitous
     # reaction
     class TerminationSpec
-      include Visitors::Visitable
-
       # Termination spec cannot belong to the gas phase
       # @return [Boolean] false
       def gas?

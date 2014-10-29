@@ -45,14 +45,6 @@ module VersatileDiamond
         end
       end
 
-      # Also visit there objects
-      # @param [Visitors::Visitor] visitor see at #super same argument
-      # @override
-      def visit(visitor)
-        super
-        theres.each { |there| there.visit(visitor) }
-      end
-
       def to_s
         lateral_strs = theres.map(&:to_s)
         "#{super} : #{lateral_strs.join(' + ')}"

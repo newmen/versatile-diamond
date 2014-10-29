@@ -171,10 +171,6 @@ module VersatileDiamond
           it { expect(other.same?(subject)).to be_falsey }
         end
       end
-
-      it_behaves_like 'visitable' do
-        subject { methane_base }
-      end
     end
 
   end

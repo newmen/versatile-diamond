@@ -67,10 +67,6 @@ module VersatileDiamond
       it_behaves_like 'termination spec' do
         subject { adsorbed_h }
       end
-
-      it_behaves_like 'visitable' do
-        subject { adsorbed_h }
-      end
     end
 
   end

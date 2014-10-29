@@ -277,10 +277,6 @@ module VersatileDiamond
         it { expect(bridge.active_bonds_num).to eq(0) }
         it { expect(activated_dimer.active_bonds_num).to eq(1) }
       end
-
-      it_behaves_like 'visitable' do
-        subject { methyl }
-      end
     end
 
   end

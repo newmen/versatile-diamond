@@ -4,7 +4,6 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      include Visitors::Visitable
       include Linker
       include BondsCounter
       include RelationBetweenAtomsChecker
@@ -185,14 +184,6 @@ module VersatileDiamond
       def same?(other)
         return false unless links.size == other.links.size
         Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
-      end
-
-      # Also visit a parent
-      # @param [Visitors::Visitor] visitor the accumulator of states
-      # @override
-      def visit(visitor)
-        super
-        parent.visit(visitor) if parent
       end
 
       def to_s(instance_atoms = @atoms, instance_links = @links)
