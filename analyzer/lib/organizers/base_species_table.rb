@@ -33,8 +33,14 @@ module VersatileDiamond
       # @param [DependentBaseSpec | SpecResidual] record the key of table
       # @return [Hash] the complete row for passed record
       def add(record)
-        cells = @column_keys.map { |key| find(key, record) }
-        @table[record] = Hash[@column_keys.zip(cells)]
+        row = row_for(record)
+        return row if row
+
+        @table[record] = {}
+        @column_keys.map do |key|
+          @table[record][key] = find(key, record)
+        end
+        @table[record]
       end
 
       # Finds optimal solutions which storing to table all correpond residuals
@@ -47,7 +53,7 @@ module VersatileDiamond
         elsif key <= record
           rest = record - key
           if rest && rest < record
-            row = row_for(rest) || add(rest)
+            row = add(rest)
             return min(row)
           end
         end
