@@ -4,7 +4,6 @@ module VersatileDiamond
     # Instance of it class represents usual specific spec that is most commonly
     # used in reactions
     class SpecificSpec
-      include Visitors::Visitable
       include BondsCounter
       include RelationBetweenAtomsChecker
       extend Forwardable
@@ -240,15 +239,6 @@ module VersatileDiamond
       # @return [Integer] sum of active bonds
       def active_bonds_num
         specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
-      end
-
-      # Also visit base spec
-      # @param [Visitors::Visitor] visitor the object which accumulate state of
-      #   current instance
-      # @override
-      def visit(visitor)
-        super
-        spec.visit(visitor)
       end
 
       def to_s

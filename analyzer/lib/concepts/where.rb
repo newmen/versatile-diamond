@@ -4,7 +4,6 @@ module VersatileDiamond
     # Instance of class is refinement for environment which contain raw
     # positions of target atoms to some atoms of around specs
     class Where < Named
-      include Visitors::Visitable
       include SpecAtomSwapper
 
       attr_reader :description, :parents, :specs
@@ -75,14 +74,6 @@ module VersatileDiamond
       def used_keynames_of(spec)
         total_raw_positions.select { |_, (s, _), _| s == spec }.
           map { |_, (_, a), _| spec.keyname(a) }.uniq
-      end
-
-      # Also visit base spec that belongs to self
-      # @param [Visitors::Visitor] visitor the object that will accumulate
-      #   state of current object
-      def visit(visitor)
-        super
-        specs.each { |spec| spec.visit(visitor) }
       end
 
     protected

@@ -379,10 +379,6 @@ module VersatileDiamond
           to match_array([dm_source.first, dm_source.first.atom(:cm)]) }
       end
 
-      it_behaves_like 'visitable' do
-        subject { methyl_desorption }
-      end
-
       describe '#changes' do
         it { expect(dimer_formation.changes).to match_array([
             [

@@ -131,16 +131,6 @@ module VersatileDiamond
           end
         end
 
-        # Visit all stored concepts
-        # @param [Visitors::Visitor] visitor the object that will accumulate
-        #   states of all stored concepts
-        def visit(visitor)
-          # necessary to visit only reactions because they will visit all the
-          # rest
-          reactions = [:ubiquitous_reaction, :reaction, :lateral_reaction]
-          all(*reactions).each { |reaction| reaction.visit(visitor) }
-        end
-
         def to_s
           content = @sac && @sac.reduce('') do |acc, (key, value)|
             "#{acc}#{key}: #{value.map(&:first).join(', ')}\n"

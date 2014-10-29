@@ -107,10 +107,6 @@ module VersatileDiamond
         it { expect(surface_activation.changes_num).to eq(1) }
         it { expect(surface_deactivation.changes_num).to eq(1) }
       end
-
-      it_behaves_like 'visitable' do
-        subject { surface_activation }
-      end
     end
 
   end

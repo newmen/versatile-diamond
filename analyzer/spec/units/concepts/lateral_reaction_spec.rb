@@ -94,10 +94,6 @@ module VersatileDiamond
         it { expect(reaction.cover?(middle)).to be_truthy }
         it { expect(reaction.cover?(other)).to be_truthy }
       end
-
-      it_behaves_like 'visitable' do
-        subject { reaction }
-      end
     end
 
   end

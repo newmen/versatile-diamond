@@ -36,10 +36,6 @@ module VersatileDiamond
         it { expect(at_middle.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
         it { expect(near_methyl.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
       end
-
-      it_behaves_like 'visitable' do
-        subject { at_end }
-      end
     end
 
   end
