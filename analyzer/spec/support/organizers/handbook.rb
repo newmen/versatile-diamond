@@ -36,6 +36,7 @@ module VersatileDiamond
           :methyl_on_bridge_base_dup,
           :vinyl_on_bridge_base,
           :methyl_on_dimer_base,
+          :vinyl_on_dimer_base,
           :two_methyls_on_dimer_base,
           :methyl_on_extended_bridge_base,
           :methyl_on_right_bridge_base,

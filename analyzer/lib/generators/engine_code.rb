@@ -157,7 +157,8 @@ module VersatileDiamond
         deps_hash = collect_dependent_species
         surface_species = @species.reject do |name, _|
           dep_spec = deps_hash[name]
-          dep_spec.simple? || (dep_spec.gas? && dep_spec.links.size == 1)
+          # TODO: is simple always gas?
+          dep_spec.simple? || dep_spec.gas?
         end
 
         surface_species.values

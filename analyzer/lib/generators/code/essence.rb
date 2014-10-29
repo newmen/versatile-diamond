@@ -21,7 +21,7 @@ module VersatileDiamond
 
           @_cut_links =
             if spec.source?
-              spec.clean_links
+              Hash[spec.clean_links.map { |a, rels| [a, rels.uniq] }]
             else
               atoms = spec.anchors
               clean_links = spec.target.clean_links.map do |atom, rels|

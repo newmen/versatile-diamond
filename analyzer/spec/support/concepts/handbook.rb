@@ -287,6 +287,16 @@ module VersatileDiamond
           s.link(s.atom(:cl), s.atom(:c2), free_bond); s
         end
 
+        set(:vinyl_on_dimer_base) do
+          s = SurfaceSpec.new(:vinyl_on_dimer)
+          s.adsorb(ethane_on_bridge_base)
+          s.rename_atom(:cb, :cl)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cl)
+          s.link(s.atom(:cl), s.atom(:cr), bond_100_front)
+          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
+        end
+
         set(:three_bridges_base) do
           s = SurfaceSpec.new(:three_bridges, tt: cd.dup)
           s.adsorb(bridge_base)

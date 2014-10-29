@@ -47,10 +47,11 @@ module VersatileDiamond
       end
 
       # Checks that other spec has same border atoms and links between them
-      # @param [DependentBaseSpec] other the comparable spec
+      # @param [DependentBaseSpec | SpecResidual] other the comparable spec
       # @return [Boolean] same or not
       def same?(other)
         return false unless links.size == other.links.size
+        return false unless self.class == other.class && owner.same?(other.owner)
 
         intersec = mirror_to(other)
         intersec.size == links.size && intersec.all? do |a, b|
@@ -60,11 +61,9 @@ module VersatileDiamond
 
     protected
 
-      attr_reader :atoms_to_parents
+      attr_reader :atoms_to_parents, :owner
 
     private
-
-      attr_reader :owner
 
       # Changes comparison behavior for more optimal base specs spliting
       # @param [Minuend] other see at #<=> same argument

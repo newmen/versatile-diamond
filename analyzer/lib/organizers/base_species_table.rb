@@ -8,7 +8,7 @@ module VersatileDiamond
       # Initialize table by array of species for which the table will be builded
       # @param [Array] base_specs the array of species
       def initialize(base_specs)
-        @column_keys = sort(base_specs)
+        @column_keys = sort(base_specs.reject { |spec| spec.simple? || spec.gas? })
         @table = {}
 
         build
@@ -18,7 +18,8 @@ module VersatileDiamond
       # @param [DependentBaseSpec] base_spec the key of table
       # @return [SpecResidual] the minimal spec residue
       def best(base_spec)
-        min(@table[base_spec])
+        row = @table[base_spec]
+        row ? min(row) : SpecResidual.empty(base_spec)
       end
 
     private
@@ -30,6 +31,7 @@ module VersatileDiamond
 
       # Stores record to table as key and correspond array of residuals
       # @param [DependentBaseSpec | SpecResidual] record the key of table
+      # @return [Hash] the complete row for passed record
       def add(record)
         cells = @column_keys.map { |key| find(key, record) }
         @table[record] = Hash[@column_keys.zip(cells)]
