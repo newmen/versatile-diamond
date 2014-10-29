@@ -5,7 +5,7 @@ module VersatileDiamond
     module Support
 
       module MessageForFileExamples
-        shared_examples_for 'message for file' do
+        shared_examples_for :message_for_file do
           subject { described_class.new('hello') }
 
           describe '#message' do

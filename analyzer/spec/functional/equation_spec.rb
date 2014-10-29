@@ -77,7 +77,7 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like 'reaction refinemenets'
+      it_behaves_like :reaction_refinemenets
     end
 
   end

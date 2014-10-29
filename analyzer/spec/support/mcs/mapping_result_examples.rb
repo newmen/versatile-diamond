@@ -3,7 +3,7 @@ module VersatileDiamond
     module Support
 
       module MappingResultExamples
-        shared_examples 'check mapping result' do
+        shared_examples :check_mapping_result do
           let(:mapping_result) do
             s = respond_to?(:source) ? source : [spec1, spec2]
             p = respond_to?(:products) ? products : [spec3]

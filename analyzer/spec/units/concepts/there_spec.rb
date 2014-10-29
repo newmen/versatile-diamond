@@ -77,7 +77,7 @@ module VersatileDiamond
 
       end
 
-      it_behaves_like 'check specs after swap_source' do
+      it_behaves_like :check_specs_after_swap_source do
         subject { on_end }
         let(:method) { :env_specs }
       end

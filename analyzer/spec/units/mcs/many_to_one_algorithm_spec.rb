@@ -50,7 +50,7 @@ module VersatileDiamond
                 ]]]
               end
 
-              it_behaves_like 'check mapping result'
+              it_behaves_like :check_mapping_result
             end
 
             describe 'reverse' do
@@ -72,7 +72,7 @@ module VersatileDiamond
                 ]]]
               end
 
-              it_behaves_like 'check mapping result'
+              it_behaves_like :check_mapping_result
             end
           end
 
@@ -112,7 +112,7 @@ module VersatileDiamond
               ]]]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
         end
 
@@ -144,7 +144,7 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
 
           describe 'high bridge with bridge' do
@@ -180,7 +180,7 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
 
           describe 'methyl on extended bridge' do
@@ -223,7 +223,7 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
         end
       end

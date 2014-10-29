@@ -3,7 +3,7 @@ module VersatileDiamond
     module Support
 
       module SwapSourceExamples
-        shared_examples_for 'check specs after swap_source' do
+        shared_examples_for :check_specs_after_swap_source do
           let(:from) { dimer }
           let(:to) { dimer_dup_ff }
           let(:before_size) { subject.send(method).size }

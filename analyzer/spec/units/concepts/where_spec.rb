@@ -14,7 +14,7 @@ module VersatileDiamond
         it { expect(at_end.description).to eq('at end of dimers row') }
       end
 
-      it_behaves_like 'check specs after swap_source' do
+      it_behaves_like :check_specs_after_swap_source do
         subject { at_end }
         let(:method) { :specs }
       end

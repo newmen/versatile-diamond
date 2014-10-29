@@ -3,13 +3,13 @@ module VersatileDiamond
     module Support
 
       module ReactionRefinementsExamples
-        shared_examples_for 'reaction refinemenets' do
+        shared_examples_for :reaction_refinemenets do
           describe 'special atom states' do
             subject do
               described_class.new(hydrogen_migration, hm_names_to_specs)
             end
 
-            shared_examples_for 'check state' do
+            shared_examples_for :check_state do
               it { expect { subject.interpret(
                 "#{state} #{name}(:#{keyname})") }.not_to raise_error }
 
@@ -36,7 +36,7 @@ module VersatileDiamond
             end
 
             describe '#incoherent' do
-              it_behaves_like 'check state' do
+              it_behaves_like :check_state do
                 let(:state) { 'incoherent' }
                 let(:name) { 'd' }
                 let(:keyname) { 'cl' }
@@ -51,7 +51,7 @@ module VersatileDiamond
             end
 
             describe '#unfixed' do
-              it_behaves_like 'check state' do
+              it_behaves_like :check_state do
                 let(:state) { 'unfixed' }
                 let(:name) { 'mod' }
                 let(:keyname) { 'cm' }

@@ -3,7 +3,7 @@ module VersatileDiamond
     module Support
 
       module LatticedRefAtomExamples
-        shared_examples_for '#lattice' do
+        shared_examples_for :check_lattice do
           describe '#lattice' do
             it { expect(reference.lattice).to be_nil }
 
