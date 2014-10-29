@@ -44,13 +44,6 @@ module VersatileDiamond
         end
       end
 
-      # Compares with an other spec
-      # @param [TerminationSpec | SpecificSpec] other with which comparison
-      # @return [Boolean] is specs same or not
-      def same?(other)
-        self == other
-      end
-
       # Verifies that passed specific spec is covered by the current
       # @param [SpecificSpec] specific_spec the verifying spec
       # @param [Atom | SpecificAtom] atom the verifying atom

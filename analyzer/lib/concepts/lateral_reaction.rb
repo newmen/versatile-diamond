@@ -45,12 +45,6 @@ module VersatileDiamond
         end
       end
 
-      # Also counts sizes of there objects
-      # @return [Float] the number of used atoms
-      def size
-        super + theres.map(&:size).reduce(:+)
-      end
-
       # Also visit there objects
       # @param [Visitors::Visitor] visitor see at #super same argument
       # @override
@@ -61,7 +55,7 @@ module VersatileDiamond
 
       def to_s
         lateral_strs = theres.map(&:to_s)
-        "#{super} | #{lateral_strs.join(' + ')}"
+        "#{super} : #{lateral_strs.join(' + ')}"
       end
 
     private

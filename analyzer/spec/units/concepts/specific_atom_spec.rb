@@ -244,16 +244,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#size' do
-        it { expect(activated_cd.size.round(2)).to eq(0.34) }
-        it { expect(activated_cd_hydride.size.round(2)).to eq(0.68) }
-        it { expect(activated_incoherent_cd.size.round(2)).to eq(0.47) }
-        it { expect(incoherent_cd.size.round(2)).to eq(0.13) }
-        it { expect(incoherent_cd_hydride.size.round(2)).to eq(0.47) }
-        it { expect(unfixed_activated_c.size.round(2)).to eq(0.47) }
-        it { expect(cd_chloride.size.round(2)).to eq(0.34) }
-      end
-
       describe '#to_s' do
         it { expect(activated_c.to_s).to eq('C[*]') }
         it { expect(unfixed_activated_c.to_s).to eq('C[*, u]') }

@@ -76,14 +76,8 @@ module VersatileDiamond
         other.where.parents.include?(where)
       end
 
-      # Counts number of environment used atoms
-      # @return [Integer] the number of used atoms
-      def size
-        env_specs.map(&:size).reduce(:+)
-      end
-
       def to_s
-        env_specs.map(&:name).join(' * ')
+        env_specs.map(&:name).join(' & ')
       end
 
       def inspect

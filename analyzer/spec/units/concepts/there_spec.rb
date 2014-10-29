@@ -130,12 +130,6 @@ module VersatileDiamond
         it { expect(on_middle.cover?(on_end)).to be_falsey }
         it { expect(there_methyl.cover?(on_end)).to be_falsey }
       end
-
-      describe '#size' do
-        it { expect(on_end.size).to eq(6) }
-        it { expect(on_middle.size).to eq(12) }
-        it { expect(there_methyl.size).to eq(4) }
-      end
     end
 
   end

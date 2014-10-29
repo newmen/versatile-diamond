@@ -278,17 +278,6 @@ module VersatileDiamond
         it { expect(activated_dimer.active_bonds_num).to eq(1) }
       end
 
-      describe '#size' do
-        it { expect(methane.size).to eq(0) }
-        it { expect(methyl.size).to eq(0) }
-        it { expect(bridge.size).to eq(3) }
-        it { expect(hydrogenated_bridge.size).to eq(3.34) }
-        it { expect(chlorigenated_bridge.size).to eq(3.34) }
-        it { expect(activated_hydrogenated_bridge.size).to eq(3.68) }
-        it { expect(extra_activated_bridge.size).to eq(3.68) }
-        it { expect(activated_methyl_on_incoherent_bridge.size).to eq(4.47) }
-      end
-
       it_behaves_like 'visitable' do
         subject { methyl }
       end

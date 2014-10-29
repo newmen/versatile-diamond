@@ -379,11 +379,6 @@ module VersatileDiamond
           to match_array([dm_source.first, dm_source.first.atom(:cm)]) }
       end
 
-      describe '#size' do
-        it { expect(methyl_activation.size.round(2)).to eq(4) }
-        it { expect(dimer_formation.size.round(2)).to eq(6.81) }
-      end
-
       it_behaves_like 'visitable' do
         subject { methyl_desorption }
       end
@@ -404,10 +399,10 @@ module VersatileDiamond
           ]) }
       end
 
-      describe '#changes_size' do
-        it { expect(dimer_formation.changes_size).to eq(2) }
-        it { expect(hydrogen_migration.changes_size).to eq(2) }
-        it { expect(methyl_incorporation.changes_size).to eq(4) }
+      describe '#changes_num' do
+        it { expect(dimer_formation.changes_num).to eq(2) }
+        it { expect(hydrogen_migration.changes_num).to eq(2) }
+        it { expect(methyl_incorporation.changes_num).to eq(4) }
       end
     end
 

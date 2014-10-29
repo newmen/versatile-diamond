@@ -95,11 +95,6 @@ module VersatileDiamond
         it { expect(reaction.cover?(other)).to be_truthy }
       end
 
-      describe '#size' do
-        it { expect(reaction.size.round(2)).to eq(12.81) }
-        it { expect(other.size.round(2)).to eq(16.81) }
-      end
-
       it_behaves_like 'visitable' do
         subject { reaction }
       end

@@ -158,12 +158,6 @@ module VersatileDiamond
         atom.additional_relations + own_links
       end
 
-      # Gets the relevant size of specific atom
-      # @return [Float] the relevant size of specific atom
-      def size
-        (actives + monovalents.size) * 0.34 + relevants.size * 0.13
-      end
-
       def to_s
         chars = (options + monovalents).map(&:to_s)
         "#{atom}[#{chars.sort.join(', ')}]"

@@ -46,7 +46,7 @@ module VersatileDiamond
           before(:each) { ethylene_base.rename_atom(:c1, :c2) }
           it { expect(ethylene_base.atom(:c1)).to be_nil }
           it { expect(ethylene_base.atom(:c2)).to eq(c1) }
-          it { expect(ethylene_base.size).to eq(2) }
+          it { expect(ethylene_base.links.size).to eq(2) }
         end
       end
 
@@ -170,21 +170,6 @@ module VersatileDiamond
           it { expect(subject.same?(other)).to be_falsey }
           it { expect(other.same?(subject)).to be_falsey }
         end
-      end
-
-      describe '#size' do
-        it { expect(hydrogen_base.size).to eq(1) }
-        it { expect(methane_base.size).to eq(1) }
-        it { expect(ethylene_base.size).to eq(2) }
-        it { expect(bridge_base.size).to eq(3) }
-        it { expect(methyl_on_bridge_base.size).to eq(4) }
-        it { expect(methyl_on_extended_bridge_base.size).to eq(8) }
-        it { expect(high_bridge_base.size).to eq(4) }
-        it { expect(dimer_base.size).to eq(6) }
-        it { expect(methyl_on_dimer_base.size).to eq(7) }
-
-        # if take into account the crystal lattice then value should be 12
-        it { expect(extended_dimer_base.size).to eq(14) }
       end
 
       it_behaves_like 'visitable' do

@@ -24,10 +24,11 @@ module VersatileDiamond
         false
       end
 
-      # Termination spec has size equal 1
-      # @return [Integer] 1
-      def size
-        1
+      # Compares with an other spec
+      # @param [TerminationSpec | SpecificSpec] other with which comparison
+      # @return [Boolean] is specs same or not
+      def same?(other)
+        self == other
       end
     end
 
