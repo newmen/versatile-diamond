@@ -27,9 +27,7 @@ module VersatileDiamond
           typed_order(self, other, DependentTypicalReaction) do
             typed_order(self, other, DependentUbiquitousReaction) do
               order(self, other, :source, :size) do
-                order(self, other, :changes_num) do
-                  order(self, other, :full_rate)
-                end
+                order(self, other, :changes_num)
               end
             end
           end

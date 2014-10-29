@@ -8,16 +8,12 @@ module VersatileDiamond
       class Handbook < CppClassWithGen
         extend Forwardable
 
-      private
-
-        def_delegators :generator, :classifier, :lattices, :spec_reactions
-
         # Checks that ubiquitous reactions presented in original set
         # @return [Boolean] exists or not
         def ubiquitous_reactions_exists?
-          return true if !generator.ubiquitous_reactions.empty?
+          return true unless generator.ubiquitous_reactions.empty?
 
-          if spec_reactions.any?(&:local?)
+          if generator.spec_reactions.any?(&:local?)
             raise 'Local reactions could not be without ubiquitous reactions'
           end
           false
@@ -25,13 +21,17 @@ module VersatileDiamond
 
         # Checks that lateral reactions presented in original set
         # @return [Boolean] exists or not
-        def lateral_exists?
-          spec_reactions.any?(&:lateral?)
+        def lateral_reactions_exists?
+          generator.spec_reactions.any?(&:lateral?)
         end
+
+      private
+
+        def_delegators :generator, :classifier, :lattices
 
         # Check that results contain amorph phase
         # @return [Boolean] contain or not
-        def amorph_exists?
+        def amorph_phase_exists?
           lattices.include?(nil)
         end
 

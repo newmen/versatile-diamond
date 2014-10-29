@@ -40,6 +40,16 @@ module VersatileDiamond
         it { expect(specie.class_name).to eq('Bridge') }
       end
 
+      describe '#species' do
+        subject { stub_generator(base_specs: dept_specs) }
+        let(:dept_specs) { [dept_bridge_base, dept_dimer_base] }
+        let(:species) do
+          dept_specs.map { |ds| subject.specie_class(ds.name) }
+        end
+
+        it { expect(subject.species).to match_array(species) }
+      end
+
       describe '#specific_gas_species' do
         let(:bases) { [dept_methane_base] }
         let(:specifics) { [dept_methyl, dept_activated_bridge] }

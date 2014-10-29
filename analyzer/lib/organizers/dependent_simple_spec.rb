@@ -6,7 +6,7 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      def_delegators :@spec, :name
+      def_delegators :@spec, :name, :gas?
       collector_methods :reaction
       attr_reader :spec
 
