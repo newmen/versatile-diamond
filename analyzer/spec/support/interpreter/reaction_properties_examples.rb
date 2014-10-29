@@ -3,7 +3,7 @@ module VersatileDiamond
     module Support
 
       module ReactionPropertiesExamples
-        shared_examples_for 'reaction properties' do
+        shared_examples_for :reaction_properties do
           before(:each) do
             elements.interpret('atom H, valence: 1')
             gas.interpret('spec :hydrogen')

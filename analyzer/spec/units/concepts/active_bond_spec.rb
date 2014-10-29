@@ -66,7 +66,7 @@ module VersatileDiamond
           to be_falsey }
       end
 
-      it_behaves_like 'termination spec' do
+      it_behaves_like :termination_spec do
         subject { active_bond }
       end
     end

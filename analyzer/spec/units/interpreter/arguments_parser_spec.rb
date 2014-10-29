@@ -10,7 +10,7 @@ module VersatileDiamond
       end
       subject { Parser.new }
 
-      shared_examples_for 'checks wrong ordering' do
+      shared_examples_for :checks_wrong_ordering do
         it 'wrong arguments ordering' do
           expect { subject.send(method, 'one: 2, :three') }.
             to raise_error(*syntax_error('common.wrong_arguments_ordering'))
@@ -33,7 +33,7 @@ module VersatileDiamond
               'common.duplicating_key', name: 'two'))
         end
 
-        it_behaves_like 'checks wrong ordering' do
+        it_behaves_like :checks_wrong_ordering do
           let(:method) { :string_to_args }
         end
       end
@@ -50,7 +50,7 @@ module VersatileDiamond
           expect(pairs).to eq({ two: 3, four: 5 })
         end
 
-        it_behaves_like 'checks wrong ordering' do
+        it_behaves_like :checks_wrong_ordering do
           let(:method) { :extract_hash_args }
         end
       end

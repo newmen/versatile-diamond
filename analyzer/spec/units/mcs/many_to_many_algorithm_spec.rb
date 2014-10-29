@@ -26,7 +26,7 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like 'check mapping result' do
+          it_behaves_like :check_mapping_result do
             subject { described_class.map_to(mapping_result, dm_names_to_specs) }
           end
         end
@@ -66,7 +66,7 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like 'check mapping result' do
+          it_behaves_like :check_mapping_result do
             subject { described_class.map_to(mapping_result, hm_names_to_specs) }
           end
         end

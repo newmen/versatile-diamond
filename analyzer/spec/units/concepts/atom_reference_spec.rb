@@ -85,7 +85,7 @@ module VersatileDiamond
         it { expect(bridge.atom(:cr).relations_limits).to eq(cd.relations_limits) }
       end
 
-      it_behaves_like '#lattice' do
+      it_behaves_like :check_lattice do
         let(:target) { c1 }
         let(:reference) { ref }
       end

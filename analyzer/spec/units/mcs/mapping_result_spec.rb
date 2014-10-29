@@ -171,7 +171,7 @@ module VersatileDiamond
         end
       end
 
-      shared_examples_for 'checks mob duplication' do
+      shared_examples_for :checks_mob_duplication do
         it { expect(subject.changes.first.first.first).to eq(abridge_dup) }
         it { expect(subject.changes.first.last.first.first).
           to eq(abridge_dup.atom(:ct)) }
@@ -204,7 +204,7 @@ module VersatileDiamond
         it { expect(subject.changes).not_to eq(df_atom_map.changes) }
         it { expect(subject.full).not_to eq(df_atom_map.full) }
 
-        it_behaves_like 'checks mob duplication'
+        it_behaves_like :checks_mob_duplication
       end
 
       describe '#swap_source' do
@@ -214,22 +214,22 @@ module VersatileDiamond
         it { expect(subject.source).not_to include(activated_bridge) }
         it { expect(subject.source).to include(abridge_dup) }
 
-        it_behaves_like 'checks mob duplication'
+        it_behaves_like :checks_mob_duplication
       end
 
       describe 'exnchange atoms' do
-        shared_examples_for 'check exchanges in result' do
-          shared_examples_for 'check atoms' do
+        shared_examples_for :check_exchanges_in_result do
+          shared_examples_for :check_atoms do
             subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
             it { should include(new_atom) }
             it { should_not include(old_atom) }
           end
 
-          it_behaves_like 'check atoms' do
+          it_behaves_like :check_atoms do
             let(:atoms) { df_atom_map.changes.map(&:last) }
           end
 
-          it_behaves_like 'check atoms' do
+          it_behaves_like :check_atoms do
             let(:atoms) { df_atom_map.full.map(&:last) }
           end
         end
@@ -241,7 +241,7 @@ module VersatileDiamond
             df_atom_map.swap_atom(activated_bridge, old_atom, new_atom)
           end
 
-          it_behaves_like 'check exchanges in result'
+          it_behaves_like :check_exchanges_in_result
         end
 
         describe '#apply_relevants' do
@@ -256,7 +256,7 @@ module VersatileDiamond
           it { expect(df_atom_map.products.first.atom(:cr).incoherent?).
             to be_truthy }
 
-          it_behaves_like 'check exchanges in result'
+          it_behaves_like :check_exchanges_in_result
         end
       end
 

@@ -14,7 +14,7 @@ module VersatileDiamond
         it { expect(methyl_desorption.reverse.type).to eq(:reverse) }
       end
 
-      shared_examples_for 'check duplicate property' do
+      shared_examples_for :check_duplicate_property do
         it { expect(subject.name).to match(/tail$/) }
         it { expect(subject.reverse.name).to match(/tail$/) }
 
@@ -24,7 +24,7 @@ module VersatileDiamond
         it { expect(subject.products.first).not_to eq(df_products.first) }
         it { expect(subject.products.last).not_to eq(df_products.last) }
 
-        shared_examples_for 'child changes too' do
+        shared_examples_for :child_changes_too do
           %w(enthalpy activation rate).each do |prop|
             describe "children setup #{prop}" do
               before(:each) do
@@ -36,19 +36,19 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like 'child changes too' do
+        it_behaves_like :child_changes_too do
           let(:reaction) { dimer_formation }
           let(:child) { subject }
         end
 
-        it_behaves_like 'child changes too' do
+        it_behaves_like :child_changes_too do
           let(:reaction) { dimer_formation.reverse }
           let(:child) { subject.reverse }
         end
       end
 
       describe '#as' do
-        shared_examples_for 'forward and reverse' do
+        shared_examples_for :forward_and_reverse do
           let(:name) { 'dimer formation' }
           before(:each) do
             subject.as(:forward).rate = 1
@@ -63,17 +63,17 @@ module VersatileDiamond
         end
 
         describe 'dimer formation' do
-          it_behaves_like 'forward and reverse' do
+          it_behaves_like :forward_and_reverse do
             subject { dimer_formation }
           end
 
-          it_behaves_like 'forward and reverse' do
+          it_behaves_like :forward_and_reverse do
             subject { dimer_formation.reverse }
           end
         end
 
         describe 'initialy inversed dimer formation' do
-          it_behaves_like 'forward and reverse' do
+          it_behaves_like :forward_and_reverse do
             subject do
               Reaction.new(:reverse, 'dimer formation',
                 df_products, df_source, df_atom_map.reverse)
@@ -85,14 +85,14 @@ module VersatileDiamond
       describe '#duplicate' do
         subject { dimer_formation.duplicate('tail') }
 
-        it_behaves_like 'check duplicate property'
+        it_behaves_like :check_duplicate_property
         it { expect(subject).to be_a(described_class) }
       end
 
       describe '#lateral_duplicate' do
         subject { dimer_formation.lateral_duplicate('tail', [on_end]) }
 
-        it_behaves_like 'check duplicate property'
+        it_behaves_like :check_duplicate_property
         it { expect(subject).to be_a(LateralReaction) }
       end
 
@@ -113,14 +113,14 @@ module VersatileDiamond
       end
 
       describe '#swap_source' do
-        shared_examples_for 'check specs existence' do
+        shared_examples_for :check_specs_existence do
           before { reaction.swap_source(old, fresh) }
           it { should include(fresh) }
           it { should_not include(old) }
         end
 
         shared_examples_for :check_mapping do
-          it_behaves_like 'check specs existence' do
+          it_behaves_like :check_specs_existence do
             subject { map.changes.map(&:first).map(&:first) }
           end
         end
@@ -134,11 +134,11 @@ module VersatileDiamond
             let(:map) { df_atom_map }
           end
 
-          it_behaves_like 'check specs existence' do
+          it_behaves_like :check_specs_existence do
             subject { reaction.positions.map(&:first).map(&:first) }
           end
 
-          it_behaves_like 'check specs existence' do
+          it_behaves_like :check_specs_existence do
             subject { reaction.positions.map { |p| p[1] }.map(&:first) }
           end
         end
@@ -154,28 +154,28 @@ module VersatileDiamond
       end
 
       describe 'exnchange atoms' do
-        shared_examples_for 'check mapping and positions changes' do
-          shared_examples_for 'check atoms existence' do
+        shared_examples_for :check_mapping_and_positions_changes do
+          shared_examples_for :check_atoms_existence do
             it { should include(new_atom) }
             it { should_not include(old_atom) }
           end
 
-          it_behaves_like 'check atoms existence' do
+          it_behaves_like :check_atoms_existence do
             subject { reaction.positions.map(&:first).map(&:last) }
           end
 
-          it_behaves_like 'check atoms existence' do
+          it_behaves_like :check_atoms_existence do
             subject { reaction.positions.map { |p| p[1] }.map(&:last) }
           end
 
-          it_behaves_like 'check atoms existence' do
+          it_behaves_like :check_atoms_existence do
             let(:atoms) { mapping.full.map(&:last) }
             subject { atoms.first.map(&:first) + atoms.last.map(&:first) }
           end
         end
 
         describe '#apply_relevants' do
-          shared_examples_for 'check incoherent only one' do
+          shared_examples_for :check_incoherent_only_one do
             let(:old_atom) { spec.atom(target_kn) }
             let(:new_atom) { spec.atom(target_kn) }
 
@@ -185,16 +185,16 @@ module VersatileDiamond
               methyl_incorporation.apply_relevants(spec, old_atom, new_atom)
             end
 
-            shared_examples_for 'for direction' do
+            shared_examples_for :for_direction do
               it { expect(direction.atom(inc_kn).incoherent?).to be_truthy }
               it { expect(direction.atom(not_inc_kn).incoherent?).to be_falsey }
             end
 
-            it_behaves_like 'for direction' do
+            it_behaves_like :for_direction do
               let(:direction) { forward }
             end
 
-            it_behaves_like 'for direction' do
+            it_behaves_like :for_direction do
               let(:direction) { reverse }
             end
           end
@@ -202,15 +202,15 @@ module VersatileDiamond
           describe 'for source' do
             let(:spec) { activated_methyl_on_extended_bridge }
 
-            shared_examples_for 'check product' do
-              it_behaves_like 'check incoherent only one' do
+            shared_examples_for :check_product do
+              it_behaves_like :check_incoherent_only_one do
                 let(:forward) { methyl_incorporation.products.first }
                 let(:reverse) { methyl_incorporation.reverse.source.first }
               end
             end
 
             describe 'bridge atom' do
-              it_behaves_like 'check product' do
+              it_behaves_like :check_product do
                 let(:target_kn) { :cb }
                 let(:inc_kn) { :cl }
                 let(:not_inc_kn) { :cr }
@@ -218,7 +218,7 @@ module VersatileDiamond
             end
 
             describe 'caugth on methyl atom' do
-              it_behaves_like 'check product' do
+              it_behaves_like :check_product do
                 let(:target_kn) { :cm }
                 let(:inc_kn) { :cr }
                 let(:not_inc_kn) { :cl }
@@ -229,14 +229,14 @@ module VersatileDiamond
           describe 'for product' do
             let(:spec) { extended_dimer }
 
-            shared_examples_for 'check source' do
-              it_behaves_like 'check incoherent only one' do
+            shared_examples_for :check_source do
+              it_behaves_like :check_incoherent_only_one do
                 let(:forward) { methyl_incorporation.source.first }
                 let(:reverse) { methyl_incorporation.reverse.products.first }
               end
             end
 
-            it_behaves_like 'check source' do
+            it_behaves_like :check_source do
               let(:target_kn) { :cr }
               let(:inc_kn) { :cb }
               let(:not_inc_kn) { :cm }

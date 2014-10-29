@@ -118,7 +118,7 @@ module VersatileDiamond
         describe 'same class instance' do
           let(:other) { SpecificAtom.new(n.dup) }
 
-          shared_examples_for 'equal if both and not if just one' do
+          shared_examples_for :equal_if_both_and_not_if_just_one do
             it 'both atoms' do
               do_with(subject)
               do_with(other)
@@ -131,19 +131,19 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.active! end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.incoherent! end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.unfixed! end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.use!(h) end
           end
         end
@@ -200,7 +200,7 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like '#lattice' do
+      it_behaves_like :check_lattice do
         let(:target) { n }
         let(:reference) { subject }
       end
