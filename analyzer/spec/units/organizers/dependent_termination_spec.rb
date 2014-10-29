@@ -8,6 +8,13 @@ module VersatileDiamond
         it { expect(dept_active_bond.parents).to be_empty }
       end
 
+      describe '<=>' do
+        it { expect(dept_active_bond <=> dept_adsorbed_h).to eq(-1) }
+        it { expect(dept_adsorbed_h <=> dept_active_bond).to eq(1) }
+        it { expect(dept_adsorbed_h <=> dept_adsorbed_cl).to eq(-1) }
+        it { expect(dept_adsorbed_cl <=> dept_adsorbed_h).to eq(1) }
+      end
+
       describe '#store_parent' do
         let(:parent) { dept_activated_bridge }
         let(:child) { dept_active_bond }
