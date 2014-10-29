@@ -52,7 +52,7 @@ module VersatileDiamond
           #
           # @return [Integer] see at #crystal_atom_index result
           define_method(:"#{name}_atom_index") do
-            ap = find_crystal_atom(instance.send(:"#{name}_crystal_atom"))
+            ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
             @classifier.index(ap)
           end
 
@@ -61,10 +61,11 @@ module VersatileDiamond
           #
           # @return [Integer] see at #crystal_atom_index result
           define_method(:"#{name}_atom_actives") do
-            ap = find_crystal_atom(instance.send(:"#{name}_crystal_atom"))
+            ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
             ap.unbonded_actives_num
           end
         end
+        public :major_atom_index
 
         # Finds the crystal atom by atom information hash
         # @param [Hash] info about crystal atom

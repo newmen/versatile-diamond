@@ -43,10 +43,28 @@ module VersatileDiamond
           end
         end
 
+        # Gets the list of used crystal lattices
+        # @return [Array] the list of crystal lattices
+        def crystal_lattices
+          lattices.reject(&:nil?)
+        end
+
         # Gets the atoms quantity
         # @return [Integer] the number of atoms
         def atoms_num
           classifier.props.size
+        end
+
+        # Gets the number of regular atoms
+        # @return [Integer] the number of regular atoms
+        def regular_atoms_num
+          crystal_lattices.size
+        end
+
+        # Gets the list of regular atoms types
+        # @return [String] the string in which enumerated types of regular atoms
+        def regular_atoms_types
+          crystal_lattices.map(&:major_atom_index).join(', ')
         end
 
         # Gets the transitive closured matrix of atom types

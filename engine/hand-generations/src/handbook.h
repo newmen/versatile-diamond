@@ -1,6 +1,7 @@
 #ifndef HANDBOOK_H
 #define HANDBOOK_H
 
+#include <atoms/atom.h>
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
@@ -14,7 +15,6 @@ using namespace vd;
 #include "names.h"
 #include "phases/diamond.h"
 #include "phases/phase_boundary.h"
-#include "atoms/atom.h"
 
 class Handbook
 {
