@@ -174,7 +174,7 @@ module VersatileDiamond
       # Gets number of changed atoms
       # @return [Integer] the number of changed atoms
       # @override
-      def changes_size
+      def changes_num
         @mapping.changes.reduce(0) do |acc, (_, atoms_zip)|
           acc + atoms_zip.size
         end

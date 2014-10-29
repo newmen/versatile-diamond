@@ -4,18 +4,36 @@ module VersatileDiamond
     # Contain some reaction and set of dependent reactions
     # @abstract
     class DependentReaction
+      include Modules::OrderProvider
       extend Forwardable
       extend Collector
 
       collector_methods :complex
       attr_reader :reaction, :parent
       def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of,
-        :size, :changes_size
+        :changes_num
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
       def initialize(reaction)
         @reaction = reaction
+      end
+
+      # Compares two reaction instances
+      # @param [UbiquitousReaction] other comparing reaction
+      # @return [Integer] the comparing result
+      def <=> (other)
+        typed_order(self, other, DependentLateralReaction) do
+          typed_order(self, other, DependentTypicalReaction) do
+            typed_order(self, other, DependentUbiquitousReaction) do
+              order(self, other, :source, :size) do
+                order(self, other, :changes_num) do
+                  order(self, other, :full_rate)
+                end
+              end
+            end
+          end
+        end
       end
 
       # Iterates each not simple specific source spec

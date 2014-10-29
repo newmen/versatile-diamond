@@ -48,7 +48,7 @@ module VersatileDiamond
 
           it { expect(concept.external_bonds_for(concept.atom(:nf))).to eq(0) }
           it { expect(concept.external_bonds_for(concept.atom(:ns))).to eq(0) }
-          it { expect(concept.size).to eq(2) }
+          it { expect(concept.links.size).to eq(2) }
         end
       end
 

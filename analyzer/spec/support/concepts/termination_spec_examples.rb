@@ -17,10 +17,6 @@ module VersatileDiamond
           describe '#extendable?' do
             it { expect(subject.extendable?).to be_falsey }
           end
-
-          describe '#size' do
-            it { expect(subject.size).to eq(1) }
-          end
         end
       end
 

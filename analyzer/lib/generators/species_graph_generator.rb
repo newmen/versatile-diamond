@@ -62,7 +62,7 @@ module VersatileDiamond
       def monoparent_deps(specs, &setup_block)
         specs.each do |spec|
           child_node = spec_node(spec)
-          parent_node = spec_node(spec.parent)
+          parent_node = spec_node(spec.parents.first)
           if parent_node
             edge = graph.add_edges(child_node, parent_node)
             edge.set(&setup_block)

@@ -50,7 +50,6 @@ module VersatileDiamond
         super(name)
         @type = type
         @source, @products = source, products
-        @source.sort! { |a, b| b.size <=> a.size }
         @simple_source, @simple_products = nil
 
         @reverse = nil
@@ -127,15 +126,9 @@ module VersatileDiamond
         rate == 0 ? 0 : Tools::Config.rate(self)
       end
 
-      # Counts size of all source specs
-      # @return [Integer] number of surface atoms used in reaction
-      def size
-        @source.map(&:size).reduce(:+)
-      end
-
       # Gets number of changed atoms
       # @return [Integer] 1
-      def changes_size
+      def changes_num
         1
       end
 

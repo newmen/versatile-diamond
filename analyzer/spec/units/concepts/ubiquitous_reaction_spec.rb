@@ -82,17 +82,14 @@ module VersatileDiamond
 
       describe '#same?' do
         let(:same) do
-          described_class.new(
-            :forward, 'duplicate', sd_source.shuffle, sd_product)
+          described_class.new(:forward, 'duplicate', sd_source.shuffle, sd_product)
         end
 
         it { expect(surface_deactivation.same?(same)).to be_truthy }
         it { expect(same.same?(surface_deactivation)).to be_truthy }
 
-        it { expect(surface_activation.same?(surface_deactivation)).
-          to be_falsey }
-        it { expect(surface_deactivation.same?(surface_activation)).
-          to be_falsey }
+        it { expect(surface_activation.same?(surface_deactivation)).to be_falsey }
+        it { expect(surface_deactivation.same?(surface_activation)).to be_falsey }
       end
 
       describe '#full_rate' do
@@ -106,14 +103,9 @@ module VersatileDiamond
         it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
       end
 
-      describe '#size' do
-        it { expect(surface_activation.size).to eq(1) }
-        it { expect(surface_deactivation.size).to eq(1) }
-      end
-
-      describe '#changes_size' do
-        it { expect(surface_activation.changes_size).to eq(1) }
-        it { expect(surface_deactivation.changes_size).to eq(1) }
+      describe '#changes_num' do
+        it { expect(surface_activation.changes_num).to eq(1) }
+        it { expect(surface_deactivation.changes_num).to eq(1) }
       end
 
       it_behaves_like 'visitable' do

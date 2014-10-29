@@ -36,10 +36,6 @@ module VersatileDiamond
         it { subject.full_rate == target.full_rate }
       end
 
-      describe '#size' do
-        it { subject.size == target.size }
-      end
-
       describe '#each_source' do
         it { expect(subject.each_source).to be_a(Enumerable) }
 

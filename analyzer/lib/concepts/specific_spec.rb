@@ -4,11 +4,10 @@ module VersatileDiamond
     # Instance of it class represents usual specific spec that is most commonly
     # used in reactions
     class SpecificSpec
-      extend Forwardable
-
       include Visitors::Visitable
       include BondsCounter
       include RelationBetweenAtomsChecker
+      extend Forwardable
 
       def_delegators :@spec, :extendable?, :gas?, :simple?
       attr_reader :spec, :specific_atoms
@@ -235,14 +234,6 @@ module VersatileDiamond
       def has_termination?(internal_atom, term_spec)
         (term_spec.hydrogen? && external_bonds_for(internal_atom) > 0) ||
           internal_atom.monovalents.include?(term_spec)
-      end
-
-      # Gets a number of atoms with number of active bonds, but if spec is gas
-      # then their size just 0
-      #
-      # @return [Float] size of current specific spec
-      def size
-        gas? ? 0 : spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
       end
 
       # Counts the sum of active bonds

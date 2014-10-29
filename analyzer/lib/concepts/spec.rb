@@ -187,12 +187,6 @@ module VersatileDiamond
         Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
       end
 
-      # Gets a number of atoms
-      # @return size of current spec
-      def size
-        atom_instances.size
-      end
-
       # Also visit a parent
       # @param [Visitors::Visitor] visitor the accumulator of states
       # @override
