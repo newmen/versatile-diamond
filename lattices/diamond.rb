@@ -7,6 +7,25 @@ class Diamond < VersatileDiamond::Lattices::Base
   # file in common templates directory which located at
   # /analyzer/lib/generators/code/templates/phases
 
+  # Describes relations which belongs to major diamond crystal carbon atom
+  # @return [Hash] the information about crystal carbon
+  def major_crystal_atom
+    crystal_atom.merge({
+      relations: [bond_front_110, bond_front_110, bond_cross_110, bond_cross_110]
+    })
+  end
+
+  # Describes relations and dangling bonds which belongs to surface diamond crystal
+  # carbon atom
+  #
+  # @return [Hash] the information about surface carbon
+  def surface_crystal_atom
+    crystal_atom.merge({
+      relations: [bond_cross_110, bond_cross_110],
+      danglings: [ActiveBond.property]
+    })
+  end
+
 private
 
   # Detects opposite relation on same lattice
@@ -70,25 +89,6 @@ private
   # @return [Integer] the number of atomic layers
   def default_surface_height
     3
-  end
-
-  # Describes relations which belongs to major diamond crystal carbon atom
-  # @return [Hash] the information about crystal carbon
-  def major_crystal_atom
-    crystal_atom.merge({
-      relations: [bond_front_110, bond_front_110, bond_cross_110, bond_cross_110]
-    })
-  end
-
-  # Describes relations and dangling bonds which belongs to surface diamond crystal
-  # carbon atom
-  #
-  # @return [Hash] the information about surface carbon
-  def surface_crystal_atom
-    crystal_atom.merge({
-      relations: [bond_cross_110, bond_cross_110],
-      danglings: [ActiveBond.property]
-    })
   end
 
   # Setups common crystal atom of diamond lattice. Atom should presents in config file
