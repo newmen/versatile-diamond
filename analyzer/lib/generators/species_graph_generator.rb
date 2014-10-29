@@ -12,7 +12,7 @@ module VersatileDiamond
 
       # Draws basic species and dependencies between them
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_base_specs(specs = base_specs, no_includes: false)
+      def draw_base_specs(specs = base_surface_specs, no_includes: false)
         deps_method = !no_includes && method(:multiparents_deps)
         draw_specs(specs, BASE_SPEC_COLOR, deps_method)
       end
@@ -21,7 +21,7 @@ module VersatileDiamond
       # draw dependencies from basic species
       #
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specific_specs(specs = specific_specs, no_includes: false)
+      def draw_specific_specs(specs = specific_surface_specs, no_includes: false)
         deps_method = !no_includes && method(:monoparent_deps)
         name_method = method(:split_specific_name)
         draw_specs(specs, SPECIFIC_SPEC_COLOR, deps_method, name_method)

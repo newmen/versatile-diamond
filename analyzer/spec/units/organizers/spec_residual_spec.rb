@@ -63,6 +63,18 @@ module VersatileDiamond
           it { expect(big_dimer_part.same?(big_mod_part)).to be_falsey }
           it { expect(big_mod_part.same?(big_dimer_part)).to be_falsey }
         end
+
+        describe 'vinyl_of_dimer && methyl_on_dimer' do
+          let(:mod_part) do
+            dept_methyl_on_dimer_base - dept_methyl_on_bridge_base - dept_bridge_base
+          end
+          let(:vod_part) do
+            dept_vinyl_on_dimer_base - dept_vinyl_on_bridge_base - dept_bridge_base
+          end
+
+          it { expect(mod_part.same?(vod_part)).to be_falsey }
+          it { expect(vod_part.same?(mod_part)).to be_falsey }
+        end
       end
 
       describe '# - ' do
