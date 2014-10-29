@@ -56,7 +56,7 @@ module VersatileDiamond
       def organize_properties!
         add_default_lattices_atoms
 
-        current_props = props.sort_by(&:size)
+        current_props = props.sort
         current_props_sd = current_props.dup
 
         until current_props.empty?

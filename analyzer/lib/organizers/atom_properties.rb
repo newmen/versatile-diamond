@@ -7,6 +7,7 @@ module VersatileDiamond
     # Accumulates information about atom
     class AtomProperties
       include Modules::ListsComparer
+      include Modules::OrderProvider
       include Lattices::BasicRelations
 
       attr_reader :smallests, :sames
@@ -67,6 +68,23 @@ module VersatileDiamond
           end
       end
       alias :eql? :==
+
+      # Compares two atom properties
+      # @param [AtomProperties] other comparing atom properties
+      # @return [Integer] the comparing result
+      def <=> (other)
+        order(self, other, :valence) do
+          typed_order(self, other, :lattice) do
+            order(self, other, :estab_bonds_num) do
+              order(self, other, :danglings, :size) do
+                typed_order(self, other, :incoherent?) do
+                  typed_order(self, other, :unfixed?)
+                end
+              end
+            end
+          end
+        end
+      end
 
       # Calculates the hash of current instance for using it as key values in Hashes
       # @return [Integer] the hash of current instance
@@ -230,15 +248,6 @@ module VersatileDiamond
       # @return [Integer] the number of total number of hydrogen atoms
       def total_hydrogens_num
         valence - bonds_num + dangling_hydrogens_num
-      end
-
-      # Gets size of properties
-      # @return [Integer] the size of properties
-      def size
-        return @size if @size
-        @size = valence + (lattice ? 0.5 : 0) +
-          estab_bonds_num + danglings.size * 0.34 +
-          (incoherent? ? 0.13 : (unfixed? ? 0.05 : 0))
       end
 
       # Convert properties to string representation
