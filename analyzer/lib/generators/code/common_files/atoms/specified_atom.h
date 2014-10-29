@@ -18,6 +18,10 @@ public:
     void specifyType() final;
 
     ushort valence() const final { return VALENCE; }
+    ushort hCount() const final;
+#ifndef NDEBUG
+    ushort actives() const final;
+#endif // NDEBUG
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -39,5 +43,24 @@ void SpecifiedAtom<VALENCE>::specifyType()
 {
     Atom::setType(Handbook::specificate(type()));
 }
+
+template <ushort VALENCE>
+ushort SpecifiedAtom<VALENCE>::hCount() const
+{
+#ifndef NDEBUG
+    Atom::hCount();
+#endif // NDEBUG
+    return Handbook::hydrogensFor(this);
+}
+
+#ifndef NDEBUG
+template <ushort VALENCE>
+ushort SpecifiedAtom<VALENCE>::actives() const
+{
+    ushort result = Handbook::activesFor(this);
+    assert(Atom::actives() == result);
+    return result;
+}
+#endif // NDEBUG
 
 #endif // SPECIFIED_ATOM_H
