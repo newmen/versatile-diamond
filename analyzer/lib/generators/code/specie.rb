@@ -241,36 +241,27 @@ module VersatileDiamond
           used_iterators.map(&:class_name)
         end
 
-        # Gets a list of used iterator files
-        # @return [Array] the array of file names
-        def iterator_files
-          used_iterators.map(&:file_name)
-        end
-
         # Gets a list of species full header file path of which will be included in
         # header file of current specie
         #
         # @return [Array] the array of species which should be included in header file
-        def header_species_dependencies
-          if symmetric?
-            [@original] + @symmetrics
-          else
-            header_parents_dependencies
-          end
+        def head_include_objects
+          species =
+            if symmetric?
+              [@original] + @symmetrics
+            else
+              header_parents_dependencies
+            end
+
+          used_iterators + species + [common_base_class_file]
         end
 
         # Gets a list of species full header file path of which will be included in
         # source file of current specie
         #
         # @return [Array] the array of species which should be included in source file
-        def source_species_dependencies
+        def body_include_objects
           ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children
-        end
-
-        # Provides the list of including files
-        # @return [Array] the list of files which should be included
-        def including_files
-          source_species_dependencies.map { |s| "../#{s.full_file_path}" }.sort
         end
 
         # Gets classes from which current code instance will be inherited if specie is

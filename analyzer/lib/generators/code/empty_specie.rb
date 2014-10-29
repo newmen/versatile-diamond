@@ -95,6 +95,13 @@ module VersatileDiamond
         def original_specie
           target_specie.original
         end
+
+        # Gets the list of objects which headers should be included in header file
+        # @return [Array] the list of including objects
+        # @override
+        def head_include_objects
+          [original_specie, common_base_class_file]
+        end
       end
 
     end

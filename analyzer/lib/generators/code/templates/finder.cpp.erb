@@ -1,9 +1,7 @@
 #include "finder.h"
 #include "handbook.h"
 
-<% including_files.each do |file_name| %>
-#include "<%= file_name %>.h"
-<% end %>
+<%= body_includes %>
 
 void Finder::initFind(Atom **atoms, uint n)
 {

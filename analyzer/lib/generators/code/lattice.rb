@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       # Creates Lattice class
-      class Lattice < CppClass
+      class Lattice < CppClassWithGen
         extend Forwardable
         extend SourceFileCopier
         include PolynameClass
@@ -15,10 +15,10 @@ module VersatileDiamond
 
         # Initializes by concept lattice
         # @param [Concepts::Lattice] lattice the target concept
-        # @param [Organizers::AtomClassifier] classifier of atom properties
-        def initialize(lattice, classifier)
+        # @param [EngineCode] generator see at #super same argument
+        def initialize(generator, lattice)
+          super(generator)
           @lattice = lattice
-          @classifier = classifier
         end
 
         # Also copies relations cpp template class which own for each lattice
@@ -44,6 +44,7 @@ module VersatileDiamond
 
       private
 
+        def_delegator :generator, :classifier
         def_delegator :@lattice, :instance
 
         %w(major surface).each do |name|
@@ -53,7 +54,7 @@ module VersatileDiamond
           # @return [Integer] see at #crystal_atom_index result
           define_method(:"#{name}_atom_index") do
             ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
-            @classifier.index(ap)
+            classifier.index(ap)
           end
 
           # Finds index of atom properties that correspond to #{name} atom instance of
@@ -74,14 +75,21 @@ module VersatileDiamond
         def find_crystal_atom(info)
           full_info = info.dup
           full_info[:lattice] = @lattice
-          target = @classifier.props.find { |prop| prop.correspond?(full_info) }
+          target = classifier.props.find { |prop| prop.correspond?(full_info) }
           target || raise('Used crystal atom was not found!')
+        end
+
+        # Gets the list of objects which headers should be included in body file
+        # @return [Array] the list of including objects
+        # @override
+        def body_include_objects
+          [generator.major_class(:atom_builder), generator.major_class(:finder)]
         end
 
         # Atoms stored in atoms directory
         # @return [String] the atoms directory
         # @override
-        def additional_path
+        def template_additional_path
           'phases'
         end
       end

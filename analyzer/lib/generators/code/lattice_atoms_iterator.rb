@@ -26,16 +26,17 @@ module VersatileDiamond
           @lattice_class.class_name
         end
 
-        # Gets name of file where described lattice class
-        # @return [String] the lattice class file name
-        def lattice_file_name
-          @lattice_class.file_name
+        # Gets the list of objects which headers should be included in header file
+        # @return [Array] the list of including objects
+        # @override
+        def head_include_objects
+          [@lattice_class]
         end
 
         # Atoms stored in atoms directory
         # @return [String] the atoms directory
         # @override
-        def additional_path
+        def template_additional_path
           'phases'
         end
       end

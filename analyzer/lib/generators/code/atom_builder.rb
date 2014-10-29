@@ -42,10 +42,17 @@ module VersatileDiamond
           "build#{atom_class.class_name}_#{lattice_name}"
         end
 
+        # Gets the list of atoms which headers should be included in header file
+        # @return [Array] the list of including objects
+        # @override
+        def head_include_objects
+          pure_atoms
+        end
+
         # Atoms stored in atoms directory
         # @return [String] the atoms directory
         # @override
-        def additional_path
+        def template_additional_path
           'atoms'
         end
       end

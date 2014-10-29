@@ -22,12 +22,6 @@ module VersatileDiamond
         def_delegators :@handbook,
           :ubiquitous_reactions_exists?, :lateral_reactions_exists?
 
-        # Provides the list of including files
-        # @return [Array] the list of files which should be included
-        def including_files
-          (root_species + ubiquitous_reactions).map(&:full_file_path).sort
-        end
-
         # Gets the sorted list of source species. Sorting is very important because
         # most small species should be found before largest species. There could be
         # used topological sort for ordering source species by dependencies between
@@ -42,6 +36,12 @@ module VersatileDiamond
         # @return [Array] the list of ubiquitous reaction code generators
         def ubiquitous_reactions
           []
+        end
+
+        # Provides the list of including objects
+        # @return [Array] the list of objects which should be included
+        def body_include_objects
+          root_species + ubiquitous_reactions
         end
       end
 

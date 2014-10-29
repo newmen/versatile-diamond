@@ -19,7 +19,7 @@ module VersatileDiamond
         collect_code_species
         collect_code_lattices
 
-        @_dependent_species = nil
+        @_major_instances, @_fns_to_insts, @_dependent_species = nil
       end
 
       # provides methods from base generator class
@@ -50,6 +50,16 @@ module VersatileDiamond
 
         raise 'No unique atoms found!' if pure_atoms.empty?
         pure_atoms.map { |atom| Code::Atom.new(atom) }
+      end
+
+      # Gets the one of major code generator isntances by file name (without ext) of it
+      # @param [Symbol] file_name the alias name of major code generator instance
+      # @return [Code::CppClass] one of major code generator instance
+      def major_class(file_name)
+        return @_fns_to_insts[file_name.to_sym] if @_fns_to_insts
+
+        @_fns_to_insts = Hash[major_code_instances.map { |x| [x.file_name.to_sym, x] }]
+        @_fns_to_insts[file_name.to_sym]
       end
 
       # Gets all used lattices
@@ -98,8 +108,10 @@ module VersatileDiamond
       # Gets the instances of major code elements
       # @return [Array] the array of instances
       def major_code_instances
+        return @_major_instances if @_major_instances
+
         handbook = Code::Handbook.new(self)
-        [
+        @_major_instances = [
           handbook,
           Code::Finder.new(self, handbook),
           Code::Env.new(self),
@@ -150,7 +162,7 @@ module VersatileDiamond
       # @return [Hash] the mirror of lattices to code generator
       def collect_code_lattices
         hash = classifier.used_lattices.map do |concept|
-          concept ? [concept, Code::Lattice.new(concept, classifier)] : [nil, nil]
+          concept ? [concept, Code::Lattice.new(self, concept)] : [nil, nil]
         end
         @lattices = Hash[hash]
       end

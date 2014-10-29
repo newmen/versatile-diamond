@@ -13,8 +13,8 @@ module VersatileDiamond
           end
 
           describe '#original_file_path' do
-            let(:value) { "base/original_#{cap_name.downcase}" }
-            it { expect(subject.original_file_path).to eq(value) }
+            let(:value) { "species/base/original_#{cap_name.downcase}.h" }
+            it { expect(subject.original_file_path.to_s).to eq(value) }
           end
 
           describe '#outer_base_file' do
@@ -35,8 +35,8 @@ module VersatileDiamond
             end
 
             describe '#full_file_path' do
-              let(:ffp) { "empty/#{file_name}" }
-              it { expect(subject.full_file_path).to eq(ffp) }
+              let(:ffp) { "species/empty/#{file_name}.h" }
+              it { expect(subject.full_file_path.to_s).to eq(ffp) }
             end
 
             describe '#class_name' do
@@ -65,8 +65,8 @@ module VersatileDiamond
             end
 
             describe '#full_file_path' do
-              let(:ffp) { "empty/#{file_name}" }
-              it { expect(subject.full_file_path).to eq(ffp) }
+              let(:ffp) { "species/empty/#{file_name}.h" }
+              it { expect(subject.full_file_path.to_s).to eq(ffp) }
             end
 
             describe '#class_name' do

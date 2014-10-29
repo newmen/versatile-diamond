@@ -52,13 +52,13 @@ module VersatileDiamond
 
         # Gets a list of parent species
         # @return [Array] the array of parent specie code generators
-        def header_species_dependencies
-          target_specie.header_parents_dependencies
+        def head_include_objects
+          target_specie.header_parents_dependencies + [common_base_class_file]
         end
 
         # Original specie doesn't have dependencies from species in source file
         # @return [Array] the empty array
-        def source_species_dependencies
+        def body_include_objects
           []
         end
       end

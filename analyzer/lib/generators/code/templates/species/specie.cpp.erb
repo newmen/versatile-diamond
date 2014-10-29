@@ -1,15 +1,13 @@
 #include "<%= file_name %>.h"
-<% including_files.each do |file_name| %>
-#include "<%= file_name %>.h"
-<% end %>
+<%= body_includes %>
 
 <% unless symmetric? && render_find_algorithms? %>
 const ushort <%= class_name %>::Base::__indexes[<%= atoms_num %>] = { <%= indexes_sequence %> };
 const ushort <%= class_name %>::Base::__roles[<%= atoms_num %>] = { <%= roles_sequence %> };
 
 <%= render_partial('name_method.cpp') %>
-<% end %>
 
+<% end %>
 <% if render_find_algorithms? %>
 <%= render_partial('find_algorithms.cpp') %>
 <% end %>

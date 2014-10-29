@@ -1,15 +1,7 @@
 #ifndef <%= define_name %>
 #define <%= define_name %>
 
-<% iterator_files.each do |file_name| %>
-#include "../../phases/<%= file_name %>.h"
-<% end %>
-<% header_species_dependencies.each do |specie| %>
-#include "../<%= specie.full_file_path %>.h"
-<% end %>
-<% unless symmetric? && render_find_algorithms? %>
-#include "../<%= outer_base_file %>.h"
-<% end %>
+<%= head_includes %>
 
 class <%= class_name %> :
     <%= public_inheritance(base_classes) %>
