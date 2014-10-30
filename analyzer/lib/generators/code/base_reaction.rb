@@ -45,7 +45,7 @@ module VersatileDiamond
         # Gets the code string with calling environment class generator
         # @return [Array] the list of code strings with calling correspond method of
         #   environment coge generator instance
-        def gas_concentration
+        def gas_concentrations
           gas_specs.map { |spec| generator.env.full_concentration_method(spec) }
         end
 
@@ -69,7 +69,7 @@ module VersatileDiamond
         # @return [String] the rendering result
         def render_rate_and_name_body_partial
           args = [%Q("#{enum_name}")]
-          args += gas_concentration unless gas_specs.empty?
+          args += gas_concentrations unless gas_specs.empty?
           local_vars = { get_rate_args: args.join(', ') }
           render_partial('rate_and_name.cpp', locals: local_vars)
         end

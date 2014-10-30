@@ -24,10 +24,10 @@ module VersatileDiamond
           it { expect(deactivation.data_class_name).to eq('DeactivationData') }
         end
 
-        describe '#gas_concentration' do
-          let(:hydrogen_env_conc) { 'Env::cHydrogenHs()' }
-          it { expect(activation.gas_concentration).to eq(hydrogen_env_conc) }
-          it { expect(deactivation.gas_concentration).to eq(hydrogen_env_conc) }
+        describe '#gas_concentrations' do
+          let(:hydrogen_env_conc) { ['Env::cHydrogenHs()'] }
+          it { expect(activation.gas_concentrations).to eq(hydrogen_env_conc) }
+          it { expect(deactivation.gas_concentrations).to eq(hydrogen_env_conc) }
         end
       end
 
