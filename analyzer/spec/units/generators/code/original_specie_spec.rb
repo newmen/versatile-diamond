@@ -37,13 +37,13 @@ module VersatileDiamond
           it { expect(subject.target_specie).to eq(code_bridge_base) }
         end
 
-        describe '#base_classes' do
+        describe '#base_class_names' do
           let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
-          it { expect(subject.base_classes).to eq([name]) }
+          it { expect(subject.base_class_names).to eq([name]) }
         end
 
         describe '#full_file_path' do
-          let(:ffp) { 'species/base/original_bridge.h' }
+          let(:ffp) { 'species/bases/original_bridge.h' }
           it { expect(subject.full_file_path.to_s).to eq(ffp) }
         end
       end

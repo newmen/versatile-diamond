@@ -91,19 +91,6 @@ module VersatileDiamond
           base
         end
 
-        # Provides classes list from which occur inheritance when template renders
-        # @return [Array] the array of cpp class names
-        # TODO: must be private
-        def base_classes
-          [base_class] + iterator_classes
-        end
-
-        # Gets outer template name of base class
-        # @return [String] the outer base class name
-        def outer_base_file
-          outer_base_class.underscore
-        end
-
         # Checks that current specie is find algorithm root
         # @return [Boolean] is find algorithm root or not
         def find_root?
@@ -201,16 +188,9 @@ module VersatileDiamond
           !spec.theres.empty?
         end
 
-        # Combines public inheritance string
-        # @param [Array] classes the array of string names of cpp classes
-        # @return [String] the string which could be used for inheritance
-        def public_inheritance(classes)
-          classes.map { |klass| "public #{klass}" }.join(', ')
-        end
-
         # Makes base classes for current specie class instance
         # @return [String] combined base classes of engine framework
-        def base_class
+        def base_class_name
           symmetric? ? generalized_class_name : wrapped_base_class_name
         end
 
@@ -219,9 +199,11 @@ module VersatileDiamond
         def base_engine_class_name
           base_class = parent? ? 'ParentSpec' : 'BaseSpec'
           parents_num = spec.parents.size
-          parents_num == 0 ?
-            "SourceSpec<#{base_class}, #{atoms_num}>" :
+          if parents_num == 0
+            "SourceSpec<#{base_class}, #{atoms_num}>"
+          else
             "DependentSpec<#{base_class}, #{parents_num}>"
+          end
         end
 
         # Checks that specie contain additional atoms and if truth then wraps base
@@ -244,18 +226,19 @@ module VersatileDiamond
 
         # Gets outer template name of base class
         # @return [String] the outer base class name
-        def outer_base_class
+        def outer_base_class_name
           sidepiece? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
         end
 
         # Makes string by which base constructor will be called
         # @return [String] the string with calling base constructor
         def outer_base_call
-          "#{outer_base_class}(#{constructor_variables_str})"
+          "#{outer_base_class_name}(#{constructor_variables_str})"
         end
 
         # Gets the collection of used crystal atom iterator classes
         # @return [Array] used crystal atom iterators
+        # @override
         def used_iterators
           return @_used_iterators if @_used_iterators
 
@@ -269,13 +252,6 @@ module VersatileDiamond
           @_used_iterators = lattices.to_a.compact.map do |lattice|
             generator.lattice_class(lattice).iterator
           end
-        end
-
-        # Combines used iterators for using them as parent classes
-        # @return [Array] the array that contain parent class names from which
-        #   specie class instance will be inheritance in source code
-        def iterator_classes
-          used_iterators.map(&:class_name)
         end
 
         # Gets a list of species full header file path of which will be included in
@@ -308,8 +284,8 @@ module VersatileDiamond
         #   and symmetric instances
         def generalized_class_name
           original_class = @original.class_name
-          symmetric_classes = @symmetrics.map(&:class_name).join(', ')
-          "Symmetric<#{original_class}, #{symmetric_classes}>"
+          symmetric_class_names = @symmetrics.map(&:class_name).join(', ')
+          "Symmetric<#{original_class}, #{symmetric_class_names}>"
         end
 
         # Makes arguments string for static find method

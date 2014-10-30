@@ -27,12 +27,6 @@ module VersatileDiamond
           @specie
         end
 
-        # Substitute base classes list for original specie template rendering
-        # @return [Array] the array with base engine class name
-        def base_classes
-          [target_specie.wrapped_base_class_name]
-        end
-
         # Delegates all missed methods to target specie for correct rendering source
         # code template
         #
@@ -48,6 +42,12 @@ module VersatileDiamond
         # @return [Boolean] false
         def render_find_algorithms?
           false
+        end
+
+        # Substitute base class name for original specie template rendering
+        # @return [String] the name of base class
+        def base_class_name
+          target_specie.wrapped_base_class_name
         end
 
         # Gets a list of parent species
