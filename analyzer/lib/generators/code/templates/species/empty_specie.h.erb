@@ -4,15 +4,13 @@
 <%= head_includes %>
 
 class <%= class_name %> :
-    <%= base_class_name %>
+    <%= public_inheritance_from_base_classes %>
 {
 public:
     <%= class_name %>(<%= original_class_name %> *parent) :
         <%= wrapper_class_name %>(parent) {}
 
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+<%= render_partial('name_method.h') %>
 };
 
 #endif // <%= define_name %>

@@ -148,9 +148,10 @@ module VersatileDiamond
             let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
             it { expect(code_for(bridge_base).wrapped_base_class_name).to eq(name) }
 
-            describe '#base_classes' do
-              let(:base_classes) { [name, 'DiamondAtomsIterator'] }
-              it { expect(code_for(bridge_base).base_classes).to eq(base_classes) }
+            describe '#base_class_names' do
+              let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
+              it { expect(code_for(bridge_base).base_class_names).
+                to eq(base_class_names) }
             end
           end
 
@@ -161,13 +162,13 @@ module VersatileDiamond
 
             describe 'child base specie' do
               subject { code_for(methyl_on_bridge_base) }
-              let(:base_classes) { [name] }
+              let(:base_class_names) { [name] }
               let(:name) do
                 'Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, ' \
                   'METHYL_ON_BRIDGE, 2>'
               end
               it { expect(subject.wrapped_base_class_name).to eq(name) }
-              it { expect(subject.base_classes).to eq(base_classes) }
+              it { expect(subject.base_class_names).to eq(base_class_names) }
             end
           end
 
@@ -177,10 +178,11 @@ module VersatileDiamond
             it_behaves_like :parent_bridge_name
 
             describe 'child base specie' do
-              let(:base_classes) { [name, 'DiamondAtomsIterator'] }
+              let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
               let(:name) { 'Base<DependentSpec<BaseSpec, 2>, DIMER, 2>' }
               it { expect(code_for(dimer_base).wrapped_base_class_name).to eq(name) }
-              it { expect(code_for(dimer_base).base_classes).to eq(base_classes) }
+              it { expect(code_for(dimer_base).base_class_names).
+                to eq(base_class_names) }
             end
           end
 
@@ -200,12 +202,12 @@ module VersatileDiamond
           end
         end
 
-        describe '#outer_base_file' do
-          it { expect(code_bridge_base.outer_base_file).to eq('base') }
+        describe '#outer_base_name' do
+          it { expect(code_bridge_base.outer_base_name).to eq('base') }
         end
 
         describe '#full_file_path' do
-          let(:ffp) { 'species/base/bridge.h' }
+          let(:ffp) { 'species/bases/bridge.h' }
           it { expect(code_bridge_base.full_file_path.to_s).to eq(ffp) }
         end
 

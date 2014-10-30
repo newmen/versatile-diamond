@@ -4,7 +4,7 @@
 <%= head_includes %>
 
 class <%= class_name %> :
-    <%= public_inheritance(base_classes) %>
+    <%= public_inheritance_from_base_classes %>
 {
 <% if render_find_algorithms? %>
 <%= render_partial('find_algorithms.h') %>
@@ -18,9 +18,7 @@ protected:
 <% unless symmetric? && render_find_algorithms? %>
 
 public:
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+<%= render_partial('name_method.h') %>
 <% end %>
 };
 

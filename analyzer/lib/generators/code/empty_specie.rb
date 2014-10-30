@@ -52,7 +52,7 @@ module VersatileDiamond
         # @return [String] the full name of base class
         def base_class_name
           wbcn = @specie == original_specie ?
-            "Empty<#{enum_name}>" : @specie.base_class_name
+            "#{outer_base_class_name}<#{enum_name}>" : @specie.base_class_name
 
           add_args = additional_template_args.map { |arg| ", #{arg}" }.join
           "#{wrapper_class_name}<#{wbcn}#{add_args}>"
@@ -68,12 +68,6 @@ module VersatileDiamond
         # @return [String] the path to original specie header file
         def original_file_path
           original_specie.full_file_path
-        end
-
-        # Gets the name to outer class header file without extension
-        # @return [String] the name of outer class header file
-        def outer_base_file
-          'empty'
         end
 
         # The decorated printable name of major specie
@@ -94,6 +88,12 @@ module VersatileDiamond
         # @return [OriginalSpecie] the original specie which is wrapping
         def original_specie
           target_specie.original
+        end
+
+        # Gets the name to outer class
+        # @return [String] the name of outer class
+        def outer_base_class_name
+          'Empty'
         end
 
         # Gets the list of objects which headers should be included in header file
