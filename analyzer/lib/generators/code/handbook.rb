@@ -123,7 +123,7 @@ module VersatileDiamond
         # @return [Array] the list of including objects
         # @override
         def head_include_objects
-          phases + [generator.major_class(:env), generator.major_class(:finder)]
+          phases + [generator.env, generator.finder]
         end
       end
 

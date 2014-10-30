@@ -34,10 +34,13 @@ module VersatileDiamond
 
       private
 
-        # Provides default concept methods value
-        # @return [Hash] the hash where each value is nil
+        # Provides default value for analysis result methods
+        # @return [Hash] the hash where each value is empty array
         def default_depts
-          hash = [:base_specs, :specific_specs].map { |c| [c, nil] }
+          hash = [
+            :base_specs, :specific_specs,
+            :ubiquitous_reactions, :typical_reactions, :lateral_reactions
+          ].map { |c| [c, []] }
           Hash[hash]
         end
 

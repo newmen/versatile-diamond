@@ -65,7 +65,7 @@ module VersatileDiamond
           value = block ? target.send(method_name, &block) : target.send(method_name)
           value_by_chain(value, methods_chain)
         else
-          target
+          block ? block[target] : target
         end
       end
     end

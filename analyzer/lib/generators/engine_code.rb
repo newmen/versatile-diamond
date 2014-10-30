@@ -19,7 +19,8 @@ module VersatileDiamond
         collect_code_species
         collect_code_lattices
 
-        @_major_instances, @_fns_to_insts, @_dependent_species = nil
+        @_atom_builder, @_env, @_finder, @_handbook = nil
+        @_dependent_species = nil
       end
 
       # provides methods from base generator class
@@ -37,6 +38,30 @@ module VersatileDiamond
         end
       end
 
+      # Gets atom builder class code generator
+      # @return [AtomBuilder] the atom builder class code generator instance
+      def atom_builder
+        @_atom_builder ||= Code::AtomBuilder.new(self)
+      end
+
+      # Gets environment class code generator
+      # @return [End] the environment class code generator instance
+      def env
+        @_env ||= Code::Env.new(self)
+      end
+
+      # Gets finder class code generator
+      # @return [Finder] the finder class code generator instance
+      def finder
+        @_finder ||= Code::Finder.new(self)
+      end
+
+      # Gets handbook class code generator
+      # @return [Finder] the handbook class code generator instance
+      def handbook
+        @_handbook ||= Code::Handbook.new(self)
+      end
+
       # Collects only unique base atom instances
       # @return [Array] the array of pure unique atom instances
       def unique_pure_atoms
@@ -50,16 +75,6 @@ module VersatileDiamond
 
         raise 'No unique atoms found!' if pure_atoms.empty?
         pure_atoms.map { |atom| Code::Atom.new(atom) }
-      end
-
-      # Gets the one of major code generator isntances by file name (without ext) of it
-      # @param [Symbol] file_name the alias name of major code generator instance
-      # @return [Code::CppClass] one of major code generator instance
-      def major_class(file_name)
-        return @_fns_to_insts[file_name.to_sym] if @_fns_to_insts
-
-        @_fns_to_insts = Hash[major_code_instances.map { |x| [x.file_name.to_sym, x] }]
-        @_fns_to_insts[file_name.to_sym]
       end
 
       # Gets all used lattices
@@ -108,15 +123,7 @@ module VersatileDiamond
       # Gets the instances of major code elements
       # @return [Array] the array of instances
       def major_code_instances
-        return @_major_instances if @_major_instances
-
-        handbook = Code::Handbook.new(self)
-        @_major_instances = [
-          handbook,
-          Code::Finder.new(self, handbook),
-          Code::Env.new(self),
-          Code::AtomBuilder.new(self)
-        ]
+        [atom_builder, env, finder, handbook]
       end
 
       # Finds and drops not unique items which are compares by block

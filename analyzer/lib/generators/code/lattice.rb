@@ -83,7 +83,7 @@ module VersatileDiamond
         # @return [Array] the list of including objects
         # @override
         def body_include_objects
-          [generator.major_class(:atom_builder), generator.major_class(:finder)]
+          [generator.atom_builder, generator.finder]
         end
 
         # Atoms stored in atoms directory
