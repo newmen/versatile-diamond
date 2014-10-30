@@ -7,6 +7,7 @@ module VersatileDiamond
       # Provides logic for all reation generators
       # @abstract
       class BaseReaction < SoughtClass
+        include ReactionsUser
 
         # Initializes reaction code generator
         # @param [EngineCode] generator see at #super same argument
@@ -41,9 +42,37 @@ module VersatileDiamond
           reaction.name
         end
 
+        # Gets the code string with calling environment class generator
+        # @return [Array] the list of code strings with calling correspond method of
+        #   environment coge generator instance
+        def gas_concentration
+          gas_specs.map { |spec| generator.env.full_concentration_method(spec) }
+        end
+
       private
 
         attr_reader :reaction
+
+        # Gets the list of more complex reactions
+        # @return [Array] the list of children reactions
+        def children
+          reaction.complexes.map(&method(:reaction_class))
+        end
+
+        # Gets reacting gas species list
+        # @return [Array] the reacting gas species list
+        def gas_specs
+          reaction.source.select(&:gas?)
+        end
+
+        # Render template with body of reaction rate method and name definition
+        # @return [String] the rendering result
+        def render_rate_and_name_body_partial
+          args = [%Q("#{enum_name}")]
+          args += gas_concentration unless gas_specs.empty?
+          local_vars = { get_rate_args: args.join(', ') }
+          render_partial('rate_and_name.cpp', locals: local_vars)
+        end
 
         # Gets the parent type of generating reaction
         # @return [String] the parent type of reaction
