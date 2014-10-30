@@ -7,6 +7,7 @@ module VersatileDiamond
       # Creates Specie class
       class Specie < BaseSpecie
         include SpecieInside
+        include ReactionsUser
         extend Forwardable
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
@@ -213,8 +214,7 @@ module VersatileDiamond
 
           if local?
             local_reactions.reduce(base) do |acc, reaction|
-              _, a = reaction.complex_source_spec_and_atom
-              "LocalableRole<#{acc}, #{index(a)}>"
+              "LocalableRole<#{acc}, #{index(reaction.atom_of_complex)}>"
             end
           else
             base
@@ -381,14 +381,6 @@ module VersatileDiamond
         # @return [String] the multilined string with cpp code
         def find_algorithm
           FindAlgorithmBuilder.new(generator, self).build
-        end
-
-        # Gets the reaction class code generator
-        # @param [Organizers::DependentReaction] reaction by which code generator
-        #   will be gotten
-        # @return [Reaction] the correspond reaction code generator
-        def reaction_class(reaction)
-          generator.reaction_class(reaction.name)
         end
       end
 

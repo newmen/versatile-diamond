@@ -1,20 +1,14 @@
 #include "<%= file_name %>.h"
 <%= body_includes %>
 
-const char <%= class_name %>::__name[] = "<%= print_name %>";
-
-double <%= class_name %>::RATE()
-{
-    static double value = getRate("<%= enum_name %>", <%= gas_concentration %>);
-    return value;
-}
+<%= render_rate_and_name_body_partial %>
 
 void SurfaceActivation::find(Atom *anchor)
 {
-<% if children_reactions.empty? %>
+<% if children.empty? %>
     findSelf<<%= class_name %>>(anchor)
 <% else %>
-<% children_reactions.each do |child| %>
+<% children.each do |child| %>
     findChild<<%= child.class_name %>>(anchor);
 <% end %>
 <% end %>

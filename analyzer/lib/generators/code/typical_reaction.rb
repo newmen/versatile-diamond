@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
 
       # Contains logic for generation typical reation
-      class TypicalReaction < BaseReaction
+      class TypicalReaction < ReactionWithComplexSpecies
       private
 
         # Gets the parent type of generating reaction
