@@ -87,7 +87,7 @@ module VersatileDiamond
         def wrapped_base_class_name
           base = "Base<#{wrapped_engine_class_name}, #{enum_name}, #{atoms_num}>"
           base = "Specific<#{base}>" if specific?
-          base = "Sidepiece<#{base}>" if lateral?
+          base = "Sidepiece<#{base}>" if sidepiece?
           base
         end
 
@@ -161,15 +161,43 @@ module VersatileDiamond
           !children.empty?
         end
 
-        # Checks that specie have reactions
+        # Gets list of local reactions for current specie
+        # @return [Array] the list of local reactions
+        def local_reactions
+          if generator.handbook.ubiquitous_reactions_exists?
+            spec.reactions.select(&:local?)
+          else
+            []
+          end
+        end
+
+        # Gets list of typical reactions for current specie
+        # @return [Array] the list of typical reactions
+        def typical_reactions
+          spec.reactions - local_reactions - lateral_reactions
+        end
+
+        # Gets list of lateral reactions for current specie
+        # @return [Array] the list of lateral reactions
+        def lateral_reactions
+          spec.reactions.select(&:lateral?)
+        end
+
+        # Checks that ubiquitous reactions prestented and specie have local reactions
+        # @return [Boolean] is local or not
+        def local?
+          !local_reactions.empty?
+        end
+
+        # Checks that specie have typical reactions
         # @return [Boolean] is specific or not
         def specific?
-          !spec.reactions.empty?
+          !typical_reactions.empty?
         end
 
         # Checks that specie have there objects
-        # @return [Boolean] is lateral or not
-        def lateral?
+        # @return [Boolean] is lateral specie or not
+        def sidepiece?
           !spec.theres.empty?
         end
 
@@ -202,13 +230,27 @@ module VersatileDiamond
         # @return [String] the wrapped or not base engine class name
         def wrapped_engine_class_name
           base_class = base_engine_class_name
-          delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
+          wrapped_class =
+            if delta > 0
+              "AdditionalAtomsWrapper<#{base_class}, #{delta}>"
+            else
+              base_class
+            end
+
+          if local?
+            local_reactions.reduce(wrapped_class) do |acc, reaction|
+              _, a = reaction.complex_source_spec_and_atom
+              "LocalableRole<#{acc}, #{index(a)}>"
+            end
+          else
+            wrapped_class
+          end
         end
 
         # Gets outer template name of base class
         # @return [String] the outer base class name
         def outer_base_class
-          lateral? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
+          sidepiece? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
         end
 
         # Makes string by which base constructor will be called

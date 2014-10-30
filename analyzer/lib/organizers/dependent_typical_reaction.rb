@@ -4,6 +4,8 @@ module VersatileDiamond
     # Wraps structural reaction without lateral interactions
     class DependentTypicalReaction < DependentReaction
 
+      def_delegator :reaction, :complex_source_spec_and_atom
+
       # Selects complex source spec and them changed atom
       # @return [SpecificSpec] the covered spec
       def source_covered_by(termination_spec)
