@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Generators
 
     # Generates program code based on engine framework for each interpreted entities
@@ -38,28 +40,14 @@ module VersatileDiamond
         end
       end
 
-      # Gets atom builder class code generator
-      # @return [AtomBuilder] the atom builder class code generator instance
-      def atom_builder
-        @_atom_builder ||= Code::AtomBuilder.new(self)
-      end
-
-      # Gets environment class code generator
-      # @return [End] the environment class code generator instance
-      def env
-        @_env ||= Code::Env.new(self)
-      end
-
-      # Gets finder class code generator
-      # @return [Finder] the finder class code generator instance
-      def finder
-        @_finder ||= Code::Finder.new(self)
-      end
-
-      # Gets handbook class code generator
-      # @return [Finder] the handbook class code generator instance
-      def handbook
-        @_handbook ||= Code::Handbook.new(self)
+      %w(atom_builder env finder handbook).each do |name|
+        # Gets #{name} class code generator
+        # @return [#{name.classify}] the #{name} class code generator instance
+        define_method(name.to_sym) do
+          var_name = :"@_#{name}"
+          instance_variable_get(var_name) ||
+            instance_variable_set(var_name, Code.const_get(name.classify).new(self))
+        end
       end
 
       # Collects only unique base atom instances
