@@ -18,9 +18,21 @@ void <%= class_name %>::findAllTypicalReactions()
 
 }
 <% end %>
-<% if lateral? %>
+<% if sidepiece? %>
 
 void <%= class_name %>::findAllLateralReactions()
+{
+
+}
+<% end %>
+<% if local? %>
+
+void <%= class_name %>::concretizeLocal(Atom *target) const
+{
+
+}
+
+void <%= class_name %>::unconcretizeLocal(Atom *target) const
 {
 
 }

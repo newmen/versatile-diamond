@@ -20,8 +20,8 @@ protected:
     void findAllChildren() final;
     void findAllTypicalReactions() final;
 
-    void concretizeLocal(Atom *target) const override;
-    void unconcretizeLocal(Atom *target) const override;
+    void concretizeLocal(Atom *target) const final;
+    void unconcretizeLocal(Atom *target) const final;
 };
 
 #endif // METHYL_ON_DIMER_CMIU_H
