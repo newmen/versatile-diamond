@@ -52,7 +52,8 @@ module VersatileDiamond
         # Organizes dependencies between wrapped specific species
         def organize_specific_specs(res)
           base_cache = res.base_specs ? make_cache(res.base_specs) : {}
-          organize_specific_specs_dependencies!(base_cache, res.specific_specs)
+          not_simple_specs = res.specific_specs.reject(&:simple?)
+          organize_specific_specs_dependencies!(base_cache, not_simple_specs)
         end
       end
     end

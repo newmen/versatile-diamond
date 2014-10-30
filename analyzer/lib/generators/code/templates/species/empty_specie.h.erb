@@ -4,7 +4,7 @@
 <%= head_includes %>
 
 class <%= class_name %> :
-    <%= public_inheritance_from_base_classes %>
+    public <%= base_class_name %>
 {
 public:
     <%= class_name %>(<%= original_class_name %> *parent) :

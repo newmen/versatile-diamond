@@ -11,12 +11,7 @@ module VersatileDiamond
         # Checks that ubiquitous reactions presented in original set
         # @return [Boolean] exists or not
         def ubiquitous_reactions_exists?
-          return true unless generator.ubiquitous_reactions.empty?
-
-          if generator.spec_reactions.any?(&:local?)
-            raise 'Local reactions could not be without ubiquitous reactions'
-          end
-          false
+          generator.ubiquitous_reactions.empty?
         end
 
         # Checks that lateral reactions presented in original set
