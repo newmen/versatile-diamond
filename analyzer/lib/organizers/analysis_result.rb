@@ -53,13 +53,13 @@ module VersatileDiamond
         end
       end
 
+    private
+
       # Gets all collected reactions with complex surface species
       # @return [Array] the array of arrays of reactions
       def spec_reactions
         [typical_reactions, lateral_reactions]
       end
-
-    private
 
       # Wraps reactions from Chest
       # @param [Class] the class that inherits DependentReaction

@@ -7,19 +7,10 @@ module VersatileDiamond
       class Finder < CppClassWithGen
         extend Forwardable
 
-        # Initializes Finder class code generator also by handbook, because Finder is
-        # direct user of Handbook class
-        #
-        # @param [EngineCode] generator see at #super same argument
-        # @param [Handbook] handbook class code generator
-        def initialize(generator, handbook)
-          super(generator)
-          @handbook = handbook
-        end
-
       private
 
-        def_delegators :@handbook,
+        def_delegator :generator, :handbook
+        def_delegators :handbook,
           :ubiquitous_reactions_exists?, :lateral_reactions_exists?
 
         # Gets the sorted list of source species. Sorting is very important because

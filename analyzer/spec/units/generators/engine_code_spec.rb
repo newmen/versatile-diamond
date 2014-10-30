@@ -4,6 +4,26 @@ module VersatileDiamond
   module Generators
 
     describe EngineCode, use: :engine_generator do
+      describe 'major code instances' do
+        subject { stub_generator(base_specs: [dept_bridge_base]) }
+
+        describe '#handbook' do
+          it { expect(subject.handbook).to be_a(Code::Handbook) }
+        end
+
+        describe '#finder' do
+          it { expect(subject.finder).to be_a(Code::Finder) }
+        end
+
+        describe '#env' do
+          it { expect(subject.env).to be_a(Code::Env) }
+        end
+
+        describe '#atom_builder' do
+          it { expect(subject.atom_builder).to be_a(Code::AtomBuilder) }
+        end
+      end
+
       describe '#unique_pure_atoms' do
         let(:bases) { [dept_methane_base, dept_bridge_base] }
         let(:specifics) { [dept_chlorigenated_bridge] }

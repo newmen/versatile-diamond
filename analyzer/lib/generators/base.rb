@@ -11,6 +11,7 @@ module VersatileDiamond
       #   interpretation and analysis
       def initialize(analysis_result)
         @analysis_result = analysis_result
+        @_spec_reactions, @_classifier, @_surface_specs = nil
       end
 
     private
@@ -32,22 +33,22 @@ module VersatileDiamond
       # Gets not ubiquitous reactions
       # @return [Array] the not ubiquitous reactions
       def spec_reactions
-        @spec_reactions ||= @analysis_result.spec_reactions.flatten
+        @_spec_reactions ||= [typical_reactions, lateral_reactions].flatten
       end
 
       # Creates atom classifier and analyse each surface spec
       def classifier
-        return @classifier if @classifier
+        return @_classifier if @_classifier
 
-        @classifier = Organizers::AtomClassifier.new
-        surface_specs.each { |spec| @classifier.analyze(spec) }
-        @classifier.organize_properties!
-        @classifier
+        @_classifier = Organizers::AtomClassifier.new
+        surface_specs.each { |spec| @_classifier.analyze(spec) }
+        @_classifier.organize_properties!
+        @_classifier
       end
 
       # Collects all uniq used surface species
       def surface_specs
-        @surface_specs ||= base_surface_specs + specific_surface_specs
+        @_surface_specs ||= base_surface_specs + specific_surface_specs
       end
 
       # Gets all base surface species
