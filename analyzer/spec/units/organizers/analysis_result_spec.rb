@@ -278,13 +278,6 @@ module VersatileDiamond
           end
         end
 
-        describe '#spec_reactions' do
-          before { store_reactions }
-
-          it { expect(subject.spec_reactions).
-            not_to include(*subject.ubiquitous_reactions) }
-        end
-
         describe '#organize_dependecies!' do
           describe '#organize_specific_specs_dependencies!' do
             before { store_reactions }
