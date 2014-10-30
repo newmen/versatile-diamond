@@ -5,6 +5,7 @@ module VersatileDiamond
     # relationship between interpreted concepts
     class AnalysisResult
       include SpeciesOrganizer
+      include ReactionsOrganizer
 
       # Exception for case when some reactions overlap
       class ReactionDuplicate < Errors::Base
@@ -228,7 +229,7 @@ module VersatileDiamond
 
         # before need to update specs by organize their dependecies!
         check_reactions_for_duplicates
-        organize_reactions_dependencies!
+        organize_all_reactions_dependencies!
       end
 
       # Checks stored reactions for duplication with each other
@@ -248,20 +249,10 @@ module VersatileDiamond
       # Organize dependencies between all stored reactions.
       # Also organize dependencies between termination species and their complex
       # parents.
-      def organize_reactions_dependencies!
-        cached_spec_reactions = spec_reactions.flatten
-        # order of dependencies organization is important!
-        ubiquitous_reactions.each do |reaction|
-          common_spec_cache = @specific_specs.merge(@base_specs)
-          reaction.organize_dependencies!(
-            cached_spec_reactions, @term_specs, common_spec_cache)
-        end
-        lateral_reactions.each do |reaction|
-          reaction.organize_dependencies!(lateral_reactions)
-        end
-        typical_reactions.each do |reaction|
-          reaction.organize_dependencies!(lateral_reactions)
-        end
+      def organize_all_reactions_dependencies!
+        nt_spec_cache = @specific_specs.merge(@base_specs)
+        reactions_lists = [ubiquitous_reactions, typical_reactions, lateral_reactions]
+        organize_reactions_dependencies!(@term_specs, nt_spec_cache, *reactions_lists)
       end
     end
 

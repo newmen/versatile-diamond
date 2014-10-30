@@ -186,13 +186,6 @@ module VersatileDiamond
             end
           end
 
-          describe 'specific as base' do
-            subject { code_for(activated_incoherent_bridge) }
-            let(:specific_specs) { [dept_activated_incoherent_bridge] }
-            let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE_CTsi, 3>' }
-            it { expect(subject.wrapped_base_class_name).to eq(name) }
-          end
-
           describe 'specific parent specie' do
             pending 'asdf'
           end
