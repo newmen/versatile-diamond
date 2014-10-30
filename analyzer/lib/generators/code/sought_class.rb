@@ -28,6 +28,14 @@ module VersatileDiamond
           outer_base_class_name.underscore
         end
 
+        def to_s
+          class_name
+        end
+
+        def inspect
+          to_s
+        end
+
       private
 
         # By default sought instance doesn't use lattice atom iterators
