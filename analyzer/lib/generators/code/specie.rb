@@ -118,10 +118,6 @@ module VersatileDiamond
           spec.name.to_s
         end
 
-        def inspect
-          class_name
-        end
-
       private
 
         # Specie class has find algorithms by default
