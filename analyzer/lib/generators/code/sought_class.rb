@@ -63,11 +63,17 @@ module VersatileDiamond
           CommonFile.new("#{template_additional_path}/#{outer_base_name}.h")
         end
 
+        # Gets the name of directory where will be stored result file
+        # @return [String] the name of result directory
+        def outer_dir_name
+          outer_base_name.pluralize
+        end
+
         # The additional path of current instance generation result
         # @return [Pathname] the directory when will be stored result of generation
         # @override
         def result_additional_path
-          super + outer_base_name.pluralize
+          super + outer_dir_name
         end
       end
 

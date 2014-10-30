@@ -20,13 +20,15 @@ module VersatileDiamond
         #
         # @return [Array] the sorted list of source specie code generators
         def root_species
-          generator.species.select(&:find_root?).sort { |a, b| a.spec <=> b.spec }
+          generator.root_species.sort { |a, b| a.spec <=> b.spec }
         end
 
         # Gets the sorted list of ubiquitous reactions
         # @return [Array] the list of ubiquitous reaction code generators
         def ubiquitous_reactions
-          []
+          generator.ubiquitous_reactions.map do |reaction|
+            generator.reaction_class(reaction.name)
+          end
         end
 
         # Provides the list of including objects

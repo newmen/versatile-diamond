@@ -4,8 +4,6 @@
 #include <atoms/atom.h>
 using namespace vd;
 
-#include "ubiquitous.h"
-
 template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>
 class Local : public B<RT>
 {

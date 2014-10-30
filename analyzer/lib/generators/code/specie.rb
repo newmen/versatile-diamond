@@ -148,7 +148,7 @@ module VersatileDiamond
         # @return [Array] the list of local reactions
         def local_reactions
           if generator.handbook.ubiquitous_reactions_exists?
-            spec.reactions.select(&:local?)
+            spec.reactions.select(&:local?).map(&method(:reaction_class))
           else
             []
           end
@@ -157,13 +157,14 @@ module VersatileDiamond
         # Gets list of typical reactions for current specie
         # @return [Array] the list of typical reactions
         def typical_reactions
-          spec.reactions - local_reactions - lateral_reactions
+          spec.reactions.map(&method(:reaction_class)) -
+            local_reactions - lateral_reactions
         end
 
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
-          spec.reactions.select(&:lateral?)
+          spec.reactions.select(&:lateral?).map(&method(:reaction_class))
         end
 
         # Checks that ubiquitous reactions prestented and specie have local reactions
@@ -270,7 +271,8 @@ module VersatileDiamond
         #
         # @return [Array] the array of species which should be included in source file
         def body_include_objects
-          ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children
+          ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children +
+            local_reactions + typical_reactions + lateral_reactions
         end
 
         # Gets classes from which current code instance will be inherited if specie is
@@ -379,6 +381,14 @@ module VersatileDiamond
         # @return [String] the multilined string with cpp code
         def find_algorithm
           FindAlgorithmBuilder.new(generator, self).build
+        end
+
+        # Gets the reaction class code generator
+        # @param [Organizers::DependentReaction] reaction by which code generator
+        #   will be gotten
+        # @return [Reaction] the correspond reaction code generator
+        def reaction_class(reaction)
+          generator.reaction_class(reaction.name)
         end
       end
 

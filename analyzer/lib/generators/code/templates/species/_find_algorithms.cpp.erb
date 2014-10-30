@@ -15,7 +15,9 @@ void <%= class_name %>::findAllChildren()
 
 void <%= class_name %>::findAllTypicalReactions()
 {
-
+<% typical_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::find(this);
+<% end %>
 }
 <% end %>
 <% if sidepiece? %>
@@ -29,11 +31,15 @@ void <%= class_name %>::findAllLateralReactions()
 
 void <%= class_name %>::concretizeLocal(Atom *target) const
 {
-
+<% local_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::concretize(target);
+<% end %>
 }
 
 void <%= class_name %>::unconcretizeLocal(Atom *target) const
 {
-
+<% local_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::unconcretize(target);
+<% end %>
 }
 <% end %>
