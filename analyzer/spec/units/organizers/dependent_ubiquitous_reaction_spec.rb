@@ -8,6 +8,7 @@ module VersatileDiamond
 
       describe '#termination' do
         it { expect(subject.termination).to eq(adsorbed_h) }
+        it { expect(dept_surface_deactivation.termination).to eq(active_bond) }
       end
 
       describe '#lateral?' do

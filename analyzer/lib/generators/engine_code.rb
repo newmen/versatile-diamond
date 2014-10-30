@@ -18,8 +18,9 @@ module VersatileDiamond
         @sequences_cacher = Code::SequencesCacher.new
         @detectors_cacher = Code::DetectorsCacher.new(self)
 
-        collect_code_species
         collect_code_lattices
+        collect_code_species
+        collect_code_reactions
 
         @_atom_builder, @_env, @_finder, @_handbook = nil
         @_dependent_species = nil
@@ -129,6 +130,15 @@ module VersatileDiamond
         result
       end
 
+      # Collects all used lattices and wraps it by source code generator
+      # @return [Hash] the mirror of lattices to code generator
+      def collect_code_lattices
+        hash = classifier.used_lattices.map do |concept|
+          concept ? [concept, Code::Lattice.new(self, concept)] : [nil, nil]
+        end
+        @lattices = Hash[hash]
+      end
+
       # Collects all used species from analysis results
       # @return [Hash] the mirror of specs names to dependent species
       def collect_dependent_species
@@ -142,8 +152,8 @@ module VersatileDiamond
         end
       end
 
-      # Wraps all collected species from analysis results
-      # @return [Hash] the mirror of specs names to spec code generator instances
+      # Wraps all collected species from analysis results. Makes the mirror of specie
+      # names to specie code generator instances.
       def collect_code_species
         @species = {}
         collect_dependent_species.each do |name, spec|
@@ -153,13 +163,41 @@ module VersatileDiamond
         @species.values.each(&:find_symmetries!)
       end
 
-      # Collects all used lattices and wraps it by source code generator
-      # @return [Hash] the mirror of lattices to code generator
-      def collect_code_lattices
-        hash = classifier.used_lattices.map do |concept|
-          concept ? [concept, Code::Lattice.new(self, concept)] : [nil, nil]
+      # Wraps all analyzed reactions. Makes the mirror of reaction names to reaction
+      # code generator instances.
+      def collect_code_reactions
+        local_reactions = spec_reactions.select(&:local?)
+        lateral_reactions = spec_reactions.select(&:lateral?)
+        typical_reactions = spec_reactions - local_reactions - lateral_reactions
+
+        @reactions = {}
+        if ubiquitous_reactions.empty?
+          # if ubiquitous reactions are not presented then all local reactions
+          # interpreted as typical reaction
+          (local_reactions + typical_reactions).each do |reaction|
+            wrap_reaction(Code::TypicalReaction, reaction)
+          end
+        else
+          %w(ubiquitous local typical).each do |rtype|
+            eval("#{rtype}_reactions").each do |reaction|
+              wrap_reaction(Code.const_get("#{rtype}_reaction".classify), reaction)
+            end
+          end
         end
-        @lattices = Hash[hash]
+
+        lateral_reactions.each do |reaction|
+          wrap_reaction(Code::LateralReaction, reaction)
+        end
+      end
+
+      # Wraps one reaction by passed code generator class and store it to interal
+      # cache by reaction name
+      #
+      # @param [Class] klass by which will be wrapped the passed reaction
+      # @param [Organizers::DependentReaction] reaction which will be wrapped
+      # @return [Code::Reaction] the wrapped reaction
+      def wrap_reaction(klass, reaction)
+        @reactions[reaction.name] = klass.new(self, reaction)
       end
 
       # Gets the species from configuration tool

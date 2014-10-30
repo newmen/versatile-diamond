@@ -64,19 +64,19 @@ module VersatileDiamond
           !@symmetrics.empty?
         end
 
-        PREF_METD_SEPS.each do |name, method, separator|
-          method_name = :"#{name}_name"
+        PREF_METD_SEPS.each do |prefix, method, separator|
+          method_name = :"#{prefix}_name"
           var_name = :"@_#{method_name}"
 
-          # Makes #{name} name for current specie
-          # @return [String] the result #{name} name
+          # Makes #{prefix} name for current specie
+          # @return [String] the result #{prefix} name
           define_method(method_name) do
             var = instance_variable_get(var_name)
             return var if var
 
             m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
             addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            addition = addition.public_send(method) if addition && name == 'file'
+            addition = addition.public_send(method) if addition && prefix == 'file'
             head = eval("m[1].#{method}")
             instance_variable_set(var_name, "#{head}#{addition}")
           end
