@@ -33,7 +33,7 @@ module VersatileDiamond
             @essence = Essence.new(self)
           end
 
-          @_class_name, @_enum_name, @_used_iterators = nil
+          @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
         end
 
         # Runs find symmetries algorithm by detector
@@ -229,21 +229,16 @@ module VersatileDiamond
         #
         # @return [String] the wrapped or not base engine class name
         def wrapped_engine_class_name
-          base_class = base_engine_class_name
-          wrapped_class =
-            if delta > 0
-              "AdditionalAtomsWrapper<#{base_class}, #{delta}>"
-            else
-              base_class
-            end
+          base = base_engine_class_name
+          base = "AdditionalAtomsWrapper<#{base}, #{delta}>" if delta > 0
 
           if local?
-            local_reactions.reduce(wrapped_class) do |acc, reaction|
+            local_reactions.reduce(base) do |acc, reaction|
               _, a = reaction.complex_source_spec_and_atom
               "LocalableRole<#{acc}, #{index(a)}>"
             end
           else
-            wrapped_class
+            base
           end
         end
 
