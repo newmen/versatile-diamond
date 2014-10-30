@@ -38,8 +38,8 @@ module VersatileDiamond
         # @param [Concepts::Lattice] lattice the atom belongs to this lattice
         # @return [String] the method name
         def method_name(atom_class, lattice)
-          lattice_name = lattice && lattice.name
-          "build#{atom_class.class_name}_#{lattice_name}"
+          lattice_name_with_prefix = lattice ? "_#{lattice.name}" : ''
+          "build#{atom_class.class_name}#{lattice_name_with_prefix}"
         end
 
         # Gets the list of atoms which headers should be included in header file
