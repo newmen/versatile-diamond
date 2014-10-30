@@ -35,7 +35,8 @@ module VersatileDiamond
           major_code_instances,
           unique_pure_atoms,
           lattices.compact,
-          species
+          species,
+          reactions
         ].each do |collection|
           collection.each { |code_class| code_class.generate(@out_path) }
         end
@@ -86,17 +87,10 @@ module VersatileDiamond
         @species[spec_name]
       end
 
-      # Gets non simple and non gas collected species
-      # @return [Array] the array of collected specie class code generators
-      def species
-        deps_hash = collect_dependent_species
-        surface_species = @species.reject do |name, _|
-          dep_spec = deps_hash[name]
-          # TODO: is simple always gas?
-          dep_spec.simple? || dep_spec.gas?
-        end
-
-        surface_species.values
+      # Gets root species
+      # @return [Array] the array of root specie class code generators
+      def root_species
+        species.select(&:find_root?)
       end
 
       # Gets the list of specific species which are gas molecules
@@ -105,6 +99,13 @@ module VersatileDiamond
         collect_dependent_species.values.select do |s|
           s.gas? && (s.simple? || s.specific?)
         end
+      end
+
+      # Gets the reaction code generator
+      # @param [Symbol] reaction_name the name of reaction which will be returned
+      # @return [Code::Reaction] the reaction code generator instance
+      def reaction_class(reaction_name)
+        @reactions[reaction_name]
       end
 
     private
@@ -191,7 +192,7 @@ module VersatileDiamond
       end
 
       # Wraps one reaction by passed code generator class and store it to interal
-      # cache by reaction name
+      # cache
       #
       # @param [Class] klass by which will be wrapped the passed reaction
       # @param [Organizers::DependentReaction] reaction which will be wrapped
@@ -208,6 +209,25 @@ module VersatileDiamond
             Organizers::DependentSimpleSpec.new(concept) :
             Organizers::DependentSpecificSpec.new(concept)
         end
+      end
+
+      # Gets non simple and non gas collected species
+      # @return [Array] the array of collected specie class code generators
+      def species
+        deps_hash = collect_dependent_species
+        surface_species = @species.reject do |name, _|
+          dep_spec = deps_hash[name]
+          # TODO: is simple always gas?
+          dep_spec.simple? || dep_spec.gas?
+        end
+
+        surface_species.values
+      end
+
+      # Gets all reactions which were collected
+      # @return [Array] the list of reaction code generators
+      def reactions
+        @reactions.values
       end
     end
 

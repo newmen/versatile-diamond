@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       # Provides methods at class level for some source file coping
-      # Should extends some class
+      # Should extends class with TemplateFile mixin
       module SourceFileCopier
       private
 
@@ -27,7 +27,9 @@ module VersatileDiamond
         # @param [String] file_name the name of coping file
         # @return [Pathname] the path to result file
         def dst_file_path(root_dir, file_name)
-          out_dir(CppClass.src_dir(root_dir)) + file_name
+          full_path = out_dir(CppClass.src_dir(root_dir)) + file_name
+          full_path.dirname.mkpath
+          full_path
         end
       end
 

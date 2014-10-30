@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Generators
     module Code
 
@@ -25,7 +27,8 @@ module VersatileDiamond
           define_method(method_name) do
             var = instance_variable_get(var_name)
             unless var
-              var = reaction.name.split(/\s+/).map(&method).join(separator)
+              parts = reaction.name.split(/\s+/).map { |str| eval("str.#{method}") }
+              var = parts.join(separator)
               instance_variable_set(var_name, var)
             end
             var
@@ -41,6 +44,19 @@ module VersatileDiamond
       private
 
         attr_reader :reaction
+
+        # Gets the parent type of generating reaction
+        # @return [String] the parent type of reaction
+        def outer_base_class_name
+          reaction_type
+        end
+
+        # Gets the name of directory where will be stored result file
+        # @return [String] the name of result directory
+        # @override
+        def outer_dir_name
+          reaction_type.underscore.pluralize
+        end
 
         # The additional path for current instance
         # @return [String] the additional directories path
