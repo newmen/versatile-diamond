@@ -15,6 +15,7 @@ public:
     {
         return specify(new <%= atom.class_name %>(type, actives, <%= lattice ? 'new Lattice(crystal, coords)' : '(Lattice *)nullptr)' %>);
     }
+
 <% end %>
 
 private:
