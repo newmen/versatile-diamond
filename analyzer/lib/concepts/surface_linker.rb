@@ -27,21 +27,14 @@ module VersatileDiamond
 
     private
 
-      # Checks that atom belongs to crystal lattice
-      # @param [Atom] atom the checking atom
-      # @return [Boolean] belongs or not
-      def has_lattice?(atom)
-        !!atom.lattice
-      end
-
       # If so, must have relations in both directions
       # @param [Atom] first the first atom
       # @param [Atom] second the second atom
       # @param [Array] positions the array with two positions
       # @return [Boolean] has or not
       def has_positions?(first, second, *positions)
-        a = has_position?(first, second, positions[0])
-        b = has_position?(second, first, positions[1])
+        a = has_position?(first, second, positions.first)
+        b = has_position?(second, first, positions.last)
 
         if a && b
           true

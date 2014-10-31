@@ -246,7 +246,7 @@ module VersatileDiamond
       end
 
       def inspect
-        name
+        name.to_s
       end
 
     protected

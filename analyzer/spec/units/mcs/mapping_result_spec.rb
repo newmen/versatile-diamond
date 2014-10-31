@@ -37,12 +37,11 @@ module VersatileDiamond
         end
 
         describe 'methyl incorporation' do
+          let(:amoe_bridge) { activated_methyl_on_extended_bridge }
           it { expect(mi_atom_map.changes).to match_array([
-              [[activated_methyl_on_extended_bridge, extended_dimer], [
-                [activated_methyl_on_extended_bridge.atom(:cm),
-                  extended_dimer.atom(:cr)],
-                [activated_methyl_on_extended_bridge.atom(:cb),
-                  extended_dimer.atom(:cl)],
+              [[amoe_bridge, extended_dimer], [
+                [amoe_bridge.atom(:cm), extended_dimer.atom(:cr)],
+                [amoe_bridge.atom(:cb), extended_dimer.atom(:cl)],
               ]],
               [[activated_dimer, extended_dimer], [
                 [activated_dimer.atom(:cl), extended_dimer.atom(:crb)],
@@ -63,6 +62,20 @@ module VersatileDiamond
               [mod.atom(:cr), abridge_dup.atom(:cr)],
             ]]
           ]) }
+      end
+
+      describe '#used_atoms_of' do
+        describe 'methyl deactivation' do
+          let(:amob) { dm_source.first }
+          it { expect(dm_atom_map.used_atoms_of(amob)).to eq([amob.atom(:cm)]) }
+        end
+
+        describe 'dimer drop' do
+          let(:d) { df_products.first }
+          let(:atoms) { [:cr, :cl].map { |kn| d.atom(kn) } }
+          let(:dd_atom_map) { df_atom_map.reverse }
+          it { expect(dd_atom_map.used_atoms_of(d)).to match_array(atoms) }
+        end
       end
 
       describe 'other_side' do

@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Represents surface structure
@@ -82,16 +84,16 @@ module VersatileDiamond
       # @param [Array] atoms the array of atoms
       # @return [Boolean] has latticed atom or not
       def at_least_one_latticed?(atoms)
-        atoms.any?(&method(:has_lattice?))
+        atoms.any?(&:lattice)
       end
 
       # Sorts atoms by having crystall lattice
       # @param [Array] atoms the array of atoms
       # @return [Array] the sorted atoms array
       def sort(atoms)
-        index = atoms.index(&method(:has_lattice?))
-        first = atoms.delete_at(index)
-        [first, atoms.pop]
+        atoms_dup = atoms.dup
+        first = atoms_dup.delete_one(&:lattice)
+        [first, atoms_dup.pop]
       end
     end
 

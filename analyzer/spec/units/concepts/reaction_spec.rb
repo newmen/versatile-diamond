@@ -320,11 +320,21 @@ module VersatileDiamond
         end
       end
 
+      describe '#used_atoms_of' do
+        subject { methyl_incorporation }
+        let(:spec) { activated_methyl_on_extended_bridge }
+        let(:atoms) { [:cm, :cb, :cr, :cl].map { |a| spec.atom(a) } }
+
+        it { expect(subject.used_atoms_of(spec)).to match_array(atoms) }
+      end
+
       describe '#used_keynames_of' do
-        it { expect(dimer_formation.used_keynames_of(activated_bridge)).
-          to eq([:ct]) }
-        it { expect(dimer_formation.used_keynames_of(activated_incoherent_bridge)).
-          to eq([:ct]) }
+        subject { dimer_formation }
+        let(:first) { activated_bridge }
+        let(:second) { activated_incoherent_bridge }
+
+        it { expect(subject.used_keynames_of(first)).to eq([:ct]) }
+        it { expect(subject.used_keynames_of(second)).to eq([:ct]) }
       end
 
       describe '#same?' do

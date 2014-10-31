@@ -378,8 +378,6 @@ events
   reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
-      position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
-      position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
 
       # все значения выдуманы
       refinement 'not in dimers row'
