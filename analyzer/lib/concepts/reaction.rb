@@ -129,13 +129,19 @@ module VersatileDiamond
         swap_atom_in_positions(os_spec, os_atom, new_atom)
       end
 
-      # Grep atoms of passed spec used in positions. For each atom find keyname
+      # Gets atoms of passed spec which used in reaction
+      # @param [SpecificSpec] spec the one of reactant
+      # @return [Array] the array of using atoms
+      def used_atoms_of(spec)
+        pos_atoms = @links.keys.select { |s, _| s == spec }.map(&:last)
+        (pos_atoms + @mapping.used_atoms_of(spec)).uniq
+      end
+
+      # Grep atom keynames of passed spec used in reaction
       # @param [SpecificSpec] spec the one of reactant
       # @return [Array] the array of keynames of used atoms of passed spec
       def used_keynames_of(spec)
-        @links.keys.select { |s, _| s == spec }.map do |_, a|
-          spec.keyname(a)
-        end
+        used_atoms_of(spec).map { |a| spec.keyname(a) }
       end
 
       # Also compares positions in both reactions
@@ -156,28 +162,21 @@ module VersatileDiamond
       # @return [Array] atoms the array of checking atoms
       # @return [Boolean] all or not
       def all_latticed?(*atoms)
-        atoms.all?(&method(:has_lattice?))
+        a, b = atoms.map(&:lattice)
+        a && a == b
       end
 
-      # Accumulate atom changes
+      # Gets atom changes list
       # @return [Array, Array] the arrays of pairs spec and atom
       def changes
-        result = []
-        @mapping.changes.each do |(spec1, spec2), atoms_zip|
-          atoms_zip.each do |atom1, atom2|
-            result << [[spec1, atom1], [spec2, atom2]]
-          end
-        end
-        result
+        MappingResult.rezip(@mapping.changes)
       end
 
       # Gets number of changed atoms
       # @return [Integer] the number of changed atoms
       # @override
       def changes_num
-        @mapping.changes.reduce(0) do |acc, (_, atoms_zip)|
-          acc + atoms_zip.size
-        end
+        @mapping.changes.reduce(0) { |acc, (_, atoms_zip)| acc + atoms_zip.size }
       end
 
     protected
@@ -193,9 +192,7 @@ module VersatileDiamond
       #   specified by lattice
       # @override
       def link_together(first, second, position)
-        unless all_latticed?(first.last, second.last)
-          raise Position::UnspecifiedAtoms
-        end
+        raise Position::UnspecifiedAtoms unless all_latticed?(first.last, second.last)
 
         @links[first] ||= []
         @links[second] ||= []
