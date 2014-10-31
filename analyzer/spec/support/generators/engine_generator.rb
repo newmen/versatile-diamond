@@ -62,7 +62,7 @@ module VersatileDiamond
         # @return [Hash] the fixed cache of depts
         def fix(depts)
           ordered_depts = sort_depts(default_depts.merge(depts))
-          all_names = ordered_depts.map(&:last).flatten.map(&:name).to_set
+          all_names = ordered_depts.flat_map(&:last).map(&:name).to_set
           depts_cache = Hash[ordered_depts]
 
           fix_reactants(depts_cache, all_names)
@@ -92,7 +92,7 @@ module VersatileDiamond
 
         # Extends passed variables by sidepieces from where objects
         def fix_sidepieces(depts_cache, all_names)
-          depts_cache[:lateral_reactions].map(&:wheres).flatten.each do |where|
+          depts_cache[:lateral_reactions].flat_map(&:wheres).each do |where|
             where.specs.each do |s|
               next if all_names.include?(s.name)
               store_reactant_lambda(depts_cache, all_names).call(s)
