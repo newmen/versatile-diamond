@@ -30,7 +30,7 @@ module VersatileDiamond
 
       # provides methods from base generator class
       public :classifier, :base_surface_specs, :specific_surface_specs, :term_specs,
-        :ubiquitous_reactions, :spec_reactions,
+        :ubiquitous_reactions, :spec_reactions
 
       # Generates source code and configuration files
       def generate(**params)

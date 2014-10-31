@@ -4,7 +4,7 @@ module VersatileDiamond
 
       # Provides method that characterize the inside of specie
       module SpecieInside
-        include SpeciesUser
+        include Code::SpeciesUser
 
         # Gets number of sceleton atoms used in specie and different from atoms of
         # parent specie
