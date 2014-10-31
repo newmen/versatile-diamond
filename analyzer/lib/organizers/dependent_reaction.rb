@@ -17,6 +17,7 @@ module VersatileDiamond
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
       def initialize(reaction)
         @reaction = reaction
+        @parent = nil
       end
 
       # Compares two reaction instances
@@ -52,7 +53,7 @@ module VersatileDiamond
       # Check that reaction have gas ion reagent
       # @return [Boolean] is reaction specific of ubiquitous or not
       def local?
-        !simple_source.empty?
+        parent && !simple_source.empty?
       end
 
       def formula
