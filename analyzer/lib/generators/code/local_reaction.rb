@@ -47,10 +47,10 @@ module VersatileDiamond
           reaction_class(reaction.parent)
         end
 
-        # Gets list of objects which will be included in header file
-        # @return [Array] the list of including objects
-        def head_include_objects
-          [parent, common_base_class_file]
+        # Gets a list of code elements each of which uses in header file
+        # @return [Array] the array of using objects in header file
+        def head_used_objects
+          [parent]
         end
       end
 

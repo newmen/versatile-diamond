@@ -55,10 +55,10 @@ module VersatileDiamond
           @_used_iterators = translate_to_iterators(lattices.to_set)
         end
 
-        # Gets a list of code elements each of which will be included in header file
-        # @return [Array] the array of header including objects
-        def head_include_objects
-          used_iterators + complex_source_species + [common_base_class_file]
+        # Gets a list of code elements each of which uses in header file
+        # @return [Array] the array of using objects in header file
+        def head_used_objects
+          complex_source_species
         end
       end
 
