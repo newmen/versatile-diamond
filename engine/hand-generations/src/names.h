@@ -12,7 +12,6 @@ enum : ushort
     TYPICAL_REACTIONS_NUM = 30,
     LATERAL_REACTIONS_NUM = 4,
 
-//    ALL_SPECS_NUM = BASE_SPECS_NUM + SPECIFIC_SPECS_NUM,
     ALL_SPEC_REACTIONS_NUM = TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM
 };
 
@@ -106,7 +105,7 @@ enum LateralReactionNames : ushort
     DIMER_DROP_IN_MIDDLE
 };
 
-static_assert(DIMER_DROP_IN_MIDDLE + 1 == TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM,
+static_assert(DIMER_DROP_IN_MIDDLE + 1 == ALL_SPEC_REACTIONS_NUM,
               "Incorrect number of lateral reactions");
 
 enum UbiquitousReactionNames : ushort
@@ -117,7 +116,7 @@ enum UbiquitousReactionNames : ushort
     METHYL_ON_DIMER_DEACTIVATION
 };
 
-static_assert(METHYL_ON_DIMER_DEACTIVATION + 1 == TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM + UBIQUITOUS_REACTIONS_NUM,
+static_assert(METHYL_ON_DIMER_DEACTIVATION + 1 == ALL_SPEC_REACTIONS_NUM + UBIQUITOUS_REACTIONS_NUM,
               "Incorrect number of ubiquitous reactions");
 
 #endif // NAMES_H
