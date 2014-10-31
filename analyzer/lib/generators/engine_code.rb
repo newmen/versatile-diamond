@@ -6,6 +6,8 @@ module VersatileDiamond
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
 
+      MAIN_CODE_INST_NAMES = %w(atom_builder env finder handbook names).freeze
+
       attr_reader :sequences_cacher, :detectors_cacher
 
       # Initializes code generator
@@ -27,7 +29,8 @@ module VersatileDiamond
       end
 
       # provides methods from base generator class
-      public :classifier, :ubiquitous_reactions, :spec_reactions, :term_specs
+      public :classifier, :base_surface_specs, :specific_surface_specs, :term_specs,
+        :ubiquitous_reactions, :spec_reactions,
 
       # Generates source code and configuration files
       def generate(**params)
@@ -42,7 +45,7 @@ module VersatileDiamond
         end
       end
 
-      %w(atom_builder env finder handbook).each do |name|
+      MAIN_CODE_INST_NAMES.each do |name|
         # Gets #{name} class code generator
         # @return [#{name.classify}] the #{name} class code generator instance
         define_method(name.to_sym) do
@@ -113,7 +116,7 @@ module VersatileDiamond
       # Gets the instances of major code elements
       # @return [Array] the array of instances
       def major_code_instances
-        [atom_builder, env, finder, handbook]
+        MAIN_CODE_INST_NAMES.map { |name| send(name.to_sym) }
       end
 
       # Finds and drops not unique items which are compares by block
