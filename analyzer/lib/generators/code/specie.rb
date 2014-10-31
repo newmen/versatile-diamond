@@ -31,7 +31,7 @@ module VersatileDiamond
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
-            @essence = Essence.new(self)
+            @essence = SpecieEssence.new(self)
           end
 
           @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
@@ -373,7 +373,7 @@ module VersatileDiamond
         # Gets a cpp code by which specie will be found when simulation doing
         # @return [String] the multilined string with cpp code
         def find_algorithm
-          FindAlgorithmBuilder.new(generator, self).build
+          SpecieFindAlgorithmBuilder.new(generator, self).build
         end
       end
 

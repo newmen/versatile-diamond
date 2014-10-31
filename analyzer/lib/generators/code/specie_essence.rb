@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
 
       # Contain logic for clean dependent specie and get essence of specie graph
-      class Essence
+      class SpecieEssence
         extend Forwardable
 
         # Initizalize cleaner by specie class code generator

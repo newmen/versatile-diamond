@@ -4,7 +4,7 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe Algorithm, use: :engine_generator do
+      describe SpecieAlgorithmBackbone, use: :engine_generator do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
         let(:generator) do
@@ -12,7 +12,7 @@ module VersatileDiamond
         end
 
         let(:specie) { generator.specie_class(subject.name) }
-        let(:algorithm) { Algorithm.new(specie) }
+        let(:algorithm) { described_class.new(specie) }
 
         [
           :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr

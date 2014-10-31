@@ -2,9 +2,9 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Contain logic for building find algorithms
+      # Contain base logic for building find algorithms
       # @abstract
-      class BaseAlgorithmsBuilder
+      class BaseAlgorithmBuilder
 
         TAB_SIZE = 4 # always so for cpp
 

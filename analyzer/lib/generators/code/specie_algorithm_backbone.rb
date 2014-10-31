@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
 
       # Provides logic for generation the find specie algorithm
-      class Algorithm
+      class SpecieAlgorithmBackbone
         include Modules::ListsComparer
         include AtomPropertiesUser
         extend Forwardable

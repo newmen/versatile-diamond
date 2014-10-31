@@ -2,8 +2,8 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Creates Names class that contains enum names of all used species and reactions.
-      # In fact instance of it class is not a cpp class.
+      # Generates names.h file that contains enum names of all used species and
+      # reactions. In fact instance of it class is not a cpp class.
       class Names < CppClassWithGen
         include SpeciesUser
         include ReactionsUser
