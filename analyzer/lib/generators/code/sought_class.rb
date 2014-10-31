@@ -66,6 +66,12 @@ module VersatileDiamond
           base_class_names.map { |class_name| "public #{class_name}" }.join(', ')
         end
 
+        # Gets a list of code elements each of which will be included in header file
+        # @return [Array] the array of header including objects
+        def head_include_objects
+          head_used_objects + used_iterators + [common_base_class_file]
+        end
+
         # Provides common file which is base class for current instance
         # @return [CommonFile] the common file for current specie
         def common_base_class_file
