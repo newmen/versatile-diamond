@@ -53,6 +53,12 @@ module VersatileDiamond
 
         attr_reader :reaction
 
+        # Gets the parent ubiquitous reaction
+        # @return [UbiquitousReaction] the parent reaction
+        def parent
+          reaction_class(reaction.parent)
+        end
+
         # Gets the list of more complex reactions
         # @return [Array] the list of children reactions
         def children
