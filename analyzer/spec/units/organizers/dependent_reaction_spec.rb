@@ -79,11 +79,22 @@ module VersatileDiamond
 
       describe '#local?' do
         describe 'methyl activation' do
-          it { expect(dept_methyl_activation.local?).to be_truthy }
+          subject { dept_methyl_activation }
+          let(:ubiq_react) { dept_surface_activation }
+          let(:term_cache) { make_cache([dept_adsorbed_h]) }
+          let(:non_term_cache) do
+            make_cache([dept_methyl_on_bridge, dept_hydrogen_ion])
+          end
+
+          before do
+            ubiq_react.organize_dependencies!([subject], term_cache, non_term_cache)
+          end
+
+          it { expect(subject.local?).to be_truthy }
         end
 
         describe 'dimer formation' do
-          it { expect(dept_dimer_formation.local?).to be_falsey }
+          it { expect(subject.local?).to be_falsey }
         end
       end
 
