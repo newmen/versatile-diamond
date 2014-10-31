@@ -73,7 +73,7 @@ module VersatileDiamond
             next if rels.empty?
 
             directed_graph = without_reverse(directed_graph, gkey)
-            anchors_queue += rels.map(&:first).flatten
+            anchors_queue += rels.flat_map(&:first)
           end
 
           connected_keys_from(directed_graph).each do |gkey|

@@ -198,7 +198,7 @@ module VersatileDiamond
                 a != b
               end
             end
-            uniq_atoms = hashes_with_diff_kv.map(&:flatten).flatten.uniq
+            uniq_atoms = hashes_with_diff_kv.flat_map(&:flatten).uniq
             anchors.select { |a| uniq_atoms.include?(a) }
           end
         end

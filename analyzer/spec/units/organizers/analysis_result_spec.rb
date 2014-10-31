@@ -208,7 +208,7 @@ module VersatileDiamond
                 end
 
                 let(:lateral_reaction) { subject.lateral_reactions.last.reaction }
-                let(:used_there) { lateral_reaction.theres.map(&:env_specs).flatten }
+                let(:used_there) { lateral_reaction.theres.flat_map(&:env_specs) }
 
                 it { expect(used_there).
                   to match_array([base(:dimer), base(:dimer)]) }
