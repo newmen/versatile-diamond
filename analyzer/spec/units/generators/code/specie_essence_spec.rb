@@ -4,7 +4,7 @@ module VersatileDiamond
   module Generators
     module Code
 
-      describe Essence, use: :engine_generator do
+      describe SpecieEssence, use: :engine_generator do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
         let(:generator) do

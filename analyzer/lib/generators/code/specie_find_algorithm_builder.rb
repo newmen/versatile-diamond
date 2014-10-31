@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       # Contain logic for building find specie algorithm
-      class FindAlgorithmBuilder < BaseAlgorithmsBuilder
+      class SpecieFindAlgorithmBuilder < BaseAlgorithmBuilder
         include SpecieInside
         extend Forwardable
 
@@ -481,7 +481,7 @@ module VersatileDiamond
         # @param [Array] atoms by which procs will be collected
         # @return [Array] the array of procs which will combined later
         def collect_procs(atoms)
-          Algorithm.new(@specie).reduce_directed_graph_from(
+          SpecieAlgorithmBackbone.new(@specie).reduce_directed_graph_from(
             [], atoms, method(:relations_block), method(:complex_block))
         end
 
