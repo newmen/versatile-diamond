@@ -35,9 +35,9 @@ module VersatileDiamond
       # @return [Array] the array of position relations
       # TODO: must be protected
       def positions
-        links.reduce([]) do |acc, (atom, list)|
-          acc + list.reduce([]) do |l, (other_atom, position)|
-            l << [atom, other_atom, position]
+        links.reduce([]) do |acc, (spec_atom, list)|
+          acc + list.reduce([]) do |l, (other_spec_atom, position)|
+            l << [spec_atom, other_spec_atom, position]
           end
         end
       end

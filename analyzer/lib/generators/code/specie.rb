@@ -246,15 +246,11 @@ module VersatileDiamond
               end
             end
 
-          @_used_iterators = lattices.to_a.compact.map do |lattice|
-            generator.lattice_class(lattice).iterator
-          end
+          @_used_iterators = translate_to_iterators(lattices)
         end
 
-        # Gets a list of species full header file path of which will be included in
-        # header file of current specie
-        #
-        # @return [Array] the array of species which should be included in header file
+        # Gets a list of code elements each of which will be included in header file
+        # @return [Array] the array of header including objects
         def head_include_objects
           species =
             if symmetric?

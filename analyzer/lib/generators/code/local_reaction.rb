@@ -3,7 +3,8 @@ module VersatileDiamond
     module Code
 
       # Contains logic for generation local reation
-      class LocalReaction < ReactionWithComplexSpecies
+      class LocalReaction < BaseReaction
+        include SpeciesUser
         include ReactionWithSimpleGas
 
         # Gets the name of base class
@@ -13,8 +14,8 @@ module VersatileDiamond
             parent.data_class_name,
             parent.class_name,
             enum_name,
-            complex_specie.enum_name,
-            complex_specie.role(atom_of_complex)
+            complex_source_specie.enum_name,
+            complex_source_specie.role(atom_of_complex)
           ]
 
           "#{reaction_type}<#{template_args.join(', ')}>"
@@ -36,7 +37,7 @@ module VersatileDiamond
 
         # Gets the complex source specie of current reaction
         # @return [Specie] the complex source specie
-        def complex_specie
+        def complex_source_specie
           specie_class(reaction.complex_source_spec_and_atom.first)
         end
 
