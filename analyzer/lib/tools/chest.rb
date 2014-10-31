@@ -135,7 +135,7 @@ module VersatileDiamond
           content = @sac && @sac.reduce('') do |acc, (key, value)|
             "#{acc}#{key}: #{value.map(&:first).join(', ')}\n"
           end
-          content ? content : 'is empty'
+          content || 'is empty'
         end
 
       private
@@ -155,7 +155,7 @@ module VersatileDiamond
           concepts = concepts.dup
           until concepts.empty?
             concept = concepts.shift
-            name = concept.send(method).to_sym
+            name = concept.public_send(method).to_sym
 
             if concepts.empty?
               block[key, bottom, name]

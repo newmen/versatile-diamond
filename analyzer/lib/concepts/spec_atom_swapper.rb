@@ -13,6 +13,10 @@ module VersatileDiamond
       def swap(spec_atom, from, to)
         return unless spec_atom[0] == from
 
+        if !from.specific_atoms.empty? && to.specific_atoms.empty?
+          raise ArgumentError, 'Swapping specific spec loses specification'
+        end
+
         intersec = Mcs::SpeciesComparator.intersec(
           from, to, collaps_multi_bond: true).first.to_a
 

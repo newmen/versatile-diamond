@@ -7,7 +7,7 @@ module VersatileDiamond
       # Collects and return all where object
       # @return [Array] the array of where objects
       def wheres
-        theres.reduce([]) { |acc, there| acc << there.where }
+        theres.map(&:where)
       end
 
       # Wraps each there object to correspond dependent instance
