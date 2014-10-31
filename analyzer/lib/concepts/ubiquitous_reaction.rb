@@ -48,7 +48,7 @@ module VersatileDiamond
       def initialize(type, name, source, products)
         super(name)
         @type = type
-        @source, @products = source, products
+        @source, @products = [source, products].map(&:dup)
         @simple_source, @simple_products = nil
 
         @reverse = nil

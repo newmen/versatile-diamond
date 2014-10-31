@@ -38,7 +38,7 @@ module VersatileDiamond
         end
 
         describe '#atom_of_complex' do
-          let(:atom) { ma_source.first.atom(:cm) }
+          let(:atom) { ma_source.first.spec.atom(:cm) }
           it { expect(subject.atom_of_complex).to eq(atom) }
         end
       end
