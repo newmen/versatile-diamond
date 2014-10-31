@@ -51,6 +51,15 @@ module VersatileDiamond
           used_iterators.map(&:class_name)
         end
 
+        # Translates concept lattices to correspond crystal atom iterators
+        # @param [Set] lattices which translated to iterators
+        # @return [Array] the list of code generators
+        def translate_to_iterators(lattices)
+          lattices.to_a.compact.map do |lattice|
+            generator.lattice_class(lattice).iterator
+          end
+        end
+
         # Provides final string for using it in code template files
         # @return [String] the string for inheritance
         def public_inheritance_from_base_classes

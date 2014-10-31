@@ -1,0 +1,13 @@
+#include "<%= file_name %>.h"
+
+<%= render_rate_and_name_body_partial %>
+
+<% complex_source_species.each do |specie| %>
+void <%= class_name %>::find(<%= specie.class_name %> *target)
+{
+}
+<% end %>
+
+void <%= class_name %>::doIt()
+{
+}
