@@ -6,6 +6,11 @@ module VersatileDiamond
       # @abstract
       class ReactionWithComplexSpecies < BaseReaction
         include SpeciesUser
+        extend Forwardable
+
+      protected
+
+        def_delegator :reaction, :lateral?
 
       private
 

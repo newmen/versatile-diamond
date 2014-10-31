@@ -41,12 +41,6 @@ module VersatileDiamond
           specie_class(reaction.complex_source_spec_and_atom.first)
         end
 
-        # Gets the parent ubiquitous reaction
-        # @return [UbiquitousReaction] the parent reaction
-        def parent
-          reaction_class(reaction.parent)
-        end
-
         # Gets a list of code elements each of which uses in header file
         # @return [Array] the array of using objects in header file
         def head_used_objects

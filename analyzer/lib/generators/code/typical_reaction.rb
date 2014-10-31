@@ -14,9 +14,15 @@ module VersatileDiamond
         # Gets the name of base class
         # @return [String] the parent type name
         def base_class_name
-          args = laterable? ? [reaction_type] : []
-          args += [enum_name, complex_source_species.size]
-          "#{outer_base_class_name}<#{args.join(', ')}>"
+          template_args = laterable? ? [reaction_type] : []
+          template_args += [enum_name, complex_source_species.size]
+          "#{outer_base_class_name}<#{template_args.join(', ')}>"
+        end
+
+        # Typical reaction haven't sidepiece species
+        # @return [Array] the empty array
+        def sidepiece_species
+          []
         end
 
       private

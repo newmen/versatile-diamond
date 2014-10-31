@@ -11,12 +11,26 @@ module VersatileDiamond
           described_class.new(generator, dept_surface_deactivation)
         end
 
-        describe '#base_class_name' do
-          it { expect(activation.base_class_name).
-            to eq('ActivationData<FORWARD_SURFACE_ACTIVATION>') }
+        it_behaves_like :check_main_names do
+          subject { activation }
+          let(:class_name) { 'ForwardSurfaceActivation' }
+          let(:enum_name) { 'FORWARD_SURFACE_ACTIVATION' }
+          let(:file_name) { 'forward_surface_activation' }
+          let(:print_name) { surface_activation.name }
+        end
 
-          it { expect(deactivation.base_class_name).
-            to eq('DeactivationData<FORWARD_SURFACE_DEACTIVATION>') }
+        describe '#base_class_name' do
+          it_behaves_like :check_base_class_name do
+            subject { activation }
+            let(:outer_class_name) { 'ActivationData' }
+            let(:templ_args) { ['FORWARD_SURFACE_ACTIVATION'] }
+          end
+
+          it_behaves_like :check_base_class_name do
+            subject { deactivation }
+            let(:outer_class_name) { 'DeactivationData' }
+            let(:templ_args) { ['FORWARD_SURFACE_DEACTIVATION'] }
+          end
         end
 
         describe '#data_class_name' do
@@ -25,9 +39,15 @@ module VersatileDiamond
         end
 
         describe '#gas_concentrations' do
-          let(:hydrogen_env_conc) { ['Env::cHydrogenHs()'] }
-          it { expect(activation.gas_concentrations).to eq(hydrogen_env_conc) }
-          it { expect(deactivation.gas_concentrations).to eq(hydrogen_env_conc) }
+          let(:env_concs) { ['Env::cHydrogenHs()'] }
+
+          it_behaves_like :check_gas_concentrations do
+            subject { activation }
+          end
+
+          it_behaves_like :check_gas_concentrations do
+            subject { deactivation }
+          end
         end
       end
 
