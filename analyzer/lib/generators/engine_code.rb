@@ -181,7 +181,7 @@ module VersatileDiamond
         else
           %w(ubiquitous local typical).each do |rtype|
             eval("#{rtype}_reactions").each do |reaction|
-              wrap_reaction(Code.const_get("#{rtype}_reaction".classify), reaction)
+              wrap_reaction(Code.const_get("#{rtype.classify}Reaction"), reaction)
             end
           end
         end

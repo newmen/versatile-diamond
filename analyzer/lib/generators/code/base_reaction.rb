@@ -74,8 +74,8 @@ module VersatileDiamond
           render_partial('rate_and_name.cpp', locals: local_vars)
         end
 
-        # Gets the parent type of generating reaction
-        # @return [String] the parent type of reaction
+        # By default gets the unwrapped parent type
+        # @return [String] the unwrapped parent type of reaction
         def outer_base_class_name
           reaction_type
         end
