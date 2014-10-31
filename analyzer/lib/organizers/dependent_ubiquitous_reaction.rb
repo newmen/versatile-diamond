@@ -44,17 +44,8 @@ module VersatileDiamond
       #   checkable possible parent reaction
       # @return [Boolean] are identical or not
       def simples_are_identical?(possible)
-        cm = method(:compare_specs)
-        lists_are_identical?(simple_source, possible.simple_source, &cm) &&
-          lists_are_identical?(simple_products, possible.simple_products, &cm)
-      end
-
-      # Compares two spec for identifing same simple species
-      # @param [Concepts::GasSpec] spec1 the first spec
-      # @param [Concepts::GasSpec] spec2 the second spec
-      # @return [Boolean] are same or not
-      def compare_specs(spec1, spec2)
-        spec1.same?(spec2)
+        lists_are_identical?(simple_source, possible.simple_source, &:same?) &&
+          lists_are_identical?(simple_products, possible.simple_products, &:same?)
       end
     end
 

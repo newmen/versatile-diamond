@@ -2,7 +2,7 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Wraps one of common file
+      # Wraps common files
       class CommonFile
 
         COMMON_FILES_DIR = 'common_files'
