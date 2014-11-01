@@ -7,7 +7,7 @@ module VersatileDiamond
       extend Forwardable
       include SpecAtomSwapper
 
-      def_delegators :where, :description, :used_keynames_of, :visit
+      def_delegator :where, :description
       attr_reader :where, :positions
 
       # Initialize a new instance of there object
@@ -60,6 +60,18 @@ module VersatileDiamond
       # @param [SpecificSpec] to the spec to which need to swap
       def swap_target(from, to)
         positions.each { |spec_atom, _| swap(spec_atom, from, to) }
+      end
+
+      # Gets atoms of passed spec which used in positions
+      # @param [Spec | SpecificSpec] spec by which the atoms will be collected
+      # @return [Array] the array of using atoms
+      def used_atoms_of(spec)
+        all_atoms = positions.each_with_object([]) do |((sk, ak), rels), acc|
+          acc << ak if sk == spec
+          rels.each { |(sv, av), _| acc << av if sv == spec }
+        end
+
+        all_atoms.uniq
       end
 
       # Compares two there objects

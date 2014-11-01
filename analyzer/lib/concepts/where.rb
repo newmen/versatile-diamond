@@ -67,15 +67,6 @@ module VersatileDiamond
         There.new(self, positions)
       end
 
-      # Grep atoms of passed spec used in raw positions of where object. For
-      # each atom find keyname.
-      # @param [SpecificSpec] spec the one of reactant
-      # @return [Array] the array of keynames of used atoms of passed spec
-      def used_keynames_of(spec)
-        total_raw_positions.select { |_, (s, _), _| s == spec }.
-          map { |_, (_, a), _| spec.keyname(a) }.uniq
-      end
-
     protected
 
       attr_reader :raw_positions

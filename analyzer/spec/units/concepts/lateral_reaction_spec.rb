@@ -66,19 +66,18 @@ module VersatileDiamond
         end
       end
 
-      describe '#used_keynames_of' do
+      describe '#used_atoms_of' do
         describe 'forward' do
           subject { reaction }
-          let(:first_bridge) { subject.source.first }
-          let(:second_bridge) { subject.source.last }
-
-          it { expect(subject.used_keynames_of(first_bridge)).to eq([:ct]) }
-          it { expect(subject.used_keynames_of(second_bridge)).to eq([:ct]) }
+          let(:first) { subject.source.first }
+          let(:second) { subject.source.last }
+          it { expect(subject.used_atoms_of(first)).to eq([first.atom(:ct)]) }
+          it { expect(subject.used_atoms_of(second)).to eq([second.atom(:ct)]) }
         end
 
         describe 'reverse' do
-          subject { reaction.reverse.used_keynames_of(target_dimer) }
-          it { should match_array([:cr, :cl]) }
+          subject { reaction.reverse.used_atoms_of(target_dimer) }
+          it { should match_array([:cr, :cl].map { |a| target_dimer.atom(a) }) }
         end
       end
 

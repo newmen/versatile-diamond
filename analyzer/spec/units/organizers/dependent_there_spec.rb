@@ -21,8 +21,9 @@ module VersatileDiamond
         it { expect(subject.each_source.to_a).to eq([mob_dup]) }
       end
 
-      describe '#used_keynames_of' do
-        it { expect(subject.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
+      describe '#used_atoms_of' do
+        let(:atoms) { [methyl_on_bridge.atom(:cb)] }
+        it { expect(subject.used_atoms_of(methyl_on_bridge)).to eq(atoms) }
       end
     end
 

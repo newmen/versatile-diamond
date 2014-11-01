@@ -57,9 +57,10 @@ module VersatileDiamond
         it { expect(source).to include(ai_bridge) }
       end
 
-      describe '#used_keynames_of' do
-        it { expect(subject.used_keynames_of(activated_bridge)).to eq([:ct]) }
-        it { expect(subject.used_keynames_of(ai_bridge)).to eq([:ct]) }
+      describe '#used_atoms_of' do
+        it { expect(subject.used_atoms_of(ai_bridge)).to eq([ai_bridge.atom(:ct)]) }
+        it { expect(subject.used_atoms_of(activated_bridge)).
+          to eq([activated_bridge.atom(:ct)]) }
       end
 
       describe '#same?' do

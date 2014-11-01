@@ -130,18 +130,11 @@ module VersatileDiamond
       end
 
       # Gets atoms of passed spec which used in reaction
-      # @param [SpecificSpec] spec the one of reactant
+      # @param [Spec | SpecificSpec] spec the one of reactant
       # @return [Array] the array of using atoms
       def used_atoms_of(spec)
         pos_atoms = @links.keys.select { |s, _| s == spec }.map(&:last)
         (pos_atoms + @mapping.used_atoms_of(spec)).uniq
-      end
-
-      # Grep atom keynames of passed spec used in reaction
-      # @param [SpecificSpec] spec the one of reactant
-      # @return [Array] the array of keynames of used atoms of passed spec
-      def used_keynames_of(spec)
-        used_atoms_of(spec).map { |a| spec.keyname(a) }
       end
 
       # Also compares positions in both reactions

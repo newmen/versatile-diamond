@@ -4,6 +4,8 @@ module VersatileDiamond
     # Wraps structural reaction with lateral interactions
     class DependentLateralReaction < DependentReaction
 
+      def_delegator :reaction, :used_atoms_of
+
       # Collects and return all where object
       # @return [Array] the array of where objects
       def wheres

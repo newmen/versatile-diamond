@@ -163,7 +163,9 @@ module VersatileDiamond
 
         extended_specs.each do |_, wrapped_ext|
           check_that_can = -> wrapped_concept do
-            used_keynames = wrapped_concept.used_keynames_of(wrapped_ext.spec)
+            concept_spec = wrapped_ext.spec
+            used_atoms = wrapped_concept.used_atoms_of(concept_spec)
+            used_keynames = used_atoms.map { |a| concept_spec.keyname(a) }
             Concepts::Spec.good_for_reduce?(used_keynames)
           end
 
