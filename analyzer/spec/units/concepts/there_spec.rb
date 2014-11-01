@@ -107,10 +107,22 @@ module VersatileDiamond
           }) }
       end
 
-      describe '#used_keynames_of' do
-        it { expect(on_end.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
-        it { expect(on_middle.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
-        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
+      describe '#used_atoms_of' do
+        let(:atoms) { [:cr, :cl].map { |kn| dimer.atom(kn) } }
+
+        describe 'on end' do
+          it { expect(on_end.used_atoms_of(dimer)).to match_array(atoms) }
+        end
+
+        describe 'on middle' do
+          it { expect(on_middle.used_atoms_of(dimer)).to match_array(atoms) }
+        end
+
+        describe 'there methyl' do
+          let(:spec) { methyl_on_bridge }
+          let(:atoms) { [spec.atom(:cb)] }
+          it { expect(there_methyl.used_atoms_of(spec)).to match_array(atoms) }
+        end
       end
 
       describe '#same?' do

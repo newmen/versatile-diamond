@@ -30,12 +30,6 @@ module VersatileDiamond
 
         # TODO: check positions
       end
-
-      describe '#used_keynames_of' do
-        it { expect(at_end.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
-        it { expect(at_middle.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
-        it { expect(near_methyl.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
-      end
     end
 
   end
