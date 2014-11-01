@@ -73,7 +73,7 @@ module VersatileDiamond
                   all_names << s.name
                   depts_cache[:term_specs] << DependentTermination.new(s)
                 else
-                  store_reactant_lambda(dr, depts_cache, all_names).call(s)
+                  store_reactant(dr, depts_cache, all_names, s)
                 end
               end
             end
@@ -85,7 +85,7 @@ module VersatileDiamond
           depts_cache[:lateral_reactions].flat_map(&:theres).each do |th|
             th.where.specs.each do |s|
               next if all_names.include?(s.name)
-              store_reactant_lambda(th, depts_cache, all_names).call(s)
+              store_reactant(th, depts_cache, all_names, s)
             end
           end
         end
@@ -101,26 +101,30 @@ module VersatileDiamond
 
         # Provides lambda which checks type of own argument and wraps and store it
         # to passed variables
-        def store_reactant_lambda(dcont, depts_cache, all_names)
-          -> s do
-            if s.is_a?(Concepts::SpecificSpec)
-              ds = DependentSpecificSpec.new(s)
-              if ds.specific?
-                all_names << s.name
-                depts_cache[:specific_specs] << ds
-              else
-                dbs = depts_cache[:base_specs].find { |bs| bs.name == s.spec.name }
-                dbs ||= DependentBaseSpec.new(s.spec)
-                dcont.swap_source(s, dbs.spec)
+        def store_reactant(dcont, depts_cache, all_names, spec)
+          if spec.is_a?(Concepts::SpecificSpec)
+            ds = DependentSpecificSpec.new(spec)
+            if ds.specific?
+              all_names << spec.name
+              depts_cache[:specific_specs] << ds
+              store_concept_to(dcont, ds)
+            else
+              dbs = depts_cache[:base_specs].find { |bs| bs.name == spec.spec.name }
+              dbs ||= DependentBaseSpec.new(spec.spec)
+              dcont.swap_source(spec, dbs.spec)
+              unless all_names.include?(dbs.name)
                 all_names << dbs.name
                 depts_cache[:base_specs] << dbs
               end
-            elsif s.is_a?(Concepts::Spec)
-              all_names << s.name
-              depts_cache[:base_specs] << DependentBaseSpec.new(s)
-            else
-              raise 'So strange reactant'
+              store_concept_to(dcont, dbs)
             end
+          elsif spec.is_a?(Concepts::Spec)
+            dbs = DependentBaseSpec.new(spec)
+            all_names << spec.name
+            depts_cache[:base_specs] << dbs
+            store_concept_to(dcont, dbs)
+          else
+            raise 'So strange reactant'
           end
         end
 

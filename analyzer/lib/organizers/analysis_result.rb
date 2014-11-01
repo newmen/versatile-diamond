@@ -132,22 +132,6 @@ module VersatileDiamond
         end
       end
 
-      # Checks type of concept and store it to spec by correspond method
-      # @param [DependentReaction | DependentThere] wrapped_concept the
-      #   checkable and storable concept
-      # @param [DependentSpec | DependentSpecificSpec] wrapped_spec the wrapped
-      #   spec to which concept will be stored
-      # @raise [ArgumentError] if type of concept is undefined
-      def store_concept_to(wrapped_concept, wrapped_spec)
-        if wrapped_concept.is_a?(DependentReaction)
-          wrapped_spec.store_reaction(wrapped_concept)
-        elsif wrapped_concept.is_a?(DependentThere)
-          wrapped_spec.store_there(wrapped_concept)
-        else
-          raise ArgumentError, 'Undefined concept type'
-        end
-      end
-
       # Purges extended spec if atoms of each one can be used as same in
       # reduced spec
       #

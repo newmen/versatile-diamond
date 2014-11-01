@@ -5,10 +5,15 @@ module VersatileDiamond
     module Code
 
       describe SymmetriesDetector, use: :engine_generator do
+        let(:typical_reactions) { [] }
+
         shared_examples_for :check_symmetry do
           let(:detector) { generator.detectors_cacher.get(subject) }
           let(:generator) do
-            stub_generator(base_specs: bases, specific_specs: specifics)
+            stub_generator(
+              base_specs: bases,
+              specific_specs: specifics,
+              typical_reactions: typical_reactions)
           end
 
           before { generator }
@@ -174,6 +179,23 @@ module VersatileDiamond
               it { expect(detector.symmetric_atoms(_cr0)).to match_array([crb, _cr0]) }
             end
           end
+        end
+
+        it_behaves_like :check_symmetry do
+          subject { dept_cross_bridge_on_bridges_base }
+          let(:bases) { [subject, dept_methyl_on_bridge_base] }
+          let(:specifics) { [] }
+          let(:typical_reactions) { [dept_sierpinski_drop] }
+          let(:symmetry_classes) do
+            ['ParentsSwapWrapper<Empty<CROSS_BRIDGE_ON_BRIDGES>, ' \
+              'OriginalCrossBridgeOnBridges, 0, 1>']
+          end
+
+          let(:symmetric_keynames) { [:ctl, :ctr] }
+          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
+          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
+          it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
+          it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
         end
       end
 
