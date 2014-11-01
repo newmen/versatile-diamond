@@ -15,7 +15,7 @@ module VersatileDiamond
           @specie = specie
 
           @symmetries = {}
-          @self_insec = spec.non_term_children.empty? ? [{}] : intersec_with_itself
+          @self_insec = intersec_with_itself
           @deep_parent_swappers = {}
 
           @_children_collected = false
@@ -28,10 +28,13 @@ module VersatileDiamond
           @_children_collected = true
 
           spec.non_term_children.each { |child| get(child).collect_symmetries }
-          return if spec.source?
 
           distrib_twins_to_parents(spec.anchors).each do |parent, twins|
             get(parent).add_symmetries_for(twins)
+          end
+
+          (spec.reactions.reject(&:local?) + spec.theres).each do |dept_user|
+            add_symmetries_for(dept_user.used_atoms_of(spec.spec))
           end
         end
 
@@ -74,11 +77,12 @@ module VersatileDiamond
         def add_symmetries_for(atoms)
           overlaps_for(atoms).each do |overlap|
             next if @symmetries.keys.any? do |pairs|
-              pairs.all?(&presented_in(overlap))
+              pairs.size == overlap.size && pairs.all?(&presented_in(overlap))
             end
 
-            overlap.size == 1 && !spec.source? && !spec.complex? &&
-              (dps = deep_parents_swapper(overlap.to_a.first))
+            dps =
+              overlap.size == 1 && !spec.source? && !spec.complex? &&
+              deep_parents_swapper(overlap.to_a.first)
 
             if dps
               @symmetries[overlap] = dps.proxy(@specie.original)
@@ -88,7 +92,7 @@ module VersatileDiamond
           end
         end
 
-        # Gets a parent which depends from several parents and each atom of pair
+        # Gets a parent which depends from several parents and each atom of passed pair
         # belongs to different parent
         #
         # @param [Array] pair of atoms which will be checked
@@ -145,17 +149,17 @@ module VersatileDiamond
         def overlaps_for(atoms)
           @self_insec.each_with_object([]) do |intersec, all_overlaps|
             overlap = {}
-            is_present = presented_in(overlap)
+            check_lambda = presented_in(overlap)
 
             atoms.each do |atom|
               other_atom = intersec[atom]
-              next if other_atom == atom || is_present[atom, other_atom]
+              next if other_atom == atom || check_lambda[atom, other_atom]
               overlap[atom] = other_atom
             end
 
             next if overlap.empty?
             next if lists_are_identical?(overlap.flatten, atoms, &:==)
-            next if all_overlaps.any? { |pairs| pairs.all?(&is_present) }
+            next if all_overlaps.any? { |pairs| pairs.all?(&check_lambda) }
 
             all_overlaps << overlap
           end
