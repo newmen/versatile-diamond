@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       # Fully syntetic test
-      describe ParentProxySpecie, use: :engine_generator do
+      describe ParentsSwapProxySpecie, use: :engine_generator do
         subject { described_class.new(generator, original_class, symmetric_class) }
         let(:original_class) { code_specie.original }
         let(:symmetric_class) do
@@ -20,7 +20,7 @@ module VersatileDiamond
 
         describe '#base_class_name' do
           let(:base_class_name) do
-            'ParentProxy<OriginalBridge, SymmetricBridge, BRIDGE>'
+            'ParentsSwapProxy<OriginalBridge, SymmetricBridge, BRIDGE>'
           end
           it { expect(subject.base_class_name).to eq(base_class_name) }
         end

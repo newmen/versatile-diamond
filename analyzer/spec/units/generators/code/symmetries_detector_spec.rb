@@ -140,7 +140,7 @@ module VersatileDiamond
             it_behaves_like :check_symmetry do
               subject { dept_twise_incoherent_dimer }
               let(:symmetry_classes) do
-                ['ParentProxy<OriginalDimer, SymmetricDimer, DIMER_CLi_CRi>']
+                ['ParentsSwapProxy<OriginalDimer, SymmetricDimer, DIMER_CLi_CRi>']
               end
               let(:symmetric_keynames) { [:cr, :cl] }
             end

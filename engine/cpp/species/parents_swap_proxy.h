@@ -8,13 +8,13 @@ namespace vd
 {
 
 template <class OS, class SS, ushort ST>
-class ParentProxy : public Typed<SS, ST>
+class ParentsSwapProxy : public Typed<SS, ST>
 {
     typedef Typed<SS, ST> ParentType;
 
 protected:
     template <class DS>
-    ParentProxy(DS *original) :
+    ParentsSwapProxy(DS *original) :
         ParentType(static_cast<OS *>(original->parent())) {}
 };
 
