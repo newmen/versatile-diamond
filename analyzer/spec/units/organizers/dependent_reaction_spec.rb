@@ -58,8 +58,9 @@ module VersatileDiamond
       end
 
       describe '#used_atoms_of' do
-        it { expect(subject.used_atoms_of(ai_bridge)).to eq([ai_bridge.atom(:ct)]) }
-        it { expect(subject.used_atoms_of(activated_bridge)).
+        it { expect(subject.used_atoms_of(dept_activated_incoherent_bridge)).
+          to eq([activated_incoherent_bridge.atom(:ct)]) }
+        it { expect(subject.used_atoms_of(dept_activated_bridge)).
           to eq([activated_bridge.atom(:ct)]) }
       end
 

@@ -34,7 +34,7 @@ module VersatileDiamond
           end
 
           (spec.reactions.reject(&:local?) + spec.theres).each do |dept_user|
-            add_symmetries_for(dept_user.used_atoms_of(spec.spec))
+            add_symmetries_for(dept_user.used_atoms_of(spec))
           end
         end
 

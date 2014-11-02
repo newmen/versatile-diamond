@@ -2,9 +2,7 @@ module VersatileDiamond
   module Organizers
 
     # Wraps structural reaction with lateral interactions
-    class DependentLateralReaction < DependentReaction
-
-      def_delegator :reaction, :used_atoms_of
+    class DependentLateralReaction < DependentSpecReaction
 
       # Collects and return all where object
       # @return [Array] the array of where objects

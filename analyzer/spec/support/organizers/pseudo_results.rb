@@ -103,8 +103,12 @@ module VersatileDiamond
         # to passed variables
         def store_reactant(dcont, depts_cache, all_names, spec)
           if spec.is_a?(Concepts::SpecificSpec)
-            ds = DependentSpecificSpec.new(spec)
-            if ds.specific?
+
+            ds = spec.simple? ?
+              DependentSimpleSpec.new(spec) :
+              DependentSpecificSpec.new(spec)
+
+            if ds.simple? || ds.specific?
               all_names << spec.name
               depts_cache[:specific_specs] << ds
               store_concept_to(dcont, ds)
