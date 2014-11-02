@@ -123,7 +123,9 @@ module VersatileDiamond
               if cached_dept_spec
                 concept.swap_source(specific_spec, cached_dept_spec.spec)
               else
-                cache[name] = DependentSpecificSpec.new(specific_spec)
+                cache[name] = specific_spec.simple? ?
+                  DependentSimpleSpec.new(specific_spec) :
+                  DependentSpecificSpec.new(specific_spec)
               end
 
               store_concept_to(concept, cache[name])

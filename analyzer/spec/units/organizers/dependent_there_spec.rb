@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentThere do
+    describe DependentThere, type: :organizer do
       subject { described_class.new(there_methyl) }
 
       describe '#each_source' do
@@ -23,7 +23,7 @@ module VersatileDiamond
 
       describe '#used_atoms_of' do
         let(:atoms) { [methyl_on_bridge.atom(:cb)] }
-        it { expect(subject.used_atoms_of(methyl_on_bridge)).to eq(atoms) }
+        it { expect(subject.used_atoms_of(dept_methyl_on_bridge)).to eq(atoms) }
       end
     end
 

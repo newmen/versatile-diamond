@@ -5,13 +5,20 @@ module VersatileDiamond
     class DependentThere
       extend Forwardable
 
-      def_delegators :@there, :where, :swap_source, :used_atoms_of
+      def_delegators :@there, :where, :swap_source
       # attr_reader :there
 
       # Stores wrappable there
       # @param [Concepts::There] there the wrappable there
       def initialize(there)
         @there = there
+      end
+
+      # Gets atoms of passed spec
+      # @param [DependentWrappedSpec] spec is the using internal sidepiece
+      # @return [Array] the array of using atoms
+      def used_atoms_of(dept_spec)
+        @there.used_atoms_of(dept_spec.spec)
       end
 
       # Iterates each enviromnet specie
