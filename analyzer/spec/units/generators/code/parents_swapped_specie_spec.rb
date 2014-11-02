@@ -22,7 +22,7 @@ module VersatileDiamond
         end
 
         describe '#proxy' do
-          it { expect(subject.proxy(original_class)).to be_a(ParentProxySpecie) }
+          it { expect(subject.proxy(original_class)).to be_a(ParentsSwapProxySpecie) }
         end
       end
 

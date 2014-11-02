@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
 
       # Creates parents swapped symmetric specie
-      class ParentProxySpecie < EmptySpecie
+      class ParentsSwapProxySpecie < EmptySpecie
 
         # Initialize parent proxy class code generator
         # @param [EngineCode] generator see at #super same argument
@@ -32,7 +32,7 @@ module VersatileDiamond
         # Defines wrapper class name
         # @return [String] the engine wrapper class name
         def wrapper_class_name
-          'ParentProxy'
+          'ParentsSwapProxy'
         end
       end
 

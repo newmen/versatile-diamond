@@ -289,8 +289,8 @@ HEADERS += \
     species/keeper.h \
     species/lateral_spec.h \
     species/localable_role.h \
-    species/parent_proxy.h \
     species/parent_spec.h \
+    species/parents_swap_proxy.h \
     species/parents_swap_wrapper.h \
     species/reactant.h \
     species/sealer.h \
