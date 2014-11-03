@@ -2,9 +2,10 @@
 #define SYMMETRIC_DIMER_H
 
 #include "../sidepiece/original_dimer.h"
-#include "../empty.h"
+#include "../empty_base.h"
 
-class SymmetricDimer : public ParentsSwapWrapper<Empty<DIMER>, OriginalDimer, 0, 1>
+class SymmetricDimer :
+    public ParentsSwapWrapper<EmptyBase<DIMER>, OriginalDimer, 0, 1>
 {
 public:
     SymmetricDimer(OriginalDimer *parent) : ParentsSwapWrapper(parent) {}

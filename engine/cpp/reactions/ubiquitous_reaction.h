@@ -19,9 +19,8 @@ protected:
 
 public:
     Atom *target() { return _target; }
-    const Atom *target() const { return _target; } // should be replaced to .anchor() call everywhere
+    const Atom *target() const { return _target; }
 
-    Atom *anchor() const override;
     void doIt() override;
 
 #ifdef PRINT

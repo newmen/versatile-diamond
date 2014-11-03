@@ -238,12 +238,20 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         ++steps;
 
 #ifndef NOUT
-        timeCounter += dt;
-        if (timeCounter >= _eachTime)
+        if (dt < 0)
         {
-            timeCounter = 0;
-            outLambda();
-            storeLambda(false);
+            std::cout << "No more events" << std::endl;
+            break;
+        }
+        else
+        {
+            timeCounter += dt;
+            if (timeCounter >= _eachTime)
+            {
+                timeCounter = 0;
+                outLambda();
+                storeLambda(false);
+            }
         }
 #endif // NOUT
     }

@@ -17,7 +17,6 @@ protected:
     LateralReaction(LateralReaction *lateralParent) : _parent(lateralParent->_parent) {}
 
 public:
-    Atom *anchor() const { return _parent->anchor(); }
     void doIt() { _parent->doIt(); }
 
     void store() override { insertToTargets(this); }

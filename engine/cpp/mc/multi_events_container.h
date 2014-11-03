@@ -16,6 +16,10 @@ public:
     MultiEventsContainer() = default;
     ~MultiEventsContainer();
 
+#ifndef NDEBUG
+    Reaction *selectEventByCoords(const int3 &crd);
+#endif // NDEBUG
+
     void add(UbiquitousReaction *event, ushort n);
     void remove(Atom *target, ushort n);
     uint removeAll(Atom *target);

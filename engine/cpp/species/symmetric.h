@@ -2,16 +2,15 @@
 #define SYMMETRIC_H
 
 #include "../tools/common.h"
-#include "parent_spec.h"
 
 namespace vd
 {
 
-template <class OriginalS, class... SymmetricSs>
+template <class OriginalS, class FirstSymmetricS, class... OtherSymmetricSs>
 class Symmetric : public OriginalS
 {
-    enum : ushort { SYMMETRICS_NUM = sizeof...(SymmetricSs) };
-    ParentSpec *_symmetrics[SYMMETRICS_NUM];
+    enum : ushort { SYMMETRICS_NUM = 1 + sizeof...(OtherSymmetricSs) };
+    typename FirstSymmetricS::SymmetricType *_symmetrics[SYMMETRICS_NUM];
 
 protected:
     template <class... Args> Symmetric(Args... args) : OriginalS(args...) {}
@@ -32,8 +31,8 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class OS, class... SSS>
-void Symmetric<OS, SSS...>::setUnvisited()
+template <class OS, class FSS, class... OSSS>
+void Symmetric<OS, FSS, OSSS...>::setUnvisited()
 {
     for (ushort i = 0; i < SYMMETRICS_NUM; ++i)
     {
@@ -42,8 +41,8 @@ void Symmetric<OS, SSS...>::setUnvisited()
     OS::setUnvisited();
 }
 
-template <class OS, class... SSS>
-void Symmetric<OS, SSS...>::findChildren()
+template <class OS, class FSS, class... OSSS>
+void Symmetric<OS, FSS, OSSS...>::findChildren()
 {
     for (ushort i = 0; i < SYMMETRICS_NUM; ++i)
     {
@@ -52,15 +51,15 @@ void Symmetric<OS, SSS...>::findChildren()
     OS::findChildren();
 }
 
-template <class OS, class... SSS>
-void Symmetric<OS, SSS...>::store()
+template <class OS, class FSS, class... OSSS>
+void Symmetric<OS, FSS, OSSS...>::store()
 {
-    createSymmetrics<SSS...>(0);
+    createSymmetrics<FSS, OSSS...>(0);
     OS::store();
 }
 
-template <class OS, class... SSS>
-void Symmetric<OS, SSS...>::remove()
+template <class OS, class FSS, class... OSSS>
+void Symmetric<OS, FSS, OSSS...>::remove()
 {
     for (ushort i = 0; i < SYMMETRICS_NUM; ++i)
     {
@@ -69,9 +68,9 @@ void Symmetric<OS, SSS...>::remove()
     OS::remove();
 }
 
-template <class OS, class... SSS>
+template <class OS, class FSS, class... OSSS>
 template <class L>
-void Symmetric<OS, SSS...>::eachSymmetry(const L &lambda)
+void Symmetric<OS, FSS, OSSS...>::eachSymmetry(const L &lambda)
 {
     lambda(this);
     for (ushort i = 0; i < SYMMETRICS_NUM; ++i)
@@ -80,16 +79,16 @@ void Symmetric<OS, SSS...>::eachSymmetry(const L &lambda)
     }
 }
 
-template <class OS, class... SSS>
+template <class OS, class FSS, class... OSSS>
 template <class HS>
-void Symmetric<OS, SSS...>::createSymmetrics(ushort index)
+void Symmetric<OS, FSS, OSSS...>::createSymmetrics(ushort index)
 {
     _symmetrics[index] = new HS(this);
 }
 
-template <class OS, class... SSS>
+template <class OS, class FSS, class... OSSS>
 template <class HS, class SS, class... TSS>
-void Symmetric<OS, SSS...>::createSymmetrics(ushort index)
+void Symmetric<OS, FSS, OSSS...>::createSymmetrics(ushort index)
 {
     createSymmetrics<HS>(index);
     createSymmetrics<SS, TSS...>(index + 1);

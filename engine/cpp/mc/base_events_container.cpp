@@ -3,22 +3,6 @@
 namespace vd
 {
 
-#ifndef NDEBUG
-Reaction *BaseEventsContainer::selectEvent(const int3 &crd)
-{
-    for (Reaction *event : _events)
-    {
-        if (event->anchor()->lattice() && event->anchor()->lattice()->coords() == crd)
-        {
-            return event;
-        }
-    }
-
-    assert(false); // multi event by crd was not found
-    return nullptr;
-}
-#endif // NDEBUG
-
 Reaction *BaseEventsContainer::selectEvent(double r)
 {
     assert(_events.size() > 0);
