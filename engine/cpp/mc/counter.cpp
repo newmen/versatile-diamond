@@ -22,22 +22,11 @@ void Counter::inc(Reaction *event)
     uint index = event->type();
     assert(_records.size() > index);
 
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
+    if (!_records[index])
     {
-        if (!_records[index])
-        {
-            _records[index] = new Record(event->name(), event->rate());
-        }
-
+        _records[index] = new Record(event->name(), event->rate());
     }
-
     _records[index]->inc();
-
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
     ++_total;
 }
 

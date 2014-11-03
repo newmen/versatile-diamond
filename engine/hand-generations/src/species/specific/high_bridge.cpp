@@ -6,8 +6,8 @@
 #include "../../reactions/typical/migration_down_at_dimer_from_high_bridge.h"
 #include "high_bridge_cms.h"
 
-const ushort HighBridge::Base::__indexes[2] = { 1, 0 };
-const ushort HighBridge::Base::__roles[2] = { 19, 18 };
+template <> const ushort HighBridge::Base::__indexes[2] = { 1, 0 };
+template <> const ushort HighBridge::Base::__roles[2] = { 19, 18 };
 
 #ifdef PRINT
 const char *HighBridge::name() const
