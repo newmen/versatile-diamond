@@ -12,7 +12,6 @@ module VersatileDiamond
         # Wraps each real specie code generator for difference naming the parents
         # species
         class UniqueSpecie < Modules::TransparentProxy
-          avail_unpublic_methods :index, :role
         end
 
         # Inits builder by target specie and main engine code generator
