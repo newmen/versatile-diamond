@@ -52,6 +52,7 @@ module VersatileDiamond
           ])
 
           define_code_species(:specific_specs, [
+            :extra_activated_bridge,
             :activated_bridge,
             :activated_incoherent_bridge,
             :activated_methyl_on_incoherent_bridge,

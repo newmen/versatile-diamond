@@ -52,12 +52,16 @@ module VersatileDiamond
         # @return [Hash] the fixed cache of depts
         def fix(depts)
           ordered_depts = sort_depts(default_depts.merge(depts))
-          all_names = ordered_depts.flat_map(&:last).map(&:name).to_set
+          only_specs = ordered_depts.flat_map(&:last).select do |o|
+            o.is_a?(DependentSimpleSpec)
+          end
+
+          all_specs = Hash[only_specs.map { |ds| [ds.name, ds] }]
           depts_cache = Hash[ordered_depts]
 
-          fix_reactants(depts_cache, all_names)
-          fix_sidepieces(depts_cache, all_names)
-          fix_bases(depts_cache, all_names)
+          fix_reactants(depts_cache, all_specs)
+          fix_sidepieces(depts_cache, all_specs)
+          fix_bases(depts_cache, all_specs)
 
           purging_specs = [depts_cache[:base_specs], depts_cache[:specific_specs]]
           pss = purge_unused_extended_specs(*purging_specs.map(&method(:make_cache)))
@@ -66,46 +70,59 @@ module VersatileDiamond
           depts_cache
         end
 
+        # Gets correct dependent spec from cache
+        def spec_from(cache, spec)
+          cache[spec.name] || cache[spec.spec.name]
+        end
+
         # Extends passed variables by reactant specs
-        def fix_reactants(depts_cache, all_names)
+        def fix_reactants(depts_cache, all_specs)
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
               r = dr.reaction
               r.source.each do |s|
-                next if all_names.include?(s.name)
-                if s.is_a?(Concepts::TerminationSpec)
-                  all_names << s.name
-                  depts_cache[:term_specs] << DependentTermination.new(s)
-                else
-                  store_reactant(dr, depts_cache, all_names, s)
+                unless all_specs.include?(s.name)
+                  if s.is_a?(Concepts::TerminationSpec)
+                    dt = DependentTermination.new(s)
+                    depts_cache[:term_specs] << dt
+                    all_specs[dt.name] = dt
+                  else
+                    store_reactant(dr, depts_cache, all_specs, s)
+                  end
                 end
+
+                store_concept_to(dr, spec_from(all_specs, s))
               end
             end
           end
         end
 
         # Extends passed variables by sidepieces from where objects
-        def fix_sidepieces(depts_cache, all_names)
+        def fix_sidepieces(depts_cache, all_specs)
           depts_cache[:lateral_reactions].flat_map(&:theres).each do |th|
             th.where.specs.each do |s|
-              next if all_names.include?(s.name)
-              store_reactant(th, depts_cache, all_names, s)
+              unless all_specs.include?(s.name)
+                store_reactant(th, depts_cache, all_specs, s)
+              end
+
+              store_concept_to(th, spec_from(all_specs, s))
             end
           end
         end
 
         # Extends passed variables by base specs from specific specs
-        def fix_bases(depts_cache, all_names)
+        def fix_bases(depts_cache, all_specs)
           depts_cache[:specific_specs].each do |ds|
-            next if all_names.include?(ds.spec.spec.name)
-            all_names << ds.spec.spec.name
-            depts_cache[:base_specs] << DependentBaseSpec.new(ds.spec.spec)
+            next if all_specs.include?(ds.spec.spec.name)
+            ds = DependentBaseSpec.new(ds.spec.spec)
+            depts_cache[:base_specs] << ds
+            all_specs[ds.name] = ds
           end
         end
 
         # Provides lambda which checks type of own argument and wraps and store it
         # to passed variables
-        def store_reactant(dcont, depts_cache, all_names, spec)
+        def store_reactant(dcont, depts_cache, all_specs, spec)
           if spec.is_a?(Concepts::SpecificSpec)
 
             ds = spec.simple? ?
@@ -113,24 +130,21 @@ module VersatileDiamond
               DependentSpecificSpec.new(spec)
 
             if ds.simple? || ds.specific?
-              all_names << spec.name
               depts_cache[:specific_specs] << ds
-              store_concept_to(dcont, ds)
+              all_specs[ds.name] = ds
             else
               dbs = depts_cache[:base_specs].find { |bs| bs.name == spec.spec.name }
               dbs ||= DependentBaseSpec.new(spec.spec)
               dcont.swap_source(spec, dbs.spec)
-              unless all_names.include?(dbs.name)
-                all_names << dbs.name
+              unless all_specs.include?(dbs.name)
                 depts_cache[:base_specs] << dbs
+                all_specs[dbs.name] = dbs
               end
-              store_concept_to(dcont, dbs)
             end
           elsif spec.is_a?(Concepts::Spec)
             dbs = DependentBaseSpec.new(spec)
-            all_names << spec.name
             depts_cache[:base_specs] << dbs
-            store_concept_to(dcont, dbs)
+            all_specs[spec.name] = dbs
           else
             raise 'So strange reactant'
           end
