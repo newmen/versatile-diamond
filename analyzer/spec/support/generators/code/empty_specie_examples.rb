@@ -14,7 +14,7 @@ module VersatileDiamond
             end
 
             describe '#original_file_path' do
-              let(:value) { "species/bases/original_#{cap_name.downcase}.h" }
+              let(:value) { "species/originals/original_#{cap_name.downcase}.h" }
               it { expect(subject.original_file_path.to_s).to eq(value) }
             end
 
