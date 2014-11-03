@@ -2,7 +2,7 @@ module VersatileDiamond
   module Organizers
 
     # Wraps not unique dependent base spec to distinguish from other similar
-    class ProxyParentSpec < Modules::TransparentProxy
+    class ProxyParentSpec < Tools::TransparentProxy
       include Modules::OrderProvider
 
       # Initializes proxy instance

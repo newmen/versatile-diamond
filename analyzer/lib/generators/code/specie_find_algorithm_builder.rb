@@ -11,7 +11,7 @@ module VersatileDiamond
 
         # Wraps each real specie code generator for difference naming the parents
         # species
-        class UniqueSpecie < Modules::TransparentProxy
+        class UniqueSpecie < Tools::TransparentProxy
         end
 
         # Inits builder by target specie and main engine code generator
