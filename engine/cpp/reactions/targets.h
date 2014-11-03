@@ -16,8 +16,6 @@ class Targets
     S *_targets[TARGETS_NUM];
 
 public:
-    Atom *anchor() const;
-
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT
@@ -67,19 +65,6 @@ Targets<S, TARGETS_NUM>::Targets(const Targets<S, TARGETS_NUM + 1> *parent, S *r
 }
 
 template <class S, ushort TARGETS_NUM>
-Atom *Targets<S, TARGETS_NUM>::anchor() const
-{
-    Atom *atom = nullptr;
-    for (int i = 0; i < TARGETS_NUM; ++i)
-    {
-        atom = _targets[i]->anchor();
-        if (atom->lattice()) break;
-    }
-    assert(atom);
-    return atom;
-}
-
-template <class S, ushort TARGETS_NUM>
 S *Targets<S, TARGETS_NUM>::target(ushort index) const
 {
     assert(index < TARGETS_NUM);
@@ -112,19 +97,8 @@ void Targets<S, TARGETS_NUM>::info(std::ostream &os)
 {
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
-        os << " ";
         assert(_targets[i]);
-        if (_targets[i])
-        {
-            if (_targets[i]->anchor()->lattice())
-            {
-                os << _targets[i]->anchor()->lattice()->coords();
-            }
-            else
-            {
-                os << "amorph";
-            }
-        }
+        os << " " << _targets[i]->name();
     }
 }
 #endif // PRINT

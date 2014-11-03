@@ -10,17 +10,17 @@ using namespace vd;
 #include "overall.h"
 
 template <ushort ST>
-class Empty : public Overall<ChildSpec<ParentSpec>, ST>
+class EmptyBase : public Overall<ChildSpec<ParentSpec>, ST>
 {
     typedef Overall<ChildSpec<ParentSpec>, ST> ParentType;
 
 public:
-    Atom *anchor() const override { return this->parent()->anchor(); }
+    typedef EmptyBase<ST> SymmetricType;
 
     void remove() override;
 
 protected:
-    template <class... Args> Empty(Args... args) : ParentType(args...) {}
+    template <class... Args> EmptyBase(Args... args) : ParentType(args...) {}
 
     void findAllChildren() override {}
 };
@@ -28,7 +28,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <ushort ST>
-void Empty<ST>::remove()
+void EmptyBase<ST>::remove()
 {
     if (this->isMarked()) return;
     ParentType::remove();

@@ -59,6 +59,8 @@ private:
     MC &operator = (const MC &) = delete;
     MC &operator = (MC &&) = delete;
 
+    Reaction *mostProbablyEvent(double r);
+
     double increaseTime(CommonMCData *data);
     void recountTotalRate();
     void updateRate(double r)
@@ -105,51 +107,30 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
-    Reaction *event = nullptr;
-    double r = data->rand(totalRate());
-
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        os << "Random number: " << r << "\n";
+        os << "Rate: " << totalRate() << " % time: " << totalTime() << "\n";
+        os << "Current sizes: " << std::endl;
+        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+        {
+            os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << "\n";
+        }
     });
 #endif // PRINT
 
-    double passRate = 0;
-    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
-    {
-        BaseEventsContainer *currentEvents = events(i);
-        double cr = currentEvents->commonRate();
-        if (r < cr + passRate)
-        {
-#ifdef PRINT
-            debugPrint([&](std::ostream &os) {
-                os << "event " << i;
-            });
-#endif // PRINT
-
-            event = currentEvents->selectEvent(r - passRate);
-            break;
-        }
-        else
-        {
-            passRate += cr;
-        }
-    }
-
-    double dt = 0;
+    double r = data->rand(totalRate());
+    Reaction *event = mostProbablyEvent(r);
     if (event)
     {
 #ifdef PRINT
         debugPrint([&](std::ostream &os) {
-            if (!event->anchor()->lattice()) os << "amorph";
-            else os << event->anchor()->lattice()->coords();
-            os << std::endl << event->name();
+            os << event->name();
         });
 #endif // PRINT
 
-        dt = increaseTime(data);
         data->counter()->inc(event);
         event->doIt();
+        return increaseTime(data);
     }
     else
     {
@@ -161,20 +142,16 @@ double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 
         recountTotalRate();
         sort();
-    }
 
-#ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "After rate: " << totalRate() << " % time: " << totalTime() << "\n";
-        os << "Current sizes: " << std::endl;
-        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+        if (totalRate() == 0)
         {
-            os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << "\n";
+            return -1;
         }
-    });
-#endif // PRINT
-
-    return dt;
+        else
+        {
+            return doRandom(data);
+        }
+    }
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -327,14 +304,14 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
 {
     assert(rt < MULTI_EVENTS_NUM);
-    _multiEvents[rt].selectEvent(0)->doIt();
+    _multiEvents[rt].selectEvent(0.0)->doIt();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)
 {
     auto crd = int3(x, y, z);
-    _multiEvents[rt].selectEvent(crd)->doIt();
+    _multiEvents[rt].selectEventByCoords(crd)->doIt();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
@@ -342,6 +319,41 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
 {
     assert(rt < MULTI_EVENTS_NUM);
     _multiEvents[rt].selectEvent((_multiEvents[rt].size() - 0.5) * _multiEvents[rt].oneRate())->doIt();
+}
+
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+Reaction *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
+{
+#ifdef PRINT
+    debugPrint([&](std::ostream &os) {
+        os << "Random number: " << r << "\n";
+    });
+#endif // PRINT
+
+    Reaction *event = nullptr;
+    double passRate = 0;
+    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+    {
+        BaseEventsContainer *currentEvents = events(i);
+        double cr = currentEvents->commonRate();
+        if (r < cr + passRate)
+        {
+#ifdef PRINT
+            debugPrint([&](std::ostream &os) {
+                os << "event " << i;
+            });
+#endif // PRINT
+
+            event = currentEvents->selectEvent(r - passRate);
+            break;
+        }
+        else
+        {
+            passRate += cr;
+        }
+    }
+
+    return event;
 }
 #endif // NDEBUG
 

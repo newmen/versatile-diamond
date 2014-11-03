@@ -195,7 +195,7 @@ module VersatileDiamond
         # Combines base engine templated specie classes
         # @return [String] unwrapped combined base engine template classes
         def base_engine_class_name
-          base_class = parent? ? 'ParentSpec' : 'BaseSpec'
+          base_class = parent? || symmetric? ? 'ParentSpec' : 'BaseSpec'
           parents_num = spec.parents.size
           if parents_num == 0
             "SourceSpec<#{base_class}, #{atoms_num}>"
@@ -230,7 +230,8 @@ module VersatileDiamond
         # Makes string by which base constructor will be called
         # @return [String] the string with calling base constructor
         def outer_base_call
-          "#{outer_base_class_name}(#{constructor_variables_str})"
+          real_outer_class_name = symmetric? ? 'Symmetric' : outer_base_class_name
+          "#{real_outer_class_name}(#{constructor_variables_str})"
         end
 
         # Gets the collection of used crystal atom iterator classes

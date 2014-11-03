@@ -51,8 +51,6 @@ SOURCES += \
     ../hand-generations/src/reactions/typical/migration_through_dimers_row.cpp \
     ../hand-generations/src/reactions/typical/next_level_bridge_to_high_bridge.cpp \
     ../hand-generations/src/reactions/typical/sierpinski_drop.cpp \
-    ../hand-generations/src/reactions/typical/sierpinski_drop_left.cpp \
-    ../hand-generations/src/reactions/typical/sierpinski_drop_right.cpp \
     ../hand-generations/src/reactions/typical/two_bridges_to_high_bridge.cpp \
     ../hand-generations/src/reactions/ubiquitous/local/methyl_on_dimer_activation.cpp \
     ../hand-generations/src/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
@@ -67,6 +65,7 @@ SOURCES += \
     ../hand-generations/src/species/base/original_bridge.cpp \
     ../hand-generations/src/species/base/two_bridges.cpp \
     ../hand-generations/src/species/empty/symmetric_bridge.cpp \
+    ../hand-generations/src/species/empty/symmetric_cross_bridge_on_bridges.cpp \
     ../hand-generations/src/species/empty/symmetric_dimer.cpp \
     ../hand-generations/src/species/empty/symmetric_dimer_cri_cli.cpp \
     ../hand-generations/src/species/sidepiece/dimer.cpp \
@@ -94,6 +93,7 @@ SOURCES += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmiu.cpp \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmsiu.cpp \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.cpp \
+    ../hand-generations/src/species/specific/original_cross_bridge_on_bridges.cpp \
     ../hand-generations/src/species/specific/original_dimer_cri_cli.cpp \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
     atoms/atom.cpp \
@@ -192,8 +192,6 @@ HEADERS += \
     ../hand-generations/src/reactions/typical/migration_through_dimers_row.h \
     ../hand-generations/src/reactions/typical/next_level_bridge_to_high_bridge.h \
     ../hand-generations/src/reactions/typical/sierpinski_drop.h \
-    ../hand-generations/src/reactions/typical/sierpinski_drop_left.h \
-    ../hand-generations/src/reactions/typical/sierpinski_drop_right.h \
     ../hand-generations/src/reactions/typical/two_bridges_to_high_bridge.h \
     ../hand-generations/src/reactions/ubiquitous.h \
     ../hand-generations/src/reactions/ubiquitous/data/activation_data.h \
@@ -211,10 +209,12 @@ HEADERS += \
     ../hand-generations/src/species/base/methyl_on_dimer.h \
     ../hand-generations/src/species/base/original_bridge.h \
     ../hand-generations/src/species/base/two_bridges.h \
-    ../hand-generations/src/species/empty.h \
     ../hand-generations/src/species/empty/symmetric_bridge.h \
+    ../hand-generations/src/species/empty/symmetric_cross_bridge_on_bridges.h \
     ../hand-generations/src/species/empty/symmetric_dimer.h \
     ../hand-generations/src/species/empty/symmetric_dimer_cri_cli.h \
+    ../hand-generations/src/species/empty_base.h \
+    ../hand-generations/src/species/empty_specific.h \
     ../hand-generations/src/species/overall.h \
     ../hand-generations/src/species/sidepiece.h \
     ../hand-generations/src/species/sidepiece/dimer.h \
@@ -243,6 +243,7 @@ HEADERS += \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmiu.h \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmsiu.h \
     ../hand-generations/src/species/specific/methyl_on_dimer_cmssiu.h \
+    ../hand-generations/src/species/specific/original_cross_bridge_on_bridges.h \
     ../hand-generations/src/species/specific/original_dimer_cri_cli.h \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.h \
     atoms/atom.h \

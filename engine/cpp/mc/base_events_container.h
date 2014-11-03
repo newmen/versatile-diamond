@@ -16,9 +16,6 @@ protected:
 public:
     virtual ~BaseEventsContainer() {}
 
-#ifndef NDEBUG
-    Reaction *selectEvent(const int3 &crd);
-#endif // NDEBUG
     Reaction *selectEvent(double r);
 
     double oneRate() const { return _events.front()->rate(); }

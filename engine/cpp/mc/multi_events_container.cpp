@@ -22,6 +22,23 @@ MultiEventsContainer::~MultiEventsContainer()
     }
 }
 
+#ifndef NDEBUG
+Reaction *MultiEventsContainer::selectEventByCoords(const int3 &crd)
+{
+    for (Reaction *event : _events)
+    {
+        UbiquitousReaction *ubiqEvent = static_cast<UbiquitousReaction *>(event);
+        if (ubiqEvent->target()->lattice() && ubiqEvent->target()->lattice()->coords() == crd)
+        {
+            return event;
+        }
+    }
+
+    assert(false); // multi event by crd was not found
+    return nullptr;
+}
+#endif // NDEBUG
+
 void MultiEventsContainer::add(UbiquitousReaction *event, ushort n)
 {
     for (uint i = 0; i < n; ++i)

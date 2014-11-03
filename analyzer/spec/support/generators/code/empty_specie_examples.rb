@@ -19,7 +19,7 @@ module VersatileDiamond
             end
 
             describe '#outer_base_name' do
-              it { expect(subject.outer_base_name).to eq('empty') }
+              it { expect(subject.outer_base_name).to eq('empty_base') }
             end
           end
 

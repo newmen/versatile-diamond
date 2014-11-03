@@ -89,7 +89,7 @@ module VersatileDiamond
 
         it { expect(bridge.name).to eq(:'bridge()') }
         it { expect(activated_bridge.name).to eq(:'bridge(ct: *)') }
-        it { expect(extra_activated_bridge.name).to eq(:'bridge(ct: **)') }
+        it { expect(extra_activated_bridge.name).to eq(:'bridge(ct: *, ct: *)') }
         it { expect(hydrogenated_bridge.name).to eq(:'bridge(ct: H)') }
         it { expect(activated_hydrogenated_bridge.name).
           to eq(:'bridge(ct: *, ct: H)') }

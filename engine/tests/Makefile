@@ -14,6 +14,7 @@ $(NAME):
 	$(MAKE) -C $(HANDG_DIR) simple-diamond ARKSFLAGS=""
 
 clean:
+	rm -rf obj
 	rm -rf $(ENGINE_OBJS_DIR)
 	rm -rf $(HANDG_OBJS_DIR)
 

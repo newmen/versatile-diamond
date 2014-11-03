@@ -31,20 +31,6 @@ short UbiquitousReaction::prevNum(const Atom *anchor, const ushort *typeToNum)
     return 0;
 }
 
-Atom *UbiquitousReaction::anchor() const
-{
-    if (_target->lattice())
-    {
-        return _target;
-    }
-    else
-    {
-        return _target->firstCrystalNeighbour() ?
-                    _target->firstCrystalNeighbour() :
-                    _target;
-    }
-}
-
 void UbiquitousReaction::doIt()
 {
     uint type = toType();

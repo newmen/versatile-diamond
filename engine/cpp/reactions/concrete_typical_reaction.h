@@ -14,8 +14,6 @@ class ConcreteTypicalReaction : public TypicalReaction, public Targets<SpecificS
     typedef Targets<SpecificSpec, TARGETS_NUM> TargetsType;
 
 public:
-    Atom *anchor() const { return TargetsType::anchor(); }
-
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT

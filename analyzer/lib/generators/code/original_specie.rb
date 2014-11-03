@@ -44,6 +44,13 @@ module VersatileDiamond
           false
         end
 
+        # Gets the name of directory where will be stored result file
+        # @return [String] the name of result directory
+        # @override
+        def outer_dir_name
+          'originals'
+        end
+
         # Substitute base class name for original specie template rendering
         # @return [String] the name of base class
         def base_class_name

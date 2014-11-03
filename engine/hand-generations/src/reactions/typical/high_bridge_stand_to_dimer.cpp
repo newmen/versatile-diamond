@@ -10,7 +10,7 @@ double HighBridgeStandToDimer::RATE()
 
 void HighBridgeStandToDimer::find(HighBridge *target)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(1);
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(21))
         {
@@ -31,7 +31,7 @@ void HighBridgeStandToDimer::find(HighBridge *target)
 void HighBridgeStandToDimer::find(DimerCRsCLi *target)
 {
     // TODO: maybe need get anchor atom of DimerCRsCLi through DimerCRs
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(0);
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(19))
         {

@@ -26,7 +26,7 @@ public:
     const char *name() const override { return __name; }
 
 private:
-    static void findByBridge(SpecificSpec *target);
+    static void findByBridge(SpecificSpec *target, ushort anchorIndex);
 };
 
 #endif // HIGH_BRIDGE_TO_METHYL_H

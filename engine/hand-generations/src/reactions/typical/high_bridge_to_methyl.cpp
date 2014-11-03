@@ -10,7 +10,7 @@ double HighBridgeToMethyl::RATE()
 
 void HighBridgeToMethyl::find(HighBridge *target)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(1);
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         SpecificSpec *neighbourSpec = nullptr;
         if (neighbour->is(28))
@@ -38,17 +38,17 @@ void HighBridgeToMethyl::find(HighBridge *target)
 
 void HighBridgeToMethyl::find(BridgeCTsi *target)
 {
-    findByBridge(target);
+    findByBridge(target, 0);
 }
 
 void HighBridgeToMethyl::find(BridgeCRs *target)
 {
-    findByBridge(target);
+    findByBridge(target, 1);
 }
 
-void HighBridgeToMethyl::findByBridge(SpecificSpec *target)
+void HighBridgeToMethyl::findByBridge(SpecificSpec *target, ushort anchorIndex)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(anchorIndex);
     assert(anchor->is(5) || anchor->is(28));
 
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {

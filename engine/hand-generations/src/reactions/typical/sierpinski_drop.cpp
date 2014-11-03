@@ -1,6 +1,4 @@
 #include "sierpinski_drop.h"
-#include "sierpinski_drop_left.h"
-#include "sierpinski_drop_right.h"
 
 const char SierpinskiDrop::__name[] = "sierpinski drop";
 
@@ -12,14 +10,16 @@ double SierpinskiDrop::RATE()
 
 void SierpinskiDrop::find(CrossBridgeOnBridges *target)
 {
-    create<SierpinskiDropLeft>(target);
-    create<SierpinskiDropRight>(target);
+    target->eachSymmetry([](SpecificSpec *reactant) {
+        create<SierpinskiDrop>(reactant);
+    });
 }
 
-void SierpinskiDrop::doItWith(Atom **atoms)
+void SierpinskiDrop::doIt()
 {
     assert(target()->type() == CrossBridgeOnBridges::ID);
 
+    Atom *atoms[2] = { target()->atom(0), target()->atom(1) };
     Atom *a = atoms[0], *b = atoms[1];
     assert(a->is(10));
 

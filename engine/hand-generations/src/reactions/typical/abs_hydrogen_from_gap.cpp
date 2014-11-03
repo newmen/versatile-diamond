@@ -10,7 +10,7 @@ double AbsHydrogenFromGap::RATE()
 
 void AbsHydrogenFromGap::find(BridgeCRh *target)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(1);
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(34) && target->atom(2) != neighbour)
         {

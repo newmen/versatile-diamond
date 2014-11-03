@@ -156,13 +156,11 @@ module VersatileDiamond
 
           describe 'empty base specie' do
             let(:base_specs) { [dept_bridge_base] }
-            let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
-            it { expect(code_for(bridge_base).wrapped_base_class_name).to eq(name) }
 
-            describe '#base_class_names' do
+            it_behaves_like :check_classes_names do
+              subject { code_for(bridge_base) }
               let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
-              it { expect(code_for(bridge_base).base_class_names).
-                to eq(base_class_names) }
+              let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
             end
           end
 
@@ -216,6 +214,26 @@ module VersatileDiamond
             it_behaves_like :check_activated_bridge do
               subject { code_for(extra_activated_bridge) }
               let(:name) { 'Base<DependentSpec<BaseSpec, 1>, BRIDGE_CTss, 1>' }
+            end
+          end
+
+          describe 'symmetric specie' do
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_cross_bridge_on_bridges_base]
+            end
+            let(:typical_reactions) { [dept_sierpinski_drop] }
+
+            it_behaves_like :check_classes_names do
+              subject { code_for(cross_bridge_on_bridges_base) }
+              let(:name) { 'Specific<Base<DependentSpec<ParentSpec, 2>, ' \
+                'CROSS_BRIDGE_ON_BRIDGES, 3>>' }
+              let(:base_class_names) do
+                [
+                  'Symmetric<OriginalCrossBridgeOnBridges, ' \
+                    'SymmetricCrossBridgeOnBridges>',
+                  'DiamondAtomsIterator'
+                ]
+              end
             end
           end
         end

@@ -13,7 +13,7 @@ double DimerFormation::RATE()
 
 void DimerFormation::find(BridgeCTsi *target)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(0);
     assert(anchor->is(28));
 
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
