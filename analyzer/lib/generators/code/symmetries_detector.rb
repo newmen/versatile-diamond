@@ -6,6 +6,7 @@ module VersatileDiamond
       class SymmetriesDetector
         include Modules::ListsComparer
         include SymmetryHelper
+        extend Forwardable
 
         # Initializes symmetries detector
         # @param [EngineCode] generator the general engine code generator
@@ -34,7 +35,7 @@ module VersatileDiamond
           end
 
           (spec.reactions.reject(&:local?) + spec.theres).each do |dept_user|
-            add_symmetries_for(dept_user.used_atoms_of(spec))
+            add_symmetries_for(dept_user.changed_atoms_of(spec))
           end
         end
 
@@ -114,17 +115,13 @@ module VersatileDiamond
 
       private
 
+        def_delegator :@specie, :spec
+
         # Delegates getting cacher to general engine code generator
         # @return [DetectorsCacher] cacher which will be used for getting an other
         #   detector by dependent wrapped spec
         def cacher
           @generator.detectors_cacher
-        end
-
-        # Delegates getting dependent spec to specie code generator
-        # @return [Organizers::DependentWrappedSpec] the original dependent spec
-        def spec
-          @specie.spec
         end
 
         # Finds intersec with itself

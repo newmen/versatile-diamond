@@ -339,6 +339,14 @@ module VersatileDiamond
         end
       end
 
+      describe '#changed_atoms_of' do
+        subject { sierpinski_drop }
+        let(:spec) { cross_bridge_on_bridges }
+        let(:atoms) { [:cm, :ctr, :ctl].map { |a| spec.atom(a) } }
+
+        it { expect(subject.changed_atoms_of(spec)).to match_array(atoms) }
+      end
+
       describe '#same?' do
         def make_same(type)
           source = [methyl_on_dimer.dup, activated_dimer.dup]

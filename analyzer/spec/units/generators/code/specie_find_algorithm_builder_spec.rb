@@ -7,8 +7,12 @@ module VersatileDiamond
       describe SpecieFindAlgorithmBuilder, use: :engine_generator do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
+        let(:typical_reactions) { [] }
         let(:generator) do
-          stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+          stub_generator(
+            base_specs: base_specs,
+            specific_specs: specific_specs,
+            typical_reactions: typical_reactions)
         end
         let(:classifier) { generator.classifier }
 
@@ -281,6 +285,7 @@ module VersatileDiamond
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
+            let(:typical_reactions) { [dept_sierpinski_drop] }
 
             let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
             let(:find_algorithm) do
