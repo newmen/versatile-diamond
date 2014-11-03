@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Modules
+  module Tools
 
     # Provides logic for create proxy instances that delegates all method calls to
     # target instance
