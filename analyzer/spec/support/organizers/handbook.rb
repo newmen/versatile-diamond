@@ -84,6 +84,7 @@ module VersatileDiamond
           :methyl_activation,
           :methyl_deactivation,
           :methyl_desorption,
+          :methyl_incorporation,
           :dimer_formation,
           :sierpinski_drop,
           :hydrogen_migration

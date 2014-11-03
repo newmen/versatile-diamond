@@ -36,7 +36,7 @@ module VersatileDiamond
           subject { dept_bridge_base }
           let(:bases) do
             [
-              dept_bridge_base,
+              subject,
               dept_dimer_base,
               dept_methyl_on_bridge_base,
               dept_methyl_on_dimer_base
@@ -49,8 +49,17 @@ module VersatileDiamond
 
         it_behaves_like :check_symmetry do
           subject { dept_methyl_on_bridge_base }
-          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
+          let(:symmetry_classes) { [] }
+          let(:symmetric_keynames) { [] }
+        end
+
+        it_behaves_like :check_symmetry do
+          subject { dept_activated_methyl_on_bridge }
+          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:specifics) { [subject] }
+          let(:typical_reactions) { [dept_methyl_incorporation] }
           let(:symmetry_classes) { [] }
           let(:symmetric_keynames) { [] }
         end
@@ -58,7 +67,7 @@ module VersatileDiamond
         it_behaves_like :check_symmetry do
           subject { dept_methyl_on_dimer_base }
           let(:bases) do
-            [dept_bridge_base, dept_methyl_on_dimer_base, dept_methyl_on_bridge_base]
+            [dept_bridge_base, dept_methyl_on_bridge_base, subject]
           end
           let(:specifics) { [dept_activated_methyl_on_dimer] }
           let(:symmetry_classes) { [] }
@@ -67,7 +76,7 @@ module VersatileDiamond
 
         describe 'symmetric dimers' do
           subject { dept_dimer_base }
-          let(:bases) { [dept_bridge_base, dept_dimer_base] }
+          let(:bases) { [dept_bridge_base, subject] }
 
           let(:cl) { dimer_base.atom(:cl) }
           let(:cr) { dimer_base.atom(:cr) }
@@ -154,7 +163,7 @@ module VersatileDiamond
 
           describe 'activated dimer' do
             subject { dept_activated_dimer }
-            let(:specifics) { [dept_activated_dimer, specific] }
+            let(:specifics) { [subject, specific] }
             let(:use_parent_symmetry) { true }
 
             it_behaves_like :check_symmetry do

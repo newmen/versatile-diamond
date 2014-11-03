@@ -152,41 +152,6 @@ module VersatileDiamond
         spec.simple? ? DependentSimpleSpec.new(spec) : DependentSpecificSpec.new(spec)
       end
 
-      # Purges extended spec if atoms of each one can be used as same in
-      # reduced spec
-      #
-      # @param [Hash] base_specs_cache the cache of base speces where keys are
-      #   names of specs and values are wrapped base specs
-      # @param [Hash] specific_specs_cache the cache of specific specs where
-      #   keys is full names of specs
-      # @return [Array] purged caches of specs
-      def purge_unused_extended_specs(base_specs_cache, specific_specs_cache)
-        extended_specs = specific_specs_cache.select do |_, spec|
-          !spec.simple? && spec.could_be_reduced?
-        end
-
-        extended_specs.each do |_, wrapped_ext|
-          check_that_can = -> wrapped_concept do
-            concept_spec = wrapped_ext.spec
-            used_atoms = wrapped_concept.used_atoms_of(concept_spec)
-            used_keynames = used_atoms.map { |a| concept_spec.keyname(a) }
-            Concepts::Spec.good_for_reduce?(used_keynames)
-          end
-
-          next unless wrapped_ext.reactions.all?(&check_that_can) &&
-            wrapped_ext.theres.all?(&check_that_can)
-
-          rd_spec = wrapped_ext.reduced
-          wrapped_rd =
-            specific_specs_cache[rd_spec.name] ||= DependentSpecificSpec.new(rd_spec)
-
-          exchange_specs(specific_specs_cache, wrapped_ext, wrapped_rd)
-          base_specs_cache.delete(wrapped_ext.base_name)
-        end
-
-        [base_specs_cache, specific_specs_cache]
-      end
-
       # Purges all specific specs if some of doesn't have specific atoms and
       # reactions
       #
@@ -207,24 +172,6 @@ module VersatileDiamond
         end
 
         [base_specs_cache, specific_specs_cache]
-      end
-
-      # Excnahges two specs
-      # @param [DependentSpecificSpec | DependentSpecificSpec] from the spec
-      #   which will be exchanged
-      # @param [DependentSpecificSpec | DependentSpec] to the spec to which
-      #   will be exchanged
-      # @param [Hash] cache where contains pairs of name => dependent_spec
-      def exchange_specs(cache, from, to)
-        lambda = -> wrapped_concept do
-          wrapped_concept.swap_source(from.spec, to.spec)
-          store_concept_to(wrapped_concept, to)
-        end
-
-        from.reactions.each(&lambda)
-        from.theres.each(&lambda)
-
-        cache.delete(from.name)
       end
 
       # Organize dependecies between collected items

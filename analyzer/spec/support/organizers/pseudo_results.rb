@@ -59,6 +59,10 @@ module VersatileDiamond
           fix_sidepieces(depts_cache, all_names)
           fix_bases(depts_cache, all_names)
 
+          purging_specs = [depts_cache[:base_specs], depts_cache[:specific_specs]]
+          pss = purge_unused_extended_specs(*purging_specs.map(&method(:make_cache)))
+          depts_cache[:base_specs], depts_cache[:specific_specs] = pss.map(&:values)
+
           depts_cache
         end
 

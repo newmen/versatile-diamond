@@ -129,12 +129,19 @@ module VersatileDiamond
         swap_atom_in_positions(os_spec, os_atom, new_atom)
       end
 
-      # Gets atoms of passed spec which used in reaction
+      # Gets all atoms of passed spec which used in reaction
       # @param [Spec | SpecificSpec] spec the one of reactant
       # @return [Array] the array of using atoms
       def used_atoms_of(spec)
         pos_atoms = @links.keys.select { |s, _| s == spec }.map(&:last)
-        (pos_atoms + @mapping.used_atoms_of(spec)).uniq
+        (pos_atoms + changed_atoms_of(spec)).uniq
+      end
+
+      # Gets changed atoms of passed spec
+      # @param [Spec | SpecificSpec] spec the one of reactant
+      # @return [Array] the array of using atoms
+      def changed_atoms_of(spec)
+        @mapping.used_atoms_of(spec)
       end
 
       # Also compares positions in both reactions
