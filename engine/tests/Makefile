@@ -1,7 +1,5 @@
 NAME		:= vd-engine-spec
 
-ARKSFLAGS	:= -DTHREADS_NUM=3
-
 ENGINE_DIR	:= ..
 ENGINE_SRC_DIR	:= $(ENGINE_DIR)/cpp
 ENGINE_OBJS_DIR	:= $(ENGINE_DIR)/obj
@@ -12,8 +10,8 @@ HANDG_OBJS_DIR	:= $(HANDG_DIR)/obj
 
 all:	$(NAME)
 $(NAME):
-	$(MAKE) -C $(ENGINE_DIR) ARKSFLAGS="$(ARKSFLAGS)"
-	$(MAKE) -C $(HANDG_DIR) simple-diamond ARKSFLAGS="$(ARKSFLAGS)"
+	$(MAKE) -C $(ENGINE_DIR) ARKSFLAGS=""
+	$(MAKE) -C $(HANDG_DIR) simple-diamond ARKSFLAGS=""
 
 clean:
 	rm -rf $(ENGINE_OBJS_DIR)

@@ -2,8 +2,8 @@
 #include "../specific/methyl_on_bridge_cbi_cmiu.h"
 #include "../specific/methyl_on_111_cmiu.h"
 
-const ushort MethylOnBridge::Base::__indexes[2] = { 1, 0 };
-const ushort MethylOnBridge::Base::__roles[2] = { 9, 14 };
+template <> const ushort MethylOnBridge::Base::__indexes[2] = { 1, 0 };
+template <> const ushort MethylOnBridge::Base::__roles[2] = { 9, 14 };
 
 #ifdef PRINT
 const char *MethylOnBridge::name() const

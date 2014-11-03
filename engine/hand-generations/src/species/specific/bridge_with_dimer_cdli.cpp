@@ -2,8 +2,8 @@
 #include "../../reactions/typical/dimer_drop_near_bridge.h"
 #include "bridge_with_dimer_cbti_cbrs_cdli.h"
 
-const ushort BridgeWithDimerCDLi::Base::__indexes[1] = { 6 };
-const ushort BridgeWithDimerCDLi::Base::__roles[1] = { 20 };
+template <> const ushort BridgeWithDimerCDLi::Base::__indexes[1] = { 6 };
+template <> const ushort BridgeWithDimerCDLi::Base::__roles[1] = { 20 };
 
 #ifdef PRINT
 const char *BridgeWithDimerCDLi::name() const

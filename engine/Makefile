@@ -1,6 +1,6 @@
 NAME		:= libengine
 
-ARKSFLAGS	:= -DNDEBUG -DTHREADS_NUM=1
+ARKSFLAGS	:= -DNDEBUG
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++

@@ -63,9 +63,6 @@ private:
     void recountTotalRate();
     void updateRate(double r)
     {
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
         _totalRate += r;
     }
 
@@ -109,10 +106,6 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
     Reaction *event = nullptr;
-
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
     double r = data->rand(totalRate());
 
 #ifdef PRINT
@@ -135,7 +128,6 @@ double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #endif // PRINT
 
             event = currentEvents->selectEvent(r - passRate);
-            data->store(event);
             break;
         }
         else
@@ -144,102 +136,43 @@ double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         }
     }
 
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
-
+    double dt = 0;
     if (event)
     {
-        data->checkSame();
+#ifdef PRINT
+        debugPrint([&](std::ostream &os) {
+            if (!event->anchor()->lattice()) os << "amorph";
+            else os << event->anchor()->lattice()->coords();
+            os << std::endl << event->name();
+        });
+#endif // PRINT
+
+        dt = increaseTime(data);
+        data->counter()->inc(event);
+        event->doIt();
     }
     else
     {
-        data->setEventNotFound();
+#ifdef PRINT
+        debugPrint([&](std::ostream &os) {
+            os << "Event not found! Recount and sort!";
+        });
+#endif // PRINT
+
+        recountTotalRate();
+        sort();
     }
 
 #ifdef PRINT
     debugPrint([&](std::ostream &os) {
-        if (!event) os << "realy null";
-        else
+        os << "After rate: " << totalRate() << " % time: " << totalTime() << "\n";
+        os << "Current sizes: " << std::endl;
+        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
         {
-            if (!event->anchor()->lattice()) os << "amorph";
-            else os << event->anchor()->lattice()->coords();
-
-            os << " which is";
-            if (!data->isSame()) os << " not";
-            os << " same";
+            os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << "\n";
         }
     });
 #endif // PRINT
-
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
-
-    double dt = 0;
-    if (event && !data->isSame())
-    {
-        dt = increaseTime(data); // here little hack, because total rate of all events is similar for each process
-    }
-
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
-
-    if (event && !data->isSame())
-    {
-#ifdef PRINT
-        debugPrint([&](std::ostream &os) {
-            os << event->name();
-        });
-#endif // PRINT
-
-        data->counter()->inc(event);
-        event->doIt();
-    }
-
-#ifdef PARALLEL
-#pragma omp barrier
-#endif // PARALLEL
-
-#ifdef PARALLEL
-#pragma omp master
-#endif // PARALLEL
-    {
-        if (data->eventWasntFound())
-        {
-#ifdef PRINT
-            debugPrint([&](std::ostream &os) {
-                os << "Event not found! Recount";
-            });
-#endif // PRINT
-
-            recountTotalRate();
-        }
-
-        if (data->eventWasntFound() || data->hasSameSite())
-        {
-#ifdef PRINT
-            debugPrint([&](std::ostream &os) {
-                os << " -> sort!";
-            });
-#endif // PRINT
-            sort();
-        }
-
-#ifdef PRINT
-        debugPrint([&](std::ostream &os) {
-            os << "After rate: " << totalRate() << " % time: " << totalTime() << "\n";
-            os << "Current sizes: " << std::endl;
-            for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
-            {
-                os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << "\n";
-            }
-        });
-#endif // PRINT
-
-        data->reset();
-    }
 
     return dt;
 }
@@ -248,15 +181,8 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
 {
     double r = data->rand(1.0);
-
-    double dt;
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
-    {
-        dt = -log(r) / totalRate();
-        _totalTime += dt;
-    }
+    double dt = -log(r) / totalRate();
+    _totalTime += dt;
 
     return dt;
 }

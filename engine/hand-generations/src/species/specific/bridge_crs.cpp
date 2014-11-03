@@ -9,8 +9,8 @@
 #include "../../reactions/typical/migration_down_in_gap_from_high_bridge.h"
 #include "../../reactions/typical/migration_down_in_gap_from_dimer.h"
 
-const ushort BridgeCRs::Base::__indexes[1] = { 1 };
-const ushort BridgeCRs::Base::__roles[1] = { 5 };
+template <> const ushort BridgeCRs::Base::__indexes[1] = { 1 };
+template <> const ushort BridgeCRs::Base::__roles[1] = { 5 };
 
 #ifdef PRINT
 const char *BridgeCRs::name() const

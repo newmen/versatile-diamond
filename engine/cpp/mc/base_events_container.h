@@ -3,18 +3,12 @@
 
 #include <vector>
 #include <unordered_map>
-#include "../tools/lockable.h"
 #include "../reactions/reaction.h"
 
 namespace vd
 {
 
-#ifdef PARALLEL
-class BaseEventsContainer :
-        public Lockable // for children classes
-#else
 class BaseEventsContainer
-#endif // PARALLEL
 {
 protected:
     std::vector<Reaction *> _events;

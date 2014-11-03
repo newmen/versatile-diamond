@@ -1,8 +1,8 @@
 #include "bridge_crs_cti_cli.h"
 #include "../../reactions/typical/next_level_bridge_to_high_bridge.h"
 
-const ushort BridgeCRsCTiCLi::Base::__indexes[3] = { 0, 1, 2 };
-const ushort BridgeCRsCTiCLi::Base::__roles[3] = { 0, 5, 4 };
+template <> const ushort BridgeCRsCTiCLi::Base::__indexes[3] = { 0, 1, 2 };
+template <> const ushort BridgeCRsCTiCLi::Base::__roles[3] = { 0, 5, 4 };
 
 #ifdef PRINT
 const char *BridgeCRsCTiCLi::name() const
