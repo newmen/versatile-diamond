@@ -151,9 +151,7 @@ module VersatileDiamond
 
         all_specs = (base_specs || []) + (specific_specs || [])
         all_specs.each { |spec| @_dependent_species[spec.name] = spec }
-        config_specs.each_with_object(@_dependent_species) do |dep_spec, hash|
-          hash[dep_spec.name] ||= dep_spec
-        end
+        @_dependent_species
       end
 
       # Wraps all collected species from analysis results. Makes the mirror of specie
@@ -202,16 +200,6 @@ module VersatileDiamond
       # @return [Code::Reaction] the wrapped reaction
       def wrap_reaction(klass, reaction)
         @reactions[reaction.name] = klass.new(self, reaction)
-      end
-
-      # Gets the species from configuration tool
-      # @return [Array] the array of gas species code generators
-      def config_specs
-        Tools::Config.concs.keys.map do |concept|
-          concept.simple? ?
-            Organizers::DependentSimpleSpec.new(concept) :
-            Organizers::DependentSpecificSpec.new(concept)
-        end
       end
 
       # Gets non simple and non gas collected species

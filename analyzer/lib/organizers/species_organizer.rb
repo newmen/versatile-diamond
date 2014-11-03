@@ -47,9 +47,10 @@ module VersatileDiamond
       # @param [Hash] base_cache see at #organize_spec_dependencies! same argument
       # @param [Array] specific_specs see at #organize_spec_dependencies! same argument
       def organize_specific_specs_dependencies!(base_cache, specific_specs)
-        specific_specs.each_with_object({}) do |wrapped_specific, specs|
+        not_simple_specs = specific_specs.reject(&:simple?)
+        not_simple_specs.each_with_object({}) do |wrapped_specific, specs|
           base_name = wrapped_specific.base_name
-          specs[base_name] ||= specific_specs.select do |s|
+          specs[base_name] ||= not_simple_specs.select do |s|
             s.base_name == base_name
           end
 

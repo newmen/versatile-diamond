@@ -79,11 +79,10 @@ module VersatileDiamond
       end
 
       let(:instances) { subject.public_send(method) }
-      let(:classes) { instances.map(&:class) }
 
       shared_examples_for :each_class_dependent do
         it { expect(instances.size).to eq(quant) }
-        it { expect(classes.all? { |c| c == dependent_class }).to be_truthy }
+        it { expect(instances.all? { |c| c.is_a?(dependent_class) }).to be_truthy }
       end
 
       describe 'reactions' do
@@ -239,42 +238,55 @@ module VersatileDiamond
             subject.specific_spec(name)
           end
 
-          before { store_reactions }
+          describe 'collection from reactions' do
+            before { store_reactions }
 
-          it_behaves_like :each_reactant_dependent do
-            let(:dependent_class) { DependentSpecificSpec }
-            let(:method) { :specific_specs }
-            let(:names) do
-              [
-                :'bridge(ct: *)',
-                :'bridge(ct: *, ct: i)',
-                # :'dimer()', # purged
-                :'dimer(cl: i)',
-                :'dimer(cr: *)',
-                # :'extended_methyl_on_bridge(cm: *)', # purged
-                # :'methyl_on_bridge()', # purged
-                :'methyl_on_bridge(cm: *)',
-                :'methyl_on_bridge(cm: i)',
-                # :'methyl_on_dimer()', # purged
-                :'methyl_on_dimer(cm: *)'
-              ]
+            it_behaves_like :each_reactant_dependent do
+              let(:dependent_class) { DependentSimpleSpec }
+              let(:method) { :specific_specs }
+              let(:names) do
+                [
+                  :'hydrogen(h: *)',
+                  :'bridge(ct: *)',
+                  :'bridge(ct: *, ct: i)',
+                  # :'dimer()', # purged
+                  :'dimer(cl: i)',
+                  :'dimer(cr: *)',
+                  # :'extended_methyl_on_bridge(cm: *)', # purged
+                  # :'methyl_on_bridge()', # purged
+                  :'methyl_on_bridge(cm: *)',
+                  :'methyl_on_bridge(cm: i)',
+                  # :'methyl_on_dimer()', # purged
+                  :'methyl_on_dimer(cm: *)'
+                ]
+              end
+            end
+
+            describe '#exchange_specs' do
+              describe '.swap_source' do
+                it { expect(methyl_incorporation.source).
+                  to include(get(:'methyl_on_bridge(cm: *)').spec) }
+              end
+
+              describe '#store_concept_to' do
+                def reactions_for(name)
+                  get(name).reactions
+                end
+
+                it { expect(reactions_for(:'dimer(cl: i)').map(&:reaction)).
+                  to eq([dimer_formation.reverse]) }
+              end
             end
           end
 
-          describe '#exchange_specs' do
-            describe '.swap_source' do
-              it { expect(methyl_incorporation.source).
-                to include(get(:'methyl_on_bridge(cm: *)').spec) }
+          describe 'collection from config' do
+            before do
+              Tools::Config.gas_concentration(methyl, 1, 'mol/l')
+              Tools::Config.gas_concentration(hydrogen_ion, 2, 'mol/l')
             end
 
-            describe '#store_concept_to' do
-              def reactions_for(name)
-                get(name).reactions
-              end
-
-              it { expect(reactions_for(:'dimer(cl: i)').map(&:reaction)).
-                to eq([dimer_formation.reverse]) }
-            end
+            it { expect(get(:'hydrogen(h: *)')).not_to be_nil }
+            it { expect(get(:'methane(c: *)')).not_to be_nil }
           end
         end
 
