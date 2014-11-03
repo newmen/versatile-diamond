@@ -7,8 +7,14 @@ module VersatileDiamond
       describe Specie, type: :code do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
+        let(:typical_reactions) { [] }
+        let(:lateral_reactions) { [] }
         let(:generator) do
-          stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+          stub_generator(
+            base_specs: base_specs,
+            specific_specs: specific_specs,
+            typical_reactions: typical_reactions,
+            lateral_reactions: lateral_reactions)
         end
 
         def code_for(base_spec)
@@ -138,9 +144,14 @@ module VersatileDiamond
           before { generator }
 
           shared_examples_for :parent_bridge_name do
-            subject { code_for(bridge_base) }
+            let(:parent_bridge) { code_for(bridge_base) }
             let(:pb_name) { 'Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>' }
-            it { expect(subject.wrapped_base_class_name).to eq(pb_name) }
+            it { expect(parent_bridge.wrapped_base_class_name).to eq(pb_name) }
+          end
+
+          shared_examples_for :check_classes_names do
+            it { expect(subject.wrapped_base_class_name).to eq(name) }
+            it { expect(subject.base_class_names).to eq(base_class_names) }
           end
 
           describe 'empty base specie' do
@@ -155,43 +166,57 @@ module VersatileDiamond
             end
           end
 
-          describe 'only one child spec' do
+          describe 'only one child specie' do
             let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
 
             it_behaves_like :parent_bridge_name
-
-            describe 'child base specie' do
+            it_behaves_like :check_classes_names do
               subject { code_for(methyl_on_bridge_base) }
               let(:base_class_names) { [name] }
               let(:name) do
                 'Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, ' \
                   'METHYL_ON_BRIDGE, 2>'
               end
-              it { expect(subject.wrapped_base_class_name).to eq(name) }
-              it { expect(subject.base_class_names).to eq(base_class_names) }
             end
           end
 
-          describe 'multi same spec' do
+          describe 'sidepiece and multi child specie' do
             let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+            let(:lateral_reactions) { [dept_middle_lateral_df] }
 
             it_behaves_like :parent_bridge_name
-
-            describe 'child base specie' do
+            it_behaves_like :check_classes_names do
+              subject { code_for(dimer_base) }
               let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
-              let(:name) { 'Base<DependentSpec<BaseSpec, 2>, DIMER, 2>' }
-              it { expect(code_for(dimer_base).wrapped_base_class_name).to eq(name) }
-              it { expect(code_for(dimer_base).base_class_names).
-                to eq(base_class_names) }
+              let(:name) { 'Sidepiece<Base<DependentSpec<BaseSpec, 2>, DIMER, 2>>' }
             end
           end
 
-          describe 'specific parent specie' do
-            pending 'asdf'
-          end
+          describe 'specific specie' do
+            shared_examples_for :check_activated_bridge do
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) do
+                [dept_activated_bridge, dept_extra_activated_bridge]
+              end
+              let(:typical_reactions) { [dept_dimer_formation] }
 
-          describe 'specific leaf specie' do
-            pending 'asdf'
+              it_behaves_like :parent_bridge_name
+              it_behaves_like :check_classes_names do
+                let(:base_class_names) { [name] }
+              end
+            end
+
+            it_behaves_like :check_activated_bridge do
+              subject { code_for(activated_bridge) }
+              let(:name) do
+                'Specific<Base<DependentSpec<ParentSpec, 1>, BRIDGE_CTs, 1>>'
+              end
+            end
+
+            it_behaves_like :check_activated_bridge do
+              subject { code_for(extra_activated_bridge) }
+              let(:name) { 'Base<DependentSpec<BaseSpec, 1>, BRIDGE_CTss, 1>' }
+            end
           end
         end
 
