@@ -126,6 +126,7 @@ module VersatileDiamond
         # @param [Array] keys the major keys of sac cache
         # @return [Array] all found concepts
         def all(*keys)
+          @sac ||= {}
           keys.reduce([]) do |acc, key|
             @sac[key] ? acc + @sac[key].values : acc
           end

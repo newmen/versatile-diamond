@@ -39,6 +39,12 @@ module VersatileDiamond
 
     private
 
+      # Gets not simple source species
+      # @return [Array] the array of not simple species
+      def not_simple_source
+        source - simple_source
+      end
+
       # Checks that simple species are identical in possible parent reaction
       # @param [DependentTypicalReaction | DependentLateralReaction] possible the
       #   checkable possible parent reaction
