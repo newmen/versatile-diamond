@@ -5,6 +5,7 @@ module VersatileDiamond
       # Provides engine code and analysis results instances for RSpec
       module EngineGenerator
         include Organizers::Support::PseudoResults
+        include Generators::Code::SpeciesUser
 
         # Iterates all dependents, analyse them, stub generator by omitted analysis
         # results and get it

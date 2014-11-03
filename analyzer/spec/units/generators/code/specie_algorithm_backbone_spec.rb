@@ -152,7 +152,6 @@ module VersatileDiamond
 
           describe 'different dept_cross_bridge_on_dimers_base' do
             subject { dept_cross_bridge_on_dimers_base }
-            let(:face_grouped_anchors) { [[ctr, csr], [ctl, csl], [cm]] }
 
             it_behaves_like :check_finite_graph do
               let(:base_specs) { [dept_dimer_base, subject] }
