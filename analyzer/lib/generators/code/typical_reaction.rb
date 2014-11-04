@@ -57,7 +57,7 @@ module VersatileDiamond
         # @override
         def used_iterators
           return @_used_iterators if @_used_iterators
-          lattices = reaction.position_keys.map(&:last).map(&:lattice)
+          lattices = reaction.links.keys.map(&:last).map(&:lattice)
           @_used_iterators = translate_to_iterators(lattices.to_set)
         end
 
