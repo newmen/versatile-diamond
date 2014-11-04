@@ -5,6 +5,7 @@ module VersatileDiamond
 
         # Contain logic for clean dependent specie and get essence of specie graph
         class SpecieGroupedNodes
+          include SpeciesUser
           extend Forwardable
 
           # Initizalize cleaner by specie class code generator
@@ -14,7 +15,6 @@ module VersatileDiamond
             @specie = specie
 
             @atoms_to_nodes = {}
-            @atoms_to_smarts = {}
             @parents_to_uniques = {}
 
             @_original_links_graph, @_cut_links_graph, @_final_graph = nil
@@ -65,6 +65,7 @@ module VersatileDiamond
 
         private
 
+          attr_reader :generator
           def_delegator :@specie, :spec
 
           def original_links_graph
@@ -83,29 +84,23 @@ module VersatileDiamond
             end
           end
 
-          def create_node(atom)
-            smart_atom = get_smart_atom(atom)
-            if smart_atom.noparent?
-              [NoneSpecie.new(@specie), smart_atom]
-            elsif smart_atom.monoparent?
-              parent = smart_atom.uses_in_species.first
-              [get_unique_specie(parent), smart_atom]
+          def parent_specie(atom)
+            parents = spec.parents_of(atom)
+            if parents.empty?
+              NoneSpecie.new(@specie)
+            elsif parents.size == 1
+              get_unique_specie(parents.first)
             else
-              species = smart_atom.uses_in_species.map(&method(:get_unique_specie))
-              [SpeciesScope.new(species), smart_atom]
+              SpeciesScope.new(parents.map(&method(:get_unique_specie)))
             end
           end
 
           def get_node(atom)
-            @atoms_to_nodes[atom] ||= create_node(atom)
-          end
-
-          def get_smart_atom(atom)
-            @atoms_to_smarts[atom] ||= SmartAtom.new(@generator, @specie, atom)
+            @atoms_to_nodes[atom] ||= Node.new(@specie, parent_specie(atom), atom)
           end
 
           def get_unique_specie(parent)
-            @parents_to_uniques[parent] ||= UniqueSpecie.new(parent)
+            @parents_to_uniques[parent] ||= UniqueSpecie.new(specie_class(parent))
           end
 
           # Gets atoms that used in cut links graph
@@ -115,7 +110,7 @@ module VersatileDiamond
           end
 
           def relation_between(*nodes)
-            atoms = nodes.map(&:last).map(&:atom)
+            atoms = nodes.map(&:atom)
             spec.relation_between(*atoms)
           end
 
@@ -160,7 +155,7 @@ module VersatileDiamond
           # Checks that passed relation is flatten in crystal lattice when placed atom
           # @return [Boolean] is flatten relation or not
           def flatten_relation?(node, relation)
-            lattice = node.last.atom.lattice
+            lattice = node.atom.lattice
             if lattice
               relation.relation? && lattice.instance.flatten?(relation)
             else
@@ -305,7 +300,7 @@ module VersatileDiamond
                   end
 
                 similar_rels_groups = selected_rels.group_by do |n, r|
-                  [n.last.properties, r.params]
+                  [n.properties, r.params]
                 end
 
                 similar_rels_groups.values.each do |similar_rels|

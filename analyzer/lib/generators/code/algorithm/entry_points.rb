@@ -6,7 +6,6 @@ module VersatileDiamond
         # Provides logic for selecting entry points of find specie algorithm
         class EntryPoints
           include Modules::OrderProvider
-          include AtomPropertiesUser
           extend Forwardable
 
           # Initializes entry points detector by specie

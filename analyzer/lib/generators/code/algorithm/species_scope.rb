@@ -11,7 +11,7 @@ module VersatileDiamond
           end
 
           def inspect
-            "scope:<#{@species.map(&:inspect).join(',')}>"
+            "scope:<#{@species.map(&:inspect).join(', ')}>"
           end
         end
 
