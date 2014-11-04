@@ -22,34 +22,29 @@ module VersatileDiamond
               let(keyname) { subject.spec.atom(keyname) }
             end
 
-            let(:b_ct) { bridge_base.atom(:ct) }
-            let(:b_cr) { bridge_base.atom(:cr) }
-            let(:d_cr) { dimer_base.atom(:cr) }
-            let(:d_cl) { dimer_base.atom(:cl) }
-            let(:mob_cb) { methyl_on_bridge_base.atom(:cb) }
-            let(:mob_cm) { methyl_on_bridge_base.atom(:cm) }
-            let(:mod_cr) { methyl_on_dimer_base.atom(:cr) }
-            let(:mod_cl) { methyl_on_dimer_base.atom(:cl) }
-            let(:mod_cm) { methyl_on_dimer_base.atom(:cm) }
-            let(:cbobs_cm) { cross_bridge_on_bridges_base.atom(:cm) }
-            let(:cbods_cm) { cross_bridge_on_dimers_base.atom(:cm) }
-
             shared_examples_for :check_graph do
               def typed_node(node)
-                [node.first.class, node.last]
+                [node.first.class, node.last.atom]
               end
 
               # each method should not change the state of grouped nodes graph
               it 'all public methods' do
-                expect(grouped_nodes.face_grouped_anchors).
-                  to match_multidim_array(face_grouped_anchors)
-
-                typed_graph =
-                  grouped_nodes.graph.each_with_object({}) do |(node, rels), acc|
-                    acc[typed_node(node)] = rels.map { |n, r| [typed_node(node), r] }
+                anchors =
+                  grouped_nodes.face_grouped_nodes.map do |nodes|
+                    nodes.map(&:last).map(&:atom)
                   end
 
-                expect(typed_graph).to match_graph(graph)
+                expect(anchors).to match_multidim_array(face_grouped_anchors)
+
+                fg = grouped_nodes.final_graph
+                typed_graph =
+                  fg.each_with_object({}) do |(nodes, rels), acc|
+                    acc[nodes.map(&method(:typed_node))] = rels.map do |ns, r|
+                      [ns.map(&method(:typed_node)), r]
+                    end
+                  end
+
+                expect(typed_graph).to match_graph(grouped_graph)
               end
             end
 
@@ -57,7 +52,7 @@ module VersatileDiamond
               subject { dept_bridge_base }
               let(:base_specs) { [subject] }
               let(:face_grouped_anchors) { [[ct], [cr], [cl]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
                   [[NoneSpecie, cr]] => [[[[NoneSpecie, ct]], param_110_front]],
                   [[NoneSpecie, cl]] => [[[[NoneSpecie, ct]], param_110_front]],
@@ -70,10 +65,10 @@ module VersatileDiamond
 
             describe 'like methyl on bridge' do
               let(:face_grouped_anchors) { [[cb], [cm]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[NoneSpecie, cm]] => [[[[UniqueSpecie, b_ct]], param_amorph]],
-                  [[UniqueSpecie, b_ct]] => [[[[NoneSpecie, cm]], param_amorph]]
+                  [[NoneSpecie, cm]] => [[[[UniqueSpecie, cb]], param_amorph]],
+                  [[UniqueSpecie, cb]] => [[[[NoneSpecie, cm]], param_amorph]]
                 }
               end
 
@@ -92,15 +87,13 @@ module VersatileDiamond
               subject { dept_vinyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:face_grouped_anchors) { [[cb], [c1], [c2]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[UniqueSpecie, b_ct]] => [[[[NoneSpecie, c1]], param_amorph]],
+                  [[UniqueSpecie, cb]] => [[[[NoneSpecie, c1]], param_amorph]],
                   [[NoneSpecie, c2]] => [[[[NoneSpecie, c1]], param_amorph]],
                   [[NoneSpecie, c1]] => [
-                    [
-                      [[[UniqueSpecie, b_ct]], param_amorph],
-                      [[[NoneSpecie, c2]], param_amorph]
-                    ]
+                    [[[UniqueSpecie, cb]], param_amorph],
+                    [[[NoneSpecie, c2]], param_amorph]
                   ]
                 }
               end
@@ -110,13 +103,13 @@ module VersatileDiamond
               subject { dept_dimer_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:face_grouped_anchors) { [[cr, cl]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[UniqueSpecie, b_ct]] => [
-                    [[[UniqueSpecie, b_ct]], param_100_front]
+                  [[UniqueSpecie, cr]] => [
+                    [[[UniqueSpecie, cl]], param_100_front]
                   ],
-                  [[UniqueSpecie, b_ct]] => [
-                    [[[UniqueSpecie, b_ct]], param_100_front]
+                  [[UniqueSpecie, cl]] => [
+                    [[[UniqueSpecie, cr]], param_100_front]
                   ]
                 }
               end
@@ -126,12 +119,12 @@ module VersatileDiamond
               subject { dept_two_methyls_on_dimer_base }
               let(:base_specs) { [dept_dimer_base, subject] }
               let(:face_grouped_anchors) { [[cr, cl], [c1], [c2]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[NoneSpecie, c1]] => [[[[UniqueSpecie, d_cr]], param_amorph]],
-                  [[NoneSpecie, c2]] => [[[[UniqueSpecie, d_cl]], param_amorph]],
-                  [[UniqueSpecie, d_cr]] => [[[[NoneSpecie, c1]], param_amorph]],
-                  [[UniqueSpecie, d_cl]] => [[[[NoneSpecie, c2]], param_amorph]]
+                  [[NoneSpecie, c1]] => [[[[UniqueSpecie, cr]], param_amorph]],
+                  [[NoneSpecie, c2]] => [[[[UniqueSpecie, cl]], param_amorph]],
+                  [[UniqueSpecie, cr]] => [[[[NoneSpecie, c1]], param_amorph]],
+                  [[UniqueSpecie, cl]] => [[[[NoneSpecie, c2]], param_amorph]]
                 }
               end
             end
@@ -141,10 +134,10 @@ module VersatileDiamond
               let(:base_specs) { [dept_methyl_on_bridge_base] }
               let(:specific_specs) { [subject] }
               let(:face_grouped_anchors) { [[cb], [cm]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[UniqueSpecie, mob_cb]] => [],
-                  [[UniqueSpecie, mob_cm]] => []
+                  [[UniqueSpecie, cb]] => [],
+                  [[UniqueSpecie, cm]] => []
                 }
               end
             end
@@ -155,13 +148,13 @@ module VersatileDiamond
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
               let(:face_grouped_anchors) { [[cr, cl]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[UniqueSpecie, mob_cb]] => [
-                    [[[UniqueSpecie, b_ct]], param_100_front]
+                  [[UniqueSpecie, cr]] => [
+                    [[[UniqueSpecie, cl]], param_100_front]
                   ],
-                  [[UniqueSpecie, b_ct]] => [
-                    [[[UniqueSpecie, mob_cb]], param_100_front]
+                  [[UniqueSpecie, cl]] => [
+                    [[[UniqueSpecie, cr]], param_100_front]
                   ]
                 }
               end
@@ -171,10 +164,10 @@ module VersatileDiamond
               subject { dept_three_bridges_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:face_grouped_anchors) { [[ct], [cc]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[SpeciesScope, b_ct]] => [],
-                  [[SpeciesScope, b_cr]] => []
+                  [[SpeciesScope, ct]] => [],
+                  [[SpeciesScope, cc]] => []
                 }
               end
             end
@@ -184,9 +177,9 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [subject] }
               let(:face_grouped_anchors) { [[cr]] }
-              let(:graph) do
+              let(:grouped_graph) do
                 {
-                  [[UniqueSpecie, b_cr]] => []
+                  [[UniqueSpecie, cr]] => []
                 }
               end
             end
@@ -197,18 +190,18 @@ module VersatileDiamond
 
               it_behaves_like :check_graph do
                 let(:base_specs) { [dept_bridge_base, subject] }
-                let(:graph) do
+                let(:grouped_graph) do
                   {
-                    [[NoneSpecie, cbobs_cm]] => [
-                      [[[UniqueSpecie, b_ct], [UniqueSpecie, b_ct]], param_amorph]
+                    [[NoneSpecie, cm]] => [
+                      [[[UniqueSpecie, ctr], [UniqueSpecie, ctl]], param_amorph]
                     ],
-                    [[UniqueSpecie, b_ct]] => [
-                      [[[UniqueSpecie, b_ct]], param_100_cross],
-                      [[[NoneSpecie, cbobs_cm]], param_amorph]
+                    [[UniqueSpecie, ctr]] => [
+                      [[[UniqueSpecie, ctl]], param_100_cross],
+                      [[[NoneSpecie, cm]], param_amorph]
                     ],
-                    [[UniqueSpecie, b_ct]] => [
-                      [[[UniqueSpecie, b_ct]], param_100_cross],
-                      [[[NoneSpecie, cbobs_cm]], param_amorph]
+                    [[UniqueSpecie, ctl]] => [
+                      [[[UniqueSpecie, ctr]], param_100_cross],
+                      [[[NoneSpecie, cm]], param_amorph]
                     ]
                   }
                 end
@@ -218,14 +211,14 @@ module VersatileDiamond
                 let(:base_specs) do
                   [dept_bridge_base, dept_methyl_on_bridge_base, subject]
                 end
-                let(:graph) do
+                let(:grouped_graph) do
                   {
-                    [[SpeciesScope, mob_cm]] => [],
-                    [[UniqueSpecie, mob_cb]] => [
-                      [[[UniqueSpecie, mob_cb]], param_100_cross]
+                    [[SpeciesScope, cm]] => [],
+                    [[UniqueSpecie, ctr]] => [
+                      [[[UniqueSpecie, ctl]], param_100_cross]
                     ],
-                    [[UniqueSpecie, mob_cb]] => [
-                      [[[UniqueSpecie, mob_cb]], param_100_cross]
+                    [[UniqueSpecie, ctl]] => [
+                      [[[UniqueSpecie, ctr]], param_100_cross]
                     ]
                   }
                 end
@@ -238,22 +231,22 @@ module VersatileDiamond
 
               it_behaves_like :check_graph do
                 let(:base_specs) { [dept_dimer_base, subject] }
-                let(:graph) do
+                let(:grouped_graph) do
                   {
-                    [[NoneSpecie, cbods_cm]] => [
-                      [[[UniqueSpecie, d_cr], [UniqueSpecie, d_cr]], param_amorph]
+                    [[NoneSpecie, cm]] => [
+                      [[[UniqueSpecie, ctr], [UniqueSpecie, ctl]], param_amorph]
                     ],
-                    [[UniqueSpecie, d_cr]] => [
-                      [[[NoneSpecie, cbods_cm]], param_amorph]
+                    [[UniqueSpecie, ctr]] => [
+                      [[[NoneSpecie, cm]], param_amorph]
                     ],
-                    [[UniqueSpecie, d_cr]] => [
-                      [[[NoneSpecie, cbods_cm]], param_amorph]
+                    [[UniqueSpecie, ctl]] => [
+                      [[[NoneSpecie, cm]], param_amorph]
                     ],
-                    [[UniqueSpecie, d_cl], [UniqueSpecie, d_cr]] => [
-                      [[[UniqueSpecie, d_cl], [UniqueSpecie, d_cr]], param_100_cross]
+                    [[UniqueSpecie, csr], [UniqueSpecie, ctr]] => [
+                      [[[UniqueSpecie, csl], [UniqueSpecie, ctl]], param_100_cross]
                     ],
-                    [[UniqueSpecie, d_cl], [UniqueSpecie, d_cr]] => [
-                      [[[UniqueSpecie, d_cl], [UniqueSpecie, d_cr]], param_100_cross]
+                    [[UniqueSpecie, csl], [UniqueSpecie, ctl]] => [
+                      [[[UniqueSpecie, csr], [UniqueSpecie, ctr]], param_100_cross]
                     ]
                   }
                 end
@@ -263,14 +256,14 @@ module VersatileDiamond
                 let(:base_specs) do
                   [dept_dimer_base, dept_methyl_on_dimer_base, subject]
                 end
-                let(:graph) do
+                let(:grouped_graph) do
                   {
-                    [[SpeciesScope, mod_cm]] => [],
-                    [[UniqueSpecie, mod_cr], [UniqueSpecie, mod_cl]] => [
-                      [[[UniqueSpecie, mod_cr], [UniqueSpecie, mod_cl]], param_100_cross]
+                    [[SpeciesScope, cm]] => [],
+                    [[UniqueSpecie, csr], [UniqueSpecie, ctr]] => [
+                      [[[UniqueSpecie, csl], [UniqueSpecie, ctl]], param_100_cross]
                     ],
-                    [[UniqueSpecie, mod_cr], [UniqueSpecie, mod_cl]] => [
-                      [[[UniqueSpecie, mod_cr], [UniqueSpecie, mod_cl]], param_100_cross]
+                    [[UniqueSpecie, csl], [UniqueSpecie, ctl]] => [
+                      [[[UniqueSpecie, csr], [UniqueSpecie, ctr]], param_100_cross]
                     ]
                   }
                 end

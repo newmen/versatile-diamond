@@ -16,23 +16,20 @@ module VersatileDiamond
             @atom = atom
           end
 
-          def key
-            [@specie, @atom]
+          def uses_in_species
+            parents_with_twins.map(&:first)
           end
 
-          def uses_in_species
-            pwts = parents_with_twins
-            raise 'Twins are different' if pwts.map(&:last).uniq.size > 1
-
-            pwts.map(&:first)
+          def properties
+            Organizers::AtomProperties.new(spec, atom)
           end
 
           def noparent?
-            parents_with_twins.empty?
+            original_pwts.empty?
           end
 
           def monoparent?
-            parents_with_twins.size == 1
+            original_pwts.size == 1
           end
 
           def inspect
@@ -45,9 +42,15 @@ module VersatileDiamond
           def_delegator :@specie, :spec
 
           def parents_with_twins
-            spec.parents_with_twins_for(atom).map do |parent, twin|
-              [specie_class(parent), twin]
+            original_pwts.map do |parent, twin|
+              specie = specie_class(parent)
+              smart_twin = self.class.new(generator, specie, twin)
+              [specie, smart_twin]
             end
+          end
+
+          def original_pwts
+            spec.parents_with_twins_for(atom)
           end
         end
 
