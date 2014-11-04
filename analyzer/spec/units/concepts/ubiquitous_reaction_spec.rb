@@ -73,6 +73,14 @@ module VersatileDiamond
         it { expect(collected_source).to match_array([active_bond, hydrogen_ion]) }
       end
 
+      describe '#similar_source' do
+        subject { surface_activation }
+        it { expect(subject.similar_source(hydrogen_ion, nil)).to eq(hydrogen_ion) }
+        it { expect(subject.similar_source(hydrogen_ion.dup, nil)).to be_nil}
+        it { expect(subject.similar_source(hydrogen_ion, hydrogen_ion)).to be_nil }
+        it { expect(subject.similar_source(active_bond, nil)).to be_nil }
+      end
+
       describe '#swap_source' do
         let(:dup) { hydrogen_ion.dup }
         before(:each) { surface_deactivation.swap_source(hydrogen_ion, dup) }

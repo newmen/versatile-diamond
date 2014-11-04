@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Instance of it class contain source and product specs. Also contained
@@ -101,11 +103,21 @@ module VersatileDiamond
         @source.each(&block)
       end
 
+      # Checks that passed spec is used in current reaction
+      # @param [SpecificSpec] spec which will be checked
+      # @param [SpecificSpec] except_spec if found spec is same as this argument,
+      #   then this spec will be skipped
+      # @return [SpecificSpec] the found result or nil
+      def similar_source(spec, except_spec)
+        @source.find { |s| s != except_spec && s == spec }
+      end
+
       # Swaps source spec to another same source spec
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       def swap_source(from, to)
-        @source.delete(from)
+        result = @source.delete_one(from)
+        raise 'Source was not deleted' unless result
         @source << to
       end
 
