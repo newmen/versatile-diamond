@@ -80,7 +80,7 @@ module VersatileDiamond
         first = @concept.atom(atoms[0])
         second = @concept.atom(atoms[1])
         @concept.link(first, second, link_instance)
-      rescue Linker::SameAtom
+      rescue SurfaceLinker::SameAtom
         syntax_error('linker.same_atom')
       rescue Lattices::Base::UndefinedRelation => e
         syntax_error('.undefined_relation', relation: e.relation)
