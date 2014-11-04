@@ -48,7 +48,7 @@ module VersatileDiamond
         describe 'same atom' do
           subject { SurfaceSpec.new(:spec, cd1: cd1, cd2: cd1) }
           it { expect { subject.link(cd1, cd1, bond_100_front) }.
-            to raise_error Linker::SameAtom }
+            to raise_error SurfaceLinker::SameAtom }
         end
       end
 

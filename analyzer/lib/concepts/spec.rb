@@ -4,7 +4,6 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      include Linker
       include BondsCounter
       include RelationBetweenAtomsChecker
 
@@ -249,6 +248,29 @@ module VersatileDiamond
       # @return [Array] the array of atom instances
       def atom_instances
         @links.keys
+      end
+
+      # Check availability of passed position between atoms
+      # @param [Atom] first the first atom
+      # @param [Atom] second the second atom
+      # @param [Bond] position the relation from first atom to second atom
+      # @return [Boolean] has or not
+      def has_relation?(first, second, position)
+        !!links[first].find do |atom, link|
+          atom == second && link.it?(position.params)
+        end
+      end
+
+      # Links two atoms in both directions
+      # @param [Atom] first the first atom
+      # @param [Atom] second the second atom
+      # @param [Bond] link the relation from first to second
+      # @param [Bond] opposite_link the relation from second to first
+      # @raise [SurfaceLinker::SameAtom] if first is same atom as well as second
+      def link_with_other(first, second, link, opposite_link)
+        raise SurfaceLinker::SameAtom if first == second
+        @links[first] << [second, link]
+        @links[second] << [first, opposite_link]
       end
 
       # Adsorbs all links from another spec with exchange atoms to they
