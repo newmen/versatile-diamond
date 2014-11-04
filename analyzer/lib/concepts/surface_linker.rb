@@ -3,10 +3,6 @@ module VersatileDiamond
 
     # Provides methods for linking two surface atoms
     module SurfaceLinker
-
-      # Exception for case when linking same atom
-      class SameAtom < Errors::Base; end
-
     protected
 
       # Links together atoms of surface spec. Surface spec must have at least
@@ -37,8 +33,8 @@ module VersatileDiamond
       # @param [Array] positions the array with two positions
       # @return [Boolean] has or not
       def has_positions?(first, second, *positions)
-        a = has_relation?(first, second, positions.first)
-        b = has_relation?(second, first, positions.last)
+        a = has_position?(first, second, positions.first)
+        b = has_position?(second, first, positions.last)
 
         if a && b
           true
@@ -47,6 +43,15 @@ module VersatileDiamond
         else
           false
         end
+      end
+
+      # Check availability of passed position between atoms
+      # @param [Atom] first the first atom
+      # @param [Atom] second the second atom
+      # @param [Bond] position the relation from first atom to second atom
+      # @return [Boolean] has or not
+      def has_position?(first, second, position)
+        !!links[first].find { |atom, link| atom == second && link == position }
       end
     end
 
