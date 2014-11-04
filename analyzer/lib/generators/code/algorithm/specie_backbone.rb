@@ -12,6 +12,7 @@ module VersatileDiamond
           # @param [Specie] specie for which algorithm will builded
           def initialize(generator, specie)
             @specie = specie
+
             @grouped_nodes = SpecieGroupedNodes.new(generator, specie).final_graph
 
             @_final_graph, @_atom_to_nodes = nil
@@ -99,8 +100,9 @@ module VersatileDiamond
           #   with using a relation parameters between them
           # @param [Proc] complex_proc do for each single anchor which no have
           #   neighbour atoms
-          def reduce_directed_graph_from(init_value, atoms, relations_proc, complex_proc)
-            ordered_graph_from(atoms).reduce(init_value) do |ext_acc, (anchors, rels)|
+          # @return [Array] the reduced array of procs
+          def reduce_directed_graph_from(atoms, relations_proc, complex_proc)
+            ordered_graph_from(atoms).reduce([]) do |ext_acc, (anchors, rels)|
               if rels.empty?
                 complex_proc[ext_acc, anchors.first]
               else

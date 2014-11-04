@@ -10,6 +10,14 @@ module VersatileDiamond
             @species = species
           end
 
+          def none?
+            false
+          end
+
+          def scope?
+            true
+          end
+
           def inspect
             "scope:<#{@species.map(&:inspect).join(', ')}>"
           end

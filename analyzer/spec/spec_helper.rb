@@ -19,7 +19,7 @@ RSpec.configure do |config|
 
   config.include VD::Organizers::Support::Properties, use: :atom_properties
   config.include VD::Organizers::Support::Handbook,
-    type: :organizer, use: :engine_generator, type: :algorithm
+    type: :organizer, use: :engine_generator
 
   config.include VD::Organizers::Support::Handbook,
     use: :engine_generator, type: :code
@@ -28,6 +28,7 @@ RSpec.configure do |config|
 
   config.include VD::Generators::Code::Support::Handbook, type: :code
 
+  config.include VD::Organizers::Support::Handbook, type: :algorithm
   config.include VD::Generators::Code::Algorithm::Support::NodesConverter,
     type: :algorithm
 

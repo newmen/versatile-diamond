@@ -13,7 +13,7 @@ module VersatileDiamond
           end
 
           let(:specie) { generator.specie_class(subject.name) }
-          let(:algorithm) { described_class.new(generator, specie) }
+          let(:backbone) { described_class.new(generator, specie) }
 
           [
             :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
@@ -24,7 +24,7 @@ module VersatileDiamond
           describe '#final_graph' do
             shared_examples_for :check_finite_graph do
               it 'translate to atomic graph and check' do
-                atomic_graph = translate_to_atomic_graph(algorithm.final_graph)
+                atomic_graph = translate_to_atomic_graph(backbone.final_graph)
                 expect(atomic_graph).to match_graph(final_graph)
               end
             end
@@ -185,7 +185,7 @@ module VersatileDiamond
           describe '#ordered_graph_from' do
             shared_examples_for :check_ordered_graph do
               it 'translate to atomic graph and check' do
-                original_ordered_graph = algorithm.ordered_graph_from(anchors)
+                original_ordered_graph = backbone.ordered_graph_from(anchors)
                 atomic_graph = translate_to_atomic_graph(original_ordered_graph)
                 expect(atomic_graph.to_a).to eq(ordered_graph)
               end

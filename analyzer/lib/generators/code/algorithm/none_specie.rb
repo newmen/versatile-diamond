@@ -10,6 +10,14 @@ module VersatileDiamond
             @specie = specie
           end
 
+          def none?
+            true
+          end
+
+          def scope?
+            false
+          end
+
           def inspect
             "none:#{@specie.inspect}"
           end

@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe EntryPoints, use: :engine_generator do
+        describe EntryNodes, use: :engine_generator do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:generator) do
@@ -13,7 +13,8 @@ module VersatileDiamond
           end
 
           let(:specie) { generator.specie_class(subject.name) }
-          let(:entry_points) { EntryPoints.new(specie) }
+          let(:backbone) { SpecieBackbone.new(generator, specie) }
+          let(:entry_nodes) { described_class.new(backbone) }
 
           [
             :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
@@ -21,17 +22,20 @@ module VersatileDiamond
             let(keyname) { subject.spec.atom(keyname) }
           end
 
-          shared_examples_for :check_entry_points do
-            it { expect(entry_points.list).to eq(points_list) }
+          shared_examples_for :check_entry_nodes do
+            it 'atoms of nodes' do
+              atoms_lists = entry_nodes.list.map { |ns| ns.map(&:atom) }
+              expect(atoms_lists).to eq(points_list)
+            end
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
             let(:points_list) { [[ct]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_methyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:points_list) { [[cb]] }
@@ -40,37 +44,37 @@ module VersatileDiamond
           describe 'different dept_vinyl_on_bridge_base' do
             subject { dept_vinyl_on_bridge_base }
 
-            it_behaves_like :check_entry_points do
+            it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:points_list) { [[cb]] }
             end
 
-            it_behaves_like :check_entry_points do
+            it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_methyl_on_bridge_base, subject] }
               let(:points_list) { [[c1]] }
             end
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:points_list) { [[cr]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_two_methyls_on_dimer_base }
             let(:base_specs) { [dept_dimer_base, subject] }
             let(:points_list) { [[cr, cl]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_activated_methyl_on_incoherent_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
             let(:points_list) { [[cb, cm]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_methyl_on_dimer_base }
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
@@ -78,20 +82,20 @@ module VersatileDiamond
             let(:points_list) { [[cr], [cl]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:points_list) { [[cc]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_activated_methyl_on_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
             let(:points_list) { [[cm]] }
           end
 
-          it_behaves_like :check_entry_points do
+          it_behaves_like :check_entry_nodes do
             subject { dept_activated_dimer }
             let(:base_specs) { [dept_dimer_base] }
             let(:specific_specs) { [subject] }
@@ -101,12 +105,12 @@ module VersatileDiamond
           describe 'different dept_cross_bridge_on_bridges_base' do
             subject { dept_cross_bridge_on_bridges_base }
 
-            it_behaves_like :check_entry_points do
+            it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:points_list) { [[ctl]] }
             end
 
-            it_behaves_like :check_entry_points do
+            it_behaves_like :check_entry_nodes do
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
@@ -117,12 +121,12 @@ module VersatileDiamond
           describe 'different dept_cross_bridge_on_dimers_base' do
             subject { dept_cross_bridge_on_dimers_base }
 
-            it_behaves_like :check_entry_points do
+            it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_dimer_base, subject] }
-              let(:points_list) { [[ctr]] }
+              let(:points_list) { [[ctl]] }
             end
 
-            it_behaves_like :check_entry_points do
+            it_behaves_like :check_entry_nodes do
               let(:base_specs) do
                 [dept_dimer_base, dept_methyl_on_dimer_base, subject]
               end
