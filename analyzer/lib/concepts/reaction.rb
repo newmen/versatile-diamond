@@ -5,11 +5,12 @@ module VersatileDiamond
     class Reaction < UbiquitousReaction
       extend Forwardable
 
+      include Linker
       include SurfaceLinker
       include SpecAtomSwapper
 
       # type of reaction could be only for not ubiquitous reaction
-      attr_reader :type
+      attr_reader :type, :links
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
@@ -17,11 +18,7 @@ module VersatileDiamond
       def initialize(*super_args, mapping)
         super(*super_args)
         @mapping = mapping
-
-        # Contain positions between atoms of different reactants.
-        # The Hash doesn't use because specs unificates by analysis results, and
-        # therefore could be duplicates like as they atoms.
-        @positions = []
+        @links = {} # contain positions between atoms of different reactants
 
         @mapping.find_positions_for(self)
       end
@@ -38,17 +35,11 @@ module VersatileDiamond
       # @return [Array] the array of position relations
       # TODO: must be protected
       def positions
-        @positions.reduce([]) do |acc, (spec_atom, list)|
+        links.reduce([]) do |acc, (spec_atom, list)|
           acc + list.reduce([]) do |l, (other_spec_atom, position)|
             l << [spec_atom, other_spec_atom, position]
           end
         end
-      end
-
-      # Gets the list of position keys
-      # @return [Array] the array of keys which used for describe positions
-      def position_keys
-        @positions.map(&:first)
       end
 
       # Store position relation between first and second atoms
@@ -142,7 +133,7 @@ module VersatileDiamond
       # @param [Spec | SpecificSpec] spec the one of reactant
       # @return [Array] the array of using atoms
       def used_atoms_of(spec)
-        pos_atoms = position_keys.select { |s, _| s == spec }.map(&:last)
+        pos_atoms = @links.keys.select { |s, _| s == spec }.map(&:last)
         (pos_atoms + changed_atoms_of(spec)).uniq
       end
 
@@ -202,51 +193,14 @@ module VersatileDiamond
       # @override
       def link_together(first, second, position)
         raise Position::UnspecifiedAtoms unless all_latticed?(first.last, second.last)
+
+        @links[first] ||= []
+        @links[second] ||= []
+
         super
       end
 
     private
-
-      # Check availability of passed position between atoms
-      # @param [Array] first the first spec with atom
-      # @param [Array] second the second spec with atom
-      # @param [Bond] position the relation from first to second
-      # @return [Boolean] has or not
-      def has_relation?(first, second, position)
-        @positions.any? do |spec_atom, links|
-          spec_atom == first && links.any? do |sa, r|
-            sa == second && r.it?(position.params)
-          end
-        end
-      end
-
-      # Links two atoms in both directions
-      # @param [Array] first the first spec with atom
-      # @param [Array] second the second spec with atom
-      # @param [Bond] link the relation from first to second
-      # @param [Bond] opposite_link the relation from second to first
-      # @raise [SurfaceLinker::SameAtom] if first is same as well as second
-      def link_with_other(first, second, link, opposite_link)
-        raise SurfaceLinker::SameAtom if first == second
-        store_position(first, second, link)
-        store_position(second, first, opposite_link)
-      end
-
-      # Stores position between passed pairs
-      # @param [Array] first the first spec with atom
-      # @param [Array] second the second spec with atom
-      # @param [Bond] position the relation from first to second
-      def store_position(first, second, position)
-        pair = @positions.find { |spec_atom, _| spec_atom == first }
-        if pair
-          list = pair.last
-        else
-          list = []
-          @positions << [first, list]
-        end
-
-        list << [second, position]
-      end
 
       # Gets opposite relation between first and second atoms for passed
       # relation instance
@@ -339,7 +293,7 @@ module VersatileDiamond
           [dup_spec, dup_spec.atom(old_spec.keyname(old_atom))]
         end
 
-        links_dup = @positions.map do |spec_atom1, links|
+        links_dup = @links.map do |spec_atom1, links|
           ld = links.map do |spec_atom2, link|
             [dup_spec_atom[*spec_atom2], link]
           end
@@ -357,7 +311,7 @@ module VersatileDiamond
       # @yield [Array] the array where first item is spec and second item is
       #   atom of it spec
       def each_spec_atom(&block)
-        @positions.each do |spec_atom1, references|
+        @links.each do |spec_atom1, references|
           block[spec_atom1]
           references.each { |spec_atom2, _| block[spec_atom2] }
         end
