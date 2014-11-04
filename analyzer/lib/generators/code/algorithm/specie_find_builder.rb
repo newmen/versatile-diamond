@@ -16,7 +16,9 @@ module VersatileDiamond
           def initialize(generator, specie)
             super(generator)
             @specie = specie
-            @entry_points = EntryPoints.new(specie)
+
+            @backbone = SpecieBackbone.new(generator, specie)
+            @entry_points = EntryNodes.new(@backbone)
 
             parents_to_species = spec.parents.map do |parent|
               [parent, UniqueSpecie.new(specie_class(parent.original))]
