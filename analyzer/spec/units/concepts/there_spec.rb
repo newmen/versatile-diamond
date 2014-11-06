@@ -82,6 +82,19 @@ module VersatileDiamond
         let(:method) { :env_specs }
       end
 
+      describe '#similar_source' do
+        subject { on_end }
+        it { expect(subject.similar_source(dimer, nil)).to eq(dimer) }
+        it { expect(subject.similar_source(dimer.dup, nil)).to be_nil}
+        it { expect(subject.similar_source(dimer, dimer)).to be_nil }
+        it { expect(subject.similar_source(bridge_base, nil)).to be_nil }
+
+        let(:ab) { activated_bridge }
+        it { expect(subject.similar_source(ab, nil)).to eq(ab) }
+        it { expect(subject.similar_source(ab.dup, nil)).to be_nil}
+        it { expect(subject.similar_source(ab, ab)).to be_nil }
+      end
+
       describe '#swap_source' do
         before { on_end.swap_source(dimer, dimer_dup_ff) }
         it { expect(on_end.positions).to match_graph({
