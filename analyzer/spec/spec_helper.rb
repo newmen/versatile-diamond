@@ -26,7 +26,7 @@ RSpec.configure do |config|
   config.include VD::Generators::Support::EngineGenerator,
     use: :engine_generator, type: :code, type: :algorithm
 
-  config.include VD::Generators::Code::Support::Handbook, type: :code
+  config.include VD::Generators::Code::Support::Handbook, type: :code, type: :algorithm
 
   config.include VD::Organizers::Support::Handbook, type: :algorithm
   config.include VD::Generators::Code::Algorithm::Support::NodesConverter,
