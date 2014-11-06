@@ -182,8 +182,12 @@ module VersatileDiamond
       # @param [Spec | SpecificSpec] other the comparable spec
       # @return [Boolean] same or not
       def same?(other)
-        return false unless links.size == other.links.size
-        Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
+        if other.is_a?(VeiledSpec)
+          other.same?(self)
+        else
+          links.size == other.links.size &&
+            Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
+        end
       end
 
       def to_s(instance_atoms = @atoms, instance_links = @links)
