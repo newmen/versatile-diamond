@@ -68,14 +68,21 @@ module VersatileDiamond
           attr_reader :generator
           def_delegator :@specie, :spec
 
+          # Makes the spec-atom nodes graph from links of target specie
+          # @return [Hash] the most comprehensive graph of nodes
           def original_links_graph
             @_original_links_graph ||= transform_links(spec.clean_links)
           end
 
+          # Makes the spec-atom nodes graph from cut links of target specie
+          # @return [Hash] the cutten graph of nodes
           def cut_links_graph
             @_cut_links_graph ||= transform_links(@specie.essence.cut_links)
           end
 
+          # Makes the graph of nodes from graph of atoms
+          # @param [Hash] links the graph of links between atoms
+          # @return [Hash] the graph of nodes
           def transform_links(links)
             links.each_with_object({}) do |(atom, rels), result|
               result[get_node(atom)] = rels.map do |a, relation|
@@ -84,6 +91,11 @@ module VersatileDiamond
             end
           end
 
+          # Detects correct algorithm specie by passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which the algorithm specie will be got
+          # @return [NoneSpecie | UniqueSpecie | SpeciesScope] the correspond algorithm
+          #   specie
           def parent_specie(atom)
             parents = spec.parents_of(atom)
             if parents.empty?
@@ -95,10 +107,16 @@ module VersatileDiamond
             end
           end
 
+          # Makes node for passed atom
+          # @return [Node] new node which contain the correspond algorithm specie and
+          #   passed atom
           def get_node(atom)
             @atoms_to_nodes[atom] ||= Node.new(@specie, parent_specie(atom), atom)
           end
 
+          # Makes unique specie instance from passed specie code generator
+          # @param [Specie] parent by which the unique algorithm specie will be maked
+          # @return [UniqueSpecie] the wrapped passed specie code generator
           def get_unique_specie(parent)
             @parents_to_uniques[parent] ||= UniqueSpecie.new(specie_class(parent))
           end
@@ -109,6 +127,10 @@ module VersatileDiamond
             cut_links_graph.keys
           end
 
+          # Detects relation between passed nodes
+          # @param [Array] nodes the array with two nodes between which the relation
+          #   will be detected
+          # @return [Concepts::Bond] the relation between atoms from passed nodes
           def relation_between(*nodes)
             atoms = nodes.map(&:atom)
             spec.relation_between(*atoms)
