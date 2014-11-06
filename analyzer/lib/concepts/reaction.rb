@@ -108,6 +108,8 @@ module VersatileDiamond
       def swap_source(from, to)
         super
         each_spec_atom { |spec_atom| swap(spec_atom, from, to) }
+        @links.rehash
+
         @mapping.swap_source(from, to)
       end
 
