@@ -30,6 +30,19 @@ module VersatileDiamond
 
       private
 
+        # Gets the list of more complex reactions
+        # @return [Array] the list of children reactions
+        # @override
+        def children
+          super.sort do |a, b|
+            aa, ba = [a, b].map(&:atom_of_complex).map do |atom|
+              Organizers::AtomProperties.new(atom)
+            end
+
+            aa <=> ba
+          end
+        end
+
         # Gets the type of reaction
         # @return [String] the type of reaction
         def reaction_type
