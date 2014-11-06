@@ -158,14 +158,14 @@ module VersatileDiamond
         # Gets list of typical reactions for current specie
         # @return [Array] the list of typical reactions
         def typical_reactions
-          spec.reactions.map(&method(:reaction_class)) -
-            local_reactions - lateral_reactions
+          all_reactions = spec.reactions.map(&method(:reaction_class))
+          (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
-          spec.reactions.select(&:lateral?).map(&method(:reaction_class))
+          spec.reactions.select(&:lateral?).map(&method(:reaction_class)).uniq
         end
 
         # Checks that ubiquitous reactions prestented and specie have local reactions

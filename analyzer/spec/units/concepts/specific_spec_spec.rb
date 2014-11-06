@@ -256,6 +256,8 @@ module VersatileDiamond
         it { expect(activated_bridge.same?(extra_activated_bridge)).to be_falsey }
         it { expect(extra_activated_bridge.same?(activated_incoherent_bridge)).
           to be_falsey }
+
+        it { expect(activated_bridge.same?(bridge_base)).to be_falsey }
       end
 
       describe '#has_termination?' do

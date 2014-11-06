@@ -135,7 +135,7 @@ module VersatileDiamond
             else
               dbs = depts_cache[:base_specs].find { |bs| bs.name == spec.spec.name }
               dbs ||= DependentBaseSpec.new(spec.spec)
-              dcont.swap_source(spec, dbs.spec)
+              swap_source_carefully(dcont, spec, dbs.spec)
               unless all_specs.include?(dbs.name)
                 depts_cache[:base_specs] << dbs
                 all_specs[dbs.name] = dbs

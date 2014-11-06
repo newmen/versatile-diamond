@@ -39,6 +39,20 @@ module VersatileDiamond
         where.all_specs
       end
 
+      # Checks that passed spec is used in current there object
+      # @param [SpecificSpec] spec which will be checked
+      # @param [SpecificSpec] except_spec if found spec is same as this argument,
+      #   then this spec will be skipped
+      # @return [SpecificSpec] the found result or nil
+      def similar_source(spec, except_spec)
+        result = nil
+        check_lambda = -> s { result = s if s != except_spec && s == spec }
+        positions.each do |(s, _), rels|
+          break if check_lambda[s] || rels.find { |(o, _), _| check_lambda[o] }
+        end
+        result
+      end
+
       # Swaps environment source spec from some to some
       # @param [SpecificSpec] from the spec from which need to swap
       # @param [SpecificSpec] to the spec to which need to swap

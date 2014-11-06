@@ -201,6 +201,8 @@ events
   reaction 'hydrogen abstraction from gap'
     aliases one: bridge, two: bridge
     equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
+      position one(:cr), two(:cr), face: 100, dir: :front
+
     activation 35
     forward_rate 3e6
 
@@ -210,7 +212,7 @@ events
     activation 30
     forward_rate 2.4e8
 
-  reaction 'serpinsky drop'
+  reaction 'sierpinski drop'
     equation cross_bridge_on_bridges = methyl_on_bridge(cm: *, cm: u) + bridge(ct: *)
     activation 30
     forward_rate 4.4e9
