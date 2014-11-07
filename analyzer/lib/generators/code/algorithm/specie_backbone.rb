@@ -15,7 +15,7 @@ module VersatileDiamond
 
             @grouped_nodes = SpecieGroupedNodes.new(generator, specie).final_graph
 
-            @_final_graph, @_atom_to_nodes = nil
+            @_final_graph, @_node_to_nodes = nil
           end
 
           # Makes algorithm graph by which code of algorithm will be generated
@@ -23,10 +23,14 @@ module VersatileDiamond
           #   excepted
           # TODO: must be private
           def final_graph
-            @_final_graph ||=
+            return @_final_graph if @_final_graph
+
+            result =
               sequence.short.reduce(@grouped_nodes) do |acc, atom|
                 limits = atom.relations_limits
-                nodes = atom_to_nodes[atom]
+                nodes = @grouped_nodes.keys.sort_by(&:size).find do |ns|
+                  ns.any? { |n| n.atom == atom }
+                end
 
                 next acc unless acc[nodes]
 
@@ -46,10 +50,12 @@ module VersatileDiamond
                   could_be_cleared ? without_reverse(g, nodes) : g
                 end
               end
+
+            @_final_graph = collaps_similar_key_nodes(result)
           end
 
           # Makes directed graph for walking find algorithm builder
-          # @param [Array] atoms from wich reverse relations of final graph will
+          # @param [Array] nodes from wich reverse relations of final graph will
           #   be rejected
           # @param [Hash] directed graph without loops
           # @option [Hash] :init_graph the graph which uses as initial value for
@@ -58,74 +64,92 @@ module VersatileDiamond
           #   graph
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
-          # TODO: must be private
-          def ordered_graph_from(atoms, init_graph: nil, visited_nodes: Set.new)
+          def ordered_graph_from(nodes, init_graph: nil, visited_nodes: Set.new)
             result = []
             directed_graph = init_graph || final_graph
-            atoms_queue = atoms.dup
+            nodes_queue = nodes.dup
 
-            until atoms_queue.empty?
-              atom = atoms_queue.shift
-              nodes = atom_to_nodes[atom]
-              next if visited_nodes.include?(nodes)
+            until nodes_queue.empty?
+              node = nodes_queue.shift
+              next if visited_nodes.include?(node)
 
-              visited_nodes << nodes
-              rels = directed_graph[nodes]
+              new_nodes = node_to_nodes[node]
+              visited_nodes += new_nodes
+              rels = directed_graph[new_nodes]
               next unless rels
 
-              result << [nodes, sort_rels_by_limits_of(nodes, rels)]
+              result << [new_nodes, sort_rels_by_limits_of(new_nodes, rels)]
               next if rels.empty?
 
-              directed_graph = without_reverse(directed_graph, nodes)
-              atoms_queue += rels.flat_map(&:first).map(&:atom)
+              directed_graph = without_reverse(directed_graph, new_nodes)
+              nodes_queue += rels.flat_map(&:first)
             end
 
-            connected_nodes_from(directed_graph).each do |nodes|
-              next if visited_nodes.include?(nodes)
+            connected_nodes_from(directed_graph).each do |ns|
+              next if includes?(:all?, visited_nodes, ns)
               params = { init_graph: directed_graph, visited_nodes: visited_nodes }
-              result += ordered_graph_from(nodes.map(&:atom), params)
+              result += ordered_graph_from(ns, params)
             end
 
-            unconnected_nodes_from(directed_graph).each do |nodes|
-              result << [nodes, []] unless visited_nodes.include?(nodes)
+            unconnected_nodes_from(directed_graph).each do |ns|
+              unless includes?(:any?, result.flat_map(&:first), ns)
+                result << [ns, []]
+              end
             end
 
             result
-          end
-
-          # Reduces directed graph maked from passed atoms
-          # @param [Object] init_value for reduce operation
-          # @param [Array] atoms see at #ordered_graph_from same argument
-          # @param [Proc] relations_proc do for each anchors and their neighbour atoms
-          #   with using a relation parameters between them
-          # @param [Proc] complex_proc do for each single anchor which no have
-          #   neighbour atoms
-          # @return [Array] the reduced array of procs
-          def reduce_directed_graph_from(atoms, relations_proc, complex_proc)
-            ordered_graph_from(atoms).reduce([]) do |ext_acc, (anchors, rels)|
-              if rels.empty?
-                complex_proc[ext_acc, anchors.first]
-              else
-                rels.reduce(ext_acc) do |int_acc, (nbrs, relation_params)|
-                  relations_proc[int_acc, anchors, nbrs, relation_params]
-                end
-              end
-            end
           end
 
         private
 
           def_delegators :@specie, :spec, :sequence
 
+          # Checks that nodes contains in set
+          # @param [Symbol] method_name by which the cheking will do
+          # @param [Array | Set] set the checkable set
+          # @param [Array] nodes which checks that they are includes in set or not
+          # @return [Boolean] are nodes includes in set or not
+          def includes?(method_name, set, nodes)
+            nodes.public_send(method_name) { |n| set.include?(n) }
+          end
+
+          # Groups key nodes of passed graph if them haven't relations and contains
+          # similar unique species
+          #
+          # @param [Hash] graph which will be collapsed
+          # @return [Hash] the collapsed graph
+          def collaps_similar_key_nodes(graph)
+            result = {}
+            shrink_graph = graph.dup
+            until shrink_graph.empty?
+              nodes, rels = shrink_graph.shift
+
+              uniq_specie_nodes = nodes.uniq(&:uniq_specie)
+              if uniq_specie_nodes.size == 1 && rels.empty?
+                uniq_specie = uniq_specie_nodes.first.uniq_specie
+                similar_nodes = nodes
+                shrink_graph.keys.each do |ns|
+                  next unless ns.all? { |n| n.uniq_specie == uniq_specie }
+                  shrink_graph.delete(ns) # because shrink_graph is Hash
+                  similar_nodes += ns
+                end
+                result[similar_nodes] = []
+              else
+                result[nodes] = rels
+              end
+            end
+            result
+          end
+
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes
-          def atom_to_nodes
-            return @_atom_to_nodes if @_atom_to_nodes
+          def node_to_nodes
+            return @_node_to_nodes if @_node_to_nodes
 
             sorted_keys = @grouped_nodes.keys.sort_by(&:size)
-            @_atom_to_nodes =
+            @_node_to_nodes =
               sorted_keys.each_with_object({}) do |nodes, result|
-                nodes.each { |node| result[node.atom] ||= nodes }
+                nodes.each { |node| result[node] ||= nodes }
               end
           end
 
@@ -163,7 +187,7 @@ module VersatileDiamond
           end
 
           # Removes relations from passed graph by two conditions
-          # @param [Proc] reject_proc the function which reject neighbours atoms
+          # @param [Proc] reject_proc the function which reject neighbours nodes
           # @yield [Array] by it condition checks that erasing should to be
           # @return [Hash] the graph without erased relations
           def except_relations(graph, reject_proc, &condition_proc)
@@ -188,7 +212,7 @@ module VersatileDiamond
           def sort_rels_by_limits_of(nodes, rels)
             rels.sort_by do |nbrs, rel_params|
               rel_ratio = nbrs.size / nodes.size
-              max_limit = nodes.map { |n| n.atom.relations_limits[rel_params] }.max
+              max_limit = nodes.map { |n| n.relations_limits[rel_params] }.max
               max_limit == rel_ratio ? max_limit : 1000 + max_limit - rel_ratio
             end
           end
@@ -204,11 +228,7 @@ module VersatileDiamond
           # @param [Hash] graph in which unconnected nodes will be found
           # @return [Array] the list of unconnected nodes
           def unconnected_nodes_from(graph)
-            nodes = graph.select { |_, rels| rels.empty? }.map(&:first)
-            nodes.each do |ns|
-              raise 'Invalid unconnected key' unless ns.size == 1
-            end
-            nodes
+            graph.select { |_, rels| rels.empty? }.map(&:first)
           end
         end
 

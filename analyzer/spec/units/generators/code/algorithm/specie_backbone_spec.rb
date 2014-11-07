@@ -87,8 +87,7 @@ module VersatileDiamond
               let(:specific_specs) { [subject] }
               let(:final_graph) do
                 {
-                  [cb] => [],
-                  [cm] => []
+                  [cb, cm] => [],
                 }
               end
             end
@@ -185,7 +184,14 @@ module VersatileDiamond
           describe '#ordered_graph_from' do
             shared_examples_for :check_ordered_graph do
               it 'translate to atomic graph and check' do
-                original_ordered_graph = backbone.ordered_graph_from(anchors)
+                nodes = anchors.each_with_object({}) do |a, acc|
+                  backbone.final_graph.keys.each do |ns|
+                    ns.each { |n| acc[a] ||= n if n.atom == a }
+                    break if acc[a]
+                  end
+                end
+
+                original_ordered_graph = backbone.ordered_graph_from(nodes.values)
                 atomic_graph = translate_to_atomic_graph(original_ordered_graph)
                 expect(atomic_graph.to_a).to eq(ordered_graph)
               end
@@ -244,8 +250,7 @@ module VersatileDiamond
               let(:anchors) { [cb, cm] }
               let(:ordered_graph) do
                 [
-                  [[cb], []],
-                  [[cm], []]
+                  [[cb, cm], []],
                 ]
               end
             end

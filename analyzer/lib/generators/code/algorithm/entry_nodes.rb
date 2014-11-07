@@ -19,7 +19,7 @@ module VersatileDiamond
             if nodes.all?(&:none?) || nodes.uniq(&:uniq_specie).size == 1
               [nodes]
             elsif nodes.any?(&:scope?)
-              [[nodes.find(&:scope?)]]
+              [[nodes.find(&:scope?)]] # finds first because nodes are sorted ^^
             else
               select_most_important(nodes)
             end
@@ -37,9 +37,7 @@ module VersatileDiamond
               border_nodes.empty? ? group.uniq(&:properties) : border_nodes
             end
 
-            target_groups.uniq do |ns|
-              ns.map { |node| [node.original_specie, node.properties] }.to_set
-            end
+            target_groups.uniq { |ns| ns.map(&:properties).to_set }
           end
 
           # Selects nodes which have placed at border of analyzing specie
