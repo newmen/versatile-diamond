@@ -1,5 +1,3 @@
-require 'benchmark'
-
 module VersatileDiamond
   module Organizers
 
@@ -7,6 +5,7 @@ module VersatileDiamond
     module Minuend
       include Modules::ListsComparer
       include Modules::OrderProvider
+      include LinksCleaner
 
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance
@@ -79,10 +78,7 @@ module VersatileDiamond
       # Removes excess positions from current links graph
       # @return [Hash] the links of concept specie without excess positions
       def clean_links
-        @_clean_links ||=
-          cleanable_links.each_with_object({}) do |(atom, rels), result|
-            result[atom] = rels.reject { |a, r| excess_position?(r, atom, a) }
-          end
+        @_clean_links ||= erase_excess_positions(cleanable_links)
       end
 
     protected
@@ -186,32 +182,6 @@ module VersatileDiamond
             neighbour == atom && !excess_position?(r, atom, a)
           end
         end
-      end
-
-      # Checks that passed relation is position and that it is excess
-      # @param [Concepts::Bond | Concepts::NoBond] relation which will checked
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   first checking atom
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   second checking atom
-      def excess_position?(relation, first, second)
-        relation.relation? && !relation.bond? &&
-          excess_position_between?(first, second)
-      end
-
-      # Checks that current specie have excess position between passed atoms
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   first checking atom
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   second checking atom
-      # @return [Boolean] has excess poosition or not
-      def excess_position_between?(first, second)
-        unless first.lattice == second.lattice
-          raise 'Wrong position between atoms that belongs to different lattices'
-        end
-
-        crystal = first.lattice.instance
-        !!crystal.position_between(first, second, original_links)
       end
     end
 
