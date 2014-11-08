@@ -296,7 +296,8 @@ module VersatileDiamond
             raise 'Incorrect atoms of reactants'
           end
 
-          reaction.position_between(*deep_small_pairs, position)
+          # TODO: check for not diamond lattice the fact that position changes to cross
+          reaction.position_between(*deep_small_pairs, position.cross)
         end
       end
 
