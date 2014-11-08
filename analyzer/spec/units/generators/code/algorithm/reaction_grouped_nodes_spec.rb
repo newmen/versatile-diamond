@@ -66,24 +66,24 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_methyl_incorporation }
-            let(:a11) { activated_methyl_on_bridge.atom(:cr) }
-            let(:a12) { activated_methyl_on_bridge.atom(:cl) }
-            let(:a21) { activated_dimer.atom(:cr) }
-            let(:a22) { activated_dimer.atom(:cl) }
+            let(:am1) { activated_methyl_on_bridge.atom(:cr) }
+            let(:am2) { activated_methyl_on_bridge.atom(:cl) }
+            let(:ad1) { activated_dimer.atom(:cr) }
+            let(:ad2) { activated_dimer.atom(:cl) }
 
-            let(:flatten_face_grouped_atoms) { [[a11, a12], [a21, a22]] }
+            let(:flatten_face_grouped_atoms) { [[am1, am2], [ad1, ad2]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a11],
-                [UniqueSpecie, a12],
-                [UniqueSpecie, a21],
-                [UniqueSpecie, a22]
+                [UniqueSpecie, am1],
+                [UniqueSpecie, am2],
+                [UniqueSpecie, ad1],
+                [UniqueSpecie, ad2]
               ]
             end
             let(:grouped_graph) do
               {
-                [a11, a12] => [[[a21, a22], param_100_cross]],
-                [a21, a22] => [[[a11, a12], param_100_cross]]
+                [am1, am2] => [[[ad2, ad1], param_100_cross]],
+                [ad2, ad1] => [[[am1, am2], param_100_cross]]
               }
             end
           end

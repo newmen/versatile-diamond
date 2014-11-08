@@ -201,6 +201,54 @@ module VersatileDiamond
             [flatten_groups, non_flatten_groups]
           end
 
+          # Gets all subsets of passed set
+          # @param [Array] set for which all subsets will be gotten
+          # @return [Array] the array with all subsets of passed set grouped by
+          #   number of elements in subset
+          def all_subsets_of(set)
+            2.upto(set.size).map { |n| set.combination(n).to_a }
+          end
+
+          # Recursive regroups flatten sequence if item is array
+          # @param [Array] sequence which will be regrouped if need
+          # @param [Object] item by which dimension the original sequence will be
+          #   regrouped
+          # @return [Array] the sequence of grouped elements
+          def regroup(sequence, item)
+            if item.is_a?(Array)
+              regroup(sequence, item.first).each_slice(item.size)
+            else
+              sequence
+            end
+          end
+
+          # Products passed lists and combinates them items
+          # @param [Array] lists which will be sliced and combinated; all lists should
+          #   have same dimensions
+          # @return [Array] the list of all possible combinations of items of passed
+          #   lists
+          # @example
+          #   [[1, 2, 3], [:a, :b]] =>
+          #     [[1, :a], [1, :b], [2, :a], [2, :b], [3, :a], [3, :b]]
+          def slices_combination(lists)
+            head, *tail = lists
+            products = tail.reduce(head) { |acc, list| acc.product(list) }
+            sequence = products.flatten
+            sequence = regroup(sequence, head.first)
+            sequence.each_slice(lists.size)
+          end
+
+          # Checks that each consecutive pair of passed list correspond to passed
+          # predicate
+          #
+          # @param [Array] list which will be checked
+          # @yield [Object, Object] the predicate function
+          # @return [Boolean] are all consecutive pairs correpond to predicate or not
+          def all_cons_pairs?(list, &block)
+            # splits internal arrays to two undependent elements
+            list.each_cons(2).all? { |a, b| block[a, b] }
+          end
+
           # Accumulates node with their most optimal neighbours
           # @param [Array] nodes which environment in flatten crystal face will be
           #   checked
@@ -209,28 +257,38 @@ module VersatileDiamond
           #   second item of array
           def accurate_node_groups_from(nodes)
             small_rels = nodes.map { |node| small_links_graph[node] }
-            neighbours = small_rels.map { |rels| rels.map(&:first) }
 
-            accurate_groups_hash = {}
-            nodes.zip(neighbours).each do |node, nbrs|
-              (neighbours - [nbrs]).each do |other_nbrs|
-                other_nbrs.each do |other_nbr|
-                  nbrs.each do |nbr|
-                    # if relation presented then it in any time is flatten, because
-                    # value which passed to current method is gotten from flatten
-                    # nodes group
-                    next unless has_relation?(nbr, other_nbr)
-                    key = Set[nbr, other_nbr]
-                    accurate_groups_hash[key] ||= []
-                    accurate_groups_hash[key] << [node, nbr]
+            accurate_groups = []
+            all_subsets_of(nodes.zip(small_rels)).each do |subsets|
+              found_on_subset = false
+              subsets.each do |subset|
+                current_nodes, srels = subset.transpose
+
+                nbrs_with_rels_groups =
+                  slices_combination(srels).select do |comb_rels|
+                    nbrs, relations = comb_rels.transpose
+                    all_cons_pairs?(relations) { |a, b| a.it?(b.params) } &&
+                      all_cons_pairs?(nbrs, &method(:has_relation?))
                   end
+
+                next if nbrs_with_rels_groups.empty?
+                found_on_subset = true
+
+                nbrs_with_rels_groups.each do |group|
+                  neighbours = group.map(&:first)
+                  accurate_groups << [current_nodes, neighbours]
                 end
               end
+              break if found_on_subset
             end
 
-            accurate_groups_hash.values.map(&:transpose)
+            accurate_groups
           end
 
+          # Iterates accurate groups of nodes which avail by passed group
+          # @return [Array] group the list of nodes which accurate neighbours will be
+          #   iterated
+          # @yeild [Array, (Array, Hash)] do for nodes and them neighbours
           def combine_accurate_relations(group, &block)
             accurate_node_groups_from(group).each do |nodes, nbrs|
               relation = relation_between(nodes.first, nbrs.first)
