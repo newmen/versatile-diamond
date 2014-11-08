@@ -118,7 +118,8 @@ module VersatileDiamond
           # @param [Specie] parent by which the unique algorithm specie will be maked
           # @return [UniqueSpecie] the wrapped passed specie code generator
           def get_unique_specie(parent)
-            @parents_to_uniques[parent] ||= UniqueSpecie.new(specie_class(parent))
+            @parents_to_uniques[parent] ||=
+              UniqueSpecie.new(specie_class(parent), parent)
           end
 
           # Gets atoms that used in cut links graph
@@ -177,9 +178,8 @@ module VersatileDiamond
           # Checks that passed relation is flatten in crystal lattice when placed atom
           # @return [Boolean] is flatten relation or not
           def flatten_relation?(node, relation)
-            lattice = node.atom.lattice
-            if lattice
-              relation.relation? && lattice.instance.flatten?(relation)
+            if node.lattice
+              relation.relation? && node.lattice.instance.flatten?(relation)
             else
               false
             end

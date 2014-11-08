@@ -8,7 +8,8 @@ module VersatileDiamond
           include Modules::OrderProvider
           extend Forwardable
 
-          attr_reader :original_specie, :uniq_specie, :atom
+          attr_reader :uniq_specie, :atom
+          def_delegators :atom, :lattice, :relations_limits
           def_delegators :uniq_specie, :none?, :scope?
 
           # Initializes the node object
@@ -32,9 +33,7 @@ module VersatileDiamond
           def <=> (other)
             typed_order(uniq_specie, other.uniq_specie, :none?) do
               typed_order(other.uniq_specie, uniq_specie, :scope?) do
-                order(other, self, :properties) do
-                  other.original_specie.spec <=> original_specie.spec
-                end
+                order(other, self, :properties)
               end
             end
           end

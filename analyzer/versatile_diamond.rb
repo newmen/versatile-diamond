@@ -21,6 +21,7 @@ AUTO_LOADING_DIRS = Dir["#{__dir__}/lib/**/"].map do |dir|
 end.compact +
   %w(
     generators/code
+    generators/code/algorithm
   )
 
 def VersatileDiamond.const_missing(class_name, dir = nil)

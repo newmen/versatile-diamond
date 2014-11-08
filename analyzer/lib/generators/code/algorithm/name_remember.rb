@@ -42,8 +42,8 @@ module VersatileDiamond
           end
 
           # Gets a name of variable
-          # @param [Array | Object] vars the variables or single variable for which name
-          #   will be gotten
+          # @param [Array | Object] vars the variables or single variable for which
+          #   name will be gotten
           # @return [String] the name of passed variable or nil
           def name_of(vars)
             if single?(vars)
