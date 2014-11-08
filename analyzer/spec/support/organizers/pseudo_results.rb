@@ -79,8 +79,7 @@ module VersatileDiamond
         def fix_reactants(depts_cache, all_specs)
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
-              r = dr.reaction
-              r.source.each do |s|
+              dr.reaction.each_source do |s|
                 unless all_specs.include?(s.name)
                   if s.is_a?(Concepts::TerminationSpec)
                     dt = DependentTermination.new(s)

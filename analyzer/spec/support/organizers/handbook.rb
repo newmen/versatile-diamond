@@ -89,6 +89,9 @@ module VersatileDiamond
           :sierpinski_drop,
           :hydrogen_migration
         ])
+        set(:dept_sierpinski_formation) do
+          Organizers::DependentTypicalReaction.new(sierpinski_drop.reverse)
+        end
 
         define_dependents(DependentLateralReaction, [
           :end_lateral_df,
