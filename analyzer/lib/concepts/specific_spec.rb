@@ -219,7 +219,7 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] the same or not
       def same?(other)
-        self.class == other.class && correspond?(other)
+        self.class == other.class ? correspond?(other) : other.same?(self)
       end
 
       # Checks termination atom at the inner atom which belongs to current spec

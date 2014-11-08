@@ -6,9 +6,12 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
-        include SpecieInside
+        include SpeciesUser
         include ReactionsUser
         extend Forwardable
+
+        ANCHOR_ATOM_NAME = 'anchor'
+        ANCHOR_SPECIE_NAME = 'parent'
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
         attr_reader :spec, :original, :sequence, :essence
@@ -31,7 +34,7 @@ module VersatileDiamond
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
-            @essence = SpecieEssence.new(self)
+            @essence = Essence.new(self)
           end
 
           @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
@@ -113,6 +116,30 @@ module VersatileDiamond
           children.reject(&:find_root?)
         end
 
+        # Gets number of sceleton atoms used in specie and different from atoms of
+        # parent specie
+        #
+        # @return [Integer] the number of anchor atoms
+        def atoms_num
+          spec.anchors.size
+        end
+
+        # Delegates indexation of atom to atom sequence instance
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be indexed
+        # @return [Integer] an index of atom
+        def index(atom)
+          sequence.atom_index(atom)
+        end
+
+        # Delegates classification to atom classifier from engine code generator
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be classificated
+        # @return [Integer] an index of classificated atom
+        def role(atom)
+          generator.classifier.index(spec, atom)
+        end
+
         # The printable name which will be shown when debug calculation output
         # @return [String] the name of specie which used by user in DSL config file
         def print_name
@@ -120,6 +147,8 @@ module VersatileDiamond
         end
 
       private
+
+        def_delegator :sequence, :delta
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
@@ -158,14 +187,14 @@ module VersatileDiamond
         # Gets list of typical reactions for current specie
         # @return [Array] the list of typical reactions
         def typical_reactions
-          spec.reactions.map(&method(:reaction_class)) -
-            local_reactions - lateral_reactions
+          all_reactions = spec.reactions.map(&method(:reaction_class))
+          (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
-          spec.reactions.select(&:lateral?).map(&method(:reaction_class))
+          spec.reactions.select(&:lateral?).map(&method(:reaction_class)).uniq
         end
 
         # Checks that ubiquitous reactions prestented and specie have local reactions
@@ -283,7 +312,11 @@ module VersatileDiamond
         # Makes arguments string for static find method
         # @return [String] the arguments string of find method
         def find_arguments_str
-          find_root? ? 'Atom *anchor' : "#{parents.first.class_name} *parent"
+          if find_root?
+            "Atom *#{ANCHOR_ATOM_NAME}"
+          else
+            "#{parents.first.class_name} *#{ANCHOR_SPECIE_NAME}"
+          end
         end
 
         # Makes string with constructor signature variables
@@ -374,7 +407,7 @@ module VersatileDiamond
         # Gets a cpp code by which specie will be found when simulation doing
         # @return [String] the multilined string with cpp code
         def find_algorithm
-          SpecieFindAlgorithmBuilder.new(generator, self).build
+          SpecieFindBuilder.new(generator, self).build
         end
       end
 
