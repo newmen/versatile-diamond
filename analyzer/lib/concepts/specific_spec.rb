@@ -4,8 +4,8 @@ module VersatileDiamond
     # Instance of it class represents usual specific spec that is most commonly
     # used in reactions
     class SpecificSpec
+      include Modules::RelationBetweenChecker
       include BondsCounter
-      include RelationBetweenAtomsChecker
       extend Forwardable
 
       def_delegators :@spec, :extendable?, :gas?, :simple?

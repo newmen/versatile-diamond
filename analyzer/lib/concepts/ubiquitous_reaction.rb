@@ -116,9 +116,8 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       def swap_source(from, to)
-        result = @source.delete_one(from)
-        raise 'Source was not deleted' unless result
-        @source << to
+        idx = @source.index(from)
+        @source[idx] = to
       end
 
       # Compares two reactions and their source and products are same then

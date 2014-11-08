@@ -41,6 +41,10 @@ module VersatileDiamond
 
         applicants.each { |possible| possible.store_parent(self) }
       end
+
+    private
+
+
     end
 
   end

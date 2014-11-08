@@ -10,19 +10,20 @@ module VersatileDiamond
         it { expect(dept_sierpinski_drop.surface_source).to eq(crm_source) }
       end
 
-      describe '#global_links' do
+      describe '#original_links' do
         let(:spc) { cross_bridge_on_bridges }
         [:cm, :ctl, :ctr].each do |kn|
           let(kn) { spc.atom(kn) }
         end
-        let(:global_links) do
+        let(:original_links) do
           {
             [spc, cm] => [[[spc, ctl], free_bond], [[spc, ctr], free_bond]],
             [spc, ctr] => [[[spc, cm], free_bond], [[spc, ctl], position_100_cross]],
             [spc, ctl] => [[[spc, cm], free_bond], [[spc, ctr], position_100_cross]]
           }
         end
-        it { expect(dept_sierpinski_drop.global_links).to match_graph(global_links) }
+        it { expect(dept_sierpinski_drop.original_links).
+          to match_graph(original_links) }
       end
 
       describe '#clean_links' do
@@ -38,7 +39,7 @@ module VersatileDiamond
           let(:clean_links) do
             {
               [s1, a1] => [[[s2, a2], position_100_front]],
-              [s2, a2] => [[[s1, a1], position_100_front]],
+              [s2, a2] => [[[s1, a1], position_100_front]]
             }
           end
           it { expect(dept_hydrogen_migration.clean_links).

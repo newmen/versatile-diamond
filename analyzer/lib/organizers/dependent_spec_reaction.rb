@@ -11,7 +11,7 @@ module VersatileDiamond
         super
 
         check_positions!
-        @_global_links, @_clean_links = nil
+        @_original_links, @_clean_links = nil
       end
 
       # Gets the list of surface source specs
@@ -20,10 +20,26 @@ module VersatileDiamond
         source.reject(&:simple?).reject(&:gas?)
       end
 
-      # Gets clean global links between all atoms of reactants
-      # @return [Hash] the clean global links graph
-      def global_links
-        @_global_links ||= erase_excess_positions(original_links)
+      # Collects links positions used atoms of reactants
+      # @return [Hash] the relations graph between used atoms of reactnats
+      def original_links
+        @_original_links ||=
+          surface_source.each_with_object(full_links.dup) do |spec, result|
+            used_atoms = reaction.used_atoms_of(spec).to_set
+            spec.links.each do |atom, rels|
+              if used_atoms.include?(atom)
+                result[[spec, atom]].reject do |(s, a), _|
+                  spec == s && !used_atoms.include?(a)
+                end
+              else
+                result.delete([spec, atom])
+              end
+            end
+
+            result.each do |_, rels|
+              rels.select! { |sa, _| result[sa] }
+            end
+          end
       end
 
       # Gets clean positions between atoms of reactants
@@ -55,28 +71,7 @@ module VersatileDiamond
       # Used for detecting relations between spec-atom instances
       # @return [Hash] the links between reactants
       def links
-        clean_links
-      end
-
-      # Collects links positions used atoms of reactants
-      # @return [Hash] the relations graph between used atoms of reactnats
-      def original_links
-        surface_source.each_with_object(full_links.dup) do |spec, result|
-          used_atoms = reaction.used_atoms_of(spec).to_set
-          spec.links.each do |atom, rels|
-            if used_atoms.include?(atom)
-              result[[spec, atom]].reject do |(s, a), _|
-                spec == s && !used_atoms.include?(a)
-              end
-            else
-              result.delete([spec, atom])
-            end
-          end
-
-          result.each do |_, rels|
-            rels.select! { |sa, _| result[sa] }
-          end
-        end
+        full_links
       end
 
       # Collects all links from positions between reactants and from reactant links

@@ -4,9 +4,9 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      include Linker
+      include Modules::RelationBetweenChecker
       include BondsCounter
-      include RelationBetweenAtomsChecker
+      include Linker
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
