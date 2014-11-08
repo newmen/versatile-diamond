@@ -8,8 +8,8 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      collector_methods :complex
       attr_reader :reaction, :parent
+      collector_methods :complex
       def_delegators :@reaction, :name, :full_rate, :swap_source, :similar_source,
         :changes_num
 

@@ -422,8 +422,11 @@ module VersatileDiamond
           Mcs::AtomMapper.map(hm_source, hm_products, hm_names_to_specs)
         end
         set(:hydrogen_migration) do
-          Reaction.new(:forward, 'hydrogen migration',
+          r = Reaction.new(:forward, 'hydrogen migration',
             hm_source, hm_products, hm_atom_map)
+          from = [methyl_on_dimer, methyl_on_dimer.atom(:cr)]
+          to = [activated_dimer, activated_dimer.atom(:cr)]
+          r.position_between(from, to, position_100_front); r
         end
 
         set(:dimer_dup_ff) { dimer.dup }

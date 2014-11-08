@@ -34,6 +34,7 @@ module VersatileDiamond
       # Reduce all positions from links structure
       # @return [Array] the array of position relations
       # TODO: must be protected
+      # TODO: зачем вообще этот метод?)
       def positions
         links.reduce([]) do |acc, (spec_atom, list)|
           acc + list.reduce([]) do |l, (other_spec_atom, position)|
