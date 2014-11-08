@@ -161,6 +161,7 @@ module VersatileDiamond
           it { expect(same_bridge.same?(subject)).to be_truthy }
 
           it { expect(subject.same?(dimer_base)).to be_falsey }
+           it { expect(subject.same?(activated_bridge)).to be_falsey }
         end
 
         describe 'methyl_on_bridge_base' do

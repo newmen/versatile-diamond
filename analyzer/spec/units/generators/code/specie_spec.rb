@@ -324,6 +324,31 @@ module VersatileDiamond
           end
         end
 
+        describe '#index' do
+          describe 'top atom of bridge' do
+            it { expect(code_bridge_base.index(bridge_base.atom(:ct))).to eq(0) }
+          end
+
+          describe 'atoms of methyl on bridge' do
+            subject { code_methyl_on_bridge_base }
+            it { expect(subject.index(methyl_on_bridge_base.atom(:cm))).to eq(0) }
+            it { expect(subject.index(methyl_on_bridge_base.atom(:cb))).to eq(1) }
+          end
+        end
+
+        describe '#role' do
+          let(:classifier) { generator.classifier }
+          before { classifier.analyze(subject.spec) }
+
+          subject { code_bridge_base }
+          it { expect(subject.role(bridge_base.atom(:ct))).to eq(0) }
+
+          let(:first) { subject.role(bridge_base.atom(:cr)) }
+          let(:second) { subject.role(bridge_base.atom(:cl)) }
+          it { expect(first == second).to be_truthy }
+          it { expect(first != 0).to be_truthy }
+        end
+
         describe '#print_name' do
           it { expect(code_bridge_base.print_name).to eq('bridge') }
           it { expect(code_activated_bridge.print_name).to eq('bridge(ct: *)') }

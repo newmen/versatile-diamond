@@ -19,14 +19,19 @@ RSpec.configure do |config|
 
   config.include VD::Organizers::Support::Properties, use: :atom_properties
   config.include VD::Organizers::Support::Handbook,
-    type: :organizer, use: :engine_generator
+    use: :engine_generator, type: :organizer
 
-  config.include VD::Organizers::Support::Handbook,
-    use: :engine_generator, type: :code
+  config.include VD::Organizers::Support::Handbook, use: :engine_generator, type: :code
   config.include VD::Generators::Support::EngineGenerator,
     use: :engine_generator, type: :code
 
   config.include VD::Generators::Code::Support::Handbook, type: :code
+
+  config.include VD::Organizers::Support::Handbook, type: :algorithm
+  config.include VD::Generators::Support::EngineGenerator, type: :algorithm
+  config.include VD::Generators::Code::Support::Handbook, type: :algorithm
+  config.include VD::Generators::Code::Algorithm::Support::NodesConverter,
+    type: :algorithm
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing

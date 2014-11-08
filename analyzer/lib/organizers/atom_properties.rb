@@ -73,12 +73,18 @@ module VersatileDiamond
       # @param [AtomProperties] other comparing atom properties
       # @return [Integer] the comparing result
       def <=> (other)
-        order(self, other, :valence) do
-          typed_order(self, other, :lattice) do
-            order(self, other, :estab_bonds_num) do
-              order(self, other, :danglings, :size) do
-                typed_order(self, other, :incoherent?) do
-                  typed_order(self, other, :unfixed?)
+        if include?(other)
+          1
+        elsif other.include?(self)
+          -1
+        else
+          order(self, other, :valence) do
+            typed_order(self, other, :lattice) do
+              order(self, other, :estab_bonds_num) do
+                order(self, other, :danglings, :size) do
+                  typed_order(self, other, :incoherent?) do
+                    typed_order(self, other, :unfixed?)
+                  end
                 end
               end
             end

@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Modules
+  module Tools
 
     # Provides logic for create proxy instances that delegates all method calls to
     # target instance
@@ -32,21 +32,21 @@ module VersatileDiamond
       # @param [Object] other instance with which comparison do
       # @return [Boolean] is equal or not
       def == (other)
-        other.class == self.class ? super(other) : @original == other
+        other.class == self.class ? super(other) : original == other
       end
 
       # Delegates all available another calls to original spec
       def method_missing(*args)
         method_name = args.first
-        if self.class.avail_method?(method_name)
-          @original.send(*args)
+        if TransparentProxy.avail_method?(method_name)
+          original.send(*args)
         else
-          @original.public_send(*args)
+          original.public_send(*args)
         end
       end
 
       def inspect
-        "proxy:#{@original.inspect}"
+        "proxy:#{original.inspect}"
       end
     end
 
