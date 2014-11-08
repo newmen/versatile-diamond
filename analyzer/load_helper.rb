@@ -1,19 +1,12 @@
-def files_in(path)
-  Dir["#{__dir__}/#{path}"]
+# Gets list of files by passed mask
+# @param [String] path_mask the mask for finging files
+# @return [Array] the list of files that corresponds to passed mask
+def files_in(path_mask)
+  Dir["#{__dir__}/#{path_mask}"]
 end
 
-def require_each(path)
-  files_in(path).each { |filename| require filename }
-end
-
-def find_dir(filename, *pathes)
-  pathes.each do |path|
-    files_in("#{path}/**/*.rb").each do |full_path|
-      match = full_path.match(/lib\/((?:\w+\/)*)(\w+).rb\Z/)
-      if match[2] == filename
-        return match[1][0..-2]
-      end
-    end
-  end
-  nil
+# Requires all files that could be found by passed mask
+# @param [String] path_mask see at #files_in same argument
+def require_each(path_mask)
+  files_in(path_mask).each { |filename| require filename }
 end
