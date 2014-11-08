@@ -298,25 +298,34 @@ module VersatileDiamond
           it { expect(hydrogen_migration.positions).to be_empty }
         end
 
-        describe 'dimer formation' do
-          it { expect(dimer_formation.positions).to match_array([
-              [
-                [activated_bridge, activated_bridge.atom(:ct)],
-                [
-                  activated_incoherent_bridge,
-                  activated_incoherent_bridge.atom(:ct)
-                ],
-                position_100_front
-              ],
-              [
-                [
-                  activated_incoherent_bridge,
-                  activated_incoherent_bridge.atom(:ct)
-                ],
-                [activated_bridge, activated_bridge.atom(:ct)],
-                position_100_front
-              ],
-            ]) }
+        shared_examples_for :check_positions do
+          it { expect(subject.positions).to match_array(positions) }
+        end
+
+        it_behaves_like :check_positions do
+          subject { dimer_formation }
+          let(:s1) { activated_bridge }
+          let(:s2) { activated_incoherent_bridge }
+          let(:positions) do
+            [
+              [[s1, s1.atom(:ct)], [s2, s2.atom(:ct)], position_100_front],
+              [[s2, s2.atom(:ct)], [s1, s1.atom(:ct)], position_100_front]
+            ]
+          end
+        end
+
+        it_behaves_like :check_positions do
+          subject { methyl_incorporation }
+          let(:s1) { activated_methyl_on_extended_bridge }
+          let(:s2) { activated_dimer }
+          let(:positions) do
+            [
+              [[s1, s1.atom(:cl)], [s2, s2.atom(:cr)], position_100_cross],
+              [[s1, s1.atom(:cr)], [s2, s2.atom(:cl)], position_100_cross],
+              [[s2, s2.atom(:cr)], [s1, s1.atom(:cl)], position_100_cross],
+              [[s2, s2.atom(:cl)], [s1, s1.atom(:cr)], position_100_cross]
+            ]
+          end
         end
       end
 

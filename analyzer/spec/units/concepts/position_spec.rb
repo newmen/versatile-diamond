@@ -43,6 +43,11 @@ module VersatileDiamond
         it { expect(subject == position_100_front).to be_falsey }
       end
 
+      describe '#cross' do
+        it { expect(position_100_front.cross).to eq(position_100_cross) }
+        it { expect(position_100_cross.cross).to eq(position_100_front) }
+      end
+
       describe '#params' do
         it { expect(position_110_front.params).to eq(param_110_front) }
         it { expect(position_100_cross.params).to eq(param_100_cross) }
