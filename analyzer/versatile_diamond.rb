@@ -16,32 +16,54 @@ require_relative 'load_helper' # useful methods
 require_each 'patches/*.rb' # same as monkey's patches
 using VersatileDiamond::Patches::RichString
 
-AUTO_LOADING_DIRS = Dir["#{__dir__}/lib/**/"].map do |dir|
-  (m = dir.match(%r{/(\w+)/\Z})) && m[1]
-end.compact +
-  %w(
-    generators/code
-    generators/code/algorithm
-  )
+LIB_DIR = 'lib'
+AUTO_LOADING_DIRS = Dir["#{__dir__}/#{LIB_DIR}/**/*.rb"].map do |dir|
+  dir.sub(%r{\A.+?#{LIB_DIR}/}, "#{LIB_DIR}/").sub(%r{/\w+\.rb\Z}, '')
+end.uniq - [LIB_DIR]
 
-def VersatileDiamond.const_missing(class_name, dir = nil)
-  filename = class_name.to_s.underscore
-
-  unless dir
-    dir = find_dir(filename, *AUTO_LOADING_DIRS.map { |d| "lib/#{d}" })
+# Finds directory where stored file with name as passed
+# @param [String] file_name
+# @param [Array] patches where find will occure
+# @return [String] the directory where file stored
+def find_dir(file_name, pathes)
+  pathes.each do |path|
+    files_in("#{path}/**/*.rb").each do |full_path|
+      match = full_path.match(%r{(#{LIB_DIR}/(?:\w+/)*)(\w+).rb\Z})
+      if match[2] == file_name
+        return match[1][0..-2]
+      end
+    end
   end
+  nil
+end
+
+# Gets name of module that corresponds to passed dir
+# @param [String] dir which will transformed to module name
+# @return [String] the name of module
+def module_name(dir)
+  dir.sub(%r{\A#{LIB_DIR}/}, '').classify
+end
+
+# Finds class or module instance
+# @param [Symbol] class_name which should be found
+# @param [String] dir where class or module should be found
+# @return [Module] the found class or module instance
+def VersatileDiamond.const_missing(class_name, dir = nil)
+  file_name = class_name.to_s.underscore
+  dir ||= find_dir(file_name, AUTO_LOADING_DIRS)
 
   if dir
-    require_relative "lib/#{dir}/#{filename}.rb"
-    component = const_get("#{dir.classify}::#{class_name}")
+    require_relative "#{dir}/#{file_name}.rb"
+    component = const_get("#{module_name(dir)}::#{class_name}")
     return component if component
   end
 
   raise "#{class_name} is not found (it's realy!)"
 end
 
+# Defines all using modules which uses as namespaces
 AUTO_LOADING_DIRS.each do |dir|
-  module_name = "VersatileDiamond::#{dir.classify}"
+  module_name = "VersatileDiamond::#{module_name(dir)}"
   eval <<-DEFINE
     module #{module_name}; end
     def (#{module_name}).const_missing(class_name)
@@ -50,6 +72,9 @@ AUTO_LOADING_DIRS.each do |dir|
   DEFINE
 end
 
+# Global hook for autoload classes and modules
+# @param [Symbol] class_name which should be found
+# @return [Module] the found class or module instance
 def Object.const_missing(class_name)
   VersatileDiamond.const_missing(class_name)
 end
