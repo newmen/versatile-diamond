@@ -60,21 +60,21 @@ module VersatileDiamond
           # @param [Hash] directed graph without loops
           # @option [Hash] :init_graph the graph which uses as initial value for
           #   internal purging graph
-          # @option [Set] :visited_nodes the set of visited nodes of internal purging
-          #   graph
+          # @option [Set] :visited_key_nodes the set of visited nodes of internal
+          #   purging graph
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
-          def ordered_graph_from(nodes, init_graph: nil, visited_nodes: Set.new)
+          def ordered_graph_from(nodes, init_graph: nil, visited_key_nodes: Set.new)
             result = []
             directed_graph = init_graph || final_graph
             nodes_queue = nodes.dup
 
             until nodes_queue.empty?
               node = nodes_queue.shift
-              next if visited_nodes.include?(node)
-
               new_nodes = node_to_nodes[node]
-              visited_nodes += new_nodes
+              next if visited_key_nodes.include?(new_nodes)
+
+              visited_key_nodes << new_nodes
               rels = directed_graph[new_nodes]
               next unless rels
 
@@ -86,15 +86,13 @@ module VersatileDiamond
             end
 
             connected_nodes_from(directed_graph).each do |ns|
-              next if includes?(:all?, visited_nodes, ns)
-              params = { init_graph: directed_graph, visited_nodes: visited_nodes }
-              result += ordered_graph_from(ns, params)
+              next if visited_key_nodes.include?(ns)
+              result += ordered_graph_from(ns,
+                init_graph: directed_graph, visited_key_nodes: visited_key_nodes)
             end
 
             unconnected_nodes_from(directed_graph).each do |ns|
-              unless includes?(:any?, result.flat_map(&:first), ns)
-                result << [ns, []]
-              end
+              result << [ns, []] unless visited_key_nodes.include?(ns)
             end
 
             result
@@ -103,15 +101,6 @@ module VersatileDiamond
         private
 
           def_delegators :@specie, :spec, :sequence
-
-          # Checks that nodes contains in set
-          # @param [Symbol] method_name by which the cheking will do
-          # @param [Array | Set] set the checkable set
-          # @param [Array] nodes which checks that they are includes in set or not
-          # @return [Boolean] are nodes includes in set or not
-          def includes?(method_name, set, nodes)
-            nodes.public_send(method_name) { |n| set.include?(n) }
-          end
 
           # Groups key nodes of passed graph if them haven't relations and contains
           # similar unique species

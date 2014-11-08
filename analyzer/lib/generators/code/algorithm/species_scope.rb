@@ -5,6 +5,9 @@ module VersatileDiamond
 
         # Contains many species as one
         class SpeciesScope
+
+          attr_reader :species
+
           # Initializes scope of species by original species list
           # @param [Array] species which will be stored as one
           def initialize(species)
