@@ -7,9 +7,13 @@ module VersatileDiamond
         # engine framework method for create a specie which was found
         class SpecieCreatorUnit
           include CommonCppExpressions
-          include ParentSpecieCppExpressions
+          include MultiParentSpeciesCppExpressions
           extend Forwardable
 
+          # Initializes specie creator
+          # @param [NameRemember] namer the remember of using names of variables
+          # @param [Specie] original_specie which uses in current building algorithm
+          # @param [Array] parent_species all unique parent species of original specie
           def initialize(namer, original_specie, parent_species)
             @namer = namer
             @original_specie = original_specie
@@ -53,9 +57,16 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the twin that belongs to passed parent
           def atom_of(parent)
-            spec.anchors.find do |atom|
-              parent_with_twin_for(atom) { |pr, _| pr == parent }
-            end
+            spec.anchors.find { |atom| twin_by(parent, atom) }
+          end
+
+          # Selects correspond twin atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom the twin that belongs to passed parent
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the twin that correspond to passed atom in parent specie
+          def twin_by(parent, atom)
+            (pwt = parent_with_twin_for(atom) { |pr, _| pr == parent }) && pwt.last
           end
 
           # Makes code which gets parent specie instance from passed atom
@@ -64,9 +75,7 @@ module VersatileDiamond
           # @override
           def spec_by_role_call(parent)
             atom = atom_of(parent)
-            pds = parent.spec
-            pwts = spec.parents_with_twins_for(atom).select { |pr, _| pr == pds }
-            twin = pwts.find { |pr, _| !namer.name_of(pr) }.last
+            twin = twin_by(parent, atom)
             super(atom, parent, twin)
           end
 
