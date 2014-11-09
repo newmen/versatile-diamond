@@ -9,6 +9,7 @@ module VersatileDiamond
         class MultiSpeciesUnit < SingleAtomUnit
           include SymmetricCppExpressions
           include ParentSpecieCppExpressions
+          include MultiParentSpeciesCppExpressions
           include ProcsReducer
 
           class << self
