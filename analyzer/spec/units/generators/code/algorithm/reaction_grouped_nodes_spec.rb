@@ -22,6 +22,10 @@ module VersatileDiamond
             it_behaves_like :check_grouped_nodes_graph do
               subject { dept_methyl_desorption }
             end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_sierpinski_drop }
+            end
           end
 
           it_behaves_like :check_grouped_nodes_graph do

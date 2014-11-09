@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
 
       # Contains logic for generation typical reation
-      class LateralReaction < ReactionWithComplexSpecies
+      class LateralReaction < SpeciesReaction
 
         # Gets the name of base class
         # @return [String] the parent type name

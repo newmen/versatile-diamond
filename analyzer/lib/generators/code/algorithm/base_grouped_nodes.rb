@@ -228,8 +228,8 @@ module VersatileDiamond
           # @return [Array] the list of all possible combinations of items of passed
           #   lists
           # @example
-          #   [[1, 2, 3], [:a, :b]] =>
-          #     [[1, :a], [1, :b], [2, :a], [2, :b], [3, :a], [3, :b]]
+          #   [[1, 2, 3], [8, 9], [0]] =>
+          #     [[1, 8, 0], [1, 9, 0], [2, 8, 0], [2, 9, 0], [3, 8, 0], [3, 9, 0]]
           def slices_combination(lists)
             head, *tail = lists
             products = tail.reduce(head) { |acc, list| acc.product(list) }
@@ -245,7 +245,7 @@ module VersatileDiamond
           # @yield [Object, Object] the predicate function
           # @return [Boolean] are all consecutive pairs correpond to predicate or not
           def all_cons_pairs?(list, &block)
-            # splits internal arrays to two undependent elements
+            # splits each internal array to two independent elements
             list.each_cons(2).all? { |a, b| block[a, b] }
           end
 

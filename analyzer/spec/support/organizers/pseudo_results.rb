@@ -60,12 +60,13 @@ module VersatileDiamond
           depts_cache = Hash[ordered_depts]
 
           fix_reactants(depts_cache, all_specs)
-          fix_sidepieces(depts_cache, all_specs)
-          fix_bases(depts_cache, all_specs)
 
           purging_specs = [depts_cache[:base_specs], depts_cache[:specific_specs]]
           pss = purge_unused_extended_specs(*purging_specs.map(&method(:make_cache)))
           depts_cache[:base_specs], depts_cache[:specific_specs] = pss.map(&:values)
+
+          fix_sidepieces(depts_cache, all_specs)
+          fix_bases(depts_cache, all_specs)
 
           depts_cache
         end

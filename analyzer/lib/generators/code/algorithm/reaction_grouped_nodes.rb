@@ -8,8 +8,7 @@ module VersatileDiamond
         class ReactionGroupedNodes < BaseGroupedNodes
           # Initizalize grouper by reaction class code generator
           # @param [EngineCode] generator the major code generator
-          # @param [ReactionWithComplexSpecies] reaction from which grouped graph will
-          #   be gotten
+          # @param [TypicalReaction] reaction from which grouped graph will be gotten
           def initialize(generator, reaction)
             super(generator)
             @reaction = reaction

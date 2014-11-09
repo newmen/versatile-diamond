@@ -3,22 +3,22 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Creates algorithm builder units
-        class SpecieUnitsFactory
+        # Creates specie find algorithm units
+        class SpecieUnitsFactory < BaseUnitsFactory
 
-          # Initializes units factory
+          # Initializes specie find algorithm units factory
           # @param [EngineCode] generator the major code generator
           # @param [Specie] specie for which the algorithm is building
           def initialize(generator, specie)
-            @generator = generator
+            super(generator)
             @specie = specie
           end
 
           # Resets the internal namer variable and clear set of collected unique
           # parent species
           def reset!
-            @namer = NameRemember.new
-            @used_unique_species = Set.new
+            create_namer!
+            @used_unique_parents = Set.new
             @used_mulsp_units = [] # used multi species units
           end
 
@@ -36,7 +36,7 @@ module VersatileDiamond
           # Gets the specie creator unit
           # @return [SpecieCreatorUnit] the unit for defines specie creation code block
           def creator
-            SpecieCreatorUnit.new(@namer, @specie, @used_unique_species.to_a)
+            SpecieCreatorUnit.new(namer, @specie, @used_unique_parents.to_a)
           end
 
         private
@@ -84,7 +84,7 @@ module VersatileDiamond
           # @return [MultiSpeciesUnit] the unit which could generate code that
           #   dependents from several parent species
           def create_multi_species_unit(parent_species, atom)
-            @used_unique_species += parent_species
+            @used_unique_parents += parent_species
             args = default_args + [parent_species, atom, common_smc_hash]
             @used_mulsp_units << (mss_unit = MultiSpeciesUnit.new(*args))
             mss_unit
@@ -95,19 +95,18 @@ module VersatileDiamond
           # @param [Array] atoms that corresponds to atoms of unique parent specie
           # @return [MultiAtomsUnit] the unit for generation code of algorithm
           def store_parent_and_create_unit(unique_parent, atoms)
-            @used_unique_species << unique_parent
-
+            @used_unique_parents << unique_parent
             if @specie.find_root?
               MultiAtomsUnit.new(*default_args, atoms)
             else
-              SingleSpecieUnit.new(*default_args, unique_parent, atoms)
+              create_single_specie_unit(unique_parent, atoms)
             end
           end
 
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
           def default_args
-            [@generator, @namer, @specie]
+            [generator, namer, @specie]
           end
         end
 

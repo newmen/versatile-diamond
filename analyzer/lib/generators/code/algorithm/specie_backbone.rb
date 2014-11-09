@@ -3,25 +3,25 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Provides logic for generation the find specie algorithm
+        # Cleans the specie grouped nodes graph from not significant relations and
+        # gets the ordered graph by which the find specie algorithm will be builded
         class SpecieBackbone
           include Modules::ListsComparer
           extend Forwardable
 
-          # Initializes algorithm by specie and grouped nodes of it
+          # Initializes backbone by specie and grouped nodes of it
+          # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie for which algorithm will builded
           def initialize(generator, specie)
             @specie = specie
-
             @grouped_nodes = SpecieGroupedNodes.new(generator, specie).final_graph
 
             @_final_graph, @_node_to_nodes = nil
           end
 
-          # Makes algorithm graph by which code of algorithm will be generated
+          # Makes clean graph without not significant relations
           # @return [Hash] the grouped graph without reverse relations if them could be
           #   excepted
-          # TODO: must be private
           def final_graph
             return @_final_graph if @_final_graph
 
@@ -117,10 +117,11 @@ module VersatileDiamond
               if uniq_specie_nodes.size == 1 && rels.empty?
                 uniq_specie = uniq_specie_nodes.first.uniq_specie
                 similar_nodes = nodes
-                shrink_graph.keys.each do |ns|
-                  next unless ns.all? { |n| n.uniq_specie == uniq_specie }
-                  shrink_graph.delete(ns) # because shrink_graph is Hash
-                  similar_nodes += ns
+                shrink_graph.each do |ns, rs|
+                  if rs.empty? && ns.all? { |n| n.uniq_specie == uniq_specie }
+                    shrink_graph.delete(ns)
+                    similar_nodes += ns
+                  end
                 end
                 result[similar_nodes] = []
               else

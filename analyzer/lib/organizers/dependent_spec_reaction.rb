@@ -24,7 +24,7 @@ module VersatileDiamond
       # @return [Hash] the relations graph between used atoms of reactnats
       def original_links
         @_original_links ||=
-          surface_source.each_with_object(full_links.dup) do |spec, result|
+          surface_source.each_with_object(links.dup) do |spec, result|
             used_atoms = reaction.used_atoms_of(spec).to_set
             spec.links.each do |atom, rels|
               if used_atoms.include?(atom)
@@ -68,17 +68,11 @@ module VersatileDiamond
         end
       end
 
-      # Used for detecting relations between spec-atom instances
-      # @return [Hash] the links between reactants
-      def links
-        full_links
-      end
-
       # Collects all links from positions between reactants and from reactant links
       # between atoms
       #
       # @return [Hash] the most full relations graph between atoms of reactnats
-      def full_links
+      def links
         surface_source.each_with_object(reaction.links.dup) do |spec, result|
           spec.links.each do |atom, rels|
             result[[spec, atom]] ||= []
