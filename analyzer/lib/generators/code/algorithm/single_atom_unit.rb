@@ -16,6 +16,11 @@ module VersatileDiamond
             @target_atom = target_atom
           end
 
+          def inspect
+            atom_props = Organizers::AtomProperties.new(spec, target_atom)
+            "SAU:(#{inspect_name_of(target_atom)}:#{atom_props.to_s})"
+          end
+
         private
 
           attr_reader :target_atom

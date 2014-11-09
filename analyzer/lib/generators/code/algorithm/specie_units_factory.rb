@@ -74,7 +74,7 @@ module VersatileDiamond
           #
           # @return [Hash] the hash of symmetric parent species with uniq twin atoms
           def common_smc_hash
-            MultiSpeciesUnit.merge_smc_hashes(@used_mulsp_units.map(&:smc_pwts_hash))
+            MultiSpeciesUnit.merge_smc_hashes(@used_mulsp_units.map(&:used_smc_hash))
           end
 
           # Creates multi species unit instance

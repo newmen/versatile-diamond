@@ -33,14 +33,17 @@ module VersatileDiamond
           # @param [Array] parent_species the target scope of parent species
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the last argument of #super method
-          # @param [Hash] common_smc_hash the hash of previous used symmetric
+          # @param [Hash] external_smc_hash the hash of previous used symmetric
           #   species and correspond atoms in other MultiSpecieUnit instances
-          def initialize(*args, parent_species, target_atom, common_smc_hash)
+          def initialize(*args, parent_species, target_atom, external_smc_hash)
             super(*args, target_atom)
             @parent_species = parent_species
-            @common_smc_hash = common_smc_hash
 
-            @_parents_with_twins, @_smc_pwts_hash = nil
+            @external_smc_hash = external_smc_hash
+            @smc_hash = {} # own hash is empty by default
+            @smc_hash_updated = false
+
+            @_parents_with_twins, @_used_smc_hash = nil
             @_not_uniq_twin = -1 # because could be nil
           end
 
@@ -60,37 +63,46 @@ module VersatileDiamond
             end
           end
 
-          # Gets the hash where by original parent instance available the list of
-          # symmetric parent species and twin atoms which are not repeated
-          #
-          # @return [Hash] the hash of unique pairs of parents and twins
-          def smc_pwts_hash
-            return @_smc_pwts_hash if @_smc_pwts_hash
+          # Collects hash of symmetric parents with unique twin atoms
+          # @return [Hash] the hash of symmetric parents with unique twin atoms
+          def used_smc_hash
+            @_used_smc_hash ||=
+              smc_parents_with_twins.each_with_object({}) do |(parent, twin), acc|
+                acc[parent.original] ||= []
+                used_pairs = acc[parent.original]
+                used_twins = used_pairs.map(&:last)
 
-            used_smc_pwts = {}
-            smc_parents_with_twins.each do |parent, twin|
-              used_smc_pwts[parent.original] ||= []
-              used_pairs = used_smc_pwts[parent.original]
-              used_twins = used_pairs.map(&:last)
+                pair =
+                  if used_twins.include?(twin)
+                    symmetric_twins = parent.symmetric_atoms(twin)
+                    first_symmetric_twin = (symmetric_twins - used_twins).first
+                    [parent, first_symmetric_twin]
+                  else
+                    [parent, twin]
+                  end
 
-              result =
-                if used_twins.include?(twin)
-                  symmetric_twins = parent.symmetric_atoms(twin)
-                  first_symmetric_twin = (symmetric_twins - used_twins).first
-                  [parent, first_symmetric_twin]
-                else
-                  [parent, twin]
-                end
+                used_pairs << pair
+              end
+          end
 
-              used_pairs << result
+          def inspect
+            pwts = used_smc_hash.flat_map(&:last) +
+              parents_with_twins.reject { |pr, tw| pr.symmetric_atom?(tw) }
+
+            nvs = pwts.sort_by(&:first).map do |parent, twin|
+              parent_nv = "#{inspect_name_of(parent)}:#{parent.original.inspect}"
+              atom_name = inspect_name_of(parent.proxy_spec.atom_by(twin))
+              atom_props = Organizers::AtomProperties.new(parent.spec, twin)
+              atom_nv = "#{atom_name}:#{atom_props.to_s}"
+              "#{parent_nv}·#{atom_nv}"
             end
 
-            @_smc_pwts_hash = used_smc_pwts
+            "MSSU:(#{nvs.join('|')})"
           end
 
         private
 
-          attr_reader :parent_species, :common_smc_hash
+          attr_reader :parent_species
 
           # Gets list of parent species with correspond twin of target atom
           # @return [Array] the list of pairs where each pair is parent and correspond
@@ -102,15 +114,18 @@ module VersatileDiamond
 
           # Gets the most common symmetric parents with twins hash
           # @return [Hash] the common hash which includes self hash
-          def update_common_smc_hash!
-            @common_smc_hash =
-              self.class.merge_smc_hashes([@common_smc_hash, smc_pwts_hash])
+          def common_smc_hash
+            self.class.merge_smc_hashes([@external_smc_hash, @smc_hash])
           end
 
           # Gets the list of symmetric parent species with uniq twin atoms
           # @return [Array] the list of symmetric parent species and twin atoms
           def uniq_smc_parents_with_twins
-            smc_pwts_hash.flat_map(&:last)
+            unless @smc_hash_updated
+              @smc_hash_updated = true
+              @smc_hash = used_smc_hash
+            end
+            @smc_hash.flat_map(&:last)
           end
 
           # Gets the list of symmetric parent species and not uniq twin atoms
@@ -260,7 +275,6 @@ module VersatileDiamond
               end
             end
 
-            update_common_smc_hash!
             reduce_procs(collecting_procs, &block).call
           end
 

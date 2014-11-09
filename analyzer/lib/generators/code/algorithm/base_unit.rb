@@ -94,6 +94,11 @@ module VersatileDiamond
           def_delegators :original_specie, :spec, :role
           def_delegator :spec, :relation_between
 
+          # JUST FOR DEBUG INSPECTATIONS
+          def inspect_name_of(obj)
+            namer.name_of(obj) || 'undef'
+          end
+
           # By default doesn't define anchor atoms
           # @return [String] the empty string
           def define_anchor_atoms
