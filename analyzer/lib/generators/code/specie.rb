@@ -407,7 +407,7 @@ module VersatileDiamond
         # Gets a cpp code by which specie will be found when simulation doing
         # @return [String] the multilined string with cpp code
         def find_algorithm
-          SpecieFindBuilder.new(generator, self).build
+          Algorithm::SpecieFindBuilder.new(generator, self).build
         end
       end
 

@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
 
       # Contains logic for generation typical reation
-      class TypicalReaction < ReactionWithComplexSpecies
+      class TypicalReaction < SpeciesReaction
 
         # Initializes typical reaction class code generator
         def initialize(*)
@@ -65,6 +65,13 @@ module VersatileDiamond
         # @return [Array] the array of using objects in header file
         def head_used_objects
           complex_source_species
+        end
+
+        # Builds find algorithm of current reaction from passed specie
+        # @param [Specie] specie the one of using reactnat
+        # @return [String] the cpp code string with find algorithm
+        def find_algorithm_from(specie)
+          Algorithm::ReactionFindBuilder.new(generator, self, specie).build
         end
       end
 

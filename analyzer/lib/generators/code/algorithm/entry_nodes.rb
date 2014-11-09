@@ -10,19 +10,22 @@ module VersatileDiamond
           # @param [SpecieBackbone] the backbone of find algorithm
           def initialize(backbone)
             @grouped_nodes = backbone.final_graph
+
+            @_list = nil
           end
 
           # Gets entry nodes of find algorithm
           # @return [Array] the ordered entry nodes, each item is array of nodes
           def list
-            nodes = @grouped_nodes.keys.flatten.uniq.sort
-            if nodes.all?(&:none?) || nodes.uniq(&:uniq_specie).size == 1
-              [nodes]
-            elsif nodes.any?(&:scope?)
-              [[nodes.find(&:scope?)]] # finds first because nodes are sorted ^^
-            else
-              select_most_important(nodes)
-            end
+            @_list ||=
+              nodes = @grouped_nodes.keys.flatten.uniq.sort
+              if nodes.all?(&:none?) || nodes.uniq(&:uniq_specie).size == 1
+                [nodes]
+              elsif nodes.any?(&:scope?)
+                [[nodes.find(&:scope?)]] # finds first because nodes are sorted ^^
+              else
+                select_most_important(nodes)
+              end
           end
 
         private

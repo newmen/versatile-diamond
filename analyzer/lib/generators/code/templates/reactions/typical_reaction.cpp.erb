@@ -5,6 +5,7 @@
 <% complex_source_species.each do |specie| %>
 void <%= class_name %>::find(<%= specie.class_name %> *target)
 {
+<%= find_algorithm_from(specie) %>
 }
 
 <% end %>
