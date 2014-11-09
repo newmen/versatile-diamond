@@ -38,6 +38,10 @@ module VersatileDiamond
               code_line("create<#{original_specie.class_name}>(#{args_str});")
           end
 
+          def inspect
+            "SCU:(#{original_specie.inspect})"
+          end
+
         private
 
           attr_reader :namer, :original_specie, :parent_species

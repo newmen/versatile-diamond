@@ -38,6 +38,11 @@ module VersatileDiamond
             end
           end
 
+          def inspect
+            pn = "#{inspect_name_of(parent_specie)}:#{parent_specie.original.inspect}"
+            "SSU:(#{pn}·[#{inspect_atoms_names.join('|')}])"
+          end
+
         private
 
           attr_reader :parent_specie

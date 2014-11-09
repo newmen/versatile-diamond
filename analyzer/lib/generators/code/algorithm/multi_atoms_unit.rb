@@ -14,10 +14,21 @@ module VersatileDiamond
             @atoms = atoms
           end
 
+          def inspect
+            "MASU:(#{inspect_atoms_names.join('|')})"
+          end
+
         private
 
           attr_reader :atoms
 
+          # JUST FOR DEBUG INSPECTATIONS
+          def inspect_atoms_names
+            atoms.map do |atom|
+              atom_props = Organizers::AtomProperties.new(spec, atom)
+              "#{inspect_name_of(atom)}:#{atom_props.to_s}"
+            end
+          end
         end
 
       end
