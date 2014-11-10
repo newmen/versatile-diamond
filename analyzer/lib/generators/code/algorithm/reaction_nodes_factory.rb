@@ -7,25 +7,21 @@ module VersatileDiamond
         class ReactionNodesFactory < BaseNodesFactory
           # Initizalize reaction nodes factory
           # @param [EngineCode] generator the major code generator
-          # @param [TypicalReaction] reaction for which the nodes will be gotten
-          def initialize(generator, reaction)
+          def initialize(generator)
             super(generator)
-            @reaction = reaction
             @specs_to_uniques = {}
           end
 
-          # Makes node for passed spec with atom
+        private
+
+          # Creates node for passed spec with atom
           # @return [Node] new node which contain the correspond algorithm specie and
           #   atom
-          def get_node(spec_atom)
+          def create_node(spec_atom)
             spec, atom = spec_atom
-            return atoms_to_nodes[atom] if atoms_to_nodes[atom]
-
             specie = get_unique_specie(spec)
-            atoms_to_nodes[atom] = Node.new(specie.original, specie, atom)
+            Node.new(specie.original, specie, atom)
           end
-
-        private
 
           # Makes unique specie instance from passed spec
           # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]

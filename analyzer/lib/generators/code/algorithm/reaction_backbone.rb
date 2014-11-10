@@ -5,17 +5,19 @@ module VersatileDiamond
 
         # Cleans the reaction grouped nodes graph from not significant relations and
         # gets the ordered graph by which the find reaction algorithm will be builded
-        class ReactionBackbone
+        class ReactionBackbone < BaseBackbone
+          extend Forwardable
+
           # Initializes backbone by reaction, reactant specie and grouped nodes of it
           # @param [EngineCode] generator the major engine code generator
           # @param [TypicalReaction] reaction the target reaction code generator
           # @param [Specie] specie the reactant from which search will be occured
           def initialize(generator, reaction, specie)
-            @generator = generator
+            super(ReactionGroupedNodes.new(generator, reaction))
             @reaction = reaction
             @specie = specie
 
-            @_final_graph, @_node_to_nodes = nil
+            @_final_graph = nil
           end
 
           # Gets entry nodes for generating algorithm
@@ -30,22 +32,25 @@ module VersatileDiamond
           def final_graph
             return @_final_graph if @_final_graph
 
-            grouped_nodes = ReactionGroupedNodes.new(@generator, @reaction).final_graph
-            result ||= grouped_nodes.each_with_object({}) do |(nodes, rels), acc|
+            result = super.each_with_object({}) do |(nodes, rels), acc|
               acc[nodes] = rels if all_of_current_specie?(nodes)
             end
 
             if result.empty?
               result[create_empty_nodes] = []
             else
-              other_side_nodes = result.values.map(&:first)
-              result = extend_by_other_side(result, other_side_nodes)
+              other_side_nodes = result.flat_map { |_, rels| rels.map(&:first) }
+              other_side_nodes.each do |nodes|
+                result = extend_graph(result, nodes) unless nodes.any?(&:anchor?)
+              end
             end
 
             @_final_graph = result
           end
 
         private
+
+          def_delegator :@grouped_nodes_graph, :big_graph
 
           # Checks that passed nodes belongs to target specie
           # @param [Array] nodes which will be checked
@@ -62,21 +67,31 @@ module VersatileDiamond
             [node]
           end
 
-          def extend_by_other_side(graph, other_side_nodes, parents_stack = [])
-            other_side_nodes.each_with_object(graph) do |nodes, acc|
-              if nodes.any?(&:anchor?)
-                acc[nodes] = stack_back_rels(parents_stack, nodes)
-              else
-                nodes.group_by(&:uniq_specie).each do |pr, ns|
-                  # parent_nodes = ns.map(&:parent)
-                  # extend_by_other_side(acc, parent_nodes, parents_stack + [pr])
-                end
-              end
+          # Extends passed graph from passed nodes
+          # @param [Hash] graph which extended instance will be gotten
+          # @param [Array] nodes from which graph will be extended
+          # @return [Hash] the extended graph
+          def extend_graph(graph, nodes)
+            all_nodes = collect_nodes(graph).flatten.to_set
+            curr_node_rels = nodes.each_with_object([]) do |node, acc|
+              rels = big_graph[node].reject { |n, _| all_nodes.include?(n) }
+              acc << [node, rels] unless rels.empty?
             end
-          end
 
-          def stack_back_rels(parents_stack, prev_nodes)
+            from_nodes, next_rels = curr_node_rels.transpose
+            next_rels = next_rels.flatten(1)
 
+            result = graph.dup
+            next_rels.group_by(&:last).each do |rp, group|
+              result[from_nodes] ||= []
+              result[from_nodes] << [group.map(&:first).uniq, rp]
+            end
+
+            next_nodes = next_rels.map(&:first).uniq
+            unless next_nodes.any?(&:anchor?)
+              result = extend_graph(result, next_nodes)
+            end
+            result
           end
         end
 

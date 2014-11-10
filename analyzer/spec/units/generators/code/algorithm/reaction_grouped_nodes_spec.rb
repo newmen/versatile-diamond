@@ -10,6 +10,9 @@ module VersatileDiamond
           let(:reaction) { generator.reaction_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, reaction) }
 
+          let(:big_links_method) { :original_links }
+          def node_to_vertex(node); [node.uniq_specie.spec.spec, node.atom] end
+
           describe 'without relations' do
             let(:flatten_face_grouped_atoms) { [] }
             let(:nodes_list) { [] }

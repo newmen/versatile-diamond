@@ -39,7 +39,7 @@ module VersatileDiamond
           # Checks that target atom is anchor in original specie
           # @return [Boolean] is anchor or not
           def anchor?
-            spec.anchor.include?(atom)
+            spec.anchors.include?(atom)
           end
 
           # Directly provides atom properties instance for current node
