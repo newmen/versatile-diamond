@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe EntryNodes, use: :engine_generator do
+        describe SpecieEntryNodes, type: :algorithm do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:generator) do
@@ -14,19 +14,12 @@ module VersatileDiamond
 
           let(:specie) { generator.specie_class(subject.name) }
           let(:backbone) { SpecieBackbone.new(generator, specie) }
-          let(:entry_nodes) { described_class.new(backbone) }
+          let(:entry_nodes) { described_class.new(backbone.final_graph).list }
 
           [
             :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
           ].each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
-          end
-
-          shared_examples_for :check_entry_nodes do
-            it 'atoms of nodes' do
-              atoms_lists = entry_nodes.list.map { |ns| ns.map(&:atom) }
-              expect(atoms_lists).to eq(points_list)
-            end
           end
 
           it_behaves_like :check_entry_nodes do

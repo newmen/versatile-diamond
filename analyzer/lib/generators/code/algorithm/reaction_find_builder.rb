@@ -22,14 +22,10 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find reaction algorithm
           def build
             nodes = entry_nodes
-            if nodes
-              unit = factory.make_unit(nodes)
-              unit.first_assign!
+            unit = factory.make_unit(nodes)
+            unit.first_assign!
 
-              combine_algorithm(nodes)
-            else
-              creation_lines
-            end
+            combine_algorithm(nodes)
           end
 
         private
@@ -44,12 +40,6 @@ module VersatileDiamond
           # @return [ReactionUnitsFactory] correspond units factory
           def create_factory
             ReactionUnitsFactory.new(generator, @reaction)
-          end
-
-          # Gets entry nodes for generating algorithm
-          # @return [Array] the array of entry nodes
-          def entry_nodes
-            backbone.final_graph.keys.first
           end
 
           # Collects procs of conditions for body of find algorithm

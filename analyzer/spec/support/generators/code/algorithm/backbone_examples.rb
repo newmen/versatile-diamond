@@ -5,6 +5,13 @@ module VersatileDiamond
         module Support
 
           module BackboneExamples
+            shared_examples_for :check_entry_nodes do
+              it 'atoms of nodes' do
+                atoms_lists = entry_nodes.map(&method(:grub_atoms))
+                expect(atoms_lists).to eq(points_list)
+              end
+            end
+
             shared_examples_for :check_finite_graph do
               it 'translate to atomic graph and check' do
                 atomic_graph = translate_to_atomic_graph(backbone.final_graph)

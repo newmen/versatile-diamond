@@ -37,12 +37,6 @@ module VersatileDiamond
             SpecieUnitsFactory.new(generator, @specie)
           end
 
-          # Gets entry nodes for generating algorithm
-          # @return [Array] the array of entry nodes
-          def entry_nodes
-            EntryNodes.new(backbone).list
-          end
-
           # Gets entry nodes zipped with else prefixes for many ways condition
           # @return [Array] entry nodes zipped with else prefixes
           def entry_nodes_with_elses

@@ -4,13 +4,12 @@ module VersatileDiamond
       module Algorithm
 
         # Provides logic for selecting entry nodes of find specie algorithm
-        class EntryNodes
+        class SpecieEntryNodes
 
           # Initializes entry nodes detector by specie
-          # @param [SpecieBackbone] the backbone of find algorithm
-          def initialize(backbone)
-            @grouped_nodes = backbone.final_graph
-
+          # @param [Hash] the final grouped graph of find algorithm
+          def initialize(final_graph)
+            @grouped_nodes = final_graph
             @_list = nil
           end
 

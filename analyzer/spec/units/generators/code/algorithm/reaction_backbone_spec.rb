@@ -17,16 +17,19 @@ module VersatileDiamond
 
           describe '#final_graph' do
             describe 'without relations' do
-              let(:final_graph) { {} }
+              let(:final_graph) do
+                { [:no_atom] => [] }
+              end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_activation }
                 let(:spec) { methyl_on_bridge_base }
+                it { expect(backbone.entry_nodes).to eq([[:no_atom]]) }
               end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_desorption }
-                let(:spec) { activated_methyl_on_bridge }
+                let(:spec) { incoherent_methyl_on_bridge }
               end
 
               it_behaves_like :check_finite_graph do
@@ -87,6 +90,41 @@ module VersatileDiamond
                     [amb] => [[[amm], param_amorph]]
                   }
                 end
+              end
+            end
+          end
+
+          describe '#entry_nodes' do
+            let(:entry_nodes) { backbone.entry_nodes }
+
+            it_behaves_like :check_entry_nodes do
+              subject { dept_methyl_activation }
+              let(:spec) { methyl_on_bridge_base }
+              let(:points_list) { [[:no_atom]] }
+            end
+
+            it_behaves_like :check_entry_nodes do
+              subject { dept_dimer_formation }
+              let(:spec) { activated_bridge }
+              let(:points_list) { [[activated_bridge.atom(:ct)]] }
+            end
+
+            describe 'in both directions with many relation' do
+              subject { dept_methyl_incorporation }
+
+              it_behaves_like :check_entry_nodes do
+                let(:spec) { activated_methyl_on_bridge }
+                let(:am1) { activated_methyl_on_bridge.atom(:cr) }
+                let(:am2) { activated_methyl_on_bridge.atom(:cl) }
+                let(:points_list) { [[am1, am2]] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:base_specs) { [dept_bridge_base] }
+                let(:spec) { activated_dimer }
+                let(:ad1) { activated_dimer.atom(:cr) }
+                let(:ad2) { activated_dimer.atom(:cl) }
+                let(:points_list) { [[ad2, ad1]] }
               end
             end
           end

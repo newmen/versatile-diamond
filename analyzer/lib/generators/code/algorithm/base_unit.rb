@@ -143,8 +143,7 @@ module VersatileDiamond
           # @param [Array] atoms which role will be checked in code
           # @return [String] the string with cpp condition
           def check_specie_condition(atoms)
-            has_children_species = !original_specie.non_root_children.empty?
-            method_name = has_children_species ? 'checkAndFind' : 'hasRole'
+            method_name = original_specie.find_endpoint? ? 'hasRole' : 'checkAndFind'
             combine_condition(atoms, '||') do |var, atom|
               "!#{var}->#{method_name}(#{original_specie.enum_name}, #{role(atom)})"
             end
