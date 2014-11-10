@@ -7,8 +7,12 @@ module VersatileDiamond
 
         describe ReactionBackbone, type: :algorithm do
           let(:base_specs) { [] }
+          let(:specific_specs) { [] }
           let(:generator) do
-            stub_generator(base_specs: base_specs, typical_reactions: [subject])
+            stub_generator(
+              base_specs: base_specs,
+              specific_specs: specific_specs,
+              typical_reactions: [subject])
           end
 
           let(:reaction) { generator.reaction_class(subject.name) }
@@ -80,6 +84,7 @@ module VersatileDiamond
 
               it_behaves_like :check_finite_graph do
                 let(:base_specs) { [dept_bridge_base] }
+                let(:specific_specs) { [dept_activated_methyl_on_bridge] }
                 let(:spec) { activated_dimer }
                 let(:amb) { activated_methyl_on_bridge.atom(:cb) }
                 let(:amm) { activated_methyl_on_bridge.atom(:cm) }

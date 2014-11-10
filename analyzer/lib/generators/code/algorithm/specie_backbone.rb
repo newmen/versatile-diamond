@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Cleans the specie grouped nodes graph from not significant relations and
         # gets the ordered graph by which the find specie algorithm will be builded
-        class SpecieBackbone
+        class SpecieBackbone < BaseBackbone
           include Modules::ListsComparer
           extend Forwardable
 
@@ -13,7 +13,7 @@ module VersatileDiamond
           # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie for which algorithm will builded
           def initialize(generator, specie)
-            @generator = generator
+            super(SpecieGroupedNodes.new(generator, specie))
             @specie = specie
 
             @_final_graph, @_node_to_nodes = nil
@@ -32,11 +32,11 @@ module VersatileDiamond
           def final_graph
             return @_final_graph if @_final_graph
 
-            grouped_nodes = SpecieGroupedNodes.new(@generator, @specie).final_graph
+            all_nodes_lists = collect_nodes(super)
             result =
-              sequence.short.reduce(grouped_nodes) do |acc, atom|
+              sequence.short.reduce(super) do |acc, atom|
                 limits = atom.relations_limits
-                nodes = grouped_nodes.keys.sort_by(&:size).find do |ns|
+                nodes = all_nodes_lists.find do |ns|
                   ns.any? { |n| n.atom == atom }
                 end
 
@@ -139,22 +139,13 @@ module VersatileDiamond
             result
           end
 
-          # Collects all nodes from final graph
-          # @return [Array] the sorted array of nodes lists
-          def final_nodes
-            lists = final_graph.each_with_object([]) do |(nodes, rels), acc|
-              acc << nodes
-              rels.each { |ns, _| acc << ns }
-            end
-            lists.sort_by(&:size)
-          end
-
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes
           def node_to_nodes
-            @_node_to_nodes ||= final_nodes.each_with_object({}) do |nodes, result|
-              nodes.each { |node| result[node] ||= nodes }
-            end
+            @_node_to_nodes ||=
+              collect_nodes(final_graph).each_with_object({}) do |nodes, result|
+                nodes.each { |node| result[node] ||= nodes }
+              end
           end
 
           # Collects similar relations that available by key of grouped graph

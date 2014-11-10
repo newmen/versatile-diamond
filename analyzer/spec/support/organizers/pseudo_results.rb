@@ -36,10 +36,13 @@ module VersatileDiamond
           ]
         end
 
-        # Provides default value for analysis result methods
-        # @return [Hash] the hash where each value is empty array
-        def default_depts
-          Hash[default_keys.map { |c| [c, []] }]
+        # Extends passed depts for analysis result methods
+        # @return [Hash] the hash where each not presented value is empty array
+        def merge_with_default(depts)
+          default_keys.each_with_object({}) do |key, acc|
+            presented_values = depts[key]
+            acc[key] = presented_values ? presented_values.dup : []
+          end
         end
 
         # Sorts in order of default depts keys
@@ -51,7 +54,7 @@ module VersatileDiamond
         # Extends passed depts hash by adding all internal species
         # @return [Hash] the fixed cache of depts
         def fix(depts)
-          ordered_depts = sort_depts(default_depts.merge(depts))
+          ordered_depts = sort_depts(merge_with_default(depts))
           only_specs = ordered_depts.flat_map(&:last).select do |o|
             o.is_a?(DependentSimpleSpec)
           end

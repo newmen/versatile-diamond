@@ -12,12 +12,19 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             @generator = generator
-            @atoms_to_nodes = {}
+            @vertices_to_nodes = {}
+          end
+
+          # Makes node for passed vertex
+          # @return [Node] the node which contain the correspond algorithm specie and
+          #   atom
+          def get_node(vertex)
+            @vertices_to_nodes[vertex] ||= create_node(vertex)
           end
 
         private
 
-          attr_reader :generator, :atoms_to_nodes
+          attr_reader :generator
 
         end
 

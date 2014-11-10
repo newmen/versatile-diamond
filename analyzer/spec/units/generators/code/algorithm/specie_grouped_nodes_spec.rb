@@ -15,6 +15,9 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, specie) }
 
+          let(:big_links_method) { :clean_links }
+          def node_to_vertex(node); node.atom end
+
           [
             :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
           ].each do |keyname|

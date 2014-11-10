@@ -14,14 +14,14 @@ module VersatileDiamond
             @parents_to_uniques = {}
           end
 
-          # Makes node for passed atom
+        private
+
+          # Creates node for passed atom
           # @return [Node] new node which contain the correspond algorithm specie and
           #   passed atom
-          def get_node(atom)
-            atoms_to_nodes[atom] ||= Node.new(@specie, parent_specie(atom), atom)
+          def create_node(atom)
+            Node.new(@specie, parent_specie(atom), atom)
           end
-
-        private
 
           # Detects correct unique parent specie by passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]

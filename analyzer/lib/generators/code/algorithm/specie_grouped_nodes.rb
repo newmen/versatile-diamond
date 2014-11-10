@@ -14,23 +14,23 @@ module VersatileDiamond
             super(SpecieNodesFactory.new(generator, specie))
             @specie = specie
 
-            @_big_links_graph, @_small_links_graph = nil
+            @_big_graph, @_small_graph = nil
+          end
+
+          # Makes the nodes graph from links of target specie
+          # @return [Hash] the most comprehensive graph of nodes
+          def big_graph
+            @_big_graph ||= transform_links(spec.clean_links)
           end
 
         private
 
           def_delegator :@specie, :spec
 
-          # Makes the nodes graph from links of target specie
-          # @return [Hash] the most comprehensive graph of nodes
-          def big_links_graph
-            @_big_links_graph ||= transform_links(spec.clean_links)
-          end
-
           # Makes the nodes graph from cut links of target specie
           # @return [Hash] the cutten graph of nodes
-          def small_links_graph
-            @_small_links_graph ||= transform_links(@specie.essence.cut_links)
+          def small_graph
+            @_small_graph ||= transform_links(@specie.essence.cut_links)
           end
 
           # Detects relation between passed nodes
