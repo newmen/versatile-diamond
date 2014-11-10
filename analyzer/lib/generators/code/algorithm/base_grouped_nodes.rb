@@ -6,12 +6,13 @@ module VersatileDiamond
         # Provides methods for make grouped nodes graph
         # @abstract
         class BaseGroupedNodes
-          include SpeciesUser
+          extend Forwardable
 
-          # Initizalize cleaner by specie class code generator
-          # @param [EngineCode] generator the major code generator
-          def initialize(generator)
-            @generator = generator
+          # Initizalizes base grouped nodes graph builder
+          # @param [SpecieNodesFactory | ReactionNodesFactory] factory which creates
+          #   nodes for current grouped nodes graph builder
+          def initialize(factory)
+            @factory = factory
             @_final_graph = nil
           end
 
@@ -60,7 +61,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :generator
+          def_delegator :@factory, :get_node
 
           # Makes the graph of nodes from passed graph
           # @param [Hash] links the original graph
