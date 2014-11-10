@@ -13,22 +13,30 @@ module VersatileDiamond
           # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie for which algorithm will builded
           def initialize(generator, specie)
+            @generator = generator
             @specie = specie
-            @grouped_nodes = SpecieGroupedNodes.new(generator, specie).final_graph
 
             @_final_graph, @_node_to_nodes = nil
+          end
+
+          # Gets entry nodes for generating algorithm
+          # @return [Array] the array of entry nodes
+          def entry_nodes
+            SpecieEntryNodes.new(final_graph).list
           end
 
           # Makes clean graph without not significant relations
           # @return [Hash] the grouped graph without reverse relations if them could be
           #   excepted
+          # TODO: must be private!
           def final_graph
             return @_final_graph if @_final_graph
 
+            grouped_nodes = SpecieGroupedNodes.new(@generator, @specie).final_graph
             result =
-              sequence.short.reduce(@grouped_nodes) do |acc, atom|
+              sequence.short.reduce(grouped_nodes) do |acc, atom|
                 limits = atom.relations_limits
-                nodes = @grouped_nodes.keys.sort_by(&:size).find do |ns|
+                nodes = grouped_nodes.keys.sort_by(&:size).find do |ns|
                   ns.any? { |n| n.atom == atom }
                 end
 
@@ -71,17 +79,17 @@ module VersatileDiamond
 
             until nodes_queue.empty?
               node = nodes_queue.shift
-              new_nodes = node_to_nodes[node]
-              next if visited_key_nodes.include?(new_nodes)
+              next_nodes = node_to_nodes[node]
+              next if visited_key_nodes.include?(next_nodes)
 
-              visited_key_nodes << new_nodes
-              rels = directed_graph[new_nodes]
+              visited_key_nodes << next_nodes
+              rels = directed_graph[next_nodes]
               next unless rels
 
-              result << [new_nodes, sort_rels_by_limits_of(new_nodes, rels)]
+              result << [next_nodes, sort_rels_by_limits_of(next_nodes, rels)]
               next if rels.empty?
 
-              directed_graph = without_reverse(directed_graph, new_nodes)
+              directed_graph = without_reverse(directed_graph, next_nodes)
               nodes_queue += rels.flat_map(&:first)
             end
 
@@ -131,16 +139,22 @@ module VersatileDiamond
             result
           end
 
+          # Collects all nodes from final graph
+          # @return [Array] the sorted array of nodes lists
+          def final_nodes
+            lists = final_graph.each_with_object([]) do |(nodes, rels), acc|
+              acc << nodes
+              rels.each { |ns, _| acc << ns }
+            end
+            lists.sort_by(&:size)
+          end
+
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes
           def node_to_nodes
-            return @_node_to_nodes if @_node_to_nodes
-
-            sorted_keys = @grouped_nodes.keys.sort_by(&:size)
-            @_node_to_nodes =
-              sorted_keys.each_with_object({}) do |nodes, result|
-                nodes.each { |node| result[node] ||= nodes }
-              end
+            @_node_to_nodes ||= final_nodes.each_with_object({}) do |nodes, result|
+              nodes.each { |node| result[node] ||= nodes }
+            end
           end
 
           # Collects similar relations that available by key of grouped graph

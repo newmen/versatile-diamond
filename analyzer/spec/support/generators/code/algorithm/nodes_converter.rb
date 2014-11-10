@@ -7,11 +7,11 @@ module VersatileDiamond
           # Provides usefull methods for working with noded graphs
           module NodesConverter
 
-            # Provides simple array with two element instead of the node
-            # @param [Node] node which will be converted
-            # @return [Array] the simple checkable array with two values
-            def typed_node(node)
-              [node.uniq_specie.class, node.atom]
+            # Grubs atoms from nodes
+            # @param [Array] nodes from which the atoms will be gotten
+            # @return [Array] the array of atoms
+            def grub_atoms(nodes)
+              nodes.map { |node| node.blunt? ? :no_atom : node.atom }
             end
 
             # Collects the list of unique nodes which used in passed graph
@@ -28,7 +28,7 @@ module VersatileDiamond
             # @return [Array] translated atomic list of relations
             def translate_to_atomic_list(nodes_list)
               nodes_list.each_with_object([]) do |(nodes, rels), acc|
-                acc << [nodes.map(&:atom), rels.map { |ns, r| [ns.map(&:atom), r] }]
+                acc << [grub_atoms(nodes), rels.map { |ns, r| [grub_atoms(ns), r] }]
               end
             end
 
@@ -39,6 +39,15 @@ module VersatileDiamond
             # @return [Hash] translated atomic graph
             def translate_to_atomic_graph(nodes_graph)
               Hash[translate_to_atomic_list(nodes_graph)]
+            end
+
+          private
+
+            # Provides simple array with two element instead of the node
+            # @param [Node] node which will be converted
+            # @return [Array] the simple checkable array with two values
+            def typed_node(node)
+              [node.uniq_specie.class, node.atom]
             end
           end
 

@@ -20,7 +20,7 @@ module VersatileDiamond
         private
 
           attr_reader :generator, :backbone, :factory
-          def_delegator :backbone, :ordered_graph_from
+          def_delegators :backbone, :entry_nodes, :ordered_graph_from
 
           # Gets the lines by which the specie will be created in algorithm
           # @return [String] the cpp code string with specie creation
