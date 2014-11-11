@@ -25,11 +25,12 @@ module VersatileDiamond
           end
 
           # Creates single specie unit
-          # @param [UniqueReaction] unique_specie for which the unit will be created
+          # @param [Specie] original_specie for which the unit will be created
+          # @param [UniqueSpecie] unique_specie which will be stored in unit
           # @param [Array] atoms that corresponds to atoms of unique parent reaction
           # @return [SingleSpecieUnit] the unit for generation code of algorithm
-          def create_single_specie_unit(unique_specie, atoms)
-            args = [generator, namer, unique_specie.original, unique_specie, atoms]
+          def create_single_specie_unit(original_specie, unique_specie, atoms)
+            args = [generator, namer, original_specie, unique_specie, atoms]
             SingleSpecieUnit.new(*args)
           end
         end
