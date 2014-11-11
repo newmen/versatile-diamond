@@ -72,9 +72,9 @@ module VersatileDiamond
           # @param [Array] nodes from which graph will be extended
           # @return [Hash] the extended graph
           def extend_graph(graph, nodes)
-            all_nodes = collect_nodes(graph).flatten.to_set
+            exist_nodes = collect_nodes(graph).flatten.to_set
             curr_node_rels = nodes.each_with_object([]) do |node, acc|
-              rels = big_graph[node].reject { |n, _| all_nodes.include?(n) }
+              rels = big_graph[node].reject { |n, _| exist_nodes.include?(n) }
               acc << [node, rels] unless rels.empty?
             end
 
@@ -82,7 +82,7 @@ module VersatileDiamond
             next_rels = next_rels.flatten(1)
 
             result = graph.dup
-            next_rels.group_by(&:last).each do |rp, group|
+            next_rels.group_by { |_, r| r.params }.each do |rp, group|
               result[from_nodes] ||= []
               result[from_nodes] << [group.map(&:first).uniq, rp]
             end

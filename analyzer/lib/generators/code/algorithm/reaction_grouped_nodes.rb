@@ -17,7 +17,9 @@ module VersatileDiamond
             @_big_graph, @_small_graph = nil
           end
 
-          # Makes the nodes graph from links of target reaction
+          # Makes the nodes graph from original links between interacting atoms of
+          # target reaction
+          #
           # @return [Hash] the most comprehensive graph of nodes
           def big_graph
             @_big_graph ||= transform_links(@reaction.original_links)

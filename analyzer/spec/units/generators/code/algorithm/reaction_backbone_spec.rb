@@ -28,7 +28,6 @@ module VersatileDiamond
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_activation }
                 let(:spec) { methyl_on_bridge_base }
-                it { expect(backbone.entry_nodes).to eq([[:no_atom]]) }
               end
 
               it_behaves_like :check_finite_graph do
