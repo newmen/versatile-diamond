@@ -137,8 +137,8 @@ module VersatileDiamond
             atoms.all?(&:lattice)
           end
 
-          # Gets a cpp code string that contain call a method for check existing current
-          # specie in atom
+          # Gets a cpp code string that contain call a method for check existing
+          # current specie in atom
           #
           # @param [Array] atoms which role will be checked in code
           # @return [String] the string with cpp condition
