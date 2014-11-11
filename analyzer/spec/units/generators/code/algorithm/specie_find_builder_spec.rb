@@ -21,23 +21,7 @@ module VersatileDiamond
           let(:builder) { described_class.new(generator, code_specie) }
 
           describe '#build' do
-            def role(spec, keyname)
-              classifier.index(spec, spec.spec.atom(keyname))
-            end
-
-            [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr].each do |keyname|
-              let(keyname) { subject.spec.atom(keyname) }
-              let(:"role_#{keyname}") { role(subject, keyname) }
-            end
-
-            [:ct, :cr].each do |keyname|
-              let(:"b_#{keyname}") { role(dept_bridge_base, keyname) }
-            end
             let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
-
-            shared_examples_for :check_code do
-              it { expect(builder.build).to eq(find_algorithm) }
-            end
 
             it_behaves_like :check_code do
               subject { dept_bridge_base }
