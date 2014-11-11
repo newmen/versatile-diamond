@@ -37,7 +37,7 @@ module VersatileDiamond
           #   presented
           # @return [String] the cpp code string
           def check_existence(else_prefix = '', &block)
-            define_anchor_atoms +
+            define_anchor_atoms_lines +
               code_condition(check_role_condition(atoms), else_prefix) do
                 code_condition(check_specie_condition(atoms), &block)
               end
@@ -101,7 +101,7 @@ module VersatileDiamond
 
           # By default doesn't define anchor atoms
           # @return [String] the empty string
-          def define_anchor_atoms
+          def define_anchor_atoms_lines
             ''
           end
 

@@ -6,6 +6,7 @@ module VersatileDiamond
         # Unit for bulding code that depends from parent specie
         class SingleParentSpecieUnit < MultiAtomsUnit
           include SymmetricCppExpressions
+          include SmartAtomCppExpressions
           include ParentSpecieCppExpressions
 
           # Also remember the unique parent specie
@@ -40,7 +41,7 @@ module VersatileDiamond
 
           def inspect
             pn = "#{inspect_name_of(parent_specie)}:#{parent_specie.original.inspect}"
-            "SPSU:(#{pn}·[#{inspect_atoms_names.join('|')}])"
+            "SPSU:(#{pn}·[#{inspect_atoms_names}])"
           end
 
         private
@@ -83,10 +84,28 @@ module VersatileDiamond
           # Gets the code line with definition of anchor atom variables
           # @return [String] the definition anchor atom variables code
           # @override
-          def define_anchor_atoms
+          def define_anchor_atoms_lines
             assign_anchor_atoms!
             values = atoms.map(&method(:atom_from_parent_call))
             define_var_line('Atom *', atoms, values)
+          end
+
+          # Gets the code line with definition of parent specie variable
+          # @return [String] the definition of parent specie variable
+          def define_parent_specie_line
+            avail_atom = atoms.find { |a| namer.name_of(a) }
+            atom_call = spec_by_role_call(avail_atom)
+            namer.assign_next('parent', parent_specie)
+            define_var_line('ParentSpec *', parent_specie, atom_call)
+          end
+
+          # Gets the code string with getting the parent specie from atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the parent specie will be gotten
+          # @return [String] cpp code string with engine framework method call
+          # @override
+          def spec_by_role_call(atom)
+            super(atom, parent_specie, twin(atom))
           end
 
           # Specifies arguments of super method

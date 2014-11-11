@@ -21,14 +21,14 @@ module VersatileDiamond
 
             shared_examples_for :check_ordered_graph do
               it 'translate to atomic graph and check' do
-                astns = anchors.each_with_object({}) do |a, acc|
-                  backbone.final_graph.keys.each do |ns|
-                    ns.each { |n| acc[a] ||= n if n.atom == a }
-                    break if acc[a]
+                entry =
+                  if backbone.entry_nodes.size == 1
+                    backbone.entry_nodes.first
+                  else
+                    entry_node
                   end
-                end
 
-                original_ordered_graph = backbone.ordered_graph_from(astns.values)
+                original_ordered_graph = backbone.ordered_graph_from(entry)
                 atomic_list = translate_to_atomic_list(original_ordered_graph)
                 expect(atomic_list).to eq(ordered_graph)
               end

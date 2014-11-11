@@ -8,6 +8,7 @@ module VersatileDiamond
         # Unit for bulding code that depends from scope of species
         class MultiParentSpeciesUnit < SingleAtomUnit
           include SymmetricCppExpressions
+          include SmartAtomCppExpressions
           include ParentSpecieCppExpressions
           include MultiParentSpeciesCppExpressions
           include ProcsReducer

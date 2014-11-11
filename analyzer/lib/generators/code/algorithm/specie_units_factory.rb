@@ -94,11 +94,11 @@ module VersatileDiamond
           # Creates multi atoms unit and remember used unique parent specie
           # @param [UniqueSpecie] unique_parent of handling specie
           # @param [Array] atoms that corresponds to atoms of unique parent specie
-          # @return [MultiAtomsUnit] the unit for generation code of algorithm
+          # @return [BaseUnit] the unit for generation code of algorithm
           def store_parent_and_create_unit(unique_parent, atoms)
             @used_unique_parents << unique_parent
-            if @specie.find_root?
-              MultiAtomsUnit.new(*default_args, atoms)
+            if @specie.find_root? && atoms.size == 1
+              SingleAtomUnit.new(*default_args, atoms.first)
             else
               SingleParentSpecieUnit.new(*default_args, unique_parent, atoms)
             end
