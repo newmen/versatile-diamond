@@ -99,7 +99,7 @@ module VersatileDiamond
             if @specie.find_root?
               MultiAtomsUnit.new(*default_args, atoms)
             else
-              create_single_specie_unit(unique_parent, atoms)
+              create_single_specie_unit(@specie, unique_parent, atoms)
             end
           end
 

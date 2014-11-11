@@ -41,7 +41,7 @@ module VersatileDiamond
           def create_single_specie_unit(nodes)
             unique_specie = nodes.first.uniq_specie
             @used_unique_species << unique_specie
-            super(unique_specie, nodes.map(&:atom))
+            super(unique_specie.original, unique_specie, nodes.map(&:atom))
           end
         end
 
