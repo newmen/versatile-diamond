@@ -22,6 +22,7 @@ module VersatileDiamond
 
           describe '#build' do
             let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
+            let(:d_cr) { role(dept_dimer_base, :cr) }
 
             it_behaves_like :check_code do
               subject { dept_bridge_base }
@@ -299,7 +300,44 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_cross_bridge_on_dimers_base }
-              let(:base_specs) { [dept_bridge_base, dept_methyl_on_dimer_base, subject] }
+              let(:base_specs) do
+                [dept_bridge_base, dept_dimer_base, subject]
+              end
+
+              let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_ctl}))
+    {
+        if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_ctl}))
+        {
+            Atom *amorph1 = anchor->amorphNeighbour();
+            if (amorph1->is(#{role_cm}))
+            {
+                ParentSpec *parent1 = anchor->specByRole<Dimer>(#{d_cr});
+                Atom *anchors[2] = { parent1->atom(0), anchor };
+                eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                    if (neighbours[0]->is(#{role_csr}) && neighbours[1]->is(#{role_ctr}) && !anchors[0]->hasBondWith(neighbours[0]) && !anchors[1]->hasBondWith(neighbours[1]))
+                    {
+                        if (neighbours[1]->hasBondWith(amorph1))
+                        {
+                            ParentSpec *parents[2] = { parent1, neighbours[0]->specByRole<Dimer>(#{d_cr}) };
+                            create<CrossBridgeOnDimers>(amorph1, parents);
+                        }
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_cross_bridge_on_dimers_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_dimer_base, dept_methyl_on_dimer_base, subject]
+              end
 
               let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
               let(:find_algorithm) do
@@ -368,7 +406,6 @@ module VersatileDiamond
               subject { dept_bridge_with_dimer_base }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
 
-              let(:d_cr) { role(dept_dimer_base, :cr) }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_cr}))

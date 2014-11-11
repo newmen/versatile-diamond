@@ -7,6 +7,7 @@ module VersatileDiamond
         # engine framework method for create a specie which was found
         class SpecieCreatorUnit
           include CommonCppExpressions
+          include SmartAtomCppExpressions
           include MultiParentSpeciesCppExpressions
           extend Forwardable
 
@@ -57,7 +58,7 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the twin that belongs to passed parent
           def atom_of(parent)
-            spec.anchors.find { |atom| twin_by(parent, atom) }
+            spec.anchors.find { |a| namer.name_of(a) && twin_by(parent, a) }
           end
 
           # Selects correspond twin atom

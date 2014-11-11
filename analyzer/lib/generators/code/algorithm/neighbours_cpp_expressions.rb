@@ -156,32 +156,39 @@ module VersatileDiamond
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
             namer.assign('neighbour', nbrs)
-            nbrs_var_name = namer.name_of(nbrs)
-
-            method_name = "eachNeighbour"
-            if nbrs.size == 1
-              define_nbrs_anchors_line = ''
-
-              lambda_arg = "Atom *#{nbrs_var_name}"
-            else
-              values = atoms.map { |a| namer.name_of(a) }
-              namer.erase(atoms)
-              namer.assign(Specie::ANCHOR_ATOM_NAME, atoms)
-              define_nbrs_anchors_line = define_var_line('Atom *', atoms, values)
-
-              method_name = "#{method_name}s<#{nbrs.size}>"
-              lambda_arg = "Atom **#{nbrs_var_name}"
-            end
-
-            method_args = [atoms_var_name, full_relation_name_ref(rel_params)]
-            clojure_args = ['&']
-            lambda_args = [lambda_arg]
-
-            define_nbrs_anchors_line +
-              code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
+            define_nbrs_anchors_lines +
+              code_lambda(*each_nbrs_call_args(nbrs, rel_params), &block)
           end
 
         private
+
+          # Gets the arguments for #each_nbrs_lambda internal call
+          # @param [Array] nbrs see at #each_nbrs_lambda same argument
+          # @param [Hash] rel_params see at #each_nbrs_lambda same argument
+          # @return [Array] the array of arguments for each neighbours operation
+          def each_nbrs_call_args(nbrs, rel_params)
+            method_args = [atoms_var_name, full_relation_name_ref(rel_params)]
+            clojure_args = ['&']
+
+            nbrs_var_name = namer.name_of(nbrs)
+            method_name = "eachNeighbour"
+            if single?
+              lambda_arg = "Atom *#{nbrs_var_name}"
+            else
+              method_name = "#{method_name}s<#{atoms.size}>"
+              lambda_arg = "Atom **#{nbrs_var_name}"
+            end
+
+            [method_name, method_args, clojure_args, [lambda_arg]]
+          end
+
+          # By default doesn't need to define anchor atoms for each crystal neighbours
+          # operation
+          #
+          # @return [String] the empty string
+          def define_nbrs_anchors_lines
+            ''
+          end
 
           # Gets the code which calls the atom of crystal by calculating coordinates
           # @param [Hash] rel_params the parameters of relations by which the coords
