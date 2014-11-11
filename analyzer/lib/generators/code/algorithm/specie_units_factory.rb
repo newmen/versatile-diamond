@@ -74,19 +74,20 @@ module VersatileDiamond
           #
           # @return [Hash] the hash of symmetric parent species with uniq twin atoms
           def common_smc_hash
-            MultiSpeciesUnit.merge_smc_hashes(@used_mulsp_units.map(&:used_smc_hash))
+            used_smc_hashes = @used_mulsp_units.map(&:used_smc_hash)
+            MultiParentSpeciesUnit.merge_smc_hashes(used_smc_hashes)
           end
 
           # Creates multi species unit instance
           # @param [Array] parent_species the sorted list of parent unique species
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom is the target atom for creating unit
-          # @return [MultiSpeciesUnit] the unit which could generate code that
+          # @return [MultiParentSpeciesUnit] the unit which could generate code that
           #   dependents from several parent species
           def create_multi_species_unit(parent_species, atom)
             @used_unique_parents += parent_species
             args = default_args + [parent_species, atom, common_smc_hash]
-            @used_mulsp_units << (mss_unit = MultiSpeciesUnit.new(*args))
+            @used_mulsp_units << (mss_unit = MultiParentSpeciesUnit.new(*args))
             mss_unit
           end
 
@@ -99,14 +100,14 @@ module VersatileDiamond
             if @specie.find_root?
               MultiAtomsUnit.new(*default_args, atoms)
             else
-              create_single_specie_unit(@specie, unique_parent, atoms)
+              SingleParentSpecieUnit.new(*default_args, unique_parent, atoms)
             end
           end
 
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
           def default_args
-            [generator, namer, @specie]
+            super + [@specie]
           end
         end
 

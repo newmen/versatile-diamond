@@ -6,7 +6,7 @@ module VersatileDiamond
       module Algorithm
 
         # Unit for bulding code that depends from scope of species
-        class MultiSpeciesUnit < SingleAtomUnit
+        class MultiParentSpeciesUnit < SingleAtomUnit
           include SymmetricCppExpressions
           include ParentSpecieCppExpressions
           include MultiParentSpeciesCppExpressions
@@ -98,7 +98,7 @@ module VersatileDiamond
               "#{parent_nv}·#{atom_nv}"
             end
 
-            "MSSU:(#{nvs.join('|')})"
+            "MPSSU:(#{nvs.join('|')})"
           end
 
         private
