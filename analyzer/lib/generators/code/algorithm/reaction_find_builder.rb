@@ -46,7 +46,7 @@ module VersatileDiamond
           # @param [Array] nodes by which procs will be collected
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
-            ordered_graph_from(nodes).each_with_object([]) do |(ns, rels), acc|
+            ordered_graph_from(nodes).reduce([]) do |acc, (ns, rels)|
               acc + accumulate_relations(ns, rels)
             end
           end
