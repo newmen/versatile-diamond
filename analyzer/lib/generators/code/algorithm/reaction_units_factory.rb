@@ -19,9 +19,9 @@ module VersatileDiamond
 
           # Makes single specie unit for each nodes list
           # @param [Array] nodes for which the unit will be maked
-          # @return [SingleSpecieUnit] the unit of code generation
+          # @return [SingleParentSpecieUnit] the unit of code generation
           def make_unit(nodes)
-            create_single_specie_unit(nodes)
+            create_reactant_unit(nodes)
           end
 
           # Gets the reaction creator unit
@@ -35,13 +35,15 @@ module VersatileDiamond
 
           # Creates single specie unit and remember used unique specie
           # @param [Array] nodes by which the multi atoms unit will be created
-          # @return [SingleSpecieUnit] the unit for generation code that depends from
+          # @return [ReactantUnit] the unit for generation code that depends from
           #   passed nodes
-          # @override
-          def create_single_specie_unit(nodes)
+          def create_reactant_unit(nodes)
             unique_specie = nodes.first.uniq_specie
             @used_unique_species << unique_specie
-            super(unique_specie.original, unique_specie, nodes.map(&:atom))
+
+            original_specie = unique_specie.original
+            args = default_args + [original_specie, unique_specie, nodes.map(&:atom)]
+            ReactantUnit.new(*args)
           end
         end
 

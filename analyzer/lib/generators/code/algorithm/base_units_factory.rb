@@ -24,14 +24,10 @@ module VersatileDiamond
             @namer = NameRemember.new
           end
 
-          # Creates single specie unit
-          # @param [Specie] original_specie for which the unit will be created
-          # @param [UniqueSpecie] unique_specie which will be stored in unit
-          # @param [Array] atoms that corresponds to atoms of unique parent reaction
-          # @return [SingleSpecieUnit] the unit for generation code of algorithm
-          def create_single_specie_unit(original_specie, unique_specie, atoms)
-            args = [generator, namer, original_specie, unique_specie, atoms]
-            SingleSpecieUnit.new(*args)
+          # Gets the list of default arguments which uses when each new unit creates
+          # @return [Array] the array of default arguments
+          def default_args
+            [generator, namer]
           end
         end
 
