@@ -132,6 +132,64 @@ module VersatileDiamond
               end
             end
           end
+
+          describe '#ordered_graph_from' do
+            it_behaves_like :check_ordered_graph do
+              subject { dept_methyl_activation }
+              let(:spec) { methyl_on_bridge_base }
+              let(:ordered_graph) do
+                [
+                  [[:no_atom], []]
+                ]
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              subject { dept_dimer_formation }
+              let(:spec) { activated_bridge }
+              let(:a1) { activated_bridge.atom(:ct) }
+              let(:a2) { activated_incoherent_bridge.atom(:ct) }
+              let(:ordered_graph) do
+                [
+                  [[a1], [[[a2], param_100_front]]]
+                ]
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              subject { dept_methyl_incorporation }
+              let(:spec) { activated_methyl_on_bridge }
+              let(:am1) { activated_methyl_on_bridge.atom(:cr) }
+              let(:am2) { activated_methyl_on_bridge.atom(:cl) }
+              let(:ad1) { activated_dimer.atom(:cr) }
+              let(:ad2) { activated_dimer.atom(:cl) }
+              let(:ordered_graph) do
+                [
+                  [[am1, am2], [[[ad2, ad1], param_100_cross]]]
+                ]
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_activated_methyl_on_bridge] }
+              subject { dept_methyl_incorporation }
+              let(:spec) { activated_dimer }
+              let(:am1) { activated_methyl_on_bridge.atom(:cr) }
+              let(:am2) { activated_methyl_on_bridge.atom(:cl) }
+              let(:amb) { activated_methyl_on_bridge.atom(:cb) }
+              let(:amm) { activated_methyl_on_bridge.atom(:cm) }
+              let(:ad1) { activated_dimer.atom(:cr) }
+              let(:ad2) { activated_dimer.atom(:cl) }
+              let(:ordered_graph) do
+                [
+                  [[ad2, ad1], [[[am1, am2], param_100_cross]]],
+                  [[am1, am2], [[[amb], param_110_front]]],
+                  [[amb], [[[amm], param_amorph]]]
+                ]
+              end
+            end
+          end
         end
 
       end
