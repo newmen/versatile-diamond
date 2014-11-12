@@ -15,9 +15,7 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:backbone) { described_class.new(generator, specie) }
 
-          [
-            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
-          ].each do |keyname|
+          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
 

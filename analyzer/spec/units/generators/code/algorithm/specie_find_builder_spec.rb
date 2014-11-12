@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe SpecieFindBuilder, use: :engine_generator do
+        describe SpecieFindBuilder, type: :algorithm do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:typical_reactions) { [] }
@@ -21,6 +21,9 @@ module VersatileDiamond
           let(:builder) { described_class.new(generator, code_specie) }
 
           describe '#build' do
+            [:ct, :cr].each do |keyname|
+              let(:"b_#{keyname}") { role(dept_bridge_base, keyname) }
+            end
             let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
             let(:d_cr) { role(dept_dimer_base, :cr) }
 
