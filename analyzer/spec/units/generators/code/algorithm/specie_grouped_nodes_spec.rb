@@ -18,9 +18,7 @@ module VersatileDiamond
           let(:big_links_method) { :clean_links }
           def node_to_vertex(node); node.atom end
 
-          [
-            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
-          ].each do |keyname|
+          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
 

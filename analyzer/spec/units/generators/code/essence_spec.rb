@@ -15,9 +15,7 @@ module VersatileDiamond
         let(:essence) { specie.essence }
 
         describe 'graphs' do
-          [
-            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
-          ].each do |keyname|
+          Algorithm::Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
 

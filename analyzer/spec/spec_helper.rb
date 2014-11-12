@@ -32,6 +32,8 @@ RSpec.configure do |config|
   config.include VD::Generators::Code::Support::Handbook, type: :algorithm
   config.include VD::Generators::Code::Algorithm::Support::NodesConverter,
     type: :algorithm
+  config.include VD::Generators::Code::Algorithm::Support::RoleChecker,
+    type: :algorithm
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
