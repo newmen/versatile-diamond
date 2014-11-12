@@ -67,6 +67,13 @@ module VersatileDiamond
           complex_source_species
         end
 
+        # Gets the arguments of find reaction method
+        # @param [Specie] specie from which the reaction will be found
+        # @return [String] the string with signature of find method
+        def find_arguments_str(specie)
+          "#{specie.class_name} *#{ANCHOR_SPECIE_NAME}"
+        end
+
         # Builds find algorithm of current reaction from passed specie
         # @param [Specie] specie the one of using reactnat
         # @return [String] the cpp code string with find algorithm

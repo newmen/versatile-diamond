@@ -14,7 +14,7 @@ module VersatileDiamond
           # @param [Specie] specie the reactant which will be found by algorithm
           def initialize(generator, reaction, specie)
             @reaction = reaction
-            @specie = @specie
+            @specie = specie
             super(generator)
           end
 
@@ -40,6 +40,12 @@ module VersatileDiamond
           # @return [ReactionUnitsFactory] correspond units factory
           def create_factory
             ReactionUnitsFactory.new(generator, @reaction)
+          end
+
+          # Gets entry nodes for current reaction
+          # @return [Array] the entry nodes of current reaction
+          def entry_nodes
+            super.first
           end
 
           # Collects procs of conditions for body of find algorithm

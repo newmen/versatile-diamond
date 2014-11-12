@@ -5,21 +5,9 @@ module VersatileDiamond
 
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create a specie which was found
-        class SpecieCreatorUnit
-          include CommonCppExpressions
-          include SmartAtomCppExpressions
+        class SpecieCreatorUnit < BaseCreatorUnit
           include MultiParentSpeciesCppExpressions
           extend Forwardable
-
-          # Initializes specie creator
-          # @param [NameRemember] namer the remember of using names of variables
-          # @param [Specie] original_specie which uses in current building algorithm
-          # @param [Array] parent_species all unique parent species of original specie
-          def initialize(namer, original_specie, parent_species)
-            @namer = namer
-            @original_specie = original_specie
-            @parent_species = parent_species.sort
-          end
 
           # Gets the code lines for specie creation
           # @return [String] the lines by which the specie will be created
@@ -49,9 +37,11 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer, :original_specie, :parent_species
           def_delegators :original_specie, :spec, :sequence
           def_delegator :sequence, :delta
+
+          alias :original_specie :original_target
+          alias :parent_species :defined_species
 
           # Finds atoms that has twin in passed parent
           # @param [UniqueSpecie] parent for which atom will be found
