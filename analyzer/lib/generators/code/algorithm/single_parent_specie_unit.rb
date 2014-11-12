@@ -85,7 +85,7 @@ module VersatileDiamond
           # @return [String] the definition anchor atom variables code
           # @override
           def define_anchor_atoms_lines
-            assign_anchor_atoms!
+            self.class.superclass.instance_method(:first_assign!).bind(self).call
             values = atoms.map(&method(:atom_from_parent_call))
             define_var_line('Atom *', atoms, values)
           end

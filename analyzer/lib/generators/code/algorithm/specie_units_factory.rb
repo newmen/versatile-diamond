@@ -24,7 +24,7 @@ module VersatileDiamond
 
           # Makes unit that correspond to passed nodes
           # @param [Array] nodes for which the unit will be maked
-          # @return [BaseUnit] the unit of code generation
+          # @return [BaseSpecieUnit] the unit of code generation
           def make_unit(nodes)
             if nodes.size == 1
               create_single_atom_unit(nodes.first)
@@ -43,8 +43,8 @@ module VersatileDiamond
 
           # Creates single atom unit by one node
           # @param [Node] node by which the single atom unit will be created
-          # @return [BaseUnit] the unit for generation code that depends from passed
-          #   node
+          # @return [BaseSpecieUnit] the unit for generation code that depends from
+          #   passed node
           def create_single_atom_unit(node)
             if node.none?
               SingleAtomUnit.new(*default_args, node.atom)
@@ -94,7 +94,7 @@ module VersatileDiamond
           # Creates multi atoms unit and remember used unique parent specie
           # @param [UniqueSpecie] unique_parent of handling specie
           # @param [Array] atoms that corresponds to atoms of unique parent specie
-          # @return [BaseUnit] the unit for generation code of algorithm
+          # @return [BaseSpecieUnit] the unit for generation code of algorithm
           def store_parent_and_create_unit(unique_parent, atoms)
             @used_unique_parents << unique_parent
             if @specie.find_root? && atoms.size == 1

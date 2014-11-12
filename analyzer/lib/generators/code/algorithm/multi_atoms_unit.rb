@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contains several atomic units
-        class MultiAtomsUnit < BaseUnit
+        class MultiAtomsUnit < BaseSpecieUnit
 
           # Also remembers the list of atomic units
           # @param [Array] args of #super method
