@@ -253,7 +253,7 @@ module VersatileDiamond
             if (amorph1->is(#{role_cm}))
             {
                 eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (neighbour->is(#{role_ctr}) && !anchor->hasBondWith(neighbour))
+                    if (neighbour->is(#{role_ctr}))
                     {
                         if (neighbour->hasBondWith(amorph1))
                         {
@@ -288,7 +288,7 @@ module VersatileDiamond
             {
                 Atom *atoms[2] = { species[0]->atom(1), species[1]->atom(1) };
                 eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (atoms[1] == neighbour && !atoms[0]->hasBondWith(neighbour))
+                    if (atoms[1] == neighbour)
                     {
                         ParentSpec *parents[2] = { species[0], species[1] };
                         create<CrossBridgeOnBridges>(parents);
@@ -320,7 +320,7 @@ module VersatileDiamond
                 ParentSpec *parent1 = anchor->specByRole<Dimer>(#{d_cr});
                 Atom *anchors[2] = { parent1->atom(0), anchor };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-                    if (neighbours[0]->is(#{role_csr}) && neighbours[1]->is(#{role_ctr}) && !anchors[0]->hasBondWith(neighbours[0]) && !anchors[1]->hasBondWith(neighbours[1]))
+                    if (neighbours[0]->is(#{role_csr}) && neighbours[1]->is(#{role_ctr}))
                     {
                         if (neighbours[1]->hasBondWith(amorph1))
                         {
@@ -355,7 +355,7 @@ module VersatileDiamond
                 Atom *atoms[4] = { species[0]->atom(4), species[0]->atom(1), species[1]->atom(4), species[1]->atom(1) };
                 Atom *anchors[2] = { atoms[2], atoms[3] };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-                    if (atoms[0] == neighbours[0] && atoms[1] == neighbours[1] && !anchors[0]->hasBondWith(neighbours[0]) && !anchors[1]->hasBondWith(neighbours[1]))
+                    if (atoms[0] == neighbours[0] && atoms[1] == neighbours[1])
                     {
                         ParentSpec *parents[2] = { species[0], species[1] };
                         create<CrossBridgeOnDimers>(parents);

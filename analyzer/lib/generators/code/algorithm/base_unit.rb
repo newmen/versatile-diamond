@@ -77,9 +77,9 @@ module VersatileDiamond
                 if defined_nbrs_with_names.empty?
                   check_role_condition(nbrs)
                 else
-                  comp_strs = defined_nbrs_with_names.map do |nbr, prev_name|
-                    "#{prev_name} == #{namer.name_of(nbr)}"
-                  end
+                  new_names = nbrs.map { |n| namer.name_of(n) }
+                  prv_names = defined_nbrs_with_names.map(&:last)
+                  comp_strs = prv_names.zip(new_names).map { |nms| nms.join(' == ') }
                   comp_strs.join(' && ')
                 end
 
@@ -129,6 +129,15 @@ module VersatileDiamond
           # @return [String] the variable name of target atom
           def target_atom_var_name
             namer.name_of(target_atom)
+          end
+
+          # Checks that atom has a bond like the passed
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which relations in current specie will be checked
+          # @param [Concepts::Bond] bond which existance will be checked
+          # @return [Boolean] is atom uses bond in current specie or not
+          def use_bond?(atom, bond)
+            spec.relations_of(atom).any? { |_, r| r == bond }
           end
 
           # Are all atoms has lattice
