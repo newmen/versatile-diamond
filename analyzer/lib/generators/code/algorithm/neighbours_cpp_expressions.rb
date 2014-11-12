@@ -237,8 +237,8 @@ module VersatileDiamond
           end
 
           # Makes code string with checking bond between passed atoms
-          # @param [Array] atoms the array with two atoms between which the bond will be
-          #   checked
+          # @param [Array] atoms the array with two atoms between which the bond will
+          #   be checked
           # @return [String] code with calling check bond function
           def check_bond_call(*atoms)
             first_var, second_var = atoms.map { |atom| namer.name_of(atom) }
@@ -246,8 +246,8 @@ module VersatileDiamond
           end
 
           # Gets the short name of relation for get neighbour atoms
-          # @param [Hash] rel_params the relation parameters by which short name will be
-          #   gotten
+          # @param [Hash] rel_params the relation parameters by which short name will
+          #   be gotten
           # @return [String] the short name of relation
           def short_relation_name(rel_params)
             "#{rel_params[:dir]}_#{rel_params[:face]}"
@@ -288,13 +288,26 @@ module VersatileDiamond
           # @param [Array] pairs of atoms between which bond existatnce will be checked
           # @return [String] the extended condition
           def append_check_bond_condition(original_condition, pairs)
-            parts = pairs.map do |a, b|
-              relation = relation_between(a, b)
-              sign = relation && relation.bond? ? '' : '!'
-              " && #{sign}#{check_bond_call(a, b)}"
+            parts = pairs.each_with_object([]) do |pair, acc|
+              relation = relation_between(*pair)
+              next unless relation
+
+              cb_call = check_bond_call(*pair)
+              if relation.bond?
+                acc << cb_call
+              else
+                any_uses_bond = pair.permutation.any? do |pr|
+                  al, bl = pr.map(&:lattice)
+                  bond = Concepts::Bond[relation.params]
+                  bond = al.opposite_relation(bl, bond) unless pr == pair
+                  use_bond?(pr.first, bond)
+                end
+
+                acc << "!#{cb_call}" if any_uses_bond
+              end
             end
 
-            "#{original_condition}#{parts.join}"
+            ([original_condition] + parts).join(' && ')
           end
         end
 
