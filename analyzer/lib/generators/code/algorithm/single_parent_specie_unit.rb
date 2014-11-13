@@ -4,18 +4,8 @@ module VersatileDiamond
       module Algorithm
 
         # Unit for bulding code that depends from parent specie
-        class SingleParentSpecieUnit < MultiAtomsUnit
-          include SymmetricCppExpressions
-          include SmartAtomCppExpressions
-          include ParentSpecieCppExpressions
-
-          # Also remember the unique parent specie
-          # @param [Array] args passes to #super method
-          # @param [UniqueSpecie] parent_specie the major specie of current unit
-          def initialize(*args, parent_specie, atoms)
-            super(*args, atoms)
-            @parent_specie = parent_specie
-          end
+        class SingleParentSpecieUnit < SingleSpecieUnit
+          include SpecieUnitBehavior
 
           # Assigns the name for internal parent specie, that it could be used when the
           # algorithm generating
@@ -40,21 +30,14 @@ module VersatileDiamond
           end
 
           def inspect
-            pn = "#{inspect_name_of(parent_specie)}:#{parent_specie.original.inspect}"
-            "SPSU:(#{pn}·[#{inspect_atoms_names}])"
+            "SPSU:(#{inspect_specie_atoms_names}])"
           end
 
         private
 
-          attr_reader :parent_specie
+          alias :parent_specie :target_specie
 
-          # Gets the using name of parent specie variable
-          # @return [String] the name of internal parent specie variable
-          def parent_specie_var_name
-            namer.name_of(parent_specie)
-          end
-
-          # Checks that internal parent specie is symmetric by target atom
+          # Checks that internal parent specie is symmetric by target atoms
           # @return [Boolean] is symmetric or not
           def symmetric?
             atoms.any? { |a| parent_specie.symmetric_atom?(twin(a)) }
@@ -77,7 +60,7 @@ module VersatileDiamond
           #   parent specie
           # @return [String] code where atom getting from parent specie
           # @override
-          def atom_from_parent_call(atom)
+          def atom_from_specie_call(atom)
             super(parent_specie, twin(atom))
           end
 
@@ -85,18 +68,24 @@ module VersatileDiamond
           # @return [String] the definition anchor atom variables code
           # @override
           def define_anchor_atoms_lines
-            self.class.superclass.instance_method(:first_assign!).bind(self).call
-            values = atoms.map(&method(:atom_from_parent_call))
+            assign_anchor_atoms_name!
+            values = atoms.map(&method(:atom_from_specie_call))
             define_var_line('Atom *', atoms, values)
           end
 
           # Gets the code line with definition of parent specie variable
           # @return [String] the definition of parent specie variable
-          def define_parent_specie_line
+          def define_target_specie_line
             avail_atom = atoms.find { |a| namer.name_of(a) }
             atom_call = spec_by_role_call(avail_atom)
             namer.assign_next('parent', parent_specie)
-            define_var_line('ParentSpec *', parent_specie, atom_call)
+            define_var_line("#{specie_type} *", parent_specie, atom_call)
+          end
+
+          # Gets the engine framework class for parent specie
+          # @return [String] the engine framework class for parent specie
+          def specie_type
+            'ParentSpec'
           end
 
           # Gets the code string with getting the parent specie from atom
@@ -106,14 +95,6 @@ module VersatileDiamond
           # @override
           def spec_by_role_call(atom)
             super(atom, parent_specie, twin(atom))
-          end
-
-          # Specifies arguments of super method
-          # @yield should return cpp code string
-          # @return [String] the code with symmetries iteration
-          # @override
-          def each_symmetry_lambda(&block)
-            super(parent_specie, 'ParentSpec', clojure_on_scope: false, &block)
           end
         end
 

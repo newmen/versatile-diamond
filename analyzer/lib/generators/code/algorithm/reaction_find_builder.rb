@@ -25,7 +25,9 @@ module VersatileDiamond
             unit = factory.make_unit(nodes)
             unit.first_assign!
 
-            combine_algorithm(nodes)
+            unit.check_symmetries do
+              combine_algorithm(nodes)
+            end
           end
 
         private
@@ -53,7 +55,7 @@ module VersatileDiamond
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
             ordered_graph_from(nodes).reduce([]) do |acc, (ns, rels)|
-              acc + accumulate_relations(ns, rels)
+              rels.empty? ? acc : acc + accumulate_relations(ns, rels)
             end
           end
         end
