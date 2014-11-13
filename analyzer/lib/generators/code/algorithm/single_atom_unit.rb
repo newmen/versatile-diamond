@@ -12,23 +12,12 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   target_atom for current unit
           def initialize(*args, target_atom)
-            super(*args)
-            @target_atom = target_atom
+            super(*args, [target_atom])
           end
 
           def inspect
             atom_props = Organizers::AtomProperties.new(spec, target_atom)
             "SAU:(#{inspect_name_of(target_atom)}:#{atom_props.to_s})"
-          end
-
-        private
-
-          attr_reader :target_atom
-
-          # Gets the array with one item
-          # @return [Array] the array with one target atom
-          def atoms
-            [target_atom]
           end
         end
 
