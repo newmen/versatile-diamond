@@ -40,7 +40,7 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_methyl_desorption }
-              let(:target_spec) { dept_methyl_on_bridge_base }
+              let(:target_spec) { dept_incoherent_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
     create<ForwardMethylDesorption>(target);
@@ -51,10 +51,12 @@ module VersatileDiamond
             it_behaves_like :check_code do
               subject { dept_sierpinski_drop }
               let(:target_spec) { dept_cross_bridge_on_bridges_base }
+              let(:base_specs) { [dept_methyl_on_bridge_base] }
+
               let(:find_algorithm) do
                 <<-CODE
-    target->eachSymmetry([](SpecificSpec *specie) {
-        create<ForwardSierpinskiDrop>(specie);
+    target->eachSymmetry([](SpecificSpec *specie1) {
+        create<ForwardSierpinskiDrop>(specie1);
     });
                 CODE
               end

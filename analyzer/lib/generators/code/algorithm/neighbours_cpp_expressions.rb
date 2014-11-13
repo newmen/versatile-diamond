@@ -7,7 +7,7 @@ module VersatileDiamond
         module NeighboursCppExpressions
 
           # Gets the code which checks relations between current unit and other unit
-          # @param [BaseSpecieUnit] other to which relations will be checked
+          # @param [BaseUnit] other to which relations will be checked
           # @param [Hash] rel_params the parameters of cheking relations
           # @yield should return cpp code string which will be implaced into code
           #   condition block
@@ -23,7 +23,7 @@ module VersatileDiamond
         protected
 
           # Gets the code which checks relations between current unit and other unit
-          # @param [BaseSpecieUnit] other from which relations will be checked
+          # @param [BaseUnit] other from which relations will be checked
           # @param [Hash] rel_params the parameters of cheking relations
           # @yield should return cpp code string which will be implaced into code
           #   condition block
@@ -37,7 +37,7 @@ module VersatileDiamond
           end
 
           # Generates code if target atom is latticed
-          # @param [BaseSpecieUnit] other from which the relations will be checked
+          # @param [BaseUnit] other from which the relations will be checked
           # @param [Hash] rev_rel_params the parameters of relations from self unit to
           #   other unit
           # @yield should return cpp code string for condition body
@@ -56,7 +56,7 @@ module VersatileDiamond
           # Generates code if target atom isn't latticed and other unit isn't multi
           # atomic
           #
-          # @param [BaseSpecieUnit] other from which the relation will be checked
+          # @param [BaseUnit] other from which the relation will be checked
           # @yield should return cpp code string for condition body
           # @return [String] the cpp code whith checking current amorphous atom
           def reverse_check_amorph_relations(other, &block)
@@ -167,7 +167,7 @@ module VersatileDiamond
           # @param [Hash] rel_params see at #each_nbrs_lambda same argument
           # @return [Array] the array of arguments for each neighbours operation
           def each_nbrs_call_args(nbrs, rel_params)
-            method_args = [atoms_var_name, full_relation_name_ref(rel_params)]
+            method_args = [namer.name_of(atoms), full_relation_name_ref(rel_params)]
             clojure_args = ['&']
 
             nbrs_var_name = namer.name_of(nbrs)

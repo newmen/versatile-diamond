@@ -64,6 +64,7 @@ module VersatileDiamond
           :high_bridge,
           :hydrogenated_bridge,
           :hydrogenated_incoherent_bridge,
+          :incoherent_methyl_on_bridge,
           :methyl,
           :methyl_on_activated_bridge,
           :methyl_on_bridge,

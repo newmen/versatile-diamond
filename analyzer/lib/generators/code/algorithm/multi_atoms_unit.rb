@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contains several atomic units
-        class MultiAtomsUnit < BaseSpecieUnit
+        class MultiAtomsUnit < BaseUnit
 
           # Also remembers the list of atomic units
           # @param [Array] args of #super method
@@ -41,13 +41,13 @@ module VersatileDiamond
             else
               define_parent_line =
                 if atoms.any? { |a| !namer.name_of(a) }
-                  define_parent_specie_line
+                  define_target_specie_line
                 else
                   ''
                 end
 
               values = atoms.map do |a|
-                namer.name_of(a) || atom_from_parent_call(a)
+                namer.name_of(a) || atom_from_specie_call(a)
               end
 
               namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)

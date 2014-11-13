@@ -7,10 +7,11 @@ module VersatileDiamond
 
         # Unit for bulding code that depends from scope of species
         class MultiParentSpeciesUnit < SingleAtomUnit
-          include SymmetricCppExpressions
-          include SmartAtomCppExpressions
-          include ParentSpecieCppExpressions
+          include SpecieUnitBehavior
           include MultiParentSpeciesCppExpressions
+          include SmartAtomCppExpressions
+          include SpecieCppExpressions
+          include SymmetricCppExpressions
           include ProcsReducer
 
           class << self
@@ -224,7 +225,7 @@ module VersatileDiamond
             parent_calls =
               parents.each_with_object([]) do |parent, acc|
                 parent_to_uniq_twins[parent].each do |twin|
-                  acc << atom_from_parent_call(parent, twin)
+                  acc << atom_from_specie_call(parent, twin)
                 end
               end
 
@@ -287,7 +288,7 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
           def symmetric_atom_condition(parent, twin, &block)
-            parent_call = atom_from_parent_call(parent, twin)
+            parent_call = atom_from_specie_call(parent, twin)
             code_condition("#{target_atom_var_name} == #{parent_call}", &block)
           end
 
@@ -372,7 +373,7 @@ module VersatileDiamond
             namer.assign_next('atom', target_atom)
             namer.assign_next('specie', undef_parent)
 
-            parent_call = atom_from_parent_call(avail_parent, undef_twin)
+            parent_call = atom_from_specie_call(avail_parent, undef_twin)
             atom_call = spec_by_role_call(undef_parent)
 
             define_var_line('Atom *', target_atom, parent_call) +
