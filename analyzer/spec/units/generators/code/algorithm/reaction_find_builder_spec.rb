@@ -19,6 +19,7 @@ module VersatileDiamond
               typical_reactions: [subject])
           end
 
+          let(:classifier) { generator.classifier }
           let(:code_reaction) { generator.reaction_class(subject.name) }
           let(:code_specie) { generator.specie_class(target_spec.name) }
           let(:builder) { described_class.new(generator, code_reaction, code_specie) }
@@ -68,9 +69,9 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(0);
-    eachNeighbour(anchor, &Diamond::cross_100, [target](Atom *neighbour) {
-        if (neighbour->is(#{role_cb}))
+    Atom *anchor = target->atom(1);
+    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
+        if (neighbour->is(#{other_role_ct}))
         {
             SpecificSpec *targets[2] = { target, neighbour->specByRole<BridgeCTs>(#{other_role_ct}) };
             create<ReverseSierpinskiDrop>(targets);

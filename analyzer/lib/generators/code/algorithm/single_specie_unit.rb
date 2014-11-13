@@ -7,7 +7,6 @@ module VersatileDiamond
         # @abstract
         class SingleSpecieUnit < MultiAtomsUnit
           include SymmetricCppExpressions
-          include SmartAtomCppExpressions
           include SpecieCppExpressions
 
           # Also remember the unique parent specie

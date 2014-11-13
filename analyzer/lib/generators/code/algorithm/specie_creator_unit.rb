@@ -43,7 +43,7 @@ module VersatileDiamond
           alias :original_specie :original_target
           alias :parent_species :defined_species
 
-          # Finds atoms that has twin in passed parent
+          # Finds atom that has twin in passed parent
           # @param [UniqueSpecie] parent for which atom will be found
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the twin that belongs to passed parent

@@ -23,8 +23,8 @@ module VersatileDiamond
           # @return [String] the cpp code string
           def check_existence(else_prefix = '', &block)
             define_anchor_atoms_lines +
-              code_condition(check_role_condition(atoms), else_prefix) do
-                code_condition(check_specie_condition(atoms), &block)
+              code_condition(check_role_condition, else_prefix) do
+                code_condition(check_specie_condition, &block)
               end
           end
 
@@ -53,9 +53,8 @@ module VersatileDiamond
           # Gets a cpp code string that contain call a method for check existing
           # current specie in atom
           #
-          # @param [Array] atoms which role will be checked in code
           # @return [String] the string with cpp condition
-          def check_specie_condition(atoms)
+          def check_specie_condition
             method_name = original_specie.find_endpoint? ? 'hasRole' : 'checkAndFind'
             combine_condition(atoms, '||') do |var, atom|
               "!#{var}->#{method_name}(#{original_specie.enum_name}, #{role(atom)})"

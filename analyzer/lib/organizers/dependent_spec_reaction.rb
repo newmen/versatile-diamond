@@ -20,7 +20,7 @@ module VersatileDiamond
       # Gets the list of surface source specs
       # @return [Array] the list of source specs without simple and gas specs
       def surface_source
-        source.reject(&:simple?).reject(&:gas?)
+        reject_not_surface(source)
       end
 
       # Collects links positions used atoms of reactants
@@ -61,6 +61,27 @@ module VersatileDiamond
         end
       end
 
+      # Checks possible relation between passed instances
+      # @param [Array] first_sa the spec-atom instance from which relation will be
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   second_a the atom which could have relation with first spec-atom instance
+      # @return [Concepts::Bond] the relation between passed instances or nil
+      def relation_between_by_saa(first_sa, second_a)
+        second_sa = links.keys.find { |sa| sa != first_sa && sa.last == second_a }
+        raise 'Undefined second atom' unless second_sa
+
+        rb = relation_between(first_sa, second_sa)
+        return rb if rb
+        return nil unless surface_source.size > 1 && surface_products.size == 1
+
+        # get atoms of big product spec
+        product_atoms = [first_sa, second_sa].map do |sa|
+          (psa = changes[sa]) && psa.last
+        end
+
+        surface_products.first.relation_between(*product_atoms)
+      end
+
     private
 
       # Checks that positions between reactants is setted
@@ -69,6 +90,18 @@ module VersatileDiamond
         if surface_source.size > 1 && reaction.links.empty?
           raise %Q(No positions between atoms of reaction "#{name}")
         end
+      end
+
+      # Gets the list of surface product specs
+      # @return [Array] the list of product specs without simple and gas specs
+      def surface_products
+        reject_not_surface(products)
+      end
+
+      # Gets the list of specs without simple and gas specs
+      # @return [Array] the array of surface specs
+      def reject_not_surface(specs)
+        specs.reject(&:simple?).reject(&:gas?)
       end
 
       # Collects all links from positions between reactants and from reactant links

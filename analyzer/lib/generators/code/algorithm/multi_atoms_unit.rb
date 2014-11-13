@@ -6,21 +6,11 @@ module VersatileDiamond
         # Contains several atomic units
         class MultiAtomsUnit < BaseUnit
 
-          # Also remembers the list of atomic units
-          # @param [Array] args of #super method
-          # @param [Array] atoms which will be used for code generation
-          def initialize(*args, atoms)
-            super(*args)
-            @atoms = atoms
-          end
-
           def inspect
             "MASU:(#{inspect_atoms_names})"
           end
 
         private
-
-          attr_reader :atoms
 
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_atoms_names
@@ -35,7 +25,7 @@ module VersatileDiamond
           # them need
           #
           # @return [String] the lines with defined anchor atoms variable
-          def define_nbrs_anchors_lines
+          def define_nbrs_specie_anchors_lines
             if single?
               super
             else
@@ -46,13 +36,19 @@ module VersatileDiamond
                   ''
                 end
 
-              values = atoms.map do |a|
-                namer.name_of(a) || atom_from_specie_call(a)
-              end
-
-              namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)
-              define_parent_line + define_var_line('Atom *', atoms, values)
+              define_parent_line + define_nbrs_anchors_line
             end
+          end
+
+          # Gets code line with defined anchors atoms for each neighbours operation
+          # @return [String] the code line with defined achor atoms variable
+          def define_nbrs_anchors_line
+            values = atoms.map do |a|
+              namer.name_of(a) || atom_from_specie_call(a)
+            end
+
+            namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)
+            define_var_line('Atom *', atoms, values)
           end
         end
 

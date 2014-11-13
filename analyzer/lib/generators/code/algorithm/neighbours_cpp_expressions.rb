@@ -13,28 +13,14 @@ module VersatileDiamond
           #   condition block
           # @return [String] the code with checking relations between units
           def check_relations(other, rel_params, &block)
-            if latticed?
-              other.reverse_check_relations(self, rel_params, &block)
+            if latticed? && other.latticed?
+              check_crystal_relations(other, rel_params, &block)
             else
-              other.reverse_check_amorph_relations(self, &block)
+              check_amorph_relations(other, &block)
             end
           end
 
         protected
-
-          # Gets the code which checks relations between current unit and other unit
-          # @param [BaseUnit] other from which relations will be checked
-          # @param [Hash] rel_params the parameters of cheking relations
-          # @yield should return cpp code string which will be implaced into code
-          #   condition block
-          # @return [String] the code with checking relations between units
-          def reverse_check_relations(other, rel_params, &block)
-            if latticed?
-              reverse_check_crystal_relations(other, rel_params, &block)
-            else
-              reverse_check_amorph_relations(other, &block)
-            end
-          end
 
           # Generates code if target atom is latticed
           # @param [BaseUnit] other from which the relations will be checked
@@ -43,13 +29,13 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the cpp code with expressions of walking through crystal
           #   lattice
-          def reverse_check_crystal_relations(other, rev_rel_params, &block)
+          def check_crystal_relations(other, rev_rel_params, &block)
             if single? == other.single?
-              other.each_nbrs_lambda(atoms, rev_rel_params, &block)
+              each_nbrs_lambda(other, rev_rel_params, &block)
             elsif single?
-              other.many_to_one_condition(target_atom, rev_rel_params, &block)
+              one_to_many_condition(other, rev_rel_params, &block)
             else # other.single?
-              other.one_to_many_condition(atoms, rev_rel_params, &block)
+              many_to_one_condition(other, rev_rel_params, &block)
             end
           end
 
@@ -59,15 +45,10 @@ module VersatileDiamond
           # @param [BaseUnit] other from which the relation will be checked
           # @yield should return cpp code string for condition body
           # @return [String] the cpp code whith checking current amorphous atom
-          def reverse_check_amorph_relations(other, &block)
+          def check_amorph_relations(other, &block)
             if single?
-              if latticed?
-                raise 'No algorithm implementation for next amorph atom case'
-              elsif !other.single?
-                raise 'Wrong initial backbone of algorithm'
-              else
-                other.amorph_nbr_condition(target_atom, &block)
-              end
+              raise 'Wrong initial backbone of algorithm' if !other.single?
+              amorph_nbr_condition(other, &block)
             else
               raise 'No algorithm implementation for next many amorph atoms case'
             end
@@ -76,27 +57,28 @@ module VersatileDiamond
           # Generates the code for case when to need to find one atom from several
           # atoms by using the properties of crystal lattice
           #
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   nbr the neighbour atom which will be achived through crystal lattice
+          # @param [BaseUnit] other the unit neighbour atom which could be achived
+          #   through crystal lattice
           # @param [Hash] rel_params the parameters of relations by which the target
           #   neighbour atoms could be achived
           # @yield should return cpp code which will be executed if target atom will
           #   be achived
           # @return [String] the cpp algorithm code
           # TODO: not tested
-          def many_to_one_condition(nbr, rel_params, &block)
+          def many_to_one_condition(other, rel_params, &block)
             unless target_atom.relations_limits[rel_params] == atoms.size
               raise 'Incorrect getting one atom from many'
             end
 
+            nbr = other.target_atom
             namer.assign_next('neighbour', nbr)
             crystal_call_str = crystal_atom_call(rel_params)
             define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
 
             nbr_var_name = namer.name_of(nbr)
-            condition_str = "#{nbr_var_name} && #{check_role_condition([nbr])}"
+            condition_str = "#{nbr_var_name} && #{other.check_role_condition}"
 
-            with_bond = atoms_with_bond(nbr)
+            with_bond = atoms_with_bond_to(other)
             unless with_bond.empty?
               condition_str = append_check_bond_condition(condition_str, with_bond)
             end
@@ -107,20 +89,25 @@ module VersatileDiamond
           # Gets a code with checking all crystal neighbours of target atom along
           # relations with same as passed parameters
           #
-          # @param [Array] nbrs the available neighbours of target atom
+          # @param [BaseUnit] other the unit with available neighbours of target atom
           # @param [Hash] rel_params the relation parameters through which neighbours
           #   was gotten
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
-          def one_to_many_condition(nbrs, rel_params, &block)
+          def one_to_many_condition(other, rel_params, &block)
+            nbrs = other.atoms
+            unless target_atom.relations_limits[rel_params] == nbrs.size
+              raise 'Incorrect getting many atoms from one'
+            end
+
             namer.assign('neighbour', nbrs)
             crystal_call_str = crystal_nbrs_call(rel_params)
             define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
 
             nbrs_var_name = namer.name_of(nbrs)
-            condition_str = "#{nbrs_var_name}.all() && #{check_role_condition(nbrs)}"
+            condition_str = "#{nbrs_var_name}.all() && #{other.check_role_condition}"
 
-            with_bond = nbrs_with_bond(nbrs)
+            with_bond = target_atom_with_bond_to(other)
             unless with_bond.empty?
               condition_str = append_check_bond_condition(condition_str, with_bond)
             end
@@ -129,11 +116,12 @@ module VersatileDiamond
           end
 
           # Gets a code with checking amorph neighbour of target atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   nbr the amorph atom which is available from anchor
+          # @param [BaseUnit] other unit with amorph atom which is achivable from
+          #   current target atom
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
-          def amorph_nbr_condition(nbr, &block)
+          def amorph_nbr_condition(other, &block)
+            nbr = other.target_atom
             if namer.name_of(nbr)
               condition_str = check_bond_call(target_atom, nbr)
               code_condition(condition_str, &block)
@@ -141,22 +129,24 @@ module VersatileDiamond
               namer.assign_next('amorph', nbr)
               amorph_nbr_call = "#{target_atom_var_name}->amorphNeighbour()"
               define_nbr_line = define_var_line('Atom *', nbr, amorph_nbr_call)
-              condition_str = check_role_condition([nbr])
+              condition_str = other.check_role_condition
               define_nbr_line + code_condition(condition_str, &block)
             end
           end
 
           # Provides a basic logic for using eachNeighbours method of engine framework
-          # @param [Array] nbrs the neighbour atoms to which iteration will do
+          # @param [BaseUnit] other the unit with neighbour atoms to which iteration
+          #   will do
           # @param [Hash] rel_params the relation parameters through which neighbours
           #   was gotten
           # @yield should return cpp code string of lambda body
           # @return [String] the string with cpp code
-          def each_nbrs_lambda(nbrs, rel_params, &block)
+          def each_nbrs_lambda(other, rel_params, &block)
+            nbrs = other.atoms
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
             namer.assign('neighbour', nbrs)
-            define_nbrs_anchors_lines +
+            define_nbrs_specie_anchors_lines +
               code_lambda(*each_nbrs_call_args(nbrs, rel_params), &block)
           end
 
@@ -186,7 +176,7 @@ module VersatileDiamond
           # operation
           #
           # @return [String] the empty string
-          def define_nbrs_anchors_lines
+          def define_nbrs_specie_anchors_lines
             ''
           end
 
@@ -213,19 +203,22 @@ module VersatileDiamond
 
           # Gets the list of atoms pairs between which has a relation, where the first
           # item of pair is atom of current node and the second item is passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   nbr the neighbour atom the bond from which to each internal atom will be
-          #   checked
-          # @return [Array] the list of pairs of bonded atoms
-          def atoms_with_bond(nbr)
-            atoms.zip([nbr] * atoms.size).select(&method(:check_bond))
+          # @param [BaseUnit] other the unit with neighbour atom the bond from which to
+          #   each internal atom will be checked
+          # @return [Array] the list of pairs of bonded atoms with units
+          def atoms_with_bond_to(other)
+            nbr = other.target_atom
+            pairs = atoms.zip([nbr] * atoms.size).select(&method(:check_bond))
+            append_units(other, pairs)
           end
 
           # Selects neighbour atoms which have bond with target atom
-          # @param [Array] nbrs the cheking neighbour atoms
-          # @return [Array] the list of pairs where between each pair has a bond
-          def nbrs_with_bond(nbrs)
-            ([target_atom] * nbrs.size).zip(nbrs).select(&method(:check_bond))
+          # @param [BaseUnit] other unit with the cheking neighbour atoms
+          # @return [Array] the list of pairs where bond has between each pair
+          def target_atom_with_bond_to(other)
+            nbrs = other.atoms
+            pairs = ([target_atom] * nbrs.size).zip(nbrs).select(&method(:check_bond))
+            append_units(other, pairs)
           end
 
           # Selects pairs which has bond between each other
@@ -234,6 +227,15 @@ module VersatileDiamond
           def check_bond(pair)
             rel = relation_between(*pair)
             rel && rel.bond?
+          end
+
+          # Appends unit to each atom of each pair
+          # @param [BaseUnit] other unit which appended to eacn second atom
+          # @param [Array] pairs of atoms to each pair of which the units will be
+          #   appended
+          # @return [Array] the array of pairs where each pair is unit with atom
+          def append_units(other, pairs)
+            pairs.map { |f, t| [[self, f], [other, t]] }
           end
 
           # Makes code string with checking bond between passed atoms
@@ -287,23 +289,25 @@ module VersatileDiamond
           # @param [String] original_condition to which new conditions will be appended
           # @param [Array] pairs of atoms between which bond existatnce will be checked
           # @return [String] the extended condition
-          def append_check_bond_condition(original_condition, pairs)
-            parts = pairs.each_with_object([]) do |pair, acc|
-              relation = relation_between(*pair)
+          def append_check_bond_condition(original_condition, units_with_atoms)
+            parts = units_with_atoms.each_with_object([]) do |pairs, acc|
+              units_pair, atoms_pair = pairs.transpose
+              relation = relation_between(*atoms_pair)
               next unless relation
 
-              cb_call = check_bond_call(*pair)
+              cb_call = check_bond_call(*atoms_pair)
               if relation.bond?
                 acc << cb_call
               else
-                any_uses_bond = pair.permutation.any? do |pr|
-                  al, bl = pr.map(&:lattice)
+                any_uses_relation = pairs.permutation.any? do |prs|
+                  us, as = prs.transpose
+                  al, bl = as.map(&:lattice)
                   bond = Concepts::Bond[relation.params]
-                  bond = al.opposite_relation(bl, bond) unless pr == pair
-                  use_bond?(pr.first, bond)
+                  bond = al.opposite_relation(bl, bond) unless as == atoms_pair
+                  us.first.use_bond?(as.first, bond.params)
                 end
 
-                acc << "!#{cb_call}" if any_uses_bond
+                acc << "!#{cb_call}" if any_uses_relation
               end
             end
 

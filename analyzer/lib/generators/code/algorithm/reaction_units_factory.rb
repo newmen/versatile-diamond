@@ -8,7 +8,7 @@ module VersatileDiamond
 
           # Initializes reaction find algorithm units factory
           # @param [EngineCode] generator the major code generator
-          # @param [Reaction] reaction for which the algorithm is building
+          # @param [TypicalReaction] reaction for which the algorithm is building
           def initialize(generator, reaction)
             super(generator)
             @reaction = reaction
@@ -25,7 +25,13 @@ module VersatileDiamond
             @used_unique_species << unique_specie
 
             args = default_args
-            args += [unique_specie.original, unique_specie, nodes.map(&:atom)]
+            args += [
+              unique_specie.original,
+              unique_specie,
+              nodes.map(&:atom),
+              @reaction.reaction
+            ]
+
             ReactantUnit.new(*args)
           end
 

@@ -6,6 +6,7 @@ module VersatileDiamond
         # Unit for bulding code that depends from parent specie
         class SingleParentSpecieUnit < SingleSpecieUnit
           include SpecieUnitBehavior
+          include SmartAtomCppExpressions
 
           # Assigns the name for internal parent specie, that it could be used when the
           # algorithm generating
