@@ -11,7 +11,7 @@ module VersatileDiamond
             # @param [Array] nodes from which the atoms will be gotten
             # @return [Array] the array of atoms
             def grub_atoms(nodes)
-              nodes.map { |node| node.blunt? ? :no_atom : node.atom }
+              nodes.map(&:atom)
             end
 
             # Collects the list of unique nodes which used in passed graph

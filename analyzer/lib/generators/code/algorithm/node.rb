@@ -4,10 +4,12 @@ module VersatileDiamond
       module Algorithm
 
         # Also contains the target atom
-        class Node < BluntNode
+        class Node
+          include Modules::OrderProvider
           extend Forwardable
 
-          attr_reader :atom
+          attr_reader :uniq_specie, :atom
+          def_delegators :uniq_specie, :none?, :scope?
           def_delegators :atom, :lattice, :relations_limits
 
           # Initializes the node object
@@ -18,22 +20,20 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which was a vertex of original graph
           def initialize(original_specie, uniq_specie, atom)
-            super(original_specie, uniq_specie)
+            @original_specie = original_specie
+            @uniq_specie = uniq_specie
             @atom = atom
           end
 
-          # At the beginning of nodes sequence puts the biggest nodes
+          # Compares current node with another node
           # @param [Node] other comparing node
           # @return [Integer] the comparing result
           def <=> (other)
-            super { order(other, self, :properties) }
-          end
-
-          # Typical node always isn't blunt
-          # @return [Boolean] false
-          # @override
-          def blunt?
-            false
+            typed_order(uniq_specie, other.uniq_specie, :none?) do
+              typed_order(other.uniq_specie, uniq_specie, :scope?) do
+                order(other, self, :properties)
+              end
+            end
           end
 
           # Checks that target atom is anchor in original specie

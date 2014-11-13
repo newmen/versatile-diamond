@@ -141,8 +141,7 @@ module VersatileDiamond
             end
             let(:grouped_graph) do
               {
-                [cb] => [],
-                [cm] => []
+                [cb, cm] => [],
               }
             end
           end

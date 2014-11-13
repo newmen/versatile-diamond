@@ -23,7 +23,7 @@ module VersatileDiamond
           def make_unit(nodes)
             @used_unique_species << nodes.first.uniq_specie
 
-            if nodes.size == 1 && nodes.first.blunt?
+            if nodes.size == 1
               BaseReactionUnit.new(*default_args_for(nodes))
             else
               ReactantUnit.new(*default_args_for(nodes), nodes.map(&:atom))

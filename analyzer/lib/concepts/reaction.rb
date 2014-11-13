@@ -170,9 +170,10 @@ module VersatileDiamond
       end
 
       # Gets atom changes list
-      # @return [Array, Array] the arrays of pairs spec and atom
+      # @return [Hash] the hash of changes where keys are spec-atom of source and
+      #   values are spec-atom of products
       def changes
-        MappingResult.rezip(@mapping.changes)
+        Hash[MappingResult.rezip(@mapping.changes)]
       end
 
       # Gets number of changed atoms

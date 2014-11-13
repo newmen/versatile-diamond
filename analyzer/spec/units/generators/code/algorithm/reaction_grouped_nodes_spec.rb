@@ -1,3 +1,4 @@
+
 require 'spec_helper'
 
 module VersatileDiamond
@@ -13,21 +14,40 @@ module VersatileDiamond
           let(:big_links_method) { :original_links }
           def node_to_vertex(node); [node.uniq_specie.spec.spec, node.atom] end
 
-          describe 'without relations' do
-            let(:flatten_face_grouped_atoms) { [] }
-            let(:nodes_list) { [] }
-            let(:grouped_graph) { {} }
+          describe 'without positions && just one atom' do
+            let(:flatten_face_grouped_atoms) { [[atom]] }
+            let(:nodes_list) { [[UniqueSpecie, atom]] }
+            let(:grouped_graph) { { [atom] => [] } }
 
             it_behaves_like :check_grouped_nodes_graph do
               subject { dept_methyl_activation }
+              let(:atom) { methyl_on_bridge_base.atom(:cm) }
             end
 
             it_behaves_like :check_grouped_nodes_graph do
               subject { dept_methyl_desorption }
+              let(:atom) { methyl_on_bridge_base.atom(:cb) }
             end
+          end
 
-            it_behaves_like :check_grouped_nodes_graph do
-              subject { dept_sierpinski_drop }
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_sierpinski_drop }
+            let(:a1) { cross_bridge_on_bridges_base.atom(:ctl) }
+            let(:a2) { cross_bridge_on_bridges_base.atom(:ctr) }
+            let(:a3) { cross_bridge_on_bridges_base.atom(:cm) }
+
+            let(:flatten_face_grouped_atoms) { [[a1, a2], [a3]] }
+            let(:nodes_list) do
+              [
+                [UniqueSpecie, a1],
+                [UniqueSpecie, a2],
+                [UniqueSpecie, a3]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [a1, a2, a3] => []
+              }
             end
           end
 
