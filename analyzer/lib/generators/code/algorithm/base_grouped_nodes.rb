@@ -56,7 +56,7 @@ module VersatileDiamond
               combine_similar_relations(group, &store_result)
             end
 
-            @_final_graph = result
+            @_final_graph = collaps_similar_key_nodes(result)
           end
 
         private
@@ -72,6 +72,35 @@ module VersatileDiamond
                 [get_node(v), relation]
               end
             end
+          end
+
+          # Groups key nodes of passed graph if them haven't relations and contains
+          # similar unique species
+          #
+          # @param [Hash] graph which will be collapsed
+          # @return [Hash] the collapsed graph
+          def collaps_similar_key_nodes(graph)
+            result = {}
+            shrink_graph = graph.dup
+            until shrink_graph.empty?
+              nodes, rels = shrink_graph.shift
+
+              uniq_specie_nodes = nodes.uniq(&:uniq_specie)
+              if uniq_specie_nodes.size == 1 && rels.empty?
+                uniq_specie = uniq_specie_nodes.first.uniq_specie
+                similar_nodes = nodes
+                shrink_graph.each do |ns, rs|
+                  if rs.empty? && ns.all? { |n| n.uniq_specie == uniq_specie }
+                    shrink_graph.delete(ns)
+                    similar_nodes += ns
+                  end
+                end
+                result[similar_nodes] = []
+              else
+                result[nodes] = rels
+              end
+            end
+            result
           end
 
           # Gets nodes that used in small links graph

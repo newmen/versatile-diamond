@@ -385,19 +385,16 @@ module VersatileDiamond
       end
 
       describe '#changes' do
-        it { expect(dimer_formation.changes).to match_array([
-            [
-              [activated_bridge, activated_bridge.atom(:ct)],
-              [dimer_dup_ff, dimer_dup_ff.atom(:cr)],
-            ],
-            [
-              [
-                activated_incoherent_bridge,
-                activated_incoherent_bridge.atom(:ct)
-              ],
-              [dimer_dup_ff, dimer_dup_ff.atom(:cl)],
-            ]
-          ]) }
+        let(:s1) { activated_bridge }
+        let(:s2) { activated_incoherent_bridge }
+        let(:p1) { dimer_dup_ff }
+        let(:changes) do
+          {
+            [s1, s1.atom(:ct)] => [p1, p1.atom(:cr)],
+            [s2, s2.atom(:ct)] => [p1, p1.atom(:cl)]
+          }
+        end
+        it { expect(dimer_formation.changes).to match_array(changes) }
       end
 
       describe '#changes_num' do

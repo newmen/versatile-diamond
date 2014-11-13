@@ -11,6 +11,10 @@ module VersatileDiamond
       end
 
       shared_examples_for :check_links do
+        describe '#changes' do
+          it { expect(subject.changes).to eq(subject.reaction.changes) }
+        end
+
         describe '#original_links' do
           it { expect(subject.original_links).to match_graph(original_links) }
         end

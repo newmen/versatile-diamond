@@ -36,13 +36,9 @@ module VersatileDiamond
               acc[nodes] = rels if all_of_current_specie?(nodes)
             end
 
-            if result.empty?
-              result[create_empty_nodes] = []
-            else
-              other_side_nodes = result.flat_map { |_, rels| rels.map(&:first) }
-              other_side_nodes.each do |nodes|
-                result = extend_graph(result, nodes) unless nodes.any?(&:anchor?)
-              end
+            other_side_nodes = result.flat_map { |_, rels| rels.map(&:first) }
+            other_side_nodes.each do |nodes|
+              result = extend_graph(result, nodes) unless nodes.any?(&:anchor?)
             end
 
             @_final_graph = result

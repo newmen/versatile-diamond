@@ -57,7 +57,7 @@ module VersatileDiamond
           # Checks that internal parent specie is symmetric by target atom
           # @return [Boolean] is symmetric or not
           def symmetric?
-            parent_specie.symmetric_atom?(twin(target_atom))
+            atoms.any? { |a| parent_specie.symmetric_atom?(twin(a)) }
           end
 
           # Gets the twin atom for passed atom

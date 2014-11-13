@@ -30,7 +30,15 @@ module VersatileDiamond
           # Makes the nodes graph from positions of target reaction
           # @return [Hash] the small graph of nodes
           def small_graph
-            @_small_graph ||= transform_links(@reaction.clean_links)
+            return @_small_graph if @_small_graph
+
+            result = transform_links(@reaction.clean_links)
+            if result.empty?
+              surf_chs = @reaction.changes.reject { |_, (s, _)| s.simple? || s.gas? }
+              result = transform_links(surf_chs.map { |sa, _| [sa, []] })
+            end
+
+            @_small_graph = result
           end
 
           # Detects relation between passed nodes

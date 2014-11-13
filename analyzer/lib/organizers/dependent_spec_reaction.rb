@@ -5,6 +5,9 @@ module VersatileDiamond
     class DependentSpecReaction < DependentReaction
       include Modules::RelationBetweenChecker
       include LinksCleaner
+      extend Forwardable
+
+      def_delegator :reaction, :changes
 
       # Initializes dependent spec reation
       def initialize(*)

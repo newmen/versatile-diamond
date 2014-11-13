@@ -16,28 +16,37 @@ module VersatileDiamond
           end
 
           let(:reaction) { generator.reaction_class(subject.name) }
-          let(:specie) { generator.specie_class(spec.name) }
+          let(:specie) { generator.specie_class(target_spec.name) }
           let(:backbone) { described_class.new(generator, reaction, specie) }
 
           describe '#final_graph' do
-            describe 'without relations' do
+            describe 'without positions' do
               let(:final_graph) do
-                { [:no_atom] => [] }
+                { atoms => [] }
               end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_activation }
-                let(:spec) { methyl_on_bridge_base }
+                let(:target_spec) { methyl_on_bridge_base }
+                let(:atoms) { [target_spec.atom(:cm)] }
               end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_desorption }
-                let(:spec) { incoherent_methyl_on_bridge }
+                let(:target_spec) { incoherent_methyl_on_bridge }
+                let(:atoms) { [target_spec.atom(:cb)] }
               end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_sierpinski_drop }
-                let(:spec) { cross_bridge_on_bridges_base }
+                let(:target_spec) { cross_bridge_on_bridges_base }
+                let(:atoms) do
+                  [
+                    target_spec.atom(:ctl),
+                    target_spec.atom(:ctr),
+                    target_spec.atom(:cm)
+                  ]
+                end
               end
             end
 
@@ -47,7 +56,7 @@ module VersatileDiamond
               let(:a2) { activated_incoherent_bridge.atom(:ct) }
 
               it_behaves_like :check_finite_graph do
-                let(:spec) { activated_bridge }
+                let(:target_spec) { activated_bridge }
                 let(:final_graph) do
                   {
                     [a1] => [[[a2], param_100_front]]
@@ -56,7 +65,7 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_finite_graph do
-                let(:spec) { activated_incoherent_bridge }
+                let(:target_spec) { activated_incoherent_bridge }
                 let(:final_graph) do
                   {
                     [a2] => [[[a1], param_100_front]]
@@ -73,7 +82,7 @@ module VersatileDiamond
               let(:ad2) { activated_dimer.atom(:cl) }
 
               it_behaves_like :check_finite_graph do
-                let(:spec) { activated_methyl_on_bridge }
+                let(:target_spec) { activated_methyl_on_bridge }
                 let(:final_graph) do
                   {
                     [am1, am2] => [[[ad2, ad1], param_100_cross]]
@@ -84,7 +93,7 @@ module VersatileDiamond
               it_behaves_like :check_finite_graph do
                 let(:base_specs) { [dept_bridge_base] }
                 let(:specific_specs) { [dept_activated_methyl_on_bridge] }
-                let(:spec) { activated_dimer }
+                let(:target_spec) { activated_dimer }
                 let(:amb) { activated_methyl_on_bridge.atom(:cb) }
                 let(:amm) { activated_methyl_on_bridge.atom(:cm) }
                 let(:final_graph) do
@@ -103,13 +112,13 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               subject { dept_methyl_activation }
-              let(:spec) { methyl_on_bridge_base }
-              let(:points_list) { [[:no_atom]] }
+              let(:target_spec) { methyl_on_bridge_base }
+              let(:points_list) { [[target_spec.atom(:cm)]] }
             end
 
             it_behaves_like :check_entry_nodes do
               subject { dept_dimer_formation }
-              let(:spec) { activated_bridge }
+              let(:target_spec) { activated_bridge }
               let(:points_list) { [[activated_bridge.atom(:ct)]] }
             end
 
@@ -117,7 +126,7 @@ module VersatileDiamond
               subject { dept_methyl_incorporation }
 
               it_behaves_like :check_entry_nodes do
-                let(:spec) { activated_methyl_on_bridge }
+                let(:target_spec) { activated_methyl_on_bridge }
                 let(:am1) { activated_methyl_on_bridge.atom(:cr) }
                 let(:am2) { activated_methyl_on_bridge.atom(:cl) }
                 let(:points_list) { [[am1, am2]] }
@@ -125,7 +134,7 @@ module VersatileDiamond
 
               it_behaves_like :check_entry_nodes do
                 let(:base_specs) { [dept_bridge_base] }
-                let(:spec) { activated_dimer }
+                let(:target_spec) { activated_dimer }
                 let(:ad1) { activated_dimer.atom(:cr) }
                 let(:ad2) { activated_dimer.atom(:cl) }
                 let(:points_list) { [[ad2, ad1]] }
@@ -136,17 +145,17 @@ module VersatileDiamond
           describe '#ordered_graph_from' do
             it_behaves_like :check_ordered_graph do
               subject { dept_methyl_activation }
-              let(:spec) { methyl_on_bridge_base }
+              let(:target_spec) { methyl_on_bridge_base }
               let(:ordered_graph) do
                 [
-                  [[:no_atom], []]
+                  [[target_spec.atom(:cm)], []]
                 ]
               end
             end
 
             it_behaves_like :check_ordered_graph do
               subject { dept_dimer_formation }
-              let(:spec) { activated_bridge }
+              let(:target_spec) { activated_bridge }
               let(:a1) { activated_bridge.atom(:ct) }
               let(:a2) { activated_incoherent_bridge.atom(:ct) }
               let(:ordered_graph) do
@@ -158,7 +167,7 @@ module VersatileDiamond
 
             it_behaves_like :check_ordered_graph do
               subject { dept_methyl_incorporation }
-              let(:spec) { activated_methyl_on_bridge }
+              let(:target_spec) { activated_methyl_on_bridge }
               let(:am1) { activated_methyl_on_bridge.atom(:cr) }
               let(:am2) { activated_methyl_on_bridge.atom(:cl) }
               let(:ad1) { activated_dimer.atom(:cr) }
@@ -174,7 +183,7 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [dept_activated_methyl_on_bridge] }
               subject { dept_methyl_incorporation }
-              let(:spec) { activated_dimer }
+              let(:target_spec) { activated_dimer }
               let(:am1) { activated_methyl_on_bridge.atom(:cr) }
               let(:am2) { activated_methyl_on_bridge.atom(:cl) }
               let(:amb) { activated_methyl_on_bridge.atom(:cb) }
