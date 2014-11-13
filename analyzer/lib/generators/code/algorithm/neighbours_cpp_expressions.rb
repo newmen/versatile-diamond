@@ -186,7 +186,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code for getting the atom of crystal
           def crystal_atom_call(rel_params)
             frn_method_name = "#{full_relation_name(rel_params)}_at"
-            atoms_vars_names_str = atom.map { |a| namer.name_of(a) }.join(', ')
+            atoms_vars_names_str = atoms.map { |a| namer.name_of(a) }.join(', ')
             "#{crystal_call}->atom(#{frn_method_name}(#{atoms_vars_names_str}))"
           end
 
