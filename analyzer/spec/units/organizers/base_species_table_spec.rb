@@ -21,7 +21,7 @@ module VersatileDiamond
       describe '#best' do
         shared_examples_for :check_optimal_parents do
           let(:best) { subject.best(spec) }
-          it { expect(best.parents).to match_array(parents) }
+          it { expect(best.parents.map(&:original)).to match_array(parents) }
         end
 
         it_behaves_like :check_optimal_parents do

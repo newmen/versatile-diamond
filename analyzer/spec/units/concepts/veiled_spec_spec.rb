@@ -4,7 +4,6 @@ module VersatileDiamond
   module Concepts
 
     describe VeiledSpec do
-
       describe '#same?' do
         shared_examples_for :check_same do
           let(:veiled) { described_class.new(subject) }

@@ -131,7 +131,7 @@ module VersatileDiamond
           before { subject.exclude }
 
           it { expect(parent.children).to eq([child]) }
-          it { expect(child.parents).to eq([parent]) }
+          it { expect(child.parents.map(&:original)).to eq([parent]) }
         end
       end
     end

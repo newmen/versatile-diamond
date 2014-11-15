@@ -61,23 +61,28 @@ module VersatileDiamond
 
         shared_examples_for :parents_with_twins do
           it_behaves_like :organize_dependencies do
-            it '#parents_with_twins_for' do
-              expect(subject.parents_with_twins_for(atom)).
-                to match_array(parents_with_twins)
+            describe '#parents_with_twins_for' do
+              let(:pwts) do
+                subject.parents_with_twins_for(atom).map { |pr, tw| [pr.original, tw] }
+              end
+              it { expect(pwts).to match_array(parents_with_twins) }
             end
 
-            it '#parents_of' do
-              expect(subject.parents_of(atom)).
-                to match_array(parents_with_twins.map(&:first))
+            describe '#parents_of' do
+              let(:parents) { subject.parents_of(atom) }
+              let(:all_is_proxy) { parents.all? { |pr| pr.is_a?(ProxyParentSpec) } }
+              it { expect(all_is_proxy).to be_truthy }
+              it { expect(parents.map(&:original)).
+                to match_array(parents_with_twins.map(&:first)) }
             end
 
-            it '#twins_of' do
-              expect(subject.twins_of(atom)).
-                to match_array(parents_with_twins.map(&:last))
+            describe '#twins_of' do
+              let(:twins) { parents_with_twins.map(&:last) }
+              it { expect(subject.twins_of(atom)).to match_array(twins) }
             end
 
-            it '#twins_num' do
-              expect(subject.twins_num(atom)).to eq(parents_with_twins.size)
+            describe '#twins_num' do
+              it { expect(subject.twins_num(atom)).to eq(parents_with_twins.size) }
             end
           end
         end
