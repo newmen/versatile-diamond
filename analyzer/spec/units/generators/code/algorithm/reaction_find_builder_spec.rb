@@ -170,6 +170,29 @@ module VersatileDiamond
                 CODE
               end
             end
+
+            it_behaves_like :check_code do
+              subject { dept_hydrogen_abs_from_gap }
+              let(:target_spec) do
+                Organizers::DependentSpecificSpec.new(subject.source.first)
+              end
+              let(:other_spec) do
+                Organizers::DependentSpecificSpec.new(subject.source.last)
+              end
+
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchor = target->atom(1);
+    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
+        if (neighbour->is(#{other_role_cr}) && neighbour != target->atom(2))
+        {
+            SpecificSpec *targets[2] = { target, neighbour->specByRole<BridgeCRH>(#{other_role_cr}) };
+            create<ForwardHydrogenAbsFromGap>(targets);
+        }
+    });
+                CODE
+              end
+            end
           end
         end
 

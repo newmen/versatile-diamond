@@ -84,7 +84,9 @@ module VersatileDiamond
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
               dr.reaction.each_source do |s|
-                unless all_specs.include?(s.name)
+                if all_specs.include?(s.name)
+                  swap_source_carefully(dr, s, spec_from(all_specs, s).spec)
+                else
                   if s.is_a?(Concepts::TerminationSpec)
                     dt = DependentTermination.new(s)
                     depts_cache[:term_specs] << dt
@@ -104,7 +106,9 @@ module VersatileDiamond
         def fix_sidepieces(depts_cache, all_specs)
           depts_cache[:lateral_reactions].flat_map(&:theres).each do |th|
             th.where.specs.each do |s|
-              unless all_specs.include?(s.name)
+              if all_specs.include?(s.name)
+                swap_source_carefully(th, s, spec_from(all_specs, s).spec)
+              else
                 store_reactant(th, depts_cache, all_specs, s)
               end
 

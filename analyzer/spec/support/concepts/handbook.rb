@@ -458,6 +458,25 @@ module VersatileDiamond
             crm_source, crm_products, crm_atom_map)
         end
 
+        set(:rhb_dup) { right_hydrogenated_bridge.dup }
+        set(:rab_dup) { right_activated_bridge.dup }
+        set(:ah_source) { [right_hydrogenated_bridge, rhb_dup] }
+        set(:ah_products) { [right_activated_bridge, rab_dup, hydrogen] }
+        set(:ah_names_to_specs) do {
+          source: [[:br1, right_hydrogenated_bridge], [:br2, rhb_dup]],
+          products: [[:br1, right_activated_bridge], [:br2, rab_dup], [:h, hydrogen]]
+        } end
+        set(:ah_atom_map) do
+          Mcs::AtomMapper.map(ah_source, ah_products, ah_names_to_specs)
+        end
+        set(:hydrogen_abs_from_gap) do
+          r = Reaction.new(:forward, 'hydrogen abs from gap',
+            ah_source, ah_products, ah_atom_map)
+          from = [right_hydrogenated_bridge, right_hydrogenated_bridge.atom(:cr)]
+          to = [rhb_dup, rhb_dup.atom(:cr)]
+          r.position_between(from, to, position_100_front); r
+        end
+
         set(:mi_source) { [activated_methyl_on_extended_bridge, activated_dimer] }
         set(:mi_product) { [extended_dimer] }
         set(:mi_names_to_specs) do {
