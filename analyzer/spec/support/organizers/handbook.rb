@@ -88,6 +88,7 @@ module VersatileDiamond
           :methyl_incorporation,
           :dimer_formation,
           :sierpinski_drop,
+          :hydrogen_abs_from_gap,
           :hydrogen_migration
         ])
         set(:dept_sierpinski_formation) do
