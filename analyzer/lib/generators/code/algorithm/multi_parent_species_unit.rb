@@ -112,7 +112,7 @@ module VersatileDiamond
           #   twin atom
           def parents_with_twins
             @_parents_with_twins ||=
-              parent_species.zip(spec.twins_of(target_atom)).sort_by(&:first)
+              parent_species.zip(original_spec.twins_of(target_atom)).sort_by(&:first)
           end
 
           # Gets the most common symmetric parents with twins hash
@@ -158,7 +158,7 @@ module VersatileDiamond
           # Gets list of twin atoms of target atom
           # @return [Array] the list of twin atoms
           def twins
-            spec.twins_of(target_atom)
+            original_spec.twins_of(target_atom)
           end
 
           # Gets not unique twin atom (which is necessarily is repeated at least once)
@@ -206,11 +206,11 @@ module VersatileDiamond
           # @param [Array] species from which defining atoms will be gotten
           # @return [String] the string of cpp code
           def define_atoms_of_not_uniq_twin_parents_line
-            atoms = spec.anchors - [target_atom]
+            atoms = original_spec.anchors - [target_atom]
             namer.assign('atom', atoms)
 
             parents = parents_of_not_uniq_twin
-            pwts = spec.anchors.each_with_object([]) do |atom, acc|
+            pwts = original_spec.anchors.each_with_object([]) do |atom, acc|
               next if atom == target_atom
               acc << parent_with_twin_for(atom) { |pr, _| parents.include?(pr) }
             end
@@ -399,7 +399,7 @@ module VersatileDiamond
           #   atom which will be checked
           # @return [Boolean] is maximal number or not
           def max_species_from?(atom, target_rel_params = nil)
-            groups = spec.links[atom].group_by { |_, r| r.params }
+            groups = original_spec.links[atom].group_by { |_, r| r.params }
             rp_to_as = Hash[groups.map { |rp, group| [rp, group.map(&:first).uniq] }]
 
             limits = atom.relations_limits

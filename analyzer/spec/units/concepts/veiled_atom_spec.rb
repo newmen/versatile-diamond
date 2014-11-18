@@ -3,16 +3,16 @@ require 'spec_helper'
 module VersatileDiamond
   module Concepts
 
-    describe VeiledSpec do
+    describe VeiledAtom do
       describe '#same?' do
         it_behaves_like :check_same_veiled do
-          subject { bridge_base }
-          let(:other) { dimer_base }
+          subject { cd }
+          let(:other) { c }
         end
 
         it_behaves_like :check_same_veiled do
-          subject { activated_bridge }
-          let(:other) { activated_dimer }
+          subject { activated_cd }
+          let(:other) { activated_c }
         end
       end
 

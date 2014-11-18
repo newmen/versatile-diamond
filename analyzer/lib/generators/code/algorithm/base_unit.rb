@@ -13,11 +13,12 @@ module VersatileDiamond
           # Initializes the empty unit of code builder algorithm
           # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
-          # @param [Specie] original_specie which uses in current building algorithm
-          def initialize(generator, namer, original_specie, atoms)
+          # @param [Organizers::DependentWrappedSpec] original_spec which uses in
+          #   current building algorithm
+          def initialize(generator, namer, original_spec, atoms)
             @generator = generator
             @namer = namer
-            @original_specie = original_specie
+            @original_spec = original_spec
             @atoms = atoms
           end
 
@@ -43,7 +44,7 @@ module VersatileDiamond
           # @param [Concepts::Bond] bond which existance will be checked
           # @return [Boolean] is atom uses bond in current specie or not
           def use_bond?(atom, bond)
-            spec.relations_of(atom).any? { |r| r == bond }
+            original_spec.relations_of(atom).any? { |r| r == bond }
           end
 
           # Selects most complex target atom
@@ -51,7 +52,7 @@ module VersatileDiamond
           #   the most target atom of original specie
           def target_atom
             @_target_atom ||= atoms.max_by do |atom|
-              Organizers::AtomProperties.new(spec, atom)
+              Organizers::AtomProperties.new(original_spec, atom)
             end
           end
 
@@ -99,8 +100,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :generator, :namer, :original_specie
-          def_delegators :original_specie, :spec, :role
+          attr_reader :generator, :namer, :original_spec
 
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
@@ -111,6 +111,10 @@ module VersatileDiamond
           # @return [String] the variable name of target atom
           def target_atom_var_name
             namer.name_of(target_atom)
+          end
+
+          def role(atom)
+            generator.classifier.index(original_spec, atom)
           end
         end
 

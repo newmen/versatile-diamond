@@ -50,7 +50,7 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the correspond twin atom
           def twin(atom)
-            twins = spec.twins_of(atom)
+            twins = original_spec.twins_of(atom)
             raise 'Incorrect number of twin atoms for current unit' if twins.size != 1
             twins.first
           end
