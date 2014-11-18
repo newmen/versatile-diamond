@@ -20,7 +20,7 @@ module VersatileDiamond
           # @return [Node] new node which contain the correspond algorithm specie and
           #   passed atom
           def create_node(atom)
-            Node.new(@specie, parent_specie(atom), @specie.spec, atom)
+            Node.new(@specie, parent_specie(atom), atom)
           end
 
           # Detects correct unique parent specie by passed atom

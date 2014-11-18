@@ -22,7 +22,7 @@ module VersatileDiamond
             spec, atom = spec_atom
             specie = get_unique_specie(spec)
             dept_spec = get_dept_spec(spec)
-            Node.new(specie.original, specie, dept_spec, atom)
+            ReactantNode.new(specie.original, specie, dept_spec, atom)
           end
 
           def get_dept_spec(spec)
