@@ -70,6 +70,8 @@ module VersatileDiamond
           atom.same?(other.atom) &&
             lists_are_identical?(options, other.options, &:==) &&
             lists_are_identical?(monovalents, other.monovalents, &:==)
+        elsif other.is_a?(VeiledAtom)
+          other.same?(self)
         else
           options.empty? && monovalents.empty? && atom.same?(other)
         end

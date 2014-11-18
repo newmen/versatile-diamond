@@ -12,7 +12,8 @@ module VersatileDiamond
           # @return [Array] the array of two items
           def parent_with_twin_for(atom, &block)
             specs_to_parents = Hash[parent_species.map { |pr| [pr.proxy_spec, pr] }]
-            pwts = spec.parents_with_twins_for(atom).map do |proxy_parent, twin|
+            original_parents = original_spec.parents_with_twins_for(atom)
+            pwts = original_parents.map do |proxy_parent, twin|
               [specs_to_parents[proxy_parent], twin]
             end
             pwts.find(&block)

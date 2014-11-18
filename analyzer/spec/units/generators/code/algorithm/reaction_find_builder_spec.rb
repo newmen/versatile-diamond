@@ -125,7 +125,7 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(2), target->atom(3) };
+    Atom *anchors[2] = { target->atom(3), target->atom(2) };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
         if (neighbours[0]->is(#{other_role_cl}) && neighbours[1]->is(#{other_role_cl}) && neighbours[0]->hasBondWith(neighbours[1]))
         {
@@ -182,9 +182,9 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(1);
-    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
-        if (neighbour->is(#{other_role_cr}) && neighbour != target->atom(2))
+    Atom *anchor = target->atom(2);
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour) {
+        if (neighbour->is(#{other_role_cr}) && neighbour != target->atom(1))
         {
             SpecificSpec *targets[2] = { target, neighbour->specByRole<BridgeCRH>(#{other_role_cr}) };
             create<ForwardHydrogenAbsFromGap>(targets);

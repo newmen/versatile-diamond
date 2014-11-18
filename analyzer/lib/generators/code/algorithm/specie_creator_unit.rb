@@ -5,9 +5,22 @@ module VersatileDiamond
 
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create a specie which was found
-        class SpecieCreatorUnit < BaseCreatorUnit
+        class SpecieCreatorUnit
+          include CommonCppExpressions
           include MultiParentSpeciesCppExpressions
+          include SmartAtomCppExpressions
           extend Forwardable
+
+          # Initializes the creator
+          # @param [NameRemember] namer the remember of using names of variables
+          # @param [Specie] original_specie which instance uses in current building
+          #   algorithm
+          # @param [Array] parent_species all previously defined unique parent species
+          def initialize(namer, original_specie, parent_species)
+            @namer = namer
+            @original_specie = original_specie
+            @parent_species = parent_species.sort
+          end
 
           # Gets the code lines for specie creation
           # @return [String] the lines by which the specie will be created
@@ -15,40 +28,44 @@ module VersatileDiamond
             additional_lines = ''
             creation_args = []
 
-            if spec.source?
+            if original_spec.source?
               additional_lines << define_atoms_variable_line
               creation_args << namer.name_of(sequence.short)
             else
               additional_lines << define_additional_atoms_variable_line if delta > 1
               creation_args << namer.name_of(sequence.addition_atoms) if delta > 0
 
-              additional_lines << define_parents_variable_line if spec.complex?
+              if original_spec.complex?
+                additional_lines << define_parents_variable_line
+              end
               creation_args << namer.name_of(parent_species)
             end
 
             args_str = creation_args.join(', ')
             additional_lines +
-              code_line("create<#{original_specie.class_name}>(#{args_str});")
+              code_line("create<#{@original_specie.class_name}>(#{args_str});")
           end
 
           def inspect
-            "SCU:(#{original_specie.inspect})"
+            "SCU:(#{@original_specie.inspect})"
           end
 
         private
 
-          def_delegators :original_specie, :spec, :sequence
+          attr_reader :namer, :parent_species
+          def_delegator :@original_specie, :sequence
           def_delegator :sequence, :delta
 
-          alias :original_specie :original_target
-          alias :parent_species :defined_species
+          def original_spec
+            @original_specie.spec
+          end
 
           # Finds atom that has twin in passed parent
           # @param [UniqueSpecie] parent for which atom will be found
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the twin that belongs to passed parent
           def atom_of(parent)
-            spec.anchors.find { |a| namer.name_of(a) && twin_by(parent, a) }
+            original_spec.anchors.find { |a| namer.name_of(a) && twin_by(parent, a) }
           end
 
           # Selects correspond twin atom
@@ -100,9 +117,10 @@ module VersatileDiamond
           # Gets a code string with defined variable
           # @param [String] type of defining variable
           # @param [String] single_name which will be passed to namer for assign name
-          #   to array of passed atoms
-          # @param [Array] atoms which will be defined
-          # @return [String] the string with defined atoms variable
+          #   to array of passed variables
+          # @param [Array] vars which will be defined
+          # @return [String] the string with defined variables
+          # @override
           def redefine_vars_line(type, single_name, vars)
             names = vars.map { |a| namer.name_of(a) }
             namer.reassign(single_name, vars)
