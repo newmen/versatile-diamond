@@ -287,31 +287,40 @@ module VersatileDiamond
           # pairs array
           #
           # @param [String] original_condition to which new conditions will be appended
-          # @param [Array] pairs of atoms between which bond existatnce will be checked
+          # @param [Array] units_with_atoms is the pairs of atoms between which the
+          #   bond existatnce will be checked
           # @return [String] the extended condition
           def append_check_bond_condition(original_condition, units_with_atoms)
             parts = units_with_atoms.each_with_object([]) do |pairs, acc|
-              units_pair, atoms_pair = pairs.transpose
+              _, atoms_pair = pairs.transpose
               relation = relation_between(*atoms_pair)
               next unless relation
 
               cb_call = check_bond_call(*atoms_pair)
               if relation.bond?
                 acc << cb_call
-              else
-                any_uses_relation = pairs.permutation.any? do |prs|
-                  us, as = prs.transpose
-                  al, bl = as.map(&:lattice)
-                  bond = Concepts::Bond[relation.params]
-                  bond = al.opposite_relation(bl, bond) unless as == atoms_pair
-                  us.first.use_bond?(as.first, bond.params)
-                end
-
-                acc << "!#{cb_call}" if any_uses_relation
+              elsif any_uses_bond?(pairs, relation.params)
+                acc << "!#{cb_call}"
               end
             end
 
             ([original_condition] + parts).join(' && ')
+          end
+
+          # Checks that any atom from each pair are used passed relation
+          # @param [Array] pairs the array with two elements where each item is pair of
+          #   unit and atom of it
+          # @param [Hash] rel_params by which the using bond will checked
+          # @return [Boolean] are any atom use bond or not
+          def any_uses_bond?(pairs, rel_params)
+            _, atoms_pair = pairs.transpose
+            pairs.permutation.any? do |prs|
+              us, as = prs.transpose
+              al, bl = as.map(&:lattice)
+              bond = Concepts::Bond[rel_params]
+              bond = al.opposite_relation(bl, bond) unless as == atoms_pair
+              us.first.use_bond?(as.first, bond)
+            end
           end
         end
 
