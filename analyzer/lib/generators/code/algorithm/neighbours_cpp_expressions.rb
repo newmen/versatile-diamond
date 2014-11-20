@@ -301,6 +301,8 @@ module VersatileDiamond
                 acc << cb_call
               elsif any_uses_bond?(pairs, relation.params)
                 acc << "!#{cb_call}"
+              elsif (linked_atom = position_with(pairs.first.last, relation))
+                acc << not_own_atom_condition(linked_atom, pairs.last.last)
               end
             end
 

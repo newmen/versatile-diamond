@@ -19,7 +19,7 @@ module VersatileDiamond
 
           # Makes single specie unit for each nodes list
           # @param [Array] nodes for which the unit will be maked
-          # @return [SingleParentSpecieUnit] the unit of code generation
+          # @return [SingleParentNonRootSpecieUnit] the unit of code generation
           def make_unit(nodes)
             dept_spec = nodes.first.dept_spec
             unique_specie = nodes.first.uniq_specie

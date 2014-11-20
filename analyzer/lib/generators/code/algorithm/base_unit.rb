@@ -8,7 +8,7 @@ module VersatileDiamond
         class BaseUnit
           include CommonCppExpressions
           include NeighboursCppExpressions
-          extend Forwardable
+          include SpecieCppExpressions
 
           # Initializes the empty unit of code builder algorithm
           # @param [EngineCode] generator the major code generator

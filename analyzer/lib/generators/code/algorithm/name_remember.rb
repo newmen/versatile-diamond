@@ -137,8 +137,8 @@ module VersatileDiamond
           # @param [String] name the name of storing variable
           # @param [Object] var the storing variable
           def check_and_store(name, var)
-            raise "Variable \"#{name}\" already exists" if names[var]
-            raise "Name \"#{name}\" already used" if variables[name]
+            raise %Q(Variable "#{name}" already has name "#{names[var]}") if names[var]
+            raise %Q(Name "#{name}" already used) if variables[name]
             names[var] = name
           end
 
