@@ -34,11 +34,20 @@ module VersatileDiamond
 
             result = transform_links(@reaction.clean_links)
             if result.empty?
-              surf_chs = @reaction.changes.reject { |_, (s, _)| s.simple? || s.gas? }
-              result = transform_links(surf_chs.map { |sa, _| [sa, []] })
+              surf_changes = @reaction.changes.reject do |(s1, _), (s2, _)|
+                bad_spec?(s1) || bad_spec?(s2)
+              end
+              result = transform_links(surf_changes.map { |sa, _| [sa, []] })
             end
 
             @_small_graph = result
+          end
+
+          # Checks that passed spec is bad
+          # @param [Concepts::Spec | Concepts::SpecificSpec] spec which will be checked
+          # @return [Boolean] is passed spec bad or not
+          def bad_spec?(spec)
+            spec.simple? || spec.gas?
           end
 
           # Detects relation between passed nodes

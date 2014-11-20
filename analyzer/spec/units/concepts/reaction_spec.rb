@@ -97,16 +97,16 @@ module VersatileDiamond
       end
 
       describe '#reverse' do
-        subject { methyl_desorption.reverse }
+        subject { hydrogen_migration.reverse }
         it { should be_a(described_class) }
 
-        it { expect(subject.source).to match_array([methyl, abridge_dup]) }
-        it { expect(subject.products).to match_array([md_source.first]) }
+        it { expect(subject.source).to match_array(hm_products) }
+        it { expect(subject.products).to match_array(hm_source) }
       end
 
       describe '#gases_num' do
-        it { expect(methyl_desorption.gases_num).to eq(0) }
-        it { expect(methyl_desorption.reverse.gases_num).to eq(1) }
+        it { expect(methyl_adsorption.gases_num).to eq(1) }
+        it { expect(methyl_desorption.gases_num).to eq(1) }
 
         it { expect(hydrogen_migration.gases_num).to eq(0) }
         it { expect(hydrogen_migration.reverse.gases_num).to eq(0) }

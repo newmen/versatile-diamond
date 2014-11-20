@@ -9,8 +9,8 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             super(generator)
-            @specs_cache = {}
-            @specs_to_uniques = {}
+            @depts_cache = {}
+            @uniques_cache = {}
           end
 
         private
@@ -26,7 +26,7 @@ module VersatileDiamond
           end
 
           def get_dept_spec(spec)
-            @specs_cache[spec] ||=
+            @depts_cache[spec] ||=
               if spec.is_a?(Concepts::SpecificSpec)
                 Organizers::DependentSpecificSpec.new(spec)
               else
@@ -39,9 +39,9 @@ module VersatileDiamond
           #   spec by which the unique algorithm specie will be maked
           # @return [UniqueSpecie] the wrapped specie code generator
           def get_unique_specie(spec)
-            return @specs_to_uniques[spec] if @specs_to_uniques[spec]
+            return @uniques_cache[spec] if @uniques_cache[spec]
             specie = specie_class(spec)
-            @specs_to_uniques[spec] = UniqueSpecie.new(specie, specie.spec)
+            @uniques_cache[spec] = UniqueSpecie.new(specie, specie.spec)
           end
         end
 

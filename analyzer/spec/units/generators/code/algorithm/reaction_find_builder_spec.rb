@@ -40,6 +40,16 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_methyl_adsorption }
+              let(:target_spec) { dept_activated_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    create<ForwardMethylAdsorption>(target);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_methyl_desorption }
               let(:target_spec) { dept_incoherent_methyl_on_bridge }
               let(:find_algorithm) do

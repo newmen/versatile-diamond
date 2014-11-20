@@ -6,7 +6,7 @@ module VersatileDiamond
     describe MappingResult do
       %w(source products).each do |type|
         describe "##{type}" do
-          it { expect(md_atom_map.send(type)).to eq(send("md_#{type}")) }
+          it { expect(hm_atom_map.send(type)).to eq(send("hm_#{type}")) }
         end
       end
 
@@ -29,11 +29,14 @@ module VersatileDiamond
       describe '#changes' do
         describe 'methyl desorption' do
           let(:mod) { md_source.first }
-
-          it { expect(md_atom_map.changes).to match_array([
+          let(:changes) do
+            [
               [[mod, abridge_dup], [[mod.atom(:cb), abridge_dup.atom(:ct)]]],
-              [[mod, methyl], [[mod.atom(:cm), methyl.atom(:c)]]]
-            ]) }
+              [[mod, methane], [[mod.atom(:cm), methane.atom(:c)]]]
+            ]
+          end
+
+          it { expect(md_atom_map.changes).to match_array(changes) }
         end
 
         describe 'methyl incorporation' do
@@ -53,15 +56,18 @@ module VersatileDiamond
 
       describe '#full' do
         let(:mod) { md_source.first }
-
-        it { expect(md_atom_map.full).to match_array([
-            [[mod, methyl], [[mod.atom(:cm), methyl.atom(:c)]]],
+        let(:full) do
+          [
+            [[mod, methane], [[mod.atom(:cm), methane.atom(:c)]]],
             [[mod, abridge_dup], [
               [mod.atom(:cb), abridge_dup.atom(:ct)],
               [mod.atom(:cl), abridge_dup.atom(:cl)],
               [mod.atom(:cr), abridge_dup.atom(:cr)],
             ]]
-          ]) }
+          ]
+        end
+
+        it { expect(md_atom_map.full).to match_array(full) }
       end
 
       describe '#used_atoms_of' do
@@ -150,37 +156,44 @@ module VersatileDiamond
       describe '#reverse' do
         describe 'methyl desorption' do
           let(:mob) { md_source.first }
-
-          it { expect(md_atom_map.reverse.full).to match_array([
-              [[methyl, mob], [[methyl.atom(:c), mob.atom(:cm)]]],
+          let(:full) do
+            [
+              [[methane, mob], [[methane.atom(:c), mob.atom(:cm)]]],
               [[abridge_dup, mob], [
                 [abridge_dup.atom(:ct), mob.atom(:cb)],
                 [abridge_dup.atom(:cl), mob.atom(:cl)],
                 [abridge_dup.atom(:cr), mob.atom(:cr)],
               ]]
-            ]) }
+            ]
+          end
+
+          it { expect(md_atom_map.reverse.full).to match_array(full) }
         end
 
         describe 'hydrogen migration' do
-          it { expect(hm_atom_map.reverse).to be_a(MappingResult) }
-
-          it { expect(hm_atom_map.reverse.changes).to match_array([
+          let(:changes) do
+            [
               [[activated_methyl_on_dimer, methyl_on_dimer],
-                [[activated_methyl_on_dimer.atom(:cm),
-                  methyl_on_dimer.atom(:cm)]]],
+                [[activated_methyl_on_dimer.atom(:cm), methyl_on_dimer.atom(:cm)]]],
               [[dimer, activated_dimer],
                 [[dimer.atom(:cr), activated_dimer.atom(:cr)]]]
-            ]) }
+            ]
+          end
+
+          it { expect(hm_atom_map.reverse.changes).to match_array(changes) }
+          it { expect(hm_atom_map.reverse).to be_a(MappingResult) }
         end
 
         describe 'dimer formation' do
-          it { expect(df_atom_map.reverse.changes).to match_array([
+          let(:changes) do
+            [
               [[dimer_dup_ff, activated_bridge],
                 [[dimer_dup_ff.atom(:cr), activated_bridge.atom(:ct)]]],
               [[dimer_dup_ff, activated_incoherent_bridge],
-                [[dimer_dup_ff.atom(:cl),
-                  activated_incoherent_bridge.atom(:ct)]]],
-            ]) }
+                [[dimer_dup_ff.atom(:cl), activated_incoherent_bridge.atom(:ct)]]],
+            ]
+          end
+          it { expect(df_atom_map.reverse.changes).to match_array(changes) }
         end
       end
 
