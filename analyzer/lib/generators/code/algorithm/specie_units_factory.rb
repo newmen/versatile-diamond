@@ -51,7 +51,7 @@ module VersatileDiamond
             elsif node.scope?
               create_multi_species_unit(node.uniq_specie.species, node.atom)
             else
-              store_parent_and_create_unit(node.uniq_specie, [node.atom])
+              create_single_specie_unit(node.uniq_specie, [node.atom])
             end
           end
 
@@ -61,9 +61,9 @@ module VersatileDiamond
           #   passed nodes
           def create_multi_atoms_unit(nodes)
             atoms = nodes.map(&:atom)
-            if nodes.group_by(&:uniq_specie).size == 1
+            if nodes.uniq(&:uniq_specie).size == 1
               unique_parent = nodes.first.uniq_specie
-              store_parent_and_create_unit(unique_parent, atoms)
+              create_single_specie_unit(unique_parent, atoms)
             else
               # TODO: because MultiAtomsUnit doesn't include SpecieUnitBehavior
               # then need to create separated unit like a MultiSpeciesAtomsUnit
@@ -96,13 +96,15 @@ module VersatileDiamond
           # Creates multi atoms unit and remember used unique parent specie
           # @param [UniqueSpecie] unique_parent of handling specie
           # @param [Array] atoms that corresponds to atoms of unique parent specie
-          # @return [BaseUnit] the unit for generation code of algorithm
-          def store_parent_and_create_unit(unique_parent, atoms)
+          # @return [SingleParentRootSpecieUnit] the unit for generation code of
+          #   algorithm
+          def create_single_specie_unit(unique_parent, atoms)
             @used_unique_parents << unique_parent
-            if @specie.find_root? && atoms.size == 1
-              SingleAtomUnit.new(*default_args, atoms.first)
+            args = default_args + [unique_parent, atoms]
+            if @specie.find_root?
+              SingleParentRootSpecieUnit.new(*args)
             else
-              SingleParentSpecieUnit.new(*default_args, unique_parent, atoms)
+              SingleParentNonRootSpecieUnit.new(*args)
             end
           end
 

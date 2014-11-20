@@ -15,9 +15,8 @@ module VersatileDiamond
             @dept_reaction = dept_reaction
           end
 
-          # Assigns the name for internal reactant specie, that it could be used when the
-          # algorithm generating
-          # @override
+          # Assigns the name for internal reactant specie, that it could be used when
+          # the algorithm generates
           def first_assign!
             namer.assign(SpeciesReaction::ANCHOR_SPECIE_NAME, target_specie)
           end

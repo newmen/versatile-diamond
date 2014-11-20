@@ -10,7 +10,6 @@ module VersatileDiamond
           include SpecieUnitBehavior
           include MultiParentSpeciesCppExpressions
           include SmartAtomCppExpressions
-          include SpecieCppExpressions
           include SymmetricCppExpressions
           include ProcsReducer
 
