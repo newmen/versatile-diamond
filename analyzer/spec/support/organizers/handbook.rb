@@ -84,6 +84,7 @@ module VersatileDiamond
         define_dependents(DependentTypicalReaction, [
           :methyl_activation,
           :methyl_deactivation,
+          :methyl_adsorption,
           :methyl_desorption,
           :methyl_incorporation,
           :dimer_formation,

@@ -38,6 +38,12 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_finite_graph do
+                subject { dept_methyl_adsorption }
+                let(:target_spec) { activated_bridge }
+                let(:atoms) { [target_spec.atom(:ct)] }
+              end
+
+              it_behaves_like :check_finite_graph do
                 subject { dept_sierpinski_drop }
                 let(:target_spec) { cross_bridge_on_bridges_base }
                 let(:atoms) do

@@ -397,12 +397,26 @@ module VersatileDiamond
             'methyl deactivation', dm_source, dm_product, dm_atom_map)
         end
 
+        set(:am_source) { [methyl, activated_bridge] }
+        set(:am_products) { [methyl_on_bridge] }
+        set(:am_names_to_specs) do {
+          source: [[:m, methyl], [:b, activated_bridge]],
+          products: [[:mob, methyl_on_bridge]]
+        } end
+        set(:am_atom_map) do
+          Mcs::AtomMapper.map(am_source, am_products, am_names_to_specs)
+        end
+        set(:methyl_adsorption) do
+          Reaction.new(
+            :forward, 'methyl adsorption', am_source, am_products, am_atom_map)
+        end
+
         set(:abridge_dup) { activated_bridge.dup }
-        set(:md_source) { [methyl_on_bridge.dup] }
-        set(:md_products) { [methyl, abridge_dup] }
+        set(:md_source) { [methyl_on_bridge.dup, hydrogen_ion] }
+        set(:md_products) { [methane, abridge_dup] }
         set(:md_names_to_specs) do {
           source: [[:mob, md_source.first]],
-          products: [[:m, methyl], [:b, abridge_dup]]
+          products: [[:m, methane], [:b, abridge_dup]]
         } end
         set(:md_atom_map) do
           Mcs::AtomMapper.map(md_source, md_products, md_names_to_specs)
