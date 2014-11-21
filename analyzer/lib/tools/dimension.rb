@@ -19,13 +19,15 @@ module VersatileDiamond
       DEFAULT_RATE = '1/s'.freeze
       DEFAULT_TIME = 's'.freeze
 
-      # Varibales which can be converted
-      VARIABLES = %w(concentration energy rate temperature time).freeze
+      # Varibales which could be converted
+      SIMPLE_ZEROFILL_VARIABLES = %w(concentration energy time).freeze
+      ANOTHER_VARIABLES = %w(rate temperature).freeze
+      ALL_VARIABLES = (SIMPLE_ZEROFILL_VARIABLES + ANOTHER_VARIABLES).freeze
 
       class << self
         include Modules::SyntaxChecker
 
-        VARIABLES.each do |var|
+        ALL_VARIABLES.each do |var|
           # Defines setting method adjusts dimension of which to produce
           # convertion by default
           #
@@ -36,7 +38,7 @@ module VersatileDiamond
           end
         end
 
-        (VARIABLES - %w(rate)).each do |var|
+        SIMPLE_ZEROFILL_VARIABLES.each do |var|
           # Defines public convert method for all vars except rate. Each
           # method converts variable value from passed dimension to
           # self value.
@@ -49,8 +51,16 @@ module VersatileDiamond
           #   is not setted
           # @return [Float] converted value
           define_method("convert_#{var}") do |value, dimension = nil|
-            convert(var.to_sym, value, dimension)
+            value == 0 ? 0 : convert(var.to_sym, value, dimension)
           end
+        end
+
+        # Converts the temperature value to default temperature dimenstion
+        # @param [Float] value see as #convert_{var}
+        # @param [String] dimension see as #convert_{var}
+        # @return [Float] converted temperature value
+        def convert_temperature(value, dimension = nil)
+          convert(:temperature, value, dimension)
         end
 
         # Converts the rate and checks dimension in accordance with number of
@@ -62,6 +72,8 @@ module VersatileDiamond
         # @raise [Errors::SyntaxError] see as #convert_{var}
         # @return [Float] converted rate value
         def convert_rate(value, gases_num, dimension = nil)
+          return 0 if value == 0
+
           dimension ||= @rate
           syntax_error('.is_not_set') unless dimension
 
@@ -155,8 +167,7 @@ module VersatileDiamond
           end
 
           default_dimension = eval("DEFAULT_#{var.to_s.upcase}")
-          if (!convertable_dimension &&
-              current_dimension == default_dimension) ||
+          if (!convertable_dimension && current_dimension == default_dimension) ||
             convertable_dimension == default_dimension
 
             return value

@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Interpret dimensions block
     class Dimensions < Component
-      Tools::Dimension::VARIABLES.each do |var|
+      Tools::Dimension::ALL_VARIABLES.each do |var|
         # Defines method for each dimension variable
         # @param [String] value the value of dimension
         define_method(var) do |value|
