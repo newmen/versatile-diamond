@@ -1039,6 +1039,11 @@ int main()
 
     // 71
     Handbook::mc().doOneOfOne(ABS_HYDROGEN_FROM_GAP);
+    // checks that correctly finds in both directions
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 0, 1);
+    Handbook::mc().doOneOfMul(CORR_SURFACE_DEACTIVATION, s.x-2, 1, 1);
+    Handbook::mc().doOneOfOne(ABS_HYDROGEN_FROM_GAP);
+    // end of both directions find checking
     assert_rate(15 * SurfaceActivation::RATE() +
                 3 * SurfaceDeactivation::RATE() +
                 2 * AdsMethylTo111::RATE() +
