@@ -156,8 +156,7 @@ module VersatileDiamond
       def external_bonds_after_extend
         return @external_bonds_after_extend if @external_bonds_after_extend
         @extended_spec = spec.extend_by_references
-        @external_bonds_after_extend =
-          @extended_spec.external_bonds - active_bonds_num
+        @external_bonds_after_extend = @extended_spec.external_bonds - active_bonds_num
       end
 
       # Makes a new specific spec by extended base spec
