@@ -1,3 +1,4 @@
+#ifdef NEYRON
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
@@ -10,3 +11,4 @@ public:
 };
 
 #endif // SAMPLE_H
+#endif // NEYRON

@@ -1,3 +1,4 @@
+#ifdef NEYRON
 #include "tails_translator.h"
 #include "../handbook.h"
 
@@ -14,3 +15,4 @@ ushort TailsTranslator::translate(ushort type) const
 {
     return _typeToTail.find(type)->second;
 }
+#endif // NEYRON

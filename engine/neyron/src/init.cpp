@@ -1,3 +1,4 @@
+#ifdef NEYRON
 #include "init.h"
 #include "sample.h"
 
@@ -10,3 +11,4 @@ void registerLocalizators()
     Sample *sample = new Sample;
     sample->registrate();
 }
+#endif // NEYRON

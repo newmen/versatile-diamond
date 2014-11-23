@@ -6,13 +6,16 @@
 #include "../mc/common_mc_data.h"
 #include "../phases/behavior_factory.h"
 #include "process_mem_usage.h"
+#include "init_config.h"
+#include "common.h"
+#include "error.h"
+
+#ifndef NEYRON
 #include "savers/crystal_slice_saver.h"
 #include "savers/volume_saver.h"
 #include "savers/volume_saver_factory.h"
 #include "savers/detector_factory.h"
-#include "init_config.h"
-#include "common.h"
-#include "error.h"
+#endif // NEYRON
 
 namespace vd
 {
@@ -26,10 +29,13 @@ class Runner
 
     const std::string _name;
     const uint _x, _y;
-    const double _totalTime, _eachTime;
+    const double _totalTime;
+#ifndef NEYRON
+    const double _eachTime;
     const Detector *_detector = nullptr;
-    const Behavior *_behavior = nullptr;
     VolumeSaver *_volumeSaver = nullptr;
+#endif // NEYRON
+    const Behavior *_behavior = nullptr;
 
 public:
     static void stop();
@@ -45,10 +51,12 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
+#ifndef NEYRON
     double activesRatio(const Crystal *crystal) const;
     void saveVolume(const Crystal *crystal);
 
     std::string filename() const;
+#endif // NEYRON
     double timestamp() const;
 
     void outputMemoryUsage(std::ostream &os) const;
@@ -67,7 +75,12 @@ void Runner<HB>::stop()
 
 template <class HB>
 Runner<HB>::Runner(const InitConfig &init) :
-    _name(init.name), _x(init.x), _y(init.y), _totalTime(init.totalTime), _eachTime(init.eachTime)
+    _name(init.name), _x(init.x), _y(init.y),
+#ifdef NEYRON
+    _totalTime(init.totalTime)
+#else
+    _totalTime(init.totalTime), _eachTime(init.eachTime)
+#endif // NEYRON
 {
     if (_name.size() == 0)
     {
@@ -81,6 +94,7 @@ Runner<HB>::Runner(const InitConfig &init) :
     {
         throw Error("Total process time should be grater than 0 seconds");
     }
+#ifndef NEYRON
     else if (_eachTime <= 0)
     {
         throw Error("Each time value should be grater than 0 seconds");
@@ -111,6 +125,7 @@ Runner<HB>::Runner(const InitConfig &init) :
     {
          _detector = detFactory.create("surf");
     }
+#endif // NEYRON
 
     BehaviorFactory bhvrFactory;
     if (init.behavior)
@@ -131,10 +146,13 @@ Runner<HB>::Runner(const InitConfig &init) :
 template <class HB>
 Runner<HB>::~Runner()
 {
+#ifndef NEYRON
     delete _volumeSaver;
     delete _detector;
+#endif // NEYRON
 }
 
+#ifndef NEYRON
 template <class HB>
 std::string Runner<HB>::filename() const
 {
@@ -142,6 +160,7 @@ std::string Runner<HB>::filename() const
     ss << _name << "-" << _x << "x" << _y << "-" << _totalTime << "s";
     return ss.str();
 }
+#endif // NEYRON
 
 template <class HB>
 double Runner<HB>::timestamp() const
@@ -164,12 +183,7 @@ void Runner<HB>::outputMemoryUsage(std::ostream &os) const
 template <class HB>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
-#ifndef NOUT
-    // TODO: Предоставить возможность сохранять концентрацию структур
-    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
-#endif // NOUT
-
-// -------------------------------------------------------------------------------- //
+    ullong steps = 0;
 
     const BehaviorFactory bhvrFactory;
     const Behavior *initBhv = bhvrFactory.create("tor");
@@ -178,7 +192,15 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     surfaceCrystal->initialize();
     surfaceCrystal->changeBehavior(_behavior);
 
-// -------------------------------------------------------------------------------- //
+    RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
+
+    CommonMCData mcData;
+    HB::mc().initCounter(&mcData);
+
+#ifndef NOUT
+#ifndef NEYRON
+    // TODO: Предоставить возможность сохранять концентрацию структур
+    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
 
     auto outLambda = [this, surfaceCrystal]() {
         std::cout.width(10);
@@ -195,11 +217,9 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
     };
 
-    ullong steps = 0;
     double timeCounter = 0;
     uint volumeSaveCounter = 0;
 
-#ifndef NOUT
     auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
         csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
 
@@ -215,15 +235,9 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
             }
         }
     };
-#endif // NOUT
 
-    RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
-
-    CommonMCData mcData;
-    HB::mc().initCounter(&mcData);
-
-#ifndef NOUT
     outLambda();
+#endif // NEYRON
 #endif // NOUT
 
     double startTime = timestamp();
@@ -242,6 +256,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         ++steps;
 
 #ifndef NOUT
+#ifndef NEYRON
         timeCounter += dt;
         if (timeCounter >= _eachTime)
         {
@@ -249,17 +264,20 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
             outLambda();
             storeLambda(false);
         }
+#endif // NEYRON
 #endif // NOUT
     }
 
     double stopTime = timestamp();
 
 #ifndef NOUT
+#ifndef NEYRON
     if (timeCounter > 0)
     {
         outLambda();
         storeLambda(true);
     }
+#endif // NEYRON
 #endif // NOUT
 
     std::cout << std::endl;
@@ -279,6 +297,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     delete surfaceCrystal;
 }
 
+#ifndef NEYRON
 template <class HB>
 double Runner<HB>::activesRatio(const Crystal *crystal) const
 {
@@ -299,6 +318,7 @@ void Runner<HB>::saveVolume(const Crystal *crystal)
 {
     _volumeSaver->save(HB::mc().totalTime(), &HB::amorph(), crystal, _detector);
 }
+#endif // NEYRON
 
 }
 

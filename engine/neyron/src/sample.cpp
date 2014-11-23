@@ -1,3 +1,4 @@
+#ifdef NEYRON
 #include "sample.h"
 #include <iostream>
 
@@ -15,3 +16,4 @@ void Sample::adsorb(const StudyUnit *unit)
 
     std::cout << "\n" << std::endl;
 }
+#endif // NEYRON

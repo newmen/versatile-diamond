@@ -8,7 +8,7 @@ HANDG_DIR	:= ../hand-generations
 HANDG_SRC_DIR	:= $(HANDG_DIR)/src
 HANDG_OBJS_DIR	:= $(HANDG_DIR)/obj
 
-ARKSFLAGS	:= -DNOUT -DNEYRON -DNDEBUG
+ARKSFLAGS	:= -DNEYRON -DNDEBUG
 
 GCC_PATH        := /usr
 CXX             := $(GCC_PATH)/bin/g++
@@ -49,6 +49,7 @@ $(OBJS_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 clean:
 	rm -f $(NAME)
+	rm -rf $(OBJS_DIR)
 	rm -rf $(HANDG_OBJS_DIR)
 	rm -rf $(ENGINE_OBJS_DIR)
 

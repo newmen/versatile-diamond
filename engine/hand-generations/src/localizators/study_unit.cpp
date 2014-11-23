@@ -1,3 +1,4 @@
+#ifdef NEYRON
 #include "study_unit.h"
 #include "../handbook.h"
 
@@ -48,3 +49,4 @@ void StudyUnit::storeState(ushort state)
     assert(_aroundStateIndex < Handbook::__atomsClusterSize);
     _aroundStates[_aroundStateIndex++] = __tt.translate(state);
 }
+#endif // NEYRON

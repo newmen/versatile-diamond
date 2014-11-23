@@ -1,3 +1,4 @@
+#ifdef NEYRON
 #include "localizators_pack.h"
 
 LocalizatorsPack::~LocalizatorsPack()
@@ -12,3 +13,4 @@ void LocalizatorsPack::add(Localizator *localizator)
 {
     _localizators.push_back(localizator);
 }
+#endif // NEYRON

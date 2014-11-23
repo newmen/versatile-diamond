@@ -16,10 +16,19 @@ int main(int argc, char *argv[])
 {
     std::cout.precision(3);
 
+#ifdef NEYRON
+    if (argc < 4 || argc > 5)
+#else
     if (argc < 6 || argc > 9)
+#endif // NEYRON
     {
         std::cerr << "Wrong number of run arguments!" << std::endl;
-        std::cout << "Try: " << argv[0] << " run_name X Y total_time save_each_time [out_format] [detector_type] [behaviour_type]" << std::endl;
+        std::cout << "Try: " << argv[0] << " run_name X Y total_time ";
+#ifndef NEYRON
+        std::cout << "save_each_time [out_format] [detector_type] ";
+#endif // NEYRON
+        std::cout << "[behaviour_type]";
+        std::cout << std::endl;
         return 1;
     }
 
