@@ -99,7 +99,7 @@ void Handbook::addLocalizator(Localizator *localizator)
     __localizators.add(localizator);
 }
 
-const ushort Handbook::__atomsClusterSize = Diamond::maxNeighboursNum() + 1;
+const ushort Handbook::__atomsClusterSize = Diamond::maxNeighboursNum();
 const ushort Handbook::__tailStatesNum = 25;
 const ushort Handbook::__tailStates[Handbook::__tailStatesNum] =
 {

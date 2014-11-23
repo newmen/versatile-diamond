@@ -44,6 +44,12 @@ void StudyUnit::storeEndState(Atom *atom)
     _nextState = atom->type();
 }
 
+const std::vector<ushort> &StudyUnit::aroundStates() const
+{
+    assert(Handbook::__atomsClusterSize >= _aroundStateIndex);
+    return _aroundStates;
+}
+
 void StudyUnit::storeState(ushort state)
 {
     assert(_aroundStateIndex < Handbook::__atomsClusterSize);

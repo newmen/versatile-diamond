@@ -35,7 +35,7 @@ public:
     ushort eventType() const { return _reactionType; }
     ushort beginState() const { return _prevState; }
     ushort endState() const { return _nextState; }
-    const std::vector<ushort> &aroundStates() const { return _aroundStates; }
+    const std::vector<ushort> &aroundStates() const;
 
 private:
     StudyUnit(const StudyUnit &) = delete;
