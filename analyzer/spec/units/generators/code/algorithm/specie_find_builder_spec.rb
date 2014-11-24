@@ -283,14 +283,14 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_cm}))
         {
-            auto species = anchor->specsByRole<MethylOnBridge, 2>(#{mob_cm});
-            if (species.all())
+            auto species1 = anchor->specsByRole<MethylOnBridge, 2>(#{mob_cm});
+            if (species1.all())
             {
-                Atom *atoms[2] = { species[0]->atom(1), species[1]->atom(1) };
+                Atom *atoms[2] = { species1[0]->atom(1), species1[1]->atom(1) };
                 eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour) {
                     if (atoms[1] == neighbour)
                     {
-                        ParentSpec *parents[2] = { species[0], species[1] };
+                        ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnBridges>(parents);
                     }
                 });
@@ -317,7 +317,7 @@ module VersatileDiamond
             Atom *amorph1 = anchor->amorphNeighbour();
             if (amorph1->is(#{role_cm}))
             {
-                ParentSpec *parent1 = anchor->specByRole<Dimer>(#{d_cr});
+                Dimer *parent1 = anchor->specByRole<Dimer>(#{d_cr});
                 Atom *anchors[2] = { parent1->atom(0), anchor };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
                     if (neighbours[0]->is(#{role_csr}) && neighbours[1]->is(#{role_ctr}))
@@ -349,15 +349,15 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
-            auto species = anchor->specsByRole<MethylOnDimer, 2>(#{mod_cm});
-            if (species.all())
+            auto species1 = anchor->specsByRole<MethylOnDimer, 2>(#{mod_cm});
+            if (species1.all())
             {
-                Atom *atoms[4] = { species[0]->atom(4), species[0]->atom(1), species[1]->atom(4), species[1]->atom(1) };
+                Atom *atoms[4] = { species1[0]->atom(4), species1[0]->atom(1), species1[1]->atom(4), species1[1]->atom(1) };
                 Atom *anchors[2] = { atoms[2], atoms[3] };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
                     if (atoms[0] == neighbours[0] && atoms[1] == neighbours[1])
                     {
-                        ParentSpec *parents[2] = { species[0], species[1] };
+                        ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnDimers>(parents);
                     }
                 });
@@ -433,6 +433,49 @@ module VersatileDiamond
                     }
                 });
             });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_intermed_migr_down_full_base }
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base,
+                  subject
+                ]
+              end
+              let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
+              let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
+
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cm}))
+        {
+            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
+            if (specie1)
+            {
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
+                    if (specie2->atom(1) != specie1->atom(1))
+                    {
+                        Atom *atoms[4] = { specie1->atom(4), specie1->atom(1), specie2->atom(2), specie2->atom(3) };
+                        Atom *anchors[2] = { atoms[2], atoms[3] };
+                        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                            if (atoms[1] == neighbours[0] && atoms[0] == neighbours[1])
+                            {
+                                ParentSpec *parents[2] = { specie1, specie2 };
+                                create<IntermedMigrDownFull>(parents);
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
                 CODE

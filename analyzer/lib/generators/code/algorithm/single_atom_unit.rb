@@ -16,8 +16,15 @@ module VersatileDiamond
           end
 
           def inspect
-            atom_props = Organizers::AtomProperties.new(original_spec, target_atom)
-            "SAU:(#{inspect_name_of(target_atom)}:#{atom_props.to_s})"
+            "SAU:(#{inspect_target_atom})"
+          end
+
+        private
+
+          # JUST FOR DEBUG INSPECTATIONS
+          def inspect_target_atom
+            ap = Organizers::AtomProperties.new(original_spec, target_atom)
+            "#{inspect_name_of(target_atom)}:#{ap.to_s}"
           end
         end
 

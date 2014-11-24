@@ -170,6 +170,20 @@ module VersatileDiamond
                 end
               end
             end
+
+            it_behaves_like :check_finite_graph do
+              subject { dept_intermed_migr_down_full_base }
+              let(:base_specs) do
+                [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+              end
+              let(:final_graph) do
+                {
+                  [cm] => [],
+                  [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
+                  [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                }
+              end
+            end
           end
 
           describe '#ordered_graph_from' do
@@ -297,6 +311,19 @@ module VersatileDiamond
                     [[cl], [[[cr], param_100_front]]]
                   ]
                 end
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              subject { dept_intermed_migr_down_full_base }
+              let(:base_specs) do
+                [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+              end
+              let(:ordered_graph) do
+                [
+                  [[cm], []],
+                  [[cbr, cbl], [[[cdr, cdl], param_100_cross]]]
+                ]
               end
             end
           end

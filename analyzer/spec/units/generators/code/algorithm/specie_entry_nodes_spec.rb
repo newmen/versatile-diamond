@@ -124,6 +124,14 @@ module VersatileDiamond
               let(:points_list) { [[cm]] }
             end
           end
+
+          it_behaves_like :check_entry_nodes do
+            subject { dept_intermed_migr_down_full_base }
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+            end
+            let(:points_list) { [[cm]] }
+          end
         end
 
       end

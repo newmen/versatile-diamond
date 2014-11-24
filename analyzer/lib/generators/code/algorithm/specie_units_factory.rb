@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -49,7 +51,7 @@ module VersatileDiamond
             if node.none?
               SingleAtomUnit.new(*default_args, node.atom)
             elsif node.scope?
-              create_multi_species_unit(node.uniq_specie.species, node.atom)
+              create_multi_parents_unit(node.uniq_specie.species, node.atom)
             else
               create_single_specie_unit(node.uniq_specie, [node.atom])
             end
@@ -77,20 +79,25 @@ module VersatileDiamond
           # @return [Hash] the hash of symmetric parent species with uniq twin atoms
           def common_smc_hash
             used_smc_hashes = @used_mulsp_units.map(&:used_smc_hash)
-            MultiParentSpeciesUnit.merge_smc_hashes(used_smc_hashes)
+            MultiSymmetricParentsUnit.merge_smc_hashes(used_smc_hashes)
           end
 
           # Creates multi species unit instance
-          # @param [Array] parent_species the sorted list of parent unique species
+          # @param [Array] parent_species the list of parent unique species
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom is the target atom for creating unit
           # @return [MultiParentSpeciesUnit] the unit which could generate code that
           #   dependents from several parent species
-          def create_multi_species_unit(parent_species, atom)
+          def create_multi_parents_unit(parent_species, atom)
             @used_unique_parents += parent_species
-            args = default_args + [parent_species, atom, common_smc_hash]
-            @used_mulsp_units << (mss_unit = MultiParentSpeciesUnit.new(*args))
-            mss_unit
+            args = default_args + [parent_species, atom]
+            if max_unsymmetric_species?(parent_species, atom)
+              MultiUnsymmetricParentsUnit.new(*args)
+            else
+              msps_unit = MultiSymmetricParentsUnit.new(*args, common_smc_hash)
+              @used_mulsp_units << msps_unit
+              msps_unit
+            end
           end
 
           # Creates multi atoms unit and remember used unique parent specie
@@ -108,10 +115,54 @@ module VersatileDiamond
             end
           end
 
+          # Cheks that in passed atom contains several same unsymmetric species and
+          # them number is maximal
+          #
+          # @param [Array] parent_species see at #create_multi_parents_unit same arg
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom see at #create_multi_parents_unit same argument
+          # @return [Boolean] is contain maximum number of similar unsymmetric species
+          def max_unsymmetric_species?(parent_species, atom)
+            twins = original_spec.twins_of(atom)
+            return false unless twins.uniq.size == 1 && twins.not_uniq.size == 1
+
+            not_uniq_twin = twins.not_uniq.first
+            return false unless parent_species.all? do |pr|
+              !pr.symmetric_atom?(not_uniq_twin)
+            end
+
+            max_species_from?(atom)
+          end
+
+          # Checks that in atom could contain the maximal number of parent species
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is maximal number or not
+          def max_species_from?(atom, target_rel_params = nil)
+            groups = original_spec.links[atom].group_by { |_, r| r.params }
+            rp_to_as = Hash[groups.map { |rp, group| [rp, group.map(&:first).uniq] }]
+
+            limits = atom.relations_limits
+            if target_rel_params
+              limits[target_rel_params] == rp_to_as[target_rel_params].size
+            else
+              rp_to_as.all? { |rp, atoms| limits[rp] == atoms.size } ||
+                rp_to_as.all? do |rp, atoms|
+                  atoms.all? { |a| max_species_from?(a, rp) }
+                end
+            end
+          end
+
+          # Gets the original dependent spec of target specie
+          # @return [DependentWrappedSpec] the original dependent spec
+          def original_spec
+            @specie.spec
+          end
+
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
           def default_args
-            super + [@specie.spec]
+            super + [original_spec]
           end
         end
 

@@ -6,7 +6,12 @@ module VersatileDiamond
 
           module RoleChecker
             ANCHOR_KEYNAMES = [
-              :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
+              :ct, :cr, :cl, :cb, :cm,
+              :cc,
+              :c1, :c2,
+              :ctl, :ctr,
+              :csl, :csr,
+              :cbr, :cbl, :cdr, :cdl
             ].freeze
 
             # @param [DependentWrappedSpec] spec

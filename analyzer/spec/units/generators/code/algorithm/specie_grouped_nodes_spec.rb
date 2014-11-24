@@ -15,7 +15,7 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, specie) }
 
-          let(:big_links_method) { :clean_links }
+          let(:big_links_method) { :original_links }
           def node_to_vertex(node); node.atom end
 
           Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
@@ -25,7 +25,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[ct], [cr], [cl]] }
+            let(:flatten_face_grouped_atoms) { [[ct], [cr, cl]] }
             let(:nodes_list) do
               [
                 [NoneSpecie, ct],
@@ -169,7 +169,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[ct], [cc]] }
+            let(:flatten_face_grouped_atoms) { [[ct, cc]] }
             let(:nodes_list) do
               [
                 [SpeciesScope, ct],
@@ -290,6 +290,52 @@ module VersatileDiamond
                   [csl, ctl] => [[[csr, ctr], param_100_cross]]
                 }
               end
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_intermed_migr_down_half_base }
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+            end
+            let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
+            let(:nodes_list) do
+              [
+                [SpeciesScope, cm],
+                [UniqueSpecie, cbr],
+                [UniqueSpecie, cdr]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [cm] => [],
+                [cdr] => [[[cbr], param_100_cross]],
+                [cbr] => [[[cdr], param_100_cross]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_intermed_migr_down_full_base }
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+            end
+            let(:flatten_face_grouped_atoms) { [[cbr, cbl], [cdr, cdl], [cm]] }
+            let(:nodes_list) do
+              [
+                [SpeciesScope, cm],
+                [UniqueSpecie, cbr],
+                [UniqueSpecie, cbl],
+                [UniqueSpecie, cdr],
+                [UniqueSpecie, cdl]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [cm] => [],
+                [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
+                [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+              }
             end
           end
         end
