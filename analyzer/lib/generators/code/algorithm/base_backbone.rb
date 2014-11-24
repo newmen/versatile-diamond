@@ -34,9 +34,10 @@ module VersatileDiamond
             until nodes_queue.empty?
               node = nodes_queue.shift
               next_nodes = node_to_nodes[node]
-              next if visited_key_nodes.include?(next_nodes)
+              next_nodes_set = next_nodes.to_set
+              next if visited_key_nodes.include?(next_nodes_set)
 
-              visited_key_nodes << next_nodes
+              visited_key_nodes << next_nodes_set
               rels = directed_graph[next_nodes]
               next unless rels
 
@@ -48,13 +49,13 @@ module VersatileDiamond
             end
 
             connected_nodes_from(directed_graph).each do |ns|
-              next if visited_key_nodes.include?(ns)
+              next if visited_key_nodes.include?(ns.to_set)
               result += ordered_graph_from(ns,
                 init_graph: directed_graph, visited_key_nodes: visited_key_nodes)
             end
 
             unconnected_nodes_from(directed_graph).each do |ns|
-              result << [ns, []] unless visited_key_nodes.include?(ns)
+              result << [ns, []] unless visited_key_nodes.include?(ns.to_set)
             end
 
             result

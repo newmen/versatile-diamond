@@ -32,9 +32,8 @@ module VersatileDiamond
           def define_target_specie_line
             avail_atom = atoms.find { |a| namer.name_of(a) }
             atom_call = spec_by_role_call(avail_atom)
-
             namer.assign_next('parent', parent_specie)
-            define_var_line("#{specie_type} *", parent_specie, atom_call)
+            define_var_line("#{parent_specie.class_name} *", parent_specie, atom_call)
           end
 
           # Gets the code string with getting the parent specie from atom

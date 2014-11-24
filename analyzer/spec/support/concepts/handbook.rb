@@ -342,6 +342,24 @@ module VersatileDiamond
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end
 
+        set(:intermed_migr_down_half_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_half)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :cdl)
+          s.rename_atom(:cr, :cdr)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:cr, :cbr)
+          s.link(s.atom(:cdr), s.atom(:cbr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:cdr), free_bond); s
+        end
+
+        set(:intermed_migr_down_full_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_full)
+          s.adsorb(intermed_migr_down_half_base)
+          s.link(s.atom(:cdl), s.atom(:cbl), position_100_cross); s
+        end
+
         # Relevant states:
         set(:incoherent) { Incoherent.property }
         set(:unfixed) { Unfixed.property }
