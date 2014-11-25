@@ -32,11 +32,9 @@ private
   # @param [Concepts::Bond] the relation between atoms in lattice
   # @raise [UndefinedRelation] if relation is invalid for current lattice
   # @return [Concepts::Bond] the reverse relation
-  def same_lattice(relation)
+  def same_lattice_opposite_relation(relation)
     if relation.face == 110
-      relation.dir == :front ?
-        relation.class[face: 110, dir: :cross] :
-        relation.class[face: 110, dir: :front]
+      relation.cross
     elsif relation.face == 100
       relation.class[face: 100, dir: relation.dir]
     else
