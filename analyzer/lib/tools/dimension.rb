@@ -27,6 +27,13 @@ module VersatileDiamond
       class << self
         include Modules::SyntaxChecker
 
+        # For RSpec
+        def reset
+          ALL_VARIABLES.each do |var|
+            instance_variable_set("@#{var}".to_sym, nil)
+          end
+        end
+
         ALL_VARIABLES.each do |var|
           # Defines setting method adjusts dimension of which to produce
           # convertion by default

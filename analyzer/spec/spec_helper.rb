@@ -47,6 +47,7 @@ RSpec.configure do |config|
     VD::Organizers::Support::Handbook.reset
     VD::Generators::Code::Support::Handbook.reset
 
+    VD::Tools::Dimension.reset
     VD::Tools::Chest.reset
     VD::Tools::Config.init
   end
