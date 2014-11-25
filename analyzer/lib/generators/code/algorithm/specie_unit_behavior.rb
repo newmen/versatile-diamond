@@ -6,7 +6,6 @@ module VersatileDiamond
         # The base class for algorithm builder units
         module SpecieUnitBehavior
           include Code::SpeciesUser
-          extend Forwardable
 
           # By default assigns internal anchor atoms to some names for using its in
           # find algorithm
@@ -38,8 +37,6 @@ module VersatileDiamond
 
         private
 
-          def_delegator :original_spec, :relation_between
-
           # Assigns the name of anchor atoms variable
           def assign_anchor_atoms_name!
             namer.assign(Specie::ANCHOR_ATOM_NAME, atoms)
@@ -60,6 +57,16 @@ module VersatileDiamond
             combine_condition(atoms, '||') do |var, atom|
               "!#{var}->#{method_name}(#{original_specie.enum_name}, #{role(atom)})"
             end
+          end
+
+          # Finds relation between passed atoms
+          # @param [Array] pair_of_units_with_atoms the array of two items where each
+          #   element is array where first item is target unit and second item is atom
+          # @return [Concepts::Bond] the relation between atoms from each pair or nil
+          #   if relation doesn't present
+          def relation_between(*pair_of_units_with_atoms)
+            atoms = pair_of_units_with_atoms.map(&:last)
+            original_spec.relation_between(*atoms)
           end
 
           def original_specie

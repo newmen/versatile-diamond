@@ -135,19 +135,15 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(3), target->atom(2) };
-    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-        if (neighbours[0]->is(#{other_role_cl}) && neighbours[1]->is(#{other_role_cl}) && neighbours[0]->hasBondWith(neighbours[1]))
-        {
-            for (int i = 0; i < 2; ++i)
+    target->eachSymmetry([](SpecificSpec *specie1) {
+        Atom *anchors[2] = { specie1->atom(3), specie1->atom(2) };
+        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+            if (neighbours[0]->is(#{other_role_cl}) && neighbours[1]->is(#{other_role_cr}) && neighbours[0]->hasBondWith(neighbours[1]))
             {
-                if (neighbours[i]->is(#{other_role_cr}))
-                {
-                    SpecificSpec *targets[2] = { neighbours[i]->specByRole<DimerCRs>(#{other_role_cr}), target };
-                    create<ForwardMethylIncorporation>(targets);
-                }
+                SpecificSpec *targets[2] = { neighbours[1]->specByRole<DimerCRs>(#{other_role_cr}), specie1 };
+                create<ForwardMethylIncorporation>(targets);
             }
-        }
+        });
     });
                 CODE
               end

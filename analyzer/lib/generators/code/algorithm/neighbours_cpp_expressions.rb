@@ -80,7 +80,7 @@ module VersatileDiamond
 
             with_bond = atoms_with_bond_to(other)
             unless with_bond.empty?
-              condition_str = append_check_bond_condition(condition_str, with_bond)
+              condition_str = append_check_bond_conditions(condition_str, with_bond)
             end
 
             define_nbr_line + code_condition(condition_str, &block)
@@ -109,7 +109,7 @@ module VersatileDiamond
 
             with_bond = target_atom_with_bond_to(other)
             unless with_bond.empty?
-              condition_str = append_check_bond_condition(condition_str, with_bond)
+              condition_str = append_check_bond_conditions(condition_str, with_bond)
             end
 
             define_nbrs_line + code_condition(condition_str, &block)
@@ -207,9 +207,7 @@ module VersatileDiamond
           #   each internal atom will be checked
           # @return [Array] the list of pairs of bonded atoms with units
           def atoms_with_bond_to(other)
-            nbr = other.target_atom
-            pairs = atoms.zip([nbr] * atoms.size).select(&method(:check_bond))
-            append_units(other, pairs)
+            select_bonded(other, atoms.zip([other.target_atom] * atoms.size))
           end
 
           # Selects neighbour atoms which have bond with target atom
@@ -217,8 +215,18 @@ module VersatileDiamond
           # @return [Array] the list of pairs where bond has between each pair
           def target_atom_with_bond_to(other)
             nbrs = other.atoms
-            pairs = ([target_atom] * nbrs.size).zip(nbrs).select(&method(:check_bond))
-            append_units(other, pairs)
+            select_bonded(other, ([target_atom] * nbrs.size).zip(nbrs))
+          end
+
+          # Appends the correspond units to each atom from each pair and selects pairs
+          # with correspond bonded atoms
+          #
+          # @param [Array] pairs the list of atom pairs from which the each pair will
+          #   be checked that atoms from it is bonded
+          # @return [Array] the list of pairs where each item is array of two elements
+          #   where the first item is unit and the second item is atom of it
+          def select_bonded(other, pairs)
+            append_units(other, pairs).select(&method(:check_bond))
           end
 
           # Selects pairs which has bond between each other
@@ -290,19 +298,22 @@ module VersatileDiamond
           # @param [Array] units_with_atoms is the pairs of atoms between which the
           #   bond existatnce will be checked
           # @return [String] the extended condition
-          def append_check_bond_condition(original_condition, units_with_atoms)
+          def append_check_bond_conditions(original_condition, units_with_atoms)
             parts = units_with_atoms.each_with_object([]) do |pairs, acc|
-              _, atoms_pair = pairs.transpose
-              relation = relation_between(*atoms_pair)
+              relation = relation_between(*pairs)
               next unless relation
 
+              units_pair, atoms_pair = pairs.transpose
               cb_call = check_bond_call(*atoms_pair)
               if relation.bond?
                 acc << cb_call
               elsif any_uses_bond?(pairs, relation.params)
                 acc << "!#{cb_call}"
-              elsif (linked_atom = position_with(pairs.first.last, relation))
-                acc << not_own_atom_condition(linked_atom, pairs.last.last)
+              elsif units_pair.map { |unit| unit.original_spec }.uniq.size > 1
+                linked_atom = position_with(pairs.first.last, relation)
+                if linked_atom
+                  acc << not_own_atom_condition(linked_atom, pairs.last.last)
+                end
               end
             end
 

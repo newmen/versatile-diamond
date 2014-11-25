@@ -55,14 +55,6 @@ module VersatileDiamond
             nodes.all? { |node| node.uniq_specie.original == @specie }
           end
 
-          # Creates empty nodes for case when reaction has just one reactant
-          # @return [Array] the array with one node
-          def create_empty_nodes
-            uniq_specie = UniqueSpecie.new(@specie, @specie.spec)
-            node = BluntNode.new(@specie, uniq_specie)
-            [node]
-          end
-
           # Extends passed graph from passed nodes
           # @param [Hash] graph which extended instance will be gotten
           # @param [Array] nodes from which graph will be extended

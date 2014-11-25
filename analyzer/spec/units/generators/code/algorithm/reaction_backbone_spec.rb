@@ -172,6 +172,9 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_ordered_graph do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
               subject { dept_methyl_incorporation }
               let(:target_spec) { activated_methyl_on_bridge }
               let(:am1) { activated_methyl_on_bridge.atom(:cr) }

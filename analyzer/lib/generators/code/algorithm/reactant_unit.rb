@@ -59,15 +59,28 @@ module VersatileDiamond
             define_nbrs_anchors_line
           end
 
-          # Gets relation between first and second passed atoms
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   target_atom the atom of target specie from which relation will be checked
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   other_atom the atom of other specie to which relation will be checked
-          # @return [Concepts::Bond] the relation between passed atoms
-          def relation_between(target_atom, other_atom)
-            target_sa = [target_specie.spec.spec, target_atom]
-            @dept_reaction.relation_between_by_saa(target_sa, other_atom)
+          # Also checks the relations between atoms of other unit
+          # @param [String] condition_str see at #super same argument
+          # @param [BaseUnit] other see at #super same argument
+          # @return [String] the extended condition
+          # @override
+          def append_check_other_relations(_condition_str, other)
+            ops = other.atoms.combination(2).map { |pair| [other, other].zip(pair) }
+            append_check_bond_conditions(super, ops)
+          end
+
+          # Gets relation between spec-atom instances which extracts from passed array
+          # of pairs
+          #
+          # @param [Array] pair_of_units_with_atoms the array of two items where each
+          #   element is array where first item is target unit and second item is atom
+          # @return [Concepts::Bond] the relation between passed spec-atom instances or
+          #   nil if relation isn't presented
+          def relation_between(*pair_of_units_with_atoms)
+            pair_of_specs_atoms = pair_of_units_with_atoms.map do |unit, atom|
+              [unit.original_spec.spec, atom]
+            end
+            @dept_reaction.relation_between(*pair_of_specs_atoms)
           end
 
           # Gets the engine framework class for reactant specie
