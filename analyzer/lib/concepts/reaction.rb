@@ -140,13 +140,6 @@ module VersatileDiamond
         (pos_atoms + changed_atoms_of(spec)).uniq
       end
 
-      # Gets changed atoms of passed spec
-      # @param [Spec | SpecificSpec] spec the one of reactant
-      # @return [Array] the array of using atoms
-      def changed_atoms_of(spec)
-        @mapping.used_atoms_of(spec)
-      end
-
       # Also compares positions in both reactions
       # @param [UbiquitousReaction] see at #super same argument
       # @override
@@ -236,6 +229,13 @@ module VersatileDiamond
         else
           super
         end
+      end
+
+      # Gets changed atoms of passed spec
+      # @param [Spec | SpecificSpec] spec the one of reactant
+      # @return [Array] the array of using atoms
+      def changed_atoms_of(spec)
+        @mapping.used_atoms_of(spec)
       end
 
       # Reverse params for creating reverse reaction with reversing of atom

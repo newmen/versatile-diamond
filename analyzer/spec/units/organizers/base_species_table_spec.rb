@@ -70,6 +70,7 @@ module VersatileDiamond
               dept_methyl_on_bridge_base,
               dept_dimer_base,
               dept_methyl_on_dimer_base,
+              dept_intermed_migr_down_half_base,
               spec
             ]
           end

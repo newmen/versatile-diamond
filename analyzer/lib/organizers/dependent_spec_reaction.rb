@@ -61,27 +61,6 @@ module VersatileDiamond
         end
       end
 
-      # Checks possible relation between passed instances
-      # @param [Array] first_sa the spec-atom instance from which relation will be
-      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-      #   second_a the atom which could have relation with first spec-atom instance
-      # @return [Concepts::Bond] the relation between passed instances or nil
-      def relation_between_by_saa(first_sa, second_a)
-        second_sa = links.keys.find { |sa| sa != first_sa && sa.last == second_a }
-        raise 'Undefined second atom' unless second_sa
-
-        rb = relation_between(first_sa, second_sa)
-        return rb if rb
-        return nil unless surface_source.size > 1 && surface_products.size == 1
-
-        # get atoms of big product spec
-        product_atoms = [first_sa, second_sa].map do |sa|
-          (psa = changes[sa]) && psa.last
-        end
-
-        surface_products.first.relation_between(*product_atoms)
-      end
-
     private
 
       # Checks that positions between reactants is setted

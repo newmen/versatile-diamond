@@ -24,7 +24,7 @@ module VersatileDiamond
 
         protected
 
-          attr_reader :atoms
+          attr_reader :original_spec, :atoms
 
           # Atomic specie is always single
           # @return [Boolean] true
@@ -73,7 +73,7 @@ module VersatileDiamond
             namer.erase(nbrs)
 
             super(other, rel_params) do
-              condition =
+              condition_str =
                 if defined_nbrs_with_names.empty?
                   other.check_role_condition
                 else
@@ -83,9 +83,8 @@ module VersatileDiamond
                   comp_strs.join(' && ')
                 end
 
-              units_with_atoms = append_units(other, atoms.zip(nbrs))
-              condition = append_check_bond_condition(condition, units_with_atoms)
-              code_condition(condition, &block)
+              condition_str = append_check_other_relations(condition_str, other)
+              code_condition(condition_str, &block)
             end
           end
 
@@ -100,7 +99,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :generator, :namer, :original_spec
+          attr_reader :generator, :namer
 
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
@@ -113,6 +112,21 @@ module VersatileDiamond
             namer.name_of(target_atom)
           end
 
+          # Appends condition of checking relations to atoms of other unit from current
+          # @param [String] condition_str the string which will be extended by
+          #   additional condition
+          # @param [BaseUnit] other the unit to atoms of which the relations will be
+          #   checked
+          # @return [String] the extended condition
+          def append_check_other_relations(condition_str, other)
+            units_with_atoms = append_units(other, atoms.zip(other.atoms))
+            append_check_bond_conditions(condition_str, units_with_atoms)
+          end
+
+          # Gets the index of passed atom from generator's classifer by original spec
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be classified
+          # @return [Integer] the role of passed atom
           def role(atom)
             generator.classifier.index(original_spec, atom)
           end

@@ -112,38 +112,6 @@ module VersatileDiamond
           }
         end
       end
-
-      describe '#relation_between_by_saa' do
-        shared_examples_for :check_rbbsaa do
-          it { expect(subject.relation_between_by_saa(first_sa, second_a)).
-            to eq(relation) }
-        end
-
-        describe 'no relation' do
-          subject { dept_hydrogen_migration }
-          let(:first_sa) { [methyl_on_dimer, methyl_on_dimer.atom(:cr)] }
-          let(:second_a) { activated_dimer.atom(:cl) }
-          let(:relation) { nil }
-          it_behaves_like :check_rbbsaa
-        end
-
-        describe 'relation between reactants' do
-          subject { dept_dimer_formation }
-          let(:first_sa) { [activated_bridge, activated_bridge.atom(:ct)] }
-          let(:second_a) { activated_incoherent_bridge.atom(:ct) }
-          let(:relation) { position_100_front }
-          it_behaves_like :check_rbbsaa
-        end
-
-        describe 'relation by product spec' do
-          subject { dept_methyl_incorporation }
-          let(:amoeb) { activated_methyl_on_extended_bridge }
-          let(:first_sa) { [amoeb, amoeb.atom(:cm)] }
-          let(:second_a) { activated_dimer.atom(:cr) }
-          let(:relation) { bond_110_cross }
-          it_behaves_like :check_rbbsaa
-        end
-      end
     end
 
   end
