@@ -127,19 +127,20 @@ module VersatileDiamond
       end
 
       %w(incoherent unfixed).each do |state|
+        method_name = :"#{state}!"
         # Defines #{state} method which change a state of atom selected by
         # keyname
         #
         # @param [Symbol] atom_keyname the keyname of selecting atom
         # @raise [Errors::SyntaxError] if atom already has setuping state
-        define_method("#{state}!") do |atom_keyname|
+        define_method(method_name) do |atom_keyname|
           atom = @specific_atoms[atom_keyname]
           unless atom
             atom = SpecificAtom.new(spec.atom(atom_keyname))
             @specific_atoms[atom_keyname] = atom
             reset_caches
           end
-          atom.send("#{state}!")
+          atom.send(method_name)
         end
       end
 

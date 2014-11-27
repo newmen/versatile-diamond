@@ -57,7 +57,7 @@ module VersatileDiamond
           #   passed dimension, or dimension is not passed and default
           #   is not setted
           # @return [Float] converted value
-          define_method("convert_#{var}") do |value, dimension = nil|
+          define_method(:"convert_#{var}") do |value, dimension = nil|
             value == 0 ? 0 : convert(var.to_sym, value, dimension)
           end
         end
