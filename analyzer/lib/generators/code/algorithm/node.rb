@@ -42,7 +42,7 @@ module VersatileDiamond
           end
 
           def inspect
-            "(#{uniq_specie.inspect} | #{properties.to_s})"
+            "(#{uniq_specie.inspect} | #{properties})"
           end
 
         private
