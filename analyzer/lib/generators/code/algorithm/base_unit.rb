@@ -79,7 +79,12 @@ module VersatileDiamond
                 else
                   new_names = nbrs.map { |n| namer.name_of(n) }
                   prv_names = defined_nbrs_with_names.map(&:last)
-                  comp_strs = prv_names.zip(new_names).map { |nms| nms.join(' == ') }
+                  zipped_names = prv_names.zip(new_names)
+                  comp_strs = atoms.zip(nbrs).zip(zipped_names).map do |ats, nms|
+                    uwas = append_units(other, [ats])
+                    op = relation_between(*uwas.first) ? '==' : '!='
+                    nms.join(" #{op} ")
+                  end
                   comp_strs.join(' && ')
                 end
 

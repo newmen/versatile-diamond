@@ -198,10 +198,14 @@ module VersatileDiamond
           # @param [Array] species from which defining atoms will be gotten
           # @return [String] the string of cpp code
           def define_avail_atoms_line
-            atoms = original_spec.anchors - [target_atom]
+            # TODO: should be used `original_spec.anchors` directly
+            using_specie_atoms =
+              SpecieBackbone.new(generator, original_specie).using_atoms
+
+            atoms = using_specie_atoms - [target_atom]
             namer.assign('atom', atoms)
 
-            pwts = original_spec.anchors.each_with_object([]) do |atom, acc|
+            pwts = using_specie_atoms.each_with_object([]) do |atom, acc|
               next if atom == target_atom
               acc << parent_with_twin_for(atom) { |pr, _| parent_species.include?(pr) }
             end
