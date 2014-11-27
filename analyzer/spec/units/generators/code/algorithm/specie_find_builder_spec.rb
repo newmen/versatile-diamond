@@ -439,8 +439,7 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_code do
-              subject { dept_intermed_migr_down_full_base }
+            describe 'intermediate migration down species' do
               let(:base_specs) do
                 [
                   dept_bridge_base,
@@ -452,7 +451,41 @@ module VersatileDiamond
               let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
               let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
 
-              let(:find_algorithm) do
+              it_behaves_like :check_code do
+                subject { dept_intermed_migr_down_half_base }
+                let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_HALF, #{role_cm}))
+        {
+            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
+            if (specie1)
+            {
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
+                    if (specie2->atom(1) != specie1->atom(1))
+                    {
+                        Atom *atoms[4] = { specie1->atom(1), specie1->atom(4), specie2->atom(2), specie2->atom(3) };
+                        Atom *anchors[2] = { atoms[2], atoms[3] };
+                        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                            if (atoms[0] == neighbours[0] && atoms[1] != neighbours[1])
+                            {
+                                ParentSpec *parents[2] = { specie1, specie2 };
+                                create<IntermedMigrDownHalf>(parents);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+                CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                subject { dept_intermed_migr_down_full_base }
+                let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_cm}))
     {
@@ -464,10 +497,10 @@ module VersatileDiamond
                 anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
                     if (specie2->atom(1) != specie1->atom(1))
                     {
-                        Atom *atoms[4] = { specie1->atom(4), specie1->atom(1), specie2->atom(2), specie2->atom(3) };
-                        Atom *anchors[2] = { atoms[2], atoms[3] };
+                        Atom *atoms[4] = { specie1->atom(1), specie1->atom(4), specie2->atom(2), specie2->atom(3) };
+                        Atom *anchors[2] = { atoms[0], atoms[1] };
                         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-                            if (atoms[1] == neighbours[0] && atoms[0] == neighbours[1])
+                            if (atoms[2] == neighbours[0] && atoms[3] == neighbours[1])
                             {
                                 ParentSpec *parents[2] = { specie1, specie2 };
                                 create<IntermedMigrDownFull>(parents);
@@ -479,6 +512,7 @@ module VersatileDiamond
         }
     }
                 CODE
+                end
               end
             end
           end

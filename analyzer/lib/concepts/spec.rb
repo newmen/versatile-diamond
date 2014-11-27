@@ -75,9 +75,12 @@ module VersatileDiamond
       def adsorb(other, &block)
         duplicates = other.duplicate_atoms_with_keynames
         duplicates.each do |keyname, atom|
-          current_keyname = block_given? ?
-            block[keyname, generate_keyname(keyname), atom] :
-            (@atoms[keyname] ? generate_keyname(keyname) : keyname)
+          current_keyname =
+            if block_given?
+              block[keyname, generate_keyname(keyname), atom]
+            else
+              @atoms[keyname] ? generate_keyname(keyname) : keyname
+            end
 
           # if block was given and returned keyname or block is not given
           describe_atom(current_keyname, atom) if current_keyname

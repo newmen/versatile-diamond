@@ -68,6 +68,13 @@ module VersatileDiamond
             @_final_graph = result
           end
 
+          # Provides the list of all atoms that uses in backbone full graph
+          # @return [Array] the list of all used atoms
+          def using_atoms
+            # TODO: hack! Uses in MultiUnsymmetricParentsUnit#define_avail_atoms_line
+            collect_nodes(final_graph).flatten.map(&:atom).uniq
+          end
+
         private
 
           def_delegators :@specie, :spec, :sequence
