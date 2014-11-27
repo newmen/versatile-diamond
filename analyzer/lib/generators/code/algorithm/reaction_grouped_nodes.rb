@@ -3,49 +3,52 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Contain logic for clean links of reaction and group them by parameters
+        # Contain logic for create nodes of reaction and group them by parameters
         # of relations
         class ReactionGroupedNodes < BaseGroupedNodes
+
           # Initizalize grouper by reaction class code generator
           # @param [EngineCode] generator the major code generator
-          # @param [ReactionWithComplexSpecies] reaction from which grouped graph will
-          #   be gotten
+          # @param [TypicalReaction] reaction from which grouped graph will be gotten
           def initialize(generator, reaction)
-            super(generator)
+            super(ReactionNodesFactory.new(generator))
             @reaction = reaction
 
-            @atoms_to_nodes = {}
-            @specs_to_uniques = {}
+            @_big_graph, @_small_graph = nil
+          end
 
-            @_big_links_graph, @_small_links_graph = nil
+          # Makes the nodes graph from original links between interacting atoms of
+          # target reaction
+          #
+          # @return [Hash] the most comprehensive graph of nodes
+          # TODO: should be private
+          def big_graph
+            @_big_graph ||= transform_links(@reaction.original_links)
           end
 
         private
 
-          def big_links_graph
-            @_big_links_graph ||= transform_links(@reaction.original_links)
+          # Makes the nodes graph from positions of target reaction
+          # @return [Hash] the small graph of nodes
+          def small_graph
+            return @_small_graph if @_small_graph
+
+            result = transform_links(@reaction.clean_links)
+            if result.empty?
+              surf_changes = @reaction.changes.reject do |(s1, _), (s2, _)|
+                bad_spec?(s1) || bad_spec?(s2)
+              end
+              result = transform_links(surf_changes.map { |sa, _| [sa, []] })
+            end
+
+            @_small_graph = result
           end
 
-          def small_links_graph
-            @_small_links_graph ||= transform_links(@reaction.clean_links)
-          end
-
-          def get_node(spec_atom)
-            spec, atom = spec_atom
-            return @atoms_to_nodes[atom] if @atoms_to_nodes[atom]
-
-            specie = get_unique_specie(spec)
-            @atoms_to_nodes[atom] = Node.new(specie.original, specie, atom)
-          end
-
-          # Makes unique specie instance from passed spec
-          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
-          #   spec by which the unique algorithm specie will be maked
-          # @return [UniqueSpecie] the wrapped specie code generator
-          def get_unique_specie(spec)
-            return @specs_to_uniques[spec] if @specs_to_uniques[spec]
-            specie = specie_class(spec)
-            @specs_to_uniques[spec] = UniqueSpecie.new(specie, specie.spec)
+          # Checks that passed spec is bad
+          # @param [Concepts::Spec | Concepts::SpecificSpec] spec which will be checked
+          # @return [Boolean] is passed spec bad or not
+          def bad_spec?(spec)
+            spec.simple? || spec.gas?
           end
 
           # Detects relation between passed nodes

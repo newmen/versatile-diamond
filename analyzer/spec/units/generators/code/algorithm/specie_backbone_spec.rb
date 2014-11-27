@@ -15,20 +15,11 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:backbone) { described_class.new(generator, specie) }
 
-          [
-            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
-          ].each do |keyname|
+          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
 
           describe '#final_graph' do
-            shared_examples_for :check_finite_graph do
-              it 'translate to atomic graph and check' do
-                atomic_graph = translate_to_atomic_graph(backbone.final_graph)
-                expect(atomic_graph).to match_graph(final_graph)
-              end
-            end
-
             it_behaves_like :check_finite_graph do
               subject { dept_bridge_base }
               let(:base_specs) { [subject] }
@@ -179,28 +170,40 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'intermediate specie of migration down process' do
+              let(:base_specs) do
+                [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+              end
+
+              it_behaves_like :check_finite_graph do
+                subject { dept_intermed_migr_down_half_base }
+                let(:final_graph) do
+                  {
+                    [cm] => [],
+                    [cdr, cdl] => [[[cbr, cbl], param_100_cross]],
+                    [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                  }
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                subject { dept_intermed_migr_down_full_base }
+                let(:final_graph) do
+                  {
+                    [cm] => [],
+                    [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
+                    [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                  }
+                end
+              end
+            end
           end
 
           describe '#ordered_graph_from' do
-            shared_examples_for :check_ordered_graph do
-              it 'translate to atomic graph and check' do
-                astns = anchors.each_with_object({}) do |a, acc|
-                  backbone.final_graph.keys.each do |ns|
-                    ns.each { |n| acc[a] ||= n if n.atom == a }
-                    break if acc[a]
-                  end
-                end
-
-                original_ordered_graph = backbone.ordered_graph_from(astns.values)
-                atomic_list = translate_to_atomic_list(original_ordered_graph)
-                expect(atomic_list).to eq(ordered_graph)
-              end
-            end
-
             it_behaves_like :check_ordered_graph do
               subject { dept_bridge_base }
               let(:base_specs) { [subject] }
-              let(:anchors) { [ct] }
               let(:ordered_graph) do
                 [
                   [[ct], [[[cl, cr], param_110_cross]]]
@@ -211,7 +214,6 @@ module VersatileDiamond
             it_behaves_like :check_ordered_graph do
               subject { dept_vinyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:anchors) { [cb] }
               let(:ordered_graph) do
                 [
                   [[cb], [[[c1], param_amorph]]],
@@ -223,7 +225,6 @@ module VersatileDiamond
             it_behaves_like :check_ordered_graph do
               subject { dept_dimer_base }
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:anchors) { [cr] }
               let(:ordered_graph) do
                 [
                   [[cr], [[[cl], param_100_front]]]
@@ -234,7 +235,6 @@ module VersatileDiamond
             it_behaves_like :check_ordered_graph do
               subject { dept_two_methyls_on_dimer_base }
               let(:base_specs) { [dept_dimer_base, subject] }
-              let(:anchors) { [cr, cl] }
               let(:ordered_graph) do
                 [
                   [[cr], [[[c1], param_amorph]]],
@@ -247,7 +247,6 @@ module VersatileDiamond
               subject { dept_activated_methyl_on_incoherent_bridge }
               let(:base_specs) { [dept_methyl_on_bridge_base] }
               let(:specific_specs) { [subject] }
-              let(:anchors) { [cb, cm] }
               let(:ordered_graph) do
                 [
                   [[cb, cm], []],
@@ -258,7 +257,6 @@ module VersatileDiamond
             it_behaves_like :check_ordered_graph do
               subject { dept_three_bridges_base }
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:anchors) { [cc] }
               let(:ordered_graph) do
                 [
                   [[cc], []],
@@ -272,7 +270,6 @@ module VersatileDiamond
 
               it_behaves_like :check_ordered_graph do
                 let(:base_specs) { [dept_bridge_base, subject] }
-                let(:anchors) { [ctl] }
                 let(:ordered_graph) do
                   [
                     [[ctl], [[[cm], param_amorph], [[ctr], param_100_cross]]],
@@ -285,13 +282,24 @@ module VersatileDiamond
                 let(:base_specs) do
                   [dept_bridge_base, dept_methyl_on_bridge_base, subject]
                 end
-                let(:anchors) { [cm] }
                 let(:ordered_graph) do
                   [
                     [[cm], []],
                     [[ctl], [[[ctr], param_100_cross]]]
                   ]
                 end
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              subject { dept_cross_bridge_on_dimers_base }
+              let(:base_specs) { [dept_dimer_base, subject] }
+              let(:ordered_graph) do
+                [
+                  [[ctr], [[[cm], param_amorph]]],
+                  [[csr, ctr], [[[csl, ctl], param_100_cross]]],
+                  [[ctl], [[[cm], param_amorph]]]
+                ]
               end
             end
 
@@ -302,7 +310,7 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_ordered_graph do
-                let(:anchors) { [cr] }
+                let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
                     [[cr], [[[cl], param_100_front]]]
@@ -311,10 +319,36 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_ordered_graph do
-                let(:anchors) { [cl] }
+                let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
                     [[cl], [[[cr], param_100_front]]]
+                  ]
+                end
+              end
+            end
+
+            describe 'intermediate specie of migration down process' do
+              let(:base_specs) do
+                [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+              end
+
+              it_behaves_like :check_ordered_graph do
+                subject { dept_intermed_migr_down_half_base }
+                let(:ordered_graph) do
+                  [
+                    [[cm], []],
+                    [[cdr, cdl], [[[cbr, cbl], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                subject { dept_intermed_migr_down_full_base }
+                let(:ordered_graph) do
+                  [
+                    [[cm], []],
+                    [[cbr, cbl], [[[cdr, cdl], param_100_cross]]]
                   ]
                 end
               end

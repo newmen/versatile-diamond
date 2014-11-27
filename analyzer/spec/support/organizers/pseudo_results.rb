@@ -36,10 +36,13 @@ module VersatileDiamond
           ]
         end
 
-        # Provides default value for analysis result methods
-        # @return [Hash] the hash where each value is empty array
-        def default_depts
-          Hash[default_keys.map { |c| [c, []] }]
+        # Extends passed depts for analysis result methods
+        # @return [Hash] the hash where each not presented value is empty array
+        def merge_with_default(depts)
+          default_keys.each_with_object({}) do |key, acc|
+            presented_values = depts[key]
+            acc[key] = presented_values ? presented_values.dup : []
+          end
         end
 
         # Sorts in order of default depts keys
@@ -51,7 +54,7 @@ module VersatileDiamond
         # Extends passed depts hash by adding all internal species
         # @return [Hash] the fixed cache of depts
         def fix(depts)
-          ordered_depts = sort_depts(default_depts.merge(depts))
+          ordered_depts = sort_depts(merge_with_default(depts))
           only_specs = ordered_depts.flat_map(&:last).select do |o|
             o.is_a?(DependentSimpleSpec)
           end
@@ -60,12 +63,13 @@ module VersatileDiamond
           depts_cache = Hash[ordered_depts]
 
           fix_reactants(depts_cache, all_specs)
-          fix_sidepieces(depts_cache, all_specs)
-          fix_bases(depts_cache, all_specs)
 
           purging_specs = [depts_cache[:base_specs], depts_cache[:specific_specs]]
           pss = purge_unused_extended_specs(*purging_specs.map(&method(:make_cache)))
           depts_cache[:base_specs], depts_cache[:specific_specs] = pss.map(&:values)
+
+          fix_sidepieces(depts_cache, all_specs)
+          fix_bases(depts_cache, all_specs)
 
           depts_cache
         end
@@ -80,7 +84,9 @@ module VersatileDiamond
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
               dr.reaction.each_source do |s|
-                unless all_specs.include?(s.name)
+                if all_specs.include?(s.name)
+                  swap_source_carefully(dr, s, spec_from(all_specs, s).spec)
+                else
                   if s.is_a?(Concepts::TerminationSpec)
                     dt = DependentTermination.new(s)
                     depts_cache[:term_specs] << dt
@@ -100,7 +106,9 @@ module VersatileDiamond
         def fix_sidepieces(depts_cache, all_specs)
           depts_cache[:lateral_reactions].flat_map(&:theres).each do |th|
             th.where.specs.each do |s|
-              unless all_specs.include?(s.name)
+              if all_specs.include?(s.name)
+                swap_source_carefully(th, s, spec_from(all_specs, s).spec)
+              else
                 store_reactant(th, depts_cache, all_specs, s)
               end
 

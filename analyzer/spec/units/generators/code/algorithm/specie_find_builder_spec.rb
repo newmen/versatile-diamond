@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe SpecieFindBuilder, use: :engine_generator do
+        describe SpecieFindBuilder, type: :algorithm do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:typical_reactions) { [] }
@@ -21,23 +21,11 @@ module VersatileDiamond
           let(:builder) { described_class.new(generator, code_specie) }
 
           describe '#build' do
-            def role(spec, keyname)
-              classifier.index(spec, spec.spec.atom(keyname))
-            end
-
-            [:ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr].each do |keyname|
-              let(keyname) { subject.spec.atom(keyname) }
-              let(:"role_#{keyname}") { role(subject, keyname) }
-            end
-
             [:ct, :cr].each do |keyname|
               let(:"b_#{keyname}") { role(dept_bridge_base, keyname) }
             end
             let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
-
-            shared_examples_for :check_code do
-              it { expect(builder.build).to eq(find_algorithm) }
-            end
+            let(:d_cr) { role(dept_dimer_base, :cr) }
 
             it_behaves_like :check_code do
               subject { dept_bridge_base }
@@ -265,7 +253,7 @@ module VersatileDiamond
             if (amorph1->is(#{role_cm}))
             {
                 eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (neighbour->is(#{role_ctr}) && !anchor->hasBondWith(neighbour))
+                    if (neighbour->is(#{role_ctr}))
                     {
                         if (neighbour->hasBondWith(amorph1))
                         {
@@ -295,14 +283,14 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_cm}))
         {
-            auto species = anchor->specsByRole<MethylOnBridge, 2>(#{mob_cm});
-            if (species.all())
+            auto species1 = anchor->specsByRole<MethylOnBridge, 2>(#{mob_cm});
+            if (species1.all())
             {
-                Atom *atoms[2] = { species[0]->atom(1), species[1]->atom(1) };
+                Atom *atoms[2] = { species1[0]->atom(1), species1[1]->atom(1) };
                 eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour) {
-                    if (atoms[1] == neighbour && !atoms[0]->hasBondWith(neighbour))
+                    if (atoms[1] == neighbour)
                     {
-                        ParentSpec *parents[2] = { species[0], species[1] };
+                        ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnBridges>(parents);
                     }
                 });
@@ -315,7 +303,44 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_cross_bridge_on_dimers_base }
-              let(:base_specs) { [dept_bridge_base, dept_methyl_on_dimer_base, subject] }
+              let(:base_specs) do
+                [dept_bridge_base, dept_dimer_base, subject]
+              end
+
+              let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_ctl}))
+    {
+        if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_ctl}))
+        {
+            Atom *amorph1 = anchor->amorphNeighbour();
+            if (amorph1->is(#{role_cm}))
+            {
+                Dimer *parent1 = anchor->specByRole<Dimer>(#{d_cr});
+                Atom *anchors[2] = { parent1->atom(0), anchor };
+                eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                    if (neighbours[0]->is(#{role_csr}) && neighbours[1]->is(#{role_ctr}))
+                    {
+                        if (neighbours[1]->hasBondWith(amorph1))
+                        {
+                            ParentSpec *parents[2] = { parent1, neighbours[0]->specByRole<Dimer>(#{d_cr}) };
+                            create<CrossBridgeOnDimers>(amorph1, parents);
+                        }
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_cross_bridge_on_dimers_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_dimer_base, dept_methyl_on_dimer_base, subject]
+              end
 
               let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
               let(:find_algorithm) do
@@ -324,15 +349,15 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
-            auto species = anchor->specsByRole<MethylOnDimer, 2>(#{mod_cm});
-            if (species.all())
+            auto species1 = anchor->specsByRole<MethylOnDimer, 2>(#{mod_cm});
+            if (species1.all())
             {
-                Atom *atoms[4] = { species[0]->atom(4), species[0]->atom(1), species[1]->atom(4), species[1]->atom(1) };
+                Atom *atoms[4] = { species1[0]->atom(4), species1[0]->atom(1), species1[1]->atom(4), species1[1]->atom(1) };
                 Atom *anchors[2] = { atoms[2], atoms[3] };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-                    if (atoms[0] == neighbours[0] && atoms[1] == neighbours[1] && !anchors[0]->hasBondWith(neighbours[0]) && !anchors[1]->hasBondWith(neighbours[1]))
+                    if (atoms[0] == neighbours[0] && atoms[1] == neighbours[1])
                     {
-                        ParentSpec *parents[2] = { species[0], species[1] };
+                        ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnDimers>(parents);
                     }
                 });
@@ -384,7 +409,6 @@ module VersatileDiamond
               subject { dept_bridge_with_dimer_base }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
 
-              let(:d_cr) { role(dept_dimer_base, :cr) }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_cr}))
@@ -412,6 +436,83 @@ module VersatileDiamond
         }
     }
                 CODE
+              end
+            end
+
+            describe 'intermediate migration down species' do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base,
+                  subject
+                ]
+              end
+              let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
+              let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
+
+              it_behaves_like :check_code do
+                subject { dept_intermed_migr_down_half_base }
+                let(:find_algorithm) do
+                  <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_HALF, #{role_cm}))
+        {
+            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
+            if (specie1)
+            {
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
+                    if (specie2->atom(1) != specie1->atom(1))
+                    {
+                        Atom *atoms[4] = { specie1->atom(1), specie1->atom(4), specie2->atom(2), specie2->atom(3) };
+                        Atom *anchors[2] = { atoms[2], atoms[3] };
+                        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                            if (atoms[0] == neighbours[0] && atoms[1] != neighbours[1])
+                            {
+                                ParentSpec *parents[2] = { specie1, specie2 };
+                                create<IntermedMigrDownHalf>(parents);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                subject { dept_intermed_migr_down_full_base }
+                let(:find_algorithm) do
+                  <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cm}))
+        {
+            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
+            if (specie1)
+            {
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
+                    if (specie2->atom(1) != specie1->atom(1))
+                    {
+                        Atom *atoms[4] = { specie1->atom(1), specie1->atom(4), specie2->atom(2), specie2->atom(3) };
+                        Atom *anchors[2] = { atoms[0], atoms[1] };
+                        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
+                            if (atoms[2] == neighbours[0] && atoms[3] == neighbours[1])
+                            {
+                                ParentSpec *parents[2] = { specie1, specie2 };
+                                create<IntermedMigrDownFull>(parents);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+                  CODE
+                end
               end
             end
           end

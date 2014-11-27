@@ -54,8 +54,8 @@ const bool Handbook::__atomsAccordance[Handbook::__atomsNum * Handbook::__atomsN
 
 const ushort Handbook::__atomsSpecifing[Handbook::__atomsNum] =
 {
-    0, 28, 2, 0, 34, 5, 4, 7, 8, 7,
-    10, 36, 27, 13, 10, 15, 16, 17, 15, 19,
+    0, 28, 2, 0, 34, 5, 34, 7, 8, 7,
+    10, 36, 27, 13, 35, 15, 16, 17, 15, 19,
     20, 21, 20, 23, 24, 35, 36, 27, 28, 36,
     27, 35, 32, 33, 34, 35, 36, 37, 38
 };

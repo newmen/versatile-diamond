@@ -70,7 +70,7 @@ module VersatileDiamond
         # Delegates the methods to classifier
         # TODO: if not hydrogen used in system then not be generated methods with
         #   hydrogen in source
-        %w(actives_to_deactives deactives_to_actives).each do |name|
+        %i(actives_to_deactives deactives_to_actives).each do |name|
           define_method(name) { classifier.public_send(name).join(', ') }
         end
 

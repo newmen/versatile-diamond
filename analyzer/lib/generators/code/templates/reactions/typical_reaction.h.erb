@@ -10,7 +10,7 @@ class <%= class_name %> :
 
 public:
 <% complex_source_species.each do |specie| %>
-    static void find(<%= specie.class_name %> *target);
+    static void find(<%= find_arguments_str(specie) %>);
 <% end %>
 
     <%= class_name %>(SpecificSpec **targets) :

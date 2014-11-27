@@ -3,18 +3,17 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # The value for AST tree which uses for generation cpp code
+        # Contains the target species (original and unique) and correspond atom
         class Node
           include Modules::OrderProvider
           extend Forwardable
 
           attr_reader :uniq_specie, :atom
-          def_delegators :atom, :lattice, :relations_limits
           def_delegators :uniq_specie, :none?, :scope?
+          def_delegators :atom, :lattice, :relations_limits
 
           # Initializes the node object
-          # @param [Specie] original_specie which (or which atom) was plased in
-          #   original analysing graph vertex
+          # @param [Specie] original_specie the target specie code generator instance
           # @param [NoneSpec | UniqueSpecie | SpeciesScope] uniq_specie which
           #   correspond to using parent species
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -25,9 +24,7 @@ module VersatileDiamond
             @atom = atom
           end
 
-          # Compares current node with another node. At the beginning of sequence puts
-          # the biggest nodes.
-          #
+          # Compares current node with another node
           # @param [Node] other comparing node
           # @return [Integer] the comparing result
           def <=> (other)
@@ -41,11 +38,19 @@ module VersatileDiamond
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties
-            Organizers::AtomProperties.new(@original_specie.spec, @atom)
+            Organizers::AtomProperties.new(dept_spec, atom)
           end
 
           def inspect
-            "(#{@uniq_specie.inspect} | #{properties.to_s})"
+            "(#{uniq_specie.inspect} | #{properties})"
+          end
+
+        private
+
+          attr_reader :original_specie
+
+          def dept_spec
+            original_specie.spec
           end
         end
 

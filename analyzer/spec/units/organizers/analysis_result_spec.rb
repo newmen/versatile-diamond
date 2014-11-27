@@ -299,7 +299,7 @@ module VersatileDiamond
             let(:parent) { subject.base_spec(:bridge) }
 
             it { expect(wrapped_specific.children).to match_array(children) }
-            it { expect(wrapped_specific.parents.first).to eq(parent) }
+            it { expect(wrapped_specific.parents.map(&:original)).to eq([parent]) }
           end
 
           describe '#check_reactions_for_duplicates' do
@@ -426,7 +426,7 @@ module VersatileDiamond
             end
 
             it { expect(wrapped_base.children).to match_array(children) }
-            it { expect(wrapped_base.parents).to eq([parent, parent]) }
+            it { expect(wrapped_base.parents.map(&:original)).to eq([parent, parent]) }
           end
         end
       end

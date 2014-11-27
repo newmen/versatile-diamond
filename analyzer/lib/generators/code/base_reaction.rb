@@ -9,6 +9,8 @@ module VersatileDiamond
       class BaseReaction < SoughtClass
         include ReactionsUser
 
+        attr_reader :reaction
+
         # Initializes reaction code generator
         # @param [EngineCode] generator see at #super same argument
         # @param [Organizers::DependentReaction] reaction by which the code will be
@@ -50,8 +52,6 @@ module VersatileDiamond
         end
 
       private
-
-        attr_reader :reaction
 
         # Gets the parent ubiquitous reaction
         # @return [UbiquitousReaction] the parent reaction

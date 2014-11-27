@@ -28,13 +28,6 @@ module VersatileDiamond
         @original = original
       end
 
-      # Compares current instance with other
-      # @param [Object] other instance with which comparison do
-      # @return [Boolean] is equal or not
-      def == (other)
-        other.class == self.class ? super(other) : original == other
-      end
-
       # Delegates all available another calls to original spec
       def method_missing(*args)
         method_name = args.first

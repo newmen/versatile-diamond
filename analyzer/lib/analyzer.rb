@@ -48,10 +48,10 @@ module VersatileDiamond
       read_all_lines
       grab_analysis
     rescue Errors::SyntaxError => e
-      puts e.message(@config_path, @line_number + 1)
+      puts e.message(@config_path, @line_number)
       nil
     rescue Errors::Base
-      puts "Versatile Diamond internal error at line #{@line_number + 1}:"
+      puts "Versatile Diamond internal error at line #{@line_number}:"
       puts "\n\t#{@line.strip}" if @line
       puts
       puts "\nPlease report this error"

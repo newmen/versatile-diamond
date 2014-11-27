@@ -10,14 +10,6 @@ module VersatileDiamond
         it { expect(subject.original).to eq(dept_bridge_base) }
       end
 
-      describe '#==' do
-        it { expect(subject).to eq(subject) }
-        it { expect(subject).to eq(dept_bridge_base) }
-        it { expect(subject).not_to eq(dept_dimer_base) }
-
-        it { expect([subject] * 2).to eq([dept_bridge_base] * 2) }
-      end
-
       describe '#<=>' do
         let(:child) { dept_methyl_on_dimer_base }
         let(:parents) { [dept_methyl_on_bridge_base, dept_bridge_base] }

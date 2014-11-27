@@ -34,7 +34,7 @@ module VersatileDiamond
       # Reduce all positions from links structure
       # @return [Array] the array of position relations
       # TODO: must be protected
-      # TODO: зачем вообще этот метод?)
+      # TODO: for rspec only? :)
       def positions
         links.reduce([]) do |acc, (spec_atom, list)|
           acc + list.reduce([]) do |l, (other_spec_atom, position)|
@@ -140,13 +140,6 @@ module VersatileDiamond
         (pos_atoms + changed_atoms_of(spec)).uniq
       end
 
-      # Gets changed atoms of passed spec
-      # @param [Spec | SpecificSpec] spec the one of reactant
-      # @return [Array] the array of using atoms
-      def changed_atoms_of(spec)
-        @mapping.used_atoms_of(spec)
-      end
-
       # Also compares positions in both reactions
       # @param [UbiquitousReaction] see at #super same argument
       # @override
@@ -170,9 +163,10 @@ module VersatileDiamond
       end
 
       # Gets atom changes list
-      # @return [Array, Array] the arrays of pairs spec and atom
+      # @return [Hash] the hash of changes where keys are spec-atom of source and
+      #   values are spec-atom of products
       def changes
-        MappingResult.rezip(@mapping.changes)
+        Hash[MappingResult.rezip(@mapping.changes)]
       end
 
       # Gets number of changed atoms
@@ -235,6 +229,13 @@ module VersatileDiamond
         else
           super
         end
+      end
+
+      # Gets changed atoms of passed spec
+      # @param [Spec | SpecificSpec] spec the one of reactant
+      # @return [Array] the array of using atoms
+      def changed_atoms_of(spec)
+        @mapping.used_atoms_of(spec)
       end
 
       # Reverse params for creating reverse reaction with reversing of atom

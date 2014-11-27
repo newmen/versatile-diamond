@@ -71,6 +71,12 @@ module VersatileDiamond
               it { expect(subject.name_of(var2)).to eq('var2') }
             end
 
+            describe 'collection' do
+              let(:vars) { [1, 2] }
+              before { subject.assign_next('var', vars) }
+              it { expect(subject.name_of(vars)).to eq('vars1') }
+            end
+
             describe 'duplicate variable' do
               let(:var) { 'value' }
               before { subject.assign_next('var', var) }

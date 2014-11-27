@@ -272,14 +272,23 @@ module VersatileDiamond
           end
         end
 
-        describe '#find_root?' do
+        describe 'rise and endpoint' do
           let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
           let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
 
-          it { expect(specie_class(bridge_base).find_root?).to be_truthy }
-          it { expect(specie_class(dimer_base).find_root?).to be_truthy }
-          it { expect(specie_class(activated_bridge).find_root?).to be_falsey }
-          it { expect(specie_class(activated_dimer).find_root?).to be_falsey }
+          describe '#find_root?' do
+            it { expect(specie_class(bridge_base).find_root?).to be_truthy }
+            it { expect(specie_class(dimer_base).find_root?).to be_truthy }
+            it { expect(specie_class(activated_bridge).find_root?).to be_falsey }
+            it { expect(specie_class(activated_dimer).find_root?).to be_falsey }
+          end
+
+          describe '#find_endpoint?' do
+            it { expect(specie_class(bridge_base).find_endpoint?).to be_falsey }
+            it { expect(specie_class(dimer_base).find_endpoint?).to be_falsey }
+            it { expect(specie_class(activated_bridge).find_endpoint?).to be_truthy }
+            it { expect(specie_class(activated_dimer).find_endpoint?).to be_truthy }
+          end
         end
 
         describe '#header_parents_dependencies' do
@@ -292,36 +301,6 @@ module VersatileDiamond
             to be_empty }
           it { expect(specie_class(activated_dimer).header_parents_dependencies).
             to eq([specie_class(dimer_base)]) }
-        end
-
-        describe '#non_root_children' do
-          let(:base_specs) do
-            [dept_bridge_base, dept_dimer_base, dept_methyl_on_bridge_base]
-          end
-          let(:specific_specs) { [dept_activated_dimer] }
-
-          shared_examples_for :check_non_root_children do
-            let(:code_specie) { specie_class(subject) }
-            let(:code_childs) { children.map(&method(:specie_class)) }
-            it { expect(code_specie.non_root_children). to match_array(code_childs) }
-          end
-
-          it_behaves_like :check_non_root_children do
-            subject { bridge_base }
-            let(:children) { [methyl_on_bridge_base] }
-          end
-
-          it_behaves_like :check_non_root_children do
-            subject { dimer_base }
-            let(:children) { [activated_dimer] }
-          end
-
-          %w(methyl_on_bridge_base activated_dimer).each do |var_name|
-            it_behaves_like :check_non_root_children do
-              subject { send(var_name.to_sym) }
-              let(:children) { [] }
-            end
-          end
         end
 
         describe '#index' do

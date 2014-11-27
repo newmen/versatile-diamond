@@ -27,12 +27,14 @@ module VersatileDiamond
       #   and values are specs
       def organize_dependencies!(not_ubiquitous_reactions, terms_cache, specs_cache)
         not_ubiquitous_reactions.each do |possible|
-          if simples_are_identical?(possible)
-            spec = possible.source_covered_by(termination)
-            if spec
-              terms_cache[termination.name].store_parent(specs_cache[spec.name])
-              possible.store_parent(self)
-            end
+          next unless simples_are_identical?(possible) &&
+            (possible.products.size == 1 ||
+              (possible.products.size == 2 && possible.simple_products.size == 1))
+
+          spec = possible.source_covered_by(termination)
+          if spec
+            terms_cache[termination.name].store_parent(specs_cache[spec.name])
+            possible.store_parent(self)
           end
         end
       end
