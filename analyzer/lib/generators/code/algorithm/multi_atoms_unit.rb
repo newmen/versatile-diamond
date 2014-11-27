@@ -16,7 +16,7 @@ module VersatileDiamond
           def inspect_atoms_names
             names = atoms.map do |atom|
               atom_props = Organizers::AtomProperties.new(original_spec, atom)
-              "#{inspect_name_of(atom)}:#{atom_props.to_s}"
+              "#{inspect_name_of(atom)}:#{atom_props}"
             end
             names.join('|')
           end

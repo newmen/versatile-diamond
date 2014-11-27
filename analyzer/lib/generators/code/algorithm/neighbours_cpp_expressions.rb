@@ -161,7 +161,7 @@ module VersatileDiamond
             clojure_args = ['&']
 
             nbrs_var_name = namer.name_of(nbrs)
-            method_name = "eachNeighbour"
+            method_name = 'eachNeighbour'
             if single?
               lambda_arg = "Atom *#{nbrs_var_name}"
             else

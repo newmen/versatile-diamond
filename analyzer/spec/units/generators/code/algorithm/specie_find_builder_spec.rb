@@ -454,7 +454,7 @@ module VersatileDiamond
               it_behaves_like :check_code do
                 subject { dept_intermed_migr_down_half_base }
                 let(:find_algorithm) do
-                <<-CODE
+                  <<-CODE
     if (anchor->is(#{role_cm}))
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_HALF, #{role_cm}))
@@ -479,14 +479,14 @@ module VersatileDiamond
             }
         }
     }
-                CODE
+                  CODE
                 end
               end
 
               it_behaves_like :check_code do
                 subject { dept_intermed_migr_down_full_base }
                 let(:find_algorithm) do
-                <<-CODE
+                  <<-CODE
     if (anchor->is(#{role_cm}))
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cm}))
@@ -511,7 +511,7 @@ module VersatileDiamond
             }
         }
     }
-                CODE
+                  CODE
                 end
               end
             end
