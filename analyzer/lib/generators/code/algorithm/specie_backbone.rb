@@ -35,18 +35,24 @@ module VersatileDiamond
             all_nodes_lists = collect_nodes(super)
             result =
               sequence.short.reduce(super) do |acc, atom|
-                limits = atom.relations_limits
                 nodes = all_nodes_lists.find do |ns|
                   ns.any? { |n| n.atom == atom }
                 end
 
                 next acc unless acc[nodes]
 
-                group_again(acc, nodes).reduce(acc) do |g, (rp, nbrs)|
+                limits = atom.relations_limits
+                # Groups again because could be case:
+                # {
+                #   [1, 2] => [[[3, 4], flatten_rel], [5, 6], flatten_rel],
+                #   [3, 4] => [[[1, 2], flatten_rel]],
+                #   [5, 6] => [[[1, 2], flatten_rel]]
+                # }
+                group_again(acc[nodes]).reduce(acc) do |g, (rp, nbrs)|
                   raise 'Incomplete grouping in on prev step' unless nbrs.size == 1
                   # next line contain .reduce operation for case if incomplete
                   # grouping still takes plase
-                  num = nbrs.reduce(0.0) { |acc, ns| acc + ns.size } / nodes.size
+                  num = nbrs.reduce(0) { |acc, ns| acc + ns.size } / nodes.size.to_f
                   raise 'Node has too more relations' if limits[rp] < num
 
                   could_be_cleared = !atom.lattice || limits[rp] == num
@@ -67,13 +73,13 @@ module VersatileDiamond
           def_delegators :@specie, :spec, :sequence
 
           # Collects similar relations that available by key of grouped graph
-          # @param [Array] nodes the key of grouped graph
+          # @param [Array] rels the relations which will be grouped
           # @return [Array] the array where each item is array that contains the
           #   following elements: first item is relation parameters, second item is
           #   array of all neighbour nodes groups available by passed key of grouped
           #   graph
-          def group_again(graph, nodes)
-            graph[nodes].group_by(&:last).map do |rp, group|
+          def group_again(rels)
+            rels.group_by(&:last).map do |rp, group|
               [rp, group.map(&:first)]
             end
           end
