@@ -293,34 +293,10 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_grouped_nodes_graph do
-            subject { dept_intermed_migr_down_half_base }
+          describe 'intermediate specie of migration down process' do
             let(:base_specs) do
               [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
             end
-            let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
-            let(:nodes_list) do
-              [
-                [SpeciesScope, cm],
-                [UniqueSpecie, cbr],
-                [UniqueSpecie, cdr]
-              ]
-            end
-            let(:grouped_graph) do
-              {
-                [cm] => [],
-                [cdr] => [[[cbr], param_100_cross]],
-                [cbr] => [[[cdr], param_100_cross]]
-              }
-            end
-          end
-
-          it_behaves_like :check_grouped_nodes_graph do
-            subject { dept_intermed_migr_down_full_base }
-            let(:base_specs) do
-              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
-            end
-            let(:flatten_face_grouped_atoms) { [[cbr, cbl], [cdr, cdl], [cm]] }
             let(:nodes_list) do
               [
                 [SpeciesScope, cm],
@@ -330,12 +306,29 @@ module VersatileDiamond
                 [UniqueSpecie, cdl]
               ]
             end
-            let(:grouped_graph) do
-              {
-                [cm] => [],
-                [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
-                [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
-              }
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_intermed_migr_down_half_base }
+              let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
+              let(:grouped_graph) do
+                {
+                  [cm] => [],
+                  [cdr, cdl] => [[[cbr, cbl], param_100_cross]],
+                  [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                }
+              end
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_intermed_migr_down_full_base }
+              let(:flatten_face_grouped_atoms) { [[cbr, cbl], [cdr, cdl], [cm]] }
+              let(:grouped_graph) do
+                {
+                  [cm] => [],
+                  [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
+                  [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                }
+              end
             end
           end
         end
