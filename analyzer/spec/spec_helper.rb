@@ -7,7 +7,7 @@ require_each '../lattices/*.rb'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir['./spec/support/**/*.rb'].each { |f| require f }
+require_each 'spec/support/**/*.rb'
 
 RSpec.configure do |config|
   VD = VersatileDiamond

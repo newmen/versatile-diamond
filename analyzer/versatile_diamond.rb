@@ -66,6 +66,8 @@ AUTO_LOADING_DIRS.each do |dir|
   module_name = "VersatileDiamond::#{module_name(dir)}"
   eval <<-DEFINE
     module #{module_name}; end
+    module #{module_name}::Support; end
+
     def (#{module_name}).const_missing(class_name)
       VersatileDiamond.const_missing(class_name, '#{dir}')
     end
