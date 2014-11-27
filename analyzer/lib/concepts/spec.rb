@@ -25,8 +25,6 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
-
-        @@_extended_specs_cache ||= {}
       end
 
       # If spec is simple (H2 or HCl for example) then true or false overwise
@@ -77,9 +75,12 @@ module VersatileDiamond
       def adsorb(other, &block)
         duplicates = other.duplicate_atoms_with_keynames
         duplicates.each do |keyname, atom|
-          current_keyname = block_given? ?
-            block[keyname, generate_keyname(keyname), atom] :
-            (@atoms[keyname] ? generate_keyname(keyname) : keyname)
+          current_keyname =
+            if block_given?
+              block[keyname, generate_keyname(keyname), atom]
+            else
+              @atoms[keyname] ? generate_keyname(keyname) : keyname
+            end
 
           # if block was given and returned keyname or block is not given
           describe_atom(current_keyname, atom) if current_keyname
@@ -158,15 +159,10 @@ module VersatileDiamond
       # @return [Spec] extended spec
       # TODO: necessary to consider crystal lattice
       def extend_by_references
-        extended_name = "extended_#{@name}".to_sym
-        unless @@_extended_specs_cache[extended_name]
-          extendable_spec = self.class.new(extended_name)
-          extendable_spec.adsorb(self)
-          extendable_spec.extend!
-          @@_extended_specs_cache[extended_name] = extendable_spec
-        end
-
-        @@_extended_specs_cache[extended_name].dup
+        extendable_spec = self.class.new("extended_#{@name}".to_sym)
+        extendable_spec.adsorb(self)
+        extendable_spec.extend!
+        extendable_spec
       end
 
       # Checks termination atom at the inner atom which belongs to current spec
@@ -224,7 +220,6 @@ module VersatileDiamond
       # Extends spec by atom-references
       def extend!
         atom_references = @atoms.select { |_, atom| atom.reference? }
-
         atom_references.each do |original_keyname, ref|
           adsorb(ref.spec) do |keyname, generated_keyname, atom|
             if keyname == ref.keyname
@@ -243,8 +238,6 @@ module VersatileDiamond
             end
           end
         end
-
-        reset_caches
       end
 
     private
@@ -294,11 +287,6 @@ module VersatileDiamond
           i += 1
         end while atom(keyname)
         keyname
-      end
-
-      # Resets internal caches
-      def reset_caches
-        @keynames_to_atoms = nil
       end
     end
 

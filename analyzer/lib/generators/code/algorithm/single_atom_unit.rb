@@ -4,26 +4,27 @@ module VersatileDiamond
       module Algorithm
 
         # The base class for units which targeted to some atom
-        # @abstract
         class SingleAtomUnit < BaseUnit
+          include SpecieUnitBehavior
 
           # Also store the target atom of unit
           # @param [Array] args of #super method
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   target_atom for current unit
           def initialize(*args, target_atom)
-            super(*args)
-            @target_atom = target_atom
+            super(*args, [target_atom])
+          end
+
+          def inspect
+            "SAU:(#{inspect_target_atom})"
           end
 
         private
 
-          attr_reader :target_atom
-
-          # Gets the array with one item
-          # @return [Array] the array with one target atom
-          def atoms
-            [target_atom]
+          # JUST FOR DEBUG INSPECTATIONS
+          def inspect_target_atom
+            ap = Organizers::AtomProperties.new(original_spec, target_atom)
+            "#{inspect_name_of(target_atom)}:#{ap}"
           end
         end
 

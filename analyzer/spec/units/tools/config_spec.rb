@@ -51,14 +51,14 @@ module VersatileDiamond
       end
 
       describe '#rate' do
+        let(:reaction) { hydrogen_migration }
         before do
-          methyl_desorption.activation = 1
-          methyl_desorption.rate = 1
+          reaction.activation = 1
+          reaction.rate = 1
           described_class.surface_temperature(300, 'K')
         end
 
-        it { expect(described_class.rate(methyl_desorption).round(10)).
-          to eq(0.9995991725) }
+        it { expect(described_class.rate(reaction).round(10)).to eq(0.9995991725) }
       end
     end
 

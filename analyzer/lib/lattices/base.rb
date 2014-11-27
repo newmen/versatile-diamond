@@ -31,7 +31,7 @@ module VersatileDiamond
       # @return [Concepts::Bond] then inverse relation between atoms in lattice
       def opposite_relation(other, relation)
         if self.class == other.class
-          same_lattice(relation)
+          same_lattice_opposite_relation(relation)
         elsif !relation.belongs_to_crystal?
           relation # there relation is a bond without face and direction
         else

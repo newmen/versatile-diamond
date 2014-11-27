@@ -101,19 +101,18 @@ module VersatileDiamond
           spec.source? || spec.complex?
         end
 
+        # Checks that current specie is find algorithm drain
+        # @return [Boolean] is find algorithm drain or not
+        def find_endpoint?
+          non_root_children.empty?
+        end
+
         # Gets a list of parents species full header file path of which will be
         # included in header file of current specie if it isn't find algorithm root
         #
         # @return [Array] the array of parent specie code generators
         def header_parents_dependencies
           find_root? ? [] : parents
-        end
-
-        # Gets children species without species which are find algorithm roots
-        # @return [Array] the array of children specie code generators without find
-        #   algorithm roots
-        def non_root_children
-          children.reject(&:find_root?)
         end
 
         # Gets number of sceleton atoms used in specie and different from atoms of
@@ -166,6 +165,13 @@ module VersatileDiamond
         # @return [Array] the array of children specie class generators
         def children
           spec.non_term_children.map(&method(:specie_class))
+        end
+
+        # Gets children species without species which are find algorithm roots
+        # @return [Array] the array of children specie code generators without find
+        #   algorithm roots
+        def non_root_children
+          children.reject(&:find_root?)
         end
 
         # Checks that specie have children
@@ -407,7 +413,7 @@ module VersatileDiamond
         # Gets a cpp code by which specie will be found when simulation doing
         # @return [String] the multilined string with cpp code
         def find_algorithm
-          SpecieFindBuilder.new(generator, self).build
+          Algorithm::SpecieFindBuilder.new(generator, self).build
         end
       end
 

@@ -97,16 +97,16 @@ module VersatileDiamond
       end
 
       describe '#reverse' do
-        subject { methyl_desorption.reverse }
+        subject { hydrogen_migration.reverse }
         it { should be_a(described_class) }
 
-        it { expect(subject.source).to match_array([methyl, abridge_dup]) }
-        it { expect(subject.products).to match_array([md_source.first]) }
+        it { expect(subject.source).to match_array(hm_products) }
+        it { expect(subject.products).to match_array(hm_source) }
       end
 
       describe '#gases_num' do
-        it { expect(methyl_desorption.gases_num).to eq(0) }
-        it { expect(methyl_desorption.reverse.gases_num).to eq(1) }
+        it { expect(methyl_adsorption.gases_num).to eq(1) }
+        it { expect(methyl_desorption.gases_num).to eq(1) }
 
         it { expect(hydrogen_migration.gases_num).to eq(0) }
         it { expect(hydrogen_migration.reverse.gases_num).to eq(0) }
@@ -245,57 +245,10 @@ module VersatileDiamond
         end
       end
 
-      describe '#position_between' do
-        before { hydrogen_migration.position_between(
-            [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
-            [activated_dimer, activated_dimer.atom(:cr)],
-            position_100_front
-          ) }
-
-        describe 'opposite relation stored too' do
-          it { expect(hydrogen_migration.positions).to match_array([
-              [
-                [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
-                [activated_dimer, activated_dimer.atom(:cr)],
-                position_100_front
-              ],
-              [
-                [activated_dimer, activated_dimer.atom(:cr)],
-                [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
-                position_100_front
-              ],
-            ]) }
-        end
-
-        describe 'apply to reverse' do
-          subject { hydrogen_migration.reverse }
-
-          it { expect(subject.positions).to match_array([
-              [
-                [
-                  activated_methyl_on_dimer,
-                  activated_methyl_on_dimer.atom(:cr)
-                ],
-                [dimer, dimer.atom(:cr)],
-                position_100_front
-              ],
-              [
-                [dimer, dimer.atom(:cr)],
-                [
-                  activated_methyl_on_dimer,
-                  activated_methyl_on_dimer.atom(:cr)
-                ],
-                position_100_front
-              ],
-            ]) }
-        end
-      end
-
       describe '#positions' do
         describe 'empty' do
           it { expect(methyl_activation.positions).to be_empty }
           it { expect(methyl_desorption.positions).to be_empty }
-          it { expect(hydrogen_migration.positions).to be_empty }
         end
 
         shared_examples_for :check_positions do
@@ -327,6 +280,36 @@ module VersatileDiamond
             ]
           end
         end
+
+        describe '#position_between' do
+          describe 'opposite relation stored too' do
+            it_behaves_like :check_positions do
+              subject { hydrogen_migration }
+              let(:s1) { methyl_on_dimer }
+              let(:s2) { activated_dimer }
+              let(:positions) do
+                [
+                  [[s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front],
+                  [[s2, s2.atom(:cr)], [s1, s1.atom(:cr)], position_100_front]
+                ]
+              end
+            end
+          end
+
+          describe 'apply to reverse' do
+            it_behaves_like :check_positions do
+              subject { hydrogen_migration.reverse }
+              let(:s1) { activated_methyl_on_dimer }
+              let(:s2) { dimer }
+              let(:positions) do
+                [
+                  [[s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front],
+                  [[s2, s2.atom(:cr)], [s1, s1.atom(:cr)], position_100_front]
+                ]
+              end
+            end
+          end
+        end
       end
 
       describe '#used_atoms_of' do
@@ -348,16 +331,8 @@ module VersatileDiamond
         end
       end
 
-      describe '#changed_atoms_of' do
-        subject { sierpinski_drop }
-        let(:spec) { cross_bridge_on_bridges }
-        let(:atoms) { [:cm, :ctr, :ctl].map { |a| spec.atom(a) } }
-
-        it { expect(subject.changed_atoms_of(spec)).to match_array(atoms) }
-      end
-
       describe '#same?' do
-        def make_same(type)
+        let(:hm_wo_positions) do
           source = [methyl_on_dimer.dup, activated_dimer.dup]
           products = [activated_methyl_on_dimer.dup, dimer.dup]
           names_to_specs = {
@@ -365,33 +340,26 @@ module VersatileDiamond
             products: [[:f, products.first], [:s, products.last]]
           }
           atom_map = Mcs::AtomMapper.map(source, products, names_to_specs)
-          Reaction.new(type, 'duplicate', source, products, atom_map)
+          Reaction.new(:forward, 'duplicate', source, products, atom_map)
         end
 
-        let(:same) { make_same(:forward) }
-        it { expect(hydrogen_migration.same?(same)).to be_truthy }
-        it { expect(same.same?(hydrogen_migration)).to be_truthy }
-
         it { expect(methyl_activation.same?(methyl_deactivation)).to be_falsey }
-        it { expect(methyl_desorption.same?(hydrogen_migration)).to be_falsey }
+        it { expect(methyl_deactivation.same?(methyl_activation)).to be_falsey }
 
-        describe 'different types' do
-          let(:reverse) { make_same(:reverse) }
-          it { expect(hydrogen_migration.same?(same)).to be_truthy }
-          it { expect(same.same?(hydrogen_migration)).to be_truthy }
+        describe 'same positions' do
+          before(:each) do
+            s1, s2 = hm_wo_positions.source
+            hm_wo_positions.position_between(
+              [s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front)
+          end
+
+          it { expect(hydrogen_migration.same?(hm_wo_positions)).to be_truthy }
+          it { expect(hm_wo_positions.same?(hydrogen_migration)).to be_truthy }
         end
 
         describe 'positions are different' do
-          before(:each) do
-            hydrogen_migration.position_between(
-              [methyl_on_dimer, methyl_on_dimer.atom(:cr)],
-              [activated_dimer, activated_dimer.atom(:cr)],
-              position_100_front
-            )
-          end
-
-          it { expect(hydrogen_migration.same?(same)).to be_falsey }
-          it { expect(same.same?(hydrogen_migration)).to be_falsey }
+          it { expect(hydrogen_migration.same?(hm_wo_positions)).to be_falsey }
+          it { expect(hm_wo_positions.same?(hydrogen_migration)).to be_falsey }
         end
 
         describe 'lateral reaction' do
@@ -409,19 +377,16 @@ module VersatileDiamond
       end
 
       describe '#changes' do
-        it { expect(dimer_formation.changes).to match_array([
-            [
-              [activated_bridge, activated_bridge.atom(:ct)],
-              [dimer_dup_ff, dimer_dup_ff.atom(:cr)],
-            ],
-            [
-              [
-                activated_incoherent_bridge,
-                activated_incoherent_bridge.atom(:ct)
-              ],
-              [dimer_dup_ff, dimer_dup_ff.atom(:cl)],
-            ]
-          ]) }
+        let(:s1) { activated_bridge }
+        let(:s2) { activated_incoherent_bridge }
+        let(:p1) { dimer_dup_ff }
+        let(:changes) do
+          {
+            [s1, s1.atom(:ct)] => [p1, p1.atom(:cr)],
+            [s2, s2.atom(:ct)] => [p1, p1.atom(:cl)]
+          }
+        end
+        it { expect(dimer_formation.changes).to match_array(changes) }
       end
 
       describe '#changes_num' do

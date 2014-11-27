@@ -25,20 +25,24 @@ module VersatileDiamond
           # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
-          def assign(single_name, vars)
-            store_variables(:check_and_store, single_name, vars)
+          # @option [Boolean] :plur_if_need is a flag which if set then passed name
+          #   should be pluralized
+          def assign(single_name, vars, plur_if_need: true)
+            args = [:check_and_store, single_name, vars]
+            store_variables(*args, plur_if_need: plur_if_need)
           end
 
           # Assign next unique name for variable
-          # @param [String] name without additional index what will using for make a new
-          #   next name of variable
+          # @param [String] single_name without additional index what will using for
+          #   make a new next name of variable
           # @param [Object] var the variable for which name will assigned
-          def assign_next(name, var)
-            last_name = @next_names.find { |n| n =~ /^#{name}\d+$/ }
+          def assign_next(single_name, var)
+            last_name = @next_names.find { |n| n =~ /^#{single_name}\d+$/ }
             max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
-            next_name = "#{name}#{max_index.next}"
+            correct_name = single?(var) ? single_name : single_name.pluralize
+            next_name = "#{correct_name}#{max_index.next}"
             @next_names.unshift(next_name)
-            assign(next_name, var)
+            assign(next_name, var, plur_if_need: false)
           end
 
           # Gets a name of variable
@@ -122,11 +126,12 @@ module VersatileDiamond
           # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
-          def store_variables(method_name, single_name, vars)
+          # @option [Boolean] :plur_if_need see at #assign same option
+          def store_variables(method_name, single_name, vars, plur_if_need: true)
             if single?(vars)
               send(method_name, single_name, single_value(vars))
             else
-              plur_name = single_name.pluralize
+              plur_name = plur_if_need ? single_name.pluralize : single_name
               vars.each_with_index do |var, i|
                 send(method_name, "#{plur_name}[#{i}]", var)
               end
@@ -137,8 +142,8 @@ module VersatileDiamond
           # @param [String] name the name of storing variable
           # @param [Object] var the storing variable
           def check_and_store(name, var)
-            raise "Variable \"#{name}\" already exists" if names[var]
-            raise "Name \"#{name}\" already used" if variables[name]
+            raise %(Variable "#{name}" already has name "#{names[var]}") if names[var]
+            raise %(Name "#{name}" already used) if variables[name]
             names[var] = name
           end
 

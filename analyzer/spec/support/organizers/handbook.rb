@@ -27,23 +27,25 @@ module VersatileDiamond
         define_dependents(DependentBaseSpec, [
           :bridge_base,
           :bridge_base_dup,
+          :bridge_with_dimer_base,
+          :cross_bridge_on_bridges_base,
+          :cross_bridge_on_dimers_base,
           :dimer_base,
           :extended_bridge_base,
           :extended_dimer_base,
           :high_bridge_base,
+          :intermed_migr_down_full_base,
+          :intermed_migr_down_half_base,
           :methane_base,
           :methyl_on_bridge_base,
           :methyl_on_bridge_base_dup,
-          :vinyl_on_bridge_base,
           :methyl_on_dimer_base,
-          :vinyl_on_dimer_base,
-          :two_methyls_on_dimer_base,
           :methyl_on_extended_bridge_base,
           :methyl_on_right_bridge_base,
-          :cross_bridge_on_bridges_base,
-          :cross_bridge_on_dimers_base,
           :three_bridges_base,
-          :bridge_with_dimer_base
+          :two_methyls_on_dimer_base,
+          :vinyl_on_bridge_base,
+          :vinyl_on_dimer_base
         ])
 
         define_dependents(DependentSpecificSpec, [
@@ -64,6 +66,7 @@ module VersatileDiamond
           :high_bridge,
           :hydrogenated_bridge,
           :hydrogenated_incoherent_bridge,
+          :incoherent_methyl_on_bridge,
           :methyl,
           :methyl_on_activated_bridge,
           :methyl_on_bridge,
@@ -83,10 +86,12 @@ module VersatileDiamond
         define_dependents(DependentTypicalReaction, [
           :methyl_activation,
           :methyl_deactivation,
+          :methyl_adsorption,
           :methyl_desorption,
           :methyl_incorporation,
           :dimer_formation,
           :sierpinski_drop,
+          :hydrogen_abs_from_gap,
           :hydrogen_migration
         ])
         set(:dept_sierpinski_formation) do

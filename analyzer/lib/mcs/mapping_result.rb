@@ -231,9 +231,10 @@ module VersatileDiamond
         [specs.first, atoms.first.first]
       end
 
-      # Finds positions between atoms of different source species
+      # Finds positions between atoms of different source species and stores them to
+      # passed reaction
+      #
       # @param [Reaction] reaction the reaction for which position finds
-      # @return [Array] the array of positions between reactants atoms
       def find_positions_for(reaction)
         return if @source.size == 1 || @source.size == @products.size
 
@@ -260,6 +261,8 @@ module VersatileDiamond
     private
 
       # Finds position relations by walking on crystal lattice from passed main atoms
+      # and stores found positions to passed reaction
+      #
       # @param [Reaction] reaction the reaction for which position finds
       # @param [SpecificSpec] main_spec the largest spec of reaction
       # @param [Array] main_atoms the atoms of passed main spec

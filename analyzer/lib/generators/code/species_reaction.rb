@@ -2,13 +2,16 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Provides logic for reation generators which uses species code generators
+      # Provides generation logic for reation which uses species
       # @abstract
-      class ReactionWithComplexSpecies < BaseReaction
+      class SpeciesReaction < BaseReaction
         include SpeciesUser
         extend Forwardable
 
-        def_delegators :reaction, :original_links, :clean_links, :relation_between
+        ANCHOR_SPECIE_NAME = 'target'
+
+        def_delegators :reaction, :original_links, :clean_links, :relation_between,
+          :changes
 
       protected
 
@@ -19,7 +22,7 @@ module VersatileDiamond
         # Gets the list of complex species which using as source of reaction
         # @reaturn [Array] the list of complex specie code generators
         def complex_source_species
-          reaction.surface_source.map(&method(:specie_class))
+          reaction.surface_source.uniq(&:name).map(&method(:specie_class))
         end
       end
 

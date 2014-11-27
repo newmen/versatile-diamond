@@ -327,7 +327,7 @@ module VersatileDiamond
       attr_reader :props
 
       # Define human named methods for accessing to props
-      %w(
+      %i(
         atom_name
         valence
         lattice

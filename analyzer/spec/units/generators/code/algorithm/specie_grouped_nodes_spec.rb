@@ -15,16 +15,17 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, specie) }
 
-          [
-            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
-          ].each do |keyname|
+          let(:big_links_method) { :original_links }
+          def node_to_vertex(node); node.atom end
+
+          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[ct], [cr], [cl]] }
+            let(:flatten_face_grouped_atoms) { [[ct], [cr, cl]] }
             let(:nodes_list) do
               [
                 [NoneSpecie, ct],
@@ -140,8 +141,7 @@ module VersatileDiamond
             end
             let(:grouped_graph) do
               {
-                [cb] => [],
-                [cm] => []
+                [cb, cm] => [],
               }
             end
           end
@@ -169,7 +169,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[ct], [cc]] }
+            let(:flatten_face_grouped_atoms) { [[ct, cc]] }
             let(:nodes_list) do
               [
                 [SpeciesScope, ct],
@@ -288,6 +288,45 @@ module VersatileDiamond
                   [cm] => [],
                   [csr, ctr] => [[[csl, ctl], param_100_cross]],
                   [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                }
+              end
+            end
+          end
+
+          describe 'intermediate specie of migration down process' do
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+            end
+            let(:nodes_list) do
+              [
+                [SpeciesScope, cm],
+                [UniqueSpecie, cbr],
+                [UniqueSpecie, cbl],
+                [UniqueSpecie, cdr],
+                [UniqueSpecie, cdl]
+              ]
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_intermed_migr_down_half_base }
+              let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
+              let(:grouped_graph) do
+                {
+                  [cm] => [],
+                  [cdr, cdl] => [[[cbr, cbl], param_100_cross]],
+                  [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                }
+              end
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_intermed_migr_down_full_base }
+              let(:flatten_face_grouped_atoms) { [[cbr, cbl], [cdr, cdl], [cm]] }
+              let(:grouped_graph) do
+                {
+                  [cm] => [],
+                  [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
+                  [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
                 }
               end
             end

@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe EntryNodes, use: :engine_generator do
+        describe SpecieEntryNodes, type: :algorithm do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:generator) do
@@ -14,19 +14,10 @@ module VersatileDiamond
 
           let(:specie) { generator.specie_class(subject.name) }
           let(:backbone) { SpecieBackbone.new(generator, specie) }
-          let(:entry_nodes) { described_class.new(backbone) }
+          let(:entry_nodes) { described_class.new(backbone.final_graph).list }
 
-          [
-            :ct, :cr, :cl, :cb, :cm, :cc, :c1, :c2, :ctl, :ctr, :csl, :csr
-          ].each do |keyname|
+          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
-          end
-
-          shared_examples_for :check_entry_nodes do
-            it 'atoms of nodes' do
-              atoms_lists = entry_nodes.list.map { |ns| ns.map(&:atom) }
-              expect(atoms_lists).to eq(points_list)
-            end
           end
 
           it_behaves_like :check_entry_nodes do
@@ -123,7 +114,7 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_dimer_base, subject] }
-              let(:points_list) { [[ctl]] }
+              let(:points_list) { [[ctr]] }
             end
 
             it_behaves_like :check_entry_nodes do
@@ -132,6 +123,14 @@ module VersatileDiamond
               end
               let(:points_list) { [[cm]] }
             end
+          end
+
+          it_behaves_like :check_entry_nodes do
+            subject { dept_intermed_migr_down_full_base }
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+            end
+            let(:points_list) { [[cm]] }
           end
         end
 

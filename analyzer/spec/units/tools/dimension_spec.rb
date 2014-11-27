@@ -93,12 +93,25 @@ module VersatileDiamond
         end
       end
 
+      describe 'no error when 0 for zerofied variables' do
+        Dimension::SIMPLE_ZEROFILL_VARIABLES.each do |var|
+          it { expect { Dimension.send("convert_#{var}", 0) }.not_to raise_error }
+        end
+      end
+
       describe 'invalid dimenstion value' do
         let(:syntax_error) { Errors::SyntaxError }
 
-        (Dimension::VARIABLES - %w(rate)).each do |var|
-          it { expect { Dimension.send("convert_#{var}", 1, 'wtf') }.
-            to raise_error syntax_error }
+        (Dimension::ALL_VARIABLES - %w(rate)).each do |var|
+          describe 'without dimenstion' do
+            let(:dim) { Dimension.send("convert_#{var}", 1) }
+            it { expect { dim }.to raise_error syntax_error }
+          end
+
+          describe 'wrong dimenstion' do
+            let(:dim) { Dimension.send("convert_#{var}", 1, 'wtf') }
+            it { expect { dim }.to raise_error syntax_error }
+          end
         end
 
         [

@@ -26,6 +26,39 @@ module VersatileDiamond
         end
       end
 
+      it_behaves_like :check_clean_links do
+        subject { dept_intermed_migr_down_full_base }
+        [:cm, :cb, :cbl, :cbr, :cdl, :cdr, :crb, :clb, :_cr0, :_cr1].each do |kn|
+          let(kn) { intermed_migr_down_full_base.atom(kn) }
+        end
+
+        let(:clean_links) do
+          {
+            cm => [[cb, free_bond], [cdr, free_bond]],
+            cb => [[cbr, bond_110_cross], [cbl, bond_110_cross], [cm, free_bond]],
+            cbr => [[cb, bond_110_front], [cdr, position_100_cross]],
+            cbl => [[cb, bond_110_front], [cdl, position_100_cross]],
+            crb => [[cdr, bond_110_front]],
+            _cr0 => [[cdr, bond_110_front]],
+            clb => [[cdl, bond_110_front]],
+            _cr1 => [[cdl, bond_110_front]],
+            cdl => [
+              [cdr, bond_100_front],
+              [clb, bond_110_cross],
+              [_cr1, bond_110_cross],
+              [cbl, position_100_cross]
+            ],
+            cdr => [
+              [cdl, bond_100_front],
+              [crb, bond_110_cross],
+              [_cr0, bond_110_cross],
+              [cbr, position_100_cross],
+              [cm, free_bond]
+            ]
+          }
+        end
+      end
+
       it_behaves_like :count_atoms_and_relations_and_parents do
         subject { dept_methyl_on_right_bridge_base - dept_bridge_base }
         let(:atoms_num) { 2 }
@@ -131,7 +164,7 @@ module VersatileDiamond
           before { subject.exclude }
 
           it { expect(parent.children).to eq([child]) }
-          it { expect(child.parents).to eq([parent]) }
+          it { expect(child.parents.map(&:original)).to eq([parent]) }
         end
       end
     end

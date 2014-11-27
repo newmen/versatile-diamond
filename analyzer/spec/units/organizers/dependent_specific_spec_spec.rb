@@ -80,7 +80,7 @@ module VersatileDiamond
         shared_examples_for :check_replacing do
           before { subject.replace_base_spec(new_base) }
           it { expect(subject.spec.spec).to eq(new_base.spec) }
-          it { expect(subject.parents.first).to eq(new_base) }
+          it { expect(subject.parents.first.original).to eq(new_base) }
         end
 
         it_behaves_like :organize_dependencies do
@@ -104,7 +104,7 @@ module VersatileDiamond
         shared_examples_for :organize_and_check do
           it_behaves_like :organize_dependencies do
             let(:others) { [parent] + children + similars }
-            it { expect(subject.parents.first).to eq(parent) }
+            it { expect(subject.parents.first.original).to eq(parent) }
             it { expect(subject.children).to match_array(children) }
           end
         end

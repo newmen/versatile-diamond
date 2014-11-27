@@ -5,6 +5,9 @@ module VersatileDiamond
     class DependentSpecReaction < DependentReaction
       include Modules::RelationBetweenChecker
       include LinksCleaner
+      extend Forwardable
+
+      def_delegator :reaction, :changes
 
       # Initializes dependent spec reation
       def initialize(*)
@@ -17,14 +20,14 @@ module VersatileDiamond
       # Gets the list of surface source specs
       # @return [Array] the list of source specs without simple and gas specs
       def surface_source
-        source.reject(&:simple?).reject(&:gas?)
+        reject_not_surface(source)
       end
 
       # Collects links positions used atoms of reactants
       # @return [Hash] the relations graph between used atoms of reactnats
       def original_links
         @_original_links ||=
-          surface_source.each_with_object(full_links.dup) do |spec, result|
+          surface_source.each_with_object(links.dup) do |spec, result|
             used_atoms = reaction.used_atoms_of(spec).to_set
             spec.links.each do |atom, rels|
               if used_atoms.include?(atom)
@@ -68,17 +71,23 @@ module VersatileDiamond
         end
       end
 
-      # Used for detecting relations between spec-atom instances
-      # @return [Hash] the links between reactants
-      def links
-        full_links
+      # Gets the list of surface product specs
+      # @return [Array] the list of product specs without simple and gas specs
+      def surface_products
+        reject_not_surface(products)
+      end
+
+      # Gets the list of specs without simple and gas specs
+      # @return [Array] the array of surface specs
+      def reject_not_surface(specs)
+        specs.reject(&:simple?).reject(&:gas?)
       end
 
       # Collects all links from positions between reactants and from reactant links
       # between atoms
       #
       # @return [Hash] the most full relations graph between atoms of reactnats
-      def full_links
+      def links
         surface_source.each_with_object(reaction.links.dup) do |spec, result|
           spec.links.each do |atom, rels|
             result[[spec, atom]] ||= []

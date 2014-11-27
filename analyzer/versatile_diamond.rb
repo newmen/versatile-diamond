@@ -22,7 +22,7 @@ AUTO_LOADING_DIRS = Dir["#{__dir__}/#{LIB_DIR}/**/*.rb"].map do |dir|
 end.uniq - [LIB_DIR]
 
 # Finds directory where stored file with name as passed
-# @param [String] file_name
+# @param [String] file_name for which the directory will be found
 # @param [Array] patches where find will occure
 # @return [String] the directory where file stored
 def find_dir(file_name, pathes)
@@ -66,6 +66,8 @@ AUTO_LOADING_DIRS.each do |dir|
   module_name = "VersatileDiamond::#{module_name(dir)}"
   eval <<-DEFINE
     module #{module_name}; end
+    module #{module_name}::Support; end
+
     def (#{module_name}).const_missing(class_name)
       VersatileDiamond.const_missing(class_name, '#{dir}')
     end

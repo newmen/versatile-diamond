@@ -50,9 +50,8 @@ module VersatileDiamond
 
       # Makes cross instance of current
       # @return [Bond] the instance with cross direction
-      # TODO: move this method to each different crystal lattice?
       def cross
-        self.class.new(face, dir == :front ? :cross : :front)
+        self.class[face: face, dir: (dir == :front ? :cross : :front)]
       end
 
       # Gets parameters of relation
