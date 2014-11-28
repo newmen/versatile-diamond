@@ -29,20 +29,17 @@ module VersatileDiamond
       # @return [Array] the array of all possible intersec
       def intersec
         @intersec = []
-
         @max_size = 0
-        @x = @assoc_graph.vertices
 
         s = Set.new
-        q_plus = @x.dup
+        q_plus = @assoc_graph.vertices
         q_minus = Set.new
 
         parse_recursive(s, q_plus, q_minus)
 
         # filtering incorrect results
         @intersec.select do |intersec|
-          proj_large(intersec).size == @max_size &&
-            proj_small(intersec).size == @max_size
+          intersec.size == @max_size
         end
       end
 
