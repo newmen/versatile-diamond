@@ -12,7 +12,7 @@ ARKSWINC	:= $(ARKSFLAGS) -I$(ENGINE_SRC_DIR)
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
 STANDART	:= -std=c++11 $(ARKSWINC)
-LINKFLAGS	:= -std=c++11 -liomp5 -openmp -lyaml-cpp
+LINKFLAGS	:= -std=c++11 -lyaml-cpp
 
 HGEN_SRC_DIR	:= src
 HGEN_OBJS_DIR	:= obj
@@ -30,7 +30,7 @@ all:	exec
 $(NAME):	dirs $(MD_FILES) $(SOURCE_OBJECTS)
 
 exec: $(NAME)
-	$(CXX) $(LINKFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^
+	$(CXX) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^ $(LINKFLAGS)
 
 dirs:
 	mkdir -p $(OBJECTS_DIRS)

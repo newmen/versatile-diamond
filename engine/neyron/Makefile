@@ -13,6 +13,7 @@ ARKSFLAGS	:= -DNEYRON -DNDEBUG
 GCC_PATH        := /usr
 CXX             := $(GCC_PATH)/bin/g++
 STANDART        := -std=c++11 $(ARKSFLAGS) -I$(ENGINE_SRC_DIR) -I$(HANDG_SRC_DIR)
+LINKFLAGS	:= -lyaml-cpp
 
 SRC_DIR         := src
 OBJS_DIR        := obj
@@ -28,15 +29,13 @@ define find_objs
 	$(shell find $(1) -name *.o -type f)
 endef
 
-LINKFLAGS	:= -lyaml-cpp
-
 .PHONY: all dirs clean
 
 all:    $(NAME)
 $(NAME):        dirs $(MD_FILES) $(SOURCE_OBJECTS)
 	$(MAKE) -C $(ENGINE_DIR) ARKSFLAGS="$(ARKSFLAGS)"
 	$(MAKE) -C $(HANDG_DIR) simple-diamond ARKSFLAGS="$(ARKSFLAGS) -I$(HANDG_SRC_DIR) -I../neyron/$(SRC_DIR)"
-	$(CXX) $(LINKFLAGS) $(call find_objs, $(ENGINE_OBJS_DIR)) $(call find_objs, $(HANDG_OBJS_DIR)) $(call find_objs, $(OBJS_DIR)) -o $(NAME)
+	$(CXX) $(call find_objs, $(ENGINE_OBJS_DIR)) $(call find_objs, $(HANDG_OBJS_DIR)) $(call find_objs, $(OBJS_DIR)) -o $(NAME) $(LINKFLAGS)
 
 dirs:
 	mkdir -p $(OBJECTS_DIRS)
