@@ -1,10 +1,27 @@
 #include <assert.h>
 #include <iostream>
+#include <unordered_set>
 #include "../assoc_graph.h"
 #include "../hanser_recursive.h"
 #include "../object_id.h"
 
 typedef AssocGraph<ObjectID> AG;
+
+void checkUnionOp()
+{
+    AG::Vertices first = { 1, 2, 3 };
+    AG::Vertices second = { 4, 2, 5, 3 };
+    assert(unionOp(first, second) == AG::Vertices({ 1, 2, 3, 4, 5 }));
+    assert(unionOp(second, first) == AG::Vertices({ 4, 2, 5, 3, 1 }));
+}
+
+void checkDiffOp()
+{
+    AG::Vertices first = { 1, 2, 3 };
+    AG::Vertices second = { 4, 2, 5, 3 };
+    assert(diffOp(first, second) == AG::Vertices({ 1 }));
+    assert(diffOp(second, first) == AG::Vertices({ 4, 5 }));
+}
 
 void checkAssocGraph()
 {
@@ -18,7 +35,7 @@ void checkAssocGraph()
     g.addEdge(v1, v3);
     g.addEdge(v1, v4, false);
 
-    assert(g.allVertices() == AG::Vertices({ v1, v2, v3, v4 }));
+    assert(g.allVertices() == AG::Vertices({ v1, v4, v2, v3 }));
 
     assert(g.extNeighbours(v1) == AG::Vertices({ v2, v3 }));
     assert(g.extNeighbours(v2) == AG::Vertices({ v1 }));
@@ -79,13 +96,16 @@ void checkHanserRecursive()
     h.addEdge(v22, v23, false);
 
     HR::Intersections intersections;
-    intersections.push_back({ v01, v13, v22 });
     intersections.push_back({ v01, v12, v23 });
+    intersections.push_back({ v01, v13, v22 });
     assert(h.intersections() == intersections);
 }
 
 int main()
 {
+    checkUnionOp();
+    checkDiffOp();
+
     checkAssocGraph();
     checkHanserRecursive();
 

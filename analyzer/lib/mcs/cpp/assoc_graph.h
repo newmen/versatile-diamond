@@ -2,7 +2,7 @@
 #define ASSOC_GRAPH_H
 
 #include <utility>
-#include "unordered_set_operations.h"
+#include "union_diff_operations.h"
 #include "graph.h"
 
 /*
@@ -53,7 +53,7 @@ void AssocGraph<V>::addEdge(V v, V w, bool isExt)
 template <typename V>
 typename AssocGraph<V>::Vertices AssocGraph<V>::allVertices() const
 {
-    return _fbn.vertices() + _ext.vertices();
+    return unionOp(_fbn.vertices(), _ext.vertices());
 }
 
 template <typename V>
