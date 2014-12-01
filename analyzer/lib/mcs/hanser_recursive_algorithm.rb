@@ -67,7 +67,7 @@ module VersatileDiamond
       # Stores vertex object id and returns it
       # @param [Object] v for which the object id will be stored
       # @return [Integer] the object id of passed vertex
-      def vertex(v)
+      def vertex_id(v)
         id = v.object_id
         return id if @ids_to_vertices[id]
 
@@ -82,7 +82,7 @@ module VersatileDiamond
       def adsorb_edges(assoc_graph, is_ext)
         vname = is_ext ? :ext : :fbn
         assoc_graph.public_send(:"each_#{vname}_edge") do |v, w|
-          FfiHanser.addEdgeTo(@hanser_pointer, vertex(v), vertex(w), is_ext)
+          FfiHanser.addEdgeTo(@hanser_pointer, vertex_id(v), vertex_id(w), is_ext)
         end
       end
     end
