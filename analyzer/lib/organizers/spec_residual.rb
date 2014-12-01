@@ -84,6 +84,16 @@ module VersatileDiamond
         different_by?(:relations_of, *args)
       end
 
+      # Checks whether the atom is used in current residual
+      # @param [Array] _ see at #super first argument
+      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #   atom the checking atom
+      # @return [Boolean] is atom used in current residual or not
+      # @override
+      def used?(_, atom)
+        !!@atoms_to_parents[atom] || super
+      end
+
       # Merges collected references of atoms to parent specs
       # @param [Hash] prev_refs the previous collected references
       # @return [Hash] new_refs the references which was collecected in difference

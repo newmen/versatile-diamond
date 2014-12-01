@@ -11,8 +11,8 @@ module VersatileDiamond
       # @option [Boolean] :collaps_multi_bond set to true if need separated
       #   instances for double or triple bonds
       # @raise [RuntimeError] if some of separated multi-bonds is invalid
-      def initialize(links, collaps_multi_bond: false)
-        dup_result = links.map do |key, list|
+      def initialize(spec, collaps_multi_bond: false)
+        dup_result = LinksEqualizer.new(spec).sorted_links.map do |key, list|
           pair = [key]
           if collaps_multi_bond
             pair << collapse_bonds(list)

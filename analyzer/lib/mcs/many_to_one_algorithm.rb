@@ -38,7 +38,7 @@ module VersatileDiamond
       # @param [Symbol] reaction_type the type of reaction (association or
       #   dissociation)
       def initialize(source, products, reaction_type)
-        make_graphs = -> spec { Graph.new(spec.links) }
+        make_graphs = -> spec { Graph.new(spec) }
         source_graphs = source.map(&make_graphs)
         product_graphs = products.map(&make_graphs)
 
