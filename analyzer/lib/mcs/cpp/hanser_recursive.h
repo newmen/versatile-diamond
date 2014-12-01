@@ -40,9 +40,11 @@ private:
     class Collector
     {
         Intersections _intersections;
-        unsigned _maxSize = 0;
+        unsigned _maxSize;
 
     public:
+        Collector() : _maxSize(0) {}
+
         void adsorbIntersec(const Intersec &intersec)
         {
             unsigned size = intersec.size();
