@@ -4,15 +4,11 @@
 #include <iostream>
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
-#include "../phases/behavior_factory.h"
 #include "process_mem_usage.h"
+#include "../phases/behavior_factory.h"
 #include "savers/crystal_slice_saver.h"
-#include "savers/volume_saver.h"
-#include "savers/volume_saver_factory.h"
-#include "savers/detector_factory.h"
 #include "init_config.h"
 #include "common.h"
-#include "error.h"
 
 namespace vd
 {
@@ -24,18 +20,12 @@ class Runner
 
     static volatile bool __stopCalculating;
 
-    const std::string _name;
-    const uint _x, _y;
-    const double _totalTime, _eachTime;
-    const Detector *_detector = nullptr;
-    const Behavior *_behavior = nullptr;
-    VolumeSaver *_volumeSaver = nullptr;
+    const InitConfig _init;
 
 public:
     static void stop();
 
-    Runner(const InitConfig &init);
-    ~Runner();
+    Runner(const InitConfig &init) : _init(init) {}
 
     void calculate(const std::initializer_list<ushort> &types);
 
@@ -66,84 +56,6 @@ void Runner<HB>::stop()
 }
 
 template <class HB>
-Runner<HB>::Runner(const InitConfig &init) :
-    _name(init.name), _x(init.x), _y(init.y), _totalTime(init.totalTime), _eachTime(init.eachTime)
-{
-    if (_name.size() == 0)
-    {
-        throw Error("Name should not be empty");
-    }
-    else if (_x == 0 || _y == 0)
-    {
-        throw Error("X and Y sizes should be grater than 0");
-    }
-    else if (_totalTime <= 0)
-    {
-        throw Error("Total process time should be grater than 0 seconds");
-    }
-    else if (_eachTime <= 0)
-    {
-        throw Error("Each time value should be grater than 0 seconds");
-    }
-
-    if (init.volumeSaverType)
-    {
-        VolumeSaverFactory vsFactory;
-        if (!vsFactory.isRegistered(init.volumeSaverType))
-        {
-            throw Error("Undefined type of volume file saver");
-        }
-
-        _volumeSaver = vsFactory.create(init.volumeSaverType, filename().c_str());
-    }
-
-    DetectorFactory<HB> detFactory;
-    if (init.detectorType)
-    {
-        if (!detFactory.isRegistered(init.detectorType))
-        {
-            throw Error("Undefined type of detector");
-        }
-
-        _detector = detFactory.create(init.detectorType);
-    }
-    else if (init.volumeSaverType)
-    {
-         _detector = detFactory.create("surf");
-    }
-
-    BehaviorFactory bhvrFactory;
-    if (init.behavior)
-    {
-        if (!bhvrFactory.isRegistered(init.behavior))
-        {
-            throw Error("Undefined type of behavior");
-        }
-
-        _behavior = bhvrFactory.create(init.behavior);
-    }
-    else
-    {
-        _behavior = bhvrFactory.create("tor");
-    }
-}
-
-template <class HB>
-Runner<HB>::~Runner()
-{
-    delete _volumeSaver;
-    delete _detector;
-}
-
-template <class HB>
-std::string Runner<HB>::filename() const
-{
-    std::stringstream ss;
-    ss << _name << "-" << _x << "x" << _y << "-" << _totalTime << "s";
-    return ss.str();
-}
-
-template <class HB>
 double Runner<HB>::timestamp() const
 {
     timeval tv;
@@ -165,22 +77,22 @@ template <class HB>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
-    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
+    CrystalSliceSaver csSaver(_init.filename().c_str(), _init.x * _init.y, types);
 
 // -------------------------------------------------------------------------------- //
 
     const BehaviorFactory bhvrFactory;
     const Behavior *initBhv = bhvrFactory.create("tor");
     typedef typename HB::SurfaceCrystal SC;
-    SC *surfaceCrystal = new SC(dim3(_x, _y, MAX_HEIGHT), initBhv);
+    SC *surfaceCrystal = new SC(dim3(_init.x, _init.y, MAX_HEIGHT), initBhv);
     surfaceCrystal->initialize();
-    surfaceCrystal->changeBehavior(_behavior);
+    surfaceCrystal->changeBehavior(_init.behavior);
 
 // -------------------------------------------------------------------------------- //
 
     auto outLambda = [this, surfaceCrystal]() {
         std::cout.width(10);
-        std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
+        std::cout << 100 * HB::mc().totalTime() / _init.totalTime << " %";
         std::cout.width(10);
         std::cout << surfaceCrystal->countAtoms();
         std::cout.width(10);
@@ -200,7 +112,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
         csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
 
-        if (_volumeSaver)
+        if (_init.volumeSaver)
         {
             if (volumeSaveCounter == 0 || forseSaveVolume)
             {
@@ -227,7 +139,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 #ifdef PARALLEL
 #pragma omp parallel
 #endif // PARALLEL
-    while (!__stopCalculating && HB::mc().totalTime() <= _totalTime)
+    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime)
     {
         double dt = HB::mc().doRandom(&mcData);
 
@@ -249,7 +161,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 #endif // PARALLEL
         {
             timeCounter += dt;
-            if (timeCounter >= _eachTime)
+            if (timeCounter >= _init.eachTime)
             {
                 timeCounter = 0;
                 outLambda();
@@ -304,7 +216,7 @@ double Runner<HB>::activesRatio(const Crystal *crystal) const
 template <class HB>
 void Runner<HB>::saveVolume(const Crystal *crystal)
 {
-    _volumeSaver->save(HB::mc().totalTime(), &HB::amorph(), crystal, _detector);
+    _init.volumeSaver->save(HB::mc().totalTime(), &HB::amorph(), crystal, _init.detector);
 }
 
 }

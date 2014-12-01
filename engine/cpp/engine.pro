@@ -138,7 +138,8 @@ SOURCES += \
     tools/savers/xyz_format.cpp \
     tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    tools/init_config.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \

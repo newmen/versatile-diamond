@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "../factory.h"
-#include "mol_saver.h"
+#include "volume_saver.h"
 
 namespace vd
 {

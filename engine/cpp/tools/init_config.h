@@ -3,28 +3,27 @@
 
 #include <cstdlib>
 #include "common.h"
+#include "../hand-generations/src/handbook.h"
+#include "savers/volume_saver.h"
+#include "savers/detector.h"
+#include "error.h"
+
+using namespace vd;
 
 struct InitConfig
 {
-    const char *name;
-    vd::uint x = 0, y = 0;
-    double totalTime;
-    double eachTime;
-    const char *volumeSaverType;
-    const char *detectorType;
-    const char *behavior;
+    const std::string name;
+    const uint x, y;
+    const double totalTime, eachTime;
+    const Detector *detector = nullptr;
+    const Behavior *behavior = nullptr;
+    VolumeSaver *volumeSaver = nullptr;
 
-    InitConfig(int argc, char *argv[])
-    {
-        name = argv[1];
-        x = atoi(argv[2]);
-        y = atoi(argv[3]);
-        totalTime = atof(argv[4]);
-        eachTime = atof(argv[5]);
-        volumeSaverType = (argc >= 7) ? argv[6] : nullptr;
-        detectorType = (argc == 8) ? argv[7] : nullptr;
-        behavior = (argc == 9) ? argv[8] : nullptr;
-    }
+    InitConfig(int argc, char *argv[]);
+    ~InitConfig();
+
+    std::string filename() const;
 };
+
 
 #endif // INIT_CONFIG_H

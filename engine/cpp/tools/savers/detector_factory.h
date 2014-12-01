@@ -3,7 +3,6 @@
 
 #include <memory>
 #include "../factory.h"
-#include "detector.h"
 #include "surface_detector.h"
 #include "all_atoms_detector.h"
 
