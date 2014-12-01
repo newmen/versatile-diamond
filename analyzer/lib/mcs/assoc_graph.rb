@@ -61,16 +61,18 @@ module VersatileDiamond
       end
 
       # Gets all paired vertices
-      # @return [Set] the set of paired vertices
+      # @return [Array] the list of paired vertices
       def vertices
-        @ext.keys.to_set
+        @ext.keys
       end
 
       # Gets neighbour vertices from correspond edges container
-      # @return [Set] the set of neighbour vertices
+      # @yield [Array, Array] for each edge
       %w(fbn ext).each do |vname|
-        define_method(vname) do |x|
-          instance_variable_get("@#{vname}".to_sym)[x].to_set
+        define_method(:"each_#{vname}_edge") do |&block|
+          instance_variable_get(:"@#{vname}").each do |v, list|
+            list.each { |w| block[v, w] } unless list.empty?
+          end
         end
       end
 
@@ -82,6 +84,11 @@ module VersatileDiamond
       def save(filename, ext: 'png', fbn_too: false)
         save_for(@ext, 'ext', filename, ext)
         save_for(@fbn, 'fbn', filename, ext) if fbn_too
+      end
+
+      def inspect
+        "Ext:\n" + names(@ext).map { |n1, n2| "  #{n1}  --  #{n2}\n" }.join +
+          "Fbn:\n" + names(@fbn).map { |n1, n2| "  #{n1}  --  #{n2}\n" }.join
       end
 
     private
@@ -121,20 +128,26 @@ module VersatileDiamond
       def save_for(edges, prefix, filename, ext)
         g = GraphViz.new(:C, type: :graph)
         cache = EdgeCache.new
-        edges.each do |v_v, list|
+        names(edges).each { |ns| g.add_edges(*ns) }
+        g.output(ext.to_sym => "#{prefix}_#{filename}.#{ext}")
+      end
+
+      def names(edges)
+        cache = EdgeCache.new
+        edges.each_with_object([]) do |(v_v, list), acc|
           v1, v2 = v_v
           list.each do |w_w|
             next if cache.has?(v_v, w_w)
             cache.add(v_v, w_w)
 
             w1, w2 = w_w
-            g.add_edges("#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}",
-              "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}")
+            acc << [
+              "#{@g1.atom_alias[v1]}_#{@g2.atom_alias[v2]}",
+              "#{@g1.atom_alias[w1]}_#{@g2.atom_alias[w2]}"
+            ]
           end
         end
-        g.output(ext.to_sym => "#{prefix}_#{filename}.#{ext}")
       end
-
     end
 
   end

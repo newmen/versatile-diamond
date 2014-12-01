@@ -25,6 +25,8 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
+
+        @_keynames_to_atoms = nil
       end
 
       # If spec is simple (H2 or HCl for example) then true or false overwise
@@ -44,7 +46,8 @@ module VersatileDiamond
       # @param [Atom] atom the atom for which keyname will be found
       # @return [Symbol] the keyname of atom
       def keyname(atom)
-        @atoms.invert[atom]
+        @_keynames_to_atoms ||= @atoms.invert
+        @_keynames_to_atoms[atom]
       end
 
       # Apends atom to spec instance
