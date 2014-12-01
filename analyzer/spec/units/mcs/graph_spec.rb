@@ -10,7 +10,7 @@ module VersatileDiamond
         s.link(c1, c2, free_bond); s
       end
 
-      let(:graph) { described_class.new(propane.links) }
+      let(:graph) { described_class.new(propane) }
       let(:vertices) { graph.each_vertex.to_a }
 
       describe '#each_vertex' do

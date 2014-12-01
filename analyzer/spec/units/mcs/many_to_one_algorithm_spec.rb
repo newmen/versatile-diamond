@@ -36,18 +36,16 @@ module VersatileDiamond
             describe 'forward' do
               # with default source and products sequence
               let(:changed) do
-                [[[spec1, spec3],
-                  [[activated_cd, cd1]]],
-                [[spec2, spec3],
-                  [[activated_cd0, cd2]]]]
+                [
+                  [[spec1, spec3], [[activated_cd, cd1]]],
+                  [[spec2, spec3], [[activated_cd0, cd2]]]
+                ]
               end
               let(:full) do
-                [[[spec1, spec3], [
-                  [activated_cd, cd1], [n, n1]
-                ]],
-                [[spec2, spec3], [
-                  [activated_cd0, cd2], [o, o1]
-                ]]]
+                [
+                  [[spec1, spec3], [[activated_cd, cd1], [n, n1]]],
+                  [[spec2, spec3], [[activated_cd0, cd2], [o, o1]]]
+                ]
               end
 
               it_behaves_like :check_mapping_result
@@ -58,18 +56,16 @@ module VersatileDiamond
               let(:source) { [spec3] }
               let(:products) { [spec1, spec2] }
               let(:changed) do
-                [[[spec3, spec1],
-                  [[cd1, activated_cd]]],
-                [[spec3, spec2],
-                  [[cd2, activated_cd0]]]]
+                [
+                  [[spec3, spec1], [[cd1, activated_cd]]],
+                  [[spec3, spec2], [[cd2, activated_cd0]]]
+                ]
               end
               let(:full) do
-                [[[spec3, spec1], [
-                  [cd1, activated_cd], [n1, n]
-                ]],
-                [[spec3, spec2], [
-                  [cd2, activated_cd0], [o1, o]
-                ]]]
+                [
+                  [[spec3, spec1], [[cd1, activated_cd], [n1, n]]],
+                  [[spec3, spec2], [[cd2, activated_cd0], [o1, o]]]
+                ]
               end
 
               it_behaves_like :check_mapping_result
@@ -98,10 +94,10 @@ module VersatileDiamond
             end
 
             let(:changed) do
-              [[[spec1, spec3],
-                [[activated_cd, cd]]],
-              [[spec2, spec3],
-                [[activated_cd, cd1]]]]
+              [
+                [[spec1, spec3], [[activated_cd, cd]]],
+                [[spec2, spec3], [[activated_cd, cd1]]]
+              ]
             end
             let(:full) do
               [[[spec1, spec3], [
@@ -132,9 +128,9 @@ module VersatileDiamond
               [
                 [[spec1, spec3], [
                   [spec1.atom(:cb), spec3.atom(:cr)],
-                  [spec1.atom(:cm), spec3.atom(:cm)],
                   [spec1.atom(:cl), spec3.atom(:crb)],
                   [spec1.atom(:cr), spec3.atom(:_cr0)],
+                  [spec1.atom(:cm), spec3.atom(:cm)],
                 ]],
                 [[spec2, spec3], [
                   [spec2.atom(:ct), spec3.atom(:cl)],
