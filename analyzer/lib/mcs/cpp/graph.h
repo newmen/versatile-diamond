@@ -1,8 +1,9 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <algorithm>
+#include <list>
 #include <unordered_map>
-#include <unordered_set>
 
 /*
  * The typical unordered sparce graph, where
@@ -12,11 +13,17 @@ template <typename V>
 class Graph
 {
 public:
-    typedef std::unordered_set<V> Vertices;
+    // There uses the list instead the set because we're depends from the order and it
+    // is important for ruby tests
+    typedef std::list<V> Vertices;
 
 private:
     typedef std::unordered_map<V, Vertices> HashTable;
     HashTable _g;
+
+    // Searated container for vertices becaulse we're depends from the original order
+    // of vertices adding
+    Vertices _vertices;
 
 public:
     Graph() = default;
@@ -31,6 +38,8 @@ private:
     Graph(Graph &&) = delete;
     Graph &operator = (const Graph &) = delete;
     Graph &operator = (Graph &&) = delete;
+
+    void checkAndAdd(V v, V w);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,19 +47,14 @@ private:
 template <class V>
 void Graph<V>::addEdge(V v, V w)
 {
-    _g[v].insert(w);
-    _g[w].insert(v);
+    checkAndAdd(v, w);
+    checkAndAdd(w, v);
 }
 
 template <class V>
 typename Graph<V>::Vertices Graph<V>::vertices() const
 {
-    Vertices result;
-    for (const typename HashTable::value_type &kvl : _g)
-    {
-        result.insert(kvl.first);
-    }
-    return result;
+    return _vertices;
 }
 
 template <class V>
@@ -63,6 +67,21 @@ typename Graph<V>::Vertices Graph<V>::neighbours(V v) const
     else
     {
         return _g.find(v)->second;
+    }
+}
+
+template <class V>
+void Graph<V>::checkAndAdd(V v, V w)
+{
+    if (std::find(_vertices.cbegin(), _vertices.cend(), v) == _vertices.cend())
+    {
+        _vertices.push_back(v);
+    }
+
+    Vertices &nbrs = _g[v];
+    if (std::find(nbrs.cbegin(), nbrs.cend(), w) == nbrs.cend())
+    {
+        nbrs.push_back(w);
     }
 }
 

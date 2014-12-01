@@ -2,7 +2,7 @@ NAME		:= libhanser
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-CXXFLAGS	:= -Wall -fPIC -std=c++11 -O2 -DNDEBUG
+CXXFLAGS	:= -Wall -fPIC -std=c++11 -O3 -DNDEBUG
 
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj

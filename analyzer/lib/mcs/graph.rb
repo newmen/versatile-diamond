@@ -7,12 +7,13 @@ module VersatileDiamond
       extend Forwardable
 
       # Initialize instance by links hash of original spec graph
-      # @param [Hash] links the hash of links
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Organizers::Minuend] spec
+      #   from which the hash of links will be used
       # @option [Boolean] :collaps_multi_bond set to true if need separated
       #   instances for double or triple bonds
       # @raise [RuntimeError] if some of separated multi-bonds is invalid
       def initialize(spec, collaps_multi_bond: false)
-        dup_result = LinksEqualizer.new(spec).sorted_links.map do |key, list|
+        dup_result = spec.links.map do |key, list|
           pair = [key]
           if collaps_multi_bond
             pair << collapse_bonds(list)
