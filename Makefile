@@ -1,4 +1,4 @@
-MCS_DIR		:= lib/mcs
+MCS_DIR		:= analyzer/lib/mcs
 
 all:
 	$(MAKE) -C $(MCS_DIR)
