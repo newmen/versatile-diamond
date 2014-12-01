@@ -31,13 +31,14 @@ module VersatileDiamond
           smb = collaps_multi_bond
 
           unless block_given?
+            # because order of intersections should be contant
             @@_intersec_cache ||= {}
             key = [first, second, smb]
             return @@_intersec_cache[key] if @@_intersec_cache[key]
           end
 
-          large_graph = Graph.new(first.links, collaps_multi_bond: smb)
-          small_graph = Graph.new(second.links, collaps_multi_bond: smb)
+          large_graph = Graph.new(first, collaps_multi_bond: smb)
+          small_graph = Graph.new(second, collaps_multi_bond: smb)
           assoc_graph =
             AssocGraph.new(large_graph, small_graph, comparer: ver_comp_block)
 
@@ -57,7 +58,6 @@ module VersatileDiamond
           smb = collaps_multi_bond
           intersec(first, second, collaps_multi_bond: smb, &block).first
         end
-
       end
     end
 

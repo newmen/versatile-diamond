@@ -21,63 +21,68 @@ module VersatileDiamond
       # @param [AssocGraph] assoc_graph see at #self.intersec same arg
       def initialize(assoc_graph)
         @assoc_graph = assoc_graph
+
+        # TODO: may be need to add forbidden self-closed edges to assoc graph
+        if @assoc_graph.vertices.size > 1
+          @ids_to_vertices = {}
+          @hanser_pointer = FfiHanser.createHanserRecursive
+
+          adsorb_edges(assoc_graph, true)
+          adsorb_edges(assoc_graph, false)
+        end
       end
 
       # Finds all intersection of associated structures. Once all possible
       # intersections are found, are selected only those projections of that
       # correspond to associated structures.
+      #
       # @return [Array] the array of all possible intersec
       def intersec
-        @intersec = []
-        @max_size = 0
+        if @assoc_graph.vertices.size > 1
+          intersec_result_pointer = FfiHanser.collectIntersections(@hanser_pointer)
+          result = []
 
-        s = Set.new
-        q_plus = @assoc_graph.vertices
-        q_minus = Set.new
+          i = 0
+          isec_size = intersec_result_pointer[:intersectSize]
+          data = intersec_result_pointer[:data]
+          intersec_result_pointer[:intersectsNum].times do
+            isec = []
+            isec_size.times do
+              id = data[i].read_uint
+              isec << @ids_to_vertices[id]
+              i += FFI::TYPE_UINT32.size
+            end
+            result << isec
+          end
 
-        parse_recursive(s, q_plus, q_minus)
-
-        # filtering incorrect results
-        @intersec.select do |intersec|
-          intersec.size == @max_size
+          FfiHanser.destroyAllData(@hanser_pointer, intersec_result_pointer)
+          result
+        else
+          [@assoc_graph.vertices]
         end
       end
 
     private
 
-      # Modified Hanser's recursive function that searches for cliques in the
-      # association graph. All found solutions will be stored to intersection var.
-      #
-      # @param [Set] s the set of vertices which belongs to clique
-      # @param [Set] q_plus the set of vertices through which clique can be
-      #   increased
-      # @param [Set] q_minus the set of vertices through which search of clique
-      #   is imposible
-      def parse_recursive(s, q_plus, q_minus)
-        # store current solution if it has max number of association vertices
-        if s.size > @max_size
-          @max_size = s.size
-          @intersec.clear
-          @intersec << s
-        elsif s.size == @max_size
-          @intersec << s
-        end
+      # Stores vertex object id and returns it
+      # @param [Object] v for which the object id will be stored
+      # @return [Integer] the object id of passed vertex
+      def vertex_id(v)
+        id = v.object_id
+        return id if @ids_to_vertices[id]
 
-        # simplified clique searching algorithm
-        unless q_plus.empty?
-          (q_plus - s).each do |x|
-            q_minus_n = q_minus + @assoc_graph.fbn(x)
+        @ids_to_vertices[id] = v
+        id
+      end
 
-            if s.empty?
-              q_plus_n = @assoc_graph.ext(x) - q_minus_n
-            else
-              q_plus_n = (q_plus + @assoc_graph.ext(x)) - q_minus_n
-            end
-
-            q_minus << x
-
-            parse_recursive(s + [x], q_plus_n, q_minus_n)
-          end
+      # Adsorbs edges from passed assoc graph to cpp solver
+      # @param [AssocGraph] assoc_graph from which the edges of different types adsorbs
+      # @param [Boolean] is_ext setups the type of adsorbing edges and if true then
+      #   adsorbs the existent edges or forbidden edges overwise
+      def adsorb_edges(assoc_graph, is_ext)
+        vname = is_ext ? :ext : :fbn
+        assoc_graph.public_send(:"each_#{vname}_edge") do |v, w|
+          FfiHanser.addEdgeTo(@hanser_pointer, vertex_id(v), vertex_id(w), is_ext)
         end
       end
     end

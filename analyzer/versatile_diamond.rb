@@ -62,14 +62,22 @@ def VersatileDiamond.const_missing(class_name, dir = nil)
 end
 
 # Defines all using modules which uses as namespaces
+RSPEC_SUPPORT_DIR = 'spec/support'
 AUTO_LOADING_DIRS.each do |dir|
   module_name = "VersatileDiamond::#{module_name(dir)}"
+  support_module_name = "#{module_name}::Support"
+  support_dir = dir.sub(%r{\A#{LIB_DIR}/}, "#{RSPEC_SUPPORT_DIR}/")
+
   eval <<-DEFINE
     module #{module_name}; end
-    module #{module_name}::Support; end
+    module #{support_module_name}; end
 
     def (#{module_name}).const_missing(class_name)
       VersatileDiamond.const_missing(class_name, '#{dir}')
+    end
+
+    def (#{support_module_name}).const_missing(class_name)
+      VersatileDiamond.const_missing(class_name, '#{support_dir}')
     end
   DEFINE
 end
