@@ -8,7 +8,7 @@ module VersatileDiamond
         s = Concepts::SurfaceSpec.new(:spec1, c1: cd1, c2: cd2)
         s.link(cd1, cd2, bond_100_front); s
       end
-      let(:graph1) { Graph.new(spec1.links) }
+      let(:graph1) { Graph.new(spec1) }
 
       let(:cf) { cd1.dup }
       let(:cs) { cd1.dup }
@@ -16,26 +16,34 @@ module VersatileDiamond
         s = Concepts::SurfaceSpec.new(:spec2, cf: cf, cs: cs)
         s.link(cf, cs, position_100_front); s
       end
-      let(:graph2) { Graph.new(spec2.links) }
+      let(:graph2) { Graph.new(spec2) }
+
+      def collect_edges(vname)
+        result = []
+        assoc.public_send(:"each_#{vname}_edge") do |v, w|
+          result << [v, w]
+        end
+        result
+      end
 
       describe 'exact match' do
-        let(:assoc) { AssocGraph.new(graph1, graph2) }
+        let(:assoc) { described_class.new(graph1, graph2) }
         # before(:each) { assoc.save('assoc') }
 
         it { expect(assoc.vertices.size).to eq(4) }
-        it { expect(assoc.fbn([cd1, cf]).size).to eq(3) }
+        it { expect(collect_edges(:ext).size).to eq(0) }
+        it { expect(collect_edges(:fbn).size).to eq(12) }
       end
 
       describe 'approximate match' do
         let(:assoc) do
-          AssocGraph.new(graph1, graph2) { |_, _| true }
+          described_class.new(graph1, graph2) { |_, _| true }
         end
         # before(:each) { assoc.save('assoc') }
 
         it { expect(assoc.vertices.size).to eq(4) }
-        it { expect(assoc.ext([cd1, cf]).size).to eq(1) }
-        it { expect(assoc.ext([cd2, cs]).size).to eq(1) }
-        it { expect(assoc.fbn([cd1, cf]).size).to eq(2) }
+        it { expect(collect_edges(:ext).size).to eq(4) }
+        it { expect(collect_edges(:fbn).size).to eq(8) }
       end
     end
 
