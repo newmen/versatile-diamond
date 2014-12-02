@@ -12,6 +12,8 @@ module VersatileDiamond
             bases = base_specs.dup
             specifics = specific_specs.dup
             (target_spec.specific? ? specifics : bases) << target_spec
+            (respond_to?(:other_spec) && other_spec.specific? ? specifics : bases) <<
+              target_spec
 
             stub_generator(
               base_specs: bases,
@@ -80,10 +82,10 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = target->atom(1);
-    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour) {
-        if (neighbour->is(#{other_role_ct}))
+    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_ct}))
         {
-            SpecificSpec *targets[2] = { target, neighbour->specByRole<BridgeCTs>(#{other_role_ct}) };
+            SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
             create<ReverseSierpinskiDrop>(targets);
         }
     });
@@ -98,10 +100,10 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = target->atom(0);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour) {
-        if (neighbour->is(#{other_role_ct}))
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_ct}))
         {
-            SpecificSpec *targets[2] = { target, neighbour->specByRole<BridgeCTs>(#{other_role_ct}) };
+            SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
             create<ForwardDimerFormation>(targets);
         }
     });
@@ -116,11 +118,70 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = target->atom(0);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour) {
-        if (neighbour->is(#{other_role_ct}))
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_ct}))
         {
-            SpecificSpec *targets[2] = { neighbour->specByRole<BridgeCTsi>(#{other_role_ct}), target };
+            SpecificSpec *targets[2] = { neighbour1->specByRole<BridgeCTsi>(#{other_role_ct}), target };
             create<ForwardDimerFormation>(targets);
+        }
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              subject { dept_intermed_migr_dh_formation }
+              let(:target_spec) { dept_activated_bridge }
+              let(:other_spec) { dept_activated_methyl_on_dimer }
+              let(:find_algorithm) do
+                <<-CODE
+    target->eachSymmetry([](SpecificSpec *specie1) {
+        Atom *anchors[2] = { specie1->atom(1), specie1->atom(2) };
+        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{other_role_cr}))
+            {
+                Atom *amorph1 = neighbours1[0]->amorphNeighbour();
+                if (amorph1->is(#{other_role_cm}))
+                {
+                    MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
+                    if (neighbours1[1] != specie2->atom(4))
+                    {
+                        SpecificSpec *targets[2] = { specie2, specie1 };
+                        create<ForwardIntermedMigrDhFormation>(targets);
+                    }
+                }
+            }
+        });
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              subject { dept_intermed_migr_dh_formation }
+              let(:target_spec) { dept_activated_methyl_on_dimer }
+              let(:other_spec) { dept_activated_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchors[2] = { target->atom(1), target->atom(4) };
+    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{other_role_cr}))
+        {
+            eachNeighbour(neighbours1[0], &Diamond::front_110, [&](Atom *neighbour1) {
+                if (neighbour1->is(#{other_role_ct}))
+                {
+                    BridgeCTs specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+                    specie1->eachSymmetry([&](SpecificSpec *specie2) {
+                        if (neighbours1[0] == specie2->atom(1) && neighbours1[1] != specie2->atom(2))
+                        {
+                            SpecificSpec *targets[2] = { target, specie2 };
+                            create<ForwardIntermedMigrDhFormation>(targets);
+                        }
+                    });
+                }
+            });
         }
     });
                 CODE
@@ -137,10 +198,10 @@ module VersatileDiamond
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
         Atom *anchors[2] = { specie1->atom(3), specie1->atom(2) };
-        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-            if (neighbours[0]->is(#{other_role_cl}) && neighbours[1]->is(#{other_role_cr}) && neighbours[0]->hasBondWith(neighbours[1]))
+        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                SpecificSpec *targets[2] = { neighbours[1]->specByRole<DimerCRs>(#{other_role_cr}), specie1 };
+                SpecificSpec *targets[2] = { neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr}), specie1 };
                 create<ForwardMethylIncorporation>(targets);
             }
         });
@@ -158,11 +219,11 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchors[2] = { target->atom(3), target->atom(0) };
-    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours) {
-        if (neighbours[0]->is(#{other_role_cr}) && neighbours[1]->is(#{other_role_cr}))
+    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            Atom *neighbour1 = crystalBy(neighbours[1])->atom(Diamond::front_110_at(neighbours[0], neighbours[1]));
-            if (neighbour1 && neighbour1->is(#{other_role_cb}) && neighbours[0]->hasBondWith(neighbour1) && neighbours[1]->hasBondWith(neighbour1))
+            Atom *neighbour1 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+            if (neighbour1 && neighbour1->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
             {
                 Atom *amorph1 = neighbour1->amorphNeighbour();
                 if (amorph1->is(#{other_role_cm}))
@@ -189,10 +250,10 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = target->atom(2);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour) {
-        if (neighbour->is(#{other_role_cr}) && neighbour != target->atom(1))
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_cr}) && neighbour1 != target->atom(1))
         {
-            SpecificSpec *targets[2] = { target, neighbour->specByRole<BridgeCRH>(#{other_role_cr}) };
+            SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCRH>(#{other_role_cr}) };
             create<ForwardHydrogenAbsFromGap>(targets);
         }
     });

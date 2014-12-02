@@ -100,7 +100,7 @@ module VersatileDiamond
               raise 'Incorrect getting many atoms from one'
             end
 
-            namer.assign('neighbour', nbrs)
+            namer.assign_next('neighbour', nbrs)
             crystal_call_str = crystal_nbrs_call(rel_params)
             define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
 
@@ -145,7 +145,7 @@ module VersatileDiamond
             nbrs = other.atoms
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
-            namer.assign('neighbour', nbrs)
+            namer.assign_next('neighbour', nbrs)
             define_nbrs_specie_anchors_lines +
               code_lambda(*each_nbrs_call_args(nbrs, rel_params), &block)
           end

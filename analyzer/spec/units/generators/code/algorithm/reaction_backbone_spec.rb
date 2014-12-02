@@ -154,6 +154,19 @@ module VersatileDiamond
               let(:points_list) { [[activated_bridge.atom(:ct)]] }
             end
 
+            describe 'in both directions without explicit relation' do
+              subject { dept_intermed_migr_dh_formation }
+              let(:points_list) { [[target_spec.atom(:cr), target_spec.atom(:cl)]] }
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { activated_bridge }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { activated_methyl_on_dimer }
+              end
+            end
+
             describe 'in both directions with many relation' do
               subject { dept_methyl_incorporation }
 
@@ -197,40 +210,72 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_ordered_graph do
-              let(:base_specs) do
-                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+            describe 'in both directions without explicit relation' do
+              subject { dept_intermed_migr_dh_formation }
+              let(:br) { activated_bridge.atom(:cr) }
+              let(:bl) { activated_bridge.atom(:cl) }
+              let(:dr) { activated_methyl_on_dimer.atom(:cr) }
+              let(:dl) { activated_methyl_on_dimer.atom(:cl) }
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+                let(:specific_specs) { [dept_activated_methyl_on_dimer] }
+                let(:target_spec) { activated_bridge }
+                let(:dm) { activated_methyl_on_dimer.atom(:cm) }
+                let(:ordered_graph) do
+                  [
+                    [[br, bl], [[[dr, dl], param_100_cross]]],
+                    [[dr], [[[dm], param_amorph]]]
+                  ]
+                end
               end
-              subject { dept_methyl_incorporation }
-              let(:target_spec) { activated_methyl_on_bridge }
-              let(:am1) { activated_methyl_on_bridge.atom(:cr) }
-              let(:am2) { activated_methyl_on_bridge.atom(:cl) }
-              let(:ad1) { activated_dimer.atom(:cr) }
-              let(:ad2) { activated_dimer.atom(:cl) }
-              let(:ordered_graph) do
-                [
-                  [[am1, am2], [[[ad2, ad1], param_100_cross]]]
-                ]
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base] }
+                let(:specific_specs) { [dept_activated_bridge] }
+                let(:target_spec) { activated_methyl_on_dimer }
+                let(:bt) { activated_bridge.atom(:ct) }
+                let(:ordered_graph) do
+                  [
+                    [[dr, dl], [[[br, bl], param_100_cross]]],
+                    [[br], [[[bt], param_110_front]]]
+                  ]
+                end
               end
             end
 
-            it_behaves_like :check_ordered_graph do
-              let(:base_specs) { [dept_bridge_base] }
-              let(:specific_specs) { [dept_activated_methyl_on_bridge] }
+            describe 'in both directions with many relation' do
               subject { dept_methyl_incorporation }
-              let(:target_spec) { activated_dimer }
               let(:am1) { activated_methyl_on_bridge.atom(:cr) }
               let(:am2) { activated_methyl_on_bridge.atom(:cl) }
-              let(:amb) { activated_methyl_on_bridge.atom(:cb) }
-              let(:amm) { activated_methyl_on_bridge.atom(:cm) }
               let(:ad1) { activated_dimer.atom(:cr) }
               let(:ad2) { activated_dimer.atom(:cl) }
-              let(:ordered_graph) do
-                [
-                  [[ad2, ad1], [[[am1, am2], param_100_cross]]],
-                  [[am1, am2], [[[amb], param_110_front]]],
-                  [[amb], [[[amm], param_amorph]]]
-                ]
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+                end
+                let(:target_spec) { activated_methyl_on_bridge }
+                let(:ordered_graph) do
+                  [
+                    [[am1, am2], [[[ad2, ad1], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base] }
+                let(:specific_specs) { [dept_activated_methyl_on_bridge] }
+                let(:target_spec) { activated_dimer }
+                let(:amb) { activated_methyl_on_bridge.atom(:cb) }
+                let(:amm) { activated_methyl_on_bridge.atom(:cm) }
+                let(:ordered_graph) do
+                  [
+                    [[ad2, ad1], [[[am1, am2], param_100_cross]]],
+                    [[am1, am2], [[[amb], param_110_front]]],
+                    [[amb], [[[amm], param_amorph]]]
+                  ]
+                end
               end
             end
           end
