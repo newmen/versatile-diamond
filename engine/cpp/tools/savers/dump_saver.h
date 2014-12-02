@@ -9,7 +9,7 @@ namespace vd {
 
 class DumpSaver
 {
-    std::ofstream *_outFile;
+    std::ofstream _outFile;
 public:
     DumpSaver();
     ~DumpSaver();
