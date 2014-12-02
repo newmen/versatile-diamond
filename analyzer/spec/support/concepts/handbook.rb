@@ -524,8 +524,8 @@ module VersatileDiamond
         set(:imdhf_atom_map) do
           Mcs::AtomMapper.map(imdhf_source, imdhf_products, imdhf_names_to_specs)
         end
-        set(:intermed_migr_down_formation) do
-          r = Reaction.new(:forward, 'intermed migr down formation',
+        set(:intermed_migr_dh_formation) do
+          r = Reaction.new(:forward, 'intermed migr dh formation',
             imdhf_source, imdhf_products, imdhf_atom_map)
         end
 

@@ -81,7 +81,7 @@ module VersatileDiamond
             end
 
             describe 'in both directions without explicit relation' do
-              subject { dept_intermed_migr_down_formation }
+              subject { dept_intermed_migr_dh_formation }
               let(:ab) { activated_bridge.atom(:cr) }
               let(:ob) { activated_bridge.atom(:cl) }
               let(:ad) { activated_methyl_on_dimer.atom(:cr) }

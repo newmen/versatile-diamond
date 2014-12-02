@@ -23,7 +23,7 @@ module VersatileDiamond
           # @return [Hash] the most comprehensive graph of nodes
           # TODO: should be private
           def big_graph
-            @_big_graph ||= transform_links(@reaction.original_links)
+            @_big_graph ||= transform_links(@reaction.links)
           end
 
         private

@@ -319,15 +319,18 @@ module VersatileDiamond
           end
 
           # Recombine flatten face neighbours by big graph if another flatten
-          # neighbours are present
+          # neighbours are present and them avail by relations that cross of passed
+          # relation
           #
-          # @param [Array] groups the list of nodes grouped by small graph
+          # @param [Array] nodes grouped by small graph
+          # @param [Concepts::Bond] cross_relation for relations by which the extending
+          #   occures
           # @return [Array] the list of regrouped flatten face grouped nodes
-          def extend_by_flatten_face(nodes)
+          def extend_by_flatten_face(nodes, cross_relation)
             flatten_nodes_from_big = nodes.map do |node|
               rels = big_graph[node].select do |n, r|
-                !nodes.include?(n) && flatten_relation?(n, r) &&
-                  !alive_relation?(node, n)
+                !cross_relation.it?(r.params) && !nodes.include?(n) &&
+                  flatten_relation?(n, r) && !alive_relation?(node, n)
               end
               [node] + rels.map(&:first)
             end
@@ -371,11 +374,12 @@ module VersatileDiamond
                 similar_rels_groups.values.each do |similar_rels|
                   nbrs, relations = similar_rels.transpose
 
+                  relation = relations.first
                   could_be_extended = nodes.size == nbrs.size &&
-                    flatten_relation?(nodes.first, relations.first)
+                    flatten_relation?(nodes.first, relation)
 
                   if could_be_extended
-                    nodes, nbrs = extend_by_flatten_face(nodes + nbrs)
+                    nodes, nbrs = extend_by_flatten_face(nodes + nbrs, relation)
                   end
                   block[nodes, [nbrs, relations.first.params]]
                 end

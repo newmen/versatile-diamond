@@ -10,8 +10,7 @@ module VersatileDiamond
 
         ANCHOR_SPECIE_NAME = 'target'
 
-        def_delegators :reaction, :original_links, :clean_links, :relation_between,
-          :changes
+        def_delegators :reaction, :links, :clean_links, :relation_between, :changes
 
       protected
 

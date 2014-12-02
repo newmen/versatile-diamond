@@ -11,7 +11,7 @@ module VersatileDiamond
           let(:reaction) { generator.reaction_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, reaction) }
 
-          let(:big_links_method) { :original_links }
+          let(:big_links_method) { :links }
           def node_to_vertex(node); [node.uniq_specie.spec.spec, node.atom] end
 
           describe 'without positions && just one atom' do
@@ -92,7 +92,7 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_grouped_nodes_graph do
-            subject { dept_intermed_migr_down_formation }
+            subject { dept_intermed_migr_dh_formation }
             let(:ab) { activated_bridge.atom(:cr) }
             let(:ob) { activated_bridge.atom(:cl) }
             let(:ad) { activated_methyl_on_dimer.atom(:cr) }

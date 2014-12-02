@@ -14,7 +14,7 @@ module VersatileDiamond
         super
 
         check_positions!
-        @_original_links, @_clean_links = nil
+        @_links, @_original_links, @_clean_links = nil
       end
 
       # Gets the list of surface source specs
@@ -23,24 +23,42 @@ module VersatileDiamond
         reject_not_surface(source)
       end
 
-      # Collects links positions used atoms of reactants
+      # Collects all links from positions between reactants and from reactant links
+      # between atoms
+      #
+      # @return [Hash] the most full relations graph between atoms of reactnats
+      def links
+        @_links ||=
+          surface_source.each_with_object(reaction.links.dup) do |spec, result|
+            spec.links.each do |atom, rels|
+              result[[spec, atom]] ||= []
+              result[[spec, atom]] += rels.map { |a, r| [[spec, a], r] }
+              result[[spec, atom]] = result[[spec, atom]].uniq
+            end
+          end
+      end
+
+      # Collects links positions used atoms of reactants, for clearing total links
       # @return [Hash] the relations graph between used atoms of reactnats
+      # TODO: must be private
       def original_links
-        @_original_links ||=
-          surface_source.each_with_object(links.dup) do |spec, result|
+        return @_original_links if @_original_links
+
+        links_dup = links.each_with_object({}) do |(sa1, rels), acc|
+          acc[sa1] = rels.dup
+        end
+
+        @_original_links =
+          surface_source.each_with_object(links_dup) do |spec, acc|
             used_atoms = reaction.used_atoms_of(spec).to_set
             spec.links.each do |atom, rels|
               if used_atoms.include?(atom)
-                result[[spec, atom]].reject do |(s, a), _|
+                acc[[spec, atom]].reject! do |(s, a), _|
                   spec == s && !used_atoms.include?(a)
                 end
               else
-                result.delete([spec, atom])
+                acc.delete([spec, atom])
               end
-            end
-
-            result.each do |_, rels|
-              rels.select! { |sa, _| result[sa] }
             end
           end
       end
@@ -81,20 +99,6 @@ module VersatileDiamond
       # @return [Array] the array of surface specs
       def reject_not_surface(specs)
         specs.reject(&:simple?).reject(&:gas?)
-      end
-
-      # Collects all links from positions between reactants and from reactant links
-      # between atoms
-      #
-      # @return [Hash] the most full relations graph between atoms of reactnats
-      def links
-        surface_source.each_with_object(reaction.links.dup) do |spec, result|
-          spec.links.each do |atom, rels|
-            result[[spec, atom]] ||= []
-            result[[spec, atom]] += rels.map { |a, r| [[spec, a], r] }
-            result[[spec, atom]] = result[[spec, atom]].uniq
-          end
-        end
       end
 
       # Selects latticed atom from passed pair of spec-atom

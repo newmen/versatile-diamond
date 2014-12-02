@@ -15,6 +15,20 @@ module VersatileDiamond
           it { expect(subject.changes).to eq(subject.reaction.changes) }
         end
 
+        describe '#links' do
+          def count_relations(links)
+            links.reduce(0) { |acc, (_, rels)| acc + rels.size }
+          end
+
+          let(:positions_num) { count_relations(subject.reaction.links) }
+          let(:links_size) do
+            positions_num + subject.source.reduce(0) do |acc, s|
+              acc + count_relations(s.links)
+            end
+          end
+          it { expect(count_relations(subject.links)).to eq(links_size) }
+        end
+
         describe '#original_links' do
           it { expect(subject.original_links).to match_graph(original_links) }
         end
