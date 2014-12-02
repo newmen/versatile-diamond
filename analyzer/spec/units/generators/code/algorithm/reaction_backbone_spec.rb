@@ -80,6 +80,32 @@ module VersatileDiamond
               end
             end
 
+            describe 'in both directions without explicit relation' do
+              subject { dept_intermed_migr_down_formation }
+              let(:ab) { activated_bridge.atom(:cr) }
+              let(:ob) { activated_bridge.atom(:cl) }
+              let(:ad) { activated_methyl_on_dimer.atom(:cr) }
+              let(:od) { activated_methyl_on_dimer.atom(:cl) }
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { activated_bridge }
+                let(:final_graph) do
+                  {
+                    [ab, ob] => [[[ad, od], param_100_cross]]
+                  }
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { activated_methyl_on_dimer }
+                let(:final_graph) do
+                  {
+                    [ad, od] => [[[ab, ob], param_100_cross]]
+                  }
+                end
+              end
+            end
+
             describe 'in both directions with many relation' do
               subject { dept_methyl_incorporation }
               let(:am1) { activated_methyl_on_bridge.atom(:cr) }

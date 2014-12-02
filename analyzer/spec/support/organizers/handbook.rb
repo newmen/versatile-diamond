@@ -89,6 +89,7 @@ module VersatileDiamond
           :methyl_adsorption,
           :methyl_desorption,
           :methyl_incorporation,
+          :intermed_migr_down_formation,
           :dimer_formation,
           :sierpinski_drop,
           :hydrogen_abs_from_gap,

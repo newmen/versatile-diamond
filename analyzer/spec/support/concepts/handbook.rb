@@ -353,11 +353,17 @@ module VersatileDiamond
           s.link(s.atom(:cdr), s.atom(:cbr), position_100_cross)
           s.link(s.atom(:cm), s.atom(:cdr), free_bond); s
         end
+        set(:intermed_migr_down_half) do
+          SpecificSpec.new(intermed_migr_down_half_base)
+        end
 
         set(:intermed_migr_down_full_base) do
           s = SurfaceSpec.new(:intermed_migr_down_full)
           s.adsorb(intermed_migr_down_half_base)
           s.link(s.atom(:cdl), s.atom(:cbl), position_100_cross); s
+        end
+        set(:intermed_migr_down_full) do
+          SpecificSpec.new(intermed_migr_down_full_base)
         end
 
         # Relevant states:
@@ -507,6 +513,20 @@ module VersatileDiamond
           from = [right_hydrogenated_bridge, right_hydrogenated_bridge.atom(:cr)]
           to = [rhb_dup, rhb_dup.atom(:cr)]
           r.position_between(from, to, position_100_front); r
+        end
+
+        set(:imdhf_source) { [activated_bridge, activated_methyl_on_dimer] }
+        set(:imdhf_products) { [intermed_migr_down_half] }
+        set(:imdhf_names_to_specs) do {
+          source: [[:ab, activated_bridge], [:amod, activated_methyl_on_dimer]],
+          products: [:imdh, intermed_migr_down_half]
+        } end
+        set(:imdhf_atom_map) do
+          Mcs::AtomMapper.map(imdhf_source, imdhf_products, imdhf_names_to_specs)
+        end
+        set(:intermed_migr_down_formation) do
+          r = Reaction.new(:forward, 'intermed migr down formation',
+            imdhf_source, imdhf_products, imdhf_atom_map)
         end
 
         set(:mi_source) { [activated_methyl_on_extended_bridge, activated_dimer] }
