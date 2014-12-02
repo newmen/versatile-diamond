@@ -15,12 +15,12 @@ struct InitConfig
     const std::string name;
     const uint x, y;
     const double totalTime, eachTime;
+    bool saveDump = true;
     const Detector *detector = nullptr;
     const Behavior *behavior = nullptr;
     VolumeSaver *volumeSaver = nullptr;
 
     InitConfig(int argc, char *argv[]);
-    ~InitConfig();
 
     std::string filename() const;
 };

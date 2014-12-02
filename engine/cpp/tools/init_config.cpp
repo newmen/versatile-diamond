@@ -13,6 +13,12 @@ InitConfig::InitConfig(int argc, char *argv[]) : name(argv[1]), x(atoi(argv[2]))
     detectorType = (argc == 8) ? argv[7] : nullptr;
     behaviorType = (argc == 9) ? argv[8] : nullptr;
 
+//    if (argc == 10)
+//        if (argv[9] == "dump")
+//            saveDump == true;
+//        else
+//            throw Error("The 9th paramrter must be a \"dump\" ");
+
     if (name.size() == 0)
     {
         throw Error("Name should not be empty");
@@ -70,12 +76,6 @@ InitConfig::InitConfig(int argc, char *argv[]) : name(argv[1]), x(atoi(argv[2]))
     {
         behavior = bhvrFactory.create("tor");
     }
-}
-
-InitConfig::~InitConfig()
-{
-    delete volumeSaver;
-    delete detector;
 }
 
 std::string InitConfig::filename() const

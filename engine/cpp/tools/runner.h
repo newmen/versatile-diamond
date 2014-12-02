@@ -7,6 +7,7 @@
 #include "process_mem_usage.h"
 #include "../phases/behavior_factory.h"
 #include "savers/crystal_slice_saver.h"
+#include "savers/dump_saver.h"
 #include "init_config.h"
 #include "common.h"
 
@@ -217,6 +218,11 @@ template <class HB>
 void Runner<HB>::saveVolume(const Crystal *crystal)
 {
     _init.volumeSaver->save(HB::mc().totalTime(), &HB::amorph(), crystal, _init.detector);
+    if (_init.saveDump)
+    {
+        DumpSaver dpSaver;
+        dpSaver.save(HB::mc().totalTime(), &HB::amorph(), crystal);
+    }
 }
 
 }
