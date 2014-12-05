@@ -21,15 +21,13 @@ module VersatileDiamond
           # target reaction
           #
           # @return [Hash] the most comprehensive graph of nodes
-          # TODO: should be private
           def big_graph
             @_big_graph ||= transform_links(@reaction.links)
           end
 
-        private
-
           # Makes the nodes graph from positions of target reaction
           # @return [Hash] the small graph of nodes
+          # TODO: rspec
           def small_graph
             return @_small_graph if @_small_graph
 
@@ -43,6 +41,8 @@ module VersatileDiamond
 
             @_small_graph = result
           end
+
+        private
 
           # Checks that passed spec is bad
           # @param [Concepts::Spec | Concepts::SpecificSpec] spec which will be checked

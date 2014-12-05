@@ -172,7 +172,7 @@ module VersatileDiamond
             eachNeighbour(neighbours1[0], &Diamond::front_110, [&](Atom *neighbour1) {
                 if (neighbour1->is(#{other_role_ct}))
                 {
-                    BridgeCTs specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+                    BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
                     specie1->eachSymmetry([&](SpecificSpec *specie2) {
                         if (neighbours1[0] == specie2->atom(1) && neighbours1[1] != specie2->atom(2))
                         {

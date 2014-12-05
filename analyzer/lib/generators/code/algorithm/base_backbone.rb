@@ -63,7 +63,8 @@ module VersatileDiamond
 
         private
 
-          def_delegator :@grouped_nodes_graph, :final_graph
+          attr_reader :grouped_nodes_graph
+          def_delegator :grouped_nodes_graph, :final_graph
 
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes

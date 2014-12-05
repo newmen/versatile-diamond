@@ -19,7 +19,6 @@ module VersatileDiamond
 
           # Makes the nodes graph from links of target specie
           # @return [Hash] the most comprehensive graph of nodes
-          # TODO: should be private
           def big_graph
             @_big_graph ||= transform_links(spec.original_links)
           end

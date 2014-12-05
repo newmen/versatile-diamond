@@ -6,7 +6,6 @@ module VersatileDiamond
         # Cleans the reaction grouped nodes graph from not significant relations and
         # gets the ordered graph by which the find reaction algorithm will be builded
         class ReactionBackbone < BaseBackbone
-          extend Forwardable
 
           # Initializes backbone by reaction, reactant specie and grouped nodes of it
           # @param [EngineCode] generator the major engine code generator
@@ -46,8 +45,6 @@ module VersatileDiamond
 
         private
 
-          def_delegator :@grouped_nodes_graph, :big_graph
-
           # Checks that passed nodes belongs to target specie
           # @param [Array] nodes which will be checked
           # @return [Boolean] are all nodes belongs to target specie or not
@@ -60,26 +57,58 @@ module VersatileDiamond
           # @param [Array] nodes from which graph will be extended
           # @return [Hash] the extended graph
           def extend_graph(graph, nodes)
-            exist_nodes = collect_nodes(graph).flatten.to_set
-            curr_node_rels = nodes.each_with_object([]) do |node, acc|
-              rels = big_graph[node].reject { |n, _| exist_nodes.include?(n) }
-              acc << [node, rels] unless rels.empty?
+            next_rels = next_ways(graph, nodes)
+            return nil if next_rels.empty? # result of recursive find
+
+            result = nil
+            next_rels.group_by(&:last).each do |rp, group|
+              from_nodes, next_nodes =
+                group.map { |fn, nn, _| [fn, nn] }.transpose.map(&:uniq)
+
+              ext_graph = graph.dup
+              ext_graph[from_nodes] ||= []
+              ext_graph[from_nodes] += [[next_nodes, rp]]
+
+              result =
+                if next_nodes.any?(&:anchor?)
+                  ext_graph
+                else
+                  extend_graph(ext_graph, next_nodes)
+                end
+              break if result
             end
 
-            from_nodes, next_rels = curr_node_rels.transpose
-            next_rels = next_rels.flatten(1)
-
-            result = graph.dup
-            next_rels.group_by { |_, r| r.params }.each do |rp, group|
-              result[from_nodes] ||= []
-              result[from_nodes] << [group.map(&:first).uniq, rp]
-            end
-
-            next_nodes = next_rels.map(&:first).uniq
-            unless next_nodes.any?(&:anchor?)
-              result = extend_graph(result, next_nodes)
-            end
             result
+          end
+
+          # Gets the next ways by which the target graph could be extended
+          # @param [Hash] graph for which the extending ways will be gotten
+          # @param [Array] nodes from which ways will be found
+          # @return [Array] the list of triples where first item of triple is
+          #   from_node, the second item is next_node and last item is relation
+          #   parameters hash
+          def next_ways(graph, nodes)
+            nodes_set = nodes.to_set
+            anchors_set = anchor_nodes(graph).to_set
+
+            prev_nodes = anchors_set + nodes_set
+            key_nodes = anchors_set & nodes_set
+            key_nodes = nodes_set if key_nodes.empty?
+
+            key_nodes.reduce([]) do |acc, node|
+              rels = grouped_nodes_graph.big_graph[node].reject do |n, _|
+                prev_nodes.include?(n) || n.uniq_specie != node.uniq_specie
+              end
+              rels.empty? ? acc : acc + rels.map { |n, r| [node, n, r.params] }
+            end
+          end
+
+          # Selects the nodes from graph which presented in small grouped graph
+          # @param [Hash] graph from which the nodes will be selected
+          # @return [Array] the list of anchor nodes
+          def anchor_nodes(graph)
+            small_nodes = grouped_nodes_graph.small_graph.keys.to_set
+            collect_nodes(graph).flatten.select { |n| small_nodes.include?(n) }
           end
         end
 
