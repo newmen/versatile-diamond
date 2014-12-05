@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -149,7 +151,7 @@ module VersatileDiamond
           # Groups dependent parent species by original specie code generator
           # @return [Array] the array where each item is array of same species
           def grouped_dependent_parents
-            dependent_parents.sort.group_by(&:original).values
+            dependent_parents.sort.groups(&:original)
           end
 
           # Gets the parents which are not dependend from other parent species

@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -33,8 +35,8 @@ module VersatileDiamond
           # @return [Array] the array of most used nodes
           def most_used_nodes
             all_nodes = @grouped_nodes.keys.flatten.reject(&:none?)
-            groups = all_nodes.group_by { |n| [n.uniq_specie.original, n.properties] }
-            most_used = groups.values.reduce([]) do |acc, group|
+            groups = all_nodes.groups { |n| [n.uniq_specie.original, n.properties] }
+            most_used = groups.reduce([]) do |acc, group|
               acc << group.max_by { |n| all_nodes.count(n) }
             end
             most_used.uniq
@@ -43,8 +45,7 @@ module VersatileDiamond
           # Selects the most important nodes in keys of grouped nodes graph
           # @return [Array] the most different or binding nodes
           def most_important_nodes
-            groups = most_used_nodes.group_by(&:uniq_specie).values
-            target_groups = groups.map do |group|
+            target_groups = most_used_nodes.groups(&:uniq_specie).map do |group|
               border_nodes = select_border(group)
               border_nodes.empty? ? group.uniq(&:properties) : border_nodes
             end

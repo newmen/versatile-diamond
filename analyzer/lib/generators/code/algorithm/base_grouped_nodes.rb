@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -24,10 +26,9 @@ module VersatileDiamond
           #   related nodes
           # TODO: must be private
           def flatten_face_grouped_nodes
-            groups = main_keys.group_by do |node|
+            main_keys.groups do |node|
               Set.new(flatten_neighbours_for(node) + [node])
             end
-            groups.values
           end
 
           # Provides undirected graph of algorithm without bonds duplications. Nodes of
