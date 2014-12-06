@@ -127,7 +127,7 @@ module VersatileDiamond
 
         describe 'to specific spec' do
           let(:reaction) { dimer_formation }
-          let(:old) { activated_bridge }
+          let(:old) { df_source.first }
           let(:fresh) { old.dup }
 
           it_behaves_like :check_mapping do
@@ -145,7 +145,7 @@ module VersatileDiamond
 
         describe 'to base spec' do
           it_behaves_like :check_mapping do
-            let(:old) { dimer }
+            let(:old) { hm_products.last }
             let(:fresh) { dimer_base }
             let(:reaction) { hydrogen_migration.reverse }
             let(:map) { reaction.instance_variable_get(:'@mapping') }
@@ -200,7 +200,7 @@ module VersatileDiamond
           end
 
           describe 'for source' do
-            let(:spec) { activated_methyl_on_extended_bridge }
+            let(:spec) { mi_source.first }
 
             shared_examples_for :check_product do
               it_behaves_like :check_incoherent_only_one do
@@ -227,7 +227,7 @@ module VersatileDiamond
           end
 
           describe 'for product' do
-            let(:spec) { extended_dimer }
+            let(:spec) { mi_product.first }
 
             shared_examples_for :check_source do
               it_behaves_like :check_incoherent_only_one do
@@ -257,8 +257,8 @@ module VersatileDiamond
 
         it_behaves_like :check_positions do
           subject { dimer_formation }
-          let(:s1) { activated_bridge }
-          let(:s2) { activated_incoherent_bridge }
+          let(:s1) { df_source.first }
+          let(:s2) { df_source.last }
           let(:positions) do
             [
               [[s1, s1.atom(:ct)], [s2, s2.atom(:ct)], position_100_front],
@@ -269,8 +269,8 @@ module VersatileDiamond
 
         it_behaves_like :check_positions do
           subject { methyl_incorporation }
-          let(:s1) { activated_methyl_on_extended_bridge }
-          let(:s2) { activated_dimer }
+          let(:s1) { mi_source.first }
+          let(:s2) { mi_source.last }
           let(:positions) do
             [
               [[s1, s1.atom(:cl)], [s2, s2.atom(:cr)], position_100_cross],
@@ -285,8 +285,8 @@ module VersatileDiamond
           describe 'opposite relation stored too' do
             it_behaves_like :check_positions do
               subject { hydrogen_migration }
-              let(:s1) { methyl_on_dimer }
-              let(:s2) { activated_dimer }
+              let(:s1) { hm_source.first }
+              let(:s2) { hm_source.last }
               let(:positions) do
                 [
                   [[s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front],
@@ -299,8 +299,8 @@ module VersatileDiamond
           describe 'apply to reverse' do
             it_behaves_like :check_positions do
               subject { hydrogen_migration.reverse }
-              let(:s1) { activated_methyl_on_dimer }
-              let(:s2) { dimer }
+              let(:s1) { hm_products.first }
+              let(:s2) { hm_products.last }
               let(:positions) do
                 [
                   [[s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front],
@@ -315,7 +315,7 @@ module VersatileDiamond
       describe '#used_atoms_of' do
         describe 'methyl incorporation' do
           subject { methyl_incorporation }
-          let(:spec) { activated_methyl_on_extended_bridge }
+          let(:spec) { mi_source.first }
           let(:atoms) { [:cm, :cb, :cr, :cl].map { |a| spec.atom(a) } }
 
           it { expect(subject.used_atoms_of(spec)).to match_array(atoms) }
@@ -323,8 +323,8 @@ module VersatileDiamond
 
         describe 'dimer formation' do
           subject { dimer_formation }
-          let(:first) { activated_bridge }
-          let(:second) { activated_incoherent_bridge }
+          let(:first) { df_source.first }
+          let(:second) { df_source.last }
 
           it { expect(subject.used_atoms_of(first)).to eq([first.atom(:ct)]) }
           it { expect(subject.used_atoms_of(second)).to eq([second.atom(:ct)]) }
@@ -377,9 +377,9 @@ module VersatileDiamond
       end
 
       describe '#changes' do
-        let(:s1) { activated_bridge }
-        let(:s2) { activated_incoherent_bridge }
-        let(:p1) { dimer_dup_ff }
+        let(:s1) { df_source.first }
+        let(:s2) { df_source.last }
+        let(:p1) { df_products.first }
         let(:changes) do
           {
             [s1, s1.atom(:ct)] => [p1, p1.atom(:cr)],

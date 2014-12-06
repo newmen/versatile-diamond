@@ -5,7 +5,7 @@ module VersatileDiamond
       module SwapSourceExamples
         shared_examples_for :check_specs_after_swap_source do
           let(:from) { dimer }
-          let(:to) { dimer_dup_ff }
+          let(:to) { dimer.dup }
           let(:before_size) { subject.send(method).size }
           before(:each) do
             before_size # count size before swap

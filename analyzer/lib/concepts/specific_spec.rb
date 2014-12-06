@@ -186,17 +186,13 @@ module VersatileDiamond
       # @return [SpecificSpec] correct reduced spec or nil
       def reduced
         return unless extended?
-
         return @correct_reduced if @correct_reduced
         @correct_reduced = @reduced.dup
-        correct_is_same = true
 
         @specific_atoms.each do |keyname, atom|
           rd_atom = @correct_reduced.atom(keyname)
           is_specific = @correct_reduced.specific_atoms[keyname]
           df = atom.diff(rd_atom)
-
-          correct_is_same = false unless is_specific && df.empty?
 
           if is_specific
             rd_atom.apply_diff(df)
@@ -205,7 +201,6 @@ module VersatileDiamond
               describe_atom(keyname, SpecificAtom.new(rd_atom, ancestor: atom))
           end
         end
-        @correct_reduced = @reduced if correct_is_same
         @correct_reduced
       end
 

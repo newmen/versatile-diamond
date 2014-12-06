@@ -12,8 +12,10 @@ module VersatileDiamond
             bases = base_specs.dup
             specifics = specific_specs.dup
             (target_spec.specific? ? specifics : bases) << target_spec
-            (respond_to?(:other_spec) && other_spec.specific? ? specifics : bases) <<
-              target_spec
+            if respond_to?(:other_spec)
+              specs = other_spec.specific? ? specifics : bases
+              specs << other_spec unless specs.find { |s| s.name == other_spec.name }
+            end
 
             stub_generator(
               base_specs: bases,

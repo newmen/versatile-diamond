@@ -5,9 +5,10 @@ module VersatileDiamond
 
     describe Where, type: :interpreter do
       let(:concept) { Concepts::Where.new(:concept, 'description') }
+
+      let(:d_dup) { dimer.dup }
       let(:where) do
-        described_class.new(
-          dimers_row, concept, { right: dimer, left: dimer_dup_ff })
+        described_class.new(dimers_row, concept, { right: dimer, left: d_dup })
       end
 
       describe '#position' do
@@ -87,7 +88,7 @@ module VersatileDiamond
             where.interpret('position :one, right(:cr), face: 100, dir: :cross')
             where.interpret('position :two, right(:cl), face: 100, dir: :cross')
           end
-          it { expect(concept.specs).to match_array([dimer_dup_ff, dimer]) }
+          it { expect(concept.specs).to match_array([d_dup, dimer]) }
         end
       end
     end

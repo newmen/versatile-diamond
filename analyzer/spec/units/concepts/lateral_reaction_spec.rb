@@ -40,10 +40,9 @@ module VersatileDiamond
 
         describe "reverced atom haven't lattice" do
           subject { original.reverse }
+          let(:ed) { mi_product.first }
           let(:curr_mid) do
-            at_middle.concretize(
-              one: [extended_dimer, extended_dimer.atom(:cl)],
-              two: [extended_dimer, extended_dimer.atom(:cr)])
+            at_middle.concretize(one: [ed, ed.atom(:cl)], two: [ed, ed.atom(:cr)])
           end
           let(:original) do
             methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])

@@ -53,8 +53,8 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_dimer_formation }
-            let(:a1) { activated_bridge.atom(:ct) }
-            let(:a2) { activated_incoherent_bridge.atom(:ct) }
+            let(:a1) { df_source.first.atom(:ct) }
+            let(:a2) { df_source.last.atom(:ct) }
 
             let(:flatten_face_grouped_atoms) { [[a1, a2]] }
             let(:nodes_list) do
@@ -73,8 +73,8 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_formation }
-            let(:a1) { activated_bridge.atom(:ct) }
-            let(:a2) { activated_methyl_on_bridge.atom(:cb) }
+            let(:a1) { crm_products.last.atom(:ct) }
+            let(:a2) { crm_products.first.atom(:cb) }
 
             let(:flatten_face_grouped_atoms) { [[a1, a2]] }
             let(:nodes_list) do
@@ -93,10 +93,12 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_intermed_migr_dh_formation }
-            let(:ab) { activated_bridge.atom(:cr) }
-            let(:ob) { activated_bridge.atom(:cl) }
-            let(:ad) { activated_methyl_on_dimer.atom(:cr) }
-            let(:od) { activated_methyl_on_dimer.atom(:cl) }
+            let(:abr) { imdhf_source.first }
+            let(:amod) { imdhf_source.last }
+            let(:ab) { abr.atom(:cr) }
+            let(:ob) { abr.atom(:cl) }
+            let(:ad) { amod.atom(:cr) }
+            let(:od) { amod.atom(:cl) }
 
             let(:flatten_face_grouped_atoms) { [[ab, ad]] }
             let(:nodes_list) do
@@ -117,10 +119,12 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_methyl_incorporation }
-            let(:am1) { activated_methyl_on_bridge.atom(:cr) }
-            let(:am2) { activated_methyl_on_bridge.atom(:cl) }
-            let(:ad1) { activated_dimer.atom(:cr) }
-            let(:ad2) { activated_dimer.atom(:cl) }
+            let(:amob) { subject.source.first }
+            let(:ad) { subject.source.last }
+            let(:am1) { amob.atom(:cr) }
+            let(:am2) { amob.atom(:cl) }
+            let(:ad1) { ad.atom(:cr) }
+            let(:ad2) { ad.atom(:cl) }
 
             let(:flatten_face_grouped_atoms) { [[am1, am2], [ad1, ad2]] }
             let(:nodes_list) do

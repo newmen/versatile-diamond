@@ -27,6 +27,7 @@ module VersatileDiamond
         atoms.each { |k, a| describe_atom(k, a) }
 
         @_keynames_to_atoms = nil
+        @_is_extendable = nil
       end
 
       # If spec is simple (H2 or HCl for example) then true or false overwise
@@ -155,7 +156,7 @@ module VersatileDiamond
       # Checks for atom-references
       # @return [Boolean] true if atom-reference exist or false overwise
       def extendable?
-        @extendable ||= atom_instances.any?(&:reference?)
+        @_is_extendable ||= atom_instances.any?(&:reference?)
       end
 
       # Duplicates current spec and extend it duplicate by atom-references

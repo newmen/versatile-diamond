@@ -4,8 +4,13 @@ module VersatileDiamond
   module Concepts
 
     describe There do
-      let(:ai_bridge) { activated_incoherent_bridge }
-      let(:ai_bridge_dup) { ai_bridge.dup }
+      let(:ab) { df_source.first }
+      let(:aib) { df_source.last }
+      let(:aib_dup) { activated_incoherent_bridge.dup }
+
+      shared_examples_for :check_positions_graph do
+        it { expect(subject.positions).to match_graph(positions) }
+      end
 
       describe '#dup' do
         subject { on_end.dup }
@@ -16,7 +21,7 @@ module VersatileDiamond
           not_to eq(on_end.positions.object_id) }
 
         describe "target swapping doesn't change duplicate" do
-          before { subject.swap_target(ai_bridge, ai_bridge_dup) }
+          before { subject.swap_target(aib, aib_dup) }
           it { expect(subject.target_specs).not_to eq(on_end.target_specs) }
         end
       end
@@ -27,11 +32,9 @@ module VersatileDiamond
       end
 
       describe '#target_specs' do
-        it { expect(on_end.target_specs).
-          to match_array([activated_bridge, ai_bridge]) }
-        it { expect(on_middle.target_specs).
-          to match_array([activated_bridge, ai_bridge]) }
-        it { expect(there_methyl.target_specs).to eq([activated_bridge]) }
+        it { expect(on_end.target_specs).to match_array([ab, aib]) }
+        it { expect(on_middle.target_specs).to match_array([ab, aib]) }
+        it { expect(there_methyl.target_specs).to eq([ab]) }
       end
 
       describe '#env_specs' do
@@ -46,35 +49,46 @@ module VersatileDiamond
       end
 
       describe '#positions' do
-        it { expect(on_end.positions).to match_graph({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross]
-            ],
-            [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross]
-            ]
-          }) }
-
-        it { expect(on_middle.positions).to match_graph({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross],
-              [[dimer, dimer.atom(:cl)], position_100_cross],
-            ],
-            [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross],
-              [[dimer, dimer.atom(:cr)], position_100_cross],
-            ]
-          }) }
-
-        it { expect(there_methyl.positions).to match_graph({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [
-                [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
-                position_100_front
+        it_behaves_like :check_positions_graph do
+          subject { on_end }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [aib, aib.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
               ]
-            ]
-          }) }
+            }
+          end
+        end
 
+        it_behaves_like :check_positions_graph do
+          subject { on_middle }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+              ],
+              [aib, aib.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross],
+                [[dimer, dimer.atom(:cr)], position_100_cross],
+              ]
+            }
+          end
+        end
+
+        it_behaves_like :check_positions_graph do
+          subject { there_methyl }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[methyl_on_bridge, methyl_on_bridge.atom(:cb)], position_100_front]
+              ]
+            }
+          end
+        end
       end
 
       it_behaves_like :check_specs_after_swap_source do
@@ -89,35 +103,40 @@ module VersatileDiamond
         it { expect(subject.similar_source(dimer, dimer)).to be_nil }
         it { expect(subject.similar_source(bridge_base, nil)).to be_nil }
 
-        let(:ab) { activated_bridge }
         it { expect(subject.similar_source(ab, nil)).to eq(ab) }
         it { expect(subject.similar_source(ab.dup, nil)).to be_nil}
         it { expect(subject.similar_source(ab, ab)).to be_nil }
       end
 
       describe '#swap_source' do
-        before { on_end.swap_source(dimer, dimer_dup_ff) }
-        it { expect(on_end.positions).to match_graph({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer_dup_ff, dimer_dup_ff.atom(:cl)], position_100_cross]
-            ],
-            [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer_dup_ff, dimer_dup_ff.atom(:cr)], position_100_cross]
-            ]
-          }) }
+        it_behaves_like :check_positions_graph do
+          subject { on_end }
+          before { subject.swap_source(dimer, d_dup) }
+          let(:d_dup) { dimer.dup }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]],
+              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]]
+            }
+          end
+        end
       end
 
       describe '#swap_target' do
-        before { on_end.swap_target(ai_bridge, ai_bridge_dup) }
-
-        it { expect(on_end.positions).to match_graph({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross]
-            ],
-            [ai_bridge_dup, ai_bridge_dup.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross]
-            ]
-          }) }
+        it_behaves_like :check_positions_graph do
+          subject { on_end }
+          before { subject.swap_target(aib, aib_dup) }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [aib_dup, aib_dup.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
+              ]
+            }
+          end
+        end
       end
 
       describe '#used_atoms_of' do

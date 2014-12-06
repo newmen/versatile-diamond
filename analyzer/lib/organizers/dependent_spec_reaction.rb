@@ -69,14 +69,11 @@ module VersatileDiamond
         @_clean_links ||= erase_excess_positions(reaction.links)
       end
 
-      %w(used changed).each do |prefix|
-        method_name = :"#{prefix}_atoms_of"
-        # Gets all using atoms of passed spec
-        # @param [DependentWrappedSpec] spec the one of reactant
-        # @return [Array] the array of using atoms
-        define_method(method_name) do |dept_spec|
-          reaction.public_send(method_name, dept_spec.spec)
-        end
+      # Gets all using atoms of passed spec
+      # @param [DependentWrappedSpec] spec the one of reactant
+      # @return [Array] the array of using atoms
+      def used_atoms_of(dept_spec)
+        reaction.used_atoms_of(dept_spec.spec)
       end
 
     private

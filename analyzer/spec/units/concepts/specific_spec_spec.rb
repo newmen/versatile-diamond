@@ -8,6 +8,12 @@ module VersatileDiamond
         it { expect(methyl.dup).not_to eq(methyl) }
         it { expect(methyl.dup.spec).to eq(methyl.spec) }
         it { expect(methyl.dup.external_bonds).to eq(3) }
+
+        describe 'extended' do
+          subject { activated_methyl_on_extended_bridge.dup }
+          it { expect(subject.extended?).to be_truthy }
+          it { expect(subject.reduced).not_to eq(activated_methyl_on_bridge) }
+        end
       end
 
       describe '#spec' do
@@ -208,10 +214,10 @@ module VersatileDiamond
         it { expect(dimer.reduced).to be_nil }
 
         it { expect(activated_methyl_on_extended_bridge.reduced).
-          to eq(activated_methyl_on_bridge) }
+          not_to eq(activated_methyl_on_bridge) }
         it { expect(right_activated_extended_bridge.reduced).
-          to eq(right_activated_bridge) }
-        it { expect(extended_dimer.reduced).to eq(dimer) }
+          not_to eq(right_activated_bridge) }
+        it { expect(extended_dimer.reduced).not_to eq(dimer) }
       end
 
       describe '#extendable?' do

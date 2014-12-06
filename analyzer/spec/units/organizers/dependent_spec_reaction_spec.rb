@@ -10,6 +10,17 @@ module VersatileDiamond
         it { expect(dept_sierpinski_drop.surface_source).to eq(crm_source) }
       end
 
+      describe '#used_atoms_of' do
+        subject { dept_dimer_formation }
+        let(:ab) { df_source.first }
+        let(:dept_ab) { DependentSpecificSpec.new(ab) }
+        let(:aib) { df_source.last }
+        let(:dept_aib) { DependentSpecificSpec.new(aib) }
+
+        it { expect(subject.used_atoms_of(dept_ab)).to eq([ab.atom(:ct)]) }
+        it { expect(subject.used_atoms_of(dept_aib)).to eq([aib.atom(:ct)]) }
+      end
+
       shared_examples_for :check_links do
         describe '#changes' do
           it { expect(subject.changes).to eq(subject.reaction.changes) }
@@ -40,7 +51,7 @@ module VersatileDiamond
 
       it_behaves_like :check_links do
         subject { dept_sierpinski_drop }
-        let(:spc) { cross_bridge_on_bridges }
+        let(:spc) { subject.source.first }
         [:cm, :ctl, :ctr].each do |kn|
           let(kn) { spc.atom(kn) }
         end
@@ -57,8 +68,8 @@ module VersatileDiamond
 
       it_behaves_like :check_links do
         subject { dept_hydrogen_migration }
-        let(:s1) { methyl_on_dimer }
-        let(:s2) { activated_dimer }
+        let(:s1) { subject.source.first }
+        let(:s2) { subject.source.last }
         let(:am) { s1.atom(:cm) }
         let(:a1) { s1.atom(:cr) }
         let(:a2) { s2.atom(:cr) }
@@ -80,8 +91,8 @@ module VersatileDiamond
 
       it_behaves_like :check_links do
         subject { dept_methyl_incorporation }
-        let(:sm) { activated_methyl_on_extended_bridge }
-        let(:sd) { activated_dimer }
+        let(:sm) { subject.source.first }
+        let(:sd) { subject.source.last }
         let(:amm) { sm.atom(:cm) }
         let(:amb) { sm.atom(:cb) }
         let(:amr) { sm.atom(:cr) }

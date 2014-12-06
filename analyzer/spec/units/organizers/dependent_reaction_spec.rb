@@ -6,7 +6,6 @@ module VersatileDiamond
     describe DependentReaction, type: :organizer do
       subject { dept_dimer_formation }
       let(:target) { dimer_formation }
-      let(:ai_bridge) { activated_incoherent_bridge }
       let(:duplicate) do
         DependentTypicalReaction.new(dimer_formation.duplicate('dup'))
       end
@@ -39,29 +38,22 @@ module VersatileDiamond
       describe '#each_source' do
         it { expect(subject.each_source).to be_a(Enumerable) }
 
-        it { expect(subject.each_source.to_a).
-          to match_array([activated_bridge, ai_bridge]) }
-
+        it { expect(subject.each_source.to_a).to match_array(df_source) }
         it { expect(dept_methyl_deactivation.each_source.to_a).
           to match_array(dm_source) }
       end
 
       describe '#swap_source' do
         let(:source) { subject.each_source.to_a }
-        let(:bridge_dup) { activated_bridge.dup }
+        let(:ab) { df_source.first }
+        let(:aib) { df_source.last }
+        let(:bridge_dup) { ab.dup }
 
-        before(:each) { subject.swap_source(activated_bridge, bridge_dup) }
+        before(:each) { subject.swap_source(ab, bridge_dup) }
 
-        it { expect(source).not_to include(activated_bridge) }
+        it { expect(source).not_to include(ab) }
         it { expect(source).to include(bridge_dup) }
-        it { expect(source).to include(ai_bridge) }
-      end
-
-      describe '#used_atoms_of' do
-        it { expect(subject.used_atoms_of(dept_activated_incoherent_bridge)).
-          to eq([activated_incoherent_bridge.atom(:ct)]) }
-        it { expect(subject.used_atoms_of(dept_activated_bridge)).
-          to eq([activated_bridge.atom(:ct)]) }
+        it { expect(source).to include(aib) }
       end
 
       describe '#same?' do

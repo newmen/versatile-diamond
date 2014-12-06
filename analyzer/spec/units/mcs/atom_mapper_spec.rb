@@ -7,27 +7,35 @@ module VersatileDiamond
       describe '#self.map' do
         describe 'many to many' do
           describe 'bridge hydrogen migration' do
-            it { expect(described_class.map(
-                [activated_bridge, methyl_on_bridge],
-                [bridge, activated_methyl_on_bridge],
+            let(:ab) { activated_bridge.dup }
+            let(:mob) { methyl_on_bridge.dup }
+            let(:b) { bridge.dup }
+            let(:amob) { activated_methyl_on_bridge.dup }
+            let(:args) do
+              [
+                [ab, mob],
+                [b, amob],
                 {
-                  source: [[:b, activated_bridge], [:mob, methyl_on_bridge]],
-                  products: [[:b, bridge], [:mob, activated_methyl_on_bridge]]
+                  source: [[:b, ab], [:mob, mob]],
+                  products: [[:b, b], [:mob, amob]]
                 }
-              ).changes).to match_array([
-                [[activated_bridge, bridge], [[activated_cd, cd]]],
-                [[methyl_on_bridge, activated_methyl_on_bridge],
-                  [[c, activated_c]]]
-              ]) }
+              ]
+            end
+            let(:changes) do
+              [
+                [[ab, b], [[ab.atom(:ct), b.atom(:ct)]]],
+                [[mob, amob], [[mob.atom(:cm), amob.atom(:cm)]]]
+              ]
+            end
+            it { expect(described_class.map(*args).changes).to match_array(changes) }
           end
 
           describe 'methyl activation' do
             let(:ma_s) { ma_source.first }
             let(:ma_p) { ma_products.first }
+            let(:changes) { [[[ma_s, ma_p], [[ma_s.atom(:cm), ma_p.atom(:cm)]]]] }
 
-            it { expect(ma_atom_map.changes).to match_array([
-                [[ma_s, ma_p], [[ma_s.atom(:cm), ma_p.atom(:cm)]]]
-              ]) }
+            it { expect(ma_atom_map.changes).to match_array(changes) }
 
             describe "methyl on bridge isn't specified" do
               before { ma_atom_map } # runs atom mapping
@@ -38,17 +46,22 @@ module VersatileDiamond
 
         describe 'many to one' do
           describe 'dimer formation' do
-            it { expect(df_atom_map.changes).to match_array([
-                [[activated_bridge, dimer_dup_ff],
-                  [[activated_cd, dimer_dup_ff.atom(:cr)]]],
-                [[activated_incoherent_bridge, dimer_dup_ff],
-                  [[activated_incoherent_cd, dimer_dup_ff.atom(:cl)]]]
-              ]) }
+            let(:ab) { df_source.first }
+            let(:aib) { df_source.last }
+            let(:d) { df_products.first }
+            let(:changes) do
+              [
+                [[ab, d], [[ab.atom(:ct), d.atom(:cr)]]],
+                [[aib, d], [[aib.atom(:ct), d.atom(:cl)]]]
+              ]
+            end
+
+            it { expect(df_atom_map.changes).to match_array(changes) }
 
             describe 'correspond dimer atom is incoherent' do
               before(:each) { df_atom_map } # runs atom mapping
-              it { expect(dimer_dup_ff.atom(:cl).incoherent?).to be_truthy }
-              it { expect(dimer_dup_ff.atom(:cr)).to be_a(Concepts::Atom) }
+              it { expect(d.atom(:cl).incoherent?).to be_truthy }
+              it { expect(d.atom(:cr)).to be_a(Concepts::Atom) }
             end
           end
         end
