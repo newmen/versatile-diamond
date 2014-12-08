@@ -3,6 +3,7 @@
 
 #include "../../phases/amorph.h"
 #include "../../phases/crystal.h"
+#include "detector.h"
 #include <fstream>
 
 namespace vd {
@@ -14,7 +15,7 @@ public:
     DumpSaver();
     ~DumpSaver();
 
-    void save(double currentTime, const Amorph *amorph, const Crystal *crystal);
+    void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector);
 };
 
 }

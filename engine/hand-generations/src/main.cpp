@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        const InitConfig init(argc, argv);
+        const InitConfig<Handbook> init(argc, argv);
         Runner<Handbook> runner(init);
         run(runner);
     }

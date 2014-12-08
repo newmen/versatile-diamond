@@ -1,9 +1,8 @@
+#include <sstream>
 #include "dump_saver.h"
-#include "atoms/atom.h"
+#include "../../atoms/atom.h"
 #include "mol_accumulator.h"
-#include "detector.h"
 #include "surface_detector.h"
-#include "../hand-generations/src/handbook.h"
 
 namespace vd {
 
@@ -16,10 +15,9 @@ DumpSaver::~DumpSaver()
     _outFile.close();
 }
 
-void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *crystal)
+void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
 {
     _outFile.open("dump.dump");
-    Detector *detector = new SurfaceDetector<Handbook>;
     MolAccumulator amorphAcc(detector), crystalAcc(detector);
 
     _outFile.write((char*)&currentTime, sizeof(currentTime));

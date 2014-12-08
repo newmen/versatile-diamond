@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
+#include "../hand-generations/src/handbook.h"
 #include "process_mem_usage.h"
 #include "../phases/behavior_factory.h"
 #include "savers/crystal_slice_saver.h"
@@ -21,12 +22,12 @@ class Runner
 
     static volatile bool __stopCalculating;
 
-    const InitConfig _init;
+    const InitConfig<Handbook> _init;
 
 public:
     static void stop();
 
-    Runner(const InitConfig &init) : _init(init) {}
+    Runner(const InitConfig<Handbook> &init) : _init(init) {}
 
     void calculate(const std::initializer_list<ushort> &types);
 
@@ -221,7 +222,8 @@ void Runner<HB>::saveVolume(const Crystal *crystal)
     if (_init.saveDump)
     {
         DumpSaver dpSaver;
-        dpSaver.save(HB::mc().totalTime(), &HB::amorph(), crystal);
+        Detector *detector = new SurfaceDetector<Handbook>;
+        dpSaver.save(HB::mc().totalTime(), &HB::amorph(), crystal, detector);
     }
 }
 

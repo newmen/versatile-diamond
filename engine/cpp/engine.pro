@@ -139,7 +139,6 @@ SOURCES += \
     tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
     tools/yaml_config_reader.cpp \
-    tools/init_config.cpp \
     tools/savers/dump_saver.cpp
 
 HEADERS += \
