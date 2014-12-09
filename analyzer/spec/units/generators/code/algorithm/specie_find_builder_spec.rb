@@ -317,14 +317,14 @@ module VersatileDiamond
             Atom *amorph1 = anchor->amorphNeighbour();
             if (amorph1->is(#{role_cm}))
             {
-                Dimer *parent1 = anchor->specByRole<Dimer>(#{d_cr});
-                Atom *anchors[2] = { parent1->atom(0), anchor };
+                Dimer *specie1 = anchor->specByRole<Dimer>(#{d_cr});
+                Atom *anchors[2] = { specie1->atom(0), anchor };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
                     if (neighbours1[0]->is(#{role_csr}) && neighbours1[1]->is(#{role_ctr}))
                     {
                         if (neighbours1[1]->hasBondWith(amorph1))
                         {
-                            ParentSpec *parents[2] = { parent1, neighbours1[0]->specByRole<Dimer>(#{d_cr}) };
+                            ParentSpec *parents[2] = { specie1, neighbours1[0]->specByRole<Dimer>(#{d_cr}) };
                             create<CrossBridgeOnDimers>(amorph1, parents);
                         }
                     }

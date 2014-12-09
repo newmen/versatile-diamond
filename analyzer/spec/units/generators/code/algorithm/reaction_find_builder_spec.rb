@@ -176,7 +176,7 @@ module VersatileDiamond
                 {
                     BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
                     specie1->eachSymmetry([&](SpecificSpec *specie2) {
-                        if (neighbours1[0] == specie2->atom(1) && neighbours1[1] != specie2->atom(2))
+                        if (neighbours1[0] == specie2->atom(2) && neighbours1[1] != specie2->atom(1))
                         {
                             SpecificSpec *targets[2] = { target, specie2 };
                             create<ForwardIntermedMigrDhFormation>(targets);

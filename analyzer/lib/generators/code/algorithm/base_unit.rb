@@ -6,6 +6,7 @@ module VersatileDiamond
         # The base class for algorithm builder units
         # @abstract
         class BaseUnit
+          include SpeciesUser
           include CommonCppExpressions
           include NeighboursCppExpressions
           include SpecieCppExpressions
@@ -115,6 +116,12 @@ module VersatileDiamond
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             namer.name_of(obj) || 'undef'
+          end
+
+          # Gets the original specie code generator
+          # @return [Specie] the original specie code generator
+          def original_specie
+            specie_class(original_spec)
           end
 
           # Gets the variable name of target atom

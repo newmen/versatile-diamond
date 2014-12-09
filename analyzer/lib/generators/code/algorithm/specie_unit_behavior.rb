@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # The base class for algorithm builder units
         module SpecieUnitBehavior
-          include Code::SpeciesUser
 
           # By default assigns internal anchor atoms to some names for using its in
           # find algorithm
@@ -67,10 +66,6 @@ module VersatileDiamond
           def relation_between(*pair_of_units_with_atoms)
             atoms = pair_of_units_with_atoms.map(&:last)
             original_spec.relation_between(*atoms)
-          end
-
-          def original_specie
-            specie_class(original_spec)
           end
         end
 
