@@ -28,20 +28,19 @@ void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *cr
         });
     });
 
-    ushort amorphNum = amorphAcc.atomsNum();
-    _outFile.write((char*)&amorphNum, sizeof(amorphAcc.atomsNum()));
+    uint amorphNum = amorphAcc.atomsNum();
+    _outFile.write((char*)&amorphNum, sizeof(amorphNum));
 
-    std::stringstream strm;
-    amorphAcc.orderedEachAtomInfo([&strm](uint i, const AtomInfo *ai){
-        strm.write((char*)&i, sizeof(i));
+    amorphAcc.orderedEachAtomInfo([this](uint i, const AtomInfo *ai){
+        _outFile.write((char*)&i, sizeof(i));
+
         const Atom *atom = ai->atom();
-
-        const char *name = atom->name();
+        const char name = *atom->name();
         ushort type = atom->type(), noBonds = atom->actives()+atom->bonds();
 
-        strm.write((char*)&type, sizeof(type));
-        strm.write((char*)&name, sizeof(name));
-        strm.write((char*)&noBonds, sizeof(noBonds));
+        _outFile.write((char*)&type, sizeof(type));
+        _outFile.write((char*)&name, sizeof(name));
+        _outFile.write((char*)&noBonds, sizeof(noBonds));
     });
 
     crystal->eachAtom([&crystalAcc](const Atom *atom) {
@@ -51,13 +50,17 @@ void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *cr
         });
     });
 
-    crystalAcc.orderedEachAtomInfo([&strm, &amorphNum](uint i, const AtomInfo *ai){
-        int arraySize = 7;
+    uint crystalNum = crystalAcc.atomsNum();
+    _outFile.write((char*)&crystalNum, sizeof(crystalNum));
+
+    crystalAcc.orderedEachAtomInfo([this, &amorphNum](uint i, const AtomInfo *ai){
+        int arraySize = 5;
         char** data = new char*[arraySize];
         std::streamsize *sizes = new std::streamsize[arraySize];
 
-        ushort type = ai->atom()->type(), index = amorphNum + i, noBonds = ai->atom()->actives()+ai->atom()->bonds();
-        const char *name = ai->atom()->name();
+        uint index = amorphNum + i;
+        ushort type = ai->atom()->type(), noBonds = ai->atom()->actives()+ai->atom()->bonds();
+        const char name = *ai->atom()->name();
         int3 crd = ai->atom()->lattice()->coords();
 
         data[0] = (char*)&index;
@@ -68,20 +71,14 @@ void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *cr
         sizes[2] = sizeof(name);
         data[3] = (char*)&noBonds;
         sizes[3] = sizeof(noBonds);
-        data[4] = (char*)&crd.x;
-        sizes[4] = sizeof(crd.x);
-        data[5] = (char*)&crd.y;
-        sizes[5] = sizeof(crd.y);
-        data[6] = (char*)&crd.z;
-        sizes[6] = sizeof(crd.y);
+        data[4] = (char*)&crd;
+        sizes[4] = sizeof(int3);
 
         for (int i = 0; i < arraySize; i++)
         {
-            strm.write(data[i], sizes[i]);
+            _outFile.write(data[i], sizes[i]);
         }
     });
-
-    _outFile << strm;
 }
 
 }

@@ -11,11 +11,11 @@ HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
 ICC_PATH = '/opt/intel/composerxe'
 ICPC = "#{ICC_PATH}/bin/icpc"
-ICPCFLAGS = "-falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259 -L#{ICC_PATH}/lib/intel64 -liomp5"
+ICPCFLAGS = "-falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259 -L#{ICC_PATH}/lib/intel64"
 
 ARKSFLAGS = '-DTHREADS_NUM=3'
 ARKSWINC = "#{ARKSFLAGS} -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR}"
-FLAGS = "#{ICPCFLAGS} #{ARKSWINC} -std=c++11 -O2 -openmp -lyaml-cpp"
+FLAGS = "#{ICPCFLAGS} #{ARKSWINC} -std=c++11 -O2 -lyaml-cpp"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string

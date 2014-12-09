@@ -14,7 +14,7 @@ LIBS += -lyaml-cpp
 #LIBS += -fopenmp -lstdc++
 
 #QMAKE_CXXFLAGS += -openmp -DPARALLEL -DTHREADS_NUM=3
-#LIBS += -L/opt/intel/lib/intel64/ -liomp5 -openmp
+#LIBS += -L/opt/intel/lib/intel64/
 
 SOURCES += \
     ../hand-generations/src/atoms/c.cpp \

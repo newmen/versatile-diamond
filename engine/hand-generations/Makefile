@@ -16,7 +16,7 @@ STANDART	:= -std=c++11 $(ARKSWINC)
 ICC_PATH	:= /opt/intel/composerxe
 ICPC		:= $(ICC_PATH)/bin/icpc
 ICPCFLAGS	:= $(STANDART) -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259
-LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64 -liomp5 -openmp -lyaml-cpp
+LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64 -lyaml-cpp
 
 HGEN_SRC_DIR	:= src
 HGEN_OBJS_DIR	:= obj
