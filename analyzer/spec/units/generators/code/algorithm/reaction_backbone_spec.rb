@@ -231,7 +231,8 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[br, bl], [[[dr, dl], param_100_cross]]],
-                    [[dr], [[[dm], param_amorph]]]
+                    [[dr], [[[dm], param_amorph]]],
+                    [[dl], []]
                   ]
                 end
               end
@@ -244,7 +245,8 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[dr, dl], [[[br, bl], param_100_cross]]],
-                    [[br], [[[bt], param_110_front]]]
+                    [[br], [[[bt], param_110_front]]],
+                    [[br, bl], []]
                   ]
                 end
               end

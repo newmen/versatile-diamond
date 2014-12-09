@@ -19,6 +19,20 @@ module VersatileDiamond
           # Makes directed graph for walking when find algorithm builds
           # @param [Array] nodes from wich reverse relations of final graph will
           #   be rejected
+          # @return [Array] the ordered list that contains the ordered relations from
+          #   final graph
+          def ordered_graph_from(nodes)
+            build_sequence_from(nodes)
+          end
+
+        private
+
+          attr_reader :grouped_nodes_graph
+          def_delegator :grouped_nodes_graph, :final_graph
+
+          # Builds sequence of kv pairs from graph for find algorithm walking
+          # @param [Array] nodes from wich reverse relations of final graph will
+          #   be rejected
           # @param [Hash] directed graph without loops
           # @option [Hash] :init_graph the graph which uses as initial value for
           #   internal purging graph
@@ -26,7 +40,7 @@ module VersatileDiamond
           #   purging graph
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
-          def ordered_graph_from(nodes, init_graph: nil, visited_key_nodes: Set.new)
+          def build_sequence_from(nodes, init_graph: nil, visited_key_nodes: Set.new)
             result = []
             directed_graph = init_graph || final_graph
             nodes_queue = nodes.dup
@@ -36,6 +50,7 @@ module VersatileDiamond
               next_nodes = node_to_nodes[node]
               next_nodes_set = next_nodes.to_set
               next if visited_key_nodes.include?(next_nodes_set)
+
 
               visited_key_nodes << next_nodes_set
               rels = directed_graph[next_nodes]
@@ -50,7 +65,7 @@ module VersatileDiamond
 
             connected_nodes_from(directed_graph).each do |ns|
               next if visited_key_nodes.include?(ns.to_set)
-              result += ordered_graph_from(ns,
+              result += build_sequence_from(ns,
                 init_graph: directed_graph, visited_key_nodes: visited_key_nodes)
             end
 
@@ -60,11 +75,6 @@ module VersatileDiamond
 
             result
           end
-
-        private
-
-          attr_reader :grouped_nodes_graph
-          def_delegator :grouped_nodes_graph, :final_graph
 
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes

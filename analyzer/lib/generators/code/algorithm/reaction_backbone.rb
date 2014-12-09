@@ -16,7 +16,7 @@ module VersatileDiamond
             @reaction = reaction
             @specie = specie
 
-            @_final_graph = nil
+            @_final_graph, @_small_nodes = nil
           end
 
           # Gets entry nodes for generating algorithm
@@ -35,12 +35,25 @@ module VersatileDiamond
               acc[nodes] = rels if all_of_current_specie?(nodes)
             end
 
-            other_side_nodes = result.flat_map { |_, rels| rels.map(&:first) }
-            other_side_nodes.each do |nodes|
+            other_side_nodes(result).each do |nodes|
               result = extend_graph(result, nodes) unless nodes.any?(&:anchor?)
             end
 
             @_final_graph = result
+          end
+
+          # Also appends nodes which should be checked at end of find algorithm
+          # @param [Array] _nodes see at #super same argument
+          # @return [Array] the ordered list that contains the ordered grouped nodes
+          #   and their relations from final graph
+          def ordered_graph_from(_nodes)
+            ext_groups = other_side_nodes(final_graph).select do |nodes|
+              nodes.size > 1 && nodes.any? { |n| !small_nodes.include?(n) }
+            end
+
+            ext_groups.reduce(super) do |acc, nodes|
+              acc << [target_nodes(nodes), []]
+            end
           end
 
         private
@@ -107,8 +120,48 @@ module VersatileDiamond
           # @param [Hash] graph from which the nodes will be selected
           # @return [Array] the list of anchor nodes
           def anchor_nodes(graph)
-            small_nodes = grouped_nodes_graph.small_graph.keys.to_set
             collect_nodes(graph).flatten.select { |n| small_nodes.include?(n) }
+          end
+
+          # Gets the nodes list which uses in relations of passed graph
+          # @param [Hash] graph from which relations the nodes will be gotten
+          # @return [Array] the list of other side nodes
+          def other_side_nodes(graph)
+            graph.flat_map { |_, rels| rels.map(&:first) }
+          end
+
+          # Gets nodes from small grouped graph
+          # @return [Array] the list of major nodes of original reactions
+          def small_nodes
+            @_small_nodes ||= grouped_nodes_graph.small_graph.keys.to_set
+          end
+
+          # Gets the set of symmetric atoms which corresponds to atoms from passed
+          # nodes
+          #
+          # @param [Array] nodes from which the target atoms will be gotten
+          # @return [Set] the set of symmetric atoms for target atoms
+          def collect_symmetric_atoms(nodes)
+            nodes.reduce(Set.new) do |acc, node|
+              acc + node.uniq_specie.symmetric_atoms(node.atom)
+            end
+          end
+
+          # Gets the list of nodes which are target for checking additional extended
+          # nodes
+          #
+          # @param [Array] ext_nodes the list of nodes which will be transformed to
+          #   target nodes list
+          # @return [Array] the list of target nodes which will be checked at end of
+          #   find algorithm
+          def target_nodes(ext_nodes)
+            symmetric_atoms = collect_symmetric_atoms(ext_nodes)
+            symmetric_nodes = ext_nodes.select { |n| symmetric_atoms.include?(n.atom) }
+            if symmetric_nodes.empty?
+              ext_nodes.reject { |n| small_nodes.include?(n) }
+            else
+              symmetric_nodes
+            end
           end
         end
 
