@@ -36,6 +36,18 @@ module VersatileDiamond
             "RU:(#{inspect_specie_atoms_names}])"
           end
 
+        protected
+
+          # Gets the list of atoms which belongs to anchors of target concept
+          # @return [Array] the list of atoms that belonga to anchors
+          # @override
+          def role_atoms
+            anchors = @dept_reaction.clean_links.keys
+            spec = original_spec.spec
+            diff = atoms.select { |a| anchors.include?([spec, a]) }
+            diff.empty? ? atoms : diff
+          end
+
         private
 
           # Checks that internal target specie is symmetric by target atoms
@@ -65,7 +77,8 @@ module VersatileDiamond
           # @return [String] the extended condition
           # @override
           def append_check_other_relations(_condition_str, other)
-            ops = other.atoms.combination(2).map { |pair| [other, other].zip(pair) }
+            other_atoms = other.role_atoms
+            ops = other_atoms.combination(2).map { |pair| [other, other].zip(pair) }
             append_check_bond_conditions(super, ops)
           end
 

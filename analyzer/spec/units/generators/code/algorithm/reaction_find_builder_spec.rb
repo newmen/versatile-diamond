@@ -139,7 +139,7 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(1), specie1->atom(2) };
+        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cr}))
             {
@@ -172,7 +172,7 @@ module VersatileDiamond
         if (neighbours1[0]->is(#{other_role_cr}))
         {
             eachNeighbour(neighbours1[0], &Diamond::front_110, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{other_role_ct}))
+                if (neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1))
                 {
                     BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
                     specie1->eachSymmetry([&](SpecificSpec *specie2) {

@@ -97,9 +97,15 @@ module VersatileDiamond
           # @param [Array] atoms which role will be checked in code
           # @return [String] the string with cpp condition
           def check_role_condition
-            combine_condition(atoms, '&&') do |var, atom|
+            combine_condition(role_atoms, '&&') do |var, atom|
               "#{var}->is(#{role(atom)})"
             end
+          end
+
+          # Gets the list of atoms which belongs to anchors of target concept
+          # @return [Array] the list of atoms that belonga to anchors
+          def role_atoms
+            atoms
           end
 
         private

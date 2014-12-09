@@ -43,12 +43,16 @@ module VersatileDiamond
           # Gets code line with defined anchors atoms for each neighbours operation
           # @return [String] the code line with defined achor atoms variable
           def define_nbrs_anchors_line
-            values = atoms.map do |a|
-              namer.name_of(a) || atom_from_specie_call(a)
-            end
+            if atoms.size > 1 || !namer.name_of(atoms.first)
+              values = atoms.map do |a|
+                namer.name_of(a) || atom_from_specie_call(a)
+              end
 
-            namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)
-            define_var_line('Atom *', atoms, values)
+              namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)
+              define_var_line('Atom *', atoms, values)
+            else
+              ''
+            end
           end
         end
 
