@@ -531,6 +531,20 @@ module VersatileDiamond
             imdhf_source, imdhf_products, imdhf_atom_map)
         end
 
+        set(:imdff_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
+        set(:imdff_products) { [intermed_migr_down_full.dup] }
+        set(:imdff_names_to_specs) do {
+          source: [[:ab, imdff_source.first], [:amod, imdff_source.last]],
+          products: [:imdh, imdff_products.first]
+        } end
+        set(:imdff_atom_map) do
+          Mcs::AtomMapper.map(imdff_source, imdff_products, imdff_names_to_specs)
+        end
+        set(:intermed_migr_df_formation) do
+          r = Reaction.new(:forward, 'intermed migr df formation',
+            imdff_source, imdff_products, imdff_atom_map)
+        end
+
         set(:mi_source) do
           [activated_methyl_on_extended_bridge.dup, activated_dimer.dup]
         end

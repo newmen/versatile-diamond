@@ -192,6 +192,54 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              subject { dept_intermed_migr_df_formation }
+              let(:target_spec) { dept_activated_bridge }
+              let(:other_spec) { dept_activated_methyl_on_dimer }
+              let(:find_algorithm) do
+                <<-CODE
+    target->eachSymmetry([](SpecificSpec *specie1) {
+        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
+        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+            {
+                Atom *amorph1 = neighbours1[0]->amorphNeighbour();
+                if (amorph1->is(#{other_role_cm}))
+                {
+                    SpecificSpec *targets[2] = { amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm}), specie1 };
+                    create<ForwardIntermedMigrDfFormation>(targets);
+                }
+            }
+        });
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              subject { dept_intermed_migr_df_formation }
+              let(:target_spec) { dept_activated_methyl_on_dimer }
+              let(:other_spec) { dept_activated_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchors[2] = { target->atom(1), target->atom(4) };
+    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
+        {
+            Atom *neighbour1 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+            if (neighbour1 && neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
+            {
+                SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
+                create<ForwardIntermedMigrDfFormation>(targets);
+            }
+        }
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
               subject { dept_methyl_incorporation }
               let(:target_spec) { dept_activated_methyl_on_bridge }
               let(:other_spec) { dept_activated_dimer }
