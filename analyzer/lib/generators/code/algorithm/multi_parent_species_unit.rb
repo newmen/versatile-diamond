@@ -4,8 +4,8 @@ module VersatileDiamond
       module Algorithm
 
         # Unit for bulding code that depends from scope of species
+        # @abstract
         class MultiParentSpeciesUnit < SingleAtomUnit
-          include SpecieUnitBehavior
           include SmartAtomCppExpressions
           include ProcsReducer
 

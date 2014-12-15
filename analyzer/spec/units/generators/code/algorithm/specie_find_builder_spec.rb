@@ -18,13 +18,15 @@ module VersatileDiamond
           let(:classifier) { generator.classifier }
 
           let(:code_specie) { generator.specie_class(subject.name) }
-          let(:builder) { described_class.new(generator, code_specie) }
+          let(:builder) { code_specie.find_builder }
 
           describe '#build' do
             [:ct, :cr].each do |keyname|
               let(:"b_#{keyname}") { role(dept_bridge_base, keyname) }
             end
-            let(:mob_cb) { role(dept_methyl_on_bridge_base, :cb) }
+            [:cb, :cm].each do |keyname|
+              let(:"mob_#{keyname}") { role(dept_methyl_on_bridge_base, keyname) }
+            end
             let(:d_cr) { role(dept_dimer_base, :cr) }
 
             it_behaves_like :check_code do
@@ -275,8 +277,6 @@ module VersatileDiamond
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
               let(:typical_reactions) { [dept_sierpinski_drop] }
-
-              let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_cm}))
@@ -439,6 +439,40 @@ module VersatileDiamond
               end
             end
 
+            it_behaves_like :check_code do
+              subject { dept_intermed_migr_down_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_BRIDGE, #{role_cm}))
+        {
+            anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie1) {
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
+                    if (specie1 != specie2)
+                    {
+                        specie1->eachSymmetry([&](ParentSpec *specie3) {
+                            Atom *atoms[2] = { specie3->atom(3), specie2->atom(1) };
+                            eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour1) {
+                                if (atoms[1] == neighbour1)
+                                {
+                                    ParentSpec *parents[2] = { specie3, specie2 };
+                                    create<IntermedMigrDownBridge>(parents);
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+        }
+    }
+                CODE
+              end
+            end
+
             describe 'intermediate migration down species' do
               let(:base_specs) do
                 [
@@ -448,7 +482,6 @@ module VersatileDiamond
                   subject
                 ]
               end
-              let(:mob_cm) { role(dept_methyl_on_bridge_base, :cm) }
               let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
 
               it_behaves_like :check_code do

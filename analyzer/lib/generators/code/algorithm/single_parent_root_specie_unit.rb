@@ -9,7 +9,7 @@ module VersatileDiamond
           include SmartAtomCppExpressions
 
           def inspect
-            "RSU:(#{inspect_specie_atoms_names}])"
+            "SPRSU:(#{inspect_specie_atoms_names}])"
           end
 
         private
@@ -53,12 +53,6 @@ module VersatileDiamond
           # @override
           def atom_from_specie_call(atom)
             super(parent_specie, twin(atom))
-          end
-
-          # Gets the engine framework class for parent specie
-          # @return [String] the engine framework class for parent specie
-          def specie_type
-            'ParentSpec'
           end
 
           # Prepare the the passed atom to correspond twin of target parent specie

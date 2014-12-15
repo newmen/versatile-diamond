@@ -36,6 +36,7 @@ module VersatileDiamond
           :high_bridge_base,
           :intermed_migr_down_full_base,
           :intermed_migr_down_half_base,
+          :intermed_migr_down_bridge_base,
           :methane_base,
           :methyl_on_bridge_base,
           :methyl_on_bridge_base_dup,

@@ -32,7 +32,7 @@ module VersatileDiamond
           # @return [String] the code with symmetries iteration
           # @override
           def each_symmetry_lambda(&block)
-            super(target_specie, specie_type, clojure_on_scope: false, &block)
+            super(target_specie, clojure_on_scope: false, &block)
           end
 
           # Checks the atom linked with passed atom by passed position

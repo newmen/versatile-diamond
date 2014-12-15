@@ -178,15 +178,6 @@ module VersatileDiamond
             code_condition("#{target_atom_var_name} == #{parent_call}", &block)
           end
 
-          # Defines default type of iterating symmetric parent variable
-          # @param [UniqueSpecie] parent which symmetric instances will be iterated
-          # @yield should return cpp code string
-          # @return [String] the code with symmetries iteration
-          # @override
-          def each_symmetry_lambda(parent, &block)
-            super(parent, 'ParentSpec', &block)
-          end
-
           # Gets a combined code for finding symmetric specie when simulation do
           # @param [UniqueSpecie] parent which will be found
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]

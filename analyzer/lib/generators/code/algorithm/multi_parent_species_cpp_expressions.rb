@@ -16,7 +16,7 @@ module VersatileDiamond
             pwts = original_parents.map do |proxy_parent, twin|
               [specs_to_parents[proxy_parent], twin]
             end
-            pwts.find(&block)
+            block_given? ? pwts.find(&block) : pwts.first
           end
         end
 

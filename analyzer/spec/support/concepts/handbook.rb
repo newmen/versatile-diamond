@@ -342,6 +342,20 @@ module VersatileDiamond
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
         end
 
+        set(:intermed_migr_down_bridge_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_bridge)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:cr, :cbr)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cbt)
+          s.link(s.atom(:cbt), s.atom(:cbr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:cbt), free_bond); s
+        end
+        set(:intermed_migr_down_bridge) do
+          SpecificSpec.new(intermed_migr_down_bridge_base)
+        end
+
         set(:intermed_migr_down_half_base) do
           s = SurfaceSpec.new(:intermed_migr_down_half)
           s.adsorb(dimer_base)

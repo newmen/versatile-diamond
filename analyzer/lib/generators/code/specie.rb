@@ -38,6 +38,7 @@ module VersatileDiamond
           end
 
           @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
+          @_find_builder = nil
         end
 
         # Runs find symmetries algorithm by detector
@@ -145,9 +146,17 @@ module VersatileDiamond
           spec.name.to_s
         end
 
+        # Gets a builder which makes cpp code for find current specie when simulating
+        # @return [Algorithm::SpecieFindBuilder] the find algorithm builder
+        # TODO: must be private
+        def find_builder
+          @_find_builder ||= Algorithm::SpecieFindBuilder.new(generator, self)
+        end
+
       private
 
         def_delegator :sequence, :delta
+        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
@@ -413,7 +422,7 @@ module VersatileDiamond
         # Gets a cpp code by which specie will be found when simulation doing
         # @return [String] the multilined string with cpp code
         def find_algorithm
-          Algorithm::SpecieFindBuilder.new(generator, self).build
+          find_builder.build
         end
       end
 

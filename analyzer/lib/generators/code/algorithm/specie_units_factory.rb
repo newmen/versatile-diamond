@@ -7,6 +7,7 @@ module VersatileDiamond
 
         # Creates specie find algorithm units
         class SpecieUnitsFactory < BaseUnitsFactory
+          include Modules::ListsComparer
 
           # Initializes specie find algorithm units factory
           # @param [EngineCode] generator the major code generator
@@ -92,7 +93,11 @@ module VersatileDiamond
             @used_unique_parents += parent_species
             args = default_args + [parent_species, atom]
             if max_unsymmetric_species?(parent_species, atom)
-              MultiUnsymmetricParentsUnit.new(*args)
+              if totally_unsymmetric_species?(parent_species, atom)
+                MultiSameUnsymmetricParentsUnit.new(*args)
+              else
+                MultiDifferentUnsymmetricParentsUnit.new(*args)
+              end
             else
               msps_unit = MultiSymmetricParentsUnit.new(*args, common_smc_hash)
               @used_mulsp_units << msps_unit
@@ -150,6 +155,27 @@ module VersatileDiamond
                 rp_to_as.all? do |rp, atoms|
                   atoms.all? { |a| max_species_from?(a, rp) }
                 end
+            end
+          end
+
+          # Checks that passed species are totally unsymmetric in original specie
+          # @param [Array] parent_species the checking species
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the cheking will be
+          # @return [Boolean] are totally unsymmetric species or not
+          def totally_unsymmetric_species?(parent_species, atom)
+            return false if parent_species.uniq(&:original).size > 1
+
+            twin = original_spec.twins_of(atom).first
+            next_atoms_rels = parent_species.map do |pr|
+              ps = pr.proxy_spec
+              awrs = ps.relations_of(twin, with_atoms: true)
+              nas = awrs.map { |atom, _| ps.atom_by(atom) }
+              nas.reduce([]) { |acc, atom| acc + original_spec.relations_of(atom) }
+            end
+
+            next_atoms_rels.combination(2).any? do |rs1, rs2|
+              !lists_are_identical?(rs1, rs2, &:==)
             end
           end
 

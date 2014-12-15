@@ -135,6 +135,12 @@ module VersatileDiamond
           def role(atom)
             generator.classifier.index(original_spec, atom)
           end
+
+          # Gets the default engine framework class for parent specie
+          # @return [String] the engine framework class for parent specie
+          def specie_type
+            'ParentSpec'
+          end
         end
 
       end

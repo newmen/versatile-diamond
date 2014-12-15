@@ -6,6 +6,8 @@ module VersatileDiamond
         # Contain logic for building find specie algorithm
         class SpecieFindBuilder < BaseFindBuilder
 
+          def_delegator :backbone, :using_atoms
+
           # Inits builder by target specie and main engine code generator
           # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie the target specie code generator

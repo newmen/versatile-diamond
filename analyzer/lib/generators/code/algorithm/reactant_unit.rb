@@ -85,6 +85,7 @@ module VersatileDiamond
 
           # Gets the engine framework class for reactant specie
           # @return [String] the engine framework class for reactant specie
+          # @override
           def specie_type
             'SpecificSpec'
           end

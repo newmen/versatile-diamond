@@ -29,7 +29,7 @@ module VersatileDiamond
           end
 
           def inspect
-            "SPSU:(#{inspect_specie_atoms_names}])"
+            "SPNRSU:(#{inspect_specie_atoms_names}])"
           end
 
         private

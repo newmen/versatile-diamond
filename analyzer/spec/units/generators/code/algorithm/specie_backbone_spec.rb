@@ -353,6 +353,20 @@ module VersatileDiamond
                 end
               end
             end
+
+            it_behaves_like :check_ordered_graph do
+              subject { dept_intermed_migr_down_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+              let(:cbt) { intermed_migr_down_bridge_base.atom(:cbt) }
+              let(:ordered_graph) do
+                [
+                  [[cm], []],
+                  [[cbr], [[[cbt], param_100_cross]]]
+                ]
+              end
+            end
           end
         end
 
