@@ -56,5 +56,14 @@ int main() {
                   << std::endl;
     }
 
+    for (int i = 0; i < amorphNum + crystalNum; i++)
+    {
+        vd::uint from, to;
+        inFile.read((char*)&from, sizeof(from));
+        inFile.read((char*)&to, sizeof(to));
+        std::cout << "bond from : " << from << " bond to : " << to << std::endl;
+    }
+
+
     return 0;
 }
