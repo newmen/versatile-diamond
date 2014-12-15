@@ -6,7 +6,6 @@ module VersatileDiamond
         # Unit for bulding code of root specie that depends from one parent specie
         class SingleParentRootSpecieUnit < SingleSpecieUnit
           include SpecieUnitBehavior
-          include SmartAtomCppExpressions
 
           def inspect
             "SPRSU:(#{inspect_specie_atoms_names}])"
@@ -27,13 +26,11 @@ module VersatileDiamond
             twins.first
           end
 
-          # Gets the code line with definition of parent specie variable
-          # @return [String] the definition of parent specie variable
-          def define_target_specie_line
-            avail_atom = atoms.find { |a| namer.name_of(a) }
-            atom_call = spec_by_role_call(avail_atom)
-            namer.assign_next('parent', parent_specie)
-            define_var_line("#{parent_specie.class_name} *", parent_specie, atom_call)
+          # Gets the anchor atom which was defined before
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the available anchor atom
+          def avail_anchor
+            atoms.find { |a| namer.name_of(a) }
           end
 
           # Gets the code string with getting the parent specie from atom

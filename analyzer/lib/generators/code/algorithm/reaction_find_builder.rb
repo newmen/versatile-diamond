@@ -55,8 +55,22 @@ module VersatileDiamond
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
             ordered_graph_from(nodes).reduce([]) do |acc, (ns, rels)|
-              rels.empty? ? acc : acc + accumulate_relations(ns, rels)
+              if rels.empty?
+                acc.empty? ? acc : (acc << check_additions(ns))
+              else
+                acc + accumulate_relations(ns, rels)
+              end
             end
+          end
+
+          # Checks additional atoms which has added when original grouped graph had
+          # extended
+          #
+          # @param [Array] nodes which will be checked
+          # @return [Proc] the proc that checks passed nodes
+          def check_additions(nodes)
+            unit = factory.make_unit(nodes)
+            -> &block { unit.check_additions(&block) }
           end
         end
 

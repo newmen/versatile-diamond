@@ -6,6 +6,7 @@ module VersatileDiamond
         # The base class for algorithm builder units
         # @abstract
         class BaseUnit
+          include SpeciesUser
           include CommonCppExpressions
           include NeighboursCppExpressions
           include SpecieCppExpressions
@@ -97,9 +98,15 @@ module VersatileDiamond
           # @param [Array] atoms which role will be checked in code
           # @return [String] the string with cpp condition
           def check_role_condition
-            combine_condition(atoms, '&&') do |var, atom|
+            combine_condition(role_atoms, '&&') do |var, atom|
               "#{var}->is(#{role(atom)})"
             end
+          end
+
+          # Gets the list of atoms which belongs to anchors of target concept
+          # @return [Array] the list of atoms that belonga to anchors
+          def role_atoms
+            atoms
           end
 
         private
@@ -109,6 +116,12 @@ module VersatileDiamond
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             namer.name_of(obj) || 'undef'
+          end
+
+          # Gets the original specie code generator
+          # @return [Specie] the original specie code generator
+          def original_specie
+            specie_class(original_spec)
           end
 
           # Gets the variable name of target atom

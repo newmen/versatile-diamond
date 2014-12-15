@@ -145,7 +145,6 @@ module VersatileDiamond
             nbrs = other.atoms
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
-            namer.assign_next('neighbour', nbrs)
             define_nbrs_specie_anchors_lines +
               code_lambda(*each_nbrs_call_args(nbrs, rel_params), &block)
           end
@@ -157,6 +156,8 @@ module VersatileDiamond
           # @param [Hash] rel_params see at #each_nbrs_lambda same argument
           # @return [Array] the array of arguments for each neighbours operation
           def each_nbrs_call_args(nbrs, rel_params)
+            namer.assign_next('neighbour', nbrs)
+
             method_args = [namer.name_of(atoms), full_relation_name_ref(rel_params)]
             clojure_args = ['&']
 

@@ -6,6 +6,7 @@ module VersatileDiamond
         # Unit for bulding code that depends from specie
         # @abstract
         class SingleSpecieUnit < MultiAtomsUnit
+          include SmartAtomCppExpressions
           include SymmetricCppExpressions
 
           # Also remember the unique parent specie
@@ -31,8 +32,16 @@ module VersatileDiamond
           # @yield should return cpp code string
           # @return [String] the code with symmetries iteration
           # @override
-          def each_symmetry_lambda(&block)
-            super(target_specie, clojure_on_scope: false, &block)
+          def each_symmetry_lambda(clojure_on_scope: false, &block)
+            super(target_specie, clojure_on_scope: clojure_on_scope, &block)
+          end
+
+          # Gets the code line with definition of parent specie variable
+          # @return [String] the definition of parent specie variable
+          def define_target_specie_line
+            atom_call = spec_by_role_call(avail_anchor)
+            namer.assign_next('specie', target_specie)
+            define_var_line("#{target_specie.class_name} *", target_specie, atom_call)
           end
 
           # Checks the atom linked with passed atom by passed position

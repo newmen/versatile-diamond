@@ -24,16 +24,38 @@ module VersatileDiamond
           # Prepares reactant instance for reaction creation
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
-          def check_symmetries(&block)
+          def check_symmetries(clojure_on_scope: false, &block)
             if symmetric?
-              each_symmetry_lambda(&block)
+              each_symmetry_lambda(clojure_on_scope: clojure_on_scope, &block)
             else
               block.call
             end
           end
 
+          # Checks additional atoms by which the grouped graph was extended
+          # @yield should get cpp code string which is body of checking
+          # @return [String] the cpp code string
+          def check_additions(&block)
+            define_target_specie_line +
+              check_symmetries(clojure_on_scope: true) do
+                ext_atoms_condition(&block)
+              end
+          end
+
           def inspect
             "RU:(#{inspect_specie_atoms_names}])"
+          end
+
+        protected
+
+          # Gets the list of atoms which belongs to anchors of target concept
+          # @return [Array] the list of atoms that belonga to anchors
+          # @override
+          def role_atoms
+            anchors = @dept_reaction.clean_links.keys
+            spec = original_spec.spec
+            diff = atoms.select { |a| anchors.include?([spec, a]) }
+            diff.empty? ? atoms : diff
           end
 
         private
@@ -42,6 +64,46 @@ module VersatileDiamond
           # @return [Boolean] is symmetric or not
           def symmetric?
             atoms.any? { |a| target_specie.symmetric_atom?(a) }
+          end
+
+          # Gets the defined anchor atom for target specie
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the available anchor atom
+          def avail_anchor
+            original_specie.spec.anchors.find do |a|
+              namer.name_of(a) && !original_specie.symmetric_atom?(a)
+            end
+          end
+
+          # Gets the checking block for atoms by which the grouped graph was extended
+          # @yield should get cpp code string which is body of checking
+          # @return [String] the cpp code string
+          def ext_atoms_condition(&block)
+            compares = atoms.map do |atom|
+              op = ext_atom?(atom) ? '!=' : '=='
+              "#{namer.name_of(atom)} #{op} #{atom_from_specie_call(atom)}"
+            end
+
+            code_condition(compares.join(' && '), &block)
+          end
+
+          # Checks that passed atom is additional and was used when grouped graph has
+          # extended
+          #
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is additional atom or not
+          def ext_atom?(atom)
+            !@dept_reaction.clean_links.include?([original_spec.spec, atom])
+          end
+
+          # Gets the code string with getting the target specie from atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the target specie will be gotten
+          # @return [String] cpp code string with engine framework method call
+          # @override
+          def spec_by_role_call(atom)
+            super(atom, target_specie, atom)
           end
 
           # Gets code string with call getting atom from target specie
@@ -60,12 +122,13 @@ module VersatileDiamond
           end
 
           # Also checks the relations between atoms of other unit
-          # @param [String] condition_str see at #super same argument
+          # @param [String] _condition_str see at #super same argument
           # @param [BaseUnit] other see at #super same argument
           # @return [String] the extended condition
           # @override
           def append_check_other_relations(_condition_str, other)
-            ops = other.atoms.combination(2).map { |pair| [other, other].zip(pair) }
+            other_atoms = other.role_atoms
+            ops = other_atoms.combination(2).map { |pair| [other, other].zip(pair) }
             append_check_bond_conditions(super, ops)
           end
 
