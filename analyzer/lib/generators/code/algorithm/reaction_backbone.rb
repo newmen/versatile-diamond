@@ -102,9 +102,8 @@ module VersatileDiamond
           #   parameters hash
           def next_ways(graph, nodes)
             nodes_set = nodes.to_set
-            anchors_set = anchor_nodes(graph).to_set
-
-            prev_nodes = anchors_set + nodes_set
+            prev_nodes = collect_nodes(graph).flatten.to_set
+            anchors_set = prev_nodes.select { |n| small_nodes.include?(n) }.to_set
             key_nodes = anchors_set & nodes_set
             key_nodes = nodes_set if key_nodes.empty?
 
@@ -114,13 +113,6 @@ module VersatileDiamond
               end
               rels.empty? ? acc : acc + rels.map { |n, r| [node, n, r.params] }
             end
-          end
-
-          # Selects the nodes from graph which presented in small grouped graph
-          # @param [Hash] graph from which the nodes will be selected
-          # @return [Array] the list of anchor nodes
-          def anchor_nodes(graph)
-            collect_nodes(graph).flatten.select { |n| small_nodes.include?(n) }
           end
 
           # Gets the nodes list which uses in relations of passed graph
