@@ -100,12 +100,10 @@ module VersatileDiamond
               ]
             end
             let(:full) do
-              [[[spec1, spec3], [
-                [activated_cd, cd], [n, n]
-              ]],
-              [[spec2, spec3], [
-                [activated_cd, cd1], [o, o]
-              ]]]
+              [
+                [[spec1, spec3], [[activated_cd, cd], [n, n]]],
+                [[spec2, spec3], [[activated_cd, cd1], [o, o]]]
+              ]
             end
 
             it_behaves_like :check_mapping_result
@@ -216,6 +214,53 @@ module VersatileDiamond
                   [spec2.atom(:crb), spec3.atom(:_cl1)],
                   [spec2.atom(:_cr0), spec3.atom(:_cr3)],
                 ]]
+              ]
+            end
+
+            it_behaves_like :check_mapping_result
+          end
+
+          describe 'migration methyl to gap' do
+            let(:spec1) { extra_activated_methyl_on_bridge }
+            let(:spec2) { right_activated_bridge.dup }
+            let(:spec3) { right_activated_bridge.dup }
+            let(:spec4) { horizont_extended_dimer }
+
+            let(:source) { [spec1, spec2, spec3] }
+            let(:products) { [spec4] }
+
+            let(:changed) do
+              [
+                [[spec1, spec4], [
+                  [spec1.atom(:cm), spec4.atom(:cr)],
+                  [spec1.atom(:cb), spec4.atom(:cl)],
+                ]],
+                [[spec2, spec4], [
+                  [spec2.atom(:cr), spec4.atom(:crb)],
+                ]],
+                [[spec3, spec4], [
+                  [spec3.atom(:cr), spec4.atom(:_cr0)],
+                ]]
+              ]
+            end
+            let(:full) do
+              [
+                [[spec1, spec4], [
+                  [spec1.atom(:cm), spec4.atom(:cr)],
+                  [spec1.atom(:cb), spec4.atom(:cl)],
+                  [spec1.atom(:cl), spec4.atom(:_cl0)],
+                  [spec1.atom(:cr), spec4.atom(:_cr1)],
+                ]],
+                [[spec2, spec4], [
+                  [spec2.atom(:cr), spec4.atom(:crb)],
+                  [spec2.atom(:ct), spec4.atom(:clht)],
+                  [spec2.atom(:cl), spec4.atom(:clhb)],
+                ]],
+                [[spec3, spec4], [
+                  [spec3.atom(:cr), spec4.atom(:_cr0)],
+                  [spec3.atom(:ct), spec4.atom(:crht)],
+                  [spec3.atom(:cl), spec4.atom(:crhb)],
+                ]],
               ]
             end
 

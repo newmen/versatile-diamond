@@ -26,6 +26,10 @@ module VersatileDiamond
             SpecificAtom.new(send(name), options: [active_bond])
           end
         end
+        set(:extra_activated_c) do
+          a = activated_c.dup
+          a.active!; a
+        end
         set(:extra_activated_cd) do
           a = activated_cd.dup
           a.active!; a
@@ -170,6 +174,9 @@ module VersatileDiamond
         set(:activated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: activated_c)
         end
+        set(:extra_activated_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: extra_activated_c)
+        end
         set(:methyl_on_activated_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
         end
@@ -263,6 +270,28 @@ module VersatileDiamond
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }
+
+        set(:horizont_extended_dimer_base) do
+          s = SurfaceSpec.new(:horizont_extended_dimer, crr: cd.dup)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cl, :clhb)
+          s.rename_atom(:ct, :clht)
+          s.rename_atom(:cr, :crb)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cl, :crhb)
+          s.rename_atom(:ct, :crht)
+          s.rename_atom(:cr, :_cr0)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cl)
+          s.rename_atom(:crr, :cr)
+          s.link(s.atom(:_cr0), s.atom(:cr), bond_110_front)
+          s.link(s.atom(:crb), s.atom(:cr), bond_110_front)
+          s.link(s.atom(:cl), s.atom(:cr), bond_100_front); s
+        end
+        set(:horizont_extended_dimer) do
+          SpecificSpec.new(horizont_extended_dimer_base)
+        end
+
         set(:pseudo_dimer_base) do
           b = bridge_base
           r, l = AtomReference.new(b, :ct), AtomReference.new(b, :ct)
@@ -601,6 +630,27 @@ module VersatileDiamond
         set(:methyl_incorporation) do
           Reaction.new(:forward, 'methyl incorporation',
             mi_source, mi_product, mi_atom_map)
+        end
+
+        set(:mg_source) do
+          [
+            extra_activated_methyl_on_bridge.dup,
+            right_activated_bridge.dup,
+            right_activated_bridge.dup
+          ]
+        end
+        set(:mg_product) { [horizont_extended_dimer.dup] }
+        set(:mg_names_to_specs) do {
+          source: [
+            [:mob, mg_source.first], [:br1, mg_source[1]], [:br2, mg_source[2]]
+          ],
+          products: [[:hed, mg_product.first]]
+        } end
+        set(:mg_atom_map) do
+          Mcs::AtomMapper.map(mg_source, mg_product, mg_names_to_specs)
+        end
+        set(:methyl_to_gap) do
+          Reaction.new(:forward, 'methyl to gap', mg_source, mg_product, mg_atom_map)
         end
 
         # Environments (targeted to dimer formation reverse reaction):

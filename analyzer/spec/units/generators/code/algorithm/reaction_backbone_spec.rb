@@ -289,6 +289,45 @@ module VersatileDiamond
               end
             end
 
+            describe 'in both directions with many species' do
+              subject { dept_methyl_to_gap }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
+
+              let(:amob) { subject.source.first }
+              let(:br1) { subject.source[1] }
+              let(:br2) { subject.source[2] }
+
+              let(:amr) { amob.atom(:cr) }
+              let(:aml) { amob.atom(:cl) }
+              let(:cr1) { br1.atom(:cr) }
+              let(:cr2) { br2.atom(:cr) }
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { amob }
+                let(:ordered_graph) do
+                  [
+                    [[amr, aml], [[[cr1, cr2], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { br1 }
+                let(:amb) { amob.atom(:cb) }
+                let(:amm) { amob.atom(:cm) }
+                let(:ordered_graph) do
+                  [
+                    [[cr1], [[[cr2], param_100_front]]],
+                    [[cr1, cr2], [[[amr, aml], param_100_cross]]],
+                    [[amr, aml], [[[amb], param_110_front]]],
+                    [[amb], [[[amm], param_amorph]]]
+                  ]
+                end
+              end
+            end
+
             describe 'in both directions with addit. and without explicit relation' do
               subject { dept_intermed_migr_dmod_formation }
               let(:base_specs) do

@@ -13,6 +13,7 @@ module VersatileDiamond
       #   instances for double or triple bonds
       # @raise [RuntimeError] if some of separated multi-bonds is invalid
       def initialize(spec, collaps_multi_bond: false)
+        @spec = spec
         dup_result = spec.links.map do |key, list|
           pair = [key]
           if collaps_multi_bond
@@ -53,6 +54,13 @@ module VersatileDiamond
       # @return [Array] the array of edges
       def edges(v, w)
         @edges[v] ? @edges[v].select { |vertex, _| vertex == w }.map(&:last) : []
+      end
+
+      # Gets all relations for passed vertex
+      # @param [Concepts::Atom] v the vertex for which the edges will be gotten
+      # @return [Array] the array of edges
+      def relations_of(v)
+        @spec.links[v].map(&:last)
       end
 
       # Selects set of lattices from atom couple

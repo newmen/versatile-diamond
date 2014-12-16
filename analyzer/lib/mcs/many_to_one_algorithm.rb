@@ -14,7 +14,8 @@ module VersatileDiamond
     # communication, maintaining its relative position.
     # Also finds only changed atoms.
     class ManyToOneAlgorithm
-      include Mcs::IntersecProjection
+      include Modules::ListsComparer
+      include IntersecProjection
 
       class << self
         # Maps two structures to one (or vice versa) and pass result of
@@ -49,9 +50,12 @@ module VersatileDiamond
         @reaction_type = reaction_type # must be :association or :dissociation
         # for current algorithm
 
-        @few_graphs, @big_graph = (@reaction_type == :association) ?
-          [source_graphs, product_graphs.first] :
-          [product_graphs, source_graphs.first]
+        @few_graphs, @big_graph =
+          if @reaction_type == :association
+            [source_graphs, product_graphs.first]
+          else
+            [product_graphs, source_graphs.first]
+          end
       end
 
       # Maps structures from stored graphs and associate_links they vertices by
@@ -78,14 +82,14 @@ module VersatileDiamond
 
           big_mapped_vertices, small_mapped_vertices = find_intersec
 
-          changed_big, changed_small = if @remaining_small_vertices
+          changed_big, changed_small =
+            if @remaining_small_vertices
               select_on_remaining(big_mapped_vertices, small_mapped_vertices)
             else
               select_on_bondary(big_mapped_vertices, small_mapped_vertices)
             end
 
-          @boundary_big_vertices =
-            @big_graph.boundary_vertices(big_mapped_vertices)
+          @boundary_big_vertices = @big_graph.boundary_vertices(big_mapped_vertices)
           @big_graph.remove_vertices!(big_mapped_vertices)
 
           # exchange to original atom for full atom mapping result
@@ -135,9 +139,7 @@ module VersatileDiamond
               raise AtomMapper::CannotMap
             else
               new_lattices = lattices_variants.pop
-              @remaining_small_vertices.zip(new_lattices).each do
-                |atom, lattice|
-
+              @remaining_small_vertices.zip(new_lattices).each do |atom, lattice|
                 @small_graph.change_lattice!(atom, lattice)
               end
             end
@@ -227,17 +229,33 @@ module VersatileDiamond
       # @return [Array, Array] changed vertices for both graphs
       def select_on_bondary(mapped_big, mapped_small)
         big_to_small = Hash[mapped_big.zip(mapped_small)]
+        small_to_big = big_to_small.invert
 
-        changed_big = if @boundary_big_vertices
+        changed_big =
+          if @boundary_big_vertices
             @boundary_big_vertices
           else
             # sum order is important!
             (vertices_with_differ_edges(mapped_big, big_to_small) +
-              extreme_vertices(mapped_big)).uniq
+              extreme_vertices!(mapped_big)).uniq
           end
-        changed_small = changed_big.map { |v| big_to_small[v] }
 
-        [changed_big, changed_small]
+        changed_small = changed_big.map { |v| big_to_small[v] }.compact
+        changed_small.select! { |v| realy_changed?(small_to_big[v], v) }
+
+        [changed_small.map { |v| small_to_big[v] }, changed_small]
+      end
+
+      # Checks that passed vertices is realy different
+      # @param [Concepts::Atom] big_vertex the vertex from big graph
+      # @param [Concepts::Atom] small_vertex the vertex from small graph
+      # @return [Boolean] are different atoms or not
+      def realy_changed?(big_vertex, small_vertex)
+        return true if big_vertex.lattice != small_vertex.lattice
+
+        big_edges = @big_graph.relations_of(big_vertex).select(&:bond?)
+        small_edges = @small_graph.relations_of(small_vertex).select(&:bond?)
+        !lists_are_identical?(big_edges, small_edges, &:==)
       end
 
       # Determines which vertices changed by changing the relative position or
@@ -264,7 +282,7 @@ module VersatileDiamond
 
       # Reduces the big graph by removing edges and disconnected vertices
       # @return [Array] the array of extreme vertices
-      def extreme_vertices(mapped_big)
+      def extreme_vertices!(mapped_big)
         @big_graph.remove_edges!(mapped_big)
         @big_graph.remove_disconnected_vertices!
         @big_graph.select_vertices(mapped_big)
