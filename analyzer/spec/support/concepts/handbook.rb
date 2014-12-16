@@ -279,6 +279,9 @@ module VersatileDiamond
         set(:activated_methyl_on_dimer) do
           SpecificSpec.new(methyl_on_dimer_base, cm: activated_c)
         end
+        set(:activated_dimer_in_methyl_on_dimer) do
+          SpecificSpec.new(methyl_on_dimer_base, cl: activated_cd)
+        end
 
         set(:two_methyls_on_dimer_base) do
           s = SurfaceSpec.new(:two_methyls_on_dimer, c2: c.dup)
@@ -378,6 +381,15 @@ module VersatileDiamond
         end
         set(:intermed_migr_down_full) do
           SpecificSpec.new(intermed_migr_down_full_base)
+        end
+
+        set(:intermed_migr_down_mod_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_mod, cdm: c)
+          s.adsorb(intermed_migr_down_half_base)
+          s.link(s.atom(:cdl), s.atom(:cdm), free_bond); s
+        end
+        set(:intermed_migr_down_mod) do
+          SpecificSpec.new(intermed_migr_down_mod_base)
         end
 
         # Relevant states:
@@ -549,7 +561,7 @@ module VersatileDiamond
         set(:imdff_products) { [intermed_migr_down_full.dup] }
         set(:imdff_names_to_specs) do {
           source: [[:ab, imdff_source.first], [:amod, imdff_source.last]],
-          products: [:imdh, imdff_products.first]
+          products: [:imdf, imdff_products.first]
         } end
         set(:imdff_atom_map) do
           Mcs::AtomMapper.map(imdff_source, imdff_products, imdff_names_to_specs)
@@ -557,6 +569,22 @@ module VersatileDiamond
         set(:intermed_migr_df_formation) do
           r = Reaction.new(:forward, 'intermed migr df formation',
             imdff_source, imdff_products, imdff_atom_map)
+        end
+
+        set(:immod_source) do
+          [activated_methyl_on_bridge.dup, activated_dimer_in_methyl_on_dimer.dup]
+        end
+        set(:immod_products) { [intermed_migr_down_mod.dup] }
+        set(:immod_names_to_specs) do {
+          source: [[:amob, immod_source.first], [:adimod, immod_source.last]],
+          products: [:imdmod, immod_products.first]
+        } end
+        set(:immod_atom_map) do
+          Mcs::AtomMapper.map(immod_source, immod_products, immod_names_to_specs)
+        end
+        set(:intermed_migr_dmod_formation) do
+          r = Reaction.new(:forward, 'intermed migr dmod formation',
+            immod_source, immod_products, immod_atom_map)
         end
 
         set(:mi_source) do

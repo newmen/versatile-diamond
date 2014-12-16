@@ -92,6 +92,7 @@ module VersatileDiamond
           :methyl_incorporation,
           :intermed_migr_dh_formation,
           :intermed_migr_df_formation,
+          :intermed_migr_dmod_formation,
           :dimer_formation,
           :sierpinski_drop,
           :hydrogen_abs_from_gap,

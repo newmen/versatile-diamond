@@ -288,6 +288,51 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'in both directions with addit. and without explicit relation' do
+              subject { dept_intermed_migr_dmod_formation }
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_dimer_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base
+                ]
+              end
+              let(:specific_specs) { [amob, adimod, dept_activated_dimer] }
+              let(:amob) { subject.source.first }
+              let(:adimod) { subject.source.last }
+
+              let(:br) { amob.atom(:cr) }
+              let(:bl) { amob.atom(:cl) }
+              let(:dr) { adimod.atom(:cr) }
+              let(:dl) { adimod.atom(:cl) }
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { amob }
+                let(:dm) { adimod.atom(:cm) }
+                let(:ordered_graph) do
+                  [
+                    [[br, bl], [[[dl, dr], param_100_cross]]],
+                    [[dr], []]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { adimod }
+                let(:bt) { amob.atom(:cb) }
+                let(:bm) { amob.atom(:cm) }
+                let(:ordered_graph) do
+                  [
+                    [[dl, dr], [[[br, bl], param_100_cross]]],
+                    [[br], [[[bt], param_110_front]]],
+                    [[bt], [[[bm], param_amorph]]],
+                    [[br, bl], []]
+                  ]
+                end
+              end
+            end
           end
         end
 
