@@ -8,7 +8,7 @@
 #include "process_mem_usage.h"
 #include "../phases/behavior_factory.h"
 #include "savers/crystal_slice_saver.h"
-#include "savers/dump_saver.h"
+#include "dump/dump_saver.h"
 #include "init_config.h"
 #include "common.h"
 
@@ -43,7 +43,11 @@ private:
     std::string filename() const;
     double timestamp() const;
 
+
+    typename HB::SurfaceCrystal *initCrystal();
+
     void outputMemoryUsage(std::ostream &os) const;
+    void printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -81,16 +85,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     // TODO: Предоставить возможность сохранять концентрацию структур
     CrystalSliceSaver csSaver(_init.filename().c_str(), _init.x * _init.y, types);
 
-// -------------------------------------------------------------------------------- //
-
-    const BehaviorFactory bhvrFactory;
-    const Behavior *initBhv = bhvrFactory.create("tor");
-    typedef typename HB::SurfaceCrystal SC;
-    SC *surfaceCrystal = new SC(dim3(_init.x, _init.y, MAX_HEIGHT), initBhv);
-    surfaceCrystal->initialize();
-    surfaceCrystal->changeBehavior(_init.behavior);
-
-// -------------------------------------------------------------------------------- //
+    typename HB::SurfaceCrystal *surfaceCrystal = initCrystal();
 
     auto outLambda = [this, surfaceCrystal]() {
         std::cout.width(10);
@@ -183,19 +178,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     }
 #endif // NOUT
 
-    std::cout << std::endl;
-    std::cout.precision(8);
-    std::cout << "Elapsed time of process: " << HB::mc().totalTime() << " s" << std::endl;
-    std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
-
-    std::cout << std::endl;
-    outputMemoryUsage(std::cout);
-    std::cout << std::endl;
-
-    std::cout.precision(3);
-    std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
-    mcData.counter()->printStats(std::cout);
-
+    printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
 }
@@ -225,6 +208,35 @@ void Runner<HB>::saveVolume(const Crystal *crystal)
         Detector *detector = new SurfaceDetector<Handbook>;
         dpSaver.save(HB::mc().totalTime(), &HB::amorph(), crystal, detector);
     }
+}
+
+template <class HB>
+void Runner<HB>::printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const
+{
+    std::cout << std::endl;
+    std::cout.precision(8);
+    std::cout << "Elapsed time of process: " << HB::mc().totalTime() << " s" << std::endl;
+    std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
+
+    std::cout << std::endl;
+    outputMemoryUsage(std::cout);
+    std::cout << std::endl;
+
+    std::cout.precision(3);
+    std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
+    mcData.counter()->printStats(std::cout);
+}
+
+template <class HB>
+typename HB::SurfaceCrystal *Runner<HB>::initCrystal()
+{
+    const BehaviorFactory bhvrFactory;
+    const Behavior *initBhv = bhvrFactory.create("tor");
+    typedef typename HB::SurfaceCrystal SC;
+    SC *surfaceCrystal = new SC(dim3(_init.x, _init.y, MAX_HEIGHT), initBhv);
+    surfaceCrystal->initialize();
+    surfaceCrystal->changeBehavior(_init.behavior);
+    return surfaceCrystal;
 }
 
 }

@@ -139,7 +139,8 @@ SOURCES += \
     tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
     tools/yaml_config_reader.cpp \
-    tools/savers/dump_saver.cpp
+    tools/dump/dump_saver.cpp \
+    tools/dump/dump_reader.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -335,7 +336,8 @@ HEADERS += \
     tools/typed.h \
     tools/vector3d.h \
     tools/yaml_config_reader.h \
-    tools/savers/dump_saver.h
+    tools/dump/dump_saver.h \
+    tools/dump/dump_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

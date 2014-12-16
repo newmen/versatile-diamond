@@ -1,8 +1,8 @@
 #include <sstream>
 #include "dump_saver.h"
 #include "../../atoms/atom.h"
-#include "mol_accumulator.h"
-#include "surface_detector.h"
+#include "../savers/mol_accumulator.h"
+#include "../savers/surface_detector.h"
 
 namespace vd {
 
@@ -79,6 +79,9 @@ void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *cr
             _outFile.write(data[i], sizes[i]);
         }
     });
+
+    uint bondsNum = amorphAcc.bondsNum() + crystalAcc.bondsNum();
+    _outFile.write((char*)&bondsNum, sizeof(bondsNum));
 
     amorphAcc.orderedEachBondInfo([this](uint i, const BondInfo *bi){
         uint atom = bi->from();
