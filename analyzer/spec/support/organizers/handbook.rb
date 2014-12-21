@@ -90,6 +90,7 @@ module VersatileDiamond
           :methyl_adsorption,
           :methyl_desorption,
           :methyl_incorporation,
+          :methyl_to_gap,
           :intermed_migr_dh_formation,
           :intermed_migr_df_formation,
           :intermed_migr_dmod_formation,

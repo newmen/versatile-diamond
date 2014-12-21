@@ -5,7 +5,7 @@ module VersatileDiamond
     module Minuend
       include Modules::ListsComparer
       include Modules::OrderProvider
-      include Organizers::LinksCleaner
+      include LinksCleaner
 
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance

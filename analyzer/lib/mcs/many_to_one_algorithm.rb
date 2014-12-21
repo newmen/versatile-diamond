@@ -253,8 +253,8 @@ module VersatileDiamond
       def realy_changed?(big_vertex, small_vertex)
         return true if big_vertex.lattice != small_vertex.lattice
 
-        big_edges = @big_graph.relations_of(big_vertex).select(&:bond?)
-        small_edges = @small_graph.relations_of(small_vertex).select(&:bond?)
+        big_edges = @big_graph.significant_edges_of(big_vertex)
+        small_edges = @small_graph.significant_edges_of(small_vertex)
         !lists_are_identical?(big_edges, small_edges, &:==)
       end
 

@@ -4,6 +4,7 @@ module VersatileDiamond
     # Represents smart graph which wrap original spec graph (with bonds and
     # position)
     class Graph
+      include Modules::ExcessPositionChecker
       extend Forwardable
 
       # Initialize instance by links hash of original spec graph
@@ -56,11 +57,12 @@ module VersatileDiamond
         @edges[v] ? @edges[v].select { |vertex, _| vertex == w }.map(&:last) : []
       end
 
-      # Gets all relations for passed vertex
+      # Gets only significant edges of passed vertex
       # @param [Concepts::Atom] v the vertex for which the edges will be gotten
       # @return [Array] the array of edges
-      def relations_of(v)
-        @spec.links[v].map(&:last)
+      def significant_edges_of(v)
+        rels = @spec.links[v].select { |w, r| r.bond? || !excess_position?(r, v, w) }
+        rels.map(&:last)
       end
 
       # Selects set of lattices from atom couple
@@ -174,6 +176,12 @@ module VersatileDiamond
       end
 
     private
+
+      # Gets the links of original spec
+      # @return [Hash] the links of original spec
+      def original_links
+        @spec.links
+      end
 
       # Collapse several bonds between two atoms to one multi-bond
       # @param [Array] list the list of pairs, where atom is first and bond is
