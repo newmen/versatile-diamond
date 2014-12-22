@@ -15,7 +15,7 @@ module VersatileDiamond
           #   nodes for current grouped nodes graph builder
           def initialize(factory)
             @factory = factory
-            @_final_graph = nil
+            @_flatten_face_grouped_nodes, @_final_graph = nil
           end
 
           # Gets the nodes of small links graph which are grouped by available
@@ -26,7 +26,7 @@ module VersatileDiamond
           #   related nodes
           # TODO: must be private
           def flatten_face_grouped_nodes
-            main_keys.groups do |node|
+            @_flatten_face_grouped_nodes ||= main_keys.groups do |node|
               Set.new(flatten_neighbours_for(node) + [node])
             end
           end
@@ -54,7 +54,7 @@ module VersatileDiamond
             end
 
             non_flatten_groups.each do |group|
-              combine_similar_relations(group, &store_result)
+              similar_combine_relations(group, &store_result)
             end
 
             @_final_graph = collaps_similar_key_nodes(result)
@@ -348,12 +348,12 @@ module VersatileDiamond
           #
           # @param [Array] group of nodes each of which could combine similar relations
           #   and neighbour nodes
-          # @yield [Array, Hash] iterates each case after getting relations for each
-          #   atom from group; the first argument of block procedure is array of nodes,
-          #   which was combined when method do, but every time it array contain just
-          #   one item which is iterating atom; the second argument of block procedure
-          #   is relation parameters for neighbour nodes array
-          def combine_similar_relations(group, &block)
+          # @yield [Array, Concepts::Bond] iterates each case after getting relations
+          #   for each atom from group; the first argument of block procedure is array
+          #   of nodes, which was combined when method do, but every time it array
+          #   contain just one item which is iterating atom; the second argument of
+          #   block procedure is relation parameters for neighbour nodes array
+          def similar_combine_relations(group, &block)
             group.each do |node|
               nodes = [node]
               rels = small_graph[node]

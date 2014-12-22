@@ -290,6 +290,8 @@ module VersatileDiamond
           same_groups.values.first.map(&:first)
         end
 
+        return unless next_atoms.map(&:to_set).reduce(:&).empty?
+
         next_atoms.transpose.each do |diff_side_atoms|
           deep_small_pairs = diff_side_atoms.map { |a| other_side(main_spec, a) }
           deep_small_specs, deep_small_atoms = deep_small_pairs.transpose
@@ -299,7 +301,7 @@ module VersatileDiamond
             raise 'Incorrect atoms of reactants'
           end
 
-          # TODO: check for not diamond lattice the fact that position changes to cross
+          # TODO: checkthe fact that position changes to cross for not diamond lattice
           reaction.position_between(*deep_small_pairs, position.cross)
         end
       end
