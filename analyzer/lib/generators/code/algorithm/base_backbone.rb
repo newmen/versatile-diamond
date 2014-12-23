@@ -47,20 +47,20 @@ module VersatileDiamond
 
             until nodes_queue.empty?
               node = nodes_queue.shift
-              next_nodes = node_to_nodes[node]
-              next_nodes_set = next_nodes.to_set
-              next if visited_key_nodes.include?(next_nodes_set)
+              node_to_nodes[node].each do |next_nodes|
+                next_nodes_set = next_nodes.to_set
+                next if visited_key_nodes.include?(next_nodes_set)
 
+                visited_key_nodes << next_nodes_set
+                rels = directed_graph[next_nodes]
+                next unless rels
 
-              visited_key_nodes << next_nodes_set
-              rels = directed_graph[next_nodes]
-              next unless rels
+                result << [next_nodes, sort_rels_by_limits_of(next_nodes, rels)]
+                next if rels.empty?
 
-              result << [next_nodes, sort_rels_by_limits_of(next_nodes, rels)]
-              next if rels.empty?
-
-              directed_graph = without_reverse(directed_graph, next_nodes)
-              nodes_queue += rels.flat_map(&:first)
+                directed_graph = without_reverse(directed_graph, next_nodes)
+                nodes_queue += rels.flat_map(&:first)
+              end
             end
 
             connected_nodes_from(directed_graph).each do |ns|
@@ -81,7 +81,10 @@ module VersatileDiamond
           def node_to_nodes
             @_node_to_nodes ||=
               collect_nodes(final_graph).each_with_object({}) do |nodes, result|
-                nodes.each { |node| result[node] ||= nodes }
+                nodes.each do |node|
+                  result[node] ||= Set.new
+                  result[node] << nodes
+                end
               end
           end
 

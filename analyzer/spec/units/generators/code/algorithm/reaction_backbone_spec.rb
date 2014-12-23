@@ -320,8 +320,8 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[cr1], [[[cr2], param_100_front]]],
-                    [[cr1, cr2], [[[amr, aml], param_100_cross]]],
-                    [[amr, aml], [[[amb], param_110_front]]],
+                    [[cr2, cr1], [[[aml, amr], param_100_cross]]],
+                    [[aml, amr], [[[amb], param_110_front]]],
                     [[amb], [[[amm], param_amorph]]]
                   ]
                 end
