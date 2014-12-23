@@ -225,7 +225,7 @@ module VersatileDiamond
 
               it_behaves_like :check_ordered_graph do
                 let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-                let(:specific_specs) { [dept_activated_methyl_on_dimer] }
+                let(:specific_specs) { [amod] }
                 let(:target_spec) { ab }
                 let(:dm) { amod.atom(:cm) }
                 let(:ordered_graph) do
@@ -239,7 +239,7 @@ module VersatileDiamond
 
               it_behaves_like :check_ordered_graph do
                 let(:base_specs) { [dept_bridge_base] }
-                let(:specific_specs) { [dept_activated_bridge] }
+                let(:specific_specs) { [ab] }
                 let(:target_spec) { amod }
                 let(:bt) { ab.atom(:ct) }
                 let(:ordered_graph) do
@@ -291,6 +291,8 @@ module VersatileDiamond
 
             describe 'in both directions with many species' do
               subject { dept_methyl_to_gap }
+              let(:specific_specs) { [amob, br1] }
+
               let(:amob) { subject.source.first }
               let(:br1) { subject.source[1] }
               let(:br2) { subject.source[2] }

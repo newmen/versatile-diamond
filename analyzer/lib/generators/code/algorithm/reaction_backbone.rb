@@ -31,12 +31,18 @@ module VersatileDiamond
           def final_graph
             return @_final_graph if @_final_graph
 
-            result = super.each_with_object({}) do |(nodes, rels), acc|
-              acc[nodes] = rels if all_of_current_specie?(nodes)
-            end
-
+            result = super.select { |nodes, _| all_of_current_specie?(nodes) }
             other_side_nodes(result).each do |nodes|
               result = extend_graph(result, nodes) unless nodes.any?(&:anchor?)
+            end
+
+            grouped_nodes = nodes_set(super)
+            result_nodes = nodes_set(result)
+
+            # if need to extend
+            if result_nodes.proper_subset?(grouped_nodes)
+              nodes = super.keys.find { |k| k.to_set == result_nodes }
+              result = extend_graph(result, nodes) if nodes
             end
 
             @_final_graph = result
@@ -62,7 +68,7 @@ module VersatileDiamond
           # @param [Array] nodes which will be checked
           # @return [Boolean] are all nodes belongs to target specie or not
           def all_of_current_specie?(nodes)
-            nodes.all? { |node| node.uniq_specie.original == @specie }
+            nodes.all? { |node| node.dept_spec.spec == @specie.spec.spec }
           end
 
           # Extends passed graph from passed nodes
@@ -102,17 +108,24 @@ module VersatileDiamond
           #   parameters hash
           def next_ways(graph, nodes)
             nodes_set = nodes.to_set
-            prev_nodes = collect_nodes(graph).flatten.to_set
+            prev_nodes = nodes_set(graph)
             anchors_set = prev_nodes.select { |n| small_nodes.include?(n) }.to_set
             key_nodes = anchors_set & nodes_set
             key_nodes = nodes_set if key_nodes.empty?
 
             key_nodes.reduce([]) do |acc, node|
               rels = grouped_nodes_graph.big_graph[node].reject do |n, _|
-                prev_nodes.include?(n) || n.uniq_specie != node.uniq_specie
+                prev_nodes.include?(n)
               end
               rels.empty? ? acc : acc + rels.map { |n, r| [node, n, r.params] }
             end
+          end
+
+          # Collects the set of all used nodes from passed graph
+          # @param [Hash] graph from which the nodes will be collected
+          # @return [Set] the set of all used nodes
+          def nodes_set(graph)
+            collect_nodes(graph).flatten.to_set
           end
 
           # Gets the nodes list which uses in relations of passed graph
