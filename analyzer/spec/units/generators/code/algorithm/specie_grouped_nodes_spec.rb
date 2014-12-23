@@ -132,7 +132,7 @@ module VersatileDiamond
             subject { dept_activated_methyl_on_incoherent_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[cb], [cm]] }
+            let(:flatten_face_grouped_atoms) { [[cb, cm]] }
             let(:nodes_list) do
               [
                 [UniqueSpecie, cm],

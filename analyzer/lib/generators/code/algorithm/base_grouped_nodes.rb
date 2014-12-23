@@ -27,7 +27,7 @@ module VersatileDiamond
           # TODO: must be private
           def flatten_face_grouped_nodes
             @_flatten_face_grouped_nodes ||= main_keys.groups do |node|
-              Set.new(flatten_neighbours_for(node) + [node])
+              (flatten_neighbours_for(node) + [node]).map(&:uniq_specie).to_set
             end
           end
 
@@ -132,6 +132,15 @@ module VersatileDiamond
             small_graph[node].reject { |n, r| flatten_relation?(n, r) }
           end
 
+          # Gets list of relations between nodes from passed group
+          # @param [Array] group of nodes between which the relations will be gotten
+          # @return [Array] the list of relations
+          def relations_from(group)
+            group.reduce([]) do |acc, node|
+              acc + small_graph[node].select { |n, _| group.include?(n) }
+            end
+          end
+
           # Gets all flatten neighbours of passed node. Moreover, if an node has a few
           # ways for getting neighbors in flat face, then selects the most optimal.
           #
@@ -142,7 +151,8 @@ module VersatileDiamond
           def flatten_neighbours_for(node)
             flatten_nbrs = flatten_relations_of(node).map(&:first)
             if flatten_nbrs.size > 1
-              flatten_nbrs.reject { |n| alive_relation?(node, n) }
+              not_alive = flatten_nbrs.reject { |n| alive_relation?(node, n) }
+              not_alive.empty? ? flatten_nbrs : not_alive
             else
               flatten_nbrs
             end
@@ -197,6 +207,16 @@ module VersatileDiamond
             !non_flatten_relations_of(node).empty?
           end
 
+          # Checks that another nodes which available from nodes from group by small
+          # graph are presents
+          #
+          # @param [Array] group which nodes will be checked
+          # @return [Boolean] are another different nodes available from nodes of group
+          #   or not
+          def different_another_nodes?(group)
+            group.map { |n| (flatten_neighbours_for(n) + [n]).to_set }.uniq.size > 1
+          end
+
           # Verifies that all flatten relations, which passed node have relations only
           # with nodes from the passed group
           #
@@ -222,7 +242,7 @@ module VersatileDiamond
             end
 
             non_flatten_groups = flatten_face_grouped_nodes.select do |group|
-              group.any? do |node|
+              different_another_nodes?(group) || group.any? do |node|
                 dept_only_from_group = only_flatten_relations_in?(group, node)
                 dept_only_from_group || small_graph[node].empty? ||
                   (!dept_only_from_group && has_non_flatten_relation?(node))
@@ -314,8 +334,13 @@ module VersatileDiamond
           # @yeild [Array, (Array, Hash)] do for nodes and them neighbours
           def accurate_combine_relations(group, &block)
             accurate_node_groups_from(group).each do |nodes, nbrs|
-              relation = relation_between(nodes.first, nbrs.first)
-              block[nodes, [nbrs, relation.params]]
+              relation = nil
+              nodes.zip(nbrs).each do |nd, nb|
+                relation = relation_between(nd, nb)
+                break if relation
+              end
+
+              block[nodes, [nbrs, relation.params]] if relation
             end
           end
 
@@ -364,6 +389,8 @@ module VersatileDiamond
                 selected_rels =
                   if only_flatten_relations_in?(group, node)
                     rels
+                  elsif different_another_nodes?(group)
+                    relations_from(group).reject { |n, _| node == n }
                   else
                     non_flatten_relations_of(node)
                   end

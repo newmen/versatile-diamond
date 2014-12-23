@@ -12,7 +12,7 @@ module VersatileDiamond
           let(:grouped_nodes) { described_class.new(generator, reaction) }
 
           let(:big_links_method) { :links }
-          def node_to_vertex(node); [node.uniq_specie.spec.spec, node.atom] end
+          def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
           describe 'without positions && just one atom' do
             let(:flatten_face_grouped_atoms) { [[atom]] }
@@ -33,10 +33,10 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_drop }
             let(:a1) { cross_bridge_on_bridges_base.atom(:ctl) }
-            let(:a2) { cross_bridge_on_bridges_base.atom(:ctr) }
-            let(:a3) { cross_bridge_on_bridges_base.atom(:cm) }
+            let(:a2) { cross_bridge_on_bridges_base.atom(:cm) }
+            let(:a3) { cross_bridge_on_bridges_base.atom(:ctr) }
 
-            let(:flatten_face_grouped_atoms) { [[a1, a2], [a3]] }
+            let(:flatten_face_grouped_atoms) { [[a1, a2, a3]] }
             let(:nodes_list) do
               [
                 [UniqueSpecie, a1],
@@ -139,6 +139,36 @@ module VersatileDiamond
               {
                 [am1, am2] => [[[ad2, ad1], param_100_cross]],
                 [ad2, ad1] => [[[am1, am2], param_100_cross]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_methyl_to_gap }
+            let(:amob) { subject.source.first }
+            let(:br1) { subject.source[1] }
+            let(:br2) { subject.source[2] }
+
+            let(:amr) { amob.atom(:cr) }
+            let(:aml) { amob.atom(:cl) }
+            let(:cr1) { br1.atom(:cr) }
+            let(:cr2) { br2.atom(:cr) }
+
+            let(:flatten_face_grouped_atoms) { [[aml, amr], [cr2, cr1]] }
+            let(:nodes_list) do
+              [
+                [UniqueSpecie, amr],
+                [UniqueSpecie, aml],
+                [UniqueSpecie, cr1],
+                [UniqueSpecie, cr2]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [cr1] => [[[cr2], param_100_front]],
+                [cr2] => [[[cr1], param_100_front]],
+                [aml, amr] => [[[cr2, cr1], param_100_cross]],
+                [cr2, cr1] => [[[aml, amr], param_100_cross]]
               }
             end
           end

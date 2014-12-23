@@ -26,12 +26,6 @@ module VersatileDiamond
             original_specie.spec.anchors.include?(correct_atom)
           end
 
-          # Directly provides atom properties instance for current node
-          # @return [Organizers::AtomProperties] for instances that stored in node
-          def properties
-            Organizers::AtomProperties.new(dept_spec, atom)
-          end
-
           def inspect
             ":#{super}:"
           end

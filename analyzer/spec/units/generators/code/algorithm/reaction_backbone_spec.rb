@@ -49,8 +49,8 @@ module VersatileDiamond
                 let(:atoms) do
                   [
                     target_spec.atom(:ctl),
-                    target_spec.atom(:ctr),
-                    target_spec.atom(:cm)
+                    target_spec.atom(:cm),
+                    target_spec.atom(:ctr)
                   ]
                 end
               end
@@ -291,10 +291,6 @@ module VersatileDiamond
 
             describe 'in both directions with many species' do
               subject { dept_methyl_to_gap }
-              let(:base_specs) do
-                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
-              end
-
               let(:amob) { subject.source.first }
               let(:br1) { subject.source[1] }
               let(:br2) { subject.source[2] }
@@ -305,15 +301,17 @@ module VersatileDiamond
               let(:cr2) { br2.atom(:cr) }
 
               it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base] }
                 let(:target_spec) { amob }
                 let(:ordered_graph) do
                   [
-                    [[amr, aml], [[[cr1, cr2], param_100_cross]]]
+                    [[aml, amr], [[[cr2, cr1], param_100_cross]]]
                   ]
                 end
               end
 
               it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
                 let(:target_spec) { br1 }
                 let(:amb) { amob.atom(:cb) }
                 let(:amm) { amob.atom(:cm) }
