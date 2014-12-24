@@ -1,0 +1,29 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+#include <phases/crystal.h>
+using namespace vd;
+
+#include "<%= crystal_properties_file_name %>"
+
+class <%= class_name %> : public <%= crystal_properties_class_name %><Crystal>
+{
+    int _defaultSurfaceHeight;
+
+public:
+#ifndef NDEBUG
+    typedef <%= relations_class_name %><Crystal> Relations;
+#endif // NDEBUG
+
+    <%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight = <%= default_surface_height %>);
+    ~<%= class_name %>();
+
+protected:
+    void buildAtoms() final;
+    Atom *makeAtom(ushort type, ushort actives, const int3 &coords) final;
+    void bondAllAtoms() final;
+
+    void findAll() final;
+};
+
+#endif // <%= define_name %>

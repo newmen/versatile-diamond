@@ -1,0 +1,20 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+<%= head_includes %>
+
+class <%= class_name %> :
+    public <%= base_class_name %>
+{
+    typedef <%= base_class_name %> ParentType;
+
+<%= render_partial('rate_and_name.h') %>
+
+public:
+    <%= class_name %>(Atom *target) : <%= outer_base_class_name %>(target) {}
+
+    static void concretize(Atom *anchor) { ParentType::concretize<<%= class_name %>>(anchor); }
+    static void unconcretize(Atom *anchor) { ParentType::unconcretize<<%= class_name %>>(anchor); }
+};
+
+#endif // <%= define_name %>

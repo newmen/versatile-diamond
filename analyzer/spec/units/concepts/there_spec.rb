@@ -1,0 +1,180 @@
+require 'spec_helper'
+
+module VersatileDiamond
+  module Concepts
+
+    describe There do
+      let(:ab) { df_source.first }
+      let(:aib) { df_source.last }
+      let(:aib_dup) { activated_incoherent_bridge.dup }
+
+      shared_examples_for :check_positions_graph do
+        it { expect(subject.positions).to match_graph(positions) }
+      end
+
+      describe '#dup' do
+        subject { on_end.dup }
+        it { should_not == on_end }
+        it { expect(subject.where).to eq(on_end.where) }
+        it { expect(subject.positions).to eq(on_end.positions) }
+        it { expect(subject.positions.object_id).
+          not_to eq(on_end.positions.object_id) }
+
+        describe "target swapping doesn't change duplicate" do
+          before { subject.swap_target(aib, aib_dup) }
+          it { expect(subject.target_specs).not_to eq(on_end.target_specs) }
+        end
+      end
+
+      describe '#where' do
+        it { expect(on_end.where).to eq(at_end) }
+        it { expect(on_middle.where).to eq(at_middle) }
+      end
+
+      describe '#target_specs' do
+        it { expect(on_end.target_specs).to match_array([ab, aib]) }
+        it { expect(on_middle.target_specs).to match_array([ab, aib]) }
+        it { expect(there_methyl.target_specs).to eq([ab]) }
+      end
+
+      describe '#env_specs' do
+        it { expect(on_end.env_specs).to eq([dimer]) }
+        it { expect(on_middle.env_specs).to match_array([dimer, dimer]) }
+        it { expect(there_methyl.env_specs).to eq([methyl_on_bridge]) }
+      end
+
+      describe '#description' do
+        it { expect(on_end.description).to eq('at end of dimers row') }
+        it { expect(there_methyl.description).to eq('chain neighbour methyl') }
+      end
+
+      describe '#positions' do
+        it_behaves_like :check_positions_graph do
+          subject { on_end }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [aib, aib.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
+              ]
+            }
+          end
+        end
+
+        it_behaves_like :check_positions_graph do
+          subject { on_middle }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+              ],
+              [aib, aib.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross],
+                [[dimer, dimer.atom(:cr)], position_100_cross],
+              ]
+            }
+          end
+        end
+
+        it_behaves_like :check_positions_graph do
+          subject { there_methyl }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[methyl_on_bridge, methyl_on_bridge.atom(:cb)], position_100_front]
+              ]
+            }
+          end
+        end
+      end
+
+      it_behaves_like :check_specs_after_swap_source do
+        subject { on_end }
+        let(:method) { :env_specs }
+      end
+
+      describe '#similar_source' do
+        subject { on_end }
+        it { expect(subject.similar_source(dimer, nil)).to eq(dimer) }
+        it { expect(subject.similar_source(dimer.dup, nil)).to be_nil}
+        it { expect(subject.similar_source(dimer, dimer)).to be_nil }
+        it { expect(subject.similar_source(bridge_base, nil)).to be_nil }
+
+        it { expect(subject.similar_source(ab, nil)).to eq(ab) }
+        it { expect(subject.similar_source(ab.dup, nil)).to be_nil}
+        it { expect(subject.similar_source(ab, ab)).to be_nil }
+      end
+
+      describe '#swap_source' do
+        it_behaves_like :check_positions_graph do
+          subject { on_end }
+          before { subject.swap_source(dimer, d_dup) }
+          let(:d_dup) { dimer.dup }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]],
+              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]]
+            }
+          end
+        end
+      end
+
+      describe '#swap_target' do
+        it_behaves_like :check_positions_graph do
+          subject { on_end }
+          before { subject.swap_target(aib, aib_dup) }
+          let(:positions) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [aib_dup, aib_dup.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
+              ]
+            }
+          end
+        end
+      end
+
+      describe '#used_atoms_of' do
+        let(:atoms) { [:cr, :cl].map { |kn| dimer.atom(kn) } }
+
+        describe 'on end' do
+          it { expect(on_end.used_atoms_of(dimer)).to match_array(atoms) }
+        end
+
+        describe 'on middle' do
+          it { expect(on_middle.used_atoms_of(dimer)).to match_array(atoms) }
+        end
+
+        describe 'there methyl' do
+          let(:spec) { methyl_on_bridge }
+          let(:atoms) { [spec.atom(:cb)] }
+          it { expect(there_methyl.used_atoms_of(spec)).to match_array(atoms) }
+        end
+      end
+
+      describe '#same?' do
+        let(:same) do
+          at_end.concretize(
+            two: [dimer, dimer.atom(:cl)], one: [dimer, dimer.atom(:cr)])
+        end
+
+        it { expect(on_end.same?(same)).to be_truthy }
+        it { expect(on_end.same?(on_middle)).to be_falsey }
+        it { expect(on_middle.same?(on_end)).to be_falsey }
+        it { expect(on_end.same?(there_methyl)).to be_falsey }
+      end
+
+      describe '#cover?' do
+        it { expect(on_end.cover?(on_middle)).to be_truthy }
+        it { expect(on_middle.cover?(on_end)).to be_falsey }
+        it { expect(there_methyl.cover?(on_end)).to be_falsey }
+      end
+    end
+
+  end
+end

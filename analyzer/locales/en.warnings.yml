@@ -1,0 +1,11 @@
+en:
+  warning_messages:
+    main: "Warning!"
+    skipped: "skipped"
+
+  position:
+    duplicate: "Duplication of position face: %{face}, direction: %{dir}"
+    atom_already_unfixed: "Atom %{atom} of specie %{spec} before was unfixed, but now it is incoherent"
+
+  some_checker:
+    warning: "Test %{param}"

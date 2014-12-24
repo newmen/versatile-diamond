@@ -1,0 +1,13 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+#include <phases/crystal_atoms_iterator.h>
+using namespace vd;
+
+<%= head_includes %>
+
+class <%= class_name %> : public CrystalAtomsIterator<<%= lattice_class_name %>>
+{
+};
+
+#endif // <%= define_name %>

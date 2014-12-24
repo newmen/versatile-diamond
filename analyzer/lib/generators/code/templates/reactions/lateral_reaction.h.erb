@@ -1,0 +1,18 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+<%= head_includes %>
+
+class <%= class_name %> :
+    public <%= base_class_name %>
+{
+<%= render_partial('rate_and_name.h') %>
+
+public:
+    template <class... Args> <%= class_name %>(Args... args) :
+        <%= outer_base_class_name %>(args...) {}
+
+    void createUnconcreted(LateralSpec *removableSpec) override;
+};
+
+#endif // <%= define_name %>

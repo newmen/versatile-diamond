@@ -1,0 +1,29 @@
+#ifndef ATOM_BUILDER_H
+#define ATOM_BUILDER_H
+
+#include <vector>
+#include <atoms/lattice.h>
+using namespace vd;
+
+<%= head_includes %>
+
+class AtomBuilder
+{
+public:
+<% combinations.each do |atom, lattice| %>
+    Atom *<%= method_name(atom, lattice) %>(ushort type, ushort actives<%= lattice && ', Crystal *crystal, const int3 &coords' %>) const
+    {
+        return specify(new <%= atom.class_name %>(type, actives, <%= lattice ? 'new Lattice(crystal, coords)' : '(Lattice *)nullptr)' %>);
+    }
+
+<% end %>
+
+private:
+    Atom *specify(Atom *atom) const
+    {
+        atom->specifyType();
+        return atom;
+    }
+};
+
+#endif // ATOM_BUILDER_H

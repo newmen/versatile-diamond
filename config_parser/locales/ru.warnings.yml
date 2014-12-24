@@ -1,7 +1,0 @@
-ru:
-  warning_messages:
-    main: "Внимание!"
-    skipped: "пропущено"
-
-  position:
-    duplicate: "Обнаружен дубликат положения в плоскости: %{face} и направлении: %{dir}"

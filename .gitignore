@@ -1,7 +1,33 @@
+build-*
+*.user
+*______*
+*.autosave
+*.swp
+*.d
+*.o
+*.so
+*~
+
+bin/
+cache/
+obj/
+results/
+engine/hand-generations/simple-diamond
+
+*.job
+vde-*s.o*
+vde-*s.e*
+
 .idea
+*.dump
+.bundle/
 coverage/
 
 Gemfile.lock
 
-*.dump
+*.mp4
 *.png
+*.mol
+*.sdf
+*.sls
+*.xyz

@@ -1,0 +1,33 @@
+Style/AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Style/CollectionMethods:
+  PreferredMethods:
+    detect: 'find'
+    inject: 'reduce'
+
+Style/DotPosition:
+  EnforcedStyle: trailing
+
+Style/FormatString:
+  EnforcedStyle: percent
+
+Style/LambdaCall:
+  EnforcedStyle: braces
+
+Style/LineLength:
+  Max: 87
+
+Style/PredicateName:
+  NamePrefixBlacklist:
+    - is_
+    - are_
+
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes

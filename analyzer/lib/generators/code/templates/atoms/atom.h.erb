@@ -1,0 +1,16 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+<%= head_includes %>
+
+class <%= class_name %> : public SpecifiedAtom<<%= valence %>>
+{
+    static const char __name[];
+
+public:
+    <%= class_name %>(ushort type, ushort actives, Lattice *lattice) : SpecifiedAtom(type, actives, lattice) {}
+
+    const char *name() const final { return __name; }
+};
+
+#endif // <%= define_name %>

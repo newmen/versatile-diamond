@@ -1,0 +1,47 @@
+#include "<%= file_name %>.h"
+<%= body_includes %>
+
+<%= class_name %>::<%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight) :
+    <%= crystal_properties_class_name %><Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+{
+}
+
+<%= class_name %>::~<%= class_name %>()
+{
+    Finder::removeAll(atoms().data(), atoms().size());
+}
+
+void <%= class_name %>::buildAtoms()
+{
+    for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
+    {
+        makeLayer(i, <%= major_atom_index %>, <%= major_atom_actives %>);
+    }
+    makeLayer(_defaultSurfaceHeight - 1, <%= surface_atom_index %>, <%= surface_atom_actives %>);
+}
+
+void <%= class_name %>::bondAllAtoms()
+{
+    atoms().ompParallelEach([this](Atom *atom) {
+        if (!atom) return;
+        assert(atom->lattice());
+
+        int z = atom->lattice()->coords().z;
+        if (z > 0)
+        {
+            bondAround(atom);
+        }
+    });
+}
+
+Atom *<%= class_name %>::makeAtom(ushort type, ushort actives, const int3 &coords)
+{
+    AtomBuilder builder;
+    Atom *atom = builder.buildCd(type, actives, this, coords);
+    return atom;
+}
+
+void <%= class_name %>::findAll()
+{
+    Finder::initFind(atoms().data(), atoms().size());
+}

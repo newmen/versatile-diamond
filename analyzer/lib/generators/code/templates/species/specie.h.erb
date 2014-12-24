@@ -1,0 +1,25 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+<%= head_includes %>
+
+class <%= class_name %> :
+    <%= public_inheritance_from_base_classes %>
+{
+<% if render_find_algorithms? %>
+<%= render_partial('find_algorithms.h') %>
+
+public:
+<% else %>
+protected:
+<% end %>
+    <%= class_name %>(<%= constructor_arguments_str %>) :
+        <%= outer_base_call %> {}
+<% unless symmetric? && render_find_algorithms? %>
+
+public:
+<%= render_partial('name_method.h') %>
+<% end %>
+};
+
+#endif // <%= define_name %>

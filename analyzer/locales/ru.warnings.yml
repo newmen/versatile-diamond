@@ -1,0 +1,10 @@
+ru:
+  warning_messages:
+    main: "Внимание!"
+    skipped: "пропущено"
+
+  specific_spec:
+    atom_already_unfixed: "Атом %{atom} структуры %{spec} сначала был unfixed, а затем стал incoherent"
+
+  position:
+    duplicate: "Обнаружен дубликат положения в плоскости: %{face} и направлении: %{dir}"
