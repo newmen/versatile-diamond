@@ -27,7 +27,7 @@ module VersatileDiamond
 
           # Makes unit that correspond to passed nodes
           # @param [Array] nodes for which the unit will be maked
-          # @return [BaseUnit] the unit of code generation
+          # @return [SimpleUnit] the unit of code generation
           def make_unit(nodes)
             if nodes.size == 1
               create_single_atom_unit(nodes.first)
@@ -46,7 +46,7 @@ module VersatileDiamond
 
           # Creates single atom unit by one node
           # @param [Node] node by which the single atom unit will be created
-          # @return [BaseUnit] the unit for generation code that depends from
+          # @return [SimpleUnit] the unit for generation code that depends from
           #   passed node
           def create_single_atom_unit(node)
             if node.none?

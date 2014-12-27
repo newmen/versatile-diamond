@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contains several atomic units
-        class MultiAtomsUnit < BaseUnit
+        class MultiAtomsUnit < SimpleUnit
 
           def inspect
             "MASU:(#{inspect_atoms_names})"

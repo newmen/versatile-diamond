@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # The base class for algorithm builder units
+        # Provides logic for units which uses when specie find algorithm builds
         module SpecieUnitBehavior
 
           # By default assigns internal anchor atoms to some names for using its in
@@ -36,6 +36,15 @@ module VersatileDiamond
 
         private
 
+          # Compares original specie with specie from other unit
+          # @param [BaseUnit] other unit with which spec the own spec will be compared
+          # @param [Array] _ does not used
+          # @return [Boolean] are original species from current and other units same or
+          #   not
+          def same_specs?(other, *_)
+            original_spec == other.original_spec
+          end
+
           # Assigns the name of anchor atoms variable
           def assign_anchor_atoms_name!
             namer.assign(Specie::ANCHOR_ATOM_NAME, atoms)
@@ -66,6 +75,12 @@ module VersatileDiamond
           def relation_between(*pair_of_units_with_atoms)
             atoms = pair_of_units_with_atoms.map(&:last)
             original_spec.relation_between(*atoms)
+          end
+
+          # Gets the default engine framework class for parent specie
+          # @return [String] the engine framework class for parent specie
+          def specie_type
+            'ParentSpec'
           end
         end
 

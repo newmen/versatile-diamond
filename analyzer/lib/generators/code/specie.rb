@@ -14,6 +14,7 @@ module VersatileDiamond
         ANCHOR_SPECIE_NAME = 'parent'
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
+        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
         attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator
@@ -156,7 +157,6 @@ module VersatileDiamond
       private
 
         def_delegator :sequence, :delta
-        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
