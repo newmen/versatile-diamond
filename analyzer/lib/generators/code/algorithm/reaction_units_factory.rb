@@ -64,8 +64,9 @@ module VersatileDiamond
               @used_species_pairs << [node.dept_spec, node.uniq_specie]
             end
 
-            atoms_to_specs = Hash[nodes.map { |n| [n.atom, n.dept_spec] }]
-            ManyReactantsUnit.new(*default_args, atoms_to_specs, @reaction.reaction)
+            atss = Hash[nodes.map { |n| [n.atom, n.dept_spec] }]
+            atuqs = Hash[nodes.map { |n| [n.atom, n.uniq_specie] }]
+            ManyReactantsUnit.new(*default_args, atss, atuqs, @reaction.reaction)
           end
         end
 

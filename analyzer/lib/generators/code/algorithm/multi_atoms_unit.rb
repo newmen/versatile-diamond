@@ -45,7 +45,7 @@ module VersatileDiamond
           def define_nbrs_anchors_line
             if atoms.size > 1 || !namer.name_of(atoms.first)
               values = atoms.map do |a|
-                namer.name_of(a) || atom_from_specie_call(a)
+                namer.name_of(a) || atom_from_own_specie_call(a)
               end
 
               namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)

@@ -44,12 +44,22 @@ module VersatileDiamond
             define_var_line("#{target_specie.class_name} *", target_specie, atom_call)
           end
 
-          # Gets dependent spec for passed atom
+          # Gets code string with call getting atom from target specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be used for get an index from target specie
+          # @return [String] code where atom getting from target specie
+          # @override
+          def atom_from_own_specie_call(atom)
+            atom_from_specie_call(target_specie, atom)
+          end
+
+          # Gets unique specie for passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   _ does not used
-          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
-          def dept_spec_for(_)
-            original_spec
+          # @return [UniqueSpecie] the target specie
+          # @override
+          def uniq_specie_for(_)
+            target_specie
           end
         end
 

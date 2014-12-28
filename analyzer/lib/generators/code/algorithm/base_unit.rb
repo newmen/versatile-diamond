@@ -43,6 +43,15 @@ module VersatileDiamond
             atoms
           end
 
+          # Gets a cpp code string that contain call a method for check atom role
+          # @param [Array] atoms which role will be checked in code
+          # @return [String] the string with cpp condition
+          def check_role_condition
+            combine_condition(role_atoms, '&&') do |var, atom|
+              "#{var}->is(#{role(atom)})"
+            end
+          end
+
         private
 
           attr_reader :generator, :namer
@@ -50,6 +59,14 @@ module VersatileDiamond
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             namer.name_of(obj) || 'undef'
+          end
+
+          # Gets the index of passed atom from generator's classifer by original spec
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be classified
+          # @return [Integer] the role of passed atom
+          def role(atom)
+            generator.classifier.index(dept_spec_for(atom), atom)
           end
         end
 

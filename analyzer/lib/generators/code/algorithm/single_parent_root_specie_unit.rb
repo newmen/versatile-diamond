@@ -48,8 +48,8 @@ module VersatileDiamond
           #   parent specie
           # @return [String] code where atom getting from parent specie
           # @override
-          def atom_from_specie_call(atom)
-            super(parent_specie, twin(atom))
+          def atom_from_specie_call(specie, atom)
+            super(specie, twin(atom))
           end
 
           # Prepare the the passed atom to correspond twin of target parent specie

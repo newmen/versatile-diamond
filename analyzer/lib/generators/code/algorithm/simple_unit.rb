@@ -18,15 +18,6 @@ module VersatileDiamond
             @original_spec = original_spec
           end
 
-          # Checks that atom has a bond like the passed
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which relations in current specie will be checked
-          # @param [Concepts::Bond] bond which existance will be checked
-          # @return [Boolean] is atom uses bond in current specie or not
-          def use_bond?(atom, bond)
-            original_spec.relations_of(atom).any? { |r| r == bond }
-          end
-
         protected
 
           attr_reader :original_spec
@@ -54,12 +45,28 @@ module VersatileDiamond
             namer.name_of(target_atom)
           end
 
-          # Gets the index of passed atom from generator's classifer by original spec
+          # Gets dependent spec for passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be classified
-          # @return [Integer] the role of passed atom
-          def role(atom)
-            generator.classifier.index(original_spec, atom)
+          #   _ does not used
+          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
+          def dept_spec_for(_)
+            original_spec
+          end
+
+          # Gets original specie for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [Specie] the internal original specie
+          def uniq_specie_for(_)
+            original_specie
+          end
+
+          # By default doesn't need to define anchor atoms for each crystal neighbours
+          # operation
+          #
+          # @return [String] the empty string
+          def define_nbrs_specie_anchors_lines
+            ''
           end
         end
 

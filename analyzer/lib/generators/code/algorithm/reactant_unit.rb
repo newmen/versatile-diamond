@@ -112,7 +112,7 @@ module VersatileDiamond
           def ext_atoms_condition(&block)
             compares = atoms.map do |atom|
               op = ext_atom?(atom) ? '!=' : '=='
-              "#{namer.name_of(atom)} #{op} #{atom_from_specie_call(atom)}"
+              "#{namer.name_of(atom)} #{op} #{atom_from_own_specie_call(atom)}"
             end
 
             code_condition(compares.join(' && '), &block)
@@ -137,15 +137,6 @@ module VersatileDiamond
             super(atom, target_specie, atom)
           end
 
-          # Gets code string with call getting atom from target specie
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be used for get an index from target specie
-          # @return [String] code where atom getting from target specie
-          # @override
-          def atom_from_specie_call(atom)
-            super(target_specie, atom)
-          end
-
           # Gets code line with defined anchors atoms for each neighbours operation
           # @return [String] the code line with defined achor atoms variable
           def define_nbrs_specie_anchors_lines
@@ -153,11 +144,11 @@ module VersatileDiamond
           end
 
           # Also checks the relations between atoms of other unit
-          # @param [String] _condition_str see at #super same argument
+          # @param [String] _ does not used
           # @param [BaseUnit] other see at #super same argument
           # @return [String] the extended condition
           # @override
-          def append_check_other_relations(_condition_str, other)
+          def append_check_other_relations(_, other)
             other_atoms = other.role_atoms
             ops = other_atoms.combination(2).map { |pair| [other, other].zip(pair) }
             append_check_bond_conditions(super, ops)
