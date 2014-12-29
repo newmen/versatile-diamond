@@ -307,10 +307,13 @@ module VersatileDiamond
                 <<-CODE
     Atom *anchor = target->atom(2);
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{role_cr}) && neighbour1 != target->atom(1))
+        if (neighbour1->is(#{role_cr}))
         {
-            SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCRH>(#{role_cr}) };
-            create<ForwardHydrogenAbsFromGap>(targets);
+            if (neighbour1 != target->atom(1))
+            {
+                SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCRH>(#{role_cr}) };
+                create<ForwardHydrogenAbsFromGap>(targets);
+            }
         }
     });
                 CODE

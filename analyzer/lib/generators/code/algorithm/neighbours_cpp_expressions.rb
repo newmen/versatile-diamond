@@ -160,7 +160,9 @@ module VersatileDiamond
                 end
 
               condition_str = append_check_other_relations(condition_str, other)
-              code_condition(condition_str, &block)
+              code_condition(condition_str) do
+                another_same_atoms_condition(other, &block)
+              end
             end
           end
 
@@ -371,6 +373,31 @@ module VersatileDiamond
             "crystalBy(#{namer.name_of(target_atom)})"
           end
 
+          # Appends other unit
+          # @param [BaseUnit] other unit which will be appended
+          # @return [Array] the appending reault
+          def append_other(other)
+            append_units(other, atoms.zip(other.atoms))
+          end
+
+          # Gets condition where checks that some atoms of current unit is not same as
+          # atoms in other unit
+          #
+          # @param [BaseUnit] other unit with which atoms comparing will do
+          # @yield should returns the internal code for body of condition
+          # @return [String] cpp code string with condition if it need
+          def another_same_atoms_condition(other, &block)
+            parts = reduce_if_relation(append_other(other)) do |acc, usp, asp, rel|
+              cur, oth = usp
+              linked_atom = cur.same_linked_atom(oth, *asp, rel)
+              if linked_atom
+                acc << cur.not_own_atom_condition(linked_atom, *asp)
+              end
+            end
+
+            parts.empty? ? block.call : code_condition(parts.join(' && '), &block)
+          end
+
           # Appends condition of checking relations to atoms of other unit from current
           # @param [String] condition_str the string which will be extended by
           #   additional condition
@@ -378,8 +405,7 @@ module VersatileDiamond
           #   checked
           # @return [String] the extended condition
           def append_check_other_relations(condition_str, other)
-            units_with_atoms = append_units(other, atoms.zip(other.atoms))
-            append_check_bond_conditions(condition_str, units_with_atoms)
+            append_check_bond_conditions(condition_str, append_other(other))
           end
 
           # Appends condition of checking bond exsistance between each atoms in passed
@@ -390,26 +416,29 @@ module VersatileDiamond
           #   bond existatnce will be checked
           # @return [String] the extended condition
           def append_check_bond_conditions(original_condition, units_with_atoms)
-            parts = units_with_atoms.each_with_object([]) do |pairs, acc|
-              relation = relation_between(*pairs)
-              next unless relation
-
-              units_pair, atoms_pair = pairs.transpose
-              cb_call = check_bond_call(*atoms_pair)
+            parts = reduce_if_relation(units_with_atoms) do |acc, usp, asp, relation|
+              cb_call = check_bond_call(*asp)
               if relation.bond?
                 acc << cb_call
-              elsif any_uses_bond?(pairs, relation.params)
+              elsif any_uses_bond?(usp.zip(asp), relation.params)
                 acc << "!#{cb_call}"
-              else
-                curr, other = units_pair
-                linked_atom = curr.same_linked_atom(other, *atoms_pair, relation)
-                if linked_atom
-                  acc << curr.not_own_atom_condition(linked_atom, *atoms_pair)
-                end
               end
             end
 
             ([original_condition] + parts).join(' && ')
+          end
+
+          # Iterates each real pair of atoms if relation between them is set
+          # @param [Array] units_with_atoms is the pairs of atoms between which the
+          #   relation existatnce will be checked
+          # @yield [Array, Array, Array, Concepts::Bond] do for each correct pair;
+          #   the first argument of block is accumulator variable
+          # @return [Array] the accumulation result
+          def reduce_if_relation(units_with_atoms, &block)
+            units_with_atoms.each_with_object([]) do |pairs, acc|
+              relation = relation_between(*pairs)
+              block[acc, *pairs.transpose, relation] if relation
+            end
           end
 
           # Checks that any atom from each pair are used passed relation
