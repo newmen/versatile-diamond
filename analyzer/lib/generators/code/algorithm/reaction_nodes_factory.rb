@@ -9,7 +9,6 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             super(generator)
-            @depts_cache = {}
             @uniques_cache = {}
           end
 
@@ -21,17 +20,7 @@ module VersatileDiamond
           def create_node(spec_atom)
             spec, atom = spec_atom
             specie = get_unique_specie(spec)
-            dept_spec = get_dept_spec(spec)
-            ReactantNode.new(specie.original, specie, dept_spec, atom)
-          end
-
-          def get_dept_spec(spec)
-            @depts_cache[spec] ||=
-              if spec.is_a?(Concepts::SpecificSpec)
-                Organizers::DependentSpecificSpec.new(spec)
-              else
-                Organizers::DependentBaseSpec.new(spec)
-              end
+            ReactantNode.new(specie.original, specie, atom)
           end
 
           # Makes unique specie instance from passed spec
@@ -41,7 +30,8 @@ module VersatileDiamond
           def get_unique_specie(spec)
             return @uniques_cache[spec] if @uniques_cache[spec]
             specie = specie_class(spec)
-            @uniques_cache[spec] = UniqueSpecie.new(specie, specie.spec)
+            dept_spec = specie.spec.clone_with_replace(spec)
+            @uniques_cache[spec] = UniqueSpecie.new(specie, dept_spec)
           end
         end
 

@@ -58,13 +58,9 @@ module VersatileDiamond
       # @return [Hash] the mirror
       # @override
       def mirror_to(other)
-        spec_atoms_comparer = -> _, _, a1, a2 { a1.original_same?(a2) }
-        intersec = Mcs::SpeciesComparator.first_general_intersec(
-          spec, other.spec, &spec_atoms_comparer)
-        raise 'Intersec is not full' unless other.links.size == intersec.size
-        # the raise should be because this situation can't be presented
-
-        Hash[intersec.to_a]
+        Mcs::SpeciesComparator.make_mirror(spec, other.spec) do |_, _, a1, a2|
+          a1.original_same?(a2)
+        end
       end
 
     protected

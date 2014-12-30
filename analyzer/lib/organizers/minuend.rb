@@ -86,9 +86,7 @@ module VersatileDiamond
       # @return [Array] the array of each pair of intersection or nil if intersection
       #   have not fond
       def mirror_to(spec)
-        args = [self, spec, { collaps_multi_bond: true }]
-        first = Mcs::SpeciesComparator.first_general_intersec(*args)
-        first && Hash[first.to_a]
+        Mcs::SpeciesComparator.make_mirror(self, spec)
       end
 
     protected

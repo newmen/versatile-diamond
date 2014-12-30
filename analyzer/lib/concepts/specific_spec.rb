@@ -257,8 +257,7 @@ module VersatileDiamond
       # Renames internal used keynames to new keynames from another base spec
       # @param [Spec] other the base spec from which keynames will gotten
       def rename_used_keynames_and_update_links(other)
-        intersec = Mcs::SpeciesComparator.first_general_intersec(spec, other)
-        mirror = Hash[intersec.to_a]
+        mirror = Mcs::SpeciesComparator.make_mirror(spec, other)
 
         new_specific_atoms = {}
         @specific_atoms.each do |old_keyname, atom|

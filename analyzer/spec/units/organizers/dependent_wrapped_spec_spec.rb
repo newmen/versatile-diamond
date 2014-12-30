@@ -4,7 +4,7 @@ module VersatileDiamond
   module Organizers
 
     describe DependentWrappedSpec, type: :organizer do
-      subject { described_class.new(bridge_base) }
+      subject { dept_bridge_base }
 
       describe '#initialize' do
         describe '#straighten_graph' do
@@ -24,14 +24,41 @@ module VersatileDiamond
         it { expect(subject.external_bonds).to eq(subject.spec.external_bonds) }
       end
 
+      describe '#clone_with_replace' do
+        let(:new_spec) { bridge_base_dup }
+        let(:clone) { subject.clone_with_replace(new_spec) }
+        let(:child) { dept_dimer_base }
+        before { subject.store_child(child) }
+
+        it { expect(clone).to be_a(described_class) }
+        it { expect(clone).not_to eq(subject) }
+        it { expect(subject).not_to eq(clone) }
+
+        it { expect(subject.spec).not_to eq(new_spec) }
+        it { expect(clone.spec).to eq(new_spec) }
+        it { expect(clone.children).to eq([child]) }
+        it { expect(clone.reactions).to be_empty }
+        it { expect(clone.theres).to be_empty }
+
+        describe 'different atoms' do
+          let(:atoms) do
+            clone.links.reduce([]) do |acc, (atom, rels)|
+              acc + [atom] + rels.map(&:first)
+            end
+          end
+
+          it { expect(atoms.uniq.select { |a| new_spec.keyname(a) }.size).to eq(3) }
+        end
+      end
+
       describe '#anchors' do
         it { expect(subject.anchors).to match_array(subject.spec.links.keys) }
       end
 
       describe '#source? && #complex?' do
         describe 'without parents and childrens' do
-          it { expect(dept_bridge_base.source?).to be_truthy }
-          it { expect(dept_bridge_base.complex?).to be_falsey }
+          it { expect(subject.source?).to be_truthy }
+          it { expect(subject.complex?).to be_falsey }
         end
 
         describe 'one parent' do

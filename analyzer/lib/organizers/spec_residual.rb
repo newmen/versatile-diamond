@@ -26,6 +26,18 @@ module VersatileDiamond
         @atoms_to_parents = atoms_to_parents
       end
 
+      # Clones the current instance and replaces value of internal owner variable and
+      # also changes internal hashes where uses the atoms of old owner spec
+      #
+      # @param [DependentWrappedSpec] owner the new value of owner variable
+      # @param [Hash] mirror of old atoms to new atoms
+      # @return [SpecResidual] the clone of current instance
+      def clone_with_replace_by(owner, mirror)
+        result = self.dup
+        result.replace_owner(owner, mirror)
+        result
+      end
+
       # Makes correct difference with other spec
       # @param [DependentWrappedSpec] other see at #super same argument
       # @return [SpecResidual] spec residual that contains current instance and
@@ -62,6 +74,22 @@ module VersatileDiamond
     protected
 
       attr_reader :atoms_to_parents, :owner
+
+      # Replaces the value of internal owner variable and change old owner atoms in
+      # interhal hashes
+      #
+      # @param [DependentWrappedSpec] owner see at #clone_with_replace_by same argument
+      # @param [Hash] mirror see at #clone_with_replace_by same argument
+      def replace_owner(owner, mirror)
+        @owner = owner
+        @links = @links.each_with_object({}) do |(atom, rels), acc|
+          acc[mirror[atom]] = rels.map { |a, r| [mirror[a], r] }
+        end
+
+        @atoms_to_parents = @atoms_to_parents.each_with_object({}) do |(a, ps), acc|
+          acc[mirror[a]] = ps.map { |p| p.clone_with_replace_by(owner, mirror) }
+        end
+      end
 
     private
 

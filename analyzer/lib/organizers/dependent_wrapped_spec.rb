@@ -11,11 +11,23 @@ module VersatileDiamond
       attr_reader :links
 
       # Also stores internal graph of links between used atoms
-      # @param [Array] _args the arguments of super constructor
-      def initialize(*_args)
+      # @override
+      def initialize(*)
         super
         @links = straighten_graph(spec.links)
-        @rest, @children, @reaction, @there = nil
+        @rest, @children = nil
+      end
+
+      # Clones the current instance but replace internal spec and change all atom
+      # references from it to atoms from new spec
+      #
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+      #   other_spec to which the current internal spec will be replaced
+      # @return [DependentWrappedSpec] the clone of current instance
+      def clone_with_replace(other_spec)
+        result = self.dup
+        result.replace_spec(other_spec)
+        result
       end
 
       # Gets anchors of internal specie
@@ -112,6 +124,23 @@ module VersatileDiamond
       # @param [DependentWrappedSpec] child which will be deleted
       def remove_child(child)
         @children.delete(child)
+      end
+
+      # Replaces value of internal spec variable and changes all another internal
+      # variables which are dependent from atoms of old spec
+      #
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+      #   other_spec see at #replace_spec same argument
+      def replace_spec(other_spec)
+        mirror = Mcs::SpeciesComparator.make_mirror(spec, other_spec)
+
+        @rest = @rest.clone_with_replace_by(self, mirror) if @rest
+        @links = @links.each_with_object({}) do |(atom, rels), acc|
+          acc[mirror[atom]] = rels.map { |a, r| [mirror[a], r] }
+        end
+
+        # directly setup the base class variable
+        @spec = other_spec
       end
 
     private
