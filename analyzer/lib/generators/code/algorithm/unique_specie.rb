@@ -11,8 +11,10 @@ module VersatileDiamond
 
           # Initializes unique specie
           # @param [Specie] original_specie the target code generator
-          # @param [Organizers::ProxyParentSpec] proxy_spec the original proxy parent
-          #   spec by which was created current instance
+          # @param [Organizers::DependentWrappedSpec | Organizers::ProxyParentSpec]
+          #   proxy_spec the original proxy parent spec (for species case) or clone
+          #   of depependent spec (for reactions case) by which was created current
+          #   instance
           def initialize(original_specie, proxy_spec)
             super(original_specie)
             @proxy_spec = proxy_spec

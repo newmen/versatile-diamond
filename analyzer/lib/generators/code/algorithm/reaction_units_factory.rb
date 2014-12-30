@@ -44,7 +44,7 @@ module VersatileDiamond
           def make_single_unit(nodes)
             dept_spec = nodes.first.dept_spec
             unique_specie = nodes.first.uniq_specie
-            @used_species_pairs << [dept_spec, unique_specie]
+            @used_species_pairs << unique_specie
 
             args = default_args + [
               dept_spec,
@@ -60,13 +60,9 @@ module VersatileDiamond
           # @param [Array] nodes from which the unit will be created
           # @return [ReactantUnit] which contains many unique specie
           def make_multi_unit(nodes)
-            nodes.each do |node|
-              @used_species_pairs << [node.dept_spec, node.uniq_specie]
-            end
-
-            atss = Hash[nodes.map { |n| [n.atom, n.dept_spec] }]
-            atuqs = Hash[nodes.map { |n| [n.atom, n.uniq_specie] }]
-            ManyReactantsUnit.new(*default_args, atss, atuqs, @reaction.reaction)
+            @used_species_pairs += nodes.map(&:uniq_specie)
+            atoms_to_species = Hash[nodes.map { |n| [n.atom, n.uniq_specie] }]
+            ManyReactantsUnit.new(*default_args, atoms_to_species, @reaction.reaction)
           end
         end
 

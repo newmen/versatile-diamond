@@ -142,6 +142,56 @@ module VersatileDiamond
           def define_nbrs_specie_anchors_lines
             define_nbrs_anchors_line
           end
+
+          # Appends other unit
+          # @param [BaseUnit] other unit which will be appended
+          # @return [Array] the appending reault
+          # @override
+          def append_other(other)
+            super + other.self_with_atoms_combination
+          end
+
+          # Gets condition where checks that some atoms of current unit is not same as
+          # atoms in other unit
+          #
+          # @param [Array] units_with_atoms is the pairs of atoms between which the
+          #   bond existatnce will be checked
+          # @yield should returns the internal code for body of condition
+          # @return [String] cpp code string with condition if it need
+          def same_atoms_condition(units_with_atoms, &block)
+            parts = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
+              cur, oth = usp
+              linked_atom = cur.same_linked_atom(oth, *asp, rel)
+              if linked_atom
+                acc << cur.not_own_atom_condition(linked_atom, *asp)
+              end
+            end
+
+            parts.empty? ? block.call : code_condition(parts.join(' && '), &block)
+          end
+
+          # Makes conditions block which will be placed into eachNeighbour lambda call
+          # @param [String] condition_str the original condition string which will be
+          #    extended
+          # @param [BaseUnit] other unit which will be checked in conditions
+          # @yield should return cpp code string of conditions body
+          # @return [String] the string with cpp code
+          def each_nbrs_condition(condition_str, other, &block)
+            units_with_atoms = append_other(other)
+            acnd_str = append_check_bond_conditions(condition_str, units_with_atoms)
+            code_condition(acnd_str) do
+              same_atoms_condition(units_with_atoms, &block)
+            end
+          end
+
+          # Gets unique specie for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [UniqueSpecie] the target specie
+          # @override
+          def uniq_specie_for(_)
+            target_specie
+          end
         end
 
       end

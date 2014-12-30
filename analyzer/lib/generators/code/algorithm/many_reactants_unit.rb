@@ -10,14 +10,13 @@ module VersatileDiamond
           # Initializes the simple unit of code builder algorithm
           # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
-          # @param [Hash] atss the mirror of atoms to correspond dependent specs
-          # @param [Hash] atuqs the mirror of atoms to correspond unique species
+          # @param [Hash] atoms_to_species the mirror of atoms to correspond unique
+          #   species
           # @param [DependentSpecReaction] dept_reaction by which the relations between
           #   atoms will be checked
-          def initialize(generator, namer, atss, atuqs, dept_reaction)
-            super(generator, namer, atss.keys)
-            @atoms_to_specs = atss
-            @atoms_to_uniq_species = atuqs
+          def initialize(generator, namer, atoms_to_species, dept_reaction)
+            super(generator, namer, atoms_to_species.keys)
+            @atoms_to_species = atoms_to_species
             @dept_reaction = dept_reaction
           end
 
@@ -27,11 +26,11 @@ module VersatileDiamond
 
         private
 
-          attr_reader :atoms_to_specs, :atoms_to_uniq_species, :dept_reaction
+          attr_reader :atoms_to_species, :dept_reaction
 
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_species_atoms_names
-            strs = atoms_to_specs.map do |a, s|
+            strs = atoms_to_species.map do |a, s|
               "#{inspect_name_of(s)}:#{s.inspect}·#{inspect_name_of(a)}"
             end
             strs.join('|')
@@ -42,7 +41,7 @@ module VersatileDiamond
           #   atom for which the original dependent spec will be returned
           # @return [Organizers::DependentWrappedSpec] the internal dependent spec
           def dept_spec_for(atom)
-            atoms_to_specs[atom]
+            uniq_specie_for(atom).proxy_spec
           end
 
           # Gets unique specie for passed atom
@@ -50,7 +49,7 @@ module VersatileDiamond
           #   _ does not used
           # @return [Specie] the unique specie
           def uniq_specie_for(atom)
-            atoms_to_uniq_species[atom]
+            atoms_to_species[atom]
           end
         end
 

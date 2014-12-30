@@ -53,14 +53,6 @@ module VersatileDiamond
             original_spec
           end
 
-          # Gets original specie for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [Specie] the internal original specie
-          def uniq_specie_for(_)
-            original_specie
-          end
-
           # By default doesn't need to define anchor atoms for each crystal neighbours
           # operation
           #

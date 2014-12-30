@@ -52,15 +52,6 @@ module VersatileDiamond
           def atom_from_own_specie_call(atom)
             atom_from_specie_call(target_specie, atom)
           end
-
-          # Gets unique specie for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [UniqueSpecie] the target specie
-          # @override
-          def uniq_specie_for(_)
-            target_specie
-          end
         end
 
       end

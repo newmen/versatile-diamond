@@ -16,6 +16,46 @@ module VersatileDiamond
             dept_spec_for(atom).spec
           end
 
+          # Gets the all self-atom pairs combination list
+          # @return [Array] the list of all possible combinations of self unit and
+          #    each role atom with self unit and other role atom
+          def self_with_atoms_combination
+            role_atoms.combination(2).map { |pair| [self, self].zip(pair) }
+          end
+
+          # Checks that other unit has an atom which also available by passed relation
+          # and if is truthy then returns linked atom
+          #
+          # @param [BaseUnit] other unit for which the atom second will be checked
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   own_atom the atom of current unit for which the relations will be checked
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   other_atom the atom from other unit which uses for comparing original
+          #   species
+          # @param [Concepts::Bond] relation which existance will be checked
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the atom which same as last of passed atoms and available by relation
+          def same_linked_atom(other, own_atom, other_atom, relation)
+            !same_specs?(other, own_atom, other_atom) &&
+              relation_with(own_atom, relation)
+          end
+
+          # Gets the cpp code string with comparison the passed atoms
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   linked_atom the atom from target specie which will be compared
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   own_atom the atom of current unit by which the specie will be gottne
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   neighbour_atom the atom from another specie which will be compared
+          # @return [String] the cpp code string with comparison the passed atoms
+          #   between each other
+          def not_own_atom_condition(linked_atom, own_atom, neighbour_atom)
+            specie = uniq_specie_for(own_atom)
+            specie_call = atom_from_specie_call(specie, linked_atom)
+            neighbour_atom_var_name = namer.name_of(neighbour_atom)
+            "#{neighbour_atom_var_name} != #{specie_call}"
+          end
+
         private
 
           # Compares dependent specie with specie from other unit
@@ -43,6 +83,21 @@ module VersatileDiamond
             end
 
             dept_reaction.relation_between(*pair_of_specs_atoms)
+          end
+
+          # hecks the atom linked with passed atom by passed relation
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the linked atom will be checked
+          # @param [Concepts::Bond] relation by which the linked atom will be checked
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the atom which linked with passed atom by passed relation or nil
+          def relation_with(atom, relation)
+            dept_spec = dept_spec_for(atom)
+            awr = dept_spec.relations_of(atom, with_atoms: true).find do |_, r|
+              r == relation
+            end
+
+            awr && awr.first
           end
 
           # Gets the engine framework class for reactant specie
