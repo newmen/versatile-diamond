@@ -142,17 +142,6 @@ module VersatileDiamond
           def define_nbrs_specie_anchors_lines
             define_nbrs_anchors_line
           end
-
-          # Also checks the relations between atoms of other unit
-          # @param [String] _ does not used
-          # @param [BaseUnit] other see at #super same argument
-          # @return [String] the extended condition
-          # @override
-          def append_check_other_relations(_, other)
-            other_atoms = other.role_atoms
-            ops = other_atoms.combination(2).map { |pair| [other, other].zip(pair) }
-            append_check_bond_conditions(super, ops)
-          end
         end
 
       end

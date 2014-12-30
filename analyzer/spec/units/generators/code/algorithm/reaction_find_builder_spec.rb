@@ -289,12 +289,60 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
-              subject { dept_hydrogen_abs_from_gap }
-              let(:target_spec) do
-                Organizers::DependentSpecificSpec.new(subject.source.first)
+              let(:base_specs) { [dept_bridge_base] }
+              subject { dept_methyl_to_gap }
+              let(:target_spec) { dept_extra_activated_methyl_on_bridge }
+              let(:other_spec) { dept_right_activated_bridge }
+
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchors[2] = { target->atom(2), target->atom(3) };
+    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
+        {
+            BridgeCRs specie1 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
+            if (neighbours1[1] != specie1->atom(1))
+            {
+                SpecificSpec *targets[3] = { target, specie1, neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr}) };
+                create<ForwardMethylToGap>(targets);
+            }
+        }
+    });
+                CODE
               end
-              let(:other_spec) do
-                Organizers::DependentSpecificSpec.new(subject.source.last)
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+              subject { dept_methyl_to_gap }
+              let(:target_spec) { dept_right_activated_bridge }
+              let(:other_spec) { dept_extra_activated_methyl_on_bridge }
+
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchor = target->atom(0);
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{role_cr}) && neighbour1 != target->atom(1))
+        {
+            Atom *anchors[2] = { neighbour1, anchor };
+            eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+                if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}) && !neighbours1[0]->hasBondWith(anchors[0]) && !neighbours1[1]->hasBondWith(anchors[1]))
+                {
+                    Atom *neighbour2 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                    if (neighbour2 && neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+                    {
+                        Atom *amorph1 = neighbour2->amorphNeighbour();
+                        if (amorph1->is(#{other_role_cm}))
+                        {
+                            SpecificSpec *targets[3] = { amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm}), target, neighbour1->specByRole<BridgeCRs>(#{role_cr}) };
+                            create<ForwardMethylToGap>(targets);
+                        }
+                    }
+                }
+            });
+        }
+    });
+                CODE
               end
             end
 

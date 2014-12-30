@@ -64,7 +64,6 @@ module VersatileDiamond
           # @yield should return cpp code which will be executed if target atom will
           #   be achived
           # @return [String] the cpp algorithm code
-          # TODO: not tested
           def many_to_one_condition(other, rel_params, &block)
             unless target_atom.relations_limits[rel_params] == atoms.size
               raise 'Incorrect getting one atom from many'
@@ -159,10 +158,7 @@ module VersatileDiamond
                   check_new_names(other, Hash[defined_nbrs_with_names])
                 end
 
-              condition_str = append_check_other_relations(condition_str, other)
-              code_condition(condition_str) do
-                another_same_atoms_condition(other, &block)
-              end
+              each_nbrs_condition(condition_str, other, &block)
             end
           end
 
@@ -206,6 +202,13 @@ module VersatileDiamond
             specie_call = atom_from_specie_call(specie, linked_atom)
             neighbour_atom_var_name = namer.name_of(neighbour_atom)
             "#{neighbour_atom_var_name} != #{specie_call}"
+          end
+
+          # Gets the all self-atom pairs combination list
+          # @return [Array] the list of all possible combinations of self unit and
+          #    each role atom with self unit and other role atom
+          def self_with_atoms_combination
+            role_atoms.combination(2).map { |pair| [self, self].zip(pair) }
           end
 
         private
@@ -260,6 +263,20 @@ module VersatileDiamond
               nms.join(" #{op} ")
             end
             comp_strs.join(' && ')
+          end
+
+          # Makes conditions block which will be placed into eachNeighbour lambda call
+          # @param [String] condition_str the original condition string which will be
+          #    extended
+          # @param [BaseUnit] other unit which will be checked in conditions
+          # @yield should return cpp code string of conditions body
+          # @return [String] the string with cpp code
+          def each_nbrs_condition(condition_str, other, &block)
+            units_with_atoms = append_other(other)
+            acnd_str = append_check_bond_conditions(condition_str, units_with_atoms)
+            code_condition(acnd_str) do
+              another_same_atoms_condition(units_with_atoms, &block)
+            end
           end
 
           # Gets the code which calls the atom of crystal by calculating coordinates
@@ -377,17 +394,19 @@ module VersatileDiamond
           # @param [BaseUnit] other unit which will be appended
           # @return [Array] the appending reault
           def append_other(other)
-            append_units(other, atoms.zip(other.atoms))
+            append_units(other, atoms.zip(other.atoms)) +
+              other.self_with_atoms_combination
           end
 
           # Gets condition where checks that some atoms of current unit is not same as
           # atoms in other unit
           #
-          # @param [BaseUnit] other unit with which atoms comparing will do
+          # @param [Array] units_with_atoms is the pairs of atoms between which the
+          #   bond existatnce will be checked
           # @yield should returns the internal code for body of condition
           # @return [String] cpp code string with condition if it need
-          def another_same_atoms_condition(other, &block)
-            parts = reduce_if_relation(append_other(other)) do |acc, usp, asp, rel|
+          def another_same_atoms_condition(units_with_atoms, &block)
+            parts = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
               cur, oth = usp
               linked_atom = cur.same_linked_atom(oth, *asp, rel)
               if linked_atom
@@ -396,16 +415,6 @@ module VersatileDiamond
             end
 
             parts.empty? ? block.call : code_condition(parts.join(' && '), &block)
-          end
-
-          # Appends condition of checking relations to atoms of other unit from current
-          # @param [String] condition_str the string which will be extended by
-          #   additional condition
-          # @param [BaseUnit] other the unit to atoms of which the relations will be
-          #   checked
-          # @return [String] the extended condition
-          def append_check_other_relations(condition_str, other)
-            append_check_bond_conditions(condition_str, append_other(other))
           end
 
           # Appends condition of checking bond exsistance between each atoms in passed
