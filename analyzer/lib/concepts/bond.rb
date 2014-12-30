@@ -64,7 +64,7 @@ module VersatileDiamond
       # @option [Symbol] :face the face of instance
       # @option [Symbol] :dir the direction of instance
       # @return [Boolean] it or not
-      def it?(face: face, dir: dir)
+      def it?(face: nil, dir: nil)
         @face == face && @dir == dir
       end
 

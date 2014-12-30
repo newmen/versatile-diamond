@@ -64,7 +64,6 @@ module VersatileDiamond
           # @yield should return cpp code which will be executed if target atom will
           #   be achived
           # @return [String] the cpp algorithm code
-          # TODO: not tested
           def many_to_one_condition(other, rel_params, &block)
             unless target_atom.relations_limits[rel_params] == atoms.size
               raise 'Incorrect getting one atom from many'
@@ -134,7 +133,9 @@ module VersatileDiamond
             end
           end
 
-          # Provides a basic logic for using eachNeighbours method of engine framework
+          # Gets a code which uses eachNeighbour method of engine framework and checks
+          # role of iterated neighbour atoms
+          #
           # @param [BaseUnit] other the unit with neighbour atoms to which iteration
           #   will do
           # @param [Hash] rel_params the relation parameters through which neighbours
@@ -145,17 +146,90 @@ module VersatileDiamond
             nbrs = other.atoms
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
-            define_nbrs_specie_anchors_lines +
-              code_lambda(*each_nbrs_call_args(nbrs, rel_params), &block)
+            defined_nbrs_with_names = nbrs.map { |nbr| [nbr, namer.name_of(nbr)] }
+            defined_nbrs_with_names.select!(&:last)
+            namer.erase(nbrs)
+
+            each_nbrs_lambda_call(nbrs, rel_params) do
+              condition_str =
+                if defined_nbrs_with_names.empty?
+                  other.check_role_condition
+                else
+                  check_new_names(other, Hash[defined_nbrs_with_names])
+                end
+
+              each_nbrs_condition(condition_str, other, &block)
+            end
+          end
+
+          # Checks that atom has a bond like the passed
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which relations in current specie will be checked
+          # @param [Concepts::Bond] bond which existance will be checked
+          # @return [Boolean] is atom uses bond in current specie or not
+          def use_bond?(atom, bond)
+            dept_spec_for(atom).relations_of(atom).any? { |r| r == bond }
+          end
+
+          # Checks that other unit has an atom which also available by passed relation
+          # and if is truthy then returns linked atom
+          #
+          # @param [BaseUnit] other unit for which the atom second will be checked
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   own_atom the atom of current unit for which the relations will be checked
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   other_atom the atom from other unit which uses for comparing original
+          #   species
+          # @param [Concepts::Bond] relation which existance will be checked
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the atom which same as last of passed atoms and available by relation
+          def same_linked_atom(other, own_atom, other_atom, relation)
+            !same_specs?(other, own_atom, other_atom) &&
+              position_with(own_atom, relation)
+          end
+
+          # Gets the cpp code string with comparison the passed atoms
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   linked_atom the atom from target specie which will be compared
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   own_atom the atom of current unit by which the specie will be gottne
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   neighbour_atom the atom from another specie which will be compared
+          # @return [String] the cpp code string with comparison the passed atoms
+          #   between each other
+          def not_own_atom_condition(linked_atom, own_atom, neighbour_atom)
+            specie = uniq_specie_for(own_atom)
+            specie_call = atom_from_specie_call(specie, linked_atom)
+            neighbour_atom_var_name = namer.name_of(neighbour_atom)
+            "#{neighbour_atom_var_name} != #{specie_call}"
+          end
+
+          # Gets the all self-atom pairs combination list
+          # @return [Array] the list of all possible combinations of self unit and
+          #    each role atom with self unit and other role atom
+          def self_with_atoms_combination
+            role_atoms.combination(2).map { |pair| [self, self].zip(pair) }
           end
 
         private
 
+          # Defines anchor atoms for get neighbour atoms and call eachNeighbour method
+          # @param [Array] nbrs the neighbour atoms from which the iteration will do
+          # @param [Hash] rel_params the relation parameters through which neighbours
+          #   was gotten
+          # @yield should return cpp code string of lambda body
+          # @return [String] the string with cpp code
+          def each_nbrs_lambda_call(nbrs, rel_params, &block)
+            define_nbrs_specie_anchors_lines +
+              code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
+          end
+
           # Gets the arguments for #each_nbrs_lambda internal call
-          # @param [Array] nbrs see at #each_nbrs_lambda same argument
-          # @param [Hash] rel_params see at #each_nbrs_lambda same argument
+          # @param [Array] nbrs the neighbour atoms from which the iteration will do
+          # @param [Hash] rel_params the relation parameters through which neighbours
+          #   was gotten
           # @return [Array] the array of arguments for each neighbours operation
-          def each_nbrs_call_args(nbrs, rel_params)
+          def each_nbrs_args(nbrs, rel_params)
             namer.assign_next('neighbour', nbrs)
 
             method_args = [namer.name_of(atoms), full_relation_name_ref(rel_params)]
@@ -173,12 +247,36 @@ module VersatileDiamond
             [method_name, method_args, clojure_args, [lambda_arg]]
           end
 
-          # By default doesn't need to define anchor atoms for each crystal neighbours
-          # operation
+          # Gets the conditions where new names of neighbour atoms compares with old
+          # names
           #
-          # @return [String] the empty string
-          def define_nbrs_specie_anchors_lines
-            ''
+          # @param [BaseUnit] other unit from which the neighbour atoms will be gotten
+          # @param [Hash] nbrs_with_old_names the mirror of neighbour atoms to old
+          #   names
+          # @return [String] the code string which could be used in condition expr
+          def check_new_names(other, nbrs_with_old_names)
+            nbrs = other.atoms
+            zipped_names = nbrs.map { |a| [nbrs_with_old_names[a], namer.name_of(a)] }
+            comp_strs = atoms.zip(nbrs).zip(zipped_names).map do |ats, nms|
+              uwas = append_units(other, [ats])
+              op = relation_between(*uwas.first) ? '==' : '!='
+              nms.join(" #{op} ")
+            end
+            comp_strs.join(' && ')
+          end
+
+          # Makes conditions block which will be placed into eachNeighbour lambda call
+          # @param [String] condition_str the original condition string which will be
+          #    extended
+          # @param [BaseUnit] other unit which will be checked in conditions
+          # @yield should return cpp code string of conditions body
+          # @return [String] the string with cpp code
+          def each_nbrs_condition(condition_str, other, &block)
+            units_with_atoms = append_other(other)
+            acnd_str = append_check_bond_conditions(condition_str, units_with_atoms)
+            code_condition(acnd_str) do
+              another_same_atoms_condition(units_with_atoms, &block)
+            end
           end
 
           # Gets the code which calls the atom of crystal by calculating coordinates
@@ -292,6 +390,33 @@ module VersatileDiamond
             "crystalBy(#{namer.name_of(target_atom)})"
           end
 
+          # Appends other unit
+          # @param [BaseUnit] other unit which will be appended
+          # @return [Array] the appending reault
+          def append_other(other)
+            append_units(other, atoms.zip(other.atoms)) +
+              other.self_with_atoms_combination
+          end
+
+          # Gets condition where checks that some atoms of current unit is not same as
+          # atoms in other unit
+          #
+          # @param [Array] units_with_atoms is the pairs of atoms between which the
+          #   bond existatnce will be checked
+          # @yield should returns the internal code for body of condition
+          # @return [String] cpp code string with condition if it need
+          def another_same_atoms_condition(units_with_atoms, &block)
+            parts = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
+              cur, oth = usp
+              linked_atom = cur.same_linked_atom(oth, *asp, rel)
+              if linked_atom
+                acc << cur.not_own_atom_condition(linked_atom, *asp)
+              end
+            end
+
+            parts.empty? ? block.call : code_condition(parts.join(' && '), &block)
+          end
+
           # Appends condition of checking bond exsistance between each atoms in passed
           # pairs array
           #
@@ -300,25 +425,29 @@ module VersatileDiamond
           #   bond existatnce will be checked
           # @return [String] the extended condition
           def append_check_bond_conditions(original_condition, units_with_atoms)
-            parts = units_with_atoms.each_with_object([]) do |pairs, acc|
-              relation = relation_between(*pairs)
-              next unless relation
-
-              units_pair, atoms_pair = pairs.transpose
-              cb_call = check_bond_call(*atoms_pair)
+            parts = reduce_if_relation(units_with_atoms) do |acc, usp, asp, relation|
+              cb_call = check_bond_call(*asp)
               if relation.bond?
                 acc << cb_call
-              elsif any_uses_bond?(pairs, relation.params)
+              elsif any_uses_bond?(usp.zip(asp), relation.params)
                 acc << "!#{cb_call}"
-              elsif units_pair.map { |unit| unit.original_spec }.uniq.size > 1
-                linked_atom = position_with(pairs.first.last, relation)
-                if linked_atom
-                  acc << not_own_atom_condition(linked_atom, pairs.last.last)
-                end
               end
             end
 
             ([original_condition] + parts).join(' && ')
+          end
+
+          # Iterates each real pair of atoms if relation between them is set
+          # @param [Array] units_with_atoms is the pairs of atoms between which the
+          #   relation existatnce will be checked
+          # @yield [Array, Array, Array, Concepts::Bond] do for each correct pair;
+          #   the first argument of block is accumulator variable
+          # @return [Array] the accumulation result
+          def reduce_if_relation(units_with_atoms, &block)
+            units_with_atoms.each_with_object([]) do |pairs, acc|
+              relation = relation_between(*pairs)
+              block[acc, *pairs.transpose, relation] if relation
+            end
           end
 
           # Checks that any atom from each pair are used passed relation
@@ -335,6 +464,21 @@ module VersatileDiamond
               bond = al.opposite_relation(bl, bond) unless as == atoms_pair
               us.first.use_bond?(as.first, bond)
             end
+          end
+
+          # hecks the atom linked with passed atom by passed position
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the linked atom will be checked
+          # @param [Concepts::Bond] position by which the linked atom will be checked
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the atom which linked with passed atom by passed position or nil
+          def position_with(atom, position)
+            dept_spec = dept_spec_for(atom)
+            awr = dept_spec.relations_of(atom, with_atoms: true).find do |_, r|
+              r == position
+            end
+
+            awr && awr.first
           end
         end
 
