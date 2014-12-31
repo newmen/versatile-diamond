@@ -300,7 +300,7 @@ module VersatileDiamond
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            BridgeCRs specie1 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
+            BridgeCRs *specie1 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
             if (neighbours1[1] != specie1->atom(1))
             {
                 SpecificSpec *targets[3] = { target, specie1, neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr}) };

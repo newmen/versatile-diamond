@@ -41,22 +41,29 @@ module VersatileDiamond
           end
 
           # Gets the cpp code string with comparison the passed atoms
+          # @param [UniqueSpecie] specie from which the linked atom will be got
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   linked_atom the atom from target specie which will be compared
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   own_atom the atom of current unit by which the specie will be gottne
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   neighbour_atom the atom from another specie which will be compared
           # @return [String] the cpp code string with comparison the passed atoms
           #   between each other
-          def not_own_atom_condition(linked_atom, own_atom, neighbour_atom)
-            specie = uniq_specie_for(own_atom)
+          def not_own_atom_condition(specie, linked_atom, neighbour_atom)
             specie_call = atom_from_specie_call(specie, linked_atom)
             neighbour_atom_var_name = namer.name_of(neighbour_atom)
             "#{neighbour_atom_var_name} != #{specie_call}"
           end
 
         private
+
+          # Gets the code string with getting the target specie from atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the target specie will be gotten
+          # @return [String] cpp code string with engine framework method call
+          # @override
+          def spec_by_role_call(atom)
+            super(atom, uniq_specie_for(atom), atom)
+          end
 
           # Compares dependent specie with specie from other unit
           # @param [BaseUnit] other unit with which spec the own spec will be compared

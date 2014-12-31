@@ -38,9 +38,7 @@ module VersatileDiamond
           # Gets the code line with definition of parent specie variable
           # @return [String] the definition of parent specie variable
           def define_target_specie_line
-            atom_call = spec_by_role_call(avail_anchor)
-            namer.assign_next('specie', target_specie)
-            define_var_line("#{target_specie.class_name} *", target_specie, atom_call)
+            define_specie_line(target_specie, avail_anchor)
           end
 
           # Gets code string with call getting atom from target specie

@@ -20,6 +20,14 @@ module VersatileDiamond
             @dept_reaction = dept_reaction
           end
 
+          # Gets unique specie for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [Specie] the unique specie
+          def uniq_specie_for(atom)
+            atoms_to_species[atom]
+          end
+
           def inspect
             "MRSU:(#{inspect_species_atoms_names}])"
           end
@@ -42,14 +50,6 @@ module VersatileDiamond
           # @return [Organizers::DependentWrappedSpec] the internal dependent spec
           def dept_spec_for(atom)
             uniq_specie_for(atom).proxy_spec
-          end
-
-          # Gets unique specie for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [Specie] the unique specie
-          def uniq_specie_for(atom)
-            atoms_to_species[atom]
           end
         end
 

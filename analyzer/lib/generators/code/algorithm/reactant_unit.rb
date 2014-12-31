@@ -45,6 +45,15 @@ module VersatileDiamond
               end
           end
 
+          # Gets unique specie for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [UniqueSpecie] the target specie
+          # @override
+          def uniq_specie_for(_)
+            target_specie
+          end
+
           def inspect
             "RU:(#{inspect_specie_atoms_names}])"
           end
@@ -128,15 +137,6 @@ module VersatileDiamond
             !dept_reaction.clean_links.include?([original_spec.spec, atom])
           end
 
-          # Gets the code string with getting the target specie from atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom from which the target specie will be gotten
-          # @return [String] cpp code string with engine framework method call
-          # @override
-          def spec_by_role_call(atom)
-            super(atom, target_specie, atom)
-          end
-
           # Gets code line with defined anchors atoms for each neighbours operation
           # @return [String] the code line with defined achor atoms variable
           def define_nbrs_specie_anchors_lines
@@ -159,15 +159,36 @@ module VersatileDiamond
           # @yield should returns the internal code for body of condition
           # @return [String] cpp code string with condition if it need
           def same_atoms_condition(units_with_atoms, &block)
-            parts = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
+            quads = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
               cur, oth = usp
               linked_atom = cur.same_linked_atom(oth, *asp, rel)
-              if linked_atom
-                acc << cur.not_own_atom_condition(linked_atom, *asp)
-              end
+              acc << [cur, linked_atom, *asp] if linked_atom
             end
 
-            parts.empty? ? block.call : code_condition(parts.join(' && '), &block)
+            if quads.empty?
+              block.call
+            else
+              uswas = quads.map { |unit, _, atom, _| [unit, atom] }
+              define_str = define_unknown_species(uswas) # assing names to species
+              conditions = quads.map do |u, l, t, n|
+                u.not_own_atom_condition(u.uniq_specie_for(t), l, n)
+              end
+
+              define_str + code_condition(conditions.join(' && '), &block)
+            end
+          end
+
+          # Assign names to unknown species and collects all necessary define lines
+          # @param [Array] unit_with_atoms the list of pairs where first item is unit
+          #   and second item is atom of it specie
+          # @return [String] the string with defining all uknown species from passed
+          #   list
+          def define_unknown_species(unit_with_atoms)
+            unit_with_atoms.each_with_object('') do |(unit, atom), result|
+              specie = unit.uniq_specie_for(atom)
+              next if namer.name_of(specie)
+              result << unit.define_specie_line(specie, atom)
+            end
           end
 
           # Makes conditions block which will be placed into eachNeighbour lambda call
@@ -182,15 +203,6 @@ module VersatileDiamond
             code_condition(acnd_str) do
               same_atoms_condition(units_with_atoms, &block)
             end
-          end
-
-          # Gets unique specie for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [UniqueSpecie] the target specie
-          # @override
-          def uniq_specie_for(_)
-            target_specie
           end
         end
 
