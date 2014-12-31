@@ -31,7 +31,7 @@ module VersatileDiamond
           smb = collaps_multi_bond
 
           unless block_given?
-            # because order of intersections should be contant
+            # because order of intersections should be constant
             @@_intersec_cache ||= {}
             key = [first, second, smb]
             return @@_intersec_cache[key] if @@_intersec_cache[key]

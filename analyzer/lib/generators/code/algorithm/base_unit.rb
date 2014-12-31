@@ -10,6 +10,7 @@ module VersatileDiamond
           include CommonCppExpressions
           include NeighboursCppExpressions
           include SpecieCppExpressions
+          include AtomCppExpressions
 
           # Initializes the empty unit of code builder algorithm
           # @param [EngineCode] generator the major code generator

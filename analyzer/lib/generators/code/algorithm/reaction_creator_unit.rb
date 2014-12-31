@@ -7,15 +7,13 @@ module VersatileDiamond
         # engine framework method for create a reaction which was found
         class ReactionCreatorUnit
           include CommonCppExpressions
+          include AtomCppExpressions
 
           # Initializes the creator
-          # @param [Organizers::AtomClassifier] classifier for get the role of atom
-          #   in undefined species
           # @param [NameRemember] namer the remember of using names of variables
           # @param [TypicalReaction] reaction which uses in current building algorithm
           # @param [Array] species the list of all previously defined unique species
-          def initialize(classifier, namer, reaction, species)
-            @classifier = classifier
+          def initialize(namer, reaction, species)
             @namer = namer
             @reaction = reaction
             @species = species.sort
@@ -55,10 +53,7 @@ module VersatileDiamond
           # @return [String] the string of cpp code with specByRole call
           def spec_by_role_call(specie)
             atom = atom_of(specie)
-            atom_var_name = namer.name_of(atom)
-            specie_class_name = specie.class_name
-            atom_role = @classifier.index(specie.proxy_spec, atom)
-            "#{atom_var_name}->specByRole<#{specie_class_name}>(#{atom_role})"
+            super(atom, specie, atom)
           end
 
           # Gets the line with definition of target species array variable

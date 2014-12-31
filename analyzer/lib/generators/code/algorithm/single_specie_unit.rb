@@ -6,7 +6,6 @@ module VersatileDiamond
         # Unit for bulding code that depends from specie
         # @abstract
         class SingleSpecieUnit < MultiAtomsUnit
-          include SmartAtomCppExpressions
           include SymmetricCppExpressions
 
           # Also remember the unique parent specie

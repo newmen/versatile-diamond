@@ -136,7 +136,7 @@ module VersatileDiamond
 
         @rest = @rest.clone_with_replace_by(self, mirror) if @rest
         @links = @links.each_with_object({}) do |(atom, rels), acc|
-          acc[mirror[atom]] = rels.map { |a, r| [mirror[a], r] }
+          acc[mirror[atom]] = rels.map { |a, r| [mirror[a] || a, r] }
         end
 
         # directly setup the base class variable

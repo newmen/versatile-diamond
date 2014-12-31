@@ -20,6 +20,16 @@ module VersatileDiamond
             @proxy_spec = proxy_spec
           end
 
+          %i(index role).each do |name|
+            # Gets correct #{name} of atom in original atoms sequence
+            # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+            #   atom the #{name} for which will be gotten
+            # @return [Integer] the #{name} of atom
+            define_method(name) do |atom|
+              original.send(name, mirror[atom])
+            end
+          end
+
           # Compares two unique specie that were initially high and then a small
           # @param [UniqueSpecie] other comparable specie
           # @return [Integer] the comparing result
@@ -37,6 +47,14 @@ module VersatileDiamond
           # @return [Boolean] false
           def scope?
             false
+          end
+
+        private
+
+          # Gets the mirror from proxy spec to original dependent spec
+          # @return [Hash] the mirror from proxy spec to original spec
+          def mirror
+            Mcs::SpeciesComparator.make_mirror(proxy_spec, original.spec)
           end
         end
 

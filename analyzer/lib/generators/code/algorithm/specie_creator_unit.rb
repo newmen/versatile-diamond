@@ -8,7 +8,7 @@ module VersatileDiamond
         class SpecieCreatorUnit
           include CommonCppExpressions
           include MultiParentSpeciesCppExpressions
-          include SmartAtomCppExpressions
+          include AtomCppExpressions
           extend Forwardable
 
           # Initializes the creator
