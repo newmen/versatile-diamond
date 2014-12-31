@@ -180,8 +180,29 @@ module VersatileDiamond
           # @yield should return cpp code string of lambda body
           # @return [String] the string with cpp code
           def each_nbrs_lambda_call(nbrs, rel_params, &block)
-            define_nbrs_specie_anchors_lines +
+            define_nbrs_specie_anchors_lines + define_anchors_array_line +
               code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
+          end
+
+          # By default doesn't need to define anchor atoms for each crystal neighbours
+          # operation
+          #
+          # @return [String] the empty string
+          def define_nbrs_specie_anchors_lines
+            ''
+          end
+
+          # Defines atoms array variable for iterating from them on crystall lattice
+          # @return [String] the line with defined atoms array variable it it need
+          def define_anchors_array_line
+            if atoms.size > 1 && !namer.array?(atoms)
+              old_names = atoms.map { |a| namer.name_of(a) }
+              namer.erase(atoms)
+              namer.assign_next('anchor', atoms)
+              define_var_line('Atom *', atoms, old_names)
+            else
+              ''
+            end
           end
 
           # Gets the arguments for #each_nbrs_lambda internal call

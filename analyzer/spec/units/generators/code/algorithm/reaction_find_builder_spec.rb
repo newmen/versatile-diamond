@@ -320,26 +320,29 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(0);
+    Atom *anchor = target->atom(2);
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{role_cr}) && neighbour1 != target->atom(1))
+        if (neighbour1->is(#{role_cr}))
         {
-            Atom *anchors[2] = { neighbour1, anchor };
-            eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-                if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}) && !neighbours1[0]->hasBondWith(anchors[0]) && !neighbours1[1]->hasBondWith(anchors[1]))
-                {
-                    Atom *neighbour2 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
-                    if (neighbour2 && neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+            if (neighbour1 != target->atom(1))
+            {
+                Atom *anchors1[2] = { neighbour1, anchor };
+                eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
+                    if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
                     {
-                        Atom *amorph1 = neighbour2->amorphNeighbour();
-                        if (amorph1->is(#{other_role_cm}))
+                        Atom *neighbour2 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                        if (neighbour2 && neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                         {
-                            SpecificSpec *targets[3] = { amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm}), target, neighbour1->specByRole<BridgeCRs>(#{role_cr}) };
-                            create<ForwardMethylToGap>(targets);
+                            Atom *amorph1 = neighbour2->amorphNeighbour();
+                            if (amorph1->is(#{other_role_cm}))
+                            {
+                                SpecificSpec *targets[3] = { amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm}), anchors1[0]->specByRole<BridgeCRs>(#{role_cr}), target };
+                                create<ForwardMethylToGap>(targets);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     });
                 CODE

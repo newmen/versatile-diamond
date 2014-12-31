@@ -52,14 +52,6 @@ module VersatileDiamond
           def dept_spec_for(_)
             original_spec
           end
-
-          # By default doesn't need to define anchor atoms for each crystal neighbours
-          # operation
-          #
-          # @return [String] the empty string
-          def define_nbrs_specie_anchors_lines
-            ''
-          end
         end
 
       end

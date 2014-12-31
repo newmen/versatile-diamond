@@ -37,9 +37,9 @@ module VersatileDiamond
           #   make a new next name of variable
           # @param [Object] var the variable for which name will assigned
           def assign_next(single_name, var)
-            last_name = @next_names.find { |n| n =~ /^#{single_name}\d+$/ }
-            max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
             correct_name = single?(var) ? single_name : single_name.pluralize
+            last_name = @next_names.find { |n| n =~ /^#{correct_name}\d+$/ }
+            max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
             next_name = "#{correct_name}#{max_index.next}"
             @next_names.unshift(next_name)
             assign(next_name, var, plur_if_need: false)
@@ -55,7 +55,9 @@ module VersatileDiamond
             else
               check_proc = proc { |var| names[var] }
               if vars.all?(&check_proc)
-                array_name_for(vars)
+                name = array_name_for(vars)
+                raise 'Not all vars belongs to array' unless name
+                name
               elsif vars.any?(&check_proc)
                 raise 'Not for all variables in passed set the name is presented'
               else
@@ -69,6 +71,13 @@ module VersatileDiamond
           #   removed from internal cache
           def erase(vars)
             as_arr(vars).each { |var| names.delete(var) }
+          end
+
+          # Checks that passed vars have same array variable name
+          # @param [Array] vars the list of variables which will be checked
+          # @return [Boolean] are vars have same array variable name or not
+          def array?(vars)
+            !!array_name_for(vars)
           end
 
         private
@@ -110,14 +119,11 @@ module VersatileDiamond
             stored_names = vars.map { |var| names[var] }
             array_name = stored_names.first.scan(/^\w+/).first
 
-            # checking
-            stored_names.each do |name|
-              unless name.match(/^#{array_name}\[\d+\]$/)
-                raise 'Not all vars belongs to array'
-              end
+            if stored_names.any? { |name| !name.match(/^#{array_name}\[\d+\]$/) }
+              nil
+            else
+              array_name
             end
-
-            array_name
           end
 
           # Assign unique names for each variables
