@@ -15,6 +15,7 @@ module VersatileDiamond
       #         Concepts::Spec | Concepts::SpecificSpec] spec the wrappable spec
       def initialize(spec)
         @spec = spec
+        @reactions = nil
       end
 
       # Simple spec does not have links

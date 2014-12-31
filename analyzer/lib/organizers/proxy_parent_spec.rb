@@ -14,6 +14,20 @@ module VersatileDiamond
         super(original)
         @child = child
         @mirror = mirror
+
+        make_invert_mirror
+      end
+
+      # Clones the current instance and replaces value of internal child variable and
+      # also changes the mirror of child spec atoms to original spec atoms
+      #
+      # @param [DependentBaseSpec] child the new value of child variable
+      # @param [Hash] mirror of old key atoms to new key atoms
+      # @return [ProxyParentSpec] the clone of current instance
+      def clone_with_replace_by(child, mirror)
+        result = self.dup
+        result.replace_child(child, mirror)
+        result
       end
 
       # Compares current instance with other
@@ -40,10 +54,31 @@ module VersatileDiamond
       # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   the atom of child spec
       def atom_by(twin)
-        @mirror.invert[twin]
+        @invert_mirror[twin]
+      end
+
+    protected
+
+      # Replaces the value of internal child variable and change keys of internal
+      # mirror variable
+      #
+      # @param [DependentBaseSpec] child see at #clone_with_replace_by same argument
+      # @param [Hash] mirror see at #clone_with_replace_by same argument
+      def replace_child(child, mirror)
+        @child = child
+        @mirror = @mirror.each_with_object({}) do |(f, t), acc|
+          acc[mirror[f]] = t
+        end
+
+        make_invert_mirror
       end
 
     private
+
+      # Makes inverted mirror
+      def make_invert_mirror
+        @invert_mirror = @mirror.invert
+      end
 
       ['', 'clean_'].each do |prefix|
         # Counts the atom references in child spec

@@ -186,6 +186,37 @@ module VersatileDiamond
               let(:vars) { [1, 2] }
             end
           end
+
+          describe '#array?' do
+            describe 'single variable' do
+              let(:var) { :var }
+              before { subject.assign('var', var) }
+              it { expect(subject.array?([var])).to be_falsey }
+            end
+
+            describe 'many variables' do
+              let(:vars) { [1, 2] }
+              before { subject.assign('var', vars) }
+
+              describe 'same array varaible name' do
+                it { expect(subject.array?(vars)).to be_truthy }
+              end
+
+              describe 'different array varaible name' do
+                let(:others) { [3, 4] }
+                let(:array) { [vars.first, others.first] }
+                before { subject.assign('other', others) }
+                it { expect(subject.array?(array)).to be_falsey }
+              end
+
+              describe 'one var is not an array' do
+                let(:other) { :other }
+                let(:array) { [vars.first, other] }
+                before { subject.assign('other', other) }
+                it { expect(subject.array?(array)).to be_falsey }
+              end
+            end
+          end
         end
 
       end

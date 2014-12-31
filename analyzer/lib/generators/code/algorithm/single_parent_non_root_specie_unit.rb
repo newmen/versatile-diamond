@@ -45,7 +45,7 @@ module VersatileDiamond
           # @override
           def define_anchor_atoms_lines
             assign_anchor_atoms_name!
-            values = atoms.map(&method(:atom_from_specie_call))
+            values = atoms.map(&method(:atom_from_own_specie_call))
             define_var_line('Atom *', atoms, values)
           end
         end

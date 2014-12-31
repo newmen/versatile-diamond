@@ -8,6 +8,12 @@ module VersatileDiamond
 
       collector_methods :there
 
+      # @override
+      def initialize(*)
+        super
+        @theres = nil
+      end
+
       # All species is not termination by default
       # @return [Boolean] false
       # @override

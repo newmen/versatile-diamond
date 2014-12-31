@@ -10,6 +10,21 @@ module VersatileDiamond
         it { expect(subject.original).to eq(dept_bridge_base) }
       end
 
+      describe '#clone_with_replace_by' do
+        let(:mirror) { Mcs::SpeciesComparator.make_mirror(dimer_base, dimer_base_dup) }
+        let(:clone) { subject.clone_with_replace_by(dept_dimer_base_dup, mirror) }
+        it { expect(clone).to be_a(described_class) }
+        it { expect(clone).not_to eq(subject) }
+        it { expect(subject).not_to eq(clone) }
+
+        describe 'different atoms' do
+          let(:old_cr_twin) { subject.twin_of(dimer_base.atom(:cr)) }
+          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:r)) }
+          it { expect(new_cr_twin).not_to be_nil }
+          it { expect(old_cr_twin).to eq(new_cr_twin) }
+        end
+      end
+
       describe '#<=>' do
         let(:child) { dept_methyl_on_dimer_base }
         let(:parents) { [dept_methyl_on_bridge_base, dept_bridge_base] }

@@ -10,9 +10,7 @@ module VersatileDiamond
 
           let(:original) { dept_bridge_base }
           let(:child) { dept_methyl_on_bridge_base }
-          let(:mirror) do
-            Mcs::SpeciesComparator.first_general_intersec(child, original)
-          end
+          let(:mirror) { Mcs::SpeciesComparator.make_mirror(child, original) }
           let(:proxy_dept_spec) do
             Organizers::ProxyParentSpec.new(original, child, mirror)
           end
@@ -20,7 +18,7 @@ module VersatileDiamond
           describe '<=>' do
             let(:last_child) { dept_activated_methyl_on_bridge }
             let(:other_mirror) do
-              Mcs::SpeciesComparator.first_general_intersec(last_child, child)
+              Mcs::SpeciesComparator.make_mirror(last_child, child)
             end
             let(:other_proxy) do
               Organizers::ProxyParentSpec.new(child, last_child, other_mirror)

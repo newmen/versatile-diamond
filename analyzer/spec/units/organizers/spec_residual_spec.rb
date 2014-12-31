@@ -47,6 +47,26 @@ module VersatileDiamond
         it { expect(subject.parents).to be_empty }
       end
 
+      describe '#clone_with_replace_by' do
+        subject { small_dimer_part }
+        let(:mirror) { Mcs::SpeciesComparator.make_mirror(dimer_base, dimer_base_dup) }
+        let(:clone) { subject.clone_with_replace_by(dept_dimer_base_dup, mirror) }
+
+        it { expect(clone).to be_a(described_class) }
+        it { expect(clone).not_to eq(subject) }
+        it { expect(subject).not_to eq(clone) }
+
+        describe 'different atoms' do
+          let(:atoms) do
+            clone.links.reduce([]) do |acc, (atom, rels)|
+              acc + [atom] + rels.map(&:first)
+            end
+          end
+
+          it { expect(atoms.all? { |a| dimer_base_dup.keyname(a) }).to be_truthy }
+        end
+      end
+
       describe '#same?' do
         describe 'methyl_on_bridge_dup' do
           let(:another_mob_part) { dept_methyl_on_bridge_base_dup - dept_bridge_base }

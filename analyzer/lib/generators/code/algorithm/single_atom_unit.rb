@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # The base class for units which targeted to some atom
-        class SingleAtomUnit < BaseUnit
+        class SingleAtomUnit < SimpleUnit
           include SpecieUnitBehavior
 
           # Also store the target atom of unit
