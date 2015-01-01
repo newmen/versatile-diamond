@@ -101,6 +101,15 @@ module VersatileDiamond
         order(other, self, :relations_num, &block)
       end
 
+      # Gets the number of external bonds for comparing with dependent base spec
+      # @return [Integer] the number of external bonds
+      def external_bonds
+        links.reduce(0) do |acc, (atom, rels)|
+          acc + atom.valence + atom.additional_relations.size -
+            rels.map(&:last).select(&:bond?).size
+        end
+      end
+
       # Checks that relations of both atom have same sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]

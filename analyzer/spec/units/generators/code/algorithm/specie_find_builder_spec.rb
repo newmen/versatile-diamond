@@ -417,7 +417,7 @@ module VersatileDiamond
         {
             anchor->eachSpecByRole<Dimer>(#{d_cr}, [&](Dimer *target1) {
                 target1->eachSymmetry([&](ParentSpec *specie1) {
-                    if (anchor == specie1->atom(3))
+                    if (anchor == specie1->atom(0))
                     {
                         anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
                             target2->eachSymmetry([&](ParentSpec *specie2) {
@@ -430,6 +430,60 @@ module VersatileDiamond
                                 }
                             });
                         });
+                    }
+                });
+            });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_top_methyl_on_half_extended_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
+        {
+            anchor->eachSpecByRole<MethylOnBridge>(#{role_cr}, [&](MethylOnBridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (anchor == specie1->atom(2))
+                    {
+                        ParentSpec *parents[2] = { specie1, anchor->specByRole<Bridge>(0) };
+                        create<TopMethylOnHalfExtendedBridge>(parents);
+                    }
+                });
+            });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_lower_methyl_on_half_extended_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+              end
+
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
+        {
+            anchor->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (anchor == specie1->atom(2))
+                    {
+                        ParentSpec *parents[2] = { anchor->specByRole<MethylOnRightBridge>(0), specie1 };
+                        create<LowerMethylOnHalfExtendedBridge>(parents);
                     }
                 });
             });

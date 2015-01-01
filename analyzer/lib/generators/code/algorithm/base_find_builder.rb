@@ -6,7 +6,7 @@ module VersatileDiamond
         # Contain base logic for building find algorithms
         # @abstract
         class BaseFindBuilder
-          include ProcsReducer
+          include Modules::ProcsReducer
           extend Forwardable
 
           # Inits builder by main engine code generator

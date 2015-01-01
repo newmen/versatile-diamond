@@ -145,11 +145,7 @@ module VersatileDiamond
         if simple?
           2
         else
-          atoms = atom_instances
-          internal_bonds = atoms.reduce(0) do |acc, atom|
-            acc + internal_bonds_for(atom)
-          end
-          atoms.map(&:valence).reduce(:+) - internal_bonds
+          atom_instances.reduce(0) { |acc, atom| acc + external_bonds_for(atom) }
         end
       end
 

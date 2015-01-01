@@ -147,7 +147,7 @@ module VersatileDiamond
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
       def external_bonds
-        spec.external_bonds - active_bonds_num #- monovalents_num
+        spec.external_bonds - active_bonds_num - monovalents_num
       end
 
       # Extends originial spec by atom-references and store it to temp variable
@@ -231,6 +231,12 @@ module VersatileDiamond
       # @return [Integer] sum of active bonds
       def active_bonds_num
         specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
+      end
+
+      # Counts the sum of monovalent atoms at specific atoms
+      # @return [Integer] sum of monovalent atoms
+      def monovalents_num
+        specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.monovalents.size }
       end
 
       def to_s

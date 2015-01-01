@@ -160,6 +160,18 @@ module VersatileDiamond
           right_activated_bridge.extended
         end
 
+        set(:half_extended_bridge_base) do
+          s = SurfaceSpec.new(:half_extended_bridge)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cr, :cbr)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:ct, :cr)
+          s.describe_atom(:ct, cd.dup)
+          s.describe_atom(:cl, AtomReference.new(bridge_base, :ct))
+          s.link(s.atom(:ct), s.atom(:cr), bond_110_cross)
+          s.link(s.atom(:ct), s.atom(:cl), bond_110_cross); s
+        end
+
         set(:methyl_on_bridge_base) do
           s = DuppableSurfaceSpec.new(:methyl_on_bridge, cm: c)
           s.adsorb(bridge_base)
@@ -210,12 +222,22 @@ module VersatileDiamond
           activated_methyl_on_bridge.extended
         end
 
+        set(:top_methyl_on_half_extended_bridge_base) do
+          s = SurfaceSpec.new(:top_methyl_on_half_extended_bridge, cm: c.dup)
+          s.adsorb(half_extended_bridge_base)
+          s.link(s.atom(:ct), s.atom(:cm), free_bond); s
+        end
+        set(:lower_methyl_on_half_extended_bridge_base) do
+          s = SurfaceSpec.new(:lower_methyl_on_half_extended_bridge, cm: c.dup)
+          s.adsorb(half_extended_bridge_base)
+          s.link(s.atom(:cbr), s.atom(:cm), free_bond); s
+        end
+
         set(:methyl_on_right_bridge_base) do
           s = SurfaceSpec.new(:methyl_on_right_bridge, cm: c)
           s.adsorb(bridge_base)
           s.link(c, s.atom(:cr), free_bond); s
         end
-        # set(:methyl_on_right_bridge) { SpecificSpec.new(methyl_on_right_bridge_base) }
         set(:activated_methyl_on_right_bridge) do
           SpecificSpec.new(methyl_on_right_bridge_base, cm: activated_c)
         end
