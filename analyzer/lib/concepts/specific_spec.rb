@@ -5,7 +5,7 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       include Modules::RelationBetweenChecker
-      include BondsCounter
+      include Modules::BondsCounter
       extend Forwardable
 
       def_delegators :@spec, :extendable?, :gas?, :simple?

@@ -37,9 +37,7 @@ module VersatileDiamond
         return row if row
 
         @table[record] = {}
-        @column_keys.map do |key|
-          @table[record][key] = find(key, record)
-        end
+        @column_keys.map { |key| @table[record][key] = find(key, record) }
         @table[record]
       end
 

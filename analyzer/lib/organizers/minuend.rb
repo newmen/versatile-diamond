@@ -5,26 +5,21 @@ module VersatileDiamond
     module Minuend
       include Modules::ListsComparer
       include Modules::OrderProvider
+      include Modules::ProcsReducer
       include Organizers::LinksCleaner
 
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance
       # @return [Integer] the result of comparation
       def <=> (other)
-        order(self, other, :links, :size) do
-          order_classes(other) do
-            order_relations(other) do
-              parents.size <=> other.parents.size
-            end
-          end
-        end
+        compare_with(other)
       end
 
       # Checks that current instance is less than other
       # @param [Minuend] other the comparable minuend instance
       # @return [Boolean] is less or not
       def < (other)
-        (self <=> other) < 0
+        compare_with(other, strong_types_order: false) < 0
       end
 
       # Checks that current instance is less than other or equal
@@ -110,6 +105,20 @@ module VersatileDiamond
       end
 
     private
+
+      # Compares two minuend instances
+      # @param [Minuend] other the comparable minuend instance
+      # @option [Boolean] :strong_types_order is the flag which if set then types info
+      #   also used for ordering
+      # @return [Integer] the result of comparation
+      def compare_with(other, strong_types_order: true)
+        procs = []
+        procs << -> &block { order(self, other, :links, :size, &block) }
+        procs << -> &block { order_classes(other, &block) } if strong_types_order
+        procs << -> &block { order_relations(other, &block) }
+
+        reduce_procs(procs) { parents.size <=> other.parents.size }.call
+      end
 
       # Provides comparison by class of each instance
       # @param [Minuend] other see at #<=> same argument

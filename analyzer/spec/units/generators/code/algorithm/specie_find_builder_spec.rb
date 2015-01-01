@@ -417,7 +417,7 @@ module VersatileDiamond
         {
             anchor->eachSpecByRole<Dimer>(#{d_cr}, [&](Dimer *target1) {
                 target1->eachSymmetry([&](ParentSpec *specie1) {
-                    if (anchor == specie1->atom(3))
+                    if (anchor == specie1->atom(0))
                     {
                         anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
                             target2->eachSymmetry([&](ParentSpec *specie2) {

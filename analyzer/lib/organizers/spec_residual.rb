@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Contain some residual of find diff between base species
     class SpecResidual
+      include Modules::BondsCounter
       include Minuend
 
       class << self
@@ -99,6 +100,12 @@ module VersatileDiamond
       # @override
       def order_relations(other, &block)
         order(other, self, :relations_num, &block)
+      end
+
+      # Gets the number of external bonds for comparing with dependent base spec
+      # @return [Integer] the number of external bonds
+      def external_bonds
+        count_external_bonds_of(links.keys)
       end
 
       # Checks that relations of both atom have same sets

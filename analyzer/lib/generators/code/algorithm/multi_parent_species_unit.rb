@@ -6,7 +6,7 @@ module VersatileDiamond
         # Unit for bulding code that depends from scope of species
         # @abstract
         class MultiParentSpeciesUnit < SingleAtomUnit
-          include ProcsReducer
+          include Modules::ProcsReducer
 
           # Also remembers parent species scope
           # @param [Array] args of #super method
