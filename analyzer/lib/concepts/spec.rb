@@ -5,7 +5,7 @@ module VersatileDiamond
     # @abstract
     class Spec < Named
       include Modules::RelationBetweenChecker
-      include Modules::BondsCounter
+      include BondsCounter
       include Linker
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
@@ -142,7 +142,11 @@ module VersatileDiamond
       # Summarizes external bonds of all internal atoms
       # @return [Integer] sum of external bonds
       def external_bonds
-        simple? ? 2 : count_external_bonds_of(atom_instances)
+        if simple?
+          2
+        else
+          atom_instances.reduce(0) { |acc, atom| acc + external_bonds_for(atom) }
+        end
       end
 
       # Checks for atom-references

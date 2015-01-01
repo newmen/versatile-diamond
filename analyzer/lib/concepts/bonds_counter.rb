@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Modules
+  module Concepts
 
     # Provides methods for count number of bonds for concrete atom
     module BondsCounter
@@ -20,13 +20,6 @@ module VersatileDiamond
       # @return [Integer] number of bonds
       def internal_bonds_for(atom)
         links[atom].map(&:last).select(&:bond?).size
-      end
-
-      # Counts external bonds of passed atoms
-      # @param [Array] atoms which external bonds will be counted
-      # @return [Integer] the number of total external bonds
-      def count_external_bonds_of(atoms)
-        atoms.reduce(0) { |acc, atom| acc + external_bonds_for(atom) }
       end
     end
   end
