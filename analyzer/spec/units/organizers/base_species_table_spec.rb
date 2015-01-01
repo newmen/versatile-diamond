@@ -77,6 +77,14 @@ module VersatileDiamond
           let(:spec) { dept_intermed_migr_down_full_base }
           let(:parents) { [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base] }
         end
+
+        it_behaves_like :check_optimal_parents do
+          let(:dependent_base_species) do
+            [dept_bridge_base, dept_methyl_on_bridge_base, spec]
+          end
+          let(:spec) { dept_methyl_on_half_extended_bridge_base }
+          let(:parents) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+        end
       end
     end
 
