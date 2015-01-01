@@ -197,7 +197,7 @@ module VersatileDiamond
         it { expect(methyl.external_bonds).to eq(3) }
         it { expect(bridge.external_bonds).to eq(4) }
         it { expect(extra_activated_bridge.external_bonds).to eq(2) }
-        it { expect(chlorigenated_bridge.external_bonds).to eq(4) }#3 }
+        it { expect(chlorigenated_bridge.external_bonds).to eq(3) }
       end
 
       describe '#extended?' do

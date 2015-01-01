@@ -65,7 +65,7 @@ module VersatileDiamond
 
     protected
 
-      def_delegator :@spec, :specific_atoms
+      def_delegators :@spec, :specific_atoms, :monovalents_num
 
       # Counts the sum of active bonds and monovalent atoms
       # @return [Integer] sum of dangling bonds
@@ -126,12 +126,6 @@ module VersatileDiamond
             [mirror[atom] || atom, relation]
           end
         end
-      end
-
-      # Counts the sum of monovalent atoms at specific atoms
-      # @return [Integer] sum of monovalent atoms
-      def monovalents_num
-        specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.monovalents.size }
       end
 
       # Compares two specific atoms and checks that own atom could include other atom
