@@ -6,6 +6,7 @@ module VersatileDiamond
         # The base class for algorithm builder units
         # @abstract
         class BaseUnit
+          extend Forwardable
           include SpeciesUser
           include CommonCppExpressions
           include NeighboursCppExpressions
@@ -53,10 +54,11 @@ module VersatileDiamond
         private
 
           attr_reader :generator, :namer
+          def_delegator :namer, :name_of
 
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
-            namer.name_of(obj) || 'undef'
+            name_of(obj) || 'undef'
           end
 
           # Gets a cpp code string that contains the call of method for check atom role

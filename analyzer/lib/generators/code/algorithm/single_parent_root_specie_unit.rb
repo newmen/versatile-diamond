@@ -12,11 +12,11 @@ module VersatileDiamond
           # @return [String] the cpp code string
           # @override
           def check_species(&block)
-            if namer.name_of(parent_specie) || atoms.any? { |a| namer.name_of(a) }
+            if name_of(parent_specie) || atoms.any?(&method(:name_of))
               block.call
             else
               define_target_specie_lambda do
-                if atoms.all? { |a| namer.name_of(a) }
+                if atoms.all?(&method(:name_of))
                   block.call
                 else
                   check_undefined_atom_roles(&block)
@@ -50,7 +50,7 @@ module VersatileDiamond
           # @return [String] the cpp code string with defining atoms and checking
           #   condition
           def check_undefined_atom_roles(&block)
-            undefined_atoms = atoms.reject { |a| namer.name_of(a) }
+            undefined_atoms = atoms.reject(&method(:name_of))
             define_undefined_atoms_line +
               code_condition(check_atoms_roles_of(undefined_atoms), &block)
           end
@@ -64,10 +64,7 @@ module VersatileDiamond
           # Defines atoms variable line and reassing names to all internal atoms
           # @return [String] the string with definition of atoms variable
           def define_undefined_atoms_line
-            values = atoms.map do |a|
-              namer.name_of(a) || atom_from_own_specie_call(a)
-            end
-
+            values = atom_values # collect before erase
             namer.erase(atoms)
             namer.assign_next('atom', atoms)
             define_var_line('Atom *', atoms, values)
@@ -99,14 +96,14 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the available anchor atom
           def avail_anchor
-            atoms.find { |a| namer.name_of(a) } || avail_not_own_anchor
+            atoms.find(&method(:name_of)) || avail_not_own_anchor
           end
 
           # Gets anchor atoms which was defined but not belongs to current unit
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the available not own anchor atom
           def avail_not_own_anchor
-            original_spec.anchors.select { |a| namer.name_of(a) }.find do |atom|
+            original_spec.anchors.select(&method(:name_of)).find do |atom|
               !own_twins(atom).empty?
             end
           end

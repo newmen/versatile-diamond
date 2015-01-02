@@ -68,9 +68,9 @@ module VersatileDiamond
           def same_parents_condition(parents, &block)
             condition_str =
               if parents.size > 1
-                "#{namer.name_of(parents)}.all()"
+                "#{name_of(parents)}.all()"
               else # parents.size == 1
-                namer.name_of(parents.first)
+                name_of(parents.first)
               end
 
             code_condition(condition_str, &block)

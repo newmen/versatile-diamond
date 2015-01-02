@@ -74,9 +74,7 @@ module VersatileDiamond
             crystal_call_str = crystal_atom_call(rel_params)
             define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
 
-            nbr_var_name = namer.name_of(nbr)
-            condition_str = "#{nbr_var_name} && #{other.check_role_condition}"
-
+            condition_str = "#{name_of(nbr)} && #{other.check_role_condition}"
             with_bond = atoms_with_bond_to(other)
             unless with_bond.empty?
               condition_str = append_check_bond_conditions(condition_str, with_bond)
@@ -103,9 +101,7 @@ module VersatileDiamond
             crystal_call_str = crystal_nbrs_call(rel_params)
             define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
 
-            nbrs_var_name = namer.name_of(nbrs)
-            condition_str = "#{nbrs_var_name}.all() && #{other.check_role_condition}"
-
+            condition_str = "#{name_of(nbrs)}.all() && #{other.check_role_condition}"
             with_bond = target_atom_with_bond_to(other)
             unless with_bond.empty?
               condition_str = append_check_bond_conditions(condition_str, with_bond)
@@ -121,7 +117,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code
           def amorph_nbr_condition(other, &block)
             nbr = other.target_atom
-            if namer.name_of(nbr)
+            if name_of(nbr)
               condition_str = check_bond_call(target_atom, nbr)
               code_condition(condition_str, &block)
             else
@@ -146,7 +142,7 @@ module VersatileDiamond
             nbrs = other.atoms
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
-            defined_nbrs_with_names = nbrs.map { |nbr| [nbr, namer.name_of(nbr)] }
+            defined_nbrs_with_names = nbrs.map { |nbr| [nbr, name_of(nbr)] }
             defined_nbrs_with_names.select!(&:last)
             namer.erase(nbrs)
 
@@ -196,7 +192,7 @@ module VersatileDiamond
           # @return [String] the line with defined atoms array variable it it need
           def define_anchors_array_line
             if atoms.size > 1 && !namer.array?(atoms)
-              old_names = atoms.map { |a| namer.name_of(a) }
+              old_names = atoms.map(&method(:name_of)) # collect before erase
               namer.erase(atoms)
               namer.assign_next('anchor', atoms)
               define_var_line('Atom *', atoms, old_names)
@@ -213,10 +209,10 @@ module VersatileDiamond
           def each_nbrs_args(nbrs, rel_params)
             namer.assign_next('neighbour', nbrs)
 
-            method_args = [namer.name_of(atoms), full_relation_name_ref(rel_params)]
+            method_args = [name_of(atoms), full_relation_name_ref(rel_params)]
             closure_args = ['&']
 
-            nbrs_var_name = namer.name_of(nbrs)
+            nbrs_var_name = name_of(nbrs)
             method_name = 'eachNeighbour'
             if single?
               lambda_arg = "Atom *#{nbrs_var_name}"
@@ -237,7 +233,7 @@ module VersatileDiamond
           # @return [String] the code string which could be used in condition expr
           def check_new_names(other, nbrs_with_old_names)
             nbrs = other.atoms
-            zipped_names = nbrs.map { |a| [nbrs_with_old_names[a], namer.name_of(a)] }
+            zipped_names = nbrs.map { |a| [nbrs_with_old_names[a], name_of(a)] }
             comp_strs = atoms.zip(nbrs).zip(zipped_names).map do |ats, nms|
               uwas = append_units(other, [ats])
               op = relation_between(*uwas.first) ? '==' : '!='
@@ -263,7 +259,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code for getting the atom of crystal
           def crystal_atom_call(rel_params)
             frn_method_name = "#{full_relation_name(rel_params)}_at"
-            atoms_vars_names_str = atoms.map { |a| namer.name_of(a) }.join(', ')
+            atoms_vars_names_str = atoms.map(&method(:name_of)).join(', ')
             "#{crystal_call}->atom(#{frn_method_name}(#{atoms_vars_names_str}))"
           end
 
@@ -328,7 +324,7 @@ module VersatileDiamond
           #   be checked
           # @return [String] code with calling check bond function
           def check_bond_call(*atoms)
-            first_var, second_var = atoms.map { |atom| namer.name_of(atom) }
+            first_var, second_var = atoms.map(&method(:name_of))
             "#{first_var}->hasBondWith(#{second_var})"
           end
 
@@ -365,7 +361,7 @@ module VersatileDiamond
           #
           # @return [String] the string with cpp call
           def crystal_call
-            "crystalBy(#{namer.name_of(target_atom)})"
+            "crystalBy(#{name_of(target_atom)})"
           end
 
           # Appends other unit

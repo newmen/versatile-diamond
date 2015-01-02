@@ -13,9 +13,7 @@ module VersatileDiamond
           #   atom of which will be used for get an index of it from specie
           # @return [String] code where atom getting from specie
           def atom_from_specie_call(specie, atom)
-            specie_var_name = namer.name_of(specie)
-            atom_index = specie.index(atom)
-            "#{specie_var_name}->atom(#{atom_index})"
+            "#{name_of(specie)}->atom(#{specie.index(atom)})"
           end
         end
 

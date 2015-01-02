@@ -30,10 +30,10 @@ module VersatileDiamond
               super
             else
               define_parent_line =
-                if atoms.any? { |a| !namer.name_of(a) }
-                  define_target_specie_line
-                else
+                if atoms.all?(&method(:name_of))
                   ''
+                else
+                  define_target_specie_line
                 end
 
               define_parent_line + define_nbrs_anchors_line
@@ -43,16 +43,19 @@ module VersatileDiamond
           # Gets code line with defined anchors atoms for each neighbours operation
           # @return [String] the code line with defined achor atoms variable
           def define_nbrs_anchors_line
-            if atoms.size > 1 || !namer.name_of(atoms.first)
-              values = atoms.map do |a|
-                namer.name_of(a) || atom_from_own_specie_call(a)
-              end
-
+            if atoms.size > 1 || !name_of(atoms.first)
+              values = atom_values # collect before reassign
               namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)
               define_var_line('Atom *', atoms, values)
             else
               ''
             end
+          end
+
+          # Collects the names of atom variables or calls them from own specie
+          # @return [Array] the list of atom names or specie calls
+          def atom_values
+            atoms.map { |a| name_of(a) || atom_from_own_specie_call(a) }
           end
         end
 

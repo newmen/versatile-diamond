@@ -30,7 +30,7 @@ module VersatileDiamond
 
               opr = [parent]
               pairs = (iterated - opr).zip(opr * prev_prs_num)
-              names = pairs.map { |pair| pair.map { |pr| namer.name_of(pr) } }
+              names = pairs.map { |pair| pair.map(&method(:name_of)) }
               conds_str = names.map { |pair| pair.join(' != ') }.join(' && ')
               acc << -> &prc { code_condition(conds_str, &prc) }
             end

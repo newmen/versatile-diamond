@@ -50,8 +50,7 @@ module VersatileDiamond
           #   between each other
           def not_own_atom_condition(specie, linked_atom, neighbour_atom)
             specie_call = atom_from_specie_call(specie, linked_atom)
-            neighbour_atom_var_name = namer.name_of(neighbour_atom)
-            "#{neighbour_atom_var_name} != #{specie_call}"
+            "#{name_of(neighbour_atom)} != #{specie_call}"
           end
 
         private

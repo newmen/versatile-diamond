@@ -109,13 +109,13 @@ module VersatileDiamond
           # Gets the list of defined parent species which is symmetric by target atom
           # @return [Array] the list of used symmetric parent species
           def used_smc_parent_species
-            smc_parent_species.select { |pr| namer.name_of(pr) }
+            smc_parent_species.select(&method(:name_of))
           end
 
           # Gets the list of undefined parent species which is symmetric by target atom
           # @return [Array] the list of unused symmetric parent species
           def undef_smc_parent_species
-            smc_parent_species.reject { |pr| namer.name_of(pr) }
+            smc_parent_species.reject(&method(:name_of))
           end
 
           # Provides condition block which checks that first argument parent isn't
@@ -144,7 +144,7 @@ module VersatileDiamond
 
             uniq_smc_parents_with_twins.each do |parent, twin|
               namer.assign_next('target', parent)
-              parent_name = namer.name_of(parent)
+              parent_name = name_of(parent)
 
               sames = visited_parents_to_names.select do |pr, _|
                 pr.original == parent.original
@@ -213,7 +213,7 @@ module VersatileDiamond
             prev_pwts = common_smc_hash[avail_parent.original]
             used_twins = prev_pwts.select { |pr, _| pr == avail_parent }.map(&:last)
             undef_twin = (symmetric_twins - used_twins).first
-            undef_parent = parent_species.reject { |pr| namer.name_of(pr) }.first
+            undef_parent = parent_species.reject(&method(:name_of)).first
 
             namer.assign_next('atom', target_atom)
             namer.assign_next('specie', undef_parent)

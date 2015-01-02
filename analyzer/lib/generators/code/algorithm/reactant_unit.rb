@@ -111,7 +111,7 @@ module VersatileDiamond
           #   the available anchor atom
           def avail_anchor
             original_specie.spec.anchors.find do |a|
-              namer.name_of(a) && !original_specie.symmetric_atom?(a)
+              name_of(a) && !original_specie.symmetric_atom?(a)
             end
           end
 
@@ -121,7 +121,7 @@ module VersatileDiamond
           def ext_atoms_condition(&block)
             compares = atoms.map do |atom|
               op = ext_atom?(atom) ? '!=' : '=='
-              "#{namer.name_of(atom)} #{op} #{atom_from_own_specie_call(atom)}"
+              "#{name_of(atom)} #{op} #{atom_from_own_specie_call(atom)}"
             end
 
             code_condition(compares.join(' && '), &block)
@@ -186,8 +186,7 @@ module VersatileDiamond
           def define_unknown_species(unit_with_atoms)
             unit_with_atoms.each_with_object('') do |(unit, atom), result|
               specie = unit.uniq_specie_for(atom)
-              next if namer.name_of(specie)
-              result << unit.define_specie_line(specie, atom)
+              result << unit.define_specie_line(specie, atom) unless name_of(specie)
             end
           end
 

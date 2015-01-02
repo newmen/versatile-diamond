@@ -71,14 +71,11 @@ module VersatileDiamond
           # @yield should return cpp code string
           # @return [String] the code with each specie iteration
           def each_spec_by_role_lambda(parent, &block)
-            parent_var_name = namer.name_of(parent)
             parent_class = parent.class_name
-            twin = twin_from(parent)
-
             method_name = "#{target_atom_var_name}->eachSpecByRole<#{parent_class}>"
-            method_args = [parent.role(twin)]
+            method_args = [parent.role(twin_from(parent))]
             closure_args = ['&']
-            lambda_args = ["#{parent_class} *#{parent_var_name}"]
+            lambda_args = ["#{parent_class} *#{name_of(parent)}"]
 
             code_lambda(method_name, method_args, closure_args, lambda_args, &block)
           end

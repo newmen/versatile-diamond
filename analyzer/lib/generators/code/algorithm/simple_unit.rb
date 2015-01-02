@@ -42,7 +42,7 @@ module VersatileDiamond
           # Gets the variable name of target atom
           # @return [String] the variable name of target atom
           def target_atom_var_name
-            namer.name_of(target_atom)
+            name_of(target_atom)
           end
 
           # Gets dependent spec for passed atom

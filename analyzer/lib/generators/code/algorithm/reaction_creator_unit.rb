@@ -36,8 +36,7 @@ module VersatileDiamond
           # Gets the cpp code string with creation of target reaction
           # @return [String] the cpp code line with creation target reaction call
           def create_line
-            species_var_name = namer.name_of(@species)
-            code_line("create<#{@reaction.class_name}>(#{species_var_name});")
+            code_line("create<#{@reaction.class_name}>(#{namer.name_of(@species)});")
           end
 
           # Finds previously defined atom
@@ -59,10 +58,7 @@ module VersatileDiamond
           # Gets the line with definition of target species array variable
           # @return [String] th ecpp code line with definition of target species var
           def define_target_species_variable_line
-            items = @species.map do |specie|
-              namer.name_of(specie) || spec_by_role_call(specie)
-            end
-
+            items = @species.map { |s| namer.name_of(s) || spec_by_role_call(s) }
             namer.reassign('target', @species)
             define_var_line('SpecificSpec *', @species, items)
           end
