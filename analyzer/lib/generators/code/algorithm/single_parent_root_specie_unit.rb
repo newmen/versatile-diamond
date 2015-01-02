@@ -51,17 +51,6 @@ module VersatileDiamond
           def atom_from_specie_call(specie, atom)
             super(specie, twin(atom))
           end
-
-          # Prepare the the passed atom to correspond twin of target parent specie
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom from which the linked atom will be checked
-          # @param [Concepts::Bond] position by which the linked atom will be checked
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the atom which linked with passed atom by passed position or nil
-          # @override
-          def position_with(atom, position)
-            super(twin(atom), position)
-          end
         end
 
       end
