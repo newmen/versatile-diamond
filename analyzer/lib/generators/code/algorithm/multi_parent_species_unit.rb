@@ -77,10 +77,10 @@ module VersatileDiamond
 
             method_name = "#{target_atom_var_name}->eachSpecByRole<#{parent_class}>"
             method_args = [parent.role(twin)]
-            clojure_args = ['&']
+            closure_args = ['&']
             lambda_args = ["#{parent_class} *#{parent_var_name}"]
 
-            code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
+            code_lambda(method_name, method_args, closure_args, lambda_args, &block)
           end
         end
 

@@ -27,9 +27,9 @@ module VersatileDiamond
           # Prepares reactant instance for reaction creation
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
-          def check_symmetries(clojure_on_scope: false, &block)
+          def check_symmetries(closure_on_scope: false, &block)
             if symmetric?
-              each_symmetry_lambda(clojure_on_scope: clojure_on_scope, &block)
+              each_symmetry_lambda(closure_on_scope: closure_on_scope, &block)
             else
               block.call
             end
@@ -40,7 +40,7 @@ module VersatileDiamond
           # @return [String] the cpp code string
           def check_additions(&block)
             define_target_specie_line +
-              check_symmetries(clojure_on_scope: true) do
+              check_symmetries(closure_on_scope: true) do
                 ext_atoms_condition(&block)
               end
           end

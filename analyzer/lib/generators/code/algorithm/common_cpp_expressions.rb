@@ -48,17 +48,17 @@ module VersatileDiamond
           # @param [String] method_name the name of engine framework method which have
           #   lambda as last argument
           # @param [Array] method_args the typed arguments of method call
-          # @param [Array] clojure_args the arguments which passed to lambda
+          # @param [Array] closure_args the arguments which passed to lambda
           # @param [Array] lambda_args the typed arguments of lambda call
           # @yield should return cpp code with several lines which will be plased in
           #   lambda body
           # @return [String] the code with method call
-          def code_lambda(method_name, method_args, clojure_args, lambda_args, &block)
+          def code_lambda(method_name, method_args, closure_args, lambda_args, &block)
             separator = ', '
-            clojure_args_str = clojure_args.join(separator)
+            closure_args_str = closure_args.join(separator)
             lambda_args_str = lambda_args.join(separator)
 
-            lambda_head = "[#{clojure_args_str}](#{lambda_args_str})"
+            lambda_head = "[#{closure_args_str}](#{lambda_args_str})"
             args_wo_lambda_body = (method_args + [lambda_head]).join(separator)
 
             code_line("#{method_name}(#{args_wo_lambda_body} {") +

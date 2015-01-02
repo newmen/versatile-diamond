@@ -48,7 +48,7 @@ module VersatileDiamond
               twins = all_pwts.select { |pr, _| pr == parent }.map(&:last)
               if twins.any? { |a| parent.symmetric_atom?(a) }
                 acc << -> &prc do
-                  each_symmetry_lambda(parent, clojure_on_scope: true, &prc)
+                  each_symmetry_lambda(parent, closure_on_scope: true, &prc)
                 end
               end
             end

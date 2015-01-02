@@ -1,7 +1,7 @@
 module VersatileDiamond
   module Organizers
 
-    # Collects methods for works with transitive clojure matrix of atom properties
+    # Collects methods for works with transitive closure matrix of atom properties
     # TODO: rspec it!
     class TransitiveMatrix
 
@@ -53,7 +53,7 @@ module VersatileDiamond
 
     private
 
-      # Transitive clojure on DFS
+      # Transitive closure on DFS
       # @param [Integer] v the v vertex
       # @param [Integer] w the w vertex
       # @param [Array] methods wich will be called for get children
@@ -71,7 +71,7 @@ module VersatileDiamond
         end
       end
 
-      # Selects only source properties from transitive clojure matrix builded
+      # Selects only source properties from transitive closure matrix builded
       # for :smallests dependencies
       def source_props
         @matrix.column_vectors.map(&:to_a).map.with_index.

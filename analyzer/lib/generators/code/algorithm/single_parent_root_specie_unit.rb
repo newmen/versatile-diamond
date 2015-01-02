@@ -39,7 +39,7 @@ module VersatileDiamond
           def define_target_specie_lambda(&block)
             define_target_specie_line +
               if symmetric?
-                each_symmetry_lambda(clojure_on_scope: true, &block)
+                each_symmetry_lambda(closure_on_scope: true, &block)
               else
                 block.call
               end

@@ -214,7 +214,7 @@ module VersatileDiamond
             namer.assign_next('neighbour', nbrs)
 
             method_args = [namer.name_of(atoms), full_relation_name_ref(rel_params)]
-            clojure_args = ['&']
+            closure_args = ['&']
 
             nbrs_var_name = namer.name_of(nbrs)
             method_name = 'eachNeighbour'
@@ -225,7 +225,7 @@ module VersatileDiamond
               lambda_arg = "Atom **#{nbrs_var_name}"
             end
 
-            [method_name, method_args, clojure_args, [lambda_arg]]
+            [method_name, method_args, closure_args, [lambda_arg]]
           end
 
           # Gets the conditions where new names of neighbour atoms compares with old

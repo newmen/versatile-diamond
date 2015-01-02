@@ -31,8 +31,8 @@ module VersatileDiamond
           # @yield should return cpp code string
           # @return [String] the code with symmetries iteration
           # @override
-          def each_symmetry_lambda(clojure_on_scope: false, &block)
-            super(target_specie, clojure_on_scope: clojure_on_scope, &block)
+          def each_symmetry_lambda(closure_on_scope: false, &block)
+            super(target_specie, closure_on_scope: closure_on_scope, &block)
           end
 
           # Gets the code line with definition of parent specie variable
