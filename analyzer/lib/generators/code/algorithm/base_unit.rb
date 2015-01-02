@@ -44,13 +44,10 @@ module VersatileDiamond
             atoms
           end
 
-          # Gets a cpp code string that contain call a method for check atom role
-          # @param [Array] atoms which role will be checked in code
+          # Gets cpp code string that contains the call of method for check roled atom
           # @return [String] the string with cpp condition
           def check_role_condition
-            combine_condition(role_atoms, '&&') do |var, atom|
-              "#{var}->is(#{role(atom)})"
-            end
+            check_atoms_roles_of(role_atoms)
           end
 
         private
@@ -60,6 +57,15 @@ module VersatileDiamond
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             namer.name_of(obj) || 'undef'
+          end
+
+          # Gets a cpp code string that contains the call of method for check atom role
+          # @param [Array] atoms which role will be checked in code
+          # @return [String] the string with cpp condition
+          def check_atoms_roles_of(atoms)
+            combine_condition(atoms, '&&') do |var, atom|
+              "#{var}->is(#{role(atom)})"
+            end
           end
 
           # Gets the index of passed atom from generator's classifer by original spec

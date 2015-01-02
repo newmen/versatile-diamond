@@ -34,16 +34,10 @@ module VersatileDiamond
 
         private
 
-          # Checks that internal parent specie is symmetric by target atoms
-          # @return [Boolean] is symmetric or not
-          def symmetric?
-            atoms.any? { |a| parent_specie.symmetric_atom?(twin(a)) }
-          end
-
           # Gets the code line with definition of anchor atom variables
           # @return [String] the definition anchor atom variables code
           # @override
-          def define_anchor_atoms_lines
+          def define_anchor_atoms_line
             assign_anchor_atoms_name!
             values = atoms.map(&method(:atom_from_own_specie_call))
             define_var_line('Atom *', atoms, values)

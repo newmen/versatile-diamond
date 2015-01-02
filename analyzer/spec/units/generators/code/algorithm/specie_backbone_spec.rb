@@ -265,6 +265,17 @@ module VersatileDiamond
               end
             end
 
+            it_behaves_like :check_ordered_graph do
+              subject { dept_lower_methyl_on_half_extended_bridge_base }
+              let(:base_specs) { [dept_bridge_base, subject] }
+              let(:ordered_graph) do
+                [
+                  [[cr], []],
+                  [[cbr], [[[cm], param_amorph]]]
+                ]
+              end
+            end
+
             describe 'different dept_cross_bridge_on_bridges_base' do
               subject { dept_cross_bridge_on_bridges_base }
 
