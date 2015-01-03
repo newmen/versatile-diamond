@@ -18,6 +18,14 @@ module VersatileDiamond
             @original_spec = original_spec
           end
 
+          # Gets dependent spec for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
+          def dept_spec_for(_)
+            original_spec
+          end
+
         protected
 
           attr_reader :original_spec
@@ -43,14 +51,6 @@ module VersatileDiamond
           # @return [String] the variable name of target atom
           def target_atom_var_name
             name_of(target_atom)
-          end
-
-          # Gets dependent spec for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
-          def dept_spec_for(_)
-            original_spec
           end
         end
 

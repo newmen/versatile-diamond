@@ -34,10 +34,24 @@ module VersatileDiamond
           #   species
           # @param [Concepts::Bond] relation which existance will be checked
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the atom which same as last of passed atoms and available by relation
+          #   the atom which same as last of passed atoms and available by relation or
+          #   nil if linked atom isn't same
           def same_linked_atom(other, own_atom, other_atom, relation)
-            !same_specs?(other, own_atom, other_atom) &&
-              relation_with(own_atom, relation)
+            return nil if same_specs?(other, own_atom, other_atom)
+
+            linked_atom = relation_with(own_atom, relation)
+            return nil unless linked_atom
+
+            pairs = [
+              [dept_spec_for(own_atom), linked_atom],
+              [other.dept_spec_for(other_atom), other_atom]
+            ]
+
+            props = pairs.map do |dept_spec, atom|
+              Organizers::AtomProperties.new(dept_spec, atom)
+            end
+
+            props.permutation(2).any? { |f, s| f.include?(s) } ? linked_atom : nil
           end
 
           # Gets the cpp code string with comparison the passed atoms

@@ -30,6 +30,14 @@ module VersatileDiamond
             atoms_to_species[atom]
           end
 
+          # Gets correspond original dependent spec for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the original dependent spec will be returned
+          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
+          def dept_spec_for(atom)
+            uniq_specie_for(atom).proxy_spec
+          end
+
           def inspect
             "MRSU:(#{inspect_species_atoms_names}])"
           end
@@ -55,14 +63,6 @@ module VersatileDiamond
             end
 
             @_target_atom = pair.first
-          end
-
-          # Gets correspond original dependent spec for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom for which the original dependent spec will be returned
-          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
-          def dept_spec_for(atom)
-            uniq_specie_for(atom).proxy_spec
           end
         end
 
