@@ -87,15 +87,38 @@ module VersatileDiamond
 
             other_groups = other_spec_atoms.groups(&:first)
             many_others = other_groups.select { |group| group.size > 1 }
-            return false if many_others.empty?
-
-            # if other side atoms are symmetric too then current symmetric isn't
-            # significant
-            !many_others.any? do |group|
-              group.all? do |(s, a), _|
-                specie_class(s).symmetric_atom?(a)
+            if many_others.empty?
+              !same_others?(other_spec_atoms)
+            else
+              # if other side atoms are symmetric too then current symmetric isn't
+              # significant
+              !many_others.any? do |group|
+                group.all? do |(s, a), _|
+                  specie_class(s).symmetric_atom?(a)
+                end
               end
             end
+          end
+
+          # Checks that passed specs atoms array contains same or different pairs
+          # @param [Array] specs_atoms which will be checked
+          # @return [Boolean] are same passed pairs or not
+          def same_others?(specs_atoms)
+            named_groups = specs_atoms.groups { |s, _| s.name }
+            return false if named_groups.size > 1
+
+            props = specs_atoms.map do |s, a|
+              dept_spec =
+                if s.is_a?(Concepts::SpecificSpec)
+                  Organizers::DependentSpecificSpec.new(s)
+                else
+                  Organizers::DependentBaseSpec.new(s)
+                end
+
+              Organizers::AtomProperties.new(dept_spec, a)
+            end
+
+            props.uniq.size == 1
           end
 
           # Gets the correct key of reaction links for passed atom
