@@ -107,6 +107,7 @@ module VersatileDiamond
             named_groups = specs_atoms.groups { |s, _| s.name }
             return false if named_groups.size > 1
 
+            # TODO: not beauty solytion
             props = specs_atoms.map do |s, a|
               dept_spec =
                 if s.is_a?(Concepts::SpecificSpec)

@@ -18,8 +18,8 @@ module VersatileDiamond
             end
 
             stub_generator(
-              base_specs: bases,
-              specific_specs: specifics,
+              base_specs: bases.uniq,
+              specific_specs: specifics.uniq,
               typical_reactions: [subject])
           end
 
@@ -346,6 +346,108 @@ module VersatileDiamond
         }
     });
                 CODE
+              end
+            end
+
+            describe 'two level dimers formation' do
+              Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
+                let(:"thrid_role_#{keyname}") { role(thrid_spec, keyname) }
+              end
+
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
+              let(:specific_specs) do
+                [
+                  dept_extra_activated_methyl_on_bridge,
+                  dept_activated_incoherent_dimer,
+                  dept_right_activated_bridge
+                ]
+              end
+              subject { dept_two_dimers_form }
+
+              it_behaves_like :check_code do
+                let(:target_spec) { dept_right_activated_bridge }
+                let(:other_spec) { dept_activated_incoherent_dimer }
+                let(:thrid_spec) { dept_extra_activated_methyl_on_bridge }
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *anchor = target->atom(2);
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_cl}) && !anchor->hasBondWith(neighbour1))
+        {
+            Atom *anchors1[2] = { neighbour1, anchor };
+            eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
+                if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
+                {
+                    Atom *neighbour2 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                    if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+                    {
+                        Atom *amorph1 = neighbour2->amorphNeighbour();
+                        if (amorph1->is(#{thrid_role_cm}))
+                        {
+                            SpecificSpec *targets[3] = { anchors1[0]->specByRole<DimerCLsCRi>(#{other_role_cl}), amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm}), target };
+                            create<ForwardTwoDimersForm>(targets);
+                        }
+                    }
+                }
+            });
+        }
+    });
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                let(:target_spec) { dept_activated_incoherent_dimer }
+                let(:other_spec) { dept_right_activated_bridge }
+                let(:thrid_spec) { dept_extra_activated_methyl_on_bridge }
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *anchor = target->atom(3);
+    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_cr}) && !anchor->hasBondWith(neighbour1))
+        {
+            Atom *anchors1[2] = { anchor, neighbour1 };
+            eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
+                if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
+                {
+                    Atom *neighbour2 = crystalBy(neighbours1[1])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                    if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+                    {
+                        Atom *amorph1 = neighbour2->amorphNeighbour();
+                        if (amorph1->is(#{thrid_role_cm}))
+                        {
+                            SpecificSpec *targets[3] = { target, amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm}), anchors1[1]->specByRole<BridgeCRs>(#{other_role_cr}) };
+                            create<ForwardTwoDimersForm>(targets);
+                        }
+                    }
+                }
+            });
+        }
+    });
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                let(:target_spec) { dept_extra_activated_methyl_on_bridge }
+                let(:other_spec) { dept_activated_incoherent_dimer }
+                let(:thrid_spec) { dept_right_activated_bridge }
+                let(:find_algorithm) do
+                  <<-CODE
+    target->eachSymmetry([](SpecificSpec *specie1) {
+        Atom *anchors[2] = { specie1->atom(2), specie1->atom(3) };
+        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{thrid_role_cr}) && !neighbours1[0]->hasBondWith(neighbours1[1]))
+            {
+                SpecificSpec *targets[3] = { neighbours1[0]->specByRole<DimerCLsCRi>(#{other_role_cl}), specie1, neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr}) };
+                create<ForwardTwoDimersForm>(targets);
+            }
+        });
+    });
+                  CODE
+                end
               end
             end
 

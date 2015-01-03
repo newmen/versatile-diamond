@@ -314,6 +314,25 @@ module VersatileDiamond
           SpecificSpec.new(horizont_extended_dimer_base)
         end
 
+        set(:two_level_dimers_base) do
+          s = SurfaceSpec.new(:two_level_dimers, ctr: cd.dup)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :cdl)
+          s.rename_atom(:cr, :cdd)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:ct, :cbt)
+          s.rename_atom(:cr, :cbb)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :ctl)
+          s.link(s.atom(:ctr), s.atom(:cdd), bond_110_cross)
+          s.link(s.atom(:ctr), s.atom(:cbb), bond_110_cross)
+          s.link(s.atom(:ctl), s.atom(:ctr), bond_100_front); s
+        end
+        set(:two_level_dimers) do
+          SpecificSpec.new(two_level_dimers_base)
+        end
+
         set(:pseudo_dimer_base) do
           b = bridge_base
           r, l = AtomReference.new(b, :ct), AtomReference.new(b, :ct)
@@ -673,6 +692,27 @@ module VersatileDiamond
         end
         set(:methyl_to_gap) do
           Reaction.new(:forward, 'methyl to gap', mg_source, mg_product, mg_atom_map)
+        end
+
+        set(:mbd_source) do
+          [
+            extra_activated_methyl_on_bridge.dup,
+            right_activated_bridge.dup,
+            activated_incoherent_dimer.dup
+          ]
+        end
+        set(:mbd_product) { [two_level_dimers.dup] }
+        set(:mbd_names_to_specs) do {
+          source: [
+            [:mob, mbd_source.first], [:b, mbd_source[1]], [:d, mbd_source[2]]
+          ],
+          products: [[:tlds, mbd_product.first]]
+        } end
+        set(:mbd_am) do
+          Mcs::AtomMapper.map(mbd_source, mbd_product, mbd_names_to_specs)
+        end
+        set(:two_dimers_form) do
+          Reaction.new(:forward, 'two dimers form', mbd_source, mbd_product, mbd_am)
         end
 
         # Environments (targeted to dimer formation reverse reaction):
