@@ -576,6 +576,22 @@ module VersatileDiamond
             df_source, df_products, df_atom_map)
         end
 
+        set(:idd_source) { [twise_incoherent_dimer.dup] }
+        set(:idd_products) do
+          [activated_incoherent_bridge.dup, activated_incoherent_bridge.dup]
+        end
+        set(:idd_names_to_specs) do {
+          source: [[tid: idd_source.first]],
+          products: [[b1: idd_products.first], [b2: idd_products.last]]
+        } end
+        set(:idd_atom_map) do
+          Mcs::AtomMapper.map(idd_source, idd_products, idd_names_to_specs)
+        end
+        set(:incoherent_dimer_drop) do
+          Reaction.new(:forward, 'incoherent dimer drop',
+            idd_source, idd_products, idd_atom_map)
+        end
+
         set(:crm_source) { [cross_bridge_on_bridges.dup] }
         set(:crm_products) { [activated_methyl_on_bridge.dup, activated_bridge.dup] }
         set(:crm_names_to_specs) do {

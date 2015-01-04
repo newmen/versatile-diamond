@@ -96,6 +96,16 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_incoherent_dimer_drop }
+              let(:target_spec) { dept_twise_incoherent_dimer }
+              let(:find_algorithm) do
+                <<-CODE
+    create<ForwardIncoherentDimerDrop>(target);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_dimer_formation }
               let(:target_spec) { dept_activated_incoherent_bridge }
               let(:other_spec) { dept_activated_bridge }

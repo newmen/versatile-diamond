@@ -81,6 +81,8 @@ module VersatileDiamond
             return true unless role_atoms == symmetric_atoms
 
             links = dept_reaction.clean_links
+            return false if links.empty?
+
             other_spec_atoms = symmetric_atoms.flat_map do |a|
               links[spec_atom_key(a)].map(&:first)
             end

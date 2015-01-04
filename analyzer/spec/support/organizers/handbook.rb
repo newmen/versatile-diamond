@@ -101,6 +101,7 @@ module VersatileDiamond
           :intermed_migr_df_formation,
           :intermed_migr_dmod_formation,
           :dimer_formation,
+          :incoherent_dimer_drop,
           :sierpinski_drop,
           :hydrogen_abs_from_gap,
           :hydrogen_migration
