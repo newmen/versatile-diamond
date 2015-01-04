@@ -147,7 +147,9 @@ module VersatileDiamond
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
       def external_bonds
-        spec.external_bonds - active_bonds_num - monovalents_num
+        # TODO: incorrect counting because material balance matcher depends from it
+        # TODO: replace external bonds logic to directly using number of atoms
+        spec.external_bonds - active_bonds_num #- monovalents_num
       end
 
       # Extends originial spec by atom-references and store it to temp variable

@@ -42,7 +42,7 @@ module VersatileDiamond
           elsif reaction.complexes.empty?
             reaction_type
           else
-            raise 'Тот самый случай'
+            raise 'Now typical reaction could not depend from another typical reaction'
           end
         end
 

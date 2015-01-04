@@ -58,6 +58,18 @@ module VersatileDiamond
                 'reaction.cannot_map', name: 'bridge'))
           end
 
+          describe 'reaction with dangling H' do
+            before do
+              elements.interpret('atom H, valence: 1')
+              gas.interpret('spec :hydrogen')
+              gas.interpret('  atoms h: H')
+            end
+
+            it { expect { reaction.interpret(
+                'equation methyl_on_bridge(cm: H) + hydrogen(h: *) = methyl_on_bridge(cm: *) + hydrogen') }.
+              not_to raise_error }
+          end
+
           describe 'simple reaction' do
             before(:each) do
               reaction.interpret('equation bridge(ct: *) + methane(c: *) = methyl_on_bridge')
