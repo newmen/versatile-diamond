@@ -98,6 +98,16 @@ module VersatileDiamond
       def all_same?(other)
         super_same?(other) && lists_are_identical?(theres, other.theres, &:same?)
       end
+
+      # Also swaps target atoms for all used there objects
+      # @param [SpecificSpec] spec see at #super same argument
+      # @param [Atom] from see at #super same argument
+      # @param [Atom] to see at #super same argument
+      # @override
+      def swap_atom_in_positions(spec, from, to)
+        super
+        theres.each { |there| there.swap_target_atom(spec, from, to) } if from != to
+      end
     end
 
   end

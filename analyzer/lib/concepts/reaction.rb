@@ -114,6 +114,16 @@ module VersatileDiamond
         @mapping.swap_source(from, to)
       end
 
+      # Swaps using atoms of passed spec
+      # @param [Spec | SpecificSpec] spec for which the atoms will be swapped
+      # @param [Atom | AtomReference| SpecificAtom] from the atom which will be swapped
+      # @param [Atom | AtomReference| SpecificAtom] to the atom to which will be
+      #   swapped
+      def swap_atom(spec, from, to)
+        swap_atom_in_positions(spec, from, to)
+        @mapping.swap_atom(spec, from, to)
+      end
+
       # Applies relevant states for other side atom
       # @param [SpecificSpec] spec
       # @param [Atom | SpecificAtom] old_atom the atom which will be replaced
@@ -335,8 +345,7 @@ module VersatileDiamond
       # Swaps used specific spec atom to new atom (used only when atom was
       # changed for some specific spec and not chaned for current reaction)
       #
-      # @param [SpecificSpec] spec the specific spec the atom of which will be
-      #   swapped
+      # @param [SpecificSpec] spec the specific spec the atom of which will be swapped
       # @param [Atom] from the used atom
       # @param [Atom] to the new atom
       def swap_atom_in_positions(spec, from, to)

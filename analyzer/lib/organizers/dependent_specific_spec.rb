@@ -103,8 +103,28 @@ module VersatileDiamond
       def update_links(new_base)
         mirror = DependentBaseSpec.new(spec.spec).mirror_to(new_base)
 
+        update_reactions(mirror)
+        update_theres(mirror)
         update_atoms(mirror)
         update_relations(mirror)
+      end
+
+      # Updates atoms that uses in reactions which depends from current spec
+      # @param [Hash] mirror where keys are atoms of old base specie and values are
+      #   atoms of new base specie
+      def update_reactions(mirror)
+        reactions.each do |reaction|
+          mirror.each { |from, to| reaction.swap_atom(spec, from, to) }
+        end
+      end
+
+      # Updates atoms that uses in there objects as environment atoms
+      # @param [Hash] mirror where keys are atoms of old base specie and values are
+      #   atoms of new base specie
+      def update_theres(mirror)
+        theres.each do |there|
+          mirror.each { |from, to| there.swap_env_atom(spec, from, to) }
+        end
       end
 
       # Updates keys of internal links graph

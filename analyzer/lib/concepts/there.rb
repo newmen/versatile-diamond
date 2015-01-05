@@ -76,6 +76,25 @@ module VersatileDiamond
         positions.each { |spec_atom, _| swap(spec_atom, from, to) }
       end
 
+      # Swaps atoms which uses as target
+      # @param [SpecificSpec] spec the specific spec the atom of which will be swapped
+      # @param [Atom] from the used atom
+      # @param [Atom] to the new atom
+      def swap_target_atom(spec, from, to)
+        positions.each { |spec_atom, _| swap_atom(spec_atom, spec, from, to) }
+      end
+
+      # Swaps atoms in environment
+      # @param [SpecificSpec] spec the specific spec the atom of which will be swapped
+      # @param [Atom] from the used atom
+      # @param [Atom] to the new atom
+      def swap_env_atom(spec, from, to)
+        return if from == to
+        positions.each do |_, rels|
+          rels.each { |spec_atom, _| swap_atom(spec_atom, spec, from, to) }
+        end
+      end
+
       # Gets atoms of passed spec which used in positions
       # @param [Spec | SpecificSpec] spec by which the atoms will be collected
       # @return [Array] the array of using atoms
@@ -108,6 +127,18 @@ module VersatileDiamond
 
       def inspect
         to_s
+      end
+
+    private
+
+      # Swaps atoms in passed spec_atom instance
+      # @param [Array] spec_atom the instance with spec and atom which will be changed
+      #   if spec is equal to passed spec and atom is equal to passed "from" instance
+      # @param [SpecificSpec] spec the specific spec the atom of which will be swapped
+      # @param [Atom] from the used atom
+      # @param [Atom] to the new atom
+      def swap_atom(spec_atom, spec, from, to)
+        spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
       end
     end
 

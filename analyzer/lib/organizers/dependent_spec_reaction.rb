@@ -7,7 +7,7 @@ module VersatileDiamond
       include LinksCleaner
       extend Forwardable
 
-      def_delegator :reaction, :changes
+      def_delegators :reaction, :changes, :swap_atom
 
       # Initializes dependent spec reation
       def initialize(*)

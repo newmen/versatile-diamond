@@ -30,7 +30,7 @@ module VersatileDiamond
       # child and vice versa. Should have only one parent and only one child.
       # @raise [RuntimeError] if spec is not excess and not unused
       def exclude
-        raise 'Excluding spec could be excess or unused' unless excess? || unused?
+        raise 'Excluding spec should be excess or unused' unless excess? || unused?
 
         parents.map(&:original).uniq.each { |parent| parent.remove_child(self) }
 
