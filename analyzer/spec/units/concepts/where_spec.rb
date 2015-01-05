@@ -6,7 +6,7 @@ module VersatileDiamond
     describe Where do
       describe '#specs' do
         it { expect(at_end.specs).to eq([dimer]) }
-        it { expect(at_middle.specs).to eq([dimer]) }
+        it { expect(at_middle.specs).to eq([dimer_dup]) }
         it { expect(near_methyl.specs).to eq([methyl_on_bridge]) }
       end
 

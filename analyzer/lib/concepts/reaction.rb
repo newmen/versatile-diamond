@@ -108,8 +108,11 @@ module VersatileDiamond
       # @override
       def swap_source(from, to)
         super
-        each_spec_atom { |spec_atom| swap(spec_atom, from, to) }
-        @links.rehash
+        @links = @links.each_with_object({}) do |(spec_atom, rels), acc|
+          acc[swap(spec_atom, from, to)] = rels.map do |sa, rel|
+            [swap(sa, from, to), rel]
+          end
+        end
 
         @mapping.swap_source(from, to)
       end
@@ -320,16 +323,6 @@ module VersatileDiamond
         duplication
       end
 
-      # Do something in links container by passed block
-      # @yield [Array] the array where first item is spec and second item is
-      #   atom of it spec
-      def each_spec_atom(&block)
-        @links.each do |spec_atom1, references|
-          block[spec_atom1]
-          references.each { |spec_atom2, _| block[spec_atom2] }
-        end
-      end
-
       # Compares two position instances by some pairs
       # @param [Array] pos1 the first position instance
       # @param [Array] pos2 the second position instance
@@ -350,8 +343,10 @@ module VersatileDiamond
       # @param [Atom] to the new atom
       def swap_atom_in_positions(spec, from, to)
         return if from == to
-        each_spec_atom do |spec_atom|
-          spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
+        @links = @links.each_with_object({}) do |(spec_atom, rels), acc|
+          acc[swap_only_atoms(spec_atom, spec, from, to)] = rels.map do |sa, rel|
+            [swap_only_atoms(sa, spec, from, to), rel]
+          end
         end
       end
     end

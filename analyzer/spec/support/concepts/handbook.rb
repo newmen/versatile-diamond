@@ -277,6 +277,7 @@ module VersatileDiamond
         end
 
         set(:dimer) { SpecificSpec.new(dimer_base) }
+        set(:dimer_dup) { dimer.dup }
         set(:activated_dimer) { SpecificSpec.new(dimer_base, cr: activated_cd) }
         set(:twise_incoherent_dimer) do
           SpecificSpec.new(dimer_base, cr: incoherent_cd.dup, cl: incoherent_cd.dup)
@@ -747,9 +748,9 @@ module VersatileDiamond
         end
 
         set(:at_middle) do
-          w = Where.new(:at_middle, 'at middle of dimers row', specs: [dimer])
-          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
-          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross)
+          w = Where.new(:at_middle, 'at middle of dimers row', specs: [dimer_dup])
+          w.raw_position(:one, [dimer_dup, dimer_dup.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dimer_dup, dimer_dup.atom(:cr)], position_100_cross)
           w.parents << at_end; w
         end
         set(:on_middle) do

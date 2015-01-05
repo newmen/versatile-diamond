@@ -54,7 +54,7 @@ module VersatileDiamond
       #   old spec will be changed
       def swap_source_carefully(target_container, from, to)
         return if from == to
-        similar_spec = target_container.similar_source(to, from)
+        similar_spec = target_container.similar_source(to)
         to_spec = similar_spec ? Concepts::VeiledSpec.new(to) : to
         target_container.swap_source(from, to_spec)
       end
@@ -67,7 +67,11 @@ module VersatileDiamond
       # @param [Hash] cache where contains pairs of name => dependent_spec
       def exchange_specs(cache, from, to)
         lambda = -> wrapped_concept do
-          swap_source_carefully(wrapped_concept, from.spec, to.spec)
+          wrapped_concept.each_source.each do |spec|
+            if spec.name == from.spec.name
+              swap_source_carefully(wrapped_concept, spec, to.spec)
+            end
+          end
           store_concept_to(wrapped_concept, to)
         end
 

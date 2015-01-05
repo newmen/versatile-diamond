@@ -39,7 +39,7 @@ module VersatileDiamond
 
       describe '#env_specs' do
         it { expect(on_end.env_specs).to eq([dimer]) }
-        it { expect(on_middle.env_specs).to match_array([dimer, dimer]) }
+        it { expect(on_middle.env_specs).to match_array([dimer, dimer_dup]) }
         it { expect(there_methyl.env_specs).to eq([methyl_on_bridge]) }
       end
 
@@ -69,11 +69,11 @@ module VersatileDiamond
             {
               [ab, ab.atom(:ct)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross],
-                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
               ],
               [aib, aib.atom(:ct)] => [
                 [[dimer, dimer.atom(:cr)], position_100_cross],
-                [[dimer, dimer.atom(:cr)], position_100_cross],
+                [[dimer_dup, dimer_dup.atom(:cr)], position_100_cross],
               ]
             }
           end
@@ -98,14 +98,12 @@ module VersatileDiamond
 
       describe '#similar_source' do
         subject { on_end }
-        it { expect(subject.similar_source(dimer, nil)).to eq(dimer) }
-        it { expect(subject.similar_source(dimer.dup, nil)).to be_nil}
-        it { expect(subject.similar_source(dimer, dimer)).to be_nil }
-        it { expect(subject.similar_source(bridge_base, nil)).to be_nil }
+        it { expect(subject.similar_source(dimer)).to eq(dimer) }
+        it { expect(subject.similar_source(dimer.dup)).to be_nil}
+        it { expect(subject.similar_source(bridge_base)).to be_nil }
 
-        it { expect(subject.similar_source(ab, nil)).to eq(ab) }
-        it { expect(subject.similar_source(ab.dup, nil)).to be_nil}
-        it { expect(subject.similar_source(ab, ab)).to be_nil }
+        it { expect(subject.similar_source(ab)).to eq(ab) }
+        it { expect(subject.similar_source(ab.dup)).to be_nil }
       end
 
       describe '#swap_source' do

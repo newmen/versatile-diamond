@@ -28,17 +28,21 @@ module VersatileDiamond
         it { should be_a(described_class) }
 
         describe 'theres reversed too' do
-          it { expect(there.positions).to match_graph({
+          let(:positions) do
+            {
               [target_dimer, target_dimer.atom(:cr)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
               ],
               [target_dimer, target_dimer.atom(:cl)] => [
                 [[dimer, dimer.atom(:cr)], position_100_cross]
               ],
-            }) }
+            }
+          end
+          it { expect(there.positions).to match_graph(positions) }
         end
 
         describe "reverced atom haven't lattice" do
+          # could not be, just image this reaction!
           subject { original.reverse }
           let(:ed) { mi_product.first }
           let(:curr_mid) do
@@ -50,18 +54,21 @@ module VersatileDiamond
           let(:moeb) { subject.source.first }
           let(:dim) { subject.source.last }
 
-          it { expect(there.positions).to match_graph({
+          let(:positions) do
+            {
               [moeb, moeb.atom(:cb)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross],
-                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
               ],
               [dim, dim.atom(:cl)] => [
-                [[dimer, dimer.atom(:cr)], position_110_front],
+                [[dimer_dup, dimer_dup.atom(:cr)], position_110_front],
               ],
               [dim, dim.atom(:cr)] => [
                 [[dimer, dimer.atom(:cr)], position_110_front],
               ],
-            }) }
+            }
+          end
+          it { expect(there.positions).to match_graph(positions) }
         end
       end
 

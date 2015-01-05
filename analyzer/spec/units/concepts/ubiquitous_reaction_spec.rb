@@ -75,10 +75,9 @@ module VersatileDiamond
 
       describe '#similar_source' do
         subject { surface_activation }
-        it { expect(subject.similar_source(hydrogen_ion, nil)).to eq(hydrogen_ion) }
-        it { expect(subject.similar_source(hydrogen_ion.dup, nil)).to be_nil}
-        it { expect(subject.similar_source(hydrogen_ion, hydrogen_ion)).to be_nil }
-        it { expect(subject.similar_source(active_bond, nil)).to be_nil }
+        it { expect(subject.similar_source(hydrogen_ion)).to eq(hydrogen_ion) }
+        it { expect(subject.similar_source(hydrogen_ion.dup)).to be_nil}
+        it { expect(subject.similar_source(active_bond)).to be_nil }
       end
 
       describe '#swap_source' do

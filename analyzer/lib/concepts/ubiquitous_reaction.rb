@@ -105,11 +105,9 @@ module VersatileDiamond
 
       # Checks that passed spec is used in current reaction
       # @param [SpecificSpec] spec which will be checked
-      # @param [SpecificSpec] except_spec if found spec is same as this argument,
-      #   then this spec will be skipped
       # @return [SpecificSpec] the found result or nil
-      def similar_source(spec, except_spec)
-        @source.find { |s| s != except_spec && s == spec }
+      def similar_source(spec)
+        @source.find { |s| s == spec }
       end
 
       # Swaps source spec to another same source spec

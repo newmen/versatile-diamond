@@ -209,9 +209,8 @@ module VersatileDiamond
                 let(:lateral_reaction) { subject.lateral_reactions.last.reaction }
                 let(:used_there) { lateral_reaction.theres.flat_map(&:env_specs) }
 
-                it { expect(used_there).
-                  to match_array([base(:dimer), base(:dimer)]) }
-
+                it { expect(used_there.uniq.size > 1).to be_truthy }
+                it { expect(used_there.map(&:name)).to match_array([:dimer, :dimer]) }
                 it { expect(hydrogen_migration.reverse.source).
                   to include(base(:dimer)) }
               end

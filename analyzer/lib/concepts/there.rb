@@ -36,17 +36,18 @@ module VersatileDiamond
       # Provides environment species
       # @return [Array] all species stored in used where and in their parents
       def env_specs
-        where.all_specs
+        all_specs = positions.each_with_object([]) do |(_, links), acc|
+          links.each { |(spec, _), _| acc << spec }
+        end
+        all_specs.uniq
       end
 
       # Checks that passed spec is used in current there object
       # @param [SpecificSpec] spec which will be checked
-      # @param [SpecificSpec] except_spec if found spec is same as this argument,
-      #   then this spec will be skipped
       # @return [SpecificSpec] the found result or nil
-      def similar_source(spec, except_spec)
+      def similar_source(spec)
         result = nil
-        check_lambda = -> s { result = s if s != except_spec && s == spec }
+        check_lambda = -> s { result = s if s == spec }
         positions.each do |(s, _), rels|
           break if check_lambda[s] || rels.find { |(o, _), _| check_lambda[o] }
         end
@@ -58,8 +59,10 @@ module VersatileDiamond
       # @param [SpecificSpec] to the spec to which need to swap
       def swap_source(from, to)
         where.swap_source(from, to)
-        positions.each do |_, links|
-          links.each { |spec_atom, _| swap(spec_atom, from, to) }
+        @positions = @positions.each_with_object({}) do |(sa, links), acc|
+          acc[swap(sa, from, to)] = links.map do |spec_atom, rel|
+            [swap(spec_atom, from, to), rel]
+          end
         end
       end
 
@@ -73,7 +76,9 @@ module VersatileDiamond
       # @param [SpecificSpec] from the spec from which need to swap
       # @param [SpecificSpec] to the spec to which need to swap
       def swap_target(from, to)
-        positions.each { |spec_atom, _| swap(spec_atom, from, to) }
+        @positions = @positions.each_with_object({}) do |(spec_atom, links), acc|
+          acc[swap(spec_atom, from, to)] = links
+        end
       end
 
       # Swaps atoms which uses as target
@@ -81,7 +86,9 @@ module VersatileDiamond
       # @param [Atom] from the used atom
       # @param [Atom] to the new atom
       def swap_target_atom(spec, from, to)
-        positions.each { |spec_atom, _| swap_atom(spec_atom, spec, from, to) }
+        @positions = @positions.each_with_object({}) do |(spec_atom, links), acc|
+          acc[swap_only_atoms(spec_atom, spec, from, to)] = links
+        end
       end
 
       # Swaps atoms in environment
@@ -90,8 +97,10 @@ module VersatileDiamond
       # @param [Atom] to the new atom
       def swap_env_atom(spec, from, to)
         return if from == to
-        positions.each do |_, rels|
-          rels.each { |spec_atom, _| swap_atom(spec_atom, spec, from, to) }
+        @positions = @positions.each_with_object({}) do |(spec_atom, links), acc|
+          acc[spec_atom] = links.map do |sa, rel|
+            [swap(sa, from, to), rel]
+          end
         end
       end
 
@@ -127,18 +136,6 @@ module VersatileDiamond
 
       def inspect
         to_s
-      end
-
-    private
-
-      # Swaps atoms in passed spec_atom instance
-      # @param [Array] spec_atom the instance with spec and atom which will be changed
-      #   if spec is equal to passed spec and atom is equal to passed "from" instance
-      # @param [SpecificSpec] spec the specific spec the atom of which will be swapped
-      # @param [Atom] from the used atom
-      # @param [Atom] to the new atom
-      def swap_atom(spec_atom, spec, from, to)
-        spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
       end
     end
 

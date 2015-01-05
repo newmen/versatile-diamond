@@ -41,7 +41,9 @@ module VersatileDiamond
         return unless @specs.delete(from)
         @specs << to
 
-        raw_positions.each { |_, spec_atom, _| swap(spec_atom, from, to) }
+        @raw_positions = @raw_positions.map do |target, spec_atom, position|
+          [target, swap(spec_atom, from, to), position]
+        end
         parents.each { |parent| parent.swap_source(from, to) }
       end
 

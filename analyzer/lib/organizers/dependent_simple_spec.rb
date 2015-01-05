@@ -41,6 +41,10 @@ module VersatileDiamond
       def specific?
         true
       end
+
+      def inspect
+        "(#{spec.inspect})"
+      end
     end
 
   end
