@@ -123,8 +123,7 @@ module VersatileDiamond
       def apply_relevants(spec, old_atom, new_atom, to_reverse_too: true)
         if to_reverse_too
           @mapping.apply_relevants(spec, old_atom, new_atom)
-          reverse.apply_relevants(spec, old_atom, new_atom,
-            to_reverse_too: false)
+          reverse.apply_relevants(spec, old_atom, new_atom, to_reverse_too: false)
         end
 
         swap_atom_in_positions(spec, old_atom, new_atom)
@@ -342,7 +341,6 @@ module VersatileDiamond
       # @param [Atom] to the new atom
       def swap_atom_in_positions(spec, from, to)
         return if from == to
-
         each_spec_atom do |spec_atom|
           spec_atom[1] = to if spec_atom[0] == spec && spec_atom[1] == from
         end

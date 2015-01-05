@@ -124,7 +124,7 @@ module VersatileDiamond
         return @reverse if @reverse
         reversed_result = Hash[@result.map do |key, mapping|
           reversed_mapping = mapping.map do |specs, atoms|
-            [specs.reverse, atoms.map { |pair| pair.reverse }]
+            [specs.reverse, atoms.map(&:reverse)]
           end
           [key, reversed_mapping]
         end]
@@ -140,7 +140,7 @@ module VersatileDiamond
         source = @source.map { |spec| mirrors[:source][spec] }
         products = @products.map { |spec| mirrors[:products][spec] }
 
-        exchanged_result = Hash[@result.map do |key, mapping|
+        exchanged_result = @result.map do |key, mapping|
           exchanged_mapping = mapping.map do |(s, p), atoms|
             ns, np = mirrors[:source][s], mirrors[:products][p]
             exchanged_atoms = atoms.map do |v, w|
@@ -149,9 +149,9 @@ module VersatileDiamond
             [[ns, np], exchanged_atoms]
           end
           [key, exchanged_mapping]
-        end]
+        end
 
-        self.class.new(source, products, result: exchanged_result)
+        self.class.new(source, products, result: Hash[exchanged_result])
       end
 
       # Swap source species in result. Drops atom mapping result for atoms
@@ -160,13 +160,13 @@ module VersatileDiamond
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
       def swap_source(from, to)
+        mirror = SpeciesComparator.make_mirror(from, to)
         @source.map! { |spec| spec == from ? to : spec }
         @result.each do |_, mapping|
           mapping.map! do |specs, atoms|
             spec = specs.first
             if spec == from
-              changed_atoms = atoms.select { |f, _| from.keyname(f) }.
-                map { |f, s| [to.atom(from.keyname(f)), s] }
+              changed_atoms = atoms.map { |f, s| [mirror[f], s] }
               [[to, specs.last], changed_atoms]
             else
               [specs, atoms]
@@ -192,8 +192,7 @@ module VersatileDiamond
 
             atoms.each do |pair|
               atom_index = is_source ? 0 : 1
-              next unless from == pair[atom_index]
-              pair[atom_index] = to
+              pair[atom_index] = to if from == pair[atom_index]
             end
           end
         end

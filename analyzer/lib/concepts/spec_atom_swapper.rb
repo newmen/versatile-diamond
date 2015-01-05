@@ -17,14 +17,11 @@ module VersatileDiamond
           raise ArgumentError, 'Swapping specific spec loses specification'
         end
 
-        intersec = Mcs::SpeciesComparator.intersec(
-          from, to, collaps_multi_bond: true).first.to_a
+        mirror = Mcs::SpeciesComparator.make_mirror(from, to)
 
-        if intersec.size < to.links.size
+        if mirror.size < to.links.size
           raise ArgumentError, 'Intersection less than swapped specs'
         end
-
-        mirror = Hash[intersec]
 
         spec_atom[0] = to
         spec_atom[1] = mirror[spec_atom[1]]
