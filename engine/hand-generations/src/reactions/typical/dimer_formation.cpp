@@ -33,6 +33,46 @@ void DimerFormation::find(BridgeCTsi *target)
     });
 }
 
+void DimerFormation::checkLaterals(Dimer *sidepiece)
+{
+    Atom *atoms[2] = { sidepiece->atom(0), sidepiece->atom(3) };
+    eachNeighbours<2>(atoms, &Diamond::cross_100, [&](Atom **neighbours) {
+        if (neighbours[0]->is(28) && neighbours[1]->is(28))
+        {
+            SpecificSpec *targets[2] = {
+                neighbours[0]->specByRole<BridgeCTsi>(28),
+                neighbours[1]->specByRole<BridgeCTsi>(28)
+            };
+
+            if (targets[0] && targets[1])
+            {
+                assert(targets[0] != targets[1]);
+                {
+                    auto neighbourReaction =
+                            targets[0]->checkoutReactionWith<DimerFormationAtEnd>(targets[1]);
+                    if (neighbourReaction)
+                    {
+                        if (!sidepiece->haveReaction(neighbourReaction))
+                        {
+                            neighbourReaction->concretize<DimerFormationInMiddle>(sidepiece);
+                        }
+                        return;
+                    }
+                }
+                {
+                    auto neighbourReaction =
+                            targets[0]->checkoutReactionWith<DimerFormation>(targets[1]);
+                    if (neighbourReaction)
+                    {
+                        neighbourReaction->concretize<DimerFormationAtEnd>(sidepiece);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+}
+
 void DimerFormation::doIt()
 {
     assert(target(0)->type() == BridgeCTsi::ID);
