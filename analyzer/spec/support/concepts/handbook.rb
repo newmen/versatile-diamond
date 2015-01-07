@@ -431,8 +431,8 @@ module VersatileDiamond
           SpecificSpec.new(intermed_migr_down_bridge_base)
         end
 
-        set(:intermed_migr_down_half_base) do
-          s = SurfaceSpec.new(:intermed_migr_down_half)
+        set(:intermed_migr_down_common_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_common)
           s.adsorb(dimer_base)
           s.rename_atom(:cl, :cdl)
           s.rename_atom(:cr, :cdr)
@@ -442,13 +442,22 @@ module VersatileDiamond
           s.link(s.atom(:cdr), s.atom(:cbr), position_100_cross)
           s.link(s.atom(:cm), s.atom(:cdr), free_bond); s
         end
+        set(:intermed_migr_down_common) do
+          SpecificSpec.new(intermed_migr_down_common_base)
+        end
+
+        set(:intermed_migr_down_half_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_half)
+          s.adsorb(intermed_migr_down_common_base)
+          s.link(s.atom(:cdl), s.atom(:cbl), non_position_100_cross); s
+        end
         set(:intermed_migr_down_half) do
           SpecificSpec.new(intermed_migr_down_half_base)
         end
 
         set(:intermed_migr_down_full_base) do
           s = SurfaceSpec.new(:intermed_migr_down_full)
-          s.adsorb(intermed_migr_down_half_base)
+          s.adsorb(intermed_migr_down_common_base)
           s.link(s.atom(:cdl), s.atom(:cbl), position_100_cross); s
         end
         set(:intermed_migr_down_full) do
@@ -629,6 +638,20 @@ module VersatileDiamond
           from = [ah_source.first, ah_source.first.atom(:cr)]
           to = [ah_source.last, ah_source.last.atom(:cr)]
           r.position_between(from, to, position_100_front); r
+        end
+
+        set(:imdcf_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
+        set(:imdcf_products) { [intermed_migr_down_common.dup] }
+        set(:imdcf_names_to_specs) do {
+          source: [[:ab, imdcf_source.first], [:amod, imdcf_source.last]],
+          products: [:imdc, imdcf_products.first]
+        } end
+        set(:imdcf_atom_map) do
+          Mcs::AtomMapper.map(imdcf_source, imdcf_products, imdcf_names_to_specs)
+        end
+        set(:intermed_migr_dc_formation) do
+          r = Reaction.new(:forward, 'intermed migr dc formation',
+            imdcf_source, imdcf_products, imdcf_atom_map)
         end
 
         set(:imdhf_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
