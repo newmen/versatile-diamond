@@ -104,15 +104,18 @@ module VersatileDiamond
 
         # Extends passed variables by sidepieces from where objects
         def fix_sidepieces(depts_cache, all_specs)
-          depts_cache[:lateral_reactions].flat_map(&:theres).each do |th|
-            th.where.specs.each do |s|
-              if all_specs.include?(s.name)
-                swap_source_carefully(th, s, spec_from(all_specs, s).spec)
-              else
-                store_reactant(th, depts_cache, all_specs, s)
-              end
+          depts_cache[:lateral_reactions].each do |reaction|
+            reaction.theres.each do |th|
+              there = DependentThere.new(reaction, th)
+              there.where.specs.each do |s|
+                if all_specs.include?(s.name)
+                  swap_source_carefully(there, s, spec_from(all_specs, s).spec)
+                else
+                  store_reactant(there, depts_cache, all_specs, s)
+                end
 
-              store_concept_to(th, spec_from(all_specs, s))
+                store_concept_to(there, spec_from(all_specs, s))
+              end
             end
           end
         end

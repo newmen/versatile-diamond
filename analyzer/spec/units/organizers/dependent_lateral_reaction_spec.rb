@@ -11,7 +11,7 @@ module VersatileDiamond
       end
 
       describe '#theres' do
-        it { expect(subject.theres.map(&:class)).to eq([DependentThere]) }
+        it { expect(subject.theres).to eq(middle_lateral_df.theres) }
       end
 
       describe '#lateral?' do

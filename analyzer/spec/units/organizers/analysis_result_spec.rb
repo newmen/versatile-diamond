@@ -109,8 +109,9 @@ module VersatileDiamond
         before { store_reactions }
 
         describe '#theres' do
-          it { expect(subject.theres.size).to eq(2) }
           it { expect(subject.theres.map(&:class)).to eq([DependentThere] * 2) }
+          it { expect(subject.theres.map(&:lateral_reaction).map(&:reaction)).
+            to match_array([end_lateral_df, middle_lateral_df]) }
         end
       end
 
