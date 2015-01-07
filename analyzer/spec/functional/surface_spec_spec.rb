@@ -11,44 +11,50 @@ module VersatileDiamond
         interpret_basis
       end
 
-      describe '#position' do
-        describe 'both atoms has lattice' do
-          let(:incomplete) { syntax_error('position.incomplete') }
+      %w(position no-position).each do |relation|
+        describe "##{relation}" do
+          describe 'both atoms has lattice' do
+            let(:incomplete) { syntax_error('position.incomplete') }
 
-          before(:each) do
-            spec.interpret('atoms c1: C%d, c2: C%d')
+            before(:each) do
+              spec.interpret('atoms c1: C%d, c2: C%d')
+            end
+
+            it { expect { spec.interpret("#{relation} :c1, :c2, face: 100") }.
+              to raise_error(*incomplete) }
+
+            it { expect { spec.interpret("#{relation} :c1, :c2, dir: :front") }.
+              to raise_error(*incomplete) }
+
+            it { expect {
+                spec.interpret("#{relation} :c1, :c2, face: 100, dir: :front")
+              }.not_to raise_error }
           end
 
-          it { expect { spec.interpret('position :c1, :c2, face: 100') }.
-            to raise_error(*incomplete) }
+          describe 'only one atom has lattice' do
+            before(:each) do
+              spec.interpret('atoms c1: C%d, c2: C')
+            end
 
-          it { expect { spec.interpret('position :c1, :c2, dir: :front') }.
-            to raise_error(*incomplete) }
+            let(:undefined_relation) do
+              (relation =~ /^no-/) ? non_position_100_front : position_100_front
+            end
 
-          it { expect {
-              spec.interpret('position :c1, :c2, face: 100, dir: :front')
-            }.not_to raise_error }
-        end
-
-        describe 'only one atom has lattice' do
-          before(:each) do
-            spec.interpret('atoms c1: C%d, c2: C')
+            it { expect {
+                spec.interpret("#{relation} :c1, :c2, face: 100, dir: :front")
+              }.to raise_error(*syntax_error(
+                'surface_spec.undefined_relation', relation: undefined_relation))
+            }
           end
 
-          it { expect {
-              spec.interpret('position :c1, :c2, face: 100, dir: :front')
-            }.to raise_error(*syntax_error(
-              'surface_spec.undefined_relation', relation: position_100_front))
-          }
-        end
+          describe 'duplication' do
+            let(:spec) { Interpreter::SurfaceSpec.new(bridge_base) }
 
-        describe 'duplication' do
-          let(:spec) { Interpreter::SurfaceSpec.new(bridge_base) }
-
-          it { expect {
-              spec.interpret('position :cl, :cr, face: 100, dir: :front')
-            }.to raise_error(*syntax_warning(
-              'position.duplicate', face: 100, dir: :front)) }
+            it { expect {
+                spec.interpret("#{relation} :cl, :cr, face: 100, dir: :front")
+              }.to raise_error(*syntax_warning(
+                'position.duplicate', face: 100, dir: :front)) }
+          end
         end
       end
     end

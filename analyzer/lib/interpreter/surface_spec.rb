@@ -16,6 +16,17 @@ module VersatileDiamond
         end
       end
 
+      # Surface structure could have no position between atoms
+      # @param [Array] atoms the array of atom keynames
+      # @option [Symbol] :face the face of position
+      # @option [Symbol] :dir the direction of position
+      # @raise [Errors::SyntaxError] if non position without face or direction
+      define_method(:'no-position') do |*atoms, face: nil, dir: nil|
+        interpret_position_errors do
+          link(*atoms, Concepts::NonPosition[face: face, dir: dir])
+        end
+      end
+
     private
 
       # Matches simple atom with case when it have lattice

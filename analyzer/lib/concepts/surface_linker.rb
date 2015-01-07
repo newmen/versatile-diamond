@@ -51,7 +51,9 @@ module VersatileDiamond
       # @param [Bond] position the relation from first atom to second atom
       # @return [Boolean] has or not
       def has_position?(first, second, position)
-        !!links[first].find { |atom, link| atom == second && link == position }
+        !!links[first].find do |atom, link|
+          atom == second && link.it?(position.params)
+        end
       end
     end
 

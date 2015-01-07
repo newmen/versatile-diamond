@@ -95,6 +95,12 @@ module VersatileDiamond
         face && dir
       end
 
+      # Bond instance aways is exist
+      # @return [Boolean] true
+      def exist?
+        true
+      end
+
       def to_s
         symbol = '-'
         str = symbol.dup

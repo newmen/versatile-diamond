@@ -81,6 +81,7 @@ module VersatileDiamond
             set(:"param_#{face}_#{dir}") { param_hash }
             set(:"bond_#{face}_#{dir}") { Bond[param_hash] }
             set(:"position_#{face}_#{dir}") { Position[param_hash] }
+            set(:"non_position_#{face}_#{dir}") { NonPosition[param_hash] }
           end
         end
 

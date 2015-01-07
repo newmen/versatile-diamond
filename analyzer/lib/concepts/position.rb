@@ -38,13 +38,13 @@ module VersatileDiamond
         end
       end
 
-      # Approximate compares two instances. If their fase and direction is
+      # Approximate compares two instances. If their face and direction is
       # correspond then instances is the same.
       #
       # @param [Concepts::Bond] other an other comparing instances
       # @return [Boolean] same or not
       def same?(other)
-        face == other.face && dir == other.dir
+        exist? == other.exist? && face == other.face && dir == other.dir
       end
 
       # Checks that current position is not a bond

@@ -63,6 +63,7 @@ module VersatileDiamond
       end
 
       describe '#same?' do
+        it { expect(position_100_front.same?(non_position_100_front)).to be_falsey }
         it { expect(position_100_front.same?(position_100_cross)).to be_falsey }
         it { expect(position_100_front.same?(bond_110_front)).to be_falsey }
         it { expect(position_100_front.same?(bond_100_front)).to be_truthy }
@@ -70,6 +71,11 @@ module VersatileDiamond
 
       describe '#belongs_to_crystal?' do
         it { expect(position_100_cross.belongs_to_crystal?).to be_truthy }
+      end
+
+      describe '#exist?' do
+        it { expect(position_100_front.exist?).to be_truthy }
+        it { expect(position_110_cross.exist?).to be_truthy }
       end
     end
 
