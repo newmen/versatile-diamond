@@ -83,6 +83,30 @@ module VersatileDiamond
             end
 
             describe 'in both directions without explicit relation' do
+              subject { dept_intermed_migr_dc_formation }
+              let(:ab) { activated_bridge.atom(:cr) }
+              let(:ad) { activated_methyl_on_dimer.atom(:cr) }
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { activated_bridge }
+                let(:final_graph) do
+                  {
+                    [ab] => [[[ad], param_100_cross]]
+                  }
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { activated_methyl_on_dimer }
+                let(:final_graph) do
+                  {
+                    [ad] => [[[ab], param_100_cross]]
+                  }
+                end
+              end
+            end
+
+            describe 'in both directions with non position relation' do
               subject { dept_intermed_migr_dh_formation }
               let(:ab) { activated_bridge.atom(:cr) }
               let(:ob) { activated_bridge.atom(:cl) }
@@ -160,6 +184,19 @@ module VersatileDiamond
             end
 
             describe 'in both directions without explicit relation' do
+              subject { dept_intermed_migr_dc_formation }
+              let(:points_list) { [[target_spec.atom(:cr)]] }
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { activated_bridge }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { activated_methyl_on_dimer }
+              end
+            end
+
+            describe 'in both directions with no position relation' do
               subject { dept_intermed_migr_dh_formation }
               let(:points_list) { [[target_spec.atom(:cr), target_spec.atom(:cl)]] }
 
@@ -214,6 +251,41 @@ module VersatileDiamond
             end
 
             describe 'in both directions without explicit relation' do
+              subject { dept_intermed_migr_dc_formation }
+              let(:ab) { subject.source.first }
+              let(:amod) { subject.source.last }
+
+              let(:br) { ab.atom(:cr) }
+              let(:dr) { amod.atom(:cr) }
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+                let(:specific_specs) { [amod] }
+                let(:target_spec) { ab }
+                let(:dm) { amod.atom(:cm) }
+                let(:ordered_graph) do
+                  [
+                    [[br], [[[dr], param_100_cross]]],
+                    [[dr], [[[dm], param_amorph]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_bridge_base] }
+                let(:specific_specs) { [ab] }
+                let(:target_spec) { amod }
+                let(:bt) { ab.atom(:ct) }
+                let(:ordered_graph) do
+                  [
+                    [[dr], [[[br], param_100_cross]]],
+                    [[br], [[[bt], param_110_front]]]
+                  ]
+                end
+              end
+            end
+
+            describe 'in both directions with non position relation' do
               subject { dept_intermed_migr_dh_formation }
               let(:ab) { subject.source.first }
               let(:amod) { subject.source.last }
@@ -231,8 +303,7 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[br, bl], [[[dr, dl], param_100_cross]]],
-                    [[dr], [[[dm], param_amorph]]],
-                    [[dl], []]
+                    [[dr], [[[dm], param_amorph]]]
                   ]
                 end
               end
@@ -245,8 +316,7 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[dr, dl], [[[br, bl], param_100_cross]]],
-                    [[br], [[[bt], param_110_front]]],
-                    [[br, bl], []]
+                    [[br], [[[bt], param_110_front]]]
                   ]
                 end
               end
@@ -352,8 +422,7 @@ module VersatileDiamond
                 let(:dm) { adimod.atom(:cm) }
                 let(:ordered_graph) do
                   [
-                    [[br, bl], [[[dl, dr], param_100_cross]]],
-                    [[dr], []]
+                    [[bl, br], [[[dr, dl], param_100_cross]]]
                   ]
                 end
               end
@@ -364,10 +433,9 @@ module VersatileDiamond
                 let(:bm) { amob.atom(:cm) }
                 let(:ordered_graph) do
                   [
-                    [[dl, dr], [[[br, bl], param_100_cross]]],
+                    [[dr, dl], [[[bl, br], param_100_cross]]],
                     [[br], [[[bt], param_110_front]]],
-                    [[bt], [[[bm], param_amorph]]],
-                    [[br, bl], []]
+                    [[bt], [[[bm], param_amorph]]]
                   ]
                 end
               end

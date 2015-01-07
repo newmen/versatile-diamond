@@ -92,6 +92,28 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_intermed_migr_dc_formation }
+            let(:abr) { imdcf_source.first }
+            let(:amod) { imdcf_source.last }
+            let(:ab) { abr.atom(:cr) }
+            let(:ad) { amod.atom(:cr) }
+
+            let(:flatten_face_grouped_atoms) { [[ab, ad]] }
+            let(:nodes_list) do
+              [
+                [UniqueSpecie, ab],
+                [UniqueSpecie, ad]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [ab] => [[[ad], param_100_cross]],
+                [ad] => [[[ab], param_100_cross]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
             subject { dept_intermed_migr_dh_formation }
             let(:abr) { imdhf_source.first }
             let(:amod) { imdhf_source.last }
@@ -100,7 +122,7 @@ module VersatileDiamond
             let(:ad) { amod.atom(:cr) }
             let(:od) { amod.atom(:cl) }
 
-            let(:flatten_face_grouped_atoms) { [[ab, ad]] }
+            let(:flatten_face_grouped_atoms) { [[ad, od], [ab, ob]] }
             let(:nodes_list) do
               [
                 [UniqueSpecie, ab],
