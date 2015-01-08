@@ -14,18 +14,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#self.make_from' do
-        describe 'bond' do
-          subject { Position.make_from(bond_100_front) }
-          it { should == position_100_front }
-        end
-
-        describe 'poisition' do
-          subject { Position.make_from(position_110_cross) }
-          it { should == position_110_cross }
-        end
-      end
-
       describe '#face' do
         it { expect(position_100_front.face).to eq(100) }
         it { expect(position_100_cross.face).to eq(100) }
@@ -51,6 +39,11 @@ module VersatileDiamond
       describe '#params' do
         it { expect(position_110_front.params).to eq(param_110_front) }
         it { expect(position_100_cross.params).to eq(param_100_cross) }
+      end
+
+      describe '#make_position' do
+        it { expect(position_100_front.make_position).to eq(position_100_front) }
+        it { expect(position_110_cross.make_position).to eq(position_110_cross) }
       end
 
       describe '#it?' do

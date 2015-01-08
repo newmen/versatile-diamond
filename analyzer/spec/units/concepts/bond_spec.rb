@@ -57,6 +57,12 @@ module VersatileDiamond
         it { expect(bond_100_cross.params).to eq(param_100_cross) }
       end
 
+      describe '#make_position' do
+        it { expect(bond_100_front.make_position).to eq(position_100_front) }
+        it { expect(bond_110_cross.make_position).to eq(position_110_cross) }
+        it { expect { free_bond.make_position }.to raise_error }
+      end
+
       describe '#it?' do
         subject { bond_110_front }
 

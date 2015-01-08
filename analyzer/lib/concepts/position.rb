@@ -29,13 +29,6 @@ module VersatileDiamond
           raise Incomplete unless face && dir
           super(face: face, dir: dir)
         end
-
-        # Makes a new position from relation
-        # @param [Bond] relation the relation from which position will be maked
-        # @return [Position] a position with same face and dir as relation
-        def make_from(relation)
-          self[relation.params]
-        end
       end
 
       # Approximate compares two instances. If their face and direction is

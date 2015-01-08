@@ -71,9 +71,7 @@ module VersatileDiamond
                   rel = ws.links[sana].find { |a, _| a == wa }.last
 
                   reversed_positions[rsa] ||= []
-                  reversed_positions[rsa] << [
-                    [ws, wa], Position.make_from(rel)
-                  ]
+                  reversed_positions[rsa] << [[ws, wa], rel.make_position]
                   break
                 end
               end

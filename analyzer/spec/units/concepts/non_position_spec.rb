@@ -14,11 +14,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#self.make_from another non position' do
-        subject { NonPosition.make_from(non_position_110_cross) }
-        it { should == non_position_110_cross }
-      end
-
       describe '#face' do
         it { expect(non_position_100_front.face).to eq(100) }
         it { expect(non_position_100_cross.face).to eq(100) }
@@ -45,6 +40,13 @@ module VersatileDiamond
       describe '#params' do
         it { expect(non_position_110_front.params).to eq(param_110_front) }
         it { expect(non_position_100_cross.params).to eq(param_100_cross) }
+      end
+
+      describe '#make_position' do
+        it { expect(non_position_100_front.make_position).
+          to eq(non_position_100_front) }
+        it { expect(non_position_110_cross.make_position).
+          to eq(non_position_110_cross) }
       end
 
       describe '#it?' do

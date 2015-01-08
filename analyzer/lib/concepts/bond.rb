@@ -60,6 +60,12 @@ module VersatileDiamond
         { face: face, dir: dir }
       end
 
+      # Makes position relation from bond relation
+      # @return [Position] the position which correspond to current bond
+      def make_position
+        Position[params]
+      end
+
       # Checks current instances for passed options
       # @option [Symbol] :face the face of instance
       # @option [Symbol] :dir the direction of instance

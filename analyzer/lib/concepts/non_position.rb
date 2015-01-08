@@ -5,6 +5,12 @@ module VersatileDiamond
     # relations between them could be
     class NonPosition < Position
 
+      # Gets self instance
+      # @return [NonPosition] the non position relation
+      def make_position
+        self
+      end
+
       # Non position instance aways isn't exist
       # @return [Boolean] false
       def exist?
