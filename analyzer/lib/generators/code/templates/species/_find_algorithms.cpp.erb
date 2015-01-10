@@ -24,7 +24,9 @@ void <%= class_name %>::findAllTypicalReactions()
 
 void <%= class_name %>::findAllLateralReactions()
 {
-
+<% laterable_typical_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::checkLaterals(this);
+<% end %>
 }
 <% end %>
 <% if local? %>

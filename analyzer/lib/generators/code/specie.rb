@@ -206,6 +206,13 @@ module VersatileDiamond
           (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
+        # Gets list of typical reactions which could be concretized by current specie
+        # @return [Array] the list of laterable typical reactions
+        def laterable_typical_reactions
+          parent_reactions = spec.theres.map(&:lateral_reaction).map(&:parent).compact
+          parent_reactions.reject(&:lateral?).uniq.map(&method(:reaction_class))
+        end
+
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
