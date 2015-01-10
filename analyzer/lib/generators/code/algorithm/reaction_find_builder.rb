@@ -54,23 +54,45 @@ module VersatileDiamond
           # @param [Array] nodes by which procs will be collected
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
-            ordered_graph_from(nodes).reduce([]) do |acc, (ns, rels)|
-              if rels.empty?
-                acc.empty? ? acc : (acc << check_additions(ns))
-              else
-                acc + accumulate_relations(ns, rels)
-              end
+            ordered_graph = ordered_graph_from(nodes)
+            result = ordered_graph.reduce([]) do |acc, (ns, rels)|
+              acc + accumulate_relations(ns, rels)
             end
+
+            pswrs = not_compiences(ordered_graph)
+            if pswrs
+              atoms_to_rels = Hash[pswrs.map { |pair, rel| [pair.last.atom, rel] }]
+              unit = factory.make_unit(pswrs.map(&:first).transpose.last)
+              result << -> &prc { unit.check_compliences(atoms_to_rels, &prc) }
+            end
+            result
           end
 
-          # Checks additional atoms which has added when original grouped graph had
-          # extended
-          #
-          # @param [Array] nodes which will be checked
-          # @return [Proc] the proc that checks passed nodes
-          def check_additions(nodes)
-            unit = factory.make_unit(nodes)
-            -> &block { unit.check_additions(&block) }
+          # Finds non complienced nodes
+          # @param [Array] ordered_graph by which the nodes will be found
+          # @return [Array] the list of nodes pairs with relations or nil
+          def not_compiences(ordered_graph)
+            result = nil
+            ordered_graph.reverse.each do |ns, rels|
+              rels.each do |nbrs, _|
+                next unless ns.size == nbrs.size
+                pswrs = ns.zip(nbrs).map do |pair|
+                  rel = @reaction.relation_between(*pair.map(&method(:spec_atom_from)))
+                  [pair, rel]
+                end
+
+                result = pswrs if pswrs.any? { |_, rel| !rel.exist? }
+              end
+              break if result
+            end
+            result
+          end
+
+          # Makes reaction links graph vertex from passed node
+          # @param [ReactantNode] node from which the links vertex will be gotten
+          # @return [Array] the reaction links graph vertex
+          def spec_atom_from(node)
+            [node.dept_spec.spec, node.atom]
           end
         end
 

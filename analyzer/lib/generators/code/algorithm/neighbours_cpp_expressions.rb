@@ -149,7 +149,8 @@ module VersatileDiamond
             each_nbrs_lambda_call(nbrs, rel_params) do
               condition_str =
                 if defined_nbrs_with_names.empty?
-                  other.check_role_condition
+                  cheking_atoms = append_other(other).map(&:last).map(&:last)
+                  other.check_atoms_roles_of(cheking_atoms)
                 else
                   check_new_names(other, Hash[defined_nbrs_with_names])
                 end
@@ -236,7 +237,7 @@ module VersatileDiamond
             zipped_names = nbrs.map { |a| [nbrs_with_old_names[a], name_of(a)] }
             comp_strs = atoms.zip(nbrs).zip(zipped_names).map do |ats, nms|
               uwas = append_units(other, [ats])
-              op = relation_between(*uwas.first) ? '==' : '!='
+              op = relation_between(*uwas.first).exist? ? '==' : '!='
               nms.join(" #{op} ")
             end
             comp_strs.join(' && ')
@@ -319,6 +320,15 @@ module VersatileDiamond
             pairs.map { |f, t| [[self, f], [other, t]] }
           end
 
+          # Appends other unit
+          # @param [BaseUnit] other unit which will be appended
+          # @return [Array] the appending reault
+          def append_other(other)
+            append_units(other, atoms.zip(other.atoms)).select do |pair|
+              relation_between(*pair).exist?
+            end
+          end
+
           # Makes code string with checking bond between passed atoms
           # @param [Array] atoms the array with two atoms between which the bond will
           #   be checked
@@ -362,13 +372,6 @@ module VersatileDiamond
           # @return [String] the string with cpp call
           def crystal_call
             "crystalBy(#{name_of(target_atom)})"
-          end
-
-          # Appends other unit
-          # @param [BaseUnit] other unit which will be appended
-          # @return [Array] the appending reault
-          def append_other(other)
-            append_units(other, atoms.zip(other.atoms))
           end
 
           # Appends condition of checking bond exsistance between each atoms in passed
