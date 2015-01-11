@@ -127,7 +127,8 @@ module VersatileDiamond
         ])
 
         define_dependent_theres([
-          [:on_end, :end_lateral_df]
+          [:on_end, :end_lateral_df],
+          [:on_middle, :middle_lateral_df]
         ])
       end
 
