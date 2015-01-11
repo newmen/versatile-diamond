@@ -12,17 +12,19 @@ module VersatileDiamond
       # @param [Atom] first the first of two linking atoms
       # @param [Atom] second the second of two linking atoms
       # @param [Bond] relation the instance of relation
+      # @option [Boolean] :check_possible is flag that another positions should be
+      #   checked
       # @raise [Lattices::Base::UndefinedRelation] if used relation instance is
       #   wrong for current lattice
       # @raise [Position::Duplicate] if same position already exist
-      def link_together(first, second, relation)
+      def link_together(first, second, relation, check_possible: true)
         orel = opposite_relation(first, second, relation)
 
-        if !relation.bond? && has_positions?(first, second, relation, orel)
+        if !relation.bond? && has_relations?(first, second, relation, orel)
           raise Position::Duplicate, relation
         end
 
-        unless relation.exist? || position_presented?
+        if check_possible && !(relation.exist? || position_presented?)
           raise NonPosition::Impossible
         end
 
@@ -42,29 +44,29 @@ module VersatileDiamond
       # If so, must have relations in both directions
       # @param [Atom] first the first atom
       # @param [Atom] second the second atom
-      # @param [Array] positions the array with two positions
+      # @param [Array] relations the array with two relations
       # @return [Boolean] has or not
-      def has_positions?(first, second, *positions)
-        a = has_position?(first, second, positions.first)
-        b = has_position?(second, first, positions.last)
+      def has_relations?(first, second, *relations)
+        a = has_relation?(first, second, relations.first)
+        b = has_relation?(second, first, relations.last)
 
         if a && b
           true
         elsif a || b
-          raise 'Checking positions ERROR'
+          raise 'Checking relations ERROR'
         else
           false
         end
       end
 
-      # Check availability of passed position between atoms
+      # Check availability of passed relation between atoms
       # @param [Atom] first the first atom
       # @param [Atom] second the second atom
-      # @param [Bond] position the relation from first atom to second atom
+      # @param [Bond] relation the relation from first atom to second atom
       # @return [Boolean] has or not
-      def has_position?(first, second, position)
+      def has_relation?(first, second, relation)
         !!links[first].find do |atom, link|
-          atom == second && link.it?(position.params)
+          atom == second && link.it?(relation.params)
         end
       end
     end

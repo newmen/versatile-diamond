@@ -250,7 +250,7 @@ module VersatileDiamond
           small_specs, small_atoms = small_pairs.transpose
           if reaction.all_latticed?(*small_atoms)
             next if small_specs.first == small_specs.last
-            reaction.position_between(*small_pairs, position)
+            reaction.position_between(*small_pairs, position, check_possible: false)
           else
             deep_find_positions(reaction, main_spec, main_atoms, position)
           end
@@ -301,7 +301,8 @@ module VersatileDiamond
           end
 
           # TODO: checkthe fact that position changes to cross for not diamond lattice
-          reaction.position_between(*deep_small_pairs, position.cross)
+          reaction.position_between(*deep_small_pairs, position.cross,
+            check_possible: false)
         end
       end
 
