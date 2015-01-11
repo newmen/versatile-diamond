@@ -1,9 +1,12 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Instance of class is refinement for environment which contain raw
     # positions of target atoms to some atoms of around specs
     class Where < Named
+      include Modules::ListsComparer
       include SpecAtomSwapper
 
       attr_reader :description, :parents, :specs
@@ -69,6 +72,21 @@ module VersatileDiamond
         There.new(self, positions)
       end
 
+      # Compares raw positions between self and other where objects
+      # @param [Where] other where object which raw positions will be checked
+      # @return [Boolean] are same raw positions or not
+      # TODO: valid comparison?
+      def same_positions?(other)
+        return false unless same_specs?(other)
+
+        orp = other.raw_positions.dup
+        raw_positions.all? do |target, spec_atom, position|
+          orp.delete_one do |t, sa, p|
+            t == target && p == position && same_spec_atoms?(spec_atom, sa)
+          end
+        end
+      end
+
     protected
 
       attr_reader :raw_positions
@@ -86,6 +104,31 @@ module VersatileDiamond
       # @return [Array] the array with reduced values
       def parents_reduce(method)
         parents.reduce([]) { |acc, parent| acc + parent.send(method) }
+      end
+
+      # Compares specs of current and other where objects
+      # @param [Where] other where object which specs will be checked
+      # @return [Boolean] are same specs or not
+      def same_specs?(other)
+        lists_are_identical?(specs, other.specs, &:same?)
+      end
+
+      # Compares two spec_atom instances
+      # @param [Array] first spec_atom instance
+      # @param [Array] second spec_atom instance
+      # @return [Boolean] are identical spec_atom instances or not
+      def same_spec_atoms?(first, second)
+        sf, ss = first.first, second.first
+        return false unless sf.links.size == ss.links.size
+
+        args = [sf, ss, { collaps_multi_bond: true }]
+        insecs = Mcs::SpeciesComparator.intersec(*args)
+        return false unless sf.links.size == insecs.first.size
+
+        af, as = first.last, second.last
+        insecs.any? do |intersec|
+          intersec.any? { |f, t| f == af && t == as }
+        end
       end
     end
 
