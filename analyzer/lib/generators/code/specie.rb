@@ -237,6 +237,12 @@ module VersatileDiamond
           !spec.theres.empty?
         end
 
+        # Gets the where object logic generators
+        # @return [Array] the list of where object logic generators
+        def wheres
+          spec.theres.map(&:where).uniq
+        end
+
         # Makes base classes for current specie class instance
         # @return [String] combined base classes of engine framework
         def base_class_name
