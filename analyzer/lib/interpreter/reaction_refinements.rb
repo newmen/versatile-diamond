@@ -30,12 +30,31 @@ module VersatileDiamond
       # Sets the position of atoms relative to each other for the current
       # reaction concept
       #
+      # @param [Array] used_atom_strs see at #position_by same argument
+      # @param [Hash] options see at #position_by same argument
+      def position(*used_atom_strs, **options)
+        position_by(Concepts::Position, *used_atom_strs, **options)
+      end
+
+      # Sets no position of atoms relative to each other for the current
+      # reaction concept
+      #
+      # @param [Array] used_atom_strs see at #position_by same argument
+      # @param [Hash] options see at #position_by same argument
+      define_method(:'no-position') do |*used_atom_strs, **options|
+        position_by(Concepts::NonPosition, *used_atom_strs, **options)
+      end
+
+    private
+
+      # Sets the position relation between atoms
+      # @param [Class] klass of position relation
       # @param [Array] used_atom_strs the array of string where each string
       #   matched for atom used in specific spec
       # @param [Hash] options the options of position
       # @raise [Errors::SyntaxError] if position already exists for selected
       #   atoms or atom cannot be found
-      def position(*used_atom_strs, **options)
+      def position_by(klass, *used_atom_strs, **options)
         first_spec_atom, second_spec_atom =
           used_atom_strs.map do |atom_str|
             specific_spec, atom_keyname = find_any_spec(atom_str)
@@ -47,12 +66,10 @@ module VersatileDiamond
         current = current_reaction(first_spec, second_spec)
 
         interpret_position_errors do
-          pos = Concepts::Position[options]
+          pos = klass[options]
           current.position_between(first_spec_atom, second_spec_atom, pos)
         end
       end
-
-    private
 
       # Gets current reaction by passed species
       # @param [Array] specs the array of species which should be the source

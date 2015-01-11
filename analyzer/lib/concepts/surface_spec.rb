@@ -23,7 +23,7 @@ module VersatileDiamond
       # @return [Position] the position relation or nil
       def position_between(first, second)
         relation = relation_between(first, second)
-        relation && relation.belongs_to_crystal? && Position.make_from(relation)
+        relation && relation.belongs_to_crystal? && relation.make_position
       end
 
     protected

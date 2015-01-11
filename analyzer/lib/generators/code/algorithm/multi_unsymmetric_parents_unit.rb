@@ -7,6 +7,7 @@ module VersatileDiamond
         # @abstract
         class MultiUnsymmetricParentsUnit < MultiParentSpeciesUnit
           include MultiParentSpeciesCppExpressions
+          include SymmetricCppExpressions
 
           # Also defines cache variable...
           def initialize(*)
@@ -19,9 +20,11 @@ module VersatileDiamond
           # @return [String] the string with cpp code
           # @override
           def check_species(&block)
-            define_and_check_all_parents do
-              define_avail_atoms_line + block.call
-            end
+            procs = []
+            procs << -> &prc { define_and_check_all_parents(&prc) }
+            procs += symmetric_procs
+
+            reduce_procs(procs) { define_avail_atoms_line + block.call }.call
           end
 
           def inspect
@@ -36,6 +39,22 @@ module VersatileDiamond
           # @return [Array] the list of atoms which used in specie
           def using_specie_atoms
             @_using_specie_atoms ||= original_specie.using_atoms
+          end
+
+          # Gets list of procs where iterates symmetries of parent species
+          # @return [Array] the list of procs
+          def symmetric_procs
+            other_atoms = using_specie_atoms - [target_atom]
+            all_pwts = other_atoms.map { |a| parent_with_twin_for(a) }
+
+            parent_species.each_with_object([]) do |parent, acc|
+              twins = all_pwts.select { |pr, _| pr == parent }.map(&:last)
+              if twins.any? { |a| parent.symmetric_atom?(a) }
+                acc << -> &prc do
+                  each_symmetry_lambda(parent, closure_on_scope: true, &prc)
+                end
+              end
+            end
           end
 
           # Gets a cpp code that defines all anchors available from passed species

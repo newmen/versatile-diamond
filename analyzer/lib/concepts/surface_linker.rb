@@ -22,10 +22,22 @@ module VersatileDiamond
           raise Position::Duplicate, relation
         end
 
+        unless relation.exist? || position_presented?
+          raise NonPosition::Impossible
+        end
+
         link_with_other(first, second, relation, orel)
       end
 
     private
+
+      # Checks that any position relation is presented
+      # @return [Boolean] is position presented in links graph or not
+      def position_presented?
+        links.any? do |_, rels|
+          rels.any? { |_, r| r.relation? && !r.bond? && r.exist? }
+        end
+      end
 
       # If so, must have relations in both directions
       # @param [Atom] first the first atom
@@ -51,7 +63,9 @@ module VersatileDiamond
       # @param [Bond] position the relation from first atom to second atom
       # @return [Boolean] has or not
       def has_position?(first, second, position)
-        !!links[first].find { |atom, link| atom == second && link == position }
+        !!links[first].find do |atom, link|
+          atom == second && link.it?(position.params)
+        end
       end
     end
 

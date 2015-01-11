@@ -15,6 +15,8 @@ module VersatileDiamond
         syntax_warning('position.duplicate', e.position.params)
       rescue Concepts::Position::UnspecifiedAtoms
         syntax_error('position.unspecified_atoms')
+      rescue Concepts::NonPosition::Impossible
+        syntax_error('non_position.impossible')
       end
     end
 

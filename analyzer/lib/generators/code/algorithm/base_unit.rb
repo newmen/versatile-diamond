@@ -39,16 +39,19 @@ module VersatileDiamond
             atoms.all?(&:lattice)
           end
 
-          # Gets the list of atoms which belongs to anchors of target concept
-          # @return [Array] the list of atoms that belonga to anchors
-          def role_atoms
-            atoms
-          end
-
           # Gets cpp code string that contains the call of method for check roled atom
           # @return [String] the string with cpp condition
           def check_role_condition
-            check_atoms_roles_of(role_atoms)
+            check_atoms_roles_of(atoms)
+          end
+
+          # Gets a cpp code string that contains the call of method for check atom role
+          # @param [Array] atoms which role will be checked in code
+          # @return [String] the string with cpp condition
+          def check_atoms_roles_of(atoms)
+            combine_condition(atoms, '&&') do |var, atom|
+              "#{var}->is(#{role(atom)})"
+            end
           end
 
         private
@@ -59,15 +62,6 @@ module VersatileDiamond
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             name_of(obj) || 'undef'
-          end
-
-          # Gets a cpp code string that contains the call of method for check atom role
-          # @param [Array] atoms which role will be checked in code
-          # @return [String] the string with cpp condition
-          def check_atoms_roles_of(atoms)
-            combine_condition(atoms, '&&') do |var, atom|
-              "#{var}->is(#{role(atom)})"
-            end
           end
 
           # Gets the index of passed atom from generator's classifer by original spec
