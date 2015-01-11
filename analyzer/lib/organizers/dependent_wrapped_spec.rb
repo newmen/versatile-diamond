@@ -6,7 +6,7 @@ module VersatileDiamond
     class DependentWrappedSpec < DependentSpec
       include Minuend
 
-      collector_methods :child
+      collector_methods :there, :child
       def_delegators :@spec, :external_bonds, :relation_between
       attr_reader :links
 
@@ -15,7 +15,7 @@ module VersatileDiamond
       def initialize(*)
         super
         @links = straighten_graph(spec.links)
-        @rest, @children = nil
+        @theres, @children, @rest = nil
       end
 
       # Clones the current instance but replace internal spec and change all atom
