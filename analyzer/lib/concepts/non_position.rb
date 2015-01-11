@@ -5,6 +5,9 @@ module VersatileDiamond
     # relations between them could be
     class NonPosition < Position
 
+      # When another positions isn't presented
+      class Impossible < Errors::Base; end
+
       # Gets self instance
       # @return [NonPosition] the non position relation
       def make_position

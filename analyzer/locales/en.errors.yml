@@ -53,6 +53,9 @@ en:
     incomplete: "Necessary to characterize the position of atoms relative to each other"
     unspecified_atoms: "Incorrect linking unspecified atoms"
 
+  non_position:
+    impossible: "Wrong using \"non posssion\" before using real positions between atoms"
+
   lattice:
     need_define_class: "Necessary to define class when defining new lattice"
 
