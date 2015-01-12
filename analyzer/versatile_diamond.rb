@@ -62,6 +62,19 @@ def VersatileDiamond.const_missing(class_name, dir = nil)
   raise "#{class_name} is not found (it's realy!)"
 end
 
+# Global hook for autoload classes and modules
+# @param [Symbol] class_name which should be found
+# @return [Module] the found class or module instance
+def Object.const_missing(class_name)
+  VersatileDiamond.const_missing(class_name)
+end
+
+def define_module(name)
+  name.split('::').reverse.reduce('module Support; end') do |acc, part|
+    "module #{part}; #{acc} end"
+  end
+end
+
 # Defines all using modules which uses as namespaces
 RSPEC_SUPPORT_DIR = 'spec/support'
 AUTO_LOADING_DIRS.each do |dir|
@@ -70,8 +83,7 @@ AUTO_LOADING_DIRS.each do |dir|
   support_dir = dir.sub(%r{\A#{LIB_DIR}/}, "#{RSPEC_SUPPORT_DIR}/")
 
   eval <<-DEFINE
-    module #{module_name}; end
-    module #{support_module_name}; end
+    #{define_module(module_name)}
 
     def (#{module_name}).const_missing(class_name)
       VersatileDiamond.const_missing(class_name, '#{dir}')
@@ -83,11 +95,6 @@ AUTO_LOADING_DIRS.each do |dir|
   DEFINE
 end
 
-# Global hook for autoload classes and modules
-# @param [Symbol] class_name which should be found
-# @return [Module] the found class or module instance
-def Object.const_missing(class_name)
-  VersatileDiamond.const_missing(class_name)
-end
+puts 'All modules successfully loaded'
 
-require_each 'lib/**/*.rb'
+require_each "#{LIB_DIR}/**/*.rb"

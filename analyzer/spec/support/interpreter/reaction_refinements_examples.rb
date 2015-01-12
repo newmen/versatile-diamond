@@ -65,55 +65,54 @@ module VersatileDiamond
             end
           end
 
-          describe '#position' do
-            subject { described_class.new(dimer_formation, df_names_to_specs) }
+          %w(position no-position).each do |relation|
+            describe "##{relation}" do
+              subject { described_class.new(dimer_formation, df_names_to_specs) }
 
-            describe 'duplication' do
-              it { expect {
-                  subject.interpret(
-                    'position b2(:ct), b1(:ct), face: 100, dir: :front')
-                }.to raise_error(*syntax_warning(
-                  'position.duplicate', face: 100, dir: 'front')) }
-            end
-
-            describe 'incomplete' do
-              it { expect {
-                  subject.interpret('position b2(:ct), b1(:ct), face: 100')
-                }.to raise_error(*syntax_error('position.incomplete')) }
-            end
-
-            describe 'wrong atom keyname' do
-              it { expect {
-                  subject.interpret(
-                    'position b1(:wrong), b2(:ct), face: 100, dir: front')
-                }.to raise_error(*syntax_error(
-                  'matcher.undefined_used_atom', name: 'b1(:wrong)')) }
-
-              it { expect {
-                  subject.interpret(
-                    'position b1(:ct), b2(:wrong), face: 100, dir: front')
-                }.to raise_error(*syntax_error(
-                  'matcher.undefined_used_atom', name: 'b2(:wrong)')) }
-            end
-
-            describe 'different equation parts' do
-              it { expect {
-                  subject.interpret(
-                    'position b1(:ct), d(:cl), face: 100, dir: front')
-                }.to raise_error(*syntax_error(
-                  'refinement.different_parts', name: 'b2(:wrong)')) }
-
-            end
-
-            describe 'between surface and gas' do
-              subject do
-                described_class.new(methyl_desorption, md_names_to_specs)
+              describe 'duplication' do
+                it { expect {
+                    subject.interpret(
+                      "#{relation} b2(:ct), b1(:ct), face: 100, dir: :front")
+                  }.to raise_error(*syntax_warning(
+                    'position.duplicate', face: 100, dir: 'front')) }
               end
 
-              it { expect {
-                  subject.interpret(
-                    'position m(:c), b(:ct), face: 100, dir: front')
-                }.to raise_error(*syntax_error('position.unspecified_atoms')) }
+              describe 'incomplete' do
+                it { expect {
+                    subject.interpret("#{relation} b2(:ct), b1(:ct), face: 100")
+                  }.to raise_error(*syntax_error('position.incomplete')) }
+              end
+
+              describe 'wrong atom keyname' do
+                it { expect {
+                    subject.interpret(
+                      "#{relation} b1(:wrong), b2(:ct), face: 100, dir: front")
+                  }.to raise_error(*syntax_error(
+                    'matcher.undefined_used_atom', name: 'b1(:wrong)')) }
+
+                it { expect {
+                    subject.interpret(
+                      "#{relation} b1(:ct), b2(:wrong), face: 100, dir: front")
+                  }.to raise_error(*syntax_error(
+                    'matcher.undefined_used_atom', name: 'b2(:wrong)')) }
+              end
+
+              describe 'different equation parts' do
+                it { expect {
+                    subject.interpret(
+                      "#{relation} b1(:ct), d(:cl), face: 100, dir: front")
+                  }.to raise_error(*syntax_error(
+                    'refinement.different_parts', name: 'b2(:wrong)')) }
+              end
+
+              describe 'between surface and gas' do
+                subject { described_class.new(methyl_desorption, md_names_to_specs) }
+
+                it { expect {
+                    subject.interpret(
+                      "#{relation} m(:c), b(:ct), face: 100, dir: front")
+                  }.to raise_error(*syntax_error('position.unspecified_atoms')) }
+              end
             end
           end
         end

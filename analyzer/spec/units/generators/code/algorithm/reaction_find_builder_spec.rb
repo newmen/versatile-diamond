@@ -143,6 +143,55 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              subject { dept_intermed_migr_dc_formation }
+              let(:target_spec) { dept_activated_bridge }
+              let(:other_spec) { dept_activated_methyl_on_dimer }
+              let(:find_algorithm) do
+                <<-CODE
+    target->eachSymmetry([](SpecificSpec *specie1) {
+        Atom *anchor = specie1->atom(2);
+        eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+            if (neighbour1->is(#{other_role_cr}))
+            {
+                Atom *amorph1 = neighbour1->amorphNeighbour();
+                if (amorph1->is(#{other_role_cm}))
+                {
+                    SpecificSpec *targets[2] = { amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm}), specie1 };
+                    create<ForwardIntermedMigrDcFormation>(targets);
+                }
+            }
+        });
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              subject { dept_intermed_migr_dc_formation }
+              let(:target_spec) { dept_activated_methyl_on_dimer }
+              let(:other_spec) { dept_activated_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchor = target->atom(1);
+    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_cr}))
+        {
+            eachNeighbour(neighbour1, &Diamond::front_110, [&](Atom *neighbour2) {
+                if (neighbour2->is(#{other_role_ct}) && neighbour1->hasBondWith(neighbour2))
+                {
+                    SpecificSpec *targets[2] = { target, neighbour2->specByRole<BridgeCTs>(#{other_role_ct}) };
+                    create<ForwardIntermedMigrDcFormation>(targets);
+                }
+            });
+        }
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
               subject { dept_intermed_migr_dh_formation }
               let(:target_spec) { dept_activated_bridge }
               let(:other_spec) { dept_activated_methyl_on_dimer }

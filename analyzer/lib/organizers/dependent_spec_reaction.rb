@@ -27,6 +27,7 @@ module VersatileDiamond
       # between atoms
       #
       # @return [Hash] the most full relations graph between atoms of reactnats
+      # TODO: must be private
       def links
         @_links ||=
           surface_source.each_with_object(reaction.links.dup) do |spec, result|
@@ -38,9 +39,8 @@ module VersatileDiamond
           end
       end
 
-      # Collects links positions used atoms of reactants, for clearing total links
+      # Collects links of positions between atoms of reactants for clearing
       # @return [Hash] the relations graph between used atoms of reactnats
-      # TODO: must be private
       def original_links
         return @_original_links if @_original_links
 

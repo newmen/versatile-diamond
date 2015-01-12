@@ -177,24 +177,31 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_finite_graph do
-                subject { dept_intermed_migr_down_half_base }
+                subject { dept_intermed_migr_down_common_base }
                 let(:final_graph) do
                   {
                     [cm] => [],
-                    [cdr, cdl] => [[[cbr, cbl], param_100_cross]],
-                    [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                    [cdr] => [[[cbr], param_100_cross]],
+                    [cbr] => [[[cdr], param_100_cross]]
                   }
                 end
               end
 
-              it_behaves_like :check_finite_graph do
-                subject { dept_intermed_migr_down_full_base }
+              describe 'both lower atoms are related' do
                 let(:final_graph) do
                   {
                     [cm] => [],
                     [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
                     [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
                   }
+                end
+
+                it_behaves_like :check_finite_graph do
+                  subject { dept_intermed_migr_down_half_base }
+                end
+
+                it_behaves_like :check_finite_graph do
+                  subject { dept_intermed_migr_down_full_base }
                 end
               end
             end
@@ -345,22 +352,29 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_ordered_graph do
-                subject { dept_intermed_migr_down_half_base }
+                subject { dept_intermed_migr_down_common_base }
                 let(:ordered_graph) do
                   [
                     [[cm], []],
-                    [[cdr, cdl], [[[cbr, cbl], param_100_cross]]]
+                    [[cdr], [[[cbr], param_100_cross]]]
                   ]
                 end
               end
 
-              it_behaves_like :check_ordered_graph do
-                subject { dept_intermed_migr_down_full_base }
+              describe 'both lower atoms are related' do
                 let(:ordered_graph) do
                   [
                     [[cm], []],
                     [[cbr, cbl], [[[cdr, cdl], param_100_cross]]]
                   ]
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  subject { dept_intermed_migr_down_half_base }
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  subject { dept_intermed_migr_down_full_base }
                 end
               end
             end

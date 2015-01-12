@@ -57,6 +57,12 @@ module VersatileDiamond
         it { expect(bond_100_cross.params).to eq(param_100_cross) }
       end
 
+      describe '#make_position' do
+        it { expect(bond_100_front.make_position).to eq(position_100_front) }
+        it { expect(bond_110_cross.make_position).to eq(position_110_cross) }
+        it { expect { free_bond.make_position }.to raise_error }
+      end
+
       describe '#it?' do
         subject { bond_110_front }
 
@@ -69,11 +75,19 @@ module VersatileDiamond
       describe '#same?' do
         it { expect(free_bond.same?(bond_110_front)).to be_truthy }
         it { expect(bond_110_front.same?(free_bond)).to be_truthy }
+        it { expect(bond_110_front.same?(position_110_front)).to be_truthy }
+        it { expect(bond_110_front.same?(position_100_front)).to be_falsey }
+        it { expect(bond_110_front.same?(non_position_110_front)).to be_falsey }
       end
 
       describe '#belongs_to_crystal?' do
         it { expect(free_bond.belongs_to_crystal?).to be_falsey }
         it { expect(bond_100_front.belongs_to_crystal?).to be_truthy }
+      end
+
+      describe '#exist?' do
+        it { expect(free_bond.exist?).to be_truthy }
+        it { expect(bond_100_front.exist?).to be_truthy }
       end
     end
 

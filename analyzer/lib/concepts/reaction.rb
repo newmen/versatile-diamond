@@ -48,18 +48,20 @@ module VersatileDiamond
       # @param [Array] second the array with second spec and atom
       # @param [Position] position the position relation between atoms of both
       #   species
+      # @option [Boolean] :check_possible is flag that another positions should be
+      #   checked
       # @raise [RuntimeError] if linking atoms belongs to one spec
       # @raise [Lattices::Base::UndefinedRelation] if used relation instance is
       #   wrong for current lattice
       # @raise [Position::Duplicate] if same position already exist
       # @raise [Position::UnspecifiedAtoms] if not all atoms belongs to crystal
       #   lattice
-      def position_between(first, second, position)
+      def position_between(first, second, position, check_possible: true)
         if @mapping.reaction_type == :dissociation
           raise 'Cannot link atoms of single structure'
         end
 
-        link_together(first, second, position)
+        link_together(first, second, position, check_possible: check_possible)
         return if @mapping.reaction_type == :association
 
         first = @mapping.other_side(*first)
@@ -200,7 +202,7 @@ module VersatileDiamond
       # @raise [Position::UnspecifiedAtoms] if first or second atom isn't
       #   specified by lattice
       # @override
-      def link_together(first, second, position)
+      def link_together(first, second, position, **)
         raise Position::UnspecifiedAtoms unless all_latticed?(first.last, second.last)
 
         @links[first] ||= []

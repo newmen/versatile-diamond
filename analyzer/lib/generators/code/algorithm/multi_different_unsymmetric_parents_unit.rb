@@ -19,7 +19,7 @@ module VersatileDiamond
           end
 
           def inspect
-            "MICUPSU:(#{inspect_target_atom_and_parents_names})"
+            "MDUPSU:(#{inspect_target_atom_and_parents_names})"
           end
 
         private

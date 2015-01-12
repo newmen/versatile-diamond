@@ -16,13 +16,6 @@ module VersatileDiamond
             dept_spec_for(atom).spec
           end
 
-          # Gets the all self-atom pairs combination list
-          # @return [Array] the list of all possible combinations of self unit and
-          #    each role atom with self unit and other role atom
-          def self_with_atoms_combination
-            role_atoms.combination(2).map { |pair| [self, self].zip(pair) }
-          end
-
           # Checks that other unit has an atom which also available by passed relation
           # and if is truthy then returns linked atom
           #
