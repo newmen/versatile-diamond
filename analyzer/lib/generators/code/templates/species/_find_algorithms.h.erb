@@ -2,7 +2,7 @@ public:
     static void find(<%= find_arguments_str %>);
 <% if sidepiece? %>
 <% wheres.each do |where| %>
-    template <class L> static void <%= where.nameAndSignature %>;
+    template <class L> static void <%= where.signature %>;
 <% end %>
 <% end %>
 

@@ -38,7 +38,7 @@ module VersatileDiamond
             @essence = Essence.new(self)
           end
 
-          @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
+          @_class_name, @_enum_name, @_file_name, @_used_iterators, @_wheres = nil
           @_find_builder = nil
         end
 
@@ -240,7 +240,7 @@ module VersatileDiamond
         # Gets the where object logic generators
         # @return [Array] the list of where object logic generators
         def wheres
-          spec.theres.map(&:where).uniq
+          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(wh) }
         end
 
         # Makes base classes for current specie class instance

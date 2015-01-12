@@ -27,7 +27,7 @@ public:
 <% wheres.each do |where| %>
 
 template <class L>
-void <%= class_name %>::<%= where.nameAndSignature %>
+void <%= class_name %>::<%= where.signature %>
 {
 <%= where.algorithm %>
 }
