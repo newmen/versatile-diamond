@@ -3,11 +3,11 @@ module VersatileDiamond
 
     # Also contained positions between the reactants
     class Reaction < UbiquitousReaction
-      extend Forwardable
-
+      include Modules::GraphDupper
       include Linker
       include SurfaceLinker
       include SpecAtomSwapper
+      extend Forwardable
 
       # type of reaction could be only for not ubiquitous reaction
       attr_reader :type, :links
@@ -295,8 +295,7 @@ module VersatileDiamond
         products_dup = dup_and_save[:products, @products]
 
         mapping = @mapping.duplicate(mirrors)
-        [mirrors,
-          @type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
+        [mirrors, @type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
       end
 
       # Setups duplicated reaction
@@ -306,18 +305,10 @@ module VersatileDiamond
       # @return [Reaction] setuped duplicated reaction
       def setup_duplication(duplication, mirrors)
         old_to_dup = mirrors.values.reduce(&:merge)
-        dup_spec_atom = -> old_spec, old_atom do
+        duplication.links = dup_graph(@links) do |old_spec, old_atom|
           dup_spec = old_to_dup[old_spec]
           [dup_spec, dup_spec.atom(old_spec.keyname(old_atom))]
         end
-
-        links_dup = @links.map do |spec_atom1, links|
-          ld = links.map do |spec_atom2, link|
-            [dup_spec_atom[*spec_atom2], link]
-          end
-          [dup_spec_atom[*spec_atom1], ld]
-        end
-        duplication.links = Hash[links_dup]
 
         @children ||= []
         @children << duplication
