@@ -49,35 +49,28 @@ module VersatileDiamond
       # @override
       def reverse_params
         reversed_theres = theres.map do |there|
-          reversed_positions = {}
-          there.positions.each do |spec_atom, links|
-            spec, atom = @mapping.other_side(*spec_atom)
-            if atom.lattice
-              reversed_positions[[spec, atom]] = links
+          reversed_refs = {}
+          there.target_refs.each do |target, (spec, atom)|
+            other_side_spec_atom = mapping.other_side(spec, atom)
+            if other_side_spec_atom.last.lattice
+              reversed_refs[target] = other_side_spec_atom
             else
-              os, oa = spec_atom # original spec and original atom
-              # for each spec of environment
-              links.each do |(ws, wa), _|
-                # finds another position between latticed atom of original
-                # spec and atom of environment spec
-                os.links[oa].each do |na, nl|
-                  next unless na.lattice
-                  rsa = @mapping.other_side(os, na)
-                  next unless rsa[1].lattice
-                  # skip atom if it already used for connecting environment
-                  next if there.positions[[os, na]] || reversed_positions[rsa]
+              # finds another position between latticed atom of original
+              # spec and atom of environment spec
+              spec.links[atom].each do |na, nl|
+                next unless na.lattice
+                next if there.target_refs.values.include?([spec, na])
 
-                  sana = ws.links[wa].find { |_, wl| wl == nl }.first
-                  rel = ws.links[sana].find { |a, _| a == wa }.last
+                nbr_spec_atom = mapping.other_side(spec, na)
+                next unless nbr_spec_atom.last.lattice
+                # skip atom if it already used for connecting environment
+                next if reversed_refs.values.include?(nbr_spec_atom)
 
-                  reversed_positions[rsa] ||= []
-                  reversed_positions[rsa] << [[ws, wa], rel.make_position]
-                  break
-                end
+                reversed_refs[target] = nbr_spec_atom
               end
             end
           end
-          There.new(there.where, reversed_positions)
+          There.new(there.where, reversed_refs)
         end
 
         [*super, reversed_theres]

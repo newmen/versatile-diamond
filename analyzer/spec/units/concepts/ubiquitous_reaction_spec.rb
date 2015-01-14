@@ -73,11 +73,11 @@ module VersatileDiamond
         it { expect(collected_source).to match_array([active_bond, hydrogen_ion]) }
       end
 
-      describe '#similar_source' do
+      describe '#use_similar_source?' do
         subject { surface_activation }
-        it { expect(subject.similar_source(hydrogen_ion)).to eq(hydrogen_ion) }
-        it { expect(subject.similar_source(hydrogen_ion.dup)).to be_nil}
-        it { expect(subject.similar_source(active_bond)).to be_nil }
+        it { expect(subject.use_similar_source?(hydrogen_ion)).to be_truthy }
+        it { expect(subject.use_similar_source?(hydrogen_ion.dup)).to be_falsey}
+        it { expect(subject.use_similar_source?(active_bond)).to be_falsey }
       end
 
       describe '#swap_source' do

@@ -5,7 +5,7 @@ module VersatileDiamond
     class DependentThere
       extend Forwardable
 
-      def_delegators :@there, :where, :swap_source, :similar_source
+      def_delegators :@there, :where, :swap_source, :use_similar_source?
       attr_reader :lateral_reaction
       # attr_reader :there
 

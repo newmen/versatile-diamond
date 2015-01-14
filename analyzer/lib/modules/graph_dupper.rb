@@ -23,7 +23,11 @@ module VersatileDiamond
       # @yield [Object] the block by which the passed vertex will be duplicated or
       #   will be used Object#dup by default
       def dup_vertex(vertex, &block)
-        block_given? ? block[vertex] : vertex.dup
+        if block_given?
+          block[vertex]
+        else
+          vertex.is_a?(Symbol) ? vertex : vertex.dup
+        end
       end
     end
 

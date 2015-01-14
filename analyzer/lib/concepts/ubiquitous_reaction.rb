@@ -105,9 +105,9 @@ module VersatileDiamond
 
       # Checks that passed spec is used in current reaction
       # @param [SpecificSpec] spec which will be checked
-      # @return [SpecificSpec] the found result or nil
-      def similar_source(spec)
-        @source.find { |s| s == spec }
+      # @return [Boolan] is used similar source spec or not
+      def use_similar_source?(spec)
+        @source.any? { |s| s == spec }
       end
 
       # Swaps source spec to another same source spec

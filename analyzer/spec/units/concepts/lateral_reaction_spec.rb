@@ -38,7 +38,7 @@ module VersatileDiamond
               ],
             }
           end
-          it { expect(there.positions).to match_graph(positions) }
+          it { expect(there.links).to match_graph(positions) }
         end
 
         describe "reverced atom haven't lattice" do
@@ -68,7 +68,7 @@ module VersatileDiamond
               ],
             }
           end
-          it { expect(there.positions).to match_graph(positions) }
+          it { expect(there.links).to match_graph(positions) }
         end
       end
 
