@@ -4,6 +4,21 @@ module VersatileDiamond
     # Describes reaction which has a some environment expresed by there objects
     class LateralReaction < Reaction
 
+      # Raises when target atom of sidepiece there object haven't lattice
+      class ReversingError < Errors::Base
+        attr_reader :spec
+        def initialize(spec, atom)
+          @spec = spec
+          @atom = atom
+        end
+
+        # Gets the keyname of invalid atom
+        # @return [Symbol] the keyname of atom
+        def keyname
+          @spec.keyname(@atom)
+        end
+      end
+
       attr_reader :theres
 
       # Among super, keeps the atom map
@@ -55,21 +70,10 @@ module VersatileDiamond
             if other_side_spec_atom.last.lattice
               reversed_refs[target] = other_side_spec_atom
             else
-              # finds another position between latticed atom of original
-              # spec and atom of environment spec
-              spec.links[atom].each do |na, nl|
-                next unless na.lattice
-                next if there.target_refs.values.include?([spec, na])
-
-                nbr_spec_atom = mapping.other_side(spec, na)
-                next unless nbr_spec_atom.last.lattice
-                # skip atom if it already used for connecting environment
-                next if reversed_refs.values.include?(nbr_spec_atom)
-
-                reversed_refs[target] = nbr_spec_atom
-              end
+              raise ReversingError.new(*other_side_spec_atom)
             end
           end
+
           There.new(there.where, reversed_refs)
         end
 
