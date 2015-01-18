@@ -1,3 +1,5 @@
+require_relative '../organizers/pseudo_results.rb'
+
 module VersatileDiamond
   module Generators
     module Support
