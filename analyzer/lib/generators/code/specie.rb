@@ -240,7 +240,7 @@ module VersatileDiamond
         # Gets the where object logic generators
         # @return [Array] the list of where object logic generators
         def wheres
-          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(wh) }
+          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(generator, wh) }
         end
 
         # Makes base classes for current specie class instance
