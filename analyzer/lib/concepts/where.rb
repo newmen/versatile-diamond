@@ -41,6 +41,7 @@ module VersatileDiamond
       # Swaps dependent specific spec
       # @param [SpecificSpec] from the spec which will be replaced
       # @param [SpecificSpec] to the spec to which swap will produce
+      # TODO: rspec
       def swap_source(from, to)
         return if from == to
         return unless @specs.delete(from)
@@ -58,6 +59,7 @@ module VersatileDiamond
       #   swapped
       # @param [Atom | AtomReference | SpecificAtom | VeiledAtom] from the used atom
       # @param [Atom | AtomReference | SpecificAtom | VeiledAtom] to the new atom
+      # TODO: rspec
       def swap_atom(spec, from, to)
         return if from == to
         @links = dup_graph(@links) do |v|
