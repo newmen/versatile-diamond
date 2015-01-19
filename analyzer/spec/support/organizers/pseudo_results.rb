@@ -12,7 +12,7 @@ module VersatileDiamond
         #
         # @param [Hash] depts see at #stub_generator same argument
         # @return [RSpec::Mocks::Double] same as original analysis results
-        def stub_results(depts)
+        def stub_results(**depts)
           results = double('pseudo_analysis_results')
           fix(depts).each do |method_name, list|
             allow(results).to receive(method_name).and_return(list)
