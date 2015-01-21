@@ -86,12 +86,14 @@ module VersatileDiamond
               subject { WhereLogic.new(generator, at_middle) }
               let(:specific_specs) { [dept_dimer] }
               let(:ordered_graph) do
-                [[
-                  [:one, :two], [
-                    [[dimer.atom(:cl), dimer.atom(:cr)], param_100_cross],
-                    [[dimer_dup.atom(:cl), dimer_dup.atom(:cr)], param_100_cross]
+                [
+                  [[:two], [
+                    [[dimer.atom(:cr), dimer_dup.atom(:cr)], param_100_cross]]
+                  ],
+                  [[:one], [
+                    [[dimer.atom(:cl), dimer_dup.atom(:cl)], param_100_cross]]
                   ]
-                ]]
+                ]
               end
             end
 

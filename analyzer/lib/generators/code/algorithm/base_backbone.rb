@@ -22,7 +22,23 @@ module VersatileDiamond
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
           def ordered_graph_from(nodes)
-            build_sequence_from(nodes)
+            ordered_graph = build_sequence_from(nodes)
+            maximals = ordered_graph.select do |kns, rels|
+              kns.all?(&:lattice) && kns.size > 1 && !rels.empty? &&
+                rels.all? { |vns, _| vns.size == kns.size } &&
+                kns.all? { |kn| kn.relations_limits[rels.first.last] == rels.size }
+            end
+
+            maximals.each do |mx|
+              index = ordered_graph.index(mx)
+              ordered_graph.delete_at(index)
+              relation = mx.last.first.last
+              [mx.first, *mx.last.map(&:first)].transpose.each do |k, *vs|
+                ordered_graph.insert(index, [[k], [[vs, relation]]])
+              end
+            end
+
+            ordered_graph
           end
 
         private
