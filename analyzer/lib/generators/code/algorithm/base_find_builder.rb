@@ -7,7 +7,6 @@ module VersatileDiamond
         # @abstract
         class BaseFindBuilder
           include Modules::ProcsReducer
-          extend Forwardable
 
           # Inits builder by main engine code generator
           # @param [EngineCode] generator the major engine code generator
@@ -20,7 +19,6 @@ module VersatileDiamond
         private
 
           attr_reader :generator, :backbone, :factory
-          def_delegators :backbone, :entry_nodes, :ordered_graph_from
 
           # Gets the lines by which the specie will be created in algorithm
           # @return [String] the cpp code string with specie creation
