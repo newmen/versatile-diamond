@@ -25,7 +25,7 @@ public:
     const char *name() const override { return __name; }
 
 protected:
-    LateralReaction *lookAround() override;
+    bool lookAround() override;
 
 private:
     inline void changeAtom(Atom *atom) const;

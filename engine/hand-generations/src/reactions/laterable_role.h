@@ -17,7 +17,7 @@ public:
 protected:
     template <class... Args> LaterableRole(Args... args)  : ParentType(args...) {}
 
-    virtual LateralReaction *lookAround() = 0;
+    virtual bool lookAround() = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -25,12 +25,8 @@ protected:
 template <ushort RT, ushort TARGETS_NUM>
 void LaterableRole<Typical, RT, TARGETS_NUM>::store()
 {
-    auto lateralReaction = lookAround();
-    if (lateralReaction)
-    {
-        lateralReaction->store();
-    }
-    else
+    bool deptFromEnv = lookAround();
+    if (!deptFromEnv)
     {
         ParentType::store();
     }

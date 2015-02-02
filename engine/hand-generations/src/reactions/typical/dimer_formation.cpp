@@ -89,28 +89,44 @@ void DimerFormation::doIt()
     Finder::findAll(atoms, 2);
 }
 
-LateralReaction *DimerFormation::lookAround()
+bool DimerFormation::lookAround()
 {
+    bool result = false;
+    LateralSpec *sidepieces[2] = { nullptr, nullptr };
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
-    LateralSpec *neighbours[2] = { nullptr, nullptr };
-    LateralReaction *concreted = nullptr;
+    eachNeighbours<2>(atoms, &Diamond::cross_100, [&](Atom **neighbours) {
+        if (neighbours[0]->is(22) && neighbours[1]->is(22))
+        {
+            LateralSpec *oneSideSpecies[2] = {
+                neighbours[0]->specByRole<Dimer>(22),
+                neighbours[1]->specByRole<Dimer>(22)
+            };
 
-    Dimer::row(atoms, [this, &neighbours, &concreted](LateralSpec *spec) {
-        if (neighbours[0])
-        {
-            neighbours[1] = spec;
-            assert(concreted);
-            delete concreted;
-            concreted = new DimerFormationInMiddle(this, neighbours);
-        }
-        else
-        {
-            concreted = new DimerFormationAtEnd(this, spec);
-            neighbours[0] = spec;
+            if (oneSideSpecies[0] && oneSideSpecies[0] == oneSideSpecies[1])
+            {
+                if (sidepieces[0])
+                {
+                    sidepieces[1] = oneSideSpecies[0];
+                }
+                else
+                {
+                    sidepieces[0] = oneSideSpecies[0];
+                    result = true;
+                }
+            }
         }
     });
 
-    return concreted;
+    if (sidepieces[0] && sidepieces[1])
+    {
+        create<DimerFormationInMiddle>(this, sidepieces);
+    }
+    else if (sidepieces[0])
+    {
+        create<DimerFormationAtEnd>(this, sidepieces[0]);
+    }
+
+    return result;
 }
 
 void DimerFormation::changeAtom(Atom *atom) const
