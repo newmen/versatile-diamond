@@ -47,13 +47,37 @@ end
 # @param [String] random_name the name of binary output file
 def compile_test(file_name, random_name)
   if (!@maked && ARGV.size == 0) || ARGV.size == 1
-    `make -j3`
+    `make -j#{processor_count}`
     @maked = true
   end
 
   supports = Dir['support/**/*.cpp']
   args = "#{supports.join(' ')}"
   compile_line(file_name, random_name, args)
+end
+
+# Gets the number of processor cores
+# The original source code: https://github.com/grosser/parallel
+# @return [Integer] the number of cores
+def processor_count
+  case RbConfig::CONFIG['host_os']
+  when /darwin9/
+    `hwprefs cpu_count`.to_i
+  when /darwin/
+    ((`which hwprefs` != '') ? `hwprefs thread_count` : `sysctl -n hw.ncpu`).to_i
+  when /linux/
+    `cat /proc/cpuinfo | grep processor | wc -l`.to_i
+  when /freebsd/
+    `sysctl -n hw.ncpu`.to_i
+  when /mswin|mingw/
+    require 'win32ole'
+    wmi = WIN32OLE.connect("winmgmts://")
+    # TODO: count hyper-threaded in this
+    cpu = wmi.ExecQuery("select NumberOfCores from Win32_Processor")
+    cpu.to_enum.first.NumberOfCores
+  else
+    1
+  end
 end
 
 # Runs test
