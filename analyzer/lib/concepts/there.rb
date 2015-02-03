@@ -5,6 +5,7 @@ module VersatileDiamond
     # positions between reactants and environment specs
     class There
       include Modules::GraphDupper
+      include Modules::ListsComparer
       include SpecAtomSwapper
       extend Forwardable
 
@@ -113,6 +114,14 @@ module VersatileDiamond
       # @return [Boolean] is cover or not
       def cover?(other)
         other.where.parents.include?(where)
+      end
+
+      # Compares raw positions between self and other there objects
+      # @param [There] other there object which raw positions will be checked
+      # @return [Boolean] are same raw positions or not
+      def same_positions?(other)
+        lists_are_identical?(links.keys, other.links.keys, &:==) &&
+          where.same_positions?(other.where)
       end
 
       def to_s

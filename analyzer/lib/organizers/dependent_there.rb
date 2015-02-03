@@ -5,9 +5,8 @@ module VersatileDiamond
     class DependentThere
       extend Forwardable
 
-      def_delegators :@there, :where, :swap_source, :use_similar_source?
+      def_delegators :there, :where, :swap_source, :use_similar_source?
       attr_reader :lateral_reaction
-      # attr_reader :there
 
       # Stores wrappable there
       # @param [DependentLateralReaction] lateral_reaction which uses also passed there
@@ -22,7 +21,7 @@ module VersatileDiamond
       # @param [DependentWrappedSpec] spec is the using internal sidepiece
       # @return [Array] the array of using atoms
       def used_atoms_of(dept_spec)
-        @there.used_atoms_of(dept_spec.spec)
+        there.used_atoms_of(dept_spec.spec)
       end
 
       # Iterates each enviromnet specie
@@ -30,8 +29,20 @@ module VersatileDiamond
       #   enviromnent specie
       # @return [Enumerator] if block doesn't given
       def each_source(&block)
-        @there.env_specs.each(&block)
+        there.env_specs.each(&block)
       end
+
+      # Compares raw positions between self and other there objects
+      # @param [DependentThere] other there object which raw positions will be checked
+      # @return [Boolean] are same raw positions or not
+      def same_positions?(other)
+        there.same_positions?(other.there)
+      end
+
+    protected
+
+      attr_reader :there
+
     end
 
   end

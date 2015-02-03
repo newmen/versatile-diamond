@@ -172,6 +172,14 @@ module VersatileDiamond
         it { expect(on_middle.cover?(on_end)).to be_falsey }
         it { expect(there_methyl.cover?(on_end)).to be_falsey }
       end
+
+      describe '#same_positions?' do
+        it { expect(on_end.same_positions?(on_middle)).to be_truthy }
+        it { expect(on_middle.same_positions?(on_end)).to be_truthy }
+
+        it { expect(on_end.same_positions?(there_methyl)).to be_falsey }
+        it { expect(there_methyl.same_positions?(on_end)).to be_falsey }
+      end
     end
 
   end

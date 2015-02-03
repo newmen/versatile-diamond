@@ -21,17 +21,5 @@ public:
 <%= render_partial('name_method.h') %>
 <% end %>
 };
-<% if render_find_algorithms? && sidepiece? %>
-
-//////////////////////////////////////////////////////////////////////////////////////
-<% wheres.each do |where| %>
-
-template <class L>
-void <%= class_name %>::<%= where.signature %>
-{
-<%= where.algorithm %>
-}
-<% end %>
-<% end %>
 
 #endif // <%= define_name %>

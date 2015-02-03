@@ -92,31 +92,31 @@ module VersatileDiamond
         end
       end
 
-      describe '#similar_wheres' do
+      describe '#similar_theres' do
         subject { dept_dimer }
 
-        it { expect(subject.similar_wheres).to be_empty }
+        it { expect(subject.similar_theres).to be_empty }
 
         describe 'there objects are presented' do
           before do
             subject.store_there(dept_on_end)
             subject.store_there(dept_on_middle)
           end
-          it { expect(subject.similar_wheres).to eq([[at_end, at_middle]]) }
+          it { expect(subject.similar_theres).to eq([[dept_on_end, dept_on_middle]]) }
         end
       end
 
-      describe '#root_wheres' do
+      describe '#root_theres' do
         subject { dept_dimer }
 
-        it { expect(subject.root_wheres).to be_empty }
+        it { expect(subject.root_theres).to be_empty }
 
         describe 'there objects are presented' do
           before do
             subject.store_there(dept_on_end)
             subject.store_there(dept_on_middle)
           end
-          it { expect(subject.root_wheres).to eq([at_end]) }
+          it { expect(subject.root_theres).to eq([dept_on_end]) }
         end
       end
     end
