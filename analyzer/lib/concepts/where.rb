@@ -103,57 +103,6 @@ module VersatileDiamond
         atoms += parents.reduce([]) { |acc, parent| acc + parent.used_atoms_of(spec) }
         atoms.uniq
       end
-
-      # Compares raw positions between self and other where objects
-      # @param [Where] other where object which raw positions will be checked
-      # @return [Boolean] are same raw positions or not
-      # TODO: valid comparison?
-      def same_positions?(other)
-        same_specs?(other) &&
-          lists_are_identical?(raw_positions, other.raw_positions) do |fs, os|
-            (target, spec_atom, position), (t, sa, p) = fs, os
-            t == target && p == position && same_spec_atoms?(spec_atom, sa)
-          end
-      end
-
-    protected
-
-      # Gets the list of all raw positions
-      # @return [Array] the list of raw positions
-      def raw_positions
-        links.flat_map do |target, rels|
-          rels.map { |spec_atom, relation| [target, spec_atom, relation] }
-        end
-      end
-
-    private
-
-      # Compares specs of current and other where objects
-      # @param [Where] other where object which specs will be checked
-      # @return [Boolean] are same specs or not
-      def same_specs?(other)
-        lists_are_identical?(specs, other.specs, &:same?)
-      end
-
-      # Compares two spec_atom instances
-      # @param [Array] first spec_atom instance
-      # @param [Array] second spec_atom instance
-      # @return [Boolean] are identical spec_atom instances or not
-      def same_spec_atoms?(first, second)
-        return true if first == second
-
-        sf, ss = first.first, second.first
-        return false unless sf.links.size == ss.links.size
-
-        args = [sf, ss, { collaps_multi_bond: true }]
-        insecs = Mcs::SpeciesComparator.intersec(*args)
-        return false unless sf.links.size == insecs.first.size
-
-        af, as = first.last, second.last
-        insecs.any? do |intersec|
-          intersec.any? { |f, t| f == af && t == as }
-        end
-      end
     end
 
   end

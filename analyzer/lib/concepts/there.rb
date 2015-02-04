@@ -31,9 +31,14 @@ module VersatileDiamond
       # @return [Hash] the graph of positions between target atoms of specs and
       #   environment atoms of specs
       def links
-        dup_graph(where.total_links) do |v|
-          v.is_a?(Symbol) ? target_refs[v] : v
-        end
+        transform_where_links(:total_links)
+      end
+
+      # Gets possible cutten positions graph which uses just own links of where object
+      # @return [Hash] the possible cutten graph of positions between target atoms of
+      #   specs and environment atoms of specs
+      def own_links
+        transform_where_links(:links)
       end
 
       # Provides environment species
@@ -116,20 +121,25 @@ module VersatileDiamond
         other.where.parents.include?(where)
       end
 
-      # Compares raw positions between self and other there objects
-      # @param [There] other there object which raw positions will be checked
-      # @return [Boolean] are same raw positions or not
-      def same_positions?(other)
-        lists_are_identical?(links.keys, other.links.keys, &:==) &&
-          where.same_positions?(other.where)
-      end
-
       def to_s
         env_specs.map(&:name).join(' & ')
       end
 
       def inspect
         to_s
+      end
+
+    private
+
+      # Gets the transformed links of where object where target symbols is replaced to
+      # correspond spec-atom pairs of reactants
+      #
+      # @param [Symbol] links_method which will be called from where object
+      # @return [Hash] the transformed links graph
+      def transform_where_links(links_method)
+        dup_graph(where.public_send(links_method)) do |v|
+          v.is_a?(Symbol) ? target_refs[v] : v
+        end
       end
     end
 
