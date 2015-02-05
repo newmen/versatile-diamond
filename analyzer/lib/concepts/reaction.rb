@@ -7,6 +7,7 @@ module VersatileDiamond
       include Linker
       include SurfaceLinker
       include SpecAtomSwapper
+      include PositionsComparer
       extend Forwardable
 
       # type of reaction could be only for not ubiquitous reaction
@@ -29,17 +30,6 @@ module VersatileDiamond
       # @param [Symbol] type the type of parent reaction
       def as(type)
         @type == type ? self : reverse
-      end
-
-      # Reduce all positions from links structure
-      # @return [Array] the array of position relations
-      # TODO: must be protected
-      def positions
-        links.flat_map do |spec_atom, rels|
-          rels.map do |other_spec_atom, position|
-            [spec_atom, other_spec_atom, position]
-          end
-        end
       end
 
       # Store position relation between first and second atoms
@@ -157,14 +147,7 @@ module VersatileDiamond
       # @param [UbiquitousReaction] see at #super same argument
       # @override
       def same?(other)
-        is_same_positions =
-          lists_are_identical?(positions, other.positions) do |pos1, pos2|
-            pos1.last == pos2.last && # compares position relation instances
-              (same_positions?(pos1, pos2, [[0, 0], [1, 1]]) ||
-                same_positions?(pos1, pos2, [[0, 1], [1, 0]]))
-          end
-
-        is_same_positions && super
+        super && same_positions?(other)
       end
 
       # Checks that all atoms belongs to lattice
@@ -311,18 +294,6 @@ module VersatileDiamond
         @children << duplication
 
         duplication
-      end
-
-      # Compares two position instances by some pairs
-      # @param [Array] pos1 the first position instance
-      # @param [Array] pos2 the second position instance
-      # @param [Array] indexes_pairs the array that contain pairs of indexes of
-      #   comparing positions
-      # @return [Boolean] are same positions or not
-      def same_positions?(pos1, pos2, indexes_pairs)
-        indexes_pairs.all? do |i, j|
-          [0, 1].all? { |k| pos1[i][k].same?(pos2[j][k]) }
-        end
       end
 
       # Swaps used specific spec atom to new atom (used only when atom was

@@ -65,7 +65,7 @@ module VersatileDiamond
         it { expect(subject.same?(duplicate)).to be_truthy }
         it { expect(duplicate.same?(subject)).to be_truthy }
 
-        it { expect(subject.same?(lateral_subject)).to be_truthy }
+        it { expect(subject.same?(lateral_subject)).to be_falsey }
         it { expect(lateral_subject.same?(subject)).to be_falsey }
 
         it { expect(subject.same?(dept_methyl_deactivation)).to be_falsey }

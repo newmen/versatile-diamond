@@ -1,11 +1,13 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Contain some there and provides behavior for dependent entities set
     class DependentThere
       extend Forwardable
 
-      def_delegators :there, :where, :swap_source, :use_similar_source?
+      def_delegators :there, :swap_source, :use_similar_source?
       attr_reader :lateral_reaction
 
       # Stores wrappable there
@@ -32,15 +34,35 @@ module VersatileDiamond
         there.env_specs.each(&block)
       end
 
-      # Compares raw positions between self and other there objects
-      # @param [DependentThere] other there object which raw positions will be checked
-      # @return [Boolean] are same raw positions or not
-      def same_positions?(other)
-        there.same_positions?(other.there)
+      # Verifies that passed there object is covered by the current
+      # @param [There] other the verifying there object
+      # @return [Boolean] is cover or not
+      def cover?(other)
+        positions_dup = positions.dup
+        other.positions.all? do |opos|
+          positions_dup.delete_one do |spos|
+            Concepts::PositionsComparer.same_pos_tuples?(spos, opos)
+          end
+        end
+      end
+
+      # Compares two dependent there objects
+      # @param [DependentThere] other there object which will be compared
+      # @return [Boolean] are same objects or not
+      def same?(other)
+        there.same?(other.there)
+      end
+
+      # Compares own positions between self and other there objects
+      # @param [DependentThere] other there object which own positions will be checked
+      # @return [Boolean] are same own positions or not
+      def same_own_positions?(other)
+        there.same_own_positions?(other.there)
       end
 
     protected
 
+      def_delegator :there, :positions
       attr_reader :there
 
     end

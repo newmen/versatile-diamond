@@ -6,12 +6,29 @@ module VersatileDiamond
     describe DependentLateralReaction, type: :organizer do
       subject { dept_middle_lateral_df }
 
-      describe '#wheres' do
-        it { expect(subject.wheres).to match_array([at_middle]) }
+      describe '#sidepiece_specs' do
+        it { expect(subject.sidepiece_specs.map(&:name)).to eq([:'dimer()'] * 2) }
       end
 
       describe '#theres' do
-        it { expect(subject.theres).to eq(middle_lateral_df.theres) }
+        it { expect(subject.theres.first).to be_a(DependentThere) }
+
+        describe 'internal caching' do
+          it { expect(subject.theres).to eq(subject.theres) }
+        end
+      end
+
+      describe '#cover?' do
+        let(:other) { described_class.new(concept) }
+        let(:concept) do
+          dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
+        end
+
+        it { expect(subject.cover?(dept_end_lateral_df)).to be_truthy }
+        it { expect(other.cover?(dept_end_lateral_df)).to be_truthy }
+
+        it { expect(dept_end_lateral_df.cover?(subject)).to be_falsey }
+        it { expect(dept_end_lateral_df.cover?(other)).to be_falsey }
       end
 
       describe '#lateral?' do

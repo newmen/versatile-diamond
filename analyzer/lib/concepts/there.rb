@@ -7,10 +7,21 @@ module VersatileDiamond
       include Modules::GraphDupper
       include Modules::ListsComparer
       include SpecAtomSwapper
-      extend Forwardable
+      include PositionsComparer
 
-      def_delegator :where, :description
-      attr_reader :where, :target_refs
+      # Raises when target atom of sidepiece there object haven't lattice
+      class ReversingError < Errors::Base
+        attr_reader :spec
+        def initialize(spec, atom)
+          @spec, @atom = spec, atom
+        end
+
+        # Gets the keyname of invalid atom
+        # @return [Symbol] the keyname of atom
+        def keyname
+          @spec.keyname(@atom)
+        end
+      end
 
       # Initialize a new instance of there object
       # @param [Where] where the basic where object
@@ -41,6 +52,24 @@ module VersatileDiamond
         transform_where_links(:links)
       end
 
+      # Makes reversed there object
+      # @param [Mcs::MappingResult] mapping by which the other side spec and atom will
+      #   be gotten
+      # @return [There] the reversed there object
+      def reverse(mapping)
+        reversed_refs = {}
+        target_refs.each do |target, (spec, atom)|
+          other_side_spec_atom = mapping.other_side(spec, atom)
+          if other_side_spec_atom.last.lattice
+            reversed_refs[target] = other_side_spec_atom
+          else
+            raise ReversingError.new(*other_side_spec_atom)
+          end
+        end
+
+        self.class.new(where, reversed_refs)
+      end
+
       # Provides environment species
       # @return [Array] all species stored in used where and in their parents
       def env_specs
@@ -68,7 +97,7 @@ module VersatileDiamond
       # Provides target species
       # @return [Array] the array of target species
       def target_specs
-        target_refs.values.map(&:first)
+        target_refs.values.map(&:first).uniq
       end
 
       # Swaps target spec from some to some
@@ -110,15 +139,16 @@ module VersatileDiamond
       # @param [There] other with which comparison
       # @return [Boolean] are their wheres equal
       def same?(other)
-        # TODO: not complete check!
-        where == other.where
+        self == other ||
+          (target_specs.size == other.target_specs.size &&
+            env_specs.size == other.env_specs.size && same_positions?(other))
       end
 
-      # Verifies that passed there object is covered by the current
-      # @param [There] other the verifying there object
-      # @return [Boolean] is cover or not
-      def cover?(other)
-        other.where.parents.include?(where)
+      # Compares own positions between self and other there objects
+      # @param [There] other there object which own positions will be checked
+      # @return [Boolean] are same own positions or not
+      def same_own_positions?(other)
+        same_by_method?(:own_positions, other)
       end
 
       def to_s
@@ -127,6 +157,16 @@ module VersatileDiamond
 
       def inspect
         to_s
+      end
+
+    protected
+
+      attr_reader :where, :target_refs
+
+      # Gets the list of own position tuples
+      # @return [Array] the list of own position tuples
+      def own_positions
+        make_positions(own_links)
       end
 
     private

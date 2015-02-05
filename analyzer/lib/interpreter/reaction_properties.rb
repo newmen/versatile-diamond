@@ -81,7 +81,7 @@ module VersatileDiamond
           @reverse_was_stored = true
         end
         forward.reverse
-      rescue Concepts::LateralReaction::ReversingError => e
+      rescue Concepts::There::ReversingError => e
         syntax_error('lateral_reaction.amorph_reverse_atom',
           spec: e.spec.name, atom: e.keyname)
       end

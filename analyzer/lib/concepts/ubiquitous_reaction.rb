@@ -124,8 +124,9 @@ module VersatileDiamond
       # @param [UbiquitousReaction] other reaction with which comparison
       # @return [Boolean] the result of comparing
       def same?(other)
-        lists_are_identical?(@source, other.source, &:same?) &&
-          lists_are_identical?(@products, other.products, &:same?)
+        self.class == other.class &&
+          lists_are_identical?(source, other.source, &:same?) &&
+          lists_are_identical?(products, other.products, &:same?)
       end
 
       # Calculate full rate of reaction

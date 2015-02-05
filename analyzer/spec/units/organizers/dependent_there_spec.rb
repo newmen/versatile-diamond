@@ -11,10 +11,6 @@ module VersatileDiamond
         it { expect(subject.each_source.to_a).to eq([methyl_on_bridge]) }
       end
 
-      describe '#where' do
-        it { expect(subject.where).to eq(near_methyl) }
-      end
-
       describe '#swap_source' do
         let(:mob_dup) { methyl_on_bridge.dup }
         before { subject.swap_source(methyl_on_bridge, mob_dup) }
@@ -28,6 +24,11 @@ module VersatileDiamond
       describe '#used_atoms_of' do
         let(:atoms) { [methyl_on_bridge.atom(:cb)] }
         it { expect(subject.used_atoms_of(dept_methyl_on_bridge)).to eq(atoms) }
+      end
+
+      describe '#cover?' do
+        it { expect(dept_on_middle.cover?(dept_on_end)).to be_truthy }
+        it { expect(dept_on_end.cover?(dept_on_middle)).to be_falsey }
       end
     end
 

@@ -15,20 +15,13 @@ module VersatileDiamond
       describe '#dup' do
         subject { on_end.dup }
         it { should_not == on_end }
-        it { expect(subject.where).to eq(on_end.where) }
         it { expect(subject.links).to eq(on_end.links) }
-        it { expect(subject.links.object_id).
-          not_to eq(on_end.links.object_id) }
+        it { expect(subject.links.object_id).not_to eq(on_end.links.object_id) }
 
         describe "target swapping doesn't change duplicate" do
           before { subject.swap_target(aib, aib_dup) }
           it { expect(subject.target_specs).not_to eq(on_end.target_specs) }
         end
-      end
-
-      describe '#where' do
-        it { expect(on_end.where).to eq(at_end) }
-        it { expect(on_middle.where).to eq(at_middle) }
       end
 
       describe '#target_specs' do
@@ -41,11 +34,6 @@ module VersatileDiamond
         it { expect(on_end.env_specs).to eq([dimer]) }
         it { expect(on_middle.env_specs).to match_array([dimer, dimer_dup]) }
         it { expect(there_methyl.env_specs).to eq([methyl_on_bridge]) }
-      end
-
-      describe '#description' do
-        it { expect(on_end.description).to eq('at end of dimers row') }
-        it { expect(there_methyl.description).to eq('chain neighbour methyl') }
       end
 
       describe '#links' do
@@ -156,29 +144,29 @@ module VersatileDiamond
       end
 
       describe '#same?' do
+        let(:reverse_end) { end_lateral_df.reverse.theres.first }
         let(:same) do
           at_end.concretize(
             two: [dimer, dimer.atom(:cl)], one: [dimer, dimer.atom(:cr)])
         end
 
-        it { expect(on_end.same?(same)).to be_truthy }
+        it { expect(reverse_end.same?(same)).to be_falsey }
+        it { expect(same.same?(reverse_end)).to be_falsey }
+
+        it { expect(on_end.same?(same)).to be_falsey }
+        it { expect(same.same?(on_end)).to be_falsey }
+
         it { expect(on_end.same?(on_middle)).to be_falsey }
         it { expect(on_middle.same?(on_end)).to be_falsey }
         it { expect(on_end.same?(there_methyl)).to be_falsey }
       end
 
-      describe '#cover?' do
-        it { expect(on_end.cover?(on_middle)).to be_truthy }
-        it { expect(on_middle.cover?(on_end)).to be_falsey }
-        it { expect(there_methyl.cover?(on_end)).to be_falsey }
-      end
+      describe '#same_own_positions?' do
+        it { expect(on_end.same_own_positions?(on_middle)).to be_truthy }
+        it { expect(on_middle.same_own_positions?(on_end)).to be_truthy }
 
-      describe '#same_positions?' do
-        it { expect(on_end.same_positions?(on_middle)).to be_truthy }
-        it { expect(on_middle.same_positions?(on_end)).to be_truthy }
-
-        it { expect(on_end.same_positions?(there_methyl)).to be_falsey }
-        it { expect(there_methyl.same_positions?(on_end)).to be_falsey }
+        it { expect(on_end.same_own_positions?(there_methyl)).to be_falsey }
+        it { expect(there_methyl.same_own_positions?(on_end)).to be_falsey }
       end
     end
 

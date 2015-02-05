@@ -5,8 +5,6 @@ module VersatileDiamond
 
     describe LateralReaction do
       let(:reaction) { end_lateral_df }
-      let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
-      let(:middle) { middle_lateral_df }
       let(:other) do
         dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
       end
@@ -50,8 +48,7 @@ module VersatileDiamond
             methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])
           end
 
-          it { expect { original.reverse }.
-            to raise_error(described_class::ReversingError) }
+          it { expect { original.reverse }.to raise_error(There::ReversingError) }
         end
       end
 
@@ -71,16 +68,18 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(reaction.same?(same)).to be_truthy }
-        it { expect(reaction.same?(middle)).to be_falsey }
-        it { expect(middle.same?(reaction)).to be_falsey }
+        let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
 
-        it { expect(reaction.same?(dimer_formation)).to be_falsey }
-      end
+        it { expect(end_lateral_df.same?(same)).to be_truthy }
+        it { expect(same.same?(end_lateral_df)).to be_truthy }
 
-      describe '#cover?' do
-        it { expect(reaction.cover?(middle)).to be_truthy }
-        it { expect(reaction.cover?(other)).to be_truthy }
+        it { expect(end_lateral_df.same?(middle_lateral_df)).to be_falsey }
+        it { expect(middle_lateral_df.same?(end_lateral_df)).to be_falsey }
+
+        it { expect(end_lateral_df.same?(other)).to be_falsey }
+        it { expect(other.same?(end_lateral_df)).to be_falsey }
+
+        it { expect(end_lateral_df.same?(dimer_formation)).to be_falsey }
       end
     end
 

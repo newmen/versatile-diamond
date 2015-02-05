@@ -20,7 +20,7 @@ module VersatileDiamond
         # Gets the list of species which using as sidepiece of reaction
         # @return [Array] the list of sidepiece species
         def sidepiece_species
-          reaction.wheres.flat_map(&:all_specs).map(&method(:specie_class))
+          reaction.sidepiece_specs.map(&method(:specie_class))
         end
 
       private

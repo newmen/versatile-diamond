@@ -69,7 +69,7 @@ module VersatileDiamond
 
         laterals.each do |reaction|
           reaction.theres.each do |there|
-            store_base_specs(there.where.specs)
+            store_base_specs(there.env_specs)
           end
         end
 

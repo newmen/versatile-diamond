@@ -24,7 +24,7 @@ module VersatileDiamond
       def organize_dependencies!(lateral_reactions)
         applicants = []
         lateral_reactions.each do |possible|
-          applicants << possible if same?(possible)
+          applicants << possible if reaction.same_positions?(possible.reaction)
         end
 
         return if applicants.empty?
@@ -41,10 +41,6 @@ module VersatileDiamond
 
         applicants.each { |possible| possible.store_parent(self) }
       end
-
-    private
-
-
     end
 
   end

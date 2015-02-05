@@ -71,9 +71,7 @@ module VersatileDiamond
       # Collects there instances from lateral reactions
       # @return [Array] the array of collected instances
       def collect_theres
-        lateral_reactions.reduce([]) do |acc, reaction|
-          acc + reaction.theres.map { |there| DependentThere.new(reaction, there) }
-        end
+        lateral_reactions.flat_map(&:theres)
       end
 
       # Collects termination species from reactions
