@@ -43,7 +43,6 @@ private:
     std::string filename() const;
     double timestamp() const;
 
-
     typename HB::SurfaceCrystal *initCrystal();
 
     void outputMemoryUsage(std::ostream &os) const;
@@ -206,7 +205,7 @@ void Runner<HB>::saveVolume(const Crystal *crystal)
     {
         DumpSaver dpSaver;
         Detector *detector = new SurfaceDetector<Handbook>;
-        dpSaver.save(HB::mc().totalTime(), &HB::amorph(), crystal, detector);
+        dpSaver.save(_init.x, _init.y, HB::mc().totalTime(), &HB::amorph(), crystal, detector);
     }
 }
 

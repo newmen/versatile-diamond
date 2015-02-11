@@ -15,11 +15,13 @@ DumpSaver::~DumpSaver()
     _outFile.close();
 }
 
-void DumpSaver::save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
+void DumpSaver::save(uint x, uint y, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
 {
     _outFile.open("dump.dump");
     MolAccumulator amorphAcc(detector), crystalAcc(detector);
 
+    _outFile.write((char*)&x, sizeof(x));
+    _outFile.write((char*)&y, sizeof(y));
     _outFile.write((char*)&currentTime, sizeof(currentTime));
 
     amorph->eachAtom([&amorphAcc](const Atom *atom) {

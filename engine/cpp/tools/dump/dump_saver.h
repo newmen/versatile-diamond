@@ -15,7 +15,7 @@ public:
     DumpSaver();
     ~DumpSaver();
 
-    void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector);
+    void save(uint x, uint y, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector);
 };
 
 }

@@ -7,6 +7,11 @@ int main() {
 
     std::ifstream inFile("/home/dobr/projects/versatile-diamond/engine/build-engine-Desktop-Debug/dump.dump");
 
+    vd::uint x, y;
+    inFile.read((char*)&x, sizeof(x));
+    inFile.read((char*)&y, sizeof(y));
+    std::cout << "sizes x: " << x << " y: " << y << std::endl;
+
     double curTime;
     inFile.read((char*)&curTime, sizeof(curTime));
     std::cout << "current time: " << curTime << std::endl;

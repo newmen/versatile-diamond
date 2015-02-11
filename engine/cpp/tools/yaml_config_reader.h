@@ -16,12 +16,20 @@ public:
     template <typename T, class... Args>
     T read(const char *key, Args... args) const;
 
+    template <class... Args>
+    bool isDefined(const char *key, Args... args) const;
+
 private:
     template <typename T>
     T recursiveRead(const YAML::Node &node, const char *key) const;
 
     template <typename T, class... Args>
     T recursiveRead(const YAML::Node &node, const char *key, Args... args) const;
+
+    bool recursiveIsDefined(const YAML::Node &node, const char *key) const;
+
+    template <class... Args>
+    bool recursiveIsDefined(const YAML::Node &node, const char *key, Args... args) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -30,6 +38,12 @@ template <typename T, class... Args>
 T YAMLConfigReader::read(const char *key, Args... args) const
 {
     return recursiveRead<T>(_root, key, args...);
+}
+
+template <class... Args>
+bool YAMLConfigReader::isDefined(const char *key, Args... args) const
+{
+    return recursiveIsDefined(_root, key, args...);
 }
 
 template <typename T>
@@ -42,6 +56,12 @@ template <typename T, class... Args>
 T YAMLConfigReader::recursiveRead(const YAML::Node &node, const char *key, Args... args) const
 {
     return recursiveRead<T>(node[key], args...);
+}
+
+template <class... Args>
+bool YAMLConfigReader::recursiveIsDefined(const YAML::Node &node, const char *key, Args... args) const
+{
+    return isDefined(node[key], args...);
 }
 
 }
