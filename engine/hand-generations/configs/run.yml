@@ -1,0 +1,23 @@
+system: 
+	time: 0.2
+	behavior: tor
+	size_x: 5
+	size_y: 5
+
+integral: 
+	step:
+
+dump:
+	step:
+
+mol: 
+	step:
+	detector:
+
+sdf: 
+	step:
+	detector:
+
+xyz:
+	step:
+	detector:
