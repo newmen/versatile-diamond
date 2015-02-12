@@ -10,9 +10,6 @@ namespace vd
 template <class S, ushort TARGETS_NUM>
 class Targets
 {
-    friend class Targets<S, TARGETS_NUM - 1>;
-    friend class Targets<S, TARGETS_NUM + 1>;
-
     S *_targets[TARGETS_NUM];
 
 public:
@@ -22,8 +19,6 @@ public:
 
 protected:
     Targets(S **targets);
-    Targets(const Targets<S, TARGETS_NUM - 1> *parent, S *additional);
-    Targets(const Targets<S, TARGETS_NUM + 1> *parent, S *removable);
 
     inline S *target(ushort index = 0) const;
 
@@ -39,28 +34,6 @@ Targets<S, TARGETS_NUM>::Targets(S **targets)
     for (ushort i = 0; i < TARGETS_NUM; ++i)
     {
         _targets[i] = targets[i];
-    }
-}
-
-template <class S, ushort TARGETS_NUM>
-Targets<S, TARGETS_NUM>::Targets(const Targets<S, TARGETS_NUM - 1> *parent, S *additional)
-{
-    for (ushort i = 0; i < TARGETS_NUM - 1; ++i)
-    {
-        _targets[i] = parent->_targets[i];
-    }
-    _targets[TARGETS_NUM - 1] = additional;
-}
-
-template <class S, ushort TARGETS_NUM>
-Targets<S, TARGETS_NUM>::Targets(const Targets<S, TARGETS_NUM + 1> *parent, S *removable)
-{
-    for (ushort i = 0, j = 0; i < TARGETS_NUM + 1; ++i)
-    {
-        if (parent->_targets[i] != removable)
-        {
-            _targets[j++] = parent->_targets[i];
-        }
     }
 }
 

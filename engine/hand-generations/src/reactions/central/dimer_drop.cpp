@@ -34,9 +34,11 @@ void DimerDrop::checkLaterals(Dimer *sidepiece)
                     auto neighbourReaction = target->checkoutReaction<DimerDropAtEnd>();
                     if (neighbourReaction)
                     {
+                        assert(!sidepiece->haveReaction(neighbourReaction));
                         if (!sidepiece->haveReaction(neighbourReaction))
                         {
-                            neighbourReaction->concretize<DimerDropInMiddle>(sidepiece);
+                            SingleLateralReaction *chunk = new DimerDropAtEnd(neighbourReaction->parent(), sidepiece);
+                            neighbourReaction->concretize(chunk);
                         }
                         return;
                     }
@@ -45,7 +47,8 @@ void DimerDrop::checkLaterals(Dimer *sidepiece)
                     auto neighbourReaction = target->checkoutReaction<DimerDrop>();
                     if (neighbourReaction)
                     {
-                        neighbourReaction->concretize<DimerDropAtEnd>(sidepiece);
+                        SingleLateralReaction *chunk = new DimerDropAtEnd(neighbourReaction, sidepiece);
+                        neighbourReaction->concretize(chunk);
                         return;
                     }
                 }
@@ -69,10 +72,24 @@ void DimerDrop::doIt()
     Finder::findAll(atoms, 2);
 }
 
-bool DimerDrop::lookAround()
+LateralReaction *DimerDrop::selectFrom(SingleLateralReaction **chunks, ushort num) const
 {
-    bool result = false;
-    LateralSpec *sidepieces[2] = { nullptr, nullptr };
+    if (num == 2)
+    {
+        return new DimerDropInMiddle(chunks);
+    }
+    else
+    {
+        assert(num == 1);
+        return chunks[0];
+    }
+}
+
+SpecReaction *DimerDrop::lookAround()
+{
+    uint index = 0;
+    SingleLateralReaction * chunks[2] = { nullptr, nullptr };
+
     Atom *atoms[2] = { target()->atom(0), target()->atom(3) };
     eachNeighbours<2>(atoms, &Diamond::cross_100, [&](Atom **neighbours) {
         if (neighbours[0]->is(22) && neighbours[1]->is(22))
@@ -84,29 +101,12 @@ bool DimerDrop::lookAround()
 
             if (oneSideSpecies[0] && oneSideSpecies[0] == oneSideSpecies[1])
             {
-                if (sidepieces[0])
-                {
-                    sidepieces[1] = oneSideSpecies[0];
-                }
-                else
-                {
-                    sidepieces[0] = oneSideSpecies[0];
-                    result = true;
-                }
+                chunks[index++] = new DimerDropAtEnd(this, oneSideSpecies[0]);
             }
         }
     });
 
-    if (sidepieces[0] && sidepieces[1])
-    {
-        create<DimerDropInMiddle>(this, sidepieces);
-    }
-    else if (sidepieces[0])
-    {
-        create<DimerDropAtEnd>(this, sidepieces[0]);
-    }
-
-    return result;
+    return selectReaction(chunks, index);
 }
 
 void DimerDrop::changeAtom(Atom *atom) const

@@ -9,8 +9,8 @@ namespace vd
 class TypicalReaction : public SpecReaction
 {
 public:
-    void store() override { insertToTargets(this); }
-    void remove() override { eraseFromTargets(this); }
+    void store() override;
+    void remove() override;
 
 protected:
     friend class LateralReaction;

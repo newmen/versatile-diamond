@@ -3,24 +3,26 @@
 
 #include "../species/lateral_spec.h"
 #include "spec_reaction.h"
-#include "typical_reaction.h"
 
 namespace vd
 {
 
+class CentralReaction;
+
 class LateralReaction : public SpecReaction
 {
-    TypicalReaction *_parent = nullptr;
+    CentralReaction *_parent = nullptr;
 
 protected:
-    LateralReaction(TypicalReaction *parent) : _parent(parent) {}
-    LateralReaction(LateralReaction *lateralParent) : _parent(lateralParent->_parent) {}
+    LateralReaction(CentralReaction *parent);
 
 public:
-    void doIt() { _parent->doIt(); }
+    CentralReaction *parent() { return _parent; }
 
-    void store() override { insertToTargets(this); }
-    void remove() override { eraseFromTargets(this); }
+    void doIt();
+
+    void store() override;
+    void remove() override;
 
     virtual void unconcretizeBy(LateralSpec *spec) = 0;
 
@@ -28,10 +30,8 @@ protected:
     virtual void insertToTargets(LateralReaction *reaction) = 0;
     virtual void eraseFromTargets(LateralReaction *reaction) = 0;
 
-    void insertToParentTargets() { _parent->insertToTargets(this); }
-    void eraseFromParentTargets() { _parent->eraseFromTargets(this); }
-
-    TypicalReaction *parent() { return _parent; }
+    void insertToParentTargets();
+    void eraseFromParentTargets();
 };
 
 }

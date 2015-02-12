@@ -48,23 +48,24 @@ void DimerFormation::checkLaterals(Dimer *sidepiece)
             {
                 assert(targets[0] != targets[1]);
                 {
-                    auto neighbourReaction =
-                            targets[0]->checkoutReactionWith<DimerFormationAtEnd>(targets[1]);
+                    auto neighbourReaction = targets[0]->checkoutReactionWith<DimerFormationAtEnd>(targets[1]);
                     if (neighbourReaction)
                     {
+                        assert(!sidepiece->haveReaction(neighbourReaction));
                         if (!sidepiece->haveReaction(neighbourReaction))
                         {
-                            neighbourReaction->concretize<DimerFormationInMiddle>(sidepiece);
+                            SingleLateralReaction *chunk = new DimerFormationAtEnd(neighbourReaction->parent(), sidepiece);
+                            neighbourReaction->concretize(chunk);
                         }
                         return;
                     }
                 }
                 {
-                    auto neighbourReaction =
-                            targets[0]->checkoutReactionWith<DimerFormation>(targets[1]);
+                    auto neighbourReaction = targets[0]->checkoutReactionWith<DimerFormation>(targets[1]);
                     if (neighbourReaction)
                     {
-                        neighbourReaction->concretize<DimerFormationAtEnd>(sidepiece);
+                        SingleLateralReaction *chunk = new DimerFormationAtEnd(neighbourReaction, sidepiece);
+                        neighbourReaction->concretize(chunk);
                         return;
                     }
                 }
@@ -89,10 +90,24 @@ void DimerFormation::doIt()
     Finder::findAll(atoms, 2);
 }
 
-bool DimerFormation::lookAround()
+LateralReaction *DimerFormation::selectFrom(SingleLateralReaction **chunks, ushort num) const
 {
-    bool result = false;
-    LateralSpec *sidepieces[2] = { nullptr, nullptr };
+    if (num == 2)
+    {
+        return new DimerFormationInMiddle(chunks);
+    }
+    else
+    {
+        assert(num == 1);
+        return chunks[0];
+    }
+}
+
+SpecReaction *DimerFormation::lookAround()
+{
+    uint index = 0;
+    SingleLateralReaction * chunks[2] = { nullptr, nullptr };
+
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
     eachNeighbours<2>(atoms, &Diamond::cross_100, [&](Atom **neighbours) {
         if (neighbours[0]->is(22) && neighbours[1]->is(22))
@@ -104,29 +119,12 @@ bool DimerFormation::lookAround()
 
             if (oneSideSpecies[0] && oneSideSpecies[0] == oneSideSpecies[1])
             {
-                if (sidepieces[0])
-                {
-                    sidepieces[1] = oneSideSpecies[0];
-                }
-                else
-                {
-                    sidepieces[0] = oneSideSpecies[0];
-                    result = true;
-                }
+                chunks[index++] = new DimerFormationAtEnd(this, oneSideSpecies[0]);
             }
         }
     });
 
-    if (sidepieces[0] && sidepieces[1])
-    {
-        create<DimerFormationInMiddle>(this, sidepieces);
-    }
-    else if (sidepieces[0])
-    {
-        create<DimerFormationAtEnd>(this, sidepieces[0]);
-    }
-
-    return result;
+    return selectReaction(chunks, index);
 }
 
 void DimerFormation::changeAtom(Atom *atom) const

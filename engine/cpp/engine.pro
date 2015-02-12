@@ -17,6 +17,8 @@ SOURCES += \
     ../hand-generations/src/main.cpp \
     ../hand-generations/src/phases/diamond.cpp \
     ../hand-generations/src/phases/phase_boundary.cpp \
+    ../hand-generations/src/reactions/central/dimer_drop.cpp \
+    ../hand-generations/src/reactions/central/dimer_formation.cpp \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.cpp \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.cpp \
     ../hand-generations/src/reactions/lateral/dimer_formation_at_end.cpp \
@@ -29,9 +31,7 @@ SOURCES += \
     ../hand-generations/src/reactions/typical/des_methyl_from_111.cpp \
     ../hand-generations/src/reactions/typical/des_methyl_from_bridge.cpp \
     ../hand-generations/src/reactions/typical/des_methyl_from_dimer.cpp \
-    ../hand-generations/src/reactions/typical/dimer_drop.cpp \
     ../hand-generations/src/reactions/typical/dimer_drop_near_bridge.cpp \
-    ../hand-generations/src/reactions/typical/dimer_formation.cpp \
     ../hand-generations/src/reactions/typical/dimer_formation_near_bridge.cpp \
     ../hand-generations/src/reactions/typical/form_two_bond.cpp \
     ../hand-generations/src/reactions/typical/high_bridge_stand_to_dimer.cpp \
@@ -108,7 +108,9 @@ SOURCES += \
     phases/behavior_plane.cpp \
     phases/behavior_tor.cpp \
     phases/crystal.cpp \
+    reactions/central_reaction.cpp \
     reactions/lateral_reaction.cpp \
+    reactions/typical_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     species/base_spec.cpp \
     species/lateral_spec.cpp \
@@ -144,16 +146,20 @@ HEADERS += \
     ../hand-generations/src/phases/diamond_crystal_properties.h \
     ../hand-generations/src/phases/diamond_relations.h \
     ../hand-generations/src/phases/phase_boundary.h \
+    ../hand-generations/src/reactions/central.h \
+    ../hand-generations/src/reactions/central/dimer_drop.h \
+    ../hand-generations/src/reactions/central/dimer_formation.h \
     ../hand-generations/src/reactions/concretizable_role.h \
-    ../hand-generations/src/reactions/laterable_role.h \
     ../hand-generations/src/reactions/lateral.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_in_middle.h \
     ../hand-generations/src/reactions/local.h \
+    ../hand-generations/src/reactions/multi_lateral.h \
     ../hand-generations/src/reactions/rates_reader.h \
     ../hand-generations/src/reactions/registrator.h \
+    ../hand-generations/src/reactions/single_lateral.h \
     ../hand-generations/src/reactions/typical.h \
     ../hand-generations/src/reactions/typical/abs_hydrogen_from_gap.h \
     ../hand-generations/src/reactions/typical/ads_methyl_to_111.h \
@@ -162,9 +168,7 @@ HEADERS += \
     ../hand-generations/src/reactions/typical/des_methyl_from_111.h \
     ../hand-generations/src/reactions/typical/des_methyl_from_bridge.h \
     ../hand-generations/src/reactions/typical/des_methyl_from_dimer.h \
-    ../hand-generations/src/reactions/typical/dimer_drop.h \
     ../hand-generations/src/reactions/typical/dimer_drop_near_bridge.h \
-    ../hand-generations/src/reactions/typical/dimer_formation.h \
     ../hand-generations/src/reactions/typical/dimer_formation_near_bridge.h \
     ../hand-generations/src/reactions/typical/form_two_bond.h \
     ../hand-generations/src/reactions/typical/high_bridge_stand_to_dimer.h \
@@ -265,10 +269,13 @@ HEADERS += \
     phases/behavior_tor.h \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
+    reactions/central_reaction.h \
     reactions/concrete_lateral_reaction.h \
     reactions/concrete_typical_reaction.h \
     reactions/lateral_reaction.h \
+    reactions/multi_lateral_reaction.h \
     reactions/reaction.h \
+    reactions/single_lateral_reaction.h \
     reactions/spec_reaction.h \
     reactions/targets.h \
     reactions/typical_reaction.h \

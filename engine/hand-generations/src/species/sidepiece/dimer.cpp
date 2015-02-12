@@ -1,6 +1,6 @@
 #include "dimer.h"
-#include "../../reactions/typical/dimer_drop.h"
-#include "../../reactions/typical/dimer_formation.h"
+#include "../../reactions/central/dimer_drop.h"
+#include "../../reactions/central/dimer_formation.h"
 #include "../base/methyl_on_dimer.h"
 #include "../specific/dimer_crs.h"
 #include "../specific/dimer_cri_cli.h"
