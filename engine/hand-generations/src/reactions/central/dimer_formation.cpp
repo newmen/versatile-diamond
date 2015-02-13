@@ -52,11 +52,8 @@ void DimerFormation::checkLaterals(Dimer *sidepiece)
                     if (neighbourReaction)
                     {
                         assert(!sidepiece->haveReaction(neighbourReaction));
-                        if (!sidepiece->haveReaction(neighbourReaction))
-                        {
-                            SingleLateralReaction *chunk = new DimerFormationAtEnd(neighbourReaction->parent(), sidepiece);
-                            neighbourReaction->concretize(chunk);
-                        }
+                        SingleLateralReaction *chunk = new DimerFormationAtEnd(neighbourReaction->parent(), sidepiece);
+                        neighbourReaction->concretize(chunk);
                         return;
                     }
                 }
