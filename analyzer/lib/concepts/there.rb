@@ -8,6 +8,9 @@ module VersatileDiamond
       include Modules::ListsComparer
       include SpecAtomSwapper
       include PositionsComparer
+      extend Forwardable
+
+      def_delegator :where, :description
 
       # Raises when target atom of sidepiece there object haven't lattice
       class ReversingError < Errors::Base

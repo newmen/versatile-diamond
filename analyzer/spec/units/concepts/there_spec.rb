@@ -24,6 +24,10 @@ module VersatileDiamond
         end
       end
 
+      describe '#description' do
+        it { expect(on_end.description).to eq(at_end.description) }
+      end
+
       describe '#target_specs' do
         it { expect(on_end.target_specs).to match_array([ab, aib]) }
         it { expect(on_middle.target_specs).to match_array([ab, aib]) }
