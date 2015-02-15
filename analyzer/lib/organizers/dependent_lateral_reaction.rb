@@ -25,6 +25,12 @@ module VersatileDiamond
         @_theres ||= reaction.theres.map { |th| DependentThere.new(self, th) }
       end
 
+      # Gets the list of spec-atoms which are targets for sidepiece species
+      # @return [Array] the list spec-atoms which are sidepiece targets
+      def lateral_targets
+        theres.map(&:targets).reduce(:+).to_a
+      end
+
       # Checks that current reaction covered by other reaction
       # @param [DependentLateralReaction] other the comparable reaction
       # @return [Boolean] covered or not

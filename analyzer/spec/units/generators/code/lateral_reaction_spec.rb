@@ -35,12 +35,14 @@ module VersatileDiamond
           it_behaves_like :check_base_class_name do
             let(:target) { dept_end_lateral_df }
             let(:outer_class_name) { 'ConcretizableRole' }
-            let(:templ_args) { ['Lateral', 'FORWARD_DIMER_FORMATION_END_LATERAL', 1] }
+            let(:templ_args) do
+              ['SingleLateral', 'FORWARD_DIMER_FORMATION_END_LATERAL', 1]
+            end
           end
 
           it_behaves_like :check_base_class_name do
             let(:target) { dept_middle_lateral_df }
-            let(:outer_class_name) { 'Lateral' }
+            let(:outer_class_name) { 'MultiLateral' }
             let(:templ_args) { ['FORWARD_DIMER_FORMATION_MIDDLE_LATERAL', 2] }
           end
         end

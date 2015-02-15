@@ -34,8 +34,8 @@ module VersatileDiamond
 
           it_behaves_like :check_base_class_name do
             let(:lateral_reactions) { [dept_end_lateral_df] }
-            let(:outer_class_name) { 'LaterableRole' }
-            let(:templ_args) { ['Typical', 'FORWARD_DIMER_FORMATION', 2] }
+            let(:outer_class_name) { 'ConcretizableRole' }
+            let(:templ_args) { ['Central', 'FORWARD_DIMER_FORMATION', 2] }
           end
         end
 

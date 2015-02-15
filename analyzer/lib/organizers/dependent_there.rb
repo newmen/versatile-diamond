@@ -34,6 +34,12 @@ module VersatileDiamond
         there.env_specs.each(&block)
       end
 
+      # Gets the set of target spec-atoms
+      # @return [Set] the set of target spec-atoms
+      def targets
+        there.links.keys.to_set
+      end
+
       # Verifies that passed there object is covered by the current
       # @param [There] other the verifying there object
       # @return [Boolean] is cover or not

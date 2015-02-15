@@ -50,6 +50,22 @@ module VersatileDiamond
       end
 
       it_behaves_like :check_links do
+        subject { dept_incoherent_dimer_drop }
+        let(:dmr) { subject.source.first }
+        [:cl, :cr].each do |kn|
+          let(kn) { dmr.atom(kn) }
+        end
+
+        let(:original_links) do
+          {
+            [dmr, cl] => [[[dmr, cr], bond_100_front]],
+            [dmr, cr] => [[[dmr, cl], bond_100_front]]
+          }
+        end
+        let(:clean_links) { {} }
+      end
+
+      it_behaves_like :check_links do
         subject { dept_sierpinski_drop }
         let(:spc) { subject.source.first }
         [:cm, :ctl, :ctr].each do |kn|

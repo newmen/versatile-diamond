@@ -6,15 +6,6 @@ module VersatileDiamond
 
       # Contains logic for generation typical reation
       class LateralReaction < SpeciesReaction
-
-        # Gets the name of base class
-        # @return [String] the parent type name
-        def base_class_name
-          template_args = tail? ? [] : [reaction_type]
-          template_args += [enum_name, sidepiece_species.size]
-          "#{outer_base_class_name}<#{template_args.join(', ')}>"
-        end
-
       protected
 
         # Gets the list of species which using as sidepiece of reaction
@@ -25,23 +16,16 @@ module VersatileDiamond
 
       private
 
-        # Checks that current reaction is a tail of overall engine find algorithm
-        # @return [Boolean] is final reaction in reactions tree or not
-        def tail?
-          reaction.complexes.empty?
-        end
-
-        # Gets the parent type of generating reaction
-        # @return [String] the parent type of reaction
-        # @override
-        def outer_base_class_name
-          tail? ? reaction_type : 'ConcretizableRole'
-        end
-
         # Gets the type of reaction
         # @return [String] the type of reaction
         def reaction_type
-          'Lateral'
+          concretizable? ? 'SingleLateral' : 'MultiLateral'
+        end
+
+        # Gets the number of species which used as base class template argument
+        # @return [Integer] the number of using sidepieces
+        def template_specs_num
+          sidepiece_species.size
         end
 
         # Gets a list of code elements each of which uses in header file
