@@ -8,6 +8,7 @@ module VersatileDiamond
       extend Forwardable
 
       def_delegators :there, :swap_source, :use_similar_source?
+      def_delegator :there, :where # for graphs generators
       attr_reader :lateral_reaction
 
       # Stores wrappable there

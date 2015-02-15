@@ -79,7 +79,7 @@ module VersatileDiamond
         multi_deps(:complexes, reactions, method(:reaction_node), &complexes_setup)
 
         if @spec_to_node
-          parent_reactions = reactions.reject { |reaction| reaction.parent }
+          parent_reactions = reactions.select { |reaction| reaction.parents.empty? }
           multi_deps(:source, parent_reactions,
             method(:reaction_node), method(:spec_node), &setup_block)
         end

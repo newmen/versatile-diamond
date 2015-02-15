@@ -11,6 +11,7 @@ module VersatileDiamond
       extend Forwardable
 
       def_delegator :where, :description
+      attr_reader :where # for graphs generators
 
       # Raises when target atom of sidepiece there object haven't lattice
       class ReversingError < Errors::Base
@@ -164,7 +165,7 @@ module VersatileDiamond
 
     protected
 
-      attr_reader :where, :target_refs
+      attr_reader :target_refs
 
       # Gets the list of own position tuples
       # @return [Array] the list of own position tuples

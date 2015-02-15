@@ -25,6 +25,12 @@ module VersatileDiamond
         @_theres ||= reaction.theres.map { |th| DependentThere.new(self, th) }
       end
 
+      # Provides where objects for graphs generators
+      # @return [Array] the array of using where objects
+      def wheres
+        theres.map(&:where)
+      end
+
       # Gets the list of spec-atoms which are targets for sidepiece species
       # @return [Array] the list spec-atoms which are sidepiece targets
       def lateral_targets
