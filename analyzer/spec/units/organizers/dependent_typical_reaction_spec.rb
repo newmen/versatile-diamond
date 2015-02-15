@@ -34,10 +34,10 @@ module VersatileDiamond
         shared_examples_for :organize_and_check do
           before { reaction.organize_dependencies!(lateral_reactions) }
 
-          describe '#parent' do
-            it 'each complex have a parent' do
+          describe '#parents' do
+            it 'each complex have a parents' do
               complexes.each do |complex|
-                expect(complex.parent).to eq(reaction)
+                expect(complex.parents).to eq([reaction])
               end
             end
           end

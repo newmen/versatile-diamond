@@ -8,8 +8,8 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      attr_reader :reaction, :parent
-      collector_methods :complex
+      attr_reader :reaction
+      collector_methods :parent, :complex
       def_delegators :@reaction, :name, :full_rate, :swap_source, :use_similar_source?,
         :changes_num
 
@@ -17,7 +17,6 @@ module VersatileDiamond
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
       def initialize(reaction)
         @reaction = reaction
-        @parent = nil
       end
 
       # Compares two reaction instances
@@ -53,7 +52,7 @@ module VersatileDiamond
       # Check that reaction have gas ion reagent
       # @return [Boolean] is reaction specific of ubiquitous or not
       def local?
-        parent && !simple_source.empty?
+        !(parents.empty? || simple_source.empty?)
       end
 
       def formula
@@ -66,9 +65,9 @@ module VersatileDiamond
 
       # Stores the parent of reaction
       # @param [DependentReaction] parent the parent of current reaction
+      alias_method :super_store_parent, :store_parent
       def store_parent(parent)
-        raise 'Parent already set' if @parent
-        @parent = parent
+        super_store_parent(parent)
         parent.store_complex(self)
       end
     end

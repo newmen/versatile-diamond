@@ -53,10 +53,10 @@ module VersatileDiamond
 
       private
 
-        # Gets the parent ubiquitous reaction
-        # @return [UbiquitousReaction] the parent reaction
-        def parent
-          reaction_class(reaction.parent)
+        # Gets the parents of current reaction
+        # @return [Array] the parents of current reaction
+        def parents
+          reaction.parents.map(&method(:reaction_class))
         end
 
         # Gets the list of more complex reactions

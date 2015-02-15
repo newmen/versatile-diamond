@@ -46,6 +46,12 @@ module VersatileDiamond
         def head_used_objects
           [parent]
         end
+
+        # The local reaction could have just one parent ubiquitous reaction
+        # @return [UbiquitousReaction] the parent reaction for current local reaction
+        def parent
+          parents.first
+        end
       end
 
     end
