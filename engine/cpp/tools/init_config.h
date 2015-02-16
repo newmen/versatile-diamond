@@ -3,11 +3,8 @@
 
 #include <cstdlib>
 #include "../phases/behavior_factory.h"
-#include "savers/volume_saver_factory.h"
-#include "savers/detector_factory.h"
-#include "savers/volume_saver.h"
-#include "savers/detector.h"
 #include "yaml_config_reader.h"
+#include "savers_builder.h"
 #include "common.h"
 #include "error.h"
 
@@ -22,7 +19,6 @@ struct InitConfig
     const char *dumpPath;
     const Detector *detector = nullptr;
     const Behavior *behavior = nullptr;
-    std::vector<> saversCollection;
 
     InitConfig(int argc, char *argv[]);
 
@@ -71,15 +67,25 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
         throw Error("Total process time should be grater than 0 seconds");
     }
 
+    if (reader.isDefined("system", "behavior"))
+    {
+        BehaviorFactory bhvrFactory;
+        std::string behaviorType = reader.read<std::string>("system", "behavior");
+
+        if (!bhvrFactory.isRegistered(behaviorType))
+        {
+            throw Error("Undefined type of behavior");
+        }
+
+        behavior = bhvrFactory.create(behaviorType);
+    }
+
+
+    // Тут общее заканчивается. Читать конфиги для каждого савера.
+
     if (reader.isDefined("dump", "step"))
     {
-        VolumeSaverFactory vsFactory;
-        if (!vsFactory.isRegistered("dump"))
-        {
-            throw Error("Undefined type of volume file saver");
-        }
-//collector with builder take all savers
-        volumeSaver = vsFactory.create(volumeSaverType, filename().c_str());
+
     }
 
     DetectorFactory<HB> detFactory;
@@ -95,21 +101,6 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
     else if (volumeSaverType)
     {
         detector = detFactory.create("surf");
-    }
-
-    BehaviorFactory bhvrFactory;
-    if (behaviorType)
-    {
-        if (!bhvrFactory.isRegistered(behaviorType))
-        {
-            throw Error("Undefined type of behavior");
-        }
-
-        behavior = bhvrFactory.create(behaviorType);
-    }
-    else
-    {
-        behavior = bhvrFactory.create("tor");
     }
 }
 
