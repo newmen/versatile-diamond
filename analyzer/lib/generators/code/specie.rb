@@ -38,7 +38,7 @@ module VersatileDiamond
             @essence = Essence.new(self)
           end
 
-          @_class_name, @_enum_name, @_file_name, @_used_iterators, @_wheres = nil
+          @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
           @_find_builder = nil
         end
 
@@ -235,12 +235,6 @@ module VersatileDiamond
         # @return [Boolean] is lateral specie or not
         def sidepiece?
           !spec.theres.empty?
-        end
-
-        # Gets the where object logic generators
-        # @return [Array] the list of where object logic generators
-        def wheres
-          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(generator, wh) }
         end
 
         # Makes base classes for current specie class instance

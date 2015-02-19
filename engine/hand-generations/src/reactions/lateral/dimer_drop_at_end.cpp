@@ -1,5 +1,4 @@
 #include "dimer_drop_at_end.h"
-#include "../../species/sidepiece/dimer.h"
 
 const char DimerDropAtEnd::__name[] = "dimer drop at end of dimers row";
 

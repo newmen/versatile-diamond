@@ -1,5 +1,4 @@
 #include "dimer_drop_in_middle.h"
-#include "../../species/sidepiece/dimer.h"
 
 const char DimerDropInMiddle::__name[] = "dimer drop in middle of dimers row";
 

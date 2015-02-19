@@ -4,8 +4,6 @@ module VersatileDiamond
     # Wraps structural reaction with lateral interactions
     class DependentLateralReaction < DependentSpecReaction
 
-      def_delegator :reaction, :theres
-
       # Initializes dependent lateral reation
       # @override
       def initialize(*)

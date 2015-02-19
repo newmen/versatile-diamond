@@ -1,5 +1,4 @@
 #include "dimer_formation_in_middle.h"
-#include "../../species/sidepiece/dimer.h"
 
 const char DimerFormationInMiddle::__name[] = "dimer formation in middle of dimers row";
 

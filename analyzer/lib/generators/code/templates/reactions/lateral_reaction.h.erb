@@ -11,8 +11,6 @@ class <%= class_name %> :
 public:
     template <class... Args> <%= class_name %>(Args... args) :
         <%= outer_base_class_name %>(args...) {}
-
-    void createUnconcreted(LateralSpec *removableSpec) override;
 };
 
 #endif // <%= define_name %>
