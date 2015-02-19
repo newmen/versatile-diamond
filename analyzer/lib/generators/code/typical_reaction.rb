@@ -66,6 +66,29 @@ module VersatileDiamond
         def find_algorithm_from(specie)
           Algorithm::ReactionFindBuilder.new(generator, self, specie).build
         end
+
+        # Gets the maximal number of lateral reaction chunks
+        # @return [Integer] the maximal number of lateral reaction chunks
+        def lateral_chunks_num
+          overall_lateral_reaction.chunks_num
+        end
+
+        # Gets lateral reaction which is overall other children reactions
+        # @return [LateralReaction] overall lateral reaction
+        def overall_lateral_reaction
+        end
+
+        # Gets the string by which chunks of lateral reactions define
+        # @return [String] the string with null defined chunks of lateral reactions
+        def define_lateral_chunks
+          ptrs = (['nullptr'] * lateral_chunks_num).join(', ')
+          "SingleLateralReaction *chunks[#{lateral_chunks_num}] = { #{ptrs} }"
+        end
+
+        # Builds look around algorithm for find all possible lateral reactions
+        # @return [String] the string with cpp code of look around algorithm
+        def look_around_algorithm
+        end
       end
 
     end

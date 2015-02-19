@@ -30,20 +30,55 @@ module VersatileDiamond
         end
 
         describe '#base_class_name' do
-          let(:lateral_reactions) { [dept_end_lateral_df, dept_middle_lateral_df] }
+          describe 'several lateral reactions' do
+            let(:lateral_reactions) { [dept_end_lateral_df, dept_middle_lateral_df] }
 
-          it_behaves_like :check_base_class_name do
-            let(:target) { dept_end_lateral_df }
-            let(:outer_class_name) { 'ConcretizableRole' }
-            let(:templ_args) do
-              ['SingleLateral', 'FORWARD_DIMER_FORMATION_END_LATERAL', 1]
+            it_behaves_like :check_base_class_name do
+              let(:target) { dept_end_lateral_df }
+              let(:outer_class_name) { 'ConcretizableRole' }
+              let(:templ_args) do
+                ['SingleLateral', 'FORWARD_DIMER_FORMATION_END_LATERAL', 1]
+              end
+            end
+
+            it_behaves_like :check_base_class_name do
+              let(:target) { dept_middle_lateral_df }
+              let(:outer_class_name) { 'MultiLateral' }
+              let(:templ_args) { ['FORWARD_DIMER_FORMATION_MIDDLE_LATERAL', 2] }
             end
           end
 
-          it_behaves_like :check_base_class_name do
+          describe 'one lateral reaction' do
+            let(:lateral_reactions) { [dept_middle_lateral_df] }
+            it_behaves_like :check_base_class_name do
+              let(:target) { dept_middle_lateral_df }
+              let(:outer_class_name) { 'SingleLateral' }
+              let(:templ_args) { ['FORWARD_DIMER_FORMATION_MIDDLE_LATERAL', 2] }
+            end
+          end
+        end
+
+        describe '#chunks_num' do
+          shared_examples_for :check_chunks_num do
+            it { expect(subject.chunks_num).to eq(chunks_num) }
+          end
+
+          it_behaves_like :check_chunks_num do
+            let(:lateral_reactions) { [target] }
+            let(:target) { dept_end_lateral_df }
+            let(:chunks_num) { 1 }
+          end
+
+          it_behaves_like :check_chunks_num do
+            let(:lateral_reactions) { [target] }
+            let(:target) { dept_end_lateral_df }
+            let(:chunks_num) { 1 }
+          end
+
+          it_behaves_like :check_chunks_num do
+            let(:lateral_reactions) { [dept_end_lateral_df, target] }
             let(:target) { dept_middle_lateral_df }
-            let(:outer_class_name) { 'MultiLateral' }
-            let(:templ_args) { ['FORWARD_DIMER_FORMATION_MIDDLE_LATERAL', 2] }
+            let(:chunks_num) { 2 }
           end
         end
       end

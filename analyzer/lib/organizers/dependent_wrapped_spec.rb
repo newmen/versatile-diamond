@@ -6,6 +6,7 @@ module VersatileDiamond
     class DependentWrappedSpec < DependentSpec
       include Minuend
 
+      # TODO: own there objects that described below are not used
       collector_methods :there, :child
       def_delegators :@spec, :external_bonds, :relation_between
       attr_reader :links
