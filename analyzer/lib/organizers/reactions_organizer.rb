@@ -22,7 +22,9 @@ module VersatileDiamond
         # order of dependencies organization is important!
         organize_ubiquitous_reactions_deps!(term_ss, non_term_ss, *reactions_lists)
         organize_lateral_reactions_deps!(lateral_rs)
-        organize_typical_reactions_deps!(typical_rs, lateral_rs)
+
+        root_lateral_rs = lateral_rs.select { |r| r.parents.empty? }
+        organize_typical_reactions_deps!(typical_rs, root_lateral_rs)
       end
 
     private

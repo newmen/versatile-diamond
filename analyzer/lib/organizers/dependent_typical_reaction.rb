@@ -22,24 +22,9 @@ module VersatileDiamond
       # Organize dependencies from another lateral reactions
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
-        applicants = []
         lateral_reactions.each do |possible|
-          applicants << possible if reaction.same_positions?(possible.reaction)
+          possible.store_parent(self) if reaction.same_positions?(possible.reaction)
         end
-
-        return if applicants.empty?
-
-        loop do
-          inc = applicants.select do |possible|
-            applicants.find do |unr|
-              possible != unr && possible.complexes.include?(unr)
-            end
-          end
-          break if inc.empty?
-          applicants = inc
-        end
-
-        applicants.each { |possible| possible.store_parent(self) }
       end
     end
 
