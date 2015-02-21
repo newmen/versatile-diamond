@@ -142,7 +142,11 @@ SOURCES += \
     tools/dump/dump_saver.cpp \
     tools/dump/dump_reader.cpp \
     tools/savers_runner.cpp \
-    tools/savers_builder.cpp
+    tools/savers_builder.cpp \
+    tools/savers_wrapper_stopper.cpp \
+    tools/savers_wrapper.cpp \
+    tools/run_xyz_saver.cpp \
+    tools/run_volume_saver.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -341,7 +345,12 @@ HEADERS += \
     tools/dump/dump_saver.h \
     tools/dump/dump_reader.h \
     tools/savers_runner.h \
-    tools/savers_builder.h
+    tools/savers_builder.h \
+    tools/savers_decorator.h \
+    tools/savers_wrapper_stopper.h \
+    tools/savers_wrapper.h \
+    tools/run_xyz_saver.h \
+    tools/run_volume_saver.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \
