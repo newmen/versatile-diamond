@@ -21,6 +21,11 @@ module VersatileDiamond
         it { expect(subject.lateral_reaction).to eq(dimer_formation) }
       end
 
+      describe '#<=>' do
+        it { expect(dept_on_end <=> dept_on_middle).to eq(-1) }
+        it { expect(dept_on_middle <=> dept_on_end).to eq(1) }
+      end
+
       describe '#used_atoms_of' do
         let(:atoms) { [methyl_on_bridge.atom(:cb)] }
         it { expect(subject.used_atoms_of(dept_methyl_on_bridge)).to eq(atoms) }

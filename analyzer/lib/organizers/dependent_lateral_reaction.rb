@@ -67,6 +67,18 @@ module VersatileDiamond
         super_method = reaction.class.superclass.instance_method(:same?).bind(reaction)
         super_method.call(other.reaction)
       end
+
+      # Compares two lateral reaction instances by there objects of them
+      # @param [DependentLateralReaction] other comparable lateral reaction
+      # @return [Integer] the result of comparison
+      # @override
+      def partial_order(other)
+        order(self, other, :theres, :size) do
+          theres.sort.zip(other.theres.sort).reduce(0) do |acc, (t1, t2)|
+            acc == 0 ? (t1 <=> t2) : acc
+          end
+        end
+      end
     end
 
   end

@@ -59,7 +59,7 @@ module VersatileDiamond
           dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
         end
 
-        let(:lateral_reactions) { [target, subject, other] }
+        let(:lateral_reactions) { [target, subject, other].sort }
 
         before do
           lateral_reactions.each do |reaction|

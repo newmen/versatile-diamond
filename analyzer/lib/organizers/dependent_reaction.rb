@@ -23,12 +23,14 @@ module VersatileDiamond
       # @param [UbiquitousReaction] other comparing reaction
       # @return [Integer] the comparing result
       def <=> (other)
-        order(self, other, :changes_num) do
-          order(self, other, :source, :size) do
-            order(self, other, :products, :size) do
-              typed_order(self, other, DependentLateralReaction) do
-                typed_order(self, other, DependentTypicalReaction) do
-                  typed_order(self, other, DependentUbiquitousReaction)
+        typed_order(self, other, DependentLateralReaction) do
+          typed_order(self, other, DependentTypicalReaction) do
+            typed_order(self, other, DependentUbiquitousReaction) do
+              order(self, other, :changes_num) do
+                order(self, other, :source, :size) do
+                  order(self, other, :products, :size) do
+                    partial_order(other)
+                  end
                 end
               end
             end
@@ -69,6 +71,14 @@ module VersatileDiamond
       def store_parent(parent)
         super_store_parent(parent)
         parent.store_complex(self)
+      end
+
+      # Provides partial order which could be overriden in children classes
+      # @param [DependentReaction] other comparable reaction which have same type as
+      #   self reaction
+      # @return [Integer] the result of comparison
+      def partial_order(other)
+        0
       end
     end
 
