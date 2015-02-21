@@ -1,16 +1,16 @@
-#ifndef RUNVOLUMESAVER_H
-#define RUNVOLUMESAVER_H
+#ifndef VOLUMESAVERITEM_H
+#define VOLUMESAVERITEM_H
 
-#include "savers_wrapper.h"
+#include "item_wrapper.h"
 #include "savers/volume_saver_factory.h"
 #include "savers/detector.h"
 
 namespace vd {
 
-class RunVolumeSaver : public SaversWrapper
+class VolumeSaverItem : public ItemWrapper
 {
 public:
-    RunVolumeSaver(SaversDecorator* targ) : SaversWrapper(targ) {}
+    VolumeSaverItem(SaversDecorator* targ) : ItemWrapper(targ) {}
 
 private:
     VolumeSaver* takeSaver(std::string volumeSaverType, std::string filename);
@@ -19,4 +19,4 @@ private:
 
 }
 
-#endif // RUNVOLUMESAVER_H
+#endif // VOLUMESAVERITEM_H

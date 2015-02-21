@@ -125,28 +125,27 @@ SOURCES += \
     tools/common.cpp \
     tools/lockable.cpp \
     tools/process_mem_usage.cpp \
-    tools/savers/accumulator.cpp \
-    tools/savers/all_atoms_detector.cpp \
-    tools/savers/bond_info.cpp \
-    tools/savers/crystal_slice_saver.cpp \
-    tools/savers/mol_accumulator.cpp \
-    tools/savers/mol_format.cpp \
-    tools/savers/mol_saver.cpp \
-    tools/savers/sdf_saver.cpp \
-    tools/savers/volume_saver_factory.cpp \
-    tools/savers/xyz_accumulator.cpp \
-    tools/savers/xyz_format.cpp \
-    tools/savers/xyz_saver.cpp \
+    savers/accumulator.cpp \
+    savers/all_atoms_detector.cpp \
+    savers/bond_info.cpp \
+    savers/crystal_slice_saver.cpp \
+    savers/mol_accumulator.cpp \
+    savers/mol_format.cpp \
+    savers/mol_saver.cpp \
+    savers/sdf_saver.cpp \
+    savers/volume_saver_factory.cpp \
+    savers/xyz_accumulator.cpp \
+    savers/xyz_format.cpp \
+    savers/xyz_saver.cpp \
     tools/scavenger.cpp \
     tools/yaml_config_reader.cpp \
-    tools/dump/dump_saver.cpp \
-    tools/dump/dump_reader.cpp \
+    savers/dump/dump_saver.cpp \
+    savers/dump/dump_reader.cpp \
     tools/savers_runner.cpp \
-    tools/savers_builder.cpp \
-    tools/savers_wrapper_stopper.cpp \
-    tools/savers_wrapper.cpp \
-    tools/run_xyz_saver.cpp \
-    tools/run_volume_saver.cpp
+    savers/decorator/soul.cpp \
+    savers/decorator/item_wrapper.cpp \
+    savers/decorator/volume_saver_item.cpp \
+    savers/decorator/xyz_queue_item.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -316,41 +315,40 @@ HEADERS += \
     tools/many_items_result.h \
     tools/process_mem_usage.h \
     tools/runner.h \
-    tools/savers/accumulator.h \
-    tools/savers/actives_portion_counter.h \
-    tools/savers/all_atoms_detector.h \
-    tools/savers/atom_info.h \
-    tools/savers/bond_info.h \
-    tools/savers/bundle_saver.h \
-    tools/savers/crystal_slice_saver.h \
-    tools/savers/detector.h \
-    tools/savers/detector_factory.h \
-    tools/savers/format.h \
-    tools/savers/many_files.h \
-    tools/savers/mol_accumulator.h \
-    tools/savers/mol_format.h \
-    tools/savers/mol_saver.h \
-    tools/savers/one_file.h \
-    tools/savers/sdf_saver.h \
-    tools/savers/surface_detector.h \
-    tools/savers/volume_saver.h \
-    tools/savers/volume_saver_factory.h \
-    tools/savers/xyz_accumulator.h \
-    tools/savers/xyz_format.h \
-    tools/savers/xyz_saver.h \
+    savers/accumulator.h \
+    savers/actives_portion_counter.h \
+    savers/all_atoms_detector.h \
+    savers/atom_info.h \
+    savers/bond_info.h \
+    savers/bundle_saver.h \
+    savers/crystal_slice_saver.h \
+    savers/detector.h \
+    savers/detector_factory.h \
+    savers/format.h \
+    savers/many_files.h \
+    savers/mol_accumulator.h \
+    savers/mol_format.h \
+    savers/mol_saver.h \
+    savers/one_file.h \
+    savers/sdf_saver.h \
+    savers/surface_detector.h \
+    savers/volume_saver.h \
+    savers/volume_saver_factory.h \
+    savers/xyz_accumulator.h \
+    savers/xyz_format.h \
+    savers/xyz_saver.h \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
     tools/yaml_config_reader.h \
-    tools/dump/dump_saver.h \
-    tools/dump/dump_reader.h \
-    tools/savers_runner.h \
-    tools/savers_builder.h \
-    tools/savers_decorator.h \
-    tools/savers_wrapper_stopper.h \
-    tools/savers_wrapper.h \
-    tools/run_xyz_saver.h \
-    tools/run_volume_saver.h
+    savers/dump/dump_saver.h \
+    savers/dump/dump_reader.h \
+    savers/decorator/queue_item.h \
+    savers/decorator/soul.h \
+    savers/decorator/item_wrapper.h \
+    savers/decorator/volume_saver_item.h \
+    savers/decorator/xyz_queue_item.h \
+    savers/savers_builder.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

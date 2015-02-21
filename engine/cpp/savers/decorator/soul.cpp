@@ -1,8 +1,8 @@
-#include "savers_wrapper_stopper.h"
+#include "soul.h"
 
 namespace vd {
 
-void SaversWrapperStopper::copyData()
+void Soul::copyData()
 {
     if (!_isDataCopied)
     {
@@ -11,19 +11,19 @@ void SaversWrapperStopper::copyData()
     }
 }
 
-void SaversWrapperStopper::saveData() {}
+void Soul::saveData() {}
 
-Amorph *SaversWrapperStopper::amorph()
+Amorph *Soul::amorph()
 {
     return _amorph;
 }
 
-Crystal *SaversWrapperStopper::crystal()
+Crystal *Soul::crystal()
 {
     return _crystal;
 }
 
-SaversWrapperStopper::~SaversWrapperStopper()
+Soul::~Soul()
 {
     if (_isDataCopied)
     {
