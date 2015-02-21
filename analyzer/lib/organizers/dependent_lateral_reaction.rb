@@ -54,7 +54,9 @@ module VersatileDiamond
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
         lateral_reactions.each do |possible|
-          possible.store_parent(self) if self != possible && possible.cover?(self)
+          if self != possible && possible.cover?(self)
+            possible.store_parent(self) if !parents.any? { |pr| possible.cover?(pr) }
+          end
         end
       end
 
