@@ -5,6 +5,7 @@ module VersatileDiamond
 
     # Contain some there and provides behavior for dependent entities set
     class DependentThere
+      include Modules::SpecLinksAdsorber
       include Modules::OrderProvider
       extend Forwardable
 
@@ -19,6 +20,8 @@ module VersatileDiamond
       def initialize(lateral_reaction, there)
         @lateral_reaction = lateral_reaction
         @there = there
+
+        @_links = nil
       end
 
       # Compares two there objects
@@ -26,6 +29,20 @@ module VersatileDiamond
       # @return [Integer] the comparison result
       def <=> (other)
         order(self, other, :links_num)
+      end
+
+      # Gets the extendes links of there object with links of sidepiece species
+      # @return [Hash] the extended links of there object with links of sidepiece specs
+      def links
+        return @_links if @_links
+        @_links = adsorb_links(there.links, there.env_specs)
+        there.links.each do |target, rels|
+          rels.each do |sa, r|
+            @_links[sa] ||= []
+            @_links[sa] << [target, r]
+          end
+        end
+        @_links
       end
 
       # Gets atoms of passed spec
