@@ -66,6 +66,7 @@ module VersatileDiamond
       # @param [DependentLateralReaction] other the comparable lateral reaction
       # @return [Boolean] same by super or not
       def super_same?(other)
+        # TODO: in Ruby 2.2 could be writen as `reaction.method(:same?).super_method`
         super_method = reaction.class.superclass.instance_method(:same?).bind(reaction)
         super_method.call(other.reaction)
       end
