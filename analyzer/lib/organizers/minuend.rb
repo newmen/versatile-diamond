@@ -1,12 +1,11 @@
 module VersatileDiamond
   module Organizers
 
-    # Provides method for minuend behavior
+    # Provides common logic for another minuend modules
     module Minuend
       include Modules::ListsComparer
       include Modules::OrderProvider
       include Modules::ProcsReducer
-      include Organizers::LinksCleaner
 
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance
@@ -30,58 +29,12 @@ module VersatileDiamond
       end
 
       # Makes residual of difference between top and possible parent
-      # @param [DependentBaseSpec | DependentSpecificSpec] other the subtrahend spec
-      # @return [SpecResidual] the residual of diference between arguments or nil if
-      #   it doesn't exist
+      # @param [Object] other the subtrahend entity
+      # @return [SpecResidual | ChunkResidual] the residual of diference between
+      #   arguments or nil if it doesn't exist
       def - (other)
         mirror = mirror_to(other)
-        return nil if other.links.size != mirror.size
-
-        proxy = ProxyParentSpec.new(other, owner, mirror)
-
-        residuals = {}
-        atoms_to_parents = {}
-        pairs_from(mirror).each do |own_atom, other_atom|
-          unless other_atom
-            residuals[own_atom] = links[own_atom] # <-- same as bottom
-            next
-          end
-
-          is_diff = different_used_relations?(other, own_atom, other_atom) ||
-            used?(mirror.keys, own_atom)
-
-          if is_diff
-            residuals[own_atom] = links[own_atom] # <-- same as top
-            atoms_to_parents[own_atom] = [proxy]
-          end
-        end
-
-        SpecResidual.new(owner, residuals, atoms_to_parents)
-      end
-
-      # Provides relations of atom in current resudual
-      # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
-      #   be got
-      # @option [Boolean] :with_atoms if true, then relations will contain neighbour
-      #   atoms too
-      # @return [Array] the array of atom relations
-      def relations_of(atom, with_atoms: false)
-        relations = links[atom]
-        with_atoms ? relations : relations.map(&:last)
-      end
-
-      # Removes excess positions from current links graph
-      # @return [Hash] the links of concept specie without excess positions
-      def clean_links
-        @_clean_links ||= erase_excess_positions(cleanable_links)
-      end
-
-      # Finds first intersec with some spec
-      # @param [DependentBaseSpec] spec the checkable specie
-      # @return [Array] the array of each pair of intersection or nil if intersection
-      #   have not fond
-      def mirror_to(spec)
-        Mcs::SpeciesComparator.make_mirror(self, spec)
+        other.links.size == mirror.size ? subtract(other, mirror) : nil
       end
 
     protected
@@ -90,18 +43,6 @@ module VersatileDiamond
       # @return [Integer] the number of relations
       def relations_num
         links.values.map(&:size).reduce(:+)
-      end
-
-      # Checks that atom have amorph bond and if it is true then relations returns else
-      # only bonds will returned
-      #
-      # @param [Atom] atom see at #relations_of same argument
-      # @return [Array] the array of relations without position relations
-      def used_relations_of(atom)
-        pairs = relations_of(atom, with_atoms: true).reject do |a, r|
-          excess_position?(r, atom, a)
-        end
-        pairs.map(&:last)
       end
 
     private
@@ -117,18 +58,7 @@ module VersatileDiamond
         procs << -> &block { order_classes(other, &block) } if strong_types_order
         procs << -> &block { order_relations(other, &block) }
 
-        reduce_procs(procs) { parents.size <=> other.parents.size }.call
-      end
-
-      # Provides comparison by class of each instance
-      # @param [Minuend] other see at #<=> same argument
-      # @return [Integer] the result of comparation
-      def order_classes(other, &block)
-        typed_order(self, other, DependentSpecificSpec) do
-          typed_order(self, other, DependentBaseSpec) do
-            typed_order(self, other, SpecResidual, &block)
-          end
-        end
+        reduce_procs(procs, &comparing_core(other)).call
       end
 
       # Provides comparison by number of relations
@@ -138,11 +68,30 @@ module VersatileDiamond
         order(self, other, :relations_num, &block)
       end
 
-      # Makes pairs of atoms from mirror. If some atoms from current links are not
+      # Subtracts other entity from current
+      # @param [Object] other the subtrahend spec
+      # @param [Hash] mirror from self to other spec
+      # @yield [Object] pass the own key when both keys in the pair are different
+      # @return [SpecResidual | ChunkResidual] substraction result
+      def rest_links(other, mirror, &block)
+        pairs_from(mirror).each_with_object({}) do |(own_key, other_key), rest|
+          unless other_key
+            rest[own_key] = links[own_key] # <-- same as bottom
+            next
+          end
+
+          if different_or_used?(other, own_key, other_key, mirror.keys)
+            rest[own_key] = links[own_key] # <-- same as top
+            block[own_key] if block_given?
+          end
+        end
+      end
+
+      # Makes pairs of keys from mirror. If some keys from current links are not
       # presented in mirror then them will be added to head of pairs.
       #
-      # @param [Hash] mirror of atoms from current spec to subtrahend spec
-      # @return [Array] the array of atoms pairs
+      # @param [Hash] mirror of keys from current spec to subtrahend spec
+      # @return [Array] the array of keys pairs
       def pairs_from(mirror)
         pairs = mirror.to_a
         if pairs.size < links.size
@@ -153,41 +102,39 @@ module VersatileDiamond
         pairs
       end
 
-      # Checks that relations gotten by method of both atom have same relations sets
+      # Checks that passed pair of keys contain different or used keys
+      def different_or_used?(other, own_key, other_key, mirrored_keys)
+        different_used_relations?(other, own_key, other_key) ||
+          used?(mirrored_keys, own_key)
+      end
+
+      # Checks that relations gotten by method of both key have same relations sets
       # @param [Symbol] method name which will called
-      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
-      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom the major of comparable atoms
-      # @param [Concepts::Atom | Concepts::AtomReference] other_atom the second
-      #   comparable atom
+      # @param [Minuend] other same as #- argument
+      # @param [Object] own_key the major comparable keys
+      # @param [Object] other_key the second comparable key
       # @return [Boolean] are different or not
-      def different_by?(method, other, own_atom, other_atom)
-        srs, ors = send(method, own_atom), other.send(method, other_atom)
+      def different_by?(method, other, own_key, other_key)
+        srs, ors = send(method, own_key), other.send(method, other_key)
         !lists_are_identical?(srs, ors, &:==)
       end
 
-      # Checks that bonds of both atom have same relations sets
-      # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
-      # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   own_atom same as #different_by? argument
-      # @param [Concepts::Atom | Concepts::AtomReference] other_atom same as
-      #   #different_by? argument
+      # Checks that bonds of both key have same relations sets
+      # @param [Minuend] other same as #- argument
+      # @param [Object] own_key same as #different_by? argument
+      # @param [Object] other_key same as #different_by? argument
       # @return [Boolean] are different or not
       def different_used_relations?(*args)
         different_by?(:used_relations_of, *args)
       end
 
-      # Checks whether the atom is used in current links
-      # @param [Array] used_in_mirror the atoms which was mapped to atoms of smallest
-      #   spec
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   atom the checkable atom
+      # Checks whether the key is used in current links
+      # @param [Array] mirrored_keys the keys which was mapped to keys of subtrahend
+      # @param [Object] key the checkable key
       # @return [Boolean] is used or not
-      def used?(used_in_mirror, atom)
-        (links.keys - used_in_mirror).any? do |a|
-          links[a].any? do |neighbour, r|
-            neighbour == atom && !excess_position?(r, atom, a)
-          end
+      def used?(mirrored_keys, key)
+        (links.keys - mirrored_keys).any? do |k|
+          links[k].any? { |neighbour, r| neighbour?(k, neighbour, key, r) }
         end
       end
     end

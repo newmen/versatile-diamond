@@ -483,7 +483,7 @@ module VersatileDiamond
       end
 
       # Harvest dangling bonds of atom in spec
-      # @param [Minuend] spec see at #new same argument
+      # @param [MinuendSpec] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   spec see at #new same argument
       # @return [Array] dangling states array
@@ -496,7 +496,7 @@ module VersatileDiamond
       end
 
       # Collects only lattices which are reacheble through each undirected bond
-      # @param [Minuend] spec see at #new same argument
+      # @param [MinuendSpec] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   spec see at #new same argument
       # @return [Array] the array of achieving lattices and correspond relations

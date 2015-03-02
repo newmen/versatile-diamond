@@ -2,7 +2,7 @@ module VersatileDiamond
   module Organizers
     module Support
 
-      module MinuendExamples
+      module MinuendSpecExamples
         shared_examples_for :check_clean_links do
           describe '#clean_links' do
             it { expect(subject.clean_links).to match_graph(clean_links) }

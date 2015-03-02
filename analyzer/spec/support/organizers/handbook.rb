@@ -132,6 +132,9 @@ module VersatileDiamond
           [:on_end, :end_lateral_df],
           [:on_middle, :middle_lateral_df]
         ])
+
+        set(:end_chunk) { Chunk.new(dept_end_lateral_df, [dept_on_end]) }
+        set(:middle_chunk) { Chunk.new(dept_middle_lateral_df, [dept_on_middle]) }
       end
 
     end

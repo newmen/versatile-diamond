@@ -4,7 +4,7 @@ module VersatileDiamond
     # Wraps some many-atomic species and provides common methods for using them
     # @abstract
     class DependentWrappedSpec < DependentSpec
-      include Minuend
+      include MinuendSpec
 
       # TODO: own there objects that described below are not used
       collector_methods :there, :child

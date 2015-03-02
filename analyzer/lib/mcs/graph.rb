@@ -8,7 +8,7 @@ module VersatileDiamond
       extend Forwardable
 
       # Initialize instance by links hash of original spec graph
-      # @param [Concepts::Spec | Concepts::SpecificSpec | Organizers::Minuend] spec
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Organizers::MinuendSpec] spec
       #   from which the hash of links will be used
       # @option [Boolean] :collaps_multi_bond set to true if need separated
       #   instances for double or triple bonds

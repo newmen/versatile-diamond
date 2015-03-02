@@ -4,7 +4,7 @@ module VersatileDiamond
     # Contain some residual of find diff between base species
     class SpecResidual
       include Modules::GraphDupper
-      include Minuend
+      include MinuendSpec
 
       class << self
         # Gets empty residual instance
@@ -20,7 +20,7 @@ module VersatileDiamond
       # Initialize residual by hash of links and residual border atoms
       # @param [DependentWrappedSpec] owner of current instance
       # @param [Hash] links the links between some atoms
-      # @param [hash] atoms_to_parents the mirror of owner atoms to parent specs
+      # @param [Hash] atoms_to_parents the mirror of owner atoms to parent specs
       def initialize(owner, links, atoms_to_parents)
         @owner = owner
         @links = links
@@ -37,19 +37,6 @@ module VersatileDiamond
         result = self.dup
         result.replace_owner(owner, mirror)
         result
-      end
-
-      # Makes correct difference with other spec
-      # @param [DependentWrappedSpec] other see at #super same argument
-      # @return [SpecResidual] spec residual that contains current instance and
-      #   difference operation result
-      # @override
-      def - (other)
-        diff = super(other)
-        return nil unless diff
-
-        full_atoms_to_parents = merge(@atoms_to_parents, diff.atoms_to_parents)
-        self.class.new(owner, diff.links, full_atoms_to_parents)
       end
 
       # Gets all stored parents
@@ -91,10 +78,22 @@ module VersatileDiamond
 
     private
 
+      # Makes correct difference with other spec
+      # @return [SpecResidual] spec residual that contains current instance and
+      #   difference operation result
+      # @override
+      def subtract(*)
+        diff = super
+        full_atoms_to_parents = merge(@atoms_to_parents, diff.atoms_to_parents)
+        self.class.new(diff.owner, diff.links, full_atoms_to_parents)
+      end
+
       # Changes comparison behavior for more optimal base specs spliting
-      # @param [Minuend] other see at #<=> same argument
+      # @param [MinuendSpec] other see at #<=> same argument
       # @return [Integer] the result of comparation
       # @override
+      # TODO: if you want that methyl_on_dimer belongs to dimer instead bridge and
+      #   methyl_on_bridge then remove this overriden method
       def order_relations(other, &block)
         order(other, self, :relations_num, &block)
       end
@@ -111,9 +110,9 @@ module VersatileDiamond
       # Checks that relations of both atom have same sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom same as Minuend#different_by? argument
+      #   spec_atom same as MinuendSpec#different_by? argument
       # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
-      #   Minuend#different_by? argument
+      #   MinuendSpec#different_by? argument
       # @return [Boolean] are different or not
       def different_relations?(*args)
         different_by?(:relations_of, *args)
@@ -136,11 +135,8 @@ module VersatileDiamond
       # @return [Hash] the merging result where each value is list of possible values
       def merge(prev_refs, new_refs)
         new_refs.each_with_object(prev_refs.dup) do |(a, ps), result|
-          if result[a]
-            result[a] += ps
-          else
-            result[a] = ps
-          end
+          result[a] ||= []
+          result[a] += ps
         end
       end
 
