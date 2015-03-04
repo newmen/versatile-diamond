@@ -1,9 +1,24 @@
 require 'rspec/expectations'
 
 module VersatileDiamond
+  using Patches::RichArray
+
   module Support
     module Matchers
       include VersatileDiamond::Modules::ListsComparer
+
+      def graphs_diff(actual, expected)
+        actual.each_with_object({}) do |(v, rels), acc|
+          next if expected[v] && lists_are_identical?(expected[v], rels, &:==)
+          if expected[v]
+            ed, rd = expected[v].dup, rels.dup
+            rd.delete_one(ed.pop) until ed.empty? || rd.empty?
+            acc[v] = rd unless rd.empty?
+          else
+            acc[v] = rels
+          end
+        end
+      end
 
       RSpec::Matchers.define :match_graph do |expected|
         match do |actual|
@@ -13,8 +28,17 @@ module VersatileDiamond
             end
         end
         failure_message do |actual|
-          "expected that\n#{graph_to_s(actual)}\n" \
-            "should be like\n#{graph_to_s(expected)}"
+          excess = graphs_diff(actual, expected)
+          missed = graphs_diff(expected, actual)
+
+          strs = [
+            "expected that\n#{graph_to_s(actual)}",
+            "should be like\n#{graph_to_s(expected)}",
+          ]
+          strs << "excess:\n#{graph_to_s(excess)}" unless excess.empty?
+          strs << "missed:\n#{graph_to_s(missed)}" unless missed.empty?
+
+          strs.join("\n")
         end
 
         # Transforms graph to string
