@@ -52,6 +52,25 @@ module VersatileDiamond
         end
       end
 
+      describe '#swap_source' do
+        let(:ab) { end_lateral_df.source.first }
+        let(:ab_dup) { ab.dup }
+        before { end_lateral_df.swap_source(ab, ab_dup) }
+
+        # from super
+        it { expect(end_lateral_df.source.include?(ab)).to be_falsey }
+        it { expect(end_lateral_df.source.include?(ab_dup)).to be_truthy }
+
+        let(:links_keys) { end_lateral_df.links.keys.map(&:first) }
+        it { expect(links_keys.include?(ab)).to be_falsey }
+        it { expect(links_keys.include?(ab_dup)).to be_truthy }
+
+        # theres
+        let(:there_specs) { end_lateral_df.theres.flat_map(&:target_specs) }
+        it { expect(there_specs.include?(ab)).to be_falsey }
+        it { expect(there_specs.include?(ab_dup)).to be_truthy }
+      end
+
       describe '#used_atoms_of' do
         describe 'forward' do
           subject { reaction }

@@ -14,6 +14,14 @@ module VersatileDiamond
         @theres = theres
       end
 
+      # Also changes targets of there object
+      # @param [SpecificSpec] from the spec from which need to swap
+      # @param [SpecificSpec] to the spec to which need to swap
+      def swap_source(from, to)
+        super
+        theres.each { |there| there.swap_target(from, to) }
+      end
+
       # Also checks using in there objects
       # @param [Spec | SpecificSpec] spec the one of reactant
       # @return [Array] the array of using atoms

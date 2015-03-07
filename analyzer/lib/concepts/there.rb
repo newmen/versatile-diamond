@@ -10,7 +10,7 @@ module VersatileDiamond
       include PositionsComparer
       extend Forwardable
 
-      def_delegator :where, :description
+      def_delegators :where, :description, :swap_source
       attr_reader :where # for graphs generators
 
       # Raises when target atom of sidepiece there object haven't lattice
@@ -80,22 +80,13 @@ module VersatileDiamond
         where.all_specs.uniq
       end
 
-      # Checks that passed spec is used in current there object
+      # Checks that passed spec is used in internal where object
       # @param [SpecificSpec] spec which will be checked
       # @return [Boolan] is used similar spec or not
       def use_similar_source?(spec)
-        target_refs.any? { |_, (s, _)| s == spec } ||
-          where.total_links.any? do |_, rels|
-            rels.any? { |(s, _), _| s == spec }
-          end
-      end
-
-      # Swaps environment source spec from some to some
-      # @param [SpecificSpec] from the spec from which need to swap
-      # @param [SpecificSpec] to the spec to which need to swap
-      def swap_source(from, to)
-        where.swap_source(from, to)
-        swap_target(from, to)
+        where.total_links.any? do |_, rels|
+          rels.any? { |(s, _), _| s == spec }
+        end
       end
 
       # Provides target species
