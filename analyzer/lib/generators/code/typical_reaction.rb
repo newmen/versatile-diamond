@@ -38,7 +38,7 @@ module VersatileDiamond
           return @_used_iterators if @_used_iterators
           specs_atoms =
             if reaction.clean_links.empty?
-              concretizable? ? reaction.complexes.map(&:lateral_targets) : []
+              concretizable? ? reaction.children.map(&:lateral_targets) : []
             else
               reaction.clean_links.keys
             end

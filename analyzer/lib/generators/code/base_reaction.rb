@@ -62,7 +62,7 @@ module VersatileDiamond
         # Gets the list of more complex reactions
         # @return [Array] the list of children reactions
         def children
-          reaction.complexes.map(&method(:reaction_class))
+          reaction.children.map(&method(:reaction_class))
         end
 
         # Gets reacting gas species list

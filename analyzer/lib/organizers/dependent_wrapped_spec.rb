@@ -4,6 +4,7 @@ module VersatileDiamond
     # Wraps some many-atomic species and provides common methods for using them
     # @abstract
     class DependentWrappedSpec < DependentSpec
+      include InspecableDependentInstance
       include MinuendSpec
 
       # TODO: own there objects that described below are not used
@@ -143,15 +144,6 @@ module VersatileDiamond
         @_root_theres ||= similar_theres.reduce([]) do |acc, group|
           acc + find_root_theres(group)
         end
-      end
-
-      def to_s
-        "(#{name}, [#{parents.map(&:name).join(' ')}], " +
-          "[#{children.map(&:name).join(' ')}])"
-      end
-
-      def inspect
-        to_s
       end
 
     protected

@@ -36,25 +36,25 @@ module VersatileDiamond
 
           describe '#parents' do
             it 'each complex have a parents' do
-              complexes.each do |complex|
+              children.each do |complex|
                 expect(complex.parents).to eq([reaction])
               end
             end
           end
 
-          describe '#complexes' do
-            it { expect(reaction.complexes).to match_array(complexes) }
+          describe '#children' do
+            it { expect(reaction.children).to match_array(children) }
           end
         end
 
         it_behaves_like :organize_and_check do
           let(:reaction) { dept_dimer_formation }
-          let(:complexes) { lateral_reactions }
+          let(:children) { [dept_end_lateral_df] }
         end
 
         it_behaves_like :organize_and_check do
           let(:reaction) { dept_methyl_desorption }
-          let(:complexes) { [] }
+          let(:children) { [] }
         end
       end
     end

@@ -10,13 +10,13 @@ module VersatileDiamond
         DependentTypicalReaction.new(dimer_formation.duplicate('dup'))
       end
 
-      describe '#complexes' do
-        it { expect(subject.complexes).to be_empty }
+      describe '#children' do
+        it { expect(subject.children).to be_empty }
       end
 
-      describe '#store_complex' do
-        before { subject.store_complex(dept_end_lateral_df) }
-        it { expect(subject.complexes).to eq([dept_end_lateral_df]) }
+      describe '#store_child' do
+        before { subject.store_child(dept_end_lateral_df) }
+        it { expect(subject.children).to eq([dept_end_lateral_df]) }
       end
 
       describe '#reaction' do

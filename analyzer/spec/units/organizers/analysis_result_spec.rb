@@ -365,7 +365,7 @@ module VersatileDiamond
             before { store_reactions }
 
             shared_examples_for :expect_complex do
-              it { expect(reaction.complexes).to eq([complex]) }
+              it { expect(reaction.children).to eq([complex]) }
             end
 
             describe 'ubiquitous' do
