@@ -5,12 +5,11 @@ module VersatileDiamond
     # @abstract
     class DependentReaction
       include Modules::OrderProvider
+      include MultiParentsAndChildren
       include InspecableDependentInstance
       extend Forwardable
-      extend Collector
 
       attr_reader :reaction
-      collector_methods :parent, :child
       def_delegators :@reaction, :name, :full_rate, :swap_source, :use_similar_source?,
         :changes_num
 
@@ -65,14 +64,6 @@ module VersatileDiamond
     protected
 
       def_delegators :@reaction, :source, :products, :simple_source, :simple_products
-
-      # Stores the parent of reaction
-      # @param [DependentReaction] parent the parent of current reaction
-      alias_method :super_store_parent, :store_parent
-      def store_parent(parent)
-        super_store_parent(parent)
-        parent.store_child(self)
-      end
 
       # Provides partial order which could be overriden in children classes
       # @param [DependentReaction] other comparable reaction which have same type as

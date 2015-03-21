@@ -760,16 +760,22 @@ module VersatileDiamond
         set(:dimers_row) do
           Environment.new(:dimers_row, targets: [:one, :two])
         end
+
+        # Provides similar definition of there object for dimer formation reaction
+        def self.df_there(there_name, where_name)
+          set(there_name) do
+            ab, aib = df_source
+            targets_hash = { one: [ab, ab.atom(:ct)], two: [aib, aib.atom(:ct)] }
+            public_send(where_name).concretize(targets_hash)
+          end
+        end
+
         set(:at_end) do
           w = Where.new(:at_end, 'at end of dimers row', specs: [dimer])
           w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
           w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross); w
         end
-        set(:on_end) do
-          ab = df_source.first
-          aib = df_source.last
-          at_end.concretize(one: [ab, ab.atom(:ct)], two: [aib, aib.atom(:ct)])
-        end
+        df_there(:on_end, :at_end)
 
         set(:at_middle) do
           w = Where.new(:at_middle, 'at middle of dimers row', specs: [dimer_dup])
@@ -777,11 +783,7 @@ module VersatileDiamond
           w.raw_position(:two, [dimer_dup, dimer_dup.atom(:cr)], position_100_cross)
           w.parents << at_end; w
         end
-        set(:on_middle) do
-          ab = df_source.first
-          aib = df_source.last
-          at_middle.concretize(one: [ab, ab.atom(:ct)], two: [aib, aib.atom(:ct)])
-        end
+        df_there(:on_middle, :at_middle)
 
         set(:end_lateral_df) do
           dimer_formation.lateral_duplicate('end lateral', [on_end])
@@ -799,6 +801,17 @@ module VersatileDiamond
         set(:there_methyl) do
           ab = df_source.first
           near_methyl.concretize(target: [ab, ab.atom(:ct)])
+        end
+
+        set(:at_end_with_bridge) do
+          w = Where.new('at end with bridge', specs: [bridge])
+          w.raw_position(:two, [bridge, bridge.atom(:ct)], position_100_front)
+          w.parents << at_end; w
+        end
+        df_there(:on_end_with_bridge, :at_end_with_bridge)
+
+        set(:ewb_lateral_df) do
+          dimer_formation.lateral_duplicate('e.w.b. lateral', [on_end_with_bridge])
         end
       end
 

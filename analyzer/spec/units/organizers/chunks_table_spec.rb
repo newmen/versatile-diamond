@@ -5,7 +5,7 @@ module VersatileDiamond
 
     describe ChunksTable, type: :organizer do
       subject { described_class.new(all_chunks) }
-      let(:all_chunks) { [end_chunk, middle_chunk].shuffle }
+      let(:all_chunks) { [end_chunk, middle_chunk, ewb_chunk].shuffle }
 
       describe '#best' do
         shared_examples_for :check_parents do
@@ -21,6 +21,11 @@ module VersatileDiamond
         it_behaves_like :check_parents do
           let(:chunk) { middle_chunk }
           let(:parents) { [end_chunk] * 2 }
+        end
+
+        it_behaves_like :check_parents do
+          let(:chunk) { ewb_chunk }
+          let(:parents) { [] }
         end
       end
     end

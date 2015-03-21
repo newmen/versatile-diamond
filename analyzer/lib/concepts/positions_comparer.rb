@@ -3,18 +3,6 @@ module VersatileDiamond
 
     # Provides logic for compare positions
     module PositionsComparer
-      class << self
-        # Compares two tuples of positions
-        # @param [Array] pos1 the first tuple of positions
-        # @param [Array] pos2 the second tuple of positions
-        # @return [Boolean] are same or not
-        def same_pos_tuples?(pos1, pos2)
-          pos1.last == pos2.last && [0, 1].all? do |i|
-            [0, 1].all? { |j| pos1[i][j].same?(pos2[i][j]) }
-          end
-        end
-      end
-
       # Reduce all positions from links structure
       # @return [Array] the array of position tuples
       # TODO: must be protected
@@ -38,8 +26,18 @@ module VersatileDiamond
       # @param [Symbol] method name which uses for getting the comparing lists
       # @return [Boolean] are identical gotten lists or not
       def same_by_method?(method, other)
-        pos_compr_method = PositionsComparer.method(:same_pos_tuples?)
+        pos_compr_method = method(:same_pos_tuples?)
         lists_are_identical?(send(method), other.send(method), &pos_compr_method)
+      end
+
+      # Compares two tuples of positions
+      # @param [Array] pos1 the first tuple of positions
+      # @param [Array] pos2 the second tuple of positions
+      # @return [Boolean] are same or not
+      def same_pos_tuples?(pos1, pos2)
+        pos1.last == pos2.last && [0, 1].all? do |i|
+          [0, 1].all? { |j| pos1[i][j].same?(pos2[i][j]) }
+        end
       end
 
       # Gets the list of position tuples which combines from passed graph

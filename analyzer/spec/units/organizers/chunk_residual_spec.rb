@@ -7,8 +7,8 @@ module VersatileDiamond
       let(:big) { middle_chunk - end_chunk }
       let(:small) { big - end_chunk }
       let(:other) do
-        same_as_middle = Chunk.new(dept_middle_lateral_df, [dept_on_middle])
-        middle_chunk - same_as_middle
+        concept = dimer_formation.lateral_duplicate('copy', [on_middle])
+        middle_chunk - DependentLateralReaction.new(concept).chunk
       end
 
       describe '#<=>' do
@@ -32,15 +32,17 @@ module VersatileDiamond
       describe '#-' do
         it { expect(small).to be_a(described_class) }
 
-        let(:ab) { df_source.first }
-        let(:aib) { df_source.last }
+        let(:ab) { middle_lateral_df.source.first }
+        let(:aib) { middle_lateral_df.source.last }
         let(:rest_links) do
           {
             [ab, ab.atom(:ct)] => [
+              [[aib, aib.atom(:ct)], position_100_front],
               [[dimer, dimer.atom(:cl)], position_100_cross],
               [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
             ],
             [aib, aib.atom(:ct)] => [
+              [[ab, ab.atom(:ct)], position_100_front],
               [[dimer, dimer.atom(:cr)], position_100_cross],
               [[dimer_dup, dimer_dup.atom(:cr)], position_100_cross],
             ],

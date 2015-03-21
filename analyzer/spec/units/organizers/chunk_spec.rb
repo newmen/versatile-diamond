@@ -6,6 +6,20 @@ module VersatileDiamond
     describe Chunk, type: :organizer do
       let(:residual) { middle_chunk - end_chunk }
 
+      describe '#parents && #root?' do
+        it { expect(middle_chunk.parents).to be_empty }
+
+        describe '#store_parent' do
+          before { middle_chunk.store_parent(end_chunk) }
+          it { expect(middle_chunk.parents).to eq([end_chunk]) }
+        end
+      end
+
+      describe '#lateral_reaction' do
+        it { expect(end_chunk.lateral_reaction).to eq(dept_end_lateral_df) }
+        it { expect(middle_chunk.lateral_reaction).to eq(dept_middle_lateral_df) }
+      end
+
       describe '#<=>' do
         it { expect(end_chunk <=> middle_chunk).to eq(-1) }
         it { expect(middle_chunk <=> end_chunk).to eq(1) }
@@ -33,15 +47,21 @@ module VersatileDiamond
       describe '#-' do
         it { expect(residual).to be_a(ChunkResidual) }
 
-        let(:ab) { df_source.first }
-        let(:aib) { df_source.last }
+        let(:ab) { middle_lateral_df.source.first }
+        let(:aib) { middle_lateral_df.source.last }
         let(:rest_links) do
           {
             [ab, ab.atom(:ct)] => [
+              # [[ab, ab.atom(:cr)], bond_110_cross],
+              # [[ab, ab.atom(:cl)], bond_110_cross],
+              # [[aib, aib.atom(:ct)], position_100_front],
               [[dimer, dimer.atom(:cl)], position_100_cross],
               [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
             ],
             [aib, aib.atom(:ct)] => [
+              # [[aib, aib.atom(:cr)], bond_110_cross],
+              # [[aib, aib.atom(:cl)], bond_110_cross],
+              # [[ab, ab.atom(:ct)], position_100_front],
               [[dimer, dimer.atom(:cr)], position_100_cross],
               [[dimer_dup, dimer_dup.atom(:cr)], position_100_cross],
             ],
@@ -80,7 +100,10 @@ module VersatileDiamond
       end
 
       describe 'equality' do
-        let(:other) { described_class.new(dept_end_lateral_df, [dept_on_end]) }
+        let(:other) do
+          concept = dimer_formation.lateral_duplicate('copy', [on_end])
+          DependentLateralReaction.new(concept).chunk
+        end
 
         describe '#==' do
           it { expect(end_chunk == end_chunk).to be_truthy }

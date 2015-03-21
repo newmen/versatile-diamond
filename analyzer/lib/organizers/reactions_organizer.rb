@@ -21,12 +21,7 @@ module VersatileDiamond
 
         # order of dependencies organization is important!
         organize_ubiquitous_reactions_deps!(term_ss, non_term_ss, *reactions_lists)
-
-        lateral_rs = lateral_rs.sort
-        organize_lateral_reactions_deps!(lateral_rs)
-
-        root_lateral_rs = lateral_rs.select { |r| r.parents.empty? }
-        organize_typical_reactions_deps!(typical_rs, root_lateral_rs)
+        organize_complex_reactions_deps!(typical_rs, lateral_rs)
       end
 
     private
@@ -44,17 +39,11 @@ module VersatileDiamond
         end
       end
 
-      # Organize dependencies between typical reactions
+      # Organize dependencies between typical and lateral reactions
       # @param [Array] typical_rs the list of dependent typical reactions
       # @param [Array] lateral_rs the list of dependent lateral reactions
-      def organize_typical_reactions_deps!(typical_rs, lateral_rs)
+      def organize_complex_reactions_deps!(typical_rs, lateral_rs)
         typical_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }
-      end
-
-      # Organize dependencies between lateral reactions
-      # @param [Array] lateral_rs the list of dependent lateral reactions
-      def organize_lateral_reactions_deps!(lateral_rs)
-        lateral_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }
       end
     end
 

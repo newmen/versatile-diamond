@@ -10,6 +10,10 @@ module VersatileDiamond
         it { expect(subject.sidepiece_specs.map(&:name)).to eq([:'dimer()'] * 2) }
       end
 
+      describe '#chunk' do
+        it { expect(subject.chunk.same?(middle_chunk)).to be_truthy }
+      end
+
       describe '#theres' do
         it { expect(subject.theres.first).to be_a(DependentThere) }
 
@@ -35,46 +39,39 @@ module VersatileDiamond
         end
       end
 
-      describe '#cover?' do
-        let(:other) { described_class.new(concept) }
-        let(:concept) do
-          dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
-        end
-
-        it { expect(subject.cover?(dept_end_lateral_df)).to be_truthy }
-        it { expect(other.cover?(dept_end_lateral_df)).to be_truthy }
-
-        it { expect(dept_end_lateral_df.cover?(subject)).to be_falsey }
-        it { expect(dept_end_lateral_df.cover?(other)).to be_falsey }
-      end
-
       describe '#lateral?' do
         it { expect(subject.lateral?).to be_truthy }
       end
 
-      describe '#organize_dependencies!' do
-        let(:target) { dept_end_lateral_df }
-        let(:other) { described_class.new(other_concept) }
-        let(:other_concept) do
-          dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
+      describe 'DependentTypicalReaction#organize_dependencies!' do
+        let(:lateral_reactions) do
+          [dept_end_lateral_df, dept_middle_lateral_df]
         end
 
-        let(:lateral_reactions) { [target, subject, other].sort }
+        shared_examples_for :organize_and_check do
+          before { typical_reaction.organize_dependencies!(lateral_reactions) }
 
-        before do
-          lateral_reactions.each do |reaction|
-            reaction.organize_dependencies!(lateral_reactions)
+          describe '#parents' do
+            it { expect(lateral_reaction.parents).to eq(parents) }
+          end
+
+          describe '#children' do
+            it { expect(lateral_reaction.children).to match_array(children) }
           end
         end
 
-        describe '#parents' do
-          it { expect(subject.parents).to eq([target]) }
+        it_behaves_like :organize_and_check do
+          let(:typical_reaction) { dept_dimer_formation }
+          let(:lateral_reaction) { dept_middle_lateral_df }
+          let(:parents) { [dept_end_lateral_df] * 2 }
+          let(:children) { [] }
         end
 
-        describe '#complexes' do
-          it { expect(target.complexes).to match_array([subject, other]) }
-          it { expect(subject.complexes).to be_empty }
-          it { expect(other.complexes).to be_empty }
+        it_behaves_like :organize_and_check do
+          let(:typical_reaction) { dept_dimer_formation }
+          let(:lateral_reaction) { dept_end_lateral_df }
+          let(:parents) { [typical_reaction] }
+          let(:children) { [dept_middle_lateral_df] * 2 }
         end
       end
     end

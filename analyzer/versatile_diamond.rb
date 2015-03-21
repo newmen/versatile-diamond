@@ -9,6 +9,7 @@ require 'digest'
 require 'tsort'
 require 'erb'
 require 'set'
+require 'multiset'
 require 'i18n'
 I18n.enforce_available_locales = true
 I18n.load_path << files_in('locales/*.yml')

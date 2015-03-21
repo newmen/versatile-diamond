@@ -2,10 +2,12 @@ module VersatileDiamond
   module Organizers
 
     # Provides logic for side-chunk of lateral reaction
-    class Chunk
+    class Chunk < ChunkCore
       include MinuendChunk
+      extend Forwardable
 
-      attr_reader :links
+      def_delegator :lateral_reaction, :full_rate
+      attr_reader :lateral_reaction
 
       # Initializes the chunk by lateral reaction and it there objects
       # @param [DependentLateralReaction] lateral_reaction link to which will be
@@ -13,28 +15,20 @@ module VersatileDiamond
       # @param [Array] theres the array of there objects the links from which will be
       #   collected and used as links of chunk
       def initialize(lateral_reaction, theres)
+        super(theres)
+        @theres = theres
         @lateral_reaction = lateral_reaction
-        @targets = theres.map(&:targets).reduce(:+)
-        @links = merge_there_links(theres)
+
+        @_tail_name = nil
       end
 
-    protected
-
-      attr_reader :targets
+      # Collecs all names from there objects and joins it by 'and' string
+      # @return [String] the combined name by names of there objects
+      def tail_name
+        @_tail_name ||= @theres.map(&:description).join(' and ')
+      end
 
     private
-
-      # Merges the links of there objects
-      # @param [Array] theres array of there objects the links of which will be merged
-      # @return [Hash] the common links hash
-      def merge_there_links(theres)
-        theres.each_with_object({}) do |there, acc|
-          there.links.each do |sa1, rels|
-            acc[sa1] ||= []
-            acc[sa1] += rels
-          end
-        end
-      end
 
       # Provides the lowest level of comparing two minuend instances
       # @param [MinuendChunk] other comparing instance

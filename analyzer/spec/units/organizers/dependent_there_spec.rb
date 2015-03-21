@@ -4,7 +4,11 @@ module VersatileDiamond
   module Organizers
 
     describe DependentThere, type: :organizer do
-      subject { described_class.new(dimer_formation, there_methyl) }
+      subject { described_class.new(there_methyl) }
+
+      describe '#description' do
+        it { expect(subject.description).to eq(there_methyl.description) }
+      end
 
       describe '#links' do
         shared_examples_for :check_links do
@@ -137,10 +141,6 @@ module VersatileDiamond
         it { expect(subject.each_source.to_a).to eq([mob_dup]) }
       end
 
-      describe '#lateral_reaction' do
-        it { expect(subject.lateral_reaction).to eq(dimer_formation) }
-      end
-
       describe '#<=>' do
         it { expect(dept_on_end <=> dept_on_middle).to eq(-1) }
         it { expect(dept_on_middle <=> dept_on_end).to eq(1) }
@@ -166,11 +166,6 @@ module VersatileDiamond
         it_behaves_like :check_targets do
           let(:dept_reaction) { dept_middle_lateral_df }
         end
-      end
-
-      describe '#cover?' do
-        it { expect(dept_on_middle.cover?(dept_on_end)).to be_truthy }
-        it { expect(dept_on_end.cover?(dept_on_middle)).to be_falsey }
       end
     end
 

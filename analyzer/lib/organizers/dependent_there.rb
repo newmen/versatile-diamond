@@ -1,6 +1,4 @@
 module VersatileDiamond
-  using Patches::RichArray
-
   module Organizers
 
     # Contain some there and provides behavior for dependent entities set
@@ -9,16 +7,12 @@ module VersatileDiamond
       include Modules::OrderProvider
       extend Forwardable
 
-      def_delegators :there, :swap_source, :use_similar_source?
+      def_delegators :there, :description, :swap_source, :use_similar_source?
       def_delegator :there, :where # for graphs generators
-      attr_reader :lateral_reaction
 
       # Stores wrappable there
-      # @param [DependentLateralReaction] lateral_reaction which uses also passed there
-      #   object
       # @param [Concepts::There] there the wrappable there
-      def initialize(lateral_reaction, there)
-        @lateral_reaction = lateral_reaction
+      def initialize(there)
         @there = there
 
         @_links = nil
@@ -66,18 +60,6 @@ module VersatileDiamond
         there.links.keys.to_set
       end
 
-      # Verifies that passed there object is covered by the current
-      # @param [There] other the verifying there object
-      # @return [Boolean] is cover or not
-      def cover?(other)
-        positions_dup = positions.dup
-        other.positions.all? do |opos|
-          positions_dup.delete_one do |spos|
-            Concepts::PositionsComparer.same_pos_tuples?(spos, opos)
-          end
-        end
-      end
-
       # Compares two dependent there objects
       # @param [DependentThere] other there object which will be compared
       # @return [Boolean] are same objects or not
@@ -94,7 +76,6 @@ module VersatileDiamond
 
     protected
 
-      def_delegator :there, :positions
       attr_reader :there
 
       # Gets the number of used relations

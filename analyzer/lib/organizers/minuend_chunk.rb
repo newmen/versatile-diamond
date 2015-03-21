@@ -3,13 +3,14 @@ module VersatileDiamond
 
     # Provides methods for minuend behavior
     module MinuendChunk
+      include Mcs::SpecsAtomsComparator
       include Organizers::Minuend
 
       # Compares two chunk instances and check that them are same
       # @param [MinuendChunk] other chunk which will be compared
       # @return [Boolean] is same other chunk or not
       def same?(other)
-        return false unless self.class == other.class && targets == other.targets
+        return false unless self.class == other.class && same_targets?(other)
         lsz = links.size
         other.links.size == lsz &&
           (targets.size == lsz || mirror_to(other).size == lsz)
@@ -53,19 +54,11 @@ module VersatileDiamond
         end
       end
 
-      # Compares two spec-atom instances
-      # @param [Array] sa1 the first spec-atom instance
-      # @param [Array] sa2 the second spec-atom instance
-      # @return [Boolean] is same spec-atom instances or not
-      def same_sa?(sa1, sa2)
-        (spec1, atom1), (spec2, atom2) = sa1, sa2
-        return false unless spec1.equal?(spec2) || spec1.links.size == spec2.links.size
-
-        insecs =
-          Mcs::SpeciesComparator.intersec(spec1, spec2, collaps_multi_bond: true)
-
-        insecs.size > 0 && insecs.first.size == spec1.links.size &&
-          insecs.any? { |ic| ic.include?([atom1, atom2]) }
+      # Checks that targets of current and other are same
+      # @param [MinuendChunk] other chunk which targets will be checked
+      # @return [Boolean] are similar targets in current and other chunks or not
+      def same_targets?(other)
+        lists_are_identical?(targets, other.targets, &method(:same_sa?))
       end
 
       # Provides comparison by class of each instance
