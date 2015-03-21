@@ -23,10 +23,19 @@ module VersatileDiamond
 
       private
 
+        # Gets the list of objects which headers should be included in header file
+        # of current class
+        #
+        # @return [Array] the list of including objects
+        # @override
+        def head_include_objects
+          [CommonFile.new('atoms/specified_atom.h')]
+        end
+
         # Atoms stored in atoms directory
         # @return [String] the atoms directory
         # @override
-        def additional_path
+        def template_additional_path
           'atoms'
         end
       end

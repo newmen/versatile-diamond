@@ -5,6 +5,7 @@ module VersatileDiamond
     # relationship between interpreted concepts
     class AnalysisResult
       include SpeciesOrganizer
+      include ReactionsOrganizer
 
       # Exception for case when some reactions overlap
       class ReactionDuplicate < Errors::Base
@@ -53,12 +54,6 @@ module VersatileDiamond
         end
       end
 
-      # Gets all collected reactions with complex surface species
-      # @return [Array] the array of arrays of reactions
-      def spec_reactions
-        [typical_reactions, lateral_reactions]
-      end
-
     private
 
       # Wraps reactions from Chest
@@ -76,14 +71,16 @@ module VersatileDiamond
       # Collects there instances from lateral reactions
       # @return [Array] the array of collected instances
       def collect_theres
-        lateral_reactions.reduce([]) { |acc, reaction| acc + reaction.theres }
+        lateral_reactions.reduce([]) do |acc, reaction|
+          acc + reaction.theres.map { |there| DependentThere.new(reaction, there) }
+        end
       end
 
       # Collects termination species from reactions
       # @return [Hash] the hash where keys are names of specs and wrapped
       #    termination species as values
       def collect_termination_specs
-        ubiquitous_reactions.each.with_object({}) do |reaction, cache|
+        ubiquitous_reactions.each_with_object({}) do |reaction, cache|
           term = reaction.termination
           cache[term.name] ||= DependentTermination.new(term)
           store_concept_to(reaction, cache[term.name])
@@ -112,14 +109,18 @@ module VersatileDiamond
       #   full names of each specific spec
       def collect_specific_specs
         cache = {}
-        (spec_reactions + [theres]).each do |concepts|
+        all = [ubiquitous_reactions, typical_reactions, lateral_reactions, theres]
+        all.each do |concepts|
           concepts.each do |concept|
             concept.each_source do |specific_spec|
+              next if @term_specs[specific_spec.name]
+
               name = specific_spec.name
-              if cache[name]
-                concept.swap_source(specific_spec, cache[name].spec)
+              cached_dept_spec = cached_spec(cache, specific_spec)
+              if cached_dept_spec
+                swap_source_carefully(concept, specific_spec, cached_dept_spec.spec)
               else
-                cache[name] = DependentSpecificSpec.new(specific_spec)
+                cache[name] = create_dept_specific_spec(specific_spec)
               end
 
               store_concept_to(concept, cache[name])
@@ -127,53 +128,30 @@ module VersatileDiamond
           end
         end
 
-        purge_unused_extended_specs(cache)
+        Tools::Config.concs.keys.each do |specific_spec|
+          next if cached_spec(cache, specific_spec)
+          cache[specific_spec.name] = create_dept_specific_spec(specific_spec)
+        end
+        cache
       end
 
-      # Checks type of concept and store it to spec by correspond method
-      # @param [DependentReaction | DependentThere] wrapped_concept the
-      #   checkable and storable concept
-      # @param [DependentSpec | DependentSpecificSpec] wrapped_spec the wrapped
-      #   spec to which concept will be stored
-      # @raise [ArgumentError] if type of concept is undefined
-      def store_concept_to(wrapped_concept, wrapped_spec)
-        if wrapped_concept.is_a?(DependentReaction)
-          wrapped_spec.store_reaction(wrapped_concept)
-        elsif wrapped_concept.is_a?(DependentThere)
-          wrapped_spec.store_there(wrapped_concept)
-        else
-          raise ArgumentError, 'Undefined concept type'
+      # Finds concept specific spec in cache
+      # @param [Hash] cache where will be found similar spec
+      # @param [Concepts::SpecificSpec] spec by which the similar spec will be
+      #   found in cache
+      # @return [DependentSpecificSpec] the search result or nil
+      def cached_spec(cache, spec)
+        cached_dept_spec = cache[spec.name] || cache.values.find do |dss|
+          dss.spec.same?(spec)
         end
       end
 
-      # Purges extended spec if atoms of each one can be used as same in
-      # reduced spec
-      #
-      # @param [Hash] specific_specs_cache the cache of specific specs where
-      #   keys is full names of specs
-      # @return [Hash] resulted cache of specific specs
-      def purge_unused_extended_specs(specific_specs_cache)
-        extended_specs = specific_specs_cache.select do |_, spec|
-          spec.reduced && spec.could_be_reduced?
-        end
-
-        extended_specs.each do |_, wrapped_ext|
-          check_that_can = -> wrapped_concept do
-            used_keynames = wrapped_concept.used_keynames_of(wrapped_ext.spec)
-            Concepts::Spec.good_for_reduce?(used_keynames)
-          end
-
-          next unless wrapped_ext.reactions.all?(&check_that_can) &&
-            wrapped_ext.theres.all?(&check_that_can)
-
-          rd_spec = wrapped_ext.reduced
-          wrapped_rd =
-            specific_specs_cache[rd_spec.name] ||= DependentSpecificSpec.new(rd_spec)
-
-          exchange_specs(specific_specs_cache, wrapped_ext, wrapped_rd)
-        end
-
-        specific_specs_cache
+      # Creates correspond dependent specific spec instance
+      # @param [Concepts::SpecificSpec] spec the concept by which new spec will
+      #   created
+      # @return [DependentSimpleSpec] the wrapped concept spec
+      def create_dept_specific_spec(spec)
+        spec.simple? ? DependentSimpleSpec.new(spec) : DependentSpecificSpec.new(spec)
       end
 
       # Purges all specific specs if some of doesn't have specific atoms and
@@ -186,37 +164,16 @@ module VersatileDiamond
       # @return [Array] the array where first item is base specs hash and
       #   second item is specific specs hash
       def purge_unspecified_specs(base_specs_cache, specific_specs_cache)
-        specific_specs = specific_specs_cache.values
-        specific_specs.each do |wrapped_specific|
-          spec = wrapped_specific.base_spec
-          base_specs_cache[spec.name] ||= DependentBaseSpec.new(spec)
-        end
+        base_specs_cache, specific_specs_cache =
+          purge_unused_extended_specs(base_specs_cache, specific_specs_cache)
 
-        unspecified_specs = specific_specs.reject(&:specific?)
+        unspecified_specs = specific_specs_cache.values.reject(&:specific?)
         unspecified_specs.each do |wrapped_specific|
           wrapped_base = base_specs_cache[wrapped_specific.base_name]
           exchange_specs(specific_specs_cache, wrapped_specific, wrapped_base)
         end
 
         [base_specs_cache, specific_specs_cache]
-      end
-
-      # Excnahges two specs
-      # @param [DependentSpecificSpec | DependentSpecificSpec] from the spec
-      #   which will be exchanged
-      # @param [DependentSpecificSpec | DependentSpec] to the spec to which
-      #   will be exchanged
-      # @param [Hash] cache where contains pairs of name => dependent_spec
-      def exchange_specs(cache, from, to)
-        lambda = -> wrapped_concept do
-          wrapped_concept.swap_source(from.spec, to.spec)
-          store_concept_to(wrapped_concept, to)
-        end
-
-        from.reactions.each(&lambda)
-        from.theres.each(&lambda)
-
-        cache.delete(from.name)
       end
 
       # Organize dependecies between collected items
@@ -227,13 +184,14 @@ module VersatileDiamond
 
         # before need to update specs by organize their dependecies!
         check_reactions_for_duplicates
-        organize_reactions_dependencies!
+        organize_all_reactions_dependencies!
       end
 
       # Checks stored reactions for duplication with each other
       # @raise [ReactionDuplicate] if duplicate is found
       def check_reactions_for_duplicates
-        ([ubiquitous_reactions] + spec_reactions).each do |reactions|
+        all = [ubiquitous_reactions, typical_reactions, lateral_reactions]
+        all.each do |reactions|
           reactions = reactions.dup
 
           until reactions.empty?
@@ -247,20 +205,10 @@ module VersatileDiamond
       # Organize dependencies between all stored reactions.
       # Also organize dependencies between termination species and their complex
       # parents.
-      def organize_reactions_dependencies!
-        cached_spec_reactions = spec_reactions.flatten
-        # order of dependencies organization is important!
-        ubiquitous_reactions.each do |reaction|
-          common_spec_cache = @specific_specs.merge(@base_specs)
-          reaction.organize_dependencies!(
-            cached_spec_reactions, @term_specs, common_spec_cache)
-        end
-        lateral_reactions.each do |reaction|
-          reaction.organize_dependencies!(lateral_reactions)
-        end
-        typical_reactions.each do |reaction|
-          reaction.organize_dependencies!(lateral_reactions)
-        end
+      def organize_all_reactions_dependencies!
+        nt_spec_cache = @specific_specs.merge(@base_specs)
+        reactions_lists = [ubiquitous_reactions, typical_reactions, lateral_reactions]
+        organize_reactions_dependencies!(@term_specs, nt_spec_cache, *reactions_lists)
       end
     end
 

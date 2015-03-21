@@ -2,8 +2,8 @@
 #include "../base/bridge.h"
 #include "../specific/two_bridges_ctri_cbrs.h"
 
-const ushort TwoBridges::Base::__indexes[2] = { 5, 0 };
-const ushort TwoBridges::Base::__roles[2] = { 24, 6 };
+template <> const ushort TwoBridges::Base::__indexes[2] = { 5, 0 };
+template <> const ushort TwoBridges::Base::__roles[2] = { 24, 6 };
 
 #ifdef PRINT
 const char *TwoBridges::name() const
@@ -15,33 +15,27 @@ const char *TwoBridges::name() const
 
 void TwoBridges::find(Atom *anchor)
 {
-    if (anchor->is(24) && anchor->lattice()->coords().z > 0)
+    if (anchor->is(24))
     {
         if (!anchor->checkAndFind(TWO_BRIDGES, 24))
         {
-            anchor->eachSpecByRole<Bridge>(6, [anchor](Bridge *target) {
-                target->eachSymmetry([anchor, target](ParentSpec *specie) {
-                    if (specie->atom(2) == anchor)
+            anchor->eachSpecByRole<Bridge>(6, [&](Bridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (specie1->atom(1) == anchor)
                     {
-                        Atom *secondAnchor = specie->atom(1);
-                        if (secondAnchor->is(6))
-                        {
-                            Bridge *externalLast = anchor->selectSpecByRole<Bridge>(6, [target](Bridge *other) {
-                                return other == target;
-                            });
-
-                            ParentSpec *last = externalLast->selectSymmetry([anchor](ParentSpec *other) {
-                                return other->atom(1) == anchor;
-                            });
-
-                            ParentSpec *parents[3] = {
-                                secondAnchor->specByRole<Bridge>(3),
-                                specie,
-                                last
-                            };
-
-                            create<TwoBridges>(parents);
-                        }
+                        anchor->eachSpecByRole<Bridge>(6, [&](Bridge *target2) {
+                            if (target2 != target1)
+                            {
+                                target2->eachSymmetry([&](ParentSpec *specie2) {
+                                    if (specie2->atom(2) == anchor)
+                                    {
+                                        Atom *atom1 = specie2->atom(1);
+                                        ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie2, specie1 };
+                                        create<TwoBridges>(parents);
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             });

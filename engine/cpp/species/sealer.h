@@ -14,7 +14,6 @@ public:
     ushort type() const override { return B::type(); }
 
     Atom *atom(ushort index) const override { return B::atom(index); }
-    Atom *anchor() const override { return B::anchor(); }
 
     void store() override;
 

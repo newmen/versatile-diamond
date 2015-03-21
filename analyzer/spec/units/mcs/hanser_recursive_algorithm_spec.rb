@@ -4,13 +4,9 @@ module VersatileDiamond
   module Mcs
 
     describe HanserRecursiveAlgorithm do
-      let(:bridge_links) { bridge_base.links }
-      let(:methyl_on_bridge_links) { methyl_on_bridge_base.links }
-
-      let(:assoc) do
-        AssocGraph.new(
-          Graph.new(bridge_links), Graph.new(methyl_on_bridge_links))
-      end
+      let(:bridge_graph) { Graph.new(bridge_base) }
+      let(:methyl_on_bridge_graph) { Graph.new(methyl_on_bridge_base) }
+      let(:assoc) { AssocGraph.new(bridge_graph, methyl_on_bridge_graph) }
 
       describe '#self.first_intersec' do
         subject { described_class.first_intersec(assoc) }

@@ -4,6 +4,8 @@ module VersatileDiamond
     # Class for bond instance. The bond can be without face and direction.
     class Bond
 
+      AMORPH_PARAMS = { face: nil, dir: nil }.freeze
+
       attr_reader :face, :dir
 
       class << self
@@ -18,6 +20,12 @@ module VersatileDiamond
           key << "_#{dir}" if dir
           @consts ||= {}
           @consts[key] ||= new(face, dir)
+        end
+
+        # Gets an amorph bond
+        # @param [Bond] the amorph bond
+        def amorph
+          self[AMORPH_PARAMS]
         end
 
         # Resets internal cache for RSpec
@@ -37,14 +45,32 @@ module VersatileDiamond
       # @param [Bond] other relation instance with which comparing will be
       # @return [Boolean] equal or not
       def == (other)
-        self.class == other.class && other.it?(face: face, dir: dir)
+        self.class == other.class && other.it?(params)
+      end
+
+      # Makes cross instance of current
+      # @return [Bond] the instance with cross direction
+      def cross
+        self.class[face: face, dir: (dir == :front ? :cross : :front)]
+      end
+
+      # Gets parameters of relation
+      # @return [Hash] the hash of relation perameters
+      def params
+        { face: face, dir: dir }
+      end
+
+      # Makes position relation from bond relation
+      # @return [Position] the position which correspond to current bond
+      def make_position
+        Position[params]
       end
 
       # Checks current instances for passed options
       # @option [Symbol] :face the face of instance
       # @option [Symbol] :dir the direction of instance
       # @return [Boolean] it or not
-      def it?(face: face, dir: dir)
+      def it?(face: nil, dir: nil)
         @face == face && @dir == dir
       end
 
@@ -69,11 +95,23 @@ module VersatileDiamond
         true
       end
 
+      # Checks that current bond belongs to crystal
+      # @return [Boolean] is have face and direction or not
+      def belongs_to_crystal?
+        face && dir
+      end
+
+      # Bond instance aways is exist
+      # @return [Boolean] true
+      def exist?
+        true
+      end
+
       def to_s
         symbol = '-'
         str = symbol.dup
-        str << "#{@face}#{symbol}" if @face
-        str << "#{@dir}#{symbol}" if @dir
+        str << "#{face}#{symbol}" if face
+        str << "#{dir}#{symbol}" if dir
         "#{str}#{symbol}"
       end
 

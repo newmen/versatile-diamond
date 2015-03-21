@@ -1,0 +1,68 @@
+#ifndef NAMES_H
+#define NAMES_H
+
+#include <tools/common.h>
+
+enum : ushort
+{
+    BASE_SPECS_NUM = <%= base_species_num %>,
+    SPECIFIC_SPECS_NUM = <%= specific_species_num %>,
+
+    UBIQUITOUS_REACTIONS_NUM = <%= ubiquitous_reactions_num %>,
+    TYPICAL_REACTIONS_NUM = <%= typical_reactions_num %>,
+    LATERAL_REACTIONS_NUM = <%= lateral_reactions_num %>,
+
+    ALL_SPEC_REACTIONS_NUM = TYPICAL_REACTIONS_NUM + LATERAL_REACTIONS_NUM
+};
+
+enum BaseSpecNames : ushort
+{
+<% each_base_specie_enum_name do |enum_name, position| %>
+    <%= wrap_enum(enum_name, position) %>
+<% end %>
+};
+
+static_assert(<%= base_species_enum_names.last %> + 1 == BASE_SPECS_NUM,
+              "Incorrect number of base species");
+
+enum SpecificSpecNames : ushort
+{
+<% each_specific_specie_enum_name do |enum_name, position| %>
+    <%= wrap_enum(enum_name, position, 'BASE_SPECS_NUM') %>
+<% end %>
+};
+
+static_assert(<%= specific_species_enum_names.last %> + 1 == SPECIFIC_SPECS_NUM + BASE_SPECS_NUM,
+              "Incorrect number of specific species");
+
+enum TypicalReactionNames : ushort
+{
+<% each_typical_reaction_enum_name do |enum_name, position| %>
+    <%= wrap_enum(enum_name, position) %>
+<% end %>
+};
+
+static_assert(<%= typical_reactions_enum_names.last %> + 1 == TYPICAL_REACTIONS_NUM,
+              "Incorrect number of typical reactions");
+
+enum LateralReactionNames : ushort
+{
+<% each_lateral_reaction_enum_name do |enum_name, position| %>
+    <%= wrap_enum(enum_name, position, 'TYPICAL_REACTIONS_NUM') %>
+<% end %>
+};
+
+static_assert(<%= lateral_reactions_enum_names.last %> + 1 == ALL_SPEC_REACTIONS_NUM,
+              "Incorrect number of lateral reactions");
+
+enum UbiquitousReactionNames : ushort
+{
+<% each_ubiquitous_reaction_enum_name do |enum_name, position| %>
+    <%= wrap_enum(enum_name, position, 'ALL_SPEC_REACTIONS_NUM') %>
+<% end %>
+};
+
+static_assert(<%= ubiquitous_reactions_enum_names.last %> + 1 == ALL_SPEC_REACTIONS_NUM + UBIQUITOUS_REACTIONS_NUM,
+              "Incorrect number of ubiquitous reactions");
+
+#endif // NAMES_H

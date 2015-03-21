@@ -1,0 +1,7 @@
+    static const char __name[];
+
+public:
+    static double RATE();
+
+    double rate() const override { return RATE(); }
+    const char *name() const override { return __name; }

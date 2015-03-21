@@ -5,28 +5,57 @@ module VersatileDiamond
     module Code
 
       # Creates Lattice class
-      class Lattice < CppClass
+      class Lattice < CppClassWithGen
         extend Forwardable
-        extend SourceFileCopier
+        include SourceFileCopier
         include PolynameClass
 
         def_delegators :instance, :default_surface_height
-        copy_source :crystal_properties, :relations
+
+        class << self
+          def additional_sources(*names)
+            names.each do |name|
+              name_method = :"#{name}_name"
+              file_name_method = :"#{name}_file_name"
+
+              # The class name of lattice #{name} code instance
+              # @return [String] the class name of used #{name}
+              define_method(:"#{name}_class_name") do
+                send(name_method).classify
+              end
+
+              # The file name of lattice #{name} code instance
+              # @return [String] the file name of used #{name}
+              define_method(file_name_method) do
+                "#{send(name_method)}.h"
+              end
+
+              # The name of lattice #{name} code instance
+              # @return [String] the #{name} underscored instance name
+              define_method(name_method) do
+                "#{class_name.underscore}_#{name}"
+              end
+              private name_method
+            end
+          end
+        end
+
+        additional_sources :crystal_properties, :relations
 
         # Initializes by concept lattice
         # @param [Concepts::Lattice] lattice the target concept
-        # @param [Organizers::AtomClassifier] classifier of atom properties
-        def initialize(lattice, classifier)
+        # @param [EngineCode] generator see at #super same argument
+        def initialize(generator, lattice)
+          super(generator)
           @lattice = lattice
-          @classifier = classifier
         end
 
         # Also copies relations cpp template class which own for each lattice
-        # @param [String] see at #super same argument
+        # @param [String] root_dir see at #super same argument
         def generate(root_dir)
           super
-          cp_crystal_properties_file_path(root_dir)
-          cp_relations_file_path(root_dir)
+          copy_file(root_dir, crystal_properties_file_name)
+          copy_file(root_dir, relations_file_name)
           iterator.generate(root_dir)
         end
 
@@ -44,6 +73,7 @@ module VersatileDiamond
 
       private
 
+        def_delegator :generator, :classifier
         def_delegator :@lattice, :instance
 
         %w(major surface).each do |name|
@@ -52,8 +82,8 @@ module VersatileDiamond
           #
           # @return [Integer] see at #crystal_atom_index result
           define_method(:"#{name}_atom_index") do
-            ap = find_crystal_atom(instance.send(:"#{name}_crystal_atom"))
-            @classifier.index(ap)
+            ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
+            classifier.index(ap)
           end
 
           # Finds index of atom properties that correspond to #{name} atom instance of
@@ -61,10 +91,11 @@ module VersatileDiamond
           #
           # @return [Integer] see at #crystal_atom_index result
           define_method(:"#{name}_atom_actives") do
-            ap = find_crystal_atom(instance.send(:"#{name}_crystal_atom"))
+            ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
             ap.unbonded_actives_num
           end
         end
+        public :major_atom_index
 
         # Finds the crystal atom by atom information hash
         # @param [Hash] info about crystal atom
@@ -73,14 +104,21 @@ module VersatileDiamond
         def find_crystal_atom(info)
           full_info = info.dup
           full_info[:lattice] = @lattice
-          target = @classifier.props.find { |prop| prop.correspond?(full_info) }
+          target = classifier.props.find { |prop| prop.correspond?(full_info) }
           target || raise('Used crystal atom was not found!')
+        end
+
+        # Gets the list of objects which headers should be included in body file
+        # @return [Array] the list of including objects
+        # @override
+        def body_include_objects
+          [generator.atom_builder, generator.finder]
         end
 
         # Atoms stored in atoms directory
         # @return [String] the atoms directory
         # @override
-        def additional_path
+        def template_additional_path
           'phases'
         end
       end

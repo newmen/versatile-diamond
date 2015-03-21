@@ -34,16 +34,16 @@ module VersatileDiamond
         end
 
         describe 'extra activated bridge' do
-          shared_examples_for 'different expression' do
+          shared_examples_for :different_expression do
             subject { matcher.match(expr) }
             it { expect(subject.atom(:ct).actives).to eq(2) }
           end
 
-          it_behaves_like 'different expression' do
+          it_behaves_like :different_expression do
             let(:expr) { 'bridge(ct: **)' }
           end
 
-          it_behaves_like 'different expression' do
+          it_behaves_like :different_expression do
             let(:expr) { 'bridge(ct: *, ct: *)' }
           end
         end

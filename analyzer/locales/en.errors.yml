@@ -53,6 +53,9 @@ en:
     incomplete: "Necessary to characterize the position of atoms relative to each other"
     unspecified_atoms: "Incorrect linking unspecified atoms"
 
+  non_position:
+    impossible: "Wrong using \"non posssion\" before using real positions between atoms"
+
   lattice:
     need_define_class: "Necessary to define class when defining new lattice"
 
@@ -77,6 +80,9 @@ en:
     invalid_valence: "In the global reaction can be specified only monovalent atoms"
     need_define_equation: "Necessary to define equation first"
     wrong_balance: "Wrong reaction balance"
+
+  lateral_reaction:
+    amorph_reverse_atom: "The atom %{spec}(%{atom}) of reverse reaction is not belongs to crystal lattice"
 
   equation:
     undefined_target: "Undefined target atom name \"%{name}\""

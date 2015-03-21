@@ -64,11 +64,7 @@ module VersatileDiamond
           to be_truthy }
       end
 
-      it_behaves_like 'termination spec' do
-        subject { adsorbed_h }
-      end
-
-      it_behaves_like 'visitable' do
+      it_behaves_like :termination_spec do
         subject { adsorbed_h }
       end
     end

@@ -95,8 +95,8 @@ events
     equation methyl_on_dimer(cm: H) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       incoherent methyl_on_dimer(:cm)
 
-    activation 37.5
-    forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
+    activation 5.2
+    forward_rate 2.8e2 * T ** 3.5, 'cm3/(mol * s)'
 
   reaction 'methyl deactivation'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer(cm: H)
@@ -181,9 +181,10 @@ events
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
 
     enthalpy 24
-    activation 14.9
-    forward_rate 6.1e13
-    reverse_rate 1.1e12
+    forward_activation 12.3
+    reverse_activation 36.3
+    forward_rate 1.1e12
+    reverse_rate 6.1e13
 
   reaction 'high bridge to bridge and dimer'
     equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
@@ -194,17 +195,16 @@ events
   reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
-      position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
-      position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
-
     activation 31.3
     forward_rate 3.5e8
 
   reaction 'hydrogen abstraction from gap'
     aliases one: bridge, two: bridge
     equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
+      position one(:cr), two(:cr), face: 100, dir: :front
+
     activation 35
-    forward_rate 3e5
+    forward_rate 3e6
 
   reaction 'migration along dimers row'
     equation methyl_on_dimer(cm: *, cm: u) + dimer(cr: *) = cross_bridge_on_dimers
@@ -212,7 +212,7 @@ events
     activation 30
     forward_rate 2.4e8
 
-  reaction 'serpinsky drop'
+  reaction 'sierpinski drop'
     equation cross_bridge_on_bridges = methyl_on_bridge(cm: *, cm: u) + bridge(ct: *)
     activation 30
     forward_rate 4.4e9

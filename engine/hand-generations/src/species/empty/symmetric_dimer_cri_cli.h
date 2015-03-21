@@ -4,10 +4,10 @@
 #include "../specific/original_dimer_cri_cli.h"
 
 class SymmetricDimerCRiCLi :
-        public ParentProxy<OriginalDimer, SymmetricDimer, DIMER_CRi_CLi>
+        public ParentsSwapProxy<OriginalDimer, SymmetricDimer, DIMER_CRi_CLi>
 {
 public:
-    SymmetricDimerCRiCLi(OriginalDimerCRiCLi *parent) : ParentProxy(parent) {}
+    SymmetricDimerCRiCLi(OriginalDimerCRiCLi *parent) : ParentsSwapProxy(parent) {}
 
 #ifdef PRINT
     const char *name() const final;

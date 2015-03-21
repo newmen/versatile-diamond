@@ -14,6 +14,19 @@ module VersatileDiamond
 
           delete_at(index || size)
         end
+
+        # Groups the items by passed block
+        # @yield [Object] for each item from which the grouping value will be gotten
+        # @return [Array] the list of grouped arrays
+        def groups(&block)
+          group_by(&block).values
+        end
+
+        # Gets not unique items of array
+        # @return [Array] the not unique items of original sequence
+        def not_uniq
+          select { |item| count(item) > 1 }.uniq
+        end
       end
     end
 

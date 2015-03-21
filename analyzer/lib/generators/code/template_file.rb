@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichString
+
   module Generators
     module Code
 
@@ -15,6 +17,12 @@ module VersatileDiamond
 
       private
 
+        # The additional path of current instance generation result
+        # @return [Pathname] the directory when will be stored result of generation
+        def result_additional_path
+          Pathname.new(template_additional_path)
+        end
+
         # Writes file to passed dir
         # @param [String] root_dir the out generation dir
         # @param [String] ext the extention of generation file
@@ -26,7 +34,7 @@ module VersatileDiamond
         # @param [String] root_dir see at #write_file same argument
         # @return [Pathname] the path to output directory
         def out_dir_path(root_dir)
-          Pathname.new(root_dir) + additional_path
+          Pathname.new(root_dir) + result_additional_path
         end
 
         # Makes out directory if it does not exist
@@ -49,7 +57,9 @@ module VersatileDiamond
         # Get the path to template dir where is stored file
         # @return [Pathname] the path to template dir
         def template_dir
-          Pathname.new(File.dirname(__FILE__)) + TEMPLATES_DIR + additional_path
+          Pathname.new(File.dirname(__FILE__)) +
+            TEMPLATES_DIR +
+            template_additional_path
         end
 
         # Gets the path to template

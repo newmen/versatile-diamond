@@ -14,8 +14,6 @@ class ConcreteLateralReaction : public LateralReaction, public Targets<LateralSp
     typedef Targets<LateralSpec, LATERALS_NUM> TargetsType;
 
 public:
-    Atom *anchor() const { return LateralReaction::anchor(); /* || TargetsType::anchor(); */ }
-
 #ifdef PRINT
     void info(std::ostream &os);
 #endif // PRINT

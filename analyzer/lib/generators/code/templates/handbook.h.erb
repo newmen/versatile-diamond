@@ -1,29 +1,24 @@
 #ifndef HANDBOOK_H
 #define HANDBOOK_H
 
+#include <atoms/atom.h>
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
 #include <species/keeper.h>
-<% if lateral_exists? %>
+<% if lateral_reactions_exists? %>
 #include <species/lateral_spec.h>
 <% end %>
 #include <species/specific_spec.h>
 using namespace vd;
 
-#include "env.h"
-#include "finder.h"
-#include "names.h"
-
-<% phases.each do |phase| %>
-#include "phases/<%= phase %>.h"
-<% end %>
+<%= head_includes %>
 
 class Handbook
 {
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
-<% if lateral_exists? %>
+<% if lateral_reactions_exists? %>
 private:
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     static LKeeper __lateralKeepers[THREADS_NUM];
@@ -37,7 +32,7 @@ private:
 public:
     static SKeeper &specificKeeper();
 
-<% if amorph_exists? %>
+<% if amorph_phase_exists? %>
 private:
     static PhaseBoundary __amorph;
 public:
@@ -54,22 +49,34 @@ public:
     static DMC &mc();
     static Scavenger &scavenger();
 
+    static bool isRegular(const Atom *atom);
+
+    static ushort activesFor(const Atom *atom);
+    static ushort hydrogensFor(const Atom *atom);
+    static ushort hToActivesFor(const Atom *atom);
+    static ushort activesToHFor(const Atom *atom);
+
 private:
     template <class T> static inline T &selectForThread(T *container);
 
-    static const ushort __atomsNum;
     static const bool __atomsAccordance[];
     static const ushort __atomsSpecifing[];
 
+    static const ushort __regularAtomsTypes[];
+    static const ushort __regularAtomsNum;
+
 <% if ubiquitous_reactions_exists? %>
-public:
     static const ushort __hToActives[];
+    static const ushort __activesToH[];
+
+public:
     static const ushort __hOnAtoms[];
     static const ushort __activesOnAtoms[];
-    static const ushort __activesToH[];
 <% end %>
 
 public:
+    static const ushort __atomsNum;
+
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
 };

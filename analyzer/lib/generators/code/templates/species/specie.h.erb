@@ -1,18 +1,10 @@
 #ifndef <%= define_name %>
 #define <%= define_name %>
 
-<% iterator_files.each do |file_name| %>
-#include "../../phases/<%= file_name %>.h"
-<% end %>
-<% header_species_dependencies.each do |specie| %>
-#include "../<%= specie.full_file_path %>.h"
-<% end %>
-<% unless symmetric? && render_find_algorithms? %>
-#include "../<%= outer_base_file %>.h"
-<% end %>
+<%= head_includes %>
 
 class <%= class_name %> :
-    <%= public_inheritance(base_classes) %>
+    <%= public_inheritance_from_base_classes %>
 {
 <% if render_find_algorithms? %>
 <%= render_partial('find_algorithms.h') %>
@@ -26,10 +18,20 @@ protected:
 <% unless symmetric? && render_find_algorithms? %>
 
 public:
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+<%= render_partial('name_method.h') %>
 <% end %>
 };
+<% if render_find_algorithms? && sidepiece? %>
+
+//////////////////////////////////////////////////////////////////////////////////////
+<% wheres.each do |where| %>
+
+template <class L>
+void <%= class_name %>::<%= where.signature %>
+{
+<%= where.algorithm %>
+}
+<% end %>
+<% end %>
 
 #endif // <%= define_name %>

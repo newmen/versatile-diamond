@@ -4,6 +4,21 @@ module VersatileDiamond
     # Describes reaction which has a some environment expresed by there objects
     class LateralReaction < Reaction
 
+      # Raises when target atom of sidepiece there object haven't lattice
+      class ReversingError < Errors::Base
+        attr_reader :spec
+        def initialize(spec, atom)
+          @spec = spec
+          @atom = atom
+        end
+
+        # Gets the keyname of invalid atom
+        # @return [Symbol] the keyname of atom
+        def keyname
+          @spec.keyname(@atom)
+        end
+      end
+
       attr_reader :theres
 
       # Among super, keeps the atom map
@@ -15,17 +30,10 @@ module VersatileDiamond
       end
 
       # Also checks using in there objects
-      # @param [SpecificSpec] spec the one of reactant
-      # @return [Array] the array of keynames of used atoms of passed spec
-      # @override
-      def used_keynames_of(spec)
-        keynames = super + theres.reduce([]) do |acc, there|
-          acc + there.positions.keys.select { |s, _| s == spec }.map do |_, a|
-            spec.keyname(a)
-          end
-        end
-
-        keynames.uniq
+      # @param [Spec | SpecificSpec] spec the one of reactant
+      # @return [Array] the array of using atoms
+      def used_atoms_of(spec)
+        (super + theres.flat_map { |there| there.used_atoms_of(spec) }).uniq
       end
 
       # Also compare there objects
@@ -45,23 +53,9 @@ module VersatileDiamond
         end
       end
 
-      # Also counts sizes of there objects
-      # @return [Float] the number of used atoms
-      def size
-        super + theres.map(&:size).reduce(:+)
-      end
-
-      # Also visit there objects
-      # @param [Visitors::Visitor] visitor see at #super same argument
-      # @override
-      def visit(visitor)
-        super
-        theres.each { |there| there.visit(visitor) }
-      end
-
       def to_s
         lateral_strs = theres.map(&:to_s)
-        "#{super} | #{lateral_strs.join(' + ')}"
+        "#{super} : #{lateral_strs.join(' + ')}"
       end
 
     private
@@ -70,37 +64,17 @@ module VersatileDiamond
       # @override
       def reverse_params
         reversed_theres = theres.map do |there|
-          reversed_positions = {}
-          there.positions.each do |spec_atom, links|
-            spec, atom = @mapping.other_side(*spec_atom)
-            if atom.lattice
-              reversed_positions[[spec, atom]] = links
+          reversed_refs = {}
+          there.target_refs.each do |target, (spec, atom)|
+            other_side_spec_atom = mapping.other_side(spec, atom)
+            if other_side_spec_atom.last.lattice
+              reversed_refs[target] = other_side_spec_atom
             else
-              os, oa = spec_atom # original spec and original atom
-              # for each spec of environment
-              links.each do |(ws, wa), _|
-                # finds another position between latticed atom of original
-                # spec and atom of environment spec
-                os.links[oa].each do |na, nl|
-                  next unless na.lattice
-                  rsa = @mapping.other_side(os, na)
-                  next unless rsa[1].lattice
-                  # skip atom if it already used for connecting environment
-                  next if there.positions[[os, na]] || reversed_positions[rsa]
-
-                  sana = ws.links[wa].find { |_, wl| wl == nl }.first
-                  rel = ws.links[sana].find { |a, _| a == wa }.last
-
-                  reversed_positions[rsa] ||= []
-                  reversed_positions[rsa] << [
-                    [ws, wa], Position.make_from(rel)
-                  ]
-                  break
-                end
-              end
+              raise ReversingError.new(*other_side_spec_atom)
             end
           end
-          There.new(there.where, reversed_positions)
+
+          There.new(there.where, reversed_refs)
         end
 
         [*super, reversed_theres]
@@ -118,6 +92,16 @@ module VersatileDiamond
       # @return [Boolean] is reaction initially similar, and all theres are same
       def all_same?(other)
         super_same?(other) && lists_are_identical?(theres, other.theres, &:same?)
+      end
+
+      # Also swaps target atoms for all used there objects
+      # @param [SpecificSpec] spec see at #super same argument
+      # @param [Atom] from see at #super same argument
+      # @param [Atom] to see at #super same argument
+      # @override
+      def swap_atom_in_positions(spec, from, to)
+        super
+        theres.each { |there| there.swap_target_atom(spec, from, to) } if from != to
       end
     end
 

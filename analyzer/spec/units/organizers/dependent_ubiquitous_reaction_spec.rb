@@ -8,6 +8,7 @@ module VersatileDiamond
 
       describe '#termination' do
         it { expect(subject.termination).to eq(adsorbed_h) }
+        it { expect(dept_surface_deactivation.termination).to eq(active_bond) }
       end
 
       describe '#lateral?' do
@@ -31,7 +32,7 @@ module VersatileDiamond
           end
 
           let(:specs_cache) do
-            all_reactions.each.with_object({}) do |reaction, cache|
+            all_reactions.each_with_object({}) do |reaction, cache|
               reaction.each_source do |spec|
                 cache[spec.name] = DependentSpecificSpec.new(spec)
               end

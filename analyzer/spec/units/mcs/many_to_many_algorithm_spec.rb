@@ -26,17 +26,16 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like 'check mapping result' do
+          it_behaves_like :check_mapping_result do
             subject { described_class.map_to(mapping_result, dm_names_to_specs) }
           end
         end
 
         describe 'hydrogen migration' do
-          let(:spec1) { methyl_on_dimer }
-          let(:spec2) { activated_dimer }
-          let(:spec3) { activated_methyl_on_dimer }
-          let(:spec4) { dimer }
-          let(:products) { [activated_methyl_on_dimer, dimer] }
+          let(:spec1) { hm_source.first }
+          let(:spec2) { hm_source.last }
+          let(:spec3) { hm_products.first }
+          let(:spec4) { hm_products.last }
 
           let(:changed) do
             [
@@ -66,7 +65,7 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like 'check mapping result' do
+          it_behaves_like :check_mapping_result do
             subject { described_class.map_to(mapping_result, hm_names_to_specs) }
           end
         end

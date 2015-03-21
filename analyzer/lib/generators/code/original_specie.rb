@@ -27,12 +27,6 @@ module VersatileDiamond
           @specie
         end
 
-        # Substitute base classes list for original specie template rendering
-        # @return [Array] the array with base engine class name
-        def base_classes
-          [target_specie.wrapped_base_class_name]
-        end
-
         # Delegates all missed methods to target specie for correct rendering source
         # code template
         #
@@ -50,15 +44,28 @@ module VersatileDiamond
           false
         end
 
+        # Gets the name of directory where will be stored result file
+        # @return [String] the name of result directory
+        # @override
+        def outer_dir_name
+          'originals'
+        end
+
+        # Substitute base class name for original specie template rendering
+        # @return [String] the name of base class
+        def base_class_name
+          target_specie.wrapped_base_class_name
+        end
+
         # Gets a list of parent species
         # @return [Array] the array of parent specie code generators
-        def header_species_dependencies
+        def head_used_objects
           target_specie.header_parents_dependencies
         end
 
         # Original specie doesn't have dependencies from species in source file
         # @return [Array] the empty array
-        def source_species_dependencies
+        def body_include_objects
           []
         end
       end

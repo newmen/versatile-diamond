@@ -98,6 +98,11 @@ module VersatileDiamond
         it { expect(ref.reference?).to be_truthy }
       end
 
+      describe '#relations_limits' do
+        it { expect(activated_c.relations_limits).to eq(c.relations_limits) }
+        it { expect(activated_cd.relations_limits).to eq(cd.relations_limits) }
+      end
+
       describe '#specific?' do
         it { expect(activated_c.specific?).to be_truthy }
         it { expect(cd_chloride.specific?).to be_truthy }
@@ -113,7 +118,7 @@ module VersatileDiamond
         describe 'same class instance' do
           let(:other) { SpecificAtom.new(n.dup) }
 
-          shared_examples_for 'equal if both and not if just one' do
+          shared_examples_for :equal_if_both_and_not_if_just_one do
             it 'both atoms' do
               do_with(subject)
               do_with(other)
@@ -126,19 +131,19 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.active! end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.incoherent! end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.unfixed! end
           end
 
-          it_behaves_like 'equal if both and not if just one' do
+          it_behaves_like :equal_if_both_and_not_if_just_one do
             def do_with(atom); atom.use!(h) end
           end
         end
@@ -195,7 +200,7 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like '#lattice' do
+      it_behaves_like :check_lattice do
         let(:target) { n }
         let(:reference) { subject }
       end
@@ -237,16 +242,6 @@ module VersatileDiamond
               [subject, active_bond]
             ]) }
         end
-      end
-
-      describe '#size' do
-        it { expect(activated_cd.size.round(2)).to eq(0.34) }
-        it { expect(activated_cd_hydride.size.round(2)).to eq(0.68) }
-        it { expect(activated_incoherent_cd.size.round(2)).to eq(0.47) }
-        it { expect(incoherent_cd.size.round(2)).to eq(0.13) }
-        it { expect(incoherent_cd_hydride.size.round(2)).to eq(0.47) }
-        it { expect(unfixed_activated_c.size.round(2)).to eq(0.47) }
-        it { expect(cd_chloride.size.round(2)).to eq(0.34) }
       end
 
       describe '#to_s' do

@@ -1,9 +1,5 @@
 #include "handbook.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 // TODO: move matrixes to separated tables.* instance
 // 10 :: ~C:i~
 // 32 :: -^C%d<
@@ -58,8 +54,8 @@ const bool Handbook::__atomsAccordance[Handbook::__atomsNum * Handbook::__atomsN
 
 const ushort Handbook::__atomsSpecifing[Handbook::__atomsNum] =
 {
-    0, 28, 2, 0, 34, 5, 4, 7, 8, 7,
-    10, 36, 27, 13, 10, 15, 16, 17, 15, 19,
+    0, 28, 2, 0, 34, 5, 34, 7, 8, 7,
+    10, 36, 27, 13, 35, 15, 16, 17, 15, 19,
     20, 21, 20, 23, 24, 35, 36, 27, 28, 36,
     27, 35, 32, 33, 34, 35, 36, 37, 38
 };
@@ -100,9 +96,9 @@ Handbook::DMC Handbook::__mc;
 
 PhaseBoundary Handbook::__amorph;
 
-Handbook::SKeeper Handbook::__specificKeepers[THREADS_NUM];
-Handbook::LKeeper Handbook::__lateralKeepers[THREADS_NUM];
-Scavenger Handbook::__scavengers[THREADS_NUM];
+Handbook::SKeeper Handbook::__specificKeeper;
+Handbook::LKeeper Handbook::__lateralKeeper;
+Scavenger Handbook::__scavenger;
 
 Handbook::DMC &Handbook::mc()
 {
@@ -116,17 +112,17 @@ PhaseBoundary &Handbook::amorph()
 
 Handbook::SKeeper &Handbook::specificKeeper()
 {
-    return selectForThread(__specificKeepers);
+    return __specificKeeper;
 }
 
 Handbook::LKeeper &Handbook::lateralKeeper()
 {
-    return selectForThread(__lateralKeepers);
+    return __lateralKeeper;
 }
 
 Scavenger &Handbook::scavenger()
 {
-    return selectForThread(__scavengers);
+    return __scavenger;
 }
 
 const ushort Handbook::__regularAtomsNum = 1;

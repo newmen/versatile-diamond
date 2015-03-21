@@ -20,7 +20,7 @@ module VersatileDiamond
       # @param [Bond] relation the used bond for linking
       # @raise [Lattices::Base::UndefinedRelation] if relation isn't free
       def link_together(first, second, relation)
-        unless relation.bond? && relation.face.nil?
+        if relation.belongs_to_crystal?
           raise Lattices::Base::UndefinedRelation.new(relation)
         end
 

@@ -2,7 +2,9 @@ module VersatileDiamond
   module Organizers
 
     # Wraps structural reaction without lateral interactions
-    class DependentTypicalReaction < DependentReaction
+    class DependentTypicalReaction < DependentSpecReaction
+
+      def_delegator :reaction, :complex_source_spec_and_atom
 
       # Selects complex source spec and them changed atom
       # @return [SpecificSpec] the covered spec
@@ -39,6 +41,10 @@ module VersatileDiamond
 
         applicants.each { |possible| possible.store_parent(self) }
       end
+
+    private
+
+
     end
 
   end

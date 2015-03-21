@@ -16,13 +16,13 @@ module VersatileDiamond
 
         describe '#base_class_name' do
           let(:base_class_name) do
-            'ParentsSwapWrapper<Empty<BRIDGE>, OriginalBridge, 1, 2>'
+            'ParentsSwapWrapper<EmptyBase<BRIDGE>, OriginalBridge, 1, 2>'
           end
           it { expect(subject.base_class_name).to eq(base_class_name) }
         end
 
         describe '#proxy' do
-          it { expect(subject.proxy(original_class)).to be_a(ParentProxySpecie) }
+          it { expect(subject.proxy(original_class)).to be_a(ParentsSwapProxySpecie) }
         end
       end
 

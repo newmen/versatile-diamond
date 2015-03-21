@@ -1,5 +1,10 @@
 public:
     static void find(<%= find_arguments_str %>);
+<% if sidepiece? %>
+<% wheres.each do |where| %>
+    template <class L> static void <%= where.signature %>;
+<% end %>
+<% end %>
 
 protected:
 <% if parent? %>
@@ -8,6 +13,10 @@ protected:
 <% if specific? %>
     void findAllTypicalReactions() final;
 <% end %>
-<% if lateral? %>
+<% if sidepiece? %>
     void findAllLateralReactions() final;
+<% end %>
+<% if local? %>
+    void concretizeLocal(Atom *target) const final;
+    void unconcretizeLocal(Atom *target) const final;
 <% end %>

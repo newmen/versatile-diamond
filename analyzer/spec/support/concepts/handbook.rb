@@ -26,6 +26,10 @@ module VersatileDiamond
             SpecificAtom.new(send(name), options: [active_bond])
           end
         end
+        set(:extra_activated_c) do
+          a = activated_c.dup
+          a.active!; a
+        end
         set(:extra_activated_cd) do
           a = activated_cd.dup
           a.active!; a
@@ -68,12 +72,16 @@ module VersatileDiamond
           set(:"activated_cd#{i}") { activated_cd.dup }
         end
 
-        # Bonds and positions:
-        set(:free_bond) { Bond[face: nil, dir: nil] }
+        # Relation parameters, bonds and positions:
+        set(:param_amorph) { Bond::AMORPH_PARAMS }
+        set(:free_bond) { Bond.amorph }
         [:front, :cross].each do |dir|
           [100, 110].each do |face|
-            set(:"bond_#{face}_#{dir}") { Bond[face: face, dir: dir] }
-            set(:"position_#{face}_#{dir}") { Position[face: face, dir: dir] }
+            param_hash = { face: face, dir: dir }
+            set(:"param_#{face}_#{dir}") { param_hash }
+            set(:"bond_#{face}_#{dir}") { Bond[param_hash] }
+            set(:"position_#{face}_#{dir}") { Position[param_hash] }
+            set(:"non_position_#{face}_#{dir}") { NonPosition[param_hash] }
           end
         end
 
@@ -153,6 +161,18 @@ module VersatileDiamond
           right_activated_bridge.extended
         end
 
+        set(:half_extended_bridge_base) do
+          s = SurfaceSpec.new(:half_extended_bridge)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cr, :cbr)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:ct, :cr)
+          s.describe_atom(:ct, cd.dup)
+          s.describe_atom(:cl, AtomReference.new(bridge_base, :ct))
+          s.link(s.atom(:ct), s.atom(:cr), bond_110_cross)
+          s.link(s.atom(:ct), s.atom(:cl), bond_110_cross); s
+        end
+
         set(:methyl_on_bridge_base) do
           s = DuppableSurfaceSpec.new(:methyl_on_bridge, cm: c)
           s.adsorb(bridge_base)
@@ -166,6 +186,9 @@ module VersatileDiamond
         set(:methyl_on_bridge) { SpecificSpec.new(methyl_on_bridge_base) }
         set(:activated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: activated_c)
+        end
+        set(:extra_activated_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: extra_activated_c)
         end
         set(:methyl_on_activated_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cb: activated_cd)
@@ -200,25 +223,35 @@ module VersatileDiamond
           activated_methyl_on_bridge.extended
         end
 
+        set(:top_methyl_on_half_extended_bridge_base) do
+          s = SurfaceSpec.new(:top_methyl_on_half_extended_bridge, cm: c.dup)
+          s.adsorb(half_extended_bridge_base)
+          s.link(s.atom(:ct), s.atom(:cm), free_bond); s
+        end
+        set(:lower_methyl_on_half_extended_bridge_base) do
+          s = SurfaceSpec.new(:lower_methyl_on_half_extended_bridge, cm: c.dup)
+          s.adsorb(half_extended_bridge_base)
+          s.link(s.atom(:cbr), s.atom(:cm), free_bond); s
+        end
+
         set(:methyl_on_right_bridge_base) do
           s = SurfaceSpec.new(:methyl_on_right_bridge, cm: c)
           s.adsorb(bridge_base)
           s.link(c, s.atom(:cr), free_bond); s
         end
-        # set(:methyl_on_right_bridge) { SpecificSpec.new(methyl_on_right_bridge_base) }
         set(:activated_methyl_on_right_bridge) do
           SpecificSpec.new(methyl_on_right_bridge_base, cm: activated_c)
         end
 
         set(:ethane_on_bridge_base) do
-          s = Concepts::SurfaceSpec.new(:ethane_on_bridge, c2: c.dup)
+          s = SurfaceSpec.new(:ethane_on_bridge, c2: c.dup)
           s.adsorb(methyl_on_bridge_base)
           s.rename_atom(:cm, :c1)
           s.link(s.atom(:c1), s.atom(:c2), free_bond); s
         end
 
         set(:vinyl_on_bridge_base) do
-          s = Concepts::SurfaceSpec.new(:vinyl_on_bridge)
+          s = SurfaceSpec.new(:vinyl_on_bridge)
           s.adsorb(ethane_on_bridge_base)
           s.link(s.atom(:c1), s.atom(:c2), free_bond); s
         end
@@ -245,6 +278,7 @@ module VersatileDiamond
         end
 
         set(:dimer) { SpecificSpec.new(dimer_base) }
+        set(:dimer_dup) { dimer.dup }
         set(:activated_dimer) { SpecificSpec.new(dimer_base, cr: activated_cd) }
         set(:twise_incoherent_dimer) do
           SpecificSpec.new(dimer_base, cr: incoherent_cd.dup, cl: incoherent_cd.dup)
@@ -260,6 +294,47 @@ module VersatileDiamond
         end
         set(:extended_dimer_base) { dimer_base.extend_by_references }
         set(:extended_dimer) { dimer.extended }
+
+        set(:horizont_extended_dimer_base) do
+          s = SurfaceSpec.new(:horizont_extended_dimer, crr: cd.dup)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cl, :clhb)
+          s.rename_atom(:ct, :clht)
+          s.rename_atom(:cr, :crb)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cl, :crhb)
+          s.rename_atom(:ct, :crht)
+          s.rename_atom(:cr, :_cr0)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cl)
+          s.rename_atom(:crr, :cr)
+          s.link(s.atom(:_cr0), s.atom(:cr), bond_110_front)
+          s.link(s.atom(:crb), s.atom(:cr), bond_110_front)
+          s.link(s.atom(:cl), s.atom(:cr), bond_100_front); s
+        end
+        set(:horizont_extended_dimer) do
+          SpecificSpec.new(horizont_extended_dimer_base)
+        end
+
+        set(:two_level_dimers_base) do
+          s = SurfaceSpec.new(:two_level_dimers, ctr: cd.dup)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :cdl)
+          s.rename_atom(:cr, :cdd)
+          s.adsorb(bridge_base)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:ct, :cbt)
+          s.rename_atom(:cr, :cbb)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :ctl)
+          s.link(s.atom(:ctr), s.atom(:cdd), bond_110_cross)
+          s.link(s.atom(:ctr), s.atom(:cbb), bond_110_cross)
+          s.link(s.atom(:ctl), s.atom(:ctr), bond_100_front); s
+        end
+        set(:two_level_dimers) do
+          SpecificSpec.new(two_level_dimers_base)
+        end
+
         set(:pseudo_dimer_base) do
           b = bridge_base
           r, l = AtomReference.new(b, :ct), AtomReference.new(b, :ct)
@@ -276,6 +351,26 @@ module VersatileDiamond
         set(:activated_methyl_on_dimer) do
           SpecificSpec.new(methyl_on_dimer_base, cm: activated_c)
         end
+        set(:activated_dimer_in_methyl_on_dimer) do
+          SpecificSpec.new(methyl_on_dimer_base, cl: activated_cd)
+        end
+
+        set(:two_methyls_on_dimer_base) do
+          s = SurfaceSpec.new(:two_methyls_on_dimer, c2: c.dup)
+          s.adsorb(methyl_on_dimer_base)
+          s.rename_atom(:cm, :c1)
+          s.link(s.atom(:cl), s.atom(:c2), free_bond); s
+        end
+
+        set(:vinyl_on_dimer_base) do
+          s = SurfaceSpec.new(:vinyl_on_dimer)
+          s.adsorb(ethane_on_bridge_base)
+          s.rename_atom(:cb, :cl)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cl)
+          s.link(s.atom(:cl), s.atom(:cr), bond_100_front)
+          s.link(s.atom(:c1), s.atom(:c2), free_bond); s
+        end
 
         set(:three_bridges_base) do
           s = SurfaceSpec.new(:three_bridges, tt: cd.dup)
@@ -288,14 +383,94 @@ module VersatileDiamond
           s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
         end
 
+        set(:bridge_with_dimer_base) do
+          s = SurfaceSpec.new(:bridge_with_dimer, tt: cd.dup)
+          s.adsorb(dimer_base)
+          s.adsorb(bridge_base)
+          s.link(s.atom(:tt), s.atom(:cr), bond_110_cross)
+          s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
+        end
+
         set(:cross_bridge_on_bridges_base) do
-          s = Concepts::SurfaceSpec.new(:cross_bridge_on_bridges)
+          s = SurfaceSpec.new(:cross_bridge_on_bridges)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :ctl)
           s.adsorb(methyl_on_bridge_base)
           s.rename_atom(:cb, :ctr)
           s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
+        end
+        set(:cross_bridge_on_bridges) do
+          SpecificSpec.new(cross_bridge_on_bridges_base)
+        end
+
+        set(:cross_bridge_on_dimers_base) do
+          s = SurfaceSpec.new(:cross_bridge_on_dimers)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :csl)
+          s.rename_atom(:cr, :ctl)
+          s.adsorb(methyl_on_dimer_base)
+          s.rename_atom(:cl, :csr)
+          s.rename_atom(:cr, :ctr)
+          s.link(s.atom(:csl), s.atom(:csr), position_100_cross)
+          s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
+        end
+
+        set(:intermed_migr_down_bridge_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_bridge)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:cr, :cbr)
+          s.adsorb(bridge_base)
+          s.rename_atom(:ct, :cbt)
+          s.link(s.atom(:cbt), s.atom(:cbr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:cbt), free_bond); s
+        end
+        set(:intermed_migr_down_bridge) do
+          SpecificSpec.new(intermed_migr_down_bridge_base)
+        end
+
+        set(:intermed_migr_down_common_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_common)
+          s.adsorb(dimer_base)
+          s.rename_atom(:cl, :cdl)
+          s.rename_atom(:cr, :cdr)
+          s.adsorb(methyl_on_bridge_base)
+          s.rename_atom(:cl, :cbl)
+          s.rename_atom(:cr, :cbr)
+          s.link(s.atom(:cdr), s.atom(:cbr), position_100_cross)
+          s.link(s.atom(:cm), s.atom(:cdr), free_bond); s
+        end
+        set(:intermed_migr_down_common) do
+          SpecificSpec.new(intermed_migr_down_common_base)
+        end
+
+        set(:intermed_migr_down_half_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_half)
+          s.adsorb(intermed_migr_down_common_base)
+          s.link(s.atom(:cdl), s.atom(:cbl), non_position_100_cross); s
+        end
+        set(:intermed_migr_down_half) do
+          SpecificSpec.new(intermed_migr_down_half_base)
+        end
+
+        set(:intermed_migr_down_full_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_full)
+          s.adsorb(intermed_migr_down_common_base)
+          s.link(s.atom(:cdl), s.atom(:cbl), position_100_cross); s
+        end
+        set(:intermed_migr_down_full) do
+          SpecificSpec.new(intermed_migr_down_full_base)
+        end
+
+        set(:intermed_migr_down_mod_base) do
+          s = SurfaceSpec.new(:intermed_migr_down_mod, cdm: c)
+          s.adsorb(intermed_migr_down_half_base)
+          s.link(s.atom(:cdl), s.atom(:cdm), free_bond); s
+        end
+        set(:intermed_migr_down_mod) do
+          SpecificSpec.new(intermed_migr_down_mod_base)
         end
 
         # Relevant states:
@@ -353,12 +528,25 @@ module VersatileDiamond
             'methyl deactivation', dm_source, dm_product, dm_atom_map)
         end
 
-        set(:abridge_dup) { activated_bridge.dup }
-        set(:md_source) { [methyl_on_bridge.dup] }
-        set(:md_products) { [methyl, abridge_dup] }
+        set(:am_source) { [methyl, activated_bridge.dup] }
+        set(:am_products) { [methyl_on_bridge.dup] }
+        set(:am_names_to_specs) do {
+          source: [[:m, methyl], [:b, am_source.last]],
+          products: [[:mob, am_products.first]]
+        } end
+        set(:am_atom_map) do
+          Mcs::AtomMapper.map(am_source, am_products, am_names_to_specs)
+        end
+        set(:methyl_adsorption) do
+          Reaction.new(
+            :forward, 'methyl adsorption', am_source, am_products, am_atom_map)
+        end
+
+        set(:md_source) { [methyl_on_bridge.dup, hydrogen_ion] }
+        set(:md_products) { [methane, activated_bridge.dup] }
         set(:md_names_to_specs) do {
           source: [[:mob, md_source.first]],
-          products: [[:m, methyl], [:b, abridge_dup]]
+          products: [[:m, methane], [:b, md_products.last]]
         } end
         set(:md_atom_map) do
           Mcs::AtomMapper.map(md_source, md_products, md_names_to_specs)
@@ -368,27 +556,28 @@ module VersatileDiamond
             :forward, 'methyl desorption', md_source, md_products, md_atom_map)
         end
 
-        set(:hm_source) { [methyl_on_dimer, activated_dimer] }
-        set(:hm_products) { [activated_methyl_on_dimer, dimer] }
+        set(:hm_source) { [methyl_on_dimer.dup, activated_dimer.dup] }
+        set(:hm_products) { [activated_methyl_on_dimer.dup, dimer.dup] }
         set(:hm_names_to_specs) do {
-          source: [[:mod, methyl_on_dimer], [:d, activated_dimer]],
-          products: [[:mod, activated_methyl_on_dimer], [:d, dimer]]
+          source: [[:mod, hm_source.first], [:d, hm_source.last]],
+          products: [[:mod, hm_products.first], [:d, hm_products.last]]
         } end
         set(:hm_atom_map) do
           Mcs::AtomMapper.map(hm_source, hm_products, hm_names_to_specs)
         end
         set(:hydrogen_migration) do
-          Reaction.new(:forward, 'hydrogen migration',
+          r = Reaction.new(:forward, 'hydrogen migration',
             hm_source, hm_products, hm_atom_map)
+          from = [hm_source.first, hm_source.first.atom(:cr)]
+          to = [hm_source.last, hm_source.last.atom(:cr)]
+          r.position_between(from, to, position_100_front); r
         end
 
-        set(:dimer_dup_ff) { dimer.dup }
-        set(:df_source) { [activated_bridge, activated_incoherent_bridge] }
-        set(:df_products) { [dimer_dup_ff] }
+        set(:df_source) { [activated_bridge.dup, activated_incoherent_bridge.dup] }
+        set(:df_products) { [dimer.dup] }
         set(:df_names_to_specs) do {
-          source: [
-            [:b1, activated_bridge], [:b2, activated_incoherent_bridge]],
-          products: [[:d, dimer_dup_ff]]
+          source: [[:b1, df_source.first], [:b2, df_source.last]],
+          products: [[:d, df_products.first]]
         } end
         set(:df_atom_map) do
           Mcs::AtomMapper.map(df_source, df_products, df_names_to_specs)
@@ -398,13 +587,124 @@ module VersatileDiamond
             df_source, df_products, df_atom_map)
         end
 
-        set(:mi_source) { [activated_methyl_on_extended_bridge, activated_dimer] }
-        set(:mi_product) { [extended_dimer] }
+        set(:idd_source) { [twise_incoherent_dimer.dup] }
+        set(:idd_products) do
+          [activated_incoherent_bridge.dup, activated_incoherent_bridge.dup]
+        end
+        set(:idd_names_to_specs) do {
+          source: [[tid: idd_source.first]],
+          products: [[b1: idd_products.first], [b2: idd_products.last]]
+        } end
+        set(:idd_atom_map) do
+          Mcs::AtomMapper.map(idd_source, idd_products, idd_names_to_specs)
+        end
+        set(:incoherent_dimer_drop) do
+          Reaction.new(:forward, 'incoherent dimer drop',
+            idd_source, idd_products, idd_atom_map)
+        end
+
+        set(:crm_source) { [cross_bridge_on_bridges.dup] }
+        set(:crm_products) { [activated_methyl_on_bridge.dup, activated_bridge.dup] }
+        set(:crm_names_to_specs) do {
+          source: [[:cbobs, crm_source.first]],
+          products: [[:amob, crm_products.first], [:ab, crm_products.last]]
+        } end
+        set(:crm_atom_map) do
+          Mcs::AtomMapper.map(crm_source, crm_products, crm_names_to_specs)
+        end
+        set(:sierpinski_drop) do
+          Reaction.new(:forward, 'sierpinski drop',
+            crm_source, crm_products, crm_atom_map)
+        end
+
+        set(:ah_source) do
+          [right_hydrogenated_bridge.dup, right_hydrogenated_bridge.dup]
+        end
+        set(:ah_products) do
+          [right_activated_bridge.dup, hydrogen, right_activated_bridge.dup]
+        end
+        set(:ah_names_to_specs) do {
+          source: [[:br1, ah_source.first], [:br2, ah_source.last]],
+          products: [
+            [:br1, ah_products.first], [:br2, ah_products.last], [:h, hydrogen]
+          ]
+        } end
+        set(:ah_atom_map) do
+          Mcs::AtomMapper.map(ah_source, ah_products, ah_names_to_specs)
+        end
+        set(:hydrogen_abs_from_gap) do
+          r = Reaction.new(:forward, 'hydrogen abs from gap',
+            ah_source, ah_products, ah_atom_map)
+          from = [ah_source.first, ah_source.first.atom(:cr)]
+          to = [ah_source.last, ah_source.last.atom(:cr)]
+          r.position_between(from, to, position_100_front); r
+        end
+
+        set(:imdcf_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
+        set(:imdcf_products) { [intermed_migr_down_common.dup] }
+        set(:imdcf_names_to_specs) do {
+          source: [[:ab, imdcf_source.first], [:amod, imdcf_source.last]],
+          products: [:imdc, imdcf_products.first]
+        } end
+        set(:imdcf_atom_map) do
+          Mcs::AtomMapper.map(imdcf_source, imdcf_products, imdcf_names_to_specs)
+        end
+        set(:intermed_migr_dc_formation) do
+          r = Reaction.new(:forward, 'intermed migr dc formation',
+            imdcf_source, imdcf_products, imdcf_atom_map)
+        end
+
+        set(:imdhf_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
+        set(:imdhf_products) { [intermed_migr_down_half.dup] }
+        set(:imdhf_names_to_specs) do {
+          source: [[:ab, imdhf_source.first], [:amod, imdhf_source.last]],
+          products: [:imdh, imdhf_products.first]
+        } end
+        set(:imdhf_atom_map) do
+          Mcs::AtomMapper.map(imdhf_source, imdhf_products, imdhf_names_to_specs)
+        end
+        set(:intermed_migr_dh_formation) do
+          r = Reaction.new(:forward, 'intermed migr dh formation',
+            imdhf_source, imdhf_products, imdhf_atom_map)
+        end
+
+        set(:imdff_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
+        set(:imdff_products) { [intermed_migr_down_full.dup] }
+        set(:imdff_names_to_specs) do {
+          source: [[:ab, imdff_source.first], [:amod, imdff_source.last]],
+          products: [:imdf, imdff_products.first]
+        } end
+        set(:imdff_atom_map) do
+          Mcs::AtomMapper.map(imdff_source, imdff_products, imdff_names_to_specs)
+        end
+        set(:intermed_migr_df_formation) do
+          r = Reaction.new(:forward, 'intermed migr df formation',
+            imdff_source, imdff_products, imdff_atom_map)
+        end
+
+        set(:immod_source) do
+          [activated_methyl_on_bridge.dup, activated_dimer_in_methyl_on_dimer.dup]
+        end
+        set(:immod_products) { [intermed_migr_down_mod.dup] }
+        set(:immod_names_to_specs) do {
+          source: [[:amob, immod_source.first], [:adimod, immod_source.last]],
+          products: [:imdmod, immod_products.first]
+        } end
+        set(:immod_atom_map) do
+          Mcs::AtomMapper.map(immod_source, immod_products, immod_names_to_specs)
+        end
+        set(:intermed_migr_dmod_formation) do
+          r = Reaction.new(:forward, 'intermed migr dmod formation',
+            immod_source, immod_products, immod_atom_map)
+        end
+
+        set(:mi_source) do
+          [activated_methyl_on_extended_bridge.dup, activated_dimer.dup]
+        end
+        set(:mi_product) { [extended_dimer.dup] }
         set(:mi_names_to_specs) do {
-          source: [
-            [:mob, activated_methyl_on_extended_bridge],
-            [:d, activated_dimer]],
-          products: [[:ed, extended_dimer]]
+          source: [[:mob, mi_source.first], [:d, mi_source.last]],
+          products: [[:ed, mi_product.first]]
         } end
         set(:mi_atom_map) do
           Mcs::AtomMapper.map(mi_source, mi_product, mi_names_to_specs)
@@ -412,6 +712,48 @@ module VersatileDiamond
         set(:methyl_incorporation) do
           Reaction.new(:forward, 'methyl incorporation',
             mi_source, mi_product, mi_atom_map)
+        end
+
+        set(:mg_source) do
+          [
+            extra_activated_methyl_on_bridge.dup,
+            right_activated_bridge.dup,
+            right_activated_bridge.dup
+          ]
+        end
+        set(:mg_product) { [horizont_extended_dimer.dup] }
+        set(:mg_names_to_specs) do {
+          source: [
+            [:mob, mg_source.first], [:br1, mg_source[1]], [:br2, mg_source[2]]
+          ],
+          products: [[:hed, mg_product.first]]
+        } end
+        set(:mg_atom_map) do
+          Mcs::AtomMapper.map(mg_source, mg_product, mg_names_to_specs)
+        end
+        set(:methyl_to_gap) do
+          Reaction.new(:forward, 'methyl to gap', mg_source, mg_product, mg_atom_map)
+        end
+
+        set(:mbd_source) do
+          [
+            extra_activated_methyl_on_bridge.dup,
+            right_activated_bridge.dup,
+            activated_incoherent_dimer.dup
+          ]
+        end
+        set(:mbd_product) { [two_level_dimers.dup] }
+        set(:mbd_names_to_specs) do {
+          source: [
+            [:mob, mbd_source.first], [:b, mbd_source[1]], [:d, mbd_source[2]]
+          ],
+          products: [[:tlds, mbd_product.first]]
+        } end
+        set(:mbd_am) do
+          Mcs::AtomMapper.map(mbd_source, mbd_product, mbd_names_to_specs)
+        end
+        set(:two_dimers_form) do
+          Reaction.new(:forward, 'two dimers form', mbd_source, mbd_product, mbd_am)
         end
 
         # Environments (targeted to dimer formation reverse reaction):
@@ -424,24 +766,21 @@ module VersatileDiamond
           w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross); w
         end
         set(:on_end) do
-          activated_i_bridge = activated_incoherent_bridge
-          at_end.concretize(
-            one: [activated_bridge, activated_bridge.atom(:ct)],
-            two: [activated_i_bridge, activated_i_bridge.atom(:ct)])
+          ab = df_source.first
+          aib = df_source.last
+          at_end.concretize(one: [ab, ab.atom(:ct)], two: [aib, aib.atom(:ct)])
         end
 
         set(:at_middle) do
-          w = Where.new(
-            :at_middle, 'at middle of dimers row', specs: [dimer])
-          w.raw_position(:one, [dimer, dimer.atom(:cl)], position_100_cross)
-          w.raw_position(:two, [dimer, dimer.atom(:cr)], position_100_cross)
+          w = Where.new(:at_middle, 'at middle of dimers row', specs: [dimer_dup])
+          w.raw_position(:one, [dimer_dup, dimer_dup.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dimer_dup, dimer_dup.atom(:cr)], position_100_cross)
           w.parents << at_end; w
         end
         set(:on_middle) do
-          activated_i_bridge = activated_incoherent_bridge
-          at_middle.concretize(
-            one: [activated_bridge, activated_bridge.atom(:ct)],
-            two: [activated_i_bridge, activated_i_bridge.atom(:ct)])
+          ab = df_source.first
+          aib = df_source.last
+          at_middle.concretize(one: [ab, ab.atom(:ct)], two: [aib, aib.atom(:ct)])
         end
 
         set(:end_lateral_df) do
@@ -453,17 +792,13 @@ module VersatileDiamond
         end
 
         set(:near_methyl) do
-          w = Where.new(:near_methyl, 'chain neighbour methyl',
-            specs: [methyl_on_bridge])
-          w.raw_position(
-            :target,
-            [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
-            position_100_front
-          ); w
+          mob = methyl_on_bridge
+          w = Where.new(:near_methyl, 'chain neighbour methyl', specs: [mob])
+          w.raw_position(:target, [mob, mob.atom(:cb)], position_100_front); w
         end
         set(:there_methyl) do
-          near_methyl.concretize(
-            target: [activated_bridge, activated_bridge.atom(:ct)])
+          ab = df_source.first
+          near_methyl.concretize(target: [ab, ab.atom(:ct)])
         end
       end
 

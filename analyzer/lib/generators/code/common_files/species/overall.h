@@ -6,8 +6,7 @@
 #include <species/dependent_spec.h>
 #include <species/parent_spec.h>
 #include <species/additional_atoms_wrapper.h>
-#include <species/atom_shift_wrapper.h>
-#include <species/atoms_swap_wrapper.h>
+#include <species/symmetric.h>
 #include <tools/typed.h>
 using namespace vd;
 
@@ -34,6 +33,7 @@ protected:
 template <class B, ushort ST>
 void Overall<B, ST>::remove()
 {
+//    if (this->isMarked()) return; // in each dependent types
     _markedForRemove = true;
 
     ParentType::remove();

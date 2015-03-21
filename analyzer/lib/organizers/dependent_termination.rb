@@ -3,9 +3,37 @@ module VersatileDiamond
 
     # Contain some termination spec and set of dependent specs
     class DependentTermination < DependentSpec
-      include MultiParentsSpec
 
-      def_delegators :spec, :terminations_num
+      def_delegator :spec, :terminations_num
+      collector_methods :parent
+
+      # Compares two terminations
+      # @param [DependentTermination] other comparing termination
+      # @return [Integer] the comparing result
+      def <=> (other)
+        if name == :*
+          -1
+        elsif other.name == :*
+          1
+        elsif name == :H
+          -1
+        elsif other.name == :H
+          1
+        else
+          name.to_s <=> other.name.to_s
+        end
+      end
+
+      # Stores the parent of current spec and inserts current instance as a child to
+      # parent spec
+      #
+      # @param [DependentBaseSpec] parent the one of parent of current spec
+      # @override
+      alias_method :super_store_parent, :store_parent
+      def store_parent(parent)
+        super_store_parent(parent)
+        parent.store_child(self)
+      end
 
       # Termination spec always is termination
       # @return [Boolean] true

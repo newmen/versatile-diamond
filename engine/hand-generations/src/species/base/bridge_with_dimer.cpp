@@ -3,8 +3,8 @@
 #include "../sidepiece/dimer.h"
 #include "../specific/bridge_with_dimer_cdli.h"
 
-const ushort BridgeWithDimer::Base::__indexes[2] = { 5, 0 };
-const ushort BridgeWithDimer::Base::__roles[2] = { 32, 6 };
+template <> const ushort BridgeWithDimer::Base::__indexes[2] = { 5, 0 };
+template <> const ushort BridgeWithDimer::Base::__roles[2] = { 32, 6 };
 
 #ifdef PRINT
 const char *BridgeWithDimer::name() const
@@ -16,27 +16,27 @@ const char *BridgeWithDimer::name() const
 
 void BridgeWithDimer::find(Atom *anchor)
 {
-    if (anchor->is(32) && anchor->lattice()->coords().z > 0)
+    if (anchor->is(32))
     {
         if (!anchor->checkAndFind(BRIDGE_WITH_DIMER, 32))
         {
-            Bridge *topBridge = anchor->specByRole<Bridge>(6);
-            ParentSpec *targetBridge = topBridge->selectSymmetry([anchor](ParentSpec *specie) {
-                return specie->atom(2) == anchor;
+            anchor->eachSpecByRole<Bridge>(6, [&](Bridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (specie1->atom(2) == anchor)
+                    {
+                        anchor->eachSpecByRole<Dimer>(22, [&](Dimer *target2) {
+                            target2->eachSymmetry([&](ParentSpec *specie2) {
+                                if (specie2->atom(3) == anchor)
+                                {
+                                    Atom *atom1 = specie1->atom(1);
+                                    ParentSpec *parents[3] = { atom1->specByRole<Bridge>(3), specie1, specie2 };
+                                    create<BridgeWithDimer>(parents);
+                                }
+                            });
+                        });
+                    }
+                });
             });
-
-            Dimer *dimer = anchor->specByRole<Dimer>(22);
-            ParentSpec *targetDimer = dimer->selectSymmetry([anchor](ParentSpec *specie) {
-                return specie->atom(3) == anchor;
-            });
-
-            ParentSpec *targets[3] = {
-                targetBridge->atom(1)->specByRole<Bridge>(3),
-                targetBridge,
-                targetDimer
-            };
-
-            create<BridgeWithDimer>(targets);
         }
     }
 }

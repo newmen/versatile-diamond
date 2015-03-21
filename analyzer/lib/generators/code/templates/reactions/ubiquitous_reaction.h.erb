@@ -1,0 +1,17 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+#include "data/<%= data_file_name %>.h"
+
+class <%= class_name %> :
+    public <%= base_class_name %>
+{
+<%= render_partial('rate_and_name.h') %>
+
+public:
+    static void find(Atom *anchor);
+
+    <%= class_name %>(Atom *target) : <%= data_class_name %>(target) {}
+};
+
+#endif // <%= define_name %>

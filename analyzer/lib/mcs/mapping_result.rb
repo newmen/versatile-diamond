@@ -6,6 +6,17 @@ module VersatileDiamond
 
       attr_reader :source, :products, :reaction_type
 
+      # Recombines passed mapping result to list where each item is two spec_atom
+      # elements
+      #
+      # @return [Array] the immutable list of correspond pairs of spec_atom from both
+      #   sides of reaction
+      def self.rezip(result)
+        result.reduce([]) do |acc, (specs_pair, atoms_zip)|
+          acc + atoms_zip.map { |atoms_pair| specs_pair.zip(atoms_pair) }
+        end
+      end
+
       # Common data structure:
       # @result = {
       #   conformity: [
@@ -60,6 +71,12 @@ module VersatileDiamond
         @result[:conformity]
       end
 
+      # Collects atoms of passed spec which used in changes
+      # @return [Array] the array of using atoms
+      def used_atoms_of(spec)
+        changes.select { |(s, _), _| s == spec }.flat_map(&:last).map(&:first)
+      end
+
       # Finds other side spec and their atom that corresponds to passed args
       # @param [SpecificSpec] spec the spec for which will be found other side
       #   specific spec
@@ -68,25 +85,9 @@ module VersatileDiamond
       # @return [SpecificSpec, Atom] the array where first item is found
       #   specific spec and second item is correspond atom
       def other_side(spec, atom)
-        is_source = @source.include?(spec)
-
-        specs, atoms = nil
-        full.each do |specs_pair, atoms_zip|
-          next unless specs_pair.include?(spec)
-
-          atoms = atoms_zip.find do |atom1, atom2|
-            (is_source && atom1 == atom) || (!is_source && atom2 == atom)
-          end
-          next unless atoms
-
-          specs = specs_pair
-          break
-        end
-
-        return nil unless specs && atoms
-
-        reverse_index = is_source ? 1 : 0
-        [specs[reverse_index], atoms[reverse_index]]
+        quads = all_zipped_spec_atoms
+        quads = quads.map { |quad| quad.rotate(1) } unless @source.include?(spec)
+        Hash[quads][[spec, atom]]
       end
 
       # Adds correspond mapping result for :change and :conformity keys. Also
@@ -123,7 +124,7 @@ module VersatileDiamond
         return @reverse if @reverse
         reversed_result = Hash[@result.map do |key, mapping|
           reversed_mapping = mapping.map do |specs, atoms|
-            [specs.reverse, atoms.map { |pair| pair.reverse }]
+            [specs.reverse, atoms.map(&:reverse)]
           end
           [key, reversed_mapping]
         end]
@@ -139,7 +140,7 @@ module VersatileDiamond
         source = @source.map { |spec| mirrors[:source][spec] }
         products = @products.map { |spec| mirrors[:products][spec] }
 
-        exchanged_result = Hash[@result.map do |key, mapping|
+        exchanged_result = @result.map do |key, mapping|
           exchanged_mapping = mapping.map do |(s, p), atoms|
             ns, np = mirrors[:source][s], mirrors[:products][p]
             exchanged_atoms = atoms.map do |v, w|
@@ -148,9 +149,9 @@ module VersatileDiamond
             [[ns, np], exchanged_atoms]
           end
           [key, exchanged_mapping]
-        end]
+        end
 
-        self.class.new(source, products, result: exchanged_result)
+        self.class.new(source, products, result: Hash[exchanged_result])
       end
 
       # Swap source species in result. Drops atom mapping result for atoms
@@ -159,19 +160,21 @@ module VersatileDiamond
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
       def swap_source(from, to)
+        mirror = SpeciesComparator.make_mirror(from, to)
         @source.map! { |spec| spec == from ? to : spec }
         @result.each do |_, mapping|
           mapping.map! do |specs, atoms|
             spec = specs.first
             if spec == from
-              changed_atoms = atoms.select { |f, _| from.keyname(f) }.
-                map { |f, s| [to.atom(from.keyname(f)), s] }
+              changed_atoms = atoms.map { |f, s| [mirror[f], s] }
               [[to, specs.last], changed_atoms]
             else
               [specs, atoms]
             end
           end
         end
+
+        @reverse.swap_source(to, from) if @reverse
       end
 
       # Swaps atoms in result
@@ -189,8 +192,7 @@ module VersatileDiamond
 
             atoms.each do |pair|
               atom_index = is_source ? 0 : 1
-              next unless from == pair[atom_index]
-              pair[atom_index] = to
+              pair[atom_index] = to if from == pair[atom_index]
             end
           end
         end
@@ -228,54 +230,88 @@ module VersatileDiamond
         [specs.first, atoms.first.first]
       end
 
-      # Finds positions between atoms of different source species
-      # @param [Reaction] reaction the reaction for which selected position
-      # @return [Array] the array of positions between reactants atoms
-      # TODO: rspec it directly
+      # Finds positions between atoms of different source species and stores them to
+      # passed reaction
+      #
+      # @param [Reaction] reaction the reaction for which position finds
       def find_positions_for(reaction)
         return if @source.size == 1 || @source.size == @products.size
 
-        main_spec, index = @source.size == 1 ?
-          [@source.first, 0] : [@products.first, 1]
-        small_index = (index + 1) % 2
+        main_spec, idx = @source.size == 1 ? [@source.first, 0] : [@products.first, 1]
 
-        result_dup = full.dup
-        # [
-        #   [[spec1, spec2], [[atom1, atom2], [...]]],
-        #   [[spec1, spec3], [[atom1, atom3], [...]]],
-        #   [...]
-        # ]
-        begin
-          (specs, atoms_zip) = result_dup.shift
-          small_spec1 = specs[small_index]
-          atoms_zip.each do |f, s|
-            first_atom, small_atom1 = sort_atoms(index, f, s)
+        all_zipped_spec_atoms.combination(2).each do |quads|
+          main_pairs, small_pairs = quads.transpose.rotate(idx)
+          main_atoms = main_pairs.map(&:last)
+          next unless reaction.all_latticed?(*main_atoms)
 
-            result_dup.each do |next_specs, next_atoms_zip|
-              small_spec2 = next_specs[small_index]
-              next_atoms_zip.each do |nf, ns|
-                second_atom, small_atom2 = sort_atoms(index, nf, ns)
+          position = main_spec.position_between(*main_atoms)
+          next unless position
 
-                # TODO: could be realized more effectively if use associated
-                # graph from many to one algorithm
-
-                position =
-                  main_spec.position_between(first_atom, second_atom)
-                next unless position &&
-                  reaction.all_latticed?(small_atom1, small_atom2)
-
-                reaction.position_between(
-                  [small_spec1, small_atom1],
-                  [small_spec2, small_atom2],
-                  position)
-              end
-            end
+          small_specs, small_atoms = small_pairs.transpose
+          if reaction.all_latticed?(*small_atoms)
+            next if small_specs.first == small_specs.last
+            reaction.position_between(*small_pairs, position, check_possible: false)
+          else
+            deep_find_positions(reaction, main_spec, main_atoms, position)
           end
-
-        end while result_dup.size > 1
+        end
       end
 
     private
+
+      # Finds position relations by walking on crystal lattice from passed main atoms
+      # and stores found positions to passed reaction
+      #
+      # @param [Reaction] reaction the reaction for which position finds
+      # @param [SpecificSpec] main_spec the largest spec of reaction
+      # @param [Array] main_atoms the atoms of passed main spec
+      # @param [Position] position which will be added if correspond atoms will be
+      #   found
+      def deep_find_positions(reaction, main_spec, main_atoms, position)
+        crystal = main_atoms.first.lattice.instance
+        return unless crystal.flatten?(position)
+
+        rel_groups = main_atoms.map do |a|
+          not_flat_rels = main_spec.links[a].reject { |_, r| crystal.flatten?(r) }
+          not_flat_rels.group_by { |_, r| r.params }
+        end
+
+        max_rel_groups = rel_groups.select do |groups|
+          groups.select { |pr, group| crystal.relations_limit[pr] == group.size }
+        end
+
+        next_atoms = max_rel_groups.map.with_index do |groups, i|
+          same_groups = groups.select do |pr, group|
+            (other_group = rel_groups[i-1][pr]) && other_group.size == group.size
+          end
+
+          raise 'Wrong period of crystal lattice' if same_groups.size > 1
+          same_groups.values.first.map(&:first)
+        end
+
+        return unless next_atoms.map(&:to_set).reduce(:&).empty?
+
+        next_atoms.transpose.each do |diff_side_atoms|
+          deep_small_pairs = diff_side_atoms.map { |a| other_side(main_spec, a) }
+          deep_small_specs, deep_small_atoms = deep_small_pairs.transpose
+          next if deep_small_specs.first == deep_small_specs.last
+
+          unless reaction.all_latticed?(*deep_small_atoms)
+            raise 'Incorrect atoms of reactants'
+          end
+
+          # TODO: checkthe fact that position changes to cross for not diamond lattice
+          reaction.position_between(*deep_small_pairs, position.cross,
+            check_possible: false)
+        end
+      end
+
+      # Combines full atom mapping to list where each item is two spec_atom elements
+      # @return [Array] the immutable list of correspond pairs of spec_atom from both
+      #   sides of reaction
+      def all_zipped_spec_atoms
+        self.class.rezip(full)
+      end
 
       # Associates two specs and their atoms between each other
       # @param [Symbol] key the key of result
@@ -327,15 +363,6 @@ module VersatileDiamond
         else
           original_own
         end
-      end
-
-      # Sorts atoms according to index
-      # @param [Integer] index the begin index (0 or 1)
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @return [Atom, Atom] ordered atoms
-      def sort_atoms(index, first, second)
-        index == 0 ? [first, second] : [second, first]
       end
     end
 

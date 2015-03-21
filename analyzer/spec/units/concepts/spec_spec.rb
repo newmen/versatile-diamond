@@ -46,13 +46,13 @@ module VersatileDiamond
           before(:each) { ethylene_base.rename_atom(:c1, :c2) }
           it { expect(ethylene_base.atom(:c1)).to be_nil }
           it { expect(ethylene_base.atom(:c2)).to eq(c1) }
-          it { expect(ethylene_base.size).to eq(2) }
+          it { expect(ethylene_base.links.size).to eq(2) }
         end
       end
 
       describe '#links' do
-        it { expect(methane_base.links).to eq({ c => [] }) }
-        it { expect(ethylene_base.links).to eq({
+        it { expect(methane_base.links).to match_graph({ c => [] }) }
+        it { expect(ethylene_base.links).to match_graph({
           c1 => [[c2, free_bond], [c2, free_bond]],
           c2 => [[c1, free_bond], [c1, free_bond]] }) }
       end
@@ -65,6 +65,13 @@ module VersatileDiamond
           it { expect(subject.external_bonds_for(subject.atom(:c1))).to eq(2) }
           it { expect(subject.external_bonds_for(subject.atom(:c2))).to eq(2) }
         end
+      end
+
+      describe '#relation_between' do
+        let(:ct) { bridge_base.atom(:ct) }
+        let(:cr) { bridge_base.atom(:cr) }
+        it { expect(bridge_base.relation_between(ct, cr)).to eq(bond_110_cross) }
+        it { expect(bridge_base.relation_between(cr, ct)).to eq(bond_110_front) }
       end
 
       describe '#external_bonds_for' do
@@ -154,6 +161,7 @@ module VersatileDiamond
           it { expect(same_bridge.same?(subject)).to be_truthy }
 
           it { expect(subject.same?(dimer_base)).to be_falsey }
+           it { expect(subject.same?(activated_bridge)).to be_falsey }
         end
 
         describe 'methyl_on_bridge_base' do
@@ -163,25 +171,6 @@ module VersatileDiamond
           it { expect(subject.same?(other)).to be_falsey }
           it { expect(other.same?(subject)).to be_falsey }
         end
-      end
-
-      describe '#size' do
-        it { expect(hydrogen_base.size).to eq(1) }
-        it { expect(methane_base.size).to eq(1) }
-        it { expect(ethylene_base.size).to eq(2) }
-        it { expect(bridge_base.size).to eq(3) }
-        it { expect(methyl_on_bridge_base.size).to eq(4) }
-        it { expect(methyl_on_extended_bridge_base.size).to eq(8) }
-        it { expect(high_bridge_base.size).to eq(4) }
-        it { expect(dimer_base.size).to eq(6) }
-        it { expect(methyl_on_dimer_base.size).to eq(7) }
-
-        # if take into account the crystal lattice then value should be 12
-        it { expect(extended_dimer_base.size).to eq(14) }
-      end
-
-      it_behaves_like 'visitable' do
-        subject { methane_base }
       end
     end
 

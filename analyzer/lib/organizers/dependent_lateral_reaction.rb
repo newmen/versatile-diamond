@@ -2,18 +2,14 @@ module VersatileDiamond
   module Organizers
 
     # Wraps structural reaction with lateral interactions
-    class DependentLateralReaction < DependentReaction
+    class DependentLateralReaction < DependentSpecReaction
+
+      def_delegator :reaction, :theres
 
       # Collects and return all where object
       # @return [Array] the array of where objects
       def wheres
-        theres.reduce([]) { |acc, there| acc << there.where }
-      end
-
-      # Wraps each there object to correspond dependent instance
-      # @return [Array] the array of wrapped there objects
-      def theres
-        reaction.theres.map { |there| DependentThere.new(there) }
+        theres.map(&:where)
       end
 
       # Lateral reaction is lateral reaction

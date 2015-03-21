@@ -4,24 +4,43 @@ module VersatileDiamond
     # Contain some reaction and set of dependent reactions
     # @abstract
     class DependentReaction
+      include Modules::OrderProvider
       extend Forwardable
       extend Collector
 
-      collector_methods :complex
       attr_reader :reaction, :parent
-      def_delegators :@reaction, :name, :full_rate, :swap_source, :used_keynames_of,
-        :size, :changes_size
+      collector_methods :complex
+      def_delegators :@reaction, :name, :full_rate, :swap_source, :use_similar_source?,
+        :changes_num
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
       def initialize(reaction)
         @reaction = reaction
+        @parent = nil
+      end
+
+      # Compares two reaction instances
+      # @param [UbiquitousReaction] other comparing reaction
+      # @return [Integer] the comparing result
+      def <=> (other)
+        order(self, other, :changes_num) do
+          order(self, other, :source, :size) do
+            order(self, other, :products, :size) do
+              typed_order(self, other, DependentLateralReaction) do
+                typed_order(self, other, DependentTypicalReaction) do
+                  typed_order(self, other, DependentUbiquitousReaction)
+                end
+              end
+            end
+          end
+        end
       end
 
       # Iterates each not simple specific source spec
       # @yield [Concepts::SpecificSpec] do with each one
       def each_source(&block)
-        not_simple_source.each(&block)
+        source.dup.each(&block)
       end
 
       # Checks that reactions are identical
@@ -34,7 +53,7 @@ module VersatileDiamond
       # Check that reaction have gas ion reagent
       # @return [Boolean] is reaction specific of ubiquitous or not
       def local?
-        !simple_source.empty?
+        parent && !simple_source.empty?
       end
 
       def formula
@@ -44,12 +63,6 @@ module VersatileDiamond
     protected
 
       def_delegators :@reaction, :source, :products, :simple_source, :simple_products
-
-      # Gets not simple source species
-      # @return [Array] the array of not simple species
-      def not_simple_source
-        source - simple_source
-      end
 
       # Stores the parent of reaction
       # @param [DependentReaction] parent the parent of current reaction

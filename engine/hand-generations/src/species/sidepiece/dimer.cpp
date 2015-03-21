@@ -1,8 +1,4 @@
 #include "dimer.h"
-#include "../../reactions/lateral/dimer_drop_at_end.h"
-#include "../../reactions/lateral/dimer_drop_in_middle.h"
-#include "../../reactions/lateral/dimer_formation_at_end.h"
-#include "../../reactions/lateral/dimer_formation_in_middle.h"
 #include "../../reactions/typical/dimer_drop.h"
 #include "../../reactions/typical/dimer_formation.h"
 #include "../base/methyl_on_dimer.h"
@@ -41,53 +37,6 @@ void Dimer::findAllChildren()
 
 void Dimer::findAllLateralReactions()
 {
-    Atom *atoms[2] = { atom(0), atom(3) };
-
-    eachNeighbours<2>(atoms, &Diamond::cross_100, [this](Atom **neighbours) {
-        DimerFormation::ifTargets(neighbours, [this](SpecificSpec **targets) {
-            {
-                auto neighbourReaction =
-                        targets[0]->checkoutReactionWith<DimerFormationAtEnd>(targets[1]);
-                if (neighbourReaction)
-                {
-                    if (!haveReaction(neighbourReaction))
-                    {
-                        neighbourReaction->concretize<DimerFormationInMiddle>(this);
-                    }
-                    return;
-                }
-            }
-            {
-                auto neighbourReaction =
-                        targets[0]->checkoutReactionWith<DimerFormation>(targets[1]);
-                if (neighbourReaction)
-                {
-                    neighbourReaction->concretize<DimerFormationAtEnd>(this);
-                    return;
-                }
-            }
-        });
-
-        DimerDrop::ifTarget(neighbours, [this](SpecificSpec *target) {
-            {
-                auto neighbourReaction = target->checkoutReaction<DimerDropAtEnd>();
-                if (neighbourReaction)
-                {
-                    if (!haveReaction(neighbourReaction))
-                    {
-                        neighbourReaction->concretize<DimerDropInMiddle>(this);
-                    }
-                    return;
-                }
-            }
-            {
-                auto neighbourReaction = target->checkoutReaction<DimerDrop>();
-                if (neighbourReaction)
-                {
-                    neighbourReaction->concretize<DimerDropAtEnd>(this);
-                    return;
-                }
-            }
-        });
-    });
+    DimerFormation::checkLaterals(this);
+    DimerDrop::checkLaterals(this);
 }

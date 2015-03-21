@@ -4,10 +4,9 @@ module VersatileDiamond
     # Instance of it class represents usual specific spec that is most commonly
     # used in reactions
     class SpecificSpec
-      extend Forwardable
-
-      include Visitors::Visitable
+      include Modules::RelationBetweenChecker
       include BondsCounter
+      extend Forwardable
 
       def_delegators :@spec, :extendable?, :gas?, :simple?
       attr_reader :spec, :specific_atoms
@@ -75,12 +74,9 @@ module VersatileDiamond
       # Builds the full name of specific spec (with specificied atom info)
       # @return [Symbol] the full name of specific spec
       def name
-        sorted_atoms = @specific_atoms.to_a.sort do |(k1, _), (k2, _)|
-          k1 <=> k2
-        end
-
+        sorted_atoms = @specific_atoms.to_a.sort { |(k1, _), (k2, _)| k1 <=> k2 }
         args = sorted_atoms.reduce([]) do |arr, (keyname, atom)|
-          arr << "#{keyname}: #{'*' * atom.actives}" if atom.actives > 0
+          atom.actives.times { arr << "#{keyname}: *" }
           arr + relevants_for(atom) + monovalents_for(atom)
         end
 
@@ -131,25 +127,28 @@ module VersatileDiamond
       end
 
       %w(incoherent unfixed).each do |state|
+        method_name = :"#{state}!"
         # Defines #{state} method which change a state of atom selected by
         # keyname
         #
         # @param [Symbol] atom_keyname the keyname of selecting atom
         # @raise [Errors::SyntaxError] if atom already has setuping state
-        define_method("#{state}!") do |atom_keyname|
+        define_method(method_name) do |atom_keyname|
           atom = @specific_atoms[atom_keyname]
           unless atom
             atom = SpecificAtom.new(spec.atom(atom_keyname))
             @specific_atoms[atom_keyname] = atom
             reset_caches
           end
-          atom.send("#{state}!")
+          atom.send(method_name)
         end
       end
 
       # Counts number of external bonds
       # @return [Integer] the number of external bonds
       def external_bonds
+        # TODO: incorrect counting because material balance matcher depends from it
+        # TODO: replace external bonds logic to directly using number of atoms
         spec.external_bonds - active_bonds_num #- monovalents_num
       end
 
@@ -160,8 +159,7 @@ module VersatileDiamond
       def external_bonds_after_extend
         return @external_bonds_after_extend if @external_bonds_after_extend
         @extended_spec = spec.extend_by_references
-        @external_bonds_after_extend =
-          @extended_spec.external_bonds - active_bonds_num
+        @external_bonds_after_extend = @extended_spec.external_bonds - active_bonds_num
       end
 
       # Makes a new specific spec by extended base spec
@@ -190,17 +188,13 @@ module VersatileDiamond
       # @return [SpecificSpec] correct reduced spec or nil
       def reduced
         return unless extended?
-
         return @correct_reduced if @correct_reduced
         @correct_reduced = @reduced.dup
-        correct_is_same = true
 
         @specific_atoms.each do |keyname, atom|
           rd_atom = @correct_reduced.atom(keyname)
           is_specific = @correct_reduced.specific_atoms[keyname]
           df = atom.diff(rd_atom)
-
-          correct_is_same = false unless is_specific && df.empty?
 
           if is_specific
             rd_atom.apply_diff(df)
@@ -209,7 +203,6 @@ module VersatileDiamond
               describe_atom(keyname, SpecificAtom.new(rd_atom, ancestor: atom))
           end
         end
-        @correct_reduced = @reduced if correct_is_same
         @correct_reduced
       end
 
@@ -223,7 +216,7 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] other with which comparison
       # @return [Boolean] the same or not
       def same?(other)
-        self.class == other.class && spec == other.spec && correspond?(other)
+        self.class == other.class ? correspond?(other) : other.same?(self)
       end
 
       # Checks termination atom at the inner atom which belongs to current spec
@@ -236,27 +229,16 @@ module VersatileDiamond
           internal_atom.monovalents.include?(term_spec)
       end
 
-      # Gets a number of atoms with number of active bonds, but if spec is gas
-      # then their size just 0
-      #
-      # @return [Float] size of current specific spec
-      def size
-        gas? ? 0 : spec.size + (@specific_atoms.values.map(&:size).reduce(:+) || 0)
-      end
-
       # Counts the sum of active bonds
       # @return [Integer] sum of active bonds
       def active_bonds_num
         specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.actives }
       end
 
-      # Also visit base spec
-      # @param [Visitors::Visitor] visitor the object which accumulate state of
-      #   current instance
-      # @override
-      def visit(visitor)
-        super
-        spec.visit(visitor)
+      # Counts the sum of monovalent atoms at specific atoms
+      # @return [Integer] sum of monovalent atoms
+      def monovalents_num
+        specific_atoms.reduce(0) { |acc, (_, atom)| acc + atom.monovalents.size }
       end
 
       def to_s
@@ -264,7 +246,7 @@ module VersatileDiamond
       end
 
       def inspect
-        name
+        name.to_s
       end
 
     protected
@@ -283,8 +265,7 @@ module VersatileDiamond
       # Renames internal used keynames to new keynames from another base spec
       # @param [Spec] other the base spec from which keynames will gotten
       def rename_used_keynames_and_update_links(other)
-        intersec = Mcs::SpeciesComparator.first_general_intersec(spec, other)
-        mirror = Hash[intersec.to_a]
+        mirror = Mcs::SpeciesComparator.make_mirror(spec, other)
 
         new_specific_atoms = {}
         @specific_atoms.each do |old_keyname, atom|
@@ -357,7 +338,8 @@ module VersatileDiamond
       # @param [SpecificSpec] other see at #same? same argument
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
-        Mcs::SpeciesComparator.contain?(self, other)
+        equal?(other) || (links.size == other.links.size &&
+          Mcs::SpeciesComparator.contain?(self, other))
       end
 
       # Resets internal caches

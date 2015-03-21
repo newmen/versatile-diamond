@@ -5,6 +5,7 @@ build-*
 *.swp
 *.d
 *.o
+*.so
 *~
 
 bin/
@@ -24,6 +25,7 @@ coverage/
 
 Gemfile.lock
 
+*.mp4
 *.png
 *.mol
 *.sdf

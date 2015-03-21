@@ -2,9 +2,9 @@
 #define SYMMETRIC_BRIDGE_H
 
 #include "../base/original_bridge.h"
-#include "../empty.h"
+#include "../empty_base.h"
 
-class SymmetricBridge : public AtomsSwapWrapper<Empty<BRIDGE>, 1, 2>
+class SymmetricBridge : public AtomsSwapWrapper<EmptyBase<BRIDGE>, 1, 2>
 {
 public:
     SymmetricBridge(OriginalBridge *parent) : AtomsSwapWrapper(parent) {}

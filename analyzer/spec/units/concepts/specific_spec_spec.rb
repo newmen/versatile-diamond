@@ -8,6 +8,12 @@ module VersatileDiamond
         it { expect(methyl.dup).not_to eq(methyl) }
         it { expect(methyl.dup.spec).to eq(methyl.spec) }
         it { expect(methyl.dup.external_bonds).to eq(3) }
+
+        describe 'extended' do
+          subject { activated_methyl_on_extended_bridge.dup }
+          it { expect(subject.extended?).to be_truthy }
+          it { expect(subject.reduced).not_to eq(activated_methyl_on_bridge) }
+        end
       end
 
       describe '#spec' do
@@ -89,7 +95,7 @@ module VersatileDiamond
 
         it { expect(bridge.name).to eq(:'bridge()') }
         it { expect(activated_bridge.name).to eq(:'bridge(ct: *)') }
-        it { expect(extra_activated_bridge.name).to eq(:'bridge(ct: **)') }
+        it { expect(extra_activated_bridge.name).to eq(:'bridge(ct: *, ct: *)') }
         it { expect(hydrogenated_bridge.name).to eq(:'bridge(ct: H)') }
         it { expect(activated_hydrogenated_bridge.name).
           to eq(:'bridge(ct: *, ct: H)') }
@@ -125,8 +131,8 @@ module VersatileDiamond
       end
 
       describe '#links' do
-        it { expect(methyl.links).to eq({ activated_c => [] }) }
-        it { expect(vinyl.links).to eq({
+        it { expect(methyl.links).to match_graph({ activated_c => [] }) }
+        it { expect(vinyl.links).to match_graph({
           activated_c => [[c2, free_bond], [c2, free_bond]],
           c2 => [[activated_c, free_bond], [activated_c, free_bond]] }) }
       end
@@ -159,6 +165,13 @@ module VersatileDiamond
         it { expect(activated_c.unfixed?).to be_truthy }
       end
 
+      describe '#relation_between' do
+        let(:ct) { activated_bridge.atom(:ct) }
+        let(:cr) { activated_bridge.atom(:cr) }
+        it { expect(activated_bridge.relation_between(ct, cr)).to eq(bond_110_cross) }
+        it { expect(activated_bridge.relation_between(cr, ct)).to eq(bond_110_front) }
+      end
+
       describe '#external_bonds_for' do
         it { expect(methane.external_bonds_for(c)).to eq(4) }
         it { expect(methyl.external_bonds_for(activated_c)).to eq(3) }
@@ -184,7 +197,7 @@ module VersatileDiamond
         it { expect(methyl.external_bonds).to eq(3) }
         it { expect(bridge.external_bonds).to eq(4) }
         it { expect(extra_activated_bridge.external_bonds).to eq(2) }
-        it { expect(chlorigenated_bridge.external_bonds).to eq(4) }#3 }
+        it { expect(chlorigenated_bridge.external_bonds).to eq(4) }#3) }
       end
 
       describe '#extended?' do
@@ -201,10 +214,10 @@ module VersatileDiamond
         it { expect(dimer.reduced).to be_nil }
 
         it { expect(activated_methyl_on_extended_bridge.reduced).
-          to eq(activated_methyl_on_bridge) }
+          not_to eq(activated_methyl_on_bridge) }
         it { expect(right_activated_extended_bridge.reduced).
-          to eq(right_activated_bridge) }
-        it { expect(extended_dimer.reduced).to eq(dimer) }
+          not_to eq(right_activated_bridge) }
+        it { expect(extended_dimer.reduced).not_to eq(dimer) }
       end
 
       describe '#extendable?' do
@@ -249,6 +262,8 @@ module VersatileDiamond
         it { expect(activated_bridge.same?(extra_activated_bridge)).to be_falsey }
         it { expect(extra_activated_bridge.same?(activated_incoherent_bridge)).
           to be_falsey }
+
+        it { expect(activated_bridge.same?(bridge_base)).to be_falsey }
       end
 
       describe '#has_termination?' do
@@ -269,21 +284,6 @@ module VersatileDiamond
       describe '#active_bonds_num' do
         it { expect(bridge.active_bonds_num).to eq(0) }
         it { expect(activated_dimer.active_bonds_num).to eq(1) }
-      end
-
-      describe '#size' do
-        it { expect(methane.size).to eq(0) }
-        it { expect(methyl.size).to eq(0) }
-        it { expect(bridge.size).to eq(3) }
-        it { expect(hydrogenated_bridge.size).to eq(3.34) }
-        it { expect(chlorigenated_bridge.size).to eq(3.34) }
-        it { expect(activated_hydrogenated_bridge.size).to eq(3.68) }
-        it { expect(extra_activated_bridge.size).to eq(3.68) }
-        it { expect(activated_methyl_on_incoherent_bridge.size).to eq(4.47) }
-      end
-
-      it_behaves_like 'visitable' do
-        subject { methyl }
       end
     end
 

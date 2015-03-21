@@ -134,8 +134,8 @@ events
     equation methyl_on_dimer(cm: H) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       unfixed methyl_on_dimer(:cm)
 
-    activation 37.5
-    forward_rate 2.8e8, 'cm3/(mol * s)'
+    activation 5.2
+    forward_rate 2.8e2, 'cm3/(mol * s)'
     forward_tpow 3.5
 
   reaction 'methyl deactivation'
@@ -149,7 +149,7 @@ events
     # TODO: возможно стоит скрыть от пользователя возможность определения необходимости наличия одновалентных атомов, и определять это автоматически. Можно сделать условия более мягкими, и для случая, если пользователь указать "cr: i", то автоматически определять по правой части уравнения, что должно быть "cr: H".
     equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
     activation 35
-    forward_rate 3e5 # TODO: maybe value more grater than presented
+    forward_rate 3e6 # TODO: maybe value more grater than presented
 
   reaction 'same methyl-dimer hydrogen migration'
     # TODO: следует предоставить возможость автоматического определения необходимости в атоме водорода, которая потом проявляется в своействе атома при генерации, это же относится к остальным реакциям с участием водорода, описанным ниже
@@ -327,18 +327,18 @@ events
     equation high_bridge + source(ct: *, ct: i) = product(cr: *)
 
       refinement 'without chain neighbour methyl'
-        forward_activation 36.3
-        reverse_activation 12.3
+        forward_activation 12.3
+        reverse_activation 36.3
 
       # TODO: аналогично проверить значения
       lateral :high_neighbour, target_atom: high_bridge(:ct)
       there :near_methyl
-        forward_activation 25.5
-        reverse_activation 17.1
+        forward_activation 17.1
+        reverse_activation 25.5
 
     enthalpy 24
-    forward_rate 6.1e13
-    reverse_rate 1.1e12
+    forward_rate 1.1e12
+    reverse_rate 6.1e13
 
   reaction 'high bridge to bridge and dimer'
     equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
@@ -378,8 +378,6 @@ events
   reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
-      position methyl_on_bridge(:cl), source(:cl), face: 100, dir: :cross
-      position methyl_on_bridge(:cr), source(:cr), face: 100, dir: :cross
 
       # все значения выдуманы
       refinement 'not in dimers row'

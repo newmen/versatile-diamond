@@ -7,14 +7,16 @@ using namespace vd;
 
 #include "../finder.h"
 #include "../handbook.h"
+#include "rates_reader.h"
 
 template <ushort RT>
-class Ubiquitous : public Typed<UbiquitousReaction, RT>
+class Ubiquitous : public Typed<UbiquitousReaction, RT>, public RatesReader
 {
     typedef Typed<UbiquitousReaction, RT> ParentType;
 
 public:
-    enum : ushort { MC_INDEX = RT - SURFACE_ACTIVATION }; // must used first ID of ubiquitous reactions names
+    // ubiquitous reaction enums should be enumerated after all another reaction enums
+    enum : ushort { MC_INDEX = RT - ALL_SPEC_REACTIONS_NUM };
 
     void doIt() override;
 

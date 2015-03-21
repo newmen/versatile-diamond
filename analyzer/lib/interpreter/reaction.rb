@@ -214,33 +214,40 @@ module VersatileDiamond
       # @return [Boolean] see at #check_balance
       def extends_if_possible(type, source, products, bonds_sum_limit, deep, &block)
         specs = eval(type.to_s)
-        combinations = specs.size.times.reduce([]) do |acc, i|
-          acc + specs.combination(i + 1).to_a
-        end
-
-        combinations.each do |combination|
+        combinations(specs).each do |combination|
           bonds_sum = specs.reduce(0) do |acc, spec|
-            acc + (combination.include?(spec) && spec.extendable? ?
-              spec.external_bonds_after_extend :
-              spec.external_bonds)
+            acc +
+              if combination.include?(spec) && spec.extendable?
+                spec.external_bonds_after_extend
+              else
+                spec.external_bonds
+              end
           end
 
           if bonds_sum >= bonds_sum_limit
             extended_specs = specs.map do |spec|
-              combination.include?(spec) && spec.extendable? ?
-                spec.extended :
-                spec
+              combination.include?(spec) && spec.extendable? ? spec.extended : spec
             end
 
-            args = type == :source ?
-              [extended_specs, products] :
-              [source, extended_specs]
+            args =
+              if type == :source
+                [extended_specs, products]
+              else
+                [source, extended_specs]
+              end
 
             result = check_balance(*args, deep - 1, &block)
-            if result then return result else next end
+            return result if result
           end
         end
         false
+      end
+
+      # Gets all possible specs combinations between each other
+      # @param [Array] specs the list which items will be combinated between each other
+      # @return [Array] the list of combinations
+      def combinations(specs)
+        specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
       end
     end
 

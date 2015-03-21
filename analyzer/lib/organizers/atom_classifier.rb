@@ -56,7 +56,7 @@ module VersatileDiamond
       def organize_properties!
         add_default_lattices_atoms
 
-        current_props = props.sort_by(&:size)
+        current_props = props.sort
         current_props_sd = current_props.dup
 
         until current_props.empty?
@@ -153,8 +153,8 @@ module VersatileDiamond
         !!@all_props[index].relevant?
       end
 
-      # Gets matrix of transitive clojure for atom properties dependencies
-      # @return [Matrix] the general transitive clojure matrix
+      # Gets matrix of transitive closure for atom properties dependencies
+      # @return [Matrix] the general transitive closure matrix
       def general_transitive_matrix
         @_tmatrix ||= TransitiveMatrix.new(self, :smallests, :sames)
       end
@@ -248,10 +248,10 @@ module VersatileDiamond
         end
       end
 
-      # Gets matrix of transitive clojure for smallests atom properties
+      # Gets matrix of transitive closure for smallests atom properties
       # dependencies
       #
-      # @return [Matrix] the transitive clojure matrix of smallests
+      # @return [Matrix] the transitive closure matrix of smallests
       #   dependencies
       def smallests_transitive_matrix
         @_st_matrix ||= TransitiveMatrix.new(self, :smallests)

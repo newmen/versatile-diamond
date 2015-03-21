@@ -1,0 +1,15 @@
+#include "<%= file_name %>.h"
+<%= body_includes %>
+
+<%= render_rate_and_name_body_partial %>
+
+void SurfaceActivation::find(Atom *anchor)
+{
+<% if children.empty? %>
+    findSelf<<%= class_name %>>(anchor)
+<% else %>
+<% children.each do |child| %>
+    findChild<<%= child.class_name %>>(anchor);
+<% end %>
+<% end %>
+}

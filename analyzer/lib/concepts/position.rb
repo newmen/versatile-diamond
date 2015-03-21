@@ -29,28 +29,27 @@ module VersatileDiamond
           raise Incomplete unless face && dir
           super(face: face, dir: dir)
         end
-
-        # Makes a new position from relation
-        # @param [Bond] relation the relation from which position will be maked
-        # @return [Position] a position with same face and dir as relation
-        def make_from(relation)
-          self.[](face: relation.face, dir: relation.dir)
-        end
       end
 
-      # Approximate compares two instances. If their fase and direction is
+      # Approximate compares two instances. If their face and direction is
       # correspond then instances is the same.
       #
       # @param [Concepts::Bond] other an other comparing instances
       # @return [Boolean] same or not
       def same?(other)
-        face == other.face && dir == other.dir
+        exist? == other.exist? && face == other.face && dir == other.dir
       end
 
       # Checks that current position is not a bond
       # @return [Boolean] false
       def bond?
         false
+      end
+
+      # Position always belongs to crystal
+      # @return [Boolean] true
+      def belongs_to_crystal?
+        true
       end
 
       def to_s

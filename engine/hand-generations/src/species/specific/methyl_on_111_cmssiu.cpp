@@ -1,8 +1,8 @@
 #include "methyl_on_111_cmssiu.h"
 #include "../../reactions/typical/migration_down_in_gap_from_111.h"
 
-const ushort MethylOn111CMssiu::Base::__indexes[1] = { 0 };
-const ushort MethylOn111CMssiu::Base::__roles[1] = { 27 };
+template <> const ushort MethylOn111CMssiu::Base::__indexes[1] = { 0 };
+template <> const ushort MethylOn111CMssiu::Base::__roles[1] = { 27 };
 
 #ifdef PRINT
 const char *MethylOn111CMssiu::name() const

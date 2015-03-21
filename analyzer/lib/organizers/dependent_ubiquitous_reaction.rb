@@ -27,34 +27,33 @@ module VersatileDiamond
       #   and values are specs
       def organize_dependencies!(not_ubiquitous_reactions, terms_cache, specs_cache)
         not_ubiquitous_reactions.each do |possible|
-          if simples_are_identical?(possible)
-            spec = possible.source_covered_by(termination)
-            if spec
-              terms_cache[termination.name].store_parent(specs_cache[spec.name])
-              possible.store_parent(self)
-            end
+          next unless simples_are_identical?(possible) &&
+            (possible.products.size == 1 ||
+              (possible.products.size == 2 && possible.simple_products.size == 1))
+
+          spec = possible.source_covered_by(termination)
+          if spec
+            terms_cache[termination.name].store_parent(specs_cache[spec.name])
+            possible.store_parent(self)
           end
         end
       end
 
     private
 
+      # Gets not simple source species
+      # @return [Array] the array of not simple species
+      def not_simple_source
+        source - simple_source
+      end
+
       # Checks that simple species are identical in possible parent reaction
       # @param [DependentTypicalReaction | DependentLateralReaction] possible the
       #   checkable possible parent reaction
       # @return [Boolean] are identical or not
       def simples_are_identical?(possible)
-        cm = method(:compare_specs)
-        lists_are_identical?(simple_source, possible.simple_source, &cm) &&
-          lists_are_identical?(simple_products, possible.simple_products, &cm)
-      end
-
-      # Compares two spec for identifing same simple species
-      # @param [Concepts::GasSpec] spec1 the first spec
-      # @param [Concepts::GasSpec] spec2 the second spec
-      # @return [Boolean] are same or not
-      def compare_specs(spec1, spec2)
-        spec1.same?(spec2)
+        lists_are_identical?(simple_source, possible.simple_source, &:same?) &&
+          lists_are_identical?(simple_products, possible.simple_products, &:same?)
       end
     end
 

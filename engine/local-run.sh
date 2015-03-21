@@ -16,5 +16,5 @@ $engine_bin ${tmp_dir}/${2} $3 $4 $5 $6 $7 > ${tmp_dir}/log
 mv ${tmp_dir}/* ${results_dir}/
 rm -rf ${tmp_dir}
 cd ${results_dir}
-${current_dir}/slices_graphics_renderer ${composit_name}.sls
+${current_dir}/slices_graphics_renderer.rb ${composit_name}.sls
 cd -

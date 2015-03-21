@@ -4,15 +4,18 @@ module VersatileDiamond
     # Represents smart graph which wrap original spec graph (with bonds and
     # position)
     class Graph
+      include Modules::ExcessPositionChecker
       extend Forwardable
 
       # Initialize instance by links hash of original spec graph
-      # @param [Hash] links the hash of links
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Organizers::Minuend] spec
+      #   from which the hash of links will be used
       # @option [Boolean] :collaps_multi_bond set to true if need separated
       #   instances for double or triple bonds
       # @raise [RuntimeError] if some of separated multi-bonds is invalid
-      def initialize(links, collaps_multi_bond: false)
-        dup_result = links.map do |key, list|
+      def initialize(spec, collaps_multi_bond: false)
+        @spec = spec
+        dup_result = spec.links.map do |key, list|
           pair = [key]
           if collaps_multi_bond
             pair << collapse_bonds(list)
@@ -52,6 +55,14 @@ module VersatileDiamond
       # @return [Array] the array of edges
       def edges(v, w)
         @edges[v] ? @edges[v].select { |vertex, _| vertex == w }.map(&:last) : []
+      end
+
+      # Gets only significant edges of passed vertex
+      # @param [Concepts::Atom] v the vertex for which the edges will be gotten
+      # @return [Array] the array of edges
+      def significant_edges_of(v)
+        rels = @spec.links[v].select { |w, r| r.bond? || !excess_position?(r, v, w) }
+        rels.map(&:last)
       end
 
       # Selects set of lattices from atom couple
@@ -166,6 +177,12 @@ module VersatileDiamond
 
     private
 
+      # Gets the links of original spec
+      # @return [Hash] the links of original spec
+      def original_links
+        @spec.links
+      end
+
       # Collapse several bonds between two atoms to one multi-bond
       # @param [Array] list the list of pairs, where atom is first and bond is
       #   second
@@ -218,7 +235,7 @@ module VersatileDiamond
       # @param [Bond] relation the checking bond
       # @raise [RuntimeError] if bond is incorrect
       def check_bond_is_correct(relation)
-        if !relation.bond? || (relation.face && relation.dir)
+        if !relation.bond? || relation.belongs_to_crystal?
           raise 'Incorrect multi-bond'
         end
       end

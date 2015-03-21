@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Represents surface structure
@@ -12,7 +14,7 @@ module VersatileDiamond
         false
       end
 
-      # Finds position relation between two atoms, where first atom is atom of
+      # Finds position relation between two atoms, where first atom belongs to
       # largest structure (specie) and relation has direction from atom of
       # first spec to atom of second spec
       #
@@ -21,8 +23,7 @@ module VersatileDiamond
       # @return [Position] the position relation or nil
       def position_between(first, second)
         relation = relation_between(first, second)
-        relation && relation.face &&
-          Position[face: relation.face, dir: relation.dir]
+        relation && relation.belongs_to_crystal? && relation.make_position
       end
 
     protected
@@ -83,27 +84,16 @@ module VersatileDiamond
       # @param [Array] atoms the array of atoms
       # @return [Boolean] has latticed atom or not
       def at_least_one_latticed?(atoms)
-        atoms.any?(&method(:has_lattice?))
+        atoms.any?(&:lattice)
       end
 
       # Sorts atoms by having crystall lattice
       # @param [Array] atoms the array of atoms
       # @return [Array] the sorted atoms array
       def sort(atoms)
-        index = atoms.index(&method(:has_lattice?))
-        first = atoms.delete_at(index)
-        [first, atoms.pop]
-      end
-
-      # Checks that atoms is related
-      # @param [Atom] first the first atom
-      # @param [Atom] second the second atom
-      # @return [Boolean] related or not
-      # TODO: move to super?
-      def relation_between(first, second)
-        links[first] &&
-          (atom_with_rel = links[first].find { |atom, _| atom == second }) &&
-          ((_, rel) = atom_with_rel) && rel
+        atoms_dup = atoms.dup
+        first = atoms_dup.delete_one(&:lattice)
+        [first, atoms_dup.pop]
       end
     end
 

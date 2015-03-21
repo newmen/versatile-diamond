@@ -42,8 +42,6 @@ module VersatileDiamond
         #   is exist
         # @return [Chest] self
         def store(*concepts, method: :name)
-          @sac ||= {}
-
           find_bottom(concepts, method) do |key, bottom, name|
             if bottom[name]
               raise Chest::KeyNameError.new(key, name, :duplication)
@@ -128,26 +126,17 @@ module VersatileDiamond
         # @param [Array] keys the major keys of sac cache
         # @return [Array] all found concepts
         def all(*keys)
+          @sac ||= {}
           keys.reduce([]) do |acc, key|
             @sac[key] ? acc + @sac[key].values : acc
           end
-        end
-
-        # Visit all stored concepts
-        # @param [Visitors::Visitor] visitor the object that will accumulate
-        #   states of all stored concepts
-        def visit(visitor)
-          # necessary to visit only reactions because they will visit all the
-          # rest
-          reactions = [:ubiquitous_reaction, :reaction, :lateral_reaction]
-          all(*reactions).each { |reaction| reaction.visit(visitor) }
         end
 
         def to_s
           content = @sac && @sac.reduce('') do |acc, (key, value)|
             "#{acc}#{key}: #{value.map(&:first).join(', ')}\n"
           end
-          content ? content : 'is empty'
+          content || 'is empty'
         end
 
       private
@@ -159,20 +148,22 @@ module VersatileDiamond
         # @yeild [Symbol, Hash, Symbol] do for current key, found bottom and
         #   name of last concept
         def find_bottom(concepts, method, &block)
+          @sac ||= {}
+
           key = concepts.last.class.to_s.underscore.to_sym
           bottom = (@sac[key] ||= {})
 
           concepts = concepts.dup
-          begin
+          until concepts.empty?
             concept = concepts.shift
-            name = concept.send(method).to_sym
+            name = concept.public_send(method).to_sym
 
             if concepts.empty?
               block[key, bottom, name]
             else
               bottom = (bottom[name] ||= {})
             end
-          end until concepts.empty?
+          end
         end
 
         # Finds concept in sac by initial key (which is concept type) and

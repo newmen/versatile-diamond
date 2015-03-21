@@ -10,7 +10,7 @@ double HighBridgeStandToOneBridge::RATE()
 
 void HighBridgeStandToOneBridge::find(HighBridge *target)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(1);
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(28))
         {
@@ -29,7 +29,7 @@ void HighBridgeStandToOneBridge::find(HighBridge *target)
 
 void HighBridgeStandToOneBridge::find(BridgeCTsi *target)
 {
-    Atom *anchor = target->anchor();
+    Atom *anchor = target->atom(0);
     eachNeighbour(anchor, &Diamond::front_100, [target](Atom *neighbour) {
         if (neighbour->is(19))
         {

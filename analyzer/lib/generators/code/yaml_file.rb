@@ -19,7 +19,7 @@ module VersatileDiamond
         # Yaml config files located in configs directory
         # @return [String] the config directory name
         # @override
-        def additional_path
+        def template_additional_path
           'configs'
         end
       end

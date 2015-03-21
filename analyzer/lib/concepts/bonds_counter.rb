@@ -5,7 +5,8 @@ module VersatileDiamond
     module BondsCounter
 
       # Counts external bonds for atom
-      # @param [Atom] atom the atom for wtich need to count bonds
+      # @param [Concepts::Atom | Concepts::AtomReference] atom the atom for wtich need
+      #   to count bonds
       # @return [Integer] number of bonds
       def external_bonds_for(atom)
         atom.valence - internal_bonds_for(atom)
@@ -14,12 +15,12 @@ module VersatileDiamond
     protected
 
       # Counts internal bonds for atom
-      # @param [Atom] atom the atom for wtich need to count bonds
+      # @param [Concepts::Atom | Concepts::AtomReference] atom the atom for wtich need
+      #   to count bonds
       # @return [Integer] number of bonds
       def internal_bonds_for(atom)
         links[atom].map(&:last).select(&:bond?).size
       end
-
     end
   end
 end

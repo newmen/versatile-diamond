@@ -3,7 +3,7 @@ module VersatileDiamond
     module Support
 
       module TerminationSpecExamples
-        shared_examples_for 'termination spec' do
+        shared_examples_for :termination_spec do
           it { expect(subject).to be_a(TerminationSpec) }
 
           describe '#gas?' do
@@ -16,10 +16,6 @@ module VersatileDiamond
 
           describe '#extendable?' do
             it { expect(subject.extendable?).to be_falsey }
-          end
-
-          describe '#size' do
-            it { expect(subject.size).to eq(1) }
           end
         end
       end

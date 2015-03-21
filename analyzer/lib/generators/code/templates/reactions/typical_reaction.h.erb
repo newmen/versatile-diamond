@@ -1,0 +1,22 @@
+#ifndef <%= define_name %>
+#define <%= define_name %>
+
+<%= head_includes %>
+
+class <%= class_name %> :
+    <%= public_inheritance_from_base_classes %>
+{
+<%= render_partial('rate_and_name.h') %>
+
+public:
+<% complex_source_species.each do |specie| %>
+    static void find(<%= find_arguments_str(specie) %>);
+<% end %>
+
+    <%= class_name %>(SpecificSpec **targets) :
+        <%= outer_base_class_name %>(targets) {}
+
+    void doIt() override;
+};
+
+#endif // <%= define_name %>

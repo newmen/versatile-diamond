@@ -4,19 +4,24 @@ module VersatileDiamond
   module Concepts
 
     describe There do
-      let(:ai_bridge) { activated_incoherent_bridge }
-      let(:ai_bridge_dup) { ai_bridge.dup }
+      let(:ab) { df_source.first }
+      let(:aib) { df_source.last }
+      let(:aib_dup) { activated_incoherent_bridge.dup }
+
+      shared_examples_for :check_links_graph do
+        it { expect(subject.links).to match_graph(links) }
+      end
 
       describe '#dup' do
         subject { on_end.dup }
         it { should_not == on_end }
         it { expect(subject.where).to eq(on_end.where) }
-        it { expect(subject.positions).to eq(on_end.positions) }
-        it { expect(subject.positions.object_id).
-          not_to eq(on_end.positions.object_id) }
+        it { expect(subject.links).to eq(on_end.links) }
+        it { expect(subject.links.object_id).
+          not_to eq(on_end.links.object_id) }
 
         describe "target swapping doesn't change duplicate" do
-          before { subject.swap_target(ai_bridge, ai_bridge_dup) }
+          before { subject.swap_target(aib, aib_dup) }
           it { expect(subject.target_specs).not_to eq(on_end.target_specs) }
         end
       end
@@ -27,16 +32,14 @@ module VersatileDiamond
       end
 
       describe '#target_specs' do
-        it { expect(on_end.target_specs).
-          to match_array([activated_bridge, ai_bridge]) }
-        it { expect(on_middle.target_specs).
-          to match_array([activated_bridge, ai_bridge]) }
-        it { expect(there_methyl.target_specs).to eq([activated_bridge]) }
+        it { expect(on_end.target_specs).to match_array([ab, aib]) }
+        it { expect(on_middle.target_specs).to match_array([ab, aib]) }
+        it { expect(there_methyl.target_specs).to eq([ab]) }
       end
 
       describe '#env_specs' do
         it { expect(on_end.env_specs).to eq([dimer]) }
-        it { expect(on_middle.env_specs).to match_array([dimer, dimer]) }
+        it { expect(on_middle.env_specs).to match_array([dimer, dimer_dup]) }
         it { expect(there_methyl.env_specs).to eq([methyl_on_bridge]) }
       end
 
@@ -45,72 +48,111 @@ module VersatileDiamond
         it { expect(there_methyl.description).to eq('chain neighbour methyl') }
       end
 
-      describe '#positions' do
-        it { expect(on_end.positions).to eq({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross]
-            ],
-            [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross]
-            ]
-          }) }
-
-        it { expect(on_middle.positions).to eq({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross],
-              [[dimer, dimer.atom(:cl)], position_100_cross],
-            ],
-            [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross],
-              [[dimer, dimer.atom(:cr)], position_100_cross],
-            ]
-          }) }
-
-        it { expect(there_methyl.positions).to eq({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [
-                [methyl_on_bridge, methyl_on_bridge.atom(:cb)],
-                position_100_front
+      describe '#links' do
+        it_behaves_like :check_links_graph do
+          subject { on_end }
+          let(:links) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [aib, aib.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
               ]
-            ]
-          }) }
+            }
+          end
+        end
 
+        it_behaves_like :check_links_graph do
+          subject { on_middle }
+          let(:links) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
+              ],
+              [aib, aib.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross],
+                [[dimer_dup, dimer_dup.atom(:cr)], position_100_cross],
+              ]
+            }
+          end
+        end
+
+        it_behaves_like :check_links_graph do
+          subject { there_methyl }
+          let(:links) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[methyl_on_bridge, methyl_on_bridge.atom(:cb)], position_100_front]
+              ]
+            }
+          end
+        end
       end
 
-      it_behaves_like 'check specs after swap_source' do
+      it_behaves_like :check_specs_after_swap_source do
         subject { on_end }
         let(:method) { :env_specs }
       end
 
+      describe '#use_similar_source?' do
+        subject { on_end }
+        it { expect(subject.use_similar_source?(dimer)).to be_truthy }
+        it { expect(subject.use_similar_source?(dimer.dup)).to be_falsey}
+        it { expect(subject.use_similar_source?(bridge_base)).to be_falsey }
+
+        it { expect(subject.use_similar_source?(ab)).to be_truthy }
+        it { expect(subject.use_similar_source?(ab.dup)).to be_falsey }
+      end
+
       describe '#swap_source' do
-        before { on_end.swap_source(dimer, dimer_dup_ff) }
-        it { expect(on_end.positions).to eq({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer_dup_ff, dimer_dup_ff.atom(:cl)], position_100_cross]
-            ],
-            [ai_bridge, ai_bridge.atom(:ct)] => [
-              [[dimer_dup_ff, dimer_dup_ff.atom(:cr)], position_100_cross]
-            ]
-          }) }
+        it_behaves_like :check_links_graph do
+          subject { on_end }
+          before { subject.swap_source(dimer, d_dup) }
+          let(:d_dup) { dimer.dup }
+          let(:links) do
+            {
+              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]],
+              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]]
+            }
+          end
+        end
       end
 
       describe '#swap_target' do
-        before { on_end.swap_target(ai_bridge, ai_bridge_dup) }
-
-        it { expect(on_end.positions).to eq({
-            [activated_bridge, activated_bridge.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross]
-            ],
-            [ai_bridge_dup, ai_bridge_dup.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross]
-            ]
-          }) }
+        it_behaves_like :check_links_graph do
+          subject { on_end }
+          before { subject.swap_target(aib, aib_dup) }
+          let(:links) do
+            {
+              [ab, ab.atom(:ct)] => [
+                [[dimer, dimer.atom(:cl)], position_100_cross]
+              ],
+              [aib_dup, aib_dup.atom(:ct)] => [
+                [[dimer, dimer.atom(:cr)], position_100_cross]
+              ]
+            }
+          end
+        end
       end
 
-      describe '#used_keynames_of' do
-        it { expect(on_end.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
-        it { expect(on_middle.used_keynames_of(dimer)).to match_array([:cr, :cl]) }
-        it { expect(there_methyl.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
+      describe '#used_atoms_of' do
+        let(:atoms) { [:cr, :cl].map { |kn| dimer.atom(kn) } }
+
+        describe 'on end' do
+          it { expect(on_end.used_atoms_of(dimer)).to match_array(atoms) }
+        end
+
+        describe 'on middle' do
+          it { expect(on_middle.used_atoms_of(dimer)).to match_array(atoms) }
+        end
+
+        describe 'there methyl' do
+          let(:spec) { methyl_on_bridge }
+          let(:atoms) { [spec.atom(:cb)] }
+          it { expect(there_methyl.used_atoms_of(spec)).to match_array(atoms) }
+        end
       end
 
       describe '#same?' do
@@ -129,12 +171,6 @@ module VersatileDiamond
         it { expect(on_end.cover?(on_middle)).to be_truthy }
         it { expect(on_middle.cover?(on_end)).to be_falsey }
         it { expect(there_methyl.cover?(on_end)).to be_falsey }
-      end
-
-      describe '#size' do
-        it { expect(on_end.size).to eq(6) }
-        it { expect(on_middle.size).to eq(12) }
-        it { expect(there_methyl.size).to eq(4) }
       end
     end
 

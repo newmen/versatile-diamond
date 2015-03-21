@@ -132,10 +132,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 
     double startTime = timestamp();
 
-#ifdef PARALLEL
-#pragma omp parallel
-#endif // PARALLEL
-    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime)
+    while (!__stopCalculating && HB::mc().totalTime() <= _totalTime)
     {
         double dt = HB::mc().doRandom(&mcData);
 
@@ -146,15 +143,15 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         });
 #endif // PRINT
 
-#ifdef PARALLEL
-#pragma omp atomic
-#endif // PARALLEL
         ++steps;
 
 #ifndef NOUT
-#ifdef PARALLEL
-#pragma omp critical
-#endif // PARALLEL
+        if (dt < 0)
+        {
+            std::cout << "No more events" << std::endl;
+            break;
+        }
+        else
         {
             timeCounter += dt;
             if (timeCounter >= _init.eachTime)

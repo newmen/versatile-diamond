@@ -4,7 +4,7 @@ module VersatileDiamond
     # Specified atom class, contain additional atom states like incoherentness,
     # unfixness and activeness
     class SpecificAtom
-      include ListsComparer
+      include Modules::ListsComparer
       extend Forwardable
 
       # Error for case when something wrong with atom state
@@ -24,7 +24,7 @@ module VersatileDiamond
       class AlreadyUnfixed; end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
-        :original_same?, :reference?
+        :original_same?, :reference?, :relations_limits
 
       attr_reader :monovalents
 
@@ -70,6 +70,8 @@ module VersatileDiamond
           atom.same?(other.atom) &&
             lists_are_identical?(options, other.options, &:==) &&
             lists_are_identical?(monovalents, other.monovalents, &:==)
+        elsif other.is_a?(VeiledAtom)
+          other.same?(self)
         else
           options.empty? && monovalents.empty? && atom.same?(other)
         end
@@ -156,12 +158,6 @@ module VersatileDiamond
       def additional_relations
         own_links = (options + monovalents).map { |state| [self, state] }
         atom.additional_relations + own_links
-      end
-
-      # Gets the relevant size of specific atom
-      # @return [Float] the relevant size of specific atom
-      def size
-        (actives + monovalents.size) * 0.34 + relevants.size * 0.13
       end
 
       def to_s

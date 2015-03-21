@@ -1,19 +1,16 @@
 #ifndef <%= define_name %>
 #define <%= define_name %>
 
-#include "../<%= original_file_path %>.h"
-#include "../<%= outer_base_file %>.h"
+<%= head_includes %>
 
 class <%= class_name %> :
-    <%= base_class_name %>
+    public <%= base_class_name %>
 {
 public:
     <%= class_name %>(<%= original_class_name %> *parent) :
         <%= wrapper_class_name %>(parent) {}
 
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+<%= render_partial('name_method.h') %>
 };
 
 #endif // <%= define_name %>

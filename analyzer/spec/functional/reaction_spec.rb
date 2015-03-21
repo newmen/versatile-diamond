@@ -58,6 +58,18 @@ module VersatileDiamond
                 'reaction.cannot_map', name: 'bridge'))
           end
 
+          describe 'reaction with dangling H' do
+            before do
+              elements.interpret('atom H, valence: 1')
+              gas.interpret('spec :hydrogen')
+              gas.interpret('  atoms h: H')
+            end
+
+            it { expect { reaction.interpret(
+                'equation methyl_on_bridge(cm: H) + hydrogen(h: *) = methyl_on_bridge(cm: *) + hydrogen') }.
+              not_to raise_error }
+          end
+
           describe 'simple reaction' do
             before(:each) do
               reaction.interpret('equation bridge(ct: *) + methane(c: *) = methyl_on_bridge')
@@ -115,14 +127,14 @@ module VersatileDiamond
             end
 
             describe 'unfixed states' do
-              shared_examples_for 'check both unfixed' do
+              shared_examples_for :check_both_unfixed do
                 it { expect(concept.source.first.atom(:cm).unfixed?).
                   to be_truthy }
                 it { expect(concept.products.first.atom(:cm).unfixed?).
                   to be_truthy }
               end
 
-              shared_examples_for 'check unfixed only one' do
+              shared_examples_for :check_unfixed_only_one do
                 it { expect(concept.source.first.atom(:cm).unfixed?).
                   to be_truthy }
                 it { expect(concept.products.first.atom(:cm).unfixed?).
@@ -142,7 +154,7 @@ module VersatileDiamond
                     reaction.interpret('equation methyl_on_dimer + dimer(cr: *) = methyl_on_dimer(cm: *, cm: u) + dimer')
                   end
 
-                  it_behaves_like 'check both unfixed'
+                  it_behaves_like :check_both_unfixed
                 end
 
                 describe 'when high bridge forms' do
@@ -150,7 +162,7 @@ module VersatileDiamond
                     reaction.interpret('equation methyl_on_dimer(cm: *, cm: u) = high_bridge + bridge(ct: *)')
                   end
 
-                  it_behaves_like 'check unfixed only one'
+                  it_behaves_like :check_unfixed_only_one
                 end
               end
 
@@ -161,7 +173,7 @@ module VersatileDiamond
                     reaction.interpret('  unfixed methyl_on_dimer(:cm)')
                   end
 
-                  it_behaves_like 'check both unfixed'
+                  it_behaves_like :check_both_unfixed
                 end
 
                 describe 'when high bridge forms' do
@@ -170,7 +182,7 @@ module VersatileDiamond
                     reaction.interpret('  unfixed methyl_on_dimer(:cm)')
                   end
 
-                  it_behaves_like 'check unfixed only one'
+                  it_behaves_like :check_unfixed_only_one
                 end
               end
             end
@@ -293,7 +305,7 @@ module VersatileDiamond
               let(:w_dimer) { there.env_specs.first }
 
               it { expect(subject.theres.size).to eq(1) }
-              it { expect(there.positions).to eq({
+              it { expect(there.links).to match_graph({
                   [c_bridge1, c_bridge1.atom(:ct)] => [
                     [[w_dimer, w_dimer.atom(:cl)], position_100_cross]
                   ],
@@ -312,7 +324,7 @@ module VersatileDiamond
               let(:w_dimer2) { there.env_specs.last }
 
               it { expect(subject.theres.size).to eq(1) }
-              it { expect(there.positions).to eq({
+              it { expect(there.links).to match_graph({
                   [c_bridge1, c_bridge1.atom(:ct)] => [
                     [[w_dimer1, w_dimer1.atom(:cl)], position_100_cross],
                     [[w_dimer2, w_dimer2.atom(:cl)], position_100_cross],
@@ -327,7 +339,7 @@ module VersatileDiamond
         end
       end
 
-      it_behaves_like 'reaction properties' do
+      it_behaves_like :reaction_properties do
         let(:target) { reaction }
         let(:reverse) { Tools::Chest.reaction('reverse reaction name') }
       end

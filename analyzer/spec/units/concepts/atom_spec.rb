@@ -26,9 +26,8 @@ module VersatileDiamond
       end
 
       describe '#lattice' do
-        it 'set and get lattice' do
-          expect(cd.lattice).to eq(diamond)
-        end
+        it { expect(c.lattice).to be_nil }
+        it { expect(cd.lattice).to eq(diamond) }
       end
 
       describe '#reference?' do
@@ -83,6 +82,21 @@ module VersatileDiamond
 
       describe '#additional_relations' do
         it { expect(cd.additional_relations).to be_empty }
+      end
+
+      describe '#relations_limits' do
+        let(:diamond_relations_limits) do
+          {
+            param_amorph => 1,
+            param_100_front => 2,
+            param_100_cross => 2,
+            param_110_front => 2,
+            param_110_cross => 2,
+          }
+        end
+        it { expect(cd.relations_limits).to eq(diamond_relations_limits) }
+        it { expect(c.relations_limits).to eq({ param_amorph => 4 }) }
+        it { expect(n.relations_limits).to eq({ param_amorph => 3 }) }
       end
 
       describe '#to_s' do

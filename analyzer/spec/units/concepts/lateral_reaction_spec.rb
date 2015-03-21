@@ -22,63 +22,51 @@ module VersatileDiamond
       end
 
       describe '#reverse' do
-        subject { reaction.reverse }
-        let(:there) { subject.theres.first }
-
-        it { should be_a(described_class) }
-
         describe 'theres reversed too' do
-          it { expect(there.positions).to eq({
+          subject { reaction.reverse }
+          let(:there) { subject.theres.first }
+          let(:positions) do
+            {
               [target_dimer, target_dimer.atom(:cr)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
               ],
               [target_dimer, target_dimer.atom(:cl)] => [
                 [[dimer, dimer.atom(:cr)], position_100_cross]
               ],
-            }) }
+            }
+          end
+
+          it { should be_a(described_class) }
+          it { expect(there.links).to match_graph(positions) }
         end
 
         describe "reverced atom haven't lattice" do
-          subject { original.reverse }
+          # could not be, just image this reaction!
+          let(:ed) { mi_product.first }
           let(:curr_mid) do
-            at_middle.concretize(
-              one: [extended_dimer, extended_dimer.atom(:cl)],
-              two: [extended_dimer, extended_dimer.atom(:cr)])
+            at_middle.concretize(one: [ed, ed.atom(:cl)], two: [ed, ed.atom(:cr)])
           end
           let(:original) do
             methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])
           end
-          let(:moeb) { subject.source.first }
-          let(:dim) { subject.source.last }
 
-          it { expect(there.positions).to eq({
-              [moeb, moeb.atom(:cb)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross],
-                [[dimer, dimer.atom(:cl)], position_100_cross],
-              ],
-              [dim, dim.atom(:cl)] => [
-                [[dimer, dimer.atom(:cr)], position_110_front],
-              ],
-              [dim, dim.atom(:cr)] => [
-                [[dimer, dimer.atom(:cr)], position_110_front],
-              ],
-            }) }
+          it { expect { original.reverse }.
+            to raise_error(described_class::ReversingError) }
         end
       end
 
-      describe '#used_keynames_of' do
+      describe '#used_atoms_of' do
         describe 'forward' do
           subject { reaction }
-          let(:first_bridge) { subject.source.first }
-          let(:second_bridge) { subject.source.last }
-
-          it { expect(subject.used_keynames_of(first_bridge)).to eq([:ct]) }
-          it { expect(subject.used_keynames_of(second_bridge)).to eq([:ct]) }
+          let(:first) { subject.source.first }
+          let(:second) { subject.source.last }
+          it { expect(subject.used_atoms_of(first)).to eq([first.atom(:ct)]) }
+          it { expect(subject.used_atoms_of(second)).to eq([second.atom(:ct)]) }
         end
 
         describe 'reverse' do
-          subject { reaction.reverse.used_keynames_of(target_dimer) }
-          it { should match_array([:cr, :cl]) }
+          subject { reaction.reverse.used_atoms_of(target_dimer) }
+          it { should match_array([:cr, :cl].map { |a| target_dimer.atom(a) }) }
         end
       end
 
@@ -93,15 +81,6 @@ module VersatileDiamond
       describe '#cover?' do
         it { expect(reaction.cover?(middle)).to be_truthy }
         it { expect(reaction.cover?(other)).to be_truthy }
-      end
-
-      describe '#size' do
-        it { expect(reaction.size.round(2)).to eq(12.81) }
-        it { expect(other.size.round(2)).to eq(16.81) }
-      end
-
-      it_behaves_like 'visitable' do
-        subject { reaction }
       end
     end
 

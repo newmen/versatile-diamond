@@ -6,7 +6,7 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      def_delegators :@spec, :name
+      def_delegators :@spec, :name, :gas?
       collector_methods :reaction
       attr_reader :spec
 
@@ -15,18 +15,13 @@ module VersatileDiamond
       #         Concepts::Spec | Concepts::SpecificSpec] spec the wrappable spec
       def initialize(spec)
         @spec = spec
+        @reactions = nil
       end
 
       # Simple spec does not have links
       # @return [Hash] the empty hash
       def links
         {}
-      end
-
-      # Simple spec does not have residual
-      # @return [NilClass] nil
-      def rest
-        nil
       end
 
       # All species is not termination by default
@@ -45,6 +40,10 @@ module VersatileDiamond
       # @return [Boolean] false
       def specific?
         true
+      end
+
+      def inspect
+        "(#{spec.inspect})"
       end
     end
 

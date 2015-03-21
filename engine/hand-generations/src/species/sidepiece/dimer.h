@@ -31,10 +31,9 @@ void Dimer::row(Atom **anchors, const L &lambda)
                 neighbours[1]->specByRole<Dimer>(22)
             };
 
-            auto lateralSpec = specsInNeighbour[0];
-            if (lateralSpec && specsInNeighbour[0] == specsInNeighbour[1])
+            if (specsInNeighbour[0] && specsInNeighbour[0] == specsInNeighbour[1])
             {
-                lambda(lateralSpec);
+                lambda(specsInNeighbour[0]);
             }
         }
     });

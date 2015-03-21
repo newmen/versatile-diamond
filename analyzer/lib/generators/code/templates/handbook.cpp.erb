@@ -20,21 +20,41 @@ const ushort Handbook::__hToActives[Handbook::__atomsNum] =
 {
     <%= deactives_to_actives %>
 };
+ushort Handbook::hToActivesFor(const Atom *atom)
+{
+    assert(atom->type() < __atomsNum);
+    return __hToActives[atom->type()];
+}
 
 const ushort Handbook::__hOnAtoms[Handbook::__atomsNum] =
 {
     <%= nums_on_terms[:H] %>
 };
+ushort Handbook::hydrogensFor(const Atom *atom)
+{
+    assert(atom->type() < __atomsNum);
+    return __hOnAtoms[atom->type()];
+}
 
 const ushort Handbook::__activesToH[Handbook::__atomsNum] =
 {
     <%= actives_to_deactives %>
 };
+ushort Handbook::activesToHFor(const Atom *atom)
+{
+    assert(atom->type() < __atomsNum);
+    return __activesToH[atom->type()];
+}
 
 const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
 {
     <%= nums_on_terms[:*] %>
 };
+ushort Handbook::activesFor(const Atom *atom)
+{
+    assert(atom->type() < __atomsNum);
+    return __activesOnAtoms[atom->type()];
+}
 <% end %>
 
 Handbook::DMC Handbook::__mc;
@@ -55,7 +75,7 @@ Handbook::SKeeper &Handbook::specificKeeper()
     return selectForThread(__specificKeepers);
 }
 
-<% if lateral_exists? %>
+<% if lateral_reactions_exists? %>
 Handbook::LKeeper Handbook::__lateralKeepers[THREADS_NUM];
 Handbook::LKeeper &Handbook::lateralKeeper()
 {
@@ -63,7 +83,7 @@ Handbook::LKeeper &Handbook::lateralKeeper()
 }
 <% end %>
 
-<% if amorph_exists? %>
+<% if amorph_phase_exists? %>
 PhaseBoundary Handbook::__amorph;
 PhaseBoundary &Handbook::amorph()
 {
@@ -71,15 +91,33 @@ PhaseBoundary &Handbook::amorph()
 }
 <% end %>
 
+const ushort Handbook::__regularAtomsNum = <%= regular_atoms_num %>;
+const ushort Handbook::__regularAtomsTypes[Handbook::__regularAtomsNum] =
+{
+    <%= regular_atoms_types %>
+};
+bool Handbook::isRegular(const Atom *atom)
+{
+    ushort type = atom->type();
+    assert(__atomsNum > type);
+    bool b = false;
+    for (int i = 0; i < __regularAtomsNum; ++i)
+    {
+        b = b || type == __regularAtomsTypes[i];
+    }
+
+    return b;
+}
+
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
 {
-    assert(atomsNum > complexType);
-    assert(atomsNum > typeOf);
-    return __atomsAccordance[atomsNum * complexType + typeOf];
+    assert(__atomsNum > complexType);
+    assert(__atomsNum > typeOf);
+    return __atomsAccordance[__atomsNum * complexType + typeOf];
 }
 
 ushort Handbook::specificate(ushort type)
 {
-    assert(atomsNum > type);
+    assert(__atomsNum > type);
     return __atomsSpecifing[type];
 }

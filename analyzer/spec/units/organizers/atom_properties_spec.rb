@@ -37,7 +37,7 @@ module VersatileDiamond
             end
 
             describe 'classification' do
-              subject { classifier.classify(target.parent) }
+              subject { classifier.classify(target.parents.first.original) }
               let(:hash) do
                 {
                   3 => ['_~-C%d<', 1],
@@ -116,6 +116,11 @@ module VersatileDiamond
         it { expect(eob).not_to eq(bob) }
         it { expect(eob).not_to eq(vob) }
         it { expect(vob).not_to eq(eob) }
+      end
+
+      describe '#eql?' do
+        it { expect(dimer_cl.eql?(dimer_cr)).to be_truthy }
+        it { expect(ab_ct.eql?(aib_ct)).to be_falsey }
       end
 
       describe '#include?' do
@@ -507,27 +512,20 @@ module VersatileDiamond
         end
       end
 
-      describe '#size' do
-        it { expect(ucm.size).to eq(5.05) }
-        it { expect(high_cm.size).to eq(6) }
+      describe '#<=>' do
+        it { expect(ucm <=> high_cm).to eq(-1) }
+        it { expect(bridge_ct <=> bridge_cr).to eq(-1) }
+        it { expect(ab_ct <=> aib_ct).to eq(-1) }
+        it { expect(aib_ct <=> eab_ct).to eq(-1) }
+        it { expect(hb_ct <=> hib_ct).to eq(-1) }
+        it { expect(hib_ct <=> ehb_ct).to eq(-1) }
+        it { expect(ib_cr <=> ab_cr).to eq(-1) }
 
-        it { expect(bridge_ct.size).to eq(6.5) }
-        it { expect(bridge_cr.size).to eq(7.5) }
-        it { expect(dimer_cr.size).to eq(7.5) }
-
-        it { expect(ab_ct.size).to eq(6.84) }
-        it { expect(aib_ct.size).to eq(6.97) }
-        it { expect(eab_ct.size).to eq(7.18) }
-
-        it { expect(hb_ct.size).to eq(6.84) }
-        it { expect(hib_ct.size).to eq(6.97) }
-        it { expect(ehb_ct.size).to eq(7.18) }
-        it { expect(ahb_ct.size).to eq(7.18) }
-
-        it { expect(ib_cr.size).to eq(7.63) }
-        it { expect(ab_cr.size).to eq(7.84) }
-        it { expect(hb_cr.size).to eq(7.84) }
-        it { expect(clb_cr.size).to eq(7.84) }
+        it { expect(bridge_cr <=> dimer_cr).to eq(0) }
+        it { expect(ab_ct <=> hb_ct).to eq(0) }
+        it { expect(ehb_ct <=> ahb_ct).to eq(0) }
+        it { expect(ab_cr <=> hb_cr).to eq(0) }
+        it { expect(hb_cr <=> clb_cr).to eq(0) }
       end
 
       describe '#to_s' do

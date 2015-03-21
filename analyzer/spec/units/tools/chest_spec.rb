@@ -17,7 +17,7 @@ module VersatileDiamond
       describe '#store' do
         it { expect(Chest.store(concept)).to eq(Chest) }
 
-        shared_examples_for 'check duplication' do
+        shared_examples_for :check_duplication do
           describe 'duplication' do
             before { Chest.store(*dups) }
             it { expect { Chest.store(*dups.map(&:dup)) }.
@@ -31,12 +31,12 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like 'check duplication' do
+        it_behaves_like :check_duplication do
           let(:dups) { o_dups }
           let(:another) { o_another }
         end
 
-        it_behaves_like 'check duplication' do
+        it_behaves_like :check_duplication do
           let(:dups) { m_dups }
           let(:another) { m_another }
         end
@@ -89,17 +89,17 @@ module VersatileDiamond
       end
 
       describe '#method_missing' do
-        shared_examples_for 'store and get concept' do
+        shared_examples_for :store_and_get_concept do
           before { Chest.store(*concepts) }
           it { expect(Chest.concept(*concepts.map(&:name))).
             to eq(concepts.last) }
         end
 
-        it_behaves_like 'store and get concept' do
+        it_behaves_like :store_and_get_concept do
           let(:concepts) { o_dups }
         end
 
-        it_behaves_like 'store and get concept' do
+        it_behaves_like :store_and_get_concept do
           let(:concepts) { m_dups }
         end
 

@@ -16,8 +16,6 @@ protected:
     static const ushort __roles[USED_ATOMS_NUM];
 
 public:
-    Atom *anchor() const override { return this->atom(__indexes[0]); }
-
     void store() override;
     void remove() override;
 

@@ -21,7 +21,6 @@ public:
 
     virtual ushort type() const = 0;
     virtual Atom *atom(ushort index) const = 0;
-    virtual Atom *anchor() const = 0;
 
     void keep();
 

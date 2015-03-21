@@ -66,11 +66,7 @@ module VersatileDiamond
           to be_falsey }
       end
 
-      it_behaves_like 'termination spec' do
-        subject { active_bond }
-      end
-
-      it_behaves_like 'visitable' do
+      it_behaves_like :termination_spec do
         subject { active_bond }
       end
     end

@@ -15,11 +15,10 @@ public:
 
     SierpinskiDrop(SpecificSpec *target) : Typical(target) {}
 
+    void doIt() override;
+
     double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
-
-protected:
-    void doItWith(Atom **atoms);
 };
 
 #endif // SIERPINSKI_DROP_H

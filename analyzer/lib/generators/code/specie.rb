@@ -6,9 +6,16 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
+        include SpeciesUser
+        include ReactionsUser
         extend Forwardable
 
-        attr_reader :spec, :original, :sequence
+        ANCHOR_ATOM_NAME = 'anchor'
+        ANCHOR_SPECIE_NAME = 'parent'
+
+        def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
+        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
+        attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator
         # @param [EngineCode] generator see at #super same argument
@@ -24,19 +31,23 @@ module VersatileDiamond
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config
             # file
-            @original, @symmetrics, @sequence = nil
+            @original, @symmetrics, @sequence, @detector, @essence = nil
           else
-            @original = OriginalSpecie.new(@generator, self)
-            @sequence = @generator.sequences_cacher.get(spec)
+            @original = OriginalSpecie.new(generator, self)
+            @sequence = generator.sequences_cacher.get(spec)
+            @essence = Essence.new(self)
           end
 
-          @_class_name, @_enum_name, @_used_iterators = nil
-          @_pure_essence = nil
+          @_class_name, @_enum_name, @_file_name, @_used_iterators, @_wheres = nil
+          @_find_builder = nil
         end
 
+        # Runs find symmetries algorithm by detector
+        # Should be called after specie created
         def find_symmetries!
           unless spec.simple?
-            @symmetrics = @generator.detectors_cacher.get(spec).symmetry_classes
+            @detector = generator.detectors_cacher.get(spec)
+            @symmetrics = @detector.symmetry_classes
           end
         end
 
@@ -59,29 +70,22 @@ module VersatileDiamond
           !@symmetrics.empty?
         end
 
-        PREF_METD_SEPS.each do |name, method, separator|
-          method_name = :"#{name}_name"
+        PREF_METD_SEPS.each do |prefix, method, separator|
+          method_name = :"#{prefix}_name"
           var_name = :"@_#{method_name}"
 
-          # Makes #{name} name for current specie
-          # @return [String] the result #{name} name
+          # Makes #{prefix} name for current specie
+          # @return [String] the result #{prefix} name
           define_method(method_name) do
             var = instance_variable_get(var_name)
             return var if var
 
             m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
             addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            addition = addition.public_send(method) if addition && name == 'file'
-            instance_variable_set(var_name, "#{m[1].public_send(method)}#{addition}")
+            addition = addition.public_send(method) if addition && prefix == 'file'
+            head = eval("m[1].#{method}")
+            instance_variable_set(var_name, "#{head}#{addition}")
           end
-        end
-
-        # Gets number of sceleton atoms used in specie and different from atoms of
-        # parent specie
-        #
-        # @return [Integer] the number of atoms
-        def atoms_num
-          spec.target.links.size
         end
 
         # Wraps combined base engine class by classes which works with handbook
@@ -89,27 +93,20 @@ module VersatileDiamond
         def wrapped_base_class_name
           base = "Base<#{wrapped_engine_class_name}, #{enum_name}, #{atoms_num}>"
           base = "Specific<#{base}>" if specific?
-          base = "Sidepiece<#{base}>" if lateral?
+          base = "Sidepiece<#{base}>" if sidepiece?
           base
-        end
-
-        # Provides classes list from which occur inheritance when template renders
-        # @return [Array] the array of cpp class names
-        # TODO: must be private
-        def base_classes
-          [base_class] + iterator_classes
-        end
-
-        # Gets outer template name of base class
-        # @return [String] the outer base class name
-        def outer_base_file
-          outer_base_class.underscore
         end
 
         # Checks that current specie is find algorithm root
         # @return [Boolean] is find algorithm root or not
         def find_root?
-          parents.size != 1
+          spec.source? || spec.complex?
+        end
+
+        # Checks that current specie is find algorithm drain
+        # @return [Boolean] is find algorithm drain or not
+        def find_endpoint?
+          non_root_children.empty?
         end
 
         # Gets a list of parents species full header file path of which will be
@@ -120,95 +117,46 @@ module VersatileDiamond
           find_root? ? [] : parents
         end
 
+        # Gets number of sceleton atoms used in specie and different from atoms of
+        # parent specie
+        #
+        # @return [Integer] the number of anchor atoms
+        def atoms_num
+          spec.anchors.size
+        end
+
+        # Delegates indexation of atom to atom sequence instance
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be indexed
+        # @return [Integer] an index of atom
+        def index(atom)
+          sequence.atom_index(atom)
+        end
+
+        # Delegates classification to atom classifier from engine code generator
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be classificated
+        # @return [Integer] an index of classificated atom
+        def role(atom)
+          generator.classifier.index(spec, atom)
+        end
+
         # The printable name which will be shown when debug calculation output
         # @return [String] the name of specie which used by user in DSL config file
         def print_name
           spec.name.to_s
         end
 
-        # Gets an essence of wrapped dependent spec but without reverse relations if
-        # related atoms is similar. The nearer to top of achchors sequence, have more
-        # relations in essence.
-        #
-        # @return [Hash] the links hash without reverse relations
+        # Gets a builder which makes cpp code for find current specie when simulating
+        # @return [Algorithm::SpecieFindBuilder] the find algorithm builder
         # TODO: must be private
-        def pure_essence
-          return @_pure_essence if @_pure_essence
-
-          # для кажого атома:
-          # группируем отношения по фейсу и диру
-          # одинаковые ненаправленные связи - отбрасываем
-          #
-          # для каждой группы:
-          # проверяем по кристаллу максимальное количество отношений такого рода, и
-          #   если количество соответствует - удаляем обратные связи, заодно удаляя из
-          #   хеша и атомы, если у них более не остаётся отношений
-          # если меньше - проверяем тип связанного атома, и если он соответствует
-          #   текущему атому - удаляем обратную связь, заодно удаляя из хеша и сам
-          #   атом, если у него более не остаётся отношений
-          # если больше - кидаем эксепшн
-          #
-          # между всеми атомами, что участвовали в отчистке удаляем позишины, и так же
-          # если у атома в таком случае не остаётся отношений - удаляем его из эссенции
-
-          clearing_atoms = Set.new
-          essence = spec.essence
-          clear_reverse = -> reverse_atom, from_atom do
-            clearing_atoms << from_atom << reverse_atom
-            essence = clear_reverse_from(essence, reverse_atom, from_atom)
-          end
-
-          # in accordance with the order
-          short_seq.each do |atom|
-            next unless essence[atom]
-
-            clear_reverse_relations = proc { |a, _| clear_reverse[a, atom] }
-
-            groups = essence[atom].group_by do |_, r|
-              { face: r.face, dir: r.dir }
-            end
-
-            amorph_rels = groups.delete({ face: nil, dir: nil })
-            if amorph_rels
-              amorph_rels.each(&clear_reverse_relations)
-              crystal_rels = essence[atom].select { |_, r| r.face && r.dir }
-              essence[atom] = crystal_rels + amorph_rels.uniq(&:first)
-            end
-
-            next unless atom.lattice
-            limits = atom.lattice.instance.relations_limit
-
-            groups.each do |rel_opts, group_rels|
-              if limits[rel_opts] < group_rels.size
-                raise 'Atom has too more relations'
-              elsif limits[rel_opts] == group_rels.size
-                group_rels.each(&clear_reverse_relations)
-              else
-                first_prop = Organizers::AtomProperties.new(spec, atom)
-                group_rels.each do |a, _|
-                  second_prop = Organizers::AtomProperties.new(spec, a)
-                  clear_reverse[a, atom] if first_prop == second_prop
-                end
-              end
-            end
-          end
-
-          @_pure_essence = clear_excess_positions(essence, clearing_atoms)
+        def find_builder
+          @_find_builder ||= Algorithm::SpecieFindBuilder.new(generator, self)
         end
-
-        # Gets anchors by which will be first check of find algorithm
-        # @return [Array] the major anchors of current specie
-        def central_anchors
-          tras = together_related_anchors
-          scas = tras.empty? ? root_related_anchors : tras
-          scas.empty? ? [major_anchors] : scas.map { |a| [a] }
-        end
-
-      protected
-
-        def_delegator :sequence, :atom_index
 
       private
+
+        def_delegator :sequence, :delta
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
@@ -219,7 +167,7 @@ module VersatileDiamond
         # Gets the parent specie classes
         # @return [Array] the array of parent specie class generators
         def parents
-          spec.parents.map(&method(:specie_class))
+          spec.parents.map { |parent| specie_class(parent.original) }
         end
 
         # Gets the children specie classes
@@ -238,42 +186,79 @@ module VersatileDiamond
         # Checks that specie have children
         # @return [Boolean] is parent or not
         def parent?
-          !spec.children.empty?
+          !children.empty?
         end
 
-        # Checks that specie have reactions
+        # Gets list of local reactions for current specie
+        # @return [Array] the list of local reactions
+        def local_reactions
+          if generator.handbook.ubiquitous_reactions_exists?
+            spec.reactions.select(&:local?).map(&method(:reaction_class))
+          else
+            []
+          end
+        end
+
+        # Gets list of typical reactions for current specie
+        # @return [Array] the list of typical reactions
+        def typical_reactions
+          all_reactions = spec.reactions.map(&method(:reaction_class))
+          (all_reactions - local_reactions - lateral_reactions).uniq
+        end
+
+        # Gets list of typical reactions which could be concretized by current specie
+        # @return [Array] the list of laterable typical reactions
+        def laterable_typical_reactions
+          parent_reactions = spec.theres.map(&:lateral_reaction).map(&:parent).compact
+          parent_reactions.reject(&:lateral?).uniq.map(&method(:reaction_class))
+        end
+
+        # Gets list of lateral reactions for current specie
+        # @return [Array] the list of lateral reactions
+        def lateral_reactions
+          spec.reactions.select(&:lateral?).map(&method(:reaction_class)).uniq
+        end
+
+        # Checks that ubiquitous reactions prestented and specie have local reactions
+        # @return [Boolean] is local or not
+        def local?
+          !local_reactions.empty?
+        end
+
+        # Checks that specie have typical reactions
         # @return [Boolean] is specific or not
         def specific?
-          !spec.reactions.empty?
+          !typical_reactions.empty?
         end
 
         # Checks that specie have there objects
-        # @return [Boolean] is lateral or not
-        def lateral?
+        # @return [Boolean] is lateral specie or not
+        def sidepiece?
           !spec.theres.empty?
         end
 
-        # Combines public inheritance string
-        # @param [Array] classes the array of string names of cpp classes
-        # @return [String] the string which could be used for inheritance
-        def public_inheritance(classes)
-          classes.map { |klass| "public #{klass}" }.join(', ')
+        # Gets the where object logic generators
+        # @return [Array] the list of where object logic generators
+        def wheres
+          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(generator, wh) }
         end
 
         # Makes base classes for current specie class instance
         # @return [String] combined base classes of engine framework
-        def base_class
+        def base_class_name
           symmetric? ? generalized_class_name : wrapped_base_class_name
         end
 
         # Combines base engine templated specie classes
         # @return [String] unwrapped combined base engine template classes
         def base_engine_class_name
-          base_class = parent? ? 'ParentSpec' : 'BaseSpec'
-          parents_num = parents.size
-          parents_num == 0 ?
-            "SourceSpec<#{base_class}, #{atoms_num}>" :
+          base_class = parent? || symmetric? ? 'ParentSpec' : 'BaseSpec'
+          parents_num = spec.parents.size
+          if parents_num == 0
+            "SourceSpec<#{base_class}, #{atoms_num}>"
+          else
             "DependentSpec<#{base_class}, #{parents_num}>"
+          end
         end
 
         # Checks that specie contain additional atoms and if truth then wraps base
@@ -281,64 +266,50 @@ module VersatileDiamond
         #
         # @return [String] the wrapped or not base engine class name
         def wrapped_engine_class_name
-          base_class = base_engine_class_name
-          delta = @sequence.delta
-          delta > 0 ? "AdditionalAtomsWrapper<#{base_class}, #{delta}>" : base_class
+          base = base_engine_class_name
+          base = "AdditionalAtomsWrapper<#{base}, #{delta}>" if delta > 0
+
+          if local?
+            local_reactions.reduce(base) do |acc, reaction|
+              "LocalableRole<#{acc}, #{index(reaction.atom_of_complex)}>"
+            end
+          else
+            base
+          end
         end
 
         # Gets outer template name of base class
         # @return [String] the outer base class name
-        def outer_base_class
-          lateral? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
+        def outer_base_class_name
+          sidepiece? ? 'Sidepiece' : (specific? ? 'Specific' : 'Base')
         end
 
         # Makes string by which base constructor will be called
         # @return [String] the string with calling base constructor
         def outer_base_call
-          params = constructor_arguments.map(&:last).join(', ')
-          "#{outer_base_class}(#{params})"
+          real_outer_class_name = symmetric? ? 'Symmetric' : outer_base_class_name
+          "#{real_outer_class_name}(#{constructor_variables_str})"
         end
 
         # Gets the collection of used crystal atom iterator classes
         # @return [Array] used crystal atom iterators
+        # @override
         def used_iterators
           return @_used_iterators if @_used_iterators
 
-          rest_links = spec.target.links
-          anchors = rest_links.keys
-          lattices = rest_links.reduce(Set.new) do |acc, (atom, list)|
-            next acc if list.empty? || !atom.lattice
-
-            crystal_nbr_exist = list.map(&:first).any? do |a|
-              a.lattice && anchors.include?(a)
+          lattices =
+            @essence.cut_links.each_with_object(Set.new) do |(atom, rels), acc|
+              if !rels.empty? && atom.lattice && rels.map(&:first).any?(&:lattice)
+                acc << atom.lattice
+              end
             end
 
-            crystal_nbr_exist ? (acc << atom.lattice) : acc
-          end
-
-          @_used_iterators = lattices.to_a.compact.map do |lattice|
-            @generator.lattice_class(lattice).iterator
-          end
+          @_used_iterators = translate_to_iterators(lattices)
         end
 
-        # Combines used iterators for using them as parent classes
-        # @return [Array] the array that contain parent class names from which
-        #   specie class instance will be inheritance in source code
-        def iterator_classes
-          used_iterators.map(&:class_name)
-        end
-
-        # Gets a list of used iterator files
-        # @return [Array] the array of file names
-        def iterator_files
-          used_iterators.map(&:file_name)
-        end
-
-        # Gets a list of species full header file path of which will be included in
-        # header file of current specie
-        #
-        # @return [Array] the array of species which should be included in header file
-        def header_species_dependencies
+        # Gets a list of code elements each of which uses in header file
+        # @return [Array] the array of using objects in header file
+        def head_used_objects
           if symmetric?
             [@original] + @symmetrics
           else
@@ -350,8 +321,9 @@ module VersatileDiamond
         # source file of current specie
         #
         # @return [Array] the array of species which should be included in source file
-        def source_species_dependencies
-          ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children
+        def body_include_objects
+          ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children +
+            local_reactions + typical_reactions + lateral_reactions
         end
 
         # Gets classes from which current code instance will be inherited if specie is
@@ -361,18 +333,28 @@ module VersatileDiamond
         #   and symmetric instances
         def generalized_class_name
           original_class = @original.class_name
-          symmetric_classes = @symmetrics.map(&:class_name).join(', ')
-          "Symmetric<#{original_class}, #{symmetric_classes}>"
+          symmetric_class_names = @symmetrics.map(&:class_name).join(', ')
+          "Symmetric<#{original_class}, #{symmetric_class_names}>"
         end
 
         # Makes arguments string for static find method
         # @return [String] the arguments string of find method
         def find_arguments_str
-          find_root? ? 'Atom *anchor' : "#{parents.first.class_name} *parent"
+          if find_root?
+            "Atom *#{ANCHOR_ATOM_NAME}"
+          else
+            "#{parents.first.class_name} *#{ANCHOR_SPECIE_NAME}"
+          end
+        end
+
+        # Makes string with constructor signature variables
+        # @return [String] the string with constructor variables sequence
+        def constructor_variables_str
+          constructor_arguments.map(&:last).join(', ')
         end
 
         # Makes arguments string for constructor method
-        # @return [Array] the arguments string of constructor method
+        # @return [String] the arguments string of constructor method
         def constructor_arguments_str
           constructor_arguments.map(&:join).join(', ')
         end
@@ -380,7 +362,10 @@ module VersatileDiamond
         # Makes arguments for constructor method
         # @return [Array] the arguments of constructor method
         def constructor_arguments
-          [major_constructor_argument]
+          additional_arguments = additional_constructor_argument
+          arguments = []
+          arguments << additional_arguments unless additional_arguments.empty?
+          arguments << major_constructor_argument
         end
 
         # Selects major constructor argument by number of specie parents
@@ -393,6 +378,21 @@ module VersatileDiamond
             ['ParentSpec *', 'parent']
           else # parents_num > 1
             ['ParentSpec **', 'parents']
+          end
+        end
+
+        # Checks that if specie has addition atoms then them should be plased to
+        # constructor signature
+        #
+        # @return [Array] if addition atoms is not presented then empty array returned,
+        #   and the first item is type and the second is variable name overwise
+        def additional_constructor_argument
+          if delta == 0
+            []
+          elsif delta == 1
+            ['Atom *', 'additionalAtom']
+          else # delta > 1
+            ['Atom **', 'additionalAtoms']
           end
         end
 
@@ -414,22 +414,14 @@ module VersatileDiamond
 
         # Gets sorted anchors from atoms sequence
         # @return [Array] the array of anchor atoms
-        def short_seq
-          @sequence.short
-        end
-
-        # Delegates classification to atom classifier from engine code generator
-        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
-        #   atom which will be classificated
-        # @return [Integer] an index of classificated atom
-        def role(atom)
-          @generator.classifier.index(spec, atom)
+        def ordered_anchors
+          sequence.short
         end
 
         # Gets a sequence of indexes of anchor atoms
         # @return [String] the sequence of indexes joined by comma
         def indexes_sequence
-          short_seq.map(&method(:atom_index)).join(', ')
+          ordered_anchors.map(&method(:index)).join(', ')
         end
 
         # Gets a list of anchor atoms roles where each role is atom properties index
@@ -437,152 +429,13 @@ module VersatileDiamond
         #
         # @return [Array] the list of anchors roles
         def roles_sequence
-          short_seq.map(&method(:role)).join(', ')
+          ordered_anchors.map(&method(:role)).join(', ')
         end
 
-        # Filters major anchors from atom sequence
-        # @return [Array] the realy major anchors of current specie
-        def major_anchors
-          mas = @sequence.major_atoms
-          find_root? ? [mas.first] : mas
-        end
-
-        # Gets a cpp code that correspond to defining anchor(s) variable(s)
-        # @return [String] the string of cpp code
-        def define_anchor_variables
-          mas = @sequence.major_atoms
-          if mas.size == 1
-            'Atom *anchor = parent->atom(0)'
-          else
-            items = mas.map { |a| "parent->atom(#{atom_index(a)})" }.join(', ')
-            "Atom *anchors[#{mas.size}] = { #{items} };"
-          end
-        end
-
-        # Gets anchors which have relations
-        # @return [Array] the array of atoms with relations in pure essence
-        def bonded_anchors
-          pure_essence.reject { |_, links| links.empty? }.map(&:first)
-        end
-
-        # Selects atoms from pure essence which have mutual relations
-        # @return [Array] the array of together related atoms
-        def together_related_anchors
-          bonded_anchors.select do |atom|
-            pels = pure_essence[atom]
-            pels && pels.any? do |a, _|
-              rels = pure_essence[a]
-              rels && rels.any? { |q, _| q == a }
-            end
-          end
-        end
-
-        # Selects atoms with relations to which not related to by any other atoms
-        # @return [Array] the array of root related atoms
-        def root_related_anchors
-          roots = bonded_anchors.reject do |atom|
-            pels = pure_essence[atom]
-            pels && pels.any? { |a, _| a == atom }
-          end
-          roots.select do |atom|
-            pels = pure_essence[atom]
-            pels && !pels.empty?
-          end
-        end
-
-        # Gets central anchors zipped with else prefixes for many ways condition
-        # @return [Array] major anchors zipped with else prefixes
-        def central_anchors_with_elses
-          mas = central_anchors
-          elses = [''] + ['else '] * (mas.size - 1)
-          mas.zip(elses)
-        end
-
-        # Makes a condition which will be placed to cpp code template
-        # @param [Array] items which zipped with variable names and iterates by block
-        # @param [String] var_name the name of variable which also will be iterated
-        # @param [String] operator which use for combine condition
-        # @yield [String, Object] the block should returns cpp code method call
-        # @return [String] the cpp code string for condition in template
-        def combine_condition(items, var_name, operator, &block)
-          vars = items.size == 1 ?
-            [var_name] :
-            items.size.times.map { |i| "#{var_name}s[#{i}]" }
-
-          vars.zip(items).map(&block).join(" #{operator} ")
-        end
-
-        # Gets a cpp code string that contain call a method for check atom role
-        # @param [Array] atoms which role will be checked in code
-        # @param [String] var_name the name of variable for which method will be called
-        # @return [String] the string with cpp condition
-        def check_role_condition(atoms, var_name = 'anchor')
-          combine_condition(atoms, var_name, '&&') do |var, atom|
-            "#{var}->is(#{role(atom)})"
-          end
-        end
-
-        # Gets a cpp code string that contain call a method for check existing current
-        # specie in atom
-        #
-        # @param [Array] atoms which role will be checked in code
-        # @param [String] var_name the name of variable for which method will be called
-        # @return [String] the string with cpp condition
-        def check_specie_condition(atoms, var_name = 'anchor')
-          method_name = non_root_children.empty? ? 'hasRole' : 'checkAndFind'
-          combine_condition(atoms, var_name, '||') do |var, atom|
-            "!#{var}->#{method_name}(#{enum_name}, #{role(atom)})"
-          end
-        end
-
-        # Clears reverse relations from links hash between reverse_atom and from_atom.
-        # If revese_atom has no relations after clearing then reverse_atom removes too.
-        #
-        # @param [Hash] links which will be cleared
-        # @param [Concepts::Atom] reverse_atom the atom whose relations will be erased
-        # @param [Concepts::Atom] from_atom the atom to which relations will be erased
-        # @return [Hash] the links without correspond relations and reverse_atom if it
-        #   necessary
-        def clear_reverse_from(links, reverse_atom, from_atom)
-          reject_proc = proc { |a, _| a == from_atom }
-          clear_links(links, reject_proc) { |a| a == reverse_atom }
-        end
-
-        # Clears position relations which are between atom from clearing_atoms
-        # @param [Hash] links which will be cleared
-        # @param [Set] clearing_atoms the atoms between which positions will be erased
-        # @return [Hash] the links without erased positions
-        def clear_excess_positions(links, clearing_atoms)
-          # there is could be only realy bonds and positions
-          reject_proc = proc { |a, r| !r.bond? && clearing_atoms.include?(a) }
-          clear_links(links, reject_proc) { |a| clearing_atoms.include?(a) }
-        end
-
-        # Clears relations from links hash where each purging relatoins list selected
-        # by condition lambda and purification doing by reject_proc
-        #
-        # @param [Hash] links which will be cleared
-        # @param [Proc] reject_proc the function of two arguments which doing for
-        #   reject excess relations
-        # @yield [Atom] by it condition checks that erasing should to be
-        # @return [Hash] the links without erased relations
-        def clear_links(links, reject_proc, &condition_proc)
-          links.each_with_object({}) do |(atom, rels), result|
-            if condition_proc[atom]
-              new_rels = rels.reject(&reject_proc)
-              result[atom] = new_rels unless new_rels.empty?
-            else
-              result[atom] = rels
-            end
-          end
-        end
-
-        # Gets the specie class code generator
-        # @param [Organizers::DependentSpec] dept_spec dependent specie the code
-        #   generator of which will be got
-        # @return [Specie]
-        def specie_class(dept_spec)
-          @generator.specie_class(dept_spec.name)
+        # Gets a cpp code by which specie will be found when simulation doing
+        # @return [String] the multilined string with cpp code
+        def find_algorithm
+          find_builder.build
         end
       end
 

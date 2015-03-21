@@ -4,8 +4,6 @@ module VersatileDiamond
     # Represents a some "termination" spec which can be involved to ubiquitous
     # reaction
     class TerminationSpec
-      include Visitors::Visitable
-
       # Termination spec cannot belong to the gas phase
       # @return [Boolean] false
       def gas?
@@ -24,10 +22,11 @@ module VersatileDiamond
         false
       end
 
-      # Termination spec has size equal 1
-      # @return [Integer] 1
-      def size
-        1
+      # Compares with an other spec
+      # @param [TerminationSpec | SpecificSpec] other with which comparison
+      # @return [Boolean] is specs same or not
+      def same?(other)
+        self == other
       end
     end
 

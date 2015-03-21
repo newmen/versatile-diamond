@@ -36,21 +36,19 @@ module VersatileDiamond
             describe 'forward' do
               # with default source and products sequence
               let(:changed) do
-                [[[spec1, spec3],
-                  [[activated_cd, cd1]]],
-                [[spec2, spec3],
-                  [[activated_cd0, cd2]]]]
+                [
+                  [[spec1, spec3], [[activated_cd, cd1]]],
+                  [[spec2, spec3], [[activated_cd0, cd2]]]
+                ]
               end
               let(:full) do
-                [[[spec1, spec3], [
-                  [activated_cd, cd1], [n, n1]
-                ]],
-                [[spec2, spec3], [
-                  [activated_cd0, cd2], [o, o1]
-                ]]]
+                [
+                  [[spec1, spec3], [[activated_cd, cd1], [n, n1]]],
+                  [[spec2, spec3], [[activated_cd0, cd2], [o, o1]]]
+                ]
               end
 
-              it_behaves_like 'check mapping result'
+              it_behaves_like :check_mapping_result
             end
 
             describe 'reverse' do
@@ -58,21 +56,19 @@ module VersatileDiamond
               let(:source) { [spec3] }
               let(:products) { [spec1, spec2] }
               let(:changed) do
-                [[[spec3, spec1],
-                  [[cd1, activated_cd]]],
-                [[spec3, spec2],
-                  [[cd2, activated_cd0]]]]
+                [
+                  [[spec3, spec1], [[cd1, activated_cd]]],
+                  [[spec3, spec2], [[cd2, activated_cd0]]]
+                ]
               end
               let(:full) do
-                [[[spec3, spec1], [
-                  [cd1, activated_cd], [n1, n]
-                ]],
-                [[spec3, spec2], [
-                  [cd2, activated_cd0], [o1, o]
-                ]]]
+                [
+                  [[spec3, spec1], [[cd1, activated_cd], [n1, n]]],
+                  [[spec3, spec2], [[cd2, activated_cd0], [o1, o]]]
+                ]
               end
 
-              it_behaves_like 'check mapping result'
+              it_behaves_like :check_mapping_result
             end
           end
 
@@ -98,21 +94,19 @@ module VersatileDiamond
             end
 
             let(:changed) do
-              [[[spec1, spec3],
-                [[activated_cd, cd]]],
-              [[spec2, spec3],
-                [[activated_cd, cd1]]]]
+              [
+                [[spec1, spec3], [[activated_cd, cd]]],
+                [[spec2, spec3], [[activated_cd, cd1]]]
+              ]
             end
             let(:full) do
-              [[[spec1, spec3], [
-                [activated_cd, cd], [n, n]
-              ]],
-              [[spec2, spec3], [
-                [activated_cd, cd1], [o, o]
-              ]]]
+              [
+                [[spec1, spec3], [[activated_cd, cd], [n, n]]],
+                [[spec2, spec3], [[activated_cd, cd1], [o, o]]]
+              ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
         end
 
@@ -132,9 +126,9 @@ module VersatileDiamond
               [
                 [[spec1, spec3], [
                   [spec1.atom(:cb), spec3.atom(:cr)],
-                  [spec1.atom(:cm), spec3.atom(:cm)],
                   [spec1.atom(:cl), spec3.atom(:crb)],
                   [spec1.atom(:cr), spec3.atom(:_cr0)],
+                  [spec1.atom(:cm), spec3.atom(:cm)],
                 ]],
                 [[spec2, spec3], [
                   [spec2.atom(:ct), spec3.atom(:cl)],
@@ -144,7 +138,7 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
 
           describe 'high bridge with bridge' do
@@ -180,7 +174,7 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
           end
 
           describe 'methyl on extended bridge' do
@@ -223,7 +217,54 @@ module VersatileDiamond
               ]
             end
 
-            it_behaves_like 'check mapping result'
+            it_behaves_like :check_mapping_result
+          end
+
+          describe 'migration methyl to gap' do
+            let(:spec1) { extra_activated_methyl_on_bridge }
+            let(:spec2) { right_activated_bridge.dup }
+            let(:spec3) { right_activated_bridge.dup }
+            let(:spec4) { horizont_extended_dimer }
+
+            let(:source) { [spec1, spec2, spec3] }
+            let(:products) { [spec4] }
+
+            let(:changed) do
+              [
+                [[spec1, spec4], [
+                  [spec1.atom(:cm), spec4.atom(:cr)],
+                  [spec1.atom(:cb), spec4.atom(:cl)],
+                ]],
+                [[spec2, spec4], [
+                  [spec2.atom(:cr), spec4.atom(:crb)],
+                ]],
+                [[spec3, spec4], [
+                  [spec3.atom(:cr), spec4.atom(:_cr0)],
+                ]]
+              ]
+            end
+            let(:full) do
+              [
+                [[spec1, spec4], [
+                  [spec1.atom(:cm), spec4.atom(:cr)],
+                  [spec1.atom(:cb), spec4.atom(:cl)],
+                  [spec1.atom(:cl), spec4.atom(:_cl0)],
+                  [spec1.atom(:cr), spec4.atom(:_cr1)],
+                ]],
+                [[spec2, spec4], [
+                  [spec2.atom(:cr), spec4.atom(:crb)],
+                  [spec2.atom(:ct), spec4.atom(:clht)],
+                  [spec2.atom(:cl), spec4.atom(:clhb)],
+                ]],
+                [[spec3, spec4], [
+                  [spec3.atom(:cr), spec4.atom(:_cr0)],
+                  [spec3.atom(:ct), spec4.atom(:crht)],
+                  [spec3.atom(:cl), spec4.atom(:crhb)],
+                ]],
+              ]
+            end
+
+            it_behaves_like :check_mapping_result
           end
         end
       end

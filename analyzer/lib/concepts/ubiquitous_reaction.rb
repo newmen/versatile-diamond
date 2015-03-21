@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Instance of it class contain source and product specs. Also contained
@@ -7,7 +9,6 @@ module VersatileDiamond
     # corresponding instance assertion methods.
     class UbiquitousReaction < Named
       include Modules::ListsComparer
-      include Visitors::Visitable
 
       # Exception class for cases when property already setted
       class AlreadySet < Errors::Base
@@ -47,10 +48,9 @@ module VersatileDiamond
       # @param [Array] source the array of source specs
       # @param [Array] products the array of product specs
       def initialize(type, name, source, products)
-        super(name)
+        super(name.to_s.gsub(/\(|\)|-/, ' ').to_sym)
         @type = type
-        @source, @products = source, products
-        @source.sort! { |a, b| b.size <=> a.size }
+        @source, @products = [source, products].map(&:dup)
         @simple_source, @simple_products = nil
 
         @reverse = nil
@@ -103,12 +103,19 @@ module VersatileDiamond
         @source.each(&block)
       end
 
+      # Checks that passed spec is used in current reaction
+      # @param [SpecificSpec] spec which will be checked
+      # @return [Boolan] is used similar source spec or not
+      def use_similar_source?(spec)
+        @source.any? { |s| s == spec }
+      end
+
       # Swaps source spec to another same source spec
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       def swap_source(from, to)
-        @source.delete(from)
-        @source << to
+        idx = @source.index(from)
+        @source[idx] = to
       end
 
       # Compares two reactions and their source and products are same then
@@ -127,25 +134,10 @@ module VersatileDiamond
         rate == 0 ? 0 : Tools::Config.rate(self)
       end
 
-      # Counts size of all source specs
-      # @return [Integer] number of surface atoms used in reaction
-      def size
-        @source.map(&:size).reduce(:+)
-      end
-
       # Gets number of changed atoms
       # @return [Integer] 1
-      def changes_size
+      def changes_num
         1
-      end
-
-      # Also visit target source spec
-      # @param [Visitors::Visitor] visitor the object that will accumulate
-      #   state of current instance
-      # @override
-      def visit(visitor)
-        super
-        @source.each { |spec| spec.visit(visitor) }
       end
 
       def to_s

@@ -16,6 +16,44 @@ void DimerDrop::find(DimerCRiCLi *target)
     create<DimerDrop>(target);
 }
 
+void DimerDrop::checkLaterals(Dimer *sidepiece)
+{
+    Atom *atoms[2] = { sidepiece->atom(0), sidepiece->atom(3) };
+    eachNeighbours<2>(atoms, &Diamond::cross_100, [&](Atom **neighbours) {
+        if (neighbours[0]->is(20) && neighbours[1]->is(20))
+        {
+            SpecificSpec *targets[2] = {
+                neighbours[0]->specByRole<DimerCRiCLi>(20),
+                neighbours[1]->specByRole<DimerCRiCLi>(20)
+            };
+
+            if (targets[0] && targets[0] == targets[1])
+            {
+                SpecificSpec *target = targets[0];
+                {
+                    auto neighbourReaction = target->checkoutReaction<DimerDropAtEnd>();
+                    if (neighbourReaction)
+                    {
+                        if (!sidepiece->haveReaction(neighbourReaction))
+                        {
+                            neighbourReaction->concretize<DimerDropInMiddle>(sidepiece);
+                        }
+                        return;
+                    }
+                }
+                {
+                    auto neighbourReaction = target->checkoutReaction<DimerDrop>();
+                    if (neighbourReaction)
+                    {
+                        neighbourReaction->concretize<DimerDropAtEnd>(sidepiece);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+}
+
 void DimerDrop::doIt()
 {
     assert(target()->type() == DimerCRiCLi::ID);

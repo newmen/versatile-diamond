@@ -6,7 +6,6 @@ module VersatileDiamond
     describe DependentReaction, type: :organizer do
       subject { dept_dimer_formation }
       let(:target) { dimer_formation }
-      let(:ai_bridge) { activated_incoherent_bridge }
       let(:duplicate) do
         DependentTypicalReaction.new(dimer_formation.duplicate('dup'))
       end
@@ -36,34 +35,25 @@ module VersatileDiamond
         it { subject.full_rate == target.full_rate }
       end
 
-      describe '#size' do
-        it { subject.size == target.size }
-      end
-
       describe '#each_source' do
         it { expect(subject.each_source).to be_a(Enumerable) }
 
-        it { expect(subject.each_source.to_a).
-          to match_array([activated_bridge, ai_bridge]) }
-
+        it { expect(subject.each_source.to_a).to match_array(df_source) }
         it { expect(dept_methyl_deactivation.each_source.to_a).
-          to match_array([dm_source.first]) }
+          to match_array(dm_source) }
       end
 
       describe '#swap_source' do
         let(:source) { subject.each_source.to_a }
-        let(:bridge_dup) { activated_bridge.dup }
+        let(:ab) { df_source.first }
+        let(:aib) { df_source.last }
+        let(:bridge_dup) { ab.dup }
 
-        before(:each) { subject.swap_source(activated_bridge, bridge_dup) }
+        before(:each) { subject.swap_source(ab, bridge_dup) }
 
-        it { expect(source).not_to include(activated_bridge) }
+        it { expect(source).not_to include(ab) }
         it { expect(source).to include(bridge_dup) }
-        it { expect(source).to include(ai_bridge) }
-      end
-
-      describe '#used_keynames_of' do
-        it { expect(subject.used_keynames_of(activated_bridge)).to eq([:ct]) }
-        it { expect(subject.used_keynames_of(ai_bridge)).to eq([:ct]) }
+        it { expect(source).to include(aib) }
       end
 
       describe '#same?' do
@@ -83,11 +73,22 @@ module VersatileDiamond
 
       describe '#local?' do
         describe 'methyl activation' do
-          it { expect(dept_methyl_activation.local?).to be_truthy }
+          subject { dept_methyl_activation }
+          let(:ubiq_react) { dept_surface_activation }
+          let(:term_cache) { make_cache([dept_adsorbed_h]) }
+          let(:non_term_cache) do
+            make_cache([dept_methyl_on_bridge, dept_hydrogen_ion])
+          end
+
+          before do
+            ubiq_react.organize_dependencies!([subject], term_cache, non_term_cache)
+          end
+
+          it { expect(subject.local?).to be_truthy }
         end
 
         describe 'dimer formation' do
-          it { expect(dept_dimer_formation.local?).to be_falsey }
+          it { expect(subject.local?).to be_falsey }
         end
       end
 

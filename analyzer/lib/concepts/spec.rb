@@ -4,9 +4,9 @@ module VersatileDiamond
     # The class instance contains atoms and bonds between them.
     # @abstract
     class Spec < Named
-      include Visitors::Visitable
-      include Linker
+      include Modules::RelationBetweenChecker
       include BondsCounter
+      include Linker
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
@@ -25,6 +25,9 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
+
+        @_keynames_to_atoms = nil
+        @_is_extendable = nil
       end
 
       # If spec is simple (H2 or HCl for example) then true or false overwise
@@ -44,7 +47,8 @@ module VersatileDiamond
       # @param [Atom] atom the atom for which keyname will be found
       # @return [Symbol] the keyname of atom
       def keyname(atom)
-        @atoms.invert[atom]
+        @_keynames_to_atoms ||= @atoms.invert
+        @_keynames_to_atoms[atom]
       end
 
       # Apends atom to spec instance
@@ -75,9 +79,12 @@ module VersatileDiamond
       def adsorb(other, &block)
         duplicates = other.duplicate_atoms_with_keynames
         duplicates.each do |keyname, atom|
-          current_keyname = block_given? ?
-            block[keyname, generate_keyname(keyname), atom] :
-            (@atoms[keyname] ? generate_keyname(keyname) : keyname)
+          current_keyname =
+            if block_given?
+              block[keyname, generate_keyname(keyname), atom]
+            else
+              @atoms[keyname] ? generate_keyname(keyname) : keyname
+            end
 
           # if block was given and returned keyname or block is not given
           describe_atom(current_keyname, atom) if current_keyname
@@ -138,34 +145,24 @@ module VersatileDiamond
         if simple?
           2
         else
-          atoms = atom_instances
-          internal_bonds = atoms.reduce(0) do |acc, atom|
-            acc + internal_bonds_for(atom)
-          end
-          atoms.map(&:valence).reduce(:+) - internal_bonds
+          atom_instances.reduce(0) { |acc, atom| acc + external_bonds_for(atom) }
         end
       end
 
       # Checks for atom-references
       # @return [Boolean] true if atom-reference exist or false overwise
       def extendable?
-        @extendable ||= atom_instances.any?(&:reference?)
+        @_is_extendable ||= atom_instances.any?(&:reference?)
       end
 
       # Duplicates current spec and extend it duplicate by atom-references
       # @return [Spec] extended spec
       # TODO: necessary to consider crystal lattice
       def extend_by_references
-        extended_name = "extended_#{@name}".to_sym
-        begin # caching
-          Tools::Chest.spec(extended_name).dup
-        rescue Tools::Chest::KeyNameError
-          extendable_spec = self.class.new(extended_name)
-          extendable_spec.adsorb(self)
-          extendable_spec.extend!
-          Tools::Chest.store(extendable_spec)
-          extendable_spec
-        end
+        extendable_spec = self.class.new("extended_#{@name}".to_sym)
+        extendable_spec.adsorb(self)
+        extendable_spec.extend!
+        extendable_spec
       end
 
       # Checks termination atom at the inner atom which belongs to current spec
@@ -181,22 +178,12 @@ module VersatileDiamond
       # @param [Spec | SpecificSpec] other the comparable spec
       # @return [Boolean] same or not
       def same?(other)
-        return false unless links.size == other.links.size
-        Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
-      end
-
-      # Gets a number of atoms
-      # @return size of current spec
-      def size
-        atom_instances.size
-      end
-
-      # Also visit a parent
-      # @param [Visitors::Visitor] visitor the accumulator of states
-      # @override
-      def visit(visitor)
-        super
-        parent.visit(visitor) if parent
+        if other.is_a?(VeiledSpec)
+          other.same?(self)
+        else
+          equal?(other) || (links.size == other.links.size &&
+            Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true))
+        end
       end
 
       def to_s(instance_atoms = @atoms, instance_links = @links)
@@ -233,7 +220,6 @@ module VersatileDiamond
       # Extends spec by atom-references
       def extend!
         atom_references = @atoms.select { |_, atom| atom.reference? }
-
         atom_references.each do |original_keyname, ref|
           adsorb(ref.spec) do |keyname, generated_keyname, atom|
             if keyname == ref.keyname
@@ -252,8 +238,6 @@ module VersatileDiamond
             end
           end
         end
-
-        reset_caches
       end
 
     private
@@ -264,9 +248,7 @@ module VersatileDiamond
         @links.keys
       end
 
-      # Adsorbs all links from another spec with exchange atoms to they
-      #   duplicates
-      #
+      # Adsorbs all links from another spec with exchange atoms to they duplicates
       # @param [Spec] other_spec the other spec links of which will be adsrobed
       # @param [Hash] duplicates the hash of duplicates which same as was
       #   returned from #duplicate_atoms_with_keynames method
@@ -303,11 +285,6 @@ module VersatileDiamond
           i += 1
         end while atom(keyname)
         keyname
-      end
-
-      # Resets internal caches
-      def reset_caches
-        @keynames_to_atoms = nil
       end
     end
 

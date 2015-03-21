@@ -42,7 +42,7 @@ module VersatileDiamond
         # Interpret #{dir} activation energy line
         # @param [Float] value the value of activation energy
         # @param [String] dimension the dimension of activation energy
-        define_method("#{dir}_activation") do |value, dimension = nil|
+        define_method(:"#{dir}_activation") do |value, dimension = nil|
           send(dir).activation =
             Tools::Dimension.convert_energy(value, dimension)
         end
@@ -50,7 +50,7 @@ module VersatileDiamond
         # Interpret #{dir} rate line
         # @param [Float] value the value of pre-exponencial factor
         # @param [String] dimension the dimension of rate
-        define_method("#{dir}_rate") do |value, dimension = nil|
+        define_method(:"#{dir}_rate") do |value, dimension = nil|
           gases_num = send(dir).gases_num
           send(dir).rate = Tools::Dimension.convert_rate(
             eval_value_if_string(value, gases_num), gases_num, dimension)
@@ -58,7 +58,7 @@ module VersatileDiamond
 
         # Interpret #{dir} power of temperature line
         # @param [Float] value the value of temperature power
-        define_method("#{dir}_tpow") do |value|
+        define_method(:"#{dir}_tpow") do |value|
           send(dir).temp_power = value.to_f
         end
       end
@@ -81,6 +81,9 @@ module VersatileDiamond
           @reverse_was_stored = true
         end
         forward.reverse
+      rescue Concepts::LateralReaction::ReversingError => e
+        syntax_error('lateral_reaction.amorph_reverse_atom',
+          spec: e.spec.name, atom: e.keyname)
       end
 
       # Evaluate value if it passed as formula

@@ -4,280 +4,144 @@ module VersatileDiamond
   module Organizers
 
     describe DependentSpecificSpec, type: :organizer do
-      describe 'multi children spec' do
-        let(:parent) { dept_dimer }
-        let(:child) { dept_activated_dimer }
+      it_behaves_like :minuend do
+        subject { dept_activated_methyl_on_bridge }
+        let(:bigger) { dept_activated_methyl_on_incoherent_bridge }
 
-        it_behaves_like :multi_children
-        it_behaves_like :wrapped_spec
+        [:cm, :cb, :cr, :cl].each do |kn|
+          let(kn) { activated_methyl_on_bridge.atom(kn) }
+        end
 
-        describe '#remove_child' do
-          before do
-            child.store_parent(parent)
-            parent.remove_child(child)
-          end
-
-          it { expect(parent.children).to be_empty }
-          it { expect(child.parent).to eq(parent) }
+        let(:atom) { cm }
+        let(:atom_relations) { [free_bond, active_bond] }
+        let(:clean_links) do
+          {
+            cm => [[cb, free_bond]],
+            cb => [[cm, free_bond], [cr, bond_110_cross], [cl, bond_110_cross]],
+            cr => [[cb, bond_110_front]],
+            cl => [[cb, bond_110_front]]
+          }
         end
       end
 
-      it_behaves_like :residual_container do
+      it_behaves_like :wrapped_spec do
         subject { dept_activated_methyl_on_bridge }
-        let(:subtrahend) { dept_methyl_on_bridge }
+        let(:child) { dept_activated_methyl_on_incoherent_bridge }
       end
 
-      subject { dept_activated_dimer }
+      it_behaves_like :count_atoms_and_relations_and_parents do
+        subject { dept_activated_methyl_on_incoherent_bridge - dept_bridge_base_dup }
+        let(:atoms_num) { 2 }
+        let(:relations_num) { 6 }
+        let(:parents_num) { 1 }
+
+        let(:links) { subject.links }
+        it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
+        it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
+      end
+
+      it_behaves_like :parents_with_twins do
+        subject { dept_activated_methyl_on_incoherent_bridge }
+        let(:others) { [dept_methyl_on_bridge_base, dept_activated_methyl_on_bridge] }
+        let(:atom) { activated_methyl_on_incoherent_bridge.atom(:cb) }
+        let(:parents_with_twins) do
+          [
+            [dept_activated_methyl_on_bridge, activated_methyl_on_bridge.atom(:cb)]
+          ]
+        end
+      end
 
       describe '#reduced' do
-        it { expect(subject.reduced).to be_nil }
+        it { expect(dept_activated_dimer.reduced).to be_nil }
       end
 
       describe '#could_be_reduced?' do
-        it { expect(subject.could_be_reduced?).to be_falsey }
+        it { expect(dept_activated_dimer.could_be_reduced?).to be_falsey }
       end
 
       describe '#name' do
-        it { expect(subject.name).to eq(:'dimer(cr: *)') }
-      end
-
-      describe '#base_spec' do
-        it { expect(subject.base_spec).to eq(subject.spec.spec) }
+        it { expect(dept_activated_dimer.name).to eq(:'dimer(cr: *)') }
       end
 
       describe '#base_name' do
-        it { expect(subject.base_name).to eq(subject.spec.spec.name) }
+        it { expect(dept_activated_dimer.base_name).to eq(:dimer) }
       end
 
       describe '#specific?' do
-        it { expect(subject.specific?).to be_truthy }
+        it { expect(dept_activated_dimer.specific?).to be_truthy }
         it { expect(dept_dimer.specific?).to be_falsey }
       end
 
-      describe '#parent' do
-        it { expect(subject.parent).to be_nil }
-      end
+      describe '#replace_base_spec' do
+        subject { dept_activated_methyl_on_incoherent_bridge }
+        let(:old_base) { dept_methyl_on_bridge_base }
+        let(:new_base) { dept_bridge_base_dup }
 
-      describe '#parents' do
-        it { expect(subject.parents).to be_empty }
-
-        describe 'parent presented' do
-          before { subject.store_parent(dept_dimer) }
-          it { expect(subject.parents).to eq([dept_dimer]) }
-        end
-      end
-
-      describe 'parent operations' do
-        let(:parent) { dept_bridge_base }
-        let(:child) { dept_activated_bridge }
-        before { child.store_parent(parent) }
-
-        describe '#store_parent' do
-          it { expect(parent.children).to eq([child]) }
-          it { expect(child.parent).to eq(parent) }
-
-          it { expect(child.rest).not_to be_nil }
+        shared_examples_for :check_replacing do
+          before { subject.replace_base_spec(new_base) }
+          it { expect(subject.spec.spec).to eq(new_base.spec) }
+          it { expect(subject.parents.first.original).to eq(new_base) }
         end
 
-        describe '#remove_parent' do
-          before { child.remove_parent(parent) }
-
-          it { expect(parent.children).to eq([child]) }
-          it { expect(child.parent).to be_nil }
-        end
-
-        describe '#replace_parent' do
-          def store_and_restore
-            subject.store_parent(old_base)
-            subject.replace_parent(new_base)
-          end
-
-          def dept_amoib_dup
-            described_class.new(activated_methyl_on_incoherent_bridge.dup)
-          end
-
-          subject { dept_amoib_dup }
-          let(:old_base) { dept_methyl_on_bridge_base }
-          let(:new_base) { dept_bridge_base_dup }
-
-          describe 'without children' do
-            before { store_and_restore }
-
+        it_behaves_like :organize_dependencies do
+          let(:others) { [old_base] }
+          it_behaves_like :check_replacing do
             it { expect(subject.name).to eq(:'methyl_on_bridge(cm: *, t: i)') }
-            it { expect(subject.base_spec).to eq(new_base.spec) }
-            it { expect(subject.rest.atoms_num).to eq(2) }
-          end
-
-          describe 'children updates too' do
-            let(:child1) { dept_amoib_dup }
-            let(:child2) { dept_amoib_dup }
-
-            before do
-              subject.store_child(child1)
-              subject.store_child(child2)
-              store_and_restore
-            end
-
-            it { expect(child1.spec.atom(:t)).not_to be_nil }
-            it { expect(child2.spec.atom(:cm)).not_to be_nil }
           end
         end
-      end
 
-      describe '# - ' do
-        subject { minuend - subtrahend }
-        let(:links) { subject.links }
-
-        describe 'parent links size less than current size' do
-          let(:minuend) { dept_activated_methyl_on_incoherent_bridge }
-          let(:subtrahend) { dept_bridge_base_dup }
-
-          it { should be_a(SpecResidual) }
-          it { expect(links.keys.map(&:actives)).to match_array([1, 0]) }
-          it { expect(links.keys.map(&:incoherent?)).to match_array([false, true]) }
-          it { expect(links.values.reduce(:+).map(&:last)).to match_array([
-              free_bond, free_bond,
-              bond_110_cross, bond_110_cross,
-              active_bond, incoherent
-            ]) }
-        end
-
-        describe 'other is base with same links size' do
-          let(:minuend) { dept_activated_methyl_on_bridge }
-          let(:subtrahend) { dept_methyl_on_bridge_base }
-
-          it { should be_a(SpecResidual) }
-          it { expect(subject.atoms_num).to eq(1) }
-          it { expect(links.keys.first.actives).to eq(1) }
-          it { expect(subject.relations_num).to eq(2) }
-        end
-
-        describe 'hidrogenated parent' do
-          let(:minuend) { dept_hydrogenated_bridge }
-          let(:subtrahend) { dept_bridge_base_dup }
-
-          it { expect(links.size).to eq(1) }
-          it { expect(links.keys.first.monovalents).to eq([adsorbed_h]) }
-        end
-
-        describe 'resudue contain atoms with relevant states' do
-          let(:minuend) { dept_methyl_on_incoherent_bridge }
-          let(:subtrahend) { dept_methyl_on_bridge_base }
-
-          it { expect(links.size).to eq(1) }
-          it { expect(links.keys.first.incoherent?).to be_truthy }
-        end
-
-        describe 'correct relations after base spec change' do
-          let(:minuend) { dept_activated_methyl_on_right_bridge }
-          let(:subtrahend) { dept_bridge_base_dup }
-          let(:cb) { subject.links.keys.last }
-          let(:rls) do
-            [
-              free_bond,
-              bond_110_front,
-              bond_110_cross,
-              bond_110_cross,
-              position_100_front
-            ]
+        it_behaves_like :organize_dependencies do
+          let(:others) { [old_base, child] }
+          let(:child) { dept_unfixed_activated_methyl_on_incoherent_bridge }
+          it_behaves_like :check_replacing do
+            it { expect(child.spec.atom(:t)).not_to be_nil }
+            it { expect(child.spec.atom(:cm)).not_to be_nil }
           end
-
-          it { expect(subject.relations_of(cb)).to match_array(rls) }
         end
-      end
-
-      it_behaves_like :relations_of do
-        subject { dept_methyl_on_dimer_base }
-        let(:atom) { methyl_on_dimer_base.atom(:cr) }
-        let(:rls) do
-          [bond_100_front, bond_110_cross, bond_110_cross, free_bond]
-        end
-      end
-
-      describe '#size' do
-        it { expect(subject.size).to eq(10) }
-        it { expect(dept_activated_incoherent_bridge.size).to eq(11) }
       end
 
       describe '#organize_dependencies!' do
-        let(:dependent_bases) do
-          [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
-        end
-        let(:base_cache) { make_cache(dependent_bases) }
-
         shared_examples_for :organize_and_check do
-          let(:main) { [target] + addition }
-
-          before do
-            (main + children).map do |cld|
-              cld.organize_dependencies!(base_cache, similars)
-            end
-          end
-
-          it { expect(target.parent).to eq(parent) }
-          it { expect(target.children).to match_array(children) }
-
-          describe '#essence' do
-            it { expect(target.essence).to eq(essence) }
-          end
-        end
-
-        shared_examples_for :organize_and_check_base_parent do
-          it_behaves_like :organize_and_check do
-            let(:addition) { [] }
-            let(:essence) { {} }
-          end
-        end
-
-        shared_examples_for :organize_and_check_specific_parent do
-          it_behaves_like :organize_and_check do
-            let(:addition) { [parent] }
+          it_behaves_like :organize_dependencies do
+            let(:others) { [parent] + children + similars }
+            it { expect(subject.parents.first.original).to eq(parent) }
+            it { expect(subject.children).to match_array(children) }
           end
         end
 
         describe 'bridge' do
           let(:similars) do
             [
-              dept_bridge,
+              dept_bridge_base,
               dept_activated_bridge,
               dept_activated_incoherent_bridge,
               dept_extra_activated_bridge
             ]
           end
 
-          it_behaves_like :organize_and_check_base_parent do
-            let(:target) { dept_bridge }
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_bridge }
             let(:parent) { dept_bridge_base }
-            let(:children) { [dept_activated_bridge] }
+            let(:children) { [dept_activated_incoherent_bridge] }
           end
 
-          describe 'essence have only :ct' do
-            let(:essence) { { target.spec.atom(:ct) => [] } }
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_incoherent_bridge }
+            let(:parent) { dept_activated_bridge }
+            let(:children) { [dept_extra_activated_bridge] }
+          end
 
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_activated_bridge }
-              let(:parent) { dept_bridge }
-              let(:children) { [dept_activated_incoherent_bridge] }
-            end
-
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_activated_incoherent_bridge }
-              let(:parent) { dept_activated_bridge }
-              let(:children) { [dept_extra_activated_bridge] }
-            end
-
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_extra_activated_bridge }
-              let(:parent) { dept_activated_incoherent_bridge }
-              let(:children) { [] }
-            end
+          it_behaves_like :organize_and_check do
+            subject { dept_extra_activated_bridge }
+            let(:parent) { dept_activated_incoherent_bridge }
+            let(:children) { [] }
           end
         end
 
         describe 'methyl on bridge' do
           let(:similars) do
             [
-              dept_methyl_on_bridge,
+              dept_methyl_on_bridge_base,
               dept_activated_methyl_on_bridge,
               dept_methyl_on_activated_bridge,
               dept_methyl_on_incoherent_bridge,
@@ -287,77 +151,50 @@ module VersatileDiamond
             ]
           end
 
-          it_behaves_like :organize_and_check_base_parent do
-            let(:target) { dept_methyl_on_bridge }
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_methyl_on_bridge }
             let(:parent) { dept_methyl_on_bridge_base }
-            let(:children) do
-              [
-                dept_activated_methyl_on_bridge,
-                dept_methyl_on_incoherent_bridge,
-                dept_unfixed_methyl_on_bridge
-              ]
-            end
+            let(:children) { [dept_activated_methyl_on_incoherent_bridge] }
           end
 
-          describe 'essence have only :cm' do
-            let(:essence) { { target.spec.atom(:cm) => [] } }
-
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_activated_methyl_on_bridge }
-              let(:parent) { dept_methyl_on_bridge }
-              let(:children) { [dept_activated_methyl_on_incoherent_bridge] }
-            end
-
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_unfixed_activated_methyl_on_incoherent_bridge }
-              let(:parent) { dept_activated_methyl_on_incoherent_bridge }
-              let(:children) { [] }
-            end
-
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_unfixed_methyl_on_bridge }
-              let(:parent) { dept_methyl_on_bridge }
-              let(:children) { [] }
-            end
+          it_behaves_like :organize_and_check do
+            subject { dept_unfixed_activated_methyl_on_incoherent_bridge }
+            let(:parent) { dept_activated_methyl_on_incoherent_bridge }
+            let(:children) { [] }
           end
 
-          describe 'essence have only :cm' do
-            let(:essence) { { target.spec.atom(:cb) => [] } }
+          it_behaves_like :organize_and_check do
+            subject { dept_unfixed_methyl_on_bridge }
+            let(:parent) { dept_methyl_on_bridge_base }
+            let(:children) { [] }
+          end
 
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_activated_methyl_on_incoherent_bridge }
-              let(:parent) { dept_activated_methyl_on_bridge }
-              let(:children) { [dept_unfixed_activated_methyl_on_incoherent_bridge] }
-            end
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_methyl_on_incoherent_bridge }
+            let(:parent) { dept_activated_methyl_on_bridge }
+            let(:children) { [dept_unfixed_activated_methyl_on_incoherent_bridge] }
+          end
 
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_methyl_on_incoherent_bridge }
-              let(:parent) { dept_methyl_on_bridge }
-              let(:children) { [dept_methyl_on_activated_bridge] }
-            end
+          it_behaves_like :organize_and_check do
+            subject { dept_methyl_on_incoherent_bridge }
+            let(:parent) { dept_methyl_on_bridge_base }
+            let(:children) { [dept_methyl_on_activated_bridge] }
+          end
 
-            it_behaves_like :organize_and_check_specific_parent do
-              let(:target) { dept_methyl_on_activated_bridge }
-              let(:parent) { dept_methyl_on_incoherent_bridge }
-              let(:children) { [] }
-            end
+          it_behaves_like :organize_and_check do
+            subject { dept_methyl_on_activated_bridge }
+            let(:parent) { dept_methyl_on_incoherent_bridge }
+            let(:children) { [] }
           end
         end
 
         describe 'dimer' do
-          let(:similars) { [dept_dimer, dept_activated_dimer] }
+          let(:similars) { [dept_dimer_base, dept_activated_dimer] }
 
-          it_behaves_like :organize_and_check_base_parent do
-            let(:target) { dept_dimer }
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_dimer }
             let(:parent) { dept_dimer_base }
-            let(:children) { [dept_activated_dimer] }
-          end
-
-          it_behaves_like :organize_and_check_specific_parent do
-            let(:target) { dept_activated_dimer }
-            let(:parent) { dept_dimer }
             let(:children) { [] }
-            let(:essence) { { target.spec.atom(:cr) => [] } }
           end
         end
       end

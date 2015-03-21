@@ -1,17 +1,6 @@
 void <%= class_name %>::find(<%= find_arguments_str %>)
 {
-<% unless find_root? %>
-    <%= define_anchor_variables %>
-<% end %>
-<% central_anchors_with_elses.each do |atoms, else_prefix| %>
-    <%= else_prefix %>if (<%= check_role_condition(atoms) %>)
-    {
-        if (<%= check_specie_condition(atoms) %>)
-        {
-
-        }
-    }
-<% end %>
+<%= find_algorithm %>
 }
 <% if parent? %>
 
@@ -26,13 +15,33 @@ void <%= class_name %>::findAllChildren()
 
 void <%= class_name %>::findAllTypicalReactions()
 {
-
+<% typical_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::find(this);
+<% end %>
 }
 <% end %>
-<% if lateral? %>
+<% if sidepiece? %>
 
 void <%= class_name %>::findAllLateralReactions()
 {
+<% laterable_typical_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::checkLaterals(this);
+<% end %>
+}
+<% end %>
+<% if local? %>
 
+void <%= class_name %>::concretizeLocal(Atom *target) const
+{
+<% local_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::concretize(target);
+<% end %>
+}
+
+void <%= class_name %>::unconcretizeLocal(Atom *target) const
+{
+<% local_reactions.each do |reaction| %>
+    <%= reaction.class_name %>::unconcretize(target);
+<% end %>
 }
 <% end %>

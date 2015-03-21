@@ -6,6 +6,7 @@ Style/AlignParameters:
 
 Style/CollectionMethods:
   PreferredMethods:
+    detect: 'find'
     inject: 'reduce'
 
 Style/DotPosition:

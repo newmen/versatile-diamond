@@ -22,75 +22,53 @@ MultiEventsContainer::~MultiEventsContainer()
     }
 }
 
+#ifndef NDEBUG
+Reaction *MultiEventsContainer::selectEventByCoords(const int3 &crd)
+{
+    for (Reaction *event : _events)
+    {
+        UbiquitousReaction *ubiqEvent = static_cast<UbiquitousReaction *>(event);
+        if (ubiqEvent->target()->lattice() && ubiqEvent->target()->lattice()->coords() == crd)
+        {
+            return event;
+        }
+    }
+
+    assert(false); // multi event by crd was not found
+    return nullptr;
+}
+#endif // NDEBUG
+
 void MultiEventsContainer::add(UbiquitousReaction *event, ushort n)
 {
-#ifdef PARALLEL
-    lock([this, event, n]() {
-#endif // PARALLEL
-
-        for (uint i = 0; i < n; ++i)
-        {
-            _positions.insert(std::pair<Atom *, uint>(event->target(), _events.size()));
-            _events.push_back(event);
-        }
-
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
+    for (uint i = 0; i < n; ++i)
+    {
+        _positions.insert(std::pair<Atom *, uint>(event->target(), _events.size()));
+        _events.push_back(event);
+    }
 }
 
 void MultiEventsContainer::remove(Atom *target, ushort n)
 {
-#ifdef PARALLEL
-    lock([this, target, n]() {
-#endif // PARALLEL
-
 #ifndef NDEBUG
-        auto range = _positions.equal_range(target);
-        assert(std::distance(range.first, range.second) >= n);
+    auto range = _positions.equal_range(target);
+    assert(std::distance(range.first, range.second) >= n);
 #endif // NDEBUG
 
-        unlockedRemove(target, n);
-
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
+    unlockedRemove(target, n);
 }
 
 uint MultiEventsContainer::removeAll(Atom *target)
 {
-    uint n = 0;
-
-#ifdef PARALLEL
-    lock([this, target, &n]() {
-#endif // PARALLEL
-
-        auto range = _positions.equal_range(target);
-        n = std::distance(range.first, range.second);
-        unlockedRemove(target, n);
-
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
+    auto range = _positions.equal_range(target);
+    uint n = std::distance(range.first, range.second);
+    unlockedRemove(target, n);
     return n;
 }
 
 bool MultiEventsContainer::check(Atom *target)
 {
-    bool result = false;
-
-#ifdef PARALLEL
-    lock([this, target, &result]() {
-#endif // PARALLEL
-
-        result = _positions.find(target) != _positions.cend();
-
-#ifdef PARALLEL
-    });
-#endif // PARALLEL
-
-    return result;
+    return _positions.find(target) != _positions.cend();
 }
 
 void MultiEventsContainer::unlockedRemove(Atom *target, uint n)

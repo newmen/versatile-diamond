@@ -3,8 +3,8 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DependentThere do
-      subject { described_class.new(there_methyl) }
+    describe DependentThere, type: :organizer do
+      subject { described_class.new(dimer_formation, there_methyl) }
 
       describe '#each_source' do
         it { expect(subject.each_source).to be_a(Enumerator) }
@@ -21,8 +21,13 @@ module VersatileDiamond
         it { expect(subject.each_source.to_a).to eq([mob_dup]) }
       end
 
-      describe '#used_keynames_of' do
-        it { expect(subject.used_keynames_of(methyl_on_bridge)).to eq([:cb]) }
+      describe '#lateral_reaction' do
+        it { expect(subject.lateral_reaction).to eq(dimer_formation) }
+      end
+
+      describe '#used_atoms_of' do
+        let(:atoms) { [methyl_on_bridge.atom(:cb)] }
+        it { expect(subject.used_atoms_of(dept_methyl_on_bridge)).to eq(atoms) }
       end
     end
 

@@ -7,6 +7,7 @@ module VersatileDiamond
     # Accumulates information about atom
     class AtomProperties
       include Modules::ListsComparer
+      include Modules::OrderProvider
       include Lattices::BasicRelations
 
       attr_reader :smallests, :sames
@@ -21,8 +22,6 @@ module VersatileDiamond
       #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #     atom the atom for which properties will be stored
       def initialize(*args)
-        @_remake_result = nil
-
         if args.size == 1
           arg = args.first
           if arg.is_a?(Array)
@@ -55,6 +54,9 @@ module VersatileDiamond
         else
           raise ArgumentError, 'Wrong number of arguments'
         end
+
+        @_is_incoherent, @_is_unfixed, @_is_unfixed_from_nbrs = nil
+        @_estab_bond_num, @_actives_num, @_dangling_hydrogens_num = nil
       end
 
       # Deep compares two properties by all properties
@@ -65,6 +67,36 @@ module VersatileDiamond
           [:relations, :danglings, :nbr_lattices, :relevants].all? do |name|
             eq_by?(other, name)
           end
+      end
+      alias :eql? :==
+
+      # Compares two atom properties
+      # @param [AtomProperties] other comparing atom properties
+      # @return [Integer] the comparing result
+      def <=> (other)
+        if include?(other)
+          1
+        elsif other.include?(self)
+          -1
+        else
+          order(self, other, :valence) do
+            typed_order(self, other, :lattice) do
+              order(self, other, :estab_bonds_num) do
+                order(self, other, :danglings, :size) do
+                  typed_order(self, other, :incoherent?) do
+                    typed_order(self, other, :unfixed?)
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+
+      # Calculates the hash of current instance for using it as key values in Hashes
+      # @return [Integer] the hash of current instance
+      def hash
+        @props.hash
       end
 
       # Checks that current properties includes another properties
@@ -148,7 +180,8 @@ module VersatileDiamond
       # Has incoherent state or not
       # @return [Boolean] contain or not
       def incoherent?
-        relevants.include?(Incoherent.property)
+        return @_is_incoherent unless @_is_incoherent.nil?
+        @_is_incoherent = relevants.include?(Incoherent.property)
       end
 
       # Makes incoherent copy of self
@@ -204,7 +237,7 @@ module VersatileDiamond
       # Gets number of active bonds
       # @return [Integer] number of active bonds
       def actives_num
-        count_danglings(ActiveBond.property)
+        @_actives_num ||= count_danglings(ActiveBond.property)
       end
 
       # Gets the number of actives when each established bond replaced to active bond
@@ -216,22 +249,14 @@ module VersatileDiamond
       # Gets number of hydrogen atoms
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
-        count_danglings(AtomicSpec.new(Concepts::Atom.hydrogen))
+        @_dangling_hydrogens_num ||=
+          count_danglings(AtomicSpec.new(Concepts::Atom.hydrogen))
       end
 
       # Counts total number of hydrogen atoms
       # @return [Integer] the number of total number of hydrogen atoms
       def total_hydrogens_num
         valence - bonds_num + dangling_hydrogens_num
-      end
-
-      # Gets size of properties
-      # @return [Integer] the size of properties
-      def size
-        return @size if @size
-        @size = valence + (lattice ? 0.5 : 0) +
-          estab_bonds_num + danglings.size * 0.34 +
-          (incoherent? ? 0.13 : (unfixed? ? 0.05 : 0))
       end
 
       # Convert properties to string representation
@@ -305,7 +330,7 @@ module VersatileDiamond
       attr_reader :props
 
       # Define human named methods for accessing to props
-      %w(
+      %i(
         atom_name
         valence
         lattice
@@ -329,17 +354,19 @@ module VersatileDiamond
       # Has unfixed state or not
       # @return [Boolean] contain or not
       def unfixed?
+        return @_is_unfixed unless @_is_unfixed.nil?
         result = relevants.include?(Unfixed.property)
         raise 'Atom could not be unfixed!' if result && !unfixed_by_nbrs?
-        result
+        @_is_unfixed = result
       end
 
       # Checks that properties have unfixed state by neighbour lattices set
       # @return [Boolean] unfixed or not?
       def unfixed_by_nbrs?
-        groups = nbr_lattices.group_by(&:first)
-        atwrels = groups.find { |r, _| r == undirected_bond }
-        atwrels && atwrels.last.map(&:last).compact.size == 1
+        return @_is_unfixed_from_nbrs unless @_is_unfixed_from_nbrs.nil?
+        nbub = nbr_lattices.select { |r, _| r == undirected_bond }
+        @_is_unfixed_from_nbrs =
+          nbub.reduce(0) { |acc, (_, l)| acc + (l ? 1 : 0) } == 1
       end
 
       # Checks that other properties contain all bonds from current properties
@@ -372,8 +399,7 @@ module VersatileDiamond
         # Checks that other properties contain all current #{name}
         # @param [AtomProperties] other the checking properties
         # @return [Boolean] contain or not
-        method_name = :"contain_all_#{name}?"
-        define_method(method_name) do |other|
+        define_method(:"contain_all_#{name}?") do |other|
           contain_all_by?(other, name.to_sym)
         end
       end
@@ -424,8 +450,6 @@ module VersatileDiamond
       #   spec see at #new same argument
       # @return [Array] the array of pairs of atoms and replaced relations
       def remake_relations(spec, atom)
-        return @_remake_result if @_remake_result
-
         # only bonds without relevat states and positions
         bonds = spec.relations_of(atom, with_atoms: true).select { |_, r| r.bond? }
 
@@ -433,7 +457,7 @@ module VersatileDiamond
         until bonds.empty?
           atwrel = bonds.pop
           nbr, rel = atwrel
-          if rel.face
+          if rel.belongs_to_crystal?
             result << atwrel
             next
           end
@@ -455,7 +479,7 @@ module VersatileDiamond
           result << [nbr, new_relation]
         end
 
-        @_remake_result = result
+        result
       end
 
       # Harvest dangling bonds of atom in spec
@@ -512,7 +536,7 @@ module VersatileDiamond
       # Gets number of established bond relations
       # @return [Integer] the number of established bond relations
       def estab_bonds_num
-        count_relations(Concepts::Bond) +
+        @_estab_bond_num ||= count_relations(Concepts::Bond) +
           (relations.include?(:dbond) ? 2 : 0) +
           (relations.include?(:tbond) ? 3 : 0)
       end

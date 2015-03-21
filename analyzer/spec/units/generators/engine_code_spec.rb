@@ -4,6 +4,26 @@ module VersatileDiamond
   module Generators
 
     describe EngineCode, use: :engine_generator do
+      describe 'major code instances' do
+        subject { stub_generator(base_specs: [dept_bridge_base]) }
+
+        describe '#handbook' do
+          it { expect(subject.handbook).to be_a(Code::Handbook) }
+        end
+
+        describe '#finder' do
+          it { expect(subject.finder).to be_a(Code::Finder) }
+        end
+
+        describe '#env' do
+          it { expect(subject.env).to be_a(Code::Env) }
+        end
+
+        describe '#atom_builder' do
+          it { expect(subject.atom_builder).to be_a(Code::AtomBuilder) }
+        end
+      end
+
       describe '#unique_pure_atoms' do
         let(:bases) { [dept_methane_base, dept_bridge_base] }
         let(:specifics) { [dept_chlorigenated_bridge] }
@@ -40,17 +60,24 @@ module VersatileDiamond
         it { expect(specie.class_name).to eq('Bridge') }
       end
 
+      describe '#root_species' do
+        subject { stub_generator(base_specs: dept_specs) }
+        let(:dept_specs) do
+          [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+        end
+        let(:root_species) do
+          [subject.specie_class(:bridge), subject.specie_class(:dimer)]
+        end
+
+        it { expect(subject.root_species).to match_array(root_species) }
+      end
+
       describe '#specific_gas_species' do
         let(:bases) { [dept_methane_base] }
-        let(:specifics) { [dept_methyl, dept_activated_bridge] }
+        let(:specifics) { [dept_hydrogen_ion, dept_methyl, dept_activated_bridge] }
         subject { stub_generator(base_specs: bases, specific_specs: specifics) }
         let(:gas_specs) { subject.specific_gas_species }
         let(:gas_names) { [:"methane(c: *)", :"hydrogen(h: *)"] }
-
-        before do
-          Tools::Config.gas_concentration(methyl, 1, 'mol/l')
-          Tools::Config.gas_concentration(hydrogen_ion, 2, 'mol/l')
-        end
 
         it { expect(gas_specs.map(&:name)).to match_array(gas_names) }
       end
