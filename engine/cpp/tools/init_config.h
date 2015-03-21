@@ -3,12 +3,15 @@
 
 #include <cstdlib>
 #include "../phases/behavior_factory.h"
+#include "../savers/xyz_saver_builder.h"
+#include "../savers/detector_factory.h"
+#include "../savers/decorator/volume_saver_item.h"
 #include "yaml_config_reader.h"
-#include "savers_builder.h"
 #include "common.h"
 #include "error.h"
 
 using namespace vd;
+
 template <class HB>
 struct InitConfig
 {
@@ -17,8 +20,6 @@ struct InitConfig
     const double totalTime = 0;
     bool loadFromDump = false;
     const char *dumpPath;
-    const Detector *detector = nullptr;
-    const Behavior *behavior = nullptr;
 
     InitConfig(int argc, char *argv[]);
 
@@ -39,18 +40,18 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
         }
     }
 
-    YAMLConfigReader reader("configs/run.yml");
+    YAMLConfigReader yamlReader("configs/run.yml");
 
-    if (reader.isDefined("system", "size_x") && reader.isDefined("system", "size_y"))
+    if (reader.isDefined("system", "size_x") && yamlReader.isDefined("system", "size_y"))
     {
-        x = reader.read<uint>("system", "size_x");
-        y = reader.read<uint>("system", "size_y");
+        x = yamlReader.read<uint>("system", "size_x");
+        y = yamlReader.read<uint>("system", "size_y");
     }
     else
         throw Error("Sizes are not determined.");
 
     if (reader.isDefined("system", "time"))
-        totalTime = reader.read<double>("system", "time");
+        totalTime = yamlReader.read<double>("system", "time");
     else
         throw Error("Total time is not determined.");
 
@@ -70,7 +71,7 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
     if (reader.isDefined("system", "behavior"))
     {
         BehaviorFactory bhvrFactory;
-        std::string behaviorType = reader.read<std::string>("system", "behavior");
+        std::string behaviorType = yamlReader.read<std::string>("system", "behavior");
 
         if (!bhvrFactory.isRegistered(behaviorType))
         {
@@ -88,20 +89,20 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
 
     }
 
-    DetectorFactory<HB> detFactory;
-    if (detectorType)
-    {
-        if (!detFactory.isRegistered(detectorType))
-        {
-            throw Error("Undefined type of detector");
-        }
+//    DetectorFactory<HB> detFactory;
+//    if (detectorType)
+//    {
+//        if (!detFactory.isRegistered(detectorType))
+//        {
+//            throw Error("Undefined type of detector");
+//        }
 
-        detector = detFactory.create(detectorType);
-    }
-    else if (volumeSaverType)
-    {
-        detector = detFactory.create("surf");
-    }
+//        detector = detFactory.create(detectorType);
+//    }
+//    else if (volumeSaverType)
+//    {
+//        detector = detFactory.create("surf");
+//    }
 }
 
 template <class HB>

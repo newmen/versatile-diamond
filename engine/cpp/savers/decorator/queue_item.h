@@ -11,7 +11,7 @@ class QueueItem
 public:
     QueueItem();
 
-    virtual void saveData(double currentTime, std::string filename) = 0;
+    virtual void saveData() = 0;
     virtual void copyData() = 0;
     virtual Amorph* amorph() = 0;
     virtual Crystal* crystal() = 0;

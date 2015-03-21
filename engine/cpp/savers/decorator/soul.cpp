@@ -8,6 +8,7 @@ void Soul::copyData()
     {
         _amorph = new Amorph(*_amorph);
         _crystal = new Crystal(*_crystal);
+        _isDataCopied = true;
     }
 }
 

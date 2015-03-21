@@ -1,6 +1,6 @@
 #include "crystal_slice_saver.h"
 #include <sstream>
-#include "../../atoms/atom.h"
+#include "../atoms/atom.h"
 
 namespace vd
 {

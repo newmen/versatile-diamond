@@ -1,8 +1,8 @@
 #ifndef VOLUME_SAVER_H
 #define VOLUME_SAVER_H
 
-#include "../../phases/amorph.h"
-#include "../../phases/crystal.h"
+#include "../phases/amorph.h"
+#include "../phases/crystal.h"
 #include "detector.h"
 
 namespace vd

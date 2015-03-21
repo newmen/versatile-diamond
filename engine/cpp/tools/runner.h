@@ -8,7 +8,7 @@
 #include "process_mem_usage.h"
 #include "../phases/behavior_factory.h"
 #include "savers/crystal_slice_saver.h"
-#include "dump/dump_saver.h"
+#include "../savers/dump/dump_saver.h"
 #include "init_config.h"
 #include "common.h"
 

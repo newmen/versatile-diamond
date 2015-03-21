@@ -1,8 +1,8 @@
 #include <sstream>
 #include "dump_saver.h"
 #include "../../atoms/atom.h"
-#include "../savers/mol_accumulator.h"
-#include "../savers/surface_detector.h"
+#include "../mol_accumulator.h"
+#include "../surface_detector.h"
 
 namespace vd {
 

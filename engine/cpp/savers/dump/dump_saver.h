@@ -3,7 +3,7 @@
 
 #include "../../phases/amorph.h"
 #include "../../phases/crystal.h"
-#include "../savers/detector.h"
+#include "../../savers/detector.h"
 #include <fstream>
 
 namespace vd {

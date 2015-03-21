@@ -3,18 +3,16 @@
 
 #include "item_wrapper.h"
 #include "savers/volume_saver_factory.h"
-#include "savers/detector.h"
+#include "savers/detector_factory.h"
 
 namespace vd {
 
 class VolumeSaverItem : public ItemWrapper
 {
 public:
-    VolumeSaverItem(SaversDecorator* targ) : ItemWrapper(targ) {}
+    VolumeSaverItem(QueueItem* targ, SaversBuilder* svBuilder) : ItemWrapper(targ, svBuilder) {}
 
-private:
-    VolumeSaver* takeSaver(std::string volumeSaverType, std::string filename);
-    Detector* takeDetector(std::string detectorType);
+    void saveData();
 };
 
 }

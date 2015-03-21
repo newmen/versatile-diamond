@@ -4,8 +4,8 @@
 #include <fstream>
 #include <string>
 #include <map>
-#include "../../phases/crystal.h"
-#include "../common.h"
+#include "../phases/crystal.h"
+#include "../tools/common.h"
 
 namespace vd
 {
