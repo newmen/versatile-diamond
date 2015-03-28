@@ -13,25 +13,21 @@ class DumpSaverBuilder : public SaversBuilder
 {
     uint _x;
     uint _y;
-    double _currentTime;
     const Detector *_detector;
     DumpSaver *_dmpSaver;
 
 public:
     DumpSaverBuilder(uint x,
                      uint y,
-                     double currentTime,
                      const Detector *detector,
-                     QueueItem* item,
                      double step) :
-        SaversBuilder(item, step),
+        SaversBuilder(step),
         _x(x),
         _y(y),
-        _currentTime(currentTime),
         _detector(detector) { _dmpSaver = new DumpSaver(); }
 
     QueueItem* wrapItem(QueueItem* item);
-    void save(const Amorph*, const Crystal);
+    void save(const Amorph* amorph, const Crystal* crystal, double currentTime);
 };
 
 }

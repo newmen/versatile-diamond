@@ -14,7 +14,8 @@ class Treker
 public:
     Treker() {}
     QueueItem* takeItem(QueueItem *soul);
-protected:
+    void addItem(SaversBuilder* svrBilder);
+private:
     QueueItem* recursiveTakeItem(QueueItem *item, int i);
 };
 

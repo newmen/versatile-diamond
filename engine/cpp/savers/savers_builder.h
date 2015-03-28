@@ -12,6 +12,7 @@ public:
     SaversBuilder(double step) : _step(step) {}
 
     virtual QueueItem* wrapItem(QueueItem* item) = 0;
+    virtual void save(const Amorph *amorph, const Crystal *crystal);
 };
 
 }

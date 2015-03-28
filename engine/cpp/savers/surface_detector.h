@@ -1,7 +1,7 @@
 #ifndef SURFACE_DETECTOR_H
 #define SURFACE_DETECTOR_H
 
-#include "../../atoms/atom.h"
+#include "../atoms/atom.h"
 #include "detector.h"
 
 namespace vd {

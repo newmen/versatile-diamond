@@ -7,6 +7,11 @@ QueueItem *Treker::takeItem(QueueItem* soul)
     return recursiveTakeItem(soul, 0);
 }
 
+void Treker::addItem(SaversBuilder *svrBilder)
+{
+    _queue.push_back(svrBilder);
+}
+
 QueueItem *Treker::recursiveTakeItem(QueueItem *item, int i)
 {
     if (i <= _queue.size())

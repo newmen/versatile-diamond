@@ -6,8 +6,8 @@ void Soul::copyData()
 {
     if (!_isDataCopied)
     {
-        _amorph = new Amorph(*_amorph);
-        _crystal = new Crystal(*_crystal);
+        _amorph = new Amorph(_amorph);
+        _crystal = new Crystal(_crystal);
         _isDataCopied = true;
     }
 }

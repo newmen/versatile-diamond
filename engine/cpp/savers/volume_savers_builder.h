@@ -9,21 +9,18 @@ namespace vd {
 class VolumeSaversBuilder : public SaversBuilder
 {
     const Detector* _detector;
-    double _currentTime;
     std::string _volumeSaverType;
     VolumeSaver* _saver;
 public:
     VolumeSaversBuilder(const Detector* detector,
-                        double currentTime,
                         std::string saverType,
                         double step) :
         SaversBuilder(step),
         _detector(detector),
-        _currentTime(currentTime),
         _volumeSaverType(saverType) { _saver = takeSaver(_volumeSaverType); }
 
-    void save(Amorph *amorph, Crystal *crystal);
-    QueueItem wrapItem(QueueItem* item);
+    void save(const Amorph *amorph, const Crystal *crystal, double currentTime);
+    QueueItem* wrapItem(QueueItem* item);
 private:
     VolumeSaver* takeSaver(std::string volumeSaverType);
 };

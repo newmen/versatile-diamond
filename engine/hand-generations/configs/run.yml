@@ -9,6 +9,7 @@ integral:
 
 dump:
 	step:
+	detector:
 
 mol: 
 	step:

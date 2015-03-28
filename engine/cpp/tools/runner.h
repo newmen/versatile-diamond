@@ -10,6 +10,7 @@
 #include "savers/crystal_slice_saver.h"
 #include "../savers/dump/dump_saver.h"
 #include "init_config.h"
+#include "treker.h"
 #include "common.h"
 
 namespace vd
@@ -39,6 +40,7 @@ private:
 
     double activesRatio(const Crystal *crystal) const;
     void saveVolume(const Crystal *crystal);
+    Treker *createBuilders(const std::initializer_list<ushort> types);
 
     std::string filename() const;
     double timestamp() const;
@@ -204,6 +206,40 @@ void Runner<HB>::saveVolume(const Crystal *crystal)
         Detector *detector = new SurfaceDetector<Handbook>;
         dpSaver.save(_init.x, _init.y, HB::mc().totalTime(), &HB::amorph(), crystal, detector);
     }
+}
+
+template <class HB>
+Treker* Runner::createBuilders(const std::initializer_list<ushort> types)
+{
+    DetectorFactory<HB> detFactory;
+    Treker* treker;
+
+    if (_init.yamlReader.isDefined("integral", "step"))
+    {
+        treker->addItem(new IntegralSaverBuilder(_init.name, _init.x * _init.y, types, _init.yamlReader.read<double>("integral", "step")));
+    }
+
+    if (yamlReader.isDefined("dump", "step"))
+    {
+        treker->addItem(new DumpSaverBuilder(_init.x, _init.y, detFactory.create(_init.yamlReader.read<std::string>("mol", "detector")), _init.yamlReader.read<double>("dump", "step")));
+    }
+
+    if (yamlReader.isDefined("mol", "step"))
+    {
+        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader.read<std::string>("mol", "detector")), "mol", _init.yamlReader.read<double>("mol", "step")));
+    }
+
+    if (yamlReader.isDefined("sdf", "step"))
+    {
+        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader.read<std::string>("sdf", "detector")), "sdf", _init.yamlReader.read<double>("sdf", "step")));
+    }
+
+    if (yamlReader.isDefined("xyz", "step"))
+    {
+        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader.read<std::string>("xyz", "detector")), "xyz", _init.yamlReader.read<double>("xyz", "step")));
+    }
+
+    return treker;
 }
 
 template <class HB>

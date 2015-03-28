@@ -4,14 +4,14 @@
 
 namespace vd {
 
-void VolumeSaversBuilder::save(Amorph *amorph, Crystal *crystal)
+void VolumeSaversBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime)
 {
-    takeSaver(_volumeSaverType)->save(_currentTime, amorph, crystal, _detector);
+    takeSaver(_volumeSaverType)->save(currentTime, amorph, crystal, _detector);
 }
 
-QueueItem VolumeSaversBuilder::wrapItem(QueueItem* item)
+QueueItem *VolumeSaversBuilder::wrapItem(QueueItem* item)
 {
-    return new VolumeSaverItem(_item, *this);
+    return new VolumeSaverItem(item, *this);
 }
 
 VolumeSaver *VolumeSaversBuilder::takeSaver(std::string volumeSaverType)

@@ -3,9 +3,10 @@
 
 #include <cstdlib>
 #include "../phases/behavior_factory.h"
-#include "../savers/xyz_saver_builder.h"
 #include "../savers/detector_factory.h"
-#include "../savers/decorator/volume_saver_item.h"
+#include "../savers/dump_saver_builder.h"
+#include "../savers/integral_saver_builder.h"
+#include "../savers/volume_savers_builder.h"
 #include "yaml_config_reader.h"
 #include "common.h"
 #include "error.h"
@@ -20,6 +21,7 @@ struct InitConfig
     const double totalTime = 0;
     bool loadFromDump = false;
     const char *dumpPath;
+    YAMLConfigReader yamlReader;
 
     InitConfig(int argc, char *argv[]);
 
@@ -40,9 +42,8 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
         }
     }
 
-    YAMLConfigReader yamlReader("configs/run.yml");
-
-    if (reader.isDefined("system", "size_x") && yamlReader.isDefined("system", "size_y"))
+    yamlReader("configs/run.yml");
+    if (yamlReader.isDefined("system", "size_x") && yamlReader.isDefined("system", "size_y"))
     {
         x = yamlReader.read<uint>("system", "size_x");
         y = yamlReader.read<uint>("system", "size_y");
@@ -50,7 +51,7 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
     else
         throw Error("Sizes are not determined.");
 
-    if (reader.isDefined("system", "time"))
+    if (yamlReader.isDefined("system", "time"))
         totalTime = yamlReader.read<double>("system", "time");
     else
         throw Error("Total time is not determined.");
@@ -68,7 +69,7 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
         throw Error("Total process time should be grater than 0 seconds");
     }
 
-    if (reader.isDefined("system", "behavior"))
+    if (yamlReader.isDefined("system", "behavior"))
     {
         BehaviorFactory bhvrFactory;
         std::string behaviorType = yamlReader.read<std::string>("system", "behavior");
@@ -80,29 +81,6 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
 
         behavior = bhvrFactory.create(behaviorType);
     }
-
-
-    // Тут общее заканчивается. Читать конфиги для каждого савера.
-
-    if (reader.isDefined("dump", "step"))
-    {
-
-    }
-
-//    DetectorFactory<HB> detFactory;
-//    if (detectorType)
-//    {
-//        if (!detFactory.isRegistered(detectorType))
-//        {
-//            throw Error("Undefined type of detector");
-//        }
-
-//        detector = detFactory.create(detectorType);
-//    }
-//    else if (volumeSaverType)
-//    {
-//        detector = detFactory.create("surf");
-//    }
 }
 
 template <class HB>
