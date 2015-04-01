@@ -22,52 +22,43 @@ module VersatileDiamond
       # Organize dependencies from another lateral reactions
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
-        laterals = lateral_reactions.select do |possible|
-          reaction.same_positions?(possible.reaction)
+        lateral_reactions.each do |possible|
+          lateral.store_parent(self) if reaction.same_positions?(possible.reaction)
         end
-
-        chunks = laterals.map(&:chunk)
-        organize_chunks!(chunks)
-        organize_lateral_children!(chunks)
       end
 
-      # Collects chunks of all children lateral reactions, builds by them new possible
-      # lateral reactions and organize dependencies between them. Builded lateral
-      # reactions returns from method for to add them to list of lateral reactions in
-      # analysis result
+      # Combines all chunks from children lateral reactions and find unresolved lateral
+      # reactions
       #
-      # @return [Array] the list of builded lateral reactions
-      def combine_laterals!
+      # @return [Array] the list of unresolved lateral reactions
+      def combine_children_laterals!
+        chunks = children.map(&:chunk)
+        all_chunks = organize_chunks!(chunks)
 
-
+        combine_laterals(all_chunks)
       end
 
     private
 
-      # Organizes dependencies between chunks by dynamic programming table
-      # @param [Array] chunks the list of chunks each item of which will be organized
-      def organize_chunks!(chunks)
-        table = ChunksTable.new(chunks)
-        chunks.each do |chunk|
-          table.best(chunk).parents.each do |parent|
-            chunk.store_parent(parent)
-          end
-        end
+      # Builds by passed chunks new possible lateral reactions
+      # @param [Array] all_chunks the list of all chunks which will be recombined
+      #   between each other for detect unresolved lateral reactions
+      # @return [Array] the list of builded lateral reactions
+      def combine_laterals(all_chunks)
+        combiner = ChunksCombiner.new(self)
+        combiner.combine(all_chunks)
       end
 
-      # Organizes dependencies between children lateral reactions which gets through
-      # passed chunks
-      #
-      # @param [Array] chunks by which the children will be organized
-      def organize_lateral_children!(chunks)
-        chunks.each do |chunk|
-          if chunk.parents.empty?
-            chunk.lateral_reaction.store_parent(self)
-          else
-            chunk.parents.each do |pr|
-              chunk.lateral_reaction.store_parent(pr.lateral_reaction)
-            end
-          end
+      # Organizes dependencies between chunks by dynamic programming table
+      # @param [Array] chunks the list of chunks each item of which will be organized
+      # @return [Array] the list of all different chunks which could take plase on
+      #   surface under simulation
+      def organize_chunks!(chunks)
+        raise 'Same chunks presented' if chunks.combination(2).any?(&:same?)
+
+        table = ChunksTable.new(chunks)
+        chunks + chunks.reduce([]) do |independent_chunks, chunk|
+          chunk.organize_dependencies!(table, independent_chunks)
         end
       end
     end

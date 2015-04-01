@@ -5,18 +5,19 @@ module VersatileDiamond
     # @abstract
     class DependentReaction
       include Modules::OrderProvider
-      include MultiParentsAndChildren
-      include InspecableDependentInstance
       extend Forwardable
+      extend Collector
 
-      attr_reader :reaction
-      def_delegators :@reaction, :name, :full_rate, :swap_source, :use_similar_source?,
+      collector_methods :child
+      attr_reader :reaction, :parent
+      def_delegators :reaction, :name, :full_rate, :swap_source, :use_similar_source?,
         :changes_num
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction
       def initialize(reaction)
         @reaction = reaction
+        @parent = nil
       end
 
       # Compares two reaction instances
@@ -54,16 +55,32 @@ module VersatileDiamond
       # Check that reaction have gas ion reagent
       # @return [Boolean] is reaction specific of ubiquitous or not
       def local?
-        !(parents.empty? || simple_source.empty?)
+        parent || !simple_source.empty?
       end
 
       def formula
         reaction.to_s
       end
 
+      def to_s
+        "(#{name}, [#{parent}], [#{children.map(&:name).join(' ')}])"
+      end
+
+      def inspect
+        to_s
+      end
+
     protected
 
-      def_delegators :@reaction, :source, :products, :simple_source, :simple_products
+      def_delegators :reaction, :source, :products, :simple_source, :simple_products
+
+      # Stores the parent of reaction
+      # @param [DependentReaction] parent the parent of current reaction
+      def store_parent(parent)
+        raise 'Parent already set' if @parent
+        @parent = parent
+        parent.store_child(self)
+      end
 
       # Provides partial order which could be overriden in children classes
       # @param [DependentReaction] other comparable reaction which have same type as

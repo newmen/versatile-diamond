@@ -8,6 +8,7 @@ module VersatileDiamond
         # Provides methods for make grouped nodes graph
         # @abstract
         class BaseGroupedNodes
+          include Modules::ExtendedCombinator
           include Modules::GraphDupper
           extend Forwardable
 
@@ -254,7 +255,7 @@ module VersatileDiamond
           # @return [Array] the array with all subsets of passed set grouped by
           #   number of elements in subset
           def all_subsets_of(set)
-            2.upto(set.size).map { |n| set.combination(n).to_a }
+            sliced_combinations(set, 2)
           end
 
           # Products passed lists and combinates them items

@@ -804,14 +804,23 @@ module VersatileDiamond
         end
 
         set(:at_end_with_bridge) do
-          w = Where.new('at end with bridge', specs: [bridge])
+          w = Where.new(:at_ewb, 'at end with bridge', specs: [bridge])
           w.raw_position(:two, [bridge, bridge.atom(:ct)], position_100_front)
           w.parents << at_end; w
         end
         df_there(:on_end_with_bridge, :at_end_with_bridge)
-
         set(:ewb_lateral_df) do
           dimer_formation.lateral_duplicate('e.w.b. lateral', [on_end_with_bridge])
+        end
+
+        set(:at_middle_with_bridge) do
+          w = Where.new(:at_mwb, 'at middle with bridge', specs: [bridge])
+          w.raw_position(:two, [bridge, bridge.atom(:ct)], position_100_front)
+          w.parents << at_middle; w
+        end
+        df_there(:on_middle_with_bridge, :at_middle_with_bridge)
+        set(:mwb_lateral_df) do
+          dimer_formation.lateral_duplicate('m.w.b. lateral', [on_middle_with_bridge])
         end
       end
 

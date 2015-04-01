@@ -3,23 +3,103 @@ module VersatileDiamond
 
     # Describes the chunk which constructs from another chunks and can builds lateral
     # reaction for which it was builded
-    class DerivativeChunk < ChunkCore
-      # Constructs the chunk by another chunks
-      # @param [DependentTypicalReaction] typical_reaction by which the lateral
-      #   reaction will be combined
-      # @param [Array] chunks the parents of building chunk
-      def initialize(typical_reaction, chunks)
-        super(chunks)
-        chunks.each { |ch| store_parent(ch) }
-        @typical_reaction = typical_reaction
+    class DerivativeChunk
+      include Modules::ExtendedCombinator
+      include Modules::ListsComparer
+      include ChunksComparer
+      include NamedChunk
 
-        @_lateral_reaction, @_full_rate, @_tail_name = nil
+      attr_reader :parents, :links, :targets
+
+      # Constructs the chunk by another chunks
+      # @param [DependentTypicalReaction] typical_reaction for which the new lateral
+      #   reaction will be created later
+      # @param [Array] chunks the parents of building chunk
+      # @param [Hash] variants is the full table of chunks combination variants for
+      #   calculate maximal compatible full rate value
+      def initialize(typical_reaction, chunks, variants)
+        @typical_reaction = typical_reaction
+        @parents = chunks
+        @variants = variants
+
+        @targets = merge_targets(chunks)
+        @links = merge_links(chunks)
+
+        @_lateral_reaction, @_tail_name = nil
       end
 
       # Makes the lateral reaction which contain current chunk
       # @return [CombinedLateralReaction] instance of new lateral reaction
       def lateral_reaction
-        @_lateral_reaction ||= CombinedLateralReaction.new(@typical_reaction, self)
+        @_lateral_reaction ||=
+          CombinedLateralReaction.new(@typical_reaction, self, full_rate)
+      end
+
+      # The chunk which created by user described lateral reaction is original
+      # @return [Boolean] true
+      def original?
+        false
+      end
+
+      def inspect
+        "Derivative chunk of #{tail_name}"
+      end
+
+    private
+
+      # Gets set of targets from all passed containers
+      # @param [Array] chunks the list of chunks which targets will be merged
+      # @return [Array] where first item is set of targets and second item is mirror
+      #   of other same targets to targets which presented in first item
+      def merge_targets(chunks)
+        chunks.map { |chunk| chunk.mapped_targets.values.to_set }.reduce(:+)
+      end
+
+      # Merges all links from chunks list
+      # @param [Array] chunks which links will be merged
+      # @return [Hash] the common links hash
+      def merge_links(chunks)
+        used_non_target_specs = []
+
+        chunks.each_with_object({}) do |chunk, acc|
+          used_non_target_specs_mirror = {}
+
+          mirror = -> sa do
+            typical_target = chunk.mapped_targets[sa]
+            if typical_target
+              typical_target
+            else
+              spec, atom = sa
+              cached_spec =
+                if used_non_target_specs_mirror[spec]
+                  used_non_target_specs_mirror[spec]
+                elsif !used_non_target_specs.include?(spec)
+                  used_non_target_specs << spec
+                  used_non_target_specs_mirror[spec] = spec
+                else
+                  veiled_spec = Concepts::VeiledSpec.new(spec)
+                  used_non_target_specs_mirror[spec] = veiled_spec
+                end
+
+              cached_atom = cached_spec.atom(spec.keyname(atom))
+              raise 'Incorrect cached atom' unless cached_atom
+
+              [cached_spec, cached_atom]
+            end
+          end
+
+          chunk.links.each do |spec_atom, rels|
+            key = mirror[spec_atom]
+            acc[key] ||= []
+            acc[key] += rels.map { |t, r| [mirror[t], r] }
+          end
+        end
+      end
+
+      # Gets the list of parents tail names
+      # @return [Array] the list of tail names
+      def tail_names
+        parents.map(&:tail_name)
       end
 
       # Provides full rate of reaction which could be if lateral environment is same
@@ -27,13 +107,26 @@ module VersatileDiamond
       #
       # @return [Float] the rate of reaction which use the current chunk
       def full_rate
-        @_full_rate ||= parents.uniq.map(&:full_rate).max
+        tf_rate = @typical_reaction.full_rate
+        all_possible_combinations(parents).reverse.each do |slice|
+          rates = slice.map do |cs|
+            value = @variants[Multiset.new(cs)]
+            value && value.original? && value.full_rate
+          end
+
+          good_rates = rates.select { |x| x }
+          # selecs maximal different rate
+          return good_rates.max_by { |x| (tf_rate - x).abs } unless good_rates.empty?
+        end
+
+        tf_rate
       end
 
-      # Collecs all names from parent chunks and joins it by 'and' string
-      # @return [String] the combined name by names of there objects from parent chunks
-      def tail_name
-        @_tail_name ||= parents.map(&:tail_name).join(' and ')
+      # Gets all possible combinations of array items
+      # @param [Array] array which items will be combinated
+      # @return [Array] the list of all posible combinations
+      def all_possible_combinations(array)
+        sliced_combinations(array, 1)
       end
     end
 

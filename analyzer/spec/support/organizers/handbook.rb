@@ -117,7 +117,8 @@ module VersatileDiamond
         define_dependents(DependentLateralReaction, [
           :end_lateral_df,
           :middle_lateral_df,
-          :ewb_lateral_df
+          :ewb_lateral_df,
+          :mwb_lateral_df
         ])
 
         define_dependents(DependentThere, [
@@ -128,6 +129,7 @@ module VersatileDiamond
         set(:end_chunk) { dept_end_lateral_df.chunk }
         set(:middle_chunk) { dept_middle_lateral_df.chunk }
         set(:ewb_chunk) { dept_ewb_lateral_df.chunk }
+        set(:mwb_chunk) { dept_mwb_lateral_df.chunk }
       end
 
     end

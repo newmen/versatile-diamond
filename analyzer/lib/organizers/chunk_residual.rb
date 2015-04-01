@@ -25,6 +25,28 @@ module VersatileDiamond
         @owner = owner
         @links = links
         @parents = parents
+
+        @_independent_links, @_independent_chunk = nil
+      end
+
+      # Makes independent chunk from not fully matched residual
+      # @return [IndependentChunk] the chunk which builds from not fully matchde
+      #   residual
+      def independent_chunk
+        return @_independent_chunk if @_independent_chunk
+
+        if fully_matched?
+          raise 'Independent chunk could not be for fully matched residual'
+        end
+
+        @_independent_chunk =
+          IndependentChunk.new(owner, bonded_targets, independent_links)
+      end
+
+      # Checks that current chunk residual is fully matched
+      # @return [Boolean] is fully matched residual or not
+      def fully_matched?
+        parents.empty? || lists_are_identical?(links.keys, targets.to_a, &:==)
       end
 
       # Also checks that parents are equal too
@@ -58,6 +80,26 @@ module VersatileDiamond
           -> { other.parents.size <=> parents.size }
         else
           -> { 1 }
+        end
+      end
+
+      # Gets list of targets which bonded with non target vertices in links graph
+      # @return [Set] the list of bonded targets
+      def bonded_targets
+        targets.each do |tg|
+          if !independent_links[tg] && !links[tg].select { |o, _| links[o] }.empty?
+            raise 'Could not find target'
+          end
+        end
+        targets.select { |tg| independent_links[tg] }.to_set
+      end
+
+      # Collects links for independent chunk
+      # @return [Hash] the links for independent chunk
+      def independent_links
+        @_independent_links ||= links.each_with_object({}) do |(k, rels), acc|
+          linked_rels = rels.select { |o, _| links[o] }
+          acc[k] = linked_rels unless linked_rels.empty?
         end
       end
     end

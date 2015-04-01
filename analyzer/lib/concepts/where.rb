@@ -18,6 +18,9 @@ module VersatileDiamond
       #   added to end of name of lateral reaction
       # @option [Array] :specs the target specific specs
       def initialize(name, description, specs: [])
+        raise 'Description should be a string' unless description.is_a?(String)
+        raise 'Description should not be empty' if description.empty?
+
         super(name)
         @description = description
         @specs = specs

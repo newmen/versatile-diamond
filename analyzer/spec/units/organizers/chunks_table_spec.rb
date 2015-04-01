@@ -9,8 +9,9 @@ module VersatileDiamond
 
       describe '#best' do
         shared_examples_for :check_parents do
-          it { expect(subject.best(chunk)).to be_a(ChunkResidual) }
-          it { expect(subject.best(chunk).parents).to eq(parents) }
+          let(:best) { subject.best(chunk) }
+          it { expect(best).to be_a(ChunkResidual) }
+          it { expect(best.parents).to eq(parents) }
         end
 
         it_behaves_like :check_parents do
@@ -25,7 +26,7 @@ module VersatileDiamond
 
         it_behaves_like :check_parents do
           let(:chunk) { ewb_chunk }
-          let(:parents) { [] }
+          let(:parents) { [end_chunk] }
         end
       end
     end

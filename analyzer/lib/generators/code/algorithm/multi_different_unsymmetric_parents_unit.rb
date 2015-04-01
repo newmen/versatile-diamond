@@ -14,7 +14,7 @@ module VersatileDiamond
           def initialize(*args)
             super
 
-            @_grouped_undependent_parents = nil
+            @_grouped_independent_parents = nil
             @_not_uniq_twin = -1 # because could be nil
           end
 
@@ -35,7 +35,7 @@ module VersatileDiamond
           # @yield should return cpp code string for final condition body
           # @return [String] the string with cpp code
           def define_and_check_all_parents(&block)
-            procs = grouped_undependent_parents.map do |parents|
+            procs = grouped_independent_parents.map do |parents|
               -> &prc { define_and_check_same_parents(parents, &prc) }
             end
 
@@ -119,7 +119,7 @@ module VersatileDiamond
           def similar_defined_parent_with_both_twins(parent, twin)
             similar_parent, target_mirror = nil
             dss = parent.spec
-            grouped_undependent_parents.map(&:first).each do |possible_bigger|
+            grouped_independent_parents.map(&:first).each do |possible_bigger|
               mirror = dss.mirror_to(possible_bigger.spec)
               if mirror.size == dss.links.size
                 similar_parent = possible_bigger
@@ -135,7 +135,7 @@ module VersatileDiamond
           # Gets the parents which depends from other parent species
           # @return [Array] the list of parent species which depends from other parents
           def dependent_parents
-            parent_species - undependent_parents
+            parent_species - independent_parents
           end
 
           # Groups dependent parent species by original specie code generator
@@ -145,15 +145,15 @@ module VersatileDiamond
           end
 
           # Gets the parents which are not dependend from other parent species
-          # @return [Array] the list of undependent parent species
-          def undependent_parents
-            grouped_undependent_parents.flatten
+          # @return [Array] the list of independent parent species
+          def independent_parents
+            grouped_independent_parents.flatten
           end
 
-          # Gets the list of undependent parents grouped by original specie
+          # Gets the list of independent parents grouped by original specie
           # @return [Array] the array where each item is array of same species
-          def grouped_undependent_parents
-            return @_grouped_undependent_parents if @_grouped_undependent_parents
+          def grouped_independent_parents
+            return @_grouped_independent_parents if @_grouped_independent_parents
 
             sorted_parents = parent_species.sort
             result = []
@@ -170,7 +170,7 @@ module VersatileDiamond
               result << smallests
             end
 
-            @_grouped_undependent_parents = result
+            @_grouped_independent_parents = result
           end
 
           # Makes code string with calling of engine method that names specsByRole
