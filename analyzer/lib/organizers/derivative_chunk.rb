@@ -108,7 +108,8 @@ module VersatileDiamond
       # @return [Float] the rate of reaction which use the current chunk
       def full_rate
         tf_rate = @typical_reaction.full_rate
-        all_possible_combinations(parents).reverse.each do |slice|
+        original_parents = parents.select(&:original?)
+        all_possible_combinations(original_parents).reverse.each do |slice|
           rates = slice.map do |cs|
             value = @variants[Multiset.new(cs)]
             value && value.original? && value.full_rate

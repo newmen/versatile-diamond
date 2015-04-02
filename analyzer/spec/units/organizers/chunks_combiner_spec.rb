@@ -35,7 +35,7 @@ module VersatileDiamond
 
           reaction = reactions.first
           expect(reaction.class).to eq(CombinedLateralReaction)
-          expect(reaction.full_rate).to eq(33.0)
+          expect(reaction.full_rate).to eq(4.0)
           expect(reaction.chunk.parents.size).to eq(3)
         end
       end
