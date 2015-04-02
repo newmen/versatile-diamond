@@ -23,7 +23,7 @@ module VersatileDiamond
       def combine(chunks)
         variants = recombine_variants(collect_variants(chunks))
         unregistered_chunks = variants.values.select do |chunk|
-          chunk && !chunks.include?(chunk)
+          chunk && !(chunks.include?(chunk) && chunk.original?)
         end
 
         unregistered_chunks.map(&:lateral_reaction)
@@ -35,7 +35,7 @@ module VersatileDiamond
       # @param [Array] chunks from which the variants will be collected
       # @return [Hash] the initial hash of combination variants
       def collect_variants(chunks)
-        variants = Hash[chunks.map { |ch| [Multiset[ch], (!ch.original? && ch)] }]
+        variants = Hash[chunks.map { |ch| [Multiset[ch], ch] }]
         dependent_chunks = chunks.reject { |ch| ch.parents.empty? }
         dependent_chunks.each_with_object(variants) do |dept_ch, acc|
           acc[Multiset.new(dept_ch.parents)] = dept_ch

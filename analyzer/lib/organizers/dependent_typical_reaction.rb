@@ -23,7 +23,7 @@ module VersatileDiamond
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
         lateral_reactions.each do |possible|
-          lateral.store_parent(self) if reaction.same_positions?(possible.reaction)
+          possible.store_parent(self) if reaction.same_positions?(possible.reaction)
         end
       end
 
@@ -54,7 +54,9 @@ module VersatileDiamond
       # @return [Array] the list of all different chunks which could take plase on
       #   surface under simulation
       def organize_chunks!(chunks)
-        raise 'Same chunks presented' if chunks.combination(2).any?(&:same?)
+        if chunks.combination(2).any? { |a, b| a.same?(b) }
+          raise 'Same chunks presented'
+        end
 
         table = ChunksTable.new(chunks)
         chunks + chunks.reduce([]) do |independent_chunks, chunk|

@@ -36,9 +36,7 @@ module VersatileDiamond
 
           describe '#parents' do
             it 'each complex have a parents' do
-              children.each do |complex|
-                expect(complex.parents).to eq([reaction])
-              end
+              children.each { |complex| expect(complex.parent).to eq(reaction) }
             end
           end
 
@@ -49,12 +47,37 @@ module VersatileDiamond
 
         it_behaves_like :organize_and_check do
           let(:reaction) { dept_dimer_formation }
-          let(:children) { [dept_end_lateral_df] }
+          let(:children) { lateral_reactions }
         end
 
         it_behaves_like :organize_and_check do
           let(:reaction) { dept_methyl_desorption }
           let(:children) { [] }
+        end
+      end
+
+      describe '#combine_children_laterals!' do
+        let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
+        before do
+          Tools::Config.surface_temperature(0, 'C')
+          dimer_formation.rate = 1
+          end_lateral_df.rate = 22
+          ewb_lateral_df.rate = 3
+
+          dept_dimer_formation.organize_dependencies!(lateral_reactions)
+          subject # do combination and organization
+        end
+
+        subject { dept_dimer_formation.combine_children_laterals! }
+
+        it 'chunks are organized and subject contain array of new lateral reactions' do
+          expect(end_chunk.parents).to be_empty
+          expect(ewb_chunk.parents).to include(end_chunk)
+          expect(ewb_chunk.parents).not_to eq([end_chunk] * 2)
+          expect(ewb_chunk.parents.size).to eq(2)
+
+          # expect(subject.size).to eq(2)
+          expect(subject.map(&:full_rate)).to match_array([1.0, 22.0, 22.0])
         end
       end
     end

@@ -31,12 +31,11 @@ module VersatileDiamond
 
         let(:reactions) { subject.combine(chunks) }
         it 'check all combined reactions properties' do
-          expect(reactions.size).to eq(1)
+          expect(reactions.size).to eq(2)
 
-          reaction = reactions.first
-          expect(reaction.class).to eq(CombinedLateralReaction)
-          expect(reaction.full_rate).to eq(4.0)
-          expect(reaction.chunk.parents.size).to eq(3)
+          expect(reactions.map(&:class).uniq).to eq([CombinedLateralReaction])
+          expect(reactions.map(&:full_rate)).to match_array([4.0, 1.0])
+          expect(reactions.map { |r| r.chunk.parents.size }).to match_array([3, 0])
         end
       end
     end

@@ -127,7 +127,7 @@ module VersatileDiamond
       # @param [Array] array which items will be combinated
       # @return [Array] the list of all posible combinations
       def all_possible_combinations(array)
-        sliced_combinations(array, 1)
+        sliced_combinations(array, 1).map(&:uniq)
       end
     end
 
