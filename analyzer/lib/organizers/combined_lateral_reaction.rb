@@ -6,7 +6,9 @@ module VersatileDiamond
     # Describes lateral reaction which creates by chunks combinations
     class CombinedLateralReaction
       include LateralReactionInstance
+      extend Forwardable
 
+      def_delegator :parent, :local?
       attr_reader :chunk, :full_rate
 
       # Initializes combined lateral reaction

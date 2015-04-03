@@ -8,6 +8,10 @@ module VersatileDiamond
       let(:ind_chunk) { (ewb_chunk - end_chunk).independent_chunk }
       let(:lat_react) { described_class.new(parent, ind_chunk, 42) }
 
+      describe '#local?' do
+        it { expect(lat_react.local?).to be_falsey }
+      end
+
       describe '#lateral?' do
         it { expect(lat_react.lateral?).to be_truthy }
       end

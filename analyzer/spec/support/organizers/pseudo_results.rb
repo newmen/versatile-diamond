@@ -13,13 +13,18 @@ module VersatileDiamond
         # @param [Hash] depts see at #stub_generator same argument
         # @return [RSpec::Mocks::Double] same as original analysis results
         def stub_results(**depts)
-          results = double('pseudo_analysis_results')
-          fix(depts).each do |method_name, list|
-            allow(results).to receive(method_name).and_return(list)
+          fixed_depts = fix(depts).each_with_object({}) do |(method_name, list), acc|
+            acc[method_name] = list
           end
 
-          sort_depts(depts).each do |method_name, list|
-            send(:"organize_#{method_name}", results) unless list.empty?
+          results = double('pseudo_analysis_results')
+          sort_depts(fixed_depts).each do |method_name, list|
+            if !list.empty? && organization_keys.include?(method_name)
+              orgres = send(:"organize_#{method_name}", fixed_depts)
+              list += orgres if method_name == :lateral_reactions
+            end
+
+            allow(results).to receive(method_name).and_return(list)
           end
 
           results
@@ -27,12 +32,23 @@ module VersatileDiamond
 
       private
 
+        # The list of methods which data could be organized. Should be correspond to
+        # methods which described at end of current module
+        #
+        # @return [Set] the list of method names which data could be organized
+        def organization_keys
+          Set[
+            :base_specs, :specific_specs,
+            :ubiquitous_reactions, :typical_reactions, :lateral_reactions
+          ]
+        end
+
         # Provides default keys (names of analysis result methods)
         # @return [Array] the list of default keys
         def default_keys
           [
             :base_specs, :specific_specs, :term_specs,
-            :ubiquitous_reactions, :lateral_reactions, :typical_reactions
+            :ubiquitous_reactions, :typical_reactions, :lateral_reactions
           ]
         end
 
@@ -160,38 +176,41 @@ module VersatileDiamond
         end
 
         # Organizes dependencies between wrapped base species
-        def organize_base_specs(res)
-          organize_base_specs_dependencies!(res.base_specs)
+        def organize_base_specs(depts)
+          organize_base_specs_dependencies!(depts[:base_specs])
         end
 
         # Organizes dependencies between wrapped specific species
-        def organize_specific_specs(res)
-          base_cache = make_cache(res.base_specs)
-          not_simple_specs = res.specific_specs.reject(&:simple?)
+        def organize_specific_specs(depts)
+          base_cache = make_cache(depts[:base_specs])
+          not_simple_specs = depts[:specific_specs].reject(&:simple?)
           organize_specific_specs_dependencies!(base_cache, not_simple_specs)
         end
 
         # Organizes dependencies between wrapped ubiquitous reactions
-        def organize_ubiquitous_reactions(res)
-          term_ss = make_cache(res.term_specs)
-          non_term_ss = make_cache(res.base_specs)
-          non_term_ss = non_term_ss.merge(make_cache(res.specific_specs))
+        def organize_ubiquitous_reactions(depts)
+          term_ss = make_cache(depts[:term_specs])
+          non_term_ss = make_cache(depts[:base_specs])
+          non_term_ss = non_term_ss.merge(make_cache(depts[:specific_specs]))
           reactions_lists = [
-            res.ubiquitous_reactions, res.typical_reactions, res.lateral_reactions
+            depts[:ubiquitous_reactions],
+            depts[:typical_reactions],
+            depts[:lateral_reactions]
           ]
 
           organize_ubiquitous_reactions_deps!(term_ss, non_term_ss, *reactions_lists)
         end
 
         # Organizes dependencies between typical reactions
-        def organize_typical_reactions(res)
-          reactions_lists = [res.typical_reactions, res.lateral_reactions]
-          organize_typical_reactions_deps!(*reactions_lists)
+        def organize_typical_reactions(depts)
+          return @_combined_reactions if @_combined_reactions
+          reactions_lists = [depts[:typical_reactions], depts[:lateral_reactions]]
+          @_combined_reactions = organize_complex_reactions_deps!(*reactions_lists)
         end
 
         # Organizes dependencies between lateral reactions
-        def organize_lateral_reactions(res)
-          organize_lateral_reactions_deps!(res.lateral_reactions)
+        def organize_lateral_reactions(depts)
+          organize_typical_reactions(depts)
         end
       end
     end
