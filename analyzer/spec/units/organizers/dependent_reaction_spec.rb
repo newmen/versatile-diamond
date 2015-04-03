@@ -24,7 +24,7 @@ module VersatileDiamond
       end
 
       describe '#parents' do
-        it { expect(subject.parents).to be_empty }
+        it { expect(subject.parent).to be_nil }
       end
 
       describe '#name' do

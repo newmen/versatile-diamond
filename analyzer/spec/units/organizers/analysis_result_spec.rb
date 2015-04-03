@@ -105,16 +105,6 @@ module VersatileDiamond
         end
       end
 
-      describe 'lateral entities' do
-        before { store_reactions }
-
-        describe '#theres' do
-          it { expect(subject.theres.map(&:class)).to eq([DependentThere] * 2) }
-          it { expect(subject.theres.map(&:lateral_reaction).map(&:reaction)).
-            to match_array([end_lateral_df, middle_lateral_df]) }
-        end
-      end
-
       describe 'specs' do
         let(:mono_method) { method.to_s[0..-2].to_sym }
 
@@ -364,30 +354,34 @@ module VersatileDiamond
           describe '#organize_reactions_dependencies!' do
             before { store_reactions }
 
-            shared_examples_for :expect_complex do
+            describe 'ubiquitous' do
+              let(:reaction) { subject.ubiquitous_reactions.first }
+              let(:complex) { subject.typical_reactions.first }
               it { expect(reaction.children).to eq([complex]) }
             end
 
-            describe 'ubiquitous' do
-              it_behaves_like :expect_complex do
-                let(:reaction) { subject.ubiquitous_reactions.first }
-                let(:complex) { subject.typical_reactions.first }
-              end
-            end
-
             describe 'typical' do
-              it_behaves_like :expect_complex do
-                # index of reactions see in comments of #store_reactions method
-                let(:reaction) { subject.typical_reactions[5] }
-                let(:complex) { subject.lateral_reactions.first }
-              end
+              # index of reactions see in comments of #store_reactions method
+              let(:reaction) { subject.typical_reactions[5] }
+              it { expect(reaction.children).to eq(subject.lateral_reactions) }
             end
 
             describe 'lateral' do
-              it_behaves_like :expect_complex do
-                # index of reactions see in comments of #store_reactions method
-                let(:reaction) { subject.lateral_reactions.first }
-                let(:complex) { subject.lateral_reactions.last }
+              before do
+                ewb_lateral_df.rate = 8
+                Tools::Chest.store(ewb_lateral_df)
+              end
+
+              it 'check several properties of lateral reactions list' do
+                expect(subject.lateral_reactions.map(&:class).uniq).
+                  to match_array([DependentLateralReaction, CombinedLateralReaction])
+
+                expect(subject.lateral_reactions.map(&:full_rate)).
+                  to match_array([6.0, 7.0, 8.0, 7.0, 4.0])
+
+                common_parents = subject.lateral_reactions.map(&:parent).uniq
+                expect(common_parents.size).to eq(1)
+                expect(common_parents.first).not_to be_nil
               end
             end
 

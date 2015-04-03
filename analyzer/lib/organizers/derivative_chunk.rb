@@ -19,6 +19,8 @@ module VersatileDiamond
       #   calculate maximal compatible full rate value
       def initialize(typical_reaction, chunks, variants)
         @typical_reaction = typical_reaction
+
+        raise 'Derivative chunk should have more that one parent' if chunks.size < 2
         @parents = chunks
         @variants = variants
 

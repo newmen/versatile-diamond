@@ -15,8 +15,7 @@ module VersatileDiamond
         def initialize(first, second); @first, @second = first, second end
       end
 
-      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions,
-        :theres
+      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions
 
       # Collects results of interpretations from Chest to internal storage and
       # organizes dependencies between collected concepts
@@ -55,6 +54,8 @@ module VersatileDiamond
       end
 
     private
+
+      attr_reader :theres
 
       # Wraps reactions from Chest
       # @param [Class] the class that inherits DependentReaction
@@ -203,10 +204,16 @@ module VersatileDiamond
       # Organize dependencies between all stored reactions.
       # Also organize dependencies between termination species and their complex
       # parents.
+      # The lateral reactions which was missed by user and which could be is combined.
+      # Combined lateral reactions extends initial list of lateral reactions.
       def organize_all_reactions_dependencies!
         nt_spec_cache = @specific_specs.merge(@base_specs)
         reactions_lists = [ubiquitous_reactions, typical_reactions, lateral_reactions]
-        organize_reactions_dependencies!(@term_specs, nt_spec_cache, *reactions_lists)
+
+        combined_lateral_reactions =
+          organize_reactions_dependencies!(@term_specs, nt_spec_cache, *reactions_lists)
+
+        @lateral_reactions += combined_lateral_reactions
       end
     end
 

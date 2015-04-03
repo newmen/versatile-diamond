@@ -111,40 +111,6 @@ module VersatileDiamond
         spec.links
       end
 
-      # Collects list of similar there objects there each item of list is group of
-      # object which similar by positions
-      #
-      # @return [Array] the list of groups of similar there objects
-      def similar_theres
-        return @_similar_theres if @_similar_theres
-
-        pairs = theres.combination(2).select { |a, b| a.same_own_positions?(b) }
-        @_similar_theres = pairs.reduce([]) do |acc, pair|
-          same = acc.find { |pr| pair.any? { |x| pr.include?(x) } }
-          if same
-            group = (same + pair).uniq
-            # TODO: move this check to grabbing analysis result step
-            roots = find_root_theres(group)
-            if roots.size > 1
-              descs = roots.map(&:to_s).join(' | ').map { |ds| %Q("#{ds}") }
-              raise "Similar theres detected (#{descs})"
-            end
-
-            acc - [same] + [group]
-          else
-            acc << pair
-          end
-        end
-      end
-
-      # Collects different root there objects
-      # @return [Array] the list of root there objects
-      def root_theres
-        @_root_theres ||= similar_theres.reduce([]) do |acc, group|
-          acc + find_root_theres(group)
-        end
-      end
-
       def to_s
         "(#{name}, [#{parents.map(&:name).join(' ')}], " +
           "[#{children.map(&:name).join(' ')}])"
@@ -196,15 +162,6 @@ module VersatileDiamond
       def straighten_graph(links)
         links.each_with_object({}) do |(atom, relations), result|
           result[atom] = relations + atom.additional_relations
-        end
-      end
-
-      # Selects root theres from passed group of theres
-      # @param [Array] group of theres
-      # @return [Array] the list of root there objects
-      def find_root_theres(group)
-        group.select do |there|
-          (group - [there]).all? { |th| !there.cover?(th) }
         end
       end
 

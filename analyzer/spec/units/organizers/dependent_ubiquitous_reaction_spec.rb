@@ -54,7 +54,7 @@ module VersatileDiamond
           end
 
           describe '#parents' do
-            it { expect(complex.parents).to eq([target]) }
+            it { expect(complex.parent).to eq(target) }
           end
 
           describe '#children' do

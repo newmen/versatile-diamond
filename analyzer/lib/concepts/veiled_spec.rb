@@ -30,6 +30,13 @@ module VersatileDiamond
       def atom(keyname)
         @atoms_to_veiled[original.atom(keyname)]
       end
+
+      # Gets correct keyname of veiled atom
+      # @param [VeiledAtom] atom for which the keyname will be found
+      # @return [Symbol] the keyname of atom
+      def keyname(atom)
+        original.keyname(atom.original)
+      end
     end
 
   end
