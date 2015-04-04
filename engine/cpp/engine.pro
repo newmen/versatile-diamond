@@ -132,16 +132,13 @@ SOURCES += \
     tools/yaml_config_reader.cpp \
     savers/dump/dump_saver.cpp \
     savers/dump/dump_reader.cpp \
-    tools/savers_runner.cpp \
     savers/decorator/soul.cpp \
     savers/decorator/item_wrapper.cpp \
-    savers/decorator/volume_saver_item.cpp \
     savers/volume_savers_builder.cpp \
-    savers/decorator/integral_saver_item.cpp \
-    savers/decorator/dump_saver_item.cpp \
     savers/integral_saver_builder.cpp \
     tools/treker.cpp \
-    savers/dump_saver_builder.cpp
+    savers/dump_saver_builder.cpp \
+    savers/savers_builder.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -342,11 +339,8 @@ HEADERS += \
     savers/decorator/queue_item.h \
     savers/decorator/soul.h \
     savers/decorator/item_wrapper.h \
-    savers/decorator/volume_saver_item.h \
     savers/savers_builder.h \
     savers/volume_savers_builder.h \
-    savers/decorator/integral_saver_item.h \
-    savers/decorator/dump_saver_item.h \
     savers/integral_saver_builder.h \
     tools/treker.h \
     savers/dump_saver_builder.h

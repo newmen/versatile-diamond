@@ -26,8 +26,8 @@ public:
         _y(y),
         _detector(detector) { _dmpSaver = new DumpSaver(); }
 
-    QueueItem* wrapItem(QueueItem* item);
-    void save(const Amorph* amorph, const Crystal* crystal, double currentTime);
+    QueueItem* wrapItem(QueueItem* item) override;
+    void save(const Amorph* amorph, const Crystal* crystal, double currentTime, double diffTime) override;
 };
 
 }

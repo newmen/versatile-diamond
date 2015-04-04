@@ -2,6 +2,7 @@
 #define LOCAL_H
 
 #include <atoms/atom.h>
+#include "../handbook.h"
 using namespace vd;
 
 template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>

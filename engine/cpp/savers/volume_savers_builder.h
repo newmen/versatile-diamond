@@ -19,8 +19,8 @@ public:
         _detector(detector),
         _volumeSaverType(saverType) { _saver = takeSaver(_volumeSaverType); }
 
-    void save(const Amorph *amorph, const Crystal *crystal, double currentTime);
-    QueueItem* wrapItem(QueueItem* item);
+    void save(const Amorph *amorph, const Crystal *crystal, double currentTime, double diffTime) override;
+    QueueItem* wrapItem(QueueItem* item) override;
 private:
     VolumeSaver* takeSaver(std::string volumeSaverType);
 };

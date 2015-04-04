@@ -61,7 +61,7 @@ T YAMLConfigReader::recursiveRead(const YAML::Node &node, const char *key, Args.
 template <class... Args>
 bool YAMLConfigReader::recursiveIsDefined(const YAML::Node &node, const char *key, Args... args) const
 {
-    return isDefined(node[key], args...);
+    return recursiveIsDefined(node[key], args...);
 }
 
 }

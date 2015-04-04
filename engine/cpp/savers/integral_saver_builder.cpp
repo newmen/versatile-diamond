@@ -8,9 +8,10 @@ QueueItem *IntegralSaverBuilder::wrapItem(QueueItem *item)
     return new IntegralSaverItem(item, *this);
 }
 
-void IntegralSaverBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime)
+void IntegralSaverBuilder::save(const Amorph *, const Crystal *crystal, double currentTime, double diffTime)
 {
-    csSaver.writeBySlicesOf(crystal, currentTime);
+    if (isNeedSave(diffTime))
+        csSaver.writeBySlicesOf(crystal, currentTime);
 }
 
 }

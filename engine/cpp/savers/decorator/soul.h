@@ -7,18 +7,20 @@ namespace vd {
 
 class Soul : public QueueItem
 {
-    Amorph* _amorph;
-    Crystal* _crystal;
+    const Amorph* _amorph;
+    const Crystal* _crystal;
     bool _isDataCopied = false;
 
 public:
-    Soul(Amorph* amorph, Crystal* crystal) : _amorph(amorph), _crystal(crystal) {}
+    Soul(const Amorph* amorph, const Crystal* crystal) : _amorph(amorph), _crystal(crystal) {}
 
-    void copyData();
-    void saveData();
-    Amorph* amorph();
-    Crystal* crystal();
-    bool isEmpty() { return true; }
+    void copyData() override;
+    void saveData(double, double) override;
+    const Amorph *amorph() override;
+    const Crystal *crystal() override;
+    bool isEmpty() override { return true; }
+
+    ~Soul();
 };
 
 }

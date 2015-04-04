@@ -6,20 +6,20 @@ void Soul::copyData()
 {
     if (!_isDataCopied)
     {
-        _amorph = new Amorph(_amorph);
+        _amorph = new Amorph(&_amorph);
         _crystal = new Crystal(_crystal);
         _isDataCopied = true;
     }
 }
 
-void Soul::saveData() {}
+void Soul::saveData(double, double) {}
 
-Amorph *Soul::amorph()
+const Amorph *Soul::amorph()
 {
     return _amorph;
 }
 
-Crystal *Soul::crystal()
+const Crystal *Soul::crystal()
 {
     return _crystal;
 }

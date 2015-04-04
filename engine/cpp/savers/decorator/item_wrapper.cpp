@@ -9,6 +9,13 @@ void ItemWrapper::copyData()
     _target->copyData();
 }
 
+void ItemWrapper::saveData(double currentTime, double diffTime)
+{
+    _svBuilder->save(amorph(),crystal(), currentTime, diffTime);
+
+    _target->saveData(currentTime, diffTime);
+}
+
 Amorph *ItemWrapper::amorph()
 {
     return _target->amorph();

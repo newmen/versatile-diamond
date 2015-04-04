@@ -8,9 +8,10 @@ QueueItem *DumpSaverBuilder::wrapItem(QueueItem *item)
     return new DumpSaverItem(item, *this);
 }
 
-void DumpSaverBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime)
+void DumpSaverBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime, double diffTime)
 {
-    dmpSaver.save(_x, _y,currentTime, amorph, crystal, _detector);
+    if (isNeedSave(diffTime))
+        dmpSaver.save(_x, _y,currentTime, amorph, crystal, _detector);
 }
 
 }

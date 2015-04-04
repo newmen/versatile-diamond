@@ -13,10 +13,11 @@ class ItemWrapper : public QueueItem
 public:
     ItemWrapper(QueueItem* targ, SaversBuilder* svBuilder) : _target(targ), _svBuilder(svBuilder) {}
 
-    void copyData();
-    Amorph* amorph();
-    Crystal* crystal();
-    bool isEmpty() { return false; }
+    void copyData() override;
+    void saveData(double currentTime, double diffTime) override;
+    Amorph* amorph() override;
+    Crystal* crystal() override;
+    bool isEmpty() override { return false; }
 };
 
 }

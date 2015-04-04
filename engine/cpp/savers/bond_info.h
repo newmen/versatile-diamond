@@ -1,7 +1,7 @@
 #ifndef BOND_INFO_H
 #define BOND_INFO_H
 
-#include "../../tools/common.h"
+#include "../tools/common.h"
 
 namespace vd
 {

@@ -4,9 +4,10 @@
 
 namespace vd {
 
-void VolumeSaversBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime)
+void VolumeSaversBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime, double diffTime)
 {
-    takeSaver(_volumeSaverType)->save(currentTime, amorph, crystal, _detector);
+    if (isNeedSave(diffTime))
+        takeSaver(_volumeSaverType)->save(currentTime, amorph, crystal, _detector);
 }
 
 QueueItem *VolumeSaversBuilder::wrapItem(QueueItem* item)

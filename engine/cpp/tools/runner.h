@@ -5,12 +5,9 @@
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
 #include "../hand-generations/src/handbook.h"
-#include "process_mem_usage.h"
 #include "../phases/behavior_factory.h"
-#include "savers/crystal_slice_saver.h"
-#include "../savers/dump/dump_saver.h"
+#include "process_mem_usage.h"
 #include "init_config.h"
-#include "treker.h"
 #include "common.h"
 
 namespace vd
@@ -38,9 +35,8 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
+    QueueItem *createBuilders(const std::initializer_list<ushort> &types, const Amorph *amorph, const Crystal *crystal);
     double activesRatio(const Crystal *crystal) const;
-    void saveVolume(const Crystal *crystal);
-    Treker *createBuilders(const std::initializer_list<ushort> types);
 
     std::string filename() const;
     double timestamp() const;
@@ -84,8 +80,6 @@ template <class HB>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
-    CrystalSliceSaver csSaver(_init.filename().c_str(), _init.x * _init.y, types);
-
     typename HB::SurfaceCrystal *surfaceCrystal = initCrystal();
 
     auto outLambda = [this, surfaceCrystal]() {
@@ -104,24 +98,20 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     };
 
     ullong steps = 0;
-    double timeCounter = 0;
-    uint volumeSaveCounter = 0;
+    uint saveCounter = 0;
+    double currentTime = 0, dt = 0;
+    QueueItem *saver = createBuilders(types, &HB::amorph(), surfaceCrystal);
 
-    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
-        csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
-
-        if (_init.volumeSaver)
+    auto storeLambda = [this, steps, &currentTime, &dt, &saveCounter, saver](bool forseSaveVolume) {
+        if (saveCounter == 0 || forseSaveVolume)
         {
-            if (volumeSaveCounter == 0 || forseSaveVolume)
-            {
-                saveVolume(surfaceCrystal);
-            }
-            if (++volumeSaveCounter == 10)
-            {
-                volumeSaveCounter = 0;
-            }
+            saver->saveData(currentTime, dt);
         }
-    };
+        if (++saveCounter == 10)
+        {
+            saveCounter = 0;
+        }
+     };
 
     RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
 
@@ -134,9 +124,9 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 
     double startTime = timestamp();
 
-    while (!__stopCalculating && HB::mc().totalTime() <= _totalTime)
+    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime)
     {
-        double dt = HB::mc().doRandom(&mcData);
+        dt = HB::mc().doRandom(&mcData);
 
 #ifdef PRINT
         debugPrint([&](std::ostream &os) {
@@ -155,13 +145,8 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         }
         else
         {
-            timeCounter += dt;
-            if (timeCounter >= _init.eachTime)
-            {
-                timeCounter = 0;
-                outLambda();
-                storeLambda(false);
-            }
+            currentTime += dt;
+            storeLambda(false);
         }
 #endif // NOUT
     }
@@ -169,7 +154,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     double stopTime = timestamp();
 
 #ifndef NOUT
-    if (timeCounter > 0)
+    if (currentTime > 0)
     {
         outLambda();
         storeLambda(true);
@@ -179,6 +164,40 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
+}
+
+template <class HB>
+QueueItem *Runner<HB>::createBuilders(const std::initializer_list<ushort> &types, const Amorph *amorph, const Crystal *crystal)
+{
+    DetectorFactory<HB> detFactory;
+    Treker* treker;
+
+    if (_init.yamlReader->isDefined("integral", "step"))
+    {
+        treker->addItem(new IntegralSaverBuilder(_init.name.c_str(), _init.x * _init.y, types, _init.yamlReader->read<double>("integral", "step")));
+    }
+
+    if (_init.yamlReader->isDefined("dump", "step"))
+    {
+        treker->addItem(new DumpSaverBuilder(_init.x, _init.y, detFactory.create(_init.yamlReader->read<std::string>("dump", "detector")), _init.yamlReader->read<double>("dump", "step")));
+    }
+
+    if (_init.yamlReader->isDefined("mol", "step"))
+    {
+        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader->read<std::string>("mol", "detector")), "mol", _init.yamlReader->read<double>("mol", "step")));
+    }
+
+    if (_init.yamlReader->isDefined("sdf", "step"))
+    {
+        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader->read<std::string>("sdf", "detector")), "sdf", _init.yamlReader->read<double>("sdf", "step")));
+    }
+
+    if (_init.yamlReader->isDefined("xyz", "step"))
+    {
+        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader->read<std::string>("xyz", "detector")), "xyz", _init.yamlReader->read<double>("xyz", "step")));
+    }
+
+    return treker->takeItem(new Soul(amorph, crystal));
 }
 
 template <class HB>
@@ -194,52 +213,6 @@ double Runner<HB>::activesRatio(const Crystal *crystal) const
     HB::amorph().eachAtom(lambda);
     crystal->eachAtom(lambda);
     return (double)actives / (actives + hydrogens);
-}
-
-template <class HB>
-void Runner<HB>::saveVolume(const Crystal *crystal)
-{
-    _init.volumeSaver->save(HB::mc().totalTime(), &HB::amorph(), crystal, _init.detector);
-    if (_init.saveDump)
-    {
-        DumpSaver dpSaver;
-        Detector *detector = new SurfaceDetector<Handbook>;
-        dpSaver.save(_init.x, _init.y, HB::mc().totalTime(), &HB::amorph(), crystal, detector);
-    }
-}
-
-template <class HB>
-Treker* Runner::createBuilders(const std::initializer_list<ushort> types)
-{
-    DetectorFactory<HB> detFactory;
-    Treker* treker;
-
-    if (_init.yamlReader.isDefined("integral", "step"))
-    {
-        treker->addItem(new IntegralSaverBuilder(_init.name, _init.x * _init.y, types, _init.yamlReader.read<double>("integral", "step")));
-    }
-
-    if (yamlReader.isDefined("dump", "step"))
-    {
-        treker->addItem(new DumpSaverBuilder(_init.x, _init.y, detFactory.create(_init.yamlReader.read<std::string>("mol", "detector")), _init.yamlReader.read<double>("dump", "step")));
-    }
-
-    if (yamlReader.isDefined("mol", "step"))
-    {
-        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader.read<std::string>("mol", "detector")), "mol", _init.yamlReader.read<double>("mol", "step")));
-    }
-
-    if (yamlReader.isDefined("sdf", "step"))
-    {
-        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader.read<std::string>("sdf", "detector")), "sdf", _init.yamlReader.read<double>("sdf", "step")));
-    }
-
-    if (yamlReader.isDefined("xyz", "step"))
-    {
-        treker->addItem(new VolumeSaversBuilder(detFactory.create(_init.yamlReader.read<std::string>("xyz", "detector")), "xyz", _init.yamlReader.read<double>("xyz", "step")));
-    }
-
-    return treker;
 }
 
 template <class HB>

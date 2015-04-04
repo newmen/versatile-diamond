@@ -16,7 +16,7 @@ class IntegralSaverBuilder : public SaversBuilder
 public:
     IntegralSaverBuilder(const char *name,
                          uint sliceMaxNum,
-                         std::initializer_list<ushort> targetTypes,
+                         const std::initializer_list<ushort> &targetTypes,
                          double step) :
         SaversBuilder(step),
         _name(name),
@@ -26,8 +26,8 @@ public:
         csSaver = new CrystalSliceSaver(_name, _sliceMaxNum, _targetTypes);
     }
 
-    QueueItem* wrapItem(QueueItem* item);
-    void save(const Amorph *amorph, const Crystal *crystal, double currentTime);
+    QueueItem* wrapItem(QueueItem* item) override;
+    void save(const Amorph*, const Crystal *crystal, double currentTime, double diffTime) override;
 };
 
 }
