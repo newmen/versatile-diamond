@@ -124,8 +124,14 @@ module VersatileDiamond
       # @param [UbiquitousReaction] other reaction with which comparison
       # @return [Boolean] the result of comparing
       def same?(other)
-        self.class == other.class &&
-          lists_are_identical?(source, other.source, &:same?) &&
+        self.class == other.class && same_specs?(other)
+      end
+
+      # Checks that current and other reactions have same source and product specs
+      # @param [UbiquitousReaction] other comparing reaction
+      # @return [Boolean] are same specs or not
+      def same_specs?(other)
+        lists_are_identical?(source, other.source, &:same?) &&
           lists_are_identical?(products, other.products, &:same?)
       end
 

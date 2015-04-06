@@ -4,7 +4,6 @@ module VersatileDiamond
     # Contain some there and provides behavior for dependent entities set
     class DependentThere
       include Modules::SpecLinksAdsorber
-      include Modules::OrderProvider
       extend Forwardable
 
       def_delegators :there, :description, :swap_source, :use_similar_source?
@@ -16,13 +15,6 @@ module VersatileDiamond
         @there = there
 
         @_links = nil
-      end
-
-      # Compares two there objects
-      # @param [DependentThere] other comparing there object
-      # @return [Integer] the comparison result
-      def <=> (other)
-        order(self, other, :links_num)
       end
 
       # Gets the extendes links of there object with links of sidepiece species
@@ -74,15 +66,10 @@ module VersatileDiamond
         there.same_own_positions?(other.there)
       end
 
-    protected
+    private
 
       attr_reader :there
 
-      # Gets the number of used relations
-      # @return [Integer] the number of used relations
-      def links_num
-        there.links.reduce(0) { |acc, (_, rels)| acc + 1 + rels.size }
-      end
     end
 
   end

@@ -35,22 +35,6 @@ module VersatileDiamond
         it { subject.full_rate == target.full_rate }
       end
 
-      describe '#<=>' do
-        it { expect(dept_surface_deactivation <=> dept_surface_activation).to eq(-1) }
-        it { expect(dept_surface_activation <=> dept_surface_deactivation).to eq(1) }
-        it { expect(dept_dimer_formation <=> dept_hydrogen_migration).to eq(-1) }
-        it { expect(dept_hydrogen_migration <=> dept_dimer_formation).to eq(1) }
-        it { expect(dept_end_lateral_df <=> dept_middle_lateral_df).to eq(-1) }
-        it { expect(dept_middle_lateral_df <=> dept_end_lateral_df).to eq(1) }
-
-        it { expect(dept_surface_activation <=> dept_dimer_formation).to eq(-1) }
-        it { expect(dept_dimer_formation <=> dept_surface_activation).to eq(1) }
-        it { expect(dept_surface_activation <=> dept_end_lateral_df).to eq(-1) }
-        it { expect(dept_end_lateral_df <=> dept_surface_activation).to eq(1) }
-        it { expect(dept_dimer_formation <=> dept_end_lateral_df).to eq(-1) }
-        it { expect(dept_end_lateral_df <=> dept_dimer_formation).to eq(1) }
-      end
-
       describe '#each_source' do
         it { expect(subject.each_source).to be_a(Enumerable) }
 

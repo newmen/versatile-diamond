@@ -13,6 +13,14 @@ module VersatileDiamond
 
         LISTS_NAMES = INST_NAMES.map { |name| "#{name}s" }.freeze
 
+        # Initializes the internal caches
+        def initialize(*)
+          super
+
+          @_base_species, @_specific_species = nil
+          @_ubiquitous_reactions, @_typical_reactions, @_lateral_reactions = nil
+        end
+
         # Define all methods that gets sizes of lists
         LISTS_NAMES.each do |name|
           define_method(:"#{name}_num") { send(name.to_sym).size }
@@ -74,47 +82,56 @@ module VersatileDiamond
         # Gets the list of base specie code generator instances
         # @return [Array] the list of base species
         def base_species
-          species_classes(generator.base_surface_specs)
+          @_base_species ||= species_classes(generator.base_surface_specs)
         end
 
         # Gets the list of specific specie code generator instances
         # @return [Array] the list of specific species
         def specific_species
-          species_classes(generator.specific_surface_specs)
+          @_specific_species ||= species_classes(generator.specific_surface_specs)
         end
 
         # Gets the list of ubiquitous reaction code generator instances
         # @return [Array] the list of ubiquitous reactions
         def ubiquitous_reactions
-          reactions_classes(generator.ubiquitous_reactions +
-            generator.spec_reactions.select(&:local?))
+          @_ubiquitous_reactions ||= reactions_classes(
+            generator.ubiquitous_reactions + generator.spec_reactions.select(&:local?))
         end
 
         # Gets the list of typical reaction code generator instances
         # @return [Array] the list of typical reactions
         def typical_reactions
-          reactions_classes(generator.spec_reactions.reject(&:local?)) -
-            lateral_reactions
+          @_typical_reactions ||=
+            reactions_classes(generator.spec_reactions.reject(&:local?)) -
+              lateral_reactions
         end
 
         # Gets the list of lateral reactions code generator instances
         # @return [Array] the list of lateral reactionss
         def lateral_reactions
-          reactions_classes(generator.spec_reactions.select(&:lateral?))
+          @_lateral_reactions ||=
+            reactions_classes(generator.spec_reactions.select(&:lateral?))
         end
 
         # Transforms the list of dependent species to code generator instances
         # @param [Array] list of dependent species
         # @return [Array] the sorted list of code generators
         def species_classes(list)
-          list.sort.map(&method(:specie_class))
+          sort(list).map(&method(:specie_class))
         end
 
         # Transforms the list of dependent reactions to code generator instances
         # @param [Array] list of dependent reactions
         # @return [Array] the sorted list of code generators
         def reactions_classes(list)
-          list.sort.map(&method(:reaction_class))
+          sort(list).map(&method(:reaction_class))
+        end
+
+        # Sorts the items of passed list by names of them
+        # @param [Array] list which will be sorted
+        # @return [Array] the sorted list
+        def sort(list)
+          list.sort_by { |item| item.name }
         end
       end
 
