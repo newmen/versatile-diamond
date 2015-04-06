@@ -37,8 +37,8 @@ module VersatileDiamond
       end
 
       describe '#name' do
-        it { expect(lat_react.name).not_to eq(parent.name) }
-        it { expect(lat_react.name =~ /^#{parent.name}/).to be_truthy }
+        it { expect(lat_react.name).not_to eq("combined #{parent.name}") }
+        it { expect(lat_react.name =~ /^combined #{parent.name}/).to be_truthy }
       end
     end
 

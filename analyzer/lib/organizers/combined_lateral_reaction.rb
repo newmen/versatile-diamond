@@ -51,11 +51,19 @@ module VersatileDiamond
       # Gets the name of lateral reaction
       # @return [String] the name of lateral reaction
       def name
-        "#{parent.name} #{chunk.tail_name}"
+        "combined #{parent.name} #{chunk.tail_name}"
       end
 
       def formula
         "#{parent.formula} | ..."
+      end
+
+      def to_s
+        "(#{name}, [#{parent.name}])"
+      end
+
+      def inspect
+        to_s
       end
 
     private
