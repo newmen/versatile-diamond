@@ -23,7 +23,10 @@ module VersatileDiamond
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
         lateral_reactions.each do |possible|
-          possible.store_parent(self) if reaction.same_positions?(possible.reaction)
+          poss_conc = possible.reaction
+          if reaction.same_specs?(poss_conc) && reaction.same_positions?(poss_conc)
+            possible.store_parent(self)
+          end
         end
       end
 
