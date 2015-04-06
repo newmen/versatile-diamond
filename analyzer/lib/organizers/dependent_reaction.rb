@@ -55,7 +55,7 @@ module VersatileDiamond
       # Check that reaction have gas ion reagent
       # @return [Boolean] is reaction specific of ubiquitous or not
       def local?
-        parent || !simple_source.empty?
+        parent && !simple_source.empty?
       end
 
       def formula
