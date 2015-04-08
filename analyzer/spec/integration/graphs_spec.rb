@@ -35,11 +35,10 @@ describe 'graphs generation' do
 
   shared_examples_for :check_run do
     it 'run and check result file' do
-      `#{run_line} --out=#{RESULTS_PATH}`
-
-      expect(RESULTS_PATH.exist?).to be_truthy
+      `#{run_line} --out=#{RESULTS_PATH} --no-cache`
 
       expect($?.exitstatus).to eq(0)
+      expect(RESULTS_PATH.exist?).to be_truthy
       expect(RESULTS_PATH.children.size).to eq(1)
       expect(RESULTS_PATH.children.first.size).to be > 50
     end

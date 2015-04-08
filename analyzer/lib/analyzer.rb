@@ -8,22 +8,23 @@ module VersatileDiamond
       # If the results already where obtained then using it
       #
       # @param [String] config_path the path to configuration file
+      # @option [Boolean] :check_cache is flag which if true then cache will be checked
       # @return [Organizers::AnalysisResult] the result of analysis
-      def read_config(config_path)
+      def read_config(config_path, check_cache: true)
         # проверяем, что уже есть резульаты анализа
         # результатов нет: анализируем и сохраняем дамп
 
-        result = Tools::Serializer.load(config_path)
+        result = check_cache && Tools::Serializer.load(config_path)
 
         if result
           Tools::Config.load(config_path)
         else
-          Tools::Config.init
+          Tools::Config.init if check_cache
 
           content = File.open(config_path).readlines
           result = new(content, config_path).analyze
-          Tools::Serializer.save(config_path, result)
-          Tools::Config.save(config_path)
+          Tools::Serializer.save(config_path, result) if check_cache
+          Tools::Config.save(config_path) if check_cache
         end
 
         result

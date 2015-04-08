@@ -21,6 +21,7 @@ Options:
 
   --name=NAME        Set the name of output generation file or another entity
   --out=PATH         Setup output path into which results will placed [default: results]
+  --no-cache         No check cache when parse config
 
   --base-specs       Generate some info about base specs
   --spec-specs       Generate some info about specific specs
@@ -52,7 +53,9 @@ VD = VersatileDiamond
 Gens = VD::Generators
 
 I18n.locale = opt['--lang']
-analysis_result = VD::Analyzer.read_config(opt['<path_to_config>'])
+analysis_result =
+  VD::Analyzer.read_config(opt['<path_to_config>'], check_cache: !opt['--no-cache'])
+
 exit unless analysis_result
 
 unless Dir.exist?(opt['--out'])
