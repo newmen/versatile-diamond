@@ -34,20 +34,25 @@ describe 'graphs generation' do
   }
 
   shared_examples_for :check_run do
+    after { FileUtils.rm_rf(RESULTS_PATH.to_s) }
     it 'run and check result file' do
+      expect(RESULTS_PATH.exist?).to be_falsey # check that 'alter' block works
+
       `#{run_line} --out=#{RESULTS_PATH} --no-cache`
 
       expect($?.exitstatus).to eq(0)
       expect(RESULTS_PATH.exist?).to be_truthy
       expect(RESULTS_PATH.children.size).to eq(1)
-      expect(RESULTS_PATH.children.first.size).to be > 50
+
+      graph_file = RESULTS_PATH.children.first
+      expect(graph_file.extname).to eq('.png')
+      expect(graph_file.size).to be > 50
     end
   end
 
   Dir["#{EXAMPLES_PATH}/*.rb"].each do |full_file_path|
     example_name = "#{EXAMPLES_DIR}/#{File.basename(full_file_path)}"
     describe "graphs for #{example_name}" do
-      after { FileUtils.rm_rf(RESULTS_PATH.to_s) }
 
       OPTIONS.each do |option|
         describe option do
