@@ -28,7 +28,7 @@ module VersatileDiamond
       # Draws termination specs and dependencies from classified atoms
       def atoms_for_termination_specs
         draw_termination_specs
-        termination_specs.each do |spec|
+        term_specs.each do |spec|
           draw_atoms_for(spec, SpeciesGraphGenerator::TERMINATION_SPEC_COLOR)
         end
       end

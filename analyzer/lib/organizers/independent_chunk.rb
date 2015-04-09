@@ -5,6 +5,7 @@ module VersatileDiamond
     # chunks which contains in it is not presented
     class IndependentChunk
       include Modules::ListsComparer
+      include DrawableChunk
       include ChunksComparer
       include TargetsProcessor
       extend Forwardable

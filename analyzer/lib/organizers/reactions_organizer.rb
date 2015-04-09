@@ -19,7 +19,6 @@ module VersatileDiamond
         ubiq_rs, typical_rs, lateral_rs = reactions_lists
         non_ubiq_rs = typical_rs + lateral_rs
 
-        # order of dependencies organization is important!
         organize_ubiquitous_reactions_deps!(term_ss, non_term_ss, *reactions_lists)
         organize_complex_reactions_deps!(typical_rs, lateral_rs)
       end

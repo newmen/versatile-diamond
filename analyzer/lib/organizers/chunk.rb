@@ -4,7 +4,8 @@ module VersatileDiamond
     # Provides logic for side-chunk of lateral reaction
     class Chunk
       include MinuendChunk
-      include NamedChunk
+      include DrawableChunk
+      include TailedChunk
       include TargetsProcessor
       extend Forwardable
       extend Collector

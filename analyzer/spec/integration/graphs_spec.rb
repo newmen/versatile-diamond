@@ -22,8 +22,8 @@ describe 'graphs generation' do
       '--no-base_specs',
       '--no-spec_specs',
       '--no-term_specs',
-      '--no-wheres',
-      '--no-reactions'
+      '--no-reactions',
+      '--no-chunks'
     ],
     '--composition' => [
       '--base-specs',
@@ -52,7 +52,7 @@ describe 'graphs generation' do
 
   Dir["#{EXAMPLES_PATH}/*.rb"].each do |full_file_path|
     example_name = "#{EXAMPLES_DIR}/#{File.basename(full_file_path)}"
-    describe "graphs for #{example_name}" do
+    describe "for #{example_name}" do
 
       OPTIONS.each do |option|
         describe option do

@@ -32,7 +32,7 @@ Options:
   --no-base-specs    Not generate info about base specs
   --no-spec-specs    Not generate info about specific specs
   --no-term-specs    Not generate info about termination specs
-  --no-wheres        Not generate info about where objects
+  --no-chunks        Not generate info about chunk objects
   --no-reactions     Not generate info about reactions
   --no-includes      Not generate info wihtout including some in some
   --no-transitions   Not generate info wihtout transitions between some and some
@@ -63,7 +63,7 @@ unless Dir.exist?(opt['--out'])
 end
 
 props = %w(base-specs spec-specs term-specs reactions includes transitions
-  no-base-specs no-spec-specs no-term-specs no-wheres no-reactions
+  no-base-specs no-spec-specs no-term-specs no-reactions no-chunks
   no-includes no-transitions)
 
 props_to_ops = props.map do |prop|

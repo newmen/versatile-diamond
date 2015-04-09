@@ -19,15 +19,10 @@ module VersatileDiamond
       def_delegators :@analysis_result, :base_specs, :specific_specs, :term_specs,
         :ubiquitous_reactions, :typical_reactions, :lateral_reactions
 
-      # Collects all unique where objects
-      # @return [Array] the array of where objects
-      def wheres
-        cache = {}
-        @analysis_result.theres.each do |there|
-          name = there.where.name
-          cache[name] ||= there.where
-        end
-        cache.values
+      # Collects all chunks
+      # @return [Array] the array of chunks
+      def chunks
+        lateral_reactions.map(&:chunk)
       end
 
       # Gets not ubiquitous reactions

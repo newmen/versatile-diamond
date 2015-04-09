@@ -7,7 +7,8 @@ module VersatileDiamond
       include Modules::ExtendedCombinator
       include Modules::ListsComparer
       include ChunksComparer
-      include NamedChunk
+      include DrawableChunk
+      include TailedChunk
 
       attr_reader :parents, :links, :targets
 
