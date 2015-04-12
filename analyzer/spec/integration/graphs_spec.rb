@@ -19,9 +19,9 @@ describe 'graphs generation' do
   OPTIONS = ['--total-tree', '--composition']
   SUB_OPTIONS = {
     '--total-tree' => [
-      '--no-base_specs',
-      '--no-spec_specs',
-      '--no-term_specs',
+      '--no-base-specs',
+      '--no-spec-specs',
+      '--no-term-specs',
       '--no-reactions',
       '--no-chunks'
     ],
