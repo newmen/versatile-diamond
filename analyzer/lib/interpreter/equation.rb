@@ -45,7 +45,7 @@ module VersatileDiamond
         end
 
         lateral = env.make_lateral(Hash[resolved_targets])
-        store(@reaction, lateral) # only for check duplication?
+        store(@reaction, lateral)
       end
 
       # Interprets there line and nest new refinement

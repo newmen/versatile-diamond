@@ -14,6 +14,15 @@ module VersatileDiamond
               set(:"dept_#{name}") { klass.new(send(name)) }
             end
           end
+
+          # Defines dependent theres
+          def define_dependent_theres(zipped_names_with_reactions)
+            zipped_names_with_reactions.each do |there_name, reaction_name|
+              set(:"dept_#{there_name}") do
+                DependentThere.new(send("dept_#{reaction_name}"), send(there_name))
+              end
+            end
+          end
         end
 
         define_dependents(DependentTermination, [
@@ -121,9 +130,9 @@ module VersatileDiamond
           :mwb_lateral_df
         ])
 
-        define_dependents(DependentThere, [
-          :on_end,
-          :on_middle
+        define_dependent_theres([
+          [:on_end, :end_lateral_df],
+          [:on_middle, :middle_lateral_df]
         ])
 
         set(:end_chunk) { dept_end_lateral_df.chunk }

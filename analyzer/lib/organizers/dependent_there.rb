@@ -6,13 +6,15 @@ module VersatileDiamond
       include Modules::SpecLinksAdsorber
       extend Forwardable
 
-      def_delegators :there, :description, :swap_source, :use_similar_source?
+      def_delegators :there, :description, :swap_source
       def_delegator :there, :where # for graphs generators
 
       # Stores wrappable there
+      # @param [DependentLateralReaction] lateral_reaction in which current there
+      #   object uses
       # @param [Concepts::There] there the wrappable there
-      def initialize(there)
-        @there = there
+      def initialize(lateral_reaction, there)
+        @lateral_reaction, @there = lateral_reaction, there
 
         @_links = nil
       end
@@ -29,6 +31,17 @@ module VersatileDiamond
           end
         end
         @_links
+      end
+
+      # Is used similar source spec in parent lateral reaction or internal there
+      # object?
+      #
+      # @param [Concept::SpecificSpec] spec which will be checked
+      # @return [Boolean] contain similar source or not
+      def use_similar_source?(spec)
+        clr = lateral_reaction.reaction
+        clr.use_similar_source?(spec) || clr.reverse.use_similar_source?(spec) ||
+          there.use_similar_source?(spec)
       end
 
       # Gets atoms of passed spec
@@ -68,7 +81,7 @@ module VersatileDiamond
 
     private
 
-      attr_reader :there
+      attr_reader :lateral_reaction, :there
 
     end
 

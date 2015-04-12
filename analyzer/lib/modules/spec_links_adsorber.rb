@@ -18,7 +18,6 @@ module VersatileDiamond
             spec_atom = [spec, atom]
             acc[spec_atom] ||= []
             acc[spec_atom] += rels.map { |a, r| [[spec, a], r] }
-            acc[spec_atom] = acc[spec_atom].uniq
           end
         end
       end

@@ -44,17 +44,14 @@ module VersatileDiamond
             spec_name, keyname = match_used_atom(atom_str)
             spec = @names_and_specs[spec_name] ||
               Concepts::SpecificSpec.new(get(:spec, spec_name))
+
             atom = spec.atom(keyname)
+            syntax_error('matcher.undefined_used_atom', name: atom_str) unless atom
 
             used_atom_str = atom_str
-
             next if @used_spec_names.include?(spec_name)
-            if atom
-              @where.specs << spec
-            else
-              syntax_error('matcher.undefined_used_atom', name: atom_str)
-            end
 
+            @where.specs << spec
             @used_spec_names << spec_name
           end
         end

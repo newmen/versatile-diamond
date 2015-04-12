@@ -15,17 +15,10 @@ module VersatileDiamond
       # @raise [RuntimeError] if some of separated multi-bonds is invalid
       def initialize(spec, collaps_multi_bond: false)
         @spec = spec
-        dup_result = spec.links.map do |key, list|
-          pair = [key]
-          if collaps_multi_bond
-            pair << collapse_bonds(list)
-          else
-            pair << list.dup
-          end
-          pair
+        @edges = spec.links.each_with_object({}) do |(key, list), acc|
+          acc[key] = (collaps_multi_bond ? collapse_bonds(list) : list.dup)
         end
 
-        @edges = Hash[dup_result]
         @changed_vertices = {}
         @atom_alias = nil
       end

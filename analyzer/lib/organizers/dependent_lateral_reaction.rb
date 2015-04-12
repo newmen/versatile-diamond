@@ -27,7 +27,7 @@ module VersatileDiamond
       # Gets the list of dependent there objects. The internal caching is significant!
       # @return [Array] the list of dependent there objects
       def theres
-        @_theres ||= reaction.theres.map { |th| DependentThere.new(th) }
+        @_theres ||= reaction.theres.map { |th| DependentThere.new(self, th) }
       end
 
       # Gets the list of spec-atoms which are targets for sidepiece species
