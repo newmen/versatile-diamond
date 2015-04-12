@@ -19,6 +19,8 @@ module VersatileDiamond
       # @param [Float] full_rate of lateral reaction
       def initialize(typical_reaction, chunk, full_rate)
         @typical_reaction = typical_reaction
+        @typical_reaction.store_child(self)
+
         @chunk = chunk
         @full_rate = full_rate
 
@@ -31,6 +33,12 @@ module VersatileDiamond
       # @return [DependentTypicalReaction] the internal typical reaction
       def parent
         @typical_reaction
+      end
+
+      # Combined lateral reaction could not have children reactions
+      # @return [Array] the empty array
+      def children
+        []
       end
 
       # Gets iterator of source specs

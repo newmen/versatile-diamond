@@ -20,6 +20,10 @@ module VersatileDiamond
         it { expect(lat_react.parent).to eq(parent) }
       end
 
+      describe '#children' do
+        it { expect(lat_react.children).to be_empty }
+      end
+
       describe '#chunk' do
         it { expect(lat_react.chunk).to eq(ind_chunk) }
       end
