@@ -219,9 +219,8 @@ module VersatileDiamond
       # @param [Float] value see at #super same argument
       # @override
       def update_attribute(attribute, value)
-        childs = children || reverse.children
-        if childs
-          childs.each do |reaction|
+        if children
+          children.each do |reaction|
             reaction.as(@type).send(:"#{attribute}=", value)
           end
         else

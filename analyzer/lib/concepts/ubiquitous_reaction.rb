@@ -138,7 +138,7 @@ module VersatileDiamond
       # Calculate full rate of reaction
       # @return [Float] the full raction rate
       def full_rate
-        rate == 0 ? 0 : Tools::Config.rate(self)
+        @activation && @rate ? Tools::Config.rate(self) : 0
       end
 
       # Gets number of changed atoms

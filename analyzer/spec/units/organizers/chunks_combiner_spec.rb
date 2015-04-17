@@ -11,9 +11,13 @@ module VersatileDiamond
         let(:chunks) { [end_chunk, ewb_chunk, middle_chunk, ind_chunk] }
         before do
           Tools::Config.surface_temperature(0, 'C')
+          dimer_formation.activation = 0
           dimer_formation.rate = 1
+          end_lateral_df.activation = 0
           end_lateral_df.rate = 2
+          ewb_lateral_df.activation = 0
           ewb_lateral_df.rate = 33
+          middle_lateral_df.activation = 0
           middle_lateral_df.rate = 4
 
           [
