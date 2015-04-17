@@ -4,7 +4,7 @@ module VersatileDiamond
   module Organizers
 
     describe DependentThere, type: :organizer do
-      subject { described_class.new(there_methyl) }
+      subject { described_class.new(dept_dimer_formation, there_methyl) }
 
       describe '#description' do
         it { expect(subject.description).to eq(there_methyl.description) }
