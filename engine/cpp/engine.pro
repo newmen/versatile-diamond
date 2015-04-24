@@ -103,7 +103,6 @@ SOURCES += \
     mc/events_container.cpp \
     mc/multi_events_container.cpp \
     mc/random_generator.cpp \
-    phases/amorph.cpp \
     phases/behavior_factory.cpp \
     phases/behavior_plane.cpp \
     phases/behavior_tor.cpp \
@@ -129,7 +128,10 @@ SOURCES += \
     tools/savers/xyz_format.cpp \
     tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    atoms/saving_atom.cpp \
+    phases/saving_crystal.cpp \
+    phases/amorph.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -324,7 +326,14 @@ HEADERS += \
     tools/scavenger.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    phases/templated_amorph.h \
+    phases/templated_crystal.h \
+    atoms/base_atom.h \
+    atoms/saving_atom.h \
+    phases/smart_atoms_vector3d.h \
+    phases/saving_crystal.h \
+    phases/saving_amorph.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

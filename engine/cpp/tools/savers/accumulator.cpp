@@ -3,7 +3,7 @@
 namespace vd
 {
 
-void Accumulator::addBondedPair(const Atom *from, const Atom *to)
+void Accumulator::addBondedPair(const SavingAtom *from, const SavingAtom *to)
 {
     assert(from != to);
 

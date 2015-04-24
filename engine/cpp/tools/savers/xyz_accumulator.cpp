@@ -3,7 +3,7 @@
 namespace vd
 {
 
-void XYZAccumulator::treatHidden(const vd::Atom *first, const vd::Atom *second)
+void XYZAccumulator::treatHidden(const vd::SavingAtom *first, const vd::SavingAtom *second)
 {
     if (!detector()->isShown(first) && detector()->isShown(second))
     {
@@ -11,7 +11,7 @@ void XYZAccumulator::treatHidden(const vd::Atom *first, const vd::Atom *second)
     }
 }
 
-void XYZAccumulator::pushPair(const Atom *first, const Atom *second)
+void XYZAccumulator::pushPair(const SavingAtom *first, const SavingAtom *second)
 {
     _atoms.insert(first);
     _atoms.insert(second);

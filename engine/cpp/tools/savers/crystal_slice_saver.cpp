@@ -1,6 +1,6 @@
 #include "crystal_slice_saver.h"
 #include <sstream>
-#include "../../atoms/atom.h"
+#include "../../atoms/saving_atom.h"
 
 namespace vd
 {
@@ -17,13 +17,13 @@ CrystalSliceSaver::CrystalSliceSaver(const char *name, uint sliceMaxNum, std::in
     _out << std::endl;
 }
 
-void CrystalSliceSaver::writeBySlicesOf(const Crystal *crystal, double currentTime)
+void CrystalSliceSaver::writeBySlicesOf(const SavingCrystal *crystal, double currentTime)
 {
     static uint n = 0;
     _out << n++ << " = " << currentTime << " s\n";
 
     uint sliceNumber = 0;
-    crystal->eachSlice([this, &sliceNumber](Atom **atoms) {
+    crystal->eachSlice([this, &sliceNumber](SavingAtom **atoms) {
         if (++sliceNumber > 2)
         {
             auto counter = _counterProto;

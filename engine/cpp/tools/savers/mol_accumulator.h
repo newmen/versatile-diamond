@@ -9,8 +9,8 @@ namespace vd
 
 class MolAccumulator : public Accumulator
 {
-    typedef std::unordered_map<const Atom *, uint> AtomsToNums;
-    typedef std::unordered_map<const Atom *, AtomInfo *> AtomsToInfos;
+    typedef std::unordered_map<const SavingAtom *, uint> AtomsToNums;
+    typedef std::unordered_map<const SavingAtom *, AtomInfo *> AtomsToInfos;
 
     AtomsToNums _atomsToNums;
     AtomsToInfos _atomsToInfos;
@@ -33,8 +33,8 @@ public:
     template <class L> void orderedEachBondInfo(const L &lambda) const;
 
 protected:
-    void treatHidden(const Atom *first, const Atom *second) override;
-    void pushPair(const Atom *from, const Atom *to) override;
+    void treatHidden(const SavingAtom *first, const SavingAtom *second) override;
+    void pushPair(const SavingAtom *from, const SavingAtom *to) override;
 
 private:
     MolAccumulator(const MolAccumulator &) = delete;
@@ -42,12 +42,12 @@ private:
     MolAccumulator &operator = (const MolAccumulator &) = delete;
     MolAccumulator &operator = (MolAccumulator &&) = delete;
 
-    void checkOrAddAtom(const Atom *atom);
+    void checkOrAddAtom(const SavingAtom *atom);
     void checkOrIncBond(uint fi, uint ti);
     BondKey makeBondKey(uint fi, uint ti) const { return (fi << 16) ^ ti; }
 
-    bool isNear(const Atom *first, const Atom *second) const;
-    Lattice *latticeFor(const Atom *atom) const;
+    bool isNear(const SavingAtom *first, const SavingAtom *second) const;
+    Lattice<SavingCrystal> *latticeFor(const SavingAtom *atom) const;
 
     template <typename KT, class IT, class L>
     void orderedEach(const std::unordered_map<KT, uint> &toNums, const std::unordered_map<KT, IT *> &toInfos, const L &lambda) const;

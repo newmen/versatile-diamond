@@ -77,7 +77,7 @@ void MolFormat::writeAtoms(std::ostream &os) const
 std::string MolFormat::atomsOptions(const AtomInfo *ai) const
 {
 
-    const Atom *atom = ai->atom();
+    const SavingAtom *atom = ai->atom();
     bool isBtm = acc().detector()->isBottom(atom);
 
     int hc = atom->hCount();

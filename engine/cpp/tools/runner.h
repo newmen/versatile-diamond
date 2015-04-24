@@ -1,10 +1,14 @@
 #ifndef RUNNER_H
 #define RUNNER_H
 
+#include <tuple>
+#include <unordered_map>
 #include <iostream>
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
 #include "../phases/behavior_factory.h"
+#include "../phases/saving_amorph.h"
+#include "../phases/saving_crystal.h"
 #include "process_mem_usage.h"
 #include "savers/crystal_slice_saver.h"
 #include "savers/volume_saver.h"
@@ -45,8 +49,16 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
-    double activesRatio(const Crystal *crystal) const;
-    void saveVolume(const Crystal *crystal);
+    typedef std::tuple<const SavingCrystal *, const SavingAmorph *> SavingPhases;
+    SavingPhases copyAtoms(const Crystal *crystal, const Amorph *amorph) const;
+
+    double activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const;
+    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph);
+    void saveVolume(const SavingCrystal *crystal, const SavingAmorph *amorph);
+    void storeIfNeed(CrystalSliceSaver *sliceSaver,
+                     const SavingCrystal *crystal,
+                     const SavingAmorph *amorph,
+                     bool forseSaveVolume);
 
     std::string filename() const;
     double timestamp() const;
@@ -178,40 +190,8 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 
 // -------------------------------------------------------------------------------- //
 
-    auto outLambda = [this, surfaceCrystal]() {
-        std::cout.width(10);
-        std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
-        std::cout.width(10);
-        std::cout << surfaceCrystal->countAtoms();
-        std::cout.width(10);
-        std::cout << HB::amorph().countAtoms();
-        std::cout.width(10);
-        std::cout << 100 * activesRatio(surfaceCrystal) << " %";
-        std::cout.width(20);
-        std::cout << HB::mc().totalTime() << " (s)";
-        std::cout.width(20);
-        std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
-    };
-
     ullong steps = 0;
     double timeCounter = 0;
-    uint volumeSaveCounter = 0;
-
-    auto storeLambda = [this, surfaceCrystal, steps, &timeCounter, &volumeSaveCounter, &csSaver](bool forseSaveVolume) {
-        csSaver.writeBySlicesOf(surfaceCrystal, HB::mc().totalTime());
-
-        if (_volumeSaver)
-        {
-            if (volumeSaveCounter == 0 || forseSaveVolume)
-            {
-                saveVolume(surfaceCrystal);
-            }
-            if (++volumeSaveCounter == 10)
-            {
-                volumeSaveCounter = 0;
-            }
-        }
-    };
 
     RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
 
@@ -219,7 +199,10 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     HB::mc().initCounter(&mcData);
 
 #ifndef NOUT
-    outLambda();
+    SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
+    printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
+    delete std::get<0>(savingPhases);
+    delete std::get<1>(savingPhases);
 #endif // NOUT
 
     double startTime = timestamp();
@@ -249,8 +232,11 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
             if (timeCounter >= _eachTime)
             {
                 timeCounter = 0;
-                outLambda();
-                storeLambda(false);
+                SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
+                printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
+                storeIfNeed(&csSaver, std::get<0>(savingPhases), std::get<1>(savingPhases), false);
+                delete std::get<0>(savingPhases);
+                delete std::get<1>(savingPhases);
             }
         }
 #endif // NOUT
@@ -261,8 +247,11 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 #ifndef NOUT
     if (timeCounter > 0)
     {
-        outLambda();
-        storeLambda(true);
+        SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
+        printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
+        storeIfNeed(&csSaver, std::get<0>(savingPhases), std::get<1>(savingPhases), true);
+        delete std::get<0>(savingPhases);
+        delete std::get<1>(savingPhases);
     }
 #endif // NOUT
 
@@ -284,24 +273,101 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 }
 
 template <class HB>
-double Runner<HB>::activesRatio(const Crystal *crystal) const
+typename Runner<HB>::SavingPhases Runner<HB>::copyAtoms(const Crystal *crystal, const Amorph *amorph) const
+{
+    std::unordered_map<const Atom *, SavingAtom *> mirror;
+    mirror.reserve(crystal->maxAtoms() + amorph->countAtoms());
+
+    SavingCrystal *savingCrystal = new SavingCrystal(crystal);
+    SavingAmorph *savingAmorph = new SavingAmorph();
+
+    auto fillLambda = [&mirror, savingCrystal, savingAmorph](const Atom *atom) {
+        SavingAtom *sa = new SavingAtom(atom, nullptr);
+        mirror[atom] = sa;
+
+        auto originalLattice = atom->lattice();
+        if (originalLattice) {
+            savingCrystal->insert(sa, originalLattice->coords());
+        } else {
+            savingAmorph->insert(sa);
+        }
+    };
+
+    crystal->eachAtom(fillLambda);
+    amorph->eachAtom(fillLambda);
+
+    auto copyRelationsLambda = [&mirror](const Atom *atom) {
+        SavingAtom *target = mirror.find(atom)->second;
+        atom->eachNeighbour([&mirror, target](const Atom *nbr) {
+            target->bondWith(mirror.find(nbr)->second, 0);
+        });
+    };
+
+    crystal->eachAtom(copyRelationsLambda);
+    amorph->eachAtom(copyRelationsLambda);
+
+    return std::make_tuple(savingCrystal, savingAmorph);
+}
+
+template <class HB>
+double Runner<HB>::activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const
 {
     uint actives = 0;
     uint hydrogens = 0;
-    auto lambda = [&actives, &hydrogens](const Atom *atom) {
-        actives += HB::activesFor(atom);
-        hydrogens += HB::hydrogensFor(atom);
+    auto lambda = [&actives, &hydrogens](const SavingAtom *atom) {
+        actives += HB::activesFor(atom->type());
+        hydrogens += HB::hydrogensFor(atom->type());
     };
 
-    HB::amorph().eachAtom(lambda);
+    amorph->eachAtom(lambda);
     crystal->eachAtom(lambda);
     return (double)actives / (actives + hydrogens);
 }
 
 template <class HB>
-void Runner<HB>::saveVolume(const Crystal *crystal)
+void Runner<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph)
 {
-    _volumeSaver->save(HB::mc().totalTime(), &HB::amorph(), crystal, _detector);
+    std::cout.width(10);
+    std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
+    std::cout.width(10);
+    std::cout << crystal->countAtoms();
+    std::cout.width(10);
+    std::cout << amorph->countAtoms();
+    std::cout.width(10);
+    std::cout << 100 * activesRatio(crystal, amorph) << " %";
+    std::cout.width(20);
+    std::cout << HB::mc().totalTime() << " (s)";
+    std::cout.width(20);
+    std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
+}
+
+template <class HB>
+void Runner<HB>::saveVolume(const SavingCrystal *crystal, const SavingAmorph *amorph)
+{
+    _volumeSaver->save(HB::mc().totalTime(), amorph, crystal, _detector);
+}
+
+template <class HB>
+void Runner<HB>::storeIfNeed(CrystalSliceSaver *sliceSaver,
+                             const SavingCrystal *crystal,
+                             const SavingAmorph *amorph,
+                             bool forseSaveVolume)
+{
+    static uint volumeSaveCounter = 0;
+
+    sliceSaver->writeBySlicesOf(crystal, HB::mc().totalTime());
+
+    if (_volumeSaver)
+    {
+        if (volumeSaveCounter == 0 || forseSaveVolume)
+        {
+            saveVolume(crystal, amorph);
+        }
+        if (++volumeSaveCounter == 10)
+        {
+            volumeSaveCounter = 0;
+        }
+    }
 }
 
 }

@@ -4,8 +4,8 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-#include "../../phases/amorph.h"
-#include "../../phases/crystal.h"
+#include "../../phases/saving_amorph.h"
+#include "../../phases/saving_crystal.h"
 #include "detector.h"
 
 namespace vd
@@ -15,7 +15,7 @@ template <class B>
 class ManyFiles : public B
 {
 public:
-    void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) override;
+    void save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector) override;
 
 protected:
     template <class... Args> ManyFiles(Args... args) : B(args...) {}
@@ -26,7 +26,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class B>
-void ManyFiles<B>::save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
+void ManyFiles<B>::save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
 {
     std::ofstream out(filename());
     this->saveTo(out, currentTime, amorph, crystal, detector);
