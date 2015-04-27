@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <map>
-#include "../phases/crystal.h"
+#include "../phases/saving_crystal.h"
 #include "../tools/common.h"
 
 namespace vd
@@ -25,7 +25,7 @@ class CrystalSliceSaver
 public:
     CrystalSliceSaver(const char *name, uint sliceMaxNum, std::initializer_list<ushort> targetTypes);
 
-    void writeBySlicesOf(const Crystal *crystal, double currentTime);
+    void writeBySlicesOf(const SavingCrystal *crystal, double currentTime);
 
 private:
     CrystalSliceSaver(const CrystalSliceSaver &) = delete;

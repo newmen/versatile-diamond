@@ -10,7 +10,7 @@ namespace vd
 
 class XYZAccumulator : public Accumulator
 {
-    typedef std::unordered_set<const Atom *> Atoms;
+    typedef std::unordered_set<const SavingAtom *> Atoms;
     Atoms _atoms;
 
 public:
@@ -19,8 +19,8 @@ public:
     const Atoms &atoms() const { return _atoms; }
 
 protected:
-    void treatHidden(const Atom *first, const Atom *second) override;
-    void pushPair(const Atom *first, const Atom *second) override;
+    void treatHidden(const SavingAtom *first, const SavingAtom *second) override;
+    void pushPair(const SavingAtom *first, const SavingAtom *second) override;
 
 private:
     XYZAccumulator(const XYZAccumulator &) = delete;

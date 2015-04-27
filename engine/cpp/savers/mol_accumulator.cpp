@@ -18,7 +18,7 @@ MolAccumulator::~MolAccumulator()
     }
 }
 
-void MolAccumulator::treatHidden(const Atom *first, const Atom *second)
+void MolAccumulator::treatHidden(const SavingAtom *first, const SavingAtom *second)
 {
     if (!detector()->isShown(first) && detector()->isShown(second))
     {
@@ -27,7 +27,7 @@ void MolAccumulator::treatHidden(const Atom *first, const Atom *second)
     }
 }
 
-void MolAccumulator::pushPair(const Atom *from, const Atom *to)
+void MolAccumulator::pushPair(const SavingAtom *from, const SavingAtom *to)
 {
     checkOrAddAtom(from);
     checkOrAddAtom(to);
@@ -49,7 +49,7 @@ void MolAccumulator::pushPair(const Atom *from, const Atom *to)
     }
 }
 
-void MolAccumulator::checkOrAddAtom(const Atom *atom)
+void MolAccumulator::checkOrAddAtom(const SavingAtom *atom)
 {
     if (_atomsToNums.find(atom) == _atomsToNums.cend())
     {
@@ -77,9 +77,9 @@ void MolAccumulator::checkOrIncBond(uint fi, uint ti)
     }
 }
 
-bool MolAccumulator::isNear(const Atom *first, const Atom *second) const
+bool MolAccumulator::isNear(const SavingAtom *first, const SavingAtom *second) const
 {
-    Lattice *fl = latticeFor(first), *sl = latticeFor(second);
+    Lattice<SavingCrystal> *fl = latticeFor(first), *sl = latticeFor(second);
     if (fl && sl)
     {
         int3 diff = fl->coords() - sl->coords();
@@ -91,7 +91,7 @@ bool MolAccumulator::isNear(const Atom *first, const Atom *second) const
     return true;
 }
 
-Lattice *MolAccumulator::latticeFor(const Atom *atom) const
+Lattice<SavingCrystal> *MolAccumulator::latticeFor(const SavingAtom *atom) const
 {
     if (atom->lattice())
     {
@@ -99,7 +99,7 @@ Lattice *MolAccumulator::latticeFor(const Atom *atom) const
     }
     else
     {
-        const Atom *nbr = atom->firstCrystalNeighbour();
+        const SavingAtom *nbr = atom->firstCrystalNeighbour();
         return nbr ? nbr->lattice() : nullptr;
     }
 }

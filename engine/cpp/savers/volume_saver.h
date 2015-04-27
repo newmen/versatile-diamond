@@ -1,8 +1,8 @@
 #ifndef VOLUME_SAVER_H
 #define VOLUME_SAVER_H
 
-#include "../phases/amorph.h"
-#include "../phases/crystal.h"
+#include "../phases/saving_amorph.h"
+#include "../phases/saving_crystal.h"
 #include "detector.h"
 
 namespace vd
@@ -14,7 +14,7 @@ class VolumeSaver
 
 public:
     virtual ~VolumeSaver() {}
-    virtual void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) = 0;
+    virtual void save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector) = 0;
 
     const std::string &name() const { return _name; }
 

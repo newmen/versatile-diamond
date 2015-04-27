@@ -12,17 +12,17 @@ class BundleSaver : public VolumeSaver
 protected:
     template <class... Args> BundleSaver(Args... args) : VolumeSaver(args...) {}
 
-    void saveTo(std::ostream &os, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) const;
+    void saveTo(std::ostream &os, double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector) const;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 template <class A, class F>
-void BundleSaver<A, F>::saveTo(std::ostream &os, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) const
+void BundleSaver<A, F>::saveTo(std::ostream &os, double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector) const
 {
     A acc(detector);
-    auto lambda = [&acc](const Atom *atom) {
-        atom->eachNeighbour([&acc, atom](Atom *nbr) {
+    auto lambda = [&acc](const SavingAtom *atom) {
+        atom->eachNeighbour([&acc, atom](SavingAtom *nbr) {
             acc.addBondedPair(atom, nbr);
         });
     };

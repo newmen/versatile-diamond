@@ -20,7 +20,7 @@ void XYZFormat::writeHead(std::ostream &os, double currentTime) const
 
 void XYZFormat::writeAtoms(std::ostream &os) const
 {
-    for (const Atom *atom : acc().atoms())
+    for (const SavingAtom *atom : acc().atoms())
     {
         const float3 &crd = atom->realPosition();
         os << atom->name() << " "

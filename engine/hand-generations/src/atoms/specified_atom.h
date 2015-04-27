@@ -10,7 +10,8 @@ template <ushort VALENCE>
 class SpecifiedAtom : public Atom
 {
 public:
-    SpecifiedAtom(ushort type, ushort actives, Lattice *lattice) : Atom(type, actives, lattice) {}
+    SpecifiedAtom(ushort type, ushort actives, Atom::OriginalLattice *lattice) :
+        Atom(type, actives, lattice) {}
 
     bool is(ushort typeOf) const final;
     bool prevIs(ushort typeOf) const final;
@@ -50,14 +51,14 @@ ushort SpecifiedAtom<VALENCE>::hCount() const
 #ifndef NDEBUG
     Atom::hCount();
 #endif // NDEBUG
-    return Handbook::hydrogensFor(this);
+    return Handbook::hydrogensFor(type());
 }
 
 #ifndef NDEBUG
 template <ushort VALENCE>
 ushort SpecifiedAtom<VALENCE>::actives() const
 {
-    ushort result = Handbook::activesFor(this);
+    ushort result = Handbook::activesFor(type());
     assert(Atom::actives() == result);
     return result;
 }

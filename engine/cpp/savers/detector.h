@@ -1,7 +1,7 @@
 #ifndef DETECTOR_H
 #define DETECTOR_H
 
-#include "../atoms/atom.h"
+#include "../atoms/saving_atom.h"
 
 namespace vd {
 
@@ -13,8 +13,8 @@ protected:
 public:
     virtual ~Detector() {}
 
-    virtual bool isBottom(const Atom *atom) const = 0;
-    virtual bool isShown(const Atom *atom) const = 0;
+    virtual bool isBottom(const SavingAtom *atom) const = 0;
+    virtual bool isShown(const SavingAtom *atom) const = 0;
 };
 
 }

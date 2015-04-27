@@ -4,8 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../phases/amorph.h"
-#include "../phases/crystal.h"
+#include "../phases/saving_amorph.h"
+#include "../phases/saving_crystal.h"
 #include "detector.h"
 
 namespace vd
@@ -19,7 +19,7 @@ class OneFile : public B
 public:
     ~OneFile() { delete _out; }
 
-    void save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector) override;
+    void save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector) override;
 
 protected:
     template <class... Args> OneFile(Args... args) : B(args...) {}
@@ -34,7 +34,7 @@ private:
 ///////////////////////////////////////////////////////////////
 
 template <class B>
-void OneFile<B>::save(double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
+void OneFile<B>::save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
 {
     static uint counter = 0;
     if (counter > 0)

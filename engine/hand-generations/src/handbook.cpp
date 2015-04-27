@@ -127,9 +127,8 @@ Scavenger &Handbook::scavenger()
 
 const ushort Handbook::__regularAtomsNum = 1;
 const ushort Handbook::__regularAtomsTypes[Handbook::__regularAtomsNum] = { 24 };
-bool Handbook::isRegular(const Atom *atom)
+bool Handbook::isRegular(ushort type)
 {
-    ushort type = atom->type();
     bool b = false;
     for (int i = 0; i < __regularAtomsNum; ++i)
     {
@@ -139,28 +138,28 @@ bool Handbook::isRegular(const Atom *atom)
     return b;
 }
 
-ushort Handbook::activesFor(const Atom *atom)
-{
-    assert(atom->type() < __atomsNum);
-    return __activesOnAtoms[atom->type()];
+ushort Handbook::activesFor(ushort type)
+{;
+    assert(type < __atomsNum);
+    return __activesOnAtoms[type];
 }
 
-ushort Handbook::hydrogensFor(const Atom *atom)
+ushort Handbook::hydrogensFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __hOnAtoms[atom->type()];
+    assert(type < __atomsNum);
+    return __hOnAtoms[type];
 }
 
-ushort Handbook::hToActivesFor(const Atom *atom)
+ushort Handbook::hToActivesFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __hToActives[atom->type()];
+    assert(type < __atomsNum);
+    return __hToActives[type];
 }
 
-ushort Handbook::activesToHFor(const Atom *atom)
+ushort Handbook::activesToHFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __activesToH[atom->type()];
+    assert(type < __atomsNum);
+    return __activesToH[type];
 }
 
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
