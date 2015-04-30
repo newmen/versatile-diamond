@@ -14,39 +14,6 @@ module VersatileDiamond
         it { expect(methyl_desorption.reverse.type).to eq(:reverse) }
       end
 
-      shared_examples_for :check_duplicate_property do
-        it { expect(subject.name).to match(/tail$/) }
-        it { expect(subject.reverse.name).to match(/tail$/) }
-
-        it { expect(subject.source).not_to eq(df_source) }
-        it { expect(subject.source.first).not_to eq(df_source.first) }
-        it { expect(subject.products).not_to eq(df_products) }
-        it { expect(subject.products.first).not_to eq(df_products.first) }
-        it { expect(subject.products.last).not_to eq(df_products.last) }
-
-        shared_examples_for :child_changes_too do
-          %w(enthalpy activation rate).each do |prop|
-            describe "children setup #{prop}" do
-              before(:each) do
-                child # makes a child
-                reaction.send(:"#{prop}=", 456)
-              end
-              it { expect(child.send(prop)).to eq(456) }
-            end
-          end
-        end
-
-        it_behaves_like :child_changes_too do
-          let(:reaction) { dimer_formation }
-          let(:child) { subject }
-        end
-
-        it_behaves_like :child_changes_too do
-          let(:reaction) { dimer_formation.reverse }
-          let(:child) { subject.reverse }
-        end
-      end
-
       describe '#as' do
         shared_examples_for :forward_and_reverse do
           let(:name) { 'dimer formation' }
@@ -79,6 +46,39 @@ module VersatileDiamond
                 df_products, df_source, df_atom_map.reverse)
             end
           end
+        end
+      end
+
+      shared_examples_for :check_duplicate_property do
+        it { expect(subject.name).to match(/tail$/) }
+        it { expect(subject.reverse.name).to match(/tail$/) }
+
+        it { expect(subject.source).not_to eq(df_source) }
+        it { expect(subject.source.first).not_to eq(df_source.first) }
+        it { expect(subject.products).not_to eq(df_products) }
+        it { expect(subject.products.first).not_to eq(df_products.first) }
+        it { expect(subject.products.last).not_to eq(df_products.last) }
+
+        shared_examples_for :child_changes_too do
+          %w(enthalpy activation rate).each do |prop|
+            describe "children setup #{prop}" do
+              before(:each) do
+                child # makes a child
+                reaction.send(:"#{prop}=", 456)
+              end
+              it { expect(child.send(prop)).to eq(456) }
+            end
+          end
+        end
+
+        it_behaves_like :child_changes_too do
+          let(:reaction) { dimer_formation }
+          let(:child) { subject }
+        end
+
+        it_behaves_like :child_changes_too do
+          let(:reaction) { dimer_formation.reverse }
+          let(:child) { subject.reverse }
         end
       end
 

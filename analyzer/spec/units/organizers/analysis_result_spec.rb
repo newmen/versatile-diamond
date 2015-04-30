@@ -378,6 +378,7 @@ module VersatileDiamond
 
             describe 'lateral' do
               before do
+                ewb_lateral_df.activation = 0
                 ewb_lateral_df.rate = 8
                 Tools::Chest.store(ewb_lateral_df)
               end

@@ -20,6 +20,7 @@ module VersatileDiamond
         super(*super_args)
         @mapping = mapping
         @links = {} # contain positions between atoms of different reactants
+        @children = []
 
         @mapping.find_positions_for(self)
       end
@@ -91,6 +92,16 @@ module VersatileDiamond
             end
           end
         end
+      end
+
+      # Also remember reversed children
+      # @return [Reaction] the reversed reaction
+      # @override
+      def reverse
+        return @reverse if @reverse
+        result = super
+        children.each { |child| result.children << child.reverse }
+        result
       end
 
       # Also changes atom mapping result
@@ -219,12 +230,12 @@ module VersatileDiamond
       # @param [Float] value see at #super same argument
       # @override
       def update_attribute(attribute, value)
-        if children
-          children.each do |reaction|
-            reaction.as(@type).send(:"#{attribute}=", value)
-          end
-        else
+        if children.empty?
           super
+        else
+          children.each do |child|
+            child.send(:"#{attribute}=", value)
+          end
         end
       end
 
@@ -289,7 +300,6 @@ module VersatileDiamond
           [dup_spec, dup_spec.atom(old_spec.keyname(old_atom))]
         end
 
-        @children ||= []
         @children << duplication
 
         duplication

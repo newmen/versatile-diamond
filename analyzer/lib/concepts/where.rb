@@ -47,14 +47,14 @@ module VersatileDiamond
       # TODO: rspec
       def swap_source(from, to)
         return if from == to
-        return unless @specs.delete(from)
-        @specs << to
-
-        @links = dup_graph(@links) do |v|
-          v.is_a?(Symbol) ? v : swap(v, from, to)
+        if @specs.delete(from)
+          @specs << to
+          @links = dup_graph(@links) do |v|
+            v.is_a?(Symbol) ? v : swap(v, from, to)
+          end
+        else
+          parents.each { |parent| parent.swap_source(from, to) }
         end
-
-        parents.each { |parent| parent.swap_source(from, to) }
       end
 
       # Swaps atoms

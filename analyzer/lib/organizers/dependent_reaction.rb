@@ -43,7 +43,7 @@ module VersatileDiamond
       end
 
       def to_s
-        "(#{name}, [#{parent}], [#{children.map(&:name).join(' ')}])"
+        "(#{name}, [#{parent}], [#{children.map(&:name).join('; ')}])"
       end
 
       def inspect

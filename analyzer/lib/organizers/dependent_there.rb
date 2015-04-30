@@ -39,9 +39,14 @@ module VersatileDiamond
       # @param [Concept::SpecificSpec] spec which will be checked
       # @return [Boolean] contain similar source or not
       def use_similar_source?(spec)
+        return true if there.use_similar_source?(spec)
         clr = lateral_reaction.reaction
-        clr.use_similar_source?(spec) || clr.reverse.use_similar_source?(spec) ||
-          there.use_similar_source?(spec)
+        return true if clr.use_similar_source?(spec)
+        begin
+          clr.reverse.use_similar_source?(spec)
+        rescue Concepts::There::ReversingError
+          false
+        end
       end
 
       # Gets atoms of passed spec

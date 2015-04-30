@@ -60,8 +60,11 @@ module VersatileDiamond
         let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
         before do
           Tools::Config.surface_temperature(0, 'C')
+          dimer_formation.activation = 0
           dimer_formation.rate = 1
+          end_lateral_df.activation = 0
           end_lateral_df.rate = 22
+          ewb_lateral_df.activation = 0
           ewb_lateral_df.rate = 3
 
           dept_dimer_formation.organize_dependencies!(lateral_reactions)
