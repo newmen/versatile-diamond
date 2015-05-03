@@ -115,9 +115,9 @@ module VersatileDiamond
         all.each do |concepts|
           concepts.each do |concept|
             concept.each_source do |specific_spec|
-              next if @term_specs[specific_spec.name]
-
               name = specific_spec.name
+              next if @term_specs[name]
+
               cached_dept_spec = cached_spec(cache, specific_spec)
               if cached_dept_spec
                 swap_source_carefully(concept, specific_spec, cached_dept_spec.spec)

@@ -8,8 +8,8 @@ module VersatileDiamond
       include BondsCounter
       extend Forwardable
 
-      def_delegators :@spec, :extendable?, :gas?, :simple?
       attr_reader :spec, :specific_atoms
+      def_delegators :spec, :extendable?, :gas?, :simple?
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value

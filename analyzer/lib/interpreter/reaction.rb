@@ -68,11 +68,16 @@ module VersatileDiamond
               update_specs_in(names_and_specs[:source], source.zip(ext_src))
               update_specs_in(names_and_specs[:products], products.zip(ext_prd))
 
+              (ext_src + ext_prd).each do |ext_spec|
+                base_spec = ext_spec.spec
+                store(base_spec) if ext_spec.extended? && !Chest.has?(base_spec)
+              end
+
               source, products = ext_src, ext_prd
             end || syntax_error('.wrong_balance')
 
-            reaction = Concepts::Reaction.new(
-              :forward, @name, source, products, mapping)
+            reaction =
+              Concepts::Reaction.new(:forward, @name, source, products, mapping)
 
             # nest only here
             nested(Equation.new(reaction, names_and_specs))
