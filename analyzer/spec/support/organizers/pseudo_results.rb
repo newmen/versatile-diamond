@@ -19,7 +19,10 @@ module VersatileDiamond
 
           results = double('pseudo_analysis_results')
           sort_depts(fixed_depts).each do |method_name, list|
-            if !list.empty? && organization_keys.include?(method_name)
+            has_orig_depts =
+              !list.empty? && depts[method_name] && !depts[method_name].empty?
+
+            if has_orig_depts && organization_keys.include?(method_name)
               orgres = send(:"organize_#{method_name}", fixed_depts)
               list += orgres if method_name == :lateral_reactions
             end
