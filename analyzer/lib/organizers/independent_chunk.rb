@@ -33,8 +33,8 @@ module VersatileDiamond
       # Makes the lateral reaction which contain current chunk
       # @return [CombinedLateralReaction] instance of new lateral reaction
       def lateral_reaction
-        @_lateral_reaction ||=
-          CombinedLateralReaction.new(typical_reaction, self, typical_reaction.full_rate)
+        @_lateral_reaction ||= CombinedLateralReaction.new(
+                                    typical_reaction, self, typical_reaction.full_rate)
       end
 
       # Gets the tail name of current chunk

@@ -54,9 +54,9 @@ module VersatileDiamond
       private
 
         # Gets the parents of current reaction
-        # @return [Array] the parents of current reaction
-        def parents
-          reaction.parents.map(&method(:reaction_class))
+        # @return [BaseReaction] the parents of current reaction
+        def parent
+          reaction.parent && reaction_class(reaction.parent)
         end
 
         # Gets the list of more complex reactions

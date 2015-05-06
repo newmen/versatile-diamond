@@ -24,8 +24,6 @@ module VersatileDiamond
         @chunk = chunk
         @full_rate = full_rate
 
-        @parent = nil
-
         @_adopted_source = nil
       end
 

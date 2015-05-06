@@ -26,12 +26,6 @@ module VersatileDiamond
 
       private
 
-        # Checks that current reaction is a tail of overall engine find algorithm
-        # @return [Boolean] is final reaction in reactions tree or not
-        def concretizable?
-          !children.empty?
-        end
-
         # Gets the parent type of generating reaction
         # @return [String] the parent type of reaction
         # @override

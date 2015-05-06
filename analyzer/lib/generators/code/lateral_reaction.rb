@@ -10,6 +10,8 @@ module VersatileDiamond
         # Gets the number of lateral reaction chunks
         # @return [Integer] the number of lateral reaction chunks
         def chunks_num
+          parent_chunks = reaction.chunk.parents
+          parent_chunks.empty? ? 1 : parent_chunks.size
         end
 
       protected
@@ -22,14 +24,19 @@ module VersatileDiamond
 
       private
 
+        # Checks that current reaction is a tail of overall engine find algorithm
+        # @return [Boolean] is final reaction in reactions tree or not
+        def concretizable?
+          chunk = reaction.chunk
+          reaction.parent.children.map(&:chunk).any? do |ch|
+            ch.parents.include?(chunk)
+          end
+        end
+
         # Detects that current reaction is multi lateral or not
         # @return [Boolean] is current reaction multi lateral or not
         def multi?
-          result = chunks_num > 1
-          if result && !parents.all?(&:lateral?)
-            raise 'Wrong parents for multi lateral reaction'
-          end
-          result
+          chunks_num > 1
         end
 
         # Gets the type of reaction
