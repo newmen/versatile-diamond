@@ -21,6 +21,7 @@ vde-*s.e*
 .idea
 *.dump
 .bundle/
+.what_to_run/
 coverage/
 
 Gemfile.lock
