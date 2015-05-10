@@ -6,12 +6,18 @@ module VersatileDiamond
 
       # Contains logic for generation typical reation
       class LateralReaction < SpeciesReaction
+        # Also initializes additional cache variables
+        # @override
+        def initialize(*)
+          super
 
-        # Gets the number of lateral reaction chunks
-        # @return [Integer] the number of lateral reaction chunks
-        def chunks_num
-          parent_chunks = reaction.chunk.parents
-          parent_chunks.empty? ? 1 : parent_chunks.size
+          @_internal_chunks = nil
+        end
+
+        # Gets the links of lateral reaction internal minimal chunks
+        # @return [Array] the list minimal used chunks
+        def internal_chunks
+          @_internal_chunks ||= deep_chunks(reaction.chunk)
         end
 
       protected
@@ -49,6 +55,24 @@ module VersatileDiamond
         # @return [Integer] the number of using sidepieces
         def template_specs_num
           multi? ? chunks_num : sidepiece_species.size
+        end
+
+        # Gets the number of lateral reaction chunks
+        # @return [Integer] the number of lateral reaction chunks
+        def chunks_num
+          internal_chunks.size
+        end
+
+        # Collect chunks which contains in passed chunk
+        # @param [Organizers::Chunk] chunk which internal chunks will collected
+        # @return [Array] the list of internal chunks
+        def deep_chunks(chunk)
+          parent_chunks = chunk.parents
+          if parent_chunks.empty?
+            [chunk]
+          else
+            parent_chunks.map(&method(:deep_chunks)).reduce(:+)
+          end
         end
 
         # Gets a list of code elements each of which uses in header file

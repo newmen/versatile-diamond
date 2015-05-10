@@ -58,27 +58,21 @@ module VersatileDiamond
           end
         end
 
-        describe '#chunks_num' do
-          shared_examples_for :check_chunks_num do
-            it { expect(subject.chunks_num).to eq(chunks_num) }
+        describe '#internal_chunks' do
+          shared_examples_for :check_internal_chunks do
+            it { expect(subject.internal_chunks).to eq(internal_chunks) }
           end
 
-          it_behaves_like :check_chunks_num do
+          it_behaves_like :check_internal_chunks do
             let(:lateral_reactions) { [target] }
             let(:target) { dept_end_lateral_df }
-            let(:chunks_num) { 1 }
+            let(:internal_chunks) { [end_chunk] }
           end
 
-          it_behaves_like :check_chunks_num do
-            let(:lateral_reactions) { [target] }
-            let(:target) { dept_end_lateral_df }
-            let(:chunks_num) { 1 }
-          end
-
-          it_behaves_like :check_chunks_num do
+          it_behaves_like :check_internal_chunks do
             let(:lateral_reactions) { [dept_end_lateral_df, target] }
             let(:target) { dept_middle_lateral_df }
-            let(:chunks_num) { 2 }
+            let(:internal_chunks) { [end_chunk] * 2 }
           end
         end
       end

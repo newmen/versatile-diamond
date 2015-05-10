@@ -76,12 +76,7 @@ module VersatileDiamond
         # Gets the maximal number of lateral reaction chunks
         # @return [Integer] the maximal number of lateral reaction chunks
         def lateral_chunks_num
-          overall_lateral_reaction.chunks_num
-        end
-
-        # Gets lateral reaction which is overall other children reactions
-        # @return [LateralReaction] overall lateral reaction
-        def overall_lateral_reaction
+          children.flat_map(&:internal_chunks).uniq.size
         end
 
         # Gets the string by which chunks of lateral reactions define

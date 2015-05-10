@@ -14,6 +14,7 @@ module VersatileDiamond
       def swap(spec_atom, from, to)
         return spec_atom unless spec_atom[0] == from
 
+        # TODO: move #specific? method from Organizers to Concepts
         if !from.specific_atoms.empty? && to.specific_atoms.empty?
           raise ArgumentError, 'Swapping specific spec loses specification'
         end
