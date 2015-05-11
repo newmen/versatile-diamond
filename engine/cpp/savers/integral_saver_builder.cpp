@@ -1,17 +1,11 @@
 #include "integral_saver_builder.h"
-#include "decorator/integral_saver_item.h"
+#include "decorator/queue_item.h"
 
 namespace vd {
 
-QueueItem *IntegralSaverBuilder::wrapItem(QueueItem *item)
+void IntegralSaverBuilder::save(const SavingAmorph *, const SavingCrystal *crystal, const char *, double currentTime)
 {
-    return new IntegralSaverItem(item, *this);
-}
-
-void IntegralSaverBuilder::save(const Amorph *, const Crystal *crystal, double currentTime, double diffTime)
-{
-    if (isNeedSave(diffTime))
-        csSaver.writeBySlicesOf(crystal, currentTime);
+    _csSaver->writeBySlicesOf(crystal, currentTime);
 }
 
 }

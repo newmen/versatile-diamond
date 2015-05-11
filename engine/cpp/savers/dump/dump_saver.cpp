@@ -14,7 +14,7 @@ DumpSaver::~DumpSaver()
     _outFile.close();
 }
 
-void DumpSaver::save(uint x, uint y, double currentTime, const Amorph *amorph, const Crystal *crystal, const Detector *detector)
+void DumpSaver::save(uint x, uint y, double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
 {
     _outFile.open("dump.dump");
     MolAccumulator amorphAcc(detector), crystalAcc(detector);
@@ -23,8 +23,8 @@ void DumpSaver::save(uint x, uint y, double currentTime, const Amorph *amorph, c
     _outFile.write((char*)&y, sizeof(y));
     _outFile.write((char*)&currentTime, sizeof(currentTime));
 
-    amorph->eachAtom([&amorphAcc](const Atom *atom) {
-        atom->eachNeighbour([&amorphAcc, atom](Atom *nbr) {
+    amorph->eachAtom([&amorphAcc](const SavingAtom *atom) {
+        atom->eachNeighbour([&amorphAcc, atom](SavingAtom *nbr) {
             amorphAcc.addBondedPair(atom, nbr);
         });
     });
@@ -35,7 +35,7 @@ void DumpSaver::save(uint x, uint y, double currentTime, const Amorph *amorph, c
     amorphAcc.orderedEachAtomInfo([this](uint i, const AtomInfo *ai){
         _outFile.write((char*)&i, sizeof(i));
 
-        const Atom *atom = ai->atom();
+        const SavingAtom *atom = ai->atom();
         const char name = *atom->name();
         ushort type = atom->type(), noBonds = atom->actives()+atom->bonds();
 
@@ -44,8 +44,8 @@ void DumpSaver::save(uint x, uint y, double currentTime, const Amorph *amorph, c
         _outFile.write((char*)&noBonds, sizeof(noBonds));
     });
 
-    crystal->eachAtom([&crystalAcc](const Atom *atom) {
-        atom->eachNeighbour([&crystalAcc, atom](Atom *nbr) {
+    crystal->eachAtom([&crystalAcc](const SavingAtom *atom) {
+        atom->eachNeighbour([&crystalAcc, atom](SavingAtom *nbr) {
             if (nbr->lattice())
                 crystalAcc.addBondedPair(atom, nbr);
         });

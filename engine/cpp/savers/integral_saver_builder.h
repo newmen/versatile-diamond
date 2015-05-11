@@ -1,33 +1,32 @@
 #ifndef INTEGRALSAVERBUILDER_H
 #define INTEGRALSAVERBUILDER_H
 
-#include "savers_builder.h"
+#include "saver_builder.h"
 #include "crystal_slice_saver.h"
 #include "../phases/crystal.h"
 
 namespace vd {
 
-class IntegralSaverBuilder : public SaversBuilder
+class IntegralSaverBuilder : public SaverBuilder
 {
     const char *_name;
     uint _sliceMaxNum;
     std::initializer_list<ushort> _targetTypes;
-    CrystalSliceSaver *csSaver;
+    CrystalSliceSaver *_csSaver;
 public:
     IntegralSaverBuilder(const char *name,
                          uint sliceMaxNum,
                          const std::initializer_list<ushort> &targetTypes,
                          double step) :
-        SaversBuilder(step),
+        SaverBuilder(step),
         _name(name),
         _sliceMaxNum(sliceMaxNum),
         _targetTypes(targetTypes)
     {
-        csSaver = new CrystalSliceSaver(_name, _sliceMaxNum, _targetTypes);
+        _csSaver = new CrystalSliceSaver(_name, _sliceMaxNum, _targetTypes);
     }
 
-    QueueItem* wrapItem(QueueItem* item) override;
-    void save(const Amorph*, const Crystal *crystal, double currentTime, double diffTime) override;
+    void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime) override;
 };
 
 }

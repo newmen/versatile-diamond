@@ -8,6 +8,7 @@
 #include "../phases/behavior_factory.h"
 #include "../phases/saving_amorph.h"
 #include "../phases/saving_crystal.h"
+#include "../savers/progress_saver_builder.h"
 #include "process_mem_usage.h"
 #include "init_config.h"
 #include "common.h"
@@ -28,7 +29,7 @@ public:
     static void stop();
 
     Runner(const InitConfig<Handbook> &init) : _init(init) {}
-    ~Runner();
+    ~Runner() {}
 
     void calculate(const std::initializer_list<ushort> &types);
 
@@ -38,16 +39,8 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
-    QueueItem *createBuilders(const std::initializer_list<ushort> &types, const Amorph *amorph, const Crystal *crystal);
-
-    // ЭТИ ДВА МЕТОДА УХОДЯТ В ПРОГРЕСС САВЕР
-    double activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const;
-    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph);
-
-
     void storeIfNeed(const Crystal *crystal,
                      const Amorph *amorph,
-                     double totalTime,
                      double dt,
                      bool forseSave);
 
@@ -55,7 +48,9 @@ private:
     double timestamp() const;
 
     typename HB::SurfaceCrystal *initCrystal();
+    void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
 
+    void saveData(QueueItem *item, double currentTime, const char *name);
     void outputMemoryUsage(std::ostream &os) const;
     void printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const;
 };
@@ -100,16 +95,10 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     CommonMCData mcData;
     HB::mc().initCounter(&mcData);
 
-#ifndef NOUT
-    // СОЗДАЁМ ПРОГРЕСС СЕЙВЕР И ДУШУ, ОБОРАЧИВАЕМ СЕЙВЕРОМ ДУШУ,
-    // ЗОВЁМ COPYDATA && SAVEDATA
-    // УБИВАЕМ ТО ЧТО СОЗДАЛИ
-    // ВСЁ ЭТО В ОТДЕЛЬНОМ МЕТОДЕ, И ТУТ ПРОСТО ВЫЗОВ ЭТОГО МЕТОДА
+    _init.initTraker(types);
 
-    SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
-    printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
-    delete std::get<0>(savingPhases);
-    delete std::get<1>(savingPhases);
+#ifndef NOUT
+    firstSave(&HB::amorph(), surfaceCrystal, _init.name.c_str());
 #endif // NOUT
 
     ullong steps = 0;
@@ -137,7 +126,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         }
         else
         {
-            storeIfNeed(surfaceCrystal, &HB::amorph(), HB::mc().totalTime(), dt, false);
+            storeIfNeed(surfaceCrystal, &HB::amorph(), dt, false);
         }
 #endif // NOUT
     }
@@ -145,81 +134,12 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     double stopTime = timestamp();
 
 #ifndef NOUT
-    storeIfNeed(surfaceCrystal, &HB::amorph(), HB::mc().totalTime(), dt, true);
+    storeIfNeed(surfaceCrystal, &HB::amorph(), dt, true);
 #endif // NOUT
 
     printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
-}
-
-template <class HB>
-QueueItem *Runner<HB>::createBuilders(const std::initializer_list<ushort> &types, const Amorph *amorph, const Crystal *crystal)
-{
-    DetectorFactory<HB> detFactory;
-    Treker* treker = new Treker();
-
-    if (_init.yamlReader->isDefined("integral", "step"))
-    {
-        treker->addItem(new IntegralSaverBuilder(
-                            _init.name.c_str(),
-                            _init.x * _init.y,
-                            types,
-                            _init.yamlReader->read<double>("integral", "step")));
-    }
-
-    if (_init.yamlReader->isDefined("dump", "step"))
-    {
-        treker->addItem(new DumpSaverBuilder(
-                            _init.x,
-                            _init.y,
-                            detFactory.create(_init.yamlReader->read<std::string>("dump", "detector")),
-                            _init.yamlReader->read<double>("dump", "step")));
-    }
-
-    if (_init.yamlReader->isDefined("mol", "step"))
-    {
-        treker->addItem(new VolumeSaversBuilder(
-                            detFactory.create(_init.yamlReader->read<std::string>("mol", "detector")),
-                            "mol",
-                            _init.name.c_str(),
-                            _init.yamlReader->read<double>("mol", "step")));
-    }
-
-    if (_init.yamlReader->isDefined("sdf", "step"))
-    {
-        treker->addItem(new VolumeSaversBuilder(
-                            detFactory.create(_init.yamlReader->read<std::string>("sdf", "detector")),
-                            "sdf",
-                            _init.name.c_str(),
-                            _init.yamlReader->read<double>("sdf", "step")));
-    }
-
-    if (_init.yamlReader->isDefined("xyz", "step"))
-    {
-        treker->addItem(new VolumeSaversBuilder(
-                            detFactory.create(_init.yamlReader->read<std::string>("xyz", "detector")),
-                            "xyz",
-                            _init.name.c_str(),
-                            _init.yamlReader->read<double>("xyz", "step")));
-    }
-
-    return treker->takeItem(new Soul(amorph, crystal));
-}
-
-template <class HB>
-double Runner<HB>::activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const
-{
-    uint actives = 0;
-    uint hydrogens = 0;
-    auto lambda = [&actives, &hydrogens](const SavingAtom *atom) {
-        actives += HB::activesFor(atom->type());
-        hydrogens += HB::hydrogensFor(atom->type());
-    };
-
-    amorph->eachAtom(lambda);
-    crystal->eachAtom(lambda);
-    return (double)actives / (actives + hydrogens);
 }
 
 template <class HB>
@@ -252,35 +172,44 @@ typename HB::SurfaceCrystal *Runner<HB>::initCrystal()
 }
 
 template <class HB>
-void Runner<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph)
+void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
-    std::cout.width(10);
-    std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
-    std::cout.width(10);
-    std::cout << crystal->countAtoms();
-    std::cout.width(10);
-    std::cout << amorph->countAtoms();
-    std::cout.width(10);
-    std::cout << 100 * activesRatio(crystal, amorph) << " %";
-    std::cout.width(20);
-    std::cout << HB::mc().totalTime() << " (s)";
-    std::cout.width(20);
-    std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
+    QueueItem *item = new Soul(amorph, crystal);
+    ProgressSaverBuilder<HB> *progress = new ProgressSaverBuilder<HB>(0);
+    item = progress->wrapItem(item);
+    item->saveData(0, name); // грязный хак
+    delete item;
+    delete progress;
+}
+
+template <class HB>
+void Runner<HB>::saveData(QueueItem *item, double currentTime, const char *name)
+{
+    item->saveData(currentTime, name);
 }
 
 template <class HB>
 void Runner<HB>::storeIfNeed(const Crystal *crystal,
                              const Amorph *amorph,
-                             double totalTime,
                              double dt,
                              bool forseSave)
 {
     static uint volumeSaveCounter = 0;
-
-    sliceSaver->writeBySlicesOf(crystal, HB::mc().totalTime());
+//    static double currentTime = 0;
+//    currentTime += dt;
 
     if (volumeSaveCounter == 0 || forseSave)
     {
+        _init.traker->setTime(dt);
+        QueueItem *item = _init.traker->takeItem(new Soul(amorph, crystal));
+
+        if (!item->isEmpty()) // здесь проходит двойная проверка на надобность сохранения
+        {
+
+            // позвать поток
+        }
+
+
         // ЮЗАЯ ТРЕКЕР СОЗДАЁМ КУИТЕМ
         // ПРОВЕРЯЕМ ПУСТ ЛИ ОН
         // ЕСЛИ НЕ ПУСТ, ТО КОПИРУЕМ

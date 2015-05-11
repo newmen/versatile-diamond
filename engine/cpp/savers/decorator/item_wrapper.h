@@ -2,21 +2,22 @@
 #define ITEMWRAPPER_H
 
 #include "queue_item.h"
-#include "../savers_builder.h"
+#include "../saver_builder.h"
 
 namespace vd {
 
 class ItemWrapper : public QueueItem
 {
-    QueueItem* _target;
-    SaversBuilder* _svBuilder;
+    QueueItem *_target;
+    SaverBuilder *_svBuilder;
 public:
-    ItemWrapper(QueueItem* targ, SaversBuilder* svBuilder) : _target(targ), _svBuilder(svBuilder) {}
+    ItemWrapper(QueueItem *targ, SaverBuilder *svBuilder) : _target(targ), _svBuilder(svBuilder) {}
+    ~ItemWrapper();
 
+    void saveData(double currentTime, const char *name) override;
     void copyData() override;
-    void saveData(double currentTime, double diffTime) override;
-    Amorph* amorph() override;
-    Crystal* crystal() override;
+    const SavingAmorph *amorph() override;
+    const SavingCrystal *crystal() override;
     bool isEmpty() override { return false; }
 };
 

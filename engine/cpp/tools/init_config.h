@@ -8,9 +8,10 @@
 #include "../savers/decorator/soul.h"
 #include "../savers/integral_saver_builder.h"
 #include "../savers/volume_savers_builder.h"
+#include "../savers/progress_saver_builder.h"
 #include "../phases/behavior.h"
 #include "yaml_config_reader.h"
-#include "treker.h"
+#include "traker.h"
 #include "common.h"
 #include "error.h"
 
@@ -26,9 +27,11 @@ struct InitConfig
     const char *dumpPath;
     Behavior *behavior;
     YAMLConfigReader *yamlReader;
+    Traker *traker = new Traker();
 
     InitConfig(int argc, char *argv[]);
 
+    void initTraker(const std::initializer_list<ushort> &types) const;
     std::string filename() const;
 };
 
@@ -85,6 +88,62 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
         }
 
         behavior = bhvrFactory.create(bhvrType);
+    }
+}
+
+template <class HB>
+void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) const
+{
+    DetectorFactory<HB> detFactory;
+
+    if (yamlReader->isDefined("integral", "step"))
+    {
+        traker->addItem(new IntegralSaverBuilder(
+                            name.c_str(),
+                            x * y,
+                            types,
+                            yamlReader->read<double>("integral", "step")));
+    }
+
+    if (yamlReader->isDefined("dump", "step"))
+    {
+        traker->addItem(new DumpSaverBuilder(
+                            x,
+                            y,
+                            detFactory.create(yamlReader->read<std::string>("dump", "detector")),
+                            yamlReader->read<double>("dump", "step")));
+    }
+
+    if (yamlReader->isDefined("mol", "step"))
+    {
+        traker->addItem(new VolumeSaversBuilder(
+                            detFactory.create(yamlReader->read<std::string>("mol", "detector")),
+                            "mol",
+                            name.c_str(),
+                            yamlReader->read<double>("mol", "step")));
+    }
+
+    if (yamlReader->isDefined("sdf", "step"))
+    {
+        traker->addItem(new VolumeSaversBuilder(
+                            detFactory.create(yamlReader->read<std::string>("sdf", "detector")),
+                            "sdf",
+                            name.c_str(),
+                            yamlReader->read<double>("sdf", "step")));
+    }
+
+    if (yamlReader->isDefined("xyz", "step"))
+    {
+        traker->addItem(new VolumeSaversBuilder(
+                            detFactory.create(yamlReader->read<std::string>("xyz", "detector")),
+                            "xyz",
+                            name.c_str(),
+                            yamlReader->read<double>("xyz", "step")));
+    }
+
+    if (yamlReader->isDefined("progress", "step"))
+    {
+        traker->addItem(new ProgressSaverBuilder<HB>(yamlReader->read<double>("progress", "step")));
     }
 }
 

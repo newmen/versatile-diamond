@@ -1,20 +1,21 @@
 #ifndef QUEUEITEM_H
 #define QUEUEITEM_H
 
-#include "../../phases/amorph.h"
-#include "../../phases/crystal.h"
+#include "../../phases/saving_amorph.h"
+#include "../../phases/saving_crystal.h"
 
 namespace vd {
 
 class QueueItem
 {
 public:
-    QueueItem();
+    QueueItem() {}
+    virtual ~QueueItem() {}
 
-    virtual void saveData(double currentTime, double diffTime) = 0;
+    virtual void saveData(double currentTime, const char *name) = 0;
     virtual void copyData() = 0;
-    virtual const Amorph* amorph() = 0;
-    virtual const Crystal* crystal() = 0;
+    virtual const SavingAmorph* amorph() = 0;
+    virtual const SavingCrystal* crystal() = 0;
     virtual bool isEmpty() = 0;
 };
 

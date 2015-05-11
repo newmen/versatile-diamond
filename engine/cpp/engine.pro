@@ -125,7 +125,6 @@ SOURCES += \
     savers/mol_accumulator.cpp \
     savers/mol_format.cpp \
     savers/mol_saver.cpp \
-    savers/savers_builder.cpp \
     savers/sdf_saver.cpp \
     savers/volume_saver_factory.cpp \
     savers/volume_savers_builder.cpp \
@@ -139,8 +138,10 @@ SOURCES += \
     tools/common.cpp \
     tools/process_mem_usage.cpp \
     tools/scavenger.cpp \
-    tools/treker.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    tools/traker.cpp \
+    savers/saver_builder.cpp \
+    savers/progress_saver_builder.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -313,7 +314,6 @@ HEADERS += \
     savers/mol_format.h \
     savers/mol_saver.h \
     savers/one_file.h \
-    savers/savers_builder.h \
     savers/sdf_saver.h \
     savers/surface_detector.h \
     savers/volume_saver.h \
@@ -349,10 +349,13 @@ HEADERS += \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/scavenger.h \
-    tools/treker.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    tools/traker.h \
+    savers/saver_builder.h \
+    savers/progress_saver.h \
+    savers/progress_saver_builder.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

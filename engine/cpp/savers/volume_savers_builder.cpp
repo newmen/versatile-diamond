@@ -1,24 +1,26 @@
 #include "volume_savers_builder.h"
 #include "volume_saver_factory.h"
-#include "decorator/volume_saver_item.h"
+#include "decorator/queue_item.h"
 
 namespace vd {
 
-void VolumeSaversBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime, double diffTime)
+VolumeSaversBuilder::VolumeSaversBuilder(const Detector *detector, std::string saverType, const char *name, double step) :
+    SaverBuilder(step),
+    _detector(detector),
+    _volumeSaverType(saverType)
 {
-    if (isNeedSave(diffTime))
-        takeSaver(_volumeSaverType)->save(currentTime, amorph, crystal, _detector);
+    _saver = takeSaver(_volumeSaverType, name);
 }
 
-QueueItem *VolumeSaversBuilder::wrapItem(QueueItem* item)
+void VolumeSaversBuilder::save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *name, double currentTime)
 {
-    return new VolumeSaverItem(item, *this);
+    takeSaver(_volumeSaverType, name)->save(currentTime, amorph, crystal, _detector);
 }
 
-VolumeSaver *VolumeSaversBuilder::takeSaver(std::string volumeSaverType)
+VolumeSaver *VolumeSaversBuilder::takeSaver(std::string volumeSaverType, const char *name)
 {
     VolumeSaverFactory* vsFactory;
-    return vsFactory->create(volumeSaverType);
+    return vsFactory->create(volumeSaverType, name);
 }
 
 }

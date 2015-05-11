@@ -2,26 +2,30 @@
 
 namespace vd {
 
-ItemWrapper::ItemWrapper(SaversDecorator *targ) { _target = targ; }
+ItemWrapper::~ItemWrapper()
+{
+    delete _target;
+    delete _svBuilder;
+}
+
+void ItemWrapper::saveData(double currentTime, const char *name)
+{
+    copyData();
+    _svBuilder->save(amorph(), crystal(), name, currentTime);
+    _target->saveData(currentTime, name);
+}
 
 void ItemWrapper::copyData()
 {
     _target->copyData();
 }
 
-void ItemWrapper::saveData(double currentTime, double diffTime)
-{
-    _svBuilder->save(amorph(),crystal(), currentTime, diffTime);
-
-    _target->saveData(currentTime, diffTime);
-}
-
-Amorph *ItemWrapper::amorph()
+const SavingAmorph *ItemWrapper::amorph()
 {
     return _target->amorph();
 }
 
-Crystal *ItemWrapper::crystal()
+const SavingCrystal *ItemWrapper::crystal()
 {
     return _target->crystal();
 }

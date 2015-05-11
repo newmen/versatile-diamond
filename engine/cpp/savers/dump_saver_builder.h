@@ -3,13 +3,13 @@
 
 #include "../phases/amorph.h"
 #include "../phases/crystal.h"
-#include "savers_builder.h"
+#include "saver_builder.h"
 #include "dump/dump_saver.h"
 #include "detector.h"
 
 namespace vd {
 
-class DumpSaverBuilder : public SaversBuilder
+class DumpSaverBuilder : public SaverBuilder
 {
     uint _x;
     uint _y;
@@ -21,13 +21,12 @@ public:
                      uint y,
                      const Detector *detector,
                      double step) :
-        SaversBuilder(step),
+        SaverBuilder(step),
         _x(x),
         _y(y),
         _detector(detector) { _dmpSaver = new DumpSaver(); }
 
-    QueueItem* wrapItem(QueueItem* item) override;
-    void save(const Amorph* amorph, const Crystal* crystal, double currentTime, double diffTime) override;
+    void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime) override;
 };
 
 }

@@ -1,17 +1,11 @@
 #include "dump_saver_builder.h"
-#include "decorator/dump_saver_item.h"
+#include "decorator/queue_item.h"
 
 namespace vd {
 
-QueueItem *DumpSaverBuilder::wrapItem(QueueItem *item)
+void DumpSaverBuilder::save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime)
 {
-    return new DumpSaverItem(item, *this);
-}
-
-void DumpSaverBuilder::save(const Amorph *amorph, const Crystal *crystal, double currentTime, double diffTime)
-{
-    if (isNeedSave(diffTime))
-        dmpSaver.save(_x, _y,currentTime, amorph, crystal, _detector);
+    _dmpSaver->save(_x, _y,currentTime, amorph, crystal, _detector);
 }
 
 }
