@@ -11,7 +11,6 @@ end
 
 group :ruby, :test do
   gem 'rspec'
-  gem 'what_to_run'
   gem 'coveralls', require: false
 end
 

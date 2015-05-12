@@ -1,4 +1,3 @@
-require 'what_to_run/rspec'
 require 'coveralls'
 Coveralls.wear!
 
