@@ -84,14 +84,14 @@ void DumpSaver::save(uint x, uint y, double currentTime, const SavingAmorph *amo
     uint bondsNum = amorphAcc.bondsNum() + crystalAcc.bondsNum();
     _outFile.write((char*)&bondsNum, sizeof(bondsNum));
 
-    amorphAcc.orderedEachBondInfo([this](uint i, const BondInfo *bi){
+    amorphAcc.orderedEachBondInfo([this](uint, const BondInfo *bi){
         uint atom = bi->from();
         _outFile.write((char*)&atom, sizeof(atom));
         atom = bi->to();
         _outFile.write((char*)&atom, sizeof(atom));
     });
 
-    crystalAcc.orderedEachBondInfo([this](uint i, const BondInfo *bi){
+    crystalAcc.orderedEachBondInfo([this](uint, const BondInfo *bi){
         uint atom = bi->from();
         _outFile.write((char*)&atom, sizeof(atom));
         atom = bi->to();

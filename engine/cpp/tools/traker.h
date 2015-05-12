@@ -16,6 +16,7 @@ public:
     QueueItem* takeItem(QueueItem *soul);
     void addItem(SaverBuilder* svrBilder);
     void setTime(double diffTime);
+    double currentTime() { return _currentTime; }
 };
 
 }

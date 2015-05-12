@@ -10,7 +10,6 @@ ItemWrapper::~ItemWrapper()
 
 void ItemWrapper::saveData(double currentTime, const char *name)
 {
-    copyData();
     _svBuilder->save(amorph(), crystal(), name, currentTime);
     _target->saveData(currentTime, name);
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sys/time.h>
+#include <thread>
 #include "../mc/common_mc_data.h"
 #include "../hand-generations/src/handbook.h"
 #include "../phases/behavior_factory.h"
@@ -50,7 +51,7 @@ private:
     typename HB::SurfaceCrystal *initCrystal();
     void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
 
-    void saveData(QueueItem *item, double currentTime, const char *name);
+    static void saveData(QueueItem *item, double currentTime, const char *name);
     void outputMemoryUsage(std::ostream &os) const;
     void printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const;
 };
@@ -195,26 +196,18 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
                              bool forseSave)
 {
     static uint volumeSaveCounter = 0;
-//    static double currentTime = 0;
-//    currentTime += dt;
 
     if (volumeSaveCounter == 0 || forseSave)
     {
         _init.traker->setTime(dt);
         QueueItem *item = _init.traker->takeItem(new Soul(amorph, crystal));
 
-        if (!item->isEmpty()) // здесь проходит двойная проверка на надобность сохранения
+        if (!item->isEmpty())
         {
-
-            // позвать поток
+            item->copyData();
+            std::thread thr(saveData, item, _init.traker->currentTime(), _init.name.c_str());
+            thr.join();
         }
-
-
-        // ЮЗАЯ ТРЕКЕР СОЗДАЁМ КУИТЕМ
-        // ПРОВЕРЯЕМ ПУСТ ЛИ ОН
-        // ЕСЛИ НЕ ПУСТ, ТО КОПИРУЕМ
-        // В ТРЕДЕ ЗАПУСКАЕМ СОХРАНЕНИЕ И УДАЛЕНИЕ
-        // ВСЁ ЭТО В ОТДЕЛЬНОМ МЕТОДЕ И ТУТ ВЫЗОВ ЭТОГО МЕТОДА
     }
     if (++volumeSaveCounter == 10)
     {

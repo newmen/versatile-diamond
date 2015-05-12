@@ -40,13 +40,13 @@ struct InitConfig
 template <class HB>
 InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
 {
-    for (int i = 1; i < argc; i++)
+    if (argc == 3)
     {
-        std::string allStr(argv[i]);
-        if(allStr.find("--dump"))
+        std::string str(argv[2]);
+        if(str == "--dump")
         {
             loadFromDump = true;
-            dumpPath = argv[i+1];
+            dumpPath = argv[3];
         }
     }
 

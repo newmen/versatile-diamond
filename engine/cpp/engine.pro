@@ -140,8 +140,7 @@ SOURCES += \
     tools/scavenger.cpp \
     tools/yaml_config_reader.cpp \
     tools/traker.cpp \
-    savers/saver_builder.cpp \
-    savers/progress_saver_builder.cpp
+    savers/saver_builder.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \

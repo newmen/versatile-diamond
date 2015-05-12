@@ -19,7 +19,7 @@ void VolumeSaversBuilder::save(const SavingAmorph *amorph, const SavingCrystal *
 
 VolumeSaver *VolumeSaversBuilder::takeSaver(std::string volumeSaverType, const char *name)
 {
-    VolumeSaverFactory* vsFactory;
+    VolumeSaverFactory* vsFactory = new VolumeSaverFactory();
     return vsFactory->create(volumeSaverType, name);
 }
 
