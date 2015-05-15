@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <sys/time.h>
-#include <thread>
 #include "../mc/common_mc_data.h"
 #include "../hand-generations/src/handbook.h"
 #include "../phases/behavior_factory.h"
@@ -13,6 +12,7 @@
 #include "process_mem_usage.h"
 #include "init_config.h"
 #include "common.h"
+#include "thread_runner.h"
 
 namespace vd
 {
@@ -33,6 +33,7 @@ public:
     ~Runner() {}
 
     void calculate(const std::initializer_list<ushort> &types);
+    static void threadSaveData(QueueItem *item, double currentTime, const char *name);
 
 private:
     Runner(const Runner &) = delete;
@@ -51,7 +52,6 @@ private:
     typename HB::SurfaceCrystal *initCrystal();
     void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
 
-    static void saveData(QueueItem *item, double currentTime, const char *name);
     void outputMemoryUsage(std::ostream &os) const;
     void printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const;
 };
@@ -178,15 +178,9 @@ void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const c
     QueueItem *item = new Soul(amorph, crystal);
     ProgressSaverBuilder<HB> *progress = new ProgressSaverBuilder<HB>(0);
     item = progress->wrapItem(item);
-    item->saveData(0, name); // грязный хак
+    item->copyData();
+    item->saveData(1e-20, name); // грязный хак
     delete item;
-    delete progress;
-}
-
-template <class HB>
-void Runner<HB>::saveData(QueueItem *item, double currentTime, const char *name)
-{
-    item->saveData(currentTime, name);
 }
 
 template <class HB>
@@ -200,14 +194,18 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
     if (volumeSaveCounter == 0 || forseSave)
     {
         _init.traker->setTime(dt);
-        QueueItem *item = _init.traker->takeItem(new Soul(amorph, crystal));
+        QueueItem *queueitem = _init.traker->takeItem(new Soul(amorph, crystal));
 
-        if (!item->isEmpty())
+//        queueitem->copyData();
+//        queueitem->saveData(_init.totalTime, _init.name.c_str());
+        if (queueitem->isEmpty())
         {
-            item->copyData();
-            std::thread thr(saveData, item, _init.traker->currentTime(), _init.name.c_str());
-            thr.join();
+            queueitem->copyData();
+            ThreadRunner _thrRun;
+            _thrRun.saveData(queueitem, _init.totalTime, _init.name.c_str());
         }
+
+//        delete queueitem;
     }
     if (++volumeSaveCounter == 10)
     {

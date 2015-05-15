@@ -1,27 +1,28 @@
+---
 system: 
-	time: 0.2
-	behavior: tor
-	size_x: 5
-	size_y: 5
+  time: 0.2		
+  behavior: tor
+  size_x: 5
+  size_y: 5
 
-integral: 
-	step:
+#integral: 
+#  step: 0.001
 
-dump:
-	step:
-	detector:
+#dump:
+#  step:
+#  detector:
 
-mol: 
-	step:
-	detector:
+#mol: 
+#  step: 0.05
+#  detector: all
 
-sdf: 
-	step:
-	detector:
+#sdf:
+#  step:
+#  detector:
 
-xyz:
-	step:
-	detector:
+#xyz:
+#  step:
+#  detector:
 
 progress:
-	step:
+  step: 0.001

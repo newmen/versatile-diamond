@@ -5,18 +5,17 @@
 #include "../savers/decorator/queue_item.h"
 #include "../savers/saver_builder.h"
 
-namespace vd {
+namespace vd
+{
 
 class Traker
 {
-    std::vector<SaverBuilder*> _queue;
-    double _currentTime = 0;
+    std::vector<SaverBuilder *> _queue;
 public:
     Traker() {}
-    QueueItem* takeItem(QueueItem *soul);
+    QueueItem *takeItem(QueueItem *soul);
     void addItem(SaverBuilder* svrBilder);
     void setTime(double diffTime);
-    double currentTime() { return _currentTime; }
 };
 
 }

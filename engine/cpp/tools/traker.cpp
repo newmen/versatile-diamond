@@ -5,12 +5,12 @@ namespace vd {
 QueueItem *Traker::takeItem(QueueItem* soul)
 {
     QueueItem *item = soul;
-    for (SaverBuilder *bldr : _queue)
+    for (uint i = 0; i < _queue.size(); ++i)
     {
-        if (bldr->isNeedSave())
+        if (_queue[i]->isNeedSave())
         {
-            item = bldr->wrapItem(item);
-            bldr->resetTime();
+            item = _queue[i]->wrapItem(item);
+            _queue[i]->resetTime();
         }
     }
     return item;
@@ -23,7 +23,6 @@ void Traker::addItem(SaverBuilder *svrBilder)
 
 void Traker::setTime(double diffTime)
 {
-    _currentTime += diffTime;
     for (SaverBuilder *bldr : _queue)
         bldr->setTime(diffTime);
 }
