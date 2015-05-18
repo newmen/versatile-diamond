@@ -26,7 +26,7 @@ public:
         _csSaver = new CrystalSliceSaver(_name, _sliceMaxNum, _targetTypes);
     }
 
-    void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime) override;
+    void save(const SavingData &sd) override;
 };
 
 }

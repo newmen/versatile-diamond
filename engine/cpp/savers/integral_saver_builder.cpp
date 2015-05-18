@@ -3,9 +3,9 @@
 
 namespace vd {
 
-void IntegralSaverBuilder::save(const SavingAmorph *, const SavingCrystal *crystal, const char *, double currentTime)
+void IntegralSaverBuilder::save(const SavingData &sd)
 {
-    _csSaver->writeBySlicesOf(crystal, currentTime);
+    _csSaver->writeBySlicesOf(sd.crystal, sd.currentTime);
 }
 
 }

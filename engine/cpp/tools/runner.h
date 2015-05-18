@@ -12,7 +12,6 @@
 #include "process_mem_usage.h"
 #include "init_config.h"
 #include "common.h"
-#include "thread_runner.h"
 
 namespace vd
 {
@@ -33,7 +32,6 @@ public:
     ~Runner() {}
 
     void calculate(const std::initializer_list<ushort> &types);
-    static void threadSaveData(QueueItem *item, double currentTime, const char *name);
 
 private:
     Runner(const Runner &) = delete;
@@ -179,7 +177,7 @@ void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const c
     ProgressSaverBuilder<HB> *progress = new ProgressSaverBuilder<HB>(0);
     item = progress->wrapItem(item);
     item->copyData();
-    item->saveData(1e-20, name); // грязный хак
+    item->saveData(HB::mc().totalTime(), 1e-20, name); // грязный хак
     delete item;
 }
 
@@ -198,12 +196,12 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
 
 //        queueitem->copyData();
 //        queueitem->saveData(_init.totalTime, _init.name.c_str());
-        if (queueitem->isEmpty())
-        {
-            queueitem->copyData();
-            ThreadRunner _thrRun;
-            _thrRun.saveData(queueitem, _init.totalTime, _init.name.c_str());
-        }
+//        if (queueitem->isEmpty())
+//        {
+//            queueitem->copyData();
+//            std::thread thr(&Runner<HB>::threadSaveData, queueitem, _init.totalTime, _init.name.c_str());
+//            thr.join();
+//        }
 
 //        delete queueitem;
     }

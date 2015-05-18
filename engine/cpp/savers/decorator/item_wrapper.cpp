@@ -8,10 +8,9 @@ ItemWrapper::~ItemWrapper()
     delete _svBuilder;
 }
 
-void ItemWrapper::saveData(double currentTime, const char *name)
+void ItemWrapper::saveData(double allTime, double currentTime, const char *name)
 {
-    _svBuilder->save(amorph(), crystal(), name, currentTime);
-    _target->saveData(currentTime, name);
+    _target->saveData(SavingData({amorph(), crystal(), allTime, currentTime, name}));
 }
 
 void ItemWrapper::copyData()
@@ -27,6 +26,11 @@ const SavingAmorph *ItemWrapper::amorph()
 const SavingCrystal *ItemWrapper::crystal()
 {
     return _target->crystal();
+}
+
+void ItemWrapper::saveData(const SavingData &sd)
+{
+    _svBuilder->save(sd);
 }
 
 }

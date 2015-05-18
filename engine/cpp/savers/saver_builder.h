@@ -1,5 +1,5 @@
-#ifndef SAVERS_BUILDER
-#define SAVERS_BUILDER
+#ifndef SAVER_BUILDER
+#define SAVER_BUILDER
 
 #include "decorator/queue_item.h"
 
@@ -16,11 +16,10 @@ public:
     void setTime(double diffTime) { _accTime += diffTime; }
     bool isNeedSave();
     void resetTime();
-
-    virtual void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *name, double currentTime) = 0;
+    virtual void save(const SavingData &sd) = 0;
 };
 
 }
 
-#endif // SAVERS_BUILDER
+#endif // SAVER_BUILDER
 

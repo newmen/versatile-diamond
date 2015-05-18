@@ -3,9 +3,9 @@
 
 namespace vd {
 
-void DumpSaverBuilder::save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime)
+void DumpSaverBuilder::save(const SavingData &sd)
 {
-    _dmpSaver->save(_x, _y,currentTime, amorph, crystal, _detector);
+    _dmpSaver->save(_x, _y, sd.currentTime, sd.amorph, sd.crystal, _detector);
 }
 
 }

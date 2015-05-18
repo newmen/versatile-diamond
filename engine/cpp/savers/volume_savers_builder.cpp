@@ -12,9 +12,9 @@ VolumeSaversBuilder::VolumeSaversBuilder(const Detector *detector, std::string s
     _saver = takeSaver(_volumeSaverType, name);
 }
 
-void VolumeSaversBuilder::save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *name, double currentTime)
+void VolumeSaversBuilder::save(const SavingData &sd)
 {
-    takeSaver(_volumeSaverType, name)->save(currentTime, amorph, crystal, _detector);
+    takeSaver(_volumeSaverType, sd.name)->save(sd.currentTime, sd.amorph, sd.crystal, _detector);
 }
 
 VolumeSaver *VolumeSaversBuilder::takeSaver(std::string volumeSaverType, const char *name)

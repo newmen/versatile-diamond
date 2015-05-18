@@ -1,6 +1,6 @@
 ---
 system: 
-  time: 0.2		
+  time: 0.2
   behavior: tor
   size_x: 5
   size_y: 5
@@ -13,16 +13,16 @@ system:
 #  detector:
 
 #mol: 
-#  step: 0.05
-#  detector: all
+#  step: 0.005
+#  detector: surf
 
 #sdf:
 #  step:
 #  detector:
 
-#xyz:
-#  step:
-#  detector:
+xyz:
+  step: 0.001
+  detector: surf
 
 progress:
   step: 0.001

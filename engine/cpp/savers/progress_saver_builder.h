@@ -14,16 +14,16 @@ public:
     ProgressSaverBuilder(double step) : SaverBuilder(step) {}
     ~ProgressSaverBuilder() {}
 
-    void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime) override;
+    void save(const SavingData &sd) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-void ProgressSaverBuilder<HB>::save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime)
+void ProgressSaverBuilder<HB>::save(const SavingData &sd)
 {
     ProgressSaver<HB> *saver = new ProgressSaver<HB>();
-    saver->printShortState(crystal, amorph, currentTime);
+    saver->printShortState(sd.crystal, sd.amorph, sd.allTime);
 }
 
 }

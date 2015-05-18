@@ -14,7 +14,7 @@ class VolumeSaversBuilder : public SaverBuilder
 public:
     VolumeSaversBuilder(const Detector* detector, std::string saverType, const char *name, double step);
 
-    void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *name, double currentTime) override;
+    void save(const SavingData &sd) override;
 private:
     VolumeSaver* takeSaver(std::string volumeSaverType, const char *name);
 };

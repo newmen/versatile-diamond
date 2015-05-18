@@ -141,7 +141,8 @@ SOURCES += \
     tools/yaml_config_reader.cpp \
     tools/traker.cpp \
     savers/saver_builder.cpp \
-    tools/thread_runner.cpp
+    tools/parallel_saver.cpp \
+    tools/thread.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -356,7 +357,9 @@ HEADERS += \
     savers/saver_builder.h \
     savers/progress_saver.h \
     savers/progress_saver_builder.h \
-    tools/thread_runner.h
+    tools/parallel_saver.h \
+    savers/saving_data.h \
+    tools/thread.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

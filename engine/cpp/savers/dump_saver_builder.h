@@ -26,7 +26,7 @@ public:
         _y(y),
         _detector(detector) { _dmpSaver = new DumpSaver(); }
 
-    void save(const SavingAmorph *amorph, const SavingCrystal *crystal, const char *, double currentTime) override;
+    void save(const SavingData &sd) override;
 };
 
 }
