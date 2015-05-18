@@ -6,7 +6,7 @@ module VersatileDiamond
     class DependentWrappedSpec < DependentSpec
       include Minuend
 
-      collector_methods :child
+      collector_methods :there, :child
       def_delegators :@spec, :external_bonds, :relation_between
       attr_reader :links
 
@@ -15,7 +15,8 @@ module VersatileDiamond
       def initialize(*)
         super
         @links = straighten_graph(spec.links)
-        @rest, @children = nil
+        @theres, @children, @rest = nil
+        @_similar_wheres, @_root_wheres = nil
       end
 
       # Clones the current instance but replace internal spec and change all atom
@@ -109,6 +110,42 @@ module VersatileDiamond
         spec.links
       end
 
+      # Collects list of similar where objects where each item of list is group of
+      # object which similar by positions
+      #
+      # @return [Array] the list of groups of similar where objects
+      def similar_wheres
+        return @_similar_wheres if @_similar_wheres
+
+        pairs = wheres.combination(2).select { |a, b| a.same_positions?(b) }
+        @_similar_wheres = pairs.reduce([]) do |acc, pair|
+          same = acc.find { |pr| pair.any? { |x| pr.include?(x) } }
+          if same
+            group = (same + pair).uniq
+            # TODO: move this check to grabbing analysis result step
+            npws = group.select { |where| where.parents.empty? }
+            if npws.size > 1
+              descs = npws.map(&:description).join(' & ')
+              raise "Similar wheres detected (#{descs})"
+            end
+
+            acc - [same] + [group]
+          else
+            acc << pair
+          end
+        end
+      end
+
+      # Collects different root where objects
+      # @return [Array] the list of root where objects
+      def root_wheres
+        @_root_wheres ||= similar_wheres.reduce([]) do |acc, group|
+          acc + group.select do |where|
+            where.parents.empty? || !where.parents.all? { |pr| group.include?(pr) }
+          end
+        end
+      end
+
       def to_s
         "(#{name}, [#{parents.map(&:name).join(' ')}], " +
           "[#{children.map(&:name).join(' ')}])"
@@ -177,6 +214,12 @@ module VersatileDiamond
       # @return [Hash] the links which will be cleaned
       def cleanable_links
         original_links
+      end
+
+      # Gets the where object logic generators
+      # @return [Array] the list of where object logic generators
+      def wheres
+        theres.map(&:where).uniq
       end
     end
 

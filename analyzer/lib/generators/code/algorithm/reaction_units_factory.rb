@@ -14,7 +14,7 @@ module VersatileDiamond
             @reaction = reaction
 
             create_namer! # just create internal names accumulator
-            @used_species_pairs = Set.new
+            @used_species = Set.new
           end
 
           # Makes single specie unit for each nodes list
@@ -32,7 +32,7 @@ module VersatileDiamond
           # @return [ReactionCreatorUnit] the unit for defines reaction creation code
           #   block
           def creator
-            ReactionCreatorUnit.new(namer, @reaction, @used_species_pairs.to_a)
+            ReactionCreatorUnit.new(namer, @reaction, @used_species.to_a)
           end
 
         private
@@ -43,7 +43,7 @@ module VersatileDiamond
           def make_single_unit(nodes)
             dept_spec = nodes.first.dept_spec
             unique_specie = nodes.first.uniq_specie
-            @used_species_pairs << unique_specie
+            @used_species << unique_specie
 
             args = default_args + [
               dept_spec,
@@ -59,7 +59,7 @@ module VersatileDiamond
           # @param [Array] nodes from which the unit will be created
           # @return [ReactantUnit] which contains many unique specie
           def make_multi_unit(nodes)
-            @used_species_pairs += nodes.map(&:uniq_specie)
+            @used_species += nodes.map(&:uniq_specie)
             atoms_to_species = Hash[nodes.map { |n| [n.atom, n.uniq_specie] }]
             ManyReactantsUnit.new(*default_args, atoms_to_species, @reaction.reaction)
           end

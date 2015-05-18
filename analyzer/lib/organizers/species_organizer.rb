@@ -54,8 +54,8 @@ module VersatileDiamond
       #   old spec will be changed
       def swap_source_carefully(target_container, from, to)
         return if from == to
-        similar_spec = target_container.similar_source(to)
-        to_spec = similar_spec ? Concepts::VeiledSpec.new(to) : to
+        has_similar_spec = target_container.use_similar_source?(to)
+        to_spec = has_similar_spec ? Concepts::VeiledSpec.new(to) : to
         target_container.swap_source(from, to_spec)
       end
 

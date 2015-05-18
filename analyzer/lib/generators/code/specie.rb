@@ -38,7 +38,7 @@ module VersatileDiamond
             @essence = Essence.new(self)
           end
 
-          @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
+          @_class_name, @_enum_name, @_file_name, @_used_iterators, @_wheres = nil
           @_find_builder = nil
         end
 
@@ -206,6 +206,13 @@ module VersatileDiamond
           (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
+        # Gets list of typical reactions which could be concretized by current specie
+        # @return [Array] the list of laterable typical reactions
+        def laterable_typical_reactions
+          parent_reactions = spec.theres.map(&:lateral_reaction).map(&:parent).compact
+          parent_reactions.reject(&:lateral?).uniq.map(&method(:reaction_class))
+        end
+
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
@@ -228,6 +235,12 @@ module VersatileDiamond
         # @return [Boolean] is lateral specie or not
         def sidepiece?
           !spec.theres.empty?
+        end
+
+        # Gets the where object logic generators
+        # @return [Array] the list of where object logic generators
+        def wheres
+          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(generator, wh) }
         end
 
         # Makes base classes for current specie class instance

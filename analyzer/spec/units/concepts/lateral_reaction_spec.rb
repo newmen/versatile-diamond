@@ -22,12 +22,9 @@ module VersatileDiamond
       end
 
       describe '#reverse' do
-        subject { reaction.reverse }
-        let(:there) { subject.theres.first }
-
-        it { should be_a(described_class) }
-
         describe 'theres reversed too' do
+          subject { reaction.reverse }
+          let(:there) { subject.theres.first }
           let(:positions) do
             {
               [target_dimer, target_dimer.atom(:cr)] => [
@@ -38,12 +35,13 @@ module VersatileDiamond
               ],
             }
           end
-          it { expect(there.positions).to match_graph(positions) }
+
+          it { should be_a(described_class) }
+          it { expect(there.links).to match_graph(positions) }
         end
 
         describe "reverced atom haven't lattice" do
           # could not be, just image this reaction!
-          subject { original.reverse }
           let(:ed) { mi_product.first }
           let(:curr_mid) do
             at_middle.concretize(one: [ed, ed.atom(:cl)], two: [ed, ed.atom(:cr)])
@@ -51,24 +49,9 @@ module VersatileDiamond
           let(:original) do
             methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])
           end
-          let(:moeb) { subject.source.first }
-          let(:dim) { subject.source.last }
 
-          let(:positions) do
-            {
-              [moeb, moeb.atom(:cb)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross],
-                [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
-              ],
-              [dim, dim.atom(:cl)] => [
-                [[dimer_dup, dimer_dup.atom(:cr)], position_110_front],
-              ],
-              [dim, dim.atom(:cr)] => [
-                [[dimer, dimer.atom(:cr)], position_110_front],
-              ],
-            }
-          end
-          it { expect(there.positions).to match_graph(positions) }
+          it { expect { original.reverse }.
+            to raise_error(described_class::ReversingError) }
         end
       end
 

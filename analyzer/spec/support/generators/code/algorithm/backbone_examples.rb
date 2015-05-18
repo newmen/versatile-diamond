@@ -7,7 +7,7 @@ module VersatileDiamond
           module BackboneExamples
             shared_examples_for :check_entry_nodes do
               it 'atoms of nodes' do
-                atoms_lists = entry_nodes.map(&method(:grub_atoms))
+                atoms_lists = backbone.entry_nodes.map(&method(:grub_atoms))
                 expect(atoms_lists).to eq(points_list)
               end
             end

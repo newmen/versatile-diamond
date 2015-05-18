@@ -5,6 +5,7 @@ module VersatileDiamond
 
         # Contain logic for building find specie algorithm
         class SpecieFindBuilder < BaseFindBuilder
+          extend Forwardable
 
           def_delegator :backbone, :using_atoms
 
@@ -42,7 +43,8 @@ module VersatileDiamond
           # Gets entry nodes zipped with else prefixes for many ways condition
           # @return [Array] entry nodes zipped with else prefixes
           def entry_nodes_with_elses
-            entry_nodes.zip([''] + ['else '] * (entry_nodes.size - 1))
+            ens = backbone.entry_nodes
+            ens.zip([''] + ['else '] * (ens.size - 1))
           end
 
           # @return [String]
@@ -59,7 +61,7 @@ module VersatileDiamond
           # @param [Array] nodes by which procs will be collected
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
-            ordered_graph_from(nodes).reduce([]) do |acc, (ns, rels)|
+            backbone.ordered_graph_from(nodes).reduce([]) do |acc, (ns, rels)|
               acc << species_proc(ns)
               acc + accumulate_relations(ns, rels)
             end

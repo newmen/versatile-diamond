@@ -305,7 +305,7 @@ module VersatileDiamond
               let(:w_dimer) { there.env_specs.first }
 
               it { expect(subject.theres.size).to eq(1) }
-              it { expect(there.positions).to match_graph({
+              it { expect(there.links).to match_graph({
                   [c_bridge1, c_bridge1.atom(:ct)] => [
                     [[w_dimer, w_dimer.atom(:cl)], position_100_cross]
                   ],
@@ -324,7 +324,7 @@ module VersatileDiamond
               let(:w_dimer2) { there.env_specs.last }
 
               it { expect(subject.theres.size).to eq(1) }
-              it { expect(there.positions).to match_graph({
+              it { expect(there.links).to match_graph({
                   [c_bridge1, c_bridge1.atom(:ct)] => [
                     [[w_dimer1, w_dimer1.atom(:cl)], position_100_cross],
                     [[w_dimer2, w_dimer2.atom(:cl)], position_100_cross],

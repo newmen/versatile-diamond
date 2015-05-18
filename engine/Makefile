@@ -1,14 +1,11 @@
 NAME		:= libengine
 
 ARKSFLAGS	:= -DNDEBUG
+STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-STANDART	:= -std=c++11 $(ARKSFLAGS)
-
-ICC_PATH	:= /opt/intel/composerxe
-ICPC		:= $(ICC_PATH)/bin/icpc
-ICPCFLAGS	:= $(STANDART) -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259
+CFLAGS		:= $(STANDART) $(ARKSFLAGS) -O2
 
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj
@@ -32,7 +29,7 @@ $(OBJS_DIR)/%.d: $(SRC_DIR)/%.cpp
 	$(CXX) -c $(STANDART) -MM -MF $@ $<
 
 $(OBJS_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(ICPC) -c $(ICPCFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(OBJS_DIR)
