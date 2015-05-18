@@ -25,7 +25,7 @@ class Runner
     static volatile bool __stopCalculating;
 
     const InitConfig<Handbook> _init;
-    ParallelSaver _psaver;
+    ParallelSaver _pSaver;
 
 public:
     static void stop();
@@ -179,7 +179,7 @@ void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const c
     ProgressSaverBuilder<HB> *progress = new ProgressSaverBuilder<HB>(0);
     item = progress->wrapItem(item);
     item->copyData();
-    item->saveData(HB::mc().totalTime(), 1e-20, name); // грязный хак
+    item->saveData(_init.totalTime, 0, name); // грязный хак
     delete item;
 }
 
@@ -189,25 +189,35 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
                              double dt,
                              bool forseSave)
 {
-    static uint volumeSaveCounter = 0;
+    static uint takeCounter = 0, saveCounter = 0;
     static double currentTime = 0;
 
     currentTime += dt;
+    _init.traker->setTime(dt);
 
-    if (volumeSaveCounter == 0 || forseSave)
+    if (takeCounter == 0 || forseSave)
     {
-        _init.traker->setTime(dt);
         QueueItem *queueitem = _init.traker->takeItem(new Soul(amorph, crystal));
 
         if (!queueitem->isEmpty())
         {
-            _psaver.addItem(queueitem, HB::mc().totalTime(), currentTime, _init.name.c_str());
+            _pSaver.addItem(queueitem, _init.totalTime, currentTime, _init.name.c_str());
         }
     }
-    if (++volumeSaveCounter == 10)
+    if (++takeCounter == 10)
     {
-        volumeSaveCounter = 0;
+        takeCounter = 0;
     }
+
+    if (saveCounter == 100 || forseSave)
+    {
+        _pSaver.saveData();
+    }
+    else
+    {
+        ++saveCounter;
+    }
+
 }
 
 }

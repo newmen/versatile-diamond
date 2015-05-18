@@ -15,7 +15,7 @@ public:
     ProgressSaver() = default;
     ~ProgressSaver() = default;
 
-    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime);
+    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime);
 
 private:
     double activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const;
@@ -24,10 +24,10 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-void ProgressSaver<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime)
+void ProgressSaver<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime)
 {
     std::cout.width(10);
-    std::cout << 100 * HB::mc().totalTime() / allTime << " %";
+    std::cout << 100 * currentTime / allTime << " %";
     std::cout.width(10);
     std::cout << crystal->countAtoms();
     std::cout.width(10);

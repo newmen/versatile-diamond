@@ -23,7 +23,7 @@ template <class HB>
 void ProgressSaverBuilder<HB>::save(const SavingData &sd)
 {
     ProgressSaver<HB> *saver = new ProgressSaver<HB>();
-    saver->printShortState(sd.crystal, sd.amorph, sd.allTime);
+    saver->printShortState(sd.crystal, sd.amorph, sd.allTime, sd.currentTime);
 }
 
 }

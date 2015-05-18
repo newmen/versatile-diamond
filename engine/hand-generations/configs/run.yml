@@ -5,23 +5,23 @@ system:
   size_x: 5
   size_y: 5
 
-#integral: 
-#  step: 0.001
+integral: 
+  step: 0.1
 
-#dump:
-#  step:
-#  detector:
+dump:
+  step: 0.02
+  detector: all
 
-#mol: 
-#  step: 0.005
-#  detector: surf
+mol: 
+  step: 0.05
+  detector: surf
 
-#sdf:
-#  step:
-#  detector:
+sdf:
+  step: 0.05
+  detector: all
 
 xyz:
-  step: 0.001
+  step: 0.01
   detector: surf
 
 progress:
