@@ -1,7 +1,7 @@
 #ifndef ALL_ATOMS_DETECTOR_H
 #define ALL_ATOMS_DETECTOR_H
 
-#include "../../atoms/saving_atom.h"
+#include "../atoms/saving_atom.h"
 #include "detector.h"
 
 namespace vd {

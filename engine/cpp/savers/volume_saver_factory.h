@@ -2,8 +2,8 @@
 #define VOLUME_SAVER_FACTORY_H
 
 #include <memory>
-#include "../factory.h"
-#include "mol_saver.h"
+#include "../tools/factory.h"
+#include "volume_saver.h"
 
 namespace vd
 {

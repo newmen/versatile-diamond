@@ -2,8 +2,7 @@
 #define DETECTOR_FACTORY_H
 
 #include <memory>
-#include "../factory.h"
-#include "detector.h"
+#include "../tools/factory.h"
 #include "surface_detector.h"
 #include "all_atoms_detector.h"
 

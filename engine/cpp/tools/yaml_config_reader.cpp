@@ -7,4 +7,9 @@ YAMLConfigReader::YAMLConfigReader(const char *filename) : _root(YAML::LoadFile(
 {
 }
 
+bool YAMLConfigReader::recursiveIsDefined(const YAML::Node &node, const char *key) const
+{
+    return node[key].IsDefined();
+}
+
 }

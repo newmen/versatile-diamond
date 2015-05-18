@@ -2,6 +2,7 @@
 #define LOCAL_H
 
 #include <atoms/atom.h>
+#include "../handbook.h"
 using namespace vd;
 
 #include "../handbook.h"
