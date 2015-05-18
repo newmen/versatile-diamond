@@ -20,10 +20,10 @@ public:
     void copyData() override;
     const SavingAmorph *amorph() override;
     const SavingCrystal *crystal() override;
-    bool isEmpty() override { return false; }
+    bool isEmpty() const override { return false; }
 
 protected:
-    void saveData(const SavingData &sd) override;
+    void saveData(const SavingData &sd) const override;
 };
 
 }

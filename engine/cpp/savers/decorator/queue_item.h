@@ -17,8 +17,8 @@ public:
     virtual void copyData() = 0;
     virtual const SavingAmorph* amorph() = 0;
     virtual const SavingCrystal* crystal() = 0;
-    virtual bool isEmpty() = 0;
-    virtual void saveData(const SavingData &sd) = 0;
+    virtual bool isEmpty() const = 0;
+    virtual void saveData(const SavingData &sd) const = 0;
 };
 
 }

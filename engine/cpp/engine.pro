@@ -7,6 +7,7 @@ QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -DPRINT
 
 QMAKE_CXXFLAGS += -std=c++11
+LIBS += -pthread
 LIBS += -lyaml-cpp
 
 SOURCES += \

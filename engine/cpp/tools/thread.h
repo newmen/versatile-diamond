@@ -8,31 +8,20 @@ namespace vd
 
 class Thread
 {
-private:
-    pthread_t thread;
-
-    Thread(const Thread& copy);         // copy constructor denied
-    static void *thread_func(void *d)
-    {
-        ((Thread *)d)->run();
-        return NULL;
-    }
+    pthread_t _thread;
 
 public:
     Thread() {}
     virtual ~Thread() {}
 
+    int start();
+    int wait();
     virtual void run() = 0;
 
-    int start()
-    {
-        return pthread_create(&thread, NULL, Thread::thread_func, (void*)this);
-    }
+private:
+    Thread(const Thread& copy);
+    static void *thread_func(void *d);
 
-    int wait()
-    {
-        return pthread_join(thread, NULL);
-    }
 };
 
 }

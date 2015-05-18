@@ -1,6 +1,7 @@
 #include "item_wrapper.h"
 
-namespace vd {
+namespace vd
+{
 
 ItemWrapper::~ItemWrapper()
 {
@@ -28,7 +29,7 @@ const SavingCrystal *ItemWrapper::crystal()
     return _target->crystal();
 }
 
-void ItemWrapper::saveData(const SavingData &sd)
+void ItemWrapper::saveData(const SavingData &sd) const
 {
     _svBuilder->save(sd);
 }

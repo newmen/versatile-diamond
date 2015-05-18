@@ -11,15 +11,24 @@ namespace vd
 
 class ParallelSaver : public Thread
 {
-    std::vector<const QueueItem*> _queue;
+    struct qitem
+    {
+        QueueItem *item;
+        double allTime;
+        double currentTime;
+        const char *name;
+    };
+
+    std::vector<qitem *> _queue;
 
 public:
-    ParallelSaver();
+    ParallelSaver() {}
 
     void addItem(QueueItem *item, double allTime, double currentTime, const char *name);
+    void saveData();
 
 private:
-    void saveData();
+    void run() override;
 };
 
 }
