@@ -5,12 +5,16 @@ module VersatileDiamond
     class DependentThere
       extend Forwardable
 
-      def_delegators :@there, :where, :swap_source, :similar_source
+      def_delegators :@there, :where, :swap_source, :use_similar_source?
+      attr_reader :lateral_reaction
       # attr_reader :there
 
       # Stores wrappable there
+      # @param [DependentLateralReaction] lateral_reaction which uses also passed there
+      #   object
       # @param [Concepts::There] there the wrappable there
-      def initialize(there)
+      def initialize(lateral_reaction, there)
+        @lateral_reaction = lateral_reaction
         @there = there
       end
 

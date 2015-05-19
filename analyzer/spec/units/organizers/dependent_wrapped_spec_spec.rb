@@ -16,6 +16,16 @@ module VersatileDiamond
         end
       end
 
+      describe '#theres' do
+        it { expect(subject.theres).to be_empty }
+      end
+
+      describe '#store_there' do
+        let(:there) { dept_on_end }
+        before { subject.store_there(there) }
+        it { expect(subject.theres).to eq([there]) }
+      end
+
       describe '#gas?' do
         it { expect(subject.gas?).to eq(subject.spec.gas?) }
       end
@@ -79,6 +89,34 @@ module VersatileDiamond
             it { expect(subject.source?).to be_falsey }
             it { expect(subject.complex?).to be_truthy }
           end
+        end
+      end
+
+      describe '#similar_wheres' do
+        subject { dept_dimer }
+
+        it { expect(subject.similar_wheres).to be_empty }
+
+        describe 'there objects are presented' do
+          before do
+            subject.store_there(dept_on_end)
+            subject.store_there(dept_on_middle)
+          end
+          it { expect(subject.similar_wheres).to eq([[at_end, at_middle]]) }
+        end
+      end
+
+      describe '#root_wheres' do
+        subject { dept_dimer }
+
+        it { expect(subject.root_wheres).to be_empty }
+
+        describe 'there objects are presented' do
+          before do
+            subject.store_there(dept_on_end)
+            subject.store_there(dept_on_middle)
+          end
+          it { expect(subject.root_wheres).to eq([at_end]) }
         end
       end
     end

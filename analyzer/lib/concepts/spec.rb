@@ -181,8 +181,8 @@ module VersatileDiamond
         if other.is_a?(VeiledSpec)
           other.same?(self)
         else
-          links.size == other.links.size &&
-            Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true)
+          equal?(other) || (links.size == other.links.size &&
+            Mcs::SpeciesComparator.contain?(self, other, collaps_multi_bond: true))
         end
       end
 
@@ -248,9 +248,7 @@ module VersatileDiamond
         @links.keys
       end
 
-      # Adsorbs all links from another spec with exchange atoms to they
-      #   duplicates
-      #
+      # Adsorbs all links from another spec with exchange atoms to they duplicates
       # @param [Spec] other_spec the other spec links of which will be adsrobed
       # @param [Hash] duplicates the hash of duplicates which same as was
       #   returned from #duplicate_atoms_with_keynames method

@@ -7,16 +7,13 @@ ENGINE_OBJECT_DIRS := $(shell find $(ENGINE_OBJS_DIR) -type d)
 ENGINE_OBJECTS	:= $(wildcard $(addsuffix /*.o, $(ENGINE_OBJECT_DIRS)))
 
 ARKSFLAGS	:= -DNDEBUG
-ARKSWINC	:= $(ARKSFLAGS) -I$(ENGINE_SRC_DIR)
+STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-STANDART	:= -std=c++11 $(ARKSWINC)
-
-ICC_PATH	:= /opt/intel/composerxe
-ICPC		:= $(ICC_PATH)/bin/icpc
-ICPCFLAGS	:= $(STANDART) -openmp -O2 -falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259
-LINKFLAGS	:= -std=c++11 -L$(ICC_PATH)/lib/intel64 -liomp5 -openmp -lyaml-cpp
+DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR)
+CFLAGS		:= $(DFLAGS) -O2
+LFLAGS		:= $(STANDART) -lyaml-cpp
 
 HGEN_SRC_DIR	:= src
 HGEN_OBJS_DIR	:= obj
@@ -34,16 +31,16 @@ all:	exec
 $(NAME):	dirs $(MD_FILES) $(SOURCE_OBJECTS)
 
 exec: $(NAME)
-	$(ICPC) $(LINKFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^
+	$(CXX) $(LFLAGS) $(ENGINE_OBJECTS) $(SOURCE_OBJECTS) -o $^
 
 dirs:
 	mkdir -p $(OBJECTS_DIRS)
 
 $(HGEN_OBJS_DIR)/%.d: $(HGEN_SRC_DIR)/%.cpp
-	$(CXX) -c $(STANDART) -M -MF $@ $<
+	$(CXX) -c $(DFLAGS) -M -MF $@ $<
 
 $(HGEN_OBJS_DIR)/%.o: $(HGEN_SRC_DIR)/%.cpp
-	$(ICPC) -c $(ICPCFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(HGEN_OBJS_DIR)

@@ -338,7 +338,8 @@ module VersatileDiamond
       # @param [SpecificSpec] other see at #same? same argument
       # @return [Boolean] the result of Hanser's algorithm
       def correspond?(other)
-        links.size == other.links.size && Mcs::SpeciesComparator.contain?(self, other)
+        equal?(other) || (links.size == other.links.size &&
+          Mcs::SpeciesComparator.contain?(self, other))
       end
 
       # Resets internal caches

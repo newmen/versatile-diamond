@@ -29,7 +29,7 @@ const ushort *DeactivationData<RT>::nums()
 template <ushort RT>
 ushort DeactivationData<RT>::toType() const
 {
-    return Handbook::activesToHFor(this->target());
+    return Handbook::activesToHFor(this->target()->type());
 }
 
 template <ushort RT>

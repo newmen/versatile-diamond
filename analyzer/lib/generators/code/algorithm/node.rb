@@ -28,8 +28,8 @@ module VersatileDiamond
           # @param [Node] other comparing node
           # @return [Integer] the comparing result
           def <=> (other)
-            typed_order(uniq_specie, other.uniq_specie, :none?) do
-              typed_order(other.uniq_specie, uniq_specie, :scope?) do
+            typed_order(self, other, :none?) do
+              typed_order(other, self, :scope?) do
                 order(other, self, :properties)
               end
             end

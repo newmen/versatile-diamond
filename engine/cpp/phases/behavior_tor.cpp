@@ -1,5 +1,5 @@
 #include "behavior_tor.h"
-#include "atoms_vector3d.h"
+#include "smart_atoms_vector3d.h"
 
 namespace vd
 {
@@ -11,12 +11,12 @@ int BehaviorTor::correctOne(int value, uint max) const
     return value;
 }
 
-Atom *&BehaviorTor::getData(AtomsVector3d *atomsVector, const int3 &coords) const
+Atom *&BehaviorTor::getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
 {
-    return atomsVector->ParentType::operator[](correct(atomsVector, coords));
+    return atomsVector->BaseVector::operator[](correct(atomsVector, coords));
 }
 
-int3 BehaviorTor::correct(AtomsVector3d *atomsVector, const int3 &coords) const
+int3 BehaviorTor::correct(const SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
 {
     assert(coords.z >= 0);
     assert(coords.z < (int)atomsVector->sizes().z);

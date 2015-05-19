@@ -81,6 +81,9 @@ ru:
     need_define_equation: "Необходимо сначала описать уравнение"
     wrong_balance: "Неверный баланс реакции"
 
+  lateral_reaction:
+    amorph_reverse_atom: "Атом %{spec}(%{atom}) в обратной реакции не принадлежит кристаллической решётке"
+
   equation:
     undefined_target: "Неизвестное название целевого атома \"%{name}\""
 

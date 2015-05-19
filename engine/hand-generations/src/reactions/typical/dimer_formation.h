@@ -3,6 +3,7 @@
 
 #include "../../phases/diamond_atoms_iterator.h"
 #include "../../species/specific/bridge_ctsi.h"
+#include "../../species/sidepiece/dimer.h"
 #include "../laterable_role.h"
 #include "../typical.h"
 
@@ -14,7 +15,7 @@ public:
     static double RATE();
 
     static void find(BridgeCTsi *target);
-    template <class L> static void ifTargets(Atom **atoms, const L &lambda);
+    static void checkLaterals(Dimer *sidepiece);
 
     DimerFormation(SpecificSpec **targets) : LaterableRole(targets) {}
 
@@ -29,25 +30,5 @@ protected:
 private:
     inline void changeAtom(Atom *atom) const;
 };
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-template <class L>
-void DimerFormation::ifTargets(Atom **atoms, const L &lambda)
-{
-    if (atoms[0]->is(28) && atoms[1]->is(28))
-    {
-        SpecificSpec *neighbours[2] = {
-            atoms[0]->specByRole<BridgeCTsi>(28),
-            atoms[1]->specByRole<BridgeCTsi>(28)
-        };
-
-        if (neighbours[0] && neighbours[1])
-        {
-            assert(neighbours[0] != neighbours[1]);
-            lambda(neighbours);
-        }
-    }
-}
 
 #endif // DIMER_FORMATION_H

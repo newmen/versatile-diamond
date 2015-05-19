@@ -8,6 +8,7 @@ module VersatileDiamond
         # Provides methods for make grouped nodes graph
         # @abstract
         class BaseGroupedNodes
+          include Modules::GraphDupper
           extend Forwardable
 
           # Initizalizes base grouped nodes graph builder
@@ -68,11 +69,7 @@ module VersatileDiamond
           # @param [Hash] links the original graph
           # @return [Hash] the graph with nodes
           def transform_links(links)
-            links.each_with_object({}) do |(vertex, rels), result|
-              result[get_node(vertex)] = rels.map do |v, relation|
-                [get_node(v), relation]
-              end
-            end
+            dup_graph(links) { |v| get_node(v) }
           end
 
           # Groups key nodes of passed graph if them haven't relations and contains

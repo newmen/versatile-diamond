@@ -81,6 +81,9 @@ en:
     need_define_equation: "Necessary to define equation first"
     wrong_balance: "Wrong reaction balance"
 
+  lateral_reaction:
+    amorph_reverse_atom: "The atom %{spec}(%{atom}) of reverse reaction is not belongs to crystal lattice"
+
   equation:
     undefined_target: "Undefined target atom name \"%{name}\""
 

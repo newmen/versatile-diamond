@@ -12,12 +12,12 @@ int main(int argc, char *argv[])
 {
     std::cout.precision(3);
 
-    if (argc < 6 || argc > 9)
+    if (argc > 3)
     {
         std::cerr << "Wrong number of run arguments!" << std::endl;
         std::cout << "Try: "
                   << argv[0]
-                  << " run_name X Y total_time save_each_time [out_format] [detector_type] [behaviour_type]"
+                  << " run_name [--dump path_to_dump_file]"
                   << std::endl;
         return 1;
     }
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        const InitConfig init(argc, argv);
+        const InitConfig<Handbook> init(argc, argv);
         Runner<Handbook> runner(init);
         run(runner);
     }

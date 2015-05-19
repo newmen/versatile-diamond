@@ -5,144 +5,71 @@
 namespace vd
 {
 
-Atom::Atom(ushort type, ushort actives, Lattice *lattice) :
-    _type(type), _actives(actives), _lattice(lattice), _cacheLattice(lattice)
+Atom::Atom(ushort type, ushort actives, OriginalLattice *lattice) :
+    BaseAtom(type, actives, lattice), _cacheLattice(lattice)
 {
 }
 
 Atom::~Atom()
 {
-    delete _cacheLattice;
+    if (!lattice())
+    {
+        delete _cacheLattice;
+    }
 }
 
 void Atom::changeType(ushort newType)
 {
-    _prevType = _type;
+    _prevType = type();
     setType(newType);
     specifyType();
 }
 
-void Atom::activate()
-{
-    ++_actives;
-}
-
-void Atom::deactivate()
-{
-    assert(_actives > 0);
-    --_actives;
-}
-
-void Atom::bondWith(Atom *neighbour, int depth)
-{
-    assert(_actives > 0);
-    assert(_relatives.size() + _actives <= valence());
-    // TODO: there is bug for activation of *C=C%d<
-
-#ifndef NDEBUG
-    // latticed atom cannot be bonded twise with another latticed atom
-    if (lattice() && neighbour->lattice())
-    {
-        assert(_relatives.find(neighbour) == _relatives.cend());
-    }
-#endif // NDEBUG
-
-    _relatives.insert(neighbour);
-    deactivate();
-    if (depth > 0) neighbour->bondWith(this, 0);
-}
-
 void Atom::unbondFrom(Atom *neighbour, int depth)
 {
-    auto it = _relatives.find(neighbour);
-    assert(it != _relatives.cend());
+    auto it = relatives().find(neighbour);
+    assert(it != relatives().cend());
 
-    _relatives.erase(it);
+    relatives().erase(it);
     activate();
     if (depth > 0) neighbour->unbondFrom(this, 0);
 }
 
 bool Atom::hasBondWith(Atom *neighbour) const
 {
-    return _relatives.find(neighbour) != _relatives.cend();
-}
-
-Atom *Atom::amorphNeighbour() const
-{
-    Atom *neighbour = nullptr;
-    for (Atom *relative : _relatives)
-    {
-        if (!relative->lattice())
-        {
-            neighbour = relative;
-            break;
-        }
-    }
-
-    assert(neighbour);
-#ifndef NDEBUG
-    for (Atom *relative : _relatives)
-    {
-        if (!relative->lattice() && relative != neighbour)
-        {
-            assert(false); // if has many unlatticed atoms
-        }
-    }
-#endif // NDEBUG
-
-    return neighbour;
-}
-
-Atom *Atom::firstCrystalNeighbour() const
-{
-    for (Atom *nbr : _relatives)
-    {
-        if (nbr->lattice()) return nbr;
-    }
-
-    return nullptr;
-}
-
-ushort Atom::crystalNeighboursNum() const
-{
-    ushort result = lattice() ? 1 : 0;
-    for (const Atom *nbr : _relatives)
-    {
-        if (nbr->lattice()) ++result;
-    }
-
-    return result;
+    return relatives().find(neighbour) != relatives().cend();
 }
 
 void Atom::setLattice(Crystal *crystal, const int3 &coords)
 {
     assert(crystal);
-    assert(!_lattice);
+    assert(!lattice());
 
     if (_cacheLattice && _cacheLattice->crystal() == crystal)
     {
-        _lattice = _cacheLattice;
-        _lattice->updateCoords(coords);
+        _cacheLattice->updateCoords(coords);
     }
     else
     {
         delete _cacheLattice;
-        _cacheLattice = _lattice = new Lattice(crystal, coords);
+        _cacheLattice = new Lattice<Crystal>(crystal, coords);
     }
+
+    BaseAtom::setLattice(_cacheLattice);
 }
 
 void Atom::unsetLattice()
 {
-    assert(_lattice);
+    assert(lattice());
     assert(_cacheLattice);
 
-    if (_lattice != _cacheLattice)
+    if (lattice() != _cacheLattice)
     {
         delete _cacheLattice;
     }
 
-    _cacheLattice = _lattice;
-    _lattice = nullptr;
+    _cacheLattice = lattice();
+    BaseAtom::setLattice(nullptr);
 }
 
 void Atom::describe(ushort role, BaseSpec *spec)
@@ -271,136 +198,8 @@ void Atom::findUnvisitedChildren()
 
 void Atom::prepareToRemove()
 {
-    _prevType = _type;
+    _prevType = type();
     setType(NO_VALUE);
-}
-
-ushort Atom::hCount() const
-{
-    int hc = (int)valence() - actives() - bonds();
-    assert(hc >= 0);
-    return (ushort)hc;
-}
-
-float3 Atom::realPosition() const
-{
-    if (lattice())
-    {
-        return relativePosition() + lattice()->crystal()->correct(this);
-    }
-    else
-    {
-        return relativePosition();
-    }
-}
-
-float3 Atom::relativePosition() const
-{
-    if (lattice())
-    {
-        return lattice()->crystal()->translate(lattice()->coords());
-    }
-    else
-    {
-        return correctAmorphPos();
-    }
-}
-
-float3 Atom::correctAmorphPos() const
-{
-    const float amorphBondLength = 1.7;
-
-    float3 position;
-    auto goodRelatives = goodCrystalRelatives();
-    uint counter = goodRelatives.size();
-
-    for (const Atom *nbr : goodRelatives)
-    {
-        position += nbr->relativePosition(); // should be used realPosition() if correct behavior of additionHeight() for case when counter == 1;
-    }
-
-    if (counter == 1)
-    {
-        // TODO: targets to another atoms of...
-        position.z += amorphBondLength;
-    }
-    else if (counter == 2)
-    {
-        position /= 2;
-
-        const float3 frl = goodRelatives[0]->relativePosition();
-        const float3 srl = goodRelatives[1]->relativePosition();
-
-        double l = frl.length(srl);
-        assert(l > 0);
-        double halfL = l * 0.5;
-        assert(halfL < amorphBondLength);
-
-        double diffZ = frl.z - srl.z;
-        double smallXY = amorphBondLength * diffZ / l;
-        double angleXY = std::atan((frl.y - srl.y) / (frl.x - srl.x));
-        position.x += smallXY / std::cos(angleXY);
-        position.y += smallXY / std::sin(angleXY);
-
-        double tiltedH = std::sqrt(amorphBondLength * amorphBondLength - halfL * halfL);
-        double angleH = (std::abs(diffZ) < 1e-3) ? 0 : std::asin(l / diffZ);
-        position.z += tiltedH / std::cos(angleH);
-    }
-    else
-    {
-        assert(goodRelatives.size() > 2);
-
-        const float3 &frl = goodRelatives[0]->relativePosition();
-        const float3 &srl = goodRelatives[1]->relativePosition();
-        const float3 &trl = goodRelatives[2]->relativePosition();
-
-        double a = frl.length(srl);
-        double b = frl.length(trl);
-        double c = srl.length(trl);
-        double p = (a + b + c) * 0.5;
-
-        double r = 0.25 * a * b * c / std::sqrt(p * (p - a) * (p - b) * (p - c));
-        assert(r < amorphBondLength);
-
-        double tiltedH = std::sqrt(amorphBondLength * amorphBondLength - r * r);
-        // ...
-        assert(false); // there should be juicy code
-    }
-
-    return position;
-}
-
-std::vector<const Atom *> Atom::goodCrystalRelatives() const
-{
-    assert(!lattice());
-
-    const ushort crystNNs = crystalNeighboursNum();
-    const int3 *crystalCrds = nullptr;
-
-    std::vector<const Atom *> result;
-    for (const Atom *nbr : _relatives)
-    {
-        if (!crystalCrds && nbr->lattice())
-        {
-            crystalCrds = &nbr->lattice()->coords();
-        }
-        else if (nbr->lattice())
-        {
-            int3 diff = *crystalCrds - nbr->lattice()->coords();
-            if (!diff.isUnit()) continue;
-        }
-
-        ushort nbrCrystNNs = nbr->crystalNeighboursNum();
-        if (crystNNs < nbrCrystNNs || (crystNNs == nbrCrystNNs && bonds() < nbr->bonds()))
-        {
-            if (std::find(result.cbegin(), result.cend(), nbr) == result.cend())
-            {
-                result.push_back(nbr);
-            }
-        }
-    }
-
-    return result;
 }
 
 #ifdef PRINT

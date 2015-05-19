@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Provides additional methods for getting using atoms of dependent specie
     class DependentSpecReaction < DependentReaction
+      include Modules::SpecLinksAdsorber
       include Modules::RelationBetweenChecker
       include LinksCleaner
       extend Forwardable
@@ -29,38 +30,13 @@ module VersatileDiamond
       # @return [Hash] the most full relations graph between atoms of reactnats
       # TODO: must be private
       def links
-        @_links ||=
-          surface_source.each_with_object(reaction.links.dup) do |spec, result|
-            spec.links.each do |atom, rels|
-              result[[spec, atom]] ||= []
-              result[[spec, atom]] += rels.map { |a, r| [[spec, a], r] }
-              result[[spec, atom]] = result[[spec, atom]].uniq
-            end
-          end
+        @_links ||= adsorb_links(reaction.links, surface_source)
       end
 
       # Collects links of positions between atoms of reactants for clearing
       # @return [Hash] the relations graph between used atoms of reactnats
       def original_links
-        return @_original_links if @_original_links
-
-        links_dup = links.each_with_object({}) do |(sa1, rels), acc|
-          acc[sa1] = rels.dup
-        end
-
-        @_original_links =
-          surface_source.each_with_object(links_dup) do |spec, acc|
-            used_atoms = reaction.used_atoms_of(spec).to_set
-            spec.links.each do |atom, rels|
-              if used_atoms.include?(atom)
-                acc[[spec, atom]].reject! do |(s, a), _|
-                  spec == s && !used_atoms.include?(a)
-                end
-              else
-                acc.delete([spec, atom])
-              end
-            end
-          end
+        @_original_links ||= adsorb_missed_links(reaction, links, surface_source)
       end
 
       # Gets clean positions between atoms of reactants

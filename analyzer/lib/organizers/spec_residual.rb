@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Contain some residual of find diff between base species
     class SpecResidual
+      include Modules::GraphDupper
       include Minuend
 
       class << self
@@ -82,10 +83,7 @@ module VersatileDiamond
       # @param [Hash] mirror see at #clone_with_replace_by same argument
       def replace_owner(owner, mirror)
         @owner = owner
-        @links = @links.each_with_object({}) do |(atom, rels), acc|
-          acc[mirror[atom]] = rels.map { |a, r| [mirror[a], r] }
-        end
-
+        @links = dup_graph(@links) { |a| mirror[a] }
         @atoms_to_parents = @atoms_to_parents.each_with_object({}) do |(a, ps), acc|
           acc[mirror[a]] = ps.map { |p| p.clone_with_replace_by(owner, mirror) }
         end

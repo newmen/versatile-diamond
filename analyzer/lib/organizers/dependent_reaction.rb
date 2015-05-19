@@ -10,7 +10,7 @@ module VersatileDiamond
 
       attr_reader :reaction, :parent
       collector_methods :complex
-      def_delegators :@reaction, :name, :full_rate, :swap_source, :similar_source,
+      def_delegators :@reaction, :name, :full_rate, :swap_source, :use_similar_source?,
         :changes_num
 
       # Stores wrappable reaction
