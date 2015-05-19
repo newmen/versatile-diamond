@@ -8,7 +8,7 @@
 #include "../phases/behavior_factory.h"
 #include "../phases/saving_amorph.h"
 #include "../phases/saving_crystal.h"
-#include "../savers/progress_saver_builder.h"
+#include "../savers/progress_saver_counter.h"
 #include "parallel_saver.h"
 #include "process_mem_usage.h"
 #include "init_config.h"
@@ -176,7 +176,7 @@ template <class HB>
 void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
     QueueItem *item = new Soul(amorph, crystal);
-    ProgressSaverBuilder<HB> *progress = new ProgressSaverBuilder<HB>(0);
+    ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0);
     item = progress->wrapItem(item);
     item->copyData();
     item->saveData(_init.totalTime, 0, name); // грязный хак

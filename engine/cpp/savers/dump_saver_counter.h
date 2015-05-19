@@ -1,15 +1,15 @@
-#ifndef DUMPSAVERBUILDER_H
-#define DUMPSAVERBUILDER_H
+#ifndef DUMPSAVERCOUNTER_H
+#define DUMPSAVERCOUNTER_H
 
 #include "../phases/amorph.h"
 #include "../phases/crystal.h"
-#include "saver_builder.h"
+#include "saver_counter.h"
 #include "dump/dump_saver.h"
 #include "detector.h"
 
 namespace vd {
 
-class DumpSaverBuilder : public SaverBuilder
+class DumpSaverCounter : public SaverCounter
 {
     uint _x;
     uint _y;
@@ -17,11 +17,11 @@ class DumpSaverBuilder : public SaverBuilder
     DumpSaver *_dmpSaver;
 
 public:
-    DumpSaverBuilder(uint x,
+    DumpSaverCounter(uint x,
                      uint y,
                      const Detector *detector,
                      double step) :
-        SaverBuilder(step),
+        SaverCounter(step),
         _x(x),
         _y(y),
         _detector(detector) { _dmpSaver = new DumpSaver(); }
@@ -31,4 +31,4 @@ public:
 
 }
 
-#endif // DUMPSAVERBUILDER_H
+#endif // DUMPSAVERCOUNTER_H

@@ -1,16 +1,16 @@
-#ifndef SAVER_BUILDER
-#define SAVER_BUILDER
+#ifndef SAVER_COUNTER
+#define SAVER_COUNTER
 
 #include "decorator/queue_item.h"
 
 namespace vd {
 
-class SaverBuilder
+class SaverCounter
 {
     double _step, _accTime = 0;
 public:
-    SaverBuilder(double step) : _step(step) {}
-    virtual ~SaverBuilder() {}
+    SaverCounter(double step) : _step(step) {}
+    virtual ~SaverCounter() {}
 
     QueueItem* wrapItem(QueueItem* item);
     void setTime(double diffTime) { _accTime += diffTime; }
@@ -21,5 +21,5 @@ public:
 
 }
 
-#endif // SAVER_BUILDER
+#endif // SAVER_COUNTER
 

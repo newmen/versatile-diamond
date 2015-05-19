@@ -1,5 +1,5 @@
 #include "parallel_saver.h"
-#include <iostream>
+
 namespace vd
 {
 

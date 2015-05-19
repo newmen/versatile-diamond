@@ -3,18 +3,18 @@
 
 #include <vector>
 #include "../savers/decorator/queue_item.h"
-#include "../savers/saver_builder.h"
+#include "../savers/saver_counter.h"
 
 namespace vd
 {
 
 class Traker
 {
-    std::vector<SaverBuilder *> _queue;
+    std::vector<SaverCounter *> _queue;
 public:
     Traker() {}
     QueueItem *takeItem(QueueItem *soul);
-    void addItem(SaverBuilder* svrBilder);
+    void addItem(SaverCounter* svrBilder);
     void setTime(double diffTime);
 };
 

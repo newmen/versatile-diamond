@@ -1,24 +1,24 @@
-#ifndef INTEGRALSAVERBUILDER_H
-#define INTEGRALSAVERBUILDER_H
+#ifndef INTEGRALSAVERCOUNTER_H
+#define INTEGRALSAVERCOUNTER_H
 
-#include "saver_builder.h"
+#include "saver_counter.h"
 #include "crystal_slice_saver.h"
 #include "../phases/crystal.h"
 
 namespace vd {
 
-class IntegralSaverBuilder : public SaverBuilder
+class IntegralSaverCounter : public SaverCounter
 {
     const char *_name;
     uint _sliceMaxNum;
     std::initializer_list<ushort> _targetTypes;
     CrystalSliceSaver *_csSaver;
 public:
-    IntegralSaverBuilder(const char *name,
+    IntegralSaverCounter(const char *name,
                          uint sliceMaxNum,
                          const std::initializer_list<ushort> &targetTypes,
                          double step) :
-        SaverBuilder(step),
+        SaverCounter(step),
         _name(name),
         _sliceMaxNum(sliceMaxNum),
         _targetTypes(targetTypes)
@@ -31,4 +31,4 @@ public:
 
 }
 
-#endif // INTEGRALSAVERBUILDER_H
+#endif // INTEGRALSAVERCOUNTER_H

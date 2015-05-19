@@ -16,14 +16,14 @@ QueueItem *Traker::takeItem(QueueItem* soul)
     return item;
 }
 
-void Traker::addItem(SaverBuilder *svrBilder)
+void Traker::addItem(SaverCounter *svrBilder)
 {
     _queue.push_back(svrBilder);
 }
 
 void Traker::setTime(double diffTime)
 {
-    for (SaverBuilder *bldr : _queue)
+    for (SaverCounter *bldr : _queue)
         bldr->setTime(diffTime);
 }
 

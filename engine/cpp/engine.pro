@@ -121,14 +121,15 @@ SOURCES += \
     savers/decorator/soul.cpp \
     savers/dump/dump_reader.cpp \
     savers/dump/dump_saver.cpp \
-    savers/dump_saver_builder.cpp \
-    savers/integral_saver_builder.cpp \
+    savers/dump_saver_counter.cpp \
+    savers/integral_saver_counter.cpp \
     savers/mol_accumulator.cpp \
     savers/mol_format.cpp \
     savers/mol_saver.cpp \
+    savers/saver_counter.cpp \
     savers/sdf_saver.cpp \
+    savers/volume_saver_counter.cpp \
     savers/volume_saver_factory.cpp \
-    savers/volume_savers_builder.cpp \
     savers/xyz_accumulator.cpp \
     savers/xyz_format.cpp \
     savers/xyz_saver.cpp \
@@ -137,13 +138,12 @@ SOURCES += \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
     tools/common.cpp \
+    tools/parallel_saver.cpp \
     tools/process_mem_usage.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp \
+    tools/thread.cpp \
     tools/traker.cpp \
-    savers/saver_builder.cpp \
-    tools/parallel_saver.cpp \
-    tools/thread.cpp
+    tools/yaml_config_reader.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -308,19 +308,23 @@ HEADERS += \
     savers/detector_factory.h \
     savers/dump/dump_reader.h \
     savers/dump/dump_saver.h \
-    savers/dump_saver_builder.h \
+    savers/dump_saver_counter.h \
     savers/format.h \
-    savers/integral_saver_builder.h \
+    savers/integral_saver_counter.h \
     savers/many_files.h \
     savers/mol_accumulator.h \
     savers/mol_format.h \
     savers/mol_saver.h \
     savers/one_file.h \
+    savers/progress_saver.h \
+    savers/progress_saver_counter.h \
+    savers/saver_counter.h \
+    savers/saving_data.h \
     savers/sdf_saver.h \
     savers/surface_detector.h \
     savers/volume_saver.h \
+    savers/volume_saver_counter.h \
     savers/volume_saver_factory.h \
-    savers/volume_savers_builder.h \
     savers/xyz_accumulator.h \
     savers/xyz_format.h \
     savers/xyz_saver.h \
@@ -348,19 +352,15 @@ HEADERS += \
     tools/factory.h \
     tools/init_config.h \
     tools/many_items_result.h \
+    tools/parallel_saver.h \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/scavenger.h \
+    tools/thread.h \
+    tools/traker.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h \
-    tools/traker.h \
-    savers/saver_builder.h \
-    savers/progress_saver.h \
-    savers/progress_saver_builder.h \
-    tools/parallel_saver.h \
-    savers/saving_data.h \
-    tools/thread.h
+    tools/yaml_config_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

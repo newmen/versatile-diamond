@@ -1,18 +1,18 @@
-#ifndef VOLUMESAVERSBUILDER_H
-#define VOLUMESAVERSBUILDER_H
+#ifndef VOLUMESAVERCOUNTER_H
+#define VOLUMESAVERCOUNTER_H
 
-#include "saver_builder.h"
+#include "saver_counter.h"
 #include "volume_saver.h"
 
 namespace vd {
 
-class VolumeSaversBuilder : public SaverBuilder
+class VolumeSaverCounter : public SaverCounter
 {
     const Detector* _detector;
     std::string _volumeSaverType;
     VolumeSaver* _saver;
 public:
-    VolumeSaversBuilder(const Detector* detector, std::string saverType, const char *name, double step);
+    VolumeSaverCounter(const Detector* detector, std::string saverType, const char *name, double step);
 
     void save(const SavingData &sd) override;
 private:
@@ -21,4 +21,4 @@ private:
 
 }
 
-#endif // VOLUMESAVERSBUILDER_H
+#endif // VOLUMESAVERCOUNTER_H

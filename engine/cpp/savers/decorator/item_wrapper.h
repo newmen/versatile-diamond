@@ -2,7 +2,7 @@
 #define ITEMWRAPPER_H
 
 #include "queue_item.h"
-#include "../saver_builder.h"
+#include "../saver_counter.h"
 #include "../saving_data.h"
 
 namespace vd {
@@ -10,10 +10,10 @@ namespace vd {
 class ItemWrapper : public QueueItem
 {
     QueueItem *_target;
-    SaverBuilder *_svBuilder;
+    SaverCounter *_svBuilder;
 
 public:
-    ItemWrapper(QueueItem *targ, SaverBuilder *svBuilder) : _target(targ), _svBuilder(svBuilder) {}
+    ItemWrapper(QueueItem *targ, SaverCounter *svBuilder) : _target(targ), _svBuilder(svBuilder) {}
     ~ItemWrapper();
 
     void saveData(double allTime, double currentTime, const char *name) override;

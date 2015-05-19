@@ -1,14 +1,14 @@
-#include "saver_builder.h"
+#include "saver_counter.h"
 #include "decorator/item_wrapper.h"
 
 namespace vd {
 
-QueueItem *SaverBuilder::wrapItem(QueueItem *item)
+QueueItem *SaverCounter::wrapItem(QueueItem *item)
 {
     return new ItemWrapper(item, this);
 }
 
-bool SaverBuilder::isNeedSave()
+bool SaverCounter::isNeedSave()
 {
     if (_accTime >= _step)
     {
@@ -17,7 +17,7 @@ bool SaverBuilder::isNeedSave()
     return false;
 }
 
-void SaverBuilder::resetTime()
+void SaverCounter::resetTime()
 {
     _accTime -= _step;
     assert(_accTime >= 0);
