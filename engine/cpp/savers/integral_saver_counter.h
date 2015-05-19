@@ -13,18 +13,12 @@ class IntegralSaverCounter : public SaverCounter
     uint _sliceMaxNum;
     std::initializer_list<ushort> _targetTypes;
     CrystalSliceSaver *_csSaver;
+
 public:
     IntegralSaverCounter(const char *name,
                          uint sliceMaxNum,
                          const std::initializer_list<ushort> &targetTypes,
-                         double step) :
-        SaverCounter(step),
-        _name(name),
-        _sliceMaxNum(sliceMaxNum),
-        _targetTypes(targetTypes)
-    {
-        _csSaver = new CrystalSliceSaver(_name, _sliceMaxNum, _targetTypes);
-    }
+                         double step);
 
     void save(const SavingData &sd) override;
 };

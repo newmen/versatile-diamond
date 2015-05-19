@@ -10,7 +10,6 @@ namespace vd {
 class QueueItem
 {
 public:
-    QueueItem() {}
     virtual ~QueueItem() {}
 
     virtual void saveData(double allTime, double currentTime, const char *name) = 0;
@@ -19,6 +18,9 @@ public:
     virtual const SavingCrystal* crystal() = 0;
     virtual bool isEmpty() const = 0;
     virtual void saveData(const SavingData &sd) const = 0;
+
+protected:
+    QueueItem() = default;
 };
 
 }

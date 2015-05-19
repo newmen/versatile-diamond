@@ -11,11 +11,12 @@ namespace vd {
 class DumpSaver
 {
     std::ofstream _outFile;
+    uint _x, _y;
 public:
-    DumpSaver();
+    DumpSaver(uint x, uint y);
     ~DumpSaver();
 
-    void save(uint x, uint y, double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector);
+    void save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector);
 };
 
 }

@@ -179,7 +179,7 @@ void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const c
     ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0);
     item = progress->wrapItem(item);
     item->copyData();
-    item->saveData(_init.totalTime, 0, name); // грязный хак
+    item->saveData(_init.totalTime, 0, name);
     delete item;
 }
 

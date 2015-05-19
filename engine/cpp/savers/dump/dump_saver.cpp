@@ -5,7 +5,7 @@
 
 namespace vd {
 
-DumpSaver::DumpSaver()
+DumpSaver::DumpSaver(uint x, uint y) : _x(x), _y(y)
 {
 }
 
@@ -14,14 +14,15 @@ DumpSaver::~DumpSaver()
     _outFile.close();
 }
 
-void DumpSaver::save(uint x, uint y, double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
+void DumpSaver::save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
 {
     _outFile.open("dump.dump");
-    MolAccumulator amorphAcc(detector), crystalAcc(detector);
 
-    _outFile.write((char*)&x, sizeof(x));
-    _outFile.write((char*)&y, sizeof(y));
+    _outFile.write((char*)&_x, sizeof(_x));
+    _outFile.write((char*)&_y, sizeof(_y));
     _outFile.write((char*)&currentTime, sizeof(currentTime));
+
+    MolAccumulator amorphAcc(detector), crystalAcc(detector);
 
     amorph->eachAtom([&amorphAcc](const SavingAtom *atom) {
         atom->eachNeighbour([&amorphAcc, atom](SavingAtom *nbr) {
@@ -37,7 +38,8 @@ void DumpSaver::save(uint x, uint y, double currentTime, const SavingAmorph *amo
 
         const SavingAtom *atom = ai->atom();
         const char name = *atom->name();
-        ushort type = atom->type(), noBonds = atom->actives()+atom->bonds();
+        ushort type = atom->type(),
+               noBonds = atom->actives() + atom->bonds();
 
         _outFile.write((char*)&type, sizeof(type));
         _outFile.write((char*)&name, sizeof(name));

@@ -11,20 +11,11 @@ namespace vd {
 
 class DumpSaverCounter : public SaverCounter
 {
-    uint _x;
-    uint _y;
     const Detector *_detector;
     DumpSaver *_dmpSaver;
 
 public:
-    DumpSaverCounter(uint x,
-                     uint y,
-                     const Detector *detector,
-                     double step) :
-        SaverCounter(step),
-        _x(x),
-        _y(y),
-        _detector(detector) { _dmpSaver = new DumpSaver(); }
+    DumpSaverCounter(uint x, uint y, const Detector *detector, double step);
 
     void save(const SavingData &sd) override;
 };
