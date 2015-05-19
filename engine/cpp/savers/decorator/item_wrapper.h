@@ -10,20 +10,20 @@ namespace vd {
 class ItemWrapper : public QueueItem
 {
     QueueItem *_target;
-    SaverCounter *_svBuilder;
+    SaverCounter *_counter;
 
 public:
-    ItemWrapper(QueueItem *targ, SaverCounter *svBuilder) : _target(targ), _svBuilder(svBuilder) {}
+    ItemWrapper(QueueItem *targ, SaverCounter *svBuilder);
     ~ItemWrapper();
 
     void saveData(double allTime, double currentTime, const char *name) override;
     void copyData() override;
-    const SavingAmorph *amorph() override;
-    const SavingCrystal *crystal() override;
     bool isEmpty() const override { return false; }
 
 protected:
     void saveData(const SavingData &sd) const override;
+    const SavingAmorph *amorph() override;
+    const SavingCrystal *crystal() override;
 };
 
 }

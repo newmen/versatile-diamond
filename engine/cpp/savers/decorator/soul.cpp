@@ -10,33 +10,26 @@ Soul::~Soul()
 
 void Soul::copyData()
 {
-    auto tpl = copyAtoms(_origCrystal, _origAmorph);
-    _copyCrystal = std::get<0>(tpl);
-    _copyAmorph = std::get<1>(tpl);
-}
-
-typename Soul::SavingPhases Soul::copyAtoms(const Crystal *crystal, const Amorph *amorph) const
-{
     std::unordered_map<const Atom *, SavingAtom *> mirror;
-    mirror.reserve(crystal->maxAtoms() + amorph->countAtoms());
+    mirror.reserve(_origCrystal->maxAtoms() + _origAmorph->countAtoms());
 
-    SavingCrystal *savingCrystal = new SavingCrystal(crystal);
-    SavingAmorph *savingAmorph = new SavingAmorph();
+    SavingCrystal *_copyCrystal = new SavingCrystal(_origCrystal);
+    SavingAmorph *_copyAmorph = new SavingAmorph();
 
-    auto fillLambda = [&mirror, savingCrystal, savingAmorph](const Atom *atom) {
+    auto fillLambda = [&mirror, _copyCrystal, _copyAmorph](const Atom *atom) {
         SavingAtom *sa = new SavingAtom(atom, nullptr);
         mirror[atom] = sa;
 
         auto originalLattice = atom->lattice();
         if (originalLattice) {
-            savingCrystal->insert(sa, originalLattice->coords());
+            _copyCrystal->insert(sa, originalLattice->coords());
         } else {
-            savingAmorph->insert(sa);
+            _copyAmorph->insert(sa);
         }
     };
 
-    crystal->eachAtom(fillLambda);
-    amorph->eachAtom(fillLambda);
+    _origCrystal->eachAtom(fillLambda);
+    _origAmorph->eachAtom(fillLambda);
 
     auto copyRelationsLambda = [&mirror](const Atom *atom) {
         SavingAtom *target = mirror.find(atom)->second;
@@ -45,10 +38,8 @@ typename Soul::SavingPhases Soul::copyAtoms(const Crystal *crystal, const Amorph
         });
     };
 
-    crystal->eachAtom(copyRelationsLambda);
-    amorph->eachAtom(copyRelationsLambda);
-
-    return std::make_tuple(savingCrystal, savingAmorph);
+    _origCrystal->eachAtom(copyRelationsLambda);
+    _origAmorph->eachAtom(copyRelationsLambda);
 }
 
 }

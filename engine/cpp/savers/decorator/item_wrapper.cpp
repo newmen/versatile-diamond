@@ -3,17 +3,17 @@
 namespace vd
 {
 
+ItemWrapper::ItemWrapper(QueueItem *targ, SaverCounter *svBuilder) : _target(targ), _counter(svBuilder) {}
+
 ItemWrapper::~ItemWrapper()
 {
     delete _target;
-    delete _svBuilder;
+    delete _counter;
 }
 
 void ItemWrapper::saveData(double allTime, double currentTime, const char *name)
 {
-    SavingData sd({amorph(), crystal(), allTime, currentTime, name});
-    _svBuilder->save(sd);
-    _target->saveData(sd);
+    saveData(SavingData({amorph(), crystal(), allTime, currentTime, name}));
 }
 
 void ItemWrapper::copyData()
@@ -33,7 +33,7 @@ const SavingCrystal *ItemWrapper::crystal()
 
 void ItemWrapper::saveData(const SavingData &sd) const
 {
-    _svBuilder->save(sd);
+    _counter->save(sd);
     _target->saveData(sd);
 }
 

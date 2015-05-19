@@ -15,16 +15,13 @@ class Soul : public QueueItem
     const SavingAmorph *_copyAmorph = nullptr;
     const SavingCrystal *_copyCrystal = nullptr;
 
-    typedef std::tuple<const SavingCrystal *, const SavingAmorph *> SavingPhases;
-    SavingPhases copyAtoms(const Crystal *crystal, const Amorph *amorph) const;
-
 public:
     Soul(const Amorph *amorph, const Crystal *crystal) : _origAmorph(amorph), _origCrystal(crystal) {}
     ~Soul();
 
     void saveData(double, double, const char *) override {}
-    bool isEmpty() const override { return true; }
     void copyData() override;
+    bool isEmpty() const override { return true; }
 
 protected:
     const SavingAmorph *amorph() override { return _copyAmorph; }
