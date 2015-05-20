@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Provides common methods for process targets of chunks
@@ -11,13 +13,24 @@ module VersatileDiamond
         return @_mapped_targets if @_mapped_targets
 
         get_trgs = -> reaction { reaction.each_source.to_a }
-        mirror = Hash[get_trgs[lateral_reaction].zip(get_trgs[typical_reaction])]
-        raise 'Wrong mapping targets' unless mirror.all? { |lt, tt| lt.same?(tt) }
-
+        mirror = Hash[zip(get_trgs[lateral_reaction], get_trgs[typical_reaction])]
         @_mapped_targets = map_targets(mirror)
       end
 
     private
+
+      # Zips two sequece so that each result pair will contain similar items
+      # @param [Array] list1 the first zipping list
+      # @param [Array] list2 the second zipping list
+      # @return [Array] the array with pairs of similar items
+      def zip(list1, list2)
+        list2 = list2.dup
+        list1.map do |item1|
+          item2 = list2.delete_one { |x| item1.same?(x) }
+          raise 'Wrong mapping targets' unless item2
+          [item1, item2]
+        end
+      end
 
       # Change passed mirror from "spec to spec" to "target to target"
       # @return [Hash] the targets mirror

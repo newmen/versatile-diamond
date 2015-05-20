@@ -46,7 +46,7 @@ module VersatileDiamond
         typical_source = parent.each_source.to_a
         targets = chunk.targets
         if typical_source.size == targets.size
-          targets.each(&block)
+          targets.map(&:first).each(&block)
         elsif typical_source.size > targets.size
           adopted_source.each(&block)
         elsif typical_source.size < targets.size

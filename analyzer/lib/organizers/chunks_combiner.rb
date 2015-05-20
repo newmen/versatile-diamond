@@ -36,9 +36,33 @@ module VersatileDiamond
       # @return [Hash] the initial hash of combination variants
       def collect_variants(chunks)
         variants = Hash[chunks.map { |ch| [Multiset[ch], ch] }]
-        dependent_chunks = chunks.reject { |ch| ch.parents.empty? }
-        dependent_chunks.each_with_object(variants) do |dept_ch, acc|
-          acc[Multiset.new(dept_ch.parents)] = dept_ch
+        if chunks.all? { |ch| ch.parents.empty? }
+          variants = extend_variants(variants, chunks)
+        end
+
+        chunks.each_with_object(variants) do |ch, acc|
+          acc[Multiset.new(ch.parents)] = ch unless ch.parents.empty?
+        end
+      end
+
+      # Extends variants by independent chunks which could be in some of passed chunks
+      # @param [Hash] variants is the extending value
+      # @param [Array] chunks the list with potencial splitting chunk
+      # @return [Hash] the map of extended variants
+      def extend_variants(variants, chunks)
+        chunks.each_with_object(variants) do |chunk, acc|
+          independent_chunks = split_to_independent_chunks(chunk)
+          merging_chunks = independent_chunks.select do |ch|
+            chunks.any? { |big_chunk| mergeable?([big_chunk, ch]) }
+          end
+
+          if merging_chunks.size > 0
+            acc[Multiset.new(independent_chunks)] = chunk
+            independent_chunks.each do |ch|
+              chunk.store_parent(ch)
+              acc[Multiset[ch]] = ch
+            end
+          end
         end
       end
 
@@ -53,11 +77,9 @@ module VersatileDiamond
           new_cmbs = extended_cmbs.reject { |cmb| variants.include?(cmb) }
           new_cmbs.each do |cmb|
             arr = cmb.to_a
-            value =
-              mergeable?(arr) && DerivativeChunk.new(@typical_reaction, arr, variants)
-
-            if value
+            if mergeable?(arr)
               presented_cmbs << cmb
+              value = DerivativeChunk.new(@typical_reaction, arr, variants)
               variants = update_variants_to_best(variants, cmb, value)
             else
               variants[cmb] = false
@@ -79,10 +101,30 @@ module VersatileDiamond
       # @return [Hash] the updated variants (but original variants hash updates too)
       def update_variants_to_best(variants, cmb, value)
         sames = variants.select { |_, v| v && value.same?(v) }.to_a + [[cmb, value]]
-        best = sames.max_by { |k, _| k.size }
+        best = select_best(sames)
         (sames - [best]).each { |k, _| variants[k] = false }
         variants[best.first] = best.last unless variants.key?(best.first)
         variants
+      end
+
+      # Selects best pair where key is multiset of chunks and value is their
+      # composition
+      #
+      # @param [Array] sames the list of pairs
+      # @return [Array] the pair of best multiset and composition chunk
+      def select_best(sames)
+        with_original = sames.select { |k, _| k.any?(&:original?) }
+        if with_original.empty?
+          sames.max_by { |k, _| k.size }
+        else
+          maximal = with_original.max_by { |k, _| k.select(&:original?).max }
+          parents = maximal.first.to_a.reduce([]) do |acc, chunk|
+            acc + (chunk.parents.empty? ? [chunk] : chunk.parents)
+          end
+
+          mprs = Multiset.new(parents)
+          with_original.find { |k, _| k == mprs } || maximal
+        end
       end
 
       # Gets lists of common targets
@@ -190,6 +232,67 @@ module VersatileDiamond
 
         full_used_targets.all? do |target|
           !over_limits?(total_counts(chunks, target), target.last.relations_limits)
+        end
+      end
+
+      # Tries to merge chunk with itself
+      # @param [Chunk] chunk which will be checked
+      # @return [Array] the array of independen chunk if them are take a place
+      def split_to_independent_chunks(chunk)
+        links = chunk.links
+        target_specs = chunk.targets.map(&:first).uniq
+        specs = independen_sidepiece_specs(links, target_specs)
+
+        if specs.size > 1
+          specs.map do |sidepiece_spec|
+            ext_links = extract_links(links, target_specs, sidepiece_spec)
+            used_targets = ext_links.keys.select do |target|
+              target_specs.include?(target.first)
+            end
+            IndependentChunk.new(chunk, used_targets.to_set, ext_links)
+          end
+        else
+          []
+        end
+      end
+
+      # Gets sidepiece species from passed links which have relations just with
+      # target species
+      #
+      # @param [Hash] links which will be observed for independent specs
+      # @param [Array] target_specs which are reactants
+      # @return [Array] the list of independent sidepiece specs
+      def independen_sidepiece_specs(links, target_specs)
+        specs = (links.keys.map(&:first) - target_specs).uniq
+        specs.select do |spec|
+          rels_list = links.each_with_object([]) do |((s, _), rels), acc|
+            acc << rels if spec == s
+          end
+
+          rels_list.all? do |rels|
+            rels.all? { |(s, _), _| spec == s || target_specs.include?(s) }
+          end
+        end
+      end
+
+      # Extracts all links where passed spec uses
+      # @param [Hash] links which will be observed
+      # @param [Array] target_specs the target specs which which the sidepiece spec
+      #   could have a relation
+      # @param [Concepts::Spec | Concepts::SpecificSpec] sidepiece_spec for which the
+      #   links will be extracted
+      # @return [Hash] the extracted links
+      def extract_links(links, target_specs, sidepiece_spec)
+        select_spec_lambda = -> spec do
+          spec == sidepiece_spec || target_specs.include?(spec)
+        end
+
+        links.each_with_object({}) do |(spec_atom, rels), acc|
+          spec = spec_atom.first
+          if select_spec_lambda[spec]
+            extra_rels = rels.select { |(s, _), _| select_spec_lambda[s] }
+            acc[spec_atom] = extra_rels unless extra_rels.empty?
+          end
         end
       end
     end
