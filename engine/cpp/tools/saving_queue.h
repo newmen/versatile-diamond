@@ -1,5 +1,5 @@
-#ifndef PARALLELSAVER_H
-#define PARALLELSAVER_H
+#ifndef SAVING_QUEUE_H
+#define SAVING_QUEUE_H
 
 #include <queue>
 #include "thread.h"
@@ -9,7 +9,7 @@
 namespace vd
 {
 
-class ParallelSaver : public Thread
+class SavingQueue : public Thread
 {
     pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_cond_t _cond = PTHREAD_COND_INITIALIZER;
@@ -25,7 +25,8 @@ class ParallelSaver : public Thread
     std::queue<qitem *> _queue;
 
 public:
-    ParallelSaver();
+    SavingQueue();
+    ~SavingQueue();
 
     void addItem(QueueItem *item, double allTime, double currentTime, const char *name);
     void saveData();
@@ -36,4 +37,4 @@ private:
 
 }
 
-#endif // PARALLELSAVER_H
+#endif // SAVING_QUEUE_H

@@ -14,9 +14,11 @@ public:
 
     QueueItem* wrapItem(QueueItem* item);
     void setTime(double diffTime) { _accTime += diffTime; }
+    virtual void save(const SavingData &sd) = 0;
+
+private:
     bool isNeedSave();
     void resetTime();
-    virtual void save(const SavingData &sd) = 0;
 
 protected:
     SaverCounter(double step) : _step(step) {}

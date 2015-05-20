@@ -6,21 +6,15 @@ namespace vd {
 
 VolumeSaverCounter::VolumeSaverCounter(const Detector *detector, std::string saverType, const char *name, double step) :
     SaverCounter(step),
-    _detector(detector),
-    _volumeSaverType(saverType)
+    _detector(detector)
 {
-    _saver = takeSaver(_volumeSaverType, name);
+    VolumeSaverFactory* vsFactory = new VolumeSaverFactory();
+    _saver = vsFactory->create(saverType, name);
 }
 
 void VolumeSaverCounter::save(const SavingData &sd)
 {
-    takeSaver(_volumeSaverType, sd.name)->save(sd.currentTime, sd.amorph, sd.crystal, _detector);
-}
-
-VolumeSaver *VolumeSaverCounter::takeSaver(std::string volumeSaverType, const char *name)
-{
-    VolumeSaverFactory* vsFactory = new VolumeSaverFactory();
-    return vsFactory->create(volumeSaverType, name);
+    _saver->save(sd.currentTime, sd.amorph, sd.crystal, _detector);
 }
 
 }

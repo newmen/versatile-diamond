@@ -1,21 +1,26 @@
-#include "parallel_saver.h"
+#include "saving_queue.h"
 
 namespace vd
 {
 
-ParallelSaver::ParallelSaver()
+SavingQueue::SavingQueue()
 {
-    start();
+    init();
 }
 
-void ParallelSaver::addItem(QueueItem *item, double allTime, double currentTime, const char *name)
+SavingQueue::~SavingQueue()
+{
+
+}
+
+void SavingQueue::addItem(QueueItem *item, double allTime, double currentTime, const char *name)
 {
     item->copyData();
 
     _queue.push(new qitem({item, allTime, currentTime, name}));
 }
 
-void ParallelSaver::run()
+void SavingQueue::run()
 {
     while (true)
     {
@@ -34,7 +39,7 @@ void ParallelSaver::run()
     }
 }
 
-void ParallelSaver::saveData()
+void SavingQueue::saveData()
 {
     pthread_cond_signal(&_cond);
 }

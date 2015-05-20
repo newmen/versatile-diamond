@@ -3,7 +3,7 @@
 namespace vd
 {
 
-int Thread::start()
+int Thread::init()
 {
     return pthread_create(&_thread, NULL, Thread::thread_func, (void*)this);
 }
@@ -18,5 +18,6 @@ void *Thread::thread_func(void *d)
     ((Thread *)d)->run();
     return NULL;
 }
+
 
 }

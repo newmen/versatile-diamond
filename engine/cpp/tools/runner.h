@@ -9,7 +9,7 @@
 #include "../phases/saving_amorph.h"
 #include "../phases/saving_crystal.h"
 #include "../savers/progress_saver_counter.h"
-#include "parallel_saver.h"
+#include "saving_queue.h"
 #include "process_mem_usage.h"
 #include "init_config.h"
 #include "common.h"
@@ -25,7 +25,7 @@ class Runner
     static volatile bool __stopCalculating;
 
     const InitConfig<Handbook> _init;
-    ParallelSaver _pSaver;
+    SavingQueue _pSaver;
 
 public:
     static void stop();
@@ -189,7 +189,7 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
                              double dt,
                              bool forseSave)
 {
-    static uint takeCounter = 0, saveCounter = 0;
+    static uint takeCounter = 0;
     static double currentTime = 0;
 
     currentTime += dt;
@@ -202,22 +202,13 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
         if (!queueitem->isEmpty())
         {
             _pSaver.addItem(queueitem, _init.totalTime, currentTime, _init.name.c_str());
+            _pSaver.saveData();
         }
     }
     if (++takeCounter == 10)
     {
         takeCounter = 0;
     }
-
-    if (saveCounter == 100 || forseSave)
-    {
-        _pSaver.saveData();
-    }
-    else
-    {
-        ++saveCounter;
-    }
-
 }
 
 }

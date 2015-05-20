@@ -18,10 +18,12 @@ public:
 
     void saveData(double allTime, double currentTime, const char *name) override;
     void copyData() override;
+
     bool isEmpty() const override { return false; }
 
 protected:
     void saveData(const SavingData &sd) const override;
+
     const SavingAmorph *amorph() override;
     const SavingCrystal *crystal() override;
 };

@@ -25,8 +25,8 @@ struct InitConfig
     double totalTime = 0;
     bool loadFromDump = false;
     const char *dumpPath;
-    Behavior *behavior;
-    YAMLConfigReader *yamlReader;
+    const Behavior *behavior;
+    const YAMLConfigReader *yamlReader;
     Traker *traker = new Traker();
 
     InitConfig(int argc, char *argv[]);
@@ -51,43 +51,25 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
     }
 
     yamlReader = new YAMLConfigReader("configs/run.yml");
-    if (yamlReader->isDefined("system", "size_x") && yamlReader->isDefined("system", "size_y"))
+
+    if (yamlReader->isDefined("system", "size_x") && yamlReader->isDefined("system", "size_y") && !loadFromDump)
     {
         x = yamlReader->read<uint>("system", "size_x");
         y = yamlReader->read<uint>("system", "size_y");
     }
-    else
-        throw Error("Sizes are not determined.");
 
     if (yamlReader->isDefined("system", "time"))
         totalTime = yamlReader->read<double>("system", "time");
-    else
-        throw Error("Total time is not determined.");
-
-    if (name.size() == 0)
-    {
-        throw Error("Name should not be empty");
-    }
-    else if (x == 0 || y == 0)
-    {
-        throw Error("X and Y sizes should be grater than 0");
-    }
-    else if (totalTime <= 0)
-    {
-        throw Error("Total process time should be grater than 0 seconds");
-    }
 
     if (yamlReader->isDefined("system", "behavior"))
     {
         BehaviorFactory bhvrFactory;
         std::string bhvrType = yamlReader->read<std::string>("system", "behavior");
 
-        if (!bhvrFactory.isRegistered(bhvrType))
+        if (bhvrFactory.isRegistered(bhvrType))
         {
-            throw Error("Undefined type of behavior");
+            behavior = bhvrFactory.create(bhvrType);
         }
-
-        behavior = bhvrFactory.create(bhvrType);
     }
 }
 
@@ -96,10 +78,32 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 {
     DetectorFactory<HB> detFactory;
 
+    if ((x == 0 || y == 0) && !loadFromDump)
+    {
+        throw Error("Sizes are not determined.");
+    }
+
+    if (totalTime == 0)
+    {
+        throw Error("Total time is not determined.");
+    }
+    else if (totalTime <= 0)
+    {
+        throw Error("Total process time should be grater than 0 seconds");
+    }
+
+    if (name.size() == 0)
+    {
+        throw Error("Name should not be empty");
+    }
+
+//    Проверка на существование поведения.
+//    throw Error("Undefined type of behavior");
+
     if (yamlReader->isDefined("integral", "step"))
     {
-        traker->addItem(new IntegralSaverCounter(
-                            name.c_str(),
+        traker->pushItem(new IntegralSaverCounter(
+                            filename().c_str(),
                             x * y,
                             types,
                             yamlReader->read<double>("integral", "step")));
@@ -107,7 +111,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("dump", "step"))
     {
-        traker->addItem(new DumpSaverCounter(
+        traker->pushItem(new DumpSaverCounter(
                             x,
                             y,
                             detFactory.create("all"),
@@ -116,34 +120,34 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("mol", "step"))
     {
-        traker->addItem(new VolumeSaverCounter(
+        traker->pushItem(new VolumeSaverCounter(
                             detFactory.create(yamlReader->read<std::string>("mol", "detector")),
                             "mol",
-                            name.c_str(),
+                            filename().c_str(),
                             yamlReader->read<double>("mol", "step")));
     }
 
     if (yamlReader->isDefined("sdf", "step"))
     {
-        traker->addItem(new VolumeSaverCounter(
+        traker->pushItem(new VolumeSaverCounter(
                             detFactory.create(yamlReader->read<std::string>("sdf", "detector")),
                             "sdf",
-                            name.c_str(),
+                            filename().c_str(),
                             yamlReader->read<double>("sdf", "step")));
     }
 
     if (yamlReader->isDefined("xyz", "step"))
     {
-        traker->addItem(new VolumeSaverCounter(
+        traker->pushItem(new VolumeSaverCounter(
                             detFactory.create(yamlReader->read<std::string>("xyz", "detector")),
                             "xyz",
-                            name.c_str(),
+                            filename().c_str(),
                             yamlReader->read<double>("xyz", "step")));
     }
 
     if (yamlReader->isDefined("progress", "step"))
     {
-        traker->addItem(new ProgressSaverCounter<HB>(yamlReader->read<double>("progress", "step")));
+        traker->pushItem(new ProgressSaverCounter<HB>(yamlReader->read<double>("progress", "step")));
     }
 }
 

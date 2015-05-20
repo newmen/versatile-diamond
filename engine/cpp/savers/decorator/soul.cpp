@@ -13,10 +13,10 @@ void Soul::copyData()
     std::unordered_map<const Atom *, SavingAtom *> mirror;
     mirror.reserve(_origCrystal->maxAtoms() + _origAmorph->countAtoms());
 
-    SavingCrystal *_copyCrystal = new SavingCrystal(_origCrystal);
-    SavingAmorph *_copyAmorph = new SavingAmorph();
+    _copyCrystal = new SavingCrystal(_origCrystal);
+    _copyAmorph = new SavingAmorph();
 
-    auto fillLambda = [&mirror, _copyCrystal, _copyAmorph](const Atom *atom) {
+    auto fillLambda = [&mirror, this](const Atom *atom) {
         SavingAtom *sa = new SavingAtom(atom, nullptr);
         mirror[atom] = sa;
 

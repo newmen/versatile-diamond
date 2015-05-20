@@ -12,8 +12,8 @@ class Soul : public QueueItem
     const Amorph *_origAmorph;
     const Crystal *_origCrystal;
 
-    const SavingAmorph *_copyAmorph = nullptr;
-    const SavingCrystal *_copyCrystal = nullptr;
+    SavingAmorph *_copyAmorph = nullptr;
+    SavingCrystal *_copyCrystal = nullptr;
 
 public:
     Soul(const Amorph *amorph, const Crystal *crystal) : _origAmorph(amorph), _origCrystal(crystal) {}

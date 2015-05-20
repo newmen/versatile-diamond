@@ -138,12 +138,12 @@ SOURCES += \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
     tools/common.cpp \
-    tools/parallel_saver.cpp \
     tools/process_mem_usage.cpp \
     tools/scavenger.cpp \
     tools/thread.cpp \
     tools/traker.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    tools/saving_queue.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -352,7 +352,6 @@ HEADERS += \
     tools/factory.h \
     tools/init_config.h \
     tools/many_items_result.h \
-    tools/parallel_saver.h \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/scavenger.h \
@@ -360,7 +359,8 @@ HEADERS += \
     tools/traker.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    tools/saving_queue.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

@@ -8,7 +8,6 @@ ItemWrapper::ItemWrapper(QueueItem *targ, SaverCounter *svBuilder) : _target(tar
 ItemWrapper::~ItemWrapper()
 {
     delete _target;
-    delete _counter;
 }
 
 void ItemWrapper::saveData(double allTime, double currentTime, const char *name)

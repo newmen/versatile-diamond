@@ -5,7 +5,13 @@ namespace vd {
 
 QueueItem *SaverCounter::wrapItem(QueueItem *item)
 {
-    return new ItemWrapper(item, this);
+    if (isNeedSave())
+    {
+        resetTime();
+        return new ItemWrapper(item, this);
+    }
+
+    return item;
 }
 
 bool SaverCounter::isNeedSave()
