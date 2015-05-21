@@ -17,7 +17,7 @@ public:
     ~Traker();
 
     QueueItem *takeItem(QueueItem *soul);
-    void pushItem(SaverCounter* svrBilder);
+    void add(SaverCounter* svrBilder);
     void setTime(double diffTime);
 };
 

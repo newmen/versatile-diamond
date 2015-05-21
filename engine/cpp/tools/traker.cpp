@@ -20,7 +20,7 @@ QueueItem *Traker::takeItem(QueueItem* soul)
     return item;
 }
 
-void Traker::pushItem(SaverCounter *svrBilder)
+void Traker::add(SaverCounter *svrBilder)
 {
     _queue.push_back(svrBilder);
 }

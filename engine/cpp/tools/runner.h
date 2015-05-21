@@ -201,7 +201,7 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
 
         if (!queueitem->isEmpty())
         {
-            _pSaver.addItem(queueitem, _init.totalTime, currentTime, _init.name.c_str());
+            _pSaver.push(queueitem, _init.totalTime, currentTime, _init.name.c_str());
             _pSaver.saveData();
         }
     }

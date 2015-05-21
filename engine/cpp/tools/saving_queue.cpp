@@ -8,12 +8,7 @@ SavingQueue::SavingQueue()
     init();
 }
 
-SavingQueue::~SavingQueue()
-{
-
-}
-
-void SavingQueue::addItem(QueueItem *item, double allTime, double currentTime, const char *name)
+void SavingQueue::push(QueueItem *item, double allTime, double currentTime, const char *name)
 {
     item->copyData();
 
@@ -26,16 +21,20 @@ void SavingQueue::run()
     {
         pthread_mutex_lock(&_mutex);
 
-        while (!_queue.empty())
-        {
-            qitem* qi = _queue.front();
-            qi->item->saveData(qi->allTime, qi->currentTime, qi->name);
-            _queue.pop();
-        }
-
+        process();
         pthread_cond_wait(&_cond, &_mutex);
 
         pthread_mutex_unlock(&_mutex);
+    }
+}
+
+void SavingQueue::process()
+{
+    while (!_queue.empty())
+    {
+        qitem* qi = _queue.front();
+        qi->item->saveData(qi->allTime, qi->currentTime, qi->name);
+        _queue.pop();
     }
 }
 

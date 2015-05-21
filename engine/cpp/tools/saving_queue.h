@@ -26,13 +26,13 @@ class SavingQueue : public OutThread
 
 public:
     SavingQueue();
-    ~SavingQueue();
 
-    void addItem(QueueItem *item, double allTime, double currentTime, const char *name);
+    void push(QueueItem *item, double allTime, double currentTime, const char *name);
     void saveData();
 
 private:
     void run() override;
+    void process();
 };
 
 }

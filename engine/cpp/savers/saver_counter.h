@@ -16,10 +16,6 @@ public:
     void setTime(double diffTime) { _accTime += diffTime; }
     virtual void save(const SavingData &sd) = 0;
 
-private:
-    bool isNeedSave();
-    void resetTime();
-
 protected:
     SaverCounter(double step) : _step(step) {}
 };

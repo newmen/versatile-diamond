@@ -102,7 +102,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("integral", "step"))
     {
-        traker->pushItem(new IntegralSaverCounter(
+        traker->add(new IntegralSaverCounter(
                             filename().c_str(),
                             x * y,
                             types,
@@ -111,7 +111,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("dump", "step"))
     {
-        traker->pushItem(new DumpSaverCounter(
+        traker->add(new DumpSaverCounter(
                             x,
                             y,
                             detFactory.create("all"),
@@ -120,7 +120,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("mol", "step"))
     {
-        traker->pushItem(new VolumeSaverCounter(
+        traker->add(new VolumeSaverCounter(
                             detFactory.create(yamlReader->read<std::string>("mol", "detector")),
                             "mol",
                             filename().c_str(),
@@ -129,7 +129,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("sdf", "step"))
     {
-        traker->pushItem(new VolumeSaverCounter(
+        traker->add(new VolumeSaverCounter(
                             detFactory.create(yamlReader->read<std::string>("sdf", "detector")),
                             "sdf",
                             filename().c_str(),
@@ -138,7 +138,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("xyz", "step"))
     {
-        traker->pushItem(new VolumeSaverCounter(
+        traker->add(new VolumeSaverCounter(
                             detFactory.create(yamlReader->read<std::string>("xyz", "detector")),
                             "xyz",
                             filename().c_str(),
@@ -147,7 +147,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 
     if (yamlReader->isDefined("progress", "step"))
     {
-        traker->pushItem(new ProgressSaverCounter<HB>(yamlReader->read<double>("progress", "step")));
+        traker->add(new ProgressSaverCounter<HB>(yamlReader->read<double>("progress", "step")));
     }
 }
 
