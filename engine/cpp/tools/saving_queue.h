@@ -22,10 +22,12 @@ class SavingQueue : public OutThread
         const char *name;
     };
 
+    bool _stopSave = false;
     std::queue<qitem *> _queue;
 
 public:
     SavingQueue();
+    ~SavingQueue();
 
     void push(QueueItem *item, double allTime, double currentTime, const char *name);
     void saveData();

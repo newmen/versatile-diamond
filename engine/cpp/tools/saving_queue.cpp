@@ -8,6 +8,11 @@ SavingQueue::SavingQueue()
     init();
 }
 
+SavingQueue::~SavingQueue()
+{
+    _stopSave = true;
+}
+
 void SavingQueue::push(QueueItem *item, double allTime, double currentTime, const char *name)
 {
     item->copyData();
@@ -17,7 +22,7 @@ void SavingQueue::push(QueueItem *item, double allTime, double currentTime, cons
 
 void SavingQueue::run()
 {
-    while (true)
+    while (!_stopSave)
     {
         pthread_mutex_lock(&_mutex);
 
