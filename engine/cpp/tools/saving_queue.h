@@ -2,14 +2,14 @@
 #define SAVING_QUEUE_H
 
 #include <queue>
-#include "thread.h"
-#include "../savers/decorator/queue_item.h"
-#include "../savers/saving_data.h"
+#include "../savers/queue/out_thread.h"
+#include "../savers/queue/queue_item.h"
+#include "../savers/queue/saving_data.h"
 
 namespace vd
 {
 
-class SavingQueue : public Thread
+class SavingQueue : public OutThread
 {
     pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
     pthread_cond_t _cond = PTHREAD_COND_INITIALIZER;

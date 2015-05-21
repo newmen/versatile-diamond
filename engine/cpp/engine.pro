@@ -117,8 +117,6 @@ SOURCES += \
     savers/all_atoms_detector.cpp \
     savers/bond_info.cpp \
     savers/crystal_slice_saver.cpp \
-    savers/decorator/item_wrapper.cpp \
-    savers/decorator/soul.cpp \
     savers/dump/dump_reader.cpp \
     savers/dump/dump_saver.cpp \
     savers/dump_saver_counter.cpp \
@@ -126,6 +124,9 @@ SOURCES += \
     savers/mol_accumulator.cpp \
     savers/mol_format.cpp \
     savers/mol_saver.cpp \
+    savers/queue/item_wrapper.cpp \
+    savers/queue/out_thread.cpp \
+    savers/queue/soul.cpp \
     savers/saver_counter.cpp \
     savers/sdf_saver.cpp \
     savers/volume_saver_counter.cpp \
@@ -139,11 +140,10 @@ SOURCES += \
     species/specific_spec.cpp \
     tools/common.cpp \
     tools/process_mem_usage.cpp \
+    tools/saving_queue.cpp \
     tools/scavenger.cpp \
-    tools/thread.cpp \
     tools/traker.cpp \
-    tools/yaml_config_reader.cpp \
-    tools/saving_queue.cpp
+    tools/yaml_config_reader.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -301,9 +301,6 @@ HEADERS += \
     savers/bond_info.h \
     savers/bundle_saver.h \
     savers/crystal_slice_saver.h \
-    savers/decorator/item_wrapper.h \
-    savers/decorator/queue_item.h \
-    savers/decorator/soul.h \
     savers/detector.h \
     savers/detector_factory.h \
     savers/dump/dump_reader.h \
@@ -318,8 +315,12 @@ HEADERS += \
     savers/one_file.h \
     savers/progress_saver.h \
     savers/progress_saver_counter.h \
+    savers/queue/item_wrapper.h \
+    savers/queue/out_thread.h \
+    savers/queue/queue_item.h \
+    savers/queue/saving_data.h \
+    savers/queue/soul.h \
     savers/saver_counter.h \
-    savers/saving_data.h \
     savers/sdf_saver.h \
     savers/surface_detector.h \
     savers/volume_saver.h \
@@ -354,13 +355,12 @@ HEADERS += \
     tools/many_items_result.h \
     tools/process_mem_usage.h \
     tools/runner.h \
+    tools/saving_queue.h \
     tools/scavenger.h \
-    tools/thread.h \
     tools/traker.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h \
-    tools/saving_queue.h
+    tools/yaml_config_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

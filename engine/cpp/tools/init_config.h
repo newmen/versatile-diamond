@@ -5,7 +5,7 @@
 #include "../phases/behavior_factory.h"
 #include "../savers/detector_factory.h"
 #include "../savers/dump_saver_counter.h"
-#include "../savers/decorator/soul.h"
+#include "../savers/queue/soul.h"
 #include "../savers/integral_saver_counter.h"
 #include "../savers/volume_saver_counter.h"
 #include "../savers/progress_saver_counter.h"

@@ -13,7 +13,6 @@ class ProgressSaver
 {
 public:
     ProgressSaver() = default;
-    ~ProgressSaver() = default;
 
     void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime);
 
