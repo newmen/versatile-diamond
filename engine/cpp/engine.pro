@@ -117,6 +117,7 @@ SOURCES += \
     savers/all_atoms_detector.cpp \
     savers/bond_info.cpp \
     savers/crystal_slice_saver.cpp \
+    savers/dump/dump_format.cpp \
     savers/dump/dump_reader.cpp \
     savers/dump/dump_saver.cpp \
     savers/dump_saver_counter.cpp \
@@ -303,6 +304,7 @@ HEADERS += \
     savers/crystal_slice_saver.h \
     savers/detector.h \
     savers/detector_factory.h \
+    savers/dump/dump_format.h \
     savers/dump/dump_reader.h \
     savers/dump/dump_saver.h \
     savers/dump_saver_counter.h \

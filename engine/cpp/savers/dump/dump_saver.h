@@ -6,17 +6,26 @@
 #include "../../savers/detector.h"
 #include <fstream>
 
+#include "../bundle_saver.h"
+#include "../many_files.h"
+#include "../mol_accumulator.h"
+#include "dump_format.h"
+
 namespace vd {
 
-class DumpSaver
+class DumpSaver : public ManyFiles<BundleSaver<MolAccumulator, DumpFormat>>
 {
-    std::ofstream _outFile;
-    uint _x, _y;
 public:
-    DumpSaver(uint x, uint y);
-    ~DumpSaver();
+    explicit DumpSaver(uint x, uint y, const char *name): ManyFiles(x, y, name) {}
 
-    void save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector);
+protected:
+    const char *ext() const override;
+
+private:
+    DumpSaver(const DumpSaver &) = delete;
+    DumpSaver(DumpSaver &&) = delete;
+    DumpSaver &operator = (const DumpSaver &) = delete;
+    DumpSaver &operator = (DumpSaver &&) = delete;
 };
 
 }

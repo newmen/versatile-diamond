@@ -8,8 +8,8 @@ system:
 #integral:
 #  step: 0.1
 
-#dump:
-#  step: 0.02
+dump:
+  step: 0.02
 
 #mol:
 #  step: 0.05

@@ -7,8 +7,8 @@ namespace vd {
 VolumeSaverCounter::VolumeSaverCounter(const Detector *detector, std::string saverType, const char *name, double step) :
     SaverCounter(step), _detector(detector)
 {
-    VolumeSaverFactory* vsFactory = new VolumeSaverFactory();
-    _saver = vsFactory->create(saverType, name);
+    VolumeSaverFactory vsFactory;
+    _saver = vsFactory.create(saverType, name);
 }
 
 void VolumeSaverCounter::save(const SavingData &sd)

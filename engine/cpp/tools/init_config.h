@@ -114,6 +114,7 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
         traker->add(new DumpSaverCounter(
                             x,
                             y,
+                            filename().c_str(),
                             detFactory.create("all"),
                             yamlReader->read<double>("dump", "step")));
     }

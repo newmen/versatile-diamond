@@ -15,7 +15,7 @@ class DumpSaverCounter : public SaverCounter
     DumpSaver *_dmpSaver;
 
 public:
-    DumpSaverCounter(uint x, uint y, const Detector *detector, double step);
+    DumpSaverCounter(uint x, uint y, const char *name, const Detector *detector, double step);
 
     void save(const SavingData &sd) override;
 };
