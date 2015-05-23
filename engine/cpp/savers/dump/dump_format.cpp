@@ -26,15 +26,15 @@ void DumpFormat::render(std::ostream &os, double currentTime) const
     os.write((char*)&amorphNum, sizeof(amorphNum));
 
     acc().orderedEachAtomInfo([this, &os](uint i, const AtomInfo *ai){
-        os.write((char*)&i, sizeof(i));
 
         const SavingAtom *atom = ai->atom();
         if (!atom->lattice())
         {
-            const char *name = atom->name();
+            const char name = *atom->name();
             ushort type = atom->type(),
                    noBonds = atom->actives() + atom->bonds();
 
+            os.write((char*)&i, sizeof(i));
             os.write((char*)&type, sizeof(type));
             os.write((char*)&name, sizeof(name));
             os.write((char*)&noBonds, sizeof(noBonds));
@@ -54,7 +54,7 @@ void DumpFormat::render(std::ostream &os, double currentTime) const
             uint index = amorphNum + i;
             ushort type = ai->atom()->type(),
                     noBonds = ai->atom()->actives() + ai->atom()->bonds();
-            const char *name = ai->atom()->name();
+            const char name = *ai->atom()->name();
             int3 crd = ai->atom()->lattice()->coords();
 
             data[0] = (char*)&index;
