@@ -29,7 +29,7 @@ void Traker::setTime(double diffTime)
 {
     for (SaverCounter *bldr : _queue)
     {
-        bldr->setTime(diffTime);
+        bldr->appendTime(diffTime);
     }
 }
 

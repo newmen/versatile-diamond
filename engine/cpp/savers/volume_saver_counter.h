@@ -12,7 +12,7 @@ class VolumeSaverCounter : public SaverCounter
     VolumeSaver *_saver;
 
 public:
-    VolumeSaverCounter(const Detector* detector, std::string saverType, const char *name, double step);
+    VolumeSaverCounter(const Detector* detector, VolumeSaver *saver, double step);
 
     void save(const SavingData &sd) override;
 };

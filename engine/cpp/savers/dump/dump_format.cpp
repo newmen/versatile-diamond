@@ -24,7 +24,6 @@ void DumpFormat::render(std::ostream &os, double currentTime) const
 
     //amorph
     os.write((char*)&amorphNum, sizeof(amorphNum));
-
     acc().orderedEachAtomInfo([this, &os](uint i, const AtomInfo *ai){
 
         const SavingAtom *atom = ai->atom();
@@ -43,7 +42,6 @@ void DumpFormat::render(std::ostream &os, double currentTime) const
 
     //crystal
     os.write((char*)&crystalNum, sizeof(crystalNum));
-
     acc().orderedEachAtomInfo([this, &amorphNum, &os](uint i, const AtomInfo *ai){
         if (ai->atom()->lattice())
         {

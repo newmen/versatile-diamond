@@ -13,7 +13,7 @@ public:
     virtual ~SaverCounter() {}
 
     QueueItem* wrapItem(QueueItem* item);
-    void setTime(double diffTime) { _accTime += diffTime; }
+    void appendTime(double diffTime) { _accTime += diffTime; }
     virtual void save(const SavingData &sd) = 0;
 
 protected:

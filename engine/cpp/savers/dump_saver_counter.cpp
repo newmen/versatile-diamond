@@ -5,7 +5,7 @@ namespace vd {
 
 DumpSaverCounter::DumpSaverCounter(uint x, uint y, const char *name, const Detector *detector, double step) : SaverCounter(step), _detector(detector)
 {
-    _dmpSaver = new DumpSaver(x, y, name);
+    _dmpSaver = new DumpSaver(name, x, y);
 }
 
 void DumpSaverCounter::save(const SavingData &sd)

@@ -10,8 +10,8 @@ namespace vd
 
 class VolumeSaver
 {
-    uint _x, _y;
     std::string _name;
+    uint _x, _y;
 
 public:
     virtual ~VolumeSaver() {}
@@ -22,7 +22,7 @@ public:
     uint y() const { return _y; }
 
 protected:
-    VolumeSaver(uint x, uint y, const char *name) : _x(x), _y(y), _name(name) {}
+    VolumeSaver(const char *name, uint x, uint y) : _name(name), _x(x), _y(y) {}
     VolumeSaver(const char *name) : _name(name) {}
 
     virtual std::string filename() const = 0;

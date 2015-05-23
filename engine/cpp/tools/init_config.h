@@ -9,6 +9,7 @@
 #include "../savers/integral_saver_counter.h"
 #include "../savers/volume_saver_counter.h"
 #include "../savers/progress_saver_counter.h"
+#include "../savers/volume_saver_factory.h"
 #include "../phases/behavior.h"
 #include "yaml_config_reader.h"
 #include "traker.h"
@@ -33,6 +34,10 @@ struct InitConfig
 
     void initTraker(const std::initializer_list<ushort> &types) const;
     std::string filename() const;
+
+private:
+    double readStep(const char *from) const;
+    std::string readDetector(const char *from) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +81,6 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
 template <class HB>
 void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) const
 {
-    DetectorFactory<HB> detFactory;
 
     if ((x == 0 || y == 0) && !loadFromDump)
     {
@@ -100,58 +104,56 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) cons
 //    Проверка на существование поведения.
 //    throw Error("Undefined type of behavior");
 
-    if (yamlReader->isDefined("integral", "step"))
+    if (yamlReader->isDefined("integral"))
     {
         traker->add(new IntegralSaverCounter(
                             filename().c_str(),
                             x * y,
                             types,
-                            yamlReader->read<double>("integral", "step")));
+                            readStep("integral")));
     }
 
-    if (yamlReader->isDefined("dump", "step"))
+    DetectorFactory<HB> detFactory;
+    if (yamlReader->isDefined("dump"))
     {
         traker->add(new DumpSaverCounter(
                             x,
                             y,
                             filename().c_str(),
                             detFactory.create("all"),
-                            yamlReader->read<double>("dump", "step")));
+                            readStep("dump")));
     }
 
-    if (yamlReader->isDefined("mol", "step"))
+    VolumeSaverFactory vsFactory;
+    if (yamlReader->isDefined("mol"))
     {
         traker->add(new VolumeSaverCounter(
-                            detFactory.create(yamlReader->read<std::string>("mol", "detector")),
-                            "mol",
-                            filename().c_str(),
-                            yamlReader->read<double>("mol", "step")));
+                            detFactory.create(readDetector("mol")),
+                            vsFactory.create("mol", filename().c_str()),
+                            readStep("mol")));
     }
 
-    if (yamlReader->isDefined("sdf", "step"))
+    if (yamlReader->isDefined("sdf"))
     {
         traker->add(new VolumeSaverCounter(
-                            detFactory.create(yamlReader->read<std::string>("sdf", "detector")),
-                            "sdf",
-                            filename().c_str(),
-                            yamlReader->read<double>("sdf", "step")));
+                            detFactory.create(readDetector("sdf")),
+                            vsFactory.create("sdf", filename().c_str()),
+                            readStep("sdf")));
     }
 
-    if (yamlReader->isDefined("xyz", "step"))
+    if (yamlReader->isDefined("xyz"))
     {
         traker->add(new VolumeSaverCounter(
-                            detFactory.create(yamlReader->read<std::string>("xyz", "detector")),
-                            "xyz",
-                            filename().c_str(),
-                            yamlReader->read<double>("xyz", "step")));
+                            detFactory.create(readDetector("xyz")),
+                            vsFactory.create("xyz", filename().c_str()),
+                            readStep("xyz")));
     }
 
-    if (yamlReader->isDefined("progress", "step"))
+    if (yamlReader->isDefined("progress"))
     {
-        traker->add(new ProgressSaverCounter<HB>(yamlReader->read<double>("progress", "step")));
+        traker->add(new ProgressSaverCounter<HB>(readStep("progress")));
     }
 }
-
 
 template <class HB>
 std::string InitConfig<HB>::filename() const
@@ -159,6 +161,18 @@ std::string InitConfig<HB>::filename() const
     std::stringstream ss;
     ss << name << "-" << x << "x" << y << "-" << totalTime << "s";
     return ss.str();
+}
+
+template <class HB>
+double InitConfig<HB>::readStep(const char *from) const
+{
+    return yamlReader->read<double>(from, "step");
+}
+
+template <class HB>
+std::string InitConfig<HB>::readDetector(const char *from) const
+{
+    return yamlReader->read<std::string>(from, "detector");
 }
 
 #endif // INIT_CONFIG_H

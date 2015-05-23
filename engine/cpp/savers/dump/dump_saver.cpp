@@ -1,7 +1,5 @@
 #include <sstream>
 #include "dump_saver.h"
-#include "../../atoms/atom.h"
-#include "../mol_accumulator.h"
 
 namespace vd {
 

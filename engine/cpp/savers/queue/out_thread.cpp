@@ -5,17 +5,17 @@ namespace vd
 
 int OutThread::init()
 {
-    return pthread_create(&_thread, NULL, OutThread::thread_func, (void*)this);
+    return pthread_create(&_thread, nullptr, OutThread::thread_func, (void*)this);
 }
 
 int OutThread::wait()
 {
-    return pthread_join(_thread, NULL);
+    return pthread_join(_thread, nullptr);
 }
 
 void *OutThread::thread_func(void *d)
 {
-    ((OutThread *)d)->run();
+    static_cast<OutThread *>(d)->run();
     return nullptr;
 }
 

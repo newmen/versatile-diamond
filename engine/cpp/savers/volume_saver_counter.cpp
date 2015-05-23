@@ -1,14 +1,10 @@
 #include "volume_saver_counter.h"
-#include "volume_saver_factory.h"
-#include "queue/queue_item.h"
 
 namespace vd {
 
-VolumeSaverCounter::VolumeSaverCounter(const Detector *detector, std::string saverType, const char *name, double step) :
-    SaverCounter(step), _detector(detector)
+VolumeSaverCounter::VolumeSaverCounter(const Detector *detector, VolumeSaver *saver, double step) :
+    SaverCounter(step), _detector(detector), _saver(saver)
 {
-    VolumeSaverFactory vsFactory;
-    _saver = vsFactory.create(saverType, name);
 }
 
 void VolumeSaverCounter::save(const SavingData &sd)
