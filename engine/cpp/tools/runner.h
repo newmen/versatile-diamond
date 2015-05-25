@@ -20,12 +20,10 @@ namespace vd
 template <class HB>
 class Runner
 {
-    enum : ushort { MAX_HEIGHT = 100 };
-
     static volatile bool __stopCalculating;
 
     const InitConfig<Handbook> _init;
-    SavingQueue _pSaver;
+    SavingQueue _savingQueue;
 
 public:
     static void stop();
@@ -49,7 +47,6 @@ private:
     std::string filename() const;
     double timestamp() const;
 
-    typename HB::SurfaceCrystal *initCrystal();
     void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
 
     void outputMemoryUsage(std::ostream &os) const;
@@ -89,7 +86,7 @@ template <class HB>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
-    typename HB::SurfaceCrystal *surfaceCrystal = initCrystal();
+    typename HB::SurfaceCrystal *surfaceCrystal = _init.initCrystal();
 
     RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
 
@@ -99,14 +96,14 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     _init.initTraker(types);
 
 #ifndef NOUT
-    firstSave(&HB::amorph(), surfaceCrystal, _init.name.c_str());
+    firstSave(&HB::amorph(), surfaceCrystal, _init.name().c_str());
 #endif // NOUT
 
     ullong steps = 0;
     double dt = 0;
     double startTime = timestamp();
 
-    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime)
+    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime())
     {
         dt = HB::mc().doRandom(&mcData);
 
@@ -138,6 +135,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     storeIfNeed(surfaceCrystal, &HB::amorph(), dt, true);
 #endif // NOUT
 
+    _savingQueue.wait();
     printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
@@ -161,25 +159,13 @@ void Runner<HB>::printStat(double startTime, double stopTime, CommonMCData &mcDa
 }
 
 template <class HB>
-typename HB::SurfaceCrystal *Runner<HB>::initCrystal()
-{
-    const BehaviorFactory bhvrFactory;
-    const Behavior *initBhv = bhvrFactory.create("tor");
-    typedef typename HB::SurfaceCrystal SC;
-    SC *surfaceCrystal = new SC(dim3(_init.x, _init.y, MAX_HEIGHT), initBhv);
-    surfaceCrystal->initialize();
-    surfaceCrystal->changeBehavior(_init.behavior);
-    return surfaceCrystal;
-}
-
-template <class HB>
 void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
     QueueItem *item = new Soul(amorph, crystal);
     ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0);
     item = progress->wrapItem(item);
     item->copyData();
-    item->saveData(_init.totalTime, 0, name);
+    item->saveData(_init.totalTime(), 0, name);
     delete item;
 }
 
@@ -193,16 +179,15 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal,
     static double currentTime = 0;
 
     currentTime += dt;
-    _init.traker->setTime(dt);
+    _init.appendTime(dt);
 
     if (takeCounter == 0 || forseSave)
     {
-        QueueItem *queueitem = _init.traker->takeItem(new Soul(amorph, crystal));
+        QueueItem *queueitem = _init.takeItem(amorph, crystal);
 
         if (!queueitem->isEmpty())
         {
-            _pSaver.push(queueitem, _init.totalTime, currentTime, _init.name.c_str());
-            _pSaver.saveData();
+            _savingQueue.push(queueitem, _init.totalTime(), currentTime, _init.name().c_str());
         }
     }
     if (++takeCounter == 10)

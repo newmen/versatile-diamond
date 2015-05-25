@@ -13,7 +13,6 @@ class OutThread
 public:
     virtual ~OutThread() {}
 
-    int init();
     int wait();
     virtual void run() = 0;
 
@@ -22,7 +21,7 @@ private:
     static void *thread_func(void *d);
 
 protected:
-    OutThread() {}
+    OutThread();
 };
 
 }

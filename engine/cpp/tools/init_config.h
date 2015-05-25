@@ -19,160 +19,209 @@
 using namespace vd;
 
 template <class HB>
-struct InitConfig
+class InitConfig
 {
-    std::string name;
-    uint x = 0, y = 0;
-    double totalTime = 0;
-    bool loadFromDump = false;
-    const char *dumpPath;
-    const Behavior *behavior;
-    const YAMLConfigReader *yamlReader;
-    Traker *traker = new Traker();
+    enum : ushort { MAX_HEIGHT = 100 };
 
+    const YAMLConfigReader *_yamlReader;
+
+    std::string _name;
+    uint _x = 0, _y = 0;
+    double _totalTime = 0;
+    const Behavior *_behavior = nullptr;
+
+    bool _loadFromDump = false;
+    std::string _dumpPath;
+
+    Traker *_traker = new Traker();
+
+public:
     InitConfig(int argc, char *argv[]);
+    ~InitConfig();
 
     void initTraker(const std::initializer_list<ushort> &types) const;
+    typename HB::SurfaceCrystal *initCrystal() const;
+    QueueItem *takeItem(const Amorph *amorph, const Crystal *crystal) const;
+    void appendTime (double dt) const;
+
     std::string filename() const;
 
+    std::string name() const;
+    double totalTime() const;
+
 private:
+    VolumeSaverCounter *createVSCounter(const char *from, DetectorFactory<HB> &detFactory) const;
     double readStep(const char *from) const;
     std::string readDetector(const char *from) const;
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-InitConfig<HB>::InitConfig(int argc, char *argv[]) : name(argv[1])
+InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
 {
     if (argc == 3)
     {
         std::string str(argv[2]);
         if(str == "--dump")
         {
-            loadFromDump = true;
-            dumpPath = argv[3];
+            _loadFromDump = true;
+            _dumpPath = argv[3];
         }
     }
 
-    yamlReader = new YAMLConfigReader("configs/run.yml");
+    _yamlReader = new YAMLConfigReader("configs/run.yml");
 
-    if (yamlReader->isDefined("system", "size_x") && yamlReader->isDefined("system", "size_y") && !loadFromDump)
+    if (_yamlReader->isDefined("system", "size_x") && _yamlReader->isDefined("system", "size_y") && !_loadFromDump)
     {
-        x = yamlReader->read<uint>("system", "size_x");
-        y = yamlReader->read<uint>("system", "size_y");
+        _x = _yamlReader->read<uint>("system", "size_x");
+        _y = _yamlReader->read<uint>("system", "size_y");
     }
 
-    if (yamlReader->isDefined("system", "time"))
-        totalTime = yamlReader->read<double>("system", "time");
+    if (_yamlReader->isDefined("system", "time"))
+        _totalTime = _yamlReader->read<double>("system", "time");
 
-    if (yamlReader->isDefined("system", "behavior"))
+    if (_yamlReader->isDefined("system", "behavior"))
     {
         BehaviorFactory bhvrFactory;
-        std::string bhvrType = yamlReader->read<std::string>("system", "behavior");
+        std::string bhvrType = _yamlReader->read<std::string>("system", "behavior");
 
         if (bhvrFactory.isRegistered(bhvrType))
         {
-            behavior = bhvrFactory.create(bhvrType);
-        }
+            _behavior = bhvrFactory.create(bhvrType);
+        }   
     }
+}
+
+template <class HB>
+InitConfig<HB>::~InitConfig()
+{
+    delete _traker;
+    delete _yamlReader;
 }
 
 template <class HB>
 void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types) const
 {
 
-    if ((x == 0 || y == 0) && !loadFromDump)
+    if ((_x == 0 || _y == 0) && !_loadFromDump)
     {
         throw Error("Sizes are not determined.");
     }
 
-    if (totalTime == 0)
+    if (_totalTime == 0)
     {
         throw Error("Total time is not determined.");
     }
-    else if (totalTime <= 0)
+    else if (_totalTime <= 0)
     {
         throw Error("Total process time should be grater than 0 seconds");
     }
 
-    if (name.size() == 0)
+    if (_name.size() == 0)
     {
         throw Error("Name should not be empty");
     }
 
-//    Проверка на существование поведения.
-//    throw Error("Undefined type of behavior");
-
-    if (yamlReader->isDefined("integral"))
+    if (!_behavior)
     {
-        traker->add(new IntegralSaverCounter(
-                            filename().c_str(),
-                            x * y,
-                            types,
-                            readStep("integral")));
+        throw Error("Undefined type of behavior");
+    }
+
+    if (_yamlReader->isDefined("integral"))
+    {
+        _traker->add(new IntegralSaverCounter(filename().c_str(), _x * _y, types, readStep("integral")));
     }
 
     DetectorFactory<HB> detFactory;
-    if (yamlReader->isDefined("dump"))
+    if (_yamlReader->isDefined("dump"))
     {
-        traker->add(new DumpSaverCounter(
-                            x,
-                            y,
-                            filename().c_str(),
-                            detFactory.create("all"),
-                            readStep("dump")));
+        _traker->add(new DumpSaverCounter(_x, _y, filename().c_str(), detFactory.create("all"), readStep("dump")));
     }
 
-    VolumeSaverFactory vsFactory;
-    if (yamlReader->isDefined("mol"))
+    if (_yamlReader->isDefined("mol"))
     {
-        traker->add(new VolumeSaverCounter(
-                            detFactory.create(readDetector("mol")),
-                            vsFactory.create("mol", filename().c_str()),
-                            readStep("mol")));
+        _traker->add(createVSCounter("mol", detFactory));
     }
 
-    if (yamlReader->isDefined("sdf"))
+    if (_yamlReader->isDefined("sdf"))
     {
-        traker->add(new VolumeSaverCounter(
-                            detFactory.create(readDetector("sdf")),
-                            vsFactory.create("sdf", filename().c_str()),
-                            readStep("sdf")));
+        _traker->add(createVSCounter("sdf", detFactory));
     }
 
-    if (yamlReader->isDefined("xyz"))
+    if (_yamlReader->isDefined("xyz"))
     {
-        traker->add(new VolumeSaverCounter(
-                            detFactory.create(readDetector("xyz")),
-                            vsFactory.create("xyz", filename().c_str()),
-                            readStep("xyz")));
+        _traker->add(createVSCounter("xyz", detFactory));
     }
 
-    if (yamlReader->isDefined("progress"))
+    if (_yamlReader->isDefined("progress"))
     {
-        traker->add(new ProgressSaverCounter<HB>(readStep("progress")));
+        _traker->add(new ProgressSaverCounter<HB>(readStep("progress")));
     }
+}
+
+template <class HB>
+typename HB::SurfaceCrystal *InitConfig<HB>::initCrystal() const
+{
+    const BehaviorFactory bhvrFactory;
+    const Behavior *initBhv = bhvrFactory.create("tor");
+    typedef typename HB::SurfaceCrystal SC;
+    SC *surfaceCrystal = new SC(dim3(_x, _y, MAX_HEIGHT), initBhv);
+    surfaceCrystal->initialize();
+    surfaceCrystal->changeBehavior(_behavior);
+    return surfaceCrystal;
+}
+
+template <class HB>
+QueueItem *InitConfig<HB>::takeItem(const Amorph *amorph, const Crystal *crystal) const
+{
+    return _traker->takeItem(new Soul(amorph, crystal));
+}
+
+template <class HB>
+void InitConfig<HB>::appendTime(double dt) const
+{
+    _traker->appendTime(dt);
 }
 
 template <class HB>
 std::string InitConfig<HB>::filename() const
 {
     std::stringstream ss;
-    ss << name << "-" << x << "x" << y << "-" << totalTime << "s";
+    ss << _name << "-" << _x << "x" << _y << "-" << _totalTime << "s";
     return ss.str();
+}
+
+template <class HB>
+std::string InitConfig<HB>::name() const
+{
+    return _name;
+}
+
+template <class HB>
+double InitConfig<HB>::totalTime() const
+{
+    return _totalTime;
 }
 
 template <class HB>
 double InitConfig<HB>::readStep(const char *from) const
 {
-    return yamlReader->read<double>(from, "step");
+    return _yamlReader->read<double>(from, "step");
 }
 
 template <class HB>
 std::string InitConfig<HB>::readDetector(const char *from) const
 {
-    return yamlReader->read<std::string>(from, "detector");
+    return _yamlReader->read<std::string>(from, "detector");
+}
+
+template <class HB>
+VolumeSaverCounter *InitConfig<HB>::createVSCounter(const char *from, DetectorFactory<HB> &detFactory) const
+{
+    VolumeSaverFactory vsFactory;
+    return new VolumeSaverCounter(detFactory.create(readDetector(from)), vsFactory.create(from, filename().c_str()), readStep(from));
 }
 
 #endif // INIT_CONFIG_H

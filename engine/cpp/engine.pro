@@ -362,7 +362,8 @@ HEADERS += \
     tools/traker.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    savers/dump/dump_bundle_saver.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

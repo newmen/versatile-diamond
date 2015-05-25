@@ -5,27 +5,26 @@ namespace vd
 
 void DumpFormat::render(std::ostream &os, double currentTime) const
 {
-    uint x = saver().x(), y = saver().y();
-    os.write((char*)&x, sizeof(x));
-    os.write((char*)&y, sizeof(y));
+    saver.
+    os.write((char*)&_x, sizeof(_x));
+    os.write((char*)&_y, sizeof(_y));
     os.write((char*)&currentTime, sizeof(currentTime));
 
     uint amorphNum = 0, crystalNum = 0;
     acc().orderedEachAtomInfo([&amorphNum, &crystalNum](uint, const AtomInfo *ai){
-        if (!ai->atom()->lattice())
+        if (ai->atom()->lattice())
         {
-            ++amorphNum;
+            ++crystalNum;
         }
         else
         {
-            ++crystalNum;
+            ++amorphNum;
         }
     });
 
     //amorph
     os.write((char*)&amorphNum, sizeof(amorphNum));
     acc().orderedEachAtomInfo([this, &os](uint i, const AtomInfo *ai){
-
         const SavingAtom *atom = ai->atom();
         if (!atom->lattice())
         {

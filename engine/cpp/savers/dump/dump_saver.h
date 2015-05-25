@@ -8,10 +8,13 @@
 
 namespace vd {
 
-class DumpSaver : public ManyFiles<BundleSaver<MolAccumulator, DumpFormat>>
+class DumpSaver : public ManyFiles<BundleSaver<MolAccumulator, DumpFormat<DumpSaver>>>
 {
+    uint _x, _y;
 public:
-    explicit DumpSaver(const char *name, uint x, uint y): ManyFiles(name, x, y) {}
+    explicit DumpSaver(const char *name, uint x, uint y): ManyFiles(name), _x(x), _y(y) {}
+    uint x() { return _x; }
+    uint y() { return _y; }
 
 protected:
     const char *ext() const override;

@@ -10,7 +10,7 @@ namespace vd
 
 class Traker
 {
-    std::vector<SaverCounter *> _queue;
+    std::vector<SaverCounter *> _savers;
 
 public:
     Traker() {}
@@ -18,7 +18,7 @@ public:
 
     QueueItem *takeItem(QueueItem *soul);
     void add(SaverCounter* svrBilder);
-    void setTime(double diffTime);
+    void appendTime(double diffTime);
 };
 
 }

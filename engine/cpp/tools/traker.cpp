@@ -4,7 +4,7 @@ namespace vd {
 
 Traker::~Traker()
 {
-    for (SaverCounter *bldr : _queue)
+    for (SaverCounter *bldr : _savers)
     {
         delete bldr;
     }
@@ -13,7 +13,7 @@ Traker::~Traker()
 QueueItem *Traker::takeItem(QueueItem* soul)
 {
     QueueItem *item = soul;
-    for (SaverCounter *bldr : _queue)
+    for (SaverCounter *bldr : _savers)
     {
         item = bldr->wrapItem(item);
     }
@@ -22,12 +22,12 @@ QueueItem *Traker::takeItem(QueueItem* soul)
 
 void Traker::add(SaverCounter *svrBilder)
 {
-    _queue.push_back(svrBilder);
+    _savers.push_back(svrBilder);
 }
 
-void Traker::setTime(double diffTime)
+void Traker::appendTime(double diffTime)
 {
-    for (SaverCounter *bldr : _queue)
+    for (SaverCounter *bldr : _savers)
     {
         bldr->appendTime(diffTime);
     }

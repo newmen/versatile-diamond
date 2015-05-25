@@ -16,8 +16,8 @@ SavingQueue::~SavingQueue()
 void SavingQueue::push(QueueItem *item, double allTime, double currentTime, const char *name)
 {
     item->copyData();
-
     _queue.push(new qitem({item, allTime, currentTime, name}));
+    pthread_cond_signal(&_cond);
 }
 
 void SavingQueue::run()
@@ -41,11 +41,6 @@ void SavingQueue::process()
         qi->item->saveData(qi->allTime, qi->currentTime, qi->name);
         _queue.pop();
     }
-}
-
-void SavingQueue::saveData()
-{
-    pthread_cond_signal(&_cond);
 }
 
 }

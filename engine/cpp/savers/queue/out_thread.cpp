@@ -3,9 +3,9 @@
 namespace vd
 {
 
-int OutThread::init()
+OutThread::OutThread()
 {
-    return pthread_create(&_thread, nullptr, OutThread::thread_func, (void*)this);
+    pthread_create(&_thread, nullptr, OutThread::thread_func, (void*)this);
 }
 
 int OutThread::wait()
@@ -18,5 +18,6 @@ void *OutThread::thread_func(void *d)
     static_cast<OutThread *>(d)->run();
     return nullptr;
 }
+
 
 }
