@@ -15,6 +15,7 @@ public:
 
     int wait();
     virtual void run() = 0;
+    void stopThread();
 
 private:
     OutThread(const OutThread& copy);

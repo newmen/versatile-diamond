@@ -14,6 +14,7 @@ public:
 
     QueueItem* wrapItem(QueueItem* item);
     void appendTime(double diffTime) { _accTime += diffTime; }
+
     virtual void save(const SavingData &sd) = 0;
 
 protected:

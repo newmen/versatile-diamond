@@ -13,6 +13,11 @@ int OutThread::wait()
     return pthread_join(_thread, nullptr);
 }
 
+void OutThread::stopThread()
+{
+    pthread_exit(&_thread);
+}
+
 void *OutThread::thread_func(void *d)
 {
     static_cast<OutThread *>(d)->run();

@@ -4,10 +4,7 @@ namespace vd {
 
 Traker::~Traker()
 {
-    for (SaverCounter *bldr : _savers)
-    {
-        delete bldr;
-    }
+    delete _savers;
 }
 
 QueueItem *Traker::takeItem(QueueItem* soul)

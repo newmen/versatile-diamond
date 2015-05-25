@@ -135,6 +135,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     storeIfNeed(surfaceCrystal, &HB::amorph(), dt, true);
 #endif // NOUT
 
+    _savingQueue.stopSave();
     _savingQueue.wait();
     printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!

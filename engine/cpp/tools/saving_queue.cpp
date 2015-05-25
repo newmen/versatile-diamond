@@ -3,11 +3,6 @@
 namespace vd
 {
 
-SavingQueue::~SavingQueue()
-{
-    _stopSave = true;
-}
-
 void SavingQueue::push(QueueItem *item, double allTime, double currentTime, const char *name)
 {
     item->copyData();
@@ -16,8 +11,9 @@ void SavingQueue::push(QueueItem *item, double allTime, double currentTime, cons
 }
 
 void SavingQueue::run()
+
 {
-    while (!_stopSave)
+    do
     {
         pthread_mutex_lock(&_mutex);
 
@@ -26,6 +22,8 @@ void SavingQueue::run()
 
         pthread_mutex_unlock(&_mutex);
     }
+    while (!_stopSave);
+    stopThread();
 }
 
 void SavingQueue::process()
@@ -36,6 +34,11 @@ void SavingQueue::process()
         qi->item->saveData(qi->allTime, qi->currentTime, qi->name);
         _queue.pop();
     }
+}
+
+void SavingQueue::stopSave()
+{
+    _stopSave = true;
 }
 
 }
