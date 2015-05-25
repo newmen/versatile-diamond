@@ -5,9 +5,9 @@ namespace vd
 
 void DumpFormat::render(std::ostream &os, double currentTime) const
 {
-    saver.
-    os.write((char*)&_x, sizeof(_x));
-    os.write((char*)&_y, sizeof(_y));
+    uint x = _saver.x(), y = _saver.y();
+    os.write((char*)&x, sizeof(x));
+    os.write((char*)&y, sizeof(y));
     os.write((char*)&currentTime, sizeof(currentTime));
 
     uint amorphNum = 0, crystalNum = 0;

@@ -3,11 +3,6 @@
 namespace vd
 {
 
-SavingQueue::SavingQueue()
-{
-    init();
-}
-
 SavingQueue::~SavingQueue()
 {
     _stopSave = true;

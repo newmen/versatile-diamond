@@ -26,7 +26,7 @@ class SavingQueue : public OutThread
     std::queue<qitem *> _queue;
 
 public:
-    SavingQueue();
+    SavingQueue() {}
     ~SavingQueue();
 
     void push(QueueItem *item, double allTime, double currentTime, const char *name);
