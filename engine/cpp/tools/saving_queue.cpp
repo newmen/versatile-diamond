@@ -11,9 +11,8 @@ void SavingQueue::push(QueueItem *item, double allTime, double currentTime, cons
 }
 
 void SavingQueue::run()
-
 {
-    do
+    while (!_stopSave)
     {
         pthread_mutex_lock(&_mutex);
 
@@ -22,7 +21,7 @@ void SavingQueue::run()
 
         pthread_mutex_unlock(&_mutex);
     }
-    while (!_stopSave);
+    process();
     stopThread();
 }
 
@@ -33,6 +32,7 @@ void SavingQueue::process()
         qitem* qi = _queue.front();
         qi->item->saveData(qi->allTime, qi->currentTime, qi->name);
         _queue.pop();
+        delete qi;
     }
 }
 

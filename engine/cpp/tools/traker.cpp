@@ -4,10 +4,10 @@ namespace vd {
 
 Traker::~Traker()
 {
-    delete _savers;
+//    delete _savers;
 }
 
-QueueItem *Traker::takeItem(QueueItem* soul)
+QueueItem *Traker::takeItem(QueueItem* soul) const
 {
     QueueItem *item = soul;
     for (SaverCounter *bldr : _savers)
@@ -22,7 +22,7 @@ void Traker::add(SaverCounter *svrBilder)
     _savers.push_back(svrBilder);
 }
 
-void Traker::appendTime(double diffTime)
+void Traker::appendTime(double diffTime) const
 {
     for (SaverCounter *bldr : _savers)
     {

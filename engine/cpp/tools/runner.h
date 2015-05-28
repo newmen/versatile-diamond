@@ -22,7 +22,7 @@ class Runner
 {
     static volatile bool __stopCalculating;
 
-    const InitConfig<Handbook> _init;
+    InitConfig<Handbook> _init;
     SavingQueue _savingQueue;
 
 public:
@@ -165,9 +165,7 @@ void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const c
     QueueItem *item = new Soul(amorph, crystal);
     ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0);
     item = progress->wrapItem(item);
-    item->copyData();
-    item->saveData(_init.totalTime(), 0, name);
-    delete item;
+    _savingQueue.push(item, _init.totalTime(), 0, name);
 }
 
 template <class HB>

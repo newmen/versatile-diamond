@@ -320,6 +320,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
     assert(rt < MULTI_EVENTS_NUM);
     _multiEvents[rt].selectEvent((_multiEvents[rt].size() - 0.5) * _multiEvents[rt].oneRate())->doIt();
 }
+#endif // NDEBUG
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 Reaction *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
@@ -355,7 +356,6 @@ Reaction *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
 
     return event;
 }
-#endif // NDEBUG
 
 #ifdef PRINT
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>

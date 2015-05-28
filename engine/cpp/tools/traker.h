@@ -16,9 +16,9 @@ public:
     Traker() {}
     ~Traker();
 
-    QueueItem *takeItem(QueueItem *soul);
+    QueueItem *takeItem(QueueItem *soul) const;
     void add(SaverCounter* svrBilder);
-    void appendTime(double diffTime);
+    void appendTime(double diffTime) const;
 };
 
 }
