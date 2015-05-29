@@ -9,6 +9,7 @@
 #include "../phases/saving_amorph.h"
 #include "../phases/saving_crystal.h"
 #include "../savers/progress_saver_counter.h"
+#include "../savers/queue/out_thread.h"
 #include "saving_queue.h"
 #include "process_mem_usage.h"
 #include "init_config.h"
@@ -23,7 +24,7 @@ class Runner
     static volatile bool __stopCalculating;
 
     InitConfig<Handbook> _init;
-    SavingQueue _savingQueue;
+    OutThread<SavingQueue> _savingQueue;
 
 public:
     static void stop();
@@ -136,7 +137,6 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 #endif // NOUT
 
     _savingQueue.stopSave();
-    _savingQueue.wait();
     printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
@@ -169,10 +169,7 @@ void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const c
 }
 
 template <class HB>
-void Runner<HB>::storeIfNeed(const Crystal *crystal,
-                             const Amorph *amorph,
-                             double dt,
-                             bool forseSave)
+void Runner<HB>::storeIfNeed(const Crystal *crystal, const Amorph *amorph, double dt, bool forseSave)
 {
     static uint takeCounter = 0;
     static double currentTime = 0;

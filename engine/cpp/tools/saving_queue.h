@@ -4,16 +4,12 @@
 #include <queue>
 #include "../savers/queue/out_thread.h"
 #include "../savers/queue/queue_item.h"
-#include "../savers/queue/saving_data.h"
 
 namespace vd
 {
 
-class SavingQueue : public OutThread
+class SavingQueue
 {
-    pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
-    pthread_cond_t _cond = PTHREAD_COND_INITIALIZER;
-
     struct qitem
     {
         QueueItem *item;
@@ -22,18 +18,12 @@ class SavingQueue : public OutThread
         const char *name;
     };
 
-    bool _stopSave = false;
     std::queue<qitem *> _queue;
 
 public:
     SavingQueue() {}
 
     void push(QueueItem *item, double allTime, double currentTime, const char *name);
-    void saveData();
-    void stopSave();
-
-private:
-    void run() override;
     void process();
 };
 

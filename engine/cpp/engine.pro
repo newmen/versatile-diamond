@@ -126,7 +126,6 @@ SOURCES += \
     savers/mol_format.cpp \
     savers/mol_saver.cpp \
     savers/queue/item_wrapper.cpp \
-    savers/queue/out_thread.cpp \
     savers/queue/soul.cpp \
     savers/saver_counter.cpp \
     savers/sdf_saver.cpp \
