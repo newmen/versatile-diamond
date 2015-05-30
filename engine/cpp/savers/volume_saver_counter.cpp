@@ -7,6 +7,11 @@ VolumeSaverCounter::VolumeSaverCounter(const Detector *detector, VolumeSaver *sa
 {
 }
 
+VolumeSaverCounter::~VolumeSaverCounter()
+{
+    delete _saver;
+}
+
 void VolumeSaverCounter::save(const SavingData &sd)
 {
     _saver->save(sd.currentTime, sd.amorph, sd.crystal, _detector);

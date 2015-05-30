@@ -9,7 +9,7 @@ namespace vd
 
 void DumpSaver::save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
 {
-    std::ofstream os(filename());
+    std::ofstream os(filename());    
     MolAccumulator acc(detector);
     auto lambda = [&acc](const SavingAtom *atom) {
         atom->eachNeighbour([&acc, atom](SavingAtom *nbr) {

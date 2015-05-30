@@ -14,7 +14,7 @@ class ProgressSaver
 public:
     ProgressSaver() = default;
 
-    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime);
+    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime) const;
 
 private:
     double activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const;
@@ -23,7 +23,7 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-void ProgressSaver<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime)
+void ProgressSaver<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime) const
 {
     std::cout.width(10);
     std::cout << 100 * currentTime / allTime << " %";

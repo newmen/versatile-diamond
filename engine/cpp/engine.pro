@@ -120,7 +120,6 @@ SOURCES += \
     savers/dump/dump_format.cpp \
     savers/dump/dump_reader.cpp \
     savers/dump/dump_saver.cpp \
-    savers/dump_saver_counter.cpp \
     savers/integral_saver_counter.cpp \
     savers/mol_accumulator.cpp \
     savers/mol_format.cpp \
@@ -143,7 +142,8 @@ SOURCES += \
     tools/saving_queue.cpp \
     tools/scavenger.cpp \
     tools/traker.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    savers/queue/out_thread.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \

@@ -2,7 +2,6 @@
 #define SAVING_QUEUE_H
 
 #include <queue>
-#include "../savers/queue/out_thread.h"
 #include "../savers/queue/queue_item.h"
 
 namespace vd
@@ -21,7 +20,7 @@ class SavingQueue
     std::queue<qitem *> _queue;
 
 public:
-    SavingQueue() {}
+    SavingQueue() = default;
 
     void push(QueueItem *item, double allTime, double currentTime, const char *name);
     void process();

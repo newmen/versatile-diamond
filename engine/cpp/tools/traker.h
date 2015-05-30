@@ -18,7 +18,7 @@ public:
 
     QueueItem *takeItem(QueueItem *soul) const;
     void add(SaverCounter* svrBilder);
-    void appendTime(double diffTime) const;
+    void appendTime(double diffTime);
 };
 
 }

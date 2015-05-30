@@ -5,7 +5,7 @@
 
 int main() {
 
-    std::ifstream inFile("/home/Kindnes/projects/versatile-diamond/engine/build-engine-Desktop-Debug/end_version-5x5-0.2s_0.dump");
+    std::ifstream inFile("../../build-engine-Desktop-Debug/end_version-5x5-0.dump");
 
     vd::uint x, y;
     inFile.read((char*)&x, sizeof(x));

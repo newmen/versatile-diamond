@@ -13,6 +13,7 @@ class VolumeSaverCounter : public SaverCounter
 
 public:
     VolumeSaverCounter(const Detector* detector, VolumeSaver *saver, double step);
+    ~VolumeSaverCounter();
 
     void save(const SavingData &sd) override;
 };

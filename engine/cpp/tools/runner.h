@@ -10,7 +10,6 @@
 #include "../phases/saving_crystal.h"
 #include "../savers/progress_saver_counter.h"
 #include "../savers/queue/out_thread.h"
-#include "saving_queue.h"
 #include "process_mem_usage.h"
 #include "init_config.h"
 #include "common.h"
@@ -24,7 +23,7 @@ class Runner
     static volatile bool __stopCalculating;
 
     InitConfig<Handbook> _init;
-    OutThread<SavingQueue> _savingQueue;
+    OutThread _savingQueue;
 
 public:
     static void stop();
@@ -97,7 +96,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     _init.initTraker(types);
 
 #ifndef NOUT
-    firstSave(&HB::amorph(), surfaceCrystal, _init.name().c_str());
+    firstSave(&HB::amorph(), surfaceCrystal, _init.name());
 #endif // NOUT
 
     ullong steps = 0;
@@ -136,7 +135,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     storeIfNeed(surfaceCrystal, &HB::amorph(), dt, true);
 #endif // NOUT
 
-    _savingQueue.stopSave();
+    _savingQueue.stop();
     printStat(startTime, stopTime, mcData, steps);
     HB::amorph().clear(); // TODO: should not be explicitly!
     delete surfaceCrystal;
@@ -163,7 +162,8 @@ template <class HB>
 void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
     QueueItem *item = new Soul(amorph, crystal);
-    ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0);
+    const ProgressSaver<HB> *saver = new ProgressSaver<HB>();
+    ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0, saver);
     item = progress->wrapItem(item);
     _savingQueue.push(item, _init.totalTime(), 0, name);
 }
@@ -179,11 +179,11 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal, const Amorph *amorph, doubl
 
     if (takeCounter == 0 || forseSave)
     {
-        QueueItem *queueitem = _init.takeItem(amorph, crystal);
+        QueueItem *item = _init.takeItem(amorph, crystal);
 
-        if (!queueitem->isEmpty())
+        if (!item->isEmpty())
         {
-            _savingQueue.push(queueitem, _init.totalTime(), currentTime, _init.name().c_str());
+            _savingQueue.push(item, _init.totalTime(), currentTime, _init.name());
         }
     }
     if (++takeCounter == 10)

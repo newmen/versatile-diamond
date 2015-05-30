@@ -10,11 +10,16 @@
 #include "../savers/volume_saver_counter.h"
 #include "../savers/progress_saver_counter.h"
 #include "../savers/volume_saver_factory.h"
+#include "../savers/mol_saver.h"
+#include "../savers/xyz_saver.h"
+#include "../savers/sdf_saver.h"
+#include "../savers/progress_saver.h"
 #include "../phases/behavior.h"
 #include "yaml_config_reader.h"
 #include "traker.h"
 #include "common.h"
 #include "error.h"
+
 
 using namespace vd;
 
@@ -25,10 +30,14 @@ class InitConfig
 
     const YAMLConfigReader _yamlReader = *new YAMLConfigReader("configs/run.yml");
 
-    std::string _name;
+    const char *_name = nullptr;
     uint _x = 0, _y = 0;
     double _totalTime = 0;
     const Behavior *_behavior = nullptr;
+
+    CrystalSliceSaver *_csSaver = nullptr;
+    DumpSaver *_dmpSaver = nullptr;
+    ProgressSaver<HB> *_prgrsSaver = nullptr;
 
     bool _loadFromDump = false;
     std::string _dumpPath;
@@ -37,18 +46,20 @@ class InitConfig
 
 public:
     InitConfig(int argc, char *argv[]);
+    ~InitConfig();
 
     void initTraker(const std::initializer_list<ushort> &types);
     typename HB::SurfaceCrystal *initCrystal() const;
+
     QueueItem *takeItem(const Amorph *amorph, const Crystal *crystal) const;
 
-    void appendTime (double dt) const;
+    void appendTime(double dt);
 
-    std::string name() const;
+    const char *name() const;
     double totalTime() const;
 
 private:
-    VolumeSaverCounter *createVSCounter(const char *from, DetectorFactory<HB> &detFactory) const;
+    VolumeSaverCounter *createVSCounter(const char *from, const DetectorFactory<HB> &detFactory) const;
 
     double readStep(const char *from) const;
     std::string readDetector(const char *from) const;
@@ -100,6 +111,23 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
 }
 
 template <class HB>
+InitConfig<HB>::~InitConfig()
+{
+    if (_csSaver)
+    {
+        delete _csSaver;
+    }
+    if (_dmpSaver)
+    {
+        delete _dmpSaver;
+    }
+    if (_prgrsSaver)
+    {
+        delete _prgrsSaver;
+    }
+}
+
+template <class HB>
 void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types)
 {
     checkExceptions();
@@ -107,13 +135,15 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types)
 
     if (_yamlReader.isDefined("integral"))
     {
-        _traker.add(new IntegralSaverCounter(filename().c_str(), _x * _y, types, readStep("integral")));
+        _csSaver = new CrystalSliceSaver(filename().c_str(), _x * _y, types);
+        _traker.add(new IntegralSaverCounter(readStep("integral"), _csSaver));
     }
 
     DetectorFactory<HB> detFactory;
     if (_yamlReader.isDefined("dump"))
     {
-        _traker.add(new DumpSaverCounter(_x, _y, filename().c_str(), detFactory.create("all"), readStep("dump")));
+        _dmpSaver = new DumpSaver(filename().c_str(), _x, _y);
+        _traker.add(new DumpSaverCounter<HB>(readStep("dump"), _dmpSaver));
     }
 
     if (_yamlReader.isDefined("mol"))
@@ -133,7 +163,8 @@ void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types)
 
     if (_yamlReader.isDefined("progress"))
     {
-        _traker.add(new ProgressSaverCounter<HB>(readStep("progress")));
+        _prgrsSaver = new ProgressSaver<HB>();
+        _traker.add(new ProgressSaverCounter<HB>(readStep("progress"), _prgrsSaver));
     }
 }
 
@@ -156,7 +187,7 @@ QueueItem *InitConfig<HB>::takeItem(const Amorph *amorph, const Crystal *crystal
 }
 
 template <class HB>
-void InitConfig<HB>::appendTime(double dt) const
+void InitConfig<HB>::appendTime(double dt)
 {
     _traker.appendTime(dt);
 }
@@ -186,7 +217,7 @@ void InitConfig<HB>::checkExceptions() const
         throw Error("Total process time should be grater than 0 seconds");
     }
 
-    if (_name.empty())
+    if (!_name)
     {
         throw Error("Name should not be empty");
     }
@@ -197,7 +228,8 @@ void InitConfig<HB>::checkExceptions() const
     }
 }
 
-void InitConfig::checkWarnings() const
+template <class HB>
+void InitConfig<HB>::checkWarnings() const
 {
     if ((_x == 0 || _y == 0) && _loadFromDump)
     {
@@ -206,7 +238,7 @@ void InitConfig::checkWarnings() const
 }
 
 template <class HB>
-std::string InitConfig<HB>::name() const
+const char *InitConfig<HB>::name() const
 {
     return _name;
 }
@@ -230,7 +262,7 @@ std::string InitConfig<HB>::readDetector(const char *from) const
 }
 
 template <class HB>
-VolumeSaverCounter *InitConfig<HB>::createVSCounter(const char *from, DetectorFactory<HB> &detFactory) const
+VolumeSaverCounter *InitConfig<HB>::createVSCounter(const char *from, const DetectorFactory<HB> &detFactory) const
 {
     VolumeSaverFactory vsFactory;
     return new VolumeSaverCounter(detFactory.create(readDetector(from)), vsFactory.create(from, filename().c_str()), readStep(from));

@@ -10,8 +10,10 @@ namespace vd
 template <class HB>
 class ProgressSaverCounter : public SaverCounter
 {
+    const ProgressSaver<HB> *_prgrsSaver;
+
 public:
-    ProgressSaverCounter(double step) : SaverCounter(step) {}
+    ProgressSaverCounter(double step, const ProgressSaver<HB> *prgrsSaver) : SaverCounter(step), _prgrsSaver(prgrsSaver) {}
 
     void save(const SavingData &sd) override;
 };
@@ -21,8 +23,7 @@ public:
 template <class HB>
 void ProgressSaverCounter<HB>::save(const SavingData &sd)
 {
-    ProgressSaver<HB> *saver = new ProgressSaver<HB>();
-    saver->printShortState(sd.crystal, sd.amorph, sd.allTime, sd.currentTime);
+    _prgrsSaver->printShortState(sd.crystal, sd.amorph, sd.allTime, sd.currentTime);
 }
 
 }
