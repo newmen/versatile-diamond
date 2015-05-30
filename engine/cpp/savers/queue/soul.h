@@ -20,13 +20,13 @@ public:
     ~Soul();
 
     void saveData(double, double, const char *) override {}
+    void saveData(const SavingData &) const override {}
     void copyData() override;
+
     bool isEmpty() const override { return true; }
 
-protected:
     const SavingAmorph *amorph() override { return _copyAmorph; }
     const SavingCrystal *crystal() override { return _copyCrystal; }
-    void saveData(const SavingData &) const override {}
 };
 
 }

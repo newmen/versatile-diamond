@@ -12,7 +12,6 @@ class ProgressSaverCounter : public SaverCounter
 {
 public:
     ProgressSaverCounter(double step) : SaverCounter(step) {}
-    ~ProgressSaverCounter() {}
 
     void save(const SavingData &sd) override;
 };

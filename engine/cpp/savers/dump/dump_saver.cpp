@@ -4,7 +4,8 @@
 #include "../mol_accumulator.h"
 #include "dump_format.h"
 
-namespace vd {
+namespace vd
+{
 
 void DumpSaver::save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
 {

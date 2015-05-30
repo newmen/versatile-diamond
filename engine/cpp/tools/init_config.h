@@ -23,7 +23,7 @@ class InitConfig
 {
     enum : ushort { MAX_HEIGHT = 100 };
 
-    const YAMLConfigReader *_yamlReader;
+    const YAMLConfigReader _yamlReader = *new YAMLConfigReader("configs/run.yml");
 
     std::string _name;
     uint _x = 0, _y = 0;
@@ -37,7 +37,6 @@ class InitConfig
 
 public:
     InitConfig(int argc, char *argv[]);
-    ~InitConfig();
 
     void initTraker(const std::initializer_list<ushort> &types);
     typename HB::SurfaceCrystal *initCrystal() const;
@@ -57,6 +56,7 @@ private:
     std::string filename() const;
 
     void checkExceptions() const;
+    void checkWarnings() const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -74,21 +74,23 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
         }
     }
 
-    _yamlReader = new YAMLConfigReader("configs/run.yml");
-
-    if (_yamlReader->isDefined("system", "size_x") && _yamlReader->isDefined("system", "size_y") && !_loadFromDump)
+    if (_yamlReader.isDefined("system", "size_x"))
     {
-        _x = _yamlReader->read<uint>("system", "size_x");
-        _y = _yamlReader->read<uint>("system", "size_y");
+        _x = _yamlReader.read<uint>("system", "size_x");
     }
 
-    if (_yamlReader->isDefined("system", "time"))
-        _totalTime = _yamlReader->read<double>("system", "time");
+    if (_yamlReader.isDefined("system", "size_y"))
+    {
+        _y = _yamlReader.read<uint>("system", "size_y");
+    }
 
-    if (_yamlReader->isDefined("system", "behavior"))
+    if (_yamlReader.isDefined("system", "time"))
+        _totalTime = _yamlReader.read<double>("system", "time");
+
+    if (_yamlReader.isDefined("system", "behavior"))
     {
         BehaviorFactory bhvrFactory;
-        std::string bhvrType = _yamlReader->read<std::string>("system", "behavior");
+        std::string bhvrType = _yamlReader.read<std::string>("system", "behavior");
 
         if (bhvrFactory.isRegistered(bhvrType))
         {
@@ -98,43 +100,38 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
 }
 
 template <class HB>
-InitConfig<HB>::~InitConfig()
-{
-//    delete _yamlReader;
-}
-
-template <class HB>
 void InitConfig<HB>::initTraker(const std::initializer_list<ushort> &types)
 {
     checkExceptions();
+    checkWarnings();
 
-    if (_yamlReader->isDefined("integral"))
+    if (_yamlReader.isDefined("integral"))
     {
         _traker.add(new IntegralSaverCounter(filename().c_str(), _x * _y, types, readStep("integral")));
     }
 
     DetectorFactory<HB> detFactory;
-    if (_yamlReader->isDefined("dump"))
+    if (_yamlReader.isDefined("dump"))
     {
         _traker.add(new DumpSaverCounter(_x, _y, filename().c_str(), detFactory.create("all"), readStep("dump")));
     }
 
-    if (_yamlReader->isDefined("mol"))
+    if (_yamlReader.isDefined("mol"))
     {
         _traker.add(createVSCounter("mol", detFactory));
     }
 
-    if (_yamlReader->isDefined("sdf"))
+    if (_yamlReader.isDefined("sdf"))
     {
         _traker.add(createVSCounter("sdf", detFactory));
     }
 
-    if (_yamlReader->isDefined("xyz"))
+    if (_yamlReader.isDefined("xyz"))
     {
         _traker.add(createVSCounter("xyz", detFactory));
     }
 
-    if (_yamlReader->isDefined("progress"))
+    if (_yamlReader.isDefined("progress"))
     {
         _traker.add(new ProgressSaverCounter<HB>(readStep("progress")));
     }
@@ -189,7 +186,7 @@ void InitConfig<HB>::checkExceptions() const
         throw Error("Total process time should be grater than 0 seconds");
     }
 
-    if (_name.size() == 0)
+    if (_name.empty())
     {
         throw Error("Name should not be empty");
     }
@@ -197,6 +194,14 @@ void InitConfig<HB>::checkExceptions() const
     if (!_behavior)
     {
         throw Error("Undefined type of behavior");
+    }
+}
+
+void InitConfig::checkWarnings() const
+{
+    if ((_x == 0 || _y == 0) && _loadFromDump)
+    {
+        std::cout << std::endl << "WARNING! Sizes don`t need when load from dump." << std::endl;
     }
 }
 
@@ -215,13 +220,13 @@ double InitConfig<HB>::totalTime() const
 template <class HB>
 double InitConfig<HB>::readStep(const char *from) const
 {
-    return _yamlReader->read<double>(from, "step");
+    return _yamlReader.read<double>(from, "step");
 }
 
 template <class HB>
 std::string InitConfig<HB>::readDetector(const char *from) const
 {
-    return _yamlReader->read<std::string>(from, "detector");
+    return _yamlReader.read<std::string>(from, "detector");
 }
 
 template <class HB>

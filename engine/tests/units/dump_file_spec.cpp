@@ -24,11 +24,20 @@ int main() {
     {
         vd::uint ind;
         vd::ushort type, noBonds;
-        char name;
 
         inFile.read((char*)&ind, sizeof(ind));
         inFile.read((char*)&type, sizeof(type));
-        inFile.read((char*)&name, sizeof(name));
+
+        char buff[225];
+        char c;
+        int j = 0;
+        do {
+            inFile.get(c);
+            buff[j++] = c;
+        }
+        while (c);
+        std::string name(buff);
+
         inFile.read((char*)&noBonds, sizeof(noBonds));
 
         std::cout << "index: " << ind << " type: " << type << " name: " << name << " noBonds:" << noBonds << std::endl;
@@ -42,12 +51,21 @@ int main() {
     {
         vd::uint ind;
         vd::ushort type, noBonds;
-        char name;
         vd::int3 crd;
 
         inFile.read((char*)&ind, sizeof(ind));
         inFile.read((char*)&type, sizeof(type));
-        inFile.read((char*)&name, sizeof(name));
+
+        char buff[225];
+        char c;
+        int j = 0;
+        do {
+            inFile.get(c);
+            buff[j++] = c;
+        }
+        while (c);
+        std::string name(buff);
+
         inFile.read((char*)&noBonds, sizeof(noBonds));
         inFile.read((char*)&crd, sizeof(crd));
 

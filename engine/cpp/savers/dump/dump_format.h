@@ -16,9 +16,6 @@ public:
 
     void render(std::ostream &os, double currentTime) const;
 
-    const DumpSaver &saver() const { return _saver; }
-    const MolAccumulator &acc() const { return _acc; }
-
 private:
     DumpFormat(const DumpFormat &) = delete;
     DumpFormat(DumpFormat &&) = delete;
