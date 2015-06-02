@@ -10,6 +10,7 @@ VolumeSaverCounter::VolumeSaverCounter(const Detector *detector, VolumeSaver *sa
 VolumeSaverCounter::~VolumeSaverCounter()
 {
     delete _saver;
+    delete _detector;
 }
 
 void VolumeSaverCounter::save(const SavingData &sd)

@@ -15,8 +15,9 @@ void SavingQueue::process()
     {
         qitem* qi = _queue.front();
         qi->item->saveData(qi->allTime, qi->currentTime, qi->name);
-        _queue.pop();
+        delete qi->item;
         delete qi;
+        _queue.pop();
     }
 }
 

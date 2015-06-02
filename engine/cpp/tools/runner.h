@@ -162,9 +162,9 @@ template <class HB>
 void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
     QueueItem *item = new Soul(amorph, crystal);
-    const ProgressSaver<HB> *saver = new ProgressSaver<HB>();
-    ProgressSaverCounter<HB> *progress = new ProgressSaverCounter<HB>(0, saver);
-    item = progress->wrapItem(item);
+    const ProgressSaver<HB> saver;
+    ProgressSaverCounter<HB> progress(0, &saver);
+    item = progress.wrapItem(item);
     _savingQueue.push(item, _init.totalTime(), 0, name);
 }
 
@@ -184,6 +184,10 @@ void Runner<HB>::storeIfNeed(const Crystal *crystal, const Amorph *amorph, doubl
         if (!item->isEmpty())
         {
             _savingQueue.push(item, _init.totalTime(), currentTime, _init.name());
+        }
+        else
+        {
+            delete item;
         }
     }
     if (++takeCounter == 10)

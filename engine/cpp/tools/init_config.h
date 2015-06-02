@@ -55,8 +55,8 @@ public:
 
     void appendTime(double dt);
 
-    const char *name() const;
-    double totalTime() const;
+    const char *name() const { return _name; }
+    double totalTime() const { return _totalTime; }
 
 private:
     VolumeSaverCounter *createVSCounter(const char *from, const DetectorFactory<HB> &detFactory) const;
@@ -96,7 +96,9 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
     }
 
     if (_yamlReader.isDefined("system", "time"))
+    {
         _totalTime = _yamlReader.read<double>("system", "time");
+    }
 
     if (_yamlReader.isDefined("system", "behavior"))
     {
@@ -106,7 +108,7 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
         if (bhvrFactory.isRegistered(bhvrType))
         {
             _behavior = bhvrFactory.create(bhvrType);
-        }   
+        }
     }
 }
 
@@ -235,18 +237,6 @@ void InitConfig<HB>::checkWarnings() const
     {
         std::cout << std::endl << "WARNING! Sizes don`t need when load from dump." << std::endl;
     }
-}
-
-template <class HB>
-const char *InitConfig<HB>::name() const
-{
-    return _name;
-}
-
-template <class HB>
-double InitConfig<HB>::totalTime() const
-{
-    return _totalTime;
 }
 
 template <class HB>
