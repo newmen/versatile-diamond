@@ -3,18 +3,16 @@
 
 #include "../phases/amorph.h"
 #include "../phases/crystal.h"
-#include "queue/queue_item.h"
 #include "dump/dump_saver.h"
+#include "counter_whith_saver.h"
 #include "detector_factory.h"
-#include "saver_counter.h"
 
 namespace vd {
 
 template <class HB>
-class DumpSaverCounter : public SaverCounter
+class DumpSaverCounter : public CounterWhithSaver<DumpSaver>
 {
     const Detector *_detector;
-    DumpSaver *_dmpSaver;
 
 public:
     DumpSaverCounter(double step, DumpSaver *dmpSaver);
@@ -26,7 +24,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-DumpSaverCounter<HB>::DumpSaverCounter(double step, DumpSaver *dmpSaver) : SaverCounter(step), _dmpSaver(dmpSaver)
+DumpSaverCounter<HB>::DumpSaverCounter(double step, DumpSaver *dmpSaver) : CounterWhithSaver(step, dmpSaver)
 {
     DetectorFactory<HB> detFact;
     _detector = detFact.create("all");
@@ -41,7 +39,7 @@ DumpSaverCounter<HB>::~DumpSaverCounter()
 template <class HB>
 void DumpSaverCounter<HB>::save(const SavingData &sd)
 {
-    _dmpSaver->save(sd.currentTime, sd.amorph, sd.crystal, _detector);
+    CounterWhithSaver<DumpSaver>::saver()->save(sd.currentTime, sd.amorph, sd.crystal, _detector);
 }
 
 }

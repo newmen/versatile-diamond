@@ -162,8 +162,8 @@ template <class HB>
 void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
     QueueItem *item = new Soul(amorph, crystal);
-    const ProgressSaver<HB> saver;
-    ProgressSaverCounter<HB> progress(0, &saver);
+    ProgressSaver<HB> *saver = new ProgressSaver<HB>();
+    static ProgressSaverCounter<HB> progress(0, saver);
     item = progress.wrapItem(item);
     _savingQueue.push(item, _init.totalTime(), 0, name);
 }

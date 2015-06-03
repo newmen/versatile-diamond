@@ -3,13 +3,13 @@
 
 #include "saver_counter.h"
 #include "volume_saver.h"
+#include "counter_whith_saver.h"
 
 namespace vd {
 
-class VolumeSaverCounter : public SaverCounter
+class VolumeSaverCounter : public CounterWhithSaver<VolumeSaver>
 {
     const Detector *_detector;
-    VolumeSaver *_saver;
 
 public:
     VolumeSaverCounter(const Detector* detector, VolumeSaver *saver, double step);

@@ -10,16 +10,11 @@
 #include "../savers/volume_saver_counter.h"
 #include "../savers/progress_saver_counter.h"
 #include "../savers/volume_saver_factory.h"
-#include "../savers/mol_saver.h"
-#include "../savers/xyz_saver.h"
-#include "../savers/sdf_saver.h"
-#include "../savers/progress_saver.h"
 #include "../phases/behavior.h"
 #include "yaml_config_reader.h"
 #include "traker.h"
 #include "common.h"
 #include "error.h"
-
 
 using namespace vd;
 
@@ -28,7 +23,7 @@ class InitConfig
 {
     enum : ushort { MAX_HEIGHT = 100 };
 
-    const YAMLConfigReader _yamlReader = *new YAMLConfigReader("configs/run.yml");
+    const YAMLConfigReader _yamlReader;
 
     const char *_name = nullptr;
     uint _x = 0, _y = 0;
@@ -46,7 +41,6 @@ class InitConfig
 
 public:
     InitConfig(int argc, char *argv[]);
-    ~InitConfig();
 
     void initTraker(const std::initializer_list<ushort> &types);
     typename HB::SurfaceCrystal *initCrystal() const;
@@ -73,7 +67,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
+InitConfig<HB>::InitConfig(int argc, char *argv[]) : _yamlReader("configs/run.yml"), _name(argv[1])
 {
     if (argc == 3)
     {
@@ -109,23 +103,6 @@ InitConfig<HB>::InitConfig(int argc, char *argv[]) : _name(argv[1])
         {
             _behavior = bhvrFactory.create(bhvrType);
         }
-    }
-}
-
-template <class HB>
-InitConfig<HB>::~InitConfig()
-{
-    if (_csSaver)
-    {
-        delete _csSaver;
-    }
-    if (_dmpSaver)
-    {
-        delete _dmpSaver;
-    }
-    if (_prgrsSaver)
-    {
-        delete _prgrsSaver;
     }
 }
 

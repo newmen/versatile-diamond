@@ -3,13 +3,13 @@
 
 namespace vd {
 
-IntegralSaverCounter::IntegralSaverCounter(double step, CrystalSliceSaver *csSaver) : SaverCounter(step), _csSaver(csSaver)
+IntegralSaverCounter::IntegralSaverCounter(double step, CrystalSliceSaver *csSaver) : CounterWhithSaver(step, csSaver)
 {
 }
 
 void IntegralSaverCounter::save(const SavingData &sd)
 {
-    _csSaver->writeBySlicesOf(sd.crystal, sd.currentTime);
+    saver()->writeBySlicesOf(sd.crystal, sd.currentTime);
 }
 
 }
