@@ -362,7 +362,8 @@ HEADERS += \
     tools/typed.h \
     tools/vector3d.h \
     tools/yaml_config_reader.h \
-    savers/counter_whith_saver.h
+    savers/counter_whith_saver.h \
+    phases/crystal_factory.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

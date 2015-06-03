@@ -1,7 +1,7 @@
 def content
 <<PBSTASK
 #PBS -l walltime=999:0:0,nodes=1:ppn=1
-#PBS -N vde-#{ARGV[1]}-#{ARGV[2]}x#{ARGV[3]}-#{ARGV[4]}s
+#PBS -N vde-#{ARGV[1]}
 
 #!/bin/bash
 cd #{ARGV[0]}
