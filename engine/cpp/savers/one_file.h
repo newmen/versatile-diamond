@@ -4,8 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../../phases/saving_amorph.h"
-#include "../../phases/saving_crystal.h"
+#include "../phases/saving_amorph.h"
+#include "../phases/saving_crystal.h"
 #include "detector.h"
 
 namespace vd

@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "atom_info.h"
 #include "bond_info.h"
-#include "../../atoms/saving_atom.h"
+#include "../atoms/saving_atom.h"
 
 namespace vd
 {

@@ -5,7 +5,7 @@ STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-CFLAGS		:= $(STANDART) $(ARKSFLAGS) -O2
+CFLAGS		:= $(STANDART) $(ARKSFLAGS) -O2 -pthread
 
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj

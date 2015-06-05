@@ -1,5 +1,5 @@
 #include "run.h"
-#include <tools/savers/surface_detector.h>
+#include <savers/surface_detector.h>
 #include "phases/diamond.h"
 #include "handbook.h"
 

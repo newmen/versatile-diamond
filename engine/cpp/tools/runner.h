@@ -1,22 +1,18 @@
 #ifndef RUNNER_H
 #define RUNNER_H
 
-#include <tuple>
-#include <unordered_map>
 #include <iostream>
 #include <sys/time.h>
 #include "../mc/common_mc_data.h"
+#include "../hand-generations/src/handbook.h"
 #include "../phases/behavior_factory.h"
 #include "../phases/saving_amorph.h"
 #include "../phases/saving_crystal.h"
+#include "../savers/progress_saver_counter.h"
+#include "../savers/queue/out_thread.h"
 #include "process_mem_usage.h"
-#include "savers/crystal_slice_saver.h"
-#include "savers/volume_saver.h"
-#include "savers/volume_saver_factory.h"
-#include "savers/detector_factory.h"
 #include "init_config.h"
 #include "common.h"
-#include "error.h"
 
 namespace vd
 {
@@ -24,22 +20,16 @@ namespace vd
 template <class HB>
 class Runner
 {
-    enum : ushort { MAX_HEIGHT = 100 };
-
     static volatile bool __stopCalculating;
 
-    const std::string _name;
-    const uint _x, _y;
-    const double _totalTime, _eachTime;
-    const Detector *_detector = nullptr;
-    const Behavior *_behavior = nullptr;
-    VolumeSaver *_volumeSaver = nullptr;
+    InitConfig<Handbook> _init;
+    OutThread _savingQueue;
 
 public:
     static void stop();
 
-    Runner(const InitConfig &init);
-    ~Runner();
+    Runner(const InitConfig<Handbook> &init) : _init(init) {}
+    ~Runner() {}
 
     void calculate(const std::initializer_list<ushort> &types);
 
@@ -49,21 +39,18 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
-    typedef std::tuple<const SavingCrystal *, const SavingAmorph *> SavingPhases;
-    SavingPhases copyAtoms(const Crystal *crystal, const Amorph *amorph) const;
-
-    double activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const;
-    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph);
-    void saveVolume(const SavingCrystal *crystal, const SavingAmorph *amorph);
-    void storeIfNeed(CrystalSliceSaver *sliceSaver,
-                     const SavingCrystal *crystal,
-                     const SavingAmorph *amorph,
-                     bool forseSaveVolume);
+    void storeIfNeed(const Crystal *crystal,
+                     const Amorph *amorph,
+                     double dt,
+                     bool forseSave);
 
     std::string filename() const;
     double timestamp() const;
 
+    void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
+
     void outputMemoryUsage(std::ostream &os) const;
+    void printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -75,84 +62,6 @@ template <class HB>
 void Runner<HB>::stop()
 {
     __stopCalculating = true;
-}
-
-template <class HB>
-Runner<HB>::Runner(const InitConfig &init) :
-    _name(init.name), _x(init.x), _y(init.y), _totalTime(init.totalTime), _eachTime(init.eachTime)
-{
-    if (_name.size() == 0)
-    {
-        throw Error("Name should not be empty");
-    }
-    else if (_x == 0 || _y == 0)
-    {
-        throw Error("X and Y sizes should be grater than 0");
-    }
-    else if (_totalTime <= 0)
-    {
-        throw Error("Total process time should be grater than 0 seconds");
-    }
-    else if (_eachTime <= 0)
-    {
-        throw Error("Each time value should be grater than 0 seconds");
-    }
-
-    if (init.volumeSaverType)
-    {
-        VolumeSaverFactory vsFactory;
-        if (!vsFactory.isRegistered(init.volumeSaverType))
-        {
-            throw Error("Undefined type of volume file saver");
-        }
-
-        _volumeSaver = vsFactory.create(init.volumeSaverType, filename().c_str());
-    }
-
-    DetectorFactory<HB> detFactory;
-    if (init.detectorType)
-    {
-        if (!detFactory.isRegistered(init.detectorType))
-        {
-            throw Error("Undefined type of detector");
-        }
-
-        _detector = detFactory.create(init.detectorType);
-    }
-    else if (init.volumeSaverType)
-    {
-         _detector = detFactory.create("surf");
-    }
-
-    BehaviorFactory bhvrFactory;
-    if (init.behavior)
-    {
-        if (!bhvrFactory.isRegistered(init.behavior))
-        {
-            throw Error("Undefined type of behavior");
-        }
-
-        _behavior = bhvrFactory.create(init.behavior);
-    }
-    else
-    {
-        _behavior = bhvrFactory.create("tor");
-    }
-}
-
-template <class HB>
-Runner<HB>::~Runner()
-{
-    delete _volumeSaver;
-    delete _detector;
-}
-
-template <class HB>
-std::string Runner<HB>::filename() const
-{
-    std::stringstream ss;
-    ss << _name << "-" << _x << "x" << _y << "-" << _totalTime << "s";
-    return ss.str();
 }
 
 template <class HB>
@@ -177,39 +86,26 @@ template <class HB>
 void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
 {
     // TODO: Предоставить возможность сохранять концентрацию структур
-    CrystalSliceSaver csSaver(filename().c_str(), _x * _y, types);
-
-// -------------------------------------------------------------------------------- //
-
-    const BehaviorFactory bhvrFactory;
-    const Behavior *initBhv = bhvrFactory.create("tor");
-    typedef typename HB::SurfaceCrystal SC;
-    SC *surfaceCrystal = new SC(dim3(_x, _y, MAX_HEIGHT), initBhv);
-    surfaceCrystal->initialize();
-    surfaceCrystal->changeBehavior(_behavior);
-
-// -------------------------------------------------------------------------------- //
-
-    ullong steps = 0;
-    double timeCounter = 0;
+    typename HB::SurfaceCrystal *surfaceCrystal = _init.initCrystal();
 
     RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
 
     CommonMCData mcData;
     HB::mc().initCounter(&mcData);
 
+    _init.initTraker(types);
+
 #ifndef NOUT
-    SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
-    printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
-    delete std::get<0>(savingPhases);
-    delete std::get<1>(savingPhases);
+    firstSave(&HB::amorph(), surfaceCrystal, _init.name());
 #endif // NOUT
 
+    ullong steps = 0;
+    double dt = 0;
     double startTime = timestamp();
 
-    while (!__stopCalculating && HB::mc().totalTime() <= _totalTime)
+    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime())
     {
-        double dt = HB::mc().doRandom(&mcData);
+        dt = HB::mc().doRandom(&mcData);
 
 #ifdef PRINT
         debugPrint([&](std::ostream &os) {
@@ -228,16 +124,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         }
         else
         {
-            timeCounter += dt;
-            if (timeCounter >= _eachTime)
-            {
-                timeCounter = 0;
-                SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
-                printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
-                storeIfNeed(&csSaver, std::get<0>(savingPhases), std::get<1>(savingPhases), false);
-                delete std::get<0>(savingPhases);
-                delete std::get<1>(savingPhases);
-            }
+            storeIfNeed(surfaceCrystal, &HB::amorph(), dt, false);
         }
 #endif // NOUT
     }
@@ -245,16 +132,18 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     double stopTime = timestamp();
 
 #ifndef NOUT
-    if (timeCounter > 0)
-    {
-        SavingPhases savingPhases = copyAtoms(surfaceCrystal, &HB::amorph());
-        printShortState(std::get<0>(savingPhases), std::get<1>(savingPhases));
-        storeIfNeed(&csSaver, std::get<0>(savingPhases), std::get<1>(savingPhases), true);
-        delete std::get<0>(savingPhases);
-        delete std::get<1>(savingPhases);
-    }
+    storeIfNeed(surfaceCrystal, &HB::amorph(), dt, true);
 #endif // NOUT
 
+    _savingQueue.stop();
+    printStat(startTime, stopTime, mcData, steps);
+    HB::amorph().clear(); // TODO: should not be explicitly!
+    delete surfaceCrystal;
+}
+
+template <class HB>
+void Runner<HB>::printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const
+{
     std::cout << std::endl;
     std::cout.precision(8);
     std::cout << "Elapsed time of process: " << HB::mc().totalTime() << " s" << std::endl;
@@ -267,106 +156,43 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     std::cout.precision(3);
     std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
     mcData.counter()->printStats(std::cout);
-
-    HB::amorph().clear(); // TODO: should not be explicitly!
-    delete surfaceCrystal;
 }
 
 template <class HB>
-typename Runner<HB>::SavingPhases Runner<HB>::copyAtoms(const Crystal *crystal, const Amorph *amorph) const
+void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
 {
-    std::unordered_map<const Atom *, SavingAtom *> mirror;
-    mirror.reserve(crystal->maxAtoms() + amorph->countAtoms());
-
-    SavingCrystal *savingCrystal = new SavingCrystal(crystal);
-    SavingAmorph *savingAmorph = new SavingAmorph();
-
-    auto fillLambda = [&mirror, savingCrystal, savingAmorph](const Atom *atom) {
-        SavingAtom *sa = new SavingAtom(atom, nullptr);
-        mirror[atom] = sa;
-
-        auto originalLattice = atom->lattice();
-        if (originalLattice) {
-            savingCrystal->insert(sa, originalLattice->coords());
-        } else {
-            savingAmorph->insert(sa);
-        }
-    };
-
-    crystal->eachAtom(fillLambda);
-    amorph->eachAtom(fillLambda);
-
-    auto copyRelationsLambda = [&mirror](const Atom *atom) {
-        SavingAtom *target = mirror.find(atom)->second;
-        atom->eachNeighbour([&mirror, target](const Atom *nbr) {
-            target->bondWith(mirror.find(nbr)->second, 0);
-        });
-    };
-
-    crystal->eachAtom(copyRelationsLambda);
-    amorph->eachAtom(copyRelationsLambda);
-
-    return std::make_tuple(savingCrystal, savingAmorph);
+    QueueItem *item = new Soul(amorph, crystal);
+    ProgressSaver<HB> *saver = new ProgressSaver<HB>();
+    static ProgressSaverCounter<HB> progress(0, saver);
+    item = progress.wrapItem(item);
+    _savingQueue.push(item, _init.totalTime(), 0, name);
 }
 
 template <class HB>
-double Runner<HB>::activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const
+void Runner<HB>::storeIfNeed(const Crystal *crystal, const Amorph *amorph, double dt, bool forseSave)
 {
-    uint actives = 0;
-    uint hydrogens = 0;
-    auto lambda = [&actives, &hydrogens](const SavingAtom *atom) {
-        actives += HB::activesFor(atom->type());
-        hydrogens += HB::hydrogensFor(atom->type());
-    };
+    static uint takeCounter = 0;
+    static double currentTime = 0;
 
-    amorph->eachAtom(lambda);
-    crystal->eachAtom(lambda);
-    return (double)actives / (actives + hydrogens);
-}
+    currentTime += dt;
+    _init.appendTime(dt);
 
-template <class HB>
-void Runner<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph)
-{
-    std::cout.width(10);
-    std::cout << 100 * HB::mc().totalTime() / _totalTime << " %";
-    std::cout.width(10);
-    std::cout << crystal->countAtoms();
-    std::cout.width(10);
-    std::cout << amorph->countAtoms();
-    std::cout.width(10);
-    std::cout << 100 * activesRatio(crystal, amorph) << " %";
-    std::cout.width(20);
-    std::cout << HB::mc().totalTime() << " (s)";
-    std::cout.width(20);
-    std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
-}
-
-template <class HB>
-void Runner<HB>::saveVolume(const SavingCrystal *crystal, const SavingAmorph *amorph)
-{
-    _volumeSaver->save(HB::mc().totalTime(), amorph, crystal, _detector);
-}
-
-template <class HB>
-void Runner<HB>::storeIfNeed(CrystalSliceSaver *sliceSaver,
-                             const SavingCrystal *crystal,
-                             const SavingAmorph *amorph,
-                             bool forseSaveVolume)
-{
-    static uint volumeSaveCounter = 0;
-
-    sliceSaver->writeBySlicesOf(crystal, HB::mc().totalTime());
-
-    if (_volumeSaver)
+    if (takeCounter == 0 || forseSave)
     {
-        if (volumeSaveCounter == 0 || forseSaveVolume)
+        QueueItem *item = _init.takeItem(amorph, crystal);
+
+        if (!item->isEmpty())
         {
-            saveVolume(crystal, amorph);
+            _savingQueue.push(item, _init.totalTime(), currentTime, _init.name());
         }
-        if (++volumeSaveCounter == 10)
+        else
         {
-            volumeSaveCounter = 0;
+            delete item;
         }
+    }
+    if (++takeCounter == 10)
+    {
+        takeCounter = 0;
     }
 }
 
