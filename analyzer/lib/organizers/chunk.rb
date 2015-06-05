@@ -2,7 +2,7 @@ module VersatileDiamond
   module Organizers
 
     # Provides logic for side-chunk of lateral reaction
-    class Chunk
+    class Chunk < BaseChunk
       include MinuendChunk
       include DrawableChunk
       include TailedChunk
@@ -20,6 +20,8 @@ module VersatileDiamond
       # @param [Array] theres the array of there objects the links from which will be
       #   collected and used as links of chunk
       def initialize(lateral_reaction, theres)
+        super()
+
         @lateral_reaction = lateral_reaction
         @theres = theres
 

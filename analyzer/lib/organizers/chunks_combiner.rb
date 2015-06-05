@@ -240,8 +240,8 @@ module VersatileDiamond
       # @return [Array] the array of independen chunk if them are take a place
       def split_to_independent_chunks(chunk)
         links = chunk.links
-        target_specs = chunk.targets.map(&:first).uniq
-        specs = independen_sidepiece_specs(links, target_specs)
+        target_specs = chunk.target_specs
+        specs = independen_sidepiece_specs(target_specs, chunk.sidepiece_specs)
 
         if specs.size > 1
           specs.map do |sidepiece_spec|
@@ -256,15 +256,12 @@ module VersatileDiamond
         end
       end
 
-      # Gets sidepiece species from passed links which have relations just with
-      # target species
-      #
-      # @param [Hash] links which will be observed for independent specs
-      # @param [Array] target_specs which are reactants
+      # Gets sidepiece species which have relations just with target species
+      # @param [Set] target_specs which are reactants
+      # @param [Set] sidepiece_specs which are not reactants
       # @return [Array] the list of independent sidepiece specs
-      def independen_sidepiece_specs(links, target_specs)
-        specs = (links.keys.map(&:first) - target_specs).uniq
-        specs.select do |spec|
+      def independen_sidepiece_specs(target_specs, sidepiece_specs)
+        sidepiece_specs.select do |spec|
           rels_list = links.each_with_object([]) do |((s, _), rels), acc|
             acc << rels if spec == s
           end
@@ -277,8 +274,7 @@ module VersatileDiamond
 
       # Extracts all links where passed spec uses
       # @param [Hash] links which will be observed
-      # @param [Array] target_specs the target specs which which the sidepiece spec
-      #   could have a relation
+      # @param [Set] target_specs the reactants
       # @param [Concepts::Spec | Concepts::SpecificSpec] sidepiece_spec for which the
       #   links will be extracted
       # @return [Hash] the extracted links

@@ -71,7 +71,7 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_dimer_formation }
-              let(:lateral_reactions) { [dept_wb_lateral_df] }
+              let(:lateral_reactions) { [dept_ewb_lateral_df] }
               let(:combined_lateral_reactions) do
                 subject.children.select { |chd| chd.is_a?(CombinedLateralReaction) }
               end
@@ -79,7 +79,6 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    // TODO: independent chunk should be generated and then used
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
     eachNeighbour(atoms[0], &Diamond::front_100, [&](Atom *neighbour) {
         if (neighbour != atoms[1] && neighbour->is(#{bridge_ct}))

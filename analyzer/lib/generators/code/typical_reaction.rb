@@ -13,6 +13,7 @@ module VersatileDiamond
 
         # Typical reaction haven't sidepiece species
         # @return [Array] the empty array
+        # TODO: deprecated?
         def sidepiece_species
           []
         end

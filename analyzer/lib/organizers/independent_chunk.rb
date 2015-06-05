@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Describes the chunk which rest after difference operation and another smallest
     # chunks which contains in it is not presented
-    class IndependentChunk
+    class IndependentChunk < BaseChunk
       include Modules::ListsComparer
       include DrawableChunk
       include ChunksComparer
@@ -17,6 +17,8 @@ module VersatileDiamond
       # @param [Set] targets of new chunk
       # @param [Hash] links of it chunk
       def initialize(owner, targets, links)
+        super()
+
         @owner = owner
         @targets = targets
         @links = links

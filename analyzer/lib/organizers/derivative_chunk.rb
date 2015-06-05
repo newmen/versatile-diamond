@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Describes the chunk which constructs from another chunks and can builds lateral
     # reaction for which it was builded
-    class DerivativeChunk
+    class DerivativeChunk < BaseChunk
       include Modules::ExtendedCombinator
       include Modules::ListsComparer
       include ChunksComparer
@@ -19,6 +19,8 @@ module VersatileDiamond
       # @param [Hash] variants is the full table of chunks combination variants for
       #   calculate maximal compatible full rate value
       def initialize(typical_reaction, chunks, variants)
+        super()
+
         @typical_reaction = typical_reaction
 
         raise 'Derivative chunk should have more that one parent' if chunks.size < 2
