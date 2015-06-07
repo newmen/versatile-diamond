@@ -10,7 +10,7 @@ module VersatileDiamond
       # @return [Boolean] is same other chunk or not
       def same?(other)
         return true if equal?(other)
-        return false unless self.class == other.class && same_targets?(other)
+        return false unless same_targets?(other)
         lsz = links.size
         other.links.size == lsz &&
           (targets.size == lsz || mirror_to(other).size == lsz)

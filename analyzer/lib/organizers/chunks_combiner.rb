@@ -36,13 +36,11 @@ module VersatileDiamond
       # @return [Hash] the initial hash of combination variants
       def collect_variants(chunks)
         variants = Hash[chunks.map { |ch| [Multiset[ch], ch] }]
-        if chunks.all? { |ch| ch.parents.empty? }
-          variants = extend_variants(variants, chunks)
+        chunks.each do |ch|
+          variants[Multiset.new(ch.parents)] = ch unless ch.parents.empty?
         end
 
-        chunks.each_with_object(variants) do |ch, acc|
-          acc[Multiset.new(ch.parents)] = ch unless ch.parents.empty?
-        end
+        extend_variants(variants, chunks)
       end
 
       # Extends variants by independent chunks which could be in some of passed chunks
@@ -50,16 +48,16 @@ module VersatileDiamond
       # @param [Array] chunks the list with potencial splitting chunk
       # @return [Hash] the map of extended variants
       def extend_variants(variants, chunks)
-        collected_independent = []
+        previous_collected = chunks.dup
         chunks.each_with_object(variants) do |chunk, acc|
           independent_chunks = split_to_independent_chunks(chunk)
 
-          unique_independent = independent_chunks.map do |new_chunk|
-            prev_chunk = collected_independent.find { |ci| ci.same?(new_chunk) }
+          reused_independent = independent_chunks.map do |new_chunk|
+            prev_chunk = previous_collected.find { |ci| ci.same?(new_chunk) }
             if prev_chunk
               prev_chunk
             else
-              collected_independent << new_chunk
+              previous_collected << new_chunk
               new_chunk
             end
           end
@@ -69,10 +67,13 @@ module VersatileDiamond
           end
 
           if merging_chunks.size > 0
-            acc[Multiset.new(unique_independent)] = chunk
-            unique_independent.each do |ch|
-              chunk.store_parent(ch)
-              acc[Multiset[ch]] = ch
+            total_key = Multiset.new(reused_independent)
+            unless acc[total_key]
+              acc[total_key] = chunk
+              reused_independent.each do |ch|
+                chunk.store_parent(ch)
+                acc[Multiset[ch]] = ch
+              end
             end
           end
         end

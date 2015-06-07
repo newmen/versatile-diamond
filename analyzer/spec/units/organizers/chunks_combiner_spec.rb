@@ -55,10 +55,6 @@ module VersatileDiamond
             ].each do |dept_reaction|
               dept_reaction.send(:store_parent, dept_dimer_formation)
             end
-
-            2.times { middle_chunk.store_parent(end_chunk) }
-            ewb_chunk.store_parent(end_chunk)
-            ewb_chunk.store_parent(ind_chunk)
           end
 
           it_behaves_like :check_combined_reactions do
