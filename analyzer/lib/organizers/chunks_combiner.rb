@@ -50,15 +50,27 @@ module VersatileDiamond
       # @param [Array] chunks the list with potencial splitting chunk
       # @return [Hash] the map of extended variants
       def extend_variants(variants, chunks)
+        collected_independent = []
         chunks.each_with_object(variants) do |chunk, acc|
           independent_chunks = split_to_independent_chunks(chunk)
+
+          unique_independent = independent_chunks.map do |new_chunk|
+            prev_chunk = collected_independent.find { |ci| ci.same?(new_chunk) }
+            if prev_chunk
+              prev_chunk
+            else
+              collected_independent << new_chunk
+              new_chunk
+            end
+          end
+
           merging_chunks = independent_chunks.select do |ch|
             chunks.any? { |big_chunk| mergeable?([big_chunk, ch]) }
           end
 
           if merging_chunks.size > 0
-            acc[Multiset.new(independent_chunks)] = chunk
-            independent_chunks.each do |ch|
+            acc[Multiset.new(unique_independent)] = chunk
+            unique_independent.each do |ch|
               chunk.store_parent(ch)
               acc[Multiset[ch]] = ch
             end
@@ -241,7 +253,7 @@ module VersatileDiamond
       def split_to_independent_chunks(chunk)
         links = chunk.links
         target_specs = chunk.target_specs
-        specs = independen_sidepiece_specs(target_specs, chunk.sidepiece_specs)
+        specs = independen_sidepiece_specs(links, target_specs, chunk.sidepiece_specs)
 
         if specs.size > 1
           specs.map do |sidepiece_spec|
@@ -257,10 +269,11 @@ module VersatileDiamond
       end
 
       # Gets sidepiece species which have relations just with target species
+      # @param [Hash] links where the independent sidepiece species will be found
       # @param [Set] target_specs which are reactants
       # @param [Set] sidepiece_specs which are not reactants
       # @return [Array] the list of independent sidepiece specs
-      def independen_sidepiece_specs(target_specs, sidepiece_specs)
+      def independen_sidepiece_specs(links, target_specs, sidepiece_specs)
         sidepiece_specs.select do |spec|
           rels_list = links.each_with_object([]) do |((s, _), rels), acc|
             acc << rels if spec == s
