@@ -6,6 +6,9 @@ module VersatileDiamond
 
       # Contains logic for generation typical reation
       class LateralReaction < SpeciesReaction
+
+        def_delegator :reaction, :chunk
+
         # Also initializes additional cache variables
         # @override
         def initialize(*)
@@ -17,7 +20,7 @@ module VersatileDiamond
         # Gets the links of lateral reaction internal minimal chunks
         # @return [Array] the list minimal used chunks
         def internal_chunks
-          @_internal_chunks ||= deep_chunks(reaction.chunk)
+          @_internal_chunks ||= deep_chunks(chunk)
         end
 
       protected

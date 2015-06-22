@@ -18,6 +18,13 @@ module VersatileDiamond
           []
         end
 
+        # Gets all minimal lateral reaction chunks
+        # @return [Array] the list of all minimal lateral reaction chunks
+        def lateral_chunks
+          root_chunks = children.flat_map(&:internal_chunks).uniq
+          LateralChunks.new(self, children.map(&:chunk), root_chunks)
+        end
+
       private
 
         # Checks that current reaction is a tail of overall engine find algorithm
@@ -77,7 +84,7 @@ module VersatileDiamond
         # Gets the maximal number of lateral reaction chunks
         # @return [Integer] the maximal number of lateral reaction chunks
         def lateral_chunks_num
-          children.flat_map(&:internal_chunks).uniq.size
+          lateral_chunks.uniq.size
         end
 
         # Gets the string by which chunks of lateral reactions define
