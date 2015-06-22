@@ -9,6 +9,8 @@ require_each '../lattices/*.rb'
 # in spec/support/ and its subdirectories.
 require_each 'spec/support/**/*.rb'
 
+RSpec::Expectations.configuration.warn_about_potential_false_positives = false
+
 RSpec.configure do |config|
   VD = VersatileDiamond
 
