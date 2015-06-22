@@ -47,7 +47,7 @@ module VersatileDiamond
       # @param [Object] record the minuend entity
       # @return [Object] the optimal value
       def find(key, record)
-        if key.same?(record)
+        if same?(key, record)
           return empty_residual(key)
         elsif key <= record
           rest = record - key
@@ -80,6 +80,14 @@ module VersatileDiamond
       # @return [Array] the sorted array of entities
       def sort(entities)
         entities.sort { |a, b| b <=> a }
+      end
+
+      # Check that two passed instances are same
+      # @param [MinuendSpec | MinuendChunk] one is the first comparing object
+      # @param [MinuendSpec | MinuendChunk] two is the second comparing object
+      # @return [Boolean] are equal passed instances or not
+      def same?(one, two)
+        one.same?(two)
       end
     end
 

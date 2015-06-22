@@ -12,6 +12,15 @@ module VersatileDiamond
       def empty_residual(chunk)
         ChunkResidual.empty(chunk)
       end
+
+      # Also checks that instances are belongs to same class
+      # @param [MinuendChunk] one is the first comparing chunk
+      # @param [MinuendChunk] two is the second comparing chunk
+      # @return [Boolean] are equal passed instances or not
+      # @override
+      def same?(one, two)
+        one.class == two.class && super
+      end
     end
 
   end

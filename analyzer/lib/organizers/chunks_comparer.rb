@@ -6,7 +6,7 @@ module VersatileDiamond
       include Mcs::SpecsAtomsComparator
 
       # Compares two chunk instances and check that them are same
-      # @param [MinuendChunk] other chunk which will be compared
+      # @param [ChunksComparer] other chunk which will be compared
       # @return [Boolean] is same other chunk or not
       def same?(other)
         return true if equal?(other)
@@ -28,7 +28,7 @@ module VersatileDiamond
     private
 
       # Makes mirror with other chunk or chunk resudual
-      # @param [MinuendChunk] other chunk to which the mirror will be builded
+      # @param [ChunksComparer] other chunk to which the mirror will be builded
       # @return [Hash] the mirror from self chunk to other chunk
       def mirror_to(other)
         Mcs::SpeciesComparator.make_mirror(self, other) do |_, _, sa1, sa2|
@@ -38,7 +38,7 @@ module VersatileDiamond
       end
 
       # Checks that targets of current and other are same
-      # @param [MinuendChunk] other chunk which targets will be checked
+      # @param [ChunksComparer] other chunk which targets will be checked
       # @return [Boolean] are similar targets in current and other chunks or not
       def same_targets?(other)
         lists_are_identical?(targets, other.targets, &method(:same_sa?))
