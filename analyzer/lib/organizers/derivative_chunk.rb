@@ -10,6 +10,16 @@ module VersatileDiamond
       include DrawableChunk
       include TailedChunk
 
+      # Provides common veiled specs cache for correct merge different chunks
+      class << self
+        attr_reader :veiled_cache
+
+        # Initiates the veiled specs cache
+        def init_veiled_cache!
+          @veiled_cache = {}
+        end
+      end
+
       attr_reader :parents, :links, :targets
 
       # Constructs the chunk by another chunks
@@ -82,8 +92,14 @@ module VersatileDiamond
                   used_non_target_specs << spec
                   used_non_target_specs_mirror[spec] = spec
                 else
-                  veiled_spec = Concepts::VeiledSpec.new(spec)
-                  used_non_target_specs_mirror[spec] = veiled_spec
+                  rels = chunk.links.select { |(s, _), _| spec == s }
+                  if self.class.veiled_cache[rels]
+                    used_non_target_specs_mirror[spec] = self.class.veiled_cache[rels]
+                  else
+                    veiled_spec = Concepts::VeiledSpec.new(spec)
+                    used_non_target_specs_mirror[spec] = veiled_spec
+                    self.class.veiled_cache[rels] = veiled_spec
+                  end
                 end
 
               cached_atom = cached_spec.atom(spec.keyname(atom))

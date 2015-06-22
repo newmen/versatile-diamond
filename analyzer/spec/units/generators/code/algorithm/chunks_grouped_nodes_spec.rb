@@ -10,8 +10,8 @@ module VersatileDiamond
           let(:reaction) { generator.reaction_class(dependent_typical_reaction.name) }
           let(:generator) do
             stub_generator(
-              typical_reactions: [dependent_typical_reaction]
-              lateral_reactions: chunks.map(&:lateral_reactions)
+              typical_reactions: [dependent_typical_reaction],
+              lateral_reactions: chunks.map(&:lateral_reaction)
             )
           end
 
