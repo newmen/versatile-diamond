@@ -54,7 +54,8 @@ module VersatileDiamond
       # @return [Boolean] is same other chunk or not
       def same?(other)
         # TODO: owners do not comparing
-        super && lists_are_identical?(parents, other.parents, &:==)
+        super && (self.class != other.class || (self.class == other.class &&
+          lists_are_identical?(parents, other.parents, &:==)))
       end
 
     protected

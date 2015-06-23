@@ -187,8 +187,8 @@ module VersatileDiamond
           it { expect(end_chunk.same?(middle_chunk)).to be_falsey }
           it { expect(middle_chunk.same?(end_chunk)).to be_falsey }
 
-          it { expect(end_chunk.same?(residual)).to be_falsey }
-          it { expect(residual.same?(end_chunk)).to be_falsey }
+          it { expect(end_chunk.same?(residual)).to be_truthy }
+          it { expect(residual.same?(end_chunk)).to be_truthy }
         end
       end
 
