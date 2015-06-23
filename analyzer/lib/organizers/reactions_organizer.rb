@@ -44,7 +44,7 @@ module VersatileDiamond
       # @return [Array] the list of new combined lateral reactions which was missed by
       #   user
       def organize_complex_reactions_deps!(typical_rs, lateral_rs)
-        DerivativeChunk.init_veiled_cache!
+        ChunkLinksMerger.init_veiled_cache!
         typical_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }
         typical_rs.flat_map(&:combine_children_laterals!)
       end

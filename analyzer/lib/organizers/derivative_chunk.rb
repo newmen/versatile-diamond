@@ -10,16 +10,6 @@ module VersatileDiamond
       include DrawableChunk
       include TailedChunk
 
-      # Provides common veiled specs cache for correct merge different chunks
-      class << self
-        attr_reader :veiled_cache
-
-        # Initiates the veiled specs cache
-        def init_veiled_cache!
-          @veiled_cache = {}
-        end
-      end
-
       attr_reader :parents, :links, :targets
 
       # Constructs the chunk by another chunks
@@ -74,47 +64,8 @@ module VersatileDiamond
       # @param [Array] chunks which links will be merged
       # @return [Hash] the common links hash
       def merge_links(chunks)
-        used_non_target_specs = []
-
-        chunks.each_with_object({}) do |chunk, acc|
-          used_non_target_specs_mirror = {}
-
-          mirror = -> sa do
-            typical_target = chunk.mapped_targets[sa]
-            if typical_target
-              typical_target
-            else
-              spec, atom = sa
-              cached_spec =
-                if used_non_target_specs_mirror[spec]
-                  used_non_target_specs_mirror[spec]
-                elsif !used_non_target_specs.include?(spec)
-                  used_non_target_specs << spec
-                  used_non_target_specs_mirror[spec] = spec
-                else
-                  rels = chunk.links.select { |(s, _), _| spec == s }
-                  if self.class.veiled_cache[rels]
-                    used_non_target_specs_mirror[spec] = self.class.veiled_cache[rels]
-                  else
-                    veiled_spec = Concepts::VeiledSpec.new(spec)
-                    used_non_target_specs_mirror[spec] = veiled_spec
-                    self.class.veiled_cache[rels] = veiled_spec
-                  end
-                end
-
-              cached_atom = cached_spec.atom(spec.keyname(atom))
-              raise 'Incorrect cached atom' unless cached_atom
-
-              [cached_spec, cached_atom]
-            end
-          end
-
-          chunk.links.each do |spec_atom, rels|
-            key = mirror[spec_atom]
-            acc[key] ||= []
-            acc[key] += rels.map { |t, r| [mirror[t], r] }
-          end
-        end
+        clm = ChunkLinksMerger.new
+        chunks.reduce({}, &clm.public_method(:merge))
       end
 
       # Gets the list of parents tail names
