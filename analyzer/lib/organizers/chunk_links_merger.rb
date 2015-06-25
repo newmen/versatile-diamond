@@ -72,7 +72,7 @@ module VersatileDiamond
           local_cache[spec]
         elsif @instance_cache.include?(spec)
           rels = chunk.links.select { |(s, _), _| spec == s }
-          find_veiled_spec(local_cache, spec, rels)
+          find_veiled_spec(local_cache, spec, [spec, rels])
         else
           @instance_cache << spec
           local_cache[spec] = spec
@@ -83,7 +83,7 @@ module VersatileDiamond
       # @param [Hash] local_cache the changable cache for current local merge
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
       #   which veiled analog will be checked
-      # @param [Object] global_key the relations of passed spec in merging links
+      # @param [Array] global_key the spec and it relations in merging links
       # @return [Concepts::VeiledSpec] the veiled spec
       def find_veiled_spec(local_cache, spec, global_key)
         global_veiled = self.class.global_cache[global_key]
@@ -109,7 +109,7 @@ module VersatileDiamond
       # @return [Concepts::VeiledSpec] the veiled spec
       def check_instance_spec(local_cache, original_spec, global_veiled, global_key)
         if @instance_cache.include?(global_veiled)
-          complex_key = [global_veiled, global_key]
+          complex_key = [global_veiled, global_key.last]
           find_veiled_spec(local_cache, original_spec, complex_key)
         else
           @instance_cache << global_veiled
