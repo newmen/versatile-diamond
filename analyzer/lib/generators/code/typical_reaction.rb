@@ -9,6 +9,7 @@ module VersatileDiamond
         def initialize(*)
           super
           @_used_iterators = nil
+          @_lateral_chunks = nil
         end
 
         # Typical reaction haven't sidepiece species
@@ -21,8 +22,11 @@ module VersatileDiamond
         # Gets all minimal lateral reaction chunks
         # @return [Array] the list of all minimal lateral reaction chunks
         def lateral_chunks
+          return @_lateral_chunks if @_lateral_chunks
+
           root_chunks = children.flat_map(&:internal_chunks).uniq
-          LateralChunks.new(self, children.map(&:chunk), root_chunks)
+          @_lateral_chunks =
+            LateralChunks.new(self, children.map(&:chunk), root_chunks)
         end
 
       private
@@ -84,7 +88,7 @@ module VersatileDiamond
         # Gets the maximal number of lateral reaction chunks
         # @return [Integer] the maximal number of lateral reaction chunks
         def lateral_chunks_num
-          lateral_chunks.uniq.size
+          lateral_chunks.root_times
         end
 
         # Gets the string by which chunks of lateral reactions define

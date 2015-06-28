@@ -23,7 +23,9 @@ module VersatileDiamond
           end
         end
 
-        shared_examples_for :check_total_and_clean_links do
+        shared_examples_for :check_root_total_and_clean do
+          it { expect(subject.root_times).to eq(root_times) }
+
           it_behaves_like :check_vertexes_and_relations_num do
             let(:method_name) { :total_links }
             let(:vertex_num) { total_vertex_num }
@@ -38,31 +40,33 @@ module VersatileDiamond
         end
 
         describe 'just two sides' do
+          let(:root_times) { 2 }
           let(:total_vertex_num) { 18 }
           let(:total_relations_num) { 50 }
           let(:clean_vertex_num) { 6 }
           let(:clean_relations_num) { 8 }
 
-          it_behaves_like :check_total_and_clean_links do
+          it_behaves_like :check_root_total_and_clean do
             let(:lateral_reactions) { [dept_end_lateral_df] }
           end
 
-          it_behaves_like :check_total_and_clean_links do
+          it_behaves_like :check_root_total_and_clean do
             let(:lateral_reactions) { [dept_end_lateral_df, dept_middle_lateral_df] }
           end
         end
 
         describe 'complex case' do
+          let(:root_times) { 3 }
           let(:total_vertex_num) { 21 }
           let(:total_relations_num) { 58 }
           let(:clean_vertex_num) { 7 }
           let(:clean_relations_num) { 10 }
 
-          it_behaves_like :check_total_and_clean_links do
+          it_behaves_like :check_root_total_and_clean do
             let(:lateral_reactions) { [dept_ewb_lateral_df] }
           end
 
-          it_behaves_like :check_total_and_clean_links do
+          it_behaves_like :check_root_total_and_clean do
             let(:lateral_reactions) { [dept_ewb_lateral_df, dept_middle_lateral_df] }
           end
         end

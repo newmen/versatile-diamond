@@ -19,13 +19,34 @@ module VersatileDiamond
           @all_chunks = all_chunks
           @root_chunks = root_chunks
 
-          @total_chunk = Organizers::TotalChunk.new(reaction, all_chunks)
+          @_total_chunk = nil
+        end
+
+        # Gets number of how many times the root chunks contains in total chunk
+        # @return [Integer] the number of times
+        def root_times
+          result = total_chunk
+          @root_chunks.reduce(0) do |acc, chunk|
+            num = 0
+            loop do
+              next_result = result - chunk
+              break unless next_result
+
+              num += 1
+              result = next_result
+            end
+
+            acc + num
+          end
         end
 
       private
 
-        attr_reader :total_chunk
-
+        # Gets total chunk which adsorbs all chunk in self
+        # @return [Organizers::TotalChunk] the total chunk
+        def total_chunk
+          @_total_chunk ||= Organizers::TotalChunk.new(@reaction, @all_chunks)
+        end
       end
     end
   end
