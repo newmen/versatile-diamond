@@ -20,6 +20,7 @@ RSpec.configure do |config|
   config.include VD::Interpreter::Support::Handbook, type: :interpreter
 
   config.include VD::Organizers::Support::Properties, use: :atom_properties
+  config.include VD::Organizers::Support::PseudoResults, type: :organizer
   config.include VD::Organizers::Support::Handbook,
     use: :engine_generator, type: :organizer
 
@@ -53,5 +54,4 @@ RSpec.configure do |config|
     VD::Tools::Chest.reset
     VD::Tools::Config.init
   end
-
 end

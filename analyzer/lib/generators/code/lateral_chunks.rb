@@ -4,8 +4,10 @@ module VersatileDiamond
 
       # Contains logic for description of common graph of all possible chunks of some
       # typical reaction
-      class LateralChunks < Organizers::BaseChunk
-        include Modules::GraphDupper
+      class LateralChunks
+        extend Forwardable
+
+        def_delegators :total_chunk, :total_links, :clean_links
 
         # Initializes meta object which provides useful methods for code generators
         # @param [TypicalReaction] reaction from which the chunks of children lateral
@@ -17,50 +19,13 @@ module VersatileDiamond
           @all_chunks = all_chunks
           @root_chunks = root_chunks
 
-          @_total_links, @_clean_links = nil
-        end
-
-        # Gets total links of all participants
-        # @return [Hash] the graph of of relations between all using specs and their
-        #   atoms
-        def total_links
-          @_total_links ||=
-            @all_chunks.reduce(dup_graph(@reaction.links)) do |acc, chunk|
-              adsorb_links(chunk.targets, acc, chunk.links)
-            end
-        end
-
-        # Gets clean links which contains just relations between reactants and
-        # sidepiece species
-        def clean_links
-          @_clean_links ||= @all_chunks.reduce({}) do |acc, chunk|
-            adsorb_links(chunk.targets, acc, chunk.clean_links)
-          end
+          @total_chunk = Organizers::TotalChunk.new(reaction, all_chunks)
         end
 
       private
 
-        # Adsorbs all adsorbing links and gets total links
-        # @param [Set] targets from which the edges cannot be duplicated
-        # @param [Hash] original_links which will be extended in result
-        # @param [Hash] adsorbing_links which will extend the original links
-        # @return [Hash] the extended original links
-        def adsorb_links(targets, original_links, adsorbing_links)
-          adsorbing_links.each_with_object(original_links) do |(spec_atom, rels), acc|
-            if acc[spec_atom] && targets.include?(spec_atom)
-              acc[spec_atom] += dup_rels(rels.reject { |sa, _| acc[sa] })
-            elsif !acc[spec_atom]
-              acc[spec_atom] = dup_rels(rels)
-            end
-          end
-        end
+        attr_reader :total_chunk
 
-        # Dups passed rels and all internal spec_atom pairs
-        # @param [Array] rels which will be dupped
-        # @return [Array] the dupped rels
-        def dup_rels(rels)
-          rels.map { |sa, r| [sa.dup, r] }
-        end
       end
     end
   end

@@ -9,6 +9,7 @@ module VersatileDiamond
       include ChunksComparer
       include DrawableChunk
       include TailedChunk
+      include TargetsProcessor
 
       attr_reader :parents, :links, :targets
 
@@ -37,7 +38,7 @@ module VersatileDiamond
       # @return [CombinedLateralReaction] instance of new lateral reaction
       def lateral_reaction
         @_lateral_reaction ||=
-          CombinedLateralReaction.new(@typical_reaction, self, full_rate)
+          CombinedLateralReaction.new(typical_reaction, self, full_rate)
       end
 
       # The chunk which created by user described lateral reaction is original
@@ -52,12 +53,13 @@ module VersatileDiamond
 
     private
 
+      attr_reader :typical_reaction
+
       # Gets set of targets from all passed containers
       # @param [Array] chunks the list of chunks which targets will be merged
-      # @return [Array] where first item is set of targets and second item is mirror
-      #   of other same targets to targets which presented in first item
+      # @return [Set] the set of targets of internal chunks
       def merge_targets(chunks)
-        chunks.map { |chunk| chunk.mapped_targets.values.to_set }.reduce(:+)
+        ChunkTargetsMerger.new.merge(chunks)
       end
 
       # Merges all links from chunks list
@@ -79,7 +81,7 @@ module VersatileDiamond
       #
       # @return [Float] the rate of reaction which use the current chunk
       def full_rate
-        tf_rate = @typical_reaction.full_rate
+        tf_rate = typical_reaction.full_rate
         original_parents = parents.select(&:original?)
         all_possible_combinations(original_parents).reverse.each do |slice|
           rates = slice.map do |cs|

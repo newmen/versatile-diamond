@@ -5,6 +5,7 @@ module VersatileDiamond
     # chunks which contains in it is not presented
     class IndependentChunk < BaseChunk
       include Modules::ListsComparer
+      include MinuendChunk
       include DrawableChunk
       include ChunksComparer
       include TargetsProcessor
