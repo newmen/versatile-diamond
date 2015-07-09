@@ -5,9 +5,10 @@ module VersatileDiamond
       # Contains logic for description of common graph of all possible chunks of some
       # typical reaction
       class LateralChunks
+        include Modules::RelationBetweenChecker
         extend Forwardable
 
-        def_delegators :total_chunk, :total_links, :clean_links
+        def_delegators :total_chunk, :total_links, :clean_links, :sidepiece_specs
 
         # Initializes meta object which provides useful methods for code generators
         # @param [TypicalReaction] reaction from which the chunks of children lateral
@@ -46,6 +47,12 @@ module VersatileDiamond
         # @return [Organizers::TotalChunk] the total chunk
         def total_chunk
           @_total_chunk ||= Organizers::TotalChunk.new(@reaction, @all_chunks)
+        end
+
+        # The method for detection relations between
+        # @return [Hash] the total links graph
+        def links
+          total_links
         end
       end
     end

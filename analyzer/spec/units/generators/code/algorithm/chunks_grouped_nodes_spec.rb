@@ -9,39 +9,51 @@ module VersatileDiamond
           let(:generator) do
             stub_generator(
               typical_reactions: [dependent_typical_reaction],
-              lateral_reactions: chunks.map(&:lateral_reaction)
+              lateral_reactions: dependent_lateral_reactions
             )
           end
           let(:reaction) { generator.reaction_class(dependent_typical_reaction.name) }
-          let(:grouped_nodes) do
-            described_class.new(generator, reaction.lateral_chunks)
-          end
+          let(:chunks) { dependent_lateral_reactions.map(&:chunk) }
+          let(:grouped_nodes) { described_class.new(generator, subject) }
+          subject { reaction.lateral_chunks }
 
-          let(:big_links_method) { :links }
+          let(:big_links_method) { :total_links }
           def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
           it_behaves_like :check_grouped_nodes_graph do
             let(:dependent_typical_reaction) { dept_dimer_formation }
-            let(:chunks) { [end_chunk] }
+            let(:dependent_lateral_reactions) { [dept_end_lateral_df] }
+            let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
 
-            let(:b1) { df_source.first.atom(:ct) }
-            let(:b2) { df_source.last.atom(:ct) }
+            let(:t1) { df_source.first.atom(:ct) }
+            let(:t2) { df_source.last.atom(:ct) }
 
-            let(:lateral_dimer) { dimer }
-            let(:d1) { lateral_dimer.atom(:cr) }
-            let(:d2) { lateral_dimer.atom(:cl) }
+            let(:first_lateral_dimer) { sidepiece_specs.first }
+            let(:df1) { first_lateral_dimer.atom(:cr) }
+            let(:df2) { first_lateral_dimer.atom(:cl) }
 
-            let(:flatten_face_grouped_atoms) { [[a1, a2]] }
+            let(:second_lateral_dimer) { sidepiece_specs.last }
+            let(:ds1) { second_lateral_dimer.atom(:cr) }
+            let(:ds2) { second_lateral_dimer.atom(:cl) }
+
+            let(:flatten_face_grouped_atoms) { [[t1, t2], [df1, df2], [ds1, ds2]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2]
+                [UniqueSpecie, t1],
+                [UniqueSpecie, t2],
+                [UniqueSpecie, df1],
+                [UniqueSpecie, df2],
+                [UniqueSpecie, ds1],
+                [UniqueSpecie, ds2]
               ]
             end
             let(:grouped_graph) do
               {
-                [a1] => [[[a2], param_100_front]],
-                [a2] => [[[a1], param_100_front]]
+                [t1, t2] => [
+                  [[df2, df1], param_100_cross], [[ds2, ds1], param_100_cross]
+                ],
+                [df1, df2] => [[[t2, t1], param_100_cross]],
+                [ds1, ds2] => [[[t2, t1], param_100_cross]]
               }
             end
           end
