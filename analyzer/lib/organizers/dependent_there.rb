@@ -4,9 +4,10 @@ module VersatileDiamond
     # Contain some there and provides behavior for dependent entities set
     class DependentThere
       include Modules::SpecLinksAdsorber
+      include Modules::SpecAtomSwapper
       extend Forwardable
 
-      def_delegators :there, :description, :swap_source
+      def_delegators :there, :description
       def_delegator :there, :where # for graphs generators
 
       # Stores wrappable there
@@ -17,6 +18,29 @@ module VersatileDiamond
         @lateral_reaction, @there = lateral_reaction, there
 
         @_links = nil
+      end
+
+      # Checks that if result spec is veiled then fill ChunkLinksMerger and update
+      # own links
+      #
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
+      #   the spec from which need to swap
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
+      #   the spec to which need to swap
+      def swap_source(from, to)
+        if to.is_a?(Concepts::VeiledSpec)
+          spec = to.original
+          rels = links.select { |(s, _), _| spec == s }
+          prev_spec, global_veiled = find_global_veiled([spec, rels])
+          if global_veiled
+            to = global_veiled
+          else
+            ChunkLinksMerger.global_cache[[prev_spec, rels]] = to
+          end
+          @_links = swap_in_links(:swap, @_links, from, to)
+        end
+
+        there.swap_source(from, to)
       end
 
       # Gets the extendes links of there object with links of sidepiece species
@@ -88,6 +112,18 @@ module VersatileDiamond
 
       attr_reader :lateral_reaction, :there
 
+      # Recursive finds last global veiled spec
+      # @param [Array] global_key of global veiled cache
+      # @return [Array] the array with previous global vailed spec and the last veiled
+      #   spec
+      def find_global_veiled(global_key)
+        global_veiled = ChunkLinksMerger.global_cache[global_key]
+        if global_veiled && there.env_specs.include?(global_veiled)
+          find_global_veiled([global_veiled, global_key.last])
+        else
+          [global_key.first, global_veiled]
+        end
+      end
     end
 
   end

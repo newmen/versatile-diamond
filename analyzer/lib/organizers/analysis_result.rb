@@ -20,6 +20,8 @@ module VersatileDiamond
       # Collects results of interpretations from Chest to internal storage and
       # organizes dependencies between collected concepts
       def initialize
+        ChunkLinksMerger.init_veiled_cache!
+
         @ubiquitous_reactions =
           wrap_reactions(DependentUbiquitousReaction, :ubiquitous_reaction)
         @typical_reactions =
