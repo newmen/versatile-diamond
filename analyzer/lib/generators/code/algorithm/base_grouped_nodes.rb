@@ -49,13 +49,11 @@ module VersatileDiamond
               result[nodes] << nbrs_with_rel_param if nbrs_with_rel_param
             end
 
-            flatten_groups, non_flatten_groups = split_grouped_nodes
-
             flatten_groups.each do |group|
               accurate_combine_relations(group, &store_result)
             end
 
-            non_flatten_groups.each do |group|
+            (non_flatten_groups + non_complete_groups).each do |group|
               similar_combine_relations(group, &store_result)
             end
 
@@ -226,28 +224,42 @@ module VersatileDiamond
             rels.all? { |n, _| group.include?(n) }
           end
 
-          # Separates the grouped nodes into two categories: nodes with flatten
-          # relations and nodes with non flatten relations
-          #
-          # @return [Array] the array with two items where each item is array. The
-          #   first item is groups of nodes with flatten relations and the second item
-          #   is groups of nodes with non flatten relations
-          def split_grouped_nodes
-            flatten_groups = flatten_face_grouped_nodes.select do |group|
+          # Selects just flatten groups
+          # @return [Array] the array of flatten groups
+          def flatten_groups
+            flatten_face_grouped_nodes.select do |group|
               group.any? do |node|
                 has_flatten_relation?(node) && !only_flatten_relations_in?(group, node)
               end
             end
+          end
 
-            non_flatten_groups = flatten_face_grouped_nodes.select do |group|
+          # Selects only non-flatten groups
+          # @return [Array] the array of non-flatten groups
+          def non_flatten_groups
+            flatten_face_grouped_nodes.select do |group|
               different_another_nodes?(group) || group.any? do |node|
                 dept_only_from_group = only_flatten_relations_in?(group, node)
                 dept_only_from_group || small_graph[node].empty? ||
                   (!dept_only_from_group && has_non_flatten_relation?(node))
               end
             end
+          end
 
-            [flatten_groups, non_flatten_groups]
+          # Makes groups from non complete groups
+          # @return [Array] the array of groups wich bulded from non complete groups
+          def non_complete_groups
+            flatten_face_grouped_nodes.each_with_object([]) do |group, acc|
+              next unless group.size == 1
+              rels = small_graph[group.first]
+              next unless rels.size == 1
+              singular_rel = rels.first
+              relation = singular_rel.last
+              next unless relation.belongs_to_crystal?
+              nbrs = [singular_rel.first]
+              next if flatten_face_grouped_nodes.include?(nbrs)
+              acc << (group + nbrs)
+            end
           end
 
           # Gets all subsets of passed set
