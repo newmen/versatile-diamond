@@ -144,7 +144,7 @@ module VersatileDiamond
           #   the neighbour nodes which avail from passed
           # @return [Array] the array of neighbour atoms which available through
           #   flatten relation
-          def flatten_neighbours_for(node)
+          def strong_flatten_neighbours_for(node)
             flatten_nbrs = flatten_relations_of(node).map(&:first)
             if flatten_nbrs.size > 1
               not_alive = flatten_nbrs.reject { |n| alive_relation?(node, n) }
@@ -157,11 +157,8 @@ module VersatileDiamond
           # Checks that passed relation is flatten on crystal lattice
           # @return [Boolean] is flatten relation or not
           def flatten_relation?(node, relation)
-            if node.lattice
+            node.lattice &&
               relation.relation? && node.lattice.instance.flatten?(relation)
-            else
-              false
-            end
           end
 
           # Checks that small links graph has relation between passed nodes
@@ -210,7 +207,10 @@ module VersatileDiamond
           # @return [Boolean] are another different nodes available from nodes of group
           #   or not
           def different_another_nodes?(group)
-            group.map { |n| (flatten_neighbours_for(n) + [n]).to_set }.uniq.size > 1
+            flatten_nbrs_sets = group.map do |node|
+              (strong_flatten_neighbours_for(node) + [node]).to_set
+            end
+            flatten_nbrs_sets.uniq.size > 1
           end
 
           # Verifies that all flatten relations, which passed node have relations only

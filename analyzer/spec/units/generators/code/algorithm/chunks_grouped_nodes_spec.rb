@@ -15,27 +15,28 @@ module VersatileDiamond
           let(:reaction) { generator.reaction_class(dependent_typical_reaction.name) }
           let(:chunks) { dependent_lateral_reactions.map(&:chunk) }
           let(:grouped_nodes) { described_class.new(generator, subject) }
+          let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
           subject { reaction.lateral_chunks }
 
           let(:big_links_method) { :total_links }
           def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
-          it_behaves_like :check_grouped_nodes_graph do
-            let(:dependent_typical_reaction) { dept_dimer_formation }
-            let(:dependent_lateral_reactions) { [dept_end_lateral_df] }
-            let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
+          let(:dependent_typical_reaction) { dept_dimer_formation }
+          let(:t1) { df_source.first.atom(:ct) }
+          let(:t2) { df_source.last.atom(:ct) }
 
-            let(:t1) { df_source.first.atom(:ct) }
-            let(:t2) { df_source.last.atom(:ct) }
+          let(:sidepiece_dimers) do
+            sidepiece_specs.select { |spec| spec.name == :dimer }
+          end
+          let(:first_lateral_dimer) { sidepiece_dimers.first }
+          let(:df1) { first_lateral_dimer.atom(:cr) }
+          let(:df2) { first_lateral_dimer.atom(:cl) }
 
-            let(:first_lateral_dimer) { sidepiece_specs.first }
-            let(:df1) { first_lateral_dimer.atom(:cr) }
-            let(:df2) { first_lateral_dimer.atom(:cl) }
+          let(:second_lateral_dimer) { sidepiece_dimers.last }
+          let(:ds1) { second_lateral_dimer.atom(:cr) }
+          let(:ds2) { second_lateral_dimer.atom(:cl) }
 
-            let(:second_lateral_dimer) { sidepiece_specs.last }
-            let(:ds1) { second_lateral_dimer.atom(:cr) }
-            let(:ds2) { second_lateral_dimer.atom(:cl) }
-
+          describe 'just cross neighbours' do
             let(:flatten_face_grouped_atoms) { [[t1, t2], [df1, df2], [ds1, ds2]] }
             let(:nodes_list) do
               [
@@ -47,6 +48,7 @@ module VersatileDiamond
                 [UniqueSpecie, ds2]
               ]
             end
+
             let(:grouped_graph) do
               {
                 [t1, t2] => [
@@ -55,6 +57,67 @@ module VersatileDiamond
                 [df1, df2] => [[[t2, t1], param_100_cross]],
                 [ds1, ds2] => [[[t2, t1], param_100_cross]]
               }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:dependent_lateral_reactions) { [dept_end_lateral_df] }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:dependent_lateral_reactions) { [dept_middle_lateral_df] }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:dependent_lateral_reactions) do
+                [dept_end_lateral_df, dept_middle_lateral_df]
+              end
+            end
+          end
+
+          describe 'not only cross neighbours' do
+            let(:sidepiece_bridge) { (sidepiece_specs - sidepiece_dimers).first }
+            let(:b) { sidepiece_bridge.atom(:ct) }
+
+            let(:nodes_list) do
+              [
+                [UniqueSpecie, t1],
+                [UniqueSpecie, t2],
+                [UniqueSpecie, df1],
+                [UniqueSpecie, df2],
+                [UniqueSpecie, ds1],
+                [UniqueSpecie, ds2],
+                [UniqueSpecie, b]
+              ]
+            end
+
+            let(:flatten_face_grouped_atoms) do
+              [[t1, t2], [df1, df2], [ds1, ds2], [b]]
+            end
+
+            let(:grouped_graph) do
+              {
+                [t2, t1] => [
+                  [[df1, df2], param_100_cross], [[ds1, ds2], param_100_cross]
+                ],
+                [df1, df2] => [[[t2, t1], param_100_cross]],
+                [ds1, ds2] => [[[t2, t1], param_100_cross]],
+                [t2] => [[[b], param_100_front]],
+                [b] => [[[t2], param_100_front]]
+              }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:dependent_lateral_reactions) { [dept_ewb_lateral_df] }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:dependent_lateral_reactions) { [dept_mwb_lateral_df] }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:dependent_lateral_reactions) do
+                [dept_ewb_lateral_df, dept_mwb_lateral_df]
+              end
             end
           end
         end
