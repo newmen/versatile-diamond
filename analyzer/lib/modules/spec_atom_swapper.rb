@@ -1,5 +1,5 @@
 module VersatileDiamond
-  module Concepts
+  module Modules
 
     # Provides method for swapping spec and their atom
     module SpecAtomSwapper
@@ -14,7 +14,7 @@ module VersatileDiamond
       def swap(spec_atom, from, to)
         return spec_atom unless spec_atom[0] == from
 
-        # TODO: move #specific? method from Organizers to Concepts
+        # TODO: move #specific? method from Organizers to swap_in_linksConcepts
         if !from.specific_atoms.empty? && to.specific_atoms.empty?
           raise ArgumentError, 'Swapping specific spec loses specification'
         end
@@ -39,6 +39,20 @@ module VersatileDiamond
           [spec, to]
         else
           spec_atom
+        end
+      end
+
+      # Swaps spec and it atoms in passed links by passed method
+      # @param [Symbol] method name which will be used for swapping
+      # @param [Hash] links where spec and it atoms will be swapped
+      # @param [Array] swapping_insts the parameters which will passed to swapping
+      #   method
+      # @return [Hash] the new links graph with swapped entities
+      def swap_in_links(method, links, *swapping_insts)
+        links.each_with_object({}) do |(spec_atom, rels), acc|
+          acc[send(method, spec_atom, *swapping_insts)] = rels.map do |sa, rel|
+            [send(method, sa, *swapping_insts), rel]
+          end
         end
       end
     end

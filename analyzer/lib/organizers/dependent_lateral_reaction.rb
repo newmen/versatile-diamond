@@ -35,6 +35,17 @@ module VersatileDiamond
       def lateral_targets
         theres.map(&:targets).reduce(:+).to_a
       end
+
+      # Also swap targets of depending chunk
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
+      #   the spec from which need to swap
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
+      #   the spec to which need to swap
+      # @override
+      def swap_source(from, to)
+        super
+        chunk.swap_spec(from, to) if @_chunk
+      end
     end
 
   end

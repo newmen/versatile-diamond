@@ -8,7 +8,7 @@ module VersatileDiamond
     class Where < Named
       include Modules::ListsComparer
       include Modules::GraphDupper
-      include SpecAtomSwapper
+      include Modules::SpecAtomSwapper
 
       attr_reader :description, :parents, :specs, :links
 

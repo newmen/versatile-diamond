@@ -6,7 +6,7 @@ module VersatileDiamond
     class There
       include Modules::GraphDupper
       include Modules::ListsComparer
-      include SpecAtomSwapper
+      include Modules::SpecAtomSwapper
       include PositionsComparer
       extend Forwardable
 

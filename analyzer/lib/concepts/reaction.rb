@@ -4,9 +4,9 @@ module VersatileDiamond
     # Also contained positions between the reactants
     class Reaction < UbiquitousReaction
       include Modules::GraphDupper
+      include Modules::SpecAtomSwapper
       include Linker
       include SurfaceLinker
-      include SpecAtomSwapper
       include PositionsComparer
       extend Forwardable
 
@@ -110,12 +110,7 @@ module VersatileDiamond
       # @override
       def swap_source(from, to)
         super
-        @links = @links.each_with_object({}) do |(spec_atom, rels), acc|
-          acc[swap(spec_atom, from, to)] = rels.map do |sa, rel|
-            [swap(sa, from, to), rel]
-          end
-        end
-
+        @links = swap_in_links(:swap, @links, from, to)
         mapping.swap_source(from, to)
       end
 
@@ -313,11 +308,7 @@ module VersatileDiamond
       # @param [Atom] to the new atom
       def swap_atom_in_positions(spec, from, to)
         return if from == to
-        @links = @links.each_with_object({}) do |(spec_atom, rels), acc|
-          acc[swap_only_atoms(spec_atom, spec, from, to)] = rels.map do |sa, rel|
-            [swap_only_atoms(sa, spec, from, to), rel]
-          end
-        end
+        @links = swap_in_links(:swap_only_atoms, @links, spec, from, to)
       end
     end
 

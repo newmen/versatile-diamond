@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Provides logic for side-chunk of lateral reaction
     class Chunk < BaseChunk
+      include Modules::SpecAtomSwapper
       include MinuendChunk
       include DrawableChunk
       include TailedChunk
@@ -35,6 +36,16 @@ module VersatileDiamond
       # @return [DependentTypicalReaction] the parent typical reaction
       def typical_reaction
         lateral_reaction.parent
+      end
+
+      # Also swap targets and links of current chunk
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
+      #   the spec from which need to swap
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
+      #   the spec to which need to swap
+      def swap_spec(from, to)
+        @targets = @targets.map { |spec_atom| swap(spec_atom, from, to) }.to_set
+        @links = swap_in_links(:swap, @links, from, to)
       end
 
       # The chunk which created by user described lateral reaction is original
