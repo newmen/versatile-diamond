@@ -6,13 +6,15 @@ module VersatileDiamond
       module Algorithm
 
         describe ChunksGroupedNodes, type: :algorithm do
-          let(:grouped_nodes) { described_class.new(generator, reaction) }
-          let(:reaction) { generator.reaction_class(dependent_typical_reaction.name) }
           let(:generator) do
             stub_generator(
               typical_reactions: [dependent_typical_reaction],
               lateral_reactions: chunks.map(&:lateral_reaction)
             )
+          end
+          let(:reaction) { generator.reaction_class(dependent_typical_reaction.name) }
+          let(:grouped_nodes) do
+            described_class.new(generator, reaction.lateral_chunks)
           end
 
           let(:big_links_method) { :links }

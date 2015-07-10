@@ -11,14 +11,11 @@ module VersatileDiamond
           # children of passed typical reaction
           #
           # @param [EngineCode] generator the major code generator
-          # @param [TypicalReaction] reaction from which the grouped graph of chunks of
-          #   children lateral reactions will be gotten
-          # @param [Array] chunks of children lateral reactions of passed typical
-          #   reaction
-          def initialize(generator, reaction, chunks)
+          # @param [LateralChunks] lateral_chunks for which the grouped graph will be
+          #   builded
+          def initialize(generator, lateral_chunks)
             super(ReactionNodesFactory.new(generator))
-            @reaction = reaction
-            @chunks = chunks
+            @lateral_chunks = lateral_chunks
           end
 
         end
