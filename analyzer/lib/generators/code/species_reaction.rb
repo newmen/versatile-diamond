@@ -12,6 +12,12 @@ module VersatileDiamond
 
         def_delegators :reaction, :links, :clean_links, :relation_between, :changes
 
+        # Initializes additional caches
+        def initialize(*)
+          super
+          @_complex_source_species = nil
+        end
+
         # Gets the name of base class
         # @return [String] the parent type name
         def base_class_name
@@ -33,10 +39,14 @@ module VersatileDiamond
           concretizable? ? 'ConcretizableRole' : reaction_type
         end
 
-        # Gets the list of complex species which using as source of reaction
+        # Gets the sorted list of complex species which using as source of reaction
         # @reaturn [Array] the list of complex specie code generators
         def complex_source_species
-          reaction.surface_source.uniq(&:name).map(&method(:specie_class))
+          return @_complex_source_species if @_complex_source_species
+
+          # we should sort because order is important when getting target specie index
+          species = reaction.surface_source.uniq(&:name).map(&method(:specie_class))
+          @_complex_source_species = species.sort { |a, b| a.spec <=> b.spec }
         end
       end
 

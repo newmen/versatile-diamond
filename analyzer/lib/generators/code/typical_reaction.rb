@@ -29,6 +29,14 @@ module VersatileDiamond
             LateralChunks.new(self, children.map(&:chunk), root_chunks)
         end
 
+        # Gets the index of passed specie reactant
+        # @param [Specie] specie for which the index will returned
+        # @return [Integer] the index of passed specie or nil if reaction have just one
+        #   reactant
+        def target_index(specie)
+          complex_source_species.size == 1 ? nil : complex_source_species.index(specie)
+        end
+
       private
 
         # Checks that current reaction is a tail of overall engine find algorithm
