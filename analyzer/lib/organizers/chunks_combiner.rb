@@ -63,19 +63,13 @@ module VersatileDiamond
             end
           end
 
-          merging_chunks = independent_chunks.select do |ch|
-            chunks.any? { |big_chunk| mergeable?([big_chunk, ch]) }
-          end
-
-          if merging_chunks.size > 0
-            total_key = Multiset.new(reused_independent)
-            unless acc[total_key]
-              acc[total_key] = chunk
-              reused_independent.each do |ch|
-                unless chunk.parents.include?(ch)
-                  chunk.store_parent(ch)
-                  acc[Multiset[ch]] = ch
-                end
+          total_key = Multiset.new(reused_independent)
+          unless acc[total_key]
+            acc[total_key] = chunk
+            reused_independent.each do |ch|
+              unless chunk.parents.include?(ch)
+                chunk.store_parent(ch)
+                acc[Multiset[ch]] = ch
               end
             end
           end
@@ -253,11 +247,11 @@ module VersatileDiamond
 
       # Tries to merge chunk with itself
       # @param [Chunk] chunk which will be checked
-      # @return [Array] the array of independen chunk if them are take a place
+      # @return [Array] the array of independentchunk if them are take a place
       def split_to_independent_chunks(chunk)
         links = chunk.links
         target_specs = chunk.target_specs
-        specs = independen_sidepiece_specs(links, target_specs, chunk.sidepiece_specs)
+        specs = independent_sidepiece_specs(links, target_specs, chunk.sidepiece_specs)
 
         if specs.size > 1
           specs.map do |sidepiece_spec|
@@ -277,7 +271,7 @@ module VersatileDiamond
       # @param [Set] target_specs which are reactants
       # @param [Set] sidepiece_specs which are not reactants
       # @return [Array] the list of independent sidepiece specs
-      def independen_sidepiece_specs(links, target_specs, sidepiece_specs)
+      def independent_sidepiece_specs(links, target_specs, sidepiece_specs)
         sidepiece_specs.select do |spec|
           rels_list = links.each_with_object([]) do |((s, _), rels), acc|
             acc << rels if spec == s

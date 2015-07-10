@@ -228,7 +228,7 @@ module VersatileDiamond
           # @return [Array] the array of flatten groups
           def flatten_groups
             flatten_face_grouped_nodes.select do |group|
-              group.any? do |node|
+              group.size > 1 && group.any? do |node|
                 has_flatten_relation?(node) && !only_flatten_relations_in?(group, node)
               end
             end

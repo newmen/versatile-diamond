@@ -61,7 +61,10 @@ module VersatileDiamond
       def adsorb_links(targets, original_links, adsorbing_links)
         adsorbing_links.each_with_object(original_links) do |(spec_atom, rels), acc|
           if acc[spec_atom] && targets.include?(spec_atom)
-            acc[spec_atom] += dup_rels(rels.reject { |sa, _| acc[sa] })
+            new_rels = rels.reject do |sa, _|
+              acc[spec_atom].any? { |x, _| sa == x }
+            end
+            acc[spec_atom] += dup_rels(new_rels)
           elsif !acc[spec_atom]
             acc[spec_atom] = dup_rels(rels)
           end

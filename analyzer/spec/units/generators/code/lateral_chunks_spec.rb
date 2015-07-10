@@ -41,10 +41,10 @@ module VersatileDiamond
 
         describe 'just two sides' do
           let(:root_times) { 2 }
-          let(:total_vertex_num) { 18 }
-          let(:total_relations_num) { 50 }
-          let(:clean_vertex_num) { 6 }
-          let(:clean_relations_num) { 8 }
+          let(:total_vertex_num) { 12 }
+          let(:total_relations_num) { 32 }
+          let(:clean_vertex_num) { 4 }
+          let(:clean_relations_num) { 4 }
 
           it_behaves_like :check_root_total_and_clean do
             let(:lateral_reactions) { [dept_end_lateral_df] }
@@ -57,10 +57,10 @@ module VersatileDiamond
 
         describe 'complex case' do
           let(:root_times) { 3 }
-          let(:total_vertex_num) { 21 }
-          let(:total_relations_num) { 58 }
-          let(:clean_vertex_num) { 7 }
-          let(:clean_relations_num) { 10 }
+          let(:total_vertex_num) { 15 }
+          let(:total_relations_num) { 40 }
+          let(:clean_vertex_num) { 5 }
+          let(:clean_relations_num) { 6 }
 
           it_behaves_like :check_root_total_and_clean do
             let(:lateral_reactions) { [dept_ewb_lateral_df] }

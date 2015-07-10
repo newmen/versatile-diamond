@@ -165,6 +165,12 @@ module VersatileDiamond
         extendable_spec
       end
 
+      # For the common interface with SpecificSpec
+      # @return [Array] the empty array
+      def specific_atoms
+        []
+      end
+
       # Checks termination atom at the inner atom which belongs to current spec
       # @param [Atom | SpecificAtom] internal_atom the atom which belongs to
       #   current spec

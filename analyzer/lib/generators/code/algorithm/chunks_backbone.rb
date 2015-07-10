@@ -34,29 +34,11 @@ module VersatileDiamond
 
         private
 
-          # Gets the concept spec from node
-          # @param [Node] node from which the concept spec will be gotten
-          # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
-          def concept_spec(node)
-            node.dept_spec.spec
-          end
-
-          # Also checks that nodes in relations belongs to just one unit chunk
-          # @param [Array] _nodes which properties and relations checks
-          # @param [Array] rels the relations of passed nodes
-          # @return [Boolean] is nodes should be reordering much optimal or not
-          # @override
-          def maximal_rels?(_nodes, rels)
-            return false unless super
-            specs = rels.flat_map(&:first).map(&method(:concept_spec))
-            @lateral_chunks.count_chunks(specs) == 1
-          end
-
           # Checks that passed nodes contains specs which belongs to target specs
           # @param [Array] nodes which will be checked
           # @return [Boolean] are all nodes contain target spec
           def all_target_specs?(nodes)
-            nodes.all? { |node| @lateral_chunks.target_spec?(concept_spec(node)) }
+            nodes.all? { |node| @lateral_chunks.target_spec?(node.dept_spec.spec) }
           end
         end
 
