@@ -6,6 +6,7 @@ module VersatileDiamond
     class DerivativeChunk < BaseChunk
       include Modules::ExtendedCombinator
       include Modules::ListsComparer
+      include ChunkParentsOrganizer
       include ChunksComparer
       include DrawableChunk
       include TailedChunk

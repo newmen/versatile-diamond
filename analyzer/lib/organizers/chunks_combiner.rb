@@ -26,6 +26,7 @@ module VersatileDiamond
           chunk && !(chunks.include?(chunk) && chunk.original?)
         end
 
+        (chunks + unregistered_chunks).each(&:reorganize_parents!)
         unregistered_chunks.map(&:lateral_reaction)
       end
 
@@ -71,8 +72,10 @@ module VersatileDiamond
             unless acc[total_key]
               acc[total_key] = chunk
               reused_independent.each do |ch|
-                chunk.store_parent(ch)
-                acc[Multiset[ch]] = ch
+                unless chunk.parents.include?(ch)
+                  chunk.store_parent(ch)
+                  acc[Multiset[ch]] = ch
+                end
               end
             end
           end

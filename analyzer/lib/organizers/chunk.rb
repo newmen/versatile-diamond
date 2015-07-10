@@ -4,6 +4,7 @@ module VersatileDiamond
     # Provides logic for side-chunk of lateral reaction
     class Chunk < BaseChunk
       include Modules::SpecAtomSwapper
+      include ChunkParentsOrganizer
       include MinuendChunk
       include DrawableChunk
       include TailedChunk

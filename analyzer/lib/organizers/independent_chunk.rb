@@ -33,6 +33,11 @@ module VersatileDiamond
         []
       end
 
+      # No parents no organization
+      def reorganize_parents!
+        # pass
+      end
+
       # Makes the lateral reaction which contain current chunk
       # @return [CombinedLateralReaction] instance of new lateral reaction
       def lateral_reaction
