@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Contain logic for create nodes for chunks of lateral reaction and group them
         # by parameters of relations
-        class ChunksGroupedNodes < BaseGroupedNodes
+        class LateralChunksGroupedNodes < BaseGroupedNodes
 
           # Initializes nodes grouper for chunks of all lateral reactions which are
           # children of passed typical reaction
@@ -41,8 +41,7 @@ module VersatileDiamond
           #   will be detected
           # @return [Concepts::Bond] the relation between atoms from passed nodes
           def relation_between(*nodes)
-            specs_atoms = nodes.map { |n| [n.dept_spec.spec, n.atom] }
-            @lateral_chunks.relation_between(*specs_atoms)
+            @lateral_chunks.relation_between(*nodes.map(&:spec_atom))
           end
         end
 

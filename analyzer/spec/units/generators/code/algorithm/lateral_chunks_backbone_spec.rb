@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ChunksBackbone, type: :algorithm do
+        describe LateralChunksBackbone, type: :algorithm do
           let(:generator) do
             stub_generator(
               typical_reactions: [typical_reaction],

@@ -5,14 +5,14 @@ module VersatileDiamond
 
         # Cleans the chunks grouped nodes graph from not significant relations and
         # gets the ordered graph by which the look around algorithm will be builded
-        class ChunksBackbone < BaseBackbone
+        class LateralChunksBackbone < BaseBackbone
 
           # Initializes backbone by lateral chunks object
           # @param [EngineCode] generator the major engine code generator
           # @param [LateralChunks] lateral_chunks the target object for which the graph
           #   will be builded
           def initialize(generator, lateral_chunks)
-            super(ChunksGroupedNodes.new(generator, lateral_chunks))
+            super(LateralChunksGroupedNodes.new(generator, lateral_chunks))
             @lateral_chunks = lateral_chunks
 
             @_final_graph = nil

@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ChunksGroupedNodes, type: :algorithm do
+        describe LateralChunksGroupedNodes, type: :algorithm do
           let(:generator) do
             stub_generator(
               typical_reactions: [typical_reaction],
