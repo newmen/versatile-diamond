@@ -29,7 +29,7 @@ module VersatileDiamond
           # TODO: must be private
           def flatten_face_grouped_nodes
             @_flatten_face_grouped_nodes ||= main_keys.groups do |node|
-              (flatten_neighbours_for(node) + [node]).map(&:uniq_specie).to_set
+              (strong_flatten_neighbours_for(node) + [node]).map(&:uniq_specie).to_set
             end
           end
 

@@ -22,23 +22,7 @@ module VersatileDiamond
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
           def ordered_graph_from(nodes)
-            ordered_graph = build_sequence_from(nodes)
-            maximals = ordered_graph.select do |kns, rels|
-              kns.all?(&:lattice) && kns.size > 1 && !rels.empty? &&
-                rels.all? { |vns, _| vns.size == kns.size } &&
-                kns.all? { |kn| kn.relations_limits[rels.first.last] == rels.size }
-            end
-
-            maximals.each do |mx|
-              index = ordered_graph.index(mx)
-              ordered_graph.delete_at(index)
-              relation = mx.last.first.last
-              [mx.first, *mx.last.map(&:first)].transpose.each do |k, *vs|
-                ordered_graph.insert(index, [[k], [[vs, relation]]])
-              end
-            end
-
-            ordered_graph
+            reorder_by_maximals(build_sequence_from(nodes))
           end
 
         private
@@ -92,6 +76,41 @@ module VersatileDiamond
             result
           end
 
+          # Reorders passed graph when for some key nodes of it the
+          # maximal relations condition is met
+          #
+          # @param [Hash] ordered_graph which will trying to reorder
+          # @return [Hash] original passed graph or reordered graph
+          def reorder_by_maximals(ordered_graph)
+            maximals(ordered_graph).each_with_object(ordered_graph) do |mx, acc|
+              index = acc.index(mx)
+              acc.delete_at(index)
+              relation = mx.last.first.last
+              [mx.first, *mx.last.map(&:first)].transpose.each do |k, *vs|
+                acc.insert(index, [[k], [[vs, relation]]])
+              end
+            end
+          end
+
+          # Collects the nodes which have maximal number of relations
+          # @param [Array] ordered_graph the flatten graph from which the components
+          #   with maximal number of relations will extracted
+          # @return [Array] the flatten graph with nodes which have maximal number of
+          #   relations
+          def maximals(ordered_graph)
+            ordered_graph.select { |nodes, rels| maximal_rels?(nodes, rels) }
+          end
+
+          # Checks that passed nodes can be selected for maximal relations graph
+          # @param [Array] nodes which properties and relations checks
+          # @param [Array] rels the relations of passed nodes
+          # @return [Boolean] is nodes should be reordering much optimal or not
+          def maximal_rels?(nodes, rels)
+            nodes.all?(&:lattice) && nodes.size > 1 && !rels.empty? &&
+              rels.all? { |nbrs, _| nbrs.size == nodes.size } &&
+              nodes.all? { |nd| nd.relations_limits[rels.first.last] == rels.size }
+          end
+
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes
           def node_to_nodes
@@ -107,9 +126,8 @@ module VersatileDiamond
           # Collects all nodes from final graph
           # @return [Array] the sorted array of nodes lists
           def collect_nodes(graph)
-            lists = graph.each_with_object([]) do |(nodes, rels), acc|
-              acc << nodes
-              rels.each { |ns, _| acc << ns }
+            lists = graph.reduce([]) do |acc, (nodes, rels)|
+              acc + [nodes] + rels.map(&:first)
             end
             lists.uniq.sort_by(&:size)
           end

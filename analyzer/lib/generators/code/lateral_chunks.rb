@@ -41,6 +41,21 @@ module VersatileDiamond
           end
         end
 
+        # Counts chunks which uses at least one spec from passed list
+        # @param [Array] specs each of which will checked in each internal unit chunks
+        # @return [Integer] the number of chunks which uses passed specs
+        def count_chunks(specs)
+          chunks_users(specs).size
+        end
+
+        # Checks that passed spec belongs to target specs set
+        # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
+        #   which will be checked in the set of target specs
+        # @return [Boolean] is target spec or not
+        def target_spec?(spec)
+          total_chunk.target_specs.include?(spec)
+        end
+
       private
 
         # Gets total chunk which adsorbs all chunk in self
@@ -53,6 +68,15 @@ module VersatileDiamond
         # @return [Hash] the total links graph
         def links
           total_links
+        end
+
+        # Selects chunks which uses at least one spec from passed list
+        # @param [Array] specs each of which will checked in each internal unit chunks
+        # @return [Array] the list of chunks which uses passed specs
+        def chunks_users(specs)
+          @all_chunks.select do |ch|
+            specs.any? { |spec| ch.sidepiece_specs.include?(spec) }
+          end
         end
       end
     end
