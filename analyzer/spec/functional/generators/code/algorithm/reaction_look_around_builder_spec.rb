@@ -6,27 +6,25 @@ module VersatileDiamond
       module Algorithm
 
         describe ReactionLookAroundBuilder, type: :algorithm do
-          let(:base_specs) { [] }
-          let(:specific_specs) { [] }
           let(:generator) do
             stub_generator(
-              base_specs: base_specs,
-              specific_specs: specific_specs,
-              typical_reactions: [subject],
-              lateral_reactions: lateral_reactions)
+              typical_reactions: [typical_reaction],
+              lateral_reactions: lateral_reactions
+            )
           end
-
+          let(:reaction) { generator.reaction_class(typical_reaction.name) }
           let(:chunks) { lateral_reactions.map(&:chunk) }
           let(:classifier) { generator.classifier }
-          let(:code_reaction) { generator.reaction_class(subject.name) }
-          let(:builder) { described_class.new(generator, code_reaction, chunks) }
+          let(:builder) { described_class.new(generator, subject) }
+          subject { reaction.lateral_chunks }
+
+          let(:typical_reaction) { dept_dimer_formation }
 
           let(:dimer_cr) { role(dept_dimer_base, keyname) }
           let(:bridge_ct) { role(dept_bridge_base, keyname) }
 
           describe '#build' do
             it_behaves_like :check_code do
-              subject { dept_dimer_formation }
               let(:lateral_reactions) { [dept_end_lateral_df] }
               let(:find_algorithm) do
                 <<-CODE
@@ -46,7 +44,6 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
-              subject { dept_dimer_formation }
               let(:lateral_reactions) { [dept_middle_lateral_df] }
               let(:find_algorithm) do
                 <<-CODE
@@ -70,13 +67,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
-              subject { dept_dimer_formation }
               let(:lateral_reactions) { [dept_ewb_lateral_df] }
-              let(:combined_lateral_reactions) do
-                subject.children.select { |chd| chd.is_a?(CombinedLateralReaction) }
-              end
-              let(:ind_chunk_ids) { combined_lateral_reactions.map(&:chunk) }
-
               let(:find_algorithm) do
                 <<-CODE
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
@@ -100,13 +91,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
-              subject { dept_dimer_formation }
               let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
-              let(:combined_lateral_reactions) do
-                subject.children.select { |chd| chd.is_a?(CombinedLateralReaction) }
-              end
-              let(:ind_chunk_id) { combined_lateral_reactions.first.chunk }
-
               let(:find_algorithm) do
                 <<-CODE
     Atom *atoms[2] = { target(0)->atom(0), target(1)->atom(0) };
