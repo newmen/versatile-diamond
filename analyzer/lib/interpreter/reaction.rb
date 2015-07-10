@@ -27,7 +27,7 @@ module VersatileDiamond
 
       # Interpets equation line. Matches source and product specified specs
       # and store it to concept reaction. Where specs is matched then checks
-      # complience matching and checks the balance of reaction. Also will be
+      # compliance matching and checks the balance of reaction. Also will be
       # checked composition of specs and if termination spec contained then
       # creates corresponding concept of reaction.
       #

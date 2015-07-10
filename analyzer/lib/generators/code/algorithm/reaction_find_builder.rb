@@ -57,12 +57,12 @@ module VersatileDiamond
             if pswrs
               atoms_to_rels = Hash[pswrs.map { |pair, rel| [pair.last.atom, rel] }]
               unit = factory.make_unit(pswrs.map(&:first).transpose.last)
-              result << -> &prc { unit.check_compliences(atoms_to_rels, &prc) }
+              result << -> &prc { unit.check_compliances(atoms_to_rels, &prc) }
             end
             result
           end
 
-          # Finds non complienced nodes
+          # Finds non complianced nodes
           # @param [Array] ordered_graph by which the nodes will be found
           # @return [Array] the list of nodes pairs with relations or nil
           def not_compiences(ordered_graph)

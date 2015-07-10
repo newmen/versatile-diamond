@@ -37,14 +37,14 @@ module VersatileDiamond
             end
           end
 
-          # Checks non complience atoms which should not be available from other atoms
+          # Checks non compliance atoms which should not be available from other atoms
           # @param [Array] atoms_to_rels the hash of own atoms to using relations
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
-          def check_compliences(atoms_to_rels, &block)
+          def check_compliances(atoms_to_rels, &block)
             define_target_specie_line +
               check_symmetries(closure_on_scope: true) do
-                compliences_condition(atoms_to_rels, &block)
+                compliances_condition(atoms_to_rels, &block)
               end
           end
 
@@ -170,7 +170,7 @@ module VersatileDiamond
           # @param [Array] atoms_to_rels the hash of own atoms to using relations
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
-          def compliences_condition(atoms_to_rels, &block)
+          def compliances_condition(atoms_to_rels, &block)
             comp_atoms =
               if all_atoms_symmetric?
                 atoms

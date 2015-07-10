@@ -28,7 +28,7 @@ module VersatileDiamond
       #   represent a target atom from reactants and the second element is
       #   represent a environment spec atom
       # @param [Hash] options the options for creating position
-      # @raise [Errors::SyntaxError] if some of atoms cannot be complienced or
+      # @raise [Errors::SyntaxError] if some of atoms cannot be complianced or
       #   if spec in position cannot be resolved
       def position(*atom_strs, **options)
         target, spec, atom, used_atom_str = nil
