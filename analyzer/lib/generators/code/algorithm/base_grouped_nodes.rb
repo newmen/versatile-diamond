@@ -10,6 +10,7 @@ module VersatileDiamond
         class BaseGroupedNodes
           include Modules::ExtendedCombinator
           include Modules::GraphDupper
+          include Modules::ListsComparer
           extend Forwardable
 
           # Initizalizes base grouped nodes graph builder
@@ -344,6 +345,8 @@ module VersatileDiamond
           # @yeild [Array, (Array, Hash)] do for nodes and them neighbours
           def accurate_combine_relations(group, &block)
             accurate_node_groups_from(group).each do |nodes, nbrs|
+              next if lists_are_identical?(nodes, nbrs, &:==)
+
               relation = nil
               nodes.zip(nbrs).each do |nd, nb|
                 relation = relation_between(nd, nb)

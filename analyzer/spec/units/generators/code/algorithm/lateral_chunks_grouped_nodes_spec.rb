@@ -18,7 +18,7 @@ module VersatileDiamond
           let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
           subject { reaction.lateral_chunks }
 
-          let(:big_links_method) { :total_links }
+          let(:big_links_method) { :links }
           def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
           let(:typical_reaction) { dept_dimer_formation }
