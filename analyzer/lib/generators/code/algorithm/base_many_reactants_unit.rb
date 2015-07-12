@@ -55,7 +55,7 @@ module VersatileDiamond
           def target_atom
             return @_target_atom if @_target_atom
             pair = @atoms_to_species.max_by do |atom, specie|
-              Organizers::AtomProperties.new(specie.proxy_spec, atom)
+              atom_properties(specie.proxy_spec, atom)
             end
 
             @_target_atom = pair.first

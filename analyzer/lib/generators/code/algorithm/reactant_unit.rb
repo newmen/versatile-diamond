@@ -97,7 +97,7 @@ module VersatileDiamond
 
             props = specs_atoms_rels.map do |(s, a), _|
               dept_spec = linked_dept_spec(s)
-              Organizers::AtomProperties.new(dept_spec, a)
+              atom_properties(dept_spec, a)
             end
 
             props.uniq.size == 1 && specs_atoms_rels.map(&:last).uniq.size == 1

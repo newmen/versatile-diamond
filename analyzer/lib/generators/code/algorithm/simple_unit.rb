@@ -35,7 +35,7 @@ module VersatileDiamond
           #   the most target atom of original specie
           def target_atom
             @_target_atom ||= atoms.max_by do |atom|
-              Organizers::AtomProperties.new(original_spec, atom)
+              atom_properties(original_spec, atom)
             end
           end
 

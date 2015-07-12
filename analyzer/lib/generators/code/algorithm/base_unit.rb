@@ -71,6 +71,16 @@ module VersatileDiamond
           def role(atom)
             generator.classifier.index(dept_spec_for(atom), atom)
           end
+
+          # Gets atom properties
+          # @param [Organizers::DependentWrappedSpec] dept_spec the context spec
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which properties will be gotten
+          # @return [Organizers::AtomProperties] the properties of passed atom in
+          #   passed context spec
+          def atom_properties(dept_spec, atom)
+            Organizers::AtomProperties.new(dept_spec, atom)
+          end
         end
 
       end

@@ -38,7 +38,7 @@ module VersatileDiamond
             each_relations_with(other, own_atom, other_atom, relation) do |(ls, la)|
               linked_dsa = [linked_dept_spec(ls), la]
               props = [linked_dsa, other_dsa].map do |dept_spec, atom|
-                Organizers::AtomProperties.new(dept_spec, atom)
+                atom_properties(dept_spec, atom)
               end
 
               block[la] if props.permutation(2).any? { |f, s| f.include?(s) }
