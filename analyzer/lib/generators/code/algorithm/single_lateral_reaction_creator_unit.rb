@@ -58,15 +58,15 @@ module VersatileDiamond
             equal_pairs = equal_groups.flat_map { |gr| gr.each_cons(2).to_a }
             not_equal_pairs = groups.map(&:first).each_cons(2).to_a
 
-            equal_strs = equal_pairs.map(&comp_method('=='))
-            not_equal_strs = not_equal_pairs.map(&comp_method('!='))
+            equal_strs = equal_pairs.map(&compare('=='))
+            not_equal_strs = not_equal_pairs.map(&compare('!='))
             equal_strs + not_equal_strs
           end
 
           # Gets the function for expand condition expression
           # @param [String] operator for comparison two values
           # @return [Proc] the function which will compares two variable values
-          def comp_method(operator)
+          def compare(operator)
             return -> vars do
               vars.map { |x| namer.name_of(x) }.join(" #{operator} ")
             end

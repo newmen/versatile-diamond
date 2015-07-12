@@ -109,6 +109,7 @@ module VersatileDiamond
         # Builds look around algorithm for find all possible lateral reactions
         # @return [String] the string with cpp code of look around algorithm
         def look_around_algorithm
+          Algorithm::ReactionLookAroundBuilder.new(generator, lateral_chunks).build
         end
       end
 
