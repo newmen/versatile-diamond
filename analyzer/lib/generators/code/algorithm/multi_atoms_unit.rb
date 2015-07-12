@@ -25,6 +25,7 @@ module VersatileDiamond
           # them need
           #
           # @return [String] the lines with defined anchor atoms variable
+          # @override
           def define_nbrs_specie_anchors_lines
             if single?
               super
