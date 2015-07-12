@@ -41,15 +41,23 @@ module VersatileDiamond
           def same_atoms_condition(units_with_atoms, &block)
             quads = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
               cur, oth = usp
-              linked_atom = cur.same_linked_atom(oth, *asp, rel)
-              acc << [cur, linked_atom, *asp] if linked_atom
+              cur.same_linked_atoms(oth, *asp, rel) do |linked_atom|
+                acc << [cur, linked_atom, *asp]
+              end
             end
 
             if quads.empty?
               block.call
             else
-              uswas = quads.map { |unit, _, atom, _| [unit, atom] }
-              define_str = define_unknown_species(uswas) # assing names to species
+              undef_quads = quads.reject { |_, la, _, _| name_of(la) }
+              define_str =
+                if undef_quads.empty?
+                  ''
+                else
+                  uswas = undef_quads.map { |unit, _, atom, _| [unit, atom] }
+                  define_unknown_species(uswas) # assing names to species
+                end
+
               conditions = quads.map do |u, l, t, n|
                 u.not_own_atom_condition(u.uniq_specie_for(t), l, n)
               end

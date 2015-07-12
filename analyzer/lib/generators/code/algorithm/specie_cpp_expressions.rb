@@ -13,7 +13,9 @@ module VersatileDiamond
           #   atom of which will be used for get an index of it from specie
           # @return [String] code where atom getting from specie
           def atom_from_specie_call(specie, atom)
-            "#{name_of(specie)}->atom(#{specie.index(atom)})"
+            index = specie.index(atom)
+            raise "Undefined atom #{atom} for #{specie.original}" unless index
+            "#{name_of(specie)}->atom(#{index})"
           end
         end
 

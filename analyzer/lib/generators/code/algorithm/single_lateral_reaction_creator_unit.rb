@@ -26,14 +26,10 @@ module VersatileDiamond
           end
 
           # Gets the code lines for lateral reaction creation
-          # @param [String] result_var_name the name of variable to which will assigned
-          #   memory allocation result
-          # @option [Boolean] :prepend_type is the flag which says that need to prepend
-          #   type of creating lateral reaction before resulting variable name
           # @return [String] the lines by which the reaction will be created
-          def lines(result_var_name, prepend_type: false)
+          def lines
             define_target_species_variable_line + check_nbr_species do
-              create_line(result_var_name, prepend_type: prepend_type)
+              create_line
             end
           end
 
@@ -77,17 +73,11 @@ module VersatileDiamond
           end
 
           # Gets the cpp code string with creation of lateral reaction
-          # @param [String] result_var_name the name of variable to which will assigned
-          #   memory allocation result
-          # @option [Boolean] :prepend_type is the flag which says that need to prepend
-          #   type of creating lateral reaction before resulting variable name
           # @return [String] the cpp code line with creation lateral reaction call
-          def create_line(result_var_name, prepend_type: false)
+          def create_line
             creating_class = @creating_reaction.class_name
-            lval = result_var_name
-            lval = "#{creating_class} *#{lval}" if prepend_type
-            alloc_string = "new #{creating_class}(#{creating_args.join(', ')})"
-            code_line("#{lval} = #{alloc_string};")
+            alloc_str = "new #{creating_class}(#{creating_args.join(', ')})"
+            code_line("chunks[index++] = #{alloc_str};")
           end
 
           # String values which will passed to constructor of creating single lateral

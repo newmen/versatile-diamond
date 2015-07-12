@@ -69,12 +69,15 @@ module VersatileDiamond
                   <<-CODE
     Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
     eachNeighbour(atoms1[0], &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1 != atoms1[1] && neighbour1->is(#{bridge_ct}))
+        if (neighbour1->is(#{bridge_ct}))
         {
-            LateralSpec *specie = neighbour1->specByRole<Bridge>(#{bridge_ct});
-            if (specie)
+            if (neighbour1 != atoms1[1])
             {
-                chunks[index++] = new #{generating_class_name}(this, specie);
+                LateralSpec *specie = neighbour1->specByRole<Bridge>(#{bridge_ct});
+                if (specie)
+                {
+                    chunks[index++] = new #{generating_class_name}(this, specie);
+                }
             }
         }
     });

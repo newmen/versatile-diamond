@@ -16,8 +16,8 @@ module VersatileDiamond
             dept_spec_for(atom).spec
           end
 
-          # Checks that other unit has an atom which also available by passed relation
-          # and if is truthy then returns linked atom
+          # Iterates other unit which has an atom which also available by passed
+          # relation and if is truthy then returns linked atom
           #
           # @param [BaseUnit] other unit for which the atom second will be checked
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -26,25 +26,23 @@ module VersatileDiamond
           #   other_atom the atom from other unit which uses for comparing original
           #   species
           # @param [Concepts::Bond] relation which existance will be checked
+          # @yield [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the other linked atoms
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the atom which same as last of passed atoms and available by relation, or
           #   nil if linked atom isn't same
-          def same_linked_atom(other, own_atom, other_atom, relation)
-            return nil if same_specs?(other, own_atom, other_atom)
+          def same_linked_atoms(other, own_atom, other_atom, relation, &block)
+            other_dept_spec = other.dept_spec_for(other_atom)
+            other_dsa = [other_dept_spec, other_atom]
 
-            linked_atom = relation_with(own_atom, relation)
-            return nil unless linked_atom
+            each_relations_with(other, own_atom, other_atom, relation) do |(ls, la)|
+              linked_dsa = [linked_dept_spec(ls), la]
+              props = [linked_dsa, other_dsa].map do |dept_spec, atom|
+                Organizers::AtomProperties.new(dept_spec, atom)
+              end
 
-            pairs = [
-              [dept_spec_for(own_atom), linked_atom],
-              [other.dept_spec_for(other_atom), other_atom]
-            ]
-
-            props = pairs.map do |dept_spec, atom|
-              Organizers::AtomProperties.new(dept_spec, atom)
+              block[la] if props.permutation(2).any? { |f, s| f.include?(s) }
             end
-
-            props.permutation(2).any? { |f, s| f.include?(s) } ? linked_atom : nil
           end
 
           # Gets the cpp code string with comparison the passed atoms
@@ -56,11 +54,20 @@ module VersatileDiamond
           # @return [String] the cpp code string with comparison the passed atoms
           #   between each other
           def not_own_atom_condition(specie, linked_atom, neighbour_atom)
-            specie_call = atom_from_specie_call(specie, linked_atom)
-            "#{name_of(neighbour_atom)} != #{specie_call}"
+            linked_atom_exp =
+              name_of(linked_atom) || atom_from_specie_call(specie, linked_atom)
+            "#{name_of(neighbour_atom)} != #{linked_atom_exp}"
           end
 
         private
+
+          # Gets dependent spec for passed concept spec
+          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   spec for which the dependent spec will be gotten
+          # @return [Organizers::DependentWrappedSpec] the correct dependent spec
+          def linked_dept_spec(spec)
+            generator.specie_class(spec.name).spec.clone_with_replace(spec)
+          end
 
           # Gets the code string with getting the target specie from atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -69,18 +76,6 @@ module VersatileDiamond
           # @override
           def spec_by_role_call(atom)
             super(atom, uniq_specie_for(atom), atom)
-          end
-
-          # Compares dependent specie with specie from other unit
-          # @param [BaseUnit] other unit with which spec the own spec will be compared
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   own_atom the atom of current unit
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   other_atom the atom of other unit
-          # @return [Boolean] are original concept species from current and other units
-          #   same or not
-          def same_specs?(other, own_atom, other_atom)
-            concept_spec(own_atom) == other.concept_spec(other_atom)
           end
 
           # Gets relation between spec-atom instances which extracts from passed array
@@ -98,19 +93,28 @@ module VersatileDiamond
             relations_checker.relation_between(*pair_of_specs_atoms)
           end
 
-          # hecks the atom linked with passed atom by passed relation
+          # Iterates the spec-atoms linked with passed own atom by passed relation
+          # @param [BaseUnit] other unit for which the atom second will be checked
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom from which the linked atom will be checked
-          # @param [Concepts::Bond] relation by which the linked atom will be checked
+          #   own_atom the atom of current unit for which the relations will be checked
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   other_atom the atom from other unit which uses for comparing original
+          #   species
+          # @param [Concepts::Bond] relation which existance will be checked
+          # @yield [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   all available different atoms in relations checker links graph
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the atom which linked with passed atom by passed relation or nil
-          def relation_with(atom, relation)
-            dept_spec = dept_spec_for(atom)
-            awr = dept_spec.relations_of(atom, with_atoms: true).find do |_, r|
-              r == relation
-            end
+          def each_relations_with(other, own_atom, other_atom, relation, &block)
+            own_concept_spec = concept_spec(own_atom)
+            other_concept_spec = other.concept_spec(other_atom)
 
-            awr && awr.first
+            own_sa = [own_concept_spec, own_atom]
+            other_sa = [other_concept_spec, other_atom]
+            same_rels = relations_checker.links[own_sa].select { |_, r| r == relation }
+            diff_rels = same_rels.reject { |sa, _| sa == other_sa }
+
+            diff_rels.map(&:first).each(&block)
           end
         end
 

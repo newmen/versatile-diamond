@@ -36,15 +36,6 @@ module VersatileDiamond
 
         private
 
-          # Compares original specie with specie from other unit
-          # @param [BaseUnit] other unit with which spec the own spec will be compared
-          # @param [Array] _ does not used
-          # @return [Boolean] are original species from current and other units same or
-          #   not
-          def same_specs?(other, *_)
-            original_spec == other.original_spec
-          end
-
           # Assigns the name of anchor atoms variable
           def assign_anchor_atoms_name!
             namer.assign(Specie::ANCHOR_ATOM_NAME, atoms)

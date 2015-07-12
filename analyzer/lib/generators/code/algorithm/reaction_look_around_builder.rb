@@ -64,7 +64,7 @@ module VersatileDiamond
           # @return [String] the cpp code string with lateral reaction creation
           def creation_lines(tail_nodes)
             detect_sidepieces(tail_nodes).reduce('') do |acc, (reaction, species)|
-              acc + factory.creator(reaction, species).lines('chunks[index++]')
+              acc + factory.creator(reaction, species).lines
             end
           end
 
