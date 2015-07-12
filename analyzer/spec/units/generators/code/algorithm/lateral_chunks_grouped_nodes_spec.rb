@@ -13,7 +13,6 @@ module VersatileDiamond
             )
           end
           let(:reaction) { generator.reaction_class(typical_reaction.name) }
-          let(:chunks) { lateral_reactions.map(&:chunk) }
           let(:grouped_nodes) { described_class.new(generator, subject) }
           let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
           subject { reaction.lateral_chunks }

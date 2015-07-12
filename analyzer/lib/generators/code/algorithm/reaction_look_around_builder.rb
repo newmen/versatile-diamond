@@ -33,7 +33,7 @@ module VersatileDiamond
           # Creates backbone of algorithm
           # @return [SpecieBackbone] the backbone which provides ordered graph
           def create_backbone
-            LateralChunksBackbone.new(generator, @lateral_chunks)
+            LookAroundBackbone.new(generator, @lateral_chunks)
           end
 
           # Creates factory of units for algorithm generation

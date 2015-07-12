@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe LateralChunksBackbone, type: :algorithm do
+        describe LookAroundBackbone, type: :algorithm do
           let(:generator) do
             stub_generator(
               typical_reactions: [typical_reaction],
@@ -13,7 +13,6 @@ module VersatileDiamond
             )
           end
           let(:reaction) { generator.reaction_class(typical_reaction.name) }
-          let(:chunks) { lateral_reactions.map(&:chunk) }
           let(:backbone) { described_class.new(generator, subject) }
           let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
           subject { reaction.lateral_chunks }
