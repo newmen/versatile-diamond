@@ -9,6 +9,7 @@ module VersatileDiamond
         extend Forwardable
 
         ANCHOR_SPECIE_NAME = 'target'
+        SIDEPIECE_SPECIE_NAME = 'sidepiece'
 
         def_delegators :reaction, :links, :clean_links, :relation_between, :changes
 

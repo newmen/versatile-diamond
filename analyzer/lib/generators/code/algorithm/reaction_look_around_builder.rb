@@ -15,8 +15,8 @@ module VersatileDiamond
             super(generator)
           end
 
-          # Generates find algorithm cpp code for target reaction
-          # @return [String] the string with cpp code of find reaction algorithm
+          # Generates look around algorithm cpp code
+          # @return [String] the string with cpp code of look around algorithm
           def build
             main_nodes = backbone.entry_nodes.flatten.uniq
             unit = factory.make_unit(main_nodes)

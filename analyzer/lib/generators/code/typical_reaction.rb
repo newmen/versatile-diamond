@@ -10,13 +10,14 @@ module VersatileDiamond
           super
           @_used_iterators = nil
           @_lateral_chunks = nil
+          @_sidepiece_species = nil
         end
 
-        # Typical reaction haven't sidepiece species
-        # @return [Array] the empty array
-        # TODO: deprecated?
+        # Gets list of sidepiece species from all children reactions
+        # @return [Array] the list of sidepiece species which can concretize current
+        #   reaction
         def sidepiece_species
-          []
+          @_sidepiece_species ||= children.flat_map(&:sidepiece_species).uniq
         end
 
         # Gets all minimal lateral reaction chunks
@@ -110,6 +111,22 @@ module VersatileDiamond
         # @return [String] the string with cpp code of look around algorithm
         def look_around_algorithm
           Algorithm::ReactionLookAroundBuilder.new(generator, lateral_chunks).build
+        end
+
+        # Gets the arguments of check laterals method
+        # @param [Specie] specie from which lateral reaction can be found
+        # @return [String] the string with signature of find method
+        def check_laterals_arguments_str(specie)
+          "#{specie.class_name} *{SIDEPIECE_SPECIE_NAME}"
+        end
+
+        # Builds check laterals algorithm of current reaction from passed specie
+        # @param [Specie] specie the one of using sidepiece specie
+        # @return [String] the cpp code string with find algorithm
+        def check_laterals_algorithm_from(specie)
+          specie_users = children.select { |lr| lr.sidepiece_species.include?(specie) }
+          args = [generator, specie_users, lateral_chunks, specie]
+          Algorithm::ReactionCheckLateralsBuilder.new(*args).build
         end
       end
 

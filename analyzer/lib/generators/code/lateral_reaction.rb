@@ -23,8 +23,6 @@ module VersatileDiamond
           @_internal_chunks ||= deep_chunks(chunk)
         end
 
-      protected
-
         # Gets the list of species which using as sidepiece of reaction
         # @return [Array] the list of sidepiece species
         def sidepiece_species

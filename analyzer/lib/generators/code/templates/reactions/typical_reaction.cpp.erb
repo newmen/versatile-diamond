@@ -9,6 +9,13 @@ void <%= class_name %>::find(<%= find_arguments_str(specie) %>)
 }
 <% end %>
 <% if concretizable? %>
+<% sidepiece_species.each do |specie| %>
+void <%= class_name %>::checkLaterals(<%= check_laterals_arguments_str(specie) %>)
+{
+<%= check_laterals_algorithm_from(specie) %>
+}
+
+<% end %>
 
 LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **chunks, ushort num) const
 {
