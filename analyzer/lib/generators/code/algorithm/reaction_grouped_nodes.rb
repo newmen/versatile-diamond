@@ -55,8 +55,7 @@ module VersatileDiamond
           #   will be detected
           # @return [Concepts::Bond] the relation between atoms from passed nodes
           def relation_between(*nodes)
-            specs_atoms = nodes.map { |n| [n.uniq_specie.spec.spec, n.atom] }
-            @reaction.relation_between(*specs_atoms)
+            @reaction.relation_between(*nodes.map(&:spec_atom))
           end
         end
 

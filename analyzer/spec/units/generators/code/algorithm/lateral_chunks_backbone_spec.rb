@@ -60,7 +60,7 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               let(:lateral_reactions) { [dept_ewb_lateral_df] }
-              let(:points_list) { [[t2, t1]] }
+              let(:points_list) { [[t2], [t2, t1]] }
             end
           end
 
@@ -88,24 +88,37 @@ module VersatileDiamond
             end
 
             describe 'diff-side neighbours' do
-              let(:ordered_graph) do
-                [
-                  [[t2], [[[b], param_100_front]]],
-                  [[t2, t1], [[[d1, d2], param_100_cross]]]
-                ]
+              shared_examples_for :check_all_ordered_graphs do
+                it_behaves_like :check_ordered_graph do
+                  let(:lateral_reactions) { [dept_ewb_lateral_df] }
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:lateral_reactions) { [dept_mwb_lateral_df] }
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:lateral_reactions) do
+                    [dept_ewb_lateral_df, dept_mwb_lateral_df]
+                  end
+                end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:lateral_reactions) { [dept_ewb_lateral_df] }
+              it_behaves_like :check_all_ordered_graphs do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[t2], [[[b], param_100_front]]]
+                  ]
+                end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:lateral_reactions) { [dept_mwb_lateral_df] }
-              end
-
-              it_behaves_like :check_ordered_graph do
-                let(:lateral_reactions) do
-                  [dept_ewb_lateral_df, dept_mwb_lateral_df]
+              it_behaves_like :check_all_ordered_graphs do
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[t2, t1], [[[d1, d2], param_100_cross]]]
+                  ]
                 end
               end
             end

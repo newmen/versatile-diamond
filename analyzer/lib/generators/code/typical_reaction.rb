@@ -26,7 +26,7 @@ module VersatileDiamond
 
           root_chunks = children.flat_map(&:internal_chunks).uniq
           @_lateral_chunks =
-            LateralChunks.new(self, children.map(&:chunk), root_chunks)
+            LateralChunks.new(generator, self, children.map(&:chunk), root_chunks)
         end
 
         # Gets the index of passed specie reactant

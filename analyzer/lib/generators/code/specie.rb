@@ -369,9 +369,9 @@ module VersatileDiamond
           if parents_num == 0
             ['Atom **', 'atoms']
           elsif parents_num == 1
-            ['ParentSpec *', 'parent']
+            ['ParentSpec *', ANCHOR_SPECIE_NAME]
           else # parents_num > 1
-            ['ParentSpec **', 'parents']
+            ['ParentSpec **', ANCHOR_SPECIE_NAME.pluralize]
           end
         end
 

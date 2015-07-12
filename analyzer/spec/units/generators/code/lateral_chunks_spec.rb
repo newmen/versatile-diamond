@@ -27,7 +27,7 @@ module VersatileDiamond
           it { expect(subject.root_times).to eq(root_times) }
 
           it_behaves_like :check_vertexes_and_relations_num do
-            let(:method_name) { :total_links }
+            let(:method_name) { :links }
             let(:vertex_num) { total_vertex_num }
             let(:relations_num) { total_relations_num }
           end

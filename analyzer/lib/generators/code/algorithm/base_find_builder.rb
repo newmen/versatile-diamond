@@ -5,23 +5,11 @@ module VersatileDiamond
 
         # Contain base logic for building find algorithms
         # @abstract
-        class BaseFindBuilder
-          include Modules::ProcsReducer
-
-          # Inits builder by main engine code generator
-          # @param [EngineCode] generator the major engine code generator
-          def initialize(generator)
-            @generator = generator
-            @backbone = create_backbone
-            @factory = create_factory
-          end
-
+        class BaseFindBuilder < BaseAlgorithmBuilder
         private
 
-          attr_reader :generator, :backbone, :factory
-
-          # Gets the lines by which the specie will be created in algorithm
-          # @return [String] the cpp code string with specie creation
+          # Gets the lines by which the finding instance will be created in algorithm
+          # @return [String] the cpp code string with finding instance creation
           def creation_lines
             factory.creator.lines
           end
@@ -43,16 +31,6 @@ module VersatileDiamond
             rels.reduce([]) do |acc, (nbrs, rel_params)|
               acc << relations_proc(nodes, nbrs, rel_params)
             end
-          end
-
-          # Wraps calling of checking relations between generation units to lambda
-          # @param [Array] nodes from which relations will be checked
-          # @param [Array] nbrs the neighbour nodes to which relations will be checked
-          # @return [Proc] lazy calling for check relations unit method
-          def relations_proc(nodes, nbrs, rel_params)
-            curr_unit = factory.make_unit(nodes)
-            nbrs_unit = factory.make_unit(nbrs)
-            -> &block { curr_unit.check_relations(nbrs_unit, rel_params, &block) }
           end
         end
 

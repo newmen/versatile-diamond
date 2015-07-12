@@ -3,8 +3,8 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Provides logic for units which uses when reaction find algorithm builds
-        module ReactionUnitBehavior
+        # Provides common logic for units which uses when reaction algorithm builds
+        module ReactantUnitCommonBehavior
         protected
 
           # Gets the original concept spec from current unique dependent spec
@@ -27,7 +27,7 @@ module VersatileDiamond
           #   species
           # @param [Concepts::Bond] relation which existance will be checked
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the atom which same as last of passed atoms and available by relation or
+          #   the atom which same as last of passed atoms and available by relation, or
           #   nil if linked atom isn't same
           def same_linked_atom(other, own_atom, other_atom, relation)
             return nil if same_specs?(other, own_atom, other_atom)
@@ -95,7 +95,7 @@ module VersatileDiamond
               [unit.concept_spec(atom), atom]
             end
 
-            dept_reaction.relation_between(*pair_of_specs_atoms)
+            relations_checker.relation_between(*pair_of_specs_atoms)
           end
 
           # hecks the atom linked with passed atom by passed relation
@@ -111,12 +111,6 @@ module VersatileDiamond
             end
 
             awr && awr.first
-          end
-
-          # Gets the engine framework class for reactant specie
-          # @return [String] the engine framework class for reactant specie
-          def specie_type
-            'SpecificSpec'
           end
         end
 

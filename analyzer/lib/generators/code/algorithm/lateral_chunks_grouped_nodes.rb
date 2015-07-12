@@ -25,7 +25,7 @@ module VersatileDiamond
           #
           # @return [Hash] the most comprehensive graph of nodes
           def big_graph
-            @_big_graph ||= transform_links(@lateral_chunks.total_links)
+            @_big_graph ||= transform_links(@lateral_chunks.links)
           end
 
         private
