@@ -51,7 +51,7 @@ module VersatileDiamond
 
           before(:each) { interpret_basis }
 
-          it 'not complience reactants' do
+          it 'not compliance reactants' do
             expect { reaction.interpret(
                 'equation bridge(cr: *) + bridge = bridge + bridge(ct: *)') }.
               to raise_error(*syntax_error(

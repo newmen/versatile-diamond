@@ -31,7 +31,7 @@ module VersatileDiamond
 
                 it { expect { subject.interpret("#{state} b(:ct)") }.
                   to raise_error(*syntax_error(
-                    'refinement.cannot_complience', name: 'b')) }
+                    'refinement.cannot_compliance', name: 'b')) }
               end
             end
 

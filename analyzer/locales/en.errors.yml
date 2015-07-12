@@ -88,7 +88,7 @@ en:
     undefined_target: "Undefined target atom name \"%{name}\""
 
   refinement:
-    cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
+    cannot_compliance: "Specs \"%{name}\" can not be complianced, try to use \"aliases\" instruction"
     different_parts: "Linking species that belongs to different parts of equation"
 
   where:
