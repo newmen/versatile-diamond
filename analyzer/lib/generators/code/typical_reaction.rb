@@ -23,11 +23,7 @@ module VersatileDiamond
         # Gets all minimal lateral reaction chunks
         # @return [Array] the list of all minimal lateral reaction chunks
         def lateral_chunks
-          return @_lateral_chunks if @_lateral_chunks
-
-          root_chunks = children.flat_map(&:internal_chunks).uniq
-          @_lateral_chunks =
-            LateralChunks.new(generator, self, children.map(&:chunk), root_chunks)
+          @_lateral_chunks ||= LateralChunks.new(generator, self, children)
         end
 
         # Gets the index of passed specie reactant

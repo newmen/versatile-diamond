@@ -4,66 +4,47 @@ module VersatileDiamond
       module Algorithm
 
         # Contain logic for building reaction look around algorithm
-        class ReactionLookAroundBuilder < BaseAlgorithmBuilder
-
-          # Inits builder by main engine code generator and lateral chunks object
-          # @param [EngineCode] generator the major engine code generator
-          # @param [LateralChunks] lateral_chunks the target object by which the
-          #   algorithm will be generated
-          def initialize(generator, lateral_chunks)
-            @lateral_chunks = lateral_chunks
-            super(generator)
-          end
-
-          # Generates look around algorithm cpp code
-          # @return [String] the string with cpp code of look around algorithm
-          def build
-            main_nodes = backbone.entry_nodes.flatten.uniq
-            unit = factory.make_unit(main_nodes)
-            unit.first_assign!
-
-            unit.define_target_atoms_line +
-              backbone.entry_nodes.reduce('') do |acc, nodes|
-                acc + combine_algorithm(nodes)
-              end
-          end
-
+        class ReactionLookAroundBuilder < LateralChunksAlgorithmBuilder
         private
 
           # Creates backbone of algorithm
-          # @return [SpecieBackbone] the backbone which provides ordered graph
+          # @return [LookAroundBackbone] the backbone which provides ordered graph
           def create_backbone
-            LookAroundBackbone.new(generator, @lateral_chunks)
+            LookAroundBackbone.new(generator, lateral_chunks)
           end
 
           # Creates factory of units for algorithm generation
-          # @return [LateralChunksUnitsFactory] correspond units factory
+          # @return [LookAroundUnitsFactory] correspond units factory
           def create_factory
-            LateralChunksUnitsFactory.new(generator, @lateral_chunks)
+            LookAroundUnitsFactory.new(generator, lateral_chunks)
           end
 
-          # Build look around algorithm by combining procs that occured by walking on
-          # backbone graph ordered from nodes
+          # Builds body of algorithm
+          # @return [String] the string with cpp code
+          def body
+            backbone.entry_nodes.reduce('') do |acc, nodes|
+              acc + combine_algorithm(nodes)
+            end
+          end
+
+          # Build look around algorithm by combining procs that occured by walking
+          # on backbone graph ordered from nodes
           #
           # @param [Array] nodes from which walking will occure
           # @return [String] the cpp code find algorithm
           def combine_algorithm(nodes)
-            collect_parts(nodes).reduce(:+)
-          end
-
-          # @return [Array] the array of cpp code strings
-          def collect_parts(nodes)
-            _, rels = ordered_graph_from(nodes).first
-            rels.map do |nbrs, rel_params|
+            checking_rels(nodes).reduce('') do |acc, (nbrs, rel_params)|
               func = relations_proc(nodes, nbrs, rel_params)
-              func.call { creation_lines(nbrs) }
+              acc + func.call { creation_lines(nbrs) }
             end
           end
 
           # Gets the lines by which the lateral reaction will be created in algorithm
+          # @param [Array] side_nodes the list of nodes from which the lateral reaction
+          #   will be created
           # @return [String] the cpp code string with lateral reaction creation
-          def creation_lines(tail_nodes)
-            detect_sidepieces(tail_nodes).reduce('') do |acc, (reaction, species)|
+          def creation_lines(side_nodes)
+            detect_sidepieces(side_nodes).reduce('') do |acc, (reaction, species)|
               acc + factory.creator(reaction, species).lines
             end
           end
@@ -82,7 +63,7 @@ module VersatileDiamond
           # @return [Array] the list of reation-specie pairs
           def reactions_with_species(nodes)
             nodes.map do |node|
-              [@lateral_chunks.select_reaction(node.spec_atom), node.uniq_specie]
+              [lateral_chunks.select_reaction(node.spec_atom), node.uniq_specie]
             end
           end
         end

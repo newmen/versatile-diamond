@@ -39,9 +39,16 @@ module VersatileDiamond
           # @return [String] the code with condition
           def code_condition(condition_str, else_prefix = '', &block)
             code_line("#{else_prefix}if (#{condition_str})") +
-              code_line('{') +
-              increase_spaces(block.call) +
-              code_line('}')
+              code_scope(&block)
+          end
+
+          # Gets the scope of code
+          # @yield should return the body of scope
+          # @return [String] the scoped code
+          def code_scope(&block)
+            code_line('{') +
+            increase_spaces(block.call) +
+            code_line('}')
           end
 
           # Gets a code with cpp lambda block

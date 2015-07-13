@@ -15,6 +15,14 @@ module VersatileDiamond
         end
       end
 
+      describe '#self.reorder' do
+        let(:independent_chunk) { (ewb_chunk - end_chunk).independent_chunk }
+        let(:chunks) { [independent_chunk, end_chunk, ewb_chunk, middle_chunk] }
+        it { expect(BaseChunk.reorder(chunks.shuffle)).to eq(chunks) }
+        it { expect(BaseChunk.reorder(chunks.shuffle, direction: :desc)).
+          to eq(chunks.reverse) }
+      end
+
       describe '#lateral_reaction' do
         it { expect(end_chunk.lateral_reaction).to eq(dept_end_lateral_df) }
         it { expect(middle_chunk.lateral_reaction).to eq(dept_middle_lateral_df) }

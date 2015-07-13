@@ -28,13 +28,13 @@ module VersatileDiamond
             @_big_graph ||= transform_links(@lateral_chunks.links)
           end
 
-        private
-
           # Makes the nodes graph from positions of chunks
           # @return [Hash] the small graph of nodes
           def small_graph
             @_small_graph ||= transform_links(@lateral_chunks.clean_links)
           end
+
+        private
 
           # Detects relation between passed nodes
           # @param [Array] nodes the array with two nodes between which the relation

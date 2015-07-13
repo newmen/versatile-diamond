@@ -50,7 +50,7 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   linked_atom the atom from target specie which will be compared
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   neighbour_atom the atom from another specie which will be compared
+            #   neighbour_atom the atom from another specie which will be compared
           # @return [String] the cpp code string with comparison the passed atoms
           #   between each other
           def not_own_atom_condition(specie, linked_atom, neighbour_atom)

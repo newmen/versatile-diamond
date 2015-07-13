@@ -5,10 +5,9 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # The instance of class could defines all neccessary variables and calls
-        # engine framework method for create a lateral reaction which was found
+        # Makes lines of code which describes creation of single lateral reaction
+        # @abstract
         class SingleLateralReactionCreatorUnit < BaseReactionCreatorUnit
-          include LateralSpecDefiner
 
           # Garanties uniquality of all similar species
           class OtherSideSpecie < Tools::TransparentProxy; end
@@ -17,9 +16,10 @@ module VersatileDiamond
           # @param [NameRemember] namer the remember of using names of variables
           # @param [LateralReaction] creating_reaction which will created by current
           #   algorithm
-          # @param [Array] species the list of all previously defined unique species
-          def initialize(namer, creating_reaction, species)
-            super(namer, species)
+          # @param [Array] checking_species the list of all previously defined unique
+          #   species
+          def initialize(namer, creating_reaction, checking_species)
+            super(namer, checking_species)
             @creating_reaction = creating_reaction
 
             @_other_side_species = nil
@@ -29,7 +29,7 @@ module VersatileDiamond
           # @return [String] the lines by which the reaction will be created
           def lines
             define_target_species_variable_line + check_nbr_species do
-              create_line
+              create_lines
             end
           end
 
@@ -72,20 +72,34 @@ module VersatileDiamond
             end
           end
 
-          # Gets the cpp code string with creation of lateral reaction
-          # @return [String] the cpp code line with creation lateral reaction call
-          def create_line
-            creating_class = @creating_reaction.class_name
-            alloc_str = "new #{creating_class}(#{creating_args.join(', ')})"
-            code_line("chunks[index++] = #{alloc_str};")
+          # Gets the class name of creating instance
+          # @return [String] the name of creating instance class
+          def creating_class
+            @creating_reaction.class_name
+          end
+
+          # Gets the string with memory allocation of lateral reaction
+          # @param [String] parent_var_name the name of variable of parent reaction
+          # @return [String] the cpp code string
+          def alloc_str(parent_var_name)
+            args_str = creating_args(parent_var_name).join(', ')
+            "new #{creating_class}(#{args_str})"
           end
 
           # String values which will passed to constructor of creating single lateral
           # reaction
           #
+          # @param [String] parent_var_name the name of variable of parent reaction
           # @return [Array] the arguments of lateral reaction constructor
-          def creating_args
-            ['this', namer.name_of(different_species)]
+          def creating_args(parent_var_name)
+            [parent_var_name, sidepiece_var_name]
+          end
+
+          # Gets name of sidepiece species variable
+          # @return [String] the name of variable which passed to constructor of
+          #   creating lateral reaction
+          def sidepiece_var_name
+            namer.name_of(sidepiece_specie)
           end
 
           # Collects different atoms for each using specie

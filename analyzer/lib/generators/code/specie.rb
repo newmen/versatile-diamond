@@ -10,8 +10,8 @@ module VersatileDiamond
         include ReactionsUser
         extend Forwardable
 
-        ANCHOR_ATOM_NAME = 'anchor'
-        ANCHOR_SPECIE_NAME = 'parent'
+        ANCHOR_ATOM_NAME = 'anchor'.freeze
+        ANCHOR_SPECIE_NAME = 'parent'.freeze
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
         def_delegator :@_find_builder, :using_atoms # error if no find algorithm

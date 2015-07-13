@@ -29,8 +29,6 @@ module VersatileDiamond
           reaction.sidepiece_specs.map(&method(:specie_class))
         end
 
-      private
-
         # Checks that current reaction is a tail of overall engine find algorithm
         # @return [Boolean] is final reaction in reactions tree or not
         def concretizable?
@@ -39,6 +37,8 @@ module VersatileDiamond
             ch.parents.include?(chunk)
           end
         end
+
+      private
 
         # Detects that current reaction is multi lateral or not
         # @return [Boolean] is current reaction multi lateral or not

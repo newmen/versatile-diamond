@@ -14,17 +14,18 @@ module VersatileDiamond
 
         # Initializes meta object which provides useful methods for code generators
         # @param [EngineCode] generator of engine code
-        # @param [TypicalReaction] reaction from which the chunks of children lateral
-        #   reactions will be wrapped
-        # @param [Array] all_chunks of children lateral reactions of passed reaction
-        # @param [Array] root_chunks of children lateral reactions of passed reaction
-        def initialize(generator, reaction, all_chunks, root_chunks)
+        # @param [TypicalReaction] typical_reaction from which the chunks of children
+        #   lateral reactions will be wrapped
+        # @param [Array] lateral_reactions the children reactions of passed typical
+        def initialize(generator, typical_reaction, lateral_reactions)
           @generator = generator
-          @reaction = reaction
-          @all_chunks = all_chunks
-          @root_chunks = root_chunks
+          @reaction = typical_reaction
+          @affixes = lateral_reactions
 
-          @_total_chunk = nil
+          @all_chunks = lateral_reactions.map(&:chunk)
+          @root_chunks = lateral_reactions.flat_map(&:internal_chunks).uniq
+
+          @_total_chunk, @_ordered_small_lateral_reactions = nil
         end
 
         # The method for detection relations between
@@ -60,6 +61,29 @@ module VersatileDiamond
 
           chunk = chunks_users.first
           @generator.reaction_class(chunk.lateral_reaction.name)
+        end
+
+        # Gets the ordered list of lateral reactions which are parents for some other
+        # lateral reactions
+        #
+        # @return [Array] the list of single lateral reactions
+        def ordered_small_lateral_reactions
+          return @_ordered_small_lateral_reactions if @_ordered_small_lateral_reactions
+
+          # :(
+          small_reactions = @affixes.select(&:concretizable?)
+          chunks = small_reactions.map(:chunk)
+          ordered_chunks = Organizers::BaseChunk.reorder(chunks)
+
+          @_ordered_small_lateral_reactions = small_reactions.sort_by do |react|
+            ordered_chunks.index(react.chunk)
+          end
+        end
+
+        # Checks that target reaction is mono-reactant
+        # @return [Boolean] is mono-reactant target reaction or not
+        def mono_reactant?
+          total_chunk.target_specs.size == 1
         end
 
         # Checks that passed spec belongs to target specs set

@@ -30,6 +30,16 @@ module VersatileDiamond
             role = specie.role(getting_atom)
             "#{atom_var_name}->specByRole<#{specie.class_name}>(#{role})"
           end
+
+          # Gets atom properties
+          # @param [Organizers::DependentWrappedSpec] dept_spec the context spec
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which properties will be gotten
+          # @return [Organizers::AtomProperties] the properties of passed atom in
+          #   passed context spec
+          def atom_properties(dept_spec, atom)
+            Organizers::AtomProperties.new(dept_spec, atom)
+          end
         end
 
       end

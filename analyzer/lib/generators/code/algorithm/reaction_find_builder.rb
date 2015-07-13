@@ -33,7 +33,7 @@ module VersatileDiamond
         private
 
           # Creates backbone of algorithm
-          # @return [SpecieBackbone] the backbone which provides ordered graph
+          # @return [ReactionBackbone] the backbone which provides ordered graph
           def create_backbone
             ReactionBackbone.new(generator, @reaction, @specie)
           end

@@ -75,6 +75,20 @@ module VersatileDiamond
             let(:internal_chunks) { [end_chunk] * 2 }
           end
         end
+
+        describe '#concretizable?' do
+          let(:lateral_reactions) { [target] }
+
+          describe 'small' do
+            let(:target) { dept_end_lateral_df }
+            it { expect(subject.concretizable?).to be_truthy }
+          end
+
+          describe 'big' do
+            let(:target) { dept_middle_lateral_df }
+            it { expect(subject.concretizable?).to be_falsey }
+          end
+        end
       end
 
     end
