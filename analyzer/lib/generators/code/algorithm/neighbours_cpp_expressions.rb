@@ -192,13 +192,13 @@ module VersatileDiamond
           # Defines atoms array variable for iterating from them on crystall lattice
           # @return [String] the line with defined atoms array variable it it need
           def define_anchors_array_line
-            if atoms.size > 1 && !namer.array?(atoms)
+            if atoms.size == 1 || namer.full_array?(atoms)
+              ''
+            else
               old_names = atoms.map(&method(:name_of)) # collect before erase
               namer.erase(atoms)
               namer.assign_next('anchor', atoms)
               define_var_line('Atom *', atoms, old_names)
-            else
-              ''
             end
           end
 

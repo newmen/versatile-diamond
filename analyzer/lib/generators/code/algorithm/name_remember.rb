@@ -11,6 +11,7 @@ module VersatileDiamond
           def initialize
             @names = {}
             @next_names = []
+            @used_names = Set.new
           end
 
           # Assign unique names for each variables with duplicate error checking
@@ -76,8 +77,8 @@ module VersatileDiamond
           # Checks that passed vars have same array variable name
           # @param [Array] vars the list of variables which will be checked
           # @return [Boolean] are vars have same array variable name or not
-          def array?(vars)
-            !!array_name_for(vars)
+          def full_array?(vars)
+            vars.all?(&method(:name_of)) && !!array_name_for(vars)
           end
 
         private
@@ -119,11 +120,11 @@ module VersatileDiamond
             stored_names = vars.map { |var| names[var] }
             array_name = stored_names.first.scan(/^\w+/).first
 
-            if stored_names.any? { |name| !name.match(/^#{array_name}\[\d+\]$/) }
-              nil
-            else
-              array_name
-            end
+            match_lambda = -> name { name.match(/^#{array_name}\[\d+\]$/) }
+            is_array = stored_names.all?(&match_lambda) &&
+              @used_names.select(&match_lambda).size == vars.size
+
+            is_array ? array_name : nil
           end
 
           # Assign unique names for each variables
@@ -150,7 +151,7 @@ module VersatileDiamond
           def check_and_store(name, var)
             raise %(Variable "#{name}" already has name "#{names[var]}") if names[var]
             raise %(Name "#{name}" already used) if variables[name]
-            names[var] = name
+            remember(name, var)
           end
 
           # Replases a variable with some name without error checking
@@ -159,6 +160,14 @@ module VersatileDiamond
           def replace(name, var)
             replasing_var = variables[name]
             names.delete(replasing_var)
+            remember(name, var)
+          end
+
+          # Remembers the name of variable
+          # @param [String] name the name of storing variable
+          # @param [Object] var the storing variable
+          def remember(name, var)
+            @used_names << name
             names[var] = name
           end
         end

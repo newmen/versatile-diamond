@@ -187,11 +187,11 @@ module VersatileDiamond
             end
           end
 
-          describe '#array?' do
+          describe '#full_array?' do
             describe 'single variable' do
               let(:var) { :var }
               before { subject.assign('var', var) }
-              it { expect(subject.array?([var])).to be_falsey }
+              it { expect(subject.full_array?([var])).to be_falsey }
             end
 
             describe 'many variables' do
@@ -199,22 +199,29 @@ module VersatileDiamond
               before { subject.assign('var', vars) }
 
               describe 'same array varaible name' do
-                it { expect(subject.array?(vars)).to be_truthy }
+                it { expect(subject.full_array?(vars)).to be_truthy }
               end
 
               describe 'different array varaible name' do
                 let(:others) { [3, 4] }
                 let(:array) { [vars.first, others.first] }
                 before { subject.assign('other', others) }
-                it { expect(subject.array?(array)).to be_falsey }
+                it { expect(subject.full_array?(array)).to be_falsey }
               end
 
               describe 'one var is not an array' do
                 let(:other) { :other }
                 let(:array) { [vars.first, other] }
                 before { subject.assign('other', other) }
-                it { expect(subject.array?(array)).to be_falsey }
+                it { expect(subject.full_array?(array)).to be_falsey }
               end
+            end
+
+            describe 'too many items of array' do
+              let(:vars) { [1, 2] }
+              let(:all) { vars + [3, 4] }
+              before { subject.assign('var', all) }
+              it { expect(subject.full_array?(vars)).to be_falsey }
             end
           end
         end
