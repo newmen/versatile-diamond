@@ -33,6 +33,12 @@ module VersatileDiamond
         []
       end
 
+      # Independent chunk is always source chunk
+      # @return [Array] list with one self item
+      def internal_chunks
+        [self]
+      end
+
       # No parents no organization
       def reorganize_parents!
         # pass

@@ -30,7 +30,7 @@ module VersatileDiamond
         @targets = merge_targets(theres)
         @links = merge_links(theres)
 
-        @_mapped_targets, @_tail_name = nil
+        @_mapped_targets, @_internal_chunks, @_tail_name = nil
       end
 
       # Gets the parent typical reaction

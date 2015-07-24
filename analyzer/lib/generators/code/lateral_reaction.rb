@@ -8,20 +8,7 @@ module VersatileDiamond
       class LateralReaction < SpeciesReaction
 
         def_delegator :reaction, :chunk
-
-        # Also initializes additional cache variables
-        # @override
-        def initialize(*)
-          super
-
-          @_internal_chunks = nil
-        end
-
-        # Gets the links of lateral reaction internal minimal chunks
-        # @return [Array] the list minimal used chunks
-        def internal_chunks
-          @_internal_chunks ||= deep_chunks(chunk)
-        end
+        def_delegator :chunk, :internal_chunks
 
         # Gets the list of species which using as sidepiece of reaction
         # @return [Array] the list of sidepiece species
@@ -62,18 +49,6 @@ module VersatileDiamond
         # @return [Integer] the number of lateral reaction chunks
         def chunks_num
           internal_chunks.size
-        end
-
-        # Collect chunks which contains in passed chunk
-        # @param [Organizers::Chunk] chunk which internal chunks will collected
-        # @return [Array] the list of internal chunks
-        def deep_chunks(chunk)
-          parent_chunks = chunk.parents
-          if parent_chunks.empty?
-            [chunk]
-          else
-            parent_chunks.map(&method(:deep_chunks)).reduce(:+)
-          end
         end
 
         # Gets a list of code elements each of which uses in header file
