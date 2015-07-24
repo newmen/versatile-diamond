@@ -32,7 +32,7 @@ module VersatileDiamond
         @targets = merge_targets(chunks)
         @links = merge_links(chunks)
 
-        @_lateral_reaction, @_tail_name = nil
+        @_lateral_reaction, @_internal_chunks, @_tail_name = nil
       end
 
       # Makes the lateral reaction which contain current chunk
@@ -49,7 +49,7 @@ module VersatileDiamond
       end
 
       def inspect
-        "Derivative chunk of #{tail_name}"
+        "Derivative chunk with #{tail_name}"
       end
 
     private
@@ -69,12 +69,6 @@ module VersatileDiamond
       def merge_links(chunks)
         clm = ChunkLinksMerger.new
         chunks.reduce({}, &clm.public_method(:merge))
-      end
-
-      # Gets the list of parents tail names
-      # @return [Array] the list of tail names
-      def tail_names
-        parents.map(&:tail_name)
       end
 
       # Provides full rate of reaction which could be if lateral environment is same

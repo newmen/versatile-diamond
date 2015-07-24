@@ -7,7 +7,6 @@ module VersatileDiamond
       include ChunkParentsOrganizer
       include MinuendChunk
       include DrawableChunk
-      include TailedChunk
       include TargetsProcessor
       extend Forwardable
       extend Collector
@@ -30,7 +29,7 @@ module VersatileDiamond
         @targets = merge_targets(theres)
         @links = merge_links(theres)
 
-        @_mapped_targets, @_internal_chunks, @_tail_name = nil
+        @_mapped_targets, @_internal_chunks = nil
       end
 
       # Gets the parent typical reaction
@@ -107,10 +106,10 @@ module VersatileDiamond
         end
       end
 
-      # Gets the list of descriptions of there objects
-      # @return [Array] the list of tail names
-      def tail_names
-        @theres.map(&:description)
+      # Collecs all names from there objects and joins it by 'and' string
+      # @return [String] the combined name by names of there objects
+      def tail_name
+        @_tail_name ||= @theres.map(&:description).join(' and ')
       end
 
       # Provides the lowest level of comparing two minuend instances

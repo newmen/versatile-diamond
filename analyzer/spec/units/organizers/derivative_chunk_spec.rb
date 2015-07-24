@@ -103,7 +103,7 @@ module VersatileDiamond
       end
 
       describe '#tail_name' do
-        let(:tail_name) { (['at end of dimers row'] * 2).join(' and ') }
+        let(:tail_name) { (['dimer'] * 2).join(' and ') }
         it { expect(derv_chunk.tail_name).to eq(tail_name) }
       end
     end

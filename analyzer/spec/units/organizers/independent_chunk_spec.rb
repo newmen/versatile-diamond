@@ -52,10 +52,13 @@ module VersatileDiamond
         it { expect(ind_swr.parents).to be_empty }
       end
 
+      describe '#internal_chunks' do
+        it { expect(ind_bwr.internal_chunks).to eq([ind_bwr]) }
+        it { expect(ind_swr.internal_chunks).to eq([ind_swr]) }
+      end
+
       describe '#tail_name' do
-        it { expect(ind_bwr.tail_name).to be_a(String) }
-        it { expect(ind_bwr.tail_name).not_to eq('') }
-        it { expect(ind_bwr.tail_name).not_to eq(ind_swr.tail_name) }
+        it { expect(ind_bwr.tail_name).to eq('bridge') }
       end
 
       describe '#original?' do

@@ -11,7 +11,8 @@ module VersatileDiamond
         end
 
         def underscore
-          split('::').last.scan(/[A-Z][a-z0-9]*/).map(&:downcase).join('_')
+          camelparts = split('::').last.scan(/[A-Z][a-z0-9]*/)
+          camelparts.empty? ? self : camelparts.map(&:downcase).join('_')
         end
 
         def classify

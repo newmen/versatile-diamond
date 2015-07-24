@@ -58,7 +58,7 @@ module VersatileDiamond
       # Gets the name of lateral reaction
       # @return [String] the name of lateral reaction
       def name
-        "combined #{parent.name} #{chunk.tail_name}"
+        "combined #{parent.name} with #{chunk.tail_name} No#{chunk.object_id}"
       end
 
       def formula

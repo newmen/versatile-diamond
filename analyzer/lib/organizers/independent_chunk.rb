@@ -8,6 +8,7 @@ module VersatileDiamond
       include MinuendChunk
       include DrawableChunk
       include ChunksComparer
+      include TailedChunk
       include TargetsProcessor
       extend Forwardable
 
@@ -24,7 +25,7 @@ module VersatileDiamond
         @targets = targets
         @links = links
 
-        @_lateral_reaction = nil
+        @_lateral_reaction, @_tail_name = nil
       end
 
       # The independent chunk haven't parents
@@ -51,12 +52,6 @@ module VersatileDiamond
                                     typical_reaction, self, typical_reaction.full_rate)
       end
 
-      # Gets the tail name of current chunk
-      # @return [String] the tail name of current chunk
-      def tail_name
-        "chunk No#{object_id}"
-      end
-
       # The chunk which created by chunk residual is not original
       # @return [Boolean] false
       def original?
@@ -64,7 +59,7 @@ module VersatileDiamond
       end
 
       def to_s
-        "Independent #{tail_name}"
+        "Independent chunk with #{tail_name}"
       end
 
       def inspect

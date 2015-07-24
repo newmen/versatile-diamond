@@ -6,6 +6,7 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
+        include Modules::SpecNameConverter
         include SpeciesUser
         include ReactionsUser
         extend Forwardable
@@ -80,11 +81,8 @@ module VersatileDiamond
             var = instance_variable_get(var_name)
             return var if var
 
-            m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
-            addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            addition = addition.public_send(method) if addition && prefix == 'file'
-            head = eval("m[1].#{method}")
-            instance_variable_set(var_name, "#{head}#{addition}")
+            nm = convert_name(spec.name, method, separator, tail_too: prefix == 'file')
+            instance_variable_set(var_name, nm)
           end
         end
 
@@ -388,22 +386,6 @@ module VersatileDiamond
           else # delta > 1
             ['Atom **', 'additionalAtoms']
           end
-        end
-
-        # Makes suffix of name which is used in name builder methods
-        # @param [String] brackets_str the string which contain brackets and some
-        #   additional params of specie in them
-        # @return [String] the suffix of name
-        # @example generating name
-        #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
-        def name_suffixes(brackets_str)
-          params_str = brackets_str.scan(/\((.+?)\)/).first.first
-          params = params_str.scan(/(\w+): (.)/)
-          strs = params.group_by(&:first).map do |k, gs|
-            states = gs.map { |item| item.last == '*' ? 's' : item.last }.join
-            "#{k.upcase}#{states}"
-          end
-          strs.sort
         end
 
         # Gets sorted anchors from atoms sequence

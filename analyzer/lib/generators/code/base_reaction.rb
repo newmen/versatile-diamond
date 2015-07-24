@@ -28,13 +28,13 @@ module VersatileDiamond
           # Makes #{prefix} name for current specie
           # @return [String] the result #{prefix} name
           define_method(method_name) do
-            var = instance_variable_get(var_name)
-            unless var
+            value = instance_variable_get(var_name)
+            unless value
               parts = reaction.name.split(/\s+/).map { |str| eval("str.#{method}") }
-              var = parts.join(separator)
-              instance_variable_set(var_name, var)
+              value = parts.join(separator).gsub('.', '')
+              instance_variable_set(var_name, value)
             end
-            var
+            value
           end
         end
 
