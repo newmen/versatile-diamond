@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contain logic for building reaction check laterals algorithm
-        class ReactionCheckLateralsBuilder < BaseAlgorithmBuilder
+        class ReactionCheckLateralsBuilder < LateralChunksAlgorithmBuilder
 
           # Inits builder
           # @param [EngineCode] generator the major engine code generator

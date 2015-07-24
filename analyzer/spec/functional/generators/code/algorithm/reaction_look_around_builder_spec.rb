@@ -9,7 +9,9 @@ module VersatileDiamond
           let(:generator) do
             stub_generator(
               base_specs: [dept_bridge_base, dept_dimer_base],
-              specific_specs: [dept_activated_bridge, dept_activated_incoherent_bridge],
+              specific_specs: [
+                dept_activated_bridge, dept_activated_incoherent_bridge
+              ],
               typical_reactions: [typical_reaction],
               lateral_reactions: lateral_reactions
             )

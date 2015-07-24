@@ -27,7 +27,7 @@ module VersatileDiamond
           def initialize(namer, lat_react, lat_chks, sdpcs, rectns)
             super(namer, lat_react, rectns.map(&:first))
             @lateral_chunks = lat_chks
-            @sidepieces = sdpcs.map(&:first).sort
+            @sidepieces = sdpcs.map(&:first).sort.uniq
 
             @sidepieces_with_atoms = concepts(sdpcs)
             @reactants_with_atoms = concepts(rectns)
@@ -61,7 +61,7 @@ module VersatileDiamond
               checkout_reaction_block(lateral_reaction)
             end
 
-            blocks << checkout_reaction_block(main_reaction, typical: false)
+            blocks << checkout_reaction_block(main_reaction, lateral: false)
             blocks.join
           end
 
@@ -121,16 +121,16 @@ module VersatileDiamond
           # Gets string with checkout reaction engine call
           # @param [TypicalReaction | LateralReaction] reaction which will checked out
           # @return [String] the cpp code string with call
-          def checkout_reaction_line(reaction)
-            if species.size == 1
-              checking_species = [species, @sidepieces].map(&:first)
+          def checkout_reaction_call(reaction)
+            if other_side_species.size == 1
+              checking_species = [other_side_species, @sidepieces].map(&:first)
               if has_same_target?(*checking_species)
                 checkout_reaction_without_two(reaction, checking_species)
               else
                 checkout_reaction_from_one(reaction)
               end
             else
-              checkout_reaction_with_two(reaction, species[0..1])
+              checkout_reaction_with_two(reaction, other_side_species[0..1])
             end
           end
 
@@ -177,14 +177,14 @@ module VersatileDiamond
           # specie
           #
           # @param [UniqueSpecie] target_spece is one of reaction reactant
-          # @param [UniqueSpecie] sidepiece_specie the specie with which another
-          #   target will be compared
+          # @param [UniqueSpecie] side_specie the specie with which another target will
+          #   be compared
           # @return [Boolean] is exist another same target or not
-          def has_same_target?(target_specie, sidepiece_specie)
+          def has_same_target?(target_specie, side_specie)
             return false if @lateral_chunks.mono_reactant?
 
             target_pairs = select_concepts(target_specie, @reactants_with_atoms)
-            sidepiece_pairs = select_concepts(sidepiece_specie, @sidepieces_with_atoms)
+            sidepiece_pairs = select_concepts(side_specie, @sidepieces_with_atoms)
 
             other_rels = select_rels(target_pairs) do |spec, s, _|
               @lateral_chunks.target_spec?(s) && spec != s
@@ -198,7 +198,7 @@ module VersatileDiamond
               sidepiece_rels.any? do |(s, a), r|
                 next false unless rel == r && spec.same?(s) && atom.same?(a)
 
-                dept_spec = sidepiece_specie.proxy_spec
+                dept_spec = side_specie.proxy_spec
                 apt = atom_properties(dept_spec.clone_with_replace(spec), atom)
                 aps = atom_properties(dept_spec, a)
 

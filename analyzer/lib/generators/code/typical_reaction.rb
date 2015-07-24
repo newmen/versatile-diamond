@@ -11,6 +11,8 @@ module VersatileDiamond
           @_used_iterators = nil
           @_lateral_chunks = nil
           @_sidepiece_species = nil
+
+          @_check_laterals_builder = nil
         end
 
         # Gets list of sidepiece species from all children reactions
@@ -32,6 +34,22 @@ module VersatileDiamond
         #   reactant
         def target_index(specie)
           complex_source_species.size == 1 ? nil : complex_source_species.index(specie)
+        end
+
+        # Gets builder of check lateral algorighm from passed specie
+        # @param [Specie] specie from which the algorithm will build
+        # @return [ReactionCheckLateralsBuilder] the builder of checkLaterals method
+        #   code
+        def check_laterals_builder_from(specie)
+          return @_check_laterals_builder if @_check_laterals_builder
+
+          simple_specie_users = children.select do |lateral_reaction|
+            lateral_reaction.concretizable? &&
+              lateral_reaction.sidepiece_species.include?(specie)
+          end
+
+          args = [generator, simple_specie_users, lateral_chunks, specie]
+          @_check_laterals_builder = Algorithm::ReactionCheckLateralsBuilder.new(*args)
         end
 
       private
@@ -120,9 +138,7 @@ module VersatileDiamond
         # @param [Specie] specie the one of using sidepiece specie
         # @return [String] the cpp code string with find algorithm
         def check_laterals_algorithm_from(specie)
-          specie_users = children.select { |lr| lr.sidepiece_species.include?(specie) }
-          args = [generator, specie_users, lateral_chunks, specie]
-          Algorithm::ReactionCheckLateralsBuilder.new(*args).build
+          check_laterals_builder(specie).build
         end
       end
 

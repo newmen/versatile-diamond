@@ -72,7 +72,7 @@ module VersatileDiamond
 
           # :(
           small_reactions = @affixes.select(&:concretizable?)
-          chunks = small_reactions.map(:chunk)
+          chunks = small_reactions.map(&:chunk)
           ordered_chunks = Organizers::BaseChunk.reorder(chunks)
 
           @_ordered_small_lateral_reactions = small_reactions.sort_by do |react|

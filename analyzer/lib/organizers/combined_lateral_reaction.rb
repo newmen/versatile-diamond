@@ -9,6 +9,7 @@ module VersatileDiamond
       extend Forwardable
 
       def_delegator :parent, :local?
+      def_delegator :chunk, :sidepiece_specs
       attr_reader :chunk, :full_rate
 
       # Initializes combined lateral reaction

@@ -53,10 +53,16 @@ module VersatileDiamond
           # Gets condition string where presented species comparing
           # @return [String] the string with condition
           def species_condition_arr
-            groups = other_side_species.groups { |s| s.original }
-            equal_groups = groups.select { |gr| gr.size > 1 }
+            gr_select_lambda = -> gr { gr.size > 1 }
+
+            all_groups = other_side_species.groups { |s| s.original }
+            equal_groups = all_groups.select(&gr_select_lambda)
             equal_pairs = equal_groups.flat_map { |gr| gr.each_cons(2).to_a }
-            not_equal_pairs = groups.map(&:first).each_cons(2).to_a
+            not_equal_groups = (all_groups - equal_groups).map(&:first).groups do |s|
+              s.original.original
+            end
+            not_equal_group = not_equal_groups.select(&gr_select_lambda)
+            not_equal_pairs = not_equal_group.each_cons(2).to_a
 
             equal_strs = equal_pairs.map(&compare('=='))
             not_equal_strs = not_equal_pairs.map(&compare('!='))
