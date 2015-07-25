@@ -137,16 +137,6 @@ module VersatileDiamond
                     }
                 }
                 {
-                    #{class_name_with_two_dimer} *nbrReaction = species[0]->checkoutReactionWith<#{class_name_with_two_dimer}>(species[1]);
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_dimer}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
                     ForwardDimerFormation *nbrReaction = species[0]->checkoutReactionWith<ForwardDimerFormation>(species[1]);
                     if (nbrReaction)
                     {
@@ -174,27 +164,7 @@ module VersatileDiamond
             if (specie)
             {
                 {
-                    #{class_name_with_bridge} *nbrReaction = specie->checkoutReaction<#{class_name_with_bridge}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
                     #{class_name_with_dimer} *nbrReaction = specie->checkoutReaction<#{class_name_with_dimer}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardDimerFormationEwbLateral *nbrReaction = specie->checkoutReaction<ForwardDimerFormationEwbLateral>();
                     if (nbrReaction)
                     {
                         assert(!target->haveReaction(nbrReaction));

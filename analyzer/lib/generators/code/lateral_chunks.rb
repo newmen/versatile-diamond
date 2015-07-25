@@ -68,8 +68,22 @@ module VersatileDiamond
         #
         # @param [Specie] specie which should be one of sidepiece species of reaction
         # @return [Array] the list of single lateral reactions
+        # TODO: must be private
         def unconcrete_affixes
           @_unconcrete_affixes ||= @affixes.select(&:concretizable?)
+        end
+
+        # Gets the ordered list of lateral reactions which are root lateral reactions
+        # and not uses maximal times passed specie
+        #
+        # @param [Specie] specie which should be one of sidepiece species of reaction
+        # @return [Array] the list of single lateral reactions
+        def unconcrete_affixes_without(specie)
+          max_times = maximal_times_usage(specie)
+          unconcrete_affixes.reject do |lateral_reaction|
+            num = lateral_reaction.sidepiece_species.select { |sp| sp == specie }.size
+            num == max_times
+          end
         end
 
         # Gets the ordered list of root lateral reactions and uses passed specie
@@ -109,6 +123,16 @@ module VersatileDiamond
         # @return [Organizers::TotalChunk] the total chunk
         def make_total_chunk(chunks)
           Organizers::TotalChunk.new(reaction, chunks)
+        end
+
+        # Counts which times passed sidepiece specie uses in one lateral reaction
+        # @param [Specie] specie for which the number will gotten
+        # @return [Integer] the number of usage must be more than 1
+        def maximal_times_usage(specie)
+          times_usage = @affixes.map do |lateral_reaction|
+            lateral_reaction.sidepiece_species.select { |sp| sp == specie }.size
+          end
+          times_usage.max
         end
       end
     end
