@@ -90,14 +90,15 @@ module VersatileDiamond
             end
 
             describe 'three sides neighbours' do
+              let(:lateral_reactions) { [dept_ewb_lateral_df] }
+              let(:class_name_with_bridge) { generating_class_names[0] }
+              let(:class_name_with_dimer) { generating_class_names[1] }
+              let(:class_name_with_two_dimer) { generating_class_names[2] }
+
               it_behaves_like :check_code do
                 let(:spec) { lateral_dimer }
-                let(:lateral_reactions) { [dept_ewb_lateral_df] }
-                let(:class_name_with_bridge) { generating_class_names[0] }
-                let(:class_name_with_dimer) { generating_class_names[1] }
-                let(:class_name_with_two_dimer) { generating_class_names[2] }
                 let(:find_algorithm) do
-                <<-CODE
+                  <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
@@ -157,7 +158,74 @@ module VersatileDiamond
             }
         }
     });
-                CODE
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                let(:spec) { lateral_bridge }
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atom1 = target->atom(0);
+    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{aib_ct}))
+        {
+            SpecificSpec *specie = neighbour1->specByRole<BridgeCTsi>(#{aib_ct});
+            if (specie)
+            {
+                {
+                    #{class_name_with_bridge} *nbrReaction = specie->checkoutReaction<#{class_name_with_bridge}>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    #{class_name_with_dimer} *nbrReaction = specie->checkoutReaction<#{class_name_with_dimer}>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    ForwardDimerFormationEwbLateral *nbrReaction = specie->checkoutReaction<ForwardDimerFormationEwbLateral>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    #{class_name_with_two_dimer} *nbrReaction = specie->checkoutReaction<#{class_name_with_two_dimer}>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    ForwardDimerFormation *nbrReaction = specie->checkoutReaction<ForwardDimerFormation>();
+                    if (nbrReaction)
+                    {
+                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction, target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+                  CODE
                 end
               end
             end

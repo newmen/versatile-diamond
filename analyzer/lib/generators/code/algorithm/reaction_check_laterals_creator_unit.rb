@@ -138,7 +138,8 @@ module VersatileDiamond
           # @param [TypicalReaction | LateralReaction] reaction which will checked out
           # @return [String] the cpp code string with call
           def checkout_reaction_from_one(reaction)
-            "#{sidepiece_var_name}->checkoutReaction<#{reaction.class_name}>()"
+            var_name = namer.name_of(other_side_species)
+            "#{var_name}->checkoutReaction<#{reaction.class_name}>()"
           end
 
           # Gets call which checks reaction by two species
