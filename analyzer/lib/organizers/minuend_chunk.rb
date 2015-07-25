@@ -27,15 +27,6 @@ module VersatileDiamond
         ChunkResidual.new(owner, rest_links(other, mirror), [other])
       end
 
-      # Provides comparison by class of each instance
-      # @param [MinuendSpec] other see at #<=> same argument
-      # @return [Integer] the result of comparation
-      def order_classes(other, &block)
-        typed_order(self, other, Chunk) do
-          typed_order(self, other, ChunkResidual, &block)
-        end
-      end
-
       # Also checks that key is one of targets
       # @param [Array] _ does not used
       # @param [Array] key the one of links graph key

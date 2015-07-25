@@ -52,7 +52,7 @@ module VersatileDiamond
             let(:lateral_reactions) { [dept_middle_lateral_df] }
             it_behaves_like :check_base_class_name do
               let(:target) { dept_middle_lateral_df }
-              let(:outer_class_name) { 'SingleLateral' }
+              let(:outer_class_name) { 'MultiLateral' }
               let(:templ_args) { ['FORWARD_DIMER_FORMATION_MIDDLE_LATERAL', 2] }
             end
           end

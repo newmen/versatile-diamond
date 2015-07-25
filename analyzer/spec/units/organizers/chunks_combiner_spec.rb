@@ -32,8 +32,8 @@ module VersatileDiamond
 
           it_behaves_like :check_combined_reactions do
             let(:rates) { [1.0, 1.0, 1.0, 2.0] }
-            let(:parents) { [0, 0, 1, 2] }
-            let(:internal_chunks) { [1, 1, 2, 2] }
+            let(:parents) { [0, 0, 2, 2] }
+            let(:internal_chunks) { [1, 1, 3, 2] }
           end
         end
 
@@ -63,7 +63,7 @@ module VersatileDiamond
           it_behaves_like :check_combined_reactions do
             let(:rates) { [1.0, 4.0] }
             let(:parents) { [0, 2] }
-            let(:internal_chunks) { [1, 2] }
+            let(:internal_chunks) { [1, 3] }
           end
         end
       end

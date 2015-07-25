@@ -35,36 +35,8 @@ module VersatileDiamond
       #
       # @return [Array] the list of unresolved lateral reactions
       def combine_children_laterals!
-        chunks = children.map(&:chunk)
-        all_chunks = organize_chunks!(chunks)
-
-        combine_laterals(all_chunks)
-      end
-
-    private
-
-      # Builds by passed chunks new possible lateral reactions
-      # @param [Array] all_chunks the list of all chunks which will be recombined
-      #   between each other for detect unresolved lateral reactions
-      # @return [Array] the list of builded lateral reactions
-      def combine_laterals(all_chunks)
         combiner = ChunksCombiner.new(self)
-        combiner.combine(all_chunks)
-      end
-
-      # Organizes dependencies between chunks by dynamic programming table
-      # @param [Array] chunks the list of chunks each item of which will be organized
-      # @return [Array] the list of all different chunks which could take plase on
-      #   surface under simulation
-      def organize_chunks!(chunks)
-        if chunks.combination(2).any? { |a, b| a.same?(b) }
-          raise 'Same chunks presented'
-        end
-
-        table = ChunksTable.new(chunks)
-        chunks + chunks.reduce([]) do |independent_chunks, chunk|
-          chunk.organize_dependencies!(table, independent_chunks)
-        end
+        combiner.combine(children.map(&:chunk))
       end
     end
 

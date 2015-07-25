@@ -80,7 +80,7 @@ module VersatileDiamond
           expect(ewb_chunk.parents.size).to eq(2)
 
           # expect(subject.size).to eq(2)
-          expect(subject.map(&:full_rate)).to match_array([1.0, 22.0, 22.0])
+          expect(subject.map(&:full_rate)).to match_array([1.0, 22.0, 3.0])
         end
       end
     end

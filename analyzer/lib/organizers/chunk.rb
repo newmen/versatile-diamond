@@ -54,31 +54,10 @@ module VersatileDiamond
         true
       end
 
-      # Organizes dependencies of current chunk from another chunks from table. If
-      # residual of current chunk in table is not fully matched then independent
-      # chunks stores as parent of current chunk and extend passed array of independent
-      # chunks if already is not presented in it.
-      #
-      # @param [ChunksTable] table from which the best residual will be gotten
-      # @param [Array] independent_chunks the list of independent chunks which gotten
-      #   for another chunks
-      # @return [Array] the possible extendend array of independent_chunks
-      def organize_dependencies!(table, independent_chunks)
-        best = table.best(self)
-        best.parents.each { |parent| store_parent(parent) }
-
-        unless best.fully_matched?
-          ind_chunk = best.independent_chunk
-          other_ind_chunk = independent_chunks.find { |ich| ind_chunk.same?(ich) }
-          if other_ind_chunk
-            store_parent(other_ind_chunk)
-          else
-            independent_chunks << ind_chunk
-            store_parent(ind_chunk)
-          end
-        end
-
-        independent_chunks
+      # Collecs all names from there objects and joins it by 'and' string
+      # @return [String] the combined name by names of there objects
+      def tail_name
+        @_tail_name ||= @theres.map(&:description).join(' and ')
       end
 
       def inspect
@@ -103,23 +82,6 @@ module VersatileDiamond
             acc[sa1] ||= []
             acc[sa1] += rels
           end
-        end
-      end
-
-      # Collecs all names from there objects and joins it by 'and' string
-      # @return [String] the combined name by names of there objects
-      def tail_name
-        @_tail_name ||= @theres.map(&:description).join(' and ')
-      end
-
-      # Provides the lowest level of comparing two minuend instances
-      # @param [MinuendChunk] other comparing instance
-      # @return [Proc] the core of comparison
-      def comparing_core(other)
-        if self.class == other.class
-          -> { 0 }
-        else
-          -> { -1 }
         end
       end
 

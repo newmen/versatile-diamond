@@ -12,6 +12,10 @@ module VersatileDiamond
         it { expect(ind_swr).not_to eq(ind_bwr) }
       end
 
+      describe '#<=>' do
+        it { expect(ind_bwr <=> ind_swr).to eq(0) }
+      end
+
       describe '#same?' do
         it { expect(ind_bwr.same?(ind_swr)).to be_truthy }
         it { expect(ind_swr.same?(ind_bwr)).to be_truthy }

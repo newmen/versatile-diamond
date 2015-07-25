@@ -85,7 +85,7 @@ module VersatileDiamond
 
               it_behaves_like :check_code do
                 let(:lateral_reactions) { [dept_middle_lateral_df] }
-                let(:class_name) { generating_class_name }
+                let(:class_name) { generating_class_names.first }
               end
             end
           end

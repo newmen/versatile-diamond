@@ -40,8 +40,13 @@ module VersatileDiamond
         [self]
       end
 
+      # Nothing to remember
+      def remember_internal_chunks!
+        # pass
+      end
+
       # No parents no organization
-      def reorganize_parents!
+      def reorganize_parents!(_)
         # pass
       end
 

@@ -6,15 +6,6 @@ module VersatileDiamond
       include MinuendChunk
       extend Forwardable
 
-      class << self
-        # Gets empty residual instance
-        # @param [Chunk] owner see at #new same argument
-        # @return [ChunkResidual] the empty residual instance
-        def empty(owner)
-          new(owner, owner.links, [])
-        end
-      end
-
       attr_reader :links, :parents
 
       # Initializes the chunk residual
@@ -73,14 +64,13 @@ module VersatileDiamond
         self.class.new(diff.owner, diff.links, parents + diff.parents)
       end
 
-      # Provides the lowest level of comparing two minuend instances
-      # @param [MinuendChunk] other comparing instance
-      # @return [Proc] the core of comparison
+      # Gets core for ordering chunks
+      # @param [ChunkResidual] other comparing chunk
+      # @return [Integer] comparison result
+      # @override
       def comparing_core(other)
-        if self.class == other.class
-          -> { other.parents.size <=> parents.size }
-        else
-          -> { 1 }
+        compare_total_links_num(other) do
+          other.parents.size <=> parents.size
         end
       end
 

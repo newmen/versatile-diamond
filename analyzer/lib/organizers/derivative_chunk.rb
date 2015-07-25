@@ -77,19 +77,31 @@ module VersatileDiamond
       # @return [Float] the rate of reaction which use the current chunk
       def full_rate
         tf_rate = typical_reaction.full_rate
-        original_parents = parents.select(&:original?)
-        all_possible_combinations(original_parents).reverse.each do |slice|
-          rates = slice.map do |cs|
-            value = @variants[Multiset.new(cs)]
-            value && value.original? && value.full_rate
+        max_prs = maximal_parents
+        if max_prs.size == 1
+          max_prs.first.full_rate
+        else
+          all_possible_combinations(max_prs).reverse.each do |slice|
+            rates = slice.map do |cs|
+              value = @variants[Multiset.new(cs)]
+              value && value.original? && value.full_rate
+            end
+
+            good_rates = rates.select { |x| x }
+            # selecs maximal different rate
+            return good_rates.max_by { |x| (tf_rate - x).abs } unless good_rates.empty?
           end
 
-          good_rates = rates.select { |x| x }
-          # selecs maximal different rate
-          return good_rates.max_by { |x| (tf_rate - x).abs } unless good_rates.empty?
+          tf_rate
         end
+      end
 
-        tf_rate
+      # Selects biggest original parents
+      # @return [Array] the list of largest original parents
+      def maximal_parents
+        original_parents = parents.select(&:original?)
+        max_num = original_parents.map(&:total_links_num).max
+        original_parents.select { |pr| pr.total_links_num == max_num }
       end
 
       # Gets all possible combinations of array items

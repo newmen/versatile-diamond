@@ -51,7 +51,7 @@ module VersatileDiamond
           # Gets ordered list of checking lateral reactions
           # @return [Array] the list of reactions which will checked
           def checking_reactions
-            @lateral_chunks.ordered_small_lateral_reactions
+            @lateral_chunks.unconcrete_affixes
           end
 
           # Gets the cpp code lines with concretization of lateral reactions

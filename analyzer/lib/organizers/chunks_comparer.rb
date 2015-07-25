@@ -3,7 +3,29 @@ module VersatileDiamond
 
     # Provides methods for compare chunks between them
     module ChunksComparer
+      include Modules::OrderProvider
       include Mcs::SpecsAtomsComparator
+
+      # Compares two chunk between each other
+      # @param [ChunkComparer] other comparing chunk
+      # @return [Integer] comparison result
+      def <=> (other)
+        typed_order(self, other, DerivativeChunk) do
+          typed_order(self, other, Chunk) do
+            typed_order(self, other, IndependentChunk) do
+              typed_order(self, other, ChunkResidual) do
+                comparing_core(other)
+              end
+            end
+          end
+        end
+      end
+
+      # Counts total number of links
+      # @return [Integer] the number of links
+      def total_links_num
+        links.reduce(0) { |acc, rels| acc + 1 + rels.size }
+      end
 
       # Compares two chunk instances and check that them are same
       # @param [ChunksComparer] other chunk which will be compared
@@ -35,6 +57,23 @@ module VersatileDiamond
           ts = [target?(sa1), other.target?(sa2)]
           (ts.all? || !ts.any?) && same_sa?(sa1, sa2)
         end
+      end
+
+      # Gets core for ordering chunks
+      # @param [ChunkComparer] other comparing chunk
+      # @return [Integer] comparison result
+      def comparing_core(other)
+        order(self, other, :clean_links, :size) do
+          compare_total_links_num(other)
+        end
+      end
+
+      # Compares two chunks by number of total links num
+      # @param [ChunkComparer] other comparing chunk
+      # @yield do internal compares if total links numbers are equal
+      # @return [Integer] comparison result
+      def compare_total_links_num(other, &block)
+        order(self, other, :total_links_num, &block)
       end
 
       # Checks that targets of current and other are same

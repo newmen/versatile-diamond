@@ -4,9 +4,10 @@ module VersatileDiamond
   module Organizers
 
     describe DerivativeChunk, type: :organizer do
-      before { dept_end_lateral_df.send(:store_parent, dept_dimer_formation) }
+      before { dept_end_lateral_df.send(:store_parent, typical_reaction) }
+      let(:typical_reaction) { dept_dimer_formation }
       let(:derv_chunk) do
-        described_class.new(dept_dimer_formation, [end_chunk] * 2, {})
+        described_class.new(typical_reaction, [end_chunk] * 2, {})
       end
 
       let(:ab) { dimer_formation.source.first }
@@ -91,6 +92,17 @@ module VersatileDiamond
         end
 
         it { expect(derv_chunk.links).to match_graph(links) }
+      end
+
+      describe '#<=>' do
+        before { dept_ewb_lateral_df.send(:store_parent, typical_reaction) }
+        let(:other) do
+          chunks = [(ewb_chunk - end_chunk).independent_chunk] + [end_chunk] * 2
+          described_class.new(typical_reaction, chunks, {})
+        end
+
+        it { expect(derv_chunk <=> other).to eq(-1) }
+        it { expect(other <=> derv_chunk).to eq(1) }
       end
 
       describe '#original?' do

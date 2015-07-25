@@ -8,6 +8,8 @@ module VersatileDiamond
         # Initializes typical reaction class code generator
         def initialize(*)
           super
+          @_children = nil
+
           @_used_iterators = nil
           @_lateral_chunks = nil
           @_sidepiece_species = nil
@@ -53,6 +55,13 @@ module VersatileDiamond
         end
 
       private
+
+        # Orders children lateral reaction
+        # @return [Array] the ordered children lateral reactions list
+        # @override
+        def children
+          @_children ||= super.sort_by(&:chunk)
+        end
 
         # Checks that current reaction is a tail of overall engine find algorithm
         # @return [Boolean] is final reaction in reactions tree or not

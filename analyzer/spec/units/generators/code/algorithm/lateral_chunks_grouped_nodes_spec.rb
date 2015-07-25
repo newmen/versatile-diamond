@@ -110,7 +110,7 @@ module VersatileDiamond
               let(:grouped_graph) do
                 {
                   [t2, t1] => [[[d1, d2], param_100_cross]],
-                  [d2, d1] => [[[t1, t2], param_100_cross]],
+                  [d1, d2] => [[[t2, t1], param_100_cross]],
                   [t2] => [[[b], param_100_front]],
                   [b] => [[[t2], param_100_front]]
                 }

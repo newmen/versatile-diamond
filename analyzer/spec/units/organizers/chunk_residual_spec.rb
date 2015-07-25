@@ -24,16 +24,6 @@ module VersatileDiamond
         it { expect(swr <=> bwr).to eq(1) }
       end
 
-      describe '#<' do
-        it { expect(small < big).to be_truthy }
-        it { expect(big < small).to be_falsey }
-      end
-
-      describe '#<=' do
-        it { expect(small <= big).to be_truthy }
-        it { expect(big <= small).to be_falsey }
-      end
-
       describe '#-' do
         it { expect(small).to be_a(described_class) }
 

@@ -15,14 +15,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#self.reorder' do
-        let(:independent_chunk) { (ewb_chunk - end_chunk).independent_chunk }
-        let(:chunks) { [independent_chunk, end_chunk, ewb_chunk, middle_chunk] }
-        it { expect(BaseChunk.reorder(chunks.shuffle)).to eq(chunks) }
-        it { expect(BaseChunk.reorder(chunks.shuffle, direction: :desc)).
-          to eq(chunks.reverse) }
-      end
-
       describe '#lateral_reaction' do
         it { expect(end_chunk.lateral_reaction).to eq(dept_end_lateral_df) }
         it { expect(middle_chunk.lateral_reaction).to eq(dept_middle_lateral_df) }
@@ -73,22 +65,6 @@ module VersatileDiamond
 
         it { expect(residual <=> end_chunk).to eq(-1) }
         it { expect(end_chunk <=> residual).to eq(1) }
-      end
-
-      describe '#<' do
-        it { expect(end_chunk < middle_chunk).to be_truthy }
-        it { expect(middle_chunk < end_chunk).to be_falsey }
-
-        it { expect(residual < end_chunk).to be_falsey }
-        it { expect(end_chunk < residual).to be_truthy }
-      end
-
-      describe '#<=' do
-        it { expect(end_chunk <= middle_chunk).to be_truthy }
-        it { expect(middle_chunk <= end_chunk).to be_falsey }
-
-        it { expect(end_chunk <= residual).to be_truthy }
-        it { expect(residual <= end_chunk).to be_falsey }
       end
 
       describe '#-' do
@@ -207,35 +183,6 @@ module VersatileDiamond
 
       describe '#original?' do
         it { expect(end_chunk.original?).to be_truthy }
-      end
-
-      describe '#organize_dependencies!' do
-        shared_examples_for :check_organization do
-          let(:table) { ChunksTable.new([end_chunk, middle_chunk, ewb_chunk]) }
-          let(:result_indept_chunks) { subject.organize_dependencies!(table, []) }
-          before { result_indept_chunks }
-          it { expect(subject.parents).to match_array(parents) }
-          it { expect(result_indept_chunks).to match_array(independent_chunks) }
-        end
-
-        it_behaves_like :check_organization do
-          subject { end_chunk }
-          let(:parents) { [] }
-          let(:independent_chunks) { [] }
-        end
-
-        it_behaves_like :check_organization do
-          subject { middle_chunk }
-          let(:parents) { [end_chunk] * 2 }
-          let(:independent_chunks) { [] }
-        end
-
-        it_behaves_like :check_organization do
-          subject { ewb_chunk }
-          let(:ind_chunk) { table.best(subject).independent_chunk }
-          let(:parents) { [end_chunk, ind_chunk] }
-          let(:independent_chunks) { [ind_chunk] }
-        end
       end
     end
 

@@ -25,7 +25,7 @@ module VersatileDiamond
           @all_chunks = lateral_reactions.map(&:chunk)
           @root_chunks = lateral_reactions.flat_map(&:internal_chunks).uniq
 
-          @_total_chunk, @_ordered_small_lateral_reactions = nil
+          @_total_chunk, @_unconcrete_affixes = nil
         end
 
         # The method for detection relations between
@@ -67,17 +67,8 @@ module VersatileDiamond
         # lateral reactions
         #
         # @return [Array] the list of single lateral reactions
-        def ordered_small_lateral_reactions
-          return @_ordered_small_lateral_reactions if @_ordered_small_lateral_reactions
-
-          # :(
-          small_reactions = @affixes.select(&:concretizable?)
-          chunks = small_reactions.map(&:chunk)
-          ordered_chunks = Organizers::BaseChunk.reorder(chunks)
-
-          @_ordered_small_lateral_reactions = small_reactions.sort_by do |react|
-            ordered_chunks.index(react.chunk)
-          end
+        def unconcrete_affixes
+          @_unconcrete_affixes ||= @affixes.select(&:concretizable?)
         end
 
         # Checks that target reaction is mono-reactant

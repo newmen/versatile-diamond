@@ -26,7 +26,9 @@ module VersatileDiamond
           chunk && !(chunks.include?(chunk) && chunk.original?)
         end
 
-        (chunks + unregistered_chunks).each(&:reorganize_parents!)
+        all_chunks = (chunks + unregistered_chunks).uniq
+        all_chunks.each { |ch| ch.remember_internal_chunks! }
+        all_chunks.each { |ch| ch.reorganize_parents!(all_chunks) }
         unregistered_chunks.map(&:lateral_reaction)
       end
 
@@ -67,10 +69,8 @@ module VersatileDiamond
           unless acc[total_key]
             acc[total_key] = chunk
             reused_independent.each do |ch|
-              unless chunk.parents.include?(ch)
-                chunk.store_parent(ch)
-                acc[Multiset[ch]] = ch
-              end
+              chunk.store_parent(ch)
+              acc[Multiset[ch]] = ch
             end
           end
         end
@@ -129,7 +129,7 @@ module VersatileDiamond
         else
           maximal = with_original.max_by { |k, _| k.select(&:original?).max }
           parents = maximal.first.to_a.reduce([]) do |acc, chunk|
-            acc + (chunk.parents.empty? ? [chunk] : chunk.parents)
+            acc + chunk.internal_chunks
           end
 
           mprs = Multiset.new(parents)

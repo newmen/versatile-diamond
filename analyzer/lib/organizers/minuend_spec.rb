@@ -3,8 +3,31 @@ module VersatileDiamond
 
     # Provides method for minuend behavior
     module MinuendSpec
+      include Modules::OrderProvider
+      include Modules::ProcsReducer
       include Organizers::LinksCleaner
       include Organizers::Minuend
+
+      # Compares two minuend instances
+      # @param [Minuend] other the comparable minuend instance
+      # @return [Integer] the result of comparation
+      def <=> (other)
+        compare_with(other)
+      end
+
+      # Checks that current instance is less than other
+      # @param [Minuend] other the comparable minuend instance
+      # @return [Boolean] is less or not
+      def < (other)
+        compare_with(other, strong_types_order: false) < 0
+      end
+
+      # Checks that current instance is less than other or equal
+      # @param [Minuend] other the comparable minuend instance
+      # @return [Boolean] is less or equal or not
+      def <= (other)
+        self == other || self < other
+      end
 
       # Provides relations of atom in current resudual
       # @param [Concepts::Atom | Concepts::AtomRelation] atom for which relations will
@@ -31,7 +54,14 @@ module VersatileDiamond
         Mcs::SpeciesComparator.make_mirror(self, spec)
       end
 
+
     protected
+
+      # Counts the relations number in current links
+      # @return [Integer] the number of relations
+      def relations_num
+        links.values.map(&:size).reduce(:+)
+      end
 
       # Gets the array of used relations without excess position relations
       # @param [Atom] atom see at #relations_of same argument
@@ -60,6 +90,27 @@ module VersatileDiamond
         end
 
         SpecResidual.new(owner, residuals, atoms_to_parents)
+      end
+
+      # Compares two minuend instances
+      # @param [Minuend] other the comparable minuend instance
+      # @option [Boolean] :strong_types_order is the flag which if set then types info
+      #   also used for ordering
+      # @return [Integer] the result of comparation
+      def compare_with(other, strong_types_order: true)
+        procs = []
+        procs << -> &block { order(self, other, :links, :size, &block) }
+        procs << -> &block { order_classes(other, &block) } if strong_types_order
+        procs << -> &block { order_relations(other, &block) }
+
+        reduce_procs(procs, &comparing_core(other)).call
+      end
+
+      # Provides comparison by number of relations
+      # @param [Minuend] other see at #<=> same argument
+      # @return [Integer] the result of comparation
+      def order_relations(other, &block)
+        order(self, other, :relations_num, &block)
       end
 
       # Provides the lowest level of comparing two minuend instances

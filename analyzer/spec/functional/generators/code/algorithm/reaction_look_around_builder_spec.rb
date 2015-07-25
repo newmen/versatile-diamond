@@ -85,7 +85,7 @@ module VersatileDiamond
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
-            LateralSpec *species[2] = { neighbours1[1]->specByRole<Dimer>(#{dimer_cr}), neighbours1[0]->specByRole<Dimer>(#{dimer_cr}) };
+            LateralSpec *species[2] = { neighbours1[0]->specByRole<Dimer>(#{dimer_cr}), neighbours1[1]->specByRole<Dimer>(#{dimer_cr}) };
             if (species[0] && species[0] == species[1])
             {
                 chunks[index++] = new ForwardDimerFormationEndLateral(this, species[0]);
