@@ -785,6 +785,13 @@ module VersatileDiamond
         end
         df_there(:on_middle, :at_middle)
 
+        set(:end_lateral_idd) do
+          dmr = idd_source.first
+          targets_hash = { one: [dmr, dmr.atom(:cr)], two: [dmr, dmr.atom(:cl)] }
+          there = at_end.concretize(targets_hash)
+          incoherent_dimer_drop.lateral_duplicate('end lateral', [there])
+        end
+
         set(:end_lateral_df) do
           dimer_formation.lateral_duplicate('end lateral', [on_end])
         end

@@ -24,8 +24,6 @@ module VersatileDiamond
           let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
           subject { reaction.lateral_chunks }
 
-          let(:typical_reaction) { dept_dimer_formation }
-
           let(:lateral_bridge) { (sidepiece_specs - [lateral_dimer]).first }
           let(:lateral_dimer) do
             sidepiece_specs.select { |spec| spec.name == :dimer }.first
@@ -42,7 +40,8 @@ module VersatileDiamond
           end
 
           describe '#build' do
-            describe 'just cross neighbours' do
+            describe 'dimer formation just cross neighbours' do
+              let(:typical_reaction) { dept_dimer_formation }
               let(:spec) { lateral_dimer }
               let(:find_algorithm) do
                 <<-CODE
@@ -89,7 +88,8 @@ module VersatileDiamond
               end
             end
 
-            describe 'three sides neighbours' do
+            describe 'dimer formation three sides neighbours' do
+              let(:typical_reaction) { dept_dimer_formation }
               let(:lateral_reactions) { [dept_ewb_lateral_df] }
               let(:class_name_with_bridge) { generating_class_names[0] }
               let(:class_name_with_dimer) { generating_class_names[1] }
@@ -199,6 +199,51 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'incoherent dimer drop' do
+              it_behaves_like :check_code do
+                let(:typical_reaction) { dept_incoherent_dimer_drop }
+                let(:lateral_reactions) { [dept_end_lateral_idd] }
+                let(:spec) { lateral_dimer }
+                let(:id_cr) { role(dept_twise_incoherent_dimer, :cr) }
+                let(:id_cl) { role(dept_twise_incoherent_dimer, :cl) }
+
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atoms1[2] = { target->atom(0), target->atom(3) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+        {
+            SpecificSpec *species[2] = { neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cr}), neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cl}) };
+            if (species[0] && species[0] == species[1])
+            {
+                {
+                    ForwardIncoherentDimerDropEndLateral *nbrReaction = species[0]->checkoutReaction<ForwardIncoherentDimerDropEndLateral>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new ForwardIncoherentDimerDropEndLateral(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    ForwardIncoherentDimerDrop *nbrReaction = species[0]->checkoutReaction<ForwardIncoherentDimerDrop>();
+                    if (nbrReaction)
+                    {
+                        SingleLateralReaction *chunk = new ForwardIncoherentDimerDropEndLateral(nbrReaction, target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+                  CODE
+                end
+              end
+            end
+
           end
         end
 

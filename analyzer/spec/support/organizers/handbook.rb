@@ -124,6 +124,7 @@ module VersatileDiamond
         end
 
         define_dependents(DependentLateralReaction, [
+          :end_lateral_idd,
           :end_lateral_df,
           :middle_lateral_df,
           :ewb_lateral_df,

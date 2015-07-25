@@ -68,7 +68,7 @@ module VersatileDiamond
         #
         # @param [Specie] specie which should be one of sidepiece species of reaction
         # @return [Array] the list of single lateral reactions
-        # TODO: must be private
+        # TODO: must be private (just for rspecs)
         def unconcrete_affixes
           @_unconcrete_affixes ||= @affixes.select(&:concretizable?)
         end
