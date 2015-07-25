@@ -17,6 +17,14 @@ module VersatileDiamond
             @target_specie = target_specie
           end
 
+          # Checks that passed spec equal to using specie
+          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   spec which will checked
+          # @return [Boolean] is target spec or not
+          def unit_spec?(spec)
+            target_specie.proxy_spec.spec == spec
+          end
+
         private
 
           attr_reader :target_specie

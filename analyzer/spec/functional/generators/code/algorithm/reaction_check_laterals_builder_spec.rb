@@ -34,9 +34,9 @@ module VersatileDiamond
           let(:ab_ct) { role(dept_activated_bridge, :ct) }
           let(:aib_ct) { role(dept_activated_incoherent_bridge, :ct) }
 
-          let(:generating_class_name) { combined_lateral_reaction.class_name }
+          let(:generating_class_names) { combined_lateral_reaction.map(&:class_name) }
           let(:combined_lateral_reaction) do
-            reaction.send(:children).find do |lr|
+            reaction.send(:children).select do |lr|
               !lr.chunk.original? && lr.chunk.parents.size == 0
             end
           end

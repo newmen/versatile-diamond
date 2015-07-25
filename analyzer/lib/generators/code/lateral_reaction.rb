@@ -19,10 +19,8 @@ module VersatileDiamond
         # Checks that current reaction is a tail of overall engine find algorithm
         # @return [Boolean] is final reaction in reactions tree or not
         def concretizable?
-          chunk = reaction.chunk
-          reaction.parent.children.map(&:chunk).any? do |ch|
-            ch.parents.include?(chunk)
-          end
+          # is chunk have children or not?
+          other_scope_chunks.any? { |ch| ch.parents.include?(chunk) }
         end
 
       private
@@ -61,6 +59,12 @@ module VersatileDiamond
         # @return [Array] the empty list
         def body_include_objects
           []
+        end
+
+        # Gets list of chunks which belongs to current chunks scope except self
+        # @return [Array] the list of current chunks scope except self
+        def other_scope_chunks
+          reaction.parent.children.map(&:chunk).reject { |ch| ch == chunk }
         end
       end
 

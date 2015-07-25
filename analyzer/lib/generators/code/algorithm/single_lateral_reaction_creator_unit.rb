@@ -105,7 +105,7 @@ module VersatileDiamond
           # @return [String] the name of variable which passed to constructor of
           #   creating lateral reaction
           def sidepiece_var_name
-            namer.name_of(sidepiece_specie)
+            namer.name_of(sidepiece_species)
           end
 
           # Collects different atoms for each using specie

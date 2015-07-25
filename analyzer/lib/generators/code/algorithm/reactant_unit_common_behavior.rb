@@ -113,8 +113,11 @@ module VersatileDiamond
             other_sa = [other_concept_spec, other_atom]
             same_rels = relations_checker.links[own_sa].select { |_, r| r == relation }
             diff_rels = same_rels.reject { |sa, _| sa == other_sa }
+            avail_rels = diff_rels.select do |(s, a), _|
+              unit_spec?(s) || other.unit_spec?(s) || name_of(s) || name_of(a)
+            end
 
-            diff_rels.map(&:first).each(&block)
+            avail_rels.map(&:first).each(&block)
           end
         end
 

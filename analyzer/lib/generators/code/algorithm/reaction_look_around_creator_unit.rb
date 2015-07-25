@@ -23,7 +23,7 @@ module VersatileDiamond
           # reaction
           #
           # @return [Array] the list of sidepiece species
-          def sidepiece_specie
+          def sidepiece_species
             different_species
           end
         end

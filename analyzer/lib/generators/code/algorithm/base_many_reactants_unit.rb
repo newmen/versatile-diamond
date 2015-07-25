@@ -36,6 +36,14 @@ module VersatileDiamond
             uniq_specie_for(atom).proxy_spec
           end
 
+          # Checks that passed spec equal to any using specie
+          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   spec which will checked
+          # @return [Boolean] is target spec or not
+          def unit_spec?(spec)
+            target_species.any? { |target_spec| target_spec.proxy_spec.spec == spec }
+          end
+
           def inspect
             "BMRSU:(#{inspect_species_atoms_names}])"
           end

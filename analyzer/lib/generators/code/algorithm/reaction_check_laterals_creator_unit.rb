@@ -90,7 +90,7 @@ module VersatileDiamond
           #
           # @return [String] the assertion code line
           def assert_havent_line
-            fail 'Too many sidepiece species' if sidepiece_specie.size > 1
+            fail 'Too many sidepiece species' if sidepiece_species.size > 1
             have_call = "#{sidepiece_var_name}->haveReaction(#{NBR_REACTION_NAME})"
             code_line("assert(!#{have_call});")
           end
@@ -169,7 +169,7 @@ module VersatileDiamond
           # reaction
           #
           # @return [Array] the list of sidepiece species
-          def sidepiece_specie
+          def sidepiece_species
             @sidepieces
           end
 
