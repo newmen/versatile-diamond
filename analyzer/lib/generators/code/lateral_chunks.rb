@@ -63,12 +63,23 @@ module VersatileDiamond
           @generator.reaction_class(chunk.lateral_reaction.name)
         end
 
-        # Gets the ordered list of lateral reactions which are parents for some other
-        # lateral reactions
+        # Gets the ordered list of lateral reactions which are root lateral reactions
+        # and uses passed specie
         #
+        # @param [Specie] specie which should be one of sidepiece species of reaction
         # @return [Array] the list of single lateral reactions
         def unconcrete_affixes
           @_unconcrete_affixes ||= @affixes.select(&:concretizable?)
+        end
+
+        # Gets the ordered list of root lateral reactions and uses passed specie
+        # @param [Specie] specie which should be one of sidepiece species of reaction
+        # @return [Array] the list of single lateral reactions
+        def root_affixes_for(specie)
+          unconcrete_affixes.select do |lateral_reaction|
+            lateral_reaction.chunk.parents.empty? &&
+              lateral_reaction.sidepiece_species.include?(specie)
+          end
         end
 
         # Checks that target reaction is mono-reactant

@@ -45,13 +45,9 @@ module VersatileDiamond
         def check_laterals_builder_from(specie)
           return @_check_laterals_builder if @_check_laterals_builder
 
-          simple_specie_users = children.select do |lateral_reaction|
-            lateral_reaction.concretizable? &&
-              lateral_reaction.sidepiece_species.include?(specie)
-          end
-
-          args = [generator, simple_specie_users, lateral_chunks, specie]
-          @_check_laterals_builder = Algorithm::ReactionCheckLateralsBuilder.new(*args)
+          builder_class = Algorithm::ReactionCheckLateralsBuilder
+          @_check_laterals_builder =
+            builder_class.new(generator, lateral_chunks, specie)
         end
 
       private

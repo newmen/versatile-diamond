@@ -8,13 +8,10 @@ module VersatileDiamond
 
           # Inits builder
           # @param [EngineCode] generator the major engine code generator
-          # @param [Array] lateral_reactions the list of reactions which existance
-          #  should be checked
           # @param [LateralChunks] lateral_chunks the target object by which the
           #   algorithm will be generated
           # @param [Specie] specie from which the algorithm will be builded
-          def initialize(generator, lateral_reactions, lateral_chunks, specie)
-            @lateral_reactions = lateral_reactions
+          def initialize(generator, lateral_chunks, specie)
             @specie = specie
             super(generator, lateral_chunks)
           end
@@ -36,7 +33,7 @@ module VersatileDiamond
           # Builds checking bodies for all lateral reactions
           # @return [String] the string with cpp code
           def body
-            @lateral_reactions.reduce('') do |acc, reaction|
+            lateral_chunks.root_affixes_for(@specie).reduce('') do |acc, reaction|
               acc + body_for(reaction)
             end
           end
