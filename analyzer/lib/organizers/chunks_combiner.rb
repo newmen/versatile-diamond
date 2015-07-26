@@ -23,10 +23,10 @@ module VersatileDiamond
       def combine(chunks)
         variants = recombine_variants(collect_variants(chunks))
         unregistered_chunks = variants.values.select do |chunk|
-          chunk && !(chunks.include?(chunk) && chunk.original?)
+          chunk && !chunks.include?(chunk)
         end
 
-        all_chunks = (chunks + unregistered_chunks).uniq
+        all_chunks = chunks + unregistered_chunks
         all_chunks.each { |ch| ch.remember_internal_chunks! }
         all_chunks.each { |ch| ch.reorganize_parents!(all_chunks) }
         unregistered_chunks.map(&:lateral_reaction)
@@ -77,7 +77,7 @@ module VersatileDiamond
       # @param [Hash] variants the initial variants hash
       # @return [Hash] the full variants hash
       def recombine_variants(variants)
-        presented_cmbs = variants.keys
+        presented_cmbs = variants.to_a.select(&:last).map(&:first)
         until presented_cmbs.empty?
           first = presented_cmbs.first
           extended_cmbs = presented_cmbs.map { |cmb| cmb + first }
@@ -86,8 +86,7 @@ module VersatileDiamond
             arr = cmb.to_a
             if mergeable?(arr)
               presented_cmbs << cmb
-              merged = MergedChunk.new(@typical_reaction, arr, variants)
-              variants = update_variants_to_best(variants, cmb, merged)
+              variants[cmb] = MergedChunk.new(@typical_reaction, arr, variants)
             else
               variants[cmb] = false
             end
@@ -95,20 +94,6 @@ module VersatileDiamond
 
           presented_cmbs.shift # delete first chunk
         end
-        variants
-      end
-
-      # Updates passed variants by select same derivative chunk with maximal parent
-      # chunks and updates all same others to false merged
-      #
-      # @param [Hash] variants which will be updated
-      # @param [Multimap] cmb the chunks combinations
-      # @param [MergedChunk] merged which will be compared with all resolved chunks
-      # @return [Hash] the updated variants (but original variants hash updates too)
-      def update_variants_to_best(variants, cmb, merged)
-        sames = variants.select { |_, v| v && merged.same?(v) }.to_a + [[cmb, merged]]
-        best = sames.max_by { |k, _| k.size }
-        (sames - [best]).each { |k, _| variants[k] = false }
         variants
       end
 
