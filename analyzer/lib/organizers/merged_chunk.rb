@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Describes the chunk which constructs from another chunks and can builds lateral
     # reaction for which it was builded
-    class DerivativeChunk < BaseChunk
+    class MergedChunk < BaseChunk
       include Modules::ExtendedCombinator
       include Modules::ListsComparer
       include ChunkParentsOrganizer
@@ -25,7 +25,7 @@ module VersatileDiamond
 
         @typical_reaction = typical_reaction
 
-        raise 'Derivative chunk should have more that one parent' if chunks.size < 2
+        raise 'Merged chunk should have more that one parent' if chunks.size < 2
         @parents = chunks
         @variants = variants
 
@@ -48,8 +48,12 @@ module VersatileDiamond
         false
       end
 
+      def to_s
+        "Merged chunk with #{tail_name}"
+      end
+
       def inspect
-        "Derivative chunk with #{tail_name}"
+        "#{to_s} #{object_id}"
       end
 
     private

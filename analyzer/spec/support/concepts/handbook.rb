@@ -587,6 +587,22 @@ module VersatileDiamond
             df_source, df_products, df_atom_map)
         end
 
+        set(:sdf_source) { [activated_bridge.dup, activated_bridge.dup] }
+        set(:sdf_products) { [dimer.dup] }
+        set(:sdf_names_to_specs) do
+          {
+            source: [:b1, :b2].zip(sdf_source),
+            products: [:d].zip(sdf_products)
+          }
+        end
+        set(:sdf_atom_map) do
+          Mcs::AtomMapper.map(sdf_source, sdf_products, sdf_names_to_specs)
+        end
+        set(:symmetric_dimer_formation) do
+          Reaction.new(:forward, 'symmetric dimer formation',
+            sdf_source, sdf_products, sdf_atom_map)
+        end
+
         set(:idd_source) { [twise_incoherent_dimer.dup] }
         set(:idd_products) do
           [activated_incoherent_bridge.dup, activated_incoherent_bridge.dup]
@@ -828,6 +844,42 @@ module VersatileDiamond
         df_there(:on_middle_with_bridge, :at_middle_with_bridge)
         set(:mwb_lateral_df) do
           dimer_formation.lateral_duplicate('m.w.b. lateral', [on_middle_with_bridge])
+        end
+
+        # Provides similar definition of where object for symmetric dimer formation
+        # reaction
+        def self.sdf_where(where_name, short_name, target, position)
+          set(where_name) do
+            ab = activated_bridge.dup
+            w = Where.new(short_name, where_name.to_s.gsub('_', ' '), specs: [ab])
+            w.raw_position(target, [ab, ab.atom(:ct)], public_send(position)); w
+          end
+        end
+        sdf_where(:wone_front_ab, :of_ab, :one, :position_100_front)
+        sdf_where(:wtwo_front_ab, :tf_ab, :two, :position_100_front)
+        sdf_where(:wone_cross_ab, :oc_ab, :one, :position_100_cross)
+        sdf_where(:wtwo_cross_ab, :tc_ab, :two, :position_100_cross)
+
+        # Provides similar definition of there object for symmetric dimer formation
+        # reaction
+        def self.sdf_there(there_name, where_name, target, ab_index)
+          set(there_name) do
+            ab = sdf_source[ab_index]
+            public_send(where_name).concretize({ target => [ab, ab.atom(:ct)] })
+          end
+        end
+        sdf_there(:tone_front_ab, :wone_front_ab, :one, 0)
+        sdf_there(:ttwo_front_ab, :wtwo_front_ab, :two, 1)
+        sdf_there(:tone_cross_ab, :wone_cross_ab, :one, 0)
+        sdf_there(:ttwo_cross_ab, :wtwo_cross_ab, :two, 1)
+
+        set(:small_ab_lateral_sdf) do
+          theres = [tone_front_ab, ttwo_cross_ab]
+          symmetric_dimer_formation.lateral_duplicate('small', theres)
+        end
+        set(:big_ab_lateral_sdf) do
+          theres = [tone_front_ab, tone_cross_ab, ttwo_front_ab, ttwo_cross_ab]
+          symmetric_dimer_formation.lateral_duplicate('big', theres)
         end
       end
 

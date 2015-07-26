@@ -8,6 +8,7 @@ module VersatileDiamond
       # @param [Array] sa2 the second spec-atom instance
       # @return [Boolean] is same spec-atom instances or not
       def same_sa?(sa1, sa2)
+        return true if sa1 == sa2
         (spec1, atom1), (spec2, atom2) = sa1, sa2
         return false unless spec1.equal?(spec2) || spec1.links.size == spec2.links.size
 

@@ -24,21 +24,16 @@ module VersatileDiamond
       def reorganize_parents!(all_chunks)
         possible_parents = all_chunks.select do |chunk|
           next false if chunk == self
-          next false if chunk.internal_chunks.size > internal_chunks.size
+          next false if chunk.internal_chunks.size >= internal_chunks.size
           ichs_dup = internal_chunks.dup
-          chunk.internal_chunks.all? { |pr| ichs_dup.delete_one(pr) }
+          chunk.internal_chunks.all? { |pr| ichs_dup.delete_one(pr) } &&
+            mirror_to(chunk).size == chunk.links.size
         end
 
         max_num = possible_parents.map { |pr| pr.internal_chunks.size }.max
         maximal_parents = possible_parents.select do |pr|
           pr.internal_chunks.size == max_num
         end
-
-        is_fail = maximal_parents.combination(2).any? do |a, b|
-          lists_are_identical?(a.internal_chunks, b.internal_chunks, &:==)
-        end
-        binding.pry if is_fail
-        raise 'Similar parents of selected parents' if is_fail
 
         own_parents_dup = internal_chunks - [self]
         maximal_parents.each do |pr|

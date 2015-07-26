@@ -10,7 +10,7 @@ module VersatileDiamond
       # @param [ChunkComparer] other comparing chunk
       # @return [Integer] comparison result
       def <=> (other)
-        typed_order(self, other, DerivativeChunk) do
+        typed_order(self, other, MergedChunk) do
           typed_order(self, other, Chunk) do
             typed_order(self, other, IndependentChunk) do
               typed_order(self, other, ChunkResidual) do
@@ -24,7 +24,7 @@ module VersatileDiamond
       # Counts total number of links
       # @return [Integer] the number of links
       def total_links_num
-        links.reduce(0) { |acc, rels| acc + 1 + rels.size }
+        links.reduce(0) { |acc, rels| acc + rels.size }
       end
 
       # Compares two chunk instances and check that them are same

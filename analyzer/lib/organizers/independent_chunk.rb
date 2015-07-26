@@ -68,7 +68,7 @@ module VersatileDiamond
       end
 
       def inspect
-        to_s
+        "#{to_s} #{object_id}"
       end
 
     private

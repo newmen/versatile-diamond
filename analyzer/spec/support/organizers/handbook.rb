@@ -114,6 +114,7 @@ module VersatileDiamond
           :intermed_migr_df_formation,
           :intermed_migr_dmod_formation,
           :dimer_formation,
+          :symmetric_dimer_formation,
           :incoherent_dimer_drop,
           :sierpinski_drop,
           :hydrogen_abs_from_gap,
@@ -128,7 +129,9 @@ module VersatileDiamond
           :end_lateral_df,
           :middle_lateral_df,
           :ewb_lateral_df,
-          :mwb_lateral_df
+          :mwb_lateral_df,
+          :small_ab_lateral_sdf,
+          :big_ab_lateral_sdf
         ])
 
         define_dependent_theres([

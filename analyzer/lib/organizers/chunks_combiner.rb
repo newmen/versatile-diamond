@@ -39,10 +39,6 @@ module VersatileDiamond
       # @return [Hash] the initial hash of combination variants
       def collect_variants(chunks)
         variants = Hash[chunks.map { |ch| [Multiset[ch], ch] }]
-        chunks.each do |ch|
-          variants[Multiset.new(ch.parents)] = ch unless ch.parents.empty?
-        end
-
         extend_variants(variants, chunks)
       end
 
@@ -67,6 +63,7 @@ module VersatileDiamond
 
           total_key = Multiset.new(reused_independent)
           unless acc[total_key]
+            acc[Multiset[chunk]] = false
             acc[total_key] = chunk
             reused_independent.each do |ch|
               chunk.store_parent(ch)
@@ -89,8 +86,8 @@ module VersatileDiamond
             arr = cmb.to_a
             if mergeable?(arr)
               presented_cmbs << cmb
-              value = DerivativeChunk.new(@typical_reaction, arr, variants)
-              variants = update_variants_to_best(variants, cmb, value)
+              merged = MergedChunk.new(@typical_reaction, arr, variants)
+              variants = update_variants_to_best(variants, cmb, merged)
             else
               variants[cmb] = false
             end
@@ -102,47 +99,33 @@ module VersatileDiamond
       end
 
       # Updates passed variants by select same derivative chunk with maximal parent
-      # chunks and updates all same others to false value
+      # chunks and updates all same others to false merged
       #
       # @param [Hash] variants which will be updated
       # @param [Multimap] cmb the chunks combinations
-      # @param [DerivativeChunk] value which will be compared with all derivative
-      #   chunks
+      # @param [MergedChunk] merged which will be compared with all resolved chunks
       # @return [Hash] the updated variants (but original variants hash updates too)
-      def update_variants_to_best(variants, cmb, value)
-        sames = variants.select { |_, v| v && value.same?(v) }.to_a + [[cmb, value]]
-        best = select_best(sames)
+      def update_variants_to_best(variants, cmb, merged)
+        sames = variants.select { |_, v| v && merged.same?(v) }.to_a + [[cmb, merged]]
+        best = sames.max_by { |k, _| k.size }
         (sames - [best]).each { |k, _| variants[k] = false }
-        variants[best.first] = best.last unless variants.key?(best.first)
         variants
       end
 
-      # Selects best pair where key is multiset of chunks and value is their
-      # composition
-      #
-      # @param [Array] sames the list of pairs
-      # @return [Array] the pair of best multiset and composition chunk
-      def select_best(sames)
-        with_original = sames.select { |k, _| k.any?(&:original?) }
-        if with_original.empty?
-          sames.max_by { |k, _| k.size }
-        else
-          maximal = with_original.max_by { |k, _| k.select(&:original?).max }
-          parents = maximal.first.to_a.reduce([]) do |acc, chunk|
-            acc + chunk.internal_chunks
-          end
-
-          mprs = Multiset.new(parents)
-          with_original.find { |k, _| k == mprs } || maximal
-        end
-      end
-
       # Gets lists of common targets
-      # @param [Array] targets the lists of targets for which the common targets will
+      # @param [Array] chunks the lists of chunks for which the common targets will
       #   be selected
       # @return [Array] the lists of common targets
-      def common_targets(targets)
-        targets.combination(2).flat_map(&method(:select_commons)).uniq
+      def common_targets(chunks)
+        uniq_chunks = chunks.uniq
+        if uniq_chunks.size == 1
+          chunks.first.targets.to_a
+        else
+          similar = chunks.groups { |ch| ch }.select { |gr| gr.size > 1 }.map(&:first)
+          targets = uniq_chunks.map(&:targets)
+          common = targets.combination(2).flat_map(&method(:select_commons)).uniq
+          (common + similar.flat_map { |ch| ch.targets.to_a }).uniq
+        end
       end
 
       # Selects common targets from both of passed lists
@@ -160,19 +143,6 @@ module VersatileDiamond
       # @return [Array] the list of targets of general reaction
       def general_targets
         @_general_targets ||= @typical_reaction.reaction.links.keys
-      end
-
-      # Checks that usages of each target from passed list is less than usaged in
-      # general targets list
-      #
-      # @param [Array] targets each item usages of which will be checked
-      # @return [Boolean] is usage of each target from passed list less than usages in
-      #   general targets list or not
-      def reject_less_used(targets)
-        targets.reject do |target|
-          cf = -> t { same_sa?(target, t) }
-          targets.count(&cf) < general_targets.count(&cf)
-        end
       end
 
       # Finds correspond relations of target in graph
@@ -234,13 +204,8 @@ module VersatileDiamond
       # @param [Array] chunks the list of chunks which tries to merge
       # @return [Boolean] is possible merge or not
       def mergeable?(chunks)
-        targets = common_targets(chunks.map(&:targets))
-        return true if targets.empty?
-
-        full_used_targets = reject_less_used(targets)
-        return true if full_used_targets.empty?
-
-        full_used_targets.all? do |target|
+        targets = common_targets(chunks)
+        targets.empty? || targets.all? do |target|
           !over_limits?(total_counts(chunks, target), target.last.relations_limits)
         end
       end

@@ -31,6 +31,17 @@ module VersatileDiamond
       def sidepiece_specs
         @_sidepiece_specs ||= links.keys.map(&:first).to_set - target_specs
       end
+
+      # TODO: inspectation method for debug
+      def relations
+        clean_links.reduce([]) do |acc, ((spec, _), rels)|
+          if sidepiece_specs.include?(spec)
+            acc + rels.map(&:last)
+          else
+            acc
+          end
+        end
+      end
     end
 
   end

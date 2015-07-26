@@ -16,16 +16,15 @@ module VersatileDiamond
       # @return [String] the converted name
       def convert_name(name, str_method, separator, tail_too: true)
         m = name.to_s.match(/(\w+)(\(.+?\))?/)
-        tail = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-        tail = tail.public_send(str_method) if tail && tail_too
-        head = eval("m[1].#{str_method}")
-        "#{head}#{tail}"
+        tail_parts = m[2] ? name_suffixes(m[2]) : []
+        tail_parts.map! { |part| eval("part.#{str_method}") } if tail_too
+        ([eval("m[1].#{str_method}")] + tail_parts).join(separator)
       end
 
       # Makes suffix of name which is used in name builder methods
       # @param [String] brackets_str the string which contain brackets and some
       #   additional params of specie in them
-      # @return [String] the suffix of name
+      # @return [Array] the list of name suffixes
       # @example generating name
       #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
       def name_suffixes(brackets_str)

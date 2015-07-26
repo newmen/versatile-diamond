@@ -3,10 +3,10 @@ require 'spec_helper'
 module VersatileDiamond
   module Organizers
 
-    describe DerivativeChunk, type: :organizer do
+    describe MergedChunk, type: :organizer do
       before { dept_end_lateral_df.send(:store_parent, typical_reaction) }
       let(:typical_reaction) { dept_dimer_formation }
-      let(:derv_chunk) do
+      let(:mrg_chunk) do
         described_class.new(typical_reaction, [end_chunk] * 2, {})
       end
 
@@ -15,12 +15,12 @@ module VersatileDiamond
 
       describe '#targets' do
         let(:targets) { Set[[ab, ab.atom(:ct)], [aib, aib.atom(:ct)]] }
-        it { expect(derv_chunk.targets).to eq(targets) }
+        it { expect(mrg_chunk.targets).to eq(targets) }
       end
 
       describe '#links' do
         let(:veiled_dimer) do
-          (derv_chunk.links.keys.map(&:first) - [ab, aib, dimer]).first
+          (mrg_chunk.links.keys.map(&:first) - [ab, aib, dimer]).first
         end
         let(:links) do
           {
@@ -91,7 +91,7 @@ module VersatileDiamond
           }
         end
 
-        it { expect(derv_chunk.links).to match_graph(links) }
+        it { expect(mrg_chunk.links).to match_graph(links) }
       end
 
       describe '#<=>' do
@@ -101,22 +101,22 @@ module VersatileDiamond
           described_class.new(typical_reaction, chunks, {})
         end
 
-        it { expect(derv_chunk <=> other).to eq(-1) }
-        it { expect(other <=> derv_chunk).to eq(1) }
+        it { expect(mrg_chunk <=> other).to eq(-1) }
+        it { expect(other <=> mrg_chunk).to eq(1) }
       end
 
       describe '#original?' do
-        it { expect(derv_chunk.original?).to be_falsey }
+        it { expect(mrg_chunk.original?).to be_falsey }
       end
 
       describe '#lateral_reaction' do
-        it { expect(derv_chunk.lateral_reaction).to be_a(CombinedLateralReaction) }
-        it { expect(derv_chunk.lateral_reaction).to eq(derv_chunk.lateral_reaction) }
+        it { expect(mrg_chunk.lateral_reaction).to be_a(CombinedLateralReaction) }
+        it { expect(mrg_chunk.lateral_reaction).to eq(mrg_chunk.lateral_reaction) }
       end
 
       describe '#tail_name' do
         let(:tail_name) { (['dimer'] * 2).join(' and ') }
-        it { expect(derv_chunk.tail_name).to eq(tail_name) }
+        it { expect(mrg_chunk.tail_name).to eq(tail_name) }
       end
     end
 

@@ -15,7 +15,7 @@ module VersatileDiamond
       # Initializes combined lateral reaction
       # @param [DependentTypicalReaction] typical_reaction to which will be redirected
       #   calls for get source species and etc.
-      # @param [DerivativeChunk] chunk which describes local environment of combined
+      # @param [MergedChunk] chunk which describes local environment of combined
       #   lateral reaction
       # @param [Float] full_rate of lateral reaction
       def initialize(typical_reaction, chunk, full_rate)
