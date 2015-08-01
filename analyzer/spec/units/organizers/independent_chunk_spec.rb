@@ -21,6 +21,19 @@ module VersatileDiamond
         it { expect(ind_swr.same?(ind_bwr)).to be_truthy }
       end
 
+      describe '#accurate_same?' do
+        let(:replaced) { ind_bwr.replace_target(from, to) }
+        let(:aib) { activated_incoherent_bridge.dup }
+        let(:from) { ind_bwr.targets.first }
+        let(:to) { [aib, aib.atom(:ct)] }
+
+        it { expect(replaced.accurate_same?(ind_bwr)).to be_falsey }
+        it { expect(ind_bwr.accurate_same?(replaced)).to be_falsey }
+
+        it { expect(ind_bwr.accurate_same?(ind_swr)).to be_truthy }
+        it { expect(ind_swr.accurate_same?(ind_bwr)).to be_truthy }
+      end
+
       describe '#replace_target' do
         subject { ind_bwr.replace_target(from, to) }
         let(:from) { ind_bwr.targets.first }

@@ -33,11 +33,14 @@ module VersatileDiamond
       # @param [ChunksComparer] other chunk which will be compared
       # @return [Boolean] is same other chunk or not
       def same?(other)
-        return true if equal?(other)
-        return false unless same_targets?(other)
-        lsz = links.size
-        other.links.size == lsz &&
-          (targets.size == lsz || mirror_to(other).size == lsz)
+        check_same?(other, method(:same_sa?), :mirror_to)
+      end
+
+      # Accurate compares two chunk instances and check that them are same
+      # @param [ChunksComparer] other chunk which will be compared
+      # @return [Boolean] is same other chunk or not
+      def accurate_same?(other)
+        check_same?(other, :==, :accurate_mirror_to)
       end
 
     protected
@@ -55,9 +58,35 @@ module VersatileDiamond
       # @param [ChunksComparer] other chunk to which the mirror will be builded
       # @return [Hash] the mirror from self chunk to other chunk
       def mirror_to(other)
+        make_mirror(other) do |ts, sa1, sa2|
+          (ts.all? || !ts.any?) && same_sa?(sa1, sa2)
+        end
+      end
+
+      # Makes accurate mirror with other chunk
+      # @param [ChunksComparer] other chunk to which the mirror will be builded
+      # @return [Hash] the accurate mirror from self chunk to other chunk
+      def accurate_mirror_to(other)
+        make_mirror(other) do |ts, sa1, sa2|
+          if ts.all?
+            sa1 == sa2
+          elsif !ts.any?
+            same_sa?(sa1, sa2)
+          else
+            false
+          end
+        end
+      end
+
+      # Makes mirror with other chunk
+      # @param [ChunksComparer] other chunk to which the mirror will be builded
+      # @yield [Array, Array, Array] iterates target checking and targets from both
+      #   chunks
+      # @return [Hash] the mirror from self chunk to other chunk
+      def make_mirror(other, &block)
         Mcs::SpeciesComparator.make_mirror(self, other) do |_, _, sa1, sa2|
           ts = [target?(sa1), other.target?(sa2)]
-          (ts.all? || !ts.any?) && same_sa?(sa1, sa2)
+          block[ts, sa1, sa2]
         end
       end
 
@@ -79,11 +108,25 @@ module VersatileDiamond
         order(self, other, :total_links_num, &block)
       end
 
+      # Compares two chunk instances and check that them are same
+      # @param [ChunksComparer] other chunk which will be compared
+      # @param [Proc] targets_cm_proc by which targets will compared
+      # @param [Symbol] mirror_method name for build the mirror between chunks
+      # @return [Boolean] is same other chunk or not
+      def check_same?(other, targets_cm_proc, mirror_method)
+        return true if equal?(other)
+        return false unless same_targets?(other, &targets_cm_proc)
+        lsz = links.size
+        other.links.size == lsz &&
+          (targets.size == lsz || send(mirror_method, other).size == lsz)
+      end
+
       # Checks that targets of current and other are same
       # @param [ChunksComparer] other chunk which targets will be checked
+      # @yield [Array, Array] compares each pair of targets
       # @return [Boolean] are similar targets in current and other chunks or not
-      def same_targets?(other)
-        lists_are_identical?(targets, other.targets, &method(:same_sa?))
+      def same_targets?(other, &block)
+        lists_are_identical?(targets, other.targets, &block)
       end
     end
 
