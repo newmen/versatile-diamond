@@ -43,6 +43,37 @@ module VersatileDiamond
         end
       end
 
+      # Recursive finds last global veiled spec
+      # @param [DependentReaction | DependentThere] target_container in which the
+      #   source spec will be changed
+      # @param [Array] global_key of global veiled cache
+      # @return [Array] the array with previous global vailed spec and the last veiled
+      #   spec
+      def find_global_veiled(target_container, global_key)
+        global_veiled = ChunkLinksMerger.global_cache[global_key]
+        if global_veiled && target_container.each_source.to_a.include?(global_veiled)
+          find_global_veiled([global_veiled, global_key.last])
+        else
+          [global_key.first, global_veiled]
+        end
+      end
+
+      # Makes veiled spec (or use from global cache) by passed container and spec
+      # @param [DependentReaction | DependentThere] target_container in which the
+      #   source spec will be changed
+      # @param [Concepts::Spec | Concepts::SpecificSpec] spec the new spec to which
+      #   old spec will be changed
+      def make_veiled_spec(target_container, spec)
+        rels = target_container.links.select { |(s, _), _| spec == s }
+        prev_spec, global_veiled = find_global_veiled(target_container, [spec, rels])
+        if global_veiled
+          global_veiled
+        else
+          key = [prev_spec, rels]
+          ChunkLinksMerger.global_cache[key] = Concepts::VeiledSpec.new(spec)
+        end
+      end
+
       # Checks that swapping source presented in target container and if so then
       # wraps new source spec to veiled spec
       #
@@ -55,13 +86,13 @@ module VersatileDiamond
       def swap_source_carefully(target_container, from, to)
         return if from == to
         has_similar_spec = target_container.use_similar_source?(to)
-        to_spec = has_similar_spec ? Concepts::VeiledSpec.new(to) : to
+        to_spec = has_similar_spec ? make_veiled_spec(target_container, to) : to
         target_container.swap_source(from, to_spec)
       end
 
       # Excnahges two specs
-      # @param [DependentSpecificSpec | DependentSpecificSpec] from the spec
-      #   which will be exchanged
+      # @param [Hash] cache of spec names to specs
+      # @param [DependentSpecificSpec] from the spec which will be exchanged
       # @param [DependentSpecificSpec | DependentSpec] to the spec to which
       #   will be exchanged
       # @param [Hash] cache where contains pairs of name => dependent_spec

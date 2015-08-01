@@ -47,6 +47,12 @@ module VersatileDiamond
         typical_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }
         typical_rs.flat_map(&:combine_children_laterals!)
       end
+
+      # Reorganizes the specs of children reactions
+      # @param [Array] typical_crs the list of concept typical reactions
+      def reorganize_children_specs!(typical_crs)
+        typical_crs.each(&:reorganize_children_specs!)
+      end
     end
 
   end

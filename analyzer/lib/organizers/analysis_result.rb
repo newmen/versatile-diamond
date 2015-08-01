@@ -21,6 +21,7 @@ module VersatileDiamond
       # organizes dependencies between collected concepts
       def initialize
         ChunkLinksMerger.init_veiled_cache!
+        reorganize_children_specs!(chest_reactions(:reaction))
 
         @ubiquitous_reactions =
           wrap_reactions(DependentUbiquitousReaction, :ubiquitous_reaction)
@@ -59,6 +60,13 @@ module VersatileDiamond
 
       attr_reader :theres
 
+      # Gets the list of reactions from Chest
+      # @param [Symbol] chest_key the key by which reactions will be got from Chest
+      # @return [Array] the list of concept reactions
+      def chest_reactions(chest_key)
+        Tools::Chest.all(chest_key).reject { |r| r.full_rate == 0 }
+      end
+
       # Wraps reactions from Chest
       # @param [Class] the class that inherits DependentReaction
       # @param [Symbol] chest_key the key by which reactions will be got from Chest
@@ -66,9 +74,7 @@ module VersatileDiamond
       # @return [Array] the array with each wrapped reaction
       def wrap_reactions(klass, chest_key)
         raise 'Wrong klass value' unless klass.ancestors.include?(DependentReaction)
-
-        with_rate = Tools::Chest.all(chest_key).reject { |r| r.full_rate == 0 }
-        with_rate.map { |reaction| klass.new(reaction) }
+        chest_reactions(chest_key).map { |reaction| klass.new(reaction) }
       end
 
       # Collects there instances from lateral reactions

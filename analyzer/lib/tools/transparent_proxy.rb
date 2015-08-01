@@ -25,6 +25,11 @@ module VersatileDiamond
       # Initializes proxy instance
       # @param [Object] original to which will delegated all method calls
       def initialize(original)
+        @@numbers ||= {}
+        @@numbers[original] ||= 0
+        @@numbers[original] += 1
+        @i = @@numbers[original]
+
         @original = original
       end
 
@@ -39,8 +44,13 @@ module VersatileDiamond
       end
 
       def inspect
-        "proxy:#{original.inspect}"
+        "proxy_#{i}:#{original.inspect}"
       end
+
+    private
+
+      attr_reader :i
+
     end
 
   end

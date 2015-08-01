@@ -108,7 +108,7 @@ module VersatileDiamond
           [variants, nil]
         else
           chunks_mirror = chunks_mirror.reject(&:==)
-          prs_chs = variants.values.uniq # presented chunks
+          prs_chs = variants.to_a.select(&:last).map(&:last).uniq # presented chunks
           chunks = cmb.map do |ch|
             new_ch = chunks_mirror[ch]
             (new_ch && prs_chs.find { |prs_ch| prs_ch.accurate_same?(new_ch) }) || ch
@@ -317,7 +317,7 @@ module VersatileDiamond
       # @param [Array] same_targets which limits will checked
       # @return [Hash] the mirror of original chunks to chunks which can be merged
       def similar_mergeable(chunks, same_targets)
-        iterate_permutations(chunks, same_targets) do
+        iterate_permutations(chunks, same_targets) do |chunks_groups, targets_maps|
           result = targets_maps.zip(chunks_groups).map do |ts_map, cs_group|
             ts_map.reduce([]) do |acc, (k, v)|
               selected_chunks = cs_group.select { |ch| ch.targets.include?(k) }
@@ -342,11 +342,10 @@ module VersatileDiamond
       # @param [Array] same_target which should be used for merge chunks
       # @return [Array] list of mapped chunk to using targets
       def map_chunks_to_targets(chunks, original_target, same_target)
-        if !chunks.empty? && good_limits?(chunks, same_target)
-          chunks.map { |ch| [ch, [original_target, same_target]] }
-        else
-          []
-        end
+        is_good = !chunks.empty? && good_limits?(chunks, same_target) &&
+          good_limits?(chunks, original_target)
+
+        is_good ? chunks.map { |ch| [ch, [original_target, same_target]] } : []
       end
 
       # Iterates permutations of chunks and targets for find mergeable chunks with
@@ -360,7 +359,7 @@ module VersatileDiamond
         splitted_chunks_groups = possible_chunks_combinations(chunks)
         permutate_targets(targets).reduce([]) do |a1, targets_maps|
           !a1.empty? ? a1 : splitted_chunks_groups.reduce(a1) do |a2, chunks_groups|
-            a2.empty? ? a2 + block[chunks_groups, targets_map] : a2
+            a2.empty? ? a2 + block[chunks_groups, targets_maps] : a2
           end
         end
       end

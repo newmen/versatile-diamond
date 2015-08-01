@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Also contained positions between the reactants
@@ -178,6 +180,15 @@ module VersatileDiamond
         mapping.changes.reduce(0) { |acc, (_, atoms_zip)| acc + atoms_zip.size }
       end
 
+      # Reorganizes the specs of children reactions
+      def reorganize_children_specs!
+        @children.each do |child|
+          if same_specs?(child) && same_positions?(child)
+            swap_by_map!(child, map_to_specs_of(child, :source))
+          end
+        end
+      end
+
     protected
 
       attr_reader :children
@@ -202,6 +213,28 @@ module VersatileDiamond
     private
 
       attr_reader :mapping
+
+      # Makes the mirror of current specs to specs of child
+      # @param [Reaction] child to which specs the map will builded
+      # @param [Symbol] method for get a list of specs
+      # @return [Array] the map of specs
+      def map_to_specs_of(child, method)
+        child_specs = child.public_send(method).dup
+        public_send(method).reduce([]) do |acc, self_spec|
+          child_spec = child_specs.find { |s| self_spec.same?(s) }
+          acc << [self_spec, child_specs.delete_one(child_spec)]
+        end
+      end
+
+      # Swaps specs of child reaction by passed map
+      # @param [Reaction] child which specs will be swapped
+      # @param [Hash] specs_map which will used for get correspond specs of current
+      #   reaction
+      def swap_by_map!(child, specs_map)
+        specs_map.each do |self_spec, child_spec|
+          child.swap_source(child_spec, self_spec)
+        end
+      end
 
       # Gets opposite relation between first and second atoms for passed
       # relation instance

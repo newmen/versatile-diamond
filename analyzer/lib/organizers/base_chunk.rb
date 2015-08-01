@@ -73,6 +73,7 @@ module VersatileDiamond
       # @param [Array] to the target to which will be replaced
       # @return [Set] the set with replacing target
       def replace_in_targets(from, to)
+        raise 'Targets does not contain replacing target' unless targets.include?(from)
         raise 'Targets already contains replacing target' if targets.include?(to)
         (targets.to_a - [from] + [to]).to_set
       end
@@ -82,6 +83,7 @@ module VersatileDiamond
       # @param [Array] to the target to which will be replaced
       # @return [Hash] the links with replacing target
       def replace_in_links(from, to)
+        raise 'Links does not contain replacing target' unless links[from]
         raise 'Links already contains replacing target' if links[to]
         select_sa = -> sa { sa == from ? to : sa }
         links.each_with_object({}) do |(spec_atom, rels), acc|

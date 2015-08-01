@@ -14,6 +14,9 @@ module VersatileDiamond
         # @return [RSpec::Mocks::Double] same as original analysis results
         def stub_results(**depts)
           ChunkLinksMerger.init_veiled_cache!
+          if depts[:typical_reactions]
+            reorganize_children_specs!(depts[:typical_reactions].map(&:reaction))
+          end
 
           fixed_depts = fix(depts).each_with_object({}) do |(method_name, list), acc|
             acc[method_name] = list

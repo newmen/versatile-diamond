@@ -28,18 +28,7 @@ module VersatileDiamond
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
       #   the spec to which need to swap
       def swap_source(from, to)
-        if to.is_a?(Concepts::VeiledSpec)
-          spec = to.original
-          rels = links.select { |(s, _), _| spec == s }
-          prev_spec, global_veiled = find_global_veiled([spec, rels])
-          if global_veiled
-            to = global_veiled
-          else
-            ChunkLinksMerger.global_cache[[prev_spec, rels]] = to
-          end
-          @_links = swap_in_links(:swap, @_links, from, to)
-        end
-
+        @_links = nil
         there.swap_source(from, to)
       end
 
@@ -112,18 +101,6 @@ module VersatileDiamond
 
       attr_reader :lateral_reaction, :there
 
-      # Recursive finds last global veiled spec
-      # @param [Array] global_key of global veiled cache
-      # @return [Array] the array with previous global vailed spec and the last veiled
-      #   spec
-      def find_global_veiled(global_key)
-        global_veiled = ChunkLinksMerger.global_cache[global_key]
-        if global_veiled && there.env_specs.include?(global_veiled)
-          find_global_veiled([global_veiled, global_key.last])
-        else
-          [global_key.first, global_veiled]
-        end
-      end
     end
 
   end
