@@ -4,8 +4,6 @@ module VersatileDiamond
     # Provides logic for typical chunk with replaced target
     class TargetReplacedChunk < TypicalChunk
 
-      attr_reader :lateral_reaction, :targets, :links, :tail_name
-
       # Initializes the typical chunk with replaced target
       # @param [DependentLateralReaction] lateral_reaction which will be prototype of
       #   internal lateral reaction

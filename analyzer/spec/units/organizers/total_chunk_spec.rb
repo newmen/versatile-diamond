@@ -17,6 +17,7 @@ module VersatileDiamond
       let(:targets_num) { 2 }
 
       describe '#typical_reaction' do
+        let(:lateral_reactions) { [] }
         it { expect(subject.typical_reaction).to eq(typical_reaction) }
       end
 

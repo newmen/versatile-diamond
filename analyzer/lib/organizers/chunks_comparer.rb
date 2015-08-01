@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Provides methods for compare chunks between them
     module ChunksComparer
+      include Modules::ListsComparer
       include Modules::OrderProvider
       include Mcs::SpecsAtomsComparator
 
@@ -41,6 +42,16 @@ module VersatileDiamond
       # @return [Boolean] is same other chunk or not
       def accurate_same?(other)
         check_same?(other, :==, :accurate_mirror_to)
+      end
+
+      # Compares self and other lists of internal chunks
+      # @param [ChunksComparer] other chunk which will be compared
+      # @return [Boolean] is same internal chunks or not
+      def same_internals?(other)
+        return true if equal?(other)
+        return false unless same_targets?(other, &method(:same_sa?))
+        links.size == other.links.size &&
+          lists_are_identical?(internal_chunks, other.internal_chunks, &:same?)
       end
 
     protected
@@ -118,7 +129,8 @@ module VersatileDiamond
         return false unless same_targets?(other, &targets_cm_proc)
         lsz = links.size
         other.links.size == lsz &&
-          (targets.size == lsz || send(mirror_method, other).size == lsz)
+          ((targets.size == lsz && targets.all? { |t| links[t] }) ||
+            send(mirror_method, other).size == lsz)
       end
 
       # Checks that targets of current and other are same
@@ -126,7 +138,7 @@ module VersatileDiamond
       # @yield [Array, Array] compares each pair of targets
       # @return [Boolean] are similar targets in current and other chunks or not
       def same_targets?(other, &block)
-        lists_are_identical?(targets, other.targets, &block)
+        lists_are_identical?(targets.to_a, other.targets.to_a, &block)
       end
     end
 

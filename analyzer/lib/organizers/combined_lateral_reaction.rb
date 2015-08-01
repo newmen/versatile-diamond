@@ -20,8 +20,6 @@ module VersatileDiamond
       # @param [Float] full_rate of lateral reaction
       def initialize(typical_reaction, chunk, full_rate)
         @typical_reaction = typical_reaction
-        @typical_reaction.store_child(self)
-
         @chunk = chunk
         @full_rate = full_rate
 
@@ -53,6 +51,11 @@ module VersatileDiamond
         elsif typical_source.size < targets.size
           raise 'Typical source specs number less than chunks targets number'
         end
+      end
+
+      # Stores current reaction as parent child
+      def store_to_parent!
+        @typical_reaction.store_child(self)
       end
 
       # Gets the name of lateral reaction

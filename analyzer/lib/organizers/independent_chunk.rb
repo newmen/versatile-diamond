@@ -37,7 +37,7 @@ module VersatileDiamond
       end
 
       # Nothing to remember
-      def remember_internal_chunks!
+      def remember_internal_chunks!(_)
         # pass
       end
 
@@ -62,12 +62,18 @@ module VersatileDiamond
         false
       end
 
+      # Independent chunk is not original
+      # @return [Boolean] false
+      def deep_original?
+        original?
+      end
+
       def to_s
         "Independent chunk with #{tail_name}"
       end
 
       def inspect
-        "#{to_s} #{object_id}"
+        "#{to_s} ##{object_id}"
       end
 
     private

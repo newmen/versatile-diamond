@@ -7,7 +7,6 @@ module VersatileDiamond
     # typical rection
     class ChunksCombiner
       include Mcs::SpecsAtomsComparator
-      include Modules::ListsComparer
       include Modules::ExtendedCombinator
 
       # Initializes combiner by target typical reaction
@@ -22,15 +21,22 @@ module VersatileDiamond
       # Combines children lateral raection chunks and produce new lateral reactions
       # @return [Array] the list of combined lateral reactions
       def combine(chunks)
+        chunks.each do |ch|
+          raise "Wrong targets of #{ch}" unless ch.targets == general_targets
+        end
+
         variants = recombine_variants(collect_variants(chunks))
         unregistered_chunks = variants.values.select do |chunk|
           chunk && !chunks.include?(chunk)
         end
 
-        all_chunks = chunks + unregistered_chunks
-        all_chunks.each { |ch| ch.remember_internal_chunks! }
+        all_chunks = (chunks + unregistered_chunks).sort
+        all_chunks.each { |ch| ch.remember_internal_chunks!(all_chunks) }
         all_chunks.each { |ch| ch.reorganize_parents!(all_chunks) }
-        unregistered_chunks.map(&:lateral_reaction)
+
+        combined_lateral_reactions = unregistered_chunks.map(&:lateral_reaction)
+        combined_lateral_reactions.each(&:store_to_parent!)
+        combined_lateral_reactions
       end
 
     private
@@ -86,12 +92,14 @@ module VersatileDiamond
           smallest = presented_cmbs.first
           extended_cmbs = presented_cmbs.map { |cmb| cmb + smallest }
           new_cmbs = extended_cmbs.reject { |cmb| variants.include?(cmb) }
+
+          prev_nums = presented_cmbs.size
           new_cmbs.each do |cmb|
-            variants, chs = find_mergeable(variants, cmb)
-            presented_cmbs << chs if chs
+            variants, presented_cmbs = find_mergeable(variants, presented_cmbs, cmb)
           end
 
-          presented_cmbs.shift # delete first chunk
+          # delete first chunk
+          presented_cmbs.shift if presented_cmbs.size == prev_nums
         end
         variants
       end
@@ -101,22 +109,49 @@ module VersatileDiamond
       # @param [Multiset] cmb the combination of merging chunks
       # @return [Array] the array where first item is updated variants and the second
       #   value is found chunks which merges successfully
-      def find_mergeable(variants, cmb)
-        chunks_mirror = mergeable(cmb.to_a)
-        if chunks_mirror.empty?
+      def find_mergeable(variants, presented_cmbs, cmb)
+        chunks = mergeable(cmb.to_a, &method(:cross_mergeable))
+        if chunks.empty?
           variants[cmb] = false
-          [variants, nil]
+          [variants, presented_cmbs]
         else
-          chunks_mirror = chunks_mirror.reject(&:==)
-          prs_chs = variants.to_a.select(&:last).map(&:last).uniq # presented chunks
-          chunks = cmb.map do |ch|
-            new_ch = chunks_mirror[ch]
-            (new_ch && prs_chs.find { |prs_ch| prs_ch.accurate_same?(new_ch) }) || ch
+          lookup_exist_chunks(variants, presented_cmbs, chunks)
+        end
+      end
+
+      # Checks that chunks mirror contains new chunks and if is it then adds it to
+      # variants
+      #
+      # @param [Hash] variants of all found chunks
+      # @param [Multiset] cmb the combination of merging chunks
+      # @param [Hash] chunks_mirror from prototype chunk to it new analog with excahged
+      #   targets
+      # @return [Array] the array with two items the first item is updated variants
+      #   and the second item is collected chunks for merge
+      def lookup_exist_chunks(variants, presented_cmbs, chunks)
+        presented_chunks = variants.to_a.select(&:last).map(&:last).uniq
+        exist_chunks = chunks.map do |chunk|
+          unless presented_chunks.find { |ch| ch.same?(chunk) }
+            mono_key = Multiset[chunk]
+            variants[mono_key] = chunk
+            presented_cmbs << mono_key
           end
 
-          variants[chunks] = MergedChunk.new(@typical_reaction, chunks.to_a, variants)
-          [variants, chunks]
+          presented_chunks.find { |ch| ch.accurate_same?(chunk) } || chunk
         end
+
+        cmb = Multiset.new(exist_chunks)
+        unless variants.include?(cmb)
+          merged = MergedChunk.new(@typical_reaction, exist_chunks, variants)
+          internal_merged = merged.internal_chunks
+          same_big = presented_chunks.find { |chunk| merged.same_internals?(chunk) }
+          unless same_big
+            variants[cmb] = merged
+            presented_cmbs << cmb
+          end
+        end
+
+        [variants, presented_cmbs]
       end
 
       # Sorts passed multisets
@@ -143,10 +178,9 @@ module VersatileDiamond
         if uniq_chunks.size == 1
           chunks.first.targets.to_a
         else
-          similar = chunks.groups { |ch| ch }.select { |gr| gr.size > 1 }.map(&:first)
           targets = uniq_chunks.map(&:targets)
           common = targets.combination(2).flat_map(&method(:select_commons)).uniq
-          (common + similar.flat_map { |ch| ch.targets.to_a }).uniq
+          (common + chunks.not_uniq.flat_map { |ch| ch.targets.to_a }).uniq
         end
       end
 
@@ -157,14 +191,14 @@ module VersatileDiamond
       def select_commons(targets)
         ts1, ts2 = targets.map(&:to_a).map(&:dup)
         ts1.each_with_object([]) do |target, result|
-          result << target if ts2.delete_one { |t| same_sa?(target, t) }
+          result << target if ts2.delete_one { |t| target == t }
         end
       end
 
       # Gets the list targets of reaction
-      # @return [Array] the list of targets of general reaction
+      # @return [Set] the set of targets of general reaction
       def general_targets
-        @_general_targets ||= @typical_reaction.reaction.links.keys
+        @_general_targets ||= @typical_reaction.reaction.links.keys.to_set
       end
 
       # Finds correspond relations of target in graph
@@ -233,32 +267,41 @@ module VersatileDiamond
       # merged
       #
       # @param [Array] chunks the list of chunks which tries to merge
-      # @return [Array] the list of maps with merging chunks
-      def mergeable(chunks)
+      # @return [Hash] the map of merging chunks
+      def mergeable(chunks, &block)
         targets = common_targets(chunks)
         if targets.empty? || targets.all? { |target| good_limits?(chunks, target) }
-          Hash[chunks.zip(chunks)]
+          chunks
         else
-          cross_mergeable(chunks, targets)
+          block_given? ? block[chunks, targets] : []
         end
       end
 
       # Tries to merge chunks with similar targets
       # @param [Array] chunks where relations of targets will checked
       # @param [Array] targets which limits will checked
-      # @return [Array] the list of maps with cross merging chunks
+      # @return [Hash] the map of cross merging chunks
       def cross_mergeable(chunks, targets)
         all_groups = same_targets_groups(targets)
         sames_grs = all_groups.select { |gr| gr.size > 1 }
         uniqs = (all_groups - sames_grs).map(&:first)
 
-        default_value = {}
         if !sames_grs.empty? && uniqs.all? { |target| good_limits?(chunks, target) }
           results = sames_grs.map { |group| similar_mergeable(chunks, group) }
-          results.any?(&:empty?) ? default_value : concat_cross_mergiable(results)
-        else
-          default_value
+          if !results.any?(&:empty?)
+            chunks_mirror = concat_cross_mergiable(results.reduce(:+))
+            if chunks_mirror.size == chunks.size
+              merged_chunks = chunks.map do |chunk|
+                chunks_mirror.delete_one { |ch, _| ch == chunk }.last
+              end
+              if !mergeable(merged_chunks).empty?
+                return merged_chunks
+              end
+            end
+          end
         end
+
+        []
       end
 
       # Splits the list of targets to groups where each item is same as other
@@ -266,7 +309,7 @@ module VersatileDiamond
       # @return [Array] the list of similar targets
       def same_targets_groups(targets)
         groups = []
-        cheking_targets = (general_targets + targets).uniq
+        cheking_targets = (general_targets.to_a + targets).uniq
         iterating_chunks = cheking_targets.dup
 
         until iterating_chunks.empty? do
@@ -289,26 +332,11 @@ module VersatileDiamond
 
       # Concats all cross mergiable results
       # @param [Array] mergeable_list the list of all merging chunks with using targets
-      # @return [Hash] the hash where keys are original chunks and values are chunks
-      #   with replaced targets
+      # @return [Array] the list of chunks pairs where each pair is original chunks and
+      #   chunk with replaced targets
       def concat_cross_mergiable(mergeable_lists)
-        groups = group_cross_mergiable(mergeable_lists)
-        old_new = groups.map do |chunk, targets_pairs|
-          newch = targets_pairs.reduce(chunk) { |acc, pair| acc.replace_target(*pair) }
-          [chunk, newch]
-        end
-
-        Hash[old_new]
-      end
-
-      # Groups cross mergiable results by chunks
-      # @param [Array] mergeable_list the list of all merging chunks with using targets
-      # @result [Hash] the hash where keys are original chunks and values are lists of
-      #   pairs of replacing targets
-      def group_cross_mergiable(mergeable_lists)
-        mergeable_lists.reduce(:+).each_with_object({}) do |(ch, targets), acc|
-          acc[ch] ||= []
-          acc[ch] << targets
+        mergeable_lists.reduce(:+).map do |chunk, (from, to)|
+          [chunk, from == to ? chunk : chunk.replace_target(from, to)]
         end
       end
 
@@ -325,15 +353,8 @@ module VersatileDiamond
             end
           end
 
-          result.any?(&:empty?) ? [] : purge_mapping_result(result)
+          result.any?(&:empty?) ? [] : result
         end
-      end
-
-      # Purges mapping result from not significant results
-      # @param [Array] result which will be purged
-      # @return [Array] flatten clear mapping result
-      def purge_mapping_result(result)
-        result.reduce(:+).reject { |_, (from, to)| from == to }
       end
 
       # Maps selected chunks to using targets

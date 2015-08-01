@@ -67,6 +67,7 @@ module VersatileDiamond
           ewb_lateral_df.activation = 0
           ewb_lateral_df.rate = 3
 
+          dimer_formation.reorganize_children_specs!
           dept_dimer_formation.organize_dependencies!(lateral_reactions)
           subject # do combination and organization
         end

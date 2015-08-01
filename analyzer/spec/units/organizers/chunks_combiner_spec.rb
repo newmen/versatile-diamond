@@ -25,9 +25,10 @@ module VersatileDiamond
           it 'combined reactions should be' do
             expect(cmb_reactions.map(&:class).uniq).to eq([CombinedLateralReaction])
             expect(cmb_reactions.map(&:full_rate)).to match_array(rates)
-            expect(cmb_reactions.map { |r| r.chunk.parents.size }).to eq(parents)
-            expect(cmb_reactions.map { |r| r.chunk.internal_chunks.size }).
-              to eq(internal_chunks)
+
+            chunks = cmb_reactions.map(&:chunk)
+            expect(chunks.map(&:parents).map(&:size)).to eq(parents)
+            expect(chunks.map(&:internal_chunks).map(&:size)).to eq(internal_chunks)
           end
         end
 
@@ -72,13 +73,13 @@ module VersatileDiamond
 
           it_behaves_like :check_combined_reactions do
             let(:rates) do
-              [1.0, 1.0, 1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+              [1.0, 1.0, 1.0, 5.0, 1.0, 5.0, 1.0, 5.0, 1.0, 5.0, 5.0, 5.0, 5.0]
             end
             let(:parents) do
-              [0,   0,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2]
+              [0,   0,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2]
             end
             let(:internal_chunks) do
-              [1,   1,   2,   2,   2,   3,   3,   3,   4,   4,   4,   5,   5,   6]
+              [1,   1,   2,   3,   3,   4,   4,   5,   2,   3,   4,   5,   6]
             end
           end
         end

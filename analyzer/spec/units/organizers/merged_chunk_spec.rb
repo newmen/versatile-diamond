@@ -113,6 +113,40 @@ module VersatileDiamond
         it { expect(other <=> mrg_chunk).to eq(1) }
       end
 
+      describe '#same?' do
+        before { typical_reaction.reaction.reorganize_children_specs! }
+        let(:combiner) { ChunksCombiner.new(typical_reaction) }
+        let(:typical_reaction) { dept_symmetric_dimer_formation }
+        let(:main_chunk) { dept_small_ab_lateral_sdf.chunk }
+        let(:idp_chs) { combiner.send(:split_to_independent_chunks, main_chunk) }
+        let(:rpts_chs) do
+          idp_chs.zip(idp_chs.reverse).map do |x, y|
+            x.replace_target(x.targets.first, y.targets.first)
+          end
+        end
+
+        let(:idp_mgr) { described_class.new(typical_reaction, idp_chs, {}) }
+        let(:rpts_mgr) { described_class.new(typical_reaction, rpts_chs, {}) }
+
+        it { expect(idp_mgr.same?(rpts_mgr)).to be_truthy }
+        it { expect(rpts_mgr.same?(idp_mgr)).to be_truthy }
+
+        let(:cross_idp) do
+          idp_chs.select { |ch| ch.relations.map(&:dir) == [:cross] }
+        end
+        let(:big_mgr1) do
+          described_class.new(typical_reaction, idp_chs + rpts_chs + cross_idp, {})
+        end
+        let(:big_mgr2) do
+          described_class.new(typical_reaction, rpts_chs + idp_chs + cross_idp, {})
+        end
+
+        it { expect(big_mgr1.same?(idp_mgr)).to be_falsey }
+        it { expect(idp_mgr.same?(big_mgr1)).to be_falsey }
+        it { expect(big_mgr1.same?(big_mgr2)).to be_truthy }
+        it { expect(big_mgr2.same?(big_mgr1)).to be_truthy }
+      end
+
       describe '#original?' do
         it { expect(mrg_chunk.original?).to be_falsey }
       end

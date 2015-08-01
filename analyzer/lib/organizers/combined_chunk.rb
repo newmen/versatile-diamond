@@ -3,7 +3,6 @@ module VersatileDiamond
 
     # Describes the creating complex chunk
     class CombinedChunk < BaseChunk
-      include Modules::ExtendedCombinator
       include ChunkParentsOrganizer
       include ChunksComparer
       include DrawableChunk
@@ -21,6 +20,8 @@ module VersatileDiamond
         super(targets, links)
         @typical_reaction = typical_reaction
         @variants = variants
+
+        @_lateral_reaction, @_internal_chunks, @_tail_name, @_total_links_num = nil
       end
 
       # Makes the lateral reaction which contain current chunk
@@ -30,6 +31,21 @@ module VersatileDiamond
           CombinedLateralReaction.new(typical_reaction, self, full_rate)
       end
 
+      # Provides full rate of reaction which could be if lateral environment is same
+      # as chunk describes
+      #
+      # @return [Float] the rate of reaction which use the current chunk
+      def full_rate
+        tf_rate = typical_reaction.full_rate
+        max_prs = maximal_parents
+        if max_prs.empty?
+          tf_rate
+        else
+          # selecs maximal different rate
+          max_prs.map(&:full_rate).max_by { |x| (tf_rate - x).abs }
+        end
+      end
+
       # The chunk which created by user described lateral reaction is original
       # @return [Boolean] true
       def original?
@@ -37,7 +53,7 @@ module VersatileDiamond
       end
 
       def inspect
-        "#{to_s} #{object_id}"
+        "#{to_s} ##{object_id}"
       end
 
     private
@@ -58,44 +74,16 @@ module VersatileDiamond
         [typical_reaction, new_targets, new_links, @variants]
       end
 
-      # Provides full rate of reaction which could be if lateral environment is same
-      # as chunk describes
-      #
-      # @return [Float] the rate of reaction which use the current chunk
-      def full_rate
-        tf_rate = typical_reaction.full_rate
-        max_prs = maximal_parents
-        if max_prs.size == 1
-          max_prs.first.full_rate
-        else
-          all_possible_combinations(max_prs).reverse.each do |slice|
-            rates = slice.map do |cs|
-              value = @variants[Multiset.new(cs)]
-              value && value.original? && value.full_rate
-            end
-
-            good_rates = rates.select { |x| x }
-            # selecs maximal different rate
-            return good_rates.max_by { |x| (tf_rate - x).abs } unless good_rates.empty?
-          end
-
-          tf_rate
-        end
-      end
-
       # Selects biggest original parents
       # @return [Array] the list of largest original parents
       def maximal_parents
-        original_parents = parents.select(&:original?)
-        max_num = original_parents.map(&:total_links_num).max
-        original_parents.select { |pr| pr.total_links_num == max_num }
-      end
-
-      # Gets all possible combinations of array items
-      # @param [Array] array which items will be combinated
-      # @return [Array] the list of all posible combinations
-      def all_possible_combinations(array)
-        sliced_combinations(array, 1).map(&:uniq)
+        original_parents = parents.select(&:deep_original?)
+        if original_parents.empty?
+          []
+        else
+          max_num = original_parents.map(&:total_links_num).max
+          original_parents.select { |pr| pr.total_links_num == max_num }
+        end
       end
     end
 

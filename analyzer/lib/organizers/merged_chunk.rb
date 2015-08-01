@@ -18,8 +18,6 @@ module VersatileDiamond
 
         super(typical_reaction, merge_targets(chunks), merge_links(chunks), variants)
         @parents = chunks
-
-        @_lateral_reaction, @_internal_chunks, @_tail_name, @_total_links_num = nil
       end
 
       def to_s
