@@ -41,7 +41,7 @@ module VersatileDiamond
           it_behaves_like :check_combined_reactions do
             let(:rates) { [1.0, 1.0, 1.0, 2.0] }
             let(:parents) { [0, 0, 2, 2] }
-            let(:internal_chunks) { [1, 1, 3, 2] }
+            let(:internal_chunks) { [1, 1, 2, 3] }
           end
         end
 
@@ -67,13 +67,19 @@ module VersatileDiamond
           let(:typical_reaction) { dept_symmetric_dimer_formation }
           let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
           let(:setup_rates) do
-            small_ab_lateral_sdf.rate = 10
+            small_ab_lateral_sdf.rate = 5
           end
 
           it_behaves_like :check_combined_reactions do
-            let(:rates) { [5.0, 10.0] }
-            let(:parents) { [0, 2] }
-            let(:internal_chunks) { [1, 3] }
+            let(:rates) do
+              [1.0, 1.0, 1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+            end
+            let(:parents) do
+              [0,   0,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2]
+            end
+            let(:internal_chunks) do
+              [1,   1,   2,   2,   2,   3,   3,   3,   4,   4,   4,   5,   5,   6]
+            end
           end
         end
       end

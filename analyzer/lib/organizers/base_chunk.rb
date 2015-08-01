@@ -36,7 +36,7 @@ module VersatileDiamond
       def relations
         clean_links.reduce([]) do |acc, ((spec, _), rels)|
           if sidepiece_specs.include?(spec)
-            acc + rels.map(&:last)
+            acc + rels.reject { |(s, _), _| sidepiece_specs.include?(s) }.map(&:last)
           else
             acc
           end

@@ -24,7 +24,7 @@ module VersatileDiamond
       # Counts total number of links
       # @return [Integer] the number of links
       def total_links_num
-        links.reduce(0) { |acc, rels| acc + rels.size }
+        @_total_links_num ||= links.reduce(0) { |acc, rels| acc + rels.size }
       end
 
       # Compares two chunk instances and check that them are same

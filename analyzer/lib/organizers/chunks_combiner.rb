@@ -8,6 +8,7 @@ module VersatileDiamond
     class ChunksCombiner
       include Mcs::SpecsAtomsComparator
       include Modules::ListsComparer
+      include Modules::ExtendedCombinator
 
       # Initializes combiner by target typical reaction
       # @param [DependentTypicalReaction] typical_reaction for which new lateral
@@ -61,6 +62,8 @@ module VersatileDiamond
             end
           end
 
+          next if reused_independent.empty?
+
           total_key = Multiset.new(reused_independent)
           unless acc[total_key]
             acc[Multiset[chunk]] = false
@@ -79,8 +82,9 @@ module VersatileDiamond
       def recombine_variants(variants)
         presented_cmbs = variants.to_a.select(&:last).map(&:first)
         until presented_cmbs.empty?
-          first = presented_cmbs.first
-          extended_cmbs = presented_cmbs.map { |cmb| cmb + first }
+          presented_cmbs = sort_cmbs(presented_cmbs)
+          smallest = presented_cmbs.first
+          extended_cmbs = presented_cmbs.map { |cmb| cmb + smallest }
           new_cmbs = extended_cmbs.reject { |cmb| variants.include?(cmb) }
           new_cmbs.each do |cmb|
             arr = cmb.to_a
@@ -95,6 +99,21 @@ module VersatileDiamond
           presented_cmbs.shift # delete first chunk
         end
         variants
+      end
+
+      # Sorts passed multisets
+      # @param [Array] cmbs the list of combinations which will sorted by asc
+      # @return [Array] sorted list of multisets combinations
+      def sort_cmbs(cmbs)
+        cmbs.sort do |*multisets|
+          a, b = multisets.map { |ms| ms.map(&:total_links_num).reduce(:+) }
+          if a == b
+            x, y = multisets.map(&:size)
+            x <=> y
+          else
+            a <=> b
+          end
+        end
       end
 
       # Gets lists of common targets
@@ -124,6 +143,57 @@ module VersatileDiamond
         end
       end
 
+      # Splits the list of targets to groups where each item is same as other
+      # @param [Array] targets from which the similar will selected
+      # @return [Array] the list of similar targets
+      def same_targets_groups(targets)
+        groups = []
+        cheking_targets = (general_targets + targets).uniq
+        iterating_chunks = cheking_targets.dup
+
+        until iterating_chunks.empty? do
+          target = iterating_chunks.pop
+          next unless targets.include?(target)
+
+          cheking_targets.delete_one(target)
+          groups << cheking_targets.dup.reduce([target]) do |acc, t|
+            if same_sa?(target, t)
+              iterating_chunks.delete_one(t)
+              acc << cheking_targets.delete_one(t)
+            else
+              acc
+            end
+          end
+        end
+
+        groups
+      end
+
+      # Permutates passed targets
+      # @param [Array] targets for which the permutation maps will gotten
+      # @return [Array] the list of permutation maps
+      def permutate_targets(targets)
+        perms = targets.permutation.to_a
+        perms.shift
+        perms.map { |seq| [targets.zip(targets), targets.zip(seq)] }
+      end
+
+      # Gets the chunks combination groups where each group contains two subsets:
+      # "selected" and "not selected" chunks
+      #
+      # @param [Array] chunks which will sliced to selected-unselected groups
+      # @return [Array] the list of selected-unselected groups
+      def possible_chunks_combinations(chunks)
+        result = sliced_combinations(chunks, 1, chunks.size - 1).flat_map do |cmbs|
+          cmbs.map do |cmb|
+            chunks_dup = chunks.dup
+            cmb.each { |ch| chunks_dup.delete_one(ch) }
+            [cmb, chunks_dup]
+          end
+        end
+        result.uniq
+      end
+
       # Gets the list targets of reaction
       # @return [Array] the list of targets of general reaction
       def general_targets
@@ -134,9 +204,8 @@ module VersatileDiamond
       # @param [Hash] graph which the relations will be found
       # @param [Array] target for which the relations will be found
       # @param [Array] the list of relations or empty array
-      def rels(graph, target)
-        result = graph.find { |k, _| same_sa?(target, k) }
-        result ? result.last : []
+      def rels_in(graph, target)
+        graph[target] || []
       end
 
       # Counts links of target in passed graph
@@ -145,7 +214,7 @@ module VersatileDiamond
       # @return [Hash] the hash of counted links where keys are hash with face and
       #   direction and values are quantities of correspond relations
       def count_links(graph, target)
-        groups = rels(graph, target).map(&:last).group_by(&:params)
+        groups = rels_in(graph, target).map(&:last).group_by(&:params)
         groups.each_with_object({}) { |(k, vs), acc| acc[k] = vs.size }
       end
 
@@ -185,15 +254,55 @@ module VersatileDiamond
         usage_limits.any? { |rp, n| n > real_limits[rp] }
       end
 
+      # Verifies relations limits of target in reaction and chunks
+      # @param [Array] chunks where relations of target will checked
+      # @param [Array] target which relations will checked
+      # @return [Boolean] is satisfactory limits or not
+      def good_limits?(chunks, target)
+        !over_limits?(total_counts(chunks, target), target.last.relations_limits)
+      end
+
+      # Verifies that same targets satisfy reaction and chunks relations limits
+      # @param [Array] chunks where relations of targets will checked
+      # @param [Array] same_targets which limits will checked
+      def good_similar_limits?(chunks, same_targets)
+        splitted_chunks_groups = possible_chunks_combinations(chunks)
+        permutate_targets(same_targets).any? do |targets_maps|
+          splitted_chunks_groups.any? do |chunks_groups|
+            targets_maps.zip(chunks_groups).all? do |targets_map, chunks_group|
+              targets_map.all? do |k, v|
+                selected_chunks = chunks_group.select { |ch| ch.targets.include?(v) }
+                good_limits?(selected_chunks, k)
+              end
+            end
+          end
+        end
+      end
+
+      # Verifies that similar targets have satisfactory limits in other contexts
+      # @param [Array] chunks where relations of targets will checked
+      # @param [Array] targets which limits will checked
+      # @return [Boolean] is satisfactory limits or not
+      def good_cross_limits?(chunks, targets)
+        all_groups = same_targets_groups(targets)
+        sames_groups = all_groups.select { |gr| gr.size > 1 }
+        uniq_targets = (all_groups - sames_groups).map(&:first)
+
+        !sames_groups.empty? &&
+          uniq_targets.all? { |target| good_limits?(chunks, target) } &&
+          sames_groups.all? { |group| good_similar_limits?(chunks, group) }
+      end
+
       # Tries to merge passed chunks
       # @param [Array] chunks the list of chunks which tries to merge
       # @return [Boolean] is possible merge or not
       def mergeable?(chunks)
         targets = common_targets(chunks)
-        targets.empty? || targets.all? do |target|
-          !over_limits?(total_counts(chunks, target), target.last.relations_limits)
-        end
+        targets.empty? ||
+          targets.all? { |target| good_limits?(chunks, target) } ||
+          good_cross_limits?(chunks, targets)
       end
+
 
       # Tries to merge chunk with itself
       # @param [Chunk] chunk which will be checked

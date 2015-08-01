@@ -25,7 +25,7 @@ module VersatileDiamond
         @targets = targets
         @links = links
 
-        @_lateral_reaction, @_tail_name = nil
+        @_lateral_reaction, @_tail_name, @_total_links_num = nil
       end
 
       # The independent chunk haven't parents
