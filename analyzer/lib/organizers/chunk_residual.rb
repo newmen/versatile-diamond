@@ -30,8 +30,9 @@ module VersatileDiamond
           raise 'Independent chunk could not be for fully matched residual'
         end
 
+        typical_reaction = owner.typical_reaction
         @_independent_chunk =
-          IndependentChunk.new(owner, bonded_targets, independent_links)
+          IndependentChunk.new(typical_reaction, bonded_targets, independent_links)
       end
 
       # Checks that current chunk residual is fully matched
@@ -68,9 +69,9 @@ module VersatileDiamond
       # @param [ChunkResidual] other comparing chunk
       # @return [Integer] comparison result
       # @override
-      def comparing_core(other)
+      def comparing_core(other, &block)
         compare_total_links_num(other) do
-          other.parents.size <=> parents.size
+          order(other, self, :parents, :size, &block)
         end
       end
 

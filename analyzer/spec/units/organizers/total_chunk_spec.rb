@@ -16,6 +16,10 @@ module VersatileDiamond
 
       let(:targets_num) { 2 }
 
+      describe '#typical_reaction' do
+        it { expect(subject.typical_reaction).to eq(typical_reaction) }
+      end
+
       shared_examples_for :check_vertexes_and_relations_num do
         it 'expect vertex and relations num in subject links' do
           links = subject.send(method_name)

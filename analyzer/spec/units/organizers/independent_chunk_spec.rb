@@ -21,6 +21,14 @@ module VersatileDiamond
         it { expect(ind_swr.same?(ind_bwr)).to be_truthy }
       end
 
+      describe '#replace_target' do
+        subject { ind_bwr.replace_target(from, to) }
+        let(:from) { ind_bwr.targets.first }
+        let(:to) { [extra_activated_bridge, extra_activated_bridge.atom(:ct)] }
+        it { expect(subject).to be_a(described_class) }
+        it { expect(subject).not_to eq(ind_bwr) }
+      end
+
       describe '#targets' do
         shared_examples_for :check_targets do
           let(:aib) { mwb_lateral_df.source.last }

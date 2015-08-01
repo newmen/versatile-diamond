@@ -12,18 +12,14 @@ module VersatileDiamond
       include TargetsProcessor
       extend Forwardable
 
-      attr_reader :links, :targets
-
       # Initializes independent chunk by typical reaction to it belongs and links of it
-      # @param [Chunk] owner which is original big chunk
+      # @param [DependentTypicalReaction] typical_reaction for which the new lateral
+      #   reaction will be created later
       # @param [Set] targets of new chunk
       # @param [Hash] links of it chunk
-      def initialize(owner, targets, links)
-        super()
-
-        @owner = owner
-        @targets = targets
-        @links = links
+      def initialize(typical_reaction, targets, links)
+        super(targets, links)
+        @typical_reaction = typical_reaction
 
         @_lateral_reaction, @_tail_name, @_total_links_num = nil
       end
@@ -53,8 +49,11 @@ module VersatileDiamond
       # Makes the lateral reaction which contain current chunk
       # @return [CombinedLateralReaction] instance of new lateral reaction
       def lateral_reaction
-        @_lateral_reaction ||= CombinedLateralReaction.new(
-                                    typical_reaction, self, typical_reaction.full_rate)
+        return @_lateral_reaction if @_lateral_reaction
+
+        full_rate = typical_reaction.full_rate
+        @_lateral_reaction =
+          CombinedLateralReaction.new(typical_reaction, self, full_rate)
       end
 
       # The chunk which created by chunk residual is not original
@@ -73,8 +72,15 @@ module VersatileDiamond
 
     private
 
-      def_delegator :@owner, :typical_reaction
+      attr_reader :typical_reaction
 
+      # Gets the list of attributes which will passed to constructor of new instance
+      # @param [Set] new_targets of creating instance
+      # @param [Hasn] new_links of creating instance
+      # @return [Array] the list of constructor arguments
+      def replace_instance_args(new_targets, new_links)
+        [typical_reaction, new_targets, new_links]
+      end
     end
 
   end

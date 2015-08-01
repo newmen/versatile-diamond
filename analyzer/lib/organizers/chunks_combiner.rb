@@ -318,7 +318,7 @@ module VersatileDiamond
             used_targets = ext_links.keys.select do |target|
               target_specs.include?(target.first)
             end
-            IndependentChunk.new(chunk, used_targets.to_set, ext_links)
+            IndependentChunk.new(@typical_reaction, used_targets.to_set, ext_links)
           end
         else
           []

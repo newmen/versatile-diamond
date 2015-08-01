@@ -6,6 +6,15 @@ module VersatileDiamond
     describe Chunk, type: :organizer do
       let(:residual) { middle_chunk - end_chunk }
 
+      describe '#replace_target' do
+        before { dept_end_lateral_df.send(:store_parent, dept_dimer_formation) }
+        subject { end_chunk.replace_target(from, to) }
+        let(:from) { end_chunk.targets.first }
+        let(:to) { [extra_activated_bridge, extra_activated_bridge.atom(:ct)] }
+        it { expect(subject).to be_a(TargetReplacedChunk) }
+        it { expect(subject).not_to eq(end_chunk) }
+      end
+
       describe '#parents && #root?' do
         it { expect(middle_chunk.parents).to be_empty }
 

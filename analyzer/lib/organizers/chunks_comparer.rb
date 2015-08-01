@@ -10,11 +10,13 @@ module VersatileDiamond
       # @param [ChunkComparer] other comparing chunk
       # @return [Integer] comparison result
       def <=> (other)
-        typed_order(self, other, MergedChunk) do
-          typed_order(self, other, Chunk) do
-            typed_order(self, other, IndependentChunk) do
-              typed_order(self, other, ChunkResidual) do
-                comparing_core(other)
+        typed_order(other, self, ChunkResidual) do # always at begin of ordered seq
+          comparing_core(other) do
+            typed_order(self, other, MergedChunk) do
+              typed_order(self, other, Chunk) do
+                typed_order(self, other, TargetReplacedChunk) do
+                  typed_order(self, other, IndependentChunk)
+                end
               end
             end
           end
@@ -61,10 +63,11 @@ module VersatileDiamond
 
       # Gets core for ordering chunks
       # @param [ChunkComparer] other comparing chunk
+      # @yield do internal compares if total links numbers are equal
       # @return [Integer] comparison result
-      def comparing_core(other)
+      def comparing_core(other, &block)
         order(self, other, :clean_links, :size) do
-          compare_total_links_num(other)
+          compare_total_links_num(other, &block)
         end
       end
 

@@ -13,6 +13,14 @@ module VersatileDiamond
       let(:ab) { dimer_formation.source.first }
       let(:aib) { dimer_formation.source.last }
 
+      describe '#replace_target' do
+        subject { mrg_chunk.replace_target(from, to) }
+        let(:from) { mrg_chunk.targets.first }
+        let(:to) { [extra_activated_bridge, extra_activated_bridge.atom(:ct)] }
+        it { expect(subject).to be_a(CombinedChunk) }
+        it { expect(subject).not_to eq(mrg_chunk) }
+      end
+
       describe '#targets' do
         let(:targets) { Set[[ab, ab.atom(:ct)], [aib, aib.atom(:ct)]] }
         it { expect(mrg_chunk.targets).to eq(targets) }

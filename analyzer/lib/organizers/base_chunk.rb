@@ -5,8 +5,15 @@ module VersatileDiamond
     # @abstract
     class BaseChunk
 
+      attr_reader :targets, :links
+
       # Initializes internal caches of all chunks
-      def initialize
+      # @param [Set] targets of new chunk
+      # @param [Hash] links of new chunk
+      def initialize(targets, links)
+        @targets = targets
+        @links = links
+
         @_target_specs, @_sidepiece_specs, @_clean_links = nil
       end
 
@@ -32,6 +39,16 @@ module VersatileDiamond
         @_sidepiece_specs ||= links.keys.map(&:first).to_set - target_specs
       end
 
+      # Produces new chunk but with exchanged target
+      # @param [Array] from the target which will be replaced
+      # @param [Array] to the target to which will be replaced
+      # @return [IndependentChunk] new instance with changed target
+      def replace_target(from, to)
+        new_targets = replace_in_targets(from, to)
+        new_links = replace_in_links(from, to)
+        replace_class.new(*replace_instance_args(new_targets, new_links))
+      end
+
       # TODO: inspectation method for debug
       def relations
         clean_links.reduce([]) do |acc, ((spec, _), rels)|
@@ -40,6 +57,35 @@ module VersatileDiamond
           else
             acc
           end
+        end
+      end
+
+    private
+
+      # Gets class of new replacing target instance
+      # @return [Class] of new instance
+      def replace_class
+        self.class
+      end
+
+      # Gets new set of targets where one of target was replaced
+      # @param [Array] from the target which will be replaced
+      # @param [Array] to the target to which will be replaced
+      # @return [Set] the set with replacing target
+      def replace_in_targets(from, to)
+        raise 'Targets already contains replacing target' if targets.include?(to)
+        (targets.to_a - [from] + [to]).to_set
+      end
+
+      # Gets new graph of links where one of target was replaced
+      # @param [Array] from the target which will be replaced
+      # @param [Array] to the target to which will be replaced
+      # @return [Hash] the links with replacing target
+      def replace_in_links(from, to)
+        raise 'Links already contains replacing target' if links[to]
+        select_sa = -> sa { sa == from ? to : sa }
+        links.each_with_object({}) do |(spec_atom, rels), acc|
+          acc[select_sa[spec_atom]] = rels.map { |sa, r| [select_sa[sa], r] }
         end
       end
     end

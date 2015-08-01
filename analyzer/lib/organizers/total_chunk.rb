@@ -7,7 +7,7 @@ module VersatileDiamond
       include Modules::GraphDupper
       include MinuendChunk
 
-      attr_reader :targets, :links
+      attr_reader :typical_reaction
 
       # Initializes the total chunk by target typical reaction and chunks which are
       # parts of this
@@ -15,9 +15,8 @@ module VersatileDiamond
       # @param [DependentTypicalReaction] typical_reaction the target of passed chunks
       # @param [Array] chunks the list of parts of creating total chunk
       def initialize(typical_reaction, chunks)
+        super(merge_targets(chunks), merge_links(chunks))
         @typical_reaction = typical_reaction
-        @targets = merge_targets(chunks)
-        @links = merge_links(chunks)
 
         @_total_links = nil
       end
