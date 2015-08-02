@@ -32,7 +32,7 @@ module VersatileDiamond
         true
       end
 
-      def inspect
+      def to_s
         "Chunk of #{tail_name}"
       end
 

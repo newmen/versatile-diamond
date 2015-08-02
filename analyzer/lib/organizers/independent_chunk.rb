@@ -72,10 +72,6 @@ module VersatileDiamond
         "Independent chunk with #{tail_name}"
       end
 
-      def inspect
-        "#{to_s} ##{object_id}"
-      end
-
     private
 
       attr_reader :typical_reaction

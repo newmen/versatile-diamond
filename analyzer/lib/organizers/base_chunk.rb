@@ -60,6 +60,10 @@ module VersatileDiamond
         end
       end
 
+      def inspect
+        "#{to_s} ##{object_id}"
+      end
+
     private
 
       # Gets class of new replacing target instance

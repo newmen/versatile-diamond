@@ -23,7 +23,9 @@ module VersatileDiamond
       # @return [Array] the list of combined lateral reactions
       def combine(chunks)
         chunks.each do |ch|
-          raise "Wrong targets of #{ch}" unless ch.targets == general_targets
+          unless general_targets.empty? || general_targets.superset?(ch.targets)
+            raise %Q(Wrong targets of "#{ch.to_s}")
+          end
         end
 
         variants = recombine_variants(collect_variants(chunks))

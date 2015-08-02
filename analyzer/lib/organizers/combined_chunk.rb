@@ -52,10 +52,6 @@ module VersatileDiamond
         false
       end
 
-      def inspect
-        "#{to_s} ##{object_id}"
-      end
-
     private
 
       attr_reader :typical_reaction
