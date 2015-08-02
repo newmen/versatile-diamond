@@ -91,7 +91,6 @@ events
     where :near_high_bridge, 'when there is chain neighbour high bridge'
       position target_atom, high_bridge(:ct), face: 100, dir: :front
 
-
   reaction 'methyl to high bridge'
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
       unfixed methyl_on_dimer(:cm)

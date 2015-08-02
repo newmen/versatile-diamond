@@ -25,6 +25,8 @@ module VersatileDiamond
         converted_value = Tools::Dimension.convert_energy(value, dimension)
         forward.enthalpy = converted_value
         reverse.enthalpy = -converted_value
+      rescue Concepts::UbiquitousReaction::AlreadySet => e
+        already_set_error(e)
       end
 
       # Interpret activation line and setup forward and reverse activation
@@ -36,6 +38,8 @@ module VersatileDiamond
         converted_value = Tools::Dimension.convert_energy(value, dimension)
         forward.activation = converted_value
         reverse.activation = converted_value
+      rescue Concepts::UbiquitousReaction::AlreadySet => e
+        already_set_error(e)
       end
 
       %w(forward reverse).each do |dir|
@@ -43,23 +47,35 @@ module VersatileDiamond
         # @param [Float] value the value of activation energy
         # @param [String] dimension the dimension of activation energy
         define_method(:"#{dir}_activation") do |value, dimension = nil|
-          send(dir).activation =
-            Tools::Dimension.convert_energy(value, dimension)
+          begin
+            send(dir).activation =
+              Tools::Dimension.convert_energy(value, dimension)
+          rescue Concepts::UbiquitousReaction::AlreadySet => e
+            already_set_error(e)
+          end
         end
 
         # Interpret #{dir} rate line
         # @param [Float] value the value of pre-exponencial factor
         # @param [String] dimension the dimension of rate
         define_method(:"#{dir}_rate") do |value, dimension = nil|
-          gases_num = send(dir).gases_num
-          send(dir).rate = Tools::Dimension.convert_rate(
-            eval_value_if_string(value, gases_num), gases_num, dimension)
+          begin
+            gases_num = send(dir).gases_num
+            send(dir).rate = Tools::Dimension.convert_rate(
+              eval_value_if_string(value, gases_num), gases_num, dimension)
+          rescue Concepts::UbiquitousReaction::AlreadySet => e
+            already_set_error(e)
+          end
         end
 
         # Interpret #{dir} power of temperature line
         # @param [Float] value the value of temperature power
         define_method(:"#{dir}_tpow") do |value|
-          send(dir).temp_power = value.to_f
+          begin
+            send(dir).temp_power = value.to_f
+          rescue Concepts::UbiquitousReaction::AlreadySet => e
+            already_set_error(e)
+          end
         end
       end
 
@@ -76,10 +92,7 @@ module VersatileDiamond
       #
       # @return [Concepts::UbiquitousReaction] reverse of current concept
       def reverse
-        unless @reverse_was_stored
-          store(forward.reverse)
-          @reverse_was_stored = true
-        end
+        store(forward.reverse) unless forward.has_reverse?
         forward.reverse
       rescue Concepts::There::ReversingError => e
         syntax_error('lateral_reaction.amorph_reverse_atom',
@@ -96,6 +109,13 @@ module VersatileDiamond
         else
           value
         end
+      end
+
+      # Shows syntax error when exception AlreadySet was raised
+      # @param [Concepts::UniquitousReaction:AlreadySet] e the exception object
+      def already_set_error(e)
+        syntax_error('reaction.already_set',
+          reaction: e.reaction.name, property: e.property, value: e.value)
       end
     end
 

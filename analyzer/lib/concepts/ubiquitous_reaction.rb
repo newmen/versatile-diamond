@@ -12,8 +12,12 @@ module VersatileDiamond
 
       # Exception class for cases when property already setted
       class AlreadySet < Errors::Base
-        attr_reader :property
-        def initialize(property); @property = property end
+        attr_reader :reaction, :property, :value
+        def initialize(reaction, property, value)
+          @reaction = reaction
+          @property = property
+          @value = value
+        end
       end
 
       class << self
@@ -31,8 +35,9 @@ module VersatileDiamond
             # @raise [UbiquitousReaction::AlreadySet] if property already set
             # @param [Float] value the value of property
             define_method("#{property}=") do |value|
-              if instance_variable_get(:"@#{property}")
-                raise UbiquitousReaction::AlreadySet.new(property)
+              old_value = instance_variable_get(:"@#{property}")
+              if old_value
+                raise UbiquitousReaction::AlreadySet.new(self, property, old_value)
               end
               update_attribute(property, value)
             end
@@ -56,6 +61,12 @@ module VersatileDiamond
         @reverse = nil
 
         @enthalpy, @activation, @rate = nil
+      end
+
+      # Checks that reverse reaction was created
+      # @return [Boolean] was created reverse reaction or not
+      def has_reverse?
+        !!@reverse
       end
 
       # Gets a name of reaction with prepend type of reaction

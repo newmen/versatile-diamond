@@ -22,6 +22,8 @@ module VersatileDiamond
         super(*super_args)
         @mapping = mapping
         @links = {} # contain positions between atoms of different reactants
+
+        @parent = nil
         @children = []
 
         @mapping.find_positions_for(self)
@@ -102,6 +104,7 @@ module VersatileDiamond
       def reverse
         return @reverse if @reverse
         result = super
+        @parent.reverse.children << result if @parent && @parent.has_reverse?
         children.each { |child| result.children << child.reverse }
         result
       end
@@ -182,7 +185,7 @@ module VersatileDiamond
 
       # Reorganizes the specs of children reactions
       def reorganize_children_specs!
-        @children.each do |child|
+        children.each do |child|
           if same_specs?(child) && same_positions?(child)
             swap_by_map!(child, map_to_specs_of(child, :source))
           end
@@ -192,7 +195,7 @@ module VersatileDiamond
     protected
 
       attr_reader :children
-      attr_writer :links
+      attr_writer :parent, :links
 
       # Links together two structures by it atoms
       # @param [Array] first see at #position_between same argument
@@ -328,6 +331,7 @@ module VersatileDiamond
           [dup_spec, dup_spec.atom(old_spec.keyname(old_atom))]
         end
 
+        duplication.parent = self
         @children << duplication
 
         duplication

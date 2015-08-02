@@ -75,6 +75,7 @@ en:
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
   reaction:
+    already_set: "The value of \"%{property}\" property for \"%{reaction}\" reaction already set to %{value}"
     cannot_map: "Cannot map reaction atoms"
     invalid: "Invalid reaction equation"
     invalid_valence: "In the global reaction can be specified only monovalent atoms"

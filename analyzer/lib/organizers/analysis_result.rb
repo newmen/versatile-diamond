@@ -21,7 +21,7 @@ module VersatileDiamond
       # organizes dependencies between collected concepts
       def initialize
         ChunkLinksMerger.init_veiled_cache!
-        reorganize_children_specs!(chest_reactions(:reaction))
+        reorganize_children_specs!(Tools::Chest.all(:reaction))
 
         @ubiquitous_reactions =
           wrap_reactions(DependentUbiquitousReaction, :ubiquitous_reaction)
@@ -60,13 +60,6 @@ module VersatileDiamond
 
       attr_reader :theres
 
-      # Gets the list of reactions from Chest
-      # @param [Symbol] chest_key the key by which reactions will be got from Chest
-      # @return [Array] the list of concept reactions
-      def chest_reactions(chest_key)
-        Tools::Chest.all(chest_key).reject { |r| r.full_rate == 0 }
-      end
-
       # Wraps reactions from Chest
       # @param [Class] the class that inherits DependentReaction
       # @param [Symbol] chest_key the key by which reactions will be got from Chest
@@ -74,7 +67,9 @@ module VersatileDiamond
       # @return [Array] the array with each wrapped reaction
       def wrap_reactions(klass, chest_key)
         raise 'Wrong klass value' unless klass.ancestors.include?(DependentReaction)
-        chest_reactions(chest_key).map { |reaction| klass.new(reaction) }
+
+        reactions = Tools::Chest.all(chest_key).reject { |r| r.full_rate == 0 }
+        reactions.map { |reaction| klass.new(reaction) }
       end
 
       # Collects there instances from lateral reactions
@@ -151,8 +146,13 @@ module VersatileDiamond
       #   found in cache
       # @return [DependentSpecificSpec] the search result or nil
       def cached_spec(cache, spec)
-        cached_dept_spec = cache[spec.name] || cache.values.find do |dss|
-          dss.spec.same?(spec)
+        cached_dept_spec = cache[spec.name]
+        if cached_dept_spec
+          cached_dept_spec
+        else
+          similar_dept_spec = cache.values.find { |dss| dss.spec.same?(spec) }
+          cache[similar_dept_spec.name] = similar_dept_spec if similar_dept_spec
+          similar_dept_spec
         end
       end
 
