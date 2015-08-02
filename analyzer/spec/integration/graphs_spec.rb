@@ -1,3 +1,4 @@
+require 'open3'
 require 'spec_helper'
 
 describe 'graphs generation' do
@@ -38,9 +39,10 @@ describe 'graphs generation' do
     it 'run and check result file' do
       expect(RESULTS_PATH.exist?).to be_falsey # check that 'alter' block works
 
-      `#{run_line} --out=#{RESULTS_PATH} --no-cache`
+      cmd = "#{run_line} --out=#{RESULTS_PATH} --no-cache"
+      _stdin, _stdout, stderr, _wait_thread = Open3.popen3(cmd)
 
-      expect($?.exitstatus).to eq(0)
+      expect(stderr.gets).to be_nil
       expect(RESULTS_PATH.exist?).to be_truthy
       expect(RESULTS_PATH.children.size).to eq(1)
 
