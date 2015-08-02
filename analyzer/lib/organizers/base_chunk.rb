@@ -73,9 +73,13 @@ module VersatileDiamond
       # @param [Array] to the target to which will be replaced
       # @return [Set] the set with replacing target
       def replace_in_targets(from, to)
-        raise 'Targets does not contain replacing target' unless targets.include?(from)
-        raise 'Targets already contains replacing target' if targets.include?(to)
-        (targets.to_a - [from] + [to]).to_set
+        if targets.include?(from) && targets.include?(to)
+          targets
+        elsif targets.include?(from) && !targets.include?(to)
+          (targets.to_a - [from] + [to]).to_set
+        else
+          raise 'Wrong swapping targets'
+        end
       end
 
       # Gets new graph of links where one of target was replaced
@@ -83,11 +87,27 @@ module VersatileDiamond
       # @param [Array] to the target to which will be replaced
       # @return [Hash] the links with replacing target
       def replace_in_links(from, to)
-        raise 'Links does not contain replacing target' unless links[from]
-        raise 'Links already contains replacing target' if links[to]
-        select_sa = -> sa { sa == from ? to : sa }
+        if links[from] && links[to]
+          exchange_targets_in_links do |sa|
+            if sa == to
+              from
+            else
+              sa == from ? to : sa
+            end
+          end
+        elsif links[from] && !links[to]
+          exchange_targets_in_links { |sa| sa == from ? to : sa }
+        else
+          raise 'Wrong swapping targets of links'
+        end
+      end
+
+      # Exchange relations of passed targets
+      # @yield [Array, Array] iterates processing spec-atom instances
+      # @return [Hash] links with swapped targets
+      def exchange_targets_in_links(&block)
         links.each_with_object({}) do |(spec_atom, rels), acc|
-          acc[select_sa[spec_atom]] = rels.map { |sa, r| [select_sa[sa], r] }
+          acc[block[spec_atom]] = rels.map { |sa, r| [block[sa], r] }
         end
       end
     end

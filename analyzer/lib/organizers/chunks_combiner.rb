@@ -8,6 +8,7 @@ module VersatileDiamond
     class ChunksCombiner
       include Mcs::SpecsAtomsComparator
       include Modules::ExtendedCombinator
+      include Modules::ListsComparer
 
       # Initializes combiner by target typical reaction
       # @param [DependentTypicalReaction] typical_reaction for which new lateral
@@ -377,10 +378,31 @@ module VersatileDiamond
       # @yield [Array, Array] iterates groups of chunks and targets
       # @return [Hash] result of block execution if any of it is set
       def iterate_permutations(chunks, targets, &block)
-        splitted_chunks_groups = possible_chunks_combinations(chunks)
+        diff_chunks = drop_same_multitargets(chunks, targets)
+        splitted_chunks_groups = possible_chunks_combinations(diff_chunks)
         permutate_targets(targets).reduce([]) do |a1, targets_maps|
           !a1.empty? ? a1 : splitted_chunks_groups.reduce(a1) do |a2, chunks_groups|
             a2.empty? ? a2 + block[chunks_groups, targets_maps] : a2
+          end
+        end
+      end
+
+      # Drops chunks which uses all targets and correspond sidepiece spec-atoms are
+      # equal too
+      #
+      # @param [Array] chunks which will be cleared
+      # @param [Array] targets which will be checked
+      # @return [ARray] the cleared chunks
+      def drop_same_multitargets(chunks, targets)
+        targets = targets.to_set
+        chunks.reject do |chunk|
+          next false unless chunk.targets == targets
+          many_rels = chunk.links.select { |sa, _| targets.include?(sa) }.values
+          gage = many_rels.pop
+          many_rels.all? do |rels|
+            lists_are_identical?(gage, rels) do |(sa1, r1), (sa2, r2)|
+              r1 == r2 && same_sa?(sa1, sa2)
+            end
           end
         end
       end
