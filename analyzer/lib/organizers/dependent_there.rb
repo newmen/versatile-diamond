@@ -7,7 +7,7 @@ module VersatileDiamond
       include Modules::SpecAtomSwapper
       extend Forwardable
 
-      def_delegators :there, :description
+      def_delegators :there, :description, :use_similar_source?
       def_delegator :there, :where # for graphs generators
 
       # Stores wrappable there
@@ -44,22 +44,6 @@ module VersatileDiamond
           end
         end
         @_links
-      end
-
-      # Is used similar source spec in parent lateral reaction or internal there
-      # object?
-      #
-      # @param [Concept::SpecificSpec] spec which will be checked
-      # @return [Boolean] contain similar source or not
-      def use_similar_source?(spec)
-        return true if there.use_similar_source?(spec)
-        clr = lateral_reaction.reaction
-        return true if clr.use_similar_source?(spec)
-        begin
-          clr.reverse.use_similar_source?(spec)
-        rescue Concepts::There::ReversingError
-          false
-        end
       end
 
       # Gets atoms of passed spec

@@ -12,8 +12,9 @@ module VersatileDiamond
       # @param [Array] theres the array of there objects the links from which will be
       #   collected and used as links of chunk
       def initialize(lateral_reaction, theres)
+        targets = merge_targets(theres)
         tail_name = theres.map(&:description).join(' and ')
-        super(lateral_reaction, merge_targets(theres), merge_links(theres), tail_name)
+        super(lateral_reaction, targets, merge_links(targets, theres), tail_name)
       end
 
       # Also swap targets and links of current chunk
@@ -46,15 +47,16 @@ module VersatileDiamond
       end
 
       # Adsorbs all links from there objects
+      # @param [Set] all_targets of creating chunk
       # @param [Array] theres which links will be merged
       # @return [Hash] the common links hash
-      def merge_links(theres)
-        theres.each_with_object({}) do |there, acc|
-          there.links.each do |sa1, rels|
-            acc[sa1] ||= []
-            acc[sa1] += rels
-          end
+      def merge_links(all_targets, theres)
+        targets_specs = all_targets.map(&:first).to_set
+        clm = ChunkLinksMerger.new(targets_specs) do |there, spec_atom|
+          !(all_targets - there.targets).include?(spec_atom) && spec_atom
         end
+
+        theres.reduce({}, &clm.public_method(:merge))
       end
 
       # Gets the self instance

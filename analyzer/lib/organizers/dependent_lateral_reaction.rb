@@ -46,6 +46,14 @@ module VersatileDiamond
         super
         chunk.swap_spec(from, to) if @_chunk
       end
+
+    private
+
+      # Clears internal caches
+      def clear_caches!
+        super
+        raise 'Chunk already created with possible swapping values' if @_chunk
+      end
     end
 
   end

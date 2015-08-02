@@ -8,14 +8,14 @@ module VersatileDiamond
       include LinksCleaner
       extend Forwardable
 
-      def_delegators :reaction, :changes, :swap_atom
+      def_delegators :reaction, :changes
 
       # Initializes dependent spec reation
       def initialize(*)
         super
 
         check_positions!
-        @_links, @_original_links, @_clean_links = nil
+        clear_caches!
       end
 
       # Gets the list of surface source specs
@@ -43,6 +43,18 @@ module VersatileDiamond
       # @return [Hash] the clean positions links graph
       def clean_links
         @_clean_links ||= erase_excess_positions(reaction.links)
+      end
+
+      # Clears caches and delegates call to super class
+      def swap_source(*)
+        clear_caches!
+        super
+      end
+
+      # Clears caches and delegates call to super class
+      def swap_atom(*args)
+        clear_caches!
+        reaction.swap_atom(*args)
       end
 
       # Gets all using atoms of passed spec
@@ -82,6 +94,11 @@ module VersatileDiamond
       # @override
       def check_latticed_atom(first, second)
         super(first.last, second.last)
+      end
+
+      # Clears internal caches
+      def clear_caches!
+        @_links, @_original_links, @_clean_links = nil
       end
     end
 

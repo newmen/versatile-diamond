@@ -17,18 +17,27 @@ module VersatileDiamond
       end
 
       # Initializes the internal caches
-      def initialize
+      # @param [Set] all_targets_spec of all merging instances
+      # @yield [BaseChunk | DependentThere, Array] used for get a key for total_links
+      #   graph
+      def initialize(all_targets_spec, &block)
         @instance_cache = Set.new
+        @all_targets_spec = all_targets_spec
+        @current_targets_proc = block
       end
 
+      # Merges links of passed chunk with passed total_links
+      # @param [Hash] total_links which will be merged with links of chunk
+      # @param [BaseChunk | DependentThere] chunk which links will be merged with
+      #   total_links
       # @return [Hash] the acc with links
       def merge(total_links, chunk)
         local_cache = {}
 
         chunk.links.each_with_object(total_links) do |(spec_atom, rels), acc|
-          key = key(local_cache, chunk, spec_atom)
-          acc[key] ||= []
-          acc[key] += rels.map { |sa, r| [key(local_cache, chunk, sa), r] }
+          k = key(local_cache, chunk, spec_atom)
+          acc[k] ||= []
+          acc[k] += rels.map { |sa, r| [key(local_cache, chunk, sa), r] }
         end
       end
 
@@ -40,7 +49,7 @@ module VersatileDiamond
       # @param [Array] spec_atom is the original vertex from some chunk links graph
       # @return [Array] the correct key for result links graph
       def key(local_cache, chunk, spec_atom)
-        chunk.mapped_targets[spec_atom] ||
+        @current_targets_proc[chunk, spec_atom] ||
           cached_target(local_cache, chunk, *spec_atom)
       end
 
@@ -70,7 +79,7 @@ module VersatileDiamond
       def find_cached_spec(local_cache, chunk, spec)
         if local_cache[spec]
           local_cache[spec]
-        elsif @instance_cache.include?(spec)
+        elsif @instance_cache.include?(spec) || @all_targets_spec.include?(spec)
           rels = chunk.links.select { |(s, _), _| spec == s }
           find_veiled_spec(local_cache, spec, [spec, rels])
         else

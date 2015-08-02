@@ -84,9 +84,10 @@ module VersatileDiamond
       # @param [SpecificSpec] spec which will be checked
       # @return [Boolan] is used similar spec or not
       def use_similar_source?(spec)
-        where.total_links.any? do |_, rels|
-          rels.any? { |(s, _), _| s == spec }
-        end
+        target_refs.values.any? { |(s, _)| s == spec } ||
+          where.total_links.any? do |_, rels|
+            rels.any? { |(s, _), _| s == spec }
+          end
       end
 
       # Provides target species
