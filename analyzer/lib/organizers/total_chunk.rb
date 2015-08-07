@@ -40,7 +40,7 @@ module VersatileDiamond
       # @param [Array] chunks the list of chunks which targets will be merged
       # @return [Set] the set of targets of internal chunks
       def merge_targets(chunks)
-        ChunkTargetsMerger.new.merge(chunks)
+        chunks.map(&:targets).reduce(:+)
       end
 
       # Merges all links from chunks list

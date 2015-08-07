@@ -17,7 +17,8 @@ module VersatileDiamond
         raise 'Merged chunk should have more that one parent' if chunks.size < 2
 
         targets = merge_targets(chunks)
-        super(typical_reaction, targets, merge_links(targets, chunks), variants)
+        targets_specs = targets.map(&:first).to_set
+        super(typical_reaction, targets, merge_links(targets_specs, chunks), variants)
         @parents = chunks
       end
 
@@ -31,16 +32,15 @@ module VersatileDiamond
       # @param [Array] chunks the list of chunks which targets will be merged
       # @return [Set] the set of targets of internal chunks
       def merge_targets(chunks)
-        ChunkTargetsMerger.new.merge(chunks)
+        chunks.map(&:targets).reduce(:+)
       end
 
       # Merges all links from chunks list
-      # @param [Set] all_targets of creating chunk
+      # @param [Set] all_targets_specs of creating chunk
       # @param [Array] chunks which links will be merged
       # @return [Hash] the common links hash
-      def merge_links(all_targets, chunks)
-        targets_specs = all_targets.map(&:first).to_set
-        clm = ChunkLinksMerger.new(targets_specs) { |ch, sa| ch.mapped_targets[sa] }
+      def merge_links(all_targets_specs, chunks)
+        clm = ChunkLinksMerger.new(all_targets_specs)
         chunks.reduce({}, &clm.public_method(:merge))
       end
     end

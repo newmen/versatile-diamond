@@ -17,13 +17,10 @@ module VersatileDiamond
       end
 
       # Initializes the internal caches
-      # @param [Set] all_targets_spec of all merging instances
-      # @yield [BaseChunk | DependentThere, Array] used for get a key for total_links
-      #   graph
-      def initialize(all_targets_spec, &block)
+      # @param [Set] aim_specs of all merging instances
+      def initialize(aim_specs)
         @instance_cache = Set.new
-        @all_targets_spec = all_targets_spec
-        @current_targets_proc = block
+        @aim_specs = aim_specs
       end
 
       # Merges links of passed chunk with passed total_links
@@ -45,17 +42,23 @@ module VersatileDiamond
 
       # Gets the correct key for common links graph
       # @param [Hash] local_cache the changable cache for current local merge
-      # @param [BaseChunk] chunk which links merges to total links
+      # @param [BaseChunk | DependentThere] chunk which links merges to total links
       # @param [Array] spec_atom is the original vertex from some chunk links graph
       # @return [Array] the correct key for result links graph
       def key(local_cache, chunk, spec_atom)
-        @current_targets_proc[chunk, spec_atom] ||
+        need_check_cache = !chunk.targets.include?(spec_atom) ||
+          (@aim_specs - chunk.targets.map(&:first).to_set).include?(spec_atom.first)
+
+        if need_check_cache
           cached_target(local_cache, chunk, *spec_atom)
+        else
+          spec_atom
+        end
       end
 
       # Finds correct cached key for common links graph
       # @param [Hash] local_cache the changable cache for current local merge
-      # @param [BaseChunk] chunk which links merges to total links
+      # @param [BaseChunk | DependentThere] chunk which links merges to total links
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
       #   which veiled analog will be checked
       # @param [Concepts::Atom | Concepts::SpecificAtom | Concepts::AtomReference] atom
@@ -71,7 +74,7 @@ module VersatileDiamond
 
       # Checks all level caches and find correct spec for
       # @param [Hash] local_cache the changable cache for current local merge
-      # @param [BaseChunk] chunk which links merges to total links
+      # @param [BaseChunk | DependentThere] chunk which links merges to total links
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
       #   which veiled analog will be checked
       # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] the
@@ -79,7 +82,7 @@ module VersatileDiamond
       def find_cached_spec(local_cache, chunk, spec)
         if local_cache[spec]
           local_cache[spec]
-        elsif @instance_cache.include?(spec) || @all_targets_spec.include?(spec)
+        elsif @instance_cache.include?(spec) || @aim_specs.include?(spec)
           rels = chunk.links.select { |(s, _), _| spec == s }
           find_veiled_spec(local_cache, spec, [spec, rels])
         else

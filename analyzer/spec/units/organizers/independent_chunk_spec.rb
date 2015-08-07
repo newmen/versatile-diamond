@@ -65,13 +65,6 @@ module VersatileDiamond
         it { expect(ind_bwr.lateral_reaction).to eq(ind_bwr.lateral_reaction) }
       end
 
-      describe '#mapped_targets' do
-        it_behaves_like :check_mapped_targets do
-          let(:reaction) { dept_mwb_lateral_df }
-          let(:chunk) { ind_bwr }
-        end
-      end
-
       describe '#parents' do
         it { expect(ind_bwr.parents).to be_empty }
         it { expect(ind_swr.parents).to be_empty }

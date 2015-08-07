@@ -92,7 +92,7 @@ module VersatileDiamond
         subject { on_end }
         it { expect(subject.use_similar_source?(dimer)).to be_truthy }
         it { expect(subject.use_similar_source?(dimer.dup)).to be_falsey}
-        it { expect(subject.use_similar_source?(ab)).to be_falsey }
+        it { expect(subject.use_similar_source?(ab)).to be_truthy }
       end
 
       describe '#swap_source' do

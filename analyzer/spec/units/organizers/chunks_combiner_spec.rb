@@ -19,7 +19,6 @@ module VersatileDiamond
           })
         end
 
-
         shared_examples_for :check_combined_reactions do
           let(:cmb_reactions) { typical_reaction.children - lateral_reactions }
           it 'combined reactions should be' do
@@ -27,8 +26,9 @@ module VersatileDiamond
             expect(cmb_reactions.map(&:full_rate)).to match_array(rates)
 
             chunks = cmb_reactions.map(&:chunk)
-            expect(chunks.map(&:parents).map(&:size)).to eq(parents)
-            expect(chunks.map(&:internal_chunks).map(&:size)).to eq(internal_chunks)
+            expect(chunks.map(&:parents).map(&:size)).to match_array(parents)
+            expect(chunks.map(&:internal_chunks).map(&:size)).
+              to match_array(internal_chunks)
           end
         end
 
@@ -64,22 +64,66 @@ module VersatileDiamond
           end
         end
 
-        describe 'many similar chunks (small case)' do
+        describe 'many similar chunks' do
           let(:typical_reaction) { dept_symmetric_dimer_formation }
-          let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
-          let(:setup_rates) do
-            small_ab_lateral_sdf.rate = 5
+
+          describe 'once lateral reaction' do
+            let(:parents) do
+              [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            end
+
+            describe 'small case' do
+              let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              let(:setup_rates) do
+                small_ab_lateral_sdf.rate = 5
+              end
+
+              it_behaves_like :check_combined_reactions do
+                let(:rates) do
+                  [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+                end
+                let(:internal_chunks) do
+                  [1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6]
+                end
+              end
+            end
+
+            describe 'big case' do
+              let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              let(:setup_rates) do
+                big_ab_lateral_sdf.rate = 7
+              end
+
+              it_behaves_like :check_combined_reactions do
+                let(:rates) do
+                  [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 7.0, 7.0]
+                end
+                let(:internal_chunks) do
+                  [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6]
+                end
+              end
+            end
           end
 
-          it_behaves_like :check_combined_reactions do
-            let(:rates) do
-              [1.0, 1.0, 1.0, 5.0, 1.0, 5.0, 1.0, 5.0, 1.0, 5.0, 5.0, 5.0, 5.0]
+          describe 'both cases' do
+            let(:lateral_reactions) do
+              [dept_small_ab_lateral_sdf, dept_big_ab_lateral_sdf]
             end
-            let(:parents) do
-              [0,   0,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2,   2]
+            let(:setup_rates) do
+              small_ab_lateral_sdf.rate = 5
+              big_ab_lateral_sdf.rate = 7
             end
-            let(:internal_chunks) do
-              [1,   1,   2,   3,   3,   4,   4,   5,   2,   3,   4,   5,   6]
+
+            it_behaves_like :check_combined_reactions do
+              let(:rates) do
+                [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 7.0, 7.0]
+              end
+              let(:parents) do
+                [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+              end
+              let(:internal_chunks) do
+                [1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6]
+              end
             end
           end
         end

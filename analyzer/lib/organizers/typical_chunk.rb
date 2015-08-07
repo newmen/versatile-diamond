@@ -6,7 +6,6 @@ module VersatileDiamond
     class TypicalChunk < BaseChunk
       include ChunkParentsOrganizer
       include DrawableChunk
-      include TargetsProcessor
       extend Forwardable
       extend Collector
 
@@ -25,7 +24,7 @@ module VersatileDiamond
         @lateral_reaction = lateral_reaction
         @tail_name = tail_name
 
-        @_mapped_targets, @_internal_chunks, @_total_links_num = nil
+        @_internal_chunks, @_total_links_num = nil
       end
 
       # Gets the parent typical reaction

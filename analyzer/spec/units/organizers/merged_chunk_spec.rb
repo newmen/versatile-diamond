@@ -4,11 +4,17 @@ module VersatileDiamond
   module Organizers
 
     describe MergedChunk, type: :organizer do
-      before { dept_end_lateral_df.send(:store_parent, typical_reaction) }
-      let(:typical_reaction) { dept_dimer_formation }
-      let(:mrg_chunk) do
-        described_class.new(typical_reaction, [end_chunk] * 2, {})
+      before do
+        stub_results({
+          typical_reactions: [typical_reaction],
+          lateral_reactions: lateral_reactions
+        })
       end
+
+      let(:typical_reaction) { dept_dimer_formation }
+      let(:lateral_reactions) { [dept_end_lateral_df] }
+      let(:cmb_lateral_reactions) { typical_reaction.children - lateral_reactions }
+      let(:mrg_chunk) { cmb_lateral_reactions.first.chunk }
 
       let(:ab) { dimer_formation.source.first }
       let(:aib) { dimer_formation.source.last }
@@ -28,45 +34,45 @@ module VersatileDiamond
 
       describe '#links' do
         let(:veiled_dimer) do
-          (mrg_chunk.links.keys.map(&:first) - [ab, aib, dimer]).first
+          (mrg_chunk.links.keys.map(&:first) - [ab, aib, dimer_base]).first
         end
         let(:links) do
           {
             [ab, ab.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross],
+              [[dimer_base, dimer_base.atom(:cl)], position_100_cross],
               [[veiled_dimer, veiled_dimer.atom(:cl)], position_100_cross],
             ],
             [aib, aib.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross],
+              [[dimer_base, dimer_base.atom(:cr)], position_100_cross],
               [[veiled_dimer, veiled_dimer.atom(:cr)], position_100_cross],
             ],
-            [dimer, dimer.atom(:cr)] => [
+            [dimer_base, dimer_base.atom(:cr)] => [
               [[aib, aib.atom(:ct)], position_100_cross],
-              [[dimer, dimer.atom(:cl)], bond_100_front],
-              [[dimer, dimer.atom(:crb)], bond_110_cross],
-              [[dimer, dimer.atom(:_cr0)], bond_110_cross]
+              [[dimer_base, dimer_base.atom(:cl)], bond_100_front],
+              [[dimer_base, dimer_base.atom(:crb)], bond_110_cross],
+              [[dimer_base, dimer_base.atom(:_cr0)], bond_110_cross]
             ],
-            [dimer, dimer.atom(:crb)] => [
-              [[dimer, dimer.atom(:cr)], bond_110_front],
-              [[dimer, dimer.atom(:_cr0)], position_100_front]
+            [dimer_base, dimer_base.atom(:crb)] => [
+              [[dimer_base, dimer_base.atom(:cr)], bond_110_front],
+              [[dimer_base, dimer_base.atom(:_cr0)], position_100_front]
             ],
-            [dimer, dimer.atom(:_cr0)] => [
-              [[dimer, dimer.atom(:cr)], bond_110_front],
-              [[dimer, dimer.atom(:crb)], position_100_front]
+            [dimer_base, dimer_base.atom(:_cr0)] => [
+              [[dimer_base, dimer_base.atom(:cr)], bond_110_front],
+              [[dimer_base, dimer_base.atom(:crb)], position_100_front]
             ],
-            [dimer, dimer.atom(:cl)] => [
+            [dimer_base, dimer_base.atom(:cl)] => [
               [[ab, ab.atom(:ct)], position_100_cross],
-              [[dimer, dimer.atom(:cr)], bond_100_front],
-              [[dimer, dimer.atom(:clb)], bond_110_cross],
-              [[dimer, dimer.atom(:_cr1)], bond_110_cross]
+              [[dimer_base, dimer_base.atom(:cr)], bond_100_front],
+              [[dimer_base, dimer_base.atom(:clb)], bond_110_cross],
+              [[dimer_base, dimer_base.atom(:_cr1)], bond_110_cross]
             ],
-            [dimer, dimer.atom(:clb)] => [
-              [[dimer, dimer.atom(:cl)], bond_110_front],
-              [[dimer, dimer.atom(:_cr1)], position_100_front]
+            [dimer_base, dimer_base.atom(:clb)] => [
+              [[dimer_base, dimer_base.atom(:cl)], bond_110_front],
+              [[dimer_base, dimer_base.atom(:_cr1)], position_100_front]
             ],
-            [dimer, dimer.atom(:_cr1)] => [
-              [[dimer, dimer.atom(:cl)], bond_110_front],
-              [[dimer, dimer.atom(:clb)], position_100_front],
+            [dimer_base, dimer_base.atom(:_cr1)] => [
+              [[dimer_base, dimer_base.atom(:cl)], bond_110_front],
+              [[dimer_base, dimer_base.atom(:clb)], position_100_front],
             ],
             [veiled_dimer, veiled_dimer.atom(:cr)] => [
               [[aib, aib.atom(:ct)], position_100_cross],
@@ -113,12 +119,14 @@ module VersatileDiamond
         it { expect(other <=> mrg_chunk).to eq(1) }
       end
 
-      describe '#same?' do
+      describe '#same? and #same_internals?' do
         before { typical_reaction.reaction.reorganize_children_specs! }
         let(:combiner) { ChunksCombiner.new(typical_reaction) }
         let(:typical_reaction) { dept_symmetric_dimer_formation }
-        let(:main_chunk) { dept_small_ab_lateral_sdf.chunk }
-        let(:idp_chs) { combiner.send(:split_to_independent_chunks, main_chunk) }
+        let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+        let(:idp_chs) do
+          cmb_lateral_reactions.map(&:chunk).select { |ch| ch.is_a?(IndependentChunk) }
+        end
         let(:rpts_chs) do
           idp_chs.zip(idp_chs.reverse).map do |x, y|
             x.replace_target(x.targets.first, y.targets.first)
@@ -128,8 +136,12 @@ module VersatileDiamond
         let(:idp_mgr) { described_class.new(typical_reaction, idp_chs, {}) }
         let(:rpts_mgr) { described_class.new(typical_reaction, rpts_chs, {}) }
 
-        it { expect(idp_mgr.same?(rpts_mgr)).to be_truthy }
-        it { expect(rpts_mgr.same?(idp_mgr)).to be_truthy }
+        # because links graphs of merged chunk are not connected
+        it { expect(idp_mgr.same?(rpts_mgr)).to be_falsey }
+        it { expect(rpts_mgr.same?(idp_mgr)).to be_falsey }
+
+        it { expect(idp_mgr.same_internals?(rpts_mgr)).to be_truthy }
+        it { expect(rpts_mgr.same_internals?(idp_mgr)).to be_truthy }
 
         let(:cross_idp) do
           idp_chs.select { |ch| ch.relations.map(&:dir) == [:cross] }
@@ -143,8 +155,13 @@ module VersatileDiamond
 
         it { expect(big_mgr1.same?(idp_mgr)).to be_falsey }
         it { expect(idp_mgr.same?(big_mgr1)).to be_falsey }
-        it { expect(big_mgr1.same?(big_mgr2)).to be_truthy }
-        it { expect(big_mgr2.same?(big_mgr1)).to be_truthy }
+
+        # because links graphs of merged chunk are not connected
+        it { expect(big_mgr1.same?(big_mgr2)).to be_falsey }
+        it { expect(big_mgr2.same?(big_mgr1)).to be_falsey }
+
+        it { expect(big_mgr1.same_internals?(big_mgr2)).to be_truthy }
+        it { expect(big_mgr2.same_internals?(big_mgr1)).to be_truthy }
       end
 
       describe '#original?' do

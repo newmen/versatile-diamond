@@ -7,7 +7,6 @@ module VersatileDiamond
       include ChunksComparer
       include DrawableChunk
       include TailedChunk
-      include TargetsProcessor
 
       # Constructs the combined chunk
       # @param [DependentTypicalReaction] typical_reaction for which the new lateral
@@ -77,9 +76,21 @@ module VersatileDiamond
         if original_parents.empty?
           []
         else
-          max_num = original_parents.map(&:total_links_num).max
-          original_parents.select { |pr| pr.total_links_num == max_num }
+          near_original_parents = original_parents.select(&:original?)
+          if near_original_parents.empty?
+            select_maximal(original_parents)
+          else
+            select_maximal(near_original_parents)
+          end
         end
+      end
+
+      # Selects parents with maximal total links size
+      # @param [Array] original_parents from which the maximal parents will selected
+      # @return [Array] the list of maximal size parents
+      def select_maximal(original_parents)
+        max_num = original_parents.map(&:total_links_num).max
+        original_parents.select { |pr| pr.total_links_num == max_num }
       end
     end
 

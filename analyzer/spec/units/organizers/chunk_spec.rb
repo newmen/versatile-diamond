@@ -38,13 +38,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#mapped_targets' do
-        it_behaves_like :check_mapped_targets do
-          let(:reaction) { dept_end_lateral_df }
-          let(:chunk) { end_chunk }
-        end
-      end
-
       describe '#full_rate' do
         it { expect(end_chunk.full_rate).to eq(dept_end_lateral_df.full_rate) }
       end

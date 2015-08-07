@@ -9,7 +9,6 @@ module VersatileDiamond
       include DrawableChunk
       include ChunksComparer
       include TailedChunk
-      include TargetsProcessor
       extend Forwardable
 
       # Initializes independent chunk by typical reaction to it belongs and links of it

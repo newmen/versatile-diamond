@@ -48,10 +48,10 @@ module VersatileDiamond
       # @param [ChunksComparer] other chunk which will be compared
       # @return [Boolean] is same internal chunks or not
       def same_internals?(other)
-        return true if equal?(other)
-        return false unless same_targets?(other, &method(:same_sa?))
-        links.size == other.links.size &&
-          lists_are_identical?(internal_chunks, other.internal_chunks, &:same?)
+        equal?(other) ||
+          (same_targets?(other, &method(:same_sa?)) &&
+            links.size == other.links.size &&
+            lists_are_identical?(internal_chunks, other.internal_chunks, &:same?))
       end
 
     protected
