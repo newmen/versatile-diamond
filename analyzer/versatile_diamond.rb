@@ -22,6 +22,7 @@ LIB_DIR = 'lib'
 AUTO_LOADING_DIRS = Dir["#{__dir__}/#{LIB_DIR}/**/*.rb"].map do |dir|
   dir.sub(%r{\A.+?#{LIB_DIR}/}, "#{LIB_DIR}/").sub(%r{/\w+\.rb\Z}, '')
 end.uniq - [LIB_DIR]
+AUTO_LOADING_DIRS.sort!
 
 # Finds directory where stored file with name as passed
 # @param [String] file_name for which the directory will be found
