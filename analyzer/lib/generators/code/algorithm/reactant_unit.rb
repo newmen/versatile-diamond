@@ -1,6 +1,4 @@
 module VersatileDiamond
-  using Patches::RichArray
-
   module Generators
     module Code
       module Algorithm
@@ -16,19 +14,6 @@ module VersatileDiamond
           def initialize(*args, dept_reaction)
             super(*args)
             @dept_reaction = dept_reaction
-
-            @_symmetric_atoms = nil
-          end
-
-          # Prepares reactant instance for creation
-          # @yield should get cpp code string which is body of checking
-          # @return [String] the cpp code string
-          def check_symmetries(closure_on_scope: false, &block)
-            if symmetric?
-              each_symmetry_lambda(closure_on_scope: closure_on_scope, &block)
-            else
-              block.call
-            end
           end
 
           # Checks non compliance atoms which should not be available from other atoms
@@ -51,92 +36,6 @@ module VersatileDiamond
         private
 
           attr_reader :dept_reaction
-
-          # Selects only symmetric atoms of current unit
-          # @return [Array] the list of symmetric atoms
-          def symmetric_atoms
-            @_symmetric_atoms ||= atoms.select { |a| target_specie.symmetric_atom?(a) }
-          end
-
-          # Checks that all atoms are symmetrical
-          # @return [Boolean] are all atoms symmetrical or not
-          def all_atoms_symmetric?
-            atoms == symmetric_atoms
-          end
-
-          # Checks that internal target specie is symmetric by target atoms
-          # @return [Boolean] is symmetric or not
-          def symmetric?
-            return false if symmetric_atoms.size == 0
-
-            return true if symmetric_atoms.size == 1 && all_atoms_symmetric?
-            return true unless all_atoms_symmetric?
-
-            links = relations_checker.clean_links
-            return false if links.empty?
-
-            other_spec_atoms_wr = symmetric_atoms.flat_map do |a|
-              links[spec_atom_key(a)]
-            end
-
-            other_groups = other_spec_atoms_wr.groups { |(spec, _), _| spec }
-            many_others = other_groups.select { |group| group.size > 1 }
-            if many_others.empty?
-              other_spec_atoms_wr.size > 1 && !same_others?(other_spec_atoms_wr)
-            else
-              significant_nbrs?(many_others) || significant_rels?(many_others)
-            end
-          end
-
-          # Checks that passed list contain same items. Compares atom properties from
-          # specs atoms pairs and their relations.
-          #
-          # @param [Array] specs_atoms_rels which will be checked
-          # @return [Boolean] are same items of passed list or not
-          def same_others?(specs_atoms_rels)
-            same_properties?(specs_atoms_rels.map(&:first)) &&
-              specs_atoms_rels.map(&:last).all_equal?
-          end
-
-          # Checks that passed specs atoms array contains same or different pairs
-          # @param [Array] sas specs-atoms which will be checked
-          # @return [Boolean] are same passed pairs or not
-          def same_properties?(sas)
-            sas.groups { |s, _| s.name }.size == 1 &&
-              sas.map { |s, a| atom_properties(linked_dept_spec(s), a) }.all_equal?
-
-          end
-
-          # If other side atoms are symmetric too then current symmetric isn't
-          # significant
-          #
-          # @param [Array] many_other the list of grouped spec_atom with relation
-          #   instances, by wich will be checked that symmetry is significant
-          # @return [Boolean] is significant symmetry or not
-          def significant_nbrs?(many_others)
-            many_others.any? do |group|
-              syms = group.map { |(s, a), _| specie_class(s).symmetric_atoms(a) }
-              syms.any?(&:empty?) || syms.map { |as| Set.new(as) }.reduce(&:&).empty?
-            end
-          end
-
-          # If other side atoms are available by different relations then current
-          # symmetric is significant
-          #
-          # @param [Array] many_other the list of grouped spec_atom with relation
-          #   instances, by wich will be checked that symmetry is significant
-          # @return [Boolean] is significant symmetry or not
-          def significant_rels?(many_others)
-            many_others.any? { |group| group.map(&:last).uniq.size > 1 }
-          end
-
-          # Gets the correct key of relations checker links for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom for which the key will be returned
-          # @return [Array] the key of relations checker links graph
-          def spec_atom_key(atom)
-            [target_concept_spec, atom]
-          end
 
           # Gets the checking block for atoms by which the grouped graph was extended
           # @param [Array] atoms_to_rels the hash of own atoms to using relations

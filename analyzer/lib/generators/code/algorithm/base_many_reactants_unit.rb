@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -7,6 +9,8 @@ module VersatileDiamond
         # species
         # @abstract
         class BaseManyReactantsUnit < BaseUnit
+          include Modules::ListsComparer
+          include Mcs::SpecsAtomsComparator
 
           # Initializes the base unit of code builder algorithm
           # @param [EngineCode] generator the major code generator
@@ -16,8 +20,10 @@ module VersatileDiamond
           def initialize(generator, namer, atoms_to_species)
             super(generator, namer, atoms_to_species.keys)
             @atoms_to_species = atoms_to_species
+            @target_species = @atoms_to_species.values()
+            @target_concept_specs = @target_species.map(&:proxy_spec).map(&:spec)
 
-            @_target_atom, @_target_species, @_target_concept_specs = nil
+            @_target_atom, @_symmetric_atoms = nil
           end
 
           # Gets unique specie for passed atom
@@ -50,6 +56,8 @@ module VersatileDiamond
 
         private
 
+          attr_reader :target_species, :target_concept_specs
+
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_species_atoms_names
             strs = @atoms_to_species.map do |a, s|
@@ -69,16 +77,74 @@ module VersatileDiamond
             @_target_atom = pair.first
           end
 
-          # Gets the list of internal species
-          # @return [Array] the list of using species
-          def target_species
-            @_target_species ||= @atoms_to_species.values()
+          # Gets a code with for loop
+          # @yield is the body of for loop
+          # @return [String] the code with symmetric atoms iteration
+          def each_symmetry_lambda(**, &block)
+            iterator = Object.new # any unique object which was not created previously
+            namer.assign_next('ae', iterator)
+            i = name_of(iterator)
+            num = symmetric_atoms.size
+
+            if atoms.size == 2 && namer.full_array?(atoms)
+              atoms_var_name = name_of(atoms)
+              namer.reassign("#{atoms_var_name}[#{i}]", atoms.first)
+              namer.reassign("#{atoms_var_name}[#{i}-1]", atoms.last)
+            else
+              # TODO: maybe need to redefine atoms as separated array before loop
+              # statement in the case when atoms are not "full array"
+              fail 'Can not figure out the next names of atoms variables'
+            end
+
+            code_line("for (int #{i} = 0; #{i} < #{num}; ++#{i})") +
+              code_scope(&block)
           end
 
-          # Gets the list of internal concept specs
-          # @return [Array] the list of using concept specs
-          def target_concept_specs
-            @_target_concept_spec ||= target_species.map(&:proxy_spec).map(&:spec)
+          # Gets list of pairs of atoms and corresponding atom properties
+          # @return [Array] the list of pairs
+          def atoms_to_props
+            target_concept_specs.zip(atoms).map do |spec, atom|
+              [atom, atom_properties_from_concepts(spec, atom)]
+            end
+          end
+
+          # Gets list of possible symmetric atoms
+          # @return [Array] the list where similar atoms presents
+          def symmetric_atoms
+            return @_symmetric_atoms if @_symmetric_atoms
+            # TODO: Not entirely sure of the correctness of this method. It is possible
+            # that need to use intersection with itself. But this method proved himself
+            # no worse than the version with search symmetric atoms on intersection,
+            # at all currently available tests.
+            repeated = atoms_to_props.groups(&:last).select { |gr| gr.size > 1 }
+            @_symmetric_atoms = repeated.flat_map { |gr| gr.map(&:first) }
+          end
+
+          # Checks that atoms of reactants are equal
+          # @return [Boolean] are atoms of reactants equal or not
+          def main_atoms_asymmetric?
+            symmetric_atoms.any? do |atom|
+              spec_atom = spec_atom_key(atom)
+              symmetric_atoms.any? do |a|
+                next false if atom == a
+                next true unless same_sa?(spec_atom, spec_atom_key(a))
+
+                relations =
+                  [atom, a].map(&method(:clean_relations_of)).map do |rels|
+                    rels.map(&:last)
+                  end
+
+                !lists_are_identical?(*relations, &:==)
+              end
+            end
+          end
+
+          # Gets the correct key of relations checker links for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the key will be returned
+          # @return [Array] the key of relations checker links graph
+          def spec_atom_key(atom)
+            [dept_spec_for(atom).spec, atom]
           end
         end
 

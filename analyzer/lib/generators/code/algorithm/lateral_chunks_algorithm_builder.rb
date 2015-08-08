@@ -22,7 +22,10 @@ module VersatileDiamond
             unit = initial_unit
             unit.first_assign!
 
-            unit.define_target_atoms_line + body
+            unit.define_target_atoms_line +
+              unit.check_symmetries do
+                body
+              end
           end
 
         private

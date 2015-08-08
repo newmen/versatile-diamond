@@ -8,10 +8,8 @@ module VersatileDiamond
         describe ReactionLookAroundBuilder, type: :algorithm do
           let(:generator) do
             stub_generator(
-              base_specs: [dept_bridge_base, dept_dimer_base],
-              specific_specs: [
-                dept_activated_bridge, dept_activated_incoherent_bridge
-              ],
+              base_specs: respond_to?(:base_specs) ? base_specs : [],
+              specific_specs: respond_to?(:specific_specs) ? specific_specs : [],
               typical_reactions: [typical_reaction],
               lateral_reactions: lateral_reactions
             )
@@ -22,22 +20,30 @@ module VersatileDiamond
           let(:builder) { described_class.new(generator, subject) }
           subject { reaction.lateral_chunks }
 
-          let(:typical_reaction) { dept_dimer_formation }
-
-          let(:dimer_cr) { role(dept_dimer_base, :cr) }
-          let(:bridge_ct) { role(dept_bridge_base, :ct) }
-
-          let(:generating_class_name) { combined_lateral_reaction.class_name }
-          let(:combined_lateral_reaction) do
-            reaction.send(:children).find do |lr|
+          let(:combined_lateral_reactions) do
+            reaction.send(:children).select do |lr|
               !lr.chunk.original? && lr.chunk.parents.size == 0
             end
           end
 
           describe '#build' do
-            describe 'just cross neighbours' do
-              let(:find_algorithm) do
-                <<-CODE
+            describe 'dimers row formation' do
+              let(:typical_reaction) { dept_dimer_formation }
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              let(:specific_specs) do
+                [dept_activated_bridge, dept_activated_incoherent_bridge]
+              end
+
+              let(:dimer_cr) { role(dept_dimer_base, :cr) }
+              let(:bridge_ct) { role(dept_bridge_base, :ct) }
+
+              let(:generating_class_name) do
+                combined_lateral_reactions.first.class_name
+              end
+
+              describe 'just cross neighbours' do
+                let(:find_algorithm) do
+                  <<-CODE
     Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
@@ -49,25 +55,25 @@ module VersatileDiamond
             }
         }
     });
-                CODE
+                  CODE
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_end_lateral_df] }
+                  let(:class_name) { 'ForwardDimerFormationEndLateral' }
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_middle_lateral_df] }
+                  let(:class_name) { generating_class_name }
+                end
               end
 
-              it_behaves_like :check_code do
-                let(:lateral_reactions) { [dept_end_lateral_df] }
-                let(:class_name) { 'ForwardDimerFormationEndLateral' }
-              end
-
-              it_behaves_like :check_code do
-                let(:lateral_reactions) { [dept_middle_lateral_df] }
-                let(:class_name) { generating_class_name }
-              end
-            end
-
-            describe 'three sides neighbours' do
-              it_behaves_like :check_code do
-                let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
-                let(:find_algorithm) do
-                  <<-CODE
+              describe 'three sides neighbours' do
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
+                  let(:find_algorithm) do
+                    <<-CODE
     Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
     eachNeighbour(atoms1[0], &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{bridge_ct}))
@@ -92,7 +98,112 @@ module VersatileDiamond
             }
         }
     });
+                    CODE
+                  end
+                end
+              end
+            end
+
+            describe 'many similar activated bridges' do
+              let(:typical_reaction) { dept_symmetric_dimer_formation }
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_activated_bridge] }
+
+              let(:ab_ct) { role(dept_activated_bridge, :ct) }
+
+              def cmb_reaction_class_name_by(relation)
+                cmb_reacts = combined_lateral_reactions
+                cmb_reacts.find { |clr| clr.chunk.relations == [relation] }.class_name
+              end
+
+              let(:front_cmb_name) { cmb_reaction_class_name_by(position_100_front) }
+              let(:cross_cmb_name) { cmb_reaction_class_name_by(position_100_cross) }
+
+              describe 'one original lateral reaction' do
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atoms1[2] = { #{target_atoms_definition} };
+    for (int ae1 = 0; ae1 < 2; ++ae1)
+    {
+        eachNeighbour(atoms1[ae1], &Diamond::cross_100, [&](Atom *neighbour1) {
+            if (neighbour1->is(#{ab_ct}))
+            {
+                LateralSpec *specie = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
+                if (specie)
+                {
+                    chunks[index++] = new #{cross_cmb_name}(this, specie);
+                }
+            }
+        });
+        eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour2) {
+            if (neighbour2->is(#{ab_ct}))
+            {
+                if (neighbour2 != atoms1[ae1-1])
+                {
+                    LateralSpec *specie = neighbour2->specByRole<BridgeCTs>(#{ab_ct});
+                    if (specie)
+                    {
+                        chunks[index++] = new #{front_cmb_name}(this, specie);
+                    }
+                }
+            }
+        });
+    }
                   CODE
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+                  let(:target_atoms_definition) do
+                    'target(1)->atom(0), target(0)->atom(0)'
+                  end
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+                  let(:target_atoms_definition) do
+                    'target(0)->atom(0), target(1)->atom(0)'
+                  end
+                end
+              end
+
+              describe 'many original lateral reactions' do
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
+    for (int ae1 = 0; ae1 < 2; ++ae1)
+    {
+        eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour1) {
+            if (neighbour1->is(#{ab_ct}))
+            {
+                if (neighbour1 != atoms1[ae1-1])
+                {
+                    LateralSpec *specie = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
+                    if (specie)
+                    {
+                        chunks[index++] = new #{front_cmb_name}(this, specie);
+                    }
+                }
+            }
+        });
+        eachNeighbour(atoms1[ae1], &Diamond::cross_100, [&](Atom *neighbour2) {
+            if (neighbour2->is(#{ab_ct}))
+            {
+                LateralSpec *specie = neighbour2->specByRole<BridgeCTs>(#{ab_ct});
+                if (specie)
+                {
+                    chunks[index++] = new #{cross_cmb_name}(this, specie);
+                }
+            }
+        });
+    }
+                  CODE
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) do
+                    [dept_small_ab_lateral_sdf, dept_big_ab_lateral_sdf]
+                  end
                 end
               end
             end

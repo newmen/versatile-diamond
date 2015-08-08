@@ -8,6 +8,12 @@ module VersatileDiamond
         class SingleReactantUnit < SingleSpecieUnit
           include OtherSideRelationsCppExpression
 
+          # Also initiates internal caches
+          def initialize(*)
+            super
+            @_symmetric_atoms = nil
+          end
+
           # Gets unique specie for passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   _ does not used
@@ -49,6 +55,33 @@ module VersatileDiamond
               specie = unit.uniq_specie_for(atom)
               result << unit.define_specie_line(specie, atom) unless name_of(specie)
             end
+          end
+
+          # Selects only symmetric atoms of current unit
+          # @return [Array] the list of symmetric atoms
+          def symmetric_atoms
+            @_symmetric_atoms ||= atoms.select { |a| target_specie.symmetric_atom?(a) }
+          end
+
+          # Checks that all atoms are symmetrical
+          # @return [Boolean] are all atoms symmetrical or not
+          def all_atoms_symmetric?
+            atoms == symmetric_atoms
+          end
+
+          # Checks that main atoms of reactant are symmetric
+          # @return [Boolean] is symmetric or not
+          def main_atoms_asymmetric?
+            !all_atoms_symmetric? ||
+              (symmetric_atoms.size == 1 && all_atoms_symmetric?)
+          end
+
+          # Gets the correct key of relations checker links for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the key will be returned
+          # @return [Array] the key of relations checker links graph
+          def spec_atom_key(atom)
+            [target_concept_spec, atom]
           end
         end
 

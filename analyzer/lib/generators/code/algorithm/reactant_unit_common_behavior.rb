@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # Provides common logic for units which uses when reaction algorithm builds
         module ReactantUnitCommonBehavior
+          include Algorithm::SymmetricReactantsUnitBehavior
+
         protected
 
           # Gets the original concept spec from current unique dependent spec
