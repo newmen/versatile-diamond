@@ -14,6 +14,16 @@ module VersatileDiamond
             @namer = nil
           end
 
+          # Provokes namer to save next checkpoint
+          def remember_names!
+            namer.checkpoint!
+          end
+
+          # Provokes namer to rollback names from last checkpoint
+          def restore_names!
+            namer.rollback!
+          end
+
         private
 
           attr_reader :generator, :namer

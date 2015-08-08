@@ -9,9 +9,31 @@ module VersatileDiamond
         class NameRemember
           # Initializes internal store for all using names
           def initialize
-            @names = {}
-            @next_names = []
-            @used_names = Set.new
+            init!
+            @checkpoints = []
+          end
+
+          # Saves current state to stack for future rollback to it if need
+          def checkpoint!
+            @checkpoints << {
+              names: @names.dup,
+              next_names: @next_names.dup,
+              used_names: @used_names.dup
+            }
+          end
+
+          # Restores previously saved state
+          # @option [Boolean] :forget is the flag which if is set then last checkpoint
+          #   will be forgotten
+          def rollback!(forget: false)
+            state = forget ? @checkpoints.pop : @checkpoints.last
+            if state
+              @names = state[:names].dup
+              @next_names = state[:next_names].dup
+              @used_names = state[:used_names].dup
+            else
+              init!
+            end
           end
 
           # Assign unique names for each variables with duplicate error checking
@@ -84,6 +106,13 @@ module VersatileDiamond
         private
 
           attr_reader :names
+
+          # Assigns default values to internal containers
+          def init!
+            @names = {}
+            @next_names = []
+            @used_names = Set.new
+          end
 
           # Gets a hash where keys are names and values are variables
           # @return [Hash] the inverted names hash
