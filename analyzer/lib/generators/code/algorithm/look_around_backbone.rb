@@ -6,6 +6,10 @@ module VersatileDiamond
         # Cleans the chunks grouped nodes graph from not significant relations and
         # gets the ordered graph by which the look around algorithm will be builded
         class LookAroundBackbone < LateralChunksBackbone
+          extend Forwardable
+
+          def_delegators :grouped_nodes_graph, :action_nodes
+
         private
 
           # Makes clean graph with relations only from target nodes

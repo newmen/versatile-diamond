@@ -30,6 +30,13 @@ module VersatileDiamond
             CheckLateralsUnitsFactory.new(generator, lateral_chunks)
           end
 
+          # Gets an unit from which the search begins
+          # @return [BaseUnit] the unit by which entry variables will be initialized
+          def initial_unit
+            main_nodes = backbone.entry_nodes.flatten.uniq
+            factory.make_unit(main_nodes)
+          end
+
           # Builds checking bodies for all lateral reactions
           # @return [String] the string with cpp code
           def body

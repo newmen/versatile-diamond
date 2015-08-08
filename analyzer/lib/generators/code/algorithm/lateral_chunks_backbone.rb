@@ -44,12 +44,12 @@ module VersatileDiamond
 
         private
 
-          attr_reader :lateral_chunks
+          attr_reader :lateral_chunks, :grouped_nodes_graph
 
           # Gets grouped graph
           # @return [LateralChunksGroupedNodes]
           def grouped_graph
-            @grouped_nodes_graph.final_graph
+            grouped_nodes_graph.final_graph
           end
         end
 

@@ -17,7 +17,17 @@ module VersatileDiamond
             super(ReactionNodesFactory.new(generator))
             @lateral_chunks = lateral_chunks
 
-            @_big_graph, @_small_graph = nil
+            @_big_graph, @_small_graph, @_action_nodes, @_avail_nodes = nil
+          end
+
+          # Gets list of nodes where each node correspond to one target of typical
+          # reaction
+          #
+          # @return [Array] the list of nodes with main targets
+          def action_nodes
+            @_action_nodes ||= @lateral_chunks.targets.map do |sa|
+              avail_nodes.find { |node| node.spec_atom == sa } || get_node(sa)
+            end
           end
 
           # Makes the nodes graph from original links between interacting atoms of
@@ -35,6 +45,12 @@ module VersatileDiamond
           end
 
         private
+
+          # Gets list of nodes which were created under building final graph
+          # @return [Array] the list of existed unique nodes
+          def avail_nodes
+            @_avail_nodes ||= final_graph.flat_map(&:first).uniq
+          end
 
           # Detects relation between passed nodes
           # @param [Array] nodes the array with two nodes between which the relation

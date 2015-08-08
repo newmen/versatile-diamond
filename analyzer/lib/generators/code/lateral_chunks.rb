@@ -10,6 +10,7 @@ module VersatileDiamond
 
         attr_reader :reaction
         def_delegators :total_chunk, :clean_links, :target_specs, :sidepiece_specs
+        def_delegators :overall_chunk, :targets
 
         # Initializes meta object which provides useful methods for code generators
         # @param [EngineCode] generator of engine code
@@ -36,7 +37,7 @@ module VersatileDiamond
         # Gets number of how many times the root chunks contains in total chunk
         # @return [Integer] the number of times
         def root_times
-          result = make_total_chunk(@all_chunks)
+          result = overall_chunk
           @root_chunks.reduce(0) do |acc, chunk|
             num = 0
             loop do
@@ -101,12 +102,12 @@ module VersatileDiamond
           target_specs.size == 1
         end
 
-        # Checks that passed spec belongs to target specs set
+        # Checks that passed spec belongs to overall target specs set
         # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
         #   which will be checked in the set of target specs
         # @return [Boolean] is target spec or not
         def target_spec?(spec)
-          target_specs.include?(spec)
+          overall_chunk.target_specs.include?(spec)
         end
 
         # Checks that passed spec belongs to sidepiece specs set
@@ -119,10 +120,16 @@ module VersatileDiamond
 
       private
 
-        # Gets total chunk which adsorbs all chunk in self
+        # Gets total chunk which adsorbs root chunk in self
         # @return [Organizers::TotalChunk] the total chunk
         def total_chunk
           @_total_chunk ||= make_total_chunk(@root_chunks)
+        end
+
+        # Gets total chunk which adsorbs all chunk in self
+        # @return [Organizers::TotalChunk] the overall chunk
+        def overall_chunk
+          @_overall_chunk ||= make_total_chunk(@all_chunks)
         end
 
         # Makes total chunk instance

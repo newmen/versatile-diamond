@@ -19,8 +19,7 @@ module VersatileDiamond
           # Generates lateral chunks algorithm cpp code
           # @return [String] the string with cpp code of lateral chunks algorithm
           def build
-            main_nodes = backbone.entry_nodes.flatten.uniq
-            unit = factory.make_unit(main_nodes)
+            unit = initial_unit
             unit.first_assign!
 
             unit.define_target_atoms_line + body

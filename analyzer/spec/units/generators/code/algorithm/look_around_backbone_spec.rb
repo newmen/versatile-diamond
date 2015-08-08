@@ -9,6 +9,12 @@ module VersatileDiamond
           let(:backbone) { described_class.new(generator, lateral_chunks) }
 
           it_behaves_like :dimer_formation_in_different_envs do
+            describe '#action_nodes' do
+              let(:lateral_reactions) { [dept_end_lateral_df] }
+              let(:nodes) { backbone.final_graph.keys.first }
+              it { expect(backbone.action_nodes).to match_array(nodes) }
+            end
+
             describe '#final_graph' do
               it_behaves_like :check_finite_graph do
                 let(:lateral_reactions) { [dept_end_lateral_df] }
@@ -104,6 +110,15 @@ module VersatileDiamond
           end
 
           it_behaves_like :many_similar_activated_bridges do
+            describe '#action_nodes' do
+              let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              let(:exist_nodes) { backbone.final_graph.keys.first }
+              let(:created_nodes) { backbone.action_nodes - exist_nodes }
+              it { expect(exist_nodes.size).to eq(1) }
+              it { expect(created_nodes.size).to eq(1) }
+              it { expect(backbone.action_nodes.size).to eq(2) }
+            end
+
             describe '#final_graph' do
               let(:final_graph) do
                 {

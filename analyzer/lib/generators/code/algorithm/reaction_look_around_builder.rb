@@ -19,6 +19,12 @@ module VersatileDiamond
             LookAroundUnitsFactory.new(generator, lateral_chunks)
           end
 
+          # Gets an unit from which the search begins
+          # @return [BaseUnit] the unit by which entry variables will be initialized
+          def initial_unit
+            factory.make_unit(backbone.action_nodes)
+          end
+
           # Builds body of algorithm
           # @return [String] the string with cpp code
           def body
