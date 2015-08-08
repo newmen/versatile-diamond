@@ -124,22 +124,21 @@ module VersatileDiamond
         let(:combiner) { ChunksCombiner.new(typical_reaction) }
         let(:typical_reaction) { dept_symmetric_dimer_formation }
         let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+
+        let(:b) { activated_bridge.dup }
+        let(:new_target) { [b, b.atom(:ct)] }
         let(:idp_chs) do
           cmb_lateral_reactions.map(&:chunk).select { |ch| ch.is_a?(IndependentChunk) }
         end
         let(:rpts_chs) do
-          idp_chs.zip(idp_chs.reverse).map do |x, y|
-            x.replace_target(x.targets.first, y.targets.first)
-          end
+          idp_chs.map { |x| x.replace_target(x.targets.first, new_target) }
         end
 
         let(:idp_mgr) { described_class.new(typical_reaction, idp_chs, {}) }
         let(:rpts_mgr) { described_class.new(typical_reaction, rpts_chs, {}) }
 
-        # because links graphs of merged chunk are not connected
-        it { expect(idp_mgr.same?(rpts_mgr)).to be_falsey }
-        it { expect(rpts_mgr.same?(idp_mgr)).to be_falsey }
-
+        it { expect(idp_mgr.same?(rpts_mgr)).to be_truthy }
+        it { expect(rpts_mgr.same?(idp_mgr)).to be_truthy }
         it { expect(idp_mgr.same_internals?(rpts_mgr)).to be_truthy }
         it { expect(rpts_mgr.same_internals?(idp_mgr)).to be_truthy }
 
@@ -155,11 +154,12 @@ module VersatileDiamond
 
         it { expect(big_mgr1.same?(idp_mgr)).to be_falsey }
         it { expect(idp_mgr.same?(big_mgr1)).to be_falsey }
+        it { expect(big_mgr1.same_internals?(idp_mgr)).to be_falsey }
+        it { expect(idp_mgr.same_internals?(big_mgr1)).to be_falsey }
 
-        # because links graphs of merged chunk are not connected
+        # chunks are not same because links graphs of merged chunk are not connected
         it { expect(big_mgr1.same?(big_mgr2)).to be_falsey }
         it { expect(big_mgr2.same?(big_mgr1)).to be_falsey }
-
         it { expect(big_mgr1.same_internals?(big_mgr2)).to be_truthy }
         it { expect(big_mgr2.same_internals?(big_mgr1)).to be_truthy }
       end

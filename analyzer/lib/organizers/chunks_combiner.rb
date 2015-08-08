@@ -135,12 +135,13 @@ module VersatileDiamond
       def lookup_exist_chunks(variants, presented_cmbs, chunks)
         presented_chunks = variants.to_a.select(&:last).map(&:last).uniq
         exist_chunks = chunks.map do |chunk|
-          unless presented_chunks.find { |ch| ch.same?(chunk) }
+          unless presented_chunks.any? { |ch| ch.same?(chunk) }
             mono_key = Multiset[chunk]
             variants[mono_key] = chunk
             presented_cmbs << mono_key
           end
 
+          variants = check_same_then_swap(variants, presented_chunks, chunk)
           presented_chunks.find { |ch| ch.accurate_same?(chunk) } || chunk
         end
 
@@ -156,6 +157,46 @@ module VersatileDiamond
         end
 
         [variants, presented_cmbs]
+      end
+
+      # Checks previos found chunks for similar as chunk and if them exist and their
+      # targets are different then swaps to chunk which targets most frequently used
+      #
+      # @param [Hash] variants of all found chunks
+      # @param [Array] presented_chunks the list of all previous found chunks
+      # @param [BaseChunk] chunk which analogies will be checked and swapped if need
+      # @return [Hash] the updated variants collection
+      def check_same_then_swap(variants, presented_chunks, chunk)
+        same_chunks = presented_chunks.select do |ch|
+          ch != chunk && ch.targets != chunk.targets && ch.same?(chunk)
+        end
+
+        same_chunks.reduce(variants) do |acc, same_chunk|
+          curr_num = count_with_equal_targets(presented_chunks, chunk)
+          same_num = count_with_equal_targets(presented_chunks, same_chunk)
+          curr_num > same_num ? swap_chunk(acc, same_chunk, chunk) : acc
+        end
+      end
+
+      # Swaps chunks in all found variants of chunks collection
+      # @param [Hash] variants of all found chunks
+      # @param [BaseChunk] from which chunk will swap to new chunk
+      # @param [BaseChunk] to which chunk the old chunk will swap
+      # @return [Hash] the updated variants collection
+      def swap_chunk(variants, from, to)
+        swap_lambda = -> chunk { chunk == from ? to : chunk }
+        variants.each_with_object({}) do |(cmb, chunk), acc|
+          new_cmb = cmb.include?(from) ? cmb.map(&swap_lambda) : cmb
+          acc[new_cmb] = swap_lambda[chunk]
+        end
+      end
+
+      # Counts chunks in variants which have equal targets as targets of passed chunk
+      # @param [Array] all_chunks the list of all found chunks
+      # @param [BaseChunk] chunk which analogies with equal targets will counted
+      # @return [Integer] the number of found chunks with equal targets
+      def count_with_equal_targets(all_chunks, chunk)
+        all_chunks.count { |ch| ch != chunk && ch.targets == chunk.targets }
       end
 
       # Sorts passed multisets
