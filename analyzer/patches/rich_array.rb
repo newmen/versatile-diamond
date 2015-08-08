@@ -27,6 +27,12 @@ module VersatileDiamond
         def not_uniq
           select { |item| count(item) > 1 }.uniq
         end
+
+        # Checks that array contains only equalent values
+        # @param [Boolean] are all items equal between each other or not
+        def all_equal?
+          uniq.size == 1
+        end
       end
     end
 

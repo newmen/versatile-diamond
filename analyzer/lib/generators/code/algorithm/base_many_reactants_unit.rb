@@ -17,7 +17,7 @@ module VersatileDiamond
             super(generator, namer, atoms_to_species.keys)
             @atoms_to_species = atoms_to_species
 
-            @_target_atom, @_target_species = nil
+            @_target_atom, @_target_species, @_target_concept_specs = nil
           end
 
           # Gets unique specie for passed atom
@@ -41,7 +41,7 @@ module VersatileDiamond
           #   spec which will checked
           # @return [Boolean] is target spec or not
           def unit_spec?(spec)
-            target_species.any? { |target_spec| target_spec.proxy_spec.spec == spec }
+            target_concept_specs.any? { |s| s == spec }
           end
 
           def inspect
@@ -73,6 +73,12 @@ module VersatileDiamond
           # @return [Array] the list of using species
           def target_species
             @_target_species ||= @atoms_to_species.values()
+          end
+
+          # Gets the list of internal concept specs
+          # @return [Array] the list of using concept specs
+          def target_concept_specs
+            @_target_concept_spec ||= target_species.map(&:proxy_spec).map(&:spec)
           end
         end
 

@@ -15,6 +15,7 @@ module VersatileDiamond
           def initialize(*args, target_specie, atoms)
             super(*args, atoms)
             @target_specie = target_specie
+            @target_concept_spec = target_specie.proxy_spec.spec
           end
 
           # Checks that passed spec equal to using specie
@@ -22,7 +23,7 @@ module VersatileDiamond
           #   spec which will checked
           # @return [Boolean] is target spec or not
           def unit_spec?(spec)
-            target_specie.proxy_spec.spec == spec
+            target_concept_spec == spec
           end
 
         private
@@ -33,6 +34,20 @@ module VersatileDiamond
           def inspect_specie_atoms_names
             tsn = "#{inspect_name_of(target_specie)}:#{target_specie.original.inspect}"
             "#{tsn}·[#{inspect_atoms_names}]"
+          end
+
+          # In order to check the consistency we verifies that target concept spec
+          # equal to concept spec from original dependent spec
+          #
+          # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   the internal target concept spec
+          def target_concept_spec
+            unless @target_concept_spec == original_spec.spec
+              # TODO: need to refactor units for using unique specie everytime instead
+              # original dependent spec
+              fail 'Different unit target concept specs'
+            end
+            @target_concept_spec
           end
 
           # Specifies arguments of super method

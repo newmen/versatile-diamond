@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -19,7 +21,7 @@ module VersatileDiamond
           # @param [Array] nodes for which the unit will be maked
           # @return [SingleParentNonRootSpecieUnit] the unit of code generation
           def make_unit(nodes)
-            if nodes.map(&:dept_spec).uniq.size == 1
+            if nodes.map(&:dept_spec).all_equal?
               make_single_unit(nodes)
             else
               make_multi_unit(nodes)

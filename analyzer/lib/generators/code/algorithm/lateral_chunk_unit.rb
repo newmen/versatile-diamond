@@ -29,9 +29,8 @@ module VersatileDiamond
           # Gets the name of variable for target specie
           # @return [String] the name which will first assigned
           def target_specie_var_name
-            concept_spec = target_specie.proxy_spec.spec
-            if lateral_chunks.target_spec?(concept_spec)
-              reactant_specie_var_name(concept_spec)
+            if lateral_chunks.target_spec?(target_concept_spec)
+              reactant_specie_var_name(target_concept_spec)
             else
               SpeciesReaction::ANCHOR_SPECIE_NAME
             end

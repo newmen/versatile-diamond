@@ -41,9 +41,7 @@ module VersatileDiamond
           # Checks that all species are target
           # @return [Boolean] are all species targets or not
           def all_species_are_targets?
-            target_species.all? do |uniq_specie|
-              lateral_chunks.target_spec?(uniq_specie.proxy_spec.spec)
-            end
+            target_concept_specs.all? { |spec| lateral_chunks.target_spec?(spec) }
           end
         end
 

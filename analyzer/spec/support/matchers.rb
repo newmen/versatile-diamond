@@ -109,7 +109,7 @@ module VersatileDiamond
         # @param [Array] key which will be checked
         # @return [Boolean] is uniform multi-dimensional key or not
         def uniform?(key)
-          key.map(&:class).uniq.size == 1
+          key.map(&:class).all_equal?
         end
 
         # Checks that passed key is multi-dimensional

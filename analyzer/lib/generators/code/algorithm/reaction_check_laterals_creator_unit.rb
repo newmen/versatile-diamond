@@ -123,7 +123,7 @@ module VersatileDiamond
           # @param [TypicalReaction | LateralReaction] reaction which will checked out
           # @return [String] the cpp code string with call
           def checkout_reaction_call(reaction)
-            if species.uniq.size == 1
+            if species.all_equal?
               checking_species = [other_side_species, sidepiece_species].map(&:first)
               if has_same_target?(*checking_species)
                 checkout_reaction_without_two(reaction, checking_species)

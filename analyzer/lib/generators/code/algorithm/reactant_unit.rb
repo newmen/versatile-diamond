@@ -88,19 +88,23 @@ module VersatileDiamond
             end
           end
 
-          # Checks that passed specs atoms array contains same or different pairs
+          # Checks that passed list contain same items. Compares atom properties from
+          # specs atoms pairs and their relations.
+          #
           # @param [Array] specs_atoms_rels which will be checked
-          # @return [Boolean] are same passed pairs or not
+          # @return [Boolean] are same items of passed list or not
           def same_others?(specs_atoms_rels)
-            named_groups = specs_atoms_rels.groups { |(s, _), _| s.name }
-            return false if named_groups.size > 1
+            same_properties?(specs_atoms_rels.map(&:first)) &&
+              specs_atoms_rels.map(&:last).all_equal?
+          end
 
-            props = specs_atoms_rels.map do |(s, a), _|
-              dept_spec = linked_dept_spec(s)
-              atom_properties(dept_spec, a)
-            end
+          # Checks that passed specs atoms array contains same or different pairs
+          # @param [Array] sas specs-atoms which will be checked
+          # @return [Boolean] are same passed pairs or not
+          def same_properties?(sas)
+            sas.groups { |s, _| s.name }.size == 1 &&
+              sas.map { |s, a| atom_properties(linked_dept_spec(s), a) }.all_equal?
 
-            props.uniq.size == 1 && specs_atoms_rels.map(&:last).uniq.size == 1
           end
 
           # If other side atoms are symmetric too then current symmetric isn't
@@ -111,9 +115,8 @@ module VersatileDiamond
           # @return [Boolean] is significant symmetry or not
           def significant_nbrs?(many_others)
             many_others.any? do |group|
-              !group.all? do |(s, a), _|
-                specie_class(s).symmetric_atom?(a)
-              end
+              syms = group.map { |(s, a), _| specie_class(s).symmetric_atoms(a) }
+              syms.any?(&:empty?) || syms.map { |as| Set.new(as) }.reduce(&:&).empty?
             end
           end
 
@@ -124,9 +127,7 @@ module VersatileDiamond
           #   instances, by wich will be checked that symmetry is significant
           # @return [Boolean] is significant symmetry or not
           def significant_rels?(many_others)
-            many_others.any? do |group|
-              group.map(&:last).uniq.size > 1
-            end
+            many_others.any? { |group| group.map(&:last).uniq.size > 1 }
           end
 
           # Gets the correct key of relations checker links for passed atom
@@ -134,7 +135,7 @@ module VersatileDiamond
           #   atom for which the key will be returned
           # @return [Array] the key of relations checker links graph
           def spec_atom_key(atom)
-            [original_spec.spec, atom]
+            [target_concept_spec, atom]
           end
 
           # Gets the checking block for atoms by which the grouped graph was extended
