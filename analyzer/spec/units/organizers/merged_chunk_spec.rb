@@ -174,8 +174,7 @@ module VersatileDiamond
       end
 
       describe '#tail_name' do
-        let(:tail_name) { (['dimer'] * 2).join(' and ') }
-        it { expect(mrg_chunk.tail_name).to eq(tail_name) }
+        it { expect(mrg_chunk.tail_name).to eq('100 cross dimer and 100 cross dimer') }
       end
     end
 

@@ -49,7 +49,8 @@ module VersatileDiamond
         replace_class.new(*replace_instance_args(new_targets, new_links))
       end
 
-      # TODO: inspectation method for debug
+      # Gets list of relations between target specs and sidepiece specs
+      # @return [Array] the list of relations
       def relations
         clean_links.reduce([]) do |acc, ((spec, _), rels)|
           if sidepiece_specs.include?(spec)

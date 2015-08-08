@@ -76,7 +76,7 @@ module VersatileDiamond
       end
 
       describe '#tail_name' do
-        it { expect(ind_bwr.tail_name).to eq('bridge') }
+        it { expect(ind_bwr.tail_name).to eq('100 front bridge') }
       end
 
       describe '#original?' do
