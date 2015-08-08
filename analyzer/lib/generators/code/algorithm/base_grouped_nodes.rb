@@ -58,7 +58,8 @@ module VersatileDiamond
               similar_combine_relations(group, &store_result)
             end
 
-            @_final_graph = collaps_similar_key_nodes(result)
+            @_final_graph =
+              result.empty? ? small_final_graph : collaps_similar_key_nodes(result)
           end
 
         private
@@ -70,6 +71,14 @@ module VersatileDiamond
           # @return [Hash] the graph with nodes
           def transform_links(links)
             dup_graph(links) { |v| get_node(v) }
+          end
+
+          # Combines final graph from small graph
+          # @return [Hash] the final grouped graph
+          def small_final_graph
+            small_graph.each_with_object({}) do |(node, rels), acc|
+              acc[[node]] = rels.map { |n, r| [[n], r.params] }
+            end
           end
 
           # Groups key nodes of passed graph if them haven't relations and contains

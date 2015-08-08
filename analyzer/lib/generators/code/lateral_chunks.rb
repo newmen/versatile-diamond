@@ -9,7 +9,7 @@ module VersatileDiamond
         extend Forwardable
 
         attr_reader :reaction
-        def_delegators :total_chunk, :clean_links,
+        def_delegators :total_chunk, :clean_links, :target_specs,
           :sidepiece_specs # just for tests
 
         # Initializes meta object which provides useful methods for code generators
@@ -99,7 +99,7 @@ module VersatileDiamond
         # Checks that target reaction is mono-reactant
         # @return [Boolean] is mono-reactant target reaction or not
         def mono_reactant?
-          total_chunk.target_specs.size == 1
+          target_specs.size == 1
         end
 
         # Checks that passed spec belongs to target specs set
@@ -107,7 +107,7 @@ module VersatileDiamond
         #   which will be checked in the set of target specs
         # @return [Boolean] is target spec or not
         def target_spec?(spec)
-          total_chunk.target_specs.include?(spec)
+          target_specs.include?(spec)
         end
 
       private
