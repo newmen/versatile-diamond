@@ -53,7 +53,7 @@ module VersatileDiamond
       # @param [Array] source the array of source specs
       # @param [Array] products the array of product specs
       def initialize(type, name, source, products)
-        super(name.to_s.gsub(/\(|\)|-/, ' ').to_sym)
+        super(name.to_s.gsub(/\(|\)|-/, ' ').gsub('  ', ' ').to_sym)
         @type = type
         @source, @products = [source, products].map(&:dup)
         @simple_source, @simple_products = nil

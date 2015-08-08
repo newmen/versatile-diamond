@@ -15,18 +15,19 @@ module VersatileDiamond
       #   reactions will be found (or not)
       def initialize(typical_reaction)
         @typical_reaction = typical_reaction
-
-        @_general_targets = nil
       end
 
       # Combines children lateral raection chunks and produce new lateral reactions
       # @return [Array] the list of combined lateral reactions
       def combine(chunks)
+        reactants = @typical_reaction.links.keys.to_set
         chunks.each do |ch|
-          unless general_targets.empty? || general_targets.superset?(ch.targets)
+          unless reactants.superset?(ch.targets)
             raise %Q(Wrong targets of "#{ch.to_s}")
           end
         end
+
+        @general_targets = chunks.map(&:targets).reduce(:+).to_a
 
         variants = recombine_variants(collect_variants(chunks))
         unregistered_chunks = variants.values.select do |chunk|
@@ -198,12 +199,6 @@ module VersatileDiamond
         end
       end
 
-      # Gets the list targets of reaction
-      # @return [Set] the set of targets of general reaction
-      def general_targets
-        @_general_targets ||= @typical_reaction.reaction.links.keys.to_set
-      end
-
       # Finds correspond relations of target in graph
       # @param [Hash] graph which the relations will be found
       # @param [Array] target for which the relations will be found
@@ -226,7 +221,7 @@ module VersatileDiamond
       # @param [Array] target for which the links will be counted
       # @return [Hash] the counting result
       def count_reaction_links(target)
-        count_links(@typical_reaction.reaction.links, target)
+        count_links(@typical_reaction.links, target)
       end
 
       # Counts links of target in chunk graph
@@ -312,7 +307,7 @@ module VersatileDiamond
       # @return [Array] the list of similar targets
       def same_targets_groups(targets)
         groups = []
-        cheking_targets = (general_targets.to_a + targets).uniq
+        cheking_targets = (@general_targets + targets).uniq
         iterating_chunks = cheking_targets.dup
 
         until iterating_chunks.empty? do

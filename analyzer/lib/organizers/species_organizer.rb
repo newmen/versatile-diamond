@@ -52,7 +52,7 @@ module VersatileDiamond
       def find_global_veiled(target_container, global_key)
         global_veiled = ChunkLinksMerger.global_cache[global_key]
         if global_veiled && target_container.each_source.to_a.include?(global_veiled)
-          find_global_veiled([global_veiled, global_key.last])
+          find_global_veiled(target_container, [global_veiled, global_key.last])
         else
           [global_key.first, global_veiled]
         end
