@@ -31,11 +31,12 @@ module VersatileDiamond
         end
 
         # Gets the index of passed specie reactant
-        # @param [Specie] specie for which the index will returned
+        # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
+        #   for which the index will returned
         # @return [Integer] the index of passed specie or nil if reaction have just one
         #   reactant
-        def target_index(specie)
-          complex_source_species.size == 1 ? nil : complex_source_species.index(specie)
+        def target_index(spec)
+          concept_source_species.size == 1 ? nil : concept_source_species.index(spec)
         end
 
         # Gets builder of check lateral algorighm from passed specie

@@ -16,7 +16,7 @@ module VersatileDiamond
         # Initializes additional caches
         def initialize(*)
           super
-          @_complex_source_species = nil
+          @_complex_source_species, @_concept_source_species = nil
         end
 
         # Gets the name of base class
@@ -40,14 +40,23 @@ module VersatileDiamond
           concretizable? ? 'ConcretizableRole' : reaction_type
         end
 
-        # Gets the sorted list of complex species which using as source of reaction
+        # Gets the ordered list of complex species which using as source of reaction
         # @reaturn [Array] the list of complex specie code generators
         def complex_source_species
-          return @_complex_source_species if @_complex_source_species
+          @_complex_source_species ||=
+            concept_source_species.uniq(&:name).map(&method(:specie_class))
+        end
 
+        # Gets ordered list of concept source specs
+        # @return [Array] the list of concept reactants
+        def concept_source_species
           # we should sort because order is important when getting target specie index
-          species = reaction.surface_source.uniq(&:name).map(&method(:specie_class))
-          @_complex_source_species = species.sort { |a, b| a.spec <=> b.spec }
+          # the sort order should be same as in BaseReactionCreatorUnit#initialize
+          # method
+          @_concept_source_species ||= reaction.surface_source.sort do |ca, cb|
+            da, db = [ca, cb].map(&method(:specie_class)).map(&:spec)
+            da <=> db
+          end
         end
       end
 

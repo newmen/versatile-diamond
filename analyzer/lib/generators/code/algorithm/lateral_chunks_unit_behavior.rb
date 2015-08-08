@@ -29,9 +29,11 @@ module VersatileDiamond
           end
 
           # Gets the name of variable for target specie
+          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   concept_spec which index will be checked in the list of target specs
           # @return [String] the name which will first assigned
-          def reactant_specie_var_name(uniq_specie)
-            index = lateral_chunks.reaction.target_index(uniq_specie.original)
+          def reactant_specie_var_name(concept_spec)
+            index = lateral_chunks.reaction.target_index(concept_spec)
             "target(#{index})"
           end
         end

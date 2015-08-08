@@ -26,7 +26,8 @@ module VersatileDiamond
           def first_assign!
             if all_species_are_targets?
               target_species.each do |uniq_specie|
-                namer.assign(reactant_specie_var_name(uniq_specie), uniq_specie)
+                reactant_call = reactant_specie_var_name(uniq_specie.proxy_spec.spec)
+                namer.assign(reactant_call, uniq_specie)
               end
             else
               namer.assign(SpeciesReaction::ANCHOR_SPECIE_NAME, target_species)

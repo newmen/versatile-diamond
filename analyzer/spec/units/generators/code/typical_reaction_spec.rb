@@ -44,22 +44,17 @@ module VersatileDiamond
         end
 
         describe '#target_index' do
-          let(:specie) { generator.specie_class(concept_spec.name) }
-
           describe 'without index' do
             let(:target) { dept_incoherent_dimer_drop }
-            let(:concept_spec) { idd_source.first }
-            it { expect(subject.target_index(specie)).to be_nil }
+            it { expect(subject.target_index(idd_source.first)).to be_nil }
           end
 
           describe 'with index 0' do
-            let(:concept_spec) { df_source.first }
-            it { expect(subject.target_index(specie)).to eq(0) }
+            it { expect(subject.target_index(df_source.first)).to eq(0) }
           end
 
           describe 'with index 1' do
-            let(:concept_spec) { df_source.last }
-            it { expect(subject.target_index(specie)).to eq(1) }
+            it { expect(subject.target_index(df_source.last)).to eq(1) }
           end
         end
       end
