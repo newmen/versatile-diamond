@@ -135,13 +135,13 @@ module VersatileDiamond
       def lookup_exist_chunks(variants, presented_cmbs, chunks)
         presented_chunks = variants.to_a.select(&:last).map(&:last).uniq
         exist_chunks = chunks.map do |chunk|
+          variants = check_same_then_swap(variants, presented_chunks, chunk)
           unless presented_chunks.any? { |ch| ch.same?(chunk) }
             mono_key = Multiset[chunk]
             variants[mono_key] = chunk
             presented_cmbs << mono_key
           end
 
-          variants = check_same_then_swap(variants, presented_chunks, chunk)
           presented_chunks.find { |ch| ch.accurate_same?(chunk) } || chunk
         end
 

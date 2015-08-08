@@ -5,32 +5,14 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe LateralChunksGroupedNodes, type: :algorithm do
-          let(:generator) do
-            stub_generator(
-              typical_reactions: [typical_reaction],
-              lateral_reactions: lateral_reactions
-            )
-          end
-          let(:reaction) { generator.reaction_class(typical_reaction.name) }
-          let(:grouped_nodes) { described_class.new(generator, subject) }
-          let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
-          subject { reaction.lateral_chunks }
+        describe LateralChunksGroupedNodes, type: :algorithm, use: :chunks do
+          let(:grouped_nodes) { described_class.new(generator, lateral_chunks) }
+          subject { lateral_chunks }
 
           let(:big_links_method) { :links }
           def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
-          describe 'dimer formation in different environments' do
-            let(:typical_reaction) { dept_dimer_formation }
-            let(:t1) { df_source.first.atom(:ct) }
-            let(:t2) { df_source.last.atom(:ct) }
-
-            let(:lateral_dimer) do
-              sidepiece_specs.select { |spec| spec.name == :dimer }.first
-            end
-            let(:d1) { lateral_dimer.atom(:cr) }
-            let(:d2) { lateral_dimer.atom(:cl) }
-
+          it_behaves_like :dimer_formation_in_different_envs do
             describe 'just cross neighbours' do
               let(:flatten_face_grouped_atoms) { [[t1, t2], [d1, d2]] }
               let(:nodes_list) do
@@ -85,10 +67,10 @@ module VersatileDiamond
               describe 'first case' do
                 let(:grouped_graph) do
                   {
-                    [t2, t1] => [[[d1, d2], param_100_cross]],
-                    [d1, d2] => [[[t2, t1], param_100_cross]],
-                    [t2] => [[[b], param_100_front]],
-                    [b] => [[[t2], param_100_front]]
+                    [t1, t2] => [[[d1, d2], param_100_cross]],
+                    [d1, d2] => [[[t1, t2], param_100_cross]],
+                    [t1] => [[[b], param_100_front]],
+                    [b] => [[[t1], param_100_front]]
                   }
                 end
 
@@ -110,10 +92,10 @@ module VersatileDiamond
               describe 'second case' do
                 let(:grouped_graph) do
                   {
-                    [t2, t1] => [[[d1, d2], param_100_cross]],
-                    [d1, d2] => [[[t2, t1], param_100_cross]],
-                    [t2] => [[[b], param_100_front]],
-                    [b] => [[[t2], param_100_front]]
+                    [t1, t2] => [[[d1, d2], param_100_cross]],
+                    [d1, d2] => [[[t1, t2], param_100_cross]],
+                    [t1] => [[[b], param_100_front]],
+                    [b] => [[[t1], param_100_front]]
                   }
                 end
 
@@ -126,27 +108,7 @@ module VersatileDiamond
             end
           end
 
-          describe 'many similar activated bridges' do
-            let(:typical_reaction) { dept_symmetric_dimer_formation }
-            let(:target_specs) { subject.target_specs.to_a }
-            let(:t1) { target_specs.first.atom(:ct) }
-
-            def sidepiece_spec_by(relation)
-              sidepiece_specs.find do |spec|
-                subject.clean_links.any? do |(ks, _), rels|
-                  spec == ks && rels.any? do |(ns, _), r|
-                    r == relation && target_specs.include?(ns)
-                  end
-                end
-              end
-            end
-
-            let(:front_bridge) { sidepiece_spec_by(position_100_front) }
-            let(:cross_bridge) { sidepiece_spec_by(position_100_cross) }
-
-            let(:fb) { front_bridge.atom(:ct) }
-            let(:cb) { cross_bridge.atom(:ct) }
-
+          it_behaves_like :many_similar_activated_bridges do
             let(:flatten_face_grouped_atoms) do
               [[t1], [fb], [cb]]
             end

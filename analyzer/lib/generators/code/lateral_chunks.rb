@@ -9,8 +9,7 @@ module VersatileDiamond
         extend Forwardable
 
         attr_reader :reaction
-        def_delegators :total_chunk, :clean_links, :target_specs,
-          :sidepiece_specs # just for tests
+        def_delegators :total_chunk, :clean_links, :target_specs, :sidepiece_specs
 
         # Initializes meta object which provides useful methods for code generators
         # @param [EngineCode] generator of engine code
@@ -108,6 +107,14 @@ module VersatileDiamond
         # @return [Boolean] is target spec or not
         def target_spec?(spec)
           target_specs.include?(spec)
+        end
+
+        # Checks that passed spec belongs to sidepiece specs set
+        # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
+        #   which will be checked in the set of sidepiece specs
+        # @return [Boolean] is sidepiece spec or not
+        def sidepiece_spec?(spec)
+          sidepiece_specs.include?(spec)
         end
 
       private
