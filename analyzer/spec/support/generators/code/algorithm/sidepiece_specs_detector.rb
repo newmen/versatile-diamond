@@ -29,6 +29,15 @@ module VersatileDiamond
             def sidepiece_spec_by_name(name)
               sidepiece_specs.find { |spec| spec.name == name }
             end
+
+            # Selects reaction which sidepiece specie uses passed relation
+            # @param [Concepts::Bond] relation which connects target specie and
+            #   sidepiece specie
+            # @return [String] the class name of selected reaction
+            def cmb_reaction_class_name_by(relation)
+              cmb_reacts = combined_lateral_reactions
+              cmb_reacts.find { |clr| clr.chunk.relations == [relation] }.class_name
+            end
           end
 
         end

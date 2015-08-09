@@ -86,12 +86,15 @@ module VersatileDiamond
         end
 
         describe '#unconcrete_affixes_without' do
-          let(:lateral_reactions) { [dept_ewb_lateral_df] }
+          let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
           let(:specie) { generator.specie_class(lateral_bridge.name) }
-          let(:affixes) { subject.unconcrete_affixes_without(specie) }
+          let(:affixes) do
+            subject.unconcrete_affixes_without(dept_end_lateral_df, specie)
+          end
+
           it 'check affixes' do
-            expect(affixes.size).to eq(2)
-            expect(affixes.map(&:chunk).any?(&:original?)).to be_falsey
+            expect(affixes.size).to eq(1)
+            expect(affixes.map(&:chunk).any?(&:original?)).to be_truthy
           end
         end
 

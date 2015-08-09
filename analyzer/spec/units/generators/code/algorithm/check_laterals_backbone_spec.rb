@@ -127,8 +127,7 @@ module VersatileDiamond
               describe '#final_graph' do
                 let(:final_graph) do
                   {
-                    [fb] => [[[t1], param_100_front]],
-                    [cb] => [[[t1], param_100_cross]]
+                    [cb] => [[[t1], param_100_front], [[t1], param_100_cross]]
                   }
                 end
 
@@ -142,7 +141,7 @@ module VersatileDiamond
               end
 
               describe '#entry_nodes' do
-                let(:points_list) { [[cb], [fb]] }
+                let(:points_list) { [[cb]] }
 
                 it_behaves_like :check_entry_nodes do
                   let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
@@ -169,7 +168,7 @@ module VersatileDiamond
               let(:entry_node) { backbone.entry_nodes.last }
               let(:ordered_graph) do
                 [
-                  [[fb], [[[t1], param_100_front], [[t1], param_100_cross]]]
+                  [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
                 ]
               end
             end

@@ -5,6 +5,7 @@ module VersatileDiamond
       # Contains logic for description of common graph of all possible chunks of some
       # typical reaction
       class LateralChunks
+        include Modules::ListsComparer
         include Modules::RelationBetweenChecker
         extend Forwardable
 
@@ -20,12 +21,12 @@ module VersatileDiamond
         def initialize(generator, typical_reaction, lateral_reactions)
           @generator = generator
           @reaction = typical_reaction
-          @affixes = lateral_reactions
+          @affixes = lateral_reactions.sort_by(&:chunk)
 
           @all_chunks = lateral_reactions.map(&:chunk)
           @root_chunks = lateral_reactions.flat_map(&:internal_chunks).uniq
 
-          @_total_chunk, @_unconcrete_affixes = nil
+          @_total_chunk, @_overall_chunk, @_unconcrete_affixes = nil
         end
 
         # The method for detection relations between
@@ -76,13 +77,15 @@ module VersatileDiamond
         # Gets the ordered list of lateral reactions which are root lateral reactions
         # and not uses maximal times passed specie
         #
+        # @param [LateralReaction] creating_reaction which checks that it can be
+        #   injecting to result unconcrete reaction or not
         # @param [Specie] specie which should be one of sidepiece species of reaction
         # @return [Array] the list of single lateral reactions
-        def unconcrete_affixes_without(specie)
+        def unconcrete_affixes_without(creating_reaction, specie)
           max_times = maximal_times_usage(specie)
-          unconcrete_affixes.reject do |lateral_reaction|
-            num = lateral_reaction.sidepiece_species.select { |sp| sp == specie }.size
-            num == max_times
+          unconcrete_affixes.select do |lateral_reaction|
+            mergeable?(lateral_reaction, creating_reaction) &&
+              num_species_in(lateral_reaction, specie) < max_times
           end
         end
 
@@ -139,14 +142,35 @@ module VersatileDiamond
           Organizers::TotalChunk.new(reaction, chunks)
         end
 
+        # Checks that passed reactions can be merged
+        # @param [Array] reactions which provides merging internal chunks
+        # @return [Boolean] is mergeable reactions or not
+        def mergeable?(*reactions)
+          typical_chunks = reactions.map(&:chunk)
+          combined_chunks = typical_chunks.flat_map(&:internal_chunks)
+          @affixes.any? do |lateral_reaction|
+            inspecting_chunks = lateral_reaction.chunk.internal_chunks
+            lists_are_identical?(inspecting_chunks, combined_chunks, &:same?)
+          end
+        end
+
+        # Counts which times passed specie uses in sidepiece species of passed reaction
+        # @param [LateralReaction] lateral_reaction for which the number of usages will
+        #   be gotten
+        # @param [Specie] specie which will be counted
+        # @return [Integer] the number of specie usages in sidepiece species of lateral
+        #   reaction
+        def num_species_in(lateral_reaction, specie)
+          lateral_reaction.sidepiece_species.count { |sp| sp == specie }
+        end
+
         # Counts which times passed sidepiece specie uses in one lateral reaction
         # @param [Specie] specie for which the number will gotten
         # @return [Integer] the number of usage must be more than 1
         def maximal_times_usage(specie)
-          times_usage = @affixes.map do |lateral_reaction|
-            lateral_reaction.sidepiece_species.select { |sp| sp == specie }.size
+          @affixes.reduce(0) do |acc, lateral_reaction|
+            [acc, num_species_in(lateral_reaction, specie)].max
           end
-          times_usage.max
         end
       end
     end

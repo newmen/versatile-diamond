@@ -5,13 +5,11 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ReactionCheckLateralsBuilder, type: :algorithm do
+        describe ReactionCheckLateralsBuilder, type: :algorithm, use: :chunks do
           let(:generator) do
             stub_generator(
-              base_specs: [dept_bridge_base, dept_dimer_base],
-              specific_specs: [
-                dept_activated_bridge, dept_activated_incoherent_bridge
-              ],
+              base_specs: respond_to?(:base_specs) ? base_specs : [],
+              specific_specs: respond_to?(:specific_specs) ? specific_specs : [],
               typical_reactions: [typical_reaction],
               lateral_reactions: lateral_reactions
             )
@@ -21,30 +19,35 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(spec.name) }
           let(:classifier) { generator.classifier }
           let(:builder) { reaction.check_laterals_builder_from(specie) }
-          let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
-          subject { reaction.lateral_chunks }
+          let(:lateral_chunks) { reaction.lateral_chunks }
 
-          let(:lateral_bridge) { (sidepiece_specs - [lateral_dimer]).first }
-          let(:lateral_dimer) do
-            sidepiece_specs.select { |spec| spec.name == :dimer }.first
-          end
+          let(:target_specs) { lateral_chunks.target_specs.to_a }
+          let(:sidepiece_specs) { lateral_chunks.sidepiece_specs.to_a }
 
-          let(:ab_ct) { role(dept_activated_bridge, :ct) }
-          let(:aib_ct) { role(dept_activated_incoherent_bridge, :ct) }
-
-          let(:generating_class_names) { combined_lateral_reaction.map(&:class_name) }
-          let(:combined_lateral_reaction) do
-            subject.unconcrete_affixes - lateral_reactions.map do |lr|
+          let(:generating_class_names) { combined_lateral_reactions.map(&:class_name) }
+          let(:combined_lateral_reactions) do
+            lateral_chunks.unconcrete_affixes - lateral_reactions.map do |lr|
               generator.reaction_class(lr.name)
             end
           end
 
           describe '#build' do
-            describe 'dimer formation just cross neighbours' do
+            describe 'dimers row formation near asymmetric dimer' do
               let(:typical_reaction) { dept_dimer_formation }
-              let(:spec) { lateral_dimer }
-              let(:find_algorithm) do
-                <<-CODE
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              let(:specific_specs) do
+                [dept_activated_bridge, dept_activated_incoherent_bridge]
+              end
+
+              let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
+
+              let(:ab_ct) { role(dept_activated_bridge, :ct) }
+              let(:aib_ct) { role(dept_activated_incoherent_bridge, :ct) }
+
+              describe 'just cross neighbours' do
+                let(:spec) { lateral_dimer }
+                let(:find_algorithm) do
+                  <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
@@ -74,31 +77,30 @@ module VersatileDiamond
             }
         }
     });
-                CODE
+                  CODE
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_end_lateral_df] }
+                  let(:class_name) { 'ForwardDimerFormationEndLateral' }
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_middle_lateral_df] }
+                  let(:class_name) { generating_class_names.first }
+                end
               end
 
-              it_behaves_like :check_code do
-                let(:lateral_reactions) { [dept_end_lateral_df] }
-                let(:class_name) { 'ForwardDimerFormationEndLateral' }
-              end
+              describe 'three sides neighbours' do
+                let(:lateral_reactions) { [dept_ewb_lateral_df] }
+                let(:class_name_with_bridge) { generating_class_names[0] }
+                let(:class_name_with_dimer) { generating_class_names[1] }
+                let(:class_name_with_two_dimer) { generating_class_names[2] }
 
-              it_behaves_like :check_code do
-                let(:lateral_reactions) { [dept_middle_lateral_df] }
-                let(:class_name) { generating_class_names.first }
-              end
-            end
-
-            describe 'dimer formation three sides neighbours' do
-              let(:typical_reaction) { dept_dimer_formation }
-              let(:lateral_reactions) { [dept_ewb_lateral_df] }
-              let(:class_name_with_bridge) { generating_class_names[0] }
-              let(:class_name_with_dimer) { generating_class_names[1] }
-              let(:class_name_with_two_dimer) { generating_class_names[2] }
-
-              it_behaves_like :check_code do
-                let(:spec) { lateral_dimer }
-                let(:find_algorithm) do
-                  <<-CODE
+                it_behaves_like :check_code do
+                  let(:spec) { lateral_dimer }
+                  let(:find_algorithm) do
+                    <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
@@ -148,14 +150,15 @@ module VersatileDiamond
             }
         }
     });
-                  CODE
+                    CODE
+                  end
                 end
-              end
 
-              it_behaves_like :check_code do
-                let(:spec) { lateral_bridge }
-                let(:find_algorithm) do
-                  <<-CODE
+                it_behaves_like :check_code do
+                  let(:lateral_bridge) { (sidepiece_specs - [lateral_dimer]).first }
+                  let(:spec) { lateral_bridge }
+                  let(:find_algorithm) do
+                    <<-CODE
     Atom *atom1 = target->atom(0);
     eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{aib_ct}))
@@ -195,15 +198,20 @@ module VersatileDiamond
             }
         }
     });
-                  CODE
+                    CODE
+                  end
                 end
               end
             end
 
-            describe 'incoherent dimer drop' do
+            describe 'symmetric incoherent dimer drop' do
               it_behaves_like :check_code do
                 let(:typical_reaction) { dept_incoherent_dimer_drop }
                 let(:lateral_reactions) { [dept_end_lateral_idd] }
+                let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+                let(:specific_specs) { [dept_twise_incoherent_dimer] }
+
+                let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
                 let(:spec) { lateral_dimer }
                 let(:id_cr) { role(dept_twise_incoherent_dimer, :cr) }
                 let(:id_cl) { role(dept_twise_incoherent_dimer, :cl) }
@@ -244,6 +252,303 @@ module VersatileDiamond
               end
             end
 
+            describe 'many similar activated bridges' do
+              let(:typical_reaction) { dept_symmetric_dimer_formation }
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_activated_bridge] }
+
+              let(:ab_ct) { role(dept_activated_bridge, :ct) }
+
+              let(:front_bridge) { sidepiece_spec_related_by(position_100_front) }
+              let(:cross_bridge) { sidepiece_spec_related_by(position_100_cross) }
+
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *atom1 = target->atom(0);
+    eachNeighbour(atom1, &Diamond::cross_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(2))
+        {
+            SpecificSpec *specie = neighbour1->specByRole<BridgeCTs>(2);
+            if (specie)
+            {
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    #{small_name} *nbrReaction = specie->checkoutReaction<#{small_name}>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    #{big_name} *nbrReaction = specie->checkoutReaction<#{big_name}>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    ForwardSymmetricDimerFormation *nbrReaction = specie->checkoutReaction<ForwardSymmetricDimerFormation>();
+                    if (nbrReaction)
+                    {
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction, target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(2))
+        {
+            SpecificSpec *specie = neighbour1->specByRole<BridgeCTs>(2);
+            if (specie)
+            {
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    #{small_name} *nbrReaction = specie->checkoutReaction<#{small_name}>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
+                    if (nbrReaction)
+                    {
+                        assert(!target->haveReaction(nbrReaction));
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+                {
+                    ForwardSymmetricDimerFormation *nbrReaction = specie->checkoutReaction<ForwardSymmetricDimerFormation>();
+                    if (nbrReaction)
+                    {
+                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction, target);
+                        nbrReaction->concretize(chunk);
+                        return;
+                    }
+                }
+            }
+        }
+    });
+                CODE
+              end
+
+              describe 'one original lateral reaction ' do
+                let(:spec) { front_bridge }
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+                  let(:small_name) do
+                    'ForwardSymmetricDimerFormationSmall'
+                  end
+                  let(:big_name) do
+                    'CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs'
+                  end
+                end
+
+                it_behaves_like :check_code do
+                  let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+                  let(:small_name) do
+                    'CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTs'
+                  end
+                  let(:big_name) do
+                    'ForwardSymmetricDimerFormationBig'
+                  end
+                end
+              end
+
+              describe 'many original lateral reactions' do
+                let(:lateral_reactions) do
+                  [dept_small_ab_lateral_sdf, dept_big_ab_lateral_sdf]
+                end
+
+                let(:small_name) do
+                  'ForwardSymmetricDimerFormationSmall'
+                end
+                let(:big_name) do
+                  'ForwardSymmetricDimerFormationBig'
+                end
+
+                it_behaves_like :check_code do
+                  let(:spec) { front_bridge }
+                end
+
+                it_behaves_like :check_code do
+                  let(:spec) { cross_bridge }
+                end
+              end
+            end
           end
         end
 

@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ReactionLookAroundBuilder, type: :algorithm do
+        describe ReactionLookAroundBuilder, type: :algorithm, use: :chunks do
           let(:generator) do
             stub_generator(
               base_specs: respond_to?(:base_specs) ? base_specs : [],
@@ -17,12 +17,12 @@ module VersatileDiamond
 
           let(:reaction) { generator.reaction_class(typical_reaction.name) }
           let(:classifier) { generator.classifier }
-          let(:builder) { described_class.new(generator, subject) }
-          subject { reaction.lateral_chunks }
+          let(:builder) { described_class.new(generator, lateral_chunks) }
+          let(:lateral_chunks) { reaction.lateral_chunks }
 
           let(:combined_lateral_reactions) do
-            reaction.send(:children).select do |lr|
-              !lr.chunk.original? && lr.chunk.parents.size == 0
+            lateral_chunks.unconcrete_affixes - lateral_reactions.map do |lr|
+              generator.reaction_class(lr.name)
             end
           end
 
@@ -111,17 +111,11 @@ module VersatileDiamond
 
               let(:ab_ct) { role(dept_activated_bridge, :ct) }
 
-              def cmb_reaction_class_name_by(relation)
-                cmb_reacts = combined_lateral_reactions
-                cmb_reacts.find { |clr| clr.chunk.relations == [relation] }.class_name
-              end
-
               let(:front_cmb_name) { cmb_reaction_class_name_by(position_100_front) }
               let(:cross_cmb_name) { cmb_reaction_class_name_by(position_100_cross) }
 
-              describe 'one original lateral reaction' do
-                let(:find_algorithm) do
-                  <<-CODE
+              let(:find_algorithm) do
+                <<-CODE
     Atom *atoms1[2] = { #{target_atoms_definition} };
     for (int ae1 = 0; ae1 < 2; ++ae1)
     {
@@ -149,61 +143,29 @@ module VersatileDiamond
             }
         });
     }
-                  CODE
-                end
+                CODE
+              end
 
-                it_behaves_like :check_code do
-                  let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
-                  let(:target_atoms_definition) do
-                    'target(1)->atom(0), target(0)->atom(0)'
-                  end
-                end
-
-                it_behaves_like :check_code do
-                  let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
-                  let(:target_atoms_definition) do
-                    'target(0)->atom(0), target(1)->atom(0)'
-                  end
+              it_behaves_like :check_code do
+                let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+                let(:target_atoms_definition) do
+                  'target(1)->atom(0), target(0)->atom(0)'
                 end
               end
 
-              describe 'many original lateral reactions' do
-                let(:find_algorithm) do
-                  <<-CODE
-    Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
-    for (int ae1 = 0; ae1 < 2; ++ae1)
-    {
-        eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour1) {
-            if (neighbour1->is(#{ab_ct}))
-            {
-                if (neighbour1 != atoms1[ae1-1])
-                {
-                    LateralSpec *specie = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
-                    if (specie)
-                    {
-                        chunks[index++] = new #{front_cmb_name}(this, specie);
-                    }
-                }
-            }
-        });
-        eachNeighbour(atoms1[ae1], &Diamond::cross_100, [&](Atom *neighbour2) {
-            if (neighbour2->is(#{ab_ct}))
-            {
-                LateralSpec *specie = neighbour2->specByRole<BridgeCTs>(#{ab_ct});
-                if (specie)
-                {
-                    chunks[index++] = new #{cross_cmb_name}(this, specie);
-                }
-            }
-        });
-    }
-                  CODE
+              it_behaves_like :check_code do
+                let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+                let(:target_atoms_definition) do
+                  'target(0)->atom(0), target(1)->atom(0)'
                 end
+              end
 
-                it_behaves_like :check_code do
-                  let(:lateral_reactions) do
-                    [dept_small_ab_lateral_sdf, dept_big_ab_lateral_sdf]
-                  end
+              it_behaves_like :check_code do
+                let(:lateral_reactions) do
+                  [dept_small_ab_lateral_sdf, dept_big_ab_lateral_sdf]
+                end
+                let(:target_atoms_definition) do
+                  'target(1)->atom(0), target(0)->atom(0)'
                 end
               end
             end

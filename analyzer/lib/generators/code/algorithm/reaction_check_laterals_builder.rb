@@ -40,6 +40,7 @@ module VersatileDiamond
           # Builds checking bodies for all lateral reactions
           # @return [String] the string with cpp code
           def body
+            factory.remember_names!
             lateral_chunks.root_affixes_for(@specie).reduce('') do |acc, reaction|
               acc + body_for(reaction)
             end
@@ -64,8 +65,13 @@ module VersatileDiamond
           # @return [String] the cpp code find algorithm
           def combine_algorithm(reaction, nodes)
             checking_rels(nodes).reduce('') do |acc, (nbrs, rel_params)|
-              func = relations_proc(nodes, nbrs, rel_params)
-              acc + func.call { creation_lines(reaction, nodes, nbrs) }
+              if reaction.use_relation?(rel_params)
+                factory.restore_names!
+                func = relations_proc(nodes, nbrs, rel_params)
+                acc + func.call { creation_lines(reaction, nodes, nbrs) }
+              else
+                acc
+              end
             end
           end
 

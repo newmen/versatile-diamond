@@ -106,8 +106,13 @@ module VersatileDiamond
       # @yield do internal compares if total links numbers are equal
       # @return [Integer] comparison result
       def comparing_core(other, &block)
-        order(self, other, :clean_links, :size) do
-          compare_total_links_num(other, &block)
+        a, b = [relations, other.relations].map { |rs| rs.map(&:to_s) }
+        if a == b || a.size != b.size
+          order(self, other, :clean_links, :size) do
+            compare_total_links_num(other, &block)
+          end
+        else
+          a <=> b
         end
       end
 

@@ -23,6 +23,15 @@ module VersatileDiamond
           other_scope_chunks.any? { |ch| ch.parents.include?(chunk) }
         end
 
+        # Checks that current lateral reaction use relation with passed parameters
+        # to connect some sidepiece specie
+        #
+        # @param [Hash] rel_params by which the using relations will be checked
+        # @return [Boolean] is lateral reaction depends from described relation or not
+        def use_relation?(rel_params)
+          chunk.relations.any? { |r| r.params == rel_params }
+        end
+
       private
 
         # Detects that current reaction is multi lateral or not

@@ -52,7 +52,8 @@ module VersatileDiamond
           # @return [Array] the list of reactions which will checked
           def checking_reactions
             cheking_species = sidepiece_species.map(&:original)
-            @lateral_chunks.unconcrete_affixes_without(*cheking_species)
+            arguments = [creating_reaction] + cheking_species
+            @lateral_chunks.unconcrete_affixes_without(*arguments)
           end
 
           # Gets the cpp code lines with concretization of lateral reactions

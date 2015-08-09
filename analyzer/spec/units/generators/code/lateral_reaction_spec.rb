@@ -89,6 +89,22 @@ module VersatileDiamond
             it { expect(subject.concretizable?).to be_falsey }
           end
         end
+
+        describe '#use_relation?' do
+          let(:lateral_reactions) { [target] }
+
+          describe 'dimers row' do
+            let(:target) { dept_end_lateral_df }
+            it { expect(subject.use_relation?(param_100_cross)).to be_truthy }
+            it { expect(subject.use_relation?(param_100_front)).to be_falsey }
+          end
+
+          describe 'multi bridges' do
+            let(:target) { dept_small_ab_lateral_sdf }
+            it { expect(subject.use_relation?(param_100_cross)).to be_truthy }
+            it { expect(subject.use_relation?(param_100_front)).to be_truthy }
+          end
+        end
       end
 
     end

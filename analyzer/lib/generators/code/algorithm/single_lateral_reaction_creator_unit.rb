@@ -35,6 +35,8 @@ module VersatileDiamond
 
         private
 
+          attr_reader :creating_reaction
+
           # Gets list of exactly unique species
           # @return [Array] anytime unique species
           def other_side_species

@@ -52,13 +52,15 @@ module VersatileDiamond
       # Gets list of relations between target specs and sidepiece specs
       # @return [Array] the list of relations
       def relations
-        clean_links.reduce([]) do |acc, ((spec, _), rels)|
+        result = clean_links.reduce([]) do |acc, ((spec, _), rels)|
           if sidepiece_specs.include?(spec)
             acc + rels.reject { |(s, _), _| sidepiece_specs.include?(s) }.map(&:last)
           else
             acc
           end
         end
+
+        result.sort_by(&:to_s)
       end
 
       def inspect

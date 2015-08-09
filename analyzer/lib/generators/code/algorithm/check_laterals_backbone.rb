@@ -24,14 +24,7 @@ module VersatileDiamond
           #   squized to one list if some nodes are similar
           # @override
           def ordered_graph_from(nodes)
-            similar_relations = relations_of_similar_nodes(nodes)
-            if similar_relations.empty?
-              super
-            else
-              [
-                [nodes, super.first.last + similar_relations]
-              ]
-            end
+            super(detect_key_nodes(final_graph, nodes))
           end
 
         private
@@ -40,13 +33,32 @@ module VersatileDiamond
           # @param [Array] nodes which analogies will checked in final graph
           # @return [Array] the list of another available relations
           def relations_of_similar_nodes(nodes)
-            nodes_with_relations = final_graph.select do |ns, _|
+            graph_with_same_nodes(final_graph, nodes).flat_map(&:last)
+          end
+
+          # Detects same key nodes in passed graph
+          # @param [Hash] graph where key nodes will be checked
+          # @param [Array] nodes which analogies will checked in final graph
+          # @return [Array] found key nodes or passed nodes list
+          def detect_key_nodes(graph, nodes)
+            keys = graph_with_same_nodes(graph, nodes).keys
+            raise 'Not only one similar key available' if keys.size > 1
+
+            keys.first || nodes
+          end
+
+          # Selects a part of passed graph which use same nodes as was passed
+          # @param [Hash] graph which will filtered
+          # @param [Array] nodes which analogies will checked in passed graph
+          # @return [Hash] the graph in which forward directed relations are all
+          #   outcomes from nodes which are similar as passed
+          def graph_with_same_nodes(graph, nodes)
+            graph.select do |ns, _|
               ns != nodes &&
                 lists_are_identical?(ns, nodes) do |n1, n2|
                   same_sa?(n1.spec_atom, n2.spec_atom)
                 end
             end
-            nodes_with_relations.flat_map(&:last)
           end
 
           # Makes clean graph with relations only from target nodes
@@ -56,7 +68,9 @@ module VersatileDiamond
               target_nodes = filter_nodes(nodes)
               unless target_nodes.empty?
                 nbr_sas = select_nbrs(nodes)
-                acc[target_nodes] = rels.map do |ns, r|
+                key_nodes = detect_key_nodes(acc, target_nodes)
+                acc[key_nodes] ||= []
+                acc[key_nodes] += rels.map do |ns, r|
                   [ns.select { |n| nbr_sas.include?(n.spec_atom) }, r]
                 end
               end
