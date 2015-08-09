@@ -96,28 +96,44 @@ module VersatileDiamond
               fail 'Can not figure out the next names of atoms variables'
             end
 
-            code_line("for (int #{i} = 0; #{i} < #{num}; ++#{i})") +
+            code_line("for (uint #{i} = 0; #{i} < #{num}; ++#{i})") +
               code_scope(&block)
-          end
-
-          # Gets list of pairs of atoms and corresponding atom properties
-          # @return [Array] the list of pairs
-          def atoms_to_props
-            target_concept_specs.zip(atoms).map do |spec, atom|
-              [atom, atom_properties_from_concepts(spec, atom)]
-            end
           end
 
           # Gets list of possible symmetric atoms
           # @return [Array] the list where similar atoms presents
           def symmetric_atoms
-            return @_symmetric_atoms if @_symmetric_atoms
-            # TODO: Not entirely sure of the correctness of this method. It is possible
-            # that need to use intersection with itself. But this method proved himself
-            # no worse than the version with search symmetric atoms on intersection,
-            # at all currently available tests.
-            repeated = atoms_to_props.groups(&:last).select { |gr| gr.size > 1 }
-            @_symmetric_atoms = repeated.flat_map { |gr| gr.map(&:first) }
+            @_symmetric_atoms ||= best_intersection.map(&:first).map(&:last)
+          end
+
+          # Collects the links graph which contains relations between own internal
+          # species
+          #
+          # @return [Hash] the cutten links without relations between not own specs
+          def target_concepts_links
+            concept_specs = target_concept_specs.uniq
+            concept_specs.each_with_object({}) do |spec, acc|
+              relations_checker.links.each do |spec_atom, rels|
+                next unless spec == spec_atom.first
+                acc[spec_atom] = rels.select { |(s, _), _| concept_specs.include?(s) }
+              end
+            end
+          end
+
+          # Finds self intersetions of target concepts links graphs
+          # @return [Array] the list of intersections
+          def self_intersections
+            comparing_links = [target_concepts_links] * 2
+            objs = comparing_links.map { |links| Mcs::LinksWrapper.new(links) }
+            Mcs::SpeciesComparator.intersec(*objs) { |_, _, v, w| same_sa?(v, w) }
+          end
+
+          # Selects best intersection and drops all unsignificant atoms compliance
+          # @return [Array] the list of symmetric spec-atom pairs
+          def best_intersection
+            cmp_proc = Proc.new { |v, w| v != w && atoms.include?(v.last) }
+            best = self_intersections.max_by { |insec| insec.count(&cmp_proc) }
+            best.select(&cmp_proc)
           end
 
           # Checks that atoms of reactants are equal

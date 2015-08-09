@@ -117,7 +117,7 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *atoms1[2] = { #{target_atoms_definition} };
-    for (int ae1 = 0; ae1 < 2; ++ae1)
+    for (uint ae1 = 0; ae1 < 2; ++ae1)
     {
         eachNeighbour(atoms1[ae1], &Diamond::cross_100, [&](Atom *neighbour1) {
             if (neighbour1->is(#{ab_ct}))
