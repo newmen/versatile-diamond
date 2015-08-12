@@ -110,6 +110,12 @@ module VersatileDiamond
             namer.name_of(sidepiece_species)
           end
 
+          # Gets the list of exactly different species
+          # @return [Array] the list of different species
+          def different_species
+            other_side_species.uniq { |s| s.original }
+          end
+
           # Collects different atoms for each using specie
           # @return [Array] the list of different defined atoms
           def different_atoms
@@ -121,12 +127,6 @@ module VersatileDiamond
               using_atoms << atom
               atom
             end
-          end
-
-          # Gets the list of exactly different species
-          # @return [Array] the list of different species
-          def different_species
-            other_side_species.uniq { |s| s.original }
           end
 
           # Gets list of pairs of not unique species and different atoms
