@@ -15,7 +15,12 @@ describe 'graphs generation' do
   RESULTS_DIR = 'results-for-rspecs'.freeze
   RESULTS_PATH = (ROOT_PATH + RESULTS_DIR).freeze
 
-  raise "Already exist RESULTS_PATH: #{RESULTS_PATH}" if RESULTS_PATH.exist?
+  FileUtils.rm_rf(RESULTS_PATH.to_s) if RESULTS_PATH.exist?
+
+  CACHE_DIR = 'cache-for-rspecs'.freeze
+  CACHE_PATH = (ROOT_PATH + CACHE_DIR).freeze
+
+  FileUtils.rm_rf(CACHE_PATH.to_s) if CACHE_PATH.exist?
 
   OPTIONS = ['--total-tree', '--composition']
   SUB_OPTIONS = {
@@ -36,10 +41,11 @@ describe 'graphs generation' do
 
   shared_examples_for :check_run do
     after { FileUtils.rm_rf(RESULTS_PATH.to_s) }
+
     it 'run and check result file' do
       expect(RESULTS_PATH.exist?).to be_falsey # check that 'alter' block works
 
-      cmd = "#{run_line} --out=#{RESULTS_PATH} --no-cache"
+      cmd = "#{run_line} --out=#{RESULTS_PATH} --cache-dir=#{CACHE_PATH}"
       _stdin, _stdout, stderr, _wait_thread = Open3.popen3(cmd)
 
       expect(stderr.gets).to be_nil
@@ -75,4 +81,6 @@ describe 'graphs generation' do
       end
     end
   end
+
+  after(:context) { FileUtils.rm_rf(CACHE_PATH.to_s) }
 end

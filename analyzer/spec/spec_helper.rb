@@ -48,13 +48,13 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:each) do
-    VD::Interpreter::Support::Handbook.reset
-    VD::Concepts::Support::Handbook.reset
-    VD::Organizers::Support::Handbook.reset
-    VD::Generators::Code::Support::Handbook.reset
+    VD::Interpreter::Support::Handbook.reset!
+    VD::Concepts::Support::Handbook.reset!
+    VD::Organizers::Support::Handbook.reset!
+    VD::Generators::Code::Support::Handbook.reset!
 
-    VD::Tools::Dimension.reset
-    VD::Tools::Chest.reset
-    VD::Tools::Config.init
+    VD::Tools::Dimension.reset!
+    VD::Tools::Chest.reset!
+    VD::Tools::Config.init!
   end
 end

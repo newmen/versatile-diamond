@@ -16,7 +16,7 @@ module VersatileDiamond
         attr_reader :concs
 
         # Initialize internal variables of config
-        def init
+        def init!
           @total_time = nil
           @concs = {}
           @composition = nil
@@ -26,7 +26,7 @@ module VersatileDiamond
 
         # Loads config from path by it dump
         # @param [String] path to file which will checked for correct dump
-        def load(path)
+        def load!(path)
           # internal variables same as dump_data
           @total_time, @concs, @sizes, @gas_temperature, @surface_temperature =
             Serializer.load(path, suffix: DUMP_PREFIX)
