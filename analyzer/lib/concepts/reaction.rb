@@ -136,14 +136,22 @@ module VersatileDiamond
       # @option [Boolean] :to_reverse_too applies relevant state to reverse
       #   reaction if set to true
       def apply_relevants(spec, old_atom, new_atom, to_reverse_too: true)
+        is_source = source.include?(spec)
+
         if to_reverse_too
+          os_s, os_old_a = mapping.other_side(spec, old_atom)
           mapping.apply_relevants(spec, old_atom, new_atom)
-          reverse.apply_relevants(spec, old_atom, new_atom, to_reverse_too: false)
+          _, os_new_a = mapping.other_side(spec, new_atom)
+
+          if is_source
+            reverse.apply_relevants(os_s, os_old_a, os_new_a, to_reverse_too: false)
+          else
+            apply_relevants(os_s, os_old_a, os_new_a, to_reverse_too: false)
+            reverse.apply_relevants(spec, old_atom, new_atom, to_reverse_too: false)
+          end
         end
 
-        swap_atom_in_positions(spec, old_atom, new_atom)
-        os_spec, os_atom = mapping.other_side(spec, new_atom)
-        swap_atom_in_positions(os_spec, os_atom, new_atom)
+        swap_atom_in_positions(spec, old_atom, new_atom) if is_source
       end
 
       # Gets all atoms of passed spec which used in reaction

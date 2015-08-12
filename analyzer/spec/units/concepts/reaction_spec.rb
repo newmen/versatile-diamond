@@ -182,6 +182,7 @@ module VersatileDiamond
             let(:new_atom) { spec.atom(target_kn) }
 
             before(:each) do
+              methyl_incorporation # initialize memoized value
               old_atom # initialize memoized value
               spec.incoherent!(target_kn)
               methyl_incorporation.apply_relevants(spec, old_atom, new_atom)
@@ -239,7 +240,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_source do
-              let(:target_kn) { :cr }
+              let(:target_kn) { :cl }
               let(:inc_kn) { :cb }
               let(:not_inc_kn) { :cm }
             end

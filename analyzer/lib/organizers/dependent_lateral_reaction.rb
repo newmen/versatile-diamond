@@ -30,12 +30,6 @@ module VersatileDiamond
         @_theres ||= reaction.theres.map { |th| DependentThere.new(self, th) }
       end
 
-      # Gets the list of spec-atoms which are targets for sidepiece species
-      # @return [Array] the list spec-atoms which are sidepiece targets
-      def lateral_targets
-        theres.map(&:targets).reduce(:+).to_a
-      end
-
       # Also swap targets of depending chunk
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
       #   the spec from which need to swap

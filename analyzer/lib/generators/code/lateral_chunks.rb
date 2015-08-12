@@ -26,7 +26,7 @@ module VersatileDiamond
           @all_chunks = lateral_reactions.map(&:chunk)
           @root_chunks = lateral_reactions.flat_map(&:internal_chunks).uniq
 
-          @_total_chunk, @_overall_chunk, @_unconcrete_affixes = nil
+          @_total_chunk, @_overall_chunk, @_unconcrete_affixes, @_root_times = nil
         end
 
         # The method for detection relations between
@@ -38,19 +38,22 @@ module VersatileDiamond
         # Gets number of how many times the root chunks contains in total chunk
         # @return [Integer] the number of times
         def root_times
+          return @_root_times if @_root_times
+
           result = overall_chunk
-          @root_chunks.reduce(0) do |acc, chunk|
-            num = 0
-            loop do
-              next_result = result - chunk
-              break unless next_result
+          @_root_times =
+            @root_chunks.reduce(0) do |acc, chunk|
+              num = 0
+              loop do
+                next_result = result - chunk
+                break unless next_result
 
-              num += 1
-              result = next_result
+                num += 1
+                result = next_result
+              end
+
+              acc + num
             end
-
-            acc + num
-          end
         end
 
         # Gets the lateral reaction which uses passed spec and atom

@@ -115,7 +115,7 @@ module VersatileDiamond
           def different_atoms
             using_atoms = []
             species.map do |s|
-              atom = s.proxy_spec.anchors.find do |a|
+              atom = s.proxy_spec.links.keys.find do |a|
                 namer.name_of(a) && !using_atoms.include?(a)
               end
               using_atoms << atom

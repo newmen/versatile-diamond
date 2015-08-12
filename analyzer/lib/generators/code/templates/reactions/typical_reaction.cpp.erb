@@ -28,6 +28,7 @@ SpecReaction *<%= class_name %>::lookAround()
 
 <%= look_around_algorithm %>
 
+    assert(index < <%= lateral_chunks_num %>);
     return selectReaction(chunks, index);
 }
 <% end %>

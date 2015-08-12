@@ -10,6 +10,8 @@ module VersatileDiamond
       def_delegators :there, :description, :use_similar_source?
       def_delegator :there, :where # for graphs generators
 
+      attr_reader :lateral_reaction
+
       # Stores wrappable there
       # @param [DependentLateralReaction] lateral_reaction in which current there
       #   object uses
@@ -83,7 +85,7 @@ module VersatileDiamond
 
     private
 
-      attr_reader :lateral_reaction, :there
+      attr_reader :there
 
     end
 

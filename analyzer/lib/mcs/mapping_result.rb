@@ -206,17 +206,11 @@ module VersatileDiamond
       # @param [SpecificAtom] new_atom the atom from which relevant states will
       #   got
       def apply_relevants(spec, old_atom, new_atom)
-        os = other_side(spec, old_atom) if old_atom != new_atom
-        os = other_side(spec, new_atom) unless os
-        os_spec, os_old_atom = os
+        os_spec, os_old_atom = other_side(spec, old_atom)
         swap_atom(spec, old_atom, new_atom) if old_atom != new_atom
 
-        os_old_atom = os_spec.atom(os_spec.keyname(os_old_atom))
         os_new_atom = setup_by_other(os_spec, spec, os_old_atom, new_atom)
-
-        if os_new_atom != os_old_atom
-          swap_atom(os_spec, os_old_atom, os_new_atom)
-        end
+        swap_atom(os_spec, os_old_atom, os_new_atom) if os_new_atom != os_old_atom
       end
 
       # Gets single source complex spec and their changed atom

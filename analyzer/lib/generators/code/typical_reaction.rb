@@ -13,8 +13,6 @@ module VersatileDiamond
           @_used_iterators = nil
           @_lateral_chunks = nil
           @_sidepiece_species = nil
-
-          @_check_laterals_builder = nil
         end
 
         # Gets list of sidepiece species from all children reactions
@@ -44,11 +42,8 @@ module VersatileDiamond
         # @return [ReactionCheckLateralsBuilder] the builder of checkLaterals method
         #   code
         def check_laterals_builder_from(specie)
-          return @_check_laterals_builder if @_check_laterals_builder
-
           builder_class = Algorithm::ReactionCheckLateralsBuilder
-          @_check_laterals_builder =
-            builder_class.new(generator, lateral_chunks, specie)
+          builder_class.new(generator, lateral_chunks, specie)
         end
 
       private
@@ -85,7 +80,7 @@ module VersatileDiamond
           return @_used_iterators if @_used_iterators
           specs_atoms =
             if reaction.clean_links.empty?
-              concretizable? ? reaction.children.map(&:lateral_targets) : []
+              concretizable? ? lateral_chunks.targets.to_a : []
             else
               reaction.clean_links.keys
             end
@@ -144,7 +139,7 @@ module VersatileDiamond
         # @param [Specie] specie the one of using sidepiece specie
         # @return [String] the cpp code string with find algorithm
         def check_laterals_algorithm_from(specie)
-          check_laterals_builder(specie).build
+          check_laterals_builder_from(specie).build
         end
       end
 

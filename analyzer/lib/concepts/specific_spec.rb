@@ -42,8 +42,8 @@ module VersatileDiamond
         @spec = spec
         @original_name = spec.name
 
-        @external_bonds_after_extend = nil
-        @reduced, @correct_reduced = nil
+        @extended_spec, @reduced, @correct_reduced = nil
+        @_name, @_external_bonds_after_extend = nil
       end
 
       # Makes a copy of other specific spec by dup each specific atom from it
@@ -51,7 +51,7 @@ module VersatileDiamond
       def initialize_copy(other)
         @spec = other.spec
         @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
-        reset_caches
+        reset_caches!
       end
 
       # Updates base spec from which dependent current specific spec
@@ -74,13 +74,15 @@ module VersatileDiamond
       # Builds the full name of specific spec (with specificied atom info)
       # @return [Symbol] the full name of specific spec
       def name
+        return @_name if @_name
+
         sorted_atoms = @specific_atoms.to_a.sort { |(k1, _), (k2, _)| k1 <=> k2 }
         args = sorted_atoms.reduce([]) do |arr, (keyname, atom)|
           atom.actives.times { arr << "#{keyname}: *" }
           arr + relevants_for(atom) + monovalents_for(atom)
         end
 
-        :"#{@original_name}(#{args.join(', ')})"
+        @_name = :"#{@original_name}(#{args.join(', ')})"
       end
 
       # Gets corresponding atom, because it can be specific atom
@@ -115,7 +117,7 @@ module VersatileDiamond
             "Described atom #{keyname} for specific #{name} cannot be unspecified"
         end
         @specific_atoms[keyname] = atom
-        reset_caches
+        reset_caches!
       end
 
       # Returns original links of base spec but exchange correspond atoms to
@@ -138,7 +140,7 @@ module VersatileDiamond
           unless atom
             atom = SpecificAtom.new(spec.atom(atom_keyname))
             @specific_atoms[atom_keyname] = atom
-            reset_caches
+            reset_caches!
           end
           atom.send(method_name)
         end
@@ -157,9 +159,10 @@ module VersatileDiamond
       #
       # @return [Integer] the number of external bonds for extended spec
       def external_bonds_after_extend
-        return @external_bonds_after_extend if @external_bonds_after_extend
+        return @_external_bonds_after_extend if @_external_bonds_after_extend
         @extended_spec = spec.extend_by_references
-        @external_bonds_after_extend = @extended_spec.external_bonds - active_bonds_num
+        @_external_bonds_after_extend =
+          @extended_spec.external_bonds - active_bonds_num
       end
 
       # Makes a new specific spec by extended base spec
@@ -343,9 +346,10 @@ module VersatileDiamond
       end
 
       # Resets internal caches
-      def reset_caches
+      def reset_caches!
+        @_name = nil
         @links = nil
-        @external_bonds_after_extend = nil
+        @_external_bonds_after_extend = nil
       end
     end
 

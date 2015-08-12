@@ -22,23 +22,6 @@ module VersatileDiamond
         end
       end
 
-      describe '#lateral_targets' do
-        shared_examples_for :check_targets do
-          let(:ab) { dept_reaction.reaction.source.first }
-          let(:aib) { dept_reaction.reaction.source.last }
-          let(:targets) { [[ab, ab.atom(:ct)], [aib, aib.atom(:ct)]] }
-          it { expect(dept_reaction.lateral_targets).to match_array(targets) }
-        end
-
-        it_behaves_like :check_targets do
-          let(:dept_reaction) { dept_end_lateral_df }
-        end
-
-        it_behaves_like :check_targets do
-          let(:dept_reaction) { dept_middle_lateral_df }
-        end
-      end
-
       describe '#lateral?' do
         it { expect(subject.lateral?).to be_truthy }
       end
