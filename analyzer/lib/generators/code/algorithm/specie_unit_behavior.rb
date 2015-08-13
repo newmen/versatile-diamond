@@ -68,6 +68,23 @@ module VersatileDiamond
             original_spec.relation_between(*atoms)
           end
 
+          # Gets available relations for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the relations will be gotten
+          # @return [Array] the list of relations
+          def relations_of(atom)
+            original_spec.links[atom]
+          end
+
+          # Checks that passed atom has any relations in context
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the relations will be checked
+          # @return [Boolean] has relations or not
+          def has_relations?(atom)
+            rels = original_spec.links[atom]
+            rels && !rels.empty?
+          end
+
           # Gets the default engine framework class for parent specie
           # @return [String] the engine framework class for parent specie
           def specie_type

@@ -259,6 +259,15 @@ module VersatileDiamond
         valence - bonds_num + dangling_hydrogens_num
       end
 
+      # Checks has or not free bonds?
+      # @return [Boolean] can form additional bond or not
+      def has_free_bonds?
+        return false if incoherent?
+        num = unbonded_actives_num + dangling_hydrogens_num
+        fail 'Wrong valence' if num > valence
+        num < valence
+      end
+
       # Convert properties to string representation
       # @return [String] the string representaion of properties
       def to_s

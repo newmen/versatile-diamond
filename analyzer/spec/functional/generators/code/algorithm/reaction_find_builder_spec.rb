@@ -433,7 +433,7 @@ module VersatileDiamond
                   <<-CODE
     Atom *anchor = target->atom(2);
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{other_role_cl}) && !anchor->hasBondWith(neighbour1))
+        if (neighbour1->is(#{other_role_cl}))
         {
             Atom *anchors1[2] = { neighbour1, anchor };
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
@@ -465,7 +465,7 @@ module VersatileDiamond
                   <<-CODE
     Atom *anchor = target->atom(3);
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{other_role_cr}) && !anchor->hasBondWith(neighbour1))
+        if (neighbour1->is(#{other_role_cr}))
         {
             Atom *anchors1[2] = { anchor, neighbour1 };
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
@@ -498,7 +498,7 @@ module VersatileDiamond
     target->eachSymmetry([](SpecificSpec *specie1) {
         Atom *anchors[2] = { specie1->atom(2), specie1->atom(3) };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{thrid_role_cr}) && !neighbours1[0]->hasBondWith(neighbours1[1]))
+            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{thrid_role_cr}))
             {
                 SpecificSpec *targets[3] = { neighbours1[0]->specByRole<DimerCLsCRi>(#{other_role_cl}), specie1, neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr}) };
                 create<ForwardTwoDimersForm>(targets);

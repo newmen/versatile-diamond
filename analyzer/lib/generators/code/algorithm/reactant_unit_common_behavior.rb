@@ -9,15 +9,6 @@ module VersatileDiamond
 
         protected
 
-          # Gets the original concept spec from current unique dependent spec
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom for which the original concept spec will be returned
-          # @return [Concept::Spec | Concept::SpecificSpec | Concept::VeiledSpec]
-          #   the original concept spec
-          def concept_spec(atom)
-            dept_spec_for(atom).spec
-          end
-
           # Iterates other unit which has an atom which also available by passed
           # relation and if is truthy then returns linked atom
           #
@@ -93,6 +84,22 @@ module VersatileDiamond
             end
 
             relations_checker.relation_between(*pair_of_specs_atoms)
+          end
+
+          # Gets available relations for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the relations will be gotten
+          # @return [Array] the list of relations
+          def relations_of(atom)
+            relations_checker.links[[concept_spec(atom), atom]]
+          end
+
+          # Checks that passed concept spec-atom pair has any relations in context
+          # @param [Array] spec_atom for which the relations will checked
+          # @return [Boolean] has relations or not
+          def has_relations?(spec_atom)
+            rels = relations_checker.links[spec_atom]
+            rels && !rels.empty?
           end
 
           # Iterates the spec-atoms linked with passed own atom by passed relation
