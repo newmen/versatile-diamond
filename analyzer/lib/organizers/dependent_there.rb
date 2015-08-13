@@ -7,7 +7,7 @@ module VersatileDiamond
       include Modules::SpecAtomSwapper
       extend Forwardable
 
-      def_delegators :there, :description, :use_similar_source?
+      def_delegators :there, :description, :use_similar_source?, :inspect
       def_delegator :there, :where # for graphs generators
 
       attr_reader :lateral_reaction

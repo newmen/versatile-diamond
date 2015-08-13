@@ -94,6 +94,7 @@ module VersatileDiamond
 
           fix_sidepieces(depts_cache, all_specs)
           fix_bases(depts_cache, all_specs)
+          fix_same_bases(depts_cache[:specific_specs])
 
           depts_cache
         end
@@ -151,6 +152,12 @@ module VersatileDiamond
             depts_cache[:base_specs] << ds
             all_specs[ds.name] = ds
           end
+        end
+
+        # Checks that if some reaction contains specific spec and same base spec then
+        # base spec will be swapped to veiled spec
+        def fix_same_bases(specific_specs)
+          exchange_same_used_base_specs_of(specific_specs)
         end
 
         # Provides lambda which checks type of own argument and wraps and store it

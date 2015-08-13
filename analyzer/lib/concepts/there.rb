@@ -152,7 +152,7 @@ module VersatileDiamond
       end
 
       def inspect
-        env_specs.map(&:inspect).join(' & ')
+        '[' + env_specs.map(&:inspect).join(' & ') + ']'
       end
 
     protected

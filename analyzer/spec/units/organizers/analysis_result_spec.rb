@@ -290,6 +290,35 @@ module VersatileDiamond
           end
         end
 
+        describe '#exchange_same_used_base_specs!' do
+          before do
+            Tools::Config.surface_temperature(500, 'K')
+
+            incoherent_dimer_drop.rate = 1
+            incoherent_dimer_drop.activation = 0
+            Tools::Chest.store(incoherent_dimer_drop)
+
+            end_lateral_idd.rate = 2
+            end_lateral_idd.activation = 0
+            Tools::Chest.store(end_lateral_idd)
+
+            [incoherent_dimer_drop, end_lateral_idd].each do |reaction|
+              store_base_specs(reaction.source)
+            end
+
+            end_lateral_idd.theres.each do |there|
+              store_base_specs(there.env_specs)
+            end
+          end
+
+          it 'all lateral reactions not have original base dimer' do
+            subject.lateral_reactions.each do |lateral_reaction|
+              is_included = lateral_reaction.sidepiece_specs.include?(dimer_base)
+              expect(is_included).to be_falsey
+            end
+          end
+        end
+
         describe '#organize_dependecies!' do
           describe '#organize_specific_specs_dependencies!' do
             before { store_reactions }
