@@ -163,7 +163,7 @@ module VersatileDiamond
                 [tm] => [[[dm], param_100_cross]],
                 [dm] => [[[tm], param_100_cross]],
                 [td] => [[[dd], param_110_front]],
-                [dd] => [[[td], param_110_cross]],
+                [dd] => [[[td], param_110_cross]]
               }
             end
 

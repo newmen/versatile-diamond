@@ -11,7 +11,7 @@ module VersatileDiamond
           it_behaves_like :dimer_formation_in_different_envs do
             describe '#action_nodes' do
               let(:lateral_reactions) { [dept_end_lateral_df] }
-              let(:nodes) { backbone.final_graph.keys.first }
+              let(:nodes) { backbone.entry_nodes.first }
               it { expect(backbone.action_nodes).to match_array(nodes) }
             end
 
@@ -160,6 +160,52 @@ module VersatileDiamond
 
               it_behaves_like :check_ordered_graph do
                 let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              end
+            end
+          end
+
+          it_behaves_like :methyl_incorporation_near_edge do
+            let(:lateral_reactions) { [dept_de_lateral_mi] }
+
+            describe '#action_nodes' do
+              let(:nodes) { backbone.entry_nodes.reduce(:+) }
+              it { expect(backbone.action_nodes).to match_array(nodes) }
+            end
+
+            describe '#final_graph' do
+              it_behaves_like :check_finite_graph do
+                let(:final_graph) do
+                  {
+                    [tm] => [[[dm], param_100_cross]],
+                    [td] => [[[dd], param_110_front]]
+                  }
+                end
+              end
+            end
+
+            describe '#entry_nodes' do
+              it_behaves_like :check_entry_nodes do
+                let(:points_list) { [[tm], [td]] }
+              end
+            end
+
+            describe '#ordered_graph_from' do
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[tm], [[[dm], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[td], [[[dd], param_110_front]]]
+                  ]
+                end
               end
             end
           end
