@@ -3,7 +3,6 @@ module VersatileDiamond
 
     # Wraps structural reaction with lateral interactions
     class DependentLateralReaction < DependentSpecReaction
-      include LateralReactionInstance
 
       # Initializes dependent lateral reation
       # @override

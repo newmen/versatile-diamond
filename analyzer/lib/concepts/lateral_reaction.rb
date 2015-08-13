@@ -39,6 +39,12 @@ module VersatileDiamond
         super && lists_are_identical?(theres, other.theres, &:same?)
       end
 
+      # Lateral reaction is lateral reaction
+      # @return [Boolean] true
+      def lateral?
+        true
+      end
+
       def to_s
         lateral_strs = theres.map(&:to_s)
         "#{super} : #{lateral_strs.join(' + ')}"

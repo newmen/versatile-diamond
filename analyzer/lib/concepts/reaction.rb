@@ -13,7 +13,7 @@ module VersatileDiamond
       extend Forwardable
 
       # type of reaction could be only for not ubiquitous reaction
-      attr_reader :type, :links
+      attr_reader :type, :links, :children
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
@@ -169,6 +169,12 @@ module VersatileDiamond
         super && same_positions?(other)
       end
 
+      # Typical reaction isn't lateral
+      # @return [Boolean] false
+      def lateral?
+        false
+      end
+
       # Checks that all atoms belongs to lattice
       # @return [Array] atoms the array of checking atoms
       # @return [Boolean] all or not
@@ -202,7 +208,6 @@ module VersatileDiamond
 
     protected
 
-      attr_reader :children
       attr_writer :parent, :links
 
       # Links together two structures by it atoms

@@ -5,7 +5,6 @@ module VersatileDiamond
 
     # Describes lateral reaction which creates by chunks combinations
     class CombinedLateralReaction
-      include LateralReactionInstance
       extend Forwardable
 
       def_delegator :parent, :local?
@@ -56,6 +55,12 @@ module VersatileDiamond
       # Stores current reaction as parent child
       def store_to_parent!
         @typical_reaction.store_child(self)
+      end
+
+      # Combined lateral reaction is lateral reaction
+      # @return [Boolean] true
+      def lateral?
+        true
       end
 
       # Gets the name of lateral reaction

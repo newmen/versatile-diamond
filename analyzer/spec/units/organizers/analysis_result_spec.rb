@@ -46,8 +46,8 @@ module VersatileDiamond
         hydrogen_migration.reverse.activation = 1e3
 
         # typical[5]
-        dimer_formation.rate = 4
-        dimer_formation.activation = 0
+        # dimer_formation.rate = 0
+        # dimer_formation.activation = 0
         # typical[6]
         dimer_formation.reverse.rate = 5
         dimer_formation.reverse.activation = 2e3
@@ -417,7 +417,7 @@ module VersatileDiamond
                   to match_array([DependentLateralReaction, CombinedLateralReaction])
 
                 expect(subject.lateral_reactions.map(&:full_rate)).
-                  to match_array([6.0, 7.0, 8.0, 7.0, 4.0])
+                  to match_array([6.0, 7.0, 8.0, 7.0, 0.0])
 
                 common_parents = subject.lateral_reactions.map(&:parent).uniq
                 expect(common_parents.size).to eq(1)

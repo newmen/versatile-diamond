@@ -4,7 +4,7 @@ module VersatileDiamond
     # Wraps structural reaction without lateral interactions
     class DependentTypicalReaction < DependentSpecReaction
 
-      def_delegator :reaction, :complex_source_spec_and_atom
+      def_delegators :reaction, :complex_source_spec_and_atom
 
       # Selects complex source spec and them changed atom
       # @return [SpecificSpec] the covered spec
@@ -13,15 +13,11 @@ module VersatileDiamond
         termination_spec.cover?(spec, atom) ? spec : nil
       end
 
-      # Typical reaction isn't lateral
-      # @return [Boolean] false
-      def lateral?
-        false
-      end
-
       # Organize dependencies from another lateral reactions
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
+        # TODO: excess checking because concept reaction already have a list of
+        # children reactions
         lateral_reactions.each do |possible|
           poss_conc = possible.reaction
           if reaction.same_specs?(poss_conc) && reaction.same_positions?(poss_conc)
