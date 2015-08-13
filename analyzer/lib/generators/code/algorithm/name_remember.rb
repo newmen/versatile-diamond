@@ -76,12 +76,12 @@ module VersatileDiamond
             if single?(vars)
               names[single_value(vars)]
             else
-              check_proc = proc { |var| names[var] }
-              if vars.all?(&check_proc)
+              check_lambda = -> var { names[var] }
+              if vars.all?(&check_lambda)
                 name = array_name_for(vars)
                 raise 'Not all vars belongs to array' unless name
                 name
-              elsif vars.any?(&check_proc)
+              elsif vars.any?(&check_lambda)
                 raise 'Not for all variables in passed set the name is presented'
               else
                 nil

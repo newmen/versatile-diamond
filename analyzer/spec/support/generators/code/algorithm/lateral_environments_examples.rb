@@ -47,6 +47,25 @@ module VersatileDiamond
               let(:fb) { front_bridge.atom(:ct) }
               let(:cb) { cross_bridge.atom(:ct) }
             end
+
+            shared_examples_for :methyl_incorporation_near_edge do
+              include_context :with_organized_lateral_chunks
+
+              let(:typical_reaction) { dept_methyl_incorporation }
+
+              let(:amob) { (target_specs - [admr]).first }
+              let(:admr) do
+                target_specs.find { |s| s.name == :'dimer(cr: *)' }
+              end
+
+              let(:tm) { amob.atom(:cb) }
+              let(:td) { admr.atom(:cl) }
+
+              let(:side_dimer) { sidepiece_specs.first }
+
+              let(:dm) { side_dimer.atom(:cl) }
+              let(:dd) { side_dimer.atom(:cr) }
+            end
           end
 
         end

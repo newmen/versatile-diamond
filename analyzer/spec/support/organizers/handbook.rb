@@ -130,6 +130,7 @@ module VersatileDiamond
           :middle_lateral_df,
           :ewb_lateral_df,
           :mwb_lateral_df,
+          :de_lateral_mi,
           :small_ab_lateral_sdf,
           :big_ab_lateral_sdf
         ])

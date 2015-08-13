@@ -39,10 +39,11 @@ module VersatileDiamond
       def links
         return @_links if @_links
         @_links = adsorb_links(there.links, there.env_specs)
-        there.links.each do |target, rels|
+        there.links.each do |target, rels| # reverse rels from sidepiece to targets
+          target_ltc = target.last.lattice
           rels.each do |sa, r|
             @_links[sa] ||= []
-            @_links[sa] << [target, r]
+            @_links[sa] << [target, sa.last.lattice.opposite_relation(target_ltc, r)]
           end
         end
         @_links

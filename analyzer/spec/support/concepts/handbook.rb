@@ -846,6 +846,23 @@ module VersatileDiamond
           dimer_formation.lateral_duplicate('m.w.b. lateral', [on_middle_with_bridge])
         end
 
+        set(:there_dimer_edge) do
+          dmr = dimer.dup
+          w = Where.new(:there_dimer_edge, 'at end of dimers edge', specs: [dmr])
+          w.raw_position(:one, [dmr, dmr.atom(:cl)], position_100_cross)
+          w.raw_position(:two, [dmr, dmr.atom(:cr)], position_110_front); w
+        end
+
+        set(:near_dimer_edge) do
+          amob, admr = mi_source
+          targets_hash = { one: [amob, amob.atom(:cb)], two: [admr, admr.atom(:cl)] }
+          there_dimer_edge.concretize(targets_hash)
+        end
+
+        set(:de_lateral_mi) do
+          methyl_incorporation.lateral_duplicate('mi edge lateral', [near_dimer_edge])
+        end
+
         # Provides similar definition of where object for symmetric dimer formation
         # reaction
         def self.sdf_where(where_name, short_name, target, position)

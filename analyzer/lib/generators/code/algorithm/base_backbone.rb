@@ -138,30 +138,30 @@ module VersatileDiamond
           #   excepted
           # @return [Hash] the graph without reverse relations
           def without_reverse(graph, nodes)
-            reject_proc = proc { |ns| nodes.include?(ns) }
+            reject_lambda = -> ns { nodes.include?(ns) }
 
             # except multi reverse relations
             other_side_nodes = graph[nodes].map(&:first)
-            without_full_others = except_relations(graph, reject_proc) do |ns|
+            without_full_others = except_relations(graph, reject_lambda) do |ns|
               other_side_nodes.include?(ns)
             end
 
             # except single reverse relations
             single_other_nodes = other_side_nodes.flatten.uniq
-            except_relations(without_full_others, reject_proc) do |ns|
+            except_relations(without_full_others, reject_lambda) do |ns|
               ns.size == 1 && single_other_nodes.include?(ns.first)
             end
           end
 
           # Removes relations from passed graph by two conditions
-          # @param [Proc] reject_proc the function which reject neighbours nodes
+          # @param [Proc] reject_lambda the function which reject neighbours nodes
           # @yield [Array] by it condition checks that erasing should to be
           # @return [Hash] the graph without erased relations
-          def except_relations(graph, reject_proc, &condition_proc)
+          def except_relations(graph, reject_lambda, &condition_proc)
             graph.each_with_object({}) do |(nodes, rels), result|
               if condition_proc[nodes]
                 new_rels = rels.reduce([]) do |acc, (nss, r)|
-                  new_nss = nss.reject(&reject_proc)
+                  new_nss = nss.reject(&reject_lambda)
                   new_nss.empty? ? acc : acc << [new_nss, r]
                 end
 

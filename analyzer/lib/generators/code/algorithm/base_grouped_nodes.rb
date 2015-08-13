@@ -45,17 +45,25 @@ module VersatileDiamond
             return @_final_graph if @_final_graph
 
             result = {}
-            store_result = proc do |nodes, nbrs_with_rel_param|
+            store_proc = proc do |nodes, nbrs_with_rel_param|
               result[nodes] ||= []
               result[nodes] << nbrs_with_rel_param if nbrs_with_rel_param
             end
 
-            flatten_groups.each do |group|
-              accurate_combine_relations(group, &store_result)
+            major_groups = non_complete_groups
+            using_nodes = major_groups.empty? ? [] : major_groups.reduce(:+)
+
+            if lists_are_identical?(using_nodes, main_keys, &:==)
+              similar_groups = major_groups
+            else
+              similar_groups = non_flatten_groups + major_groups
+              flatten_groups.each do |group|
+                accurate_combine_relations(group, &store_proc)
+              end
             end
 
-            (non_flatten_groups + non_complete_groups).each do |group|
-              similar_combine_relations(group, &store_result)
+            similar_groups.each do |group|
+              similar_combine_relations(group, &store_proc)
             end
 
             @_final_graph =
@@ -216,7 +224,7 @@ module VersatileDiamond
           # @param [Array] group which nodes will be checked
           # @return [Boolean] are another different nodes available from nodes of group
           #   or not
-          def different_another_nodes?(group)
+          def same_another_nodes?(group)
             flatten_nbrs_sets = group.map do |node|
               (strong_flatten_neighbours_for(node) + [node]).to_set
             end
@@ -229,7 +237,7 @@ module VersatileDiamond
           # @param [Array] group of similar nodes
           # @param [Array] node which relations will be checked
           # @return [Boolean] are flatten relations used only by group nodes or not
-          def only_flatten_relations_in?(group, node)
+          def flatten_relations_only_in?(group, node)
             rels = small_graph[node].select { |n, r| flatten_relation?(n, r) }
             rels.all? { |n, _| group.include?(n) }
           end
@@ -239,7 +247,7 @@ module VersatileDiamond
           def flatten_groups
             flatten_face_grouped_nodes.select do |group|
               group.size > 1 && group.any? do |node|
-                has_flatten_relation?(node) && !only_flatten_relations_in?(group, node)
+                has_flatten_relation?(node) && !flatten_relations_only_in?(group, node)
               end
             end
           end
@@ -248,8 +256,8 @@ module VersatileDiamond
           # @return [Array] the array of non-flatten groups
           def non_flatten_groups
             flatten_face_grouped_nodes.select do |group|
-              different_another_nodes?(group) || group.any? do |node|
-                dept_only_from_group = only_flatten_relations_in?(group, node)
+              same_another_nodes?(group) || group.any? do |node|
+                dept_only_from_group = flatten_relations_only_in?(group, node)
                 dept_only_from_group || small_graph[node].empty? ||
                   (!dept_only_from_group && has_non_flatten_relation?(node))
               end
@@ -385,19 +393,19 @@ module VersatileDiamond
                 block[nodes, nil]
               else
                 selected_rels =
-                  if only_flatten_relations_in?(group, node)
+                  if flatten_relations_only_in?(group, node)
                     rels
-                  elsif different_another_nodes?(group)
+                  elsif same_another_nodes?(group)
                     relations_from(group).reject { |n, _| node == n }
                   else
                     non_flatten_relations_of(node)
                   end
 
-                similar_rels_groups = selected_rels.group_by do |n, r|
+                similar_rels_groups = selected_rels.groups do |n, r|
                   [n.properties, r.params]
                 end
 
-                similar_rels_groups.values.each do |similar_rels|
+                similar_rels_groups.each do |similar_rels|
                   nbrs, relations = similar_rels.transpose
                   block[nodes, [nbrs, relations.first.params]]
                 end
