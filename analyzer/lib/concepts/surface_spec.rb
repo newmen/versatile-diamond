@@ -8,6 +8,17 @@ module VersatileDiamond
       include Lattices::BasicRelations
       include SurfaceLinker
 
+      # Dups current base spec
+      # @param [Sybmol] new_name of new spec
+      # @param [Hash] atom_renames the mirror of atom keynames
+      # @return [Spec] the dupped concept base spec
+      def dup(new_name = nil, atom_renames = {})
+        copy = self.class.new(new_name || name)
+        copy.adsorb(self)
+        atom_renames.each { |pair| copy.rename_atom(*pair) }
+        copy
+      end
+
       # Returns that spec is not gas
       # @return [Boolean] gas or not
       def gas?

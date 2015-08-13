@@ -79,43 +79,48 @@ module VersatileDiamond
           let(:chunk_residual) { residual }
           let(:ab) { middle_lateral_df.source.first }
           let(:aib) { middle_lateral_df.source.last }
+
+          let(:env_specs) { middle_lateral_df.theres.flat_map(&:env_specs).uniq }
+          let(:dmr1) { env_specs.last }
+          let(:dmr2) { env_specs.first }
+
           let(:rest_links) do
             {
               [ab, ab.atom(:ct)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross],
-                [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
+                [[dmr1, dmr1.atom(:cl)], position_100_cross],
+                [[dmr2, dmr2.atom(:cl)], position_100_cross],
               ],
               [aib, aib.atom(:ct)] => [
-                [[dimer, dimer.atom(:cr)], position_100_cross],
-                [[dimer_dup, dimer_dup.atom(:cr)], position_100_cross],
+                [[dmr1, dmr1.atom(:cr)], position_100_cross],
+                [[dmr2, dmr2.atom(:cr)], position_100_cross],
               ],
-              [dimer, dimer.atom(:cr)] => [
+              [dmr1, dmr1.atom(:cr)] => [
                 [[aib, aib.atom(:ct)], position_100_cross],
-                [[dimer, dimer.atom(:cl)], bond_100_front],
-                [[dimer, dimer.atom(:crb)], bond_110_cross],
-                [[dimer, dimer.atom(:_cr0)], bond_110_cross]
+                [[dmr1, dmr1.atom(:cl)], bond_100_front],
+                [[dmr1, dmr1.atom(:crb)], bond_110_cross],
+                [[dmr1, dmr1.atom(:_cr0)], bond_110_cross]
               ],
-              [dimer, dimer.atom(:crb)] => [
-                [[dimer, dimer.atom(:cr)], bond_110_front],
-                [[dimer, dimer.atom(:_cr0)], position_100_front]
+              [dmr1, dmr1.atom(:crb)] => [
+                [[dmr1, dmr1.atom(:cr)], bond_110_front],
+                [[dmr1, dmr1.atom(:_cr0)], position_100_front]
               ],
-              [dimer, dimer.atom(:_cr0)] => [
-                [[dimer, dimer.atom(:cr)], bond_110_front],
-                [[dimer, dimer.atom(:crb)], position_100_front]
+              [dmr1, dmr1.atom(:_cr0)] => [
+                [[dmr1, dmr1.atom(:cr)], bond_110_front],
+                [[dmr1, dmr1.atom(:crb)], position_100_front]
               ],
-              [dimer, dimer.atom(:cl)] => [
+              [dmr1, dmr1.atom(:cl)] => [
                 [[ab, ab.atom(:ct)], position_100_cross],
-                [[dimer, dimer.atom(:cr)], bond_100_front],
-                [[dimer, dimer.atom(:clb)], bond_110_cross],
-                [[dimer, dimer.atom(:_cr1)], bond_110_cross]
+                [[dmr1, dmr1.atom(:cr)], bond_100_front],
+                [[dmr1, dmr1.atom(:clb)], bond_110_cross],
+                [[dmr1, dmr1.atom(:_cr1)], bond_110_cross]
               ],
-              [dimer, dimer.atom(:clb)] => [
-                [[dimer, dimer.atom(:cl)], bond_110_front],
-                [[dimer, dimer.atom(:_cr1)], position_100_front]
+              [dmr1, dmr1.atom(:clb)] => [
+                [[dmr1, dmr1.atom(:cl)], bond_110_front],
+                [[dmr1, dmr1.atom(:_cr1)], position_100_front]
               ],
-              [dimer, dimer.atom(:_cr1)] => [
-                [[dimer, dimer.atom(:cl)], bond_110_front],
-                [[dimer, dimer.atom(:clb)], position_100_front],
+              [dmr1, dmr1.atom(:_cr1)] => [
+                [[dmr1, dmr1.atom(:cl)], bond_110_front],
+                [[dmr1, dmr1.atom(:clb)], position_100_front],
               ],
             }
           end
@@ -125,27 +130,32 @@ module VersatileDiamond
           let(:chunk_residual) { ewb_chunk - end_chunk }
           let(:ab) { ewb_lateral_df.source.first }
           let(:aib) { ewb_lateral_df.source.last }
+
+          let(:env_specs) { ewb_lateral_df.theres.flat_map(&:env_specs).uniq }
+          let(:br) { env_specs.first }
+          let(:dmr) { env_specs.last }
+
           let(:rest_links) do
             {
               [ab, ab.atom(:ct)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross],
+                [[dmr, dmr.atom(:cl)], position_100_cross],
               ],
               [aib, aib.atom(:ct)] => [
-                [[dimer, dimer.atom(:cr)], position_100_cross],
-                [[bridge, bridge.atom(:ct)], position_100_front],
+                [[dmr, dmr.atom(:cr)], position_100_cross],
+                [[br, br.atom(:ct)], position_100_front],
               ],
-              [bridge, bridge.atom(:ct)] => [
+              [br, br.atom(:ct)] => [
                 [[aib, aib.atom(:ct)], position_100_front],
-                [[bridge, bridge.atom(:cr)], bond_110_cross],
-                [[bridge, bridge.atom(:cl)], bond_110_cross],
+                [[br, br.atom(:cr)], bond_110_cross],
+                [[br, br.atom(:cl)], bond_110_cross],
               ],
-              [bridge, bridge.atom(:cr)] => [
-                [[bridge, bridge.atom(:ct)], bond_110_front],
-                [[bridge, bridge.atom(:cl)], position_100_front],
+              [br, br.atom(:cr)] => [
+                [[br, br.atom(:ct)], bond_110_front],
+                [[br, br.atom(:cl)], position_100_front],
               ],
-              [bridge, bridge.atom(:cl)] => [
-                [[bridge, bridge.atom(:ct)], bond_110_front],
-                [[bridge, bridge.atom(:cr)], position_100_front],
+              [br, br.atom(:cl)] => [
+                [[br, br.atom(:ct)], bond_110_front],
+                [[br, br.atom(:cr)], position_100_front],
               ]
             }
           end

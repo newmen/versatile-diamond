@@ -23,13 +23,14 @@ module VersatileDiamond
         describe 'theres reversed too' do
           subject { reaction.reverse }
           let(:there) { subject.theres.first }
+          let(:dmr) { there.env_specs.first }
           let(:positions) do
             {
               [target_dimer, target_dimer.atom(:cr)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross]
+                [[dmr, dmr.atom(:cl)], position_100_cross]
               ],
               [target_dimer, target_dimer.atom(:cl)] => [
-                [[dimer, dimer.atom(:cr)], position_100_cross]
+                [[dmr, dmr.atom(:cr)], position_100_cross]
               ],
             }
           end

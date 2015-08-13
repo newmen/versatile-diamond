@@ -38,7 +38,7 @@ module VersatileDiamond
       # Makes a duplicate of there object
       # @param [There] other the there object which will be duplicated
       def initialize_copy(other)
-        @where = other.where
+        @where = other.where.dup
         @target_refs = Hash[other.target_refs.map { |nm, sa| [nm, sa.dup] }]
       end
 
@@ -71,7 +71,7 @@ module VersatileDiamond
           end
         end
 
-        self.class.new(where, reversed_refs)
+        self.class.new(where.dup, reversed_refs)
       end
 
       # Provides environment species
@@ -152,7 +152,7 @@ module VersatileDiamond
       end
 
       def inspect
-        '[' + env_specs.map(&:inspect).join(' & ') + ']'
+        '/ ' + env_specs.map(&:inspect).join(' & ') + ' /'
       end
 
     protected

@@ -108,7 +108,7 @@ module VersatileDiamond
         set(:vinyl) { SpecificSpec.new(ethylene_base, c1: activated_c) }
 
         set(:bridge_base) do
-          s = DuppableSurfaceSpec.new(:bridge, ct: cd)
+          s = SurfaceSpec.new(:bridge, ct: cd)
           cl, cr = AtomReference.new(s, :ct), AtomReference.new(s, :ct)
           s.describe_atom(:cl, cl)
           s.describe_atom(:cr, cr)
@@ -174,7 +174,7 @@ module VersatileDiamond
         end
 
         set(:methyl_on_bridge_base) do
-          s = DuppableSurfaceSpec.new(:methyl_on_bridge, cm: c)
+          s = SurfaceSpec.new(:methyl_on_bridge, cm: c)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cb)
           s.link(c, s.atom(:cb), free_bond); s
@@ -264,7 +264,7 @@ module VersatileDiamond
         set(:high_bridge) { SpecificSpec.new(high_bridge_base) }
 
         set(:dimer_base) do
-          s = DuppableSurfaceSpec.new(:dimer)
+          s = SurfaceSpec.new(:dimer)
           s.adsorb(bridge_base)
           s.rename_atom(:cl, :crb)
           s.rename_atom(:ct, :cr)

@@ -23,9 +23,28 @@ module VersatileDiamond
 
         super(name)
         @description = description
-        @specs = specs
         @parents = []
+        @specs = specs
         @links = {}
+      end
+
+      # Makes a duplicate of where object
+      # @param [Where] other the where object which will be duplicated
+      def initialize_copy(other)
+        @description = other.description
+        @parents = other.parents.map(&:dup)
+        @specs = other.specs.map(&:dup)
+
+        specs_mirror = Hash[other.specs.zip(@specs)]
+        links_mirror = other.links.flat_map(&:last).map(&:first).map do |spec, atom|
+          self_spec = specs_mirror[spec]
+          [[spec, atom], [self_spec, self_spec.atom(spec.keyname(atom))]]
+        end
+
+        links_mirror = Hash[links_mirror]
+        @links = dup_graph(other.links) do |spec_atom|
+          spec_atom.is_a?(Symbol) ? spec_atom : links_mirror[spec_atom]
+        end
       end
 
       # Stores raw position between target symbol and some concrete atom.

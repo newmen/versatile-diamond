@@ -29,15 +29,20 @@ module VersatileDiamond
 
         let(:ab) { middle_lateral_df.source.first }
         let(:aib) { middle_lateral_df.source.last }
+
+        let(:env_specs) { middle_lateral_df.theres.flat_map(&:env_specs).uniq }
+        let(:dmr1) { env_specs.first }
+        let(:dmr2) { env_specs.last }
+
         let(:rest_links) do
           {
             [ab, ab.atom(:ct)] => [
-              [[dimer, dimer.atom(:cl)], position_100_cross],
-              [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
+              [[dmr1, dmr1.atom(:cl)], position_100_cross],
+              [[dmr2, dmr2.atom(:cl)], position_100_cross],
             ],
             [aib, aib.atom(:ct)] => [
-              [[dimer, dimer.atom(:cr)], position_100_cross],
-              [[dimer_dup, dimer_dup.atom(:cr)], position_100_cross],
+              [[dmr1, dmr1.atom(:cr)], position_100_cross],
+              [[dmr2, dmr2.atom(:cr)], position_100_cross],
             ],
           }
         end
@@ -56,23 +61,27 @@ module VersatileDiamond
         it { expect(independent_chunk).to be_a(IndependentChunk) }
 
         let(:aib) { mwb_lateral_df.source.last }
+
+        let(:env_specs) { mwb_lateral_df.theres.flat_map(&:env_specs).uniq }
+        let(:br) { env_specs.first }
+
         let(:links) do
           {
             [aib, aib.atom(:ct)] => [
-              [[bridge, bridge.atom(:ct)], position_100_front],
+              [[br, br.atom(:ct)], position_100_front],
             ],
-            [bridge, bridge.atom(:ct)] => [
+            [br, br.atom(:ct)] => [
               [[aib, aib.atom(:ct)], position_100_front],
-              [[bridge, bridge.atom(:cr)], bond_110_cross],
-              [[bridge, bridge.atom(:cl)], bond_110_cross],
+              [[br, br.atom(:cr)], bond_110_cross],
+              [[br, br.atom(:cl)], bond_110_cross],
             ],
-            [bridge, bridge.atom(:cr)] => [
-              [[bridge, bridge.atom(:ct)], bond_110_front],
-              [[bridge, bridge.atom(:cl)], position_100_front],
+            [br, br.atom(:cr)] => [
+              [[br, br.atom(:ct)], bond_110_front],
+              [[br, br.atom(:cl)], position_100_front],
             ],
-            [bridge, bridge.atom(:cl)] => [
-              [[bridge, bridge.atom(:ct)], bond_110_front],
-              [[bridge, bridge.atom(:cr)], position_100_front],
+            [br, br.atom(:cl)] => [
+              [[br, br.atom(:ct)], bond_110_front],
+              [[br, br.atom(:cr)], position_100_front],
             ]
           }
         end

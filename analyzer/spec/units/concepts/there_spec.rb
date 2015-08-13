@@ -15,7 +15,7 @@ module VersatileDiamond
       describe '#dup' do
         subject { on_end.dup }
         it { should_not == on_end }
-        it { expect(subject.links).to eq(on_end.links) }
+        it { expect(subject.links).not_to eq(on_end.links) }
         it { expect(subject.links.object_id).not_to eq(on_end.links.object_id) }
 
         describe "target swapping doesn't change duplicate" do

@@ -76,10 +76,7 @@ module VersatileDiamond
       # Collects there instances from lateral reactions
       # @return [Array] the array of collected instances
       def collect_theres
-        # sorting need because when source spec swapping then at starting it need to be
-        # in there objects with less number of specs because other there objects
-        # depends from them
-        lateral_reactions.flat_map(&:theres).sort_by { |th| th.each_source.to_a.size }
+        lateral_reactions.flat_map(&:theres)
       end
 
       # Collects termination species from reactions
