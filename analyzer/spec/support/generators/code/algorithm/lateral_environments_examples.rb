@@ -52,6 +52,7 @@ module VersatileDiamond
               include_context :with_organized_lateral_chunks
 
               let(:typical_reaction) { dept_methyl_incorporation }
+              let(:lateral_reactions) { [dept_de_lateral_mi] }
 
               let(:amob) { (target_specs - [admr]).first }
               let(:admr) do
@@ -61,10 +62,10 @@ module VersatileDiamond
               let(:tm) { amob.atom(:cb) }
               let(:td) { admr.atom(:cl) }
 
-              let(:side_dimer) { sidepiece_specs.first }
+              let(:edge_dimer) { sidepiece_specs.first }
 
-              let(:dm) { side_dimer.atom(:cl) }
-              let(:dd) { side_dimer.atom(:cr) }
+              let(:dm) { edge_dimer.atom(:cl) }
+              let(:dd) { edge_dimer.atom(:cr) }
             end
           end
 

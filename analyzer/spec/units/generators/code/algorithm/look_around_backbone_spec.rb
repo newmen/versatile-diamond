@@ -165,8 +165,6 @@ module VersatileDiamond
           end
 
           it_behaves_like :methyl_incorporation_near_edge do
-            let(:lateral_reactions) { [dept_de_lateral_mi] }
-
             describe '#action_nodes' do
               let(:nodes) { backbone.entry_nodes.reduce(:+) }
               it { expect(backbone.action_nodes).to match_array(nodes) }

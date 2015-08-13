@@ -145,30 +145,28 @@ module VersatileDiamond
           end
 
           it_behaves_like :methyl_incorporation_near_edge do
-            let(:flatten_face_grouped_atoms) do
-              [[tm], [td], [dm, dd]]
-            end
-
-            let(:nodes_list) do
-              [
-                [UniqueSpecie, tm],
-                [UniqueSpecie, td],
-                [UniqueSpecie, dm],
-                [UniqueSpecie, dd]
-              ]
-            end
-
-            let(:grouped_graph) do
-              {
-                [tm] => [[[dm], param_100_cross]],
-                [dm] => [[[tm], param_100_cross]],
-                [td] => [[[dd], param_110_front]],
-                [dd] => [[[td], param_110_cross]]
-              }
-            end
-
             it_behaves_like :check_grouped_nodes_graph do
-              let(:lateral_reactions) { [dept_de_lateral_mi] }
+              let(:flatten_face_grouped_atoms) do
+                [[tm], [td], [dm, dd]]
+              end
+
+              let(:nodes_list) do
+                [
+                  [UniqueSpecie, tm],
+                  [UniqueSpecie, td],
+                  [UniqueSpecie, dm],
+                  [UniqueSpecie, dd]
+                ]
+              end
+
+              let(:grouped_graph) do
+                {
+                  [tm] => [[[dm], param_100_cross]],
+                  [dm] => [[[tm], param_100_cross]],
+                  [td] => [[[dd], param_110_front]],
+                  [dd] => [[[td], param_110_cross]]
+                }
+              end
             end
           end
         end

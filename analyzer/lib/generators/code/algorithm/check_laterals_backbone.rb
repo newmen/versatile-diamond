@@ -29,13 +29,6 @@ module VersatileDiamond
 
         private
 
-          # Gets relations from final graph which belongs to another similar nodes
-          # @param [Array] nodes which analogies will checked in final graph
-          # @return [Array] the list of another available relations
-          def relations_of_similar_nodes(nodes)
-            graph_with_same_nodes(final_graph, nodes).flat_map(&:last)
-          end
-
           # Detects same key nodes in passed graph
           # @param [Hash] graph where key nodes will be checked
           # @param [Array] nodes which analogies will checked in final graph
@@ -54,11 +47,22 @@ module VersatileDiamond
           #   outcomes from nodes which are similar as passed
           def graph_with_same_nodes(graph, nodes)
             graph.select do |ns, _|
-              ns != nodes &&
-                lists_are_identical?(ns, nodes) do |n1, n2|
-                  same_sa?(n1.spec_atom, n2.spec_atom)
-                end
+              ns != nodes && !identical_specs?(ns, nodes) && same_nodes?(ns, nodes)
             end
+          end
+
+          # Checks that passed nodes lists are identical
+          # @param [Array] nodes_lists with two comparing arguments
+          # @return [Boolean] are passed lists identical or not
+          def same_nodes?(*nodes_lists)
+            lists_are_identical?(*nodes_lists) do |n1, n2|
+              same_sa?(n1.spec_atom, n2.spec_atom)
+            end
+          end
+
+          def identical_specs?(*nodes_lists)
+            specs_lists = nodes_lists.map { |nodes| nodes.map(&:dept_spec).uniq }
+            lists_are_identical?(*specs_lists, &:==)
           end
 
           # Makes clean graph with relations only from target nodes

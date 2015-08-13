@@ -183,6 +183,47 @@ module VersatileDiamond
               end
             end
           end
+
+          it_behaves_like :methyl_incorporation_near_edge do
+            let(:spec) { edge_dimer }
+
+            describe '#final_graph' do
+              it_behaves_like :check_finite_graph do
+                let(:final_graph) do
+                  {
+                    [dm] => [[[tm], param_100_cross]],
+                    [dd] => [[[td], param_110_cross]]
+                  }
+                end
+              end
+            end
+
+            describe '#entry_nodes' do
+              it_behaves_like :check_entry_nodes do
+                let(:points_list) { [[dm], [dd]] }
+              end
+            end
+
+            describe '#ordered_graph_from' do
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[dm], [[[tm], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[dd], [[[td], param_110_cross]]]
+                  ]
+                end
+              end
+            end
+          end
         end
 
       end
