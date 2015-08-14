@@ -25,12 +25,10 @@ module VersatileDiamond
             @_other_side_species = nil
           end
 
-          # Gets the code lines for lateral reaction creation
+          # Defines terget specie and checks it
           # @return [String] the lines by which the reaction will be created
-          def lines
-            define_target_species_variable_line + check_nbr_species do
-              create_lines
-            end
+          def define_and_check(&block)
+            define_target_species_variable_line + check_nbr_species { block.call }
           end
 
         private
@@ -140,7 +138,7 @@ module VersatileDiamond
           # @override
           def define_target_species_variable_line
             items = species_with_atoms.map { |s, a| spec_by_role_call(a, s, a) }
-            namer.reassign('specie', other_side_species)
+            namer.assign_next('specie', other_side_species)
             define_var_line("#{specie_type} *", other_side_species, items)
           end
         end

@@ -33,6 +33,17 @@ module VersatileDiamond
             @reactants_with_atoms = concepts(rectns)
           end
 
+          # Gets the cpp code lines with concretization of lateral reactions
+          # @return [String] the cpp code lines with concretization reaction call
+          def lines
+            blocks = checking_reactions.map do |lateral_reaction|
+              checkout_reaction_block(lateral_reaction)
+            end
+
+            blocks << checkout_reaction_block(main_reaction, lateral: false)
+            blocks.join
+          end
+
         private
 
           # Collects concepts from passed list of pairs
@@ -54,17 +65,6 @@ module VersatileDiamond
             cheking_species = sidepiece_species.map(&:original)
             arguments = [creating_reaction] + cheking_species
             @lateral_chunks.unconcrete_affixes_without(*arguments)
-          end
-
-          # Gets the cpp code lines with concretization of lateral reactions
-          # @return [String] the cpp code lines with concretization reaction call
-          def create_lines
-            blocks = checking_reactions.map do |lateral_reaction|
-              checkout_reaction_block(lateral_reaction)
-            end
-
-            blocks << checkout_reaction_block(main_reaction, lateral: false)
-            blocks.join
           end
 
           # Gets one cpp code line with concretization of lateral reaction

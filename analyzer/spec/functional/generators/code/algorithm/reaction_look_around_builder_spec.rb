@@ -48,10 +48,10 @@ module VersatileDiamond
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
-            LateralSpec *species[2] = { neighbours1[1]->specByRole<Dimer>(#{dimer_cr}), neighbours1[0]->specByRole<Dimer>(#{dimer_cr}) };
-            if (species[0] && species[0] == species[1])
+            LateralSpec *species1[2] = { neighbours1[1]->specByRole<Dimer>(#{dimer_cr}), neighbours1[0]->specByRole<Dimer>(#{dimer_cr}) };
+            if (species1[0] && species1[0] == species1[1])
             {
-                chunks[index++] = new #{class_name}(this, species[0]);
+                chunks[index++] = new #{class_name}(this, species1[0]);
             }
         }
     });
@@ -75,26 +75,26 @@ module VersatileDiamond
                   let(:find_algorithm) do
                     <<-CODE
     Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+        {
+            LateralSpec *species1[2] = { neighbours1[0]->specByRole<Dimer>(#{dimer_cr}), neighbours1[1]->specByRole<Dimer>(#{dimer_cr}) };
+            if (species1[0] && species1[0] == species1[1])
+            {
+                chunks[index++] = new ForwardDimerFormationEndLateral(this, species1[0]);
+            }
+        }
+    });
     eachNeighbour(atoms1[0], &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{bridge_ct}))
         {
             if (neighbour1 != atoms1[1])
             {
-                LateralSpec *specie = neighbour1->specByRole<Bridge>(#{bridge_ct});
-                if (specie)
+                LateralSpec *specie1 = neighbour1->specByRole<Bridge>(#{bridge_ct});
+                if (specie1)
                 {
-                    chunks[index++] = new #{generating_class_name}(this, specie);
+                    chunks[index++] = new #{generating_class_name}(this, specie1);
                 }
-            }
-        }
-    });
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-        if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
-        {
-            LateralSpec *species[2] = { neighbours1[0]->specByRole<Dimer>(#{dimer_cr}), neighbours1[1]->specByRole<Dimer>(#{dimer_cr}) };
-            if (species[0] && species[0] == species[1])
-            {
-                chunks[index++] = new ForwardDimerFormationEndLateral(this, species[0]);
             }
         }
     });
@@ -122,10 +122,10 @@ module VersatileDiamond
         eachNeighbour(atoms1[ae1], &Diamond::cross_100, [&](Atom *neighbour1) {
             if (neighbour1->is(#{ab_ct}))
             {
-                LateralSpec *specie = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
-                if (specie)
+                LateralSpec *specie1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
+                if (specie1)
                 {
-                    chunks[index++] = new #{cross_cmb_name}(this, specie);
+                    chunks[index++] = new #{cross_cmb_name}(this, specie1);
                 }
             }
         });
@@ -134,10 +134,10 @@ module VersatileDiamond
             {
                 if (neighbour2 != atoms1[ae1-1])
                 {
-                    LateralSpec *specie = neighbour2->specByRole<BridgeCTs>(#{ab_ct});
-                    if (specie)
+                    LateralSpec *specie2 = neighbour2->specByRole<BridgeCTs>(#{ab_ct});
+                    if (specie2)
                     {
-                        chunks[index++] = new #{front_cmb_name}(this, specie);
+                        chunks[index++] = new #{front_cmb_name}(this, specie2);
                     }
                 }
             }
@@ -166,6 +166,55 @@ module VersatileDiamond
                 end
                 let(:target_atoms_definition) do
                   'target(1)->atom(0), target(0)->atom(0)'
+                end
+              end
+            end
+
+            describe 'methyl incorporation near edge' do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
+              let(:specific_specs) do
+                [dept_activated_methyl_on_bridge, dept_activated_dimer]
+              end
+              let(:typical_reaction) { dept_methyl_incorporation }
+              let(:lateral_reactions) { [dept_de_lateral_mi] }
+
+              let(:amob) { (lateral_chunks.target_specs - [admr]).first }
+              let(:admr) do
+                lateral_chunks.target_specs.find { |s| s.name == :'dimer(cr: *)' }
+              end
+
+              let(:amob_cb) { role(amob, :cb) }
+              let(:admr_cl) { role(admr, :cl) }
+
+              let(:edge_dimer) { lateral_chunks.sidepiece_specs.first }
+              let(:edmr_cr) { role(edge_dimer, :cr) }
+
+              it_behaves_like :check_code do
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atoms1[2] = { target(0)->atom(1), target(1)->atom(3) };
+    eachNeighbour(atoms1[1], &Diamond::front_110, [&](Atom *neighbour1) {
+        if (neighbour1->is(18) && atoms1[1]->hasBondWith(neighbour1))
+        {
+            LateralSpec *specie1 = neighbour1->specByRole<Dimer>(18);
+            if (specie1)
+            {
+                eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour2) {
+                    if (neighbour2->is(18) && neighbour1->hasBondWith(neighbour2))
+                    {
+                        LateralSpec *specie2 = neighbour2->specByRole<Dimer>(18);
+                        if (specie1 == specie2)
+                        {
+                            chunks[index++] = new ForwardMethylIncorporationMiEdgeLateral(this, specie1);
+                        }
+                    }
+                });
+            }
+        }
+    });
+                  CODE
                 end
               end
             end

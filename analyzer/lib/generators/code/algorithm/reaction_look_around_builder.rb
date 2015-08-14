@@ -5,6 +5,13 @@ module VersatileDiamond
 
         # Contain logic for building reaction look around algorithm
         class ReactionLookAroundBuilder < LateralChunksAlgorithmBuilder
+
+          # Initializes internal caches
+          def initialize(*)
+            super
+            @_has_monolite_sidepiece = nil
+          end
+
         private
 
           # Creates backbone of algorithm
@@ -25,11 +32,50 @@ module VersatileDiamond
             factory.make_unit(backbone.action_nodes)
           end
 
+          # Orders entry nodes for case when we must nest one check to another
+          def ordered_entry_nodes
+            backbone.entry_nodes.sort do |a, b|
+              if a.size == b.size
+                a.max <=> b.max # reversed by nodes default ordering
+              else
+                b.size <=> a.size
+              end
+            end
+          end
+
+          # Collects procedures by which the algorithm will be combined
+          # @return [Array] the array of all procedures with end nodes
+          def collect_procs
+            ordered_entry_nodes.flat_map(&method(:combine_algorithm))
+          end
+
           # Builds body of algorithm
           # @return [String] the string with cpp code
           def body
-            backbone.entry_nodes.reduce('') do |acc, nodes|
-              acc + combine_algorithm(nodes)
+            if monolite_sidepiece?
+              nested_cmb(collect_procs)
+            else
+              sequental_cmb(collect_procs)
+            end
+          end
+
+          # Provides nested combination of entry nodes
+          # @param [Array] procs by which the algorithm will be combined
+          # @return [String] the string with cpp code
+          def nested_cmb(procs)
+            all_procs = procs.flat_map { |np, cps| [np] + cps.map(&:first) }
+            last_creator = procs.last.last.last.last
+            reduce_procs(all_procs) { last_creator.lines }.call
+          end
+
+          # Provides sequental combination of entry nodes
+          # @param [Array] procs by which the algorithm will be combined
+          # @return [String] the string with cpp code
+          def sequental_cmb(procs)
+            procs.reduce('') do |acc, (nbr_proc, crt_procs)|
+              crt = crt_procs.last.last
+              func = reduce_procs([nbr_proc] + crt_procs.map(&:first)) { crt.lines }
+              acc + func.call
             end
           end
 
@@ -37,21 +83,24 @@ module VersatileDiamond
           # on backbone graph ordered from nodes
           #
           # @param [Array] nodes from which walking will occure
-          # @return [String] the cpp code find algorithm
+          # @yield [Array] do with neighbours nodes
+          # @return [Array] the list of procedures with end nodes
           def combine_algorithm(nodes)
-            checking_rels(nodes).reduce('') do |acc, (nbrs, rel_params)|
+            checking_rels(nodes).map do |nbrs, rel_params|
               func = relations_proc(nodes, nbrs, rel_params)
-              acc + func.call { creation_lines(nbrs) }
+              [func, creation_procs(nbrs)]
             end
           end
 
           # Gets the lines by which the lateral reaction will be created in algorithm
           # @param [Array] side_nodes the list of nodes from which the lateral reaction
           #   will be created
-          # @return [String] the cpp code string with lateral reaction creation
-          def creation_lines(side_nodes)
-            detect_sidepieces(side_nodes).reduce('') do |acc, (reaction, species)|
-              acc + factory.creator(reaction, species).lines
+          # @return [Array] the list with procedures and creators
+          def creation_procs(side_nodes)
+            detect_sidepieces(side_nodes).map do |reaction, species|
+              creator = factory.creator(reaction, species)
+              func = -> &block { creator.define_and_check(&block) }
+              [func, creator]
             end
           end
 
@@ -70,6 +119,24 @@ module VersatileDiamond
           def reactions_with_species(nodes)
             nodes.map do |node|
               [lateral_chunks.select_reaction(node.spec_atom), node.uniq_specie]
+            end
+          end
+
+          # Checks that entry nodes bonded with same sidepiece specie but with
+          # different atoms of it
+          #
+          # @return [Boolean] has monolite sidepiece specie or not
+          def monolite_sidepiece?
+            all_rels = backbone.final_graph.select do |nodes, _|
+              backbone.entry_nodes.include?(nodes)
+            end
+
+            all_nbrs = all_rels.values.map { |rels| rels.flat_map(&:first) }
+            all_sas = all_nbrs.map { |nbrs| nbrs.map(&:spec_atom) }
+            all_sas.each_cons(2).any? do |sas1, sas2|
+              sas1.any? do |spec, atom|
+                sas2.any? { |s, a| spec == s && atom != a }
+              end
             end
           end
         end

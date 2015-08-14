@@ -10,14 +10,14 @@ module VersatileDiamond
         class ReactionLookAroundCreatorUnit < SingleLateralReactionCreatorUnit
           include LateralSpecDefiner
 
-        private
-
           # Gets the cpp code string with creation of lateral reaction
           # @return [String] the cpp code line with creation lateral reaction call
-          def create_lines
+          def lines
             value = alloc_str('this')
             code_line("chunks[index++] = #{value};")
           end
+
+        private
 
           # Gets list of sidepiece species which will passed to creating lateral
           # reaction

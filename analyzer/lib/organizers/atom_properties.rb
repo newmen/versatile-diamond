@@ -82,9 +82,11 @@ module VersatileDiamond
           order(self, other, :valence) do
             typed_order(self, other, :lattice) do
               order(self, other, :estab_bonds_num) do
-                order(self, other, :danglings, :size) do
-                  typed_order(self, other, :incoherent?) do
-                    typed_order(self, other, :unfixed?)
+                order(self, other, :crystal_relatons_num) do
+                  order(self, other, :danglings, :size) do
+                    typed_order(self, other, :incoherent?) do
+                      typed_order(self, other, :unfixed?)
+                    end
                   end
                 end
               end
@@ -539,7 +541,7 @@ module VersatileDiamond
       # @param [Class] klass the class of counting instances
       # @return [Integer] the number of relations
       def count_relations(klass)
-        relations.select { |r| r.class == klass }.size
+        relations.count { |r| r.class == klass }
       end
 
       # Gets number of established bond relations
@@ -548,6 +550,12 @@ module VersatileDiamond
         @_estab_bond_num ||= count_relations(Concepts::Bond) +
           (relations.include?(:dbond) ? 2 : 0) +
           (relations.include?(:tbond) ? 3 : 0)
+      end
+
+      # Gets number of relations which belongs to crystal
+      # @return [Integer] the number of crystal relations
+      def crystal_relatons_num
+        relations.count(&:belongs_to_crystal?)
       end
 
       # Gets number of established and dangling bond relations
