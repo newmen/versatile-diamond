@@ -19,7 +19,6 @@ module VersatileDiamond
           # @param [NameRemember] namer the remember of using names of variables
           # @param [LateralReaction] lat_react which will created by current block
           # @param [LateralChunk] lat_chks which provides common links graph
-          # @param [Array] ch_reacts the ordered list of cheking lateral reactions
           # @param [Array] sdpcs the list of sidepiece species which will passed to
           #   constructor of creating lateral reaction (with atoms)
           # @param [Array] rectns the list of target species from which lateral
@@ -62,8 +61,7 @@ module VersatileDiamond
           # Gets ordered list of checking lateral reactions
           # @return [Array] the list of reactions which will checked
           def checking_reactions
-            cheking_species = sidepiece_species.map(&:original)
-            arguments = [creating_reaction] + cheking_species
+            arguments = [creating_reaction] + sidepiece_species.map(&:original)
             @lateral_chunks.unconcrete_affixes_without(*arguments)
           end
 
@@ -83,7 +81,7 @@ module VersatileDiamond
               (lateral ? assert_havent_line : '') +
                 create_line(parent_inst_call) +
                 code_line("#{NBR_REACTION_NAME}->concretize(#{CHUNK_NAME});") +
-                code_line("return;") # just from iteration labmda
+                code_line("return;") # just from iteration lambda
             end
           end
 
@@ -125,8 +123,9 @@ module VersatileDiamond
           # @return [String] the cpp code string with call
           def checkout_reaction_call(reaction)
             if species.all_equal?
+              # 123
               checking_species = [other_side_species, sidepiece_species].map(&:first)
-              if has_same_target?(*checking_species)
+              if has_same_reaction?(*checking_species)
                 checkout_reaction_without_two(reaction, checking_species)
               else
                 checkout_reaction_from_one(reaction)
@@ -183,7 +182,7 @@ module VersatileDiamond
           # @param [UniqueSpecie] side_specie the specie with which another target will
           #   be compared
           # @return [Boolean] is exist another same target or not
-          def has_same_target?(target_specie, side_specie)
+          def has_same_reaction?(target_specie, side_specie)
             return false if @lateral_chunks.mono_reactant?
 
             target_pairs = select_concepts(target_specie, @reactants_with_atoms)

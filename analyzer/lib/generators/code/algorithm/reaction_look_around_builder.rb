@@ -87,43 +87,56 @@ module VersatileDiamond
           # @return [Array] the list of procedures with end nodes
           def combine_algorithm(nodes)
             checking_rels(nodes).map do |nbrs, rel_params|
-              func = relations_proc(nodes, nbrs, rel_params)
-              [func, creation_procs(nbrs)]
+              [relations_proc(nodes, nbrs, rel_params), creation_proc(nbrs)]
             end
           end
 
           # Gets the lines by which the lateral reaction will be created in algorithm
           # @param [Array] side_nodes the list of nodes from which the lateral reaction
           #   will be created
-          # @return [Array] the list with procedures and creators
-          def creation_procs(side_nodes)
-            detect_sidepieces(side_nodes).map do |reaction, species|
-              creator = factory.creator(reaction, species)
-              func = -> &block { creator.define_and_check(&block) }
-              [func, creator]
-            end
+          # @return [Array] the list of two items with procedure and creators
+          def creation_proc(side_nodes)
+            rwsps = reaction_with_sidepieces(side_nodes)
+            checker = factory.checker(*rwsps)
+            func = -> &block { checker.define_and_check(&block) }
+            [func, rwsps]
           end
 
           # Gets the instances of lateral reaction and sidepiece species which
           # available on ordered graph from passed nodes
           #
-          # @param [Array] nodes from which around iteration begining
-          def detect_sidepieces(nodes)
+          # @param [Array] the pair where first is lateral reaction and the second is
+          #   the list of sidepiece species which are additional reactants
+          def reaction_with_sidepieces(nodes)
             groups = reactions_with_species(nodes).group_by(&:first)
-            groups.map { |reaction, pairs| [reaction, pairs.map(&:last)] }
+            result = groups.map { |reaction, pairs| [reaction, pairs.map(&:last)] }
+
+            if result.size > 1
+              fail "Can't process nodes with different lateral chunks and species"
+            end
+
+            result.first
           end
 
           # Gets the list of pairs of lateral reaction and specie which uses in it
           # @param [Array] nodes by which the reaction will detected
           # @return [Array] the list of reation-specie pairs
           def reactions_with_species(nodes)
-            nodes.map do |node|
-              [lateral_chunks.select_reaction(node.spec_atom), node.uniq_specie]
-            end
+            nodes.map(&method(:make_reaction_specie_pair))
           end
 
-          # Checks that entry nodes bonded with same sidepiece specie but with
-          # different atoms of it
+          # Creates a pair of reaction with unique sidepiece
+          # @param [ReactantNode] node by which the pair will be created
+          # @return [Array] the array with two items
+          def make_reaction_specie_pair(node)
+            [
+              lateral_chunks.select_reaction(node.spec_atom),
+              OtherSideSpecie.new(node.uniq_specie)
+            ]
+          end
+
+          # Checks that entry nodes are bonded with nodes with same sidepiece specie
+          # but with different atoms of it
           #
           # @return [Boolean] has monolite sidepiece specie or not
           def monolite_sidepiece?

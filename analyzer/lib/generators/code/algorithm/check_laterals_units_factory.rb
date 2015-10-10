@@ -16,6 +16,7 @@ module VersatileDiamond
           # @return [ReactionCreatorUnit] the unit for defines lateral chunk creation
           #   code block
           def creator(lateral_reaction, side_nodes, target_nodes)
+            # 123
             ReactionCheckLateralsCreatorUnit.new(
               namer,
               lateral_reaction,

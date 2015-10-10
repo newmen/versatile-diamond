@@ -15,6 +15,13 @@ module VersatileDiamond
             args = [namer, lateral_reaction, sidepiece_species]
             ReactionLookAroundCreatorUnit.new(*args)
           end
+
+          # Gets the other side species checker unit
+          # @param [Array] otherside_species the list of absolutely unique otherside
+          #   species which will be checked by creating unit
+          def checker(otherside_species)
+            OthersideSpeciesCheckerUnit.new(otherside_species)
+          end
         end
 
       end

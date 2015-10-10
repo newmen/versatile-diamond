@@ -24,7 +24,7 @@ module VersatileDiamond
           #
           # @return [Array] the list of sidepiece species
           def sidepiece_species
-            different_species
+            different_species # 123
           end
         end
 
