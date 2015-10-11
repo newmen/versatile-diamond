@@ -52,17 +52,27 @@ module VersatileDiamond
           def check_reaction(reaction, nbrs_with_species)
             uniq_sidepieces = nbrs_with_species.map(&:last).reduce(:+).uniq(&:original)
             creator_unit = factory.creator(reaction, uniq_sidepieces)
-            species_checks_procs = nbrs_with_species.map { |as| check_sidepiece(*as) }
-            reduce_procs(species_checks_procs) { creator_unit.lines }.call
+
+            prev_sidepieces = []
+            checks_species_procs = nbrs_with_species.map do |rel_args, sidepieces|
+              prev_sidepieces_copy = prev_sidepieces
+              prev_sidepieces += sidepieces
+              check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces_copy)
+            end
+
+            reduce_procs(checks_species_procs) { creator_unit.lines }.call
           end
 
           # Gets the proc which checks neighbour sidepiece, it relations and species
           # @param [Array] rel_args the arguments for #relation_proc method
           # @param [Array] sidepieces which will be checked after relations
+          # @param [Array] prev_sidepieces the list of sidepieces which was used at
+          #   previos steps
           # @return [Proc] which generates cpp code for check the sidepiece
-          def check_sidepiece(rel_args, sidepieces)
+          def check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces)
             rl_proc = relations_proc(*rel_args)
-            checker_unit = factory.checker(sidepieces)
+            nbr_atoms = rel_args[1].map(&:atom)
+            checker_unit = factory.checker(sidepieces.zip(nbr_atoms), prev_sidepieces)
             -> &block do
               rl_proc.call { checker_unit.define_and_check(&block) }
             end

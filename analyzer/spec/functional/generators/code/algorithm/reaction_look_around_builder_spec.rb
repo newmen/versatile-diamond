@@ -48,7 +48,7 @@ module VersatileDiamond
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
-            LateralSpec *species1[2] = { neighbours1[1]->specByRole<Dimer>(#{dimer_cr}), neighbours1[0]->specByRole<Dimer>(#{dimer_cr}) };
+            LateralSpec *species1[2] = { neighbours1[0]->specByRole<Dimer>(#{dimer_cr}), neighbours1[1]->specByRole<Dimer>(#{dimer_cr}) };
             if (species1[0] && species1[0] == species1[1])
             {
                 chunks[index++] = new #{class_name}(this, species1[0]);
@@ -202,10 +202,10 @@ module VersatileDiamond
             if (specie1)
             {
                 eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour2) {
-                    if (neighbour2->is(18) && neighbour1->hasBondWith(neighbour2))
+                    if (neighbour2->is(18))
                     {
                         LateralSpec *specie2 = neighbour2->specByRole<Dimer>(18);
-                        if (specie1 == specie2)
+                        if (specie2 == specie1)
                         {
                             chunks[index++] = new ForwardMethylIncorporationMiEdgeLateral(this, specie1);
                         }
