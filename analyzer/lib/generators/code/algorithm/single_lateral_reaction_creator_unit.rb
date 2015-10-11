@@ -1,6 +1,4 @@
 module VersatileDiamond
-  using Patches::RichArray
-
   module Generators
     module Code
       module Algorithm

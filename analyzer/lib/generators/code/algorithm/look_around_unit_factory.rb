@@ -19,8 +19,10 @@ module VersatileDiamond
           # Gets the other side species checker unit
           # @param [Array] otherside_species the list of absolutely unique otherside
           #   species which will be checked by creating unit
+          # @return [LookAroundOthersideSpeciesCheckerUnit] the unit which will check
+          #   sidepiece species
           def checker(otherside_species)
-            OthersideSpeciesCheckerUnit.new(otherside_species)
+            LookAroundOthersideSpeciesCheckerUnit.new(namer, otherside_species)
           end
         end
 

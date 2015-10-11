@@ -1,6 +1,4 @@
 module VersatileDiamond
-  using Patches::RichArray
-
   module Generators
     module Code
       module Algorithm
@@ -8,8 +6,6 @@ module VersatileDiamond
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create a lateral reaction which was found
         class ReactionLookAroundCreatorUnit < SingleLateralReactionCreatorUnit
-          include LateralSpecDefiner
-
           # Gets the cpp code string with creation of lateral reaction
           # @return [String] the cpp code line with creation lateral reaction call
           def lines
@@ -24,7 +20,7 @@ module VersatileDiamond
           #
           # @return [Array] the list of sidepiece species
           def sidepiece_species
-            different_species # 123
+            species
           end
         end
 
