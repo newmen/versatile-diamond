@@ -555,7 +555,7 @@ module VersatileDiamond
       # Gets number of relations which belongs to crystal
       # @return [Integer] the number of crystal relations
       def crystal_relatons_num
-        relations.count(&:belongs_to_crystal?)
+        relations.count(:belongs_to_crystal?)
       end
 
       # Gets number of established and dangling bond relations
