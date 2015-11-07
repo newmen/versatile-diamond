@@ -392,6 +392,8 @@ module VersatileDiamond
                   acc << cb_call
                 elsif possible_relation?(rels_props)
                   acc << "!#{cb_call}" # TODO: not checked solution
+                  # (it condition already under rspec, but not checked in real crystal
+                  # growh simulation behavior)
                 end
               end
             end
