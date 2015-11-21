@@ -4,6 +4,8 @@
 #include "central.h"
 #include "single_lateral.h"
 #include "multi_lateral.h"
+#include "uno_lateral_factory.h"
+#include "duo_lateral_factory.h"
 
 template<template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM>
 class ConcretizableRole;

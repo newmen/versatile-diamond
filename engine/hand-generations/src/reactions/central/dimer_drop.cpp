@@ -29,26 +29,8 @@ void DimerDrop::checkLaterals(Dimer *sidepiece)
 
             if (targets[0] && targets[0] == targets[1])
             {
-                SpecificSpec *target = targets[0];
-                {
-                    auto neighbourReaction = target->checkoutReaction<DimerDropAtEnd>();
-                    if (neighbourReaction)
-                    {
-                        assert(!sidepiece->haveReaction(neighbourReaction));
-                        SingleLateralReaction *chunk = new DimerDropAtEnd(neighbourReaction->parent(), sidepiece);
-                        neighbourReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    auto neighbourReaction = target->checkoutReaction<DimerDrop>();
-                    if (neighbourReaction)
-                    {
-                        SingleLateralReaction *chunk = new DimerDropAtEnd(neighbourReaction, sidepiece);
-                        neighbourReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                UnoLateralFactory<DimerDropAtEnd, DimerDrop> factory;
+                factory.checkoutRestReactions(sidepiece, targets[0]);
             }
         }
     });

@@ -47,25 +47,8 @@ void DimerFormation::checkLaterals(Dimer *sidepiece)
             if (targets[0] && targets[1])
             {
                 assert(targets[0] != targets[1]);
-                {
-                    auto neighbourReaction = targets[0]->checkoutReactionWith<DimerFormationAtEnd>(targets[1]);
-                    if (neighbourReaction)
-                    {
-                        assert(!sidepiece->haveReaction(neighbourReaction));
-                        SingleLateralReaction *chunk = new DimerFormationAtEnd(neighbourReaction->parent(), sidepiece);
-                        neighbourReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    auto neighbourReaction = targets[0]->checkoutReactionWith<DimerFormation>(targets[1]);
-                    if (neighbourReaction)
-                    {
-                        SingleLateralReaction *chunk = new DimerFormationAtEnd(neighbourReaction, sidepiece);
-                        neighbourReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                DuoLateralFactory<DimerFormationAtEnd, DimerFormation> factory;
+                factory.checkoutRestReactions(sidepiece, targets);
             }
         }
     });

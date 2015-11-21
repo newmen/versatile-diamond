@@ -150,11 +150,14 @@ HEADERS += \
     ../hand-generations/src/reactions/central/dimer_drop.h \
     ../hand-generations/src/reactions/central/dimer_formation.h \
     ../hand-generations/src/reactions/concretizable_role.h \
+    ../hand-generations/src/reactions/duo_lateral_factory.h \
     ../hand-generations/src/reactions/lateral.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_in_middle.h \
+    ../hand-generations/src/reactions/lateral_creation_lambda.h \
+    ../hand-generations/src/reactions/lateral_factory.h \
     ../hand-generations/src/reactions/local.h \
     ../hand-generations/src/reactions/multi_lateral.h \
     ../hand-generations/src/reactions/rates_reader.h \
@@ -204,6 +207,7 @@ HEADERS += \
     ../hand-generations/src/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     ../hand-generations/src/reactions/ubiquitous/surface_activation.h \
     ../hand-generations/src/reactions/ubiquitous/surface_deactivation.h \
+    ../hand-generations/src/reactions/uno_lateral_factory.h \
     ../hand-generations/src/run.h \
     ../hand-generations/src/species/base.h \
     ../hand-generations/src/species/base/bridge.h \
