@@ -149,8 +149,11 @@ HEADERS += \
     ../hand-generations/src/reactions/central.h \
     ../hand-generations/src/reactions/central/dimer_drop.h \
     ../hand-generations/src/reactions/central/dimer_formation.h \
+    ../hand-generations/src/reactions/chain_factory.h \
     ../hand-generations/src/reactions/concretizable_role.h \
-    ../hand-generations/src/reactions/duo_lateral_factory.h \
+    ../hand-generations/src/reactions/duo_lateral_checker.h \
+    ../hand-generations/src/reactions/duo_not_with_lateral_factory.h \
+    ../hand-generations/src/reactions/duo_with_lateral_factory.h \
     ../hand-generations/src/reactions/lateral.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.h \

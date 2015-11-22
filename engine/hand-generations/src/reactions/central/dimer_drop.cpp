@@ -29,8 +29,8 @@ void DimerDrop::checkLaterals(Dimer *sidepiece)
 
             if (targets[0] && targets[0] == targets[1])
             {
-                UnoLateralFactory<DimerDropAtEnd, DimerDrop> factory;
-                factory.checkoutRestReactions(sidepiece, targets[0]);
+                ChainFactory<UnoLateralFactory, DimerDropAtEnd, DimerDrop> factory(sidepiece, targets[0]);
+                factory.checkoutReactions<DimerDropAtEnd>();
             }
         }
     });

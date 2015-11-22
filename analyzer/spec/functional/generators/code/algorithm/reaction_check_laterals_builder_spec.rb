@@ -55,25 +55,12 @@ module VersatileDiamond
             SpecificSpec *species[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
             if (species[0] && species[1])
             {
-                {
-                    #{class_name} *nbrReaction = species[0]->checkoutReactionWith<#{class_name}>(species[1]);
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardDimerFormation *nbrReaction = species[0]->checkoutReactionWith<ForwardDimerFormation>(species[1]);
-                    if (nbrReaction)
-                    {
-                        SingleLateralReaction *chunk = new #{class_name}(nbrReaction, target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                ChainFactory<
+                    DuoWithLateralFactory,
+                    #{class_name},
+                    ForwardDimerFormation
+                > factory(target, species);
+                factory.checkoutReactions<#{class_name}>();
             }
         }
     });
@@ -108,45 +95,16 @@ module VersatileDiamond
             SpecificSpec *species[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
             if (species[0] && species[1])
             {
-                {
-                    #{class_name_with_bridge} *nbrReaction = species[0]->checkoutReactionWith<#{class_name_with_bridge}>(species[1]);
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_dimer}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    #{class_name_with_dimer} *nbrReaction = species[0]->checkoutReactionWith<#{class_name_with_dimer}>(species[1]);
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_dimer}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardDimerFormationEwbLateral *nbrReaction = species[0]->checkoutReactionWith<ForwardDimerFormationEwbLateral>(species[1]);
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_dimer}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardDimerFormation *nbrReaction = species[0]->checkoutReactionWith<ForwardDimerFormation>(species[1]);
-                    if (nbrReaction)
-                    {
-                        SingleLateralReaction *chunk = new #{class_name_with_dimer}(nbrReaction, target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                ChainFactory<
+                    DuoWithLateralFactory,
+                    #{class_name_with_dimer},
+                    ForwardDimerFormation
+                > factory(target, species);
+                factory.checkoutReactions<
+                    #{class_name_with_dimer},
+                    #{class_name_with_bridge},
+                    ForwardDimerFormationEwbLateral
+                >();
             }
         }
     });
@@ -166,35 +124,15 @@ module VersatileDiamond
             SpecificSpec *specie = neighbour1->specByRole<BridgeCTsi>(#{aib_ct});
             if (specie)
             {
-                {
-                    #{class_name_with_dimer} *nbrReaction = specie->checkoutReaction<#{class_name_with_dimer}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    #{class_name_with_two_dimer} *nbrReaction = specie->checkoutReaction<#{class_name_with_two_dimer}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardDimerFormation *nbrReaction = specie->checkoutReaction<ForwardDimerFormation>();
-                    if (nbrReaction)
-                    {
-                        SingleLateralReaction *chunk = new #{class_name_with_bridge}(nbrReaction, target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                ChainFactory<
+                    UnoLateralFactory,
+                    #{class_name_with_bridge},
+                    ForwardDimerFormation
+                > factory(target, specie);
+                factory.checkoutReactions<
+                    #{class_name_with_dimer},
+                    #{class_name_with_two_dimer}
+                >();
             }
         }
     });
@@ -225,25 +163,12 @@ module VersatileDiamond
             SpecificSpec *species[2] = { neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cr}), neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cl}) };
             if (species[0] && species[0] == species[1])
             {
-                {
-                    ForwardIncoherentDimerDropEndLateral *nbrReaction = species[0]->checkoutReaction<ForwardIncoherentDimerDropEndLateral>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new ForwardIncoherentDimerDropEndLateral(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardIncoherentDimerDrop *nbrReaction = species[0]->checkoutReaction<ForwardIncoherentDimerDrop>();
-                    if (nbrReaction)
-                    {
-                        SingleLateralReaction *chunk = new ForwardIncoherentDimerDropEndLateral(nbrReaction, target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                ChainFactory<
+                    UnoLateralFactory,
+                    ForwardIncoherentDimerDropEndLateral,
+                    ForwardIncoherentDimerDrop
+                > factory(target, specie);
+                factory.checkoutReactions<ForwardIncoherentDimerDropEndLateral>();
             }
         }
     });
@@ -271,125 +196,24 @@ module VersatileDiamond
             SpecificSpec *specie = neighbour1->specByRole<BridgeCTs>(2);
             if (specie)
             {
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    #{small_name} *nbrReaction = specie->checkoutReaction<#{small_name}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    #{big_name} *nbrReaction = specie->checkoutReaction<#{big_name}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardSymmetricDimerFormation *nbrReaction = specie->checkoutReaction<ForwardSymmetricDimerFormation>();
-                    if (nbrReaction)
-                    {
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(nbrReaction, target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                ChainFactory<
+                    UnoLateralFactory,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
+                    ForwardSymmetricDimerFormation
+                > factory(target, specie);
+                factory.checkoutReactions<
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    #{small_name},
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
+                    #{big_name},
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs
+                >();
             }
         }
     });
@@ -399,105 +223,22 @@ module VersatileDiamond
             SpecificSpec *specie = neighbour1->specByRole<BridgeCTs>(2);
             if (specie)
             {
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    #{small_name} *nbrReaction = specie->checkoutReaction<#{small_name}>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs *nbrReaction = specie->checkoutReaction<CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs>();
-                    if (nbrReaction)
-                    {
-                        assert(!target->haveReaction(nbrReaction));
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction->parent(), target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
-                {
-                    ForwardSymmetricDimerFormation *nbrReaction = specie->checkoutReaction<ForwardSymmetricDimerFormation>();
-                    if (nbrReaction)
-                    {
-                        SingleLateralReaction *chunk = new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(nbrReaction, target);
-                        nbrReaction->concretize(chunk);
-                        return;
-                    }
-                }
+                ChainFactory<
+                    UnoLateralFactory,
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
+                    ForwardSymmetricDimerFormation
+                > factory(target, specie);
+                factory.checkoutReactions<
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    #{small_name},
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs
+                >();
             }
         }
     });

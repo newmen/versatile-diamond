@@ -10,8 +10,12 @@ using namespace vd;
 template <class TargetLateralReaction, class MinimalCentralReaction>
 class LateralFactory
 {
+    LateralSpec *_sidepiece;
+
 protected:
-    LateralFactory() = default;
+    LateralFactory(LateralSpec *sidepiece) : _sidepiece(sidepiece) {}
+
+    LateralSpec *sidepiece() { return _sidepiece; }
 
     template <class NeighbourReaction, class CheckoutLambda>
     bool highOrderVerify(LateralCreationLambda<NeighbourReaction, TargetLateralReaction, MinimalCentralReaction> &&creationLambda,
@@ -30,7 +34,7 @@ template <class LR, class CR>
 template <class NR, class L>
 bool LateralFactory<LR, CR>::highOrderVerify(LateralCreationLambda<NR, LR, CR> &&creationLambda, const L &checkoutLambda)
 {
-    auto *nbrReaction = checkoutLambda();
+    NR *nbrReaction = checkoutLambda();
     if (nbrReaction)
     {
         creationLambda(nbrReaction);
