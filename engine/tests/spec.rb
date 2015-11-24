@@ -11,7 +11,7 @@ HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
 GCC_PATH = '/usr'
 CXX = "#{GCC_PATH}/bin/g++"
-FLAGS = "-I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -std=c++11 -O2 -openmp -lyaml-cpp"
+FLAGS = "-I#{GCC_PATH}/include -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -L#{GCC_PATH}/lib -std=c++11 -O2 -openmp -lyaml-cpp"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string
