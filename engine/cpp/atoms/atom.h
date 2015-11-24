@@ -150,6 +150,7 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
     for (; range.first != range.second; ++range.first)
     {
         BaseSpec *spec = range.first->second;
+        assert(spec->type() == S::ID);
         lambda(static_cast<S *>(spec));
     }
 }
