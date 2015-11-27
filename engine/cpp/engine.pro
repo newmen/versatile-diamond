@@ -14,7 +14,6 @@ SOURCES += \
     ../hand-generations/src/env.cpp \
     ../hand-generations/src/finder.cpp \
     ../hand-generations/src/handbook.cpp \
-    ../hand-generations/src/main.cpp \
     ../hand-generations/src/phases/diamond.cpp \
     ../hand-generations/src/phases/phase_boundary.cpp \
     ../hand-generations/src/reactions/central/dimer_drop.cpp \
@@ -116,7 +115,8 @@ SOURCES += \
     species/lateral_spec.cpp \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
-    tools/common.cpp \
+    tools/debug_print.cpp \
+    tools/indent_stream.cpp \
     tools/process_mem_usage.cpp \
     tools/savers/accumulator.cpp \
     tools/savers/all_atoms_detector.cpp \
@@ -131,7 +131,15 @@ SOURCES += \
     tools/savers/xyz_format.cpp \
     tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+#    ../tests/units/c_spec.cpp \
+#    ../tests/units/diamond_relations_spec.cpp \
+#    ../tests/units/diamond_spec.cpp \
+#    ../tests/units/find_spec.cpp \
+#    ../tests/units/lattice_spec. \cpp \
+#    ../tests/units/vector3d_spec \.cpp \
+#    ../tests/support/open_diamond.cpp
+    ../hand-generations/src/main.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -309,6 +317,8 @@ HEADERS += \
     tools/debug_print.h \
     tools/error.h \
     tools/factory.h \
+    tools/indent_facet.h \
+    tools/indent_stream.h \
     tools/init_config.h \
     tools/many_items_result.h \
     tools/process_mem_usage.h \
@@ -336,8 +346,10 @@ HEADERS += \
     tools/savers/xyz_format.h \
     tools/savers/xyz_saver.h \
     tools/scavenger.h \
+    tools/short_types.h \
     tools/typed.h \
     tools/vector3d.h \
+#    ../tests/support/open_diamond.h \
     tools/yaml_config_reader.h
 
 OTHER_FILES += \

@@ -24,7 +24,7 @@ public:
     void doIt() override;
 
 #ifdef PRINT
-    void info(std::ostream &os) override;
+    void info(IndentStream &os) override;
 #endif // PRINT
 
 protected:

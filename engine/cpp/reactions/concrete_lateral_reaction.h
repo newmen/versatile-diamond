@@ -15,7 +15,7 @@ class ConcreteLateralReaction : public SingleLateralReaction, public Targets<Lat
 
 public:
 #ifdef PRINT
-    void info(std::ostream &os);
+    void info(IndentStream &os);
 #endif // PRINT
 
     void insertToLateralTargets(LateralReaction *reaction) final { this->insert(reaction); }
@@ -72,10 +72,11 @@ void ConcreteLateralReaction<LATERALS_NUM>::eraseFromTargets(LateralReaction *re
 
 #ifdef PRINT
 template <ushort LATERALS_NUM>
-void ConcreteLateralReaction<LATERALS_NUM>::info(std::ostream &os)
+void ConcreteLateralReaction<LATERALS_NUM>::info(IndentStream &os)
 {
-    os << "Lateral reaction " << this->name() << " [" << this << "]:";
-    TargetsType::info(os);
+    os << "Lateral reaction " << this->name() << " [" << this << "]";
+    IndentStream sub = indentStream(os);
+    TargetsType::info(sub);
 }
 #endif // PRINT
 

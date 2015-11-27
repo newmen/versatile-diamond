@@ -25,7 +25,7 @@ public:
     void store() override { assert(false); } // symmetric specie should be created by target specie
 
 #ifdef PRINT
-    void info(std::ostream &os) override;
+    void info(IndentStream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
@@ -84,14 +84,15 @@ Atom *ChildSpec<B, PARENTS_NUM>::atom(ushort index) const
 
 #ifdef PRINT
 template <class B, ushort PARENTS_NUM>
-void ChildSpec<B, PARENTS_NUM>::info(std::ostream &os)
+void ChildSpec<B, PARENTS_NUM>::info(IndentStream &os)
 {
     os << this->name() << " at [" << this << "]";
     for (int i = 0; i < PARENTS_NUM; ++i)
     {
-        os << " -> (";
-        _parents[i]->info(os);
-        os << ")";
+        IndentStream sub = indentStream(os);
+        sub << "-> (";
+        _parents[i]->info(sub);
+        sub << ")";
     }
 }
 

@@ -153,12 +153,12 @@ void Atom::describe(ushort role, BaseSpec *spec)
     const uint key = hash(role, type);
 
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "describe " << this << " " << std::dec;
+    debugPrint([&](IndentStream &os) {
+        os << "Atom::describe " << this << " " << std::dec;
         pos(os);
         os << " " << spec->name();
-        os << " |" << type() << ", " << _prevType << "| role type: " << role
-           << ". spec type: " << spec->type() << ". key: " << key;
+        os << " |" << _type << ", " << _prevType << "| role type: " << role
+           << ". spec type: " << type << ". key: " << key;
     });
 #endif // PRINT
 
@@ -198,7 +198,7 @@ void Atom::forget(ushort role, BaseSpec *spec)
     }
 
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
         os << "forget " << this << " " << std::dec;
         pos(os);
         os << " " << spec->name();
@@ -234,9 +234,10 @@ void Atom::setSpecsUnvisited()
 
 void Atom::removeUnsupportedSpecies()
 {
-    if (_specs.size() == 0) return;
+    uint num = _specs.size();
+    if (num == 0) return;
 
-    BaseSpec **specs = new BaseSpec*[_specs.size()]; // max possible size
+    BaseSpec **specs = new BaseSpec*[num]; // max possible size
     uint n = 0;
 
     for (auto &pr : _roles)
@@ -405,30 +406,69 @@ std::vector<const Atom *> Atom::goodCrystalRelatives() const
 }
 
 #ifdef PRINT
-void Atom::info(std::ostream &os)
+void Atom::info(IndentStream &os)
 {
     os << type() << " -> ";
     pos(os);
 
-    os << " %% roles: ";
+    printRoles(os);
+    printSpecs(os);
+}
+
+void Atom::printRoles(IndentStream &os)
+{
+    IndentStream sub = indentStream(os);
+    sub << "%% roles: ";
+    bool isFirst = true;
     for (const auto &pr : _roles)
     {
-        os << pr.first;
+        if (!isFirst)
+        {
+            sub << " | ";
+        }
+
+        sub << pr.first << " >> ";
+        int prevSt = -1;
         for (ushort st : pr.second)
         {
-            os << " , " << st << " => " << hash(pr.first, st);
+            if (st == prevSt)
+            {
+                sub << " + ";
+            }
+            else
+            {
+                if (prevSt != -1)
+                {
+                    sub << ", ";
+                }
+                sub << st << " => ";
+            }
+            sub << hash(pr.first, st);
+            prevSt = st;
         }
-        os << " | ";
-    }
 
-    os << " %% specs: ";
-    for (const auto &pr : _specs)
-    {
-        os << pr.first << " -> " << pr.second << " # ";
+        isFirst = false;
     }
 }
 
-void Atom::pos(std::ostream &os)
+void Atom::printSpecs(IndentStream &os)
+{
+    IndentStream sub = indentStream(os);
+    sub << "%% specs: ";
+    bool isFirst = true;
+    for (const auto &pr : _specs)
+    {
+        if (!isFirst)
+        {
+            sub << " # ";
+        }
+
+        sub << pr.first << " -> " << pr.second;
+        isFirst = false;
+    }
+}
+
+void Atom::pos(IndentStream &os)
 {
     if (lattice()) os << lattice()->coords();
     else os << "amorph";
@@ -459,8 +499,8 @@ BaseSpec *Atom::specByRole(ushort sid, ushort role)
     const uint key = hash(role, sid);
 
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "specByRole " << this << std::dec;
+    debugPrint([&](IndentStream &os) {
+        os << "Atom::specByRole " << this << std::dec;
         pos(os);
         os << " |" << type() << ", " << _prevType << "| role type: " << role
            << ". spec type: " << sid << ". key: " << key;

@@ -14,7 +14,7 @@ class Targets
 
 public:
 #ifdef PRINT
-    void info(std::ostream &os);
+    void info(IndentStream &os);
 #endif // PRINT
 
 protected:
@@ -66,12 +66,12 @@ void Targets<S, TARGETS_NUM>::erase(R *reaction)
 
 #ifdef PRINT
 template <class S, ushort TARGETS_NUM>
-void Targets<S, TARGETS_NUM>::info(std::ostream &os)
+void Targets<S, TARGETS_NUM>::info(IndentStream &os)
 {
     for (int i = 0; i < TARGETS_NUM; ++i)
     {
         assert(_targets[i]);
-        os << " " << _targets[i]->name();
+        os << " " << _targets[i];
     }
 }
 #endif // PRINT

@@ -16,7 +16,7 @@ class ConcreteTypicalReaction : public B, public Targets<SpecificSpec, TARGETS_N
 
 public:
 #ifdef PRINT
-    void info(std::ostream &os);
+    void info(IndentStream &os);
 #endif // PRINT
 
 protected:
@@ -43,10 +43,11 @@ ConcreteTypicalReaction<B, TARGETS_NUM>::ConcreteTypicalReaction(SpecificSpec **
 
 #ifdef PRINT
 template <class B, ushort TARGETS_NUM>
-void ConcreteTypicalReaction<B, TARGETS_NUM>::info(std::ostream &os)
+void ConcreteTypicalReaction<B, TARGETS_NUM>::info(IndentStream &os)
 {
-    os << "Typical reaction " << this->name() << " [" << this << "]:";
-    TargetsType::info(os);
+    os << "Typical reaction " << this->name() << " [" << this << "]";
+    IndentStream sub = indentStream(os);
+    TargetsType::info(sub);
 }
 #endif // PRINT
 

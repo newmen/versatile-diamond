@@ -13,7 +13,7 @@ class MultiLateralReaction : public LateralReaction
 
 public:
 #ifdef PRINT
-    void info(std::ostream &os);
+    void info(IndentStream &os);
 #endif // PRINT
 
 protected:
@@ -72,15 +72,15 @@ void MultiLateralReaction<LATERAL_REACTIONS_NUM>::eachChunk(const L &lambda)
 
 #ifdef PRINT
 template <ushort LATERAL_REACTIONS_NUM>
-void ConcreteLateralReaction<LATERAL_REACTIONS_NUM>::info(std::ostream &os)
+void MultiLateralReaction<LATERAL_REACTIONS_NUM>::info(IndentStream &os)
 {
-    os << "Multi-Lateral reaction " << this->name() << " [" << this << "]:";
+    os << "Multi-Lateral reaction " << this->name() << " [" << this << "]";
     for (uint i = 0; i < LATERAL_REACTIONS_NUM; ++i)
     {
-        os << "\n  => ";
-        _chunks[i]->info(os);
+        IndentStream sub = indentStream(os);
+        sub << "=> ";
+        _chunks[i]->info(sub);
     }
-    os << std::endl;
 }
 #endif // PRINT
 

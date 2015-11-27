@@ -17,7 +17,7 @@ public:
     virtual void doIt() = 0;
 
 #ifdef PRINT
-    virtual void info(std::ostream &os) = 0;
+    virtual void info(IndentStream &os) = 0;
 #endif // PRINT
 
     virtual const char *name() const = 0;
