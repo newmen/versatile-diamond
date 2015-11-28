@@ -4,10 +4,16 @@ module VersatileDiamond
     # Provides serialize options for analysis result data and store marshaled
     # object to file. Also provides abilities to restore object from file.
     module Serializer
-      DUMP_DIR = 'cache/'
       VD_CONFIG_EXT = '.rb'
 
       class << self
+        # Initializes serializer
+        # @param [String] dump_dir the directory where dump files will be stored
+        def init!(dump_dir)
+          FileUtils.mkdir_p(dump_dir) unless Dir.exist?(dump_dir)
+          @dump_dir = dump_dir
+        end
+
         # Loads some data by config file path and suffix
         # @param [String] config_path to config file path
         # @option [String] :suffix to result file name
@@ -29,8 +35,6 @@ module VersatileDiamond
         # @option [String] :suffix to result file name
         # @return [Object] the loaded object or nil
         def save(config_path, data, suffix: nil)
-          FileUtils.mkdir_p(DUMP_DIR) unless Dir.exist?(DUMP_DIR)
-
           save_checksum(config_path) unless suffix
           save_dump(config_path, Marshal.dump(data), suffix)
         end
@@ -79,7 +83,7 @@ module VersatileDiamond
         def path_to(ext, path, suffix: nil)
           suffix = "-#{suffix}" if suffix
           filename = File.basename(path, VD_CONFIG_EXT)
-          Pathname.new(DUMP_DIR) + "#{filename}#{suffix}.#{ext}"
+          Pathname.new(@dump_dir) + "#{filename}#{suffix}.#{ext}"
         end
 
         # Saves checksum of config file to correspond file

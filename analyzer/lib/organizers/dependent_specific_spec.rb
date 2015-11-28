@@ -82,7 +82,7 @@ module VersatileDiamond
     private
 
       # Provides additional comparation by internal properties
-      # @param [Minuend] other see at #<=> same argument
+      # @param [MinuendSpec] other see at #<=> same argument
       # @return [Integer] the result of comparation
       # @override
       def order_relations(other, &block)

@@ -8,48 +8,69 @@ module VersatileDiamond
         # Initializes typical reaction class code generator
         def initialize(*)
           super
+          @_children = nil
+
           @_used_iterators = nil
+          @_lateral_chunks = nil
+          @_sidepiece_species = nil
         end
 
-        # Gets the name of base class
-        # @return [String] the parent type name
-        def base_class_name
-          template_args = laterable? ? [reaction_type] : []
-          template_args += [enum_name, complex_source_species.size]
-          "#{outer_base_class_name}<#{template_args.join(', ')}>"
-        end
-
-        # Typical reaction haven't sidepiece species
-        # @return [Array] the empty array
+        # Gets list of sidepiece species from all children reactions
+        # @return [Array] the list of sidepiece species which can concretize current
+        #   reaction
         def sidepiece_species
-          []
+          @_sidepiece_species ||= children.flat_map(&:sidepiece_species).uniq
+        end
+
+        # Gets all minimal lateral reaction chunks
+        # @return [Array] the list of all minimal lateral reaction chunks
+        def lateral_chunks
+          @_lateral_chunks ||= LateralChunks.new(generator, self, children)
+        end
+
+        # Gets the index of passed specie reactant
+        # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
+        #   for which the index will returned
+        # @return [Integer] the index of passed specie or nil if reaction have just one
+        #   reactant
+        def target_index(spec)
+          concept_source_species.size == 1 ? nil : concept_source_species.index(spec)
+        end
+
+        # Gets builder of check lateral algorighm from passed specie
+        # @param [Specie] specie from which the algorithm will build
+        # @return [ReactionCheckLateralsBuilder] the builder of checkLaterals method
+        #   code
+        def check_laterals_builder_from(specie)
+          builder_class = Algorithm::ReactionCheckLateralsBuilder
+          builder_class.new(generator, lateral_chunks, specie)
         end
 
       private
 
-        # Checks that reaction has lateral children
-        # @return [Boolean] is laterable reaction or not
-        def laterable?
-          !reaction.complexes.empty? && reaction.complexes.all?(&:lateral?)
+        # Orders children lateral reaction
+        # @return [Array] the ordered children lateral reactions list
+        # @override
+        def children
+          @_children ||= super.sort_by(&:chunk)
         end
 
-        # Gets the parent type of generating reaction
-        # @return [String] the parent type of reaction
-        # @override
-        def outer_base_class_name
-          if laterable?
-            'LaterableRole'
-          elsif reaction.complexes.empty?
-            reaction_type
-          else
-            raise 'Now typical reaction could not depend from another typical reaction'
-          end
+        # Checks that current reaction is a tail of overall engine find algorithm
+        # @return [Boolean] is final reaction in reactions tree or not
+        def concretizable?
+          !children.empty?
         end
 
         # Gets the type of reaction
         # @return [String] the type of reaction
         def reaction_type
-          'Typical'
+          concretizable? ? 'Central' : 'Typical'
+        end
+
+        # Gets the number of species which used as base class template argument
+        # @return [Integer] the number of using species
+        def template_specs_num
+          complex_source_species.size
         end
 
         # Gets the collection of used crystal atom iterator classes
@@ -57,7 +78,14 @@ module VersatileDiamond
         # @override
         def used_iterators
           return @_used_iterators if @_used_iterators
-          lattices = reaction.clean_links.keys.map(&:last).map(&:lattice)
+          specs_atoms =
+            if reaction.clean_links.empty?
+              concretizable? ? lateral_chunks.targets.to_a : []
+            else
+              reaction.clean_links.keys
+            end
+
+          lattices = specs_atoms.map(&:last).map(&:lattice)
           @_used_iterators = translate_to_iterators(lattices.to_set)
         end
 
@@ -79,6 +107,48 @@ module VersatileDiamond
         # @return [String] the cpp code string with find algorithm
         def find_algorithm_from(specie)
           Algorithm::ReactionFindBuilder.new(generator, self, specie).build
+        end
+
+        # Gets the maximal number of lateral reaction chunks
+        # @return [Integer] the maximal number of lateral reaction chunks
+        def lateral_chunks_num
+          lateral_chunks.root_times
+        end
+
+        # Gets the string by which chunks of lateral reactions define
+        # @return [String] the string with null defined chunks of lateral reactions
+        def define_lateral_chunks
+          ptrs = (['nullptr'] * lateral_chunks_num).join(', ')
+          "SingleLateralReaction *chunks[#{lateral_chunks_num}] = { #{ptrs} }"
+        end
+
+        # Builds look around algorithm for find all possible lateral reactions
+        # @return [String] the string with cpp code of look around algorithm
+        def look_around_algorithm
+          Algorithm::ReactionLookAroundBuilder.new(generator, lateral_chunks).build
+        end
+
+        # Gets the arguments of check laterals method
+        # @param [Specie] specie from which lateral reaction can be found
+        # @return [String] the string with signature of find method
+        def check_laterals_arguments_str(specie)
+          "#{specie.class_name} *{SIDEPIECE_SPECIE_NAME}"
+        end
+
+        # Builds check laterals algorithm of current reaction from passed specie
+        # @param [Specie] specie the one of using sidepiece specie
+        # @return [String] the cpp code string with find algorithm
+        def check_laterals_algorithm_from(specie)
+          check_laterals_builder_from(specie).build
+        end
+
+        # Builds algorithm for creating right lateral reaction after that all possible
+        # chunks was found and passed to this method with number of them
+        #
+        # @return [String] the cpp code string with algorithm of selection from
+        #   available set of chunks
+        def select_from_algorithm
+          Algorithm::LateralReactionSelectBuilder.new(generator, lateral_chunks).build
         end
       end
 

@@ -4,9 +4,10 @@ module VersatileDiamond
     # Wraps some many-atomic species and provides common methods for using them
     # @abstract
     class DependentWrappedSpec < DependentSpec
-      include Minuend
+      include MinuendSpec
 
-      collector_methods :child
+      # TODO: own there objects that described below are not used
+      collector_methods :there, :child
       def_delegators :@spec, :external_bonds, :relation_between
       attr_reader :links
 
@@ -15,7 +16,8 @@ module VersatileDiamond
       def initialize(*)
         super
         @links = straighten_graph(spec.links)
-        @rest, @children = nil
+        @theres, @children, @rest = nil
+        @_similar_theres, @_root_theres = nil
       end
 
       # Clones the current instance but replace internal spec and change all atom

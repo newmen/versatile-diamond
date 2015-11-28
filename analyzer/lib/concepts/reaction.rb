@@ -1,16 +1,19 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Also contained positions between the reactants
     class Reaction < UbiquitousReaction
-      extend Forwardable
-
+      include Modules::GraphDupper
+      include Modules::SpecAtomSwapper
       include Linker
       include SurfaceLinker
-      include SpecAtomSwapper
+      include PositionsComparer
+      extend Forwardable
 
       # type of reaction could be only for not ubiquitous reaction
-      attr_reader :type, :links
+      attr_reader :type, :links, :children
 
       # Among super, keeps the atom map
       # @param [Array] super_args the arguments of super method
@@ -20,27 +23,18 @@ module VersatileDiamond
         @mapping = mapping
         @links = {} # contain positions between atoms of different reactants
 
+        @parent = nil
+        @children = []
+
         @mapping.find_positions_for(self)
       end
 
-      def_delegator :@mapping, :complex_source_spec_and_atom
+      def_delegator :mapping, :complex_source_spec_and_atom
 
       # Gets an appropriate representation of the reaction
       # @param [Symbol] type the type of parent reaction
       def as(type)
         @type == type ? self : reverse
-      end
-
-      # Reduce all positions from links structure
-      # @return [Array] the array of position relations
-      # TODO: must be protected
-      # TODO: for rspec only? :)
-      def positions
-        links.reduce([]) do |acc, (spec_atom, list)|
-          acc + list.reduce([]) do |l, (other_spec_atom, position)|
-            l << [spec_atom, other_spec_atom, position]
-          end
-        end
       end
 
       # Store position relation between first and second atoms
@@ -57,15 +51,15 @@ module VersatileDiamond
       # @raise [Position::UnspecifiedAtoms] if not all atoms belongs to crystal
       #   lattice
       def position_between(first, second, position, check_possible: true)
-        if @mapping.reaction_type == :dissociation
+        if mapping.reaction_type == :dissociation
           raise 'Cannot link atoms of single structure'
         end
 
         link_together(first, second, position, check_possible: check_possible)
-        return if @mapping.reaction_type == :association
+        return if mapping.reaction_type == :association
 
-        first = @mapping.other_side(*first)
-        second = @mapping.other_side(*second)
+        first = mapping.other_side(*first)
+        second = mapping.other_side(*second)
         reverse.link_together(first, second, position)
       end
 
@@ -104,19 +98,25 @@ module VersatileDiamond
         end
       end
 
+      # Also remember reversed children
+      # @return [Reaction] the reversed reaction
+      # @override
+      def reverse
+        return @reverse if @reverse
+        result = super
+        @parent.reverse.children << result if @parent && @parent.has_reverse?
+        children.each { |child| result.children << child.reverse }
+        result
+      end
+
       # Also changes atom mapping result
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       # @override
       def swap_source(from, to)
         super
-        @links = @links.each_with_object({}) do |(spec_atom, rels), acc|
-          acc[swap(spec_atom, from, to)] = rels.map do |sa, rel|
-            [swap(sa, from, to), rel]
-          end
-        end
-
-        @mapping.swap_source(from, to)
+        @links = swap_in_links(:swap, @links, from, to)
+        mapping.swap_source(from, to)
       end
 
       # Swaps using atoms of passed spec
@@ -126,7 +126,7 @@ module VersatileDiamond
       #   swapped
       def swap_atom(spec, from, to)
         swap_atom_in_positions(spec, from, to)
-        @mapping.swap_atom(spec, from, to)
+        mapping.swap_atom(spec, from, to)
       end
 
       # Applies relevant states for other side atom
@@ -136,14 +136,22 @@ module VersatileDiamond
       # @option [Boolean] :to_reverse_too applies relevant state to reverse
       #   reaction if set to true
       def apply_relevants(spec, old_atom, new_atom, to_reverse_too: true)
+        is_source = source.include?(spec)
+
         if to_reverse_too
-          @mapping.apply_relevants(spec, old_atom, new_atom)
-          reverse.apply_relevants(spec, old_atom, new_atom, to_reverse_too: false)
+          os_s, os_old_a = mapping.other_side(spec, old_atom)
+          mapping.apply_relevants(spec, old_atom, new_atom)
+          _, os_new_a = mapping.other_side(spec, new_atom)
+
+          if is_source
+            reverse.apply_relevants(os_s, os_old_a, os_new_a, to_reverse_too: false)
+          else
+            apply_relevants(os_s, os_old_a, os_new_a, to_reverse_too: false)
+            reverse.apply_relevants(spec, old_atom, new_atom, to_reverse_too: false)
+          end
         end
 
-        swap_atom_in_positions(spec, old_atom, new_atom)
-        os_spec, os_atom = @mapping.other_side(spec, new_atom)
-        swap_atom_in_positions(os_spec, os_atom, new_atom)
+        swap_atom_in_positions(spec, old_atom, new_atom) if is_source
       end
 
       # Gets all atoms of passed spec which used in reaction
@@ -158,14 +166,13 @@ module VersatileDiamond
       # @param [UbiquitousReaction] see at #super same argument
       # @override
       def same?(other)
-        is_same_positions =
-          lists_are_identical?(positions, other.positions) do |pos1, pos2|
-            pos1.last == pos2.last && # compares position relation instances
-              (same_positions?(pos1, pos2, [[0, 0], [1, 1]]) ||
-                same_positions?(pos1, pos2, [[0, 1], [1, 0]]))
-          end
+        super && same_positions?(other)
+      end
 
-        is_same_positions && super
+      # Typical reaction isn't lateral
+      # @return [Boolean] false
+      def lateral?
+        false
       end
 
       # Checks that all atoms belongs to lattice
@@ -180,20 +187,28 @@ module VersatileDiamond
       # @return [Hash] the hash of changes where keys are spec-atom of source and
       #   values are spec-atom of products
       def changes
-        Hash[MappingResult.rezip(@mapping.changes)]
+        Hash[MappingResult.rezip(mapping.changes)]
       end
 
       # Gets number of changed atoms
       # @return [Integer] the number of changed atoms
       # @override
       def changes_num
-        @mapping.changes.reduce(0) { |acc, (_, atoms_zip)| acc + atoms_zip.size }
+        mapping.changes.reduce(0) { |acc, (_, atoms_zip)| acc + atoms_zip.size }
+      end
+
+      # Reorganizes the specs of children reactions
+      def reorganize_children_specs!
+        children.each do |child|
+          if same_specs?(child) && same_positions?(child)
+            swap_by_map!(child, map_to_specs_of(child, :source))
+          end
+        end
       end
 
     protected
 
-      attr_reader :children
-      attr_writer :links
+      attr_writer :parent, :links
 
       # Links together two structures by it atoms
       # @param [Array] first see at #position_between same argument
@@ -212,6 +227,30 @@ module VersatileDiamond
       end
 
     private
+
+      attr_reader :mapping
+
+      # Makes the mirror of current specs to specs of child
+      # @param [Reaction] child to which specs the map will builded
+      # @param [Symbol] method for get a list of specs
+      # @return [Array] the map of specs
+      def map_to_specs_of(child, method)
+        child_specs = child.public_send(method).dup
+        public_send(method).reduce([]) do |acc, self_spec|
+          child_spec = child_specs.find { |s| self_spec.same?(s) }
+          acc << [self_spec, child_specs.delete_one(child_spec)]
+        end
+      end
+
+      # Swaps specs of child reaction by passed map
+      # @param [Reaction] child which specs will be swapped
+      # @param [Hash] specs_map which will used for get correspond specs of current
+      #   reaction
+      def swap_by_map!(child, specs_map)
+        specs_map.each do |self_spec, child_spec|
+          child.swap_source(child_spec, self_spec)
+        end
+      end
 
       # Gets opposite relation between first and second atoms for passed
       # relation instance
@@ -235,13 +274,12 @@ module VersatileDiamond
       # @param [Float] value see at #super same argument
       # @override
       def update_attribute(attribute, value)
-        childs = children || reverse.children
-        if childs
-          childs.each do |reaction|
-            reaction.as(@type).send(:"#{attribute}=", value)
-          end
-        else
+        if children.empty?
           super
+        else
+          children.each do |child|
+            child.send(:"#{attribute}=", value)
+          end
         end
       end
 
@@ -249,7 +287,7 @@ module VersatileDiamond
       # @param [Spec | SpecificSpec] spec the one of reactant
       # @return [Array] the array of using atoms
       def changed_atoms_of(spec)
-        @mapping.used_atoms_of(spec)
+        mapping.used_atoms_of(spec)
       end
 
       # Reverse params for creating reverse reaction with reversing of atom
@@ -258,7 +296,7 @@ module VersatileDiamond
       # @return [Array] reversed parameters for creating reverse reaction
       # @override
       def reverse_params
-        [*super, @mapping.reverse]
+        [*super, mapping.reverse]
       end
 
       # Duplicates current instance
@@ -283,20 +321,15 @@ module VersatileDiamond
       def duplicate_params(name_tail)
         mirrors = {}
         dup_and_save = -> type, specs do
-          mirror = mirrors[type] = {}
-          specs.map do |spec|
-            spec_dup = spec.dup
-            mirror[spec] = spec_dup
-            spec_dup
-          end
+          mirrors[type] = {}
+          specs.map { |spec| mirrors[type][spec] = spec.dup }
         end
 
         source_dup = dup_and_save[:source, @source]
         products_dup = dup_and_save[:products, @products]
 
         mapping = @mapping.duplicate(mirrors)
-        [mirrors,
-          @type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
+        [mirrors, @type, "#{@name} #{name_tail}", source_dup, products_dup, mapping]
       end
 
       # Setups duplicated reaction
@@ -306,35 +339,15 @@ module VersatileDiamond
       # @return [Reaction] setuped duplicated reaction
       def setup_duplication(duplication, mirrors)
         old_to_dup = mirrors.values.reduce(&:merge)
-        dup_spec_atom = -> old_spec, old_atom do
+        duplication.links = dup_graph(@links) do |old_spec, old_atom|
           dup_spec = old_to_dup[old_spec]
           [dup_spec, dup_spec.atom(old_spec.keyname(old_atom))]
         end
 
-        links_dup = @links.map do |spec_atom1, links|
-          ld = links.map do |spec_atom2, link|
-            [dup_spec_atom[*spec_atom2], link]
-          end
-          [dup_spec_atom[*spec_atom1], ld]
-        end
-        duplication.links = Hash[links_dup]
-
-        @children ||= []
+        duplication.parent = self
         @children << duplication
 
         duplication
-      end
-
-      # Compares two position instances by some pairs
-      # @param [Array] pos1 the first position instance
-      # @param [Array] pos2 the second position instance
-      # @param [Array] indexes_pairs the array that contain pairs of indexes of
-      #   comparing positions
-      # @return [Boolean] are same positions or not
-      def same_positions?(pos1, pos2, indexes_pairs)
-        indexes_pairs.all? do |i, j|
-          [0, 1].all? { |k| pos1[i][k].same?(pos2[j][k]) }
-        end
       end
 
       # Swaps used specific spec atom to new atom (used only when atom was
@@ -345,11 +358,7 @@ module VersatileDiamond
       # @param [Atom] to the new atom
       def swap_atom_in_positions(spec, from, to)
         return if from == to
-        @links = @links.each_with_object({}) do |(spec_atom, rels), acc|
-          acc[swap_only_atoms(spec_atom, spec, from, to)] = rels.map do |sa, rel|
-            [swap_only_atoms(sa, spec, from, to), rel]
-          end
-        end
+        @links = swap_in_links(:swap_only_atoms, @links, spec, from, to)
       end
     end
 

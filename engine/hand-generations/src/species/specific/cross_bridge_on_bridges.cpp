@@ -2,14 +2,6 @@
 #include "../base/methyl_on_bridge.h"
 #include "../../reactions/typical/sierpinski_drop.h"
 
-#ifdef PRINT
-const char *CrossBridgeOnBridges::name() const
-{
-    static const char value[] = "cross_bridge_on_briges";
-    return value;
-}
-#endif // PRINT
-
 void CrossBridgeOnBridges::find(Atom *anchor)
 {
     if (anchor->is(10))

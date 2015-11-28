@@ -1,5 +1,5 @@
 #include "bridge_ctsi.h"
-#include "../../reactions/typical/dimer_formation.h"
+#include "../../reactions/central/dimer_formation.h"
 #include "../../reactions/typical/dimer_formation_near_bridge.h"
 #include "../../reactions/typical/high_bridge_stand_to_one_bridge.h"
 #include "../../reactions/typical/high_bridge_to_methyl.h"

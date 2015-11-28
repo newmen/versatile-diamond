@@ -41,7 +41,7 @@ void UbiquitousReaction::doIt()
 }
 
 #ifdef PRINT
-void UbiquitousReaction::info(std::ostream &os)
+void UbiquitousReaction::info(IndentStream &os)
 {
     os << "Reaction " << name() << " [" << this << "] ";
     os << " as <" << target()->type() << ", " << target()->prevType() << ">: ";

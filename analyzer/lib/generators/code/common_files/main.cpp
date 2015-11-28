@@ -5,16 +5,7 @@
 
 void stopSignalHandler(int)
 {
-#ifdef PARALLEL
-#pragma omp master
-#endif // PARALLEL
     Runner<Handbook>::stop();
-}
-
-void segfaultSignalHandler(int)
-{
-    std::cerr << "Segmentation fault signal recived! Stop computing..." << std::endl;
-    exit(1);
 }
 
 int main(int argc, char *argv[])
@@ -33,23 +24,6 @@ int main(int argc, char *argv[])
 
     signal(SIGINT, stopSignalHandler);
     signal(SIGTERM, stopSignalHandler);
-#ifndef PARALLEL
-    signal(SIGSEGV, segfaultSignalHandler);
-#endif // PARALLEL
-
-#ifdef PARALLEL
-    omp_set_num_threads(THREADS_NUM);
-#endif // PARALLEL
-
-#ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-#ifdef PARALLEL
-        os << "Start as PARALLEL mode";
-#else
-        os << "Start as SINGLE THREAD mode";
-#endif // PARALLEL
-    });
-#endif // PRINT
 
     try
     {

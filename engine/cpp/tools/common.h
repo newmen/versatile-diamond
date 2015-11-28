@@ -8,8 +8,10 @@
 #include <assert.h>
 
 #ifdef PRINT
-#include "../tools/debug_print.h"
+#include "debug_print.h"
 #endif // PRINT
+
+#include "short_types.h"
 
 namespace vd
 {
@@ -100,10 +102,6 @@ struct dl3 : public dv3<T, 0>
 };
 
 }
-
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long long ullong;
 
 struct float3 : public common::dl3<float>
 {

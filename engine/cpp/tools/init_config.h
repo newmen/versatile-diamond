@@ -4,10 +4,13 @@
 #include <cstdlib>
 #include "common.h"
 
+namespace vd
+{
+
 struct InitConfig
 {
     const char *name;
-    vd::uint x = 0, y = 0;
+    uint x = 0, y = 0;
     double totalTime;
     double eachTime;
     const char *volumeSaverType;
@@ -26,5 +29,7 @@ struct InitConfig
         behavior = (argc == 9) ? argv[8] : nullptr;
     }
 };
+
+}
 
 #endif // INIT_CONFIG_H

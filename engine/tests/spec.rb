@@ -9,12 +9,9 @@ HANDG_DIR = '../hand-generations'
 HANDG_SRC_DIR = "#{HANDG_DIR}/src"
 HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
-ICC_PATH = '/opt/intel/composerxe'
-ICPC = "#{ICC_PATH}/bin/icpc"
-ICPCFLAGS = "-falign-functions=16 -ansi-alias -fstrict-aliasing -w1 -Wcheck -wd654,1572,411,873,1125,2259 -L#{ICC_PATH}/lib/intel64 -liomp5"
-
-ARKSWINC = "-I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR}"
-FLAGS = "#{ICPCFLAGS} #{ARKSWINC} -std=c++11 -O2 -openmp -lyaml-cpp"
+GCC_PATH = '/usr'
+CXX = "#{GCC_PATH}/bin/g++"
+FLAGS = "-I#{GCC_PATH}/include -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -L#{GCC_PATH}/lib -std=c++11 -O2 -openmp -lyaml-cpp"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string
@@ -25,7 +22,7 @@ def compile_line(file_in, file_out, additional_args = '')
 
   objs.reject! { |path| path =~ /main\.o$/ }
   objs_str = objs.join(' ')
-  "#{ICPC} #{FLAGS} #{additional_args} #{objs_str} -o #{file_out} #{file_in}"
+  "#{CXX} #{FLAGS} #{additional_args} #{objs_str} -o #{file_out} #{file_in}"
 end
 
 # Makes random sequence of chars
@@ -50,13 +47,37 @@ end
 # @param [String] random_name the name of binary output file
 def compile_test(file_name, random_name)
   if (!@maked && ARGV.size == 0) || ARGV.size == 1
-    `make`
+    `make -j#{processor_count}`
     @maked = true
   end
 
   supports = Dir['support/**/*.cpp']
   args = "#{supports.join(' ')}"
   compile_line(file_name, random_name, args)
+end
+
+# Gets the number of processor cores
+# The original source code: https://github.com/grosser/parallel
+# @return [Integer] the number of cores
+def processor_count
+  case RbConfig::CONFIG['host_os']
+  when /darwin9/
+    `hwprefs cpu_count`.to_i
+  when /darwin/
+    ((`which hwprefs` != '') ? `hwprefs thread_count` : `sysctl -n hw.ncpu`).to_i
+  when /linux/
+    `cat /proc/cpuinfo | grep processor | wc -l`.to_i
+  when /freebsd/
+    `sysctl -n hw.ncpu`.to_i
+  when /mswin|mingw/
+    require 'win32ole'
+    wmi = WIN32OLE.connect("winmgmts://")
+    # TODO: count hyper-threaded in this
+    cpu = wmi.ExecQuery("select NumberOfCores from Win32_Processor")
+    cpu.to_enum.first.NumberOfCores
+  else
+    1
+  end
 end
 
 # Runs test

@@ -4,10 +4,10 @@
 #include "registrator.h"
 
 template <ushort RT, ushort TARGETS_NUM = 1>
-class Typical : public Registrator<ConcreteTypicalReaction<TARGETS_NUM>, RT>
+class Typical : public Registrator<ConcreteTypicalReaction<TypicalReaction, TARGETS_NUM>, RT>
 {
 public:
-    typedef Registrator<ConcreteTypicalReaction<TARGETS_NUM>, RT> RegistratorType;
+    typedef Registrator<ConcreteTypicalReaction<TypicalReaction, TARGETS_NUM>, RT> RegistratorType;
 
 protected:
     template <class... Args> Typical(Args... args) : RegistratorType(args...) {}

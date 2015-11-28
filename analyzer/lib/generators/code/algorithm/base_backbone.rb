@@ -22,7 +22,7 @@ module VersatileDiamond
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
           def ordered_graph_from(nodes)
-            build_sequence_from(nodes)
+            reorder_by_maximals(build_sequence_from(nodes))
           end
 
         private
@@ -76,6 +76,41 @@ module VersatileDiamond
             result
           end
 
+          # Reorders passed graph when for some key nodes of it the
+          # maximal relations condition is met
+          #
+          # @param [Hash] ordered_graph which will trying to reorder
+          # @return [Hash] original passed graph or reordered graph
+          def reorder_by_maximals(ordered_graph)
+            maximals(ordered_graph).each_with_object(ordered_graph) do |mx, acc|
+              index = acc.index(mx)
+              acc.delete_at(index)
+              relation = mx.last.first.last
+              [mx.first, *mx.last.map(&:first)].transpose.each do |k, *vs|
+                acc.insert(index, [[k], [[vs, relation]]])
+              end
+            end
+          end
+
+          # Collects the nodes which have maximal number of relations
+          # @param [Array] ordered_graph the flatten graph from which the components
+          #   with maximal number of relations will extracted
+          # @return [Array] the flatten graph with nodes which have maximal number of
+          #   relations
+          def maximals(ordered_graph)
+            ordered_graph.select { |nodes, rels| maximal_rels?(nodes, rels) }
+          end
+
+          # Checks that passed nodes can be selected for maximal relations graph
+          # @param [Array] nodes which properties and relations checks
+          # @param [Array] rels the relations of passed nodes
+          # @return [Boolean] is nodes should be reordering much optimal or not
+          def maximal_rels?(nodes, rels)
+            nodes.all?(&:lattice) && nodes.size > 1 && !rels.empty? &&
+              rels.all? { |nbrs, _| nbrs.size == nodes.size } &&
+              nodes.all? { |nd| nd.relations_limits[rels.first.last] == rels.size }
+          end
+
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes
           def node_to_nodes
@@ -91,9 +126,8 @@ module VersatileDiamond
           # Collects all nodes from final graph
           # @return [Array] the sorted array of nodes lists
           def collect_nodes(graph)
-            lists = graph.each_with_object([]) do |(nodes, rels), acc|
-              acc << nodes
-              rels.each { |ns, _| acc << ns }
+            lists = graph.reduce([]) do |acc, (nodes, rels)|
+              acc + [nodes] + rels.map(&:first)
             end
             lists.uniq.sort_by(&:size)
           end
@@ -104,30 +138,30 @@ module VersatileDiamond
           #   excepted
           # @return [Hash] the graph without reverse relations
           def without_reverse(graph, nodes)
-            reject_proc = proc { |ns| nodes.include?(ns) }
+            reject_lambda = -> ns { nodes.include?(ns) }
 
             # except multi reverse relations
             other_side_nodes = graph[nodes].map(&:first)
-            without_full_others = except_relations(graph, reject_proc) do |ns|
+            without_full_others = except_relations(graph, reject_lambda) do |ns|
               other_side_nodes.include?(ns)
             end
 
             # except single reverse relations
             single_other_nodes = other_side_nodes.flatten.uniq
-            except_relations(without_full_others, reject_proc) do |ns|
+            except_relations(without_full_others, reject_lambda) do |ns|
               ns.size == 1 && single_other_nodes.include?(ns.first)
             end
           end
 
           # Removes relations from passed graph by two conditions
-          # @param [Proc] reject_proc the function which reject neighbours nodes
+          # @param [Proc] reject_lambda the function which reject neighbours nodes
           # @yield [Array] by it condition checks that erasing should to be
           # @return [Hash] the graph without erased relations
-          def except_relations(graph, reject_proc, &condition_proc)
+          def except_relations(graph, reject_lambda, &condition_proc)
             graph.each_with_object({}) do |(nodes, rels), result|
               if condition_proc[nodes]
                 new_rels = rels.reduce([]) do |acc, (nss, r)|
-                  new_nss = nss.reject(&reject_proc)
+                  new_nss = nss.reject(&reject_lambda)
                   new_nss.empty? ? acc : acc << [new_nss, r]
                 end
 

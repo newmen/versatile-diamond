@@ -88,8 +88,8 @@ MC<EVENTS_NUM, MULTI_EVENTS_NUM>::MC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
     for (int j = 0; j < MULTI_EVENTS_NUM; ++j) _order[i + j] = j + MULTI_EVENTS_INDEX_SHIFT;
 
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "Inited order: " << std::endl;
+    debugPrint([&](IndentStream &os) {
+        os << "MC::MC() inited with order: " << std::endl;
         for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
         {
             os << i << "-" << _order[i] << std::endl;
@@ -108,7 +108,8 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 {
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
+        os << "MC::doRandom()\n";
         os << "Rate: " << totalRate() << " % time: " << totalTime() << "\n";
         os << "Current sizes: " << std::endl;
         for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
@@ -123,7 +124,7 @@ double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
     if (event)
     {
 #ifdef PRINT
-        debugPrint([&](std::ostream &os) {
+        debugPrint([&](IndentStream &os) {
             os << event->name();
         });
 #endif // PRINT
@@ -135,7 +136,7 @@ double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
     else
     {
 #ifdef PRINT
-        debugPrint([&](std::ostream &os) {
+        debugPrint([&](IndentStream &os) {
             os << "Event not found! Recount and sort!";
         });
 #endif // PRINT
@@ -326,7 +327,8 @@ template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 Reaction *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
 {
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
+        os << "MC::mostProbablyEvent()\n";
         os << "Random number: " << r << "\n";
     });
 #endif // PRINT
@@ -340,7 +342,7 @@ Reaction *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
         if (r < cr + passRate)
         {
 #ifdef PRINT
-            debugPrint([&](std::ostream &os) {
+            debugPrint([&](IndentStream &os) {
                 os << "event " << i;
             });
 #endif // PRINT
@@ -361,7 +363,8 @@ Reaction *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string action, std::string type, uint n)
 {
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
+        os << "MC::printReaction() ";
         os << action << " ";
         if (n > 1)
         {

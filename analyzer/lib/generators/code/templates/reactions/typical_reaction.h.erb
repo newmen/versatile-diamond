@@ -17,6 +17,13 @@ public:
         <%= outer_base_class_name %>(targets) {}
 
     void doIt() override;
+<% if concretizable? %>
+
+    LateralReaction *selectFrom(SingleLateralReaction **chunks, ushort num) const override;
+
+protected:
+    SpecReaction *lookAround() override;
+<% end %>
 };
 
 #endif // <%= define_name %>

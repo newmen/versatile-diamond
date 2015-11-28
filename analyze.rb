@@ -21,6 +21,7 @@ Options:
 
   --name=NAME        Set the name of output generation file or another entity
   --out=PATH         Setup output path into which results will placed [default: results]
+  --cache-dir=PATH   No check cache when parse config [default: cache]
 
   --base-specs       Generate some info about base specs
   --spec-specs       Generate some info about specific specs
@@ -31,7 +32,7 @@ Options:
   --no-base-specs    Not generate info about base specs
   --no-spec-specs    Not generate info about specific specs
   --no-term-specs    Not generate info about termination specs
-  --no-wheres        Not generate info about where objects
+  --no-chunks        Not generate info about chunk objects
   --no-reactions     Not generate info about reactions
   --no-includes      Not generate info wihtout including some in some
   --no-transitions   Not generate info wihtout transitions between some and some
@@ -52,7 +53,9 @@ VD = VersatileDiamond
 Gens = VD::Generators
 
 I18n.locale = opt['--lang']
-analysis_result = VD::Analyzer.read_config(opt['<path_to_config>'])
+analysis_result =
+  VD::Analyzer.read_config(opt['<path_to_config>'], cache_dir: opt['--cache-dir'])
+
 exit unless analysis_result
 
 unless Dir.exist?(opt['--out'])
@@ -60,7 +63,7 @@ unless Dir.exist?(opt['--out'])
 end
 
 props = %w(base-specs spec-specs term-specs reactions includes transitions
-  no-base-specs no-spec-specs no-term-specs no-wheres no-reactions
+  no-base-specs no-spec-specs no-term-specs no-reactions no-chunks
   no-includes no-transitions)
 
 props_to_ops = props.map do |prop|

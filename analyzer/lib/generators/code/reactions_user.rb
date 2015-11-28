@@ -9,7 +9,7 @@ module VersatileDiamond
         # Gets the reaction class code generator
         # @param [Organizers::DependentReaction] reaction by which code generator
         #   will be gotten
-        # @return [Reaction] the correspond reaction code generator
+        # @return [BaseReaction] the correspond reaction code generator
         def reaction_class(reaction)
           generator.reaction_class(reaction.name)
         end

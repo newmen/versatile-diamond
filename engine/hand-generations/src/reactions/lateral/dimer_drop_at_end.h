@@ -2,9 +2,9 @@
 #define DIMER_DROP_AT_END_H
 
 #include "../concretizable_role.h"
-#include "../lateral.h"
+#include "../single_lateral.h"
 
-class DimerDropAtEnd : public ConcretizableRole<Lateral, DIMER_DROP_AT_END, 1>
+class DimerDropAtEnd : public ConcretizableRole<SingleLateral, DIMER_DROP_AT_END, 1>
 {
     static const char __name[];
 
@@ -15,8 +15,6 @@ public:
 
     double rate() const override { return RATE(); }
     const char *name() const override { return __name; }
-
-    void createUnconcreted(LateralSpec *removableSpec) override;
 };
 
 #endif // DIMER_DROP_AT_END_H

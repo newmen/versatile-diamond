@@ -21,7 +21,7 @@ module VersatileDiamond
           # Generates find algorithm cpp code for target reaction
           # @return [String] the string with cpp code of find reaction algorithm
           def build
-            nodes = entry_nodes
+            nodes = backbone.entry_nodes.first
             unit = factory.make_unit(nodes)
             unit.first_assign!
 
@@ -33,7 +33,7 @@ module VersatileDiamond
         private
 
           # Creates backbone of algorithm
-          # @return [SpecieBackbone] the backbone which provides ordered graph
+          # @return [ReactionBackbone] the backbone which provides ordered graph
           def create_backbone
             ReactionBackbone.new(generator, @reaction, @specie)
           end
@@ -44,17 +44,11 @@ module VersatileDiamond
             ReactionUnitsFactory.new(generator, @reaction)
           end
 
-          # Gets entry nodes for current reaction
-          # @return [Array] the entry nodes of current reaction
-          def entry_nodes
-            super.first
-          end
-
           # Collects procs of conditions for body of find algorithm
           # @param [Array] nodes by which procs will be collected
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
-            ordered_graph = ordered_graph_from(nodes)
+            ordered_graph = backbone.ordered_graph_from(nodes)
             result = ordered_graph.reduce([]) do |acc, (ns, rels)|
               acc + accumulate_relations(ns, rels)
             end
@@ -63,19 +57,19 @@ module VersatileDiamond
             if pswrs
               atoms_to_rels = Hash[pswrs.map { |pair, rel| [pair.last.atom, rel] }]
               unit = factory.make_unit(pswrs.map(&:first).transpose.last)
-              result << -> &prc { unit.check_compliences(atoms_to_rels, &prc) }
+              result << -> &prc { unit.check_compliances(atoms_to_rels, &prc) }
             end
             result
           end
 
-          # Finds non complienced nodes
+          # Finds non complianced nodes
           # @param [Array] ordered_graph by which the nodes will be found
           # @return [Array] the list of nodes pairs with relations or nil
           def not_compiences(ordered_graph)
             result = nil
             ordered_graph.reverse.each do |ns, rels|
               rels.each do |nbrs, _|
-                next unless ns.size == nbrs.size
+                next unless ns.size == nbrs.size # TODO: why reject?
                 pswrs = ns.zip(nbrs).map do |pair|
                   rel = @reaction.relation_between(*pair.map(&method(:spec_atom_from)))
                   [pair, rel]

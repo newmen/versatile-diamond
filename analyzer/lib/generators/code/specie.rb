@@ -6,12 +6,13 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
+        include Modules::SpecNameConverter
         include SpeciesUser
         include ReactionsUser
         extend Forwardable
 
-        ANCHOR_ATOM_NAME = 'anchor'
-        ANCHOR_SPECIE_NAME = 'parent'
+        ANCHOR_ATOM_NAME = 'anchor'.freeze
+        ANCHOR_SPECIE_NAME = 'parent'.freeze
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
         def_delegator :@_find_builder, :using_atoms # error if no find algorithm
@@ -80,11 +81,8 @@ module VersatileDiamond
             var = instance_variable_get(var_name)
             return var if var
 
-            m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
-            addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            addition = addition.public_send(method) if addition && prefix == 'file'
-            head = eval("m[1].#{method}")
-            instance_variable_set(var_name, "#{head}#{addition}")
+            nm = convert_name(spec.name, method, separator, tail_too: prefix == 'file')
+            instance_variable_set(var_name, nm)
           end
         end
 
@@ -204,6 +202,13 @@ module VersatileDiamond
         def typical_reactions
           all_reactions = spec.reactions.map(&method(:reaction_class))
           (all_reactions - local_reactions - lateral_reactions).uniq
+        end
+
+        # Gets list of typical reactions which could be concretized by current specie
+        # @return [Array] the list of laterable typical reactions
+        def laterable_typical_reactions
+          parent_reactions = spec.theres.map(&:lateral_reaction).map(&:parent).compact
+          parent_reactions.reject(&:lateral?).uniq.map(&method(:reaction_class))
         end
 
         # Gets list of lateral reactions for current specie
@@ -362,9 +367,9 @@ module VersatileDiamond
           if parents_num == 0
             ['Atom **', 'atoms']
           elsif parents_num == 1
-            ['ParentSpec *', 'parent']
+            ['ParentSpec *', ANCHOR_SPECIE_NAME]
           else # parents_num > 1
-            ['ParentSpec **', 'parents']
+            ['ParentSpec **', ANCHOR_SPECIE_NAME.pluralize]
           end
         end
 
@@ -381,22 +386,6 @@ module VersatileDiamond
           else # delta > 1
             ['Atom **', 'additionalAtoms']
           end
-        end
-
-        # Makes suffix of name which is used in name builder methods
-        # @param [String] brackets_str the string which contain brackets and some
-        #   additional params of specie in them
-        # @return [String] the suffix of name
-        # @example generating name
-        #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
-        def name_suffixes(brackets_str)
-          params_str = brackets_str.scan(/\((.+?)\)/).first.first
-          params = params_str.scan(/(\w+): (.)/)
-          strs = params.group_by(&:first).map do |k, gs|
-            states = gs.map { |item| item.last == '*' ? 's' : item.last }.join
-            "#{k.upcase}#{states}"
-          end
-          strs.sort
         end
 
         # Gets sorted anchors from atoms sequence

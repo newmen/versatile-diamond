@@ -4,33 +4,48 @@ module VersatileDiamond
     # Wraps structural reaction with lateral interactions
     class DependentLateralReaction < DependentSpecReaction
 
-      # Collects and return all where object
-      # @return [Array] the array of where objects
-      def wheres
-        theres.map(&:where)
+      # Initializes dependent lateral reation
+      # @override
+      def initialize(*)
+        super
+        @_theres, @_chunk = nil
       end
 
-      # Wraps each there object to correspond dependent instance
-      # @return [Array] the array of wrapped there objects
+      # Collects and return all used sidepiece specs
+      # @return [Array] the array of sidepiece specs
+      def sidepiece_specs
+        reaction.theres.flat_map(&:env_specs)
+      end
+
+      # Gets the chunk which builded for current lateral reaction
+      # @return [Chunk] the chunk which fully describes lateral environment
+      def chunk
+        @_chunk ||= Chunk.new(self, theres)
+      end
+
+      # Gets the list of dependent there objects. The internal caching is significant!
+      # @return [Array] the list of dependent there objects
       def theres
-        reaction.theres.map { |there| DependentThere.new(there) }
+        @_theres ||= reaction.theres.map { |th| DependentThere.new(self, th) }
       end
 
-      # Lateral reaction is lateral reaction
-      # @return [Boolean] true
-      def lateral?
-        true
+      # Also swap targets of depending chunk
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
+      #   the spec from which need to swap
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
+      #   the spec to which need to swap
+      # @override
+      def swap_source(from, to)
+        super
+        chunk.swap_spec(from, to) if @_chunk
       end
 
-      # Organize dependencies from another lateral reactions
-      # @param [Array] lateral_reactions the possible children
-      def organize_dependencies!(lateral_reactions)
-        lateral_reactions.each do |possible|
-          next if possible == self
-          next unless reaction.cover?(possible.reaction)
+    private
 
-          possible.store_parent(self)
-        end
+      # Clears internal caches
+      def clear_caches!
+        super
+        raise 'Chunk already created with possible swapping values' if @_chunk
       end
     end
 

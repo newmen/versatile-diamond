@@ -27,6 +27,15 @@ module VersatileDiamond
 
           attr_reader :atoms
 
+          # Gets the original concept spec from current unique dependent spec
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [Concept::Spec | Concept::SpecificSpec | Concept::VeiledSpec]
+          #   the original concept spec
+          def concept_spec(atom)
+            dept_spec_for(atom).spec
+          end
+
           # Atomic specie is always single
           # @return [Boolean] true
           def single?

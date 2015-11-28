@@ -159,13 +159,13 @@ module VersatileDiamond
             end
           end
 
-          # Checks that atom has a bond like the passed
+          # Gets a list of unit relations of atom in current node
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which relations in current specie will be checked
-          # @param [Concepts::Bond] bond which existance will be checked
-          # @return [Boolean] is atom uses bond in current specie or not
-          def use_bond?(atom, bond)
-            dept_spec_for(atom).relations_of(atom).any? { |r| r == bond }
+          # @param [Hash] rel_params by which the using relations will checked
+          # @return [Array] a list of relations of atom
+          def relations_like(atom, rel_params)
+            relations_of(atom).select { |_, r| r.it?(rel_params) }
           end
 
         private
@@ -192,13 +192,13 @@ module VersatileDiamond
           # Defines atoms array variable for iterating from them on crystall lattice
           # @return [String] the line with defined atoms array variable it it need
           def define_anchors_array_line
-            if atoms.size > 1 && !namer.array?(atoms)
+            if atoms.size == 1 || namer.full_array?(atoms)
+              ''
+            else
               old_names = atoms.map(&method(:name_of)) # collect before erase
               namer.erase(atoms)
               namer.assign_next('anchor', atoms)
               define_var_line('Atom *', atoms, old_names)
-            else
-              ''
             end
           end
 
@@ -386,8 +386,15 @@ module VersatileDiamond
               cb_call = check_bond_call(*asp)
               if relation.bond?
                 acc << cb_call
-              elsif any_uses_bond?(usp.zip(asp), relation.params)
-                acc << "!#{cb_call}"
+              else
+                rels_props = relations_permutation(usp.zip(asp), relation.params)
+                if max_bonds_num?(rels_props)
+                  acc << cb_call
+                elsif possible_relation?(rels_props)
+                  acc << "!#{cb_call}" # TODO: not checked solution
+                  # (it condition already under rspec, but not checked in real crystal
+                  # growh simulation behavior)
+                end
               end
             end
 
@@ -407,20 +414,69 @@ module VersatileDiamond
             end
           end
 
-          # Checks that any atom from each pair are used passed relation
+          # Gets a list of possible relations permutation between atoms from units
           # @param [Array] pairs the array with two elements where each item is pair of
           #   unit and atom of it
           # @param [Hash] rel_params by which the using bond will checked
-          # @return [Boolean] are any atom use bond or not
-          def any_uses_bond?(pairs, rel_params)
+          # @return [Array] the list of possible relations properties
+          def relations_permutation(pairs, rel_params)
             _, atoms_pair = pairs.transpose
-            pairs.permutation.any? do |prs|
+            pairs.permutation.map do |prs|
               us, as = prs.transpose
               al, bl = as.map(&:lattice)
-              bond = Concepts::Bond[rel_params]
-              bond = al.opposite_relation(bl, bond) unless as == atoms_pair
-              us.first.use_bond?(as.first, bond)
+              position = Concepts::Position[rel_params]
+              position = al.opposite_relation(bl, position) unless as == atoms_pair
+
+              curr_prms = position.params
+              unit, atom =  [us, as].map(&:first)
+              [
+                [unit, atom],
+                unit.relations_like(atom, curr_prms),
+                atom.relations_limits[curr_prms]
+              ]
             end
+          end
+
+          # Checks that property contains maximal number of possible bonds
+          # @param [Array] rels_props which will be checked
+          # @return [Boolean] is contain maximal number of bonds or not
+          def max_bonds_num?(rels_props)
+            rels_props.any? do |_, rels, limit_num|
+              rels.map(&:last).count(&:bond?) == limit_num
+            end
+          end
+
+          # Checks that relation between internal target atoms is possible
+          # @param [Array] rels_props which will be checked
+          # @return [Boolean]
+          def possible_relation?(rels_props)
+            all_free?(rels_props) &&
+              max_rels_used?(rels_props) && at_least_one_bond?(rels_props)
+          end
+
+          # Checks that all internal atom properties has free bonds
+          # @param [Array] rels_props which will be checked
+          # @return [Boolean]
+          def all_free?(rels_props)
+            rels_props.all? do |(unit, atom), _, _|
+              atom_properties(unit.dept_spec_for(atom), atom).has_free_bonds?
+            end
+          end
+
+          # Checks that all collected relations belongs to context graph
+          # @param [Array] rels_props which will be checked
+          # @return [Boolean]
+          def max_rels_used?(rels_props)
+            rels_props.any? do |_, rels, limit_num|
+              rels.count { |v, _| has_relations?(v) } == limit_num
+            end
+          end
+
+          # Checks that relations contains at least one bond
+          # @param [Array] rels_props which will be checked
+          # @return [Boolean]
+          def at_least_one_bond?(rels_props)
+            rels_props.any? { |_, rels, _| rels.map(&:last).any?(&:bond?) }
           end
         end
 

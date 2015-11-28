@@ -9,8 +9,31 @@ module VersatileDiamond
         class NameRemember
           # Initializes internal store for all using names
           def initialize
-            @names = {}
-            @next_names = []
+            init!
+            @checkpoints = []
+          end
+
+          # Saves current state to stack for future rollback to it if need
+          def checkpoint!
+            @checkpoints << {
+              names: @names.dup,
+              next_names: @next_names.dup,
+              used_names: @used_names.dup
+            }
+          end
+
+          # Restores previously saved state
+          # @option [Boolean] :forget is the flag which if is set then last checkpoint
+          #   will be forgotten
+          def rollback!(forget: false)
+            state = forget ? @checkpoints.pop : @checkpoints.last
+            if state
+              @names = state[:names].dup
+              @next_names = state[:next_names].dup
+              @used_names = state[:used_names].dup
+            else
+              init!
+            end
           end
 
           # Assign unique names for each variables with duplicate error checking
@@ -53,12 +76,12 @@ module VersatileDiamond
             if single?(vars)
               names[single_value(vars)]
             else
-              check_proc = proc { |var| names[var] }
-              if vars.all?(&check_proc)
+              check_lambda = -> var { names[var] }
+              if vars.all?(&check_lambda)
                 name = array_name_for(vars)
                 raise 'Not all vars belongs to array' unless name
                 name
-              elsif vars.any?(&check_proc)
+              elsif vars.any?(&check_lambda)
                 raise 'Not for all variables in passed set the name is presented'
               else
                 nil
@@ -76,13 +99,20 @@ module VersatileDiamond
           # Checks that passed vars have same array variable name
           # @param [Array] vars the list of variables which will be checked
           # @return [Boolean] are vars have same array variable name or not
-          def array?(vars)
-            !!array_name_for(vars)
+          def full_array?(vars)
+            vars.all?(&method(:name_of)) && !!array_name_for(vars)
           end
 
         private
 
           attr_reader :names
+
+          # Assigns default values to internal containers
+          def init!
+            @names = {}
+            @next_names = []
+            @used_names = Set.new
+          end
 
           # Gets a hash where keys are names and values are variables
           # @return [Hash] the inverted names hash
@@ -119,11 +149,11 @@ module VersatileDiamond
             stored_names = vars.map { |var| names[var] }
             array_name = stored_names.first.scan(/^\w+/).first
 
-            if stored_names.any? { |name| !name.match(/^#{array_name}\[\d+\]$/) }
-              nil
-            else
-              array_name
-            end
+            match_lambda = -> name { name.match(/^#{array_name}\[\d+\]$/) }
+            is_array = stored_names.all?(&match_lambda) &&
+              @used_names.select(&match_lambda).size == vars.size
+
+            is_array ? array_name : nil
           end
 
           # Assign unique names for each variables
@@ -150,7 +180,7 @@ module VersatileDiamond
           def check_and_store(name, var)
             raise %(Variable "#{name}" already has name "#{names[var]}") if names[var]
             raise %(Name "#{name}" already used) if variables[name]
-            names[var] = name
+            remember(name, var)
           end
 
           # Replases a variable with some name without error checking
@@ -159,6 +189,14 @@ module VersatileDiamond
           def replace(name, var)
             replasing_var = variables[name]
             names.delete(replasing_var)
+            remember(name, var)
+          end
+
+          # Remembers the name of variable
+          # @param [String] name the name of storing variable
+          # @param [Object] var the storing variable
+          def remember(name, var)
+            @used_names << name
             names[var] = name
           end
         end

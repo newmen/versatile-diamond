@@ -9,7 +9,7 @@ module VersatileDiamond
       # @yield [Object, Object] compares two elements from each list
       # @return [Boolean] lists are identical or not
       def lists_are_identical?(list1, list2, &block)
-        return true if list1.object_id == list2.object_id
+        return true if list1.equal?(list2)
         return false if list1.size != list2.size
 
         list1, list2 = list1.to_a.dup, list2.to_a.dup

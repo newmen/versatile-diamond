@@ -8,17 +8,15 @@ module VersatileDiamond
       let(:aib) { df_source.last }
       let(:aib_dup) { activated_incoherent_bridge.dup }
 
-      shared_examples_for :check_positions_graph do
-        it { expect(subject.positions).to match_graph(positions) }
+      shared_examples_for :check_links_graph do
+        it { expect(subject.links).to match_graph(links) }
       end
 
       describe '#dup' do
         subject { on_end.dup }
         it { should_not == on_end }
-        it { expect(subject.where).to eq(on_end.where) }
-        it { expect(subject.positions).to eq(on_end.positions) }
-        it { expect(subject.positions.object_id).
-          not_to eq(on_end.positions.object_id) }
+        it { expect(subject.links).not_to eq(on_end.links) }
+        it { expect(subject.links.object_id).not_to eq(on_end.links.object_id) }
 
         describe "target swapping doesn't change duplicate" do
           before { subject.swap_target(aib, aib_dup) }
@@ -26,9 +24,8 @@ module VersatileDiamond
         end
       end
 
-      describe '#where' do
-        it { expect(on_end.where).to eq(at_end) }
-        it { expect(on_middle.where).to eq(at_middle) }
+      describe '#description' do
+        it { expect(on_end.description).to eq(at_end.description) }
       end
 
       describe '#target_specs' do
@@ -43,15 +40,10 @@ module VersatileDiamond
         it { expect(there_methyl.env_specs).to eq([methyl_on_bridge]) }
       end
 
-      describe '#description' do
-        it { expect(on_end.description).to eq('at end of dimers row') }
-        it { expect(there_methyl.description).to eq('chain neighbour methyl') }
-      end
-
-      describe '#positions' do
-        it_behaves_like :check_positions_graph do
+      describe '#links' do
+        it_behaves_like :check_links_graph do
           subject { on_end }
-          let(:positions) do
+          let(:links) do
             {
               [ab, ab.atom(:ct)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
@@ -63,9 +55,9 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like :check_positions_graph do
+        it_behaves_like :check_links_graph do
           subject { on_middle }
-          let(:positions) do
+          let(:links) do
             {
               [ab, ab.atom(:ct)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross],
@@ -79,9 +71,9 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like :check_positions_graph do
+        it_behaves_like :check_links_graph do
           subject { there_methyl }
-          let(:positions) do
+          let(:links) do
             {
               [ab, ab.atom(:ct)] => [
                 [[methyl_on_bridge, methyl_on_bridge.atom(:cb)], position_100_front]
@@ -96,22 +88,19 @@ module VersatileDiamond
         let(:method) { :env_specs }
       end
 
-      describe '#similar_source' do
+      describe '#use_similar_source?' do
         subject { on_end }
-        it { expect(subject.similar_source(dimer)).to eq(dimer) }
-        it { expect(subject.similar_source(dimer.dup)).to be_nil}
-        it { expect(subject.similar_source(bridge_base)).to be_nil }
-
-        it { expect(subject.similar_source(ab)).to eq(ab) }
-        it { expect(subject.similar_source(ab.dup)).to be_nil }
+        it { expect(subject.use_similar_source?(dimer)).to be_truthy }
+        it { expect(subject.use_similar_source?(dimer.dup)).to be_falsey}
+        it { expect(subject.use_similar_source?(ab)).to be_truthy }
       end
 
       describe '#swap_source' do
-        it_behaves_like :check_positions_graph do
+        it_behaves_like :check_links_graph do
           subject { on_end }
           before { subject.swap_source(dimer, d_dup) }
           let(:d_dup) { dimer.dup }
-          let(:positions) do
+          let(:links) do
             {
               [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]],
               [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]]
@@ -121,10 +110,10 @@ module VersatileDiamond
       end
 
       describe '#swap_target' do
-        it_behaves_like :check_positions_graph do
+        it_behaves_like :check_links_graph do
           subject { on_end }
           before { subject.swap_target(aib, aib_dup) }
-          let(:positions) do
+          let(:links) do
             {
               [ab, ab.atom(:ct)] => [
                 [[dimer, dimer.atom(:cl)], position_100_cross]
@@ -156,21 +145,29 @@ module VersatileDiamond
       end
 
       describe '#same?' do
+        let(:reverse_end) { end_lateral_df.reverse.theres.first }
         let(:same) do
           at_end.concretize(
             two: [dimer, dimer.atom(:cl)], one: [dimer, dimer.atom(:cr)])
         end
 
-        it { expect(on_end.same?(same)).to be_truthy }
+        it { expect(reverse_end.same?(same)).to be_falsey }
+        it { expect(same.same?(reverse_end)).to be_falsey }
+
+        it { expect(on_end.same?(same)).to be_falsey }
+        it { expect(same.same?(on_end)).to be_falsey }
+
         it { expect(on_end.same?(on_middle)).to be_falsey }
         it { expect(on_middle.same?(on_end)).to be_falsey }
         it { expect(on_end.same?(there_methyl)).to be_falsey }
       end
 
-      describe '#cover?' do
-        it { expect(on_end.cover?(on_middle)).to be_truthy }
-        it { expect(on_middle.cover?(on_end)).to be_falsey }
-        it { expect(there_methyl.cover?(on_end)).to be_falsey }
+      describe '#same_own_positions?' do
+        it { expect(on_end.same_own_positions?(on_middle)).to be_truthy }
+        it { expect(on_middle.same_own_positions?(on_end)).to be_truthy }
+
+        it { expect(on_end.same_own_positions?(there_methyl)).to be_falsey }
+        it { expect(there_methyl.same_own_positions?(on_end)).to be_falsey }
       end
     end
 

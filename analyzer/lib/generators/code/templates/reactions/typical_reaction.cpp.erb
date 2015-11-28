@@ -1,14 +1,41 @@
 #include "<%= file_name %>.h"
 
 <%= render_rate_and_name_body_partial %>
-
 <% complex_source_species.each do |specie| %>
+
 void <%= class_name %>::find(<%= find_arguments_str(specie) %>)
 {
 <%= find_algorithm_from(specie) %>
 }
+<% end %>
+<% if concretizable? %>
+<% sidepiece_species.each do |specie| %>
+void <%= class_name %>::checkLaterals(<%= check_laterals_arguments_str(specie) %>)
+{
+<%= check_laterals_algorithm_from(specie) %>
+}
 
 <% end %>
+
+LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **chunks, ushort num) const
+{
+    assert(num > 0);
+
+<%= select_from_algorithm %>
+}
+
+SpecReaction *<%= class_name %>::lookAround()
+{
+    uint index = 0;
+    <%= define_lateral_chunks %>;
+
+<%= look_around_algorithm %>
+
+    assert(index < <%= lateral_chunks_num %>);
+    return selectReaction(chunks, index);
+}
+<% end %>
+
 void <%= class_name %>::doIt()
 {
 }

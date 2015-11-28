@@ -12,7 +12,6 @@ module VersatileDiamond
       # @param [Hash] names_and_specs see at Equation#initialize same argument
       def initialize(reaction, names_and_specs)
         @reaction, @names_and_specs = reaction, names_and_specs
-        @reverse_was_stored = false
       end
     end
 

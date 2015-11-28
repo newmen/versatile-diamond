@@ -106,7 +106,7 @@ module VersatileDiamond
 
       # Gets the reaction code generator
       # @param [Symbol] reaction_name the name of reaction which will be returned
-      # @return [Code::Reaction] the reaction code generator instance
+      # @return [Code::BaseReaction] the reaction code generator instance
       def reaction_class(reaction_name)
         @reactions[reaction_name]
       end

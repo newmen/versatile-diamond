@@ -4,6 +4,8 @@
 #include <atoms/atom_builder.h>
 #include <phases/diamond.h>
 
+#include <reactions/central/dimer_drop.h>
+#include <reactions/central/dimer_formation.h>
 #include <reactions/lateral/dimer_drop_at_end.h>
 #include <reactions/lateral/dimer_drop_in_middle.h>
 #include <reactions/lateral/dimer_formation_at_end.h>
@@ -15,9 +17,7 @@
 #include <reactions/typical/des_methyl_from_111.h>
 #include <reactions/typical/des_methyl_from_bridge.h>
 #include <reactions/typical/des_methyl_from_dimer.h>
-#include <reactions/typical/dimer_drop.h>
 #include <reactions/typical/dimer_drop_near_bridge.h>
-#include <reactions/typical/dimer_formation.h>
 #include <reactions/typical/dimer_formation_near_bridge.h>
 #include <reactions/typical/form_two_bond.h>
 #include <reactions/typical/high_bridge_stand_to_dimer.h>

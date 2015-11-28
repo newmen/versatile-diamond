@@ -12,8 +12,7 @@ module VersatileDiamond
         #   argument
         # @return [Boolean] contain or not
         def contain?(first, second, **options)
-          return true if first.object_id == second.object_id
-
+          return true if first.equal?(second)
           traversal = intersec(first, second, options).first
           traversal && traversal.size == second.links.size
         end

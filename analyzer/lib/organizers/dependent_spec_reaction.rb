@@ -3,18 +3,19 @@ module VersatileDiamond
 
     # Provides additional methods for getting using atoms of dependent specie
     class DependentSpecReaction < DependentReaction
+      include Modules::SpecLinksAdsorber
       include Modules::RelationBetweenChecker
       include LinksCleaner
       extend Forwardable
 
-      def_delegators :reaction, :changes, :swap_atom
+      def_delegators :reaction, :changes, :lateral?
 
       # Initializes dependent spec reation
       def initialize(*)
         super
 
         check_positions!
-        @_links, @_original_links, @_clean_links = nil
+        clear_caches!
       end
 
       # Gets the list of surface source specs
@@ -29,44 +30,31 @@ module VersatileDiamond
       # @return [Hash] the most full relations graph between atoms of reactnats
       # TODO: must be private
       def links
-        @_links ||=
-          surface_source.each_with_object(reaction.links.dup) do |spec, result|
-            spec.links.each do |atom, rels|
-              result[[spec, atom]] ||= []
-              result[[spec, atom]] += rels.map { |a, r| [[spec, a], r] }
-              result[[spec, atom]] = result[[spec, atom]].uniq
-            end
-          end
+        @_links ||= adsorb_links(reaction.links, surface_source)
       end
 
       # Collects links of positions between atoms of reactants for clearing
       # @return [Hash] the relations graph between used atoms of reactnats
       def original_links
-        return @_original_links if @_original_links
-
-        links_dup = links.each_with_object({}) do |(sa1, rels), acc|
-          acc[sa1] = rels.dup
-        end
-
-        @_original_links =
-          surface_source.each_with_object(links_dup) do |spec, acc|
-            used_atoms = reaction.used_atoms_of(spec).to_set
-            spec.links.each do |atom, rels|
-              if used_atoms.include?(atom)
-                acc[[spec, atom]].reject! do |(s, a), _|
-                  spec == s && !used_atoms.include?(a)
-                end
-              else
-                acc.delete([spec, atom])
-              end
-            end
-          end
+        @_original_links ||= adsorb_missed_links(reaction, links, surface_source)
       end
 
       # Gets clean positions between atoms of reactants
       # @return [Hash] the clean positions links graph
       def clean_links
         @_clean_links ||= erase_excess_positions(reaction.links)
+      end
+
+      # Clears caches and delegates call to super class
+      def swap_source(*)
+        clear_caches!
+        super
+      end
+
+      # Clears caches and delegates call to super class
+      def swap_atom(*args)
+        clear_caches!
+        reaction.swap_atom(*args)
       end
 
       # Gets all using atoms of passed spec
@@ -106,6 +94,11 @@ module VersatileDiamond
       # @override
       def check_latticed_atom(first, second)
         super(first.last, second.last)
+      end
+
+      # Clears internal caches
+      def clear_caches!
+        @_links, @_original_links, @_clean_links = nil
       end
     end
 

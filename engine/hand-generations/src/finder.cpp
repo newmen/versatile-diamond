@@ -35,9 +35,9 @@ void Finder::initFind(Atom **atoms, uint n)
 void Finder::findAll(Atom **atoms, uint n)
 {
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
         os << " ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-        os << "Find by " << n << " atoms";
+        os << "Finder::findAll by " << n << " atoms";
         for (uint i = 0; i < n; ++i)
         {
             os << " [" << atoms[i] << "]";

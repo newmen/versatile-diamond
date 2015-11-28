@@ -30,7 +30,7 @@ public:
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
     virtual const char *name() const = 0;
-    virtual void info(std::ostream &os) = 0;
+    virtual void info(IndentStream &os) = 0;
 
 private:
     void wasFound();

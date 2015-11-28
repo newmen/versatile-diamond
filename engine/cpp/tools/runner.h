@@ -229,7 +229,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         double dt = HB::mc().doRandom(&mcData);
 
 #ifdef PRINT
-        debugPrint([&](std::ostream &os) {
+        debugPrint([&](IndentStream &os) {
             os << "-----------------------------------------------\n"
                << steps << ". " << HB::mc().totalRate() << "\n";
         });

@@ -28,7 +28,7 @@ module VersatileDiamond
       #   represent a target atom from reactants and the second element is
       #   represent a environment spec atom
       # @param [Hash] options the options for creating position
-      # @raise [Errors::SyntaxError] if some of atoms cannot be complienced or
+      # @raise [Errors::SyntaxError] if some of atoms cannot be complianced or
       #   if spec in position cannot be resolved
       def position(*atom_strs, **options)
         target, spec, atom, used_atom_str = nil
@@ -44,17 +44,14 @@ module VersatileDiamond
             spec_name, keyname = match_used_atom(atom_str)
             spec = @names_and_specs[spec_name] ||
               Concepts::SpecificSpec.new(get(:spec, spec_name))
+
             atom = spec.atom(keyname)
+            syntax_error('matcher.undefined_used_atom', name: atom_str) unless atom
 
             used_atom_str = atom_str
-
             next if @used_spec_names.include?(spec_name)
-            if atom
-              @where.specs << spec
-            else
-              syntax_error('matcher.undefined_used_atom', name: atom_str)
-            end
 
+            @where.specs << spec
             @used_spec_names << spec_name
           end
         end

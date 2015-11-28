@@ -490,6 +490,15 @@ module VersatileDiamond
         it { expect(ad_cr.unbonded_actives_num).to eq(4) }
       end
 
+      describe '#has_free_bonds?' do
+        it { expect(bridge_ct.has_free_bonds?).to be_truthy }
+        it { expect(ab_ct.has_free_bonds?).to be_truthy }
+        it { expect(aib_ct.has_free_bonds?).to be_falsey }
+        it { expect(ab_cr.has_free_bonds?).to be_falsey }
+        it { expect(hb_cr.has_free_bonds?).to be_falsey }
+        it { expect(ad_cr.has_free_bonds?).to be_falsey }
+      end
+
       describe '#smallests' do
         it { expect(bridge_ct.smallests).to be_nil }
         it { expect(ab_ct.smallests).to be_nil }

@@ -21,7 +21,7 @@ public:
     ushort size() const override;
 
 #ifdef PRINT
-    void info(std::ostream &os) override;
+    void info(IndentStream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
@@ -60,14 +60,16 @@ ushort AdditionalAtomsWrapper<B, ATOMS_NUM>::size() const
 
 #ifdef PRINT
 template <class B, ushort ATOMS_NUM>
-void AdditionalAtomsWrapper<B, ATOMS_NUM>::info(std::ostream &os)
+void AdditionalAtomsWrapper<B, ATOMS_NUM>::info(IndentStream &os)
 {
     B::info(os);
-    os << " && additional: ";
+
+    IndentStream sub = indentStream(os);
+    sub << "&& additional:";
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
-        os << " ";
-        _additionalAtoms[i]->info(os);
+        IndentStream subSub = indentStream(sub);
+        _additionalAtoms[i]->info(subSub);
     }
 }
 

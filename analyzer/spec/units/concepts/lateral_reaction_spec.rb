@@ -5,8 +5,6 @@ module VersatileDiamond
 
     describe LateralReaction do
       let(:reaction) { end_lateral_df }
-      let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
-      let(:middle) { middle_lateral_df }
       let(:other) do
         dimer_formation.lateral_duplicate('other', [on_end, there_methyl])
       end
@@ -22,28 +20,27 @@ module VersatileDiamond
       end
 
       describe '#reverse' do
-        subject { reaction.reverse }
-        let(:there) { subject.theres.first }
-
-        it { should be_a(described_class) }
-
         describe 'theres reversed too' do
+          subject { reaction.reverse }
+          let(:there) { subject.theres.first }
+          let(:dmr) { there.env_specs.first }
           let(:positions) do
             {
               [target_dimer, target_dimer.atom(:cr)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross]
+                [[dmr, dmr.atom(:cl)], position_100_cross]
               ],
               [target_dimer, target_dimer.atom(:cl)] => [
-                [[dimer, dimer.atom(:cr)], position_100_cross]
+                [[dmr, dmr.atom(:cr)], position_100_cross]
               ],
             }
           end
-          it { expect(there.positions).to match_graph(positions) }
+
+          it { should be_a(described_class) }
+          it { expect(there.links).to match_graph(positions) }
         end
 
         describe "reverced atom haven't lattice" do
           # could not be, just image this reaction!
-          subject { original.reverse }
           let(:ed) { mi_product.first }
           let(:curr_mid) do
             at_middle.concretize(one: [ed, ed.atom(:cl)], two: [ed, ed.atom(:cr)])
@@ -51,25 +48,28 @@ module VersatileDiamond
           let(:original) do
             methyl_incorporation.reverse.lateral_duplicate('tail', [curr_mid])
           end
-          let(:moeb) { subject.source.first }
-          let(:dim) { subject.source.last }
 
-          let(:positions) do
-            {
-              [moeb, moeb.atom(:cb)] => [
-                [[dimer, dimer.atom(:cl)], position_100_cross],
-                [[dimer_dup, dimer_dup.atom(:cl)], position_100_cross],
-              ],
-              [dim, dim.atom(:cl)] => [
-                [[dimer_dup, dimer_dup.atom(:cr)], position_110_front],
-              ],
-              [dim, dim.atom(:cr)] => [
-                [[dimer, dimer.atom(:cr)], position_110_front],
-              ],
-            }
-          end
-          it { expect(there.positions).to match_graph(positions) }
+          it { expect { original.reverse }.to raise_error(There::ReversingError) }
         end
+      end
+
+      describe '#swap_source' do
+        let(:ab) { end_lateral_df.source.first }
+        let(:ab_dup) { ab.dup }
+        before { end_lateral_df.swap_source(ab, ab_dup) }
+
+        # from super
+        it { expect(end_lateral_df.source.include?(ab)).to be_falsey }
+        it { expect(end_lateral_df.source.include?(ab_dup)).to be_truthy }
+
+        let(:links_keys) { end_lateral_df.links.keys.map(&:first) }
+        it { expect(links_keys.include?(ab)).to be_falsey }
+        it { expect(links_keys.include?(ab_dup)).to be_truthy }
+
+        # theres
+        let(:there_specs) { end_lateral_df.theres.flat_map(&:target_specs) }
+        it { expect(there_specs.include?(ab)).to be_falsey }
+        it { expect(there_specs.include?(ab_dup)).to be_truthy }
       end
 
       describe '#used_atoms_of' do
@@ -88,16 +88,18 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        it { expect(reaction.same?(same)).to be_truthy }
-        it { expect(reaction.same?(middle)).to be_falsey }
-        it { expect(middle.same?(reaction)).to be_falsey }
+        let(:same) { dimer_formation.lateral_duplicate('same', [on_end]) }
 
-        it { expect(reaction.same?(dimer_formation)).to be_falsey }
-      end
+        it { expect(end_lateral_df.same?(same)).to be_truthy }
+        it { expect(same.same?(end_lateral_df)).to be_truthy }
 
-      describe '#cover?' do
-        it { expect(reaction.cover?(middle)).to be_truthy }
-        it { expect(reaction.cover?(other)).to be_truthy }
+        it { expect(end_lateral_df.same?(middle_lateral_df)).to be_falsey }
+        it { expect(middle_lateral_df.same?(end_lateral_df)).to be_falsey }
+
+        it { expect(end_lateral_df.same?(other)).to be_falsey }
+        it { expect(other.same?(end_lateral_df)).to be_falsey }
+
+        it { expect(end_lateral_df.same?(dimer_formation)).to be_falsey }
       end
     end
 

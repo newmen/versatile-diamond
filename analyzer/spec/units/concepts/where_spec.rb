@@ -10,6 +10,11 @@ module VersatileDiamond
         it { expect(near_methyl.specs).to eq([methyl_on_bridge]) }
       end
 
+      describe '#all_specs' do
+        it { expect(at_end.all_specs).to match_array([dimer]) }
+        it { expect(at_middle.all_specs).to match_array([dimer, dimer_dup]) }
+      end
+
       describe '#description' do
         it { expect(at_end.description).to eq('at end of dimers row') }
       end
@@ -27,8 +32,11 @@ module VersatileDiamond
       describe '#concretize' do
         it { expect(near_methyl.concretize(target: [bridge, bridge.atom(:ct)])).
           to be_a(There) }
+      end
 
-        # TODO: check positions
+      describe '#used_atoms_of' do
+        let(:atoms) { [dimer.atom(:cl), dimer.atom(:cr)] }
+        it { expect(at_end.used_atoms_of(dimer)).to match_array(atoms) }
       end
     end
 

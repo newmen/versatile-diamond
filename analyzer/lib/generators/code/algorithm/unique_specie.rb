@@ -18,6 +18,8 @@ module VersatileDiamond
           def initialize(original_specie, proxy_spec)
             super(original_specie)
             @proxy_spec = proxy_spec
+
+            @_mirror = nil
           end
 
           %i(index role).each do |name|
@@ -54,7 +56,7 @@ module VersatileDiamond
           # Gets the mirror from proxy spec to original dependent spec
           # @return [Hash] the mirror from proxy spec to original spec
           def mirror
-            Mcs::SpeciesComparator.make_mirror(proxy_spec, original.spec)
+            @_mirror ||= Mcs::SpeciesComparator.make_mirror(proxy_spec, original.spec)
           end
         end
 

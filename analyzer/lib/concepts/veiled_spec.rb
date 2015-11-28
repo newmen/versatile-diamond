@@ -3,6 +3,8 @@ module VersatileDiamond
 
     # Uses for replasing similar sources in concepts that contain specs
     class VeiledSpec < VeiledInstance
+      include Modules::GraphDupper
+
       # Initializes veiled spec and remember all veiled atoms for real atoms of
       # original spec
       #
@@ -19,11 +21,7 @@ module VersatileDiamond
       # Gets the links between atoms of spec
       # @return [Hash] the sparce graph data structure
       def links
-        @_links ||=
-          original.links.each_with_object({}) do |(atom, rels), acc|
-            changed_rels = rels.map { |a, r| [@atoms_to_veiled[a], r] }
-            acc[@atoms_to_veiled[atom]] = changed_rels
-          end
+        @_links ||= dup_graph(original.links) { |atom| @atoms_to_veiled[atom] }
       end
 
       # Gets veiled atom instead real atom of original spec
@@ -31,6 +29,13 @@ module VersatileDiamond
       # @return [VeiledAtom] the similar veiled atom instead atom of original spec
       def atom(keyname)
         @atoms_to_veiled[original.atom(keyname)]
+      end
+
+      # Gets correct keyname of veiled atom
+      # @param [VeiledAtom] atom for which the keyname will be found
+      # @return [Symbol] the keyname of atom
+      def keyname(atom)
+        original.keyname(atom.original)
       end
     end
 

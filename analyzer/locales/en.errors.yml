@@ -75,17 +75,21 @@ en:
     wrong_specification: "Wrong \"%{atom}\" specification of specific spec"
 
   reaction:
+    already_set: "The value of \"%{property}\" property for \"%{reaction}\" reaction already set to %{value}"
     cannot_map: "Cannot map reaction atoms"
     invalid: "Invalid reaction equation"
     invalid_valence: "In the global reaction can be specified only monovalent atoms"
     need_define_equation: "Necessary to define equation first"
     wrong_balance: "Wrong reaction balance"
 
+  lateral_reaction:
+    amorph_reverse_atom: "The atom %{spec}(%{atom}) of reverse reaction is not belongs to crystal lattice"
+
   equation:
     undefined_target: "Undefined target atom name \"%{name}\""
 
   refinement:
-    cannot_complience: "Specs \"%{name}\" can not be complienced, try to use \"aliases\" instruction"
+    cannot_compliance: "Specs \"%{name}\" can not be complianced, try to use \"aliases\" instruction"
     different_parts: "Linking species that belongs to different parts of equation"
 
   where:

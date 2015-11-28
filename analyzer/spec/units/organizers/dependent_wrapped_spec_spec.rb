@@ -16,6 +16,16 @@ module VersatileDiamond
         end
       end
 
+      describe '#theres' do
+        it { expect(subject.theres).to be_empty }
+      end
+
+      describe '#store_there' do
+        let(:there) { dept_on_end }
+        before { subject.store_there(there) }
+        it { expect(subject.theres).to eq([there]) }
+      end
+
       describe '#gas?' do
         it { expect(subject.gas?).to eq(subject.spec.gas?) }
       end

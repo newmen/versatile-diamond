@@ -129,7 +129,7 @@ module VersatileDiamond
           # @return [Boolean] is contain maximum number of similar unsymmetric species
           def max_unsymmetric_species?(parent_species, atom)
             twins = original_spec.twins_of(atom)
-            return false unless twins.uniq.size == 1 && twins.not_uniq.size == 1
+            return false unless twins.all_equal? && twins.not_uniq.size == 1
 
             not_uniq_twin = twins.not_uniq.first
             return false unless parent_species.all? do |pr|

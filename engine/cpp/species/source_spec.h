@@ -19,7 +19,7 @@ public:
     Atom *atom(ushort index) const;
 
 #ifdef PRINT
-    void info(std::ostream &os) override;
+    void info(IndentStream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
 #endif // PRINT
 };
@@ -44,13 +44,13 @@ Atom *SourceSpec<B, ATOMS_NUM>::atom(ushort index) const
 
 #ifdef PRINT
 template <class B, ushort ATOMS_NUM>
-void SourceSpec<B, ATOMS_NUM>::info(std::ostream &os)
+void SourceSpec<B, ATOMS_NUM>::info(IndentStream &os)
 {
     os << this->name() << " at [" << this << "]";
     for (int i = 0; i < ATOMS_NUM; ++i)
     {
-        os << " ";
-        _atoms[i]->info(os);
+        IndentStream sub = indentStream(os);
+        _atoms[i]->info(sub);
     }
 }
 

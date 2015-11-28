@@ -4,7 +4,7 @@ module VersatileDiamond
     # Wraps structural reaction without lateral interactions
     class DependentTypicalReaction < DependentSpecReaction
 
-      def_delegator :reaction, :complex_source_spec_and_atom
+      def_delegators :reaction, :complex_source_spec_and_atom
 
       # Selects complex source spec and them changed atom
       # @return [SpecificSpec] the covered spec
@@ -13,38 +13,27 @@ module VersatileDiamond
         termination_spec.cover?(spec, atom) ? spec : nil
       end
 
-      # Typical reaction isn't lateral
-      # @return [Boolean] false
-      def lateral?
-        false
-      end
-
       # Organize dependencies from another lateral reactions
       # @param [Array] lateral_reactions the possible children
       def organize_dependencies!(lateral_reactions)
-        applicants = []
+        # TODO: excess checking because concept reaction already have a list of
+        # children reactions
         lateral_reactions.each do |possible|
-          applicants << possible if same?(possible)
-        end
-
-        return if applicants.empty?
-
-        loop do
-          inc = applicants.select do |possible|
-            applicants.find do |unr|
-              possible != unr && possible.complexes.include?(unr)
-            end
+          poss_conc = possible.reaction
+          if reaction.same_specs?(poss_conc) && reaction.same_positions?(poss_conc)
+            possible.store_parent(self)
           end
-          break if inc.empty?
-          applicants = inc
         end
-
-        applicants.each { |possible| possible.store_parent(self) }
       end
 
-    private
-
-
+      # Combines all chunks from children lateral reactions and find unresolved lateral
+      # reactions
+      #
+      # @return [Array] the list of unresolved lateral reactions
+      def combine_children_laterals!
+        combiner = ChunksCombiner.new(self)
+        combiner.combine(children.map(&:chunk))
+      end
     end
 
   end

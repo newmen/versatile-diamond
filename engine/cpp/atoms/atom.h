@@ -85,8 +85,10 @@ public:
     float3 realPosition() const;
 
 #ifdef PRINT
-    void info(std::ostream &os);
-    void pos(std::ostream &os);
+    void info(IndentStream &os);
+    void printRoles(IndentStream &os);
+    void printSpecs(IndentStream &os);
+    void pos(IndentStream &os);
 #endif // PRINT
 
 protected:
@@ -147,11 +149,39 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
 {
     const uint key = hash(role, S::ID);
     auto range = _specs.equal_range(key);
-    for (; range.first != range.second; ++range.first)
+    uint num = std::distance(range.first, range.second);
+    if (num == 0) return;
+
+#ifdef PRINT
+    debugPrint([&](IndentStream &os) {
+        os << "Atom::eachSpecByRole " << this << " " << std::dec;
+        pos(os);
+        os << " |" << _type << ", " << _prevType << "| role id: " << role
+           << ". spec id: " << S::ID << ". key: " << key;
+        os << " => total " << num << " specs:";
+
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            BaseSpec *spec = range.first->second;
+            os << " <" << spec->type() << ">" << spec->name();
+        }
+    });
+#endif // PRINT
+
+    BaseSpec **specsDup = new BaseSpec *[num];
+    for (uint i = 0; range.first != range.second; ++range.first, ++i)
     {
-        BaseSpec *spec = range.first->second;
+        specsDup[i] = range.first->second;
+    }
+
+    for (uint i = 0; i < num; ++i)
+    {
+        BaseSpec *spec = specsDup[i];
+        assert(spec->type() == S::ID);
         lambda(static_cast<S *>(spec));
     }
+
+    delete [] specsDup;
 }
 
 }

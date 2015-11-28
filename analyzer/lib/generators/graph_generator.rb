@@ -41,27 +41,67 @@ module VersatileDiamond
         end
       end
 
-      # Draws dependencies between some entities and their dependet entities
+      # Draws dependencies between passed entities and their dependent entities which
+      # gets by passed mono_method name
+      #
+      # @param [Symbol] mono_method the name of method for get dependent entity
+      # @param [Array] entities the species for which dependencies will be drawn
+      # @param [Hash] child_node_method the method which will be used for get a node of
+      #   each child
+      # @param [Hash] parent_node_method the method which will be used for get a node
+      #   of each parent entity
+      # @yield [Edge] setups the added edges
+      def mono_dep(mono_method, entities,
+        child_node_method, parent_node_method = child_node_method, &setup_block)
+
+        entities.each do |child|
+          parent = child.public_send(mono_method)
+          make_dep(parent_node_method[parent], child_node_method[child], &setup_block)
+        end
+      end
+
+      # Draws dependencies between some entities and their dependet entities which
+      # gets by passed multi_method name
+      #
       # @param [Symbol] multi_method the name of method for get dependent entities
       # @param [Array] entities the species for which dependencies will be drawn
       # @param [Hash] child_node_method the method which will be used for get a node of
       #   each child
       # @param [Hash] parent_node_method the method which will be used for get a node
-      #   of each parent
-      #   entity
+      #   of each parent entity
       # @yield [Edge] setups the added edges
       def multi_deps(multi_method, entities,
         child_node_method, parent_node_method = child_node_method, &setup_block)
 
+        @maked_deps ||= {}
         entities.each do |child|
           child_node = child_node_method[child]
-          child.public_send(multi_method).each do |parent|
-            parent_node = parent_node_method[parent]
-            if parent_node
-              edge = @graph.add_edges(child_node, parent_node)
-              edge.set(&setup_block)
-            end
+          parent_nodes = child.public_send(multi_method).map do |parent|
+            parent_node_method[parent]
           end
+
+          parent_nodes.compact!
+          next if parent_nodes.empty?
+
+          mspns = Multiset.new(parent_nodes)
+          next if @maked_deps[mspns] == child_node
+
+          parent_nodes.each do |parent_node|
+            make_dep(parent_node, child_node, &setup_block)
+          end
+
+          @maked_deps[mspns] = child_node
+        end
+      end
+
+      # Add edge beween passed nodes
+      # @param [Node] parent_node to which dependency edge will be added if it not nil
+      # @param [Node] child_node from which dependency edge will be added
+      # @yield [Edge] setups the added edges
+      def make_dep(parent_node, child_node, &setup_block)
+        if parent_node
+          edge = @graph.add_edges(child_node, parent_node)
+          edge.set(&setup_block)
         end
       end
     end

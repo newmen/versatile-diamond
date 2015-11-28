@@ -8,6 +8,46 @@ module VersatileDiamond
         describe NameRemember do
           subject { described_class.new }
 
+          describe '#checkpoint! && #rollback!' do
+            let(:object) { Object.new }
+            let(:array) { [Object.new, Object.new] }
+            let(:other) { [1, 2, 3, 5, 8] }
+            let(:temp) { :temp }
+
+            it 'expect names' do
+              subject.assign('name', object)
+              subject.assign_next('arr', array)
+              subject.checkpoint! # 1
+              subject.reassign('other_name', object)
+              subject.assign_next('arr', [4, 2, 1])
+              subject.assign('temp', temp)
+              subject.rollback! # <- 1
+              subject.assign_next('arr', other)
+              expect(subject.name_of(object)).to eq('name')
+              expect(subject.name_of(array)).to eq('arrs1')
+              expect(subject.name_of(other)).to eq('arrs2')
+              expect(subject.name_of(temp)).to be_nil
+              subject.checkpoint! # 2
+              subject.reassign('lalas', other)
+              expect(subject.name_of(other)).to eq('lalas')
+              subject.rollback! # <- 2
+              expect(subject.name_of(other)).to eq('arrs2')
+              subject.rollback! # <- 2
+              expect(subject.name_of(other)).to eq('arrs2')
+              subject.rollback!(forget: true) # <- 2
+              expect(subject.name_of(other)).to eq('arrs2')
+              subject.rollback!(forget: true) # <- 1
+              expect(subject.name_of(other)).to be_nil
+              expect(subject.name_of(object)).to eq('name')
+              expect(subject.name_of(array)).to eq('arrs1')
+              subject.rollback!(forget: true) # <- 0
+              expect(subject.name_of(object)).to be_nil
+              expect(subject.name_of(array)).to be_nil
+              subject.rollback! # <- 0
+              subject.rollback!(forget: true) # no any error
+            end
+          end
+
           describe '#assign' do
             describe 'no raise error' do
               it { expect { subject.assign('var', 'value') }.not_to raise_error }
@@ -187,11 +227,11 @@ module VersatileDiamond
             end
           end
 
-          describe '#array?' do
+          describe '#full_array?' do
             describe 'single variable' do
               let(:var) { :var }
               before { subject.assign('var', var) }
-              it { expect(subject.array?([var])).to be_falsey }
+              it { expect(subject.full_array?([var])).to be_falsey }
             end
 
             describe 'many variables' do
@@ -199,22 +239,29 @@ module VersatileDiamond
               before { subject.assign('var', vars) }
 
               describe 'same array varaible name' do
-                it { expect(subject.array?(vars)).to be_truthy }
+                it { expect(subject.full_array?(vars)).to be_truthy }
               end
 
               describe 'different array varaible name' do
                 let(:others) { [3, 4] }
                 let(:array) { [vars.first, others.first] }
                 before { subject.assign('other', others) }
-                it { expect(subject.array?(array)).to be_falsey }
+                it { expect(subject.full_array?(array)).to be_falsey }
               end
 
               describe 'one var is not an array' do
                 let(:other) { :other }
                 let(:array) { [vars.first, other] }
                 before { subject.assign('other', other) }
-                it { expect(subject.array?(array)).to be_falsey }
+                it { expect(subject.full_array?(array)).to be_falsey }
               end
+            end
+
+            describe 'too many items of array' do
+              let(:vars) { [1, 2] }
+              let(:all) { vars + [3, 4] }
+              before { subject.assign('var', all) }
+              it { expect(subject.full_array?(vars)).to be_falsey }
             end
           end
         end

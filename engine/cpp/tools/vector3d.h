@@ -47,7 +47,7 @@ template <typename T>
 vector3d<T>::vector3d(const dim3 &sizes, const T &initValue) : _sizes(sizes)
 {
     _data = new T[_sizes.N()];
-    for (int i = 0; i < _sizes.N(); ++i) _data[i] = initValue;
+    for (uint i = 0; i < _sizes.N(); ++i) _data[i] = initValue;
 }
 
 template <typename T>
@@ -60,7 +60,7 @@ template <typename T>
 template <class Lambda>
 void vector3d<T>::each(const Lambda &lambda) const
 {
-    for (int i = 0; i < _sizes.N(); ++i)
+    for (uint i = 0; i < _sizes.N(); ++i)
     {
         lambda(_data[i]);
     }

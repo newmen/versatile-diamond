@@ -82,9 +82,11 @@ module VersatileDiamond
           order(self, other, :valence) do
             typed_order(self, other, :lattice) do
               order(self, other, :estab_bonds_num) do
-                order(self, other, :danglings, :size) do
-                  typed_order(self, other, :incoherent?) do
-                    typed_order(self, other, :unfixed?)
+                order(self, other, :crystal_relatons_num) do
+                  order(self, other, :danglings, :size) do
+                    typed_order(self, other, :incoherent?) do
+                      typed_order(self, other, :unfixed?)
+                    end
                   end
                 end
               end
@@ -257,6 +259,15 @@ module VersatileDiamond
       # @return [Integer] the number of total number of hydrogen atoms
       def total_hydrogens_num
         valence - bonds_num + dangling_hydrogens_num
+      end
+
+      # Checks has or not free bonds?
+      # @return [Boolean] can form additional bond or not
+      def has_free_bonds?
+        return false if incoherent?
+        num = unbonded_actives_num + dangling_hydrogens_num
+        fail 'Wrong valence' if num > valence
+        num < valence
       end
 
       # Convert properties to string representation
@@ -483,7 +494,7 @@ module VersatileDiamond
       end
 
       # Harvest dangling bonds of atom in spec
-      # @param [Minuend] spec see at #new same argument
+      # @param [MinuendSpec] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   spec see at #new same argument
       # @return [Array] dangling states array
@@ -496,7 +507,7 @@ module VersatileDiamond
       end
 
       # Collects only lattices which are reacheble through each undirected bond
-      # @param [Minuend] spec see at #new same argument
+      # @param [MinuendSpec] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   spec see at #new same argument
       # @return [Array] the array of achieving lattices and correspond relations
@@ -530,7 +541,7 @@ module VersatileDiamond
       # @param [Class] klass the class of counting instances
       # @return [Integer] the number of relations
       def count_relations(klass)
-        relations.select { |r| r.class == klass }.size
+        relations.count { |r| r.class == klass }
       end
 
       # Gets number of established bond relations
@@ -539,6 +550,12 @@ module VersatileDiamond
         @_estab_bond_num ||= count_relations(Concepts::Bond) +
           (relations.include?(:dbond) ? 2 : 0) +
           (relations.include?(:tbond) ? 3 : 0)
+      end
+
+      # Gets number of relations which belongs to crystal
+      # @return [Integer] the number of crystal relations
+      def crystal_relatons_num
+        relations.reject { |r| r.class == Symbol }.select(&:belongs_to_crystal?).size
       end
 
       # Gets number of established and dangling bond relations

@@ -12,14 +12,17 @@ void LateralSpec::findLateralReactions()
 
 void LateralSpec::unconcretizeReactions()
 {
+    uint num = reactions().size();
+    if (num == 0) return;
+
     uint n = 0;
-    LateralReaction **reactionsDup = new LateralReaction *[reactions().size()];
+    LateralReaction **reactionsDup = new LateralReaction *[num];
     for (auto &pr : reactions())
     {
         reactionsDup[n++] = pr.second;
     }
 
-    for (uint i = 0; i < n; ++i)
+    for (uint i = 0; i < num; ++i)
     {
         reactionsDup[i]->unconcretizeBy(this);
     }

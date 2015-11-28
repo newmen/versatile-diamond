@@ -28,7 +28,9 @@ module VersatileDiamond
 
       class << self
         # Reset the sac and using by RSpec only
-        def reset; @sac && @sac.clear end
+        def reset!
+          @sac && @sac.clear
+        end
 
         # Adds each passed concept to sac and check name duplication. If passed
         # many concepts then shift concepts to the last, each time nesting

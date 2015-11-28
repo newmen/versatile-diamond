@@ -5,24 +5,22 @@ module VersatileDiamond
 
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create a reaction which was found
-        class ReactionCreatorUnit
-          include CommonCppExpressions
-          include AtomCppExpressions
+        class ReactionCreatorUnit < BaseReactionCreatorUnit
+          include SpecificSpecDefiner
 
           # Initializes the creator
           # @param [NameRemember] namer the remember of using names of variables
           # @param [TypicalReaction] reaction which uses in current building algorithm
           # @param [Array] species the list of all previously defined unique species
           def initialize(namer, reaction, species)
-            @namer = namer
+            super(namer, species)
             @reaction = reaction
-            @species = species.sort
           end
 
           # Gets the code lines for reaction creation
           # @return [String] the lines by which the reaction will be created
           def lines
-            if @species.size == 1
+            if species.size == 1
               create_line
             else
               define_target_species_variable_line + create_line
@@ -31,12 +29,10 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer
-
           # Gets the cpp code string with creation of target reaction
           # @return [String] the cpp code line with creation target reaction call
           def create_line
-            code_line("create<#{@reaction.class_name}>(#{namer.name_of(@species)});")
+            code_line("create<#{@reaction.class_name}>(#{namer.name_of(species)});")
           end
 
           # Finds previously defined atom
@@ -58,9 +54,9 @@ module VersatileDiamond
           # Gets the line with definition of target species array variable
           # @return [String] th ecpp code line with definition of target species var
           def define_target_species_variable_line
-            items = @species.map { |s| namer.name_of(s) || spec_by_role_call(s) }
-            namer.reassign('target', @species)
-            define_var_line('SpecificSpec *', @species, items)
+            items = species.map { |s| namer.name_of(s) || spec_by_role_call(s) }
+            namer.reassign(SpeciesReaction::ANCHOR_SPECIE_NAME, species)
+            define_var_line("#{specie_type} *", species, items)
           end
         end
 

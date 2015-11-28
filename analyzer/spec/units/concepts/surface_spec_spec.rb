@@ -4,6 +4,27 @@ module VersatileDiamond
   module Concepts
 
     describe SurfaceSpec do
+      describe '#dup' do
+        describe 'new name and atoms' do
+          before { bridge_base_dup.rename_atom(:t, :YY) }
+
+          it { expect(bridge_base.atom(:YY)).to be_nil }
+          it { expect(bridge_base_dup.atom(:YY)).not_to be_nil }
+        end
+
+        describe 'same name and atoms' do
+          let(:copy) { bridge_base.dup }
+
+          it { expect(copy).not_to eq(bridge_base) }
+          it { expect(bridge_base).not_to eq(copy) }
+          it { expect(copy).not_to eq(bridge_base_dup) }
+          it { expect(bridge_base_dup).not_to eq(copy) }
+
+          it { expect(copy.name).to eq(bridge_base.name) }
+          it { expect(copy.links).not_to eq(bridge_base.links) }
+        end
+      end
+
       describe '#gas?' do
         subject { SurfaceSpec.new(:some_surface).gas? }
         it { should be_falsey }

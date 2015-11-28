@@ -15,7 +15,7 @@ public:
 protected:
     template <class... Args> EmptySpecific(Args... args) : ParentType(args...) {}
 
-    void findAllTypicalReactions() override {}
+    void findAllTypicalReactions() override { assert(false); }
 };
 
 #endif // EMPTY_SPECIFIC_H

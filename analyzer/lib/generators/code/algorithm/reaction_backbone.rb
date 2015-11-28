@@ -7,7 +7,7 @@ module VersatileDiamond
         # gets the ordered graph by which the find reaction algorithm will be builded
         class ReactionBackbone < BaseBackbone
 
-          # Initializes backbone by reaction, reactant specie and grouped nodes of it
+          # Initializes backbone by reaction and reactant specie
           # @param [EngineCode] generator the major engine code generator
           # @param [TypicalReaction] reaction the target reaction code generator
           # @param [Specie] specie the reactant from which search will be occured

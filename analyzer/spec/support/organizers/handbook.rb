@@ -7,10 +7,21 @@ module VersatileDiamond
         include Tools::Handbook
         include SpeciesOrganizer
 
-        # Defines dependent species
-        def self.define_dependents(klass, concept_names)
-          concept_names.each do |name|
-            set(:"dept_#{name}") { klass.new(send(name)) }
+        class << self
+          # Defines dependent instances
+          def define_dependents(klass, concept_names)
+            concept_names.each do |name|
+              set(:"dept_#{name}") { klass.new(send(name)) }
+            end
+          end
+
+          # Defines dependent theres
+          def define_dependent_theres(zipped_names_with_reactions)
+            zipped_names_with_reactions.each do |there_name, reaction_name|
+              set(:"dept_#{there_name}") do
+                DependentThere.new(send("dept_#{reaction_name}"), send(there_name))
+              end
+            end
           end
         end
 
@@ -103,6 +114,7 @@ module VersatileDiamond
           :intermed_migr_df_formation,
           :intermed_migr_dmod_formation,
           :dimer_formation,
+          :symmetric_dimer_formation,
           :incoherent_dimer_drop,
           :sierpinski_drop,
           :hydrogen_abs_from_gap,
@@ -113,13 +125,25 @@ module VersatileDiamond
         end
 
         define_dependents(DependentLateralReaction, [
+          :end_lateral_idd,
           :end_lateral_df,
-          :middle_lateral_df
+          :middle_lateral_df,
+          :ewb_lateral_df,
+          :mwb_lateral_df,
+          :de_lateral_mi,
+          :small_ab_lateral_sdf,
+          :big_ab_lateral_sdf
         ])
 
-        define_dependents(DependentThere, [
-          :on_end
+        define_dependent_theres([
+          [:on_end, :end_lateral_df],
+          [:on_middle, :middle_lateral_df]
         ])
+
+        set(:end_chunk) { dept_end_lateral_df.chunk }
+        set(:middle_chunk) { dept_middle_lateral_df.chunk }
+        set(:ewb_chunk) { dept_ewb_lateral_df.chunk }
+        set(:mwb_chunk) { dept_mwb_lateral_df.chunk }
       end
 
     end

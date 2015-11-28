@@ -22,37 +22,47 @@ module VersatileDiamond
 
         # ubuqitous[0]
         surface_activation.rate = 0.1
+        surface_activation.activation = 0
         # ubuqitous[1]
         surface_deactivation.rate = 0.2
+        surface_deactivation.activation = 0
 
         # typical[0]
         methyl_activation.rate = 0.3
+        methyl_activation.activation = 0
         # typical[1]
         methyl_deactivation.rate = 0.4
+        methyl_deactivation.activation = 0
 
         # typical[2]
         methyl_desorption.rate = 1
+        methyl_desorption.activation = 0
 
         # typical[3]
         hydrogen_migration.rate = 2
+        hydrogen_migration.activation = 0
         # typical[4]
         hydrogen_migration.reverse.rate = 3
         hydrogen_migration.reverse.activation = 1e3
 
         # typical[5]
-        dimer_formation.rate = 4
+        # dimer_formation.rate = 0
+        # dimer_formation.activation = 0
         # typical[6]
         dimer_formation.reverse.rate = 5
         dimer_formation.reverse.activation = 2e3
 
         # typical[7]
         methyl_incorporation.rate = 6
+        methyl_incorporation.activation = 0
 
         # lateral[0]
         end_lateral_df.rate = 6
+        end_lateral_df.activation = 0
 
         # lateral[1]
         middle_lateral_df.rate = 7
+        middle_lateral_df.activation = 0
 
         ubiquitous = [surface_activation, surface_deactivation]
 
@@ -69,7 +79,7 @@ module VersatileDiamond
 
         laterals.each do |reaction|
           reaction.theres.each do |there|
-            store_base_specs(there.where.specs)
+            store_base_specs(there.env_specs)
           end
         end
 
@@ -102,15 +112,6 @@ module VersatileDiamond
                 let(:quant) { quant }
               end
             end
-        end
-      end
-
-      describe 'lateral entities' do
-        before { store_reactions }
-
-        describe '#theres' do
-          it { expect(subject.theres.size).to eq(2) }
-          it { expect(subject.theres.map(&:class)).to eq([DependentThere] * 2) }
         end
       end
 
@@ -289,6 +290,35 @@ module VersatileDiamond
           end
         end
 
+        describe '#exchange_same_used_base_specs!' do
+          before do
+            Tools::Config.surface_temperature(500, 'K')
+
+            incoherent_dimer_drop.rate = 1
+            incoherent_dimer_drop.activation = 0
+            Tools::Chest.store(incoherent_dimer_drop)
+
+            end_lateral_idd.rate = 2
+            end_lateral_idd.activation = 0
+            Tools::Chest.store(end_lateral_idd)
+
+            [incoherent_dimer_drop, end_lateral_idd].each do |reaction|
+              store_base_specs(reaction.source)
+            end
+
+            end_lateral_idd.theres.each do |there|
+              store_base_specs(there.env_specs)
+            end
+          end
+
+          it 'all lateral reactions not have original base dimer' do
+            subject.lateral_reactions.each do |lateral_reaction|
+              is_included = lateral_reaction.sidepiece_specs.include?(dimer_base)
+              expect(is_included).to be_falsey
+            end
+          end
+        end
+
         describe '#organize_dependecies!' do
           describe '#organize_specific_specs_dependencies!' do
             before { store_reactions }
@@ -363,30 +393,35 @@ module VersatileDiamond
           describe '#organize_reactions_dependencies!' do
             before { store_reactions }
 
-            shared_examples_for :expect_complex do
-              it { expect(reaction.complexes).to eq([complex]) }
-            end
-
             describe 'ubiquitous' do
-              it_behaves_like :expect_complex do
-                let(:reaction) { subject.ubiquitous_reactions.first }
-                let(:complex) { subject.typical_reactions.first }
-              end
+              let(:reaction) { subject.ubiquitous_reactions.first }
+              let(:complex) { subject.typical_reactions.first }
+              it { expect(reaction.children).to eq([complex]) }
             end
 
             describe 'typical' do
-              it_behaves_like :expect_complex do
-                # index of reactions see in comments of #store_reactions method
-                let(:reaction) { subject.typical_reactions[5] }
-                let(:complex) { subject.lateral_reactions.first }
-              end
+              # index of reactions see in comments of #store_reactions method
+              let(:reaction) { subject.typical_reactions[5] }
+              it { expect(reaction.children).to eq(subject.lateral_reactions) }
             end
 
             describe 'lateral' do
-              it_behaves_like :expect_complex do
-                # index of reactions see in comments of #store_reactions method
-                let(:reaction) { subject.lateral_reactions.first }
-                let(:complex) { subject.lateral_reactions.last }
+              before do
+                ewb_lateral_df.activation = 0
+                ewb_lateral_df.rate = 8
+                Tools::Chest.store(ewb_lateral_df)
+              end
+
+              it 'check several properties of lateral reactions list' do
+                expect(subject.lateral_reactions.map(&:class).uniq).
+                  to match_array([DependentLateralReaction, CombinedLateralReaction])
+
+                expect(subject.lateral_reactions.map(&:full_rate)).
+                  to match_array([6.0, 7.0, 8.0, 7.0, 0.0])
+
+                common_parents = subject.lateral_reactions.map(&:parent).uniq
+                expect(common_parents.size).to eq(1)
+                expect(common_parents.first).not_to be_nil
               end
             end
 

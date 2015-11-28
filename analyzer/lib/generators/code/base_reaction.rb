@@ -28,13 +28,13 @@ module VersatileDiamond
           # Makes #{prefix} name for current specie
           # @return [String] the result #{prefix} name
           define_method(method_name) do
-            var = instance_variable_get(var_name)
-            unless var
+            value = instance_variable_get(var_name)
+            unless value
               parts = reaction.name.split(/\s+/).map { |str| eval("str.#{method}") }
-              var = parts.join(separator)
-              instance_variable_set(var_name, var)
+              value = parts.join(separator).gsub('.', '')
+              instance_variable_set(var_name, value)
             end
-            var
+            value
           end
         end
 
@@ -53,16 +53,16 @@ module VersatileDiamond
 
       private
 
-        # Gets the parent ubiquitous reaction
-        # @return [UbiquitousReaction] the parent reaction
+        # Gets the parents of current reaction
+        # @return [BaseReaction] the parents of current reaction
         def parent
-          reaction_class(reaction.parent)
+          reaction.parent && reaction_class(reaction.parent)
         end
 
         # Gets the list of more complex reactions
         # @return [Array] the list of children reactions
         def children
-          reaction.complexes.map(&method(:reaction_class))
+          reaction.children.map(&method(:reaction_class))
         end
 
         # Gets reacting gas species list

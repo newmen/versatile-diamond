@@ -7,6 +7,7 @@ module VersatileDiamond
         module CommonCppExpressions
 
           TAB_SIZE = 4 # always so for cpp
+          PREFIX_SPACES = ' ' * TAB_SIZE
 
         private
 
@@ -14,34 +15,57 @@ module VersatileDiamond
           # @param [String] code_str the string before which spaces will be added
           # @return [String] the string with spaces before
           def add_prefix_spaces(code_str)
-            "#{' ' * TAB_SIZE}#{code_str}"
+            "#{PREFIX_SPACES}#{code_str}"
           end
 
-          # Increases spaces to one more tab before each line
-          # @param [String] code_str the code with several lines
-          # @return [String] code lines with added spaces before each line
-          def increase_spaces(code_str)
-            code_str.split("\n").map(&method(:add_prefix_spaces)).join("\n") + "\n"
+          # Shifts the passed code to one indent
+          # @param [String] code_str which will be shifted
+          # @return [String] the shifted cpp code
+          def shift_code(code_str)
+            code_str.split("\n").map(&method(:add_prefix_spaces)).join("\n")
           end
 
           # Inserts spaces before and inserts new line character after passed string
           # @param [String] code_str the wrapping string with cpp code
           # @param [String] the wrapped string with spaces and new line character
           def code_line(code_str)
-            "#{add_prefix_spaces(code_str)}\n"
+            shift_code(code_str) + "\n"
+          end
+
+          # Transforms all passed string to sequental list of cpp code lines
+          # @param [Array] code_strs the list of code units which will be transormed
+          # @return [String] the scope of cpp code lines
+          def code_lines(*code_strs)
+            code_strs.map(&method(:code_line)).join
           end
 
           # Gets a code with cpp condition block
           # @param [String] condition_str the cpp code string with some condition
-          # @param [String] else_prefix the prefix which places before `if` keyword
+          # @option [Boolean] :use_else_prefix flag which identifies that before `if`
+          #   keyword the `else ` prefix should be used
           # @yield should return cpp code with several lines which will placed into
           #   condition block
           # @return [String] the code with condition
-          def code_condition(condition_str, else_prefix = '', &block)
-            code_line("#{else_prefix}if (#{condition_str})") +
-              code_line('{') +
-              increase_spaces(block.call) +
-              code_line('}')
+          def code_condition(condition_str = nil, use_else_prefix: false, &block)
+            full_expr =
+              if condition_str
+                pre_expr = use_else_prefix ? 'else if' : 'if'
+                "#{pre_expr} (#{condition_str})"
+              else
+                unless use_else_prefix
+                  fail 'Incorrect arguments was passed to combine code condition'
+                end
+                'else'
+              end
+
+            code_line(full_expr) + code_scope(&block)
+          end
+
+          # Gets the scope of code
+          # @yield should return the body of scope
+          # @return [String] the scoped code
+          def code_scope(&block)
+            code_lines('{', block.call, '}')
           end
 
           # Gets a code with cpp lambda block
@@ -61,9 +85,24 @@ module VersatileDiamond
             lambda_head = "[#{closure_args_str}](#{lambda_args_str})"
             args_wo_lambda_body = (method_args + [lambda_head]).join(separator)
 
-            code_line("#{method_name}(#{args_wo_lambda_body} {") +
-              increase_spaces(block.call) +
-              code_line('});')
+            code_lines("#{method_name}(#{args_wo_lambda_body} {", block.call, '});')
+          end
+
+          # Provides cpp code block with for loop statement
+          # @param [String] iterator_type the type of iterator variable
+          # @param [String] var_name the name of iterator variable
+          # @param [Integer] max_value the limit value of for loop iteration
+          # @yield [String] passes the name of iterator variable to passed block, this
+          #   block should return a string with cpp code which will a body of loop
+          #   statement
+          # @return [String] the full code block with for loop statement
+          def code_for_loop(iterator_type, var_name, max_value, &block)
+            iterator = Object.new # any unique object which was not created previously
+            namer.assign_next(var_name, iterator)
+            i = name_of(iterator)
+
+            code_line("for (#{iterator_type} #{i} = 0; #{i} < #{max_value}; ++#{i})") +
+              code_scope { block[i] }
           end
 
           # Gets cpp code line with defined variable

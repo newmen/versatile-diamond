@@ -15,14 +15,14 @@ module VersatileDiamond
           # Gets the code which checks that containing in unit instance is presented
           # or not
           #
-          # @param [String] else_prefix which will be used if current instance has
-          #   a several anchor atoms
+          # @option [Boolean] :use_else_prefix flag which identifies that current
+          #   instance has a several anchor atoms
           # @yield should return cpp code which will be used if unit instance is
           #   presented
           # @return [String] the cpp code string
-          def check_existence(else_prefix = '', &block)
+          def check_existence(use_else_prefix: false, &block)
             define_anchor_atoms_line +
-              code_condition(check_role_condition, else_prefix) do
+              code_condition(check_role_condition, use_else_prefix: use_else_prefix) do
                 code_condition(check_specie_condition, &block)
               end
           end
@@ -35,15 +35,6 @@ module VersatileDiamond
           end
 
         private
-
-          # Compares original specie with specie from other unit
-          # @param [BaseUnit] other unit with which spec the own spec will be compared
-          # @param [Array] _ does not used
-          # @return [Boolean] are original species from current and other units same or
-          #   not
-          def same_specs?(other, *_)
-            original_spec == other.original_spec
-          end
 
           # Assigns the name of anchor atoms variable
           def assign_anchor_atoms_name!
@@ -75,6 +66,23 @@ module VersatileDiamond
           def relation_between(*pair_of_units_with_atoms)
             atoms = pair_of_units_with_atoms.map(&:last)
             original_spec.relation_between(*atoms)
+          end
+
+          # Gets available relations for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the relations will be gotten
+          # @return [Array] the list of relations
+          def relations_of(atom)
+            original_spec.links[atom]
+          end
+
+          # Checks that passed atom has any relations in context
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the relations will be checked
+          # @return [Boolean] has relations or not
+          def has_relations?(atom)
+            rels = original_spec.links[atom]
+            rels && !rels.empty?
           end
 
           # Gets the default engine framework class for parent specie

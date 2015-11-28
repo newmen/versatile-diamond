@@ -19,13 +19,19 @@ module VersatileDiamond
         # @yield [Object] for each item from which the grouping value will be gotten
         # @return [Array] the list of grouped arrays
         def groups(&block)
-          group_by(&block).values
+          (block_given? ? group_by(&block) : group_by { |x| x }).values
         end
 
         # Gets not unique items of array
         # @return [Array] the not unique items of original sequence
         def not_uniq
           select { |item| count(item) > 1 }.uniq
+        end
+
+        # Checks that array contains only equalent values
+        # @param [Boolean] are all items equal between each other or not
+        def all_equal?(&block)
+          uniq(&block).size == 1
         end
       end
     end

@@ -1,5 +1,4 @@
 module VersatileDiamond
-
   module Interpreter
 
     # Component which can contain another components
@@ -31,5 +30,4 @@ module VersatileDiamond
     end
 
   end
-
 end

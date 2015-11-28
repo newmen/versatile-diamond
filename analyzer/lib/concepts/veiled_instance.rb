@@ -15,7 +15,7 @@ module VersatileDiamond
       end
 
       def inspect
-        "veiled:#{original.inspect}"
+        "veiled_#{i}:#{original.inspect}"
       end
     end
 

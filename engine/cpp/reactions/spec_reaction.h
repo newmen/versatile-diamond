@@ -10,11 +10,14 @@ namespace vd
 class SpecReaction : public Reaction, public Creator
 {
 public:
-    virtual void store() = 0;
-    virtual void remove() = 0;
+    virtual void store() { mcRemember(); }
+    virtual void remove() { mcForget(); }
 
 protected:
     SpecReaction() = default;
+
+    virtual void mcRemember() = 0;
+    virtual void mcForget() = 0;
 };
 
 }

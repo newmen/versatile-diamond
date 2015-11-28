@@ -41,8 +41,8 @@ int main()
     assert(nbrs[3] == diamond.atom(int3(2, 3, 1)));
 
     nbrs = diamond.neighbours110(c444);
-    assert(nbrs[0] == 0);
-    assert(nbrs[1] == 0);
+    assert(nbrs[0] == nullptr);
+    assert(nbrs[1] == nullptr);
 
     // 100
     nbrs = diamond.neighbours100(c111);

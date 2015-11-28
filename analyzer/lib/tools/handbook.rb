@@ -11,7 +11,7 @@ module VersatileDiamond
 
       module ClassMethods
         # Resets internal cache for RSpec
-        def reset
+        def reset!
           @@__handbook.clear
         end
 

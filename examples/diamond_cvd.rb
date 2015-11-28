@@ -148,6 +148,8 @@ events
     aliases one: bridge, two: bridge
     # TODO: возможно стоит скрыть от пользователя возможность определения необходимости наличия одновалентных атомов, и определять это автоматически. Можно сделать условия более мягкими, и для случая, если пользователь указать "cr: i", то автоматически определять по правой части уравнения, что должно быть "cr: H".
     equation one(cr: H) + two(cr: H) = one(cr: *) + two(cr: *) + hydrogen
+      position one(:cr), two(:cr), face: 100, dir: :front
+
     activation 35
     forward_rate 3e6 # TODO: maybe value more grater than presented
 
@@ -375,17 +377,25 @@ events
     forward_rate 2.4e8
     reverse_rate 4.4e9
 
+  environment :dimers_edge
+    targets :one_atom, :two_atom
+    aliases dm: dimer
+
+    where :edge, 'at end of dimers edge'
+      position one_atom, dm(:cl), face: 100, dir: :cross
+      position two_atom, dm(:cr), face: 110, dir: :front
+
   reaction 'methyl to dimer (incorporate down at 100 face)'
     aliases source: dimer, product: dimer
     equation methyl_on_bridge(cm: *, cm: u, cb: i) + source(cr: *) = product
 
       # все значения выдуманы
       refinement 'not in dimers row'
-        activation 31.3
+        forward_activation 31.3
 
-      lateral :dimers_row, one_atom: product(:cl), two_atom: product(:cr)
-      there :end_row
-        activation 17.6 # must be more less
+      lateral :dimers_edge, one_atom: methyl_on_bridge(:cb), two_atom: source(:cl)
+      there :edge
+        forward_activation 17.6 # must be more less
 
     forward_rate 3.5e8
 
@@ -395,12 +405,12 @@ events
     equation dimer(cr: *) = high_bridge(ch: *) + one(ct: *) + two(ct: *)
 
       refinement 'not in dimers row'
-        activation 53.5
+        forward_activation 53.5
 
       lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
       there :end_row
         # activation :inf
-        activation 500 # 1.135590e-80
+        forward_activation 500 # 1.135590e-80
         # TODO: проработать момент запрета реакций
 
     # значения также выдуманы

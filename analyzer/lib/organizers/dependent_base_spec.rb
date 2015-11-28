@@ -52,7 +52,7 @@ module VersatileDiamond
     private
 
       # Provides comparison by number of relations
-      # @param [Minuend] other see at #<=> same argument
+      # @param [MinuendSpec] other see at #<=> same argument
       # @return [Integer] the result of comparation
       def order_relations(other, &block)
         super(other) do

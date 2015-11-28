@@ -3,10 +3,10 @@
 
 #include "registrator.h"
 
-template <ushort RT, ushort LATERALS_NUM>
-class Lateral : public Registrator<ConcreteLateralReaction<LATERALS_NUM>, RT>
+template <class B, ushort RT>
+class Lateral : public Registrator<B, RT>
 {
-    typedef Registrator<ConcreteLateralReaction<LATERALS_NUM>, RT> ParentType;
+    typedef Registrator<B, RT> ParentType;
 
 public:
     void remove() override;
@@ -15,34 +15,38 @@ public:
 protected:
     template <class... Args> Lateral(Args... args) : ParentType(args...) {}
 
-    virtual void createUnconcreted(LateralSpec *spec) = 0;
+    virtual void createUnconcreted(LateralSpec *spec);
 
-    template <class R> void restoreParent();
+private:
+    void restoreParent();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <ushort RT, ushort LATERALS_NUM>
-void Lateral<RT, LATERALS_NUM>::remove()
+template <class B, ushort RT>
+void Lateral<B, RT>::remove()
 {
     ParentType::remove();
     Handbook::scavenger().markReaction(this->parent());
 }
 
-template <ushort RT, ushort LATERALS_NUM>
-void Lateral<RT, LATERALS_NUM>::unconcretizeBy(LateralSpec *spec)
+template <class B, ushort RT>
+void Lateral<B, RT>::unconcretizeBy(LateralSpec *spec)
 {
     ParentType::remove();
     createUnconcreted(spec);
 }
 
-template <ushort RT, ushort LATERALS_NUM>
-template <class R>
-void Lateral<RT, LATERALS_NUM>::restoreParent()
+template <class B, ushort RT>
+void Lateral<B, RT>::createUnconcreted(LateralSpec *)
 {
-    // except LaterableRole::store()
-    typedef typename R::RegistratorType RegistratorType;
-    static_cast<R *>(this->parent())->RegistratorType::store();
+    restoreParent();
+}
+
+template <class B, ushort RT>
+void Lateral<B, RT>::restoreParent()
+{
+    this->parent()->TypicalReaction::store();
 }
 
 #endif // LATERAL_H

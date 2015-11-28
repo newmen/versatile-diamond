@@ -29,6 +29,7 @@ public:
 
     template <class CR> CR *checkoutReaction();
     template <class CR> CR *checkoutReactionWith(const Reactant<R> *other);
+    template <class CR> CR *checkoutReactionNotWith(const Reactant<R> *other);
     bool haveReaction(R *reaction) const;
 
 protected:
@@ -42,6 +43,10 @@ protected:
 private:
     R *checkoutReaction(ushort rid);
     R *checkoutReactionWith(ushort rid, const Reactant<R> *other);
+    R *checkoutReactionNotWith(ushort rid, const Reactant<R> *other);
+
+    template <class L>
+    R *checkoutReactionOp(ushort rid, const Reactant<R> *other, const L &op);
 
     typename Reactions::const_iterator find(R *reaction) const;
 };
@@ -109,6 +114,23 @@ R *Reactant<R>::checkoutReaction(ushort rid)
 template <class R>
 R *Reactant<R>::checkoutReactionWith(ushort rid, const Reactant<R> *other)
 {
+    return checkoutReactionOp(rid, other, [](const R *a, const R *b) {
+        return a == b;
+    });
+}
+
+template <class R>
+R *Reactant<R>::checkoutReactionNotWith(ushort rid, const Reactant<R> *other)
+{
+    return checkoutReactionOp(rid, other, [](const R *a, const R *b) {
+        return a != b;
+    });
+}
+
+template <class R>
+template <class L>
+R *Reactant<R>::checkoutReactionOp(ushort rid, const Reactant<R> *other, const L &op)
+{
     auto currentRange = _reactions.equal_range(rid);
     auto anotherRange = other->_reactions.equal_range(rid);
 
@@ -120,7 +142,7 @@ R *Reactant<R>::checkoutReactionWith(ushort rid, const Reactant<R> *other)
 
         for (; anotherRangeBegin != anotherRange.second; ++anotherRangeBegin)
         {
-            if (currentReaction == anotherRangeBegin->second)
+            if (op(currentReaction, anotherRangeBegin->second))
             {
                 result = currentReaction;
                 goto break_both_loops;
