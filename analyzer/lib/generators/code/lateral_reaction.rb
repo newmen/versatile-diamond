@@ -4,16 +4,22 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Contains logic for generation typical reation
+      # Contains logic for generation lateal reation
       class LateralReaction < SpeciesReaction
 
         def_delegator :reaction, :chunk
         def_delegator :chunk, :internal_chunks
 
+        # Initializes lateal reaction class code generator
+        def initialize(*)
+          super
+          @_sidepiece_species = nil
+        end
+
         # Gets the list of species which using as sidepiece of reaction
         # @return [Array] the list of sidepiece species
         def sidepiece_species
-          specie_classes(reaction.sidepiece_specs)
+          @_sidepiece_species ||= specie_classes(reaction.sidepiece_specs)
         end
 
         # Checks that current reaction is a tail of overall engine find algorithm
