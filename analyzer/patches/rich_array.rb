@@ -19,7 +19,7 @@ module VersatileDiamond
         # @yield [Object] for each item from which the grouping value will be gotten
         # @return [Array] the list of grouped arrays
         def groups(&block)
-          group_by(&block).values
+          (block_given? ? group_by(&block) : group_by { |x| x }).values
         end
 
         # Gets not unique items of array

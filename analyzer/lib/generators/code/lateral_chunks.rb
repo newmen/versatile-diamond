@@ -56,6 +56,14 @@ module VersatileDiamond
             end
         end
 
+        # Gets lateral reactoins grouped by number of internal chunks
+        # @return [Hash] the grouping result
+        def affixes_nums
+          @affixes.group_by do |lateral_reaction|
+            lateral_reaction.internal_chunks.size
+          end
+        end
+
         # Gets the lateral reaction which uses passed spec and atom
         # @param [Array] spec_atom by which the reaction will be found
         # @return [LateralReaction] the single lateral reaction

@@ -20,9 +20,9 @@ module VersatileDiamond
           # Generates find algorithm cpp code for target specie
           # @return [String] the string with cpp code of find specie algorithm
           def build
-            entry_nodes_with_elses.reduce('') do |acc, (nodes, else_prefix)|
+            entry_nodes_with_elses.reduce('') do |acc, (nodes, need_else_prefix)|
               factory.reset!
-              acc + body_for(nodes, else_prefix)
+              acc + body_for(nodes, need_else_prefix)
             end
           end
 
@@ -44,15 +44,15 @@ module VersatileDiamond
           # @return [Array] entry nodes zipped with else prefixes
           def entry_nodes_with_elses
             ens = backbone.entry_nodes
-            ens.zip([''] + ['else '] * (ens.size - 1))
+            ens.zip([false] + [true] * (ens.size - 1))
           end
 
           # @return [String]
-          def body_for(nodes, else_prefix)
+          def body_for(nodes, need_else_prefix)
             unit = factory.make_unit(nodes)
             unit.first_assign!
 
-            unit.check_existence(else_prefix) do
+            unit.check_existence(use_else_prefix: need_else_prefix) do
               combine_algorithm(nodes)
             end
           end

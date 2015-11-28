@@ -19,6 +19,9 @@ void <%= class_name %>::checkLaterals(<%= check_laterals_arguments_str(specie) %
 
 LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **chunks, ushort num) const
 {
+    assert(num > 0);
+
+<%= select_from_algorithm %>
 }
 
 SpecReaction *<%= class_name %>::lookAround()

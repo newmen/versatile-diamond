@@ -15,14 +15,14 @@ module VersatileDiamond
           # Gets the code which checks that containing in unit instance is presented
           # or not
           #
-          # @param [String] else_prefix which will be used if current instance has
-          #   a several anchor atoms
+          # @option [Boolean] :use_else_prefix flag which identifies that current
+          #   instance has a several anchor atoms
           # @yield should return cpp code which will be used if unit instance is
           #   presented
           # @return [String] the cpp code string
-          def check_existence(else_prefix = '', &block)
+          def check_existence(use_else_prefix: false, &block)
             define_anchor_atoms_line +
-              code_condition(check_role_condition, else_prefix) do
+              code_condition(check_role_condition, use_else_prefix: use_else_prefix) do
                 code_condition(check_specie_condition, &block)
               end
           end

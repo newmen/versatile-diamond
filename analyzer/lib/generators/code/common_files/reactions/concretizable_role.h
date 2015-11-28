@@ -83,6 +83,7 @@ void ConcretizableRole<MultiLateral, RT, LATERAL_REACTIONS_NUM>::concretize(Sing
         chunks[index++] = innerChunk;
     });
 
+    assert(index == LATERAL_REACTIONS_NUM + 1);
     this->parent()->selectFrom(chunks, index)->store();
 }
 

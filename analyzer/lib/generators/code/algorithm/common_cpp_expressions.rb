@@ -41,20 +41,31 @@ module VersatileDiamond
 
           # Gets a code with cpp condition block
           # @param [String] condition_str the cpp code string with some condition
-          # @param [String] else_prefix the prefix which places before `if` keyword
+          # @option [Boolean] :use_else_prefix flag which identifies that before `if`
+          #   keyword the `else ` prefix should be used
           # @yield should return cpp code with several lines which will placed into
           #   condition block
           # @return [String] the code with condition
-          def code_condition(condition_str, else_prefix = '', &block)
-            code_line("#{else_prefix}if (#{condition_str})") +
-              code_scope(&block)
+          def code_condition(condition_str = nil, use_else_prefix: false, &block)
+            full_expr =
+              if condition_str
+                pre_expr = use_else_prefix ? 'else if' : 'if'
+                "#{pre_expr} (#{condition_str})"
+              else
+                unless use_else_prefix
+                  fail 'Incorrect arguments was passed to combine code condition'
+                end
+                'else'
+              end
+
+            code_line(full_expr) + code_scope(&block)
           end
 
           # Gets the scope of code
           # @yield should return the body of scope
           # @return [String] the scoped code
-          def code_scope(begin_char: '{', end_char: '}', &block)
-            code_lines(begin_char, block.call, end_char)
+          def code_scope(&block)
+            code_lines('{', block.call, '}')
           end
 
           # Gets a code with cpp lambda block
@@ -75,6 +86,23 @@ module VersatileDiamond
             args_wo_lambda_body = (method_args + [lambda_head]).join(separator)
 
             code_lines("#{method_name}(#{args_wo_lambda_body} {", block.call, '});')
+          end
+
+          # Provides cpp code block with for loop statement
+          # @param [String] iterator_type the type of iterator variable
+          # @param [String] var_name the name of iterator variable
+          # @param [Integer] max_value the limit value of for loop iteration
+          # @yield [String] passes the name of iterator variable to passed block, this
+          #   block should return a string with cpp code which will a body of loop
+          #   statement
+          # @return [String] the full code block with for loop statement
+          def code_for_loop(iterator_type, var_name, max_value, &block)
+            iterator = Object.new # any unique object which was not created previously
+            namer.assign_next(var_name, iterator)
+            i = name_of(iterator)
+
+            code_line("for (#{iterator_type} #{i} = 0; #{i} < #{max_value}; ++#{i})") +
+              code_scope { block[i] }
           end
 
           # Gets cpp code line with defined variable

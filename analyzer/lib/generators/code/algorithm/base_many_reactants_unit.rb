@@ -81,23 +81,19 @@ module VersatileDiamond
           # @yield is the body of for loop
           # @return [String] the code with symmetric atoms iteration
           def each_symmetry_lambda(**, &block)
-            iterator = Object.new # any unique object which was not created previously
-            namer.assign_next('ae', iterator)
-            i = name_of(iterator)
-            num = symmetric_atoms.size
+            code_for_loop('uint', 'ae', symmetric_atoms.size) do |i|
+              if atoms.size == 2 && namer.full_array?(atoms)
+                atoms_var_name = name_of(atoms)
+                namer.reassign("#{atoms_var_name}[#{i}]", atoms.first)
+                namer.reassign("#{atoms_var_name}[#{i}-1]", atoms.last)
+              else
+                # TODO: maybe need to redefine atoms as separated array before loop
+                # statement in the case when atoms are not "full array"
+                fail 'Can not figure out the next names of atoms variables'
+              end
 
-            if atoms.size == 2 && namer.full_array?(atoms)
-              atoms_var_name = name_of(atoms)
-              namer.reassign("#{atoms_var_name}[#{i}]", atoms.first)
-              namer.reassign("#{atoms_var_name}[#{i}-1]", atoms.last)
-            else
-              # TODO: maybe need to redefine atoms as separated array before loop
-              # statement in the case when atoms are not "full array"
-              fail 'Can not figure out the next names of atoms variables'
+              block.call
             end
-
-            code_line("for (uint #{i} = 0; #{i} < #{num}; ++#{i})") +
-              code_scope(&block)
           end
 
           # Gets list of possible symmetric atoms

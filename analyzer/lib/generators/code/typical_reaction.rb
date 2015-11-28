@@ -141,6 +141,15 @@ module VersatileDiamond
         def check_laterals_algorithm_from(specie)
           check_laterals_builder_from(specie).build
         end
+
+        # Builds algorithm for creating right lateral reaction after that all possible
+        # chunks was found and passed to this method with number of them
+        #
+        # @return [String] the cpp code string with algorithm of selection from
+        #   available set of chunks
+        def select_from_algorithm
+          Algorithm::LateralReactionSelectBuilder.new(generator, lateral_chunks).build
+        end
       end
 
     end
