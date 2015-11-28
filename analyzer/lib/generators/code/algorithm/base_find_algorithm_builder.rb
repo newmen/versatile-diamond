@@ -3,9 +3,9 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Contain base logic for building algorithms
+        # Contain base logic for building find algorithms
         # @abstract
-        class BaseAlgorithmBuilder
+        class BaseFindAlgorithmBuilder
           include Modules::ProcsReducer
           extend Forwardable
 

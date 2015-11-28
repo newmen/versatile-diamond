@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Contain logic for building lateral chunks algorithm
         # @abstract
-        class LateralChunksAlgorithmBuilder < BaseAlgorithmBuilder
+        class LateralChunksAlgorithmBuilder < BaseFindAlgorithmBuilder
 
           # Inits builder by main engine code generator and lateral chunks object
           # @param [EngineCode] generator the major engine code generator

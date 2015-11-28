@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contain logic for building find reaction algorithm
-        class ReactionFindBuilder < BaseFindBuilder
+        class ReactionFindBuilder < MainFindAlgorithmBuilder
 
           # Inits builder by main engine code generator, target reaction and reatant
           # specie which should be found by generating algorithm

@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Contain base logic for building find algorithms
         # @abstract
-        class BaseFindBuilder < BaseAlgorithmBuilder
+        class MainFindAlgorithmBuilder < BaseFindAlgorithmBuilder
         private
 
           # Gets the lines by which the finding instance will be created in algorithm

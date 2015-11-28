@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contain logic for building find specie algorithm
-        class SpecieFindBuilder < BaseFindBuilder
+        class SpecieFindBuilder < MainFindAlgorithmBuilder
           extend Forwardable
 
           def_delegator :backbone, :using_atoms
