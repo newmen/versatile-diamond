@@ -8,15 +8,6 @@ module VersatileDiamond
         class ReactionCreatorUnit < BaseReactionCreatorUnit
           include SpecificSpecDefiner
 
-          # Initializes the creator
-          # @param [NameRemember] namer the remember of using names of variables
-          # @param [TypicalReaction] reaction which uses in current building algorithm
-          # @param [Array] species the list of all previously defined unique species
-          def initialize(namer, reaction, species)
-            super(namer, species)
-            @reaction = reaction
-          end
-
           # Gets the code lines for reaction creation
           # @return [String] the lines by which the reaction will be created
           def lines

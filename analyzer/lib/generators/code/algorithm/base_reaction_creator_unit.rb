@@ -12,15 +12,17 @@ module VersatileDiamond
 
           # Initializes the creator
           # @param [NameRemember] namer the remember of using names of variables
+          # @param [BaseReaction] reaction which uses in current building algorithm
           # @param [Array] species the list of all previously defined unique species
-          def initialize(namer, species)
+          def initialize(namer, reaction, species)
             @namer = namer
+            @reaction = reaction
             @species = species.sort
           end
 
         private
 
-          attr_reader :namer, :species
+          attr_reader :namer, :reaction, :species
 
         end
 
