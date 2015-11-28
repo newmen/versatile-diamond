@@ -133,22 +133,19 @@ module VersatileDiamond
 
           ### --------------------------------------------------------------------- ###
 
-          # Gets the code with for loop where chunks of coupled reactions counts
-          # @return [String] the cpp code with for loop statement
-          def loop_counter
-            code_line("std::unordered_map<ushort, ushort> #{COUNTER_VAR_NAME};") +
-              code_for_loop('ushort', 'i', 'num') do |i|
-                counter_item = counter("#{CHUNKS_VAR_NAME}[#{i}]->type()")
-                code_line("++#{counter_item};")
-              end
+          # Gets the code line with defined counter container variable
+          # @return [String] the cpp code with variable definition
+          def define_counter
+            type = 'std::unordered_map<ushort, ushort>'
+            counter_func_call = "countReactions(#{CHUNKS_VAR_NAME}, #{NUM_VAR_NAME})"
+            code_line("#{type} #{COUNTER_VAR_NAME} = #{counter_func_call};")
           end
 
           # Gets the body for checking the coupled reactions
           # @return [String] the cpp string where coupled reactions checks
           def coupling_creations
-            loop_counter + combine_code(coupling_sequence) + strong_assert
+            define_counter + combine_code(coupling_sequence) + strong_assert
           end
-
 
           # Gets the sequence of selecting coupled lateral reaction
           # @return [Array] the list of triples

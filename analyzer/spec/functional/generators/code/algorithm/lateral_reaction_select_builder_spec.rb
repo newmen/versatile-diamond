@@ -75,11 +75,7 @@ module VersatileDiamond
     }
     else
     {
-        std::unordered_map<ushort, ushort> counter;
-        for (ushort i1 = 0; i1 < num; ++i1)
-        {
-            ++counter[chunks[i1]->type()];
-        }
+        std::unordered_map<ushort, ushort> counter = countReactions(chunks, num);
         if (num == 1 && (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 || counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1))
         {
             return chunks[0];

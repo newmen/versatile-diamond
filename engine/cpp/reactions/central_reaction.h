@@ -1,6 +1,7 @@
 #ifndef CENTAL_REACTION_H
 #define CENTAL_REACTION_H
 
+#include <unordered_map>
 #include "typical_reaction.h"
 #include "single_lateral_reaction.h"
 
@@ -16,6 +17,8 @@ public:
 
 protected:
     CentralReaction() = default;
+
+    static std::unordered_map<ushort, ushort> countReactions(SingleLateralReaction **chunks, ushort num);
 
     SpecReaction *selectReaction(SingleLateralReaction **chunks, ushort num);
 
