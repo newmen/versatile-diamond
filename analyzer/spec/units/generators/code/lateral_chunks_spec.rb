@@ -107,11 +107,6 @@ module VersatileDiamond
             expect(affixes.map(&:chunk).any?(&:original?)).to be_falsey
           end
         end
-
-        describe '#mono_reactant?' do
-          let(:lateral_reactions) { [dept_end_lateral_df] }
-          it { expect(subject.mono_reactant?).to be_falsey }
-        end
       end
 
     end

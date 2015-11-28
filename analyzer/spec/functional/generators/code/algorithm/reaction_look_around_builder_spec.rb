@@ -129,15 +129,15 @@ module VersatileDiamond
                 }
             }
         });
-        eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour2) {
-            if (neighbour2->is(#{ab_ct}))
+        eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour1) {
+            if (neighbour1->is(#{ab_ct}))
             {
-                if (neighbour2 != atoms1[ae1-1])
+                if (neighbour1 != atoms1[ae1-1])
                 {
-                    LateralSpec *specie2 = neighbour2->specByRole<BridgeCTs>(#{ab_ct});
-                    if (specie2)
+                    LateralSpec *specie1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
+                    if (specie1)
                     {
-                        chunks[index++] = new #{front_cmb_name}(this, specie2);
+                        chunks[index++] = new #{front_cmb_name}(this, specie1);
                     }
                 }
             }

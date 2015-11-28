@@ -68,8 +68,6 @@ module VersatileDiamond
         end
 
         # Gets the ordered list of lateral reactions which are root lateral reactions
-        # and uses passed specie
-        #
         # @param [Specie] specie which should be one of sidepiece species of reaction
         # @return [Array] the list of single lateral reactions
         # TODO: must be private (just for rspecs)
@@ -100,12 +98,6 @@ module VersatileDiamond
             lateral_reaction.chunk.parents.empty? &&
               lateral_reaction.sidepiece_species.include?(specie)
           end
-        end
-
-        # Checks that target reaction is mono-reactant
-        # @return [Boolean] is mono-reactant target reaction or not
-        def mono_reactant?
-          target_specs.size == 1
         end
 
         # Checks that passed spec belongs to overall target specs set

@@ -7,6 +7,7 @@ module VersatileDiamond
         module CommonCppExpressions
 
           TAB_SIZE = 4 # always so for cpp
+          PREFIX_SPACES = ' ' * TAB_SIZE
 
         private
 
@@ -14,21 +15,28 @@ module VersatileDiamond
           # @param [String] code_str the string before which spaces will be added
           # @return [String] the string with spaces before
           def add_prefix_spaces(code_str)
-            "#{' ' * TAB_SIZE}#{code_str}"
+            "#{PREFIX_SPACES}#{code_str}"
           end
 
-          # Increases spaces to one more tab before each line
-          # @param [String] code_str the code with several lines
-          # @return [String] code lines with added spaces before each line
-          def increase_spaces(code_str)
-            code_str.split("\n").map(&method(:add_prefix_spaces)).join("\n") + "\n"
+          # Shifts the passed code to one indent
+          # @param [String] code_str which will be shifted
+          # @return [String] the shifted cpp code
+          def shift_code(code_str)
+            code_str.split("\n").map(&method(:add_prefix_spaces)).join("\n")
           end
 
           # Inserts spaces before and inserts new line character after passed string
           # @param [String] code_str the wrapping string with cpp code
           # @param [String] the wrapped string with spaces and new line character
           def code_line(code_str)
-            "#{add_prefix_spaces(code_str)}\n"
+            shift_code(code_str) + "\n"
+          end
+
+          # Transforms all passed string to sequental list of cpp code lines
+          # @param [Array] code_strs the list of code units which will be transormed
+          # @return [String] the scope of cpp code lines
+          def code_lines(*code_strs)
+            code_strs.map(&method(:code_line)).join
           end
 
           # Gets a code with cpp condition block
@@ -45,10 +53,8 @@ module VersatileDiamond
           # Gets the scope of code
           # @yield should return the body of scope
           # @return [String] the scoped code
-          def code_scope(&block)
-            code_line('{') +
-            increase_spaces(block.call) +
-            code_line('}')
+          def code_scope(begin_char: '{', end_char: '}', &block)
+            code_lines(begin_char, block.call, end_char)
           end
 
           # Gets a code with cpp lambda block
@@ -68,9 +74,7 @@ module VersatileDiamond
             lambda_head = "[#{closure_args_str}](#{lambda_args_str})"
             args_wo_lambda_body = (method_args + [lambda_head]).join(separator)
 
-            code_line("#{method_name}(#{args_wo_lambda_body} {") +
-              increase_spaces(block.call) +
-              code_line('});')
+            code_lines("#{method_name}(#{args_wo_lambda_body} {", block.call, '});')
           end
 
           # Gets cpp code line with defined variable

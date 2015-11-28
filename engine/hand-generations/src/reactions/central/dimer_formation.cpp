@@ -47,7 +47,7 @@ void DimerFormation::checkLaterals(Dimer *sidepiece)
             if (targets[0] && targets[1])
             {
                 assert(targets[0] != targets[1]);
-                ChainFactory<DuoWithLateralFactory, DimerFormationAtEnd, DimerFormation> factory(sidepiece, targets);
+                ChainFactory<DuoLateralFactory, DimerFormationAtEnd, DimerFormation> factory(sidepiece, targets);
                 factory.checkoutReactions<DimerFormationAtEnd>();
             }
         }

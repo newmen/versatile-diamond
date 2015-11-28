@@ -36,12 +36,20 @@ module VersatileDiamond
             end
           end
 
+          # Split the sceleton tuples of neighbour nodes, relations between them and
+          # correspond sidepiece species by reaction where it used
+          #
+          # @param [Array] entry_nodes the list of nodes from which the algorithm
+          #   builds
+          # @return [Array] the list of grouped arguments for #check_reaction method
+          def slices(entry_nodes)
+            split_by_first(entry_nodes.flat_map(&method(:reaction_with_rl_sidepieces)))
+          end
+
           # Builds body of algorithm
           # @return [String] the string with cpp code
           def body
-            pts = ordered_entry_nodes.flat_map(&method(:reaction_with_rl_sidepieces))
-            slices = split_by_first(pts)
-            slices.map { |args| check_reaction(*args) }.join
+            slices(ordered_entry_nodes).map { |args| check_reaction(*args) }.join
           end
 
           # Gets the code which checks one chunk reaction
@@ -50,32 +58,9 @@ module VersatileDiamond
           #   with sidepiece which are part of checking reaction
           # @return [String] the string with cpp code
           def check_reaction(reaction, nbrs_with_species)
-            uniq_sidepieces = nbrs_with_species.map(&:last).reduce(:+).uniq(&:original)
+            uniq_sidepieces = nbrs_with_species.flat_map(&:last).uniq(&:original)
             creator_unit = factory.creator(reaction, uniq_sidepieces)
-
-            prev_sidepieces = []
-            checks_species_procs = nbrs_with_species.map do |rel_args, sidepieces|
-              prev_sidepieces_copy = prev_sidepieces
-              prev_sidepieces += sidepieces
-              check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces_copy)
-            end
-
-            reduce_procs(checks_species_procs) { creator_unit.lines }.call
-          end
-
-          # Gets the proc which checks neighbour sidepiece, it relations and species
-          # @param [Array] rel_args the arguments for #relation_proc method
-          # @param [Array] sidepieces which will be checked after relations
-          # @param [Array] prev_sidepieces the list of sidepieces which was used at
-          #   previos steps
-          # @return [Proc] which generates cpp code for check the sidepiece
-          def check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces)
-            rl_proc = relations_proc(*rel_args)
-            nbr_atoms = rel_args[1].map(&:atom)
-            checker_unit = factory.checker(sidepieces.zip(nbr_atoms), prev_sidepieces)
-            -> &block do
-              rl_proc.call { checker_unit.define_and_check(&block) }
-            end
+            check_sidepieces(nbrs_with_species) { creator_unit.lines }
           end
 
           # Splits the list of pairs to hash where keys are identical first items and

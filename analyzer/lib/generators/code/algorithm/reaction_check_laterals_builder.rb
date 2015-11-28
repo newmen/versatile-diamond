@@ -10,18 +10,20 @@ module VersatileDiamond
           # @param [EngineCode] generator the major engine code generator
           # @param [LateralChunks] lateral_chunks the target object by which the
           #   algorithm will be generated
-          # @param [Specie] specie from which the algorithm will be builded
-          def initialize(generator, lateral_chunks, specie)
-            @specie = specie
+          # @param [Specie] target_specie from which the algorithm will be builded
+          def initialize(generator, lateral_chunks, target_specie)
+            @target_specie = target_specie
             super(generator, lateral_chunks)
           end
 
         private
 
+          attr_reader :target_specie
+
           # Creates backbone of algorithm
           # @return [CheckLateralsBackbone] the backbone which provides ordered graph
           def create_backbone
-            CheckLateralsBackbone.new(generator, lateral_chunks, @specie)
+            CheckLateralsBackbone.new(generator, lateral_chunks, target_specie)
           end
 
           # Creates factory of units for algorithm generation
@@ -37,13 +39,18 @@ module VersatileDiamond
             factory.make_unit(main_nodes)
           end
 
+          # Gets the list of chunk reactions which will created for concretization of
+          # lateral reactions
+          #
+          # @return [Array] the list of checking chunk reactions
+          def target_reactions
+            lateral_chunks.root_affixes_for(target_specie)
+          end
+
           # Builds checking bodies for all lateral reactions
           # @return [String] the string with cpp code
           def body
-            factory.remember_names!
-            lateral_chunks.root_affixes_for(@specie).reduce('') do |acc, reaction|
-              acc + body_for(reaction)
-            end
+            target_reactions.map(&method(:body_for)).join
           end
 
           # Builds body of algorithm for passed reaction
@@ -64,27 +71,48 @@ module VersatileDiamond
           # @param [Array] nodes from which walking will occure
           # @return [String] the cpp code find algorithm
           def combine_algorithm(reaction, nodes)
-            checking_rels(nodes).reduce('') do |acc, (nbrs, rel_params)|
+            nodes_rl_sidepieces(reaction, nodes).reduce('') do |acc, nbrs_with_species|
+              acc + check_reaction(reaction, nbrs_with_species)
+            end
+          end
+
+          # Gets the code which checks one chunk reaction
+          # @param [LateralReaction] reaction which will be checked
+          # @param [Array] nbrs_with_species the list: relation proc args with
+          #   sidepiece species which are part of checking reaction
+          # @return [String] the string with cpp code
+          def check_reaction(reaction, nbrs_with_species)
+            sidepieces = nbrs_with_species.last.uniq(&:original)
+            uniq_target = nbrs_with_species.first.first.first.uniq_specie
+            creator_unit = factory.creator(reaction, uniq_target, sidepieces)
+            check_sidepieces([nbrs_with_species]) { creator_unit.lines }
+          end
+
+          # Gets the list of tuples with neighbour nodes, parameter of relation between
+          # them and near sidepiece species
+          #
+          # @param [LateralReaction] reaction which will be used for detect that
+          #   relation between nodes take a place
+          # @param [Array] nodes from which the neighbour nodes and relation parameter
+          #   will be gotten
+          # @return [Array] the list of tuples with nodes, relation parameter and
+          #   sidepiece species
+          def nodes_rl_sidepieces(reaction, nodes)
+            checking_rels(nodes).reduce([]) do |acc, (nbrs, rel_params)|
               if reaction.use_relation?(rel_params)
-                factory.restore_names!
-                func = relations_proc(nodes, nbrs, rel_params)
-                acc + func.call { creation_lines(reaction, nodes, nbrs) }
+                species = other_side_species(nbrs)
+                acc << [[nodes, nbrs, rel_params], species]
               else
                 acc
               end
             end
           end
 
-          # Gets the lines by which the lateral reaction will concretized in algorithm
-          # @param [LateralReaction] reaction to which the target reaction will
-          #   concretized
-          # @param [Array] side_nodes the list of nodes from which the lateral reaction
-          #   will be created
-          # @param [Array] target_nodes the list of nodes in which the reaction will
-          #   be checked
-          # @return [String] the cpp code string with lateral reaction concretization
-          def creation_lines(reaction, side_nodes, target_nodes)
-            factory.creator(reaction, side_nodes, target_nodes).lines
+          # Wraps unique specie from each node
+          # @param [Array] nodes from which the unique species will be gotten
+          # @return [Array] the list of wrapped unique species
+          def other_side_species(nodes)
+            nodes.map { |node| OtherSideSpecie.new(node.uniq_specie) }
           end
         end
 

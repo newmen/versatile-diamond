@@ -24,6 +24,7 @@ module VersatileDiamond
 
             unit.define_target_atoms_line +
               unit.check_symmetries do
+                factory.remember_names! # do not necessary (it possible just for tests)
                 body
               end
           end
@@ -37,6 +38,40 @@ module VersatileDiamond
           # @return [Array] the list of relations
           def checking_rels(nodes)
             ordered_graph_from(nodes).first.last
+          end
+
+          # Gets cpp code of checking sidepiece species
+          # @param [Array] nbrs_with_species the list of tuples with neighbour nodes,
+          #   parameter of relation between them and near sidepiece species
+          # @yield provides internal body of checking conditions
+          # @return [String] the block of cpp code with checking target atoms,
+          #   relations between them and sidepiece species which will be gotten from it
+          #   atoms
+          def check_sidepieces(nbrs_with_species, &block)
+            prev_sidepieces = []
+            checks_species_procs = nbrs_with_species.map do |rel_args, sidepieces|
+              prev_sidepieces_copy = prev_sidepieces
+              prev_sidepieces += sidepieces
+              check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces_copy)
+            end
+
+            factory.restore_names! # do not necessary (it possible just for tests)
+            reduce_procs(checks_species_procs, &block).call
+          end
+
+          # Gets the proc which checks neighbour sidepiece, it relations and species
+          # @param [Array] rel_args the arguments for #relation_proc method
+          # @param [Array] sidepieces which will be checked after relations
+          # @param [Array] prev_sidepieces the list of sidepieces which was used at
+          #   previos steps
+          # @return [Proc] which generates cpp code for check the sidepiece
+          def check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces)
+            rl_proc = relations_proc(*rel_args)
+            nbr_atoms = rel_args[1].map(&:atom)
+            checker_unit = factory.checker(sidepieces.zip(nbr_atoms), prev_sidepieces)
+            -> &block do
+              rl_proc.call { checker_unit.define_and_check(&block) }
+            end
           end
         end
 

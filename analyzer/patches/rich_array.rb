@@ -30,8 +30,8 @@ module VersatileDiamond
 
         # Checks that array contains only equalent values
         # @param [Boolean] are all items equal between each other or not
-        def all_equal?
-          uniq.size == 1
+        def all_equal?(&block)
+          uniq(&block).size == 1
         end
       end
     end
