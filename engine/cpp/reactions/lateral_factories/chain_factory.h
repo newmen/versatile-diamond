@@ -3,6 +3,9 @@
 
 #include "lateral_creation_lambda.h"
 
+namespace vd
+{
+
 template <template <class, class> class SomeLateralFactory, class LR, class CR>
 class ChainFactory : public SomeLateralFactory<LR, CR>
 {
@@ -56,6 +59,8 @@ template <class R1, class R2, class... RS>
 bool ChainFactory<B, LR, CR>::checkoutReactions()
 {
     return checkoutReaction<R1>() || checkoutReactions<R2, RS...>();
+}
+
 }
 
 #endif // CHAIN_FACTORY_H

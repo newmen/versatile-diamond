@@ -3,6 +3,9 @@
 
 #include "lateral_factory.h"
 
+namespace vd
+{
+
 template <class TargetLateralReaction, class MinimalCentralReaction>
 class UnoLateralFactory : public LateralFactory<TargetLateralReaction, MinimalCentralReaction>
 {
@@ -31,6 +34,8 @@ bool UnoLateralFactory<LR, CR>::verify(LateralCreationLambda<NR, LR, CR> &&lambd
     return this->highOrderVerify(std::forward<LateralCreationLambda<NR, LR, CR>>(lambda), [this]() {
         return _target->checkoutReaction<NR>();
     });
+}
+
 }
 
 #endif // UNO_LATERAL_FACTORY_H

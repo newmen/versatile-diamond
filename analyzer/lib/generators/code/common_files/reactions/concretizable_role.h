@@ -1,12 +1,14 @@
 #ifndef CONCRETIZABLE_ROLE_H
 #define CONCRETIZABLE_ROLE_H
 
+#include <reactions/lateral_factories/uno_lateral_factory.h>
+#include <reactions/lateral_factories/duo_lateral_factory.h>
+#include <reactions/lateral_factories/chain_factory.h>
+using namespace vd;
+
 #include "central.h"
 #include "single_lateral.h"
 #include "multi_lateral.h"
-#include "uno_lateral_factory.h"
-#include "duo_lateral_factory.h"
-#include "chain_factory.h"
 
 template<template <ushort RT, ushort TARGETS_NUM> class Wrapper, ushort RT, ushort TARGETS_NUM>
 class ConcretizableRole;

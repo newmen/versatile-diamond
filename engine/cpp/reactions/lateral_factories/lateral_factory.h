@@ -1,11 +1,12 @@
 #ifndef LATERAL_FACTORY_H
 #define LATERAL_FACTORY_H
 
-#include <species/specific_spec.h>
-#include <reactions/single_lateral_reaction.h>
-using namespace vd;
-
+#include "../../species/specific_spec.h"
+#include "../single_lateral_reaction.h"
 #include "lateral_creation_lambda.h"
+
+namespace vd
+{
 
 template <class TargetLateralReaction, class MinimalCentralReaction>
 class LateralFactory
@@ -20,12 +21,6 @@ protected:
     template <class NeighbourReaction, class CheckoutLambda>
     bool highOrderVerify(LateralCreationLambda<NeighbourReaction, TargetLateralReaction, MinimalCentralReaction> &&creationLambda,
                          const CheckoutLambda &checkoutLambda);
-
-private:
-    LateralFactory(const LateralFactory &) = delete;
-    LateralFactory(LateralFactory &&) = delete;
-    LateralFactory &operator = (const LateralFactory &) = delete;
-    LateralFactory &operator = (LateralFactory &&) = delete;
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -44,6 +39,8 @@ bool LateralFactory<LR, CR>::highOrderVerify(LateralCreationLambda<NR, LR, CR> &
     {
         return false;
     }
+
+}
 
 }
 

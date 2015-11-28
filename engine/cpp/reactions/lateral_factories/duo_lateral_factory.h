@@ -3,6 +3,9 @@
 
 #include "lateral_factory.h"
 
+namespace vd
+{
+
 template <class TargetLateralReaction, class MinimalCentralReaction>
 class DuoLateralFactory : public LateralFactory<TargetLateralReaction, MinimalCentralReaction>
 {
@@ -31,6 +34,8 @@ bool DuoLateralFactory<LR, CR>::verify(LateralCreationLambda<NR, LR, CR> &&lambd
     return this->highOrderVerify(std::forward<LateralCreationLambda<NR, LR, CR>>(lambda), [this]() {
         return _targets[0]->checkoutReactionWith<NR>(_targets[1]);
     });
+}
+
 }
 
 #endif // DUO_LATERAL_FACTORY_H

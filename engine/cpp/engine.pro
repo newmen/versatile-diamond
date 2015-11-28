@@ -131,15 +131,15 @@ SOURCES += \
     tools/savers/xyz_format.cpp \
     tools/savers/xyz_saver.cpp \
     tools/scavenger.cpp \
-    tools/yaml_config_reader.cpp \
+    ../hand-generations/src/main.cpp \
 #    ../tests/units/c_spec.cpp \
 #    ../tests/units/diamond_relations_spec.cpp \
 #    ../tests/units/diamond_spec.cpp \
 #    ../tests/units/find_spec.cpp \
 #    ../tests/units/lattice_spec. \cpp \
 #    ../tests/units/vector3d_spec \.cpp \
-#    ../tests/support/open_diamond.cpp
-    ../hand-generations/src/main.cpp
+#    ../tests/support/open_diamond.cpp \
+    tools/yaml_config_reader.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -157,17 +157,12 @@ HEADERS += \
     ../hand-generations/src/reactions/central.h \
     ../hand-generations/src/reactions/central/dimer_drop.h \
     ../hand-generations/src/reactions/central/dimer_formation.h \
-    ../hand-generations/src/reactions/chain_factory.h \
     ../hand-generations/src/reactions/concretizable_role.h \
-    ../hand-generations/src/reactions/duo_lateral_checker.h \
-    ../hand-generations/src/reactions/duo_lateral_factory.h \
     ../hand-generations/src/reactions/lateral.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_in_middle.h \
-    ../hand-generations/src/reactions/lateral_creation_lambda.h \
-    ../hand-generations/src/reactions/lateral_factory.h \
     ../hand-generations/src/reactions/local.h \
     ../hand-generations/src/reactions/multi_lateral.h \
     ../hand-generations/src/reactions/rates_reader.h \
@@ -217,7 +212,6 @@ HEADERS += \
     ../hand-generations/src/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     ../hand-generations/src/reactions/ubiquitous/surface_activation.h \
     ../hand-generations/src/reactions/ubiquitous/surface_deactivation.h \
-    ../hand-generations/src/reactions/uno_lateral_factory.h \
     ../hand-generations/src/run.h \
     ../hand-generations/src/species/base.h \
     ../hand-generations/src/species/base/bridge.h \
@@ -286,6 +280,11 @@ HEADERS += \
     reactions/central_reaction.h \
     reactions/concrete_lateral_reaction.h \
     reactions/concrete_typical_reaction.h \
+    reactions/lateral_factories/chain_factory.h \
+    reactions/lateral_factories/duo_lateral_factory.h \
+    reactions/lateral_factories/lateral_creation_lambda.h \
+    reactions/lateral_factories/lateral_factory.h \
+    reactions/lateral_factories/uno_lateral_factory.h \
     reactions/lateral_reaction.h \
     reactions/multi_lateral_reaction.h \
     reactions/reaction.h \
