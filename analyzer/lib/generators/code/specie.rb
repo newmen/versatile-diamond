@@ -171,7 +171,7 @@ module VersatileDiamond
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
-          spec.non_term_children.map(&method(:specie_class))
+          specie_classes(spec.non_term_children)
         end
 
         # Gets children species without species which are find algorithm roots
@@ -191,7 +191,7 @@ module VersatileDiamond
         # @return [Array] the list of local reactions
         def local_reactions
           if generator.handbook.ubiquitous_reactions_exists?
-            spec.reactions.select(&:local?).map(&method(:reaction_class))
+            reaction_classes(spec.reactions.select(&:local?))
           else
             []
           end
@@ -200,7 +200,7 @@ module VersatileDiamond
         # Gets list of typical reactions for current specie
         # @return [Array] the list of typical reactions
         def typical_reactions
-          all_reactions = spec.reactions.map(&method(:reaction_class))
+          all_reactions = reaction_classes(spec.reactions)
           (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
@@ -208,13 +208,13 @@ module VersatileDiamond
         # @return [Array] the list of laterable typical reactions
         def laterable_typical_reactions
           parent_reactions = spec.theres.map(&:lateral_reaction).map(&:parent).compact
-          parent_reactions.reject(&:lateral?).uniq.map(&method(:reaction_class))
+          reaction_classes(parent_reactions.reject(&:lateral?).uniq)
         end
 
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
-          spec.reactions.select(&:lateral?).map(&method(:reaction_class)).uniq
+          reaction_classes(spec.reactions.select(&:lateral?)).uniq
         end
 
         # Checks that ubiquitous reactions prestented and specie have local reactions

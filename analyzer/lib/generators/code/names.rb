@@ -117,14 +117,14 @@ module VersatileDiamond
         # @param [Array] list of dependent species
         # @return [Array] the sorted list of code generators
         def species_classes(list)
-          sort(list).map(&method(:specie_class))
+          specie_classes(sort(list))
         end
 
         # Transforms the list of dependent reactions to code generator instances
         # @param [Array] list of dependent reactions
         # @return [Array] the sorted list of code generators
         def reactions_classes(list)
-          sort(list).map(&method(:reaction_class))
+          reaction_classes(sort(list))
         end
 
         # Sorts the items of passed list by names of them

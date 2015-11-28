@@ -13,6 +13,13 @@ module VersatileDiamond
         def reaction_class(reaction)
           generator.reaction_class(reaction.name)
         end
+
+        # Gets the list of reaction class code generators
+        # @param [Array] reactions by which code generators will be gotten
+        # @return [Array] the correspond reaction code generators
+        def reaction_classes(reactions)
+          reactions.map(&method(:reaction_class))
+        end
       end
 
     end

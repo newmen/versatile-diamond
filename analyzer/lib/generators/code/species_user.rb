@@ -13,6 +13,13 @@ module VersatileDiamond
         def specie_class(spec)
           generator.specie_class(spec.name)
         end
+
+        # Gets the list of specie class code generators
+        # @param [Array] specs for which the code generators will be got
+        # @return [Array] the correspond specie code generators
+        def specie_classes(specs)
+          specs.map(&method(:specie_class))
+        end
       end
 
     end

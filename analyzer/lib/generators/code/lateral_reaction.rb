@@ -13,7 +13,7 @@ module VersatileDiamond
         # Gets the list of species which using as sidepiece of reaction
         # @return [Array] the list of sidepiece species
         def sidepiece_species
-          reaction.sidepiece_specs.map(&method(:specie_class))
+          specie_classes(reaction.sidepiece_specs)
         end
 
         # Checks that current reaction is a tail of overall engine find algorithm
