@@ -17,7 +17,9 @@ module VersatileDiamond
           # @yield should return cpp code string for final condition body
           # @return [String] the string with cpp code
           def define_and_check_all_parents(&block)
-            parent_species.each { |pr| namer.assign_next('specie', pr) }
+            parent_species.each do |parent_specie|
+              namer.assign_next(Specie::INTER_SPECIE_NAME, parent_specie)
+            end
 
             iterated = []
             procs = parent_species.each_with_object([]) do |parent, acc|

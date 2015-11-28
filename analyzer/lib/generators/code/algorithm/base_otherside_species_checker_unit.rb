@@ -97,7 +97,7 @@ module VersatileDiamond
           # @override
           def define_target_species_variable_line
             items = species_with_atoms.map { |s, a| spec_by_role_call(a, s, a) }
-            namer.assign_next('specie', defining_species)
+            namer.assign_next(Specie::INTER_SPECIE_NAME, defining_species)
             define_var_line("#{specie_type} *", defining_species, items)
           end
         end

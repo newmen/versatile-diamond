@@ -12,7 +12,7 @@ module VersatileDiamond
           # @return [String] the definition of specie variable
           def define_specie_line(specie, atom)
             atom_call = spec_by_role_call(atom) # there calling overriden method
-            namer.assign_next('specie', specie)
+            namer.assign_next(Specie::INTER_SPECIE_NAME, specie)
             define_var_line("#{specie.class_name} *", specie, atom_call)
           end
 

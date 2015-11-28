@@ -66,7 +66,7 @@ module VersatileDiamond
           def define_undefined_atoms_line
             values = atom_values # collect before erase
             namer.erase(atoms)
-            namer.assign_next('atom', atoms)
+            namer.assign_next(Specie::INTER_ATOM_NAME, atoms)
             define_var_line('Atom *', atoms, values)
           end
 

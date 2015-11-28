@@ -105,13 +105,13 @@ module VersatileDiamond
           #
           # @return [String] the string with defined atoms variable
           def define_atoms_variable_line
-            redefine_vars_line('Atom', 'atom', sequence.short)
+            redefine_vars_line('Atom', Specie::INTER_ATOM_NAME, sequence.short)
           end
 
           # Gets cpp code string with defining additional atoms variable
           # @return [String] the string with defining additional atoms variable
           def define_additional_atoms_variable_line
-            redefine_vars_line('Atom', 'additionalAtom', sequence.addition_atoms)
+            redefine_vars_line('Atom', Specie::ADD_ATOM_NAME, sequence.addition_atoms)
           end
 
           # Gets a code string with defined variable

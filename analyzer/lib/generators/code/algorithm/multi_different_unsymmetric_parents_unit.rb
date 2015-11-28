@@ -50,7 +50,7 @@ module VersatileDiamond
           # @param [Array] parents which will be defined in result string
           # @return [String] the string with cpp code of defining parents variable
           def define_same_parents_line(parents)
-            namer.assign_next('specie', parents)
+            namer.assign_next(Specie::INTER_SPECIE_NAME, parents)
             if parents.size > 1
               atom_call = specs_by_role_call(parents)
               define_var_line('auto', parents, atom_call)
@@ -100,7 +100,7 @@ module VersatileDiamond
             parent = parents.first
             twin = twin_from(parent)
 
-            namer.assign_next('specie', parent)
+            namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
             each_spec_by_role_lambda(parent) do
               *pwt, co_twin = similar_defined_parent_with_both_twins(parent, twin)
               curr_parent_call = atom_from_specie_call(parent, co_twin)

@@ -215,8 +215,8 @@ module VersatileDiamond
             undef_twin = (symmetric_twins - used_twins).first
             undef_parent = parent_species.reject(&method(:name_of)).first
 
-            namer.assign_next('atom', target_atom)
-            namer.assign_next('specie', undef_parent)
+            namer.assign_next(Specie::INTER_ATOM_NAME, target_atom)
+            namer.assign_next(Specie::INTER_SPECIE_NAME, undef_parent)
 
             parent_call = atom_from_specie_call(avail_parent, undef_twin)
             atom_call = spec_by_role_call(undef_parent)

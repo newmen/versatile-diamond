@@ -18,7 +18,7 @@ module VersatileDiamond
           def each_symmetry_lambda(specie, closure_on_scope: true, &block)
             method_name = "#{name_of(specie)}->eachSymmetry"
             namer.erase(specie)
-            namer.assign_next('specie', specie)
+            namer.assign_next(Specie::INTER_SPECIE_NAME, specie)
             closure_args = closure_on_scope ? ['&'] : []
             lambda_args = ["#{specie_type} *#{name_of(specie)}"]
 

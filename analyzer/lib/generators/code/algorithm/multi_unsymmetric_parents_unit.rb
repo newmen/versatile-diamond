@@ -62,7 +62,7 @@ module VersatileDiamond
           # @return [String] the string of cpp code
           def define_avail_atoms_line
             atoms = using_specie_atoms - [target_atom]
-            namer.assign('atom', atoms)
+            namer.assign(Specie::INTER_ATOM_NAME, atoms)
 
             pwts = using_specie_atoms.each_with_object([]) do |atom, acc|
               next if atom == target_atom

@@ -12,7 +12,11 @@ module VersatileDiamond
         extend Forwardable
 
         ANCHOR_ATOM_NAME = 'anchor'.freeze
+        INTER_ATOM_NAME = 'atom'.freeze
+        ADD_ATOM_NAME = 'additionalAtom'.freeze
+
         ANCHOR_SPECIE_NAME = 'parent'.freeze
+        INTER_SPECIE_NAME = 'specie'.freeze
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
         def_delegator :@_find_builder, :using_atoms # error if no find algorithm
