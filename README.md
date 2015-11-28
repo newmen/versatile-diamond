@@ -1,4 +1,7 @@
-[![Code Climate](https://codeclimate.com/github/newmen/versatile-diamond.png)](https://codeclimate.com/github/newmen/versatile-diamond) [![Coverage Status](https://coveralls.io/repos/newmen/versatile-diamond/badge.png?branch=master)](https://coveralls.io/r/newmen/versatile-diamond?branch=master) [![Build Status](https://secure.travis-ci.org/newmen/versatile-diamond.png)](http://travis-ci.org/newmen/versatile-diamond) [![Dependency Status](https://gemnasium.com/newmen/versatile-diamond.svg)](https://gemnasium.com/newmen/versatile-diamond)
+[![Code Climate](https://codeclimate.com/github/newmen/versatile-diamond.png)](https://codeclimate.com/github/newmen/versatile-diamond)
+[![Coverage Status](https://coveralls.io/repos/newmen/versatile-diamond/badge.svg?branch=master&service=github)](https://coveralls.io/github/newmen/versatile-diamond?branch=master)
+[![Build Status](https://secure.travis-ci.org/newmen/versatile-diamond.png)](http://travis-ci.org/newmen/versatile-diamond)
+[![Dependency Status](https://gemnasium.com/newmen/versatile-diamond.svg)](https://gemnasium.com/newmen/versatile-diamond)
 
 # Versatile Diamond
 
