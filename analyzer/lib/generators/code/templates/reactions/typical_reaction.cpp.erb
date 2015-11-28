@@ -1,7 +1,7 @@
 #include "<%= file_name %>.h"
 
 <%= render_rate_and_name_body_partial %>
-<% complex_source_species.each do |specie| %>
+<% uniq_complex_source_species.each do |specie| %>
 
 void <%= class_name %>::find(<%= find_arguments_str(specie) %>)
 {
@@ -20,7 +20,6 @@ void <%= class_name %>::checkLaterals(<%= check_laterals_arguments_str(specie) %
 LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **chunks, ushort num) const
 {
     assert(num > 0);
-
 <%= select_from_algorithm %>
 }
 

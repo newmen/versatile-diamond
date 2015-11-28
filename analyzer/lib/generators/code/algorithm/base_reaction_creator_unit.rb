@@ -17,7 +17,7 @@ module VersatileDiamond
           def initialize(namer, reaction, species)
             @namer = namer
             @reaction = reaction
-            @species = species.sort
+            @species = reaction.order_species(species)
           end
 
         private

@@ -48,6 +48,14 @@ module VersatileDiamond
 
       private
 
+        # Verifies that passed species belongs to source species set
+        # @param [Array] species which will be checked
+        def check_all_source!(specs)
+          unless lists_are_identical?(concept_source_species, specs, &:==)
+            fail 'The passed species do not belongs to set of source species'
+          end
+        end
+
         # Orders children lateral reaction
         # @return [Array] the ordered children lateral reactions list
         # @override
@@ -70,7 +78,7 @@ module VersatileDiamond
         # Gets the number of species which used as base class template argument
         # @return [Integer] the number of using species
         def template_specs_num
-          complex_source_species.size
+          concept_source_species.size
         end
 
         # Gets the collection of used crystal atom iterator classes
@@ -92,7 +100,7 @@ module VersatileDiamond
         # Gets a list of code elements each of which uses in header file
         # @return [Array] the array of using objects in header file
         def head_used_objects
-          complex_source_species
+          uniq_complex_source_species
         end
 
         # Gets the arguments of find reaction method

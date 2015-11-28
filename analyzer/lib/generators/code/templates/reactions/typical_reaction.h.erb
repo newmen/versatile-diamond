@@ -9,7 +9,7 @@ class <%= class_name %> :
 <%= render_partial('rate_and_name.h') %>
 
 public:
-<% complex_source_species.each do |specie| %>
+<% uniq_complex_source_species.each do |specie| %>
     static void find(<%= find_arguments_str(specie) %>);
 <% end %>
 

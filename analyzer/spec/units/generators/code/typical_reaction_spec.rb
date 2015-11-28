@@ -50,11 +50,11 @@ module VersatileDiamond
           end
 
           describe 'with index 0' do
-            it { expect(subject.target_index(df_source.first)).to eq(0) }
+            it { expect(subject.target_index(df_source.last)).to eq(0) }
           end
 
           describe 'with index 1' do
-            it { expect(subject.target_index(df_source.last)).to eq(1) }
+            it { expect(subject.target_index(df_source.first)).to eq(1) }
           end
         end
       end

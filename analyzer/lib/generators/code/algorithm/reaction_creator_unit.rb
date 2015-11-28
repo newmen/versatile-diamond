@@ -23,7 +23,7 @@ module VersatileDiamond
           # Gets the cpp code string with creation of target reaction
           # @return [String] the cpp code line with creation target reaction call
           def create_line
-            code_line("create<#{@reaction.class_name}>(#{namer.name_of(species)});")
+            code_line("create<#{reaction.class_name}>(#{namer.name_of(species)});")
           end
 
           # Finds previously defined atom

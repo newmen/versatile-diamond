@@ -44,7 +44,7 @@ module VersatileDiamond
               describe 'just cross neighbours' do
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
+    Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
@@ -74,7 +74,7 @@ module VersatileDiamond
                   let(:lateral_reactions) { [dept_end_lateral_df, dept_ewb_lateral_df] }
                   let(:find_algorithm) do
                     <<-CODE
-    Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
+    Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
@@ -194,7 +194,7 @@ module VersatileDiamond
               it_behaves_like :check_code do
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target(0)->atom(1), target(1)->atom(3) };
+    Atom *atoms1[2] = { target(1)->atom(1), target(0)->atom(3) };
     eachNeighbour(atoms1[1], &Diamond::front_110, [&](Atom *neighbour1) {
         if (neighbour1->is(18) && atoms1[1]->hasBondWith(neighbour1))
         {

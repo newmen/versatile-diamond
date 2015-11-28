@@ -5,6 +5,7 @@ module VersatileDiamond
       # Provides generation logic for reation which uses species
       # @abstract
       class SpeciesReaction < BaseReaction
+        include Modules::ListsComparer
         include SpeciesUser
         extend Forwardable
 
@@ -16,7 +17,7 @@ module VersatileDiamond
         # Initializes additional caches
         def initialize(*)
           super
-          @_complex_source_species, @_concept_source_species = nil
+          @_uniq_complex_source_species, @_concept_source_species = nil
         end
 
         # Gets the name of base class
@@ -25,6 +26,14 @@ module VersatileDiamond
           template_args = concretizable? ? [reaction_type] : []
           template_args += [enum_name, template_specs_num]
           "#{outer_base_class_name}<#{template_args.join(', ')}>"
+        end
+
+        # Orders passed species
+        # @param [Array] species the list of unique species which will be right ordered
+        # @return [Array] the ordered source species
+        def order_species(species)
+          check_all_source!(species.map(&:proxy_spec).map(&:spec))
+          species.sort { |*ss| ordering_rule(*ss.map(&:spec)) }
         end
 
       protected
@@ -42,21 +51,26 @@ module VersatileDiamond
 
         # Gets the ordered list of complex species which using as source of reaction
         # @reaturn [Array] the list of complex specie code generators
-        def complex_source_species
-          @_complex_source_species ||=
-            concept_source_species.uniq(&:name).map(&method(:specie_class))
+        def uniq_complex_source_species
+          @_uniq_complex_source_species ||=
+            specie_classes(concept_source_species.uniq(&:name))
         end
 
         # Gets ordered list of concept source specs
         # @return [Array] the list of concept reactants
         def concept_source_species
-          # we should sort because order is important when getting target specie index
-          # the sort order should be same as in BaseReactionCreatorUnit#initialize
-          # method
-          @_concept_source_species ||= reaction.surface_source.sort do |ca, cb|
-            da, db = [ca, cb].map(&method(:specie_class)).map(&:spec)
-            da <=> db
+          @_concept_source_species ||= reaction.surface_source.sort do |*specs|
+            ordering_rule(*specie_classes(specs).map(&:spec))
           end
+        end
+
+        # Provides the rule for ordering source species
+        # @param [Oragnizers::DependentWrappedSpec] dept_spec1
+        # @param [Oragnizers::DependentWrappedSpec] dept_spec2
+        # @param [Array] specs the pair of comparing species
+        # @return [Integer] the comparation result
+        def ordering_rule(dept_spec1, dept_spec2)
+          dept_spec2 <=> dept_spec1
         end
       end
 

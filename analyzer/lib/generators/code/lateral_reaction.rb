@@ -34,6 +34,14 @@ module VersatileDiamond
 
       private
 
+        # Verifies that passed species belongs to sidepiece species set
+        # @param [Array] species which will be checked
+        def check_all_source!(specs)
+          unless lists_are_identical?(reaction.sidepiece_specs, specs, &:==)
+            fail 'The passed species do not belongs to set of sidepiece species'
+          end
+        end
+
         # Detects that current reaction is multi lateral or not
         # @return [Boolean] is current reaction multi lateral or not
         def multi?
