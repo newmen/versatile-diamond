@@ -33,7 +33,7 @@ module VersatileDiamond
         @original = original
       end
 
-      # Delegates all available another calls to original spec
+      # Delegates all available another calls to original instance
       def method_missing(*args)
         method_name = args.first
         if TransparentProxy.avail_method?(method_name)

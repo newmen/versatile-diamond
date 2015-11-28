@@ -78,6 +78,12 @@ module VersatileDiamond
 
     private
 
+      # The cap for strong ordering
+      # @return [String] the cap
+      def name
+        "spec_residual##{object_id}"
+      end
+
       # Makes correct difference with other spec
       # @return [SpecResidual] spec residual that contains current instance and
       #   difference operation result

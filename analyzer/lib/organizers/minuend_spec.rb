@@ -117,7 +117,13 @@ module VersatileDiamond
       # @param [MinuendSpec] other comparing instance
       # @return [Proc] the core of comparison
       def comparing_core(other)
-        -> { parents.size <=> other.parents.size }
+        -> do
+          order(self, other, :parents, :size) do
+            order(self, other, :name) do
+              order(self, other, :object_id)
+            end
+          end
+        end
       end
 
       # Provides comparison by class of each instance
