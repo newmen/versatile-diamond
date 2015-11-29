@@ -24,9 +24,19 @@ module VersatileDiamond
         end
       end
 
-      # Undirected bond
+      # Undirected mono bond
       def undirected_bond
         Concepts::Bond.amorph
+      end
+
+      # Undirected double bond
+      def double_bond
+        Concepts::MultiBond[2]
+      end
+
+      # Undirected triple bond
+      def triple_bond
+        Concepts::MultiBond[3]
       end
     end
 

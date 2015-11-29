@@ -10,6 +10,8 @@ module VersatileDiamond
       include Modules::OrderProvider
       include Lattices::BasicRelations
 
+      RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
+
       attr_reader :smallests, :sames
 
       # Stores all properties of atom
@@ -183,7 +185,7 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def incoherent?
         return @_is_incoherent unless @_is_incoherent.nil?
-        @_is_incoherent = relevants.include?(Incoherent.property)
+        @_is_incoherent = relevants.include?(Concepts::Incoherent.property)
       end
 
       # Makes incoherent copy of self
@@ -191,7 +193,7 @@ module VersatileDiamond
       def incoherent
         if valence > bonds_num && !incoherent?
           props = without_relevants
-          props[-1] = [Incoherent.property]
+          props[-1] = [Concepts::Incoherent.property]
           self.class.new(props)
         else
           nil
@@ -208,7 +210,7 @@ module VersatileDiamond
       # @return [AtomProperties] activated properties or nil
       def activated
         if valence > bonds_num
-          ext_dangs = danglings + [ActiveBond.property]
+          ext_dangs = danglings + [Concepts::ActiveBond.property]
           props = [*static_states, relations, ext_dangs, nbr_lattices]
           props << (valence > bonds_num + 1 ? relevants : [])
           self.class.new(props)
@@ -221,7 +223,7 @@ module VersatileDiamond
       # @return [AtomProperties] deactivated properties or nil
       def deactivated
         dgs = danglings.dup
-        if dgs.delete_one(ActiveBond.property)
+        if dgs.delete_one(Concepts::ActiveBond.property)
           props = [*static_states, relations, dgs, nbr_lattices, relevants]
           self.class.new(props)
         else
@@ -239,7 +241,7 @@ module VersatileDiamond
       # Gets number of active bonds
       # @return [Integer] number of active bonds
       def actives_num
-        @_actives_num ||= count_danglings(ActiveBond.property)
+        @_actives_num ||= count_danglings(Concepts::ActiveBond.property)
       end
 
       # Gets the number of actives when each established bond replaced to active bond
@@ -252,7 +254,7 @@ module VersatileDiamond
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
         @_dangling_hydrogens_num ||=
-          count_danglings(AtomicSpec.new(Concepts::Atom.hydrogen))
+          count_danglings(Concepts::AtomicSpec.new(Concepts::Atom.hydrogen))
       end
 
       # Counts total number of hydrogen atoms
@@ -276,7 +278,7 @@ module VersatileDiamond
         name = atom_name.to_s
 
         dg = danglings.dup
-        name = "*#{name}" while dg.delete_one(ActiveBond.property)
+        name = "*#{name}" while dg.delete_one(Concepts::ActiveBond.property)
 
         while (monovalent_atom = dg.pop)
           name = "#{monovalent_atom}#{name}"
@@ -306,10 +308,10 @@ module VersatileDiamond
           name = "#{name}<"
         elsif down1 || down2
           name = "#{name}/"
-        elsif rl.delete_one(:tbond)
-          name = "#{name}≡#{lattice_symbol[:tbond]}"
-        elsif rl.delete_one(:dbond)
-          name = "#{name}=#{lattice_symbol[:dbond]}"
+        elsif rl.delete_one(triple_bond)
+          name = "#{name}≡#{lattice_symbol[triple_bond]}"
+        elsif rl.delete_one(double_bond)
+          name = "#{name}=#{lattice_symbol[double_bond]}"
         elsif rl.delete_one(undirected_bond)
           name = "#{name}~#{lattice_symbol[undirected_bond]}"
         end
@@ -320,8 +322,8 @@ module VersatileDiamond
           name = ">#{name}"
         elsif up1 || up2
           name = "^#{name}"
-        elsif rl.delete_one(:dbond)
-          name = "#{lattice_symbol[:dbond]}=#{name}"
+        elsif rl.delete_one(double_bond)
+          name = "#{lattice_symbol[double_bond]}=#{name}"
         end
 
         name = "-#{name}" if rl.delete_one(bond_front_100)
@@ -366,7 +368,7 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def unfixed?
         return @_is_unfixed unless @_is_unfixed.nil?
-        result = relevants.include?(Unfixed.property)
+        result = relevants.include?(Concepts::Unfixed.property)
         raise 'Atom could not be unfixed!' if result && !unfixed_by_nbrs?
         @_is_unfixed = result
       end
@@ -453,8 +455,7 @@ module VersatileDiamond
       end
 
       # Gets the relations of atom in spec, but drop positions and replace many
-      # single undirected bonds to correspond values of :dbond as double bound and
-      # :tbond as triple bond
+      # single undirected bonds to correspond values of multi bounds
       #
       # @param [DependentSpec | SpecResidual] spec see at #new same argument
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
@@ -481,9 +482,9 @@ module VersatileDiamond
               bonds.delete_one(atwrel)
               if same.size == 3 && same.size != 4
                 bonds.delete_one(atwrel)
-                :tbond
+                triple_bond
               else
-                :dbond
+                double_bond
               end
             end
 
@@ -500,9 +501,8 @@ module VersatileDiamond
       # @return [Array] dangling states array
       def danglings_for(spec, atom)
         dang_rels = spec.relations_of(atom).reject(&:relation?)
-        [Incoherent, Unfixed].map(&:property).reduce(dang_rels) do |acc, rel_prop|
+        RELATIVE_PROPERTIES.each_with_object(dang_rels) do |rel_prop, acc|
           acc.delete(rel_prop)
-          acc
         end
       end
 
@@ -513,9 +513,9 @@ module VersatileDiamond
       # @return [Array] the array of achieving lattices and correspond relations
       def nbr_lattices_for(spec, atom)
         relations_with_atoms = remake_relations(spec, atom)
-        possible_vals = [undirected_bond, :dbond, :tbond]
-        relations_with_atoms.reduce([]) do |acc, (atom, relation)|
-          possible_vals.include?(relation) ? acc << [relation, atom.lattice] : acc
+        possible_vals = [undirected_bond, double_bond, triple_bond]
+        relations_with_atoms.each_with_object([]) do |(atom, relation), acc|
+          acc << [relation, atom.lattice] if possible_vals.include?(relation)
         end
       end
 
@@ -523,10 +523,11 @@ module VersatileDiamond
       # @param [Array] rels the array of relevant states
       # @return [Array] the original relevant states
       def check_relevants(rels)
-        if rels.include?(Unfixed.property) && rels.include?(Incoherent.property)
+        if RELATIVE_PROPERTIES.all? { |prop| rels.include?(prop) }
           raise 'Unfixed atom already incoherent'
+        else
+          rels
         end
-        rels
       end
 
       # Drops relevants properties if it exists
@@ -548,14 +549,14 @@ module VersatileDiamond
       # @return [Integer] the number of established bond relations
       def estab_bonds_num
         @_estab_bond_num ||= count_relations(Concepts::Bond) +
-          (relations.include?(:dbond) ? 2 : 0) +
-          (relations.include?(:tbond) ? 3 : 0)
+          (relations.include?(double_bond) ? 2 : 0) +
+          (relations.include?(triple_bond) ? 3 : 0)
       end
 
       # Gets number of relations which belongs to crystal
       # @return [Integer] the number of crystal relations
       def crystal_relatons_num
-        relations.reject { |r| r.class == Symbol }.select(&:belongs_to_crystal?).size
+        relations.select(&:belongs_to_crystal?).size
       end
 
       # Gets number of established and dangling bond relations

@@ -37,7 +37,8 @@ module VersatileDiamond
       # @param [Concepts::Bond] other an other comparing instances
       # @return [Boolean] same or not
       def same?(other)
-        exist? == other.exist? && face == other.face && dir == other.dir
+        other.is_a?(Bond) && exist? == other.exist? &&
+          face == other.face && dir == other.dir
       end
 
       # Checks that current position is not a bond

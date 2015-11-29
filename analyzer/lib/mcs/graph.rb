@@ -191,18 +191,9 @@ module VersatileDiamond
             group.first
           else
             bonds = group.map(&:last)
-            check_bond_is_same(bonds)
+            check_bonds_are_same(bonds)
             check_bond_is_correct(bonds.first)
-
-            pair = [atom]
-            if group.size == 2
-              pair << :dbond
-            elsif group.size == 3
-              pair << :tbond
-            else
-              raise 'Incorrect bonds num'
-            end
-            pair
+            [atom, Concepts::MultiBond[group.size]]
           end
         end
 
@@ -211,7 +202,7 @@ module VersatileDiamond
 
       # Checks that list contain same item few times
       # @raise [RuntimeError] if it is not
-      def check_bond_is_same(bonds)
+      def check_bonds_are_same(bonds)
         first = nil
         bonds.each do |bond|
           if !first
@@ -225,12 +216,10 @@ module VersatileDiamond
       # Checks that bond is correct (it is not position and haven't face or
       # direction)
       #
-      # @param [Bond] relation the checking bond
+      # @param [Concepts::Bond] relation the checking bond
       # @raise [RuntimeError] if bond is incorrect
       def check_bond_is_correct(relation)
-        if !relation.bond? || relation.belongs_to_crystal?
-          raise 'Incorrect multi-bond'
-        end
+        raise 'Incorrect multi-bond' if !relation.bond? || relation.belongs_to_crystal?
       end
 
       # Changes atoms with each other by replacing internal state of edges hash
