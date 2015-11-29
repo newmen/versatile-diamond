@@ -5,6 +5,17 @@ module VersatileDiamond
       # Creates AtomBuilder class
       class AtomBuilder < CppClassWithGen
 
+        class << self
+          # Build method name
+          # @param [Atom] atom_class the atom generation class instance
+          # @param [Concepts::Lattice] lattice the atom belongs to this lattice
+          # @return [String] the method name
+          def method_name(atom_class, lattice)
+            lattice_name_with_prefix = lattice ? "_#{lattice.name}" : ''
+            "build#{atom_class.class_name}#{lattice_name_with_prefix}"
+          end
+        end
+
         # Also initialize internal atoms_mirror hash
         # @param [EngineCode] generator see at #super same arguments
         # @override
@@ -33,13 +44,11 @@ module VersatileDiamond
           end
         end
 
-        # Build method name
-        # @param [Atom] atom_class the atom generation class instance
-        # @param [Concepts::Lattice] lattice the atom belongs to this lattice
+        # Delegates call to static method
+        # @param [Array] args which will passed to static method
         # @return [String] the method name
-        def method_name(atom_class, lattice)
-          lattice_name_with_prefix = lattice ? "_#{lattice.name}" : ''
-          "build#{atom_class.class_name}#{lattice_name_with_prefix}"
+        def method_name(*args)
+          self.class.method_name(*args)
         end
 
         # Gets the list of atoms which headers should be included in header file
