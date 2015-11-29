@@ -52,12 +52,12 @@ void MigrationDownInGapFrom111::doIt()
     assert(b->is(5));
     assert(c->is(5));
 
-    a->bondWith(b);
-    a->bondWith(c);
-
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
     crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
+
+    a->bondWith(b);
+    a->bondWith(c);
 
     z->changeType(32);
 

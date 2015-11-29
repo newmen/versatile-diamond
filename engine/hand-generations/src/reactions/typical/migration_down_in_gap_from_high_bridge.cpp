@@ -52,13 +52,13 @@ void MigrationDownInGapFromHighBridge::doIt()
     assert(b->is(5));
     assert(c->is(5));
 
-    a->unbondFrom(z);
-    a->bondWith(b);
-    a->bondWith(c);
-
     Handbook::amorph().erase(a);
     assert(b->lattice()->crystal() == c->lattice()->crystal());
     crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
+
+    a->unbondFrom(z);
+    a->bondWith(b);
+    a->bondWith(c);
 
     z->changeType(21);
 

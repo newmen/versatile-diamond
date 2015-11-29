@@ -1,5 +1,4 @@
 #include "ads_methyl_to_dimer.h"
-#include "../../atoms/atom_builder.h"
 
 const char AdsMethylToDimer::__name[] = "adsorption methyl to dimer";
 
@@ -21,9 +20,9 @@ void AdsMethylToDimer::doIt()
     AtomBuilder builder;
     Atom *atoms[2] = { target()->atom(0), builder.buildC(25, 1) };
     Atom *a = atoms[0], *b = atoms[1];
-    Handbook::amorph().insert(b);
-
     assert(a->is(21));
+
+    Handbook::amorph().insert(b);
 
     a->bondWith(b);
 
