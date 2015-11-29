@@ -6,8 +6,6 @@ module VersatileDiamond
         # The base class for factories of nodes
         # @abstract
         class BaseNodesFactory
-          include SpeciesUser
-
           # Initizalize nodes factory by general code generator
           # @param [EngineCode] generator the major code generator
           def initialize(generator)

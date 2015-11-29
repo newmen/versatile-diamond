@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # Creates nodes for specie algorithm graphs building
         class SpecieNodesFactory < BaseNodesFactory
+          include SpeciesUser
+
           # Initizalize specie nodes factory
           # @param [EngineCode] generator the major code generator
           # @param [Specie] specie for which the nodes will be gotten
