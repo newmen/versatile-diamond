@@ -160,7 +160,24 @@ module VersatileDiamond
         general_transitive_matrix[detect_prop(bigger), detect_prop(smallest)]
       end
 
+      # Selects the children of passed atom properties
+      # @param [AtomProperties] smallest for which the children properties will be
+      #   gotten
+      # @return [Array] the list of children atom properties
+      def children_of(smallest)
+        props.select do |prop|
+          prop != smallest && is?(prop, smallest) && most_bigger?(prop)
+        end
+      end
+
     private
+
+      # Checks that passed atom properties haven't most bigger
+      # @param [AtomProperties] bigger atom properties which will be checked
+      # @return [Boolean] is most bigger or not
+      def most_bigger?(bigger)
+        !props.any? { |prop| prop != bigger && is?(prop, bigger) }
+      end
 
       # Finds index of passed property in collection
       # @overloaded index(collection, prop)

@@ -144,6 +144,17 @@ module VersatileDiamond
             it { expect(subject.is?(bridge_ct, eab_ct)).to be_falsey }
           end
 
+          describe '#children_of' do
+            it { expect(subject.children_of(ab_ct)).
+              to match_array([eab_ct, ahb_ct, ab_cr, ad_cr, ab_cb]) }
+            it { expect(subject.children_of(eab_ct)).to be_empty }
+            it { expect(subject.children_of(ahb_ct)).to be_empty }
+            it { expect(subject.children_of(bridge_cr)).
+              to match_array([ab_cr, hb_cr, tb_cc]) }
+            it { expect(subject.children_of(ab_cr)).to be_empty }
+            it { expect(subject.children_of(ad_cr)).to be_empty }
+          end
+
           describe 'generate graph' do
             let(:filename) { 'classifier_spec' }
             let(:image_name) { "#{filename}.png" }
