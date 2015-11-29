@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Provides logic for units which uses lateral species
         module LateralSpecDefiner
-        protected
+        private
 
           # Gets the engine framework class for reactant specie
           # @return [String] the engine framework class for reactant specie

@@ -16,6 +16,8 @@ module VersatileDiamond
         @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
         @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
         @prop_vector.each_with_index { |prop, i| tcR(i, i, *method_names) }
+
+        @_source_props, @_source_indexes = nil
       end
 
       # Makes specification for some atom properties
@@ -23,17 +25,11 @@ module VersatileDiamond
       # @result [AtomProperties] the result of maximal specification
       def specification_for(prop)
         idx = index(prop)
-
-        source_indexes = source_props.map { |p| index(p) }
-        curr_source_indexes =
-          @matrix.column(idx).map.with_index.select do |b, j|
-            b && source_indexes.include?(j)
-          end
-
-        curr_source_indexes.map!(&:last)
-
-        result = curr_source_indexes.empty? ?
-          idx : select_best_index(prop, curr_source_indexes)
+        column_idx_enum = @matrix.column(idx).map.with_index
+        cells_with_idxs = column_idx_enum.select { |b, j| b && source_index?(j) }
+        curr_source_idxs = cells_with_idxs.map(&:last)
+        result = curr_source_idxs.empty? ?
+          idx : select_best_index(prop, curr_source_idxs)
 
         @prop_vector[result]
       end
@@ -42,7 +38,7 @@ module VersatileDiamond
       # @param [Array] props_pair by which crossing the cell will be gotten
       # @return [Boolean] the value of crossing cell
       def [] (*props_pair)
-        @matrix[*props_pair.map(&method(:index))]
+        @matrix[*indexes(props_pair)]
       end
 
       def to_a
@@ -71,8 +67,9 @@ module VersatileDiamond
       # Selects only source properties from transitive closure matrix builded
       # for :smallests dependencies
       def source_props
-        columns = @matrix.column_vectors.map(&:to_a)
-        columns.map.with_index.each_with_object(Set.new) do |(col, i), acc|
+        return @_source_props if @_source_props
+        columns_idx_enum = @matrix.column_vectors.map(&:to_a).map.with_index
+        @_source_props = columns_idx_enum.each_with_object(Set.new) do |(col, i), acc|
           children_num = col.select { |t| t }.size
           prop = @prop_vector[i]
           if children_num == 1 && (prop.incoherent? || prop.dangling_hydrogens_num > 0)
@@ -86,6 +83,26 @@ module VersatileDiamond
       # @return [Integer] the index of properties
       def index(prop)
         @prop_to_index[prop]
+      end
+
+      # Gets the list of indexes for passed atom properties list
+      # @param [Array] props_list for which the indexes will be gotten
+      # @return [Array] the list of indexes
+      def indexes(props_list)
+        props_list.map(&method(:index))
+      end
+
+      # Gets list of source indexes
+      # @return [Array] the list of source atom properties indexes
+      def source_indexes
+        @_source_indexes ||= indexes(source_props)
+      end
+
+      # Checks that passed index is source
+      # @param [Integer] idx the cheking index
+      # @return [Boolean] is source index or not
+      def source_index?(idx)
+        source_indexes.include?(idx)
       end
 
       # Selects the best index of passed prop from presented array
@@ -102,10 +119,7 @@ module VersatileDiamond
           maximal_hydro_indexes = select_by_max_hydros(indexes)
           select_best_index(prop, maximal_hydro_indexes, check_hydros: false)
         else
-          lengths = indexes.map do |j|
-            [path_length(@prop_vector[j], prop), j]
-          end
-
+          lengths = indexes.map { |j| [path_length(@prop_vector[j], prop), j] }
           lengths.min_by(&:first).last
         end
       end
@@ -135,7 +149,8 @@ module VersatileDiamond
           curr = queue.shift
           return n if curr == to
 
-          break unless curr.smallests
+          ### commented 29.11.15 (remove over year!)
+          # break unless curr.smallests
 
           n += 1
           curr.smallests.each do |small|

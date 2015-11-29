@@ -12,7 +12,8 @@ module VersatileDiamond
 
       RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
 
-      attr_reader :smallests, :sames # fills from AtomClassifier#organize_properties!
+       # Fills under AtomClassifier#organize_properties!
+      attr_reader :smallests, :sames
 
       # Stores all properties of atom
       # @overload new(props)
@@ -129,10 +130,10 @@ module VersatileDiamond
       # @param [AtomProperties] other probably same properties by incoherent state
       # @return [Boolean] same or not
       def same_incoherent?(other)
-        same_basic_values?(other) && (((incoherent? || bonds_num == valence) &&
-              other.incoherent? && contain_all_danglings?(other)) ||
-            (incoherent? && other.unfixed? && eq_danglings?(other))) &&
-          eq_relations?(other) && eq_nbr_lattices?(other)
+        same_basic_values?(other) && eq_relations?(other) && eq_nbr_lattices?(other) &&
+          ((incoherent? && other.unfixed? && eq_danglings?(other)) ||
+            ((incoherent? || bonds_num == valence) &&
+              other.incoherent? && contain_all_danglings?(other)))
       end
 
       # Checks that other properties have same unfixed state
@@ -153,9 +154,11 @@ module VersatileDiamond
       def correspond?(info)
         info.all? do |key, value|
           internal_value = send(key)
-          internal_value.is_a?(Array) ?
-            lists_are_identical?(internal_value, value, &:==) :
+          if internal_value.is_a?(Array)
+            lists_are_identical?(internal_value, value, &:==)
+          else
             internal_value == value
+          end
         end
       end
 
@@ -170,7 +173,7 @@ module VersatileDiamond
           var = instance_variable_get(var_name) ||
             instance_variable_set(var_name, Set.new)
 
-          from_child = stuff.send(plur_name)
+          from_child = stuff.public_send(plur_name)
           var.subtract(from_child) if from_child
           var << stuff
         end
@@ -396,10 +399,10 @@ module VersatileDiamond
 
       # Compares with other properties by some method which returns list
       # @param [AtomProperties] other the comparing properties
-      # @param [Symbol] method by which will be comparing
+      # @param [Symbol] method_name by which will be comparing
       # @return [Boolean] lists are equal or not
-      def eq_by?(other, method)
-        lists_are_identical?(send(method), other.send(method), &:==)
+      def eq_by?(other, method_name)
+        lists_are_identical?(send(method_name), other.send(method_name), &:==)
       end
 
       %w(relations danglings nbr_lattices relevants).each do |name|
@@ -422,10 +425,11 @@ module VersatileDiamond
       # method
       #
       # @param [AtomProperties] other the checking properties
+      # @param [Symbol] method_name by which will be comparing
       # @return [Boolean] contain or not
-      def contain_all_by?(other, method)
-        stats = send(method).dup
-        other.send(method).all? { |rel| stats.delete_one(rel) }
+      def contain_all_by?(other, method_name)
+        stats = send(method_name).dup
+        other.send(method_name).all? { |rel| stats.delete_one(rel) }
       end
 
       # Compares basic values of two properties

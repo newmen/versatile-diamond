@@ -12,9 +12,9 @@ module VersatileDiamond
           include CommonCppExpressions
           extend Forwardable
 
-          CHUNKS_VAR_NAME = 'chunks'
-          NUM_VAR_NAME = 'num'
-          COUNTER_VAR_NAME = 'counter'
+          CHUNKS_VAR_NAME = 'chunks'.freeze
+          NUM_VAR_NAME = 'num'.freeze
+          COUNTER_VAR_NAME = 'counter'.freeze
 
           # @param [EngineCode] generator the major engine code generator
           # @param [LateralChunks] lateral_chunks the target object by which the

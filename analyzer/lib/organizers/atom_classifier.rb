@@ -18,9 +18,11 @@ module VersatileDiamond
       # Provides the hash of all analyzed atom properties
       # @return [Hash] the hash with set of atom properties
       def props_hash
-        @used_relevants_num == 0 ?
-          Hash[@unrelevanted_props.map { |p| index(p) }.zip(@unrelevanted_props)] :
+        if @used_relevants_num == 0
+          Hash[@unrelevanted_props.map(&method(:index)).zip(@unrelevanted_props)]
+        else
           @all_props
+        end
       end
 
       # Provides the array of all analyzed atom properties
@@ -153,7 +155,7 @@ module VersatileDiamond
       end
 
       # Gets matrix of transitive closure for atom properties dependencies
-      # @return [Matrix] the general transitive closure matrix
+      # @return [TransitiveMatrix] the general transitive closure matrix
       def general_transitive_matrix
         @_tmatrix ||= TransitiveMatrix.new(self, :smallests, :sames)
       end
@@ -250,7 +252,7 @@ module VersatileDiamond
       # Gets matrix of transitive closure for smallests atom properties
       # dependencies
       #
-      # @return [Matrix] the transitive closure matrix of smallests
+      # @return [TransitiveMatrix] the transitive closure matrix of smallests
       #   dependencies
       def smallests_transitive_matrix
         @_st_matrix ||= TransitiveMatrix.new(self, :smallests)

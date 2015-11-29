@@ -194,7 +194,7 @@ module VersatileDiamond
       # @return [Integer] the number of changed atoms
       # @override
       def changes_num
-        mapping.changes.reduce(0) { |acc, (_, atoms_zip)| acc + atoms_zip.size }
+        changes.size
       end
 
       # Reorganizes the specs of children reactions
