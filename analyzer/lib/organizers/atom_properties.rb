@@ -98,6 +98,39 @@ module VersatileDiamond
         end
       end
 
+      # Gets new atom properties instance with elements from diff
+      # @param [Hash] diff the result of difference operation
+      # @return [AtomProperties] the extended instance of atom properties or nil
+      def + (diff)
+        hash_props = {
+          atom_name: atom_name,
+          valence: valence,
+          lattice: lattice,
+          relations: relations + diff[:relations],
+          danglings: danglings + diff[:danglings],
+          nbr_lattices: nbr_lattices,
+          relevants: (relevants + diff[:relevants]).uniq
+        }
+
+        num = estab_bonds_num_in(hash_props[:relations]) + hash_props[:danglings].size
+        are_correct_props =
+          (num < valence && valid_relevants?(hash_props[:relevants])) ||
+          (num == valence && hash_props[:relevants].empty?)
+
+        are_correct_props ? self.class.new(hash_props.values) : nil
+      end
+
+      # Gets the difference between two atom properties
+      # @param [AtomProperties] other atom properties which will be erased from current
+      # @return [Hash] the difference result
+      def - (other)
+        return {
+          relations: relations.accurate_diff(other.relations),
+          danglings: danglings.accurate_diff(other.danglings),
+          relevants: relevants.accurate_diff(other.relevants)
+        }
+      end
+
       # Calculates the hash of current instance for using it as key values in Hashes
       # @return [Integer] the hash of current instance
       def hash
@@ -524,15 +557,18 @@ module VersatileDiamond
         end
       end
 
+      # Checks that passed set of relevants is correct
+      # @param [Array] rels the array of relevant states
+      # @return [Boolean] is valid or not
+      def valid_relevants?(rels)
+        !RELATIVE_PROPERTIES.all? { |prop| rels.include?(prop) }
+      end
+
       # Checks that list of relevants is not include both values in same time
       # @param [Array] rels the array of relevant states
       # @return [Array] the original relevant states
       def check_relevants(rels)
-        if RELATIVE_PROPERTIES.all? { |prop| rels.include?(prop) }
-          raise 'Unfixed atom already incoherent'
-        else
-          rels
-        end
+        valid_relevants?(rels) ? rels : raise('Unfixed atom already incoherent')
       end
 
       # Drops relevants properties if it exists
@@ -543,19 +579,19 @@ module VersatileDiamond
         wr
       end
 
-      # Counts relations that is a instance of passed class
-      # @param [Class] klass the class of counting instances
-      # @return [Integer] the number of relations
-      def count_relations(klass)
-        relations.count { |r| r.class == klass }
+      # Gets number of established bond relations
+      # @param [Array] relations where bonds will be counted
+      # @return [Integer] the number of established bond relations
+      def estab_bonds_num_in(relations)
+        relations.count { |r| r.class == Concepts::Bond } +
+          (relations.include?(double_bond) ? 2 : 0) +
+          (relations.include?(triple_bond) ? 3 : 0)
       end
 
       # Gets number of established bond relations
       # @return [Integer] the number of established bond relations
       def estab_bonds_num
-        @_estab_bond_num ||= count_relations(Concepts::Bond) +
-          (relations.include?(double_bond) ? 2 : 0) +
-          (relations.include?(triple_bond) ? 3 : 0)
+        @_estab_bond_num ||= estab_bonds_num_in(relations)
       end
 
       # Gets number of relations which belongs to crystal

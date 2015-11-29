@@ -15,6 +15,17 @@ module VersatileDiamond
           delete_at(index || size)
         end
 
+        # Makes accurate diff between two collection so that deletes just one
+        # correspond item from current collection
+        # @param [Array] other the array of extracting items
+        # @return [Array] the difference result
+        def accurate_diff(other)
+          arr1 = dup
+          arr2 = other.dup
+          arr1.delete_one(arr2.pop) until arr2.empty?
+          arr1
+        end
+
         # Groups the items by passed block
         # @yield [Object] for each item from which the grouping value will be gotten
         # @return [Array] the list of grouped arrays

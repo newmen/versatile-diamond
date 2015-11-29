@@ -123,6 +123,31 @@ module VersatileDiamond
         it { expect(ab_ct.eql?(aib_ct)).to be_falsey }
       end
 
+      describe '#+' do
+        let(:ad_diff) { ad_cr - bridge_ct }
+        it { expect(bridge_ct + ad_diff).to eq(ad_cr) }
+        it { expect(ab_ct + ad_diff).to be_nil }
+        it { expect(bridge_cr + ad_diff).to be_nil }
+
+        let(:i_diff) { ib_cr - bridge_cr }
+        it { expect(ab_ct + i_diff).to eq(aib_ct) }
+        it { expect(hib_ct + i_diff).to eq(hib_ct) }
+        it { expect(dimer_cr + i_diff).to eq(id_cr) }
+        it { expect(tb_cc + i_diff).to be_nil }
+        it { expect(ucm + i_diff).to be_nil }
+      end
+
+      describe '#-' do
+        subject { ab_cr - bridge_ct }
+        it { expect(subject[:atom_name]).to eq(ab_cr.atom_name) }
+        it { expect(subject[:valence]).to eq(c.valence) }
+        it { expect(subject[:lattice]).to be_nil }
+        it { expect(subject[:relations]).to eq([bond_110_front]) }
+        it { expect(subject[:danglings]).to eq([active_bond]) }
+        it { expect(subject[:nbr_lattices]).to be_empty }
+        it { expect(subject[:relevants]).to be_empty }
+      end
+
       describe '#include?' do
         it { expect(iamob.include?(imob)).to be_truthy }
         it { expect(ihmob.include?(imob)).to be_truthy }
