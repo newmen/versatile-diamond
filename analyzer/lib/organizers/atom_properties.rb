@@ -12,7 +12,7 @@ module VersatileDiamond
 
       RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
 
-       # Fills under AtomClassifier#organize_properties!
+      # Fills under AtomClassifier#organize_properties!
       attr_reader :smallests, :sames
 
       # Stores all properties of atom

@@ -40,8 +40,8 @@ module VersatileDiamond
               subject { classifier.classify(target.parents.first.original) }
               let(:hash) do
                 {
-                  3 => ['_~-C%d<', 1],
-                  4 => ['-C%d<', 1]
+                  2 => ['_~-C%d<', 1],
+                  3 => ['-C%d<', 1]
                 }
               end
 

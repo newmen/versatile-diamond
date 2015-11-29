@@ -19,7 +19,7 @@ module VersatileDiamond
       # @return [Hash] the hash with set of atom properties
       def props_hash
         if @used_relevants_num == 0
-          Hash[@unrelevanted_props.map(&method(:index)).zip(@unrelevanted_props)]
+          Hash[@unrelevanted_props.to_a.map.with_index { |prop, i| [i, prop] }]
         else
           @all_props
         end
@@ -37,7 +37,7 @@ module VersatileDiamond
         props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
         props.each do |prop|
           @used_relevants_num += 1 if prop.relevant?
-          next if index(prop)
+          next if internal_index(prop)
 
           store_prop(prop, check: false)
 
@@ -57,35 +57,13 @@ module VersatileDiamond
       def organize_properties!
         add_default_lattices_atoms
 
-        current_props = props.sort
-        current_props_sd = current_props.dup
-
-        until current_props.empty?
-          smallest = current_props.shift
-          current_props.each do |prop|
-            next unless smallest.contained_in?(prop)
-            prop.add_smallest(smallest)
-          end
-        end
-
-        until current_props_sd.empty?
-          smallest = current_props_sd.shift
-          current_props_sd.each do |bigger|
-            if bigger.same_incoherent?(smallest)
-              if bigger.same_hydrogens?(smallest)
-                bigger.add_smallest(smallest)
-              else
-                bigger.add_same(smallest)
-              end
-            elsif bigger.same_unfixed?(smallest)
-              bigger.add_same(smallest)
-            end
-          end
-        end
+        ordered_props_list = props.sort
+        organize_by_inclusion!(ordered_props_list)
+        organize_by_relatives!(ordered_props_list)
       end
 
-      # Classify spec and return the hash where keys is order number of property
-      # and values is number of atoms in spec with same properties
+      # Classify spec and return the hash where keys are order numbers of properties
+      # and values are numbers of atoms in spec with same properties
       #
       # @param [DependentSpec | SpecResidual] spec the analyzing spec
       # @option [DependentWrappedSpec] :without do not classify atoms like as from
@@ -115,24 +93,10 @@ module VersatileDiamond
       end
 
       # Finds index of passed property
-      # @overloaded index(prop)
-      #   @param [AtomProperties] prop the property index of which will be found
-      # @overloaded index(spec, atom)
-      #   @param [DependentSpec | SpecResidual] spec the spec for which properties of
-      #     atom will be found
-      #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #     atom for which properties will be found
+      # @param [Array] args which will passed to #index_in method
       # @return [Integer] the index of properties or nil
       def index(*args)
-        prop =
-          if args.size == 1
-            args.first
-          elsif args.size == 2
-            AtomProperties.new(*args)
-          else
-            raise ArgumentError
-          end
-        @all_props.key(prop)
+        index_in(props_hash, *args)
       end
 
       # Gets number of all different properties
@@ -151,7 +115,7 @@ module VersatileDiamond
       # @param [Integer] index the index of properties
       # @return [Boolean] has or not
       def has_relevants?(index)
-        !!@all_props[index].relevant?
+        !!props_hash[index].relevant?
       end
 
       # Gets matrix of transitive closure for atom properties dependencies
@@ -189,14 +153,44 @@ module VersatileDiamond
       end
 
       # Checks that the first atom properties are the second atom properties
-      # @param [AtomProperties] first the bigger atom properties
-      # @param [AtomProperties] second the smallest atom properties
+      # @param [AtomProperties] bigger
+      # @param [AtomProperties] smallest
       # @return [Boolean] is or not
-      def is?(first, second)
-        general_transitive_matrix[detect_prop(first), detect_prop(second)]
+      def is?(bigger, smallest)
+        general_transitive_matrix[detect_prop(bigger), detect_prop(smallest)]
       end
 
     private
+
+      # Finds index of passed property in collection
+      # @overloaded index(collection, prop)
+      #   @param [Array] collection where index will be found
+      #   @param [AtomProperties] prop the property index of which will be found
+      # @overloaded index(collection, spec, atom)
+      #   @param [Array] collection where index will be found
+      #   @param [DependentSpec | SpecResidual] spec the spec for which properties of
+      #     atom will be found
+      #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+      #     atom for which properties will be found
+      # @return [Integer] the index of properties or nil
+      def index_in(collection, *args)
+        prop =
+          if args.size == 1
+            args.first
+          elsif args.size == 2
+            AtomProperties.new(*args)
+          else
+            raise ArgumentError
+          end
+        collection.key(prop)
+      end
+
+      # Finds internal index of passed property
+      # @param [Array] args which will passed to #index_in method
+      # @return [Integer] the index of properties or nil
+      def internal_index(*args)
+        index_in(@all_props, *args)
+      end
 
       # Adds default atoms of all used lattices
       def add_default_lattices_atoms
@@ -206,6 +200,43 @@ module VersatileDiamond
             props_hash = atom_hash.merge(lattice: lattice)
             store_prop(AtomProperties.new(props_hash))
           end
+        end
+      end
+
+      # Organizes dependencies between atom properties by checking inclusion
+      # @param [Array] props_list the observing atom properties
+      def organize_by_inclusion!(props_list)
+        iterate_props_list(props_list) do |first, internal|
+          next unless internal.contained_in?(first)
+          first.add_smallest(internal)
+        end
+      end
+
+      # Organizes dependencies between atom properties by checking relative states
+      # @param [Array] props_list the observing atom properties
+      def organize_by_relatives!(props_list)
+        iterate_props_list(props_list) do |first, internal|
+          if first.same_incoherent?(internal)
+            if first.same_hydrogens?(internal)
+              first.add_smallest(internal)
+            else
+              first.add_same(internal)
+            end
+          elsif first.same_unfixed?(internal)
+            first.add_same(internal)
+          end
+        end
+      end
+
+      # Iterates passed list of atom properties
+      # @param [Array] props_list the iterating atom properties
+      # @yield [AtomProperties, AtomProperties] do with bigger and smallest atom
+      #   properties
+      def iterate_props_list(props_list, &block)
+        props_list_dup = props_list.dup
+        until props_list_dup.empty?
+          first = props_list_dup.shift
+          props_list_dup.each { |internal| block[internal, first] }
         end
       end
 
@@ -220,7 +251,7 @@ module VersatileDiamond
       # @option [Boolean] :check before storing checks or not index of
       #   properties
       def store_prop(prop, check: true)
-        @all_props[new_index] = prop unless check && index(prop)
+        @all_props[new_index] = prop unless check && internal_index(prop)
 
         unless prop.incoherent?
           incoherent_prop = prop.incoherent
@@ -228,7 +259,7 @@ module VersatileDiamond
         end
 
         unrel_prop = prop.unrelevanted
-        @all_props[new_index] = unrel_prop unless index(unrel_prop)
+        @all_props[new_index] = unrel_prop unless internal_index(unrel_prop)
         @unrelevanted_props << detect_prop(unrel_prop)
       end
 
@@ -236,14 +267,14 @@ module VersatileDiamond
       # @param [AtomProperties] prop the  atom properties search patern
       # @return [AtomProperties] analogies atom properties from internal value
       def detect_prop(prop)
-        @all_props[index(prop)]
+        @all_props[internal_index(prop)]
       end
 
       # Collects transitions array by passed method name
       # @param [Symbol] method_name which will be called
       # @return [Array] collected array
       def collect_transitions(method_name)
-        @all_props.map do |p, prop|
+        props_hash.map do |p, prop|
           other = prop.public_send(method_name)
           other && (i = index(other)) && p != i ? i : p
         end
