@@ -9,17 +9,13 @@ module VersatileDiamond
       # for select the children atom properties
       #
       # @param [AtomClassifier] classifier of atom properties
-      # @param [Array] methods by which children properties will be got
-      def initialize(classifier, *methods)
+      # @param [Array] method_names by which children properties will be got
+      def initialize(classifier, *method_names)
         @classifier = classifier
-
         @prop_vector = classifier.props
         @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
         @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
-
-        @prop_vector.each_with_index do |prop, i|
-          tcR(i, i, *methods)
-        end
+        @prop_vector.each_with_index { |prop, i| tcR(i, i, *method_names) }
       end
 
       # Makes specification for some atom properties
@@ -42,9 +38,11 @@ module VersatileDiamond
         @prop_vector[result]
       end
 
-      def [] (prop1, prop2)
-        v, w = index(prop1), index(prop2)
-        @matrix[v, w]
+      # Gets item of matrix by passed properties
+      # @param [Array] props_pair by which crossing the cell will be gotten
+      # @return [Boolean] the value of crossing cell
+      def [] (*props_pair)
+        @matrix[*props_pair.map(&method(:index))]
       end
 
       def to_a
@@ -56,32 +54,31 @@ module VersatileDiamond
       # Transitive closure on DFS
       # @param [Integer] v the v vertex
       # @param [Integer] w the w vertex
-      # @param [Array] methods wich will be called for get children
-      def tcR(v, w, *methods)
+      # @param [Array] method_names wich will be called for get children
+      def tcR(v, w, *method_names)
         @matrix[v, w] = true
-        children = methods.reduce([]) do |acc, method|
-          prop = @prop_vector[w]
-          cds = prop.send(method)
+        children = method_names.reduce([]) do |acc, method|
+          cds = @prop_vector[w].public_send(method)
           cds ? acc + cds.to_a : acc
         end
 
         children.uniq.each do |prop|
           t = index(prop)
-          tcR(v, t, *methods) unless @matrix[v, t]
+          tcR(v, t, *method_names) unless @matrix[v, t]
         end
       end
 
       # Selects only source properties from transitive closure matrix builded
       # for :smallests dependencies
       def source_props
-        @matrix.column_vectors.map(&:to_a).map.with_index.
-          reduce(Set.new) do |acc, (col, i)|
-            children_num = col.map { |t| t ? 1 : 0 }.reduce(:+)
-            prop = @prop_vector[i]
-            children_num == 1 &&
-              (prop.incoherent? || prop.dangling_hydrogens_num > 0) ?
-                acc << prop : acc
+        columns = @matrix.column_vectors.map(&:to_a)
+        columns.map.with_index.each_with_object(Set.new) do |(col, i), acc|
+          children_num = col.select { |t| t }.size
+          prop = @prop_vector[i]
+          if children_num == 1 && (prop.incoherent? || prop.dangling_hydrogens_num > 0)
+            acc << prop
           end
+        end
       end
 
       # Gets the index of atom properties

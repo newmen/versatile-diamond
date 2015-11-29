@@ -12,7 +12,7 @@ module VersatileDiamond
 
       RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
 
-      attr_reader :smallests, :sames
+      attr_reader :smallests, :sames # fills from AtomClassifier#organize_properties!
 
       # Stores all properties of atom
       # @overload new(props)
@@ -160,16 +160,17 @@ module VersatileDiamond
       end
 
       %w(smallest same).each do |name|
-        var_name = :"@#{name}s"
+        plur_name = :"#{name}s"
+        var_name = :"@#{plur_name}"
 
-        # Adds dependency from #{name} properties
-        # @param [AtomProperties] stuff the #{name} properties from which
-        #   depends current
+        # Adds dependency from #{name} atom properties
+        # @param [AtomProperties] stuff the #{name} atom properties from which the
+        #   current atom properties depends
         define_method(:"add_#{name}") do |stuff|
           var = instance_variable_get(var_name) ||
             instance_variable_set(var_name, Set.new)
 
-          from_child = stuff.send(:"#{name}s")
+          from_child = stuff.send(plur_name)
           var.subtract(from_child) if from_child
           var << stuff
         end

@@ -98,12 +98,10 @@ module VersatileDiamond
           # @return [Array] the list of tuples with nodes, relation parameter and
           #   sidepiece species
           def nodes_rl_sidepieces(reaction, nodes)
-            checking_rels(nodes).reduce([]) do |acc, (nbrs, rel_params)|
+            checking_rels(nodes).each_with_object([]) do |(nbrs, rel_params), acc|
               if reaction.use_relation?(rel_params)
                 species = other_side_species(nbrs)
                 acc << [[nodes, nbrs, rel_params], species]
-              else
-                acc
               end
             end
           end

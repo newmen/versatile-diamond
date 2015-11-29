@@ -33,7 +33,6 @@ module VersatileDiamond
       # @param [DependentBaseSpec | DependentSpecificSpec] spec the analyzing spec
       def analyze(spec)
         props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
-
         props.each do |prop|
           @used_relevants_num += 1 if prop.relevant?
           next if index(prop)
@@ -239,11 +238,11 @@ module VersatileDiamond
       end
 
       # Collects transitions array by passed method name
-      # @param [Symbol] method the method name which will be called
+      # @param [Symbol] method_name which will be called
       # @return [Array] collected array
-      def collect_transitions(method)
+      def collect_transitions(method_name)
         @all_props.map do |p, prop|
-          other = prop.send(method)
+          other = prop.public_send(method_name)
           other && (i = index(other)) && p != i ? i : p
         end
       end
