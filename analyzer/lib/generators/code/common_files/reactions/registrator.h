@@ -7,6 +7,7 @@
 #include <tools/typed.h>
 using namespace vd;
 
+#include "../atoms/atom_builder.h"
 #include "../handbook.h"
 #include "rates_reader.h"
 

@@ -5,6 +5,7 @@ module VersatileDiamond
 
         # Contains methods for generate cpp expressions which iterates neghbours
         module NeighboursCppExpressions
+          include Algorithm::CrystalCppExpressions
 
           # Gets the code which checks relations between current unit and other unit
           # @param [BaseUnit] other to which relations will be checked
@@ -71,7 +72,7 @@ module VersatileDiamond
 
             nbr = other.target_atom
             namer.assign_next('neighbour', nbr)
-            crystal_call_str = crystal_atom_call(rel_params)
+            crystal_call_str = crystal_atom_call(atoms, rel_params)
             define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
 
             condition_str = "#{name_of(nbr)} && #{other.check_role_condition}"
@@ -98,7 +99,7 @@ module VersatileDiamond
             end
 
             namer.assign_next('neighbour', nbrs)
-            crystal_call_str = crystal_nbrs_call(rel_params)
+            crystal_call_str = crystal_nbrs_call(target_atom, rel_params)
             define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
 
             condition_str = "#{name_of(nbrs)}.all() && #{other.check_role_condition}"
@@ -210,7 +211,8 @@ module VersatileDiamond
           def each_nbrs_args(nbrs, rel_params)
             namer.assign_next('neighbour', nbrs)
 
-            method_args = [name_of(atoms), full_relation_name_ref(rel_params)]
+            relation_name = full_relation_name_ref(target_atom.lattice, rel_params)
+            method_args = [name_of(atoms), relation_name]
             closure_args = ['&']
 
             nbrs_var_name = name_of(nbrs)
@@ -252,27 +254,6 @@ module VersatileDiamond
           def each_nbrs_condition(condition_str, other, &block)
             acnd_str = append_check_bond_conditions(condition_str, append_other(other))
             code_condition(acnd_str, &block)
-          end
-
-          # Gets the code which calls the atom of crystal by calculating coordinates
-          # @param [Hash] rel_params the parameters of relations by which the coords
-          #   of target atom will be calculated from own atom instances
-          # @return [String] the string with cpp code for getting the atom of crystal
-          def crystal_atom_call(rel_params)
-            frn_method_name = "#{full_relation_name(rel_params)}_at"
-            atoms_vars_names_str = atoms.map(&method(:name_of)).join(', ')
-            "#{crystal_call}->atom(#{frn_method_name}(#{atoms_vars_names_str}))"
-          end
-
-          # Gets the code which calls the method of crystal which gets neighbours of
-          # target atom
-          #
-          # @param [Hash] rel_params the relations parameters by which the neighbour
-          #   atoms will be gotten
-          # @return [String] the string wich cpp code
-          def crystal_nbrs_call(rel_params)
-            srn_method_name = short_relation_name(rel_params)
-            "#{crystal_call}->#{srn_method_name}(#{target_atom_var_name})"
           end
 
           # Gets the list of atoms pairs between which has a relation, where the first
@@ -336,42 +317,6 @@ module VersatileDiamond
           def check_bond_call(*atoms)
             first_var, second_var = atoms.map(&method(:name_of))
             "#{first_var}->hasBondWith(#{second_var})"
-          end
-
-          # Gets the short name of relation for get neighbour atoms
-          # @param [Hash] rel_params the relation parameters by which short name will
-          #   be gotten
-          # @return [String] the short name of relation
-          def short_relation_name(rel_params)
-            "#{rel_params[:dir]}_#{rel_params[:face]}"
-          end
-
-          # Gets the full name of relation by atom and relation parameters
-          # @param [Hash] rel_params the relation parameters by which full name will be
-          #   gotten
-          # @return [String] the full name relation
-          def full_relation_name(rel_params)
-            lattice_code = generator.lattice_class(target_atom.lattice)
-            lattice_class_name = lattice_code.class_name
-            short_name = short_relation_name(rel_params)
-            "#{lattice_class_name}::#{short_name}"
-          end
-
-          # Gets the reference to correspond crystal method of engine framework
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom see at #full_relation_name same argument
-          # @param [Hash] rel_params see at #full_relation_name same argument
-          # @return [String] the reference to relation method
-          def full_relation_name_ref(rel_params)
-            "&#{full_relation_name(rel_params)}"
-          end
-
-          # Gets the cpp code which uses #crystalBy engine framework method for get a
-          # crystal by atom
-          #
-          # @return [String] the string with cpp call
-          def crystal_call
-            "crystalBy(#{name_of(target_atom)})"
           end
 
           # Appends condition of checking bond exsistance between each atoms in passed
