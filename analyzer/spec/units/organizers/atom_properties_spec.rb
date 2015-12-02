@@ -139,13 +139,13 @@ module VersatileDiamond
 
       describe '#-' do
         subject { ab_cr - bridge_ct }
-        it { expect(subject[:atom_name]).to eq(ab_cr.atom_name) }
-        it { expect(subject[:valence]).to eq(c.valence) }
-        it { expect(subject[:lattice]).to be_nil }
-        it { expect(subject[:relations]).to eq([bond_110_front]) }
-        it { expect(subject[:danglings]).to eq([active_bond]) }
-        it { expect(subject[:nbr_lattices]).to be_empty }
-        it { expect(subject[:relevants]).to be_empty }
+        it { expect(subject.send(:atom_name)).to eq(ab_cr.atom_name) }
+        it { expect(subject.send(:valence)).to eq(c.valence) }
+        it { expect(subject.send(:lattice)).to eq(cd.lattice) }
+        it { expect(subject.send(:relations)).to eq([bond_110_front]) }
+        it { expect(subject.send(:danglings)).to eq([active_bond]) }
+        it { expect(subject.send(:nbr_lattices)).to be_empty }
+        it { expect(subject.send(:relevants)).to be_empty }
       end
 
       describe '#include?' do

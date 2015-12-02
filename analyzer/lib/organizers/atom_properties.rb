@@ -10,8 +10,6 @@ module VersatileDiamond
       include Modules::OrderProvider
       include Lattices::BasicRelations
 
-      RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
-
       # Fills under AtomClassifier#organize_properties!
       attr_reader :smallests, :sames
 
@@ -66,10 +64,7 @@ module VersatileDiamond
       # @param [AtomProperties] other an other atom properties
       # @return [Boolean] equal or not
       def == (other)
-        same_basic_values?(other) &&
-          [:relations, :danglings, :nbr_lattices, :relevants].all? do |name|
-            eq_by?(other, name)
-          end
+        same_basic_values?(other) && DYNAMIC_STATES.all? { |name| eq_by?(other, name) }
       end
       alias :eql? :==
 
@@ -88,7 +83,9 @@ module VersatileDiamond
                 order(self, other, :crystal_relatons_num) do
                   order(self, other, :danglings, :size) do
                     typed_order(self, other, :incoherent?) do
-                      typed_order(self, other, :unfixed?)
+                      typed_order(self, other, :unfixed?) do
+                        typed_order(self, other, :atom_name)
+                      end
                     end
                   end
                 end
@@ -98,37 +95,30 @@ module VersatileDiamond
         end
       end
 
-      # Gets new atom properties instance with elements from diff
-      # @param [Hash] diff the result of difference operation
+      # Gets new atom properties instance from two instances
+      # @param [AtomProperties] other adding atom properties
       # @return [AtomProperties] the extended instance of atom properties or nil
-      def + (diff)
-        hash_props = {
-          atom_name: atom_name,
-          valence: valence,
-          lattice: lattice,
-          relations: relations + diff[:relations],
-          danglings: danglings + diff[:danglings],
-          nbr_lattices: nbr_lattices,
-          relevants: (relevants + diff[:relevants]).uniq
-        }
+      def + (other)
+        result = nil
+        total_props = merge_props(other, :+)
+        if total_props
+          num =
+            estab_bonds_num_in(total_props[:relations]) + total_props[:danglings].size
+          are_correct_props =
+            (num < valence && valid_relevants?(total_props[:relevants])) ||
+            (num == valence && total_props[:relevants].empty?)
 
-        num = estab_bonds_num_in(hash_props[:relations]) + hash_props[:danglings].size
-        are_correct_props =
-          (num < valence && valid_relevants?(hash_props[:relevants])) ||
-          (num == valence && hash_props[:relevants].empty?)
-
-        are_correct_props ? self.class.new(hash_props.values) : nil
+          result = self.class.new(total_props.values) if are_correct_props
+        end
+        result
       end
 
       # Gets the difference between two atom properties
       # @param [AtomProperties] other atom properties which will be erased from current
-      # @return [Hash] the difference result
+      # @return [AtomProperties] the difference result or nil
       def - (other)
-        return {
-          relations: relations.accurate_diff(other.relations),
-          danglings: danglings.accurate_diff(other.danglings),
-          relevants: relevants.accurate_diff(other.relevants)
-        }
+        diff_props = merge_props(other, :accurate_diff)
+        diff_props ? self.class.new(diff_props) : nil
       end
 
       # Calculates the hash of current instance for using it as key values in Hashes
@@ -377,28 +367,26 @@ module VersatileDiamond
 
     protected
 
+      extend Lattices::BasicRelations::Amorph
+      UNDIRECTED_BONDS = [undirected_bond, double_bond, triple_bond]
+      RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
+
+      STATIC_STATES = %i(atom_name valence lattice)
+      DYNAMIC_STATES = %i(relations danglings nbr_lattices relevants)
+      ALL_STATES = STATIC_STATES + DYNAMIC_STATES
+
       attr_reader :props
 
       # Define human named methods for accessing to props
-      %i(
-        atom_name
-        valence
-        lattice
-        relations
-        danglings
-        nbr_lattices
-        relevants
-      ).each_with_index do |name, i|
+      ALL_STATES.each_with_index do |name, i|
         define_method(name) { props[i] }
       end
       public :atom_name, :lattice
 
       # The static (not arrayed) states of properties
-      #   [atom_name, valence, lattice]
-      #
       # @return [Array] the array of static states
       def static_states
-        props[0..2]
+        STATIC_STATES.map(&method(:send))
       end
 
       # Has unfixed state or not
@@ -430,6 +418,37 @@ module VersatileDiamond
 
     private
 
+      # Makes merged props hash with other instance by passed operation
+      # @param [AtomProperties] other provider of properties
+      # @param [Symbol] op the binary operation which applies the dynamic states of
+      #   both instances
+      # @return [Hash] the merged properties hash
+      def produce_props(other, op)
+        static_props = Hash[STATIC_STATES.zip(static_states)]
+        DYNAMIC_STATES.each_with_object(static_props) do |state_name, acc|
+          self_state, other_state = [self, other].map { |x| x.send(state_name) }
+          acc[state_name] = eval("self_state.#{op}(other_state)") # using directive
+        end
+      end
+
+      # Merges own properties with properties of an other passed instance
+      # @param [AtomProperties] other provider of properties
+      # @param [Symbol] binary_op the operation which applies the dynamic states of
+      #   both instances
+      # @return [Hash] the merged properties hash or nil if properties cannot be merged
+      def merge_props(other, binary_op)
+        result = nil # I want monades here!
+        if same_basic_values?(other)
+          merged_props = produce_props(other, binary_op)
+          merged_props[:relevants].uniq!
+          undir_bonds_num = UNDIRECTED_BONDS.reduce(0) do |acc, bond_type|
+            acc + merged_props[:relations].count(bond_type)
+          end
+          result = merged_props if merged_props[:nbr_lattices].size == undir_bonds_num
+        end
+        result
+      end
+
       # Compares with other properties by some method which returns list
       # @param [AtomProperties] other the comparing properties
       # @param [Symbol] method_name by which will be comparing
@@ -438,19 +457,19 @@ module VersatileDiamond
         lists_are_identical?(send(method_name), other.send(method_name), &:==)
       end
 
-      %w(relations danglings nbr_lattices relevants).each do |name|
-        # Compares current #{name} with other #{name}
+      DYNAMIC_STATES.each do |method_name|
+        # Compares current #{method_name} with other #{method_name}
         # @param [AtomProperties] other the comparing properties
         # @return [Boolean] lists are equal or not
-        define_method(:"eq_#{name}?") do |other|
-          eq_by?(other, name.to_sym)
+        define_method(:"eq_#{method_name}?") do |other|
+          eq_by?(other, method_name)
         end
 
-        # Checks that other properties contain all current #{name}
+        # Checks that other properties contain all current #{method_name}
         # @param [AtomProperties] other the checking properties
         # @return [Boolean] contain or not
-        define_method(:"contain_all_#{name}?") do |other|
-          contain_all_by?(other, name.to_sym)
+        define_method(:"contain_all_#{method_name}?") do |other|
+          contain_all_by?(other, method_name)
         end
       end
 
@@ -584,8 +603,8 @@ module VersatileDiamond
       # @return [Integer] the number of established bond relations
       def estab_bonds_num_in(relations)
         relations.count { |r| r.class == Concepts::Bond } +
-          (relations.include?(double_bond) ? 2 : 0) +
-          (relations.include?(triple_bond) ? 3 : 0)
+          2 * relations.count(double_bond) +
+          3 * relations.count(triple_bond)
       end
 
       # Gets number of established bond relations
