@@ -12,7 +12,7 @@ module VersatileDiamond
         ANCHOR_SPECIE_NAME = 'target'.freeze
         SIDEPIECE_SPECIE_NAME = 'sidepiece'.freeze
 
-        def_delegators :reaction, :links, :clean_links, :relation_between, :changes
+        def_delegators :reaction, :links, :clean_links, :relation_between
 
         # Initializes additional caches
         def initialize(*)

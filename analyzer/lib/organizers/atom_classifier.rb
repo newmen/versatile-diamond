@@ -28,7 +28,7 @@ module VersatileDiamond
       # Provides the array of all analyzed atom properties
       # @return [Array] the array of all presented properties
       def props
-        props_hash.values
+        props_hash.to_a.sort_by(&:first).map(&:last)
       end
 
       # Analyze spec and store all uniq properties
@@ -124,13 +124,11 @@ module VersatileDiamond
         @_tmatrix ||= TransitiveMatrix.new(self, :smallests, :sames)
       end
 
-      # Gets array where each element is index of result specifieng of atom
-      # properties
-      #
+      # Gets array where each element is index of much more specific atom properties
       # @return [Array] the specification array
       def specification
         props.map do |prop|
-          index(smallests_transitive_matrix.specification_for(detect_prop(prop)))
+          index(smallests_transitive_matrix.specification_for(prop))
         end
       end
 

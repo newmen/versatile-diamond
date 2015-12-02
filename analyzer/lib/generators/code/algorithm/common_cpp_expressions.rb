@@ -39,6 +39,13 @@ module VersatileDiamond
             code_strs.map(&method(:code_line)).join
           end
 
+          # Gets the code line with assert passed expression statement
+          # @param [String] expr which will be asserted
+          # @return [String] the cpp code line with assert expression
+          def code_assert(expr)
+            code_line("assert(#{expr});")
+          end
+
           # Gets a code with cpp condition block
           # @param [String] condition_str the cpp code string with some condition
           # @option [Boolean] :use_else_prefix flag which identifies that before `if`

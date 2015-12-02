@@ -5,7 +5,18 @@ module VersatileDiamond
       # Creates AtomBuilder class
       class AtomBuilder < CppClassWithGen
 
+        VAR_NAME = 'builder'.freeze
+
         class << self
+          # Gets method name for passed atom
+          # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+          #   atom for which the builder method name will be gotten
+          # @return [String] the name of method which will build the atom under
+          #   simulation
+          def method_for(atom)
+            method_name(atom.name, atom.lattice)
+          end
+
           # Build method name
           # @param [Atom] atom_class the atom generation class instance
           # @param [Concepts::Lattice] lattice the atom belongs to this lattice
