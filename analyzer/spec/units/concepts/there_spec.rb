@@ -88,11 +88,12 @@ module VersatileDiamond
         let(:method) { :env_specs }
       end
 
-      describe '#use_similar_source?' do
+      describe '#use_similar?' do
         subject { on_end }
-        it { expect(subject.use_similar_source?(dimer)).to be_truthy }
-        it { expect(subject.use_similar_source?(dimer.dup)).to be_falsey}
-        it { expect(subject.use_similar_source?(ab)).to be_truthy }
+        it { expect(subject.use_similar?(:source, dimer)).to be_truthy }
+        it { expect(subject.use_similar?(:source, dimer.dup)).to be_falsey}
+        it { expect(subject.use_similar?(:source, ab)).to be_truthy }
+        it { expect(subject.use_similar?(:products, ab)).to be_falsey }
       end
 
       describe '#swap_source' do

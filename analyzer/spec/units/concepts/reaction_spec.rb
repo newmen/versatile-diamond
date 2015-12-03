@@ -17,7 +17,7 @@ module VersatileDiamond
       describe '#as' do
         shared_examples_for :forward_and_reverse do
           let(:name) { 'dimer formation' }
-          before(:each) do
+          before do
             subject.as(:forward).rate = 1
             subject.as(:forward).reverse.rate = 2
           end
@@ -62,7 +62,7 @@ module VersatileDiamond
         shared_examples_for :child_changes_too do
           %w(enthalpy activation rate).each do |prop|
             describe "children setup #{prop}" do
-              before(:each) do
+              before do
                 child # makes a child
                 reaction.send(:"#{prop}=", 456)
               end
@@ -112,9 +112,9 @@ module VersatileDiamond
         it { expect(hydrogen_migration.reverse.gases_num).to eq(0) }
       end
 
-      describe '#swap_source' do
+      describe '#swap_on' do
         shared_examples_for :check_specs_existence do
-          before { reaction.swap_source(old, fresh) }
+          before { reaction.swap_on(:source, old, fresh) }
           it { should include(fresh) }
           it { should_not include(old) }
         end
@@ -181,7 +181,7 @@ module VersatileDiamond
             let(:old_atom) { spec.atom(target_kn) }
             let(:new_atom) { spec.atom(target_kn) }
 
-            before(:each) do
+            before do
               methyl_incorporation # initialize memoized value
               old_atom # initialize memoized value
               spec.incoherent!(target_kn)

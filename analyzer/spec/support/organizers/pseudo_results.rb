@@ -108,20 +108,22 @@ module VersatileDiamond
         def fix_reactants(depts_cache, all_specs)
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
-              dr.reaction.each_source do |s|
-                if all_specs.include?(s.name)
-                  swap_source_carefully(dr, s, spec_from(all_specs, s).spec)
-                else
-                  if s.is_a?(Concepts::TerminationSpec)
-                    dt = DependentTermination.new(s)
-                    depts_cache[:term_specs] << dt
-                    all_specs[dt.name] = dt
+              [:source, :products].each do |target|
+                dr.reaction.each(target) do |s|
+                  if all_specs.include?(s.name)
+                    swap_carefully(target, dr, s, spec_from(all_specs, s).spec)
                   else
-                    store_reactant(dr, depts_cache, all_specs, s)
+                    if s.is_a?(Concepts::TerminationSpec)
+                      dt = DependentTermination.new(s)
+                      depts_cache[:term_specs] << dt
+                      all_specs[dt.name] = dt
+                    else
+                      store_reactant(dr, depts_cache, all_specs, s)
+                    end
                   end
-                end
 
-                store_concept_to(dr, spec_from(all_specs, s))
+                  store_concept_to(dr, spec_from(all_specs, s)) if target == :source
+                end
               end
             end
           end
@@ -131,14 +133,16 @@ module VersatileDiamond
         def fix_sidepieces(depts_cache, all_specs)
           depts_cache[:lateral_reactions].each do |reaction|
             reaction.theres.each do |there|
-              there.each_source do |s|
-                if all_specs.include?(s.name)
-                  swap_source_carefully(there, s, spec_from(all_specs, s).spec)
-                else
-                  store_reactant(there, depts_cache, all_specs, s)
-                end
+              [:source, :products].each do |target|
+                there.each(target) do |s|
+                  if all_specs.include?(s.name)
+                    swap_carefully(target, there, s, spec_from(all_specs, s).spec)
+                  else
+                    store_reactant(there, depts_cache, all_specs, s)
+                  end
 
-                store_concept_to(there, spec_from(all_specs, s))
+                  store_concept_to(there, spec_from(all_specs, s)) if target == :source
+                end
               end
             end
           end
@@ -175,7 +179,9 @@ module VersatileDiamond
             else
               dbs = depts_cache[:base_specs].find { |bs| bs.name == spec.spec.name }
               dbs ||= DependentBaseSpec.new(spec.spec)
-              swap_source_carefully(dcont, spec, dbs.spec)
+              [:source, :products].each do |target|
+                swap_carefully(target, dcont, spec, dbs.spec)
+              end
               unless all_specs.include?(dbs.name)
                 depts_cache[:base_specs] << dbs
                 all_specs[dbs.name] = dbs

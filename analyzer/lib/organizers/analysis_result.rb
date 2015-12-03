@@ -115,27 +115,29 @@ module VersatileDiamond
       # looked around by atom mapping! At collecting time swaps reaction source
       # spec with another same spec (with same name) if it another spec already
       # collected. Each specific spec stores reaction or theres from which it
-      # dependent.
       #
+
       # @return [Hash] the hash of collected specific species where keys are
       #   full names of each specific spec
       def collect_specific_specs
         cache = {}
-        all = [ubiquitous_reactions, typical_reactions, lateral_reactions, theres]
-        all.each do |concepts|
+        (all_reactions + [theres]).each do |concepts|
           concepts.each do |concept|
-            concept.each_source do |specific_spec|
-              name = specific_spec.name
-              next if @term_specs[name]
+            is_ubiquitous = ubiquitous_reactions.include?(concept)
+            [:source, :products].each do |target|
+              concept.each(target) do |spec|
+                next if is_ubiquitous && !spec.simple?
+                name = spec.name
 
-              cached_dept_spec = cached_spec(cache, specific_spec)
-              if cached_dept_spec
-                swap_source_carefully(concept, specific_spec, cached_dept_spec.spec)
-              else
-                cache[name] = create_dept_specific_spec(specific_spec)
+                cached_dept_spec = cached_spec(cache, spec)
+                if cached_dept_spec
+                  swap_carefully(target, concept, spec, cached_dept_spec.spec)
+                else
+                  cache[name] = create_dept_specific_spec(spec)
+                end
+
+                store_concept_to(concept, cache[name]) if target == :source
               end
-
-              store_concept_to(concept, cache[name])
             end
           end
         end
@@ -213,16 +215,20 @@ module VersatileDiamond
       # Checks stored reactions for duplication with each other
       # @raise [ReactionDuplicate] if duplicate is found
       def check_reactions_for_duplicates
-        all = [ubiquitous_reactions, typical_reactions, lateral_reactions]
-        all.each do |reactions|
+        all_reactions.each do |reactions|
           reactions = reactions.dup
-
           until reactions.empty?
             reaction = reactions.pop
             same = reactions.find { |r| r != reaction && reaction.same?(r) }
             raise ReactionDuplicate.new(reaction.name, same.name) if same
           end
         end
+      end
+
+      # Gets lists of all types reactoins
+      # @return [Array] the lists of reactions
+      def all_reactions
+        [ubiquitous_reactions, typical_reactions, lateral_reactions]
       end
 
       # Organize dependencies between all stored reactions.
@@ -232,10 +238,8 @@ module VersatileDiamond
       # Combined lateral reactions extends initial list of lateral reactions.
       def organize_all_reactions_dependencies!
         nt_spec_cache = @specific_specs.merge(@base_specs)
-        reactions_lists = [ubiquitous_reactions, typical_reactions, lateral_reactions]
-
         combined_lateral_reactions =
-          organize_reactions_dependencies!(@term_specs, nt_spec_cache, *reactions_lists)
+          organize_reactions_dependencies!(@term_specs, nt_spec_cache, *all_reactions)
 
         @lateral_reactions += combined_lateral_reactions
       end

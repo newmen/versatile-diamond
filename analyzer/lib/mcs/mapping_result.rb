@@ -157,24 +157,28 @@ module VersatileDiamond
       # Swap source species in result. Drops atom mapping result for atoms
       # which is not belongs to new spec if it spec is reduced version of from
       #
+      # @param [Symbol] target the type of swapping species
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
-      def swap_source(from, to)
+      def swap(target, from, to)
         mirror = SpeciesComparator.make_mirror(from, to)
-        @source.map! { |spec| spec == from ? to : spec }
+        instance_variable_get(:"@#{target}").map! { |spec| spec == from ? to : spec }
+
         @result.each do |_, mapping|
           mapping.map! do |specs, atoms|
-            spec = specs.first
-            if spec == from
+            if target == :source && from == specs.first
               changed_atoms = atoms.map { |f, s| [mirror[f], s] }
               [[to, specs.last], changed_atoms]
+            elsif target == :products && from == specs.last
+              changed_atoms = atoms.map { |f, s| [f, mirror[s]] }
+              [[specs.first, to], changed_atoms]
             else
               [specs, atoms]
             end
           end
         end
 
-        @reverse.swap_source(to, from) if @reverse
+        @reverse.swap(target == :source ? :products : :source, to, from) if @reverse
       end
 
       # Swaps atoms in result

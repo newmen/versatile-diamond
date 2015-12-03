@@ -116,7 +116,7 @@ module VersatileDiamond
 
           reaction.gases_num == 0 ?
             arrenius :
-            reaction.each_source.reduce(arrenius) do |acc, spec|
+            reaction.each(:source).reduce(arrenius) do |acc, spec|
               spec.gas? ? acc * concentration_value(spec) : acc
             end
         end

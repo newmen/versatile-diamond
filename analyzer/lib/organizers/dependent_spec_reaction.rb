@@ -46,7 +46,8 @@ module VersatileDiamond
       end
 
       # Clears caches and delegates call to super class
-      def swap_source(*)
+      # @override
+      def swap_on(*)
         clear_caches!
         super
       end

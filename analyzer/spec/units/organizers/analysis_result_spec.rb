@@ -202,18 +202,16 @@ module VersatileDiamond
                 subject.base_spec(name)
               end
 
-              describe '.swap_source' do
-                def base(name)
-                  get(name).spec
-                end
-
+              describe '#swap_on' do
                 let(:lateral_reaction) { subject.lateral_reactions.last.reaction }
                 let(:used_there) { lateral_reaction.theres.flat_map(&:env_specs) }
 
                 it { expect(used_there.uniq.size > 1).to be_truthy }
                 it { expect(used_there.map(&:name)).to match_array([:dimer, :dimer]) }
-                it { expect(hydrogen_migration.reverse.source).
-                  to include(base(:dimer)) }
+
+                before { subject }
+                it { expect(hydrogen_migration.reverse.source.map(&:name)).
+                  to match_array([:dimer, :'methyl_on_dimer(cm: *)']) }
               end
 
               describe '#store_concept_to' do
@@ -241,11 +239,12 @@ module VersatileDiamond
           describe 'collection from reactions' do
             before { store_reactions }
 
-            it_behaves_like :each_reactant_dependent do
+            it_behaves_like :each_spec_dependent do
               let(:dependent_class) { DependentSimpleSpec }
               let(:method) { :specific_specs }
               let(:names) do
                 [
+                  :'hydrogen()',
                   :'hydrogen(h: *)',
                   :'bridge(ct: *)',
                   :'bridge(ct: *, ct: i)',

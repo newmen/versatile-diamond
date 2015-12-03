@@ -15,12 +15,13 @@ module VersatileDiamond
       end
 
       # Also changes targets of there object
+      # @param [Symbol] target the type of swapping species
       # @param [SpecificSpec] from the spec from which need to swap
       # @param [SpecificSpec] to the spec to which need to swap
       # @override
-      def swap_source(from, to)
+      def swap_on(target, from, to)
         super
-        theres.each { |there| there.swap_target(from, to) }
+        theres.each { |there| there.swap_target(from, to) } if target == :source
       end
 
       # Also checks using in there objects

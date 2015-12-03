@@ -33,11 +33,11 @@ module VersatileDiamond
       end
 
       describe '#each_source' do
-        it { expect(lat_react.each_source).to be_a(Enumerator) }
+        it { expect(lat_react.each(:source)).to be_a(Enumerator) }
 
         let(:ab) { dimer_formation.source.first }
         let(:adopted_source) { [ab, ind_chunk.targets.first.first] }
-        it { expect(lat_react.each_source.to_a).to match_array(adopted_source) }
+        it { expect(lat_react.each(:source).to_a).to match_array(adopted_source) }
       end
 
       describe '#name' do

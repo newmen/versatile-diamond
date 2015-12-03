@@ -225,11 +225,11 @@ module VersatileDiamond
         it { expect(subject.full).not_to eq(df_atom_map.full) }
       end
 
-      describe '#swap_source' do
+      describe '#swap' do
         subject { df_atom_map }
         let(:ab) { df_source.first }
         let(:ab_dup) { activated_bridge.dup }
-        before(:each) { subject.swap_source(ab, ab_dup) }
+        before(:each) { subject.swap(:source, ab, ab_dup) }
 
         it { expect(subject.source).not_to include(ab) }
         it { expect(subject.source).to include(ab_dup) }

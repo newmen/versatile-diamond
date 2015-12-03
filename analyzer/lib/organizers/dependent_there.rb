@@ -7,7 +7,7 @@ module VersatileDiamond
       include Modules::SpecAtomSwapper
       extend Forwardable
 
-      def_delegators :there, :description, :use_similar_source?, :inspect
+      def_delegators :there, :description, :use_similar?, :inspect
       def_delegator :there, :where # for graphs generators
 
       attr_reader :lateral_reaction
@@ -25,13 +25,16 @@ module VersatileDiamond
       # Checks that if result spec is veiled then fill ChunkLinksMerger and update
       # own links
       #
+      # @param [Symbol] target the type of swapping species
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
       #   the spec from which need to swap
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
       #   the spec to which need to swap
-      def swap_source(from, to)
-        @_links = nil
-        there.swap_source(from, to)
+      def swap_on(target, from, to)
+        if target == :source
+          @_links = nil
+          there.swap_source(from, to)
+        end
       end
 
       # Gets the extendes links of there object with links of sidepiece species
@@ -57,11 +60,12 @@ module VersatileDiamond
       end
 
       # Iterates each enviromnet specie
+      # @param [Symbol] target the type of iterating species
       # @yield [Concepts::SurfaceSpec | Concepts::SpecificSpec] do with each
       #   enviromnent specie
       # @return [Enumerator] if block doesn't given
-      def each_source(&block)
-        there.env_specs.each(&block)
+      def each(target, &block)
+        (target == :source ? there.env_specs : []).each(&block)
       end
 
       # Gets the set of target spec-atoms

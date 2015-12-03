@@ -68,7 +68,7 @@ module VersatileDiamond
       #   which ions changes will be checked
       # @return [Boolean] is there exchanges or not?
       def exchange_ions?(reaction, spec)
-        reaction.each_source.any?(&:simple?) ||
+        reaction.each(:source).any?(&:simple?) ||
           reaction.changes.any? do |src_to_prd|
             s, a = src_to_prd.first
             next unless spec == s

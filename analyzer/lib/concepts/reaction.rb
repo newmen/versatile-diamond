@@ -110,13 +110,14 @@ module VersatileDiamond
       end
 
       # Also changes atom mapping result
+      # @param [Symbol] target the type of swapping species
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       # @override
-      def swap_source(from, to)
+      def swap_on(target, from, to)
         super
-        @links = swap_in_links(:swap, @links, from, to)
-        mapping.swap_source(from, to)
+        @links = swap_in_links(:swap, @links, from, to) if target == :source
+        mapping.swap(target, from, to)
       end
 
       # Swaps using atoms of passed spec
@@ -208,7 +209,9 @@ module VersatileDiamond
       def reorganize_children_specs!
         children.each do |child|
           if same_specs?(child) && same_positions?(child)
-            swap_by_map!(child, map_to_specs_of(child, :source))
+            [:source, :products].each do |target|
+              swap_by_map!(target, child, map_to_specs_of(child, target))
+            end
           end
         end
       end
@@ -250,12 +253,13 @@ module VersatileDiamond
       end
 
       # Swaps specs of child reaction by passed map
+      # @param [Symbol] target the type of swapping species
       # @param [Reaction] child which specs will be swapped
       # @param [Hash] specs_map which will used for get correspond specs of current
       #   reaction
-      def swap_by_map!(child, specs_map)
+      def swap_by_map!(target, child, specs_map)
         specs_map.each do |self_spec, child_spec|
-          child.swap_source(child_spec, self_spec)
+          child.swap_on(target, child_spec, self_spec)
         end
       end
 

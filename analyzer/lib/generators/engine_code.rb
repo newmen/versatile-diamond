@@ -209,7 +209,8 @@ module VersatileDiamond
         surface_species = @species.reject do |name, _|
           dep_spec = deps_hash[name]
           # TODO: is simple always gas?
-          dep_spec.simple? || dep_spec.gas?
+          dep_spec.simple? || dep_spec.gas? ||
+            (dep_spec.reactions.empty? && dep_spec.theres.empty?)
         end
 
         surface_species.values

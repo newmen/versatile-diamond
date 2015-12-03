@@ -35,21 +35,21 @@ module VersatileDiamond
         it { subject.full_rate == target.full_rate }
       end
 
-      describe '#each_source' do
-        it { expect(subject.each_source).to be_a(Enumerable) }
+      describe '#each' do
+        it { expect(subject.each(:source)).to be_a(Enumerable) }
 
-        it { expect(subject.each_source.to_a).to match_array(df_source) }
-        it { expect(dept_methyl_deactivation.each_source.to_a).
+        it { expect(subject.each(:source).to_a).to match_array(df_source) }
+        it { expect(dept_methyl_deactivation.each(:source).to_a).
           to match_array(dm_source) }
       end
 
-      describe '#swap_source' do
-        let(:source) { subject.each_source.to_a }
+      describe '#swap_on' do
+        let(:source) { subject.each(:source).to_a }
         let(:ab) { df_source.first }
         let(:aib) { df_source.last }
         let(:bridge_dup) { ab.dup }
 
-        before(:each) { subject.swap_source(ab, bridge_dup) }
+        before { subject.swap_on(:source, ab, bridge_dup) }
 
         it { expect(source).not_to include(ab) }
         it { expect(source).to include(bridge_dup) }

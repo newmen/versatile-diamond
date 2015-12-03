@@ -53,10 +53,10 @@ module VersatileDiamond
         end
       end
 
-      describe '#swap_source' do
+      describe '#swap_on' do
         let(:ab) { end_lateral_df.source.first }
         let(:ab_dup) { ab.dup }
-        before { end_lateral_df.swap_source(ab, ab_dup) }
+        before { end_lateral_df.swap_on(:source, ab, ab_dup) }
 
         # from super
         it { expect(end_lateral_df.source.include?(ab)).to be_falsey }
