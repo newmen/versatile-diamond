@@ -127,8 +127,8 @@ module VersatileDiamond
       # @return [Integer] the comparing result
       def comparing_core(other)
         if belongs_to_crystal? && other.belongs_to_crystal?
-          order(self, other, :face) do
-            order(self, other, :dir)
+          order(other, self, :face) do
+            order(other, self, :dir)
           end
         elsif belongs_to_crystal?
           -1

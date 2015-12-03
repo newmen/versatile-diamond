@@ -7,6 +7,26 @@ module VersatileDiamond
         include SpeciesOrganizer
         include ReactionsOrganizer
 
+        # The mock of analysis results
+        class ResultsMock
+          def initialize(depts)
+            @depts = depts
+          end
+
+          def method_missing(*args)
+            if args.size == 1 && @depts.include?(args.first)
+              @depts[args.first]
+            else
+              key = :"#{args.first}s"
+              if args.size == 2 && args.first =~ /_spec/ && @depts.include?(key)
+                @depts[key].find { |s| s.name == args.last }
+              else
+                super
+              end
+            end
+          end
+        end
+
         # Stubs analysis results and allow to call methods with same names as keys of
         # passed hash
         #
@@ -18,24 +38,22 @@ module VersatileDiamond
             reorganize_children_specs!(depts[:typical_reactions].map(&:reaction))
           end
 
-          fixed_depts = fix(depts).each_with_object({}) do |(method_name, list), acc|
-            acc[method_name] = list
-          end
-
-          results = double('pseudo_analysis_results')
-          sort_depts(fixed_depts).each do |method_name, list|
-            has_orig_depts =
-              !list.empty? && depts[method_name] && !depts[method_name].empty?
-
-            if has_orig_depts && organization_keys.include?(method_name)
-              orgres = send(:"organize_#{method_name}", fixed_depts)
-              list += orgres if method_name == :lateral_reactions
+          fixed_depts =
+            fix(depts).each_with_object({}) do |(method_name, list), acc|
+              acc[method_name] = list
             end
 
-            allow(results).to receive(method_name).and_return(list)
-          end
+          mocking_depts =
+            sort_depts(fixed_depts).each_with_object({}) do |(method_name, list), acc|
+              if organization_keys.include?(method_name)
+                orgres = send(:"organize_#{method_name}", fixed_depts)
+                list += orgres if method_name == :lateral_reactions
+              end
 
-          results
+              acc[method_name] = list
+            end
+
+          ResultsMock.new(mocking_depts)
         end
 
       private

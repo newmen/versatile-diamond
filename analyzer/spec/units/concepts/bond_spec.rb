@@ -49,10 +49,10 @@ module VersatileDiamond
       describe '#<=>' do
         it { expect(bond_100_front <=> position_110_front).to eq(-1) }
         it { expect(position_110_front <=> bond_100_front).to eq(1) }
-        it { expect(bond_100_front <=> bond_110_front).to eq(-1) }
-        it { expect(bond_110_front <=> bond_100_front).to eq(1) }
-        it { expect(bond_100_cross <=> bond_100_front).to eq(-1) }
-        it { expect(bond_100_front <=> bond_100_cross).to eq(1) }
+        it { expect(bond_110_front <=> bond_100_front).to eq(-1) }
+        it { expect(bond_100_front <=> bond_110_front).to eq(1) }
+        it { expect(bond_100_front <=> bond_100_cross).to eq(-1) }
+        it { expect(bond_100_cross <=> bond_100_front).to eq(1) }
         it { expect(bond_100_front <=> free_bond).to eq(-1) }
         it { expect(free_bond <=> bond_100_front).to eq(1) }
       end

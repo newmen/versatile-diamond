@@ -38,7 +38,7 @@ module VersatileDiamond
           major_code_instances,
           unique_pure_atoms,
           lattices.compact,
-          species,
+          surface_species,
           reactions
         ].each do |collection|
           collection.each { |code_class| code_class.generate(@out_path) }
@@ -90,25 +90,31 @@ module VersatileDiamond
         @species[spec_name]
       end
 
+      # Gets the reaction code generator
+      # @param [Symbol] reaction_name the name of reaction which will be returned
+      # @return [Code::BaseReaction] the reaction code generator instance
+      def reaction_class(reaction_name)
+        @reactions[reaction_name]
+      end
+
       # Gets root species
       # @return [Array] the array of root specie class code generators
       def root_species
         species.select(&:find_root?)
       end
 
+      # Gets non simple and non gas collected species
+      # @return [Array] the array of collected specie class code generators
+      def surface_species
+        surface_species_hash.values
+      end
+
       # Gets the list of specific species which are gas molecules
       # @return [Array] the list of dependent specific gas species
       def specific_gas_species
-        collect_dependent_species.values.select do |s|
+        all_dependent_species.values.select do |s|
           s.gas? && (s.simple? || s.specific?)
         end
-      end
-
-      # Gets the reaction code generator
-      # @param [Symbol] reaction_name the name of reaction which will be returned
-      # @return [Code::BaseReaction] the reaction code generator instance
-      def reaction_class(reaction_name)
-        @reactions[reaction_name]
       end
 
     private
@@ -145,7 +151,7 @@ module VersatileDiamond
 
       # Collects all used species from analysis results
       # @return [Hash] the mirror of specs names to dependent species
-      def collect_dependent_species
+      def all_dependent_species
         return @_dependent_species if @_dependent_species
         @_dependent_species = {}
 
@@ -157,10 +163,10 @@ module VersatileDiamond
       # Wraps all collected species from analysis results. Makes the mirror of specie
       # names to specie code generator instances.
       def collect_code_species
-        @species = {}
-        collect_dependent_species.each do |name, spec|
-          @species[name] = Code::Specie.new(self, spec)
-        end
+        @species =
+          all_dependent_species.each_with_object({}) do |(name, spec), acc|
+            acc[name] = Code::Specie.new(self, spec)
+          end
 
         @species.values.each(&:find_symmetries!)
       end
@@ -202,18 +208,22 @@ module VersatileDiamond
         @reactions[reaction.name] = klass.new(self, reaction)
       end
 
-      # Gets non simple and non gas collected species
-      # @return [Array] the array of collected specie class code generators
-      def species
-        deps_hash = collect_dependent_species
-        surface_species = @species.reject do |name, _|
-          dep_spec = deps_hash[name]
-          # TODO: is simple always gas?
-          dep_spec.simple? || dep_spec.gas? ||
-            (dep_spec.reactions.empty? && dep_spec.theres.empty?)
+      # Provides the hash of surface specie class generators with significant species
+      # @return [Hash] the hash where keys are concept names of species and the values
+      #   are specie class generators
+      def surface_species_hash
+        @species.reject do |name, _|
+          spec = all_dependent_species[name]
+          spec.simple? || spec.gas? || spec.termination? || !deep_reactant?(spec)
         end
+      end
 
-        surface_species.values
+      # The helper function which helps to detect that specie is significant or not
+      # @param [Organizers::DependentWrappedSpec] spec which will be checked
+      # @return [Boolean] is significant specie or not
+      def deep_reactant?(spec)
+        !spec.reactions.empty? || !spec.theres.empty? ||
+            spec.children.any?(&method(:deep_reactant?))
       end
 
       # Gets all reactions which were collected

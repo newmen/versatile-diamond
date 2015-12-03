@@ -73,7 +73,7 @@ module VersatileDiamond
             s, a = src_to_prd.first
             next unless spec == s
             diff = :-.to_proc[*atom_properties_list(src_to_prd)]
-            just_activated_props(a).any? { |props| props == diff }
+            diff && just_activated_props(a).any? { |props| props == diff }
           end
       end
 
@@ -93,7 +93,8 @@ module VersatileDiamond
       # @return [Array] the list of corresponding atom properties
       def atom_properties_list(specs_atoms)
         specs_atoms.map do |spec, atom|
-          Organizers::AtomProperties.new(dept_spec(spec), atom)
+          proxy_spec = dept_spec(spec).clone_with_replace(spec)
+          Organizers::AtomProperties.new(proxy_spec, atom)
         end
       end
 

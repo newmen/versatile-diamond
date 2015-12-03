@@ -11,17 +11,7 @@ module VersatileDiamond
       # @param [DependentTermination] other comparing termination
       # @return [Integer] the comparing result
       def <=> (other)
-        if name == :*
-          -1
-        elsif other.name == :*
-          1
-        elsif name == :H
-          -1
-        elsif other.name == :H
-          1
-        else
-          name.to_s <=> other.name.to_s
-        end
+        spec <=> other.spec
       end
 
       # Stores the parent of current spec and inserts current instance as a child to

@@ -13,8 +13,8 @@ module VersatileDiamond
             specifics = specific_specs.dup
 
             append = -> spec { (spec.specific? ? specifics : bases) << spec }
-            append[first_spec]
-            append[second_spec] if respond_to?(:second_spec)
+            append[dept_spec]
+            append[other_spec] if respond_to?(:other_spec)
 
             stub_generator(
               base_specs: bases.uniq(&:name),

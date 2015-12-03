@@ -67,6 +67,12 @@ module VersatileDiamond
           super
         end
 
+        # Checks that specie have typical reactions
+        # @return [Boolean] is specific or not
+        def specific?
+          !typical_reactions.empty?
+        end
+
         # Is symmetric specie? If children species uses same as own atom and it atom
         # has symmetric analogy
         #
@@ -225,12 +231,6 @@ module VersatileDiamond
         # @return [Boolean] is local or not
         def local?
           !local_reactions.empty?
-        end
-
-        # Checks that specie have typical reactions
-        # @return [Boolean] is specific or not
-        def specific?
-          !typical_reactions.empty?
         end
 
         # Checks that specie have there objects

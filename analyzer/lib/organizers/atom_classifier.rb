@@ -39,14 +39,13 @@ module VersatileDiamond
       #   with analyzing spec and ions of gase phase
       def analyze(spec, with_ions: true)
         store_all_ioned = @is_ions_presented || with_ions
-
         avail_props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
           store_prop(@described_props, prop)
-
-          next unless store_all_ioned
-          store_all(:activated, prop)
-          store_all(:deactivated, prop)
+          if store_all_ioned
+            store_all(:activated, prop)
+            store_all(:deactivated, prop)
+          end
         end
       end
 

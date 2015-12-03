@@ -105,28 +105,28 @@ module VersatileDiamond
                   [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false],
                   [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, true, false, true, false, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false],
-                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, true]
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, true, false, false, false, true, true, false, true, false, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, false],
+                  [false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true]
                 ]) }
           end
 
           describe '#specification' do
-            it { expect(subject.specification).to eq([1, 1, 3, 3, 5, 5, 6, 8, 8, 10, 10, 11, 20, 20, 19, 19, 16, 20, 20, 19, 20, 22, 22, 23, 25, 25, 26, 30, 30, 29, 30, 31, 32]) }
+            it { expect(subject.specification).to eq([1, 1, 3, 3, 5, 5, 6, 8, 8, 10, 10, 11, 20, 20, 19, 19, 16, 20, 20, 19, 20, 24, 24, 23, 24, 26, 26, 27, 29, 29, 30, 31, 32]) }
           end
 
           describe '#actives_to_deactives' do
-            it { expect(subject.actives_to_deactives).to eq([0, 1, 0, 1, 2, 3, 4, 7, 8, 7, 8, 9, 12, 13, 12, 13, 14, 17, 18, 17, 20, 21, 22, 21, 24, 25, 24, 27, 28, 27, 30, 31, 32]) }
+            it { expect(subject.actives_to_deactives).to eq([0, 1, 0, 1, 2, 3, 4, 7, 8, 7, 8, 9, 12, 13, 12, 13, 14, 17, 18, 17, 20, 21, 22, 21, 24, 25, 26, 25, 28, 29, 28, 31, 32]) }
           end
 
           describe '#deactives_to_actives' do
-            it { expect(subject.deactives_to_actives).to eq([2, 3, 4, 5, 6, 6, 6, 9, 10, 11, 11, 11, 14, 15, 16, 16, 16, 19, 19, 19, 20, 23, 23, 23, 26, 26, 26, 29, 29, 29, 30, 31, 32]) }
+            it { expect(subject.deactives_to_actives).to eq([2, 3, 4, 5, 6, 6, 6, 9, 10, 11, 11, 11, 14, 15, 16, 16, 16, 19, 19, 19, 20, 23, 23, 23, 24, 27, 27, 27, 30, 30, 30, 31, 32]) }
           end
 
           describe '#is?' do
@@ -202,9 +202,9 @@ module VersatileDiamond
                   15 => ["*C:i%d<", 1],
                   16 => ["**C%d<", 2],
                   19 => ["H*C%d<", 1],
-                  23 => ["-*C%d<", 1],
-                  26 => ["_~*C%d<", 1],
-                  29 => ["^*C%d<", 1],
+                  23 => ["^*C%d<", 1],
+                  27 => ["_~*C%d<", 1],
+                  30 => ["-*C%d<", 1],
                 }
               end
             end
@@ -231,13 +231,13 @@ module VersatileDiamond
                   18 => ["HC:i%d<", 2],
                   19 => ["H*C%d<", 1],
                   20 => ["HHC%d<", 2],
-                  21 => ["-C%d<", 1],
-                  22 => ["-C:i%d<", 1],
-                  24 => ["_~C%d<", 1],
-                  25 => ["_~C:i%d<", 1],
-                  27 => ["^C%d<", 1],
-                  28 => ["^C:i%d<", 1],
-                  30 => ["^HC%d<", 1],
+                  21 => ["^C%d<", 1],
+                  22 => ["^C:i%d<", 1],
+                  24 => ["^HC%d<", 1],
+                  25 => ["_~C%d<", 1],
+                  26 => ["_~C:i%d<", 1],
+                  28 => ["-C%d<", 1],
+                  29 => ["-C:i%d<", 1],
                 }
               end
             end
@@ -258,7 +258,7 @@ module VersatileDiamond
               let(:hash) do
                 {
                   14 => ['*C%d<', 1],
-                  27 => ['^C%d<', 2],
+                  21 => ['^C%d<', 2],
                 }
               end
             end
@@ -268,7 +268,7 @@ module VersatileDiamond
               let(:hash) do
                 {
                   16 => ['**C%d<', 1],
-                  27 => ['^C%d<', 2],
+                  21 => ['^C%d<', 2],
                 }
               end
             end
@@ -278,7 +278,7 @@ module VersatileDiamond
               let(:hash) do
                 {
                   17 => ['HC%d<', 1],
-                  27 => ['^C%d<', 2],
+                  21 => ['^C%d<', 2],
                 }
               end
             end
@@ -288,7 +288,7 @@ module VersatileDiamond
               let(:hash) do
                 {
                   20 => ['HHC%d<', 1],
-                  27 => ['^C%d<', 2],
+                  21 => ['^C%d<', 2],
                 }
               end
             end
@@ -298,8 +298,8 @@ module VersatileDiamond
               let(:hash) do
                 {
                   12 => ['C%d<', 1],
-                  27 => ['^C%d<', 1],
-                  30 => ['^HC%d<', 1],
+                  21 => ['^C%d<', 1],
+                  24 => ['^HC%d<', 1],
                 }
               end
             end
@@ -308,8 +308,8 @@ module VersatileDiamond
               let(:spec) { dept_dimer_base }
               let(:hash) do
                 {
-                  21 => ['-C%d<', 2],
-                  27 => ['^C%d<', 4],
+                  21 => ['^C%d<', 4],
+                  28 => ['-C%d<', 2],
                 }
               end
             end
@@ -318,9 +318,9 @@ module VersatileDiamond
               let(:spec) { dept_activated_dimer }
               let(:hash) do
                 {
-                  21 => ['-C%d<', 1],
-                  23 => ['-*C%d<', 1],
-                  27 => ['^C%d<', 4],
+                  21 => ['^C%d<', 4],
+                  28 => ['-C%d<', 1],
+                  30 => ['-*C%d<', 1],
                 }
               end
             end
@@ -330,8 +330,8 @@ module VersatileDiamond
               let(:hash) do
                 {
                   0 => ['C~%d', 1],
-                  25 => ['_~C:i%d<', 1],
-                  27 => ['^C%d<', 2],
+                  21 => ['^C%d<', 2],
+                  26 => ['_~C:i%d<', 1],
                 }
               end
             end
@@ -341,7 +341,7 @@ module VersatileDiamond
               let(:hash) do
                 {
                   7 => ['C=%d', 1],
-                  27 => ['^C%d<', 2],
+                  21 => ['^C%d<', 2],
                   31 => ['_=C%d<', 1],
                 }
               end
@@ -366,7 +366,7 @@ module VersatileDiamond
                 let(:target_spec) { dept_dimer_base }
                 let(:all_species) { [dept_bridge_base, dept_dimer_base] }
                 let(:hash) do
-                  { 21 => ['-C%d<', 2] }
+                  { 28 => ['-C%d<', 2] }
                 end
               end
 
@@ -382,7 +382,7 @@ module VersatileDiamond
                 let(:hash) do
                   {
                     2 => ['*C~%d', 1],
-                    25 => ['_~C:i%d<', 1]
+                    26 => ['_~C:i%d<', 1]
                   }
                 end
               end
@@ -391,8 +391,8 @@ module VersatileDiamond
         end
 
         describe '#index' do
-          it { expect(subject.index(dept_bridge, bridge.atom(:cr))).to eq(27) }
-          it { expect(subject.index(bridge_cr)).to eq(27) }
+          it { expect(subject.index(dept_bridge, bridge.atom(:cr))).to eq(21) }
+          it { expect(subject.index(bridge_cr)).to eq(21) }
 
           let(:atom) { activated_bridge.atom(:ct) }
           it { expect(subject.index(dept_activated_bridge, atom)).to eq(14) }
@@ -404,7 +404,7 @@ module VersatileDiamond
         end
 
         describe '#has_relevants?' do
-          it { expect(subject.has_relevants?(25)).to be_truthy }
+          it { expect(subject.has_relevants?(26)).to be_truthy }
           it { expect(subject.has_relevants?(2)).to be_falsey }
         end
       end
