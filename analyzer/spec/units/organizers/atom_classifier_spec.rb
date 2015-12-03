@@ -145,12 +145,17 @@ module VersatileDiamond
           end
 
           describe '#children_of' do
-            it { expect(subject.children_of(ab_ct)).
-              to match_array([eab_ct, ahb_ct, ab_cr, ad_cr, ab_cb]) }
+            it { expect(subject.children_of(ab_ct)).to match_array([
+                eab_ct, ahb_ct, ab_cr, ad_cr, ab_cb,
+                raw_props(dept_activated_bridge, :ct, 'i')
+              ]) }
+
+            it { expect(subject.children_of(bridge_cr)).to match_array([
+                ab_cr, hb_cr, tb_cc, raw_props(dept_bridge_base, :cr, 'i')
+              ]) }
+
             it { expect(subject.children_of(eab_ct)).to be_empty }
             it { expect(subject.children_of(ahb_ct)).to be_empty }
-            it { expect(subject.children_of(bridge_cr)).
-              to match_array([ab_cr, hb_cr, tb_cc]) }
             it { expect(subject.children_of(ab_cr)).to be_empty }
             it { expect(subject.children_of(ad_cr)).to be_empty }
           end

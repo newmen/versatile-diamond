@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ReactionDoItBuilder, type: :algorithm do
+        describe ReactionDoItBuilder, type: :algorithm, use: :atom_properties do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:generator) do
@@ -29,24 +29,7 @@ module VersatileDiamond
             typical_reaction.surface_source.map { |s| generator.specie_class(s.name) }
           end
 
-          def convert_char_prop(char)
-            if char == '*'
-              [:danglings, Concepts::ActiveBond.property]
-            elsif char == 'i'
-              [:relevants, Concepts::Incoherent.property]
-            end
-          end
-
-          def convert_str_prop(str)
-            chars = str.scan(/./).group_by { |c| c }.map { |c, cs| [c, cs.size] }
-            chars.each_with_object({}) do |(c, num), acc|
-              key, value = convert_char_prop(c)
-              acc[key] ||= []
-              acc[key] += [value] * num
-            end
-          end
-
-          def raw_props(spec, keyname, str_opts)
+          def raw_props_idx(spec, keyname, str_opts)
             opts = convert_str_prop(str_opts)
             prop = Organizers::AtomProperties.new(spec, spec.spec.atom(keyname)) +
               Organizers::AtomProperties.raw(spec.spec.atom(keyname), **opts)
@@ -64,15 +47,17 @@ module VersatileDiamond
               let(:"snd_role_#{keyname}") { role(second_spec, keyname) }
             end
 
+            let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
+            let(:cm_iss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i**') }
+            let(:cm_ss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**') }
+            let(:cm_is) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i*') }
+            let(:cm_i) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i') }
+
             it_behaves_like :check_do_it do
               let(:typical_reaction) { dept_methyl_activation }
               let(:first_spec) { dept_methyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [dept_activated_methyl_on_bridge] }
-              let(:cm_sss) { raw_props(dept_methyl_on_bridge_base, :cm, '***') }
-              let(:cm_iss) { raw_props(dept_methyl_on_bridge_base, :cm, 'i**') }
-              let(:cm_is) { raw_props(dept_methyl_on_bridge_base, :cm, 'i*') }
-              let(:cm_i) { raw_props(dept_methyl_on_bridge_base, :cm, 'i') }
               let(:do_it_algorithm) do
                 <<-CODE
     SpecificSpec *specie1 = target();
@@ -89,6 +74,35 @@ module VersatileDiamond
     {
         assert(atom->is(#{cm_is}));
         atom->changeType(#{cm_iss})
+    }
+    Finder::findAll(&atom, 1);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_methyl_deactivation }
+              let(:first_spec) { dept_activated_methyl_on_bridge }
+              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *specie1 = target();
+    assert(specie1->type() == METHYL_ON_BRIDGE_CMs);
+    Atom *atom = specie1->atom(0);
+    assert(atom->is(#{role_cm}));
+    atom->deactivate();
+    if (atom->is(#{cm_is}))
+    {
+        atom->changeType(#{cm_i})
+    }
+    else if (atom->is(#{cm_iss}))
+    {
+        atom->changeType(#{cm_is})
+    }
+    else
+    {
+        assert(atom->is(#{cm_sss}));
+        atom->changeType(#{cm_ss})
     }
     Finder::findAll(&atom, 1);
                 CODE

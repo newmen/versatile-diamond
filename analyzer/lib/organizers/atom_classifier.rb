@@ -101,7 +101,7 @@ module VersatileDiamond
           if args.size == 1
             args.first
           elsif args.size == 2
-            detect_prop(AtomProperties.new(*args))
+            AtomProperties.new(*args)
           else
             raise ArgumentError
           end

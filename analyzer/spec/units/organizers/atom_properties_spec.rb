@@ -40,8 +40,8 @@ module VersatileDiamond
               subject { classifier.classify(target.parents.first.original) }
               let(:hash) do
                 {
-                  2 => ['_~-C%d<', 1],
-                  3 => ['-C%d<', 1]
+                  7 => ['-C%d<', 1],
+                  13 => ['_~-C%d<', 1],
                 }
               end
 
@@ -555,11 +555,11 @@ module VersatileDiamond
         it { expect(hib_ct <=> ehb_ct).to eq(-1) }
         it { expect(ib_cr <=> ab_cr).to eq(-1) }
 
-        it { expect(bridge_cr <=> dimer_cr).to eq(0) }
-        it { expect(ab_ct <=> hb_ct).to eq(0) }
-        it { expect(ehb_ct <=> ahb_ct).to eq(0) }
-        it { expect(ab_cr <=> hb_cr).to eq(0) }
-        it { expect(hb_cr <=> clb_cr).to eq(0) }
+        it { expect(bridge_cr <=> dimer_cr).to eq(1) }
+        it { expect(ab_ct <=> hb_ct).to eq(-1) }
+        it { expect(ab_cr <=> hb_cr).to eq(-1) }
+        it { expect(ehb_ct <=> ahb_ct).to eq(1) }
+        it { expect(hb_cr <=> clb_cr).to eq(1) }
       end
 
       describe '#to_s' do
