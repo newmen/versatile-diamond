@@ -29,6 +29,30 @@ module VersatileDiamond
             typical_reaction.surface_source.map { |s| generator.specie_class(s.name) }
           end
 
+          def convert_char_prop(char)
+            if char == '*'
+              [:danglings, Concepts::ActiveBond.property]
+            elsif char == 'i'
+              [:relevants, Concepts::Incoherent.property]
+            end
+          end
+
+          def convert_str_prop(str)
+            chars = str.scan(/./).group_by { |c| c }.map { |c, cs| [c, cs.size] }
+            chars.each_with_object({}) do |(c, num), acc|
+              key, value = convert_char_prop(c)
+              acc[key] ||= []
+              acc[key] += [value] * num
+            end
+          end
+
+          def raw_props(spec, keyname, str_opts)
+            opts = convert_str_prop(str_opts)
+            prop = Organizers::AtomProperties.new(spec, spec.spec.atom(keyname)) +
+              Organizers::AtomProperties.raw(spec.spec.atom(keyname), **opts)
+            classifier.index(prop)
+          end
+
           shared_examples_for :check_do_it do
             it { expect(builder.build).to eq(do_it_algorithm) }
           end
@@ -45,16 +69,27 @@ module VersatileDiamond
               let(:first_spec) { dept_methyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [dept_activated_methyl_on_bridge] }
+              let(:cm_sss) { raw_props(dept_methyl_on_bridge_base, :cm, '***') }
+              let(:cm_iss) { raw_props(dept_methyl_on_bridge_base, :cm, 'i**') }
+              let(:cm_is) { raw_props(dept_methyl_on_bridge_base, :cm, 'i*') }
+              let(:cm_i) { raw_props(dept_methyl_on_bridge_base, :cm, 'i') }
               let(:do_it_algorithm) do
                 <<-CODE
     SpecificSpec *specie1 = target();
-    assert(specie1->type() == METHYL_ON_DIMER_CLS_CMHIU);
+    assert(specie1->type() == METHYL_ON_BRIDGE);
     Atom *atom = specie1->atom(0);
     assert(atom->is(#{role_cm}));
     atom->activate();
-    if (a->is(27)) a->changeType(13);
-    else if (a->is(26)) a->changeType(27);
-    else a->changeType(26);
+    assert(!atom->is(#{cm_iss}) && !atom->is(#{cm_sss}));
+    if (atom->is(#{cm_i}))
+    {
+        atom->changeType(#{cm_is})
+    }
+    else
+    {
+        assert(atom->is(#{cm_is}));
+        atom->changeType(#{cm_iss})
+    }
     Finder::findAll(&atom, 1);
                 CODE
               end

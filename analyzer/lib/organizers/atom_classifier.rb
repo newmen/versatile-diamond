@@ -101,7 +101,7 @@ module VersatileDiamond
           if args.size == 1
             args.first
           elsif args.size == 2
-            AtomProperties.new(*args)
+            detect_prop(AtomProperties.new(*args))
           else
             raise ArgumentError
           end
@@ -167,7 +167,8 @@ module VersatileDiamond
       # @return [Array] the list of children atom properties
       def children_of(smallest)
         props.select do |prop|
-          prop != smallest && is?(prop, smallest) && most_bigger?(prop)
+          prop != smallest && is?(prop, smallest) &&
+            (prop.incoherent? || most_bigger?(prop))
         end
       end
 

@@ -344,11 +344,16 @@ module VersatileDiamond
             if num == 0
               fail 'Wrong number of atom types transitions'
             elsif num == 1
-              body_str = atom_type_change_bodies(atom, transitions).first
-              code_line(body_str.first)
-            else
-              triples = conditions_triples(atom, transitions)
-              triples.map { |args| code_condition(*args) }.join
+              atom_type_change_bodies(atom, transitions).first
+             else
+              atom_type_change_conditions_lines(atom, transitions).join
+            end
+          end
+
+          def atom_type_change_conditions_lines(atom, transitions)
+            triples = conditions_triples(atom, transitions)
+            triples.map do |else_prefix, cond, body_prc|
+              code_condition(cond, use_else_prefix: else_prefix, &body_prc)
             end
           end
 
@@ -378,7 +383,9 @@ module VersatileDiamond
           end
 
           def atom_type_change_bodies(atom, transitions)
-            transitions.map(&:last).map { |props| atom_type_change_call(atom, props) }
+            transitions.map(&:last).map do |props|
+              code_line(atom_type_change_call(atom, props))
+            end
           end
 
           def else_prefix_flags(num)
@@ -398,7 +405,7 @@ module VersatileDiamond
           def update_last_condition_and_body!(conds_ref, bodies_ref)
             last_cond = conds_ref.pop
             conds_ref << nil
-            bodies_ref.last = code_assert(last_cond) + code_lines(bodies_ref.last)
+            bodies_ref << (code_assert(last_cond) + bodies_ref.pop)
           end
 
           def props_role(props)

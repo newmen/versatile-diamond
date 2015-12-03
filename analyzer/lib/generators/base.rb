@@ -38,13 +38,13 @@ module VersatileDiamond
         return @_classifier if @_classifier
 
         analyzed_specs = Set.new
-        specs_with_ions = []
+        specs_with_ions = {}
         typical_reactions.each do |reaction|
-          reaction.surface_specs.each do |spec|
+          reaction.surface_source.each do |spec|
             next if analyzed_specs.include?(spec)
             analyzed_specs << spec
             specs_with_ions[spec.name] ||= []
-            specs_with_ions[spec.name] << exchange_ions?(spec)
+            specs_with_ions[spec.name] << exchange_ions?(reaction, spec)
           end
         end
 
@@ -53,7 +53,8 @@ module VersatileDiamond
 
         @_classifier = Organizers::AtomClassifier.new(is_ions_presented)
         surface_specs.each do |spec|
-          @_classifier.analyze(spec, with_ions: specs_with_ions[spec].any?)
+          cached_value = specs_with_ions[spec.name]
+          @_classifier.analyze(spec, with_ions: cached_value && cached_value.any?)
         end
 
         @_classifier.organize_properties!

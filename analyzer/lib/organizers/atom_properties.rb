@@ -22,7 +22,7 @@ module VersatileDiamond
         # Makes
         def raw(atom, **opts)
           atom_props = %i(name original_valence lattice)
-          props = atom_props.map { |method_name| atom.public_send(atom_props) } +
+          props = atom_props.map { |method_name| atom.public_send(method_name) } +
             DYNAMIC_STATES.map { |state| opts[state] || [] }
 
           new(props)
