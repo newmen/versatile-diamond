@@ -53,6 +53,15 @@ module VersatileDiamond
       def exist?
         true
       end
+
+    private
+
+      # Provides comparing core for multibond instances
+      # @param [MultiBond] other comparing instance
+      # @return [Integer] the comparing result
+      def comparing_core(other)
+        order(self, other, :arity)
+      end
     end
 
   end

@@ -4,6 +4,12 @@ module VersatileDiamond
   module Concepts
 
     describe AtomicSpec, use: :atom_properties do
+      describe '#<=>' do
+        it { expect(adsorbed_h <=> adsorbed_h).to eq(0) }
+        it { expect(adsorbed_cl <=> adsorbed_h).to eq(-1) }
+        it { expect(adsorbed_h <=> adsorbed_cl).to eq(1) }
+      end
+
       describe 'bond?' do
         it { expect(adsorbed_h.bond?).to be_falsey }
       end
@@ -27,17 +33,17 @@ module VersatileDiamond
       end
 
       describe '#== && #same?' do
+        let(:h_dup) { AtomicSpec.new(h.dup) }
         [:==, :same?].each do |method|
-          it { expect(adsorbed_h.send(method, AtomicSpec.new(h.dup))).to be_truthy }
-          it { expect(adsorbed_h.send(method, active_bond)).to be_falsey }
-          it { expect(adsorbed_h.send(method, bridge)).to be_falsey }
+          it { expect(adsorbed_h.public_send(method, h_dup)).to be_truthy }
+          it { expect(adsorbed_h.public_send(method, active_bond)).to be_falsey }
+          it { expect(adsorbed_h.public_send(method, bridge)).to be_falsey }
         end
       end
 
       describe '#cover?' do
         it { expect(adsorbed_h.cover?(bridge, cd)).to be_truthy }
-        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).
-          to be_truthy }
+        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).to be_truthy }
         it { expect(adsorbed_h.cover?(chlorigenated_bridge, cd_chloride)).
           to be_truthy }
         it { expect(adsorbed_h.cover?(activated_methyl_on_bridge, activated_c)).

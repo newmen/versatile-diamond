@@ -8,6 +8,12 @@ module VersatileDiamond
         subject { active_bond }
       end
 
+      describe '#<=>' do
+        it { expect(active_bond <=> active_bond).to eq(0) }
+        it { expect(active_bond <=> adsorbed_h).to eq(-1) }
+        it { expect(adsorbed_h <=> active_bond).to eq(1) }
+      end
+
       describe '#name' do
         it { expect(active_bond.name).to eq(:*) }
       end

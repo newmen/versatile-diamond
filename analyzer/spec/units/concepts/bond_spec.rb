@@ -46,6 +46,17 @@ module VersatileDiamond
         it { expect(subject == position_110_front).to be_falsey }
       end
 
+      describe '#<=>' do
+        it { expect(bond_100_front <=> position_110_front).to eq(-1) }
+        it { expect(position_110_front <=> bond_100_front).to eq(1) }
+        it { expect(bond_100_front <=> bond_110_front).to eq(-1) }
+        it { expect(bond_110_front <=> bond_100_front).to eq(1) }
+        it { expect(bond_100_cross <=> bond_100_front).to eq(-1) }
+        it { expect(bond_100_front <=> bond_100_cross).to eq(1) }
+        it { expect(bond_100_front <=> free_bond).to eq(-1) }
+        it { expect(free_bond <=> bond_100_front).to eq(1) }
+      end
+
       describe '#cross' do
         it { expect(bond_100_front.cross).to eq(bond_100_cross) }
         it { expect(bond_100_cross.cross).to eq(bond_100_front) }

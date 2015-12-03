@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Class for bond instance. The bond can be without face and direction.
     class Bond
+      include BondsOrderer
 
       AMORPH_PARAMS = { face: nil, dir: nil }.freeze
 
@@ -117,6 +118,23 @@ module VersatileDiamond
 
       def inspect
         to_s
+      end
+
+    private
+
+      # Provides comparing core for directed instances
+      # @param [Bond] other comparing instance
+      # @return [Integer] the comparing result
+      def comparing_core(other)
+        if belongs_to_crystal? && other.belongs_to_crystal?
+          order(self, other, :face) do
+            order(self, other, :dir)
+          end
+        elsif belongs_to_crystal?
+          -1
+        else # other.belongs_to_crystal?
+          1
+        end
       end
     end
 
