@@ -127,13 +127,11 @@ module VersatileDiamond
         @_tmatrix ||= TransitiveMatrix.new(self, :smallests, :sames)
       end
 
-      # Gets array where each element is index of result specifieng of atom
-      # properties
-      #
+      # Gets array where each element is index of much more specific atom properties
       # @return [Array] the specification array
       def specification
         props.map do |prop|
-          index(smallests_transitive_matrix.specification_for(detect_prop(prop)))
+          index(smallests_transitive_matrix.specification_for(prop))
         end
       end
 

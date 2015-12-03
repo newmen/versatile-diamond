@@ -183,6 +183,13 @@ module VersatileDiamond
         a && a == b
       end
 
+      # Gets full atom changes list
+      # @return [Hash] the hash of changes where keys are spec-atom of source and
+      #   values are spec-atom of products
+      def full_mapping
+        Hash[MappingResult.rezip(mapping.full)]
+      end
+
       # Gets atom changes list
       # @return [Hash] the hash of changes where keys are spec-atom of source and
       #   values are spec-atom of products

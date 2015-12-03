@@ -11,15 +11,14 @@ module VersatileDiamond
           let(:generator) do
             bases = base_specs.dup
             specifics = specific_specs.dup
-            (target_spec.specific? ? specifics : bases) << target_spec
-            if respond_to?(:other_spec)
-              specs = other_spec.specific? ? specifics : bases
-              specs << other_spec unless specs.find { |s| s.name == other_spec.name }
-            end
+
+            append = -> spec { (spec.specific? ? specifics : bases) << spec }
+            append[first_spec]
+            append[second_spec] if respond_to?(:second_spec)
 
             stub_generator(
-              base_specs: bases.uniq,
-              specific_specs: specifics.uniq,
+              base_specs: bases.uniq(&:name),
+              specific_specs: specifics.uniq(&:name),
               typical_reactions: [subject])
           end
 

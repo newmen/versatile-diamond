@@ -5,6 +5,8 @@ module VersatileDiamond
       # Contains logic for generation typical reation
       class TypicalReaction < SpeciesReaction
 
+        def_delegators :reaction, :changes, :full_mapping
+
         # Initializes typical reaction class code generator
         def initialize(*)
           super
@@ -157,6 +159,12 @@ module VersatileDiamond
         #   available set of chunks
         def select_from_algorithm
           Algorithm::LateralReactionSelectBuilder.new(generator, lateral_chunks).build
+        end
+
+        # Builds reaction applying algorithm
+        # @return [String] the cpp code string with algorithm of reaction applying
+        def do_it_algorithm
+          Algorithm::ReactionDoItBuilder.new(generator, self).build
         end
       end
 
