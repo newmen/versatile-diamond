@@ -40,7 +40,7 @@ module VersatileDiamond
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
-            @essence = Essence.new(self)
+            @essence = Essence.new(spec)
           end
 
           @_class_name, @_enum_name, @_file_name, @_used_iterators = nil

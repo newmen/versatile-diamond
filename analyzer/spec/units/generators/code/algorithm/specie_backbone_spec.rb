@@ -274,11 +274,12 @@ module VersatileDiamond
 
             it_behaves_like :check_ordered_graph do
               subject { dept_lower_methyl_on_half_extended_bridge_base }
-              let(:base_specs) { [dept_bridge_base, subject] }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+              end
               let(:ordered_graph) do
                 [
-                  [[cr], []],
-                  [[cbr], [[[cm], param_amorph]]]
+                  [[cr], [[[cbr], param_110_cross]]]
                 ]
               end
             end

@@ -112,9 +112,7 @@ module VersatileDiamond
       # Gets the list of specific species which are gas molecules
       # @return [Array] the list of dependent specific gas species
       def specific_gas_species
-        all_dependent_species.values.select do |s|
-          s.gas? && (s.simple? || s.specific?)
-        end
+        dependent_species.values.select { |s| s.gas? && (s.simple? || s.specific?) }
       end
 
     private
@@ -151,7 +149,7 @@ module VersatileDiamond
 
       # Collects all used species from analysis results
       # @return [Hash] the mirror of specs names to dependent species
-      def all_dependent_species
+      def dependent_species
         return @_dependent_species if @_dependent_species
         @_dependent_species = {}
 
@@ -164,7 +162,7 @@ module VersatileDiamond
       # names to specie code generator instances.
       def collect_code_species
         @species =
-          all_dependent_species.each_with_object({}) do |(name, spec), acc|
+          dependent_species.each_with_object({}) do |(name, spec), acc|
             acc[name] = Code::Specie.new(self, spec)
           end
 
@@ -213,7 +211,7 @@ module VersatileDiamond
       #   are specie class generators
       def surface_species_hash
         @species.reject do |name, _|
-          spec = all_dependent_species[name]
+          spec = dependent_species[name]
           spec.simple? || spec.gas? || spec.termination? || !spec.deep_reactant?
         end
       end

@@ -61,12 +61,19 @@ module VersatileDiamond
       end
 
       describe '#root_species' do
-        subject { stub_generator(base_specs: dept_specs) }
+        subject do
+          stub_generator(
+            base_specs: dept_specs,
+            typical_reactions: dept_reactions)
+        end
         let(:dept_specs) do
           [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
         end
+        let(:dept_reactions) do
+          [dept_dimer_formation, dept_methyl_activation, dept_incoherent_dimer_drop]
+        end
         let(:root_species) do
-          [subject.specie_class(:bridge), subject.specie_class(:dimer)]
+          [:bridge, :dimer].map(&subject.public_method(:specie_class))
         end
 
         it { expect(subject.root_species).to match_array(root_species) }

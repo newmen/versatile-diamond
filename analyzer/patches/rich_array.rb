@@ -20,8 +20,8 @@ module VersatileDiamond
         # @param [Array] other the array of extracting items
         # @return [Array] the difference result
         def accurate_diff(other)
-          arr1 = dup
           arr2 = other.dup
+          arr1 = dup
           arr1.delete_one(arr2.pop) until arr2.empty?
           arr1
         end

@@ -199,6 +199,54 @@ module VersatileDiamond
               end
             end
           end
+
+          describe 'intermediate specie of migration down process' do
+            let(:base_specs) do
+              [
+                dept_bridge_base,
+                dept_methyl_on_bridge_base,
+                dept_methyl_on_dimer_base,
+                subject
+              ]
+            end
+
+            it_behaves_like :check_cut_links do
+              subject { dept_intermed_migr_down_common_base }
+              let(:cut_links) do
+                {
+                  cm => [],
+                  cdr => [[cbr, position_100_cross]],
+                  cbr => [[cdr, position_100_cross]]
+                }
+              end
+            end
+
+            it_behaves_like :check_cut_links do
+              subject { dept_intermed_migr_down_half_base }
+              let(:cut_links) do
+                {
+                  cm => [],
+                  cdr => [[cbr, position_100_cross]],
+                  cbr => [[cdr, position_100_cross]],
+                  cdl => [[cbl, non_position_100_cross]],
+                  cbl => [[cdl, non_position_100_cross]]
+                }
+              end
+            end
+
+            it_behaves_like :check_cut_links do
+              subject { dept_intermed_migr_down_full_base }
+              let(:cut_links) do
+                {
+                  cm => [],
+                  cdr => [[cbr, position_100_cross]],
+                  cbr => [[cdr, position_100_cross]],
+                  cdl => [[cbl, position_100_cross]],
+                  cbl => [[cdl, position_100_cross]]
+                }
+              end
+            end
+          end
         end
       end
 
