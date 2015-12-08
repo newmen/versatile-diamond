@@ -35,9 +35,6 @@ module VersatileDiamond
             describe 'dimers row formation near asymmetric dimer' do
               let(:typical_reaction) { dept_dimer_formation }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-              let(:specific_specs) do
-                [dept_activated_bridge, dept_activated_incoherent_bridge]
-              end
 
               let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
 
@@ -49,20 +46,22 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-        if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
-        {
-            SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
-            if (species1[0] && species1[1])
+    target->eachSymmetry([](LateralSpec *specie1) {
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
             {
-                ChainFactory<
-                    DuoLateralFactory,
-                    #{class_name},
-                    ForwardDimerFormation
-                > factory(target, species1);
-                factory.checkoutReactions<#{class_name}>();
+                SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
+                if (species1[0] && species1[1])
+                {
+                    ChainFactory<
+                        DuoLateralFactory,
+                        #{class_name},
+                        ForwardDimerFormation
+                    > factory(specie1, species1);
+                    factory.checkoutReactions<#{class_name}>();
+                }
             }
-        }
+        });
     });
                   CODE
                 end
@@ -89,24 +88,26 @@ module VersatileDiamond
                   let(:find_algorithm) do
                     <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-        if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
-        {
-            SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
-            if (species1[0] && species1[1])
+    target->eachSymmetry([](LateralSpec *specie1) {
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
             {
-                ChainFactory<
-                    DuoLateralFactory,
-                    #{class_name_with_dimer},
-                    ForwardDimerFormation
-                > factory(target, species1);
-                factory.checkoutReactions<
-                    #{class_name_with_bridge},
-                    #{class_name_with_dimer},
-                    ForwardDimerFormationEwbLateral
-                >();
+                SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
+                if (species1[0] && species1[1])
+                {
+                    ChainFactory<
+                        DuoLateralFactory,
+                        #{class_name_with_dimer},
+                        ForwardDimerFormation
+                    > factory(specie1, species1);
+                    factory.checkoutReactions<
+                        #{class_name_with_bridge},
+                        #{class_name_with_dimer},
+                        ForwardDimerFormationEwbLateral
+                    >();
+                }
             }
-        }
+        });
     });
                     CODE
                   end
@@ -147,7 +148,6 @@ module VersatileDiamond
                 let(:typical_reaction) { dept_incoherent_dimer_drop }
                 let(:lateral_reactions) { [dept_end_lateral_idd] }
                 let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-                let(:specific_specs) { [dept_twise_incoherent_dimer] }
 
                 let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
                 let(:spec) { lateral_dimer }
@@ -180,7 +180,6 @@ module VersatileDiamond
             describe 'many similar activated bridges' do
               let(:typical_reaction) { dept_symmetric_dimer_formation }
               let(:base_specs) { [dept_bridge_base] }
-              let(:specific_specs) { [dept_activated_bridge] }
 
               let(:ab_ct) { role(dept_activated_bridge, :ct) }
 
