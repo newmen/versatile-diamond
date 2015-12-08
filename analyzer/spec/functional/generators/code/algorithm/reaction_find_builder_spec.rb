@@ -13,7 +13,7 @@ module VersatileDiamond
             specifics = specific_specs.dup
 
             append = -> spec { (spec.specific? ? specifics : bases) << spec }
-            append[dept_spec]
+            append[target_spec]
             append[other_spec] if respond_to?(:other_spec)
 
             stub_generator(
@@ -66,7 +66,6 @@ module VersatileDiamond
               subject { dept_sierpinski_drop }
               let(:target_spec) { dept_cross_bridge_on_bridges_base }
               let(:base_specs) { [dept_methyl_on_bridge_base] }
-
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
@@ -301,7 +300,6 @@ module VersatileDiamond
               subject { dept_methyl_incorporation }
               let(:target_spec) { dept_activated_methyl_on_bridge }
               let(:other_spec) { dept_activated_dimer }
-
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
@@ -323,7 +321,6 @@ module VersatileDiamond
               subject { dept_methyl_incorporation }
               let(:target_spec) { dept_activated_dimer }
               let(:other_spec) { dept_activated_methyl_on_bridge }
-
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchors[2] = { target->atom(3), target->atom(0) };
@@ -351,7 +348,6 @@ module VersatileDiamond
               subject { dept_methyl_to_gap }
               let(:target_spec) { dept_extra_activated_methyl_on_bridge }
               let(:other_spec) { dept_right_activated_bridge }
-
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchors[2] = { target->atom(2), target->atom(3) };
@@ -375,7 +371,6 @@ module VersatileDiamond
               subject { dept_methyl_to_gap }
               let(:target_spec) { dept_right_activated_bridge }
               let(:other_spec) { dept_extra_activated_methyl_on_bridge }
-
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = target->atom(2);
@@ -414,13 +409,6 @@ module VersatileDiamond
 
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
-              end
-              let(:specific_specs) do
-                [
-                  dept_extra_activated_methyl_on_bridge,
-                  dept_activated_incoherent_dimer,
-                  dept_right_activated_bridge
-                ]
               end
               subject { dept_two_dimers_form }
 
@@ -513,7 +501,6 @@ module VersatileDiamond
               subject { dept_hydrogen_abs_from_gap }
               let(:target_spec) { dept_right_hydrogenated_bridge }
               let(:other_spec) { target_spec }
-
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = target->atom(2);
