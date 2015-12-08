@@ -30,9 +30,6 @@ module VersatileDiamond
             describe 'dimers row formation' do
               let(:typical_reaction) { dept_dimer_formation }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-              let(:specific_specs) do
-                [dept_activated_bridge, dept_activated_incoherent_bridge]
-              end
 
               let(:dimer_cr) { role(dept_dimer_base, :cr) }
               let(:bridge_ct) { role(dept_bridge_base, :ct) }
@@ -107,7 +104,6 @@ module VersatileDiamond
             describe 'many similar activated bridges' do
               let(:typical_reaction) { dept_symmetric_dimer_formation }
               let(:base_specs) { [dept_bridge_base] }
-              let(:specific_specs) { [dept_activated_bridge] }
 
               let(:ab_ct) { role(dept_activated_bridge, :ct) }
 
@@ -174,9 +170,6 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
               end
-              let(:specific_specs) do
-                [dept_activated_methyl_on_bridge, dept_activated_dimer]
-              end
               let(:typical_reaction) { dept_methyl_incorporation }
               let(:lateral_reactions) { [dept_de_lateral_mi] }
 
@@ -188,7 +181,10 @@ module VersatileDiamond
               let(:amob_cb) { role(amob, :cb) }
               let(:admr_cl) { role(admr, :cl) }
 
-              let(:edge_dimer) { lateral_chunks.sidepiece_specs.first }
+              let(:edge_dimer) do
+                concept_dimer = lateral_chunks.sidepiece_specs.first
+                generator.specie_class(concept_dimer.name).spec
+              end
               let(:edmr_cr) { role(edge_dimer, :cr) }
 
               it_behaves_like :check_code do
@@ -196,15 +192,15 @@ module VersatileDiamond
                   <<-CODE
     Atom *atoms1[2] = { target(1)->atom(1), target(0)->atom(3) };
     eachNeighbour(atoms1[1], &Diamond::front_110, [&](Atom *neighbour1) {
-        if (neighbour1->is(18) && atoms1[1]->hasBondWith(neighbour1))
+        if (neighbour1->is(#{edmr_cr}) && atoms1[1]->hasBondWith(neighbour1))
         {
-            LateralSpec *specie1 = neighbour1->specByRole<Dimer>(18);
+            LateralSpec *specie1 = neighbour1->specByRole<Dimer>(#{edmr_cr});
             if (specie1)
             {
                 eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour2) {
-                    if (neighbour2->is(18))
+                    if (neighbour2->is(#{edmr_cr}))
                     {
-                        LateralSpec *specie2 = neighbour2->specByRole<Dimer>(18);
+                        LateralSpec *specie2 = neighbour2->specByRole<Dimer>(#{edmr_cr});
                         if (specie2 == specie1)
                         {
                             chunks[index++] = new ForwardMethylIncorporationMiEdgeLateral(this, specie1);
