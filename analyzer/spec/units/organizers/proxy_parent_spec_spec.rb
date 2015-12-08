@@ -78,7 +78,7 @@ module VersatileDiamond
           end
 
           describe '#children' do
-            it { expect(subject.children).to eq([dept_dimer_base] * 2) }
+            it { expect(subject.children).to eq([dept_dimer_base]) }
           end
 
           describe '#source?' do

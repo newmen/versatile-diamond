@@ -26,7 +26,8 @@ module VersatileDiamond
 
       it_behaves_like :wrapped_spec do
         subject { dept_activated_methyl_on_bridge }
-        let(:child) { dept_activated_methyl_on_incoherent_bridge }
+        let(:reaction) { dept_methyl_to_gap }
+        let(:child) { described_class.new(mg_source.first) }
       end
 
       it_behaves_like :count_atoms_and_relations_and_parents do

@@ -73,7 +73,7 @@ module VersatileDiamond
             it_behaves_like :check_code do
               subject { dept_methyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:specific_specs) { [dept_activated_methyl_on_bridge] }
+              let(:typical_reactions) { [dept_methyl_deactivation] }
               let(:find_algorithm) do
                 <<-CODE
     Atom *anchor = parent->atom(0);
@@ -455,7 +455,7 @@ module VersatileDiamond
                 target1->eachSymmetry([&](ParentSpec *specie1) {
                     if (anchor == specie1->atom(2))
                     {
-                        ParentSpec *parents[2] = { specie1, anchor->specByRole<Bridge>(0) };
+                        ParentSpec *parents[2] = { specie1, anchor->specByRole<Bridge>(#{b_ct}) };
                         create<TopMethylOnHalfExtendedBridge>(parents);
                     }
                 });
@@ -479,7 +479,7 @@ module VersatileDiamond
                 target1->eachSymmetry([&](ParentSpec *specie1) {
                     if (anchor == specie1->atom(2))
                     {
-                        Bridge *specie2 = anchor->specByRole<Bridge>(0);
+                        Bridge *specie2 = anchor->specByRole<Bridge>(#{b_ct});
                         specie2->eachSymmetry([&](ParentSpec *specie3) {
                             Atom *atom1 = specie3->atom(1);
                             if (atom1->is(#{role_cbr}))
@@ -517,7 +517,8 @@ module VersatileDiamond
                 target1->eachSymmetry([&](ParentSpec *specie1) {
                     if (anchor == specie1->atom(2))
                     {
-                        ParentSpec *parents[2] = { anchor->specByRole<MethylOnRightBridge>(0), specie1 };
+                        // TODO: there are two lower methyl on bridge which avail by b_ct role
+                        ParentSpec *parents[2] = { anchor->specByRole<MethylOnRightBridge>(#{b_ct}), specie1 };
                         create<LowerMethylOnHalfExtendedBridge>(parents);
                     }
                 });

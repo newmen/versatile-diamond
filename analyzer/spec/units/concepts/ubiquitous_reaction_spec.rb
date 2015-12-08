@@ -99,7 +99,7 @@ module VersatileDiamond
         it { expect(surface_deactivation.same?(surface_activation)).to be_falsey }
       end
 
-      describe '#full_rate' do
+      describe '#full_rate && #significant?' do
         before do
           Tools::Config.gas_temperature(1000, 'K')
           Tools::Config.gas_concentration(hydrogen_ion, 0.1, 'mol/cm3')
@@ -108,6 +108,8 @@ module VersatileDiamond
         end
 
         it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
+        it { expect(surface_deactivation.significant?).to be_truthy }
+        it { expect(surface_activation.significant?).to be_falsey }
       end
 
       describe '#changes_num' do

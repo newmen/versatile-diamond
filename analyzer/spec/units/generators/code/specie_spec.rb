@@ -162,20 +162,20 @@ module VersatileDiamond
 
           describe 'only one child specie' do
             let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+            let(:typical_reactions) { [dept_methyl_activation] }
 
             it_behaves_like :parent_bridge_name
             it_behaves_like :check_classes_names do
               subject { specie_class(methyl_on_bridge_base) }
               let(:base_class_names) { [name] }
               let(:name) do
-                'Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, ' \
-                  'METHYL_ON_BRIDGE, 2>'
+                'Specific<Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, METHYL_ON_BRIDGE, 2>>'
               end
             end
           end
 
           describe 'sidepiece and multi child specie' do
-            let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+            let(:base_specs) { [dept_dimer_base] }
             let(:lateral_reactions) { [dept_middle_lateral_df] }
 
             it_behaves_like :parent_bridge_name
@@ -188,10 +188,7 @@ module VersatileDiamond
 
           describe 'specific specie' do
             shared_examples_for :check_activated_bridge do
-              let(:base_specs) { [dept_bridge_base] }
-              let(:specific_specs) do
-                [dept_activated_bridge, dept_extra_activated_bridge]
-              end
+              let(:specific_specs) { [dept_extra_activated_bridge] }
               let(:typical_reactions) { [dept_dimer_formation] }
 
               it_behaves_like :parent_bridge_name
@@ -214,9 +211,6 @@ module VersatileDiamond
           end
 
           describe 'symmetric specie' do
-            let(:base_specs) do
-              [dept_methyl_on_bridge_base, dept_cross_bridge_on_bridges_base]
-            end
             let(:typical_reactions) { [dept_sierpinski_drop] }
 
             it_behaves_like :check_classes_names do
@@ -246,14 +240,15 @@ module VersatileDiamond
         describe '#symmetric?' do
           describe 'bridges' do
             let(:base_specs) { [dept_bridge_base] }
-            let(:specific_specs) { [dept_right_hydrogenated_bridge] }
+            let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
             it { expect(specie_class(bridge_base).symmetric?).to be_truthy }
-            it { expect(specie_class(right_hydrogenated_bridge).symmetric?).to be_falsey }
+            it { expect(specie_class(right_hydrogenated_bridge).symmetric?).
+              to be_falsey }
           end
 
           describe 'dimers' do
             let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-            let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
+            let(:typical_reactions) { [dept_dimer_formation, dept_hydrogen_migration] }
             it { expect(specie_class(bridge_base).symmetric?).to be_falsey }
             it { expect(specie_class(dimer_base).symmetric?).to be_truthy }
             it { expect(specie_class(activated_dimer).symmetric?).to be_falsey }
@@ -264,6 +259,7 @@ module VersatileDiamond
             let(:specific_specs) do
               [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]
             end
+            let(:typical_reactions) { [dept_hydrogen_migration, dept_bhad_activation] }
             it { expect(specie_class(dimer_base).symmetric?).to be_truthy }
             it { expect(specie_class(activated_dimer).symmetric?).to be_truthy }
 
@@ -274,20 +270,25 @@ module VersatileDiamond
 
         describe 'rise and endpoint' do
           let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-          let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
+          let(:specific_specs) do
+            [dept_activated_incoherent_bridge, dept_activated_dimer]
+          end
+          let(:typical_reactions) { [dept_dimer_formation, dept_hydrogen_migration] }
 
           describe '#find_root?' do
             it { expect(specie_class(bridge_base).find_root?).to be_truthy }
             it { expect(specie_class(dimer_base).find_root?).to be_truthy }
-            it { expect(specie_class(activated_bridge).find_root?).to be_falsey }
             it { expect(specie_class(activated_dimer).find_root?).to be_falsey }
+            it { expect(specie_class(activated_incoherent_bridge).find_root?).
+              to be_falsey }
           end
 
           describe '#find_endpoint?' do
             it { expect(specie_class(bridge_base).find_endpoint?).to be_falsey }
             it { expect(specie_class(dimer_base).find_endpoint?).to be_falsey }
-            it { expect(specie_class(activated_bridge).find_endpoint?).to be_truthy }
             it { expect(specie_class(activated_dimer).find_endpoint?).to be_truthy }
+            it { expect(specie_class(activated_incoherent_bridge).find_endpoint?).
+              to be_truthy }
           end
         end
 

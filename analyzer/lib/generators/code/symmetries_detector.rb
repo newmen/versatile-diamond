@@ -28,7 +28,7 @@ module VersatileDiamond
           return if @_children_collected
           @_children_collected = true
 
-          spec.non_term_children.each { |child| get(child).collect_symmetries }
+          spec.reactant_children.each { |child| get(child).collect_symmetries }
 
           distrib_twins_to_parents(spec.anchors).each do |parent, twins|
             get(parent).add_symmetries_for(twins)

@@ -65,12 +65,7 @@ module VersatileDiamond
       # @param [Symbol] chest_key the key by which reactions will be got from Chest
       # @return [Array] the list of significant reactions
       def avail_reactions(chest_key)
-        rate_check_lambda = -> reaction { reaction.full_rate > 0 }
-        Tools::Chest.all(chest_key).select do |reaction|
-          rate_check_lambda[reaction] ||
-            (chest_key == :reaction && reaction.children.all?(&:lateral?) &&
-              reaction.children.any?(&rate_check_lambda))
-        end
+        Tools::Chest.all(chest_key).select(&:significant?)
       end
 
       # Wraps reactions from Chest

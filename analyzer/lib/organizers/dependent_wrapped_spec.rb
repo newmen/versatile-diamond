@@ -87,10 +87,24 @@ module VersatileDiamond
         parents_with_twins_for(atom).size
       end
 
-      # Gets the children specie classes
-      # @return [Array] the array of children specie class generators
-      def non_term_children
-        children.reject(&:termination?)
+      # Gets the list of reactant children species
+      # @return [Array] the list of species which are use in any reaction
+      def reactant_children
+        non_term_children.select(&:deep_reactant?)
+      end
+
+      # Checks that current instance is reactant
+      # @return [Boolean] uses as part of any reaction or not
+      def deep_reactant?
+        reactant? || non_term_children.any?(&:deep_reactant?)
+      end
+
+      # Before checks that storing specie isn't child
+      # @param [DependentWrappedSpec] spec which will be stored as child
+      # @override
+      alias_method :super_store_child, :store_child
+      def store_child(spec)
+        super_store_child(spec) unless children && children.include?(spec)
       end
 
       # Checks that finding specie is source specie
@@ -113,7 +127,7 @@ module VersatileDiamond
 
       def to_s
         "(#{name}, [#{parents.map(&:name).join(' ')}], " +
-          "[#{children.map(&:name).join(' ')}])"
+          "[#{reactant_children.map(&:name).join(' ')}])"
       end
 
       def inspect
@@ -162,6 +176,20 @@ module VersatileDiamond
       def straighten_graph(links)
         links.each_with_object({}) do |(atom, relations), result|
           result[atom] = relations + atom.additional_relations
+        end
+      end
+
+      # Gets the children specie classes
+      # @return [Array] the array of children specie class generators
+      def non_term_children
+        children.reject(&:termination?)
+      end
+
+      # Checks that current instance is reactant
+      # @return [Boolean] uses as part of any reaction or not
+      def reactant?
+        [reactions, theres].any? do |container|
+          container.any? { |item| item.each(:source).to_a.include?(spec) }
         end
       end
 

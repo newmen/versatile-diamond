@@ -43,13 +43,14 @@ module VersatileDiamond
       # @return [Enumerator] if block is not given
       def each(target, &block)
         typical_target_specs = parent.each(target).to_a
-        targets = chunk.targets
-        if typical_target_specs.size == targets.size
-          targets.map(&:first).each(&block)
-        elsif typical_target_specs.size > targets.size
-          adopted_source.each(&block)
-        elsif typical_target_specs.size < targets.size
-          raise 'Typical source specs number less than chunks targets number'
+        if target == :source
+          if typical_target_specs.size < chunk.targets.size
+            raise 'Typical source specs number less than chunks targets number'
+          else
+            (adopted_source + chunk.sidepiece_specs.to_a).each(&block)
+          end
+        else
+          typical_target_specs.each(&block)
         end
       end
 
@@ -89,8 +90,8 @@ module VersatileDiamond
       def adopted_source
         return @_adopted_source if @_adopted_source
 
-        specs = chunk.targets.to_a.map(&:first)
-        srcs = parent.each(:source).to_a.map do |spec|
+        specs = chunk.target_specs.to_a
+        srcs = parent.each(:source).map do |spec|
           specs.delete_one { |ts| spec.same?(ts) } || spec
         end
 

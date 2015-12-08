@@ -23,16 +23,21 @@ module VersatileDiamond
             it { expect(subject.children).to eq([child]) }
           end
 
-          describe '#non_term_children' do
+          describe '#reactant_children' do
             before do
+              dept_active_bond.store_reaction(dept_surface_deactivation)
               subject.store_child(dept_active_bond)
+              dept_adsorbed_h.store_reaction(dept_surface_activation)
               subject.store_child(dept_adsorbed_h)
             end
-            it { expect(subject.non_term_children).to eq([]) }
+            it { expect(subject.reactant_children).to eq([]) }
 
             describe 'wish non term children' do
-              before { subject.store_child(child) }
-              it { expect(subject.non_term_children).to eq([child]) }
+              before do
+                child.store_reaction(reaction)
+                subject.store_child(child)
+              end
+              it { expect(subject.reactant_children).to eq([child]) }
             end
           end
 

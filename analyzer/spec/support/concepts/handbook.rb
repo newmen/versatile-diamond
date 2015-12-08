@@ -289,6 +289,9 @@ module VersatileDiamond
         set(:bottom_hydrogenated_activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
         end
+        set(:bottom_activated_activated_dimer) do
+          SpecificSpec.new(dimer_base, cr: activated_cd, clb: activated_cd)
+        end
         set(:right_bottom_hydrogenated_activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd, crb: cd_hydride)
         end
@@ -526,6 +529,20 @@ module VersatileDiamond
         set(:methyl_deactivation) do
           Reaction.new(:forward,
             'methyl deactivation', dm_source, dm_product, dm_atom_map)
+        end
+
+        set(:abd_source) { [bottom_hydrogenated_activated_dimer.dup, hydrogen_ion] }
+        set(:abd_products) { [bottom_activated_activated_dimer.dup, hydrogen] }
+        set(:abd_names_to_specs) do {
+          source: [[:mob, abd_source.first], [:h, hydrogen_ion]],
+          products: [[:mob, abd_products.first], [:h, hydrogen]]
+        } end
+        set(:abd_atom_map) do
+          Mcs::AtomMapper.map(abd_source, abd_products, abd_names_to_specs)
+        end
+        set(:bhad_activation) do
+          Reaction.new(
+            :forward, 'bhad activation', abd_source, abd_products, abd_atom_map)
         end
 
         set(:am_source) { [methyl, activated_bridge.dup] }

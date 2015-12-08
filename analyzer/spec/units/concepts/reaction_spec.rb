@@ -112,6 +112,44 @@ module VersatileDiamond
         it { expect(hydrogen_migration.reverse.gases_num).to eq(0) }
       end
 
+      describe '#children' do
+        subject { dimer_formation }
+        it { expect(subject.children).to be_empty }
+
+        describe 'after duplication' do
+          before { child }
+          let(:child) { subject.duplicate('tail') }
+          it { expect(subject.children).to eq([child]) }
+        end
+      end
+
+      describe '#significant?' do
+        def setup_rate_for(reaction)
+          Tools::Config.surface_temperature(1200, 'K')
+          reaction.activation = 1
+          reaction.rate = 2
+        end
+
+        subject { dimer_formation }
+        it { expect(subject.significant?).to be_falsey }
+
+        describe 'when not zero rate' do
+          before { setup_rate_for(subject) }
+          it { expect(subject.significant?).to be_truthy }
+        end
+
+        describe 'after duplication' do
+          before { child }
+          let(:child) { subject.duplicate('tail') }
+          it { expect(subject.significant?).to be_falsey }
+
+          describe 'child with not zero rate' do
+            before { setup_rate_for(child) }
+            it { expect(subject.significant?).to be_truthy }
+          end
+        end
+      end
+
       describe '#swap_on' do
         shared_examples_for :check_specs_existence do
           before { reaction.swap_on(:source, old, fresh) }

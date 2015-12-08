@@ -68,7 +68,8 @@ module VersatileDiamond
 
       it_behaves_like :wrapped_spec do
         subject { dept_bridge_base }
-        let(:child) { dept_methyl_on_bridge_base }
+        let(:reaction) { dept_methyl_activation }
+        let(:child) { described_class.new(ma_source.first) }
       end
 
       it_behaves_like :parents_with_twins do
@@ -106,7 +107,7 @@ module VersatileDiamond
 
       describe '#unused?' do
         it 'default behavior' do
-          expect(dept_bridge_base).to be_truthy
+          expect(dept_bridge_base.unused?).to be_truthy
         end
 
         it_behaves_like :organize_dependencies do
@@ -116,16 +117,16 @@ module VersatileDiamond
         end
 
         it_behaves_like :organize_dependencies do
-          subject { dept_methyl_on_bridge_base }
+          subject { described_class.new(ma_source.first) }
           let(:others) { [dept_bridge_base] }
-          before { subject.store_reaction(methyl_activation) }
+          before { subject.store_reaction(dept_methyl_activation) }
           it { expect(subject.unused?).to be_falsey }
         end
 
         it_behaves_like :organize_dependencies do
-          subject { dept_methyl_on_bridge_base }
+          subject { described_class.new(on_end.env_specs.first) }
           let(:others) { [dept_bridge_base] }
-          before { subject.store_there(there_methyl) }
+          before { subject.store_there(dept_on_end) }
           it { expect(subject.unused?).to be_falsey }
         end
       end

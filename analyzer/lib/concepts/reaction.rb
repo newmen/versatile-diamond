@@ -176,6 +176,13 @@ module VersatileDiamond
         false
       end
 
+      # Also checks that children are presented and they are significant too
+      # @return [Boolean] is significant or not
+      # @override
+      def significant?
+        super || children.any?(&:significant?)
+      end
+
       # Checks that all atoms belongs to lattice
       # @return [Array] atoms the array of checking atoms
       # @return [Boolean] all or not

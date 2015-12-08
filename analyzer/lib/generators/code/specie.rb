@@ -181,7 +181,7 @@ module VersatileDiamond
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
-          specie_classes(spec.non_term_children)
+          specie_classes(spec.reactant_children)
         end
 
         # Gets children species without species which are find algorithm roots

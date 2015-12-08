@@ -155,6 +155,12 @@ module VersatileDiamond
         @activation && @rate ? Tools::Config.rate(self) : 0
       end
 
+      # Checks that current reaction has not zero rate
+      # @return [Boolean] is significant or not
+      def significant?
+        full_rate > 0
+      end
+
       # Gets number of changed atoms
       # @return [Integer] 1
       def changes_num

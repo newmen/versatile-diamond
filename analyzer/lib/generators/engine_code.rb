@@ -100,13 +100,13 @@ module VersatileDiamond
       # Gets root species
       # @return [Array] the array of root specie class code generators
       def root_species
-        species.select(&:find_root?)
+        surface_species.select(&:find_root?)
       end
 
       # Gets non simple and non gas collected species
       # @return [Array] the array of collected specie class code generators
       def surface_species
-        surface_species_hash.values
+        surface_species_hash.values.to_set
       end
 
       # Gets the list of specific species which are gas molecules
@@ -214,16 +214,8 @@ module VersatileDiamond
       def surface_species_hash
         @species.reject do |name, _|
           spec = all_dependent_species[name]
-          spec.simple? || spec.gas? || spec.termination? || !deep_reactant?(spec)
+          spec.simple? || spec.gas? || spec.termination? || !spec.deep_reactant?
         end
-      end
-
-      # The helper function which helps to detect that specie is significant or not
-      # @param [Organizers::DependentWrappedSpec] spec which will be checked
-      # @return [Boolean] is significant specie or not
-      def deep_reactant?(spec)
-        !spec.reactions.empty? || !spec.theres.empty? ||
-            spec.children.any?(&method(:deep_reactant?))
       end
 
       # Gets all reactions which were collected

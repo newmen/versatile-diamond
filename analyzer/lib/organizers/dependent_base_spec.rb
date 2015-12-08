@@ -59,12 +59,6 @@ module VersatileDiamond
           order(self, other, :external_bonds, &block)
         end
       end
-
-      # Is current spec reactant or not
-      # @return [Boolean] is reactant or not
-      def reactant?
-        !(reactions.empty? && theres.empty?)
-      end
     end
 
   end
