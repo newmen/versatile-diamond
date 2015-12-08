@@ -517,9 +517,10 @@ module VersatileDiamond
                 target1->eachSymmetry([&](ParentSpec *specie1) {
                     if (anchor == specie1->atom(2))
                     {
-                        // TODO: there are two lower methyl on bridge which avail by b_ct role
-                        ParentSpec *parents[2] = { anchor->specByRole<MethylOnRightBridge>(#{b_ct}), specie1 };
-                        create<LowerMethylOnHalfExtendedBridge>(parents);
+                        anchor->eachSpecByRole<MethylOnRightBridge>(#{b_ct}, [&](MethylOnRightBridge *specie2) {
+                            ParentSpec *parents[2] = { specie2, specie1 };
+                            create<LowerMethylOnHalfExtendedBridge>(parents);
+                        });
                     }
                 });
             });
