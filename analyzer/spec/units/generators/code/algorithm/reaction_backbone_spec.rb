@@ -85,23 +85,30 @@ module VersatileDiamond
             describe 'in both directions without explicit relation' do
               subject { dept_intermed_migr_dc_formation }
               let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-              let(:ab) { activated_bridge.atom(:cr) }
-              let(:ad) { activated_methyl_on_dimer.atom(:cr) }
+              let(:ab) { imdcf_source.first }
+              let(:amod) { imdcf_source.last }
+
+              let(:br) { ab.atom(:cr) }
+              let(:dr) { amod.atom(:cr) }
 
               it_behaves_like :check_finite_graph do
-                let(:target_spec) { activated_bridge }
+                let(:target_spec) { ab }
+                let(:dm) { amod.atom(:cm) }
                 let(:final_graph) do
                   {
-                    [ab] => [[[ad], param_100_cross]]
+                    [br] => [[[dr], param_100_cross]],
+                    [dr] => [[[dm], param_amorph]]
                   }
                 end
               end
 
               it_behaves_like :check_finite_graph do
-                let(:target_spec) { activated_methyl_on_dimer }
+                let(:target_spec) { amod }
+                let(:bt) { ab.atom(:ct) }
                 let(:final_graph) do
                   {
-                    [ad] => [[[ab], param_100_cross]]
+                    [dr] => [[[br], param_100_cross]],
+                    [br] => [[[bt], param_110_front]]
                   }
                 end
               end
@@ -109,25 +116,33 @@ module VersatileDiamond
 
             describe 'in both directions with non position relation' do
               subject { dept_intermed_migr_dh_formation }
-              let(:ab) { activated_bridge.atom(:cr) }
-              let(:ob) { activated_bridge.atom(:cl) }
-              let(:ad) { activated_methyl_on_dimer.atom(:cr) }
-              let(:od) { activated_methyl_on_dimer.atom(:cl) }
+              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+              let(:ab) { imdhf_source.first }
+              let(:amod) { imdhf_source.last }
+
+              let(:br) { ab.atom(:cr) }
+              let(:bl) { ab.atom(:cl) }
+              let(:dr) { amod.atom(:cr) }
+              let(:dl) { amod.atom(:cl) }
 
               it_behaves_like :check_finite_graph do
-                let(:target_spec) { activated_bridge }
+                let(:target_spec) { ab }
+                let(:dm) { amod.atom(:cm) }
                 let(:final_graph) do
                   {
-                    [ab, ob] => [[[ad, od], param_100_cross]]
+                    [br, bl] => [[[dr, dl], param_100_cross]],
+                    [dr] => [[[dm], param_amorph]]
                   }
                 end
               end
 
               it_behaves_like :check_finite_graph do
-                let(:target_spec) { activated_methyl_on_dimer }
+                let(:target_spec) { amod }
+                let(:bt) { ab.atom(:ct) }
                 let(:final_graph) do
                   {
-                    [ad, od] => [[[ab, ob], param_100_cross]]
+                    [dr, dl] => [[[br, bl], param_100_cross]],
+                    [br] => [[[bt], param_110_front]]
                   }
                 end
               end

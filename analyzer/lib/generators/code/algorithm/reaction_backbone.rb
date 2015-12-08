@@ -37,10 +37,10 @@ module VersatileDiamond
             end
 
             grouped_nodes = nodes_set(super)
-            result_nodes = nodes_set(result)
 
-            # if need to extend
-            if result_nodes < grouped_nodes
+            loop do
+              result_nodes = nodes_set(result)
+              break unless result_nodes.size < grouped_nodes.size
               nodes = super.keys.find { |k| k.to_set == result_nodes }
               result = extend_graph(result, nodes) if nodes
             end
