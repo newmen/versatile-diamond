@@ -46,9 +46,10 @@ module VersatileDiamond
             if undef_smc_parent_species.empty? && !smc_parent_species.empty?
               define_symmetric_atom_and_parent_lines(&block)
             else
-              combine_find_symmetric_species do
-                combine_find_unsymmetric_species(&block)
-              end
+              combine_find_symmetric_species(&block)
+              # combine_find_symmetric_species do
+              #   combine_find_unsymmetric_species(&block)
+              # end
             end
           end
 
@@ -145,7 +146,7 @@ module VersatileDiamond
             visited_parents_to_names = {}
 
             uniq_smc_parents_with_twins.each do |parent, twin|
-              namer.assign_next('target', parent)
+              namer.assign_next(Specie::TARGET_SPECIE_NAME, parent)
               parent_name = name_of(parent)
 
               sames = visited_parents_to_names.select do |pr, _|
@@ -169,17 +170,6 @@ module VersatileDiamond
             reduce_procs(collecting_procs, &block).call
           end
 
-          # Gets condition with checking that symmetric atom of parent is target atom
-          # @param [UniqueSpecie] parent which symmetric atom will be compared
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   twin of target atom which will be checked
-          # @yield should return cpp code string for condition body
-          # @return [String] the string with cpp code
-          def symmetric_atom_condition(parent, twin, &block)
-            parent_call = atom_from_specie_call(parent, twin)
-            code_condition("#{target_atom_var_name} == #{parent_call}", &block)
-          end
-
           # Gets a combined code for finding symmetric specie when simulation do
           # @param [UniqueSpecie] parent which will be found
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -188,9 +178,7 @@ module VersatileDiamond
           # @return [String] the code with each contained specie iteration
           def find_symmetric_spec_lambda(parent, twin, check_proc, &block)
             internal_proc = -> do
-              each_symmetry_lambda(parent) do
-                symmetric_atom_condition(parent, twin, &block)
-              end
+              checked_symmetries_lambda(target_atom, parent, twin, &block)
             end
 
             internal_block =
@@ -228,27 +216,27 @@ module VersatileDiamond
               block.call
           end
 
-          # Gets the list of unsymmetric parent species
-          # @return [Array] the list which sorted by desc
-          def unsmc_parent_species
-            (parent_species - smc_parent_species).sort_by { |a, b| b <=> a }
-          end
+          # # Gets the list of unsymmetric parent species
+          # # @return [Array] the list which sorted by desc
+          # def unsmc_parent_species
+          #   (parent_species - smc_parent_species).sort_by { |a, b| b <=> a }
+          # end
 
-          # Gets the list of lambda functions for get each unsymmetric parent specie
-          # @return [Array] the list of procedures which will generate code
-          def unsmc_species_lambdas
-            unsmc_parent_species.map do |parent|
-              namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
-              -> &block { each_spec_by_role_lambda(parent, &block) }
-            end
-          end
+          # # Gets the list of lambda functions for get each unsymmetric parent specie
+          # # @return [Array] the list of procedures which will generate code
+          # def unsmc_species_lambdas
+          #   unsmc_parent_species.map do |parent|
+          #     namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
+          #     -> &block { each_spec_by_role_lambda(parent, &block) }
+          #   end
+          # end
 
-          # Combines checks of unsymmetric parent species and calls it
-          # @yield should return cpp code string for internal body of checkers
-          # @return [String] cpp code with check of unsymmetric parent species
-          def combine_find_unsymmetric_species(&block)
-            reduce_procs(unsmc_species_lambdas, &block).call
-          end
+          # # Combines checks of unsymmetric parent species and calls it
+          # # @yield should return cpp code string for internal body of checkers
+          # # @return [String] cpp code with check of unsymmetric parent species
+          # def combine_find_unsymmetric_species(&block)
+          #   reduce_procs(unsmc_species_lambdas, &block).call
+          # end
         end
 
       end

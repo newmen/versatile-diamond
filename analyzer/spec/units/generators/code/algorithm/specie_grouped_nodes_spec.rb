@@ -201,6 +201,26 @@ module VersatileDiamond
             end
           end
 
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_lower_methyl_on_half_extended_bridge_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+            end
+            let(:flatten_face_grouped_atoms) { [[cr], [cbr]] }
+            let(:nodes_list) do
+              [
+                [SpeciesScope, cr],
+                [UniqueSpecie, cbr]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [cr] => [[[cbr], param_110_cross]],
+                [cbr] => [[[cr], param_110_front]]
+              }
+            end
+          end
+
           describe 'different dept_cross_bridge_on_bridges_base' do
             subject { dept_cross_bridge_on_bridges_base }
             let(:flatten_face_grouped_atoms) { [[ctl, ctr], [cm]] }
@@ -295,7 +315,12 @@ module VersatileDiamond
 
           describe 'intermediate specie of migration down process' do
             let(:base_specs) do
-              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+              [
+                dept_bridge_base,
+                dept_methyl_on_bridge_base,
+                dept_methyl_on_dimer_base,
+                subject
+              ]
             end
 
             it_behaves_like :check_grouped_nodes_graph do

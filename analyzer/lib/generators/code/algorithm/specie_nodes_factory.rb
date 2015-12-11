@@ -25,13 +25,22 @@ module VersatileDiamond
             Node.new(@specie, parent_specie(atom), atom)
           end
 
+          # Gets list of parent species which can be checked by passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which the parent species will be collected
+          # @return [Array] the actual list of parent species
+          def collect_parents(atom)
+            spec = @specie.spec
+            spec.parents_of(atom, anchored: spec.complex?)
+          end
+
           # Detects correct unique parent specie by passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom by which the unique parent specie will be got
           # @return [NoneSpecie | UniqueSpecie | SpeciesScope] the correspond unique
           #   parent specie
           def parent_specie(atom)
-            parents = @specie.spec.parents_of(atom)
+            parents = collect_parents(atom)
             if parents.empty?
               NoneSpecie.new(@specie)
             elsif parents.size == 1

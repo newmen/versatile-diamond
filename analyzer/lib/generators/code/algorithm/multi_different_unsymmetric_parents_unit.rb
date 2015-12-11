@@ -24,13 +24,6 @@ module VersatileDiamond
 
         private
 
-          # Gets not unique twin atom (which is necessarily is repeated at least once)
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the not unique twin of target atom
-          def target_twin
-            twins.first
-          end
-
           # Collects and reduces procs each of which defines parent and checks it
           # @yield should return cpp code string for final condition body
           # @return [String] the string with cpp code
@@ -98,7 +91,7 @@ module VersatileDiamond
             raise 'Wrong number of dependent parent species' if parents.size > 1
 
             parent = parents.first
-            twin = twin_from(parent)
+            twin = twin_from(parent, anchor: true)
 
             namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
             each_spec_by_role_lambda(parent) do
@@ -179,11 +172,11 @@ module VersatileDiamond
           # @return [String] the string of cpp code with specByRole call
           def specs_by_role_call(parents)
             species_num = parents.size
-            parent = parents.first
-            twin_role = parent.role(target_twin)
+            parent = parents.last
+            twin = twin_from(parent, anchor: true)
 
             method_name = "specsByRole<#{parent.class_name}, #{species_num}>"
-            "#{target_atom_var_name}->#{method_name}(#{twin_role})"
+            "#{target_atom_var_name}->#{method_name}(#{parent.role(twin)})"
           end
         end
 

@@ -43,8 +43,15 @@ module VersatileDiamond
           # Gets entry nodes zipped with else prefixes for many ways condition
           # @return [Array] entry nodes zipped with else prefixes
           def entry_nodes_with_elses
-            ens = backbone.entry_nodes
-            ens.zip([false] + [true] * (ens.size - 1))
+            anchor_nodes = backbone.entry_nodes.dup
+            first_nodes = anchor_nodes.shift
+
+            prev_props = ordered_props(first_nodes)
+            anchor_nodes.each_with_object([[first_nodes, false]]) do |nodes, acc|
+              curr_props = ordered_props(nodes)
+              acc << [nodes, !included_in?(prev_props, curr_props)]
+              prev_props = curr_props
+            end
           end
 
           # @return [String]
@@ -71,6 +78,24 @@ module VersatileDiamond
           def species_proc(nodes)
             unit = factory.make_unit(nodes)
             -> &block { unit.check_species(&block) }
+          end
+
+          # Collets atom properties from passed nodes and orders them
+          # @param [Array] nodes from which the atom properties collects
+          # @return [Array] the ordered list of atom_properties
+          def ordered_props(nodes)
+            nodes.sort.map(&:properties)
+          end
+
+          # Checks that all small props included in all big props. Both passed lists
+          # should be ordered!
+          #
+          # @param [Array] big_props which should includes small props
+          # @param [Array] small_props which should contains in big props
+          # @return [Boolean] all small props included in all big props or not
+          def included_in?(big_props, small_props)
+            big_props.size == small_props.size &&
+              big_props.zip(small_props).all? { |big, small| big.include?(small) }
           end
         end
 

@@ -25,7 +25,7 @@ module VersatileDiamond
               elsif nodes.any?(&:scope?)
                 [[nodes.find(&:scope?)]] # finds first because nodes are sorted ^^
               else
-                most_important_nodes
+                most_important_nodes.map(&:sort)
               end
           end
 
@@ -43,14 +43,14 @@ module VersatileDiamond
           end
 
           # Selects the most important nodes in keys of grouped nodes graph
-          # @return [Array] the most different or binding nodes
+          # @return [Array] the ordered most different or binding nodes
           def most_important_nodes
             target_groups = most_used_nodes.groups(&:uniq_specie).map do |group|
               border_nodes = select_border(group)
               border_nodes.empty? ? group.uniq(&:properties) : border_nodes
             end
 
-            target_groups.uniq { |ns| ns.map(&:properties).to_set }
+            sort_by_sizes(target_groups.uniq { |ns| ns.map(&:properties).to_set })
           end
 
           # Selects nodes which have placed at border of analyzing specie
@@ -61,6 +61,23 @@ module VersatileDiamond
               @grouped_nodes.any? do |ns, rels|
                 idx = ns.index(node)
                 idx && rels.any? { |nbrs, _| nbrs[idx].none? }
+              end
+            end
+          end
+
+          # Sorts passed nodes lists by next algorithm: the bigger size lists places to
+          # begin, if sizes of ordering lists are equal then list with nodes which has
+          # bigger atom properties then it places to begin
+          #
+          # @param [Array] nodes_lists the list of lists of nodes which will be ordered
+          # @return [Array] the specific ordered list of lists
+          def sort_by_sizes(nodes_lists)
+            nodes_lists.sort do |as, bs|
+              az, bz = as.size, bs.size
+              if az == bz
+                as.zip(bs).reduce(0) { |acc, (a, b)| acc == 0 ? a <=> b : acc }
+              else
+                bs <=> az
               end
             end
           end

@@ -24,6 +24,38 @@ module VersatileDiamond
 
             code_lambda(method_name, [], closure_args, lambda_args, &block)
           end
+
+          # Gets cpp code with symmetric species iteration and checking that passed
+          # atom is equal to atom from symmetric specie
+          #
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   target_atom which name will be used for method call
+          # @param [UniqueSpecie] specie which symmetries will be iterated
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   checking_atom which will be checked
+          # @yield should return cpp code string for condition body
+          # @return [String] the string with cpp code
+          def checked_symmetries_lambda(target_atom, specie, checking_atom, &block)
+            unb_method = SymmetricCppExpressions.instance_method(:each_symmetry_lambda)
+            unb_method.bind(self).call(specie) do
+              symmetric_atom_condition(target_atom, specie, checking_atom, &block)
+            end
+          end
+
+          # Gets condition with checking that symmetric atom of specie is passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   target_atom which name will be used for method call
+          # @param [UniqueSpecie] specie which symmetric atom will be compared
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   checking_atom which will be checked
+          # @yield should return cpp code string for condition body
+          # @return [String] the string with cpp code
+          def symmetric_atom_condition(target_atom, specie, checking_atom, &block)
+            atom_var_name = namer.name_of(target_atom)
+            unb_method = SpecieCppExpressions.instance_method(:atom_from_specie_call)
+            specie_call = unb_method.bind(self).call(specie, checking_atom)
+            code_condition("#{atom_var_name} == #{specie_call}", &block)
+          end
         end
 
       end

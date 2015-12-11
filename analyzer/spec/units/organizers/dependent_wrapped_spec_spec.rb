@@ -62,7 +62,75 @@ module VersatileDiamond
       end
 
       describe '#anchors' do
-        it { expect(subject.anchors).to match_array(subject.spec.links.keys) }
+        shared_examples_for :check_anchors do
+          before { organize_base_specs_dependencies!(base_specs) }
+          let(:anchors) { keynames.map { |kn| target_spec.spec.atom(kn) } }
+          it { expect(target_spec.anchors).to match_array(anchors) }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject] }
+          let(:target_spec) { subject }
+          let(:keynames) do
+            subject.spec.links.keys.map { |a| subject.spec.keyname(a) }
+          end
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, target_spec] }
+          let(:target_spec) { dept_methyl_on_bridge_base }
+          let(:keynames) { [:cb, :cm] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, target_spec] }
+          let(:target_spec) { dept_dimer_base }
+          let(:keynames) { [:cr, :cl] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, target_spec] }
+          let(:target_spec) { dept_three_bridges_base }
+          let(:keynames) { [:ct, :cc] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_dimer_base, target_spec] }
+          let(:target_spec) { dept_bridge_with_dimer_base }
+          let(:keynames) { [:ct, :cr] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_methyl_on_bridge_base, target_spec] }
+          let(:target_spec) { dept_cross_bridge_on_bridges_base }
+          let(:keynames) { [:ctl, :cm, :ctr] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_methyl_on_right_bridge_base, target_spec] }
+          let(:target_spec) { dept_lower_methyl_on_half_extended_bridge_base }
+          let(:keynames) { [:cr, :cbr] }
+        end
+
+        describe 'intermediate specie of migration down process' do
+          let(:keynames) { [:cdr, :cbr, :cdl, :cbl, :cm] }
+          let(:base_specs) do
+            [
+              subject,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base,
+              target_spec
+            ]
+          end
+
+          it_behaves_like :check_anchors do
+            let(:target_spec) { dept_intermed_migr_down_half_base }
+          end
+
+          it_behaves_like :check_anchors do
+            let(:target_spec) { dept_intermed_migr_down_full_base }
+          end
+        end
       end
 
       describe '#source? && #complex?' do

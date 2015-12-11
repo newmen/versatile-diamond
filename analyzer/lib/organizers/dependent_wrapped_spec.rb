@@ -16,7 +16,10 @@ module VersatileDiamond
       def initialize(*)
         super
         @links = straighten_graph(spec.links)
+
         @theres, @children, @rest = nil
+
+        @_main_anchors, @_anchors = nil
         @_similar_theres, @_root_theres = nil
       end
 
@@ -35,7 +38,7 @@ module VersatileDiamond
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        target.links.keys
+        @_anchors ||= main_anchors + skipped_anchors
       end
 
       # Gets the target of current specie. It is self specie or residual if it exists
@@ -53,29 +56,35 @@ module VersatileDiamond
       # Finds parent species by atom the twins of which belongs to this parents
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom by which parent specs with twins will be found
+      # @option [Boolean] :anchored the flag which says that each twin atom in
+      #   correspond parent specie should be an anchor
       # @return [Array] the list of pairs where each pair contain parent and twin
       #   atom
-      def parents_with_twins_for(atom)
+      def parents_with_twins_for(atom, anchored: false)
         parents.each_with_object([]) do |pr, result|
           twin = pr.twin_of(atom)
-          result << [pr, twin] if twin
+          result << [pr, twin] if twin && (!anchored || pr.anchors.include?(twin))
         end
       end
 
       # Gets the parent specs of passed atom
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom by which parent specs will be found
+      # @option [Boolean] :anchored the flag which says that getting parent species
+      #   should has correspond anchor atom
       # @return [Array] the list of parent specs
-      def parents_of(atom)
-        parents_with_twins_for(atom).map(&:first)
+      def parents_of(atom, anchored: false)
+        parents_with_twins_for(atom, anchored: anchored).map(&:first)
       end
 
       # Gets all twins of passed atom
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom for which twin atoms will be found
+      # @option [Boolean] :anchored the flag which says that each getting twin should
+      #   be an anchor in parent specie
       # @return [Array] the list of twin atoms
-      def twins_of(atom)
-        parents_with_twins_for(atom).map(&:last)
+      def twins_of(atom, anchored: false)
+        parents_with_twins_for(atom, anchored: anchored).map(&:last)
       end
 
       # Gets number of all twins of passed atom
@@ -167,6 +176,92 @@ module VersatileDiamond
         self
       end
 
+      # Gets lists of parent atoms to own atoms for each parent
+      # @return [Hash] the lists of all parent atoms to own atoms separated by parent
+      def parents_atoms_zip
+        links.keys.reduce({}) do |acc, atom|
+          parents_with_twins_for(atom).each_with_object(acc) do |(parent, twin), lists|
+            lists[parent] ||= []
+            lists[parent] << [twin, atom]
+          end
+        end
+      end
+
+      # Gets lists of parent anchors to own atoms for each parent
+      # @return [Array] the lists of all parent anchors to own atoms separated by
+      #   parent
+      def parents_anchors_zip
+        parents_atoms_zip.map do |parent, twins_to_atoms|
+          [parent, twins_to_atoms.select { |twin, _| parent.anchors.include?(twin) }]
+        end
+      end
+
+      # Gets lists of parent anchors which was skipped in residual detecting
+      # @return [Array] the lists of skipped parent anchors
+      def parents_skipped_zip
+        parents_anchors_zip.reject do |_, twins_to_atoms|
+          twins_to_atoms.any? { |_, own_atom| main_anchors.include?(own_atom) }
+        end
+      end
+
+      # Sorts lists of skipped parent anchors by number of anchors or by parent size
+      # from bigger to smallest
+      #
+      # @return [Array] the ordered lists of skipped parent anchors
+      def sorted_skipped_zip
+        eq_cmp = (:==).to_proc
+        ord_cmp = (:'<=>').to_proc
+        parents_skipped_zip.sort do |*lists|
+          prs, twas = lists.transpose
+          atoms_nums = twas.map(&:size)
+          if eq_cmp[*atoms_nums] # if atoms num from both parents are equal
+            ord_cmp[prs.reverse] # from bigger to smallest
+          else
+            ord_cmp[atoms_nums.reverse] # from bigger to smallest
+          end
+        end
+      end
+
+      # Gets the list of anchors which was not added to main anchors
+      # @return [Array] the list of anchor atoms which was not detected under residual
+      #   calculation but are used as anchors for parent species
+      def skipped_anchors
+        result = Set.new
+        sorted_skipped_zip.each do |parent, twins_to_atoms|
+          twins, atoms = twins_to_atoms.transpose
+          unless atoms.any?(&result.public_method(:include?))
+            sorted_atoms = sort_atoms(self, atoms)
+            bigger_bonded_atom = sorted_atoms.reverse.find do |own_atom|
+              links[own_atom].any? { |a, _| main_anchors.include?(a) }
+            end
+
+            result << bigger_bonded_atom ||
+              sorted_atoms.select { |own_atom| own_atom.lattice }.last ||
+              sort_atoms(parent, twins_to_atoms, &:first).last.last
+          end
+        end
+        result.to_a
+      end
+
+      # Gets anchors which are present in target links
+      # @return [Array] the list of main anchors
+      def main_anchors
+        @_main_anchors ||= target.links.keys
+      end
+
+      # Orders passed collection by atom from smallest to bigger
+      # @param [DependentWrappedSpec] spec from which atoms will be compared
+      # @param [Array] collection which will be sorted
+      # @yield [Object] if passed then will be used for get atom from each item of
+      #   collection
+      # @return [Array] the ordered collection
+      def sort_atoms(spec, collection, &block)
+        pairs = collection.map do |x|
+          [AtomProperties.new(spec, block_given? ? block[x] : x), x]
+        end
+        pairs.sort_by(&:first).map(&:last)
+      end
+
       # Replaces internal atom references to original atom and inject references of it
       # to result graph
       #
@@ -197,6 +292,8 @@ module VersatileDiamond
       # @param [SpecResidual] rest the residual of difference
       # @raise [RuntimeError] if residual already set
       def store_rest(rest)
+        fail 'Main anchors already collected' if @_main_anchors
+
         @rest.parents.map(&:original).uniq.each { |pr| pr.remove_child(self) } if @rest
 
         @rest = rest

@@ -64,8 +64,10 @@ module VersatileDiamond
           # @param [UniqueSpecie] parent for which atom will be found
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the twin that belongs to passed parent
-          def atom_of(parent)
-            original_spec.anchors.find { |a| namer.name_of(a) && twin_by(parent, a) }
+          def atom_with_twin_of(parent)
+            named_atoms = original_spec.anchors.select(&namer.public_method(:name_of))
+            twins = named_atoms.map { |a| twin_by(parent, a) }
+            named_atoms.zip(twins).select(&:last).first
           end
 
           # Selects correspond twin atom
@@ -74,7 +76,8 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the twin that correspond to passed atom in parent specie
           def twin_by(parent, atom)
-            (pwt = parent_with_twin_for(atom) { |pr, _| pr == parent }) && pwt.last
+            pwt = parent_with_twin_for(atom, anchored: true) { |pr, _| pr == parent }
+            pwt && pwt.last
           end
 
           # Makes code which gets parent specie instance from passed atom
@@ -82,8 +85,7 @@ module VersatileDiamond
           # @return [String] the string of cpp code with specByRole call
           # @override
           def spec_by_role_call(parent)
-            atom = atom_of(parent)
-            twin = twin_by(parent, atom)
+            atom, twin = atom_with_twin_of(parent)
             super(atom, parent, twin)
           end
 

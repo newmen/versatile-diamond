@@ -16,6 +16,7 @@ module VersatileDiamond
         ADD_ATOM_NAME = 'additionalAtom'.freeze
 
         ANCHOR_SPECIE_NAME = 'parent'.freeze
+        TARGET_SPECIE_NAME = 'target'.freeze
         INTER_SPECIE_NAME = 'specie'.freeze
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms

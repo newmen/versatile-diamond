@@ -130,12 +130,36 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_cut_links do
+            subject { dept_bridge_with_dimer_base }
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+            let(:cut_links) do
+              {
+                ct => [],
+                cr => []
+              }
+            end
+          end
+
+          it_behaves_like :check_cut_links do
             subject { dept_right_hydrogenated_bridge }
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [subject] }
             let(:cut_links) do
               {
                 cr => []
+              }
+            end
+          end
+
+          it_behaves_like :check_cut_links do
+            subject { dept_lower_methyl_on_half_extended_bridge_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+            end
+            let(:cut_links) do
+              {
+                cr => [[cbr, bond_110_cross]],
+                cbr => [[cr, bond_110_front]]
               }
             end
           end

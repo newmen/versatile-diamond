@@ -24,7 +24,7 @@ module VersatileDiamond
           # Checks that internal target specie is symmetric by target atoms
           # @return [Boolean] is symmetric or not
           def symmetric?
-            symmetric_atoms.size > 0 &&
+            !symmetric_atoms.empty? &&
               (main_atoms_asymmetric? || asymmetric_reactants?)
           end
 

@@ -22,15 +22,17 @@ module VersatileDiamond
             @original_specie = original_specie
             @uniq_specie = uniq_specie
             @atom = atom
+
+            @_atom_properties = nil
           end
 
           # Compares current node with another node
           # @param [Node] other comparing node
           # @return [Integer] the comparing result
           def <=> (other)
-            typed_order(self, other, :none?) do
+            order(other, self, :properties) do
               typed_order(other, self, :scope?) do
-                order(other, self, :properties)
+                typed_order(self, other, :none?)
               end
             end
           end
@@ -38,7 +40,7 @@ module VersatileDiamond
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties
-            Organizers::AtomProperties.new(dept_spec, atom)
+            @_atom_properties ||= Organizers::AtomProperties.new(dept_spec, atom)
           end
 
           def inspect

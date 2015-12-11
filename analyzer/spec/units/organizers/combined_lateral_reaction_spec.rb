@@ -36,7 +36,8 @@ module VersatileDiamond
         it { expect(lat_react.each(:source)).to be_a(Enumerator) }
 
         let(:ab) { dimer_formation.source.first }
-        let(:adopted_source) { [ab, ind_chunk.targets.first.first] }
+        let(:aib) { ind_chunk.target_specs.first }
+        let(:adopted_source) { [ab, aib, ind_chunk.sidepiece_specs.first] }
         it { expect(lat_react.each(:source).to_a).to match_array(adopted_source) }
       end
 

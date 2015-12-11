@@ -256,7 +256,7 @@ module VersatileDiamond
               let(:specific_specs) { [subject] }
               let(:ordered_graph) do
                 [
-                  [[cb, cm], []],
+                  [[cm, cb], []],
                 ]
               end
             end
@@ -316,7 +316,7 @@ module VersatileDiamond
               let(:ordered_graph) do
                 [
                   [[ctr], [[[cm], param_amorph]]],
-                  [[csr, ctr], [[[csl, ctl], param_100_cross]]],
+                  [[ctr, csr], [[[ctl, csl], param_100_cross]]],
                   [[ctl], [[[cm], param_amorph]]]
                 ]
               end
@@ -366,7 +366,7 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[cm], []],
-                    [[cbr, cbl], [[[cdr, cdl], param_100_cross]]]
+                    [[cdl, cdr], [[[cbl, cbr], param_100_cross]]]
                   ]
                 end
 

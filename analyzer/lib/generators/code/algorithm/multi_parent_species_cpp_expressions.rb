@@ -8,15 +8,17 @@ module VersatileDiamond
         private
 
           # Gets parent specie and correspond twin for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which parent specs with twins will be found
+          # @option [Boolean] :anchored the flag which says that each twin atom in
+          #   correspond parent specie should be an anchor
           # @yield [UniqueSpecie, Atom] does for select parent and twin
           # @return [Array] the array of two items
-          def parent_with_twin_for(atom, &block)
+          def parent_with_twin_for(atom, anchored: false, &block)
             specs_to_parents = Hash[parent_species.map { |pr| [pr.proxy_spec, pr] }]
-            original_parents = original_spec.parents_with_twins_for(atom)
-            pwts = original_parents.map do |proxy_parent, twin|
-              [specs_to_parents[proxy_parent], twin]
-            end
-            block_given? ? pwts.find(&block) : pwts.first
+            pwts = original_spec.parents_with_twins_for(atom, anchored: anchored)
+            result = pwts.map { |proxy, twin| [specs_to_parents[proxy], twin] }
+            block_given? ? result.find(&block) : result.first
           end
         end
 
