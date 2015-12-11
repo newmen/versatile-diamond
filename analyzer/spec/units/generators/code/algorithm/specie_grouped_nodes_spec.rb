@@ -209,7 +209,7 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cr], [cbr]] }
             let(:nodes_list) do
               [
-                [SpeciesScope, cr],
+                [UniqueSpecie, cr],
                 [UniqueSpecie, cbr]
               ]
             end
@@ -328,7 +328,7 @@ module VersatileDiamond
               let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
               let(:nodes_list) do
                 [
-                  [SpeciesScope, cm],
+                  [UniqueSpecie, cm],
                   [UniqueSpecie, cbr],
                   [UniqueSpecie, cdr],
                 ]
@@ -343,10 +343,10 @@ module VersatileDiamond
             end
 
             describe 'both lower atoms are related' do
-              let(:flatten_face_grouped_atoms) { [[cbr, cbl], [cdr, cdl], [cm]] }
+              let(:flatten_face_grouped_atoms) { [[cm, cbr, cbl], [cdr, cdl]] }
               let(:nodes_list) do
                 [
-                  [SpeciesScope, cm],
+                  [UniqueSpecie, cm],
                   [UniqueSpecie, cbr],
                   [UniqueSpecie, cbl],
                   [UniqueSpecie, cdr],

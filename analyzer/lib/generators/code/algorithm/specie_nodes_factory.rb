@@ -31,7 +31,8 @@ module VersatileDiamond
           # @return [Array] the actual list of parent species
           def collect_parents(atom)
             spec = @specie.spec
-            spec.parents_of(atom, anchored: spec.complex?)
+            anchored_parents = spec.parents_of(atom, anchored: spec.complex?)
+            anchored_parents.empty? ? spec.parents_of(atom) : anchored_parents
           end
 
           # Detects correct unique parent specie by passed atom

@@ -51,9 +51,7 @@ module VersatileDiamond
             end
 
             major_groups = non_complete_groups
-            using_nodes = major_groups.empty? ? [] : major_groups.reduce(:+)
-
-            if lists_are_identical?(using_nodes, main_keys, &:==)
+            if lists_are_identical?(major_groups.flatten, main_keys, &:==)
               similar_groups = major_groups
             else
               similar_groups = non_flatten_groups + major_groups
