@@ -335,8 +335,8 @@ module VersatileDiamond
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [],
-                  [cdr] => [[[cbr], param_100_cross]],
+                  [cm] => [[[cdr], param_amorph]],
+                  [cdr] => [[[cbr], param_100_cross], [[cm], param_amorph]],
                   [cbr] => [[[cdr], param_100_cross]]
                 }
               end
@@ -355,7 +355,8 @@ module VersatileDiamond
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [],
+                  [cm] => [[[cdr], param_amorph]],
+                  [cdr] => [[[cm], param_amorph]],
                   [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
                   [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
                 }

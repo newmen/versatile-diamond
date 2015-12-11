@@ -238,8 +238,8 @@ module VersatileDiamond
               subject { dept_intermed_migr_down_common_base }
               let(:cut_links) do
                 {
-                  cm => [],
-                  cdr => [[cbr, position_100_cross]],
+                  cm => [[cdr, free_bond]],
+                  cdr => [[cbr, position_100_cross], [cm, free_bond]],
                   cbr => [[cdr, position_100_cross]]
                 }
               end
@@ -249,8 +249,8 @@ module VersatileDiamond
               subject { dept_intermed_migr_down_half_base }
               let(:cut_links) do
                 {
-                  cm => [],
-                  cdr => [[cbr, position_100_cross]],
+                  cm => [[cdr, free_bond]],
+                  cdr => [[cbr, position_100_cross], [cm, free_bond]],
                   cbr => [[cdr, position_100_cross]],
                   cdl => [[cbl, non_position_100_cross]],
                   cbl => [[cdl, non_position_100_cross]]
@@ -262,8 +262,8 @@ module VersatileDiamond
               subject { dept_intermed_migr_down_full_base }
               let(:cut_links) do
                 {
-                  cm => [],
-                  cdr => [[cbr, position_100_cross]],
+                  cm => [[cdr, free_bond]],
+                  cdr => [[cbr, position_100_cross], [cm, free_bond]],
                   cbr => [[cdr, position_100_cross]],
                   cdl => [[cbl, position_100_cross]],
                   cbl => [[cdl, position_100_cross]]

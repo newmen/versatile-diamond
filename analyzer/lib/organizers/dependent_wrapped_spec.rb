@@ -19,8 +19,9 @@ module VersatileDiamond
 
         @theres, @children, @rest = nil
 
-        @_main_anchors, @_anchors = nil
+        @_residual_links, @_main_anchors, @_anchors = nil
         @_similar_theres, @_root_theres = nil
+        @_pwts_cache = { true => {}, false => {} }
       end
 
       # Clones the current instance but replace internal spec and change all atom
@@ -35,16 +36,16 @@ module VersatileDiamond
         result
       end
 
+      # Gets the links of residual specie
+      # @return [Hash] the required links of main anchors
+      def residual_links
+        @_residual_links ||= target.links
+      end
+
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
         @_anchors ||= main_anchors + skipped_anchors
-      end
-
-      # Gets anchors which are present in target links
-      # @return [Array] the list of main anchors
-      def main_anchors
-        @_main_anchors ||= target.links.keys
       end
 
       # Gets the parent specs of current instance
@@ -61,10 +62,11 @@ module VersatileDiamond
       # @return [Array] the list of pairs where each pair contain parent and twin
       #   atom
       def parents_with_twins_for(atom, anchored: false)
-        parents.each_with_object([]) do |pr, result|
-          twin = pr.twin_of(atom)
-          result << [pr, twin] if twin && (!anchored || pr.anchors.include?(twin))
-        end
+        @_pwts_cache[anchored][atom] ||=
+          parents.each_with_object([]) do |pr, result|
+            twin = pr.twin_of(atom)
+            result << [pr, twin] if twin && (!anchored || pr.anchors.include?(twin))
+          end
       end
 
       # Gets the parent specs of passed atom
@@ -247,6 +249,12 @@ module VersatileDiamond
           end
         end
         result.to_a
+      end
+
+      # Gets anchors which are present in target links
+      # @return [Array] the list of main anchors
+      def main_anchors
+        @_main_anchors ||= target.links.keys
       end
 
       # Orders passed collection by atom from smallest to bigger
