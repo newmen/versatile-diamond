@@ -77,7 +77,7 @@ module VersatileDiamond
               if az == bz
                 as.zip(bs).reduce(0) { |acc, (a, b)| acc == 0 ? a <=> b : acc }
               else
-                bs <=> az
+                bz <=> az
               end
             end
           end

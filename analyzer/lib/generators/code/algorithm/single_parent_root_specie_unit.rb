@@ -21,7 +21,7 @@ module VersatileDiamond
           def check_species(&block)
             if name_of(parent_specie) || !require_check_symmetries?
               block.call
-            elsif !defined_symmetric_atoms.empty?
+            elsif !defined_symmetric_atoms.empty? && defined_symmetric_atoms != atoms
               symmetric_atom = defined_symmetric_atoms.first
               iterate_symmetric_target_species_lambda(symmetric_atom, &block)
             else
