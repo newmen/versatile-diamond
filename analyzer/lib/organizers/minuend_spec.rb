@@ -137,20 +137,15 @@ module VersatileDiamond
         end
       end
 
-      # Checks that passed neibhour key is the same as cheking key and relation between
-      # them is not excess
-      #
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   iterable_key the key which was not mapped
+      # Checks that passed relation between atoms is not excess
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   neighbour_key the neighbour key of iterable key
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   checking_key the key which checks that it used
       # @param [Concepts::Bond] relation between iterable key and neighbour key
       # @return [Boolean] is realy used checking key or not
-      def neighbour?(iterable_key, neighbour_key, checking_key, relation)
-        neighbour_key == checking_key &&
-          !excess_position?(relation, checking_key, iterable_key)
+      def excess_neighbour?(neighbour_key, checking_key, relation)
+        excess_position?(relation, checking_key, neighbour_key)
       end
     end
 

@@ -82,7 +82,9 @@ module VersatileDiamond
       # @return [Boolean] is used or not
       def used?(mirrored_keys, key)
         (links.keys - mirrored_keys).any? do |k|
-          links[k].any? { |neighbour, r| neighbour?(k, neighbour, key, r) }
+          links[k].any? do |neighbour, r|
+            neighbour == key && !excess_neighbour?(key, k, r)
+          end
         end
       end
     end

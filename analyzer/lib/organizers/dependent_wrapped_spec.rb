@@ -41,10 +41,10 @@ module VersatileDiamond
         @_anchors ||= main_anchors + skipped_anchors
       end
 
-      # Gets the target of current specie. It is self specie or residual if it exists
-      # @return [DependentWrappedSpec | SpecResidual] the target of current specie
-      def target
-        @rest || self
+      # Gets anchors which are present in target links
+      # @return [Array] the list of main anchors
+      def main_anchors
+        @_main_anchors ||= target.links.keys
       end
 
       # Gets the parent specs of current instance
@@ -176,6 +176,12 @@ module VersatileDiamond
         self
       end
 
+      # Gets the target of current specie. It is self specie or residual if it exists
+      # @return [DependentWrappedSpec | SpecResidual] the target of current specie
+      def target
+        @rest || self
+      end
+
       # Gets lists of parent atoms to own atoms for each parent
       # @return [Hash] the lists of all parent atoms to own atoms separated by parent
       def parents_atoms_zip
@@ -241,12 +247,6 @@ module VersatileDiamond
           end
         end
         result.to_a
-      end
-
-      # Gets anchors which are present in target links
-      # @return [Array] the list of main anchors
-      def main_anchors
-        @_main_anchors ||= target.links.keys
       end
 
       # Orders passed collection by atom from smallest to bigger
