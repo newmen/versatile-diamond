@@ -161,6 +161,28 @@ module VersatileDiamond
           same_correspond_relevants?(other)
       end
 
+      # Checks that some atom can have both properties: self and other
+      # @param [AtomProperties] other checking atom properties
+      # @return [Boolean] are self properties like other or not
+      def like?(other)
+        return true if include?(other) || other.include?(self)
+
+        both = [self, other]
+        smallests_of_both = both.map(&:smallests)
+        return false unless smallests_of_both.all?
+
+        max_root = smallests_of_both.reduce(:&).max
+        return false unless max_root
+
+        diffs = both.map { |x| x - max_root }
+        return false unless diffs.all?
+
+        rests_sum = diffs.reduce(:+)
+        return false unless rests_sum
+
+        max_root + rests_sum
+      end
+
       # Checks that both properties have same states by hydrogen atoms
       # @param [AtomProperties] other properties which will be checked
       # @return [Boolean] same or not

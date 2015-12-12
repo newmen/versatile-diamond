@@ -47,7 +47,7 @@ module VersatileDiamond
             prev_props = ordered_props(first_nodes)
             anchor_nodes.each_with_object([[first_nodes, false]]) do |nodes, acc|
               curr_props = ordered_props(nodes)
-              acc << [nodes, !included_in?(prev_props, curr_props)]
+              acc << [nodes, !like_others?(prev_props, curr_props)]
               prev_props = curr_props
             end
           end
@@ -85,15 +85,26 @@ module VersatileDiamond
             nodes.sort.map(&:properties)
           end
 
-          # Checks that all small props included in all big props. Both passed lists
-          # should be ordered!
+          # Checks that all small props can be a part of big props. Both passed lists
+          # should be ordered (because permutation did not done, just zip two lists)!
           #
           # @param [Array] big_props which should includes small props
           # @param [Array] small_props which should contains in big props
           # @return [Boolean] all small props included in all big props or not
-          def included_in?(big_props, small_props)
+          def like_others?(big_props, small_props)
             big_props.size == small_props.size &&
-              big_props.zip(small_props).all? { |big, small| big.include?(small) }
+              big_props.zip(small_props).all? do |both|
+                (:like?).to_proc.call(*classified_props(both))
+              end
+          end
+
+          # Gets the list of classified atom properties
+          # @param [Array] list_of_props which classified analogies will be returned
+          # @return [Array] the list of common classified atom properties
+          def classified_props(list_of_props)
+            list_of_props.map do |props|
+              generator.classifier.props.find { |x| x == props }
+            end
           end
         end
 

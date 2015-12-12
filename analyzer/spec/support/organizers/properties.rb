@@ -100,7 +100,8 @@ module VersatileDiamond
         prop(:ad_cr, :activated_dimer, :cr)
         prop(:id_cr, :twise_incoherent_dimer, :cr)
         prop(:mod_cr, :methyl_on_dimer, :cr)
-        prop(:mob_cb, :methyl_on_right_bridge_base, :cr)
+        prop(:mob_cr, :methyl_on_right_bridge_base, :cr)
+        prop(:mob_cb, :methyl_on_bridge_base, :cb)
 
         prop(:pseudo_dimer_cr, :pseudo_dimer_base, :cr)
 

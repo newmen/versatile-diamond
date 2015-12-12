@@ -72,7 +72,7 @@ module VersatileDiamond
           reaction.changes.any? do |src_to_prd|
             s, a = src_to_prd.first
             next unless spec == s
-            diff = :-.to_proc[*atom_properties_list(src_to_prd)]
+            diff = (:-).to_proc[*atom_properties_list(src_to_prd)]
             diff && just_activated_props(a).any? { |props| props == diff }
           end
       end

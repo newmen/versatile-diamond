@@ -178,7 +178,7 @@ module VersatileDiamond
                 lateral_chunks.target_specs.find { |s| s.name == :'dimer(cr: *)' }
               end
 
-              let(:amob_cb) { role(amob, :cb) }
+              let(:amob_cr) { role(amob, :cb) }
               let(:admr_cl) { role(admr, :cl) }
 
               let(:edge_dimer) do

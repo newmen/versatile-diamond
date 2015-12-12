@@ -53,7 +53,7 @@ module VersatileDiamond
             let(:target) { dept_activated_methyl_on_right_bridge }
 
             describe '~^C%d< is presented' do
-              subject { classifier.index(mob_cb) }
+              subject { classifier.index(mob_cr) }
               it { should_not be_nil }
             end
           end
@@ -223,6 +223,66 @@ module VersatileDiamond
         it { expect(ucm.contained_in?(bob)).to be_falsey }
         it { expect(ucm.contained_in?(eob)).to be_falsey }
         it { expect(ucm.contained_in?(vob)).to be_falsey }
+      end
+
+      describe '#like?' do
+        let(:classifier) { AtomClassifier.new(false) }
+        let(:dependent_specs) do
+          [
+            dept_activated_bridge,
+            dept_right_activated_bridge,
+            dept_methyl_on_activated_bridge,
+            dept_incoherent_methyl_on_bridge,
+            dept_twise_incoherent_dimer
+          ]
+        end
+
+        before do
+          dependent_specs.each { |spec| classifier.analyze(spec, with_ions: false) }
+          classifier.organize_properties!
+        end
+
+        def find(prop)
+          classifier.props.find { |x| x == prop }
+        end
+
+        it { expect(find(bridge_ct).like?(find(bridge_ct))).to be_truthy }
+        it { expect(find(bridge_ct).like?(find(bridge_cr))).to be_truthy }
+        it { expect(find(bridge_cr).like?(find(bridge_ct))).to be_truthy }
+        it { expect(find(ab_ct).like?(find(ab_cr))).to be_truthy }
+        it { expect(find(ab_cr).like?(find(ab_ct))).to be_truthy }
+        it { expect(find(ab_ct).like?(find(ab_cb))).to be_truthy }
+        it { expect(find(ab_cb).like?(find(ab_ct))).to be_truthy }
+
+        it { expect(find(mob_cb).like?(find(bridge_cr))).to be_truthy }
+        it { expect(find(bridge_cr).like?(find(mob_cb))).to be_truthy }
+        it { expect(find(ab_cb).like?(find(ab_cr))).to be_falsey }
+        it { expect(find(ab_cr).like?(find(ab_cb))).to be_falsey }
+
+        it { expect(find(dimer_cr).like?(find(bridge_cr))).to be_truthy }
+        it { expect(find(bridge_cr).like?(find(dimer_cr))).to be_truthy }
+        it { expect(find(id_cr).like?(find(bridge_cr))).to be_falsey }
+        it { expect(find(bridge_cr).like?(find(id_cr))).to be_falsey }
+        it { expect(find(id_cr).like?(find(mob_cb))).to be_falsey }
+        it { expect(find(mob_cb).like?(find(id_cr))).to be_falsey }
+
+        it { expect(find(cm).like?(find(imob))).to be_truthy }
+        it { expect(find(imob).like?(find(cm))).to be_truthy }
+        it { expect(find(cm).like?(find(bridge_ct))).to be_falsey }
+        it { expect(find(bridge_ct).like?(find(cm))).to be_falsey }
+        it { expect(find(cm).like?(find(bridge_ct))).to be_falsey }
+        it { expect(find(bridge_ct).like?(find(cm))).to be_falsey }
+        it { expect(find(cm).like?(find(mob_cb))).to be_falsey }
+        it { expect(find(mob_cb).like?(find(cm))).to be_falsey }
+
+        it { expect(find(bridge_ct).like?(find(tb_cc))).to be_truthy }
+        it { expect(find(tb_cc).like?(find(bridge_ct))).to be_truthy }
+        it { expect(find(bridge_cr).like?(find(tb_cc))).to be_truthy }
+        it { expect(find(tb_cc).like?(find(bridge_cr))).to be_truthy }
+        it { expect(find(ab_ct).like?(find(tb_cc))).to be_falsey }
+        it { expect(find(tb_cc).like?(find(ab_ct))).to be_falsey }
+        it { expect(find(mob_cb).like?(find(tb_cc))).to be_falsey }
+        it { expect(find(tb_cc).like?(find(mob_cb))).to be_falsey }
       end
 
       describe '#same_incoherent?' do
