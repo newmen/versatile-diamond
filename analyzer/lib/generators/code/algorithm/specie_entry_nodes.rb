@@ -18,10 +18,26 @@ module VersatileDiamond
               lists_of_nodes.sort do |as, bs|
                 az, bz = as.size, bs.size
                 if az == bz
-                  as.zip(bs).reduce(0) { |acc, (a, b)| acc == 0 ? a <=> b : acc }
+                  as.zip(bs).reduce(0) do |acc, ns|
+                    acc == 0 ? forward_no_anchors(*ns) : acc
+                  end
                 else
                   bz <=> az
                 end
+              end
+            end
+
+          private
+
+            # Compares passed passed nodes so anchors places to end
+            # @param [Node] a
+            # @param [Node] b
+            # @param [Integer] comparation result
+            def forward_no_anchors(a, b)
+              if a.anchor? == b.anchor?
+                a <=> b
+              else
+                !a.anchor? && b.anchor? ? -1 : 1
               end
             end
           end

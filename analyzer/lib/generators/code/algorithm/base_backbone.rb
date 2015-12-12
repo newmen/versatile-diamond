@@ -35,7 +35,7 @@ module VersatileDiamond
           # @param [Array] nodes from which the sequence will builded
           # @param [Set] visited nodes
           # @return [Array] the ordered list that contains the ordered relations from
-          #   passed graph
+          #   passed directed graph
           def build_sequence_from(graph, nodes, visited)
             result = []
             nodes_queue = nodes.dup
@@ -211,14 +211,14 @@ module VersatileDiamond
           # @param [Hash] graph in which connected nodes will be found
           # @return [Array] the list of connected nodes
           def connected_nodes_from(graph)
-            SpecieEntryNodes.sort(graph.reject { |_, rels| rels.empty? }.map(&:first))
+            graph.reject { |_, rels| rels.empty? }.map(&:first)
           end
 
           # Gets the list of unconnected nodes from passed graph
           # @param [Hash] graph in which unconnected nodes will be found
           # @return [Array] the list of unconnected nodes
           def unconnected_nodes_from(graph)
-            SpecieEntryNodes.sort(graph.select { |_, rels| rels.empty? }.map(&:first))
+            graph.select { |_, rels| rels.empty? }.map(&:first)
           end
         end
 

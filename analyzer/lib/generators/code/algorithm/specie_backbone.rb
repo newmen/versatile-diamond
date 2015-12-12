@@ -207,6 +207,20 @@ module VersatileDiamond
             lists_of_props = lists_of_nodes.map { |ns| ns.map(&:properties) }
             lists_are_identical?(*lists_of_props, &:==)
           end
+
+          # Also sorts the result list of connected nodes
+          # @param [Hash] graph in which connected nodes will be found
+          # @return [Array] the list of connected nodes
+          def connected_nodes_from(graph)
+            SpecieEntryNodes.sort(super)
+          end
+
+          # Also sorts the result list of unconnected nodes
+          # @param [Hash] graph in which unconnected nodes will be found
+          # @return [Array] the list of unconnected nodes
+          def unconnected_nodes_from(graph)
+            SpecieEntryNodes.sort(super)
+          end
         end
 
       end
