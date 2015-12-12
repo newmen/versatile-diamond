@@ -21,7 +21,7 @@ module VersatileDiamond
           def check_species(&block)
             if name_of(parent_specie) || !require_check_symmetries?
               block.call
-            elsif !defined_symmetric_atoms.empty? && defined_symmetric_atoms != atoms
+            elsif !(defined_symmetric_atoms.empty? || unsymmetric_atoms.empty?)
               symmetric_atom = defined_symmetric_atoms.first
               iterate_symmetric_target_species_lambda(symmetric_atom, &block)
             else
@@ -87,13 +87,13 @@ module VersatileDiamond
           # @return [Boolean] is require to check symmetries of parent specie or not
           def require_check_symmetries?
             symmetric? && atoms.any?(&method(:name_of)) &&
-              defined_unsymmetric_atoms.empty?
+              !unsymmetric_atoms.empty? && defined_unsymmetric_atoms.empty?
           end
 
           # Gets the list of defined unsymmetric atoms
           # @return [Array] list of atoms which are not symmetric in parent specie
           def defined_unsymmetric_atoms
-            (atoms - symmetric_atoms).select(&method(:name_of))
+            unsymmetric_atoms.select(&method(:name_of))
           end
 
           # Gets the list of defined symmetric atoms
@@ -107,6 +107,12 @@ module VersatileDiamond
           def symmetric_atoms
             @_symmetric_atoms ||=
               atoms.select { |a| target_specie.symmetric_atom?(twin(a)) }
+          end
+
+          # Gets only unsymmetric atoms of current unit
+          # @return [Array] the list of unsymmetric atoms
+          def unsymmetric_atoms
+            atoms - symmetric_atoms
           end
 
           # Checks that internal parent specie is symmetric by target atoms
