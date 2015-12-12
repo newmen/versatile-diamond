@@ -118,6 +118,28 @@ module VersatileDiamond
           let(:keynames) { [:cr, :cbr] }
         end
 
+        describe 'undependent from parents species set' do
+          let(:target_spec) { dept_intermed_migr_down_common_base }
+          let(:keynames) { [:cm, :cdr, :cbr] }
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) do
+              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, target_spec]
+            end
+          end
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) do
+              [
+                subject,
+                dept_methyl_on_bridge_base,
+                dept_methyl_on_dimer_base,
+                target_spec
+              ]
+            end
+          end
+        end
+
         describe 'intermediate specie of migration down process' do
           let(:keynames) { [:cdr, :cbr, :cdl, :cbl, :cm] }
           let(:base_specs) do

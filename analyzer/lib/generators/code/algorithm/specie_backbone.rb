@@ -30,42 +30,7 @@ module VersatileDiamond
           #   excepted
           # TODO: must be private!
           def final_graph
-            return @_final_graph if @_final_graph
-
-            all_nodes_lists = collect_nodes(super)
-            result =
-              sequence.short.reduce(super) do |acc, atom|
-                nodes = all_nodes_lists.find do |ns|
-                  ns.any? { |n| n.atom == atom }
-                end
-
-                next acc unless acc[nodes]
-
-                limits = atom.relations_limits
-                # Groups again because could be case:
-                # {
-                #   [1, 2] => [[[3, 4], flatten_rel], [5, 6], flatten_rel],
-                #   [3, 4] => [[[1, 2], flatten_rel]],
-                #   [5, 6] => [[[1, 2], flatten_rel]]
-                # }
-                group_again(acc[nodes]).reduce(acc) do |g, (rp, nbrs)|
-                  raise 'Incomplete grouping in on prev step' unless nbrs.size == 1
-                  # next line contain .reduce operation for case if incomplete
-                  # grouping still takes plase
-                  num = nbrs.reduce(0) { |acc, ns| acc + ns.size } / nodes.size.to_f
-                  raise 'Node has too more relations' if limits[rp] < num
-
-                  could_be_cleared = !atom.lattice || limits[rp] == num
-                  unless could_be_cleared
-                    lists = [nodes, nbrs.flatten].map { |ns| ns.map(&:properties) }
-                    could_be_cleared = lists_are_identical?(*lists, &:==)
-                  end
-
-                  could_be_cleared ? without_reverse(g, nodes) : g
-                end
-              end
-
-            @_final_graph = result
+            @_final_graph ||= clear_excess_rels(super)
           end
 
           # Provides the list of all atoms that uses in backbone full graph
@@ -79,6 +44,62 @@ module VersatileDiamond
 
           def_delegators :@specie, :spec, :sequence
 
+          # Finds nodes from passed lists by passed atom
+          # @param [Array] lists_of_nodes where result nodes will be found or not
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which the nodes will be found
+          # @return [Array] nil or nodes any of which uses passed atom
+          def find_nodes(lists_of_nodes, atom)
+            lists_of_nodes.find { |nodes| nodes.any? { |node| node.atom == atom } }
+          end
+
+          # Clears passed graph from reverse relations in order sequenced atom in
+          # original specie
+          #
+          # @param [Hash] graph which cleared analog will be returned
+          # @return [Hash] the graph wihtout excess relations
+          def clear_excess_rels(graph)
+            all_nodes_lists = collect_nodes(graph)
+            sequence.short.reduce(graph) do |acc, atom|
+              nodes = find_nodes(all_nodes_lists, atom)
+              acc[nodes] ? clear_reverse_rels(acc, nodes, atom) : acc
+            end
+          end
+
+          # Clears reverse relations from passed graph for passed nodes and anchor atom
+          #
+          # Groups again because could be case:
+          # {
+          #   [1, 2] => [[[3, 4], flatten_rel], [5, 6], flatten_rel],
+          #   [3, 4] => [[[1, 2], flatten_rel]],
+          #   [5, 6] => [[[1, 2], flatten_rel]]
+          # }
+          #
+          # @param [Hash] graph which cleared analog will be returned
+          # @param [Array] nodes the set of similar nodes to which reverse relations
+          #   will be excluded
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which the nodes was selected
+          # @return [Hash] the graph wihtout excess reverse relations
+          def clear_reverse_rels(graph, nodes, atom)
+            limits = atom.relations_limits
+            group_again(graph[nodes]).reduce(graph) do |acc, (rp, nbrs)|
+              raise 'Incomplete grouping in on prev step' unless nbrs.size == 1
+
+              all_nbrs = nbrs.flatten
+              num = all_nbrs.size / nodes.size.to_f
+              max_num = limits[rp]
+
+              if max_num < num
+                raise 'Node has too more relations'
+              elsif !atom.lattice || max_num == num || equal_props?(nodes, all_nbrs)
+                without_reverse(acc, nodes)
+              else
+                acc
+              end
+            end
+          end
+
           # Collects similar relations that available by key of grouped graph
           # @param [Array] rels the relations which will be grouped
           # @return [Array] the array where each item is array that contains the
@@ -89,6 +110,17 @@ module VersatileDiamond
             rels.group_by(&:last).map do |rp, group|
               [rp, group.map(&:first)]
             end
+          end
+
+          # Compares the lists of atom properties which will maked from passed lists
+          # of nodes
+          #
+          # @param [Array] lists_of_nodes each list of which will be converted to list
+          #   of atom properties
+          # @return [Boolean] are equal lists of atom properties or not
+          def equal_props?(*lists_of_nodes)
+            lists_of_props = lists_of_nodes.map { |ns| ns.map(&:properties) }
+            lists_are_identical?(*lists_of_props, &:==)
           end
         end
 

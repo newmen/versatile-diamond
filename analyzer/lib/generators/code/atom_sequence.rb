@@ -22,9 +22,7 @@ module VersatileDiamond
         # @return [Array] the original sequence of atoms of current specie
         # TODO: should be protected
         def original
-          return @_original_sequence if @_original_sequence
-
-          @_original_sequence =
+          @_original_sequence ||=
             if spec.source?
               sort_atoms(atoms)
             else

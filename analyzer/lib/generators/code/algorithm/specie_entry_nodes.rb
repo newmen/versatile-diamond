@@ -9,7 +9,7 @@ module VersatileDiamond
         class SpecieEntryNodes
 
           # Initializes entry nodes detector by specie
-          # @param [Hash] the final grouped graph of find algorithm
+          # @param [Hash] the final grouped (backbone) graph of find algorithm
           def initialize(final_graph)
             @grouped_nodes = final_graph
             @_list = nil

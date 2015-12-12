@@ -181,8 +181,8 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [cm] => [],
-                    [cdr] => [[[cbr], param_100_cross]],
-                    [cbr] => [[[cdr], param_100_cross]]
+                    [cbr] => [[[cdr], param_100_cross]],
+                    [cdr] => [[[cm], param_amorph]]
                   }
                 end
               end
@@ -191,8 +191,8 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [cm] => [],
-                    [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
-                    [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                    [cbr, cbl] => [[[cdr, cdl], param_100_cross]],
+                    [cdr] => [[[cm], param_amorph]]
                   }
                 end
 
@@ -390,21 +390,58 @@ module VersatileDiamond
                 [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
               end
 
-              it_behaves_like :check_ordered_graph do
+              describe 'both lower atoms are half related' do
                 subject { dept_intermed_migr_down_common_base }
-                let(:ordered_graph) do
-                  [
-                    [[cm], []],
-                    [[cdr], [[[cbr], param_100_cross]]]
-                  ]
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.first }
+                  let(:ordered_graph) do
+                    [
+                      [[cdr], [[[cm], param_amorph]]],
+                      [[cm], []],
+                      [[cbr], [[[cdr], param_100_cross]]]
+                    ]
+                  end
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.last }
+                  let(:ordered_graph) do
+                    [
+                      [[cm], []],
+                      [[cbr], [[[cdr], param_100_cross]]],
+                      [[cdr], [[[cm], param_amorph]]]
+                    ]
+                  end
                 end
               end
 
-              describe 'both lower atoms are related' do
+              describe 'both lower atoms are related from dimer' do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[cdr], [[[cm], param_amorph]]],
+                    [[cm], []],
+                    [[cbl, cbr], [[[cdl, cdr], param_100_cross]]]
+                  ]
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  subject { dept_intermed_migr_down_half_base }
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  subject { dept_intermed_migr_down_full_base }
+                end
+              end
+
+              describe 'both lower atoms are related from adsorbed methyl' do
+                let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
                     [[cm], []],
-                    [[cdl, cdr], [[[cbl, cbr], param_100_cross]]]
+                    [[cbl, cbr], [[[cdl, cdr], param_100_cross]]],
+                    [[cdr], [[[cm], param_amorph]]]
                   ]
                 end
 
