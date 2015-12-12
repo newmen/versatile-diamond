@@ -21,49 +21,49 @@ module VersatileDiamond
           def list
             return @_list if @_list
 
-            anchored_nodes = @grouped_nodes.keys.flatten.select(&:anchor?)
-            nodes = anchored_nodes.uniq.sort
+            avail_keys = @grouped_nodes.keys.flatten.uniq
+            nodes = avail_keys.sort
             @_list =
               if nodes.all?(&:none?) || nodes.uniq(&:uniq_specie).size == 1
                 [nodes]
               elsif nodes.any?(&:scope?)
                 [[nodes.find(&:scope?)]] # finds first because nodes are sorted ^^
               else
-                most_important_nodes(anchored_nodes)
+                most_important_nodes(avail_keys)
               end
           end
 
         private
 
           # Selects the nodes which are mostly used as keys of grouped nodes graph
-          # @param [Array] anchored_nodes from which the most used nodes will be
-          #   selected
+          # @param [Array] avail_keys from which the most used nodes will be selected
           # @return [Array] the array of most used nodes
-          def most_used_nodes(anchored_nodes)
-            all_nodes = anchored_nodes.reject(&:none?)
+          def most_used_nodes(avail_keys)
+            all_nodes = avail_keys.reject(&:none?).select(&:anchor?)
             groups = all_nodes.groups { |n| [n.uniq_specie.original, n.properties] }
             most_used = groups.reduce([]) do |acc, group|
+              # selects the best from each group
               acc << group.max_by { |n| all_nodes.count(n) }
             end
             most_used.uniq
           end
 
           # Selects the most important nodes in keys of grouped nodes graph
-          # @param [Array] anchored_nodes from which the most imporant nodes will be
+          # @param [Array] avail_keys from which the most imporant nodes will be
           #   selected
           # @return [Array] the ordered most different or binding nodes
-          def most_important_nodes(anchored_nodes)
-            groups = target_groups(anchored_nodes)
+          def most_important_nodes(avail_keys)
+            groups = target_groups(avail_keys)
             sort_by_sizes(groups.uniq { |ns| ns.map(&:properties).to_set })
           end
 
           # Gets nodes which grouped by using in parent specie and each group contains
           # nodes at the limit of specie or unique set of using atom properties
           #
-          # @param [Array] anchored_nodes the nodes which will be grouped
+          # @param [Array] avail_keys the nodes which will be grouped
           # @return [Array] the nodes grouped by special algorithm
-          def target_groups(anchored_nodes)
-            most_used_nodes(anchored_nodes).groups(&:uniq_specie).map do |group|
+          def target_groups(avail_keys)
+            most_used_nodes(avail_keys).groups(&:uniq_specie).map do |group|
               border_nodes = select_border(group)
               border_nodes.empty? ? group.uniq(&:properties) : border_nodes
             end
@@ -76,10 +76,7 @@ module VersatileDiamond
             nodes.select do |node|
               @grouped_nodes.any? do |ns, rels|
                 idx = ns.index(node)
-                idx && rels.any? do |nbrs, _|
-                  node = nbrs[idx]
-                  node.none? || !node.anchor?
-                end
+                idx && rels.any? { |nbrs, _| nbrs[idx].none? }
               end
             end
           end

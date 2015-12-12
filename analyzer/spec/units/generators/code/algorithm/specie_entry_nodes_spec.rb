@@ -125,12 +125,53 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_entry_nodes do
-            subject { dept_intermed_migr_down_full_base }
-            let(:base_specs) do
-              [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+          describe 'intermediate specie of migration down process' do
+            describe 'all atoms are anchored' do
+              let(:base_specs) do
+                [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+              end
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_common_base }
+                let(:points_list) { [[cdr]] }
+              end
+
+              describe 'many bottom entry points' do
+                let(:points_list) { [[cdl, cdr], [cbl]] } # why this is cool?!
+
+                it_behaves_like :check_entry_nodes do
+                  subject { dept_intermed_migr_down_half_base }
+                end
+
+                it_behaves_like :check_entry_nodes do
+                  subject { dept_intermed_migr_down_full_base }
+                end
+              end
             end
-            let(:points_list) { [[cm]] }
+
+            describe 'not all atoms are anchored' do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base,
+                  subject
+                ]
+              end
+              let(:points_list) { [[cdr], [cm]] }
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_common_base }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_half_base }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_full_base }
+              end
+            end
           end
         end
 
