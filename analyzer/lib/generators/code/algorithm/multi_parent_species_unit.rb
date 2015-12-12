@@ -42,7 +42,9 @@ module VersatileDiamond
           #   twin atom
           def parents_with_twins(anchored: false)
             pts = original_spec.parents_with_twins_for(target_atom, anchored: anchored)
-            rlt = pts.map { |pr, tw| [parent_species.find { |s| s.spec == pr }, tw] }
+            rlt = pts.map do |pr, tw|
+              [parent_species.find { |s| s.proxy_spec == pr }, tw]
+            end
             rlt.select(&:first).sort_by(&:first)
           end
 

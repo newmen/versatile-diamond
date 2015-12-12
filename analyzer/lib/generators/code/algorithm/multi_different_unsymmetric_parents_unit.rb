@@ -43,6 +43,7 @@ module VersatileDiamond
           # @param [Array] parents which will be defined in result string
           # @return [String] the string with cpp code of defining parents variable
           def define_same_parents_line(parents)
+            # TODO: incorrect logic in general case
             namer.assign_next(Specie::INTER_SPECIE_NAME, parents)
             if parents.size > 1
               atom_call = specs_by_role_call(parents)
