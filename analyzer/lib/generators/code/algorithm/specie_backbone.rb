@@ -221,6 +221,52 @@ module VersatileDiamond
           def unconnected_nodes_from(graph)
             SpecieEntryNodes.sort(super)
           end
+
+          # Builds the next part of sequence of find algorithm steps by nodes which
+          # are relates to already added nodes
+          #
+          # @param [Hash] graph the graph which uses for receive next nodes
+          # @param [Set] visited nodes
+          # @return [Array] the sequence of nodes which was not added under building
+          #   main sequence of find algorithm steps
+          # @override
+          def build_next_sequence(graph, visited)
+            pretendents = rest_nodes(graph, visited)
+            result = visited.to_a.reduce([]) do |acc, nodes|
+              bests = best_same_nodes(nodes, pretendents)
+              next acc if bests.empty? || visited.include?(bests.to_set) # cause recur
+              acc + build_sequence_from(graph, bests, visited)
+            end
+
+            result + super(graph, visited)
+          end
+
+          # Collects unvisited nodes
+          # @param [Hash] graph where rest nodes will be found
+          # @param [Set] visited nodes
+          # @return [Array] the list of not visited nodes
+          def rest_nodes(graph, visited)
+            collect_nodes(graph).reject { |nodes| visited.include?(nodes.to_set) }
+          end
+
+          # Finds the best nodes from available lists of nodes
+          # @param [Array] nodes which analogies will be found
+          # @param [Array] lists_of_nodes where the best will be found
+          # @return [Array] the nodes which uses unique species as in passed nodes
+          def best_same_nodes(nodes, lists_of_nodes)
+            uniq_species = nodes.map(&:uniq_specie)
+            sized_groups = lists_of_nodes.group_by do |ns|
+              (uniq_species & ns.map(&:uniq_specie)).size
+            end
+
+            if sized_groups.empty?
+              []
+            else
+              max_num = sized_groups.max_by(&:first).first
+              bests = sized_groups.select { |num, _| num == max_num }.flat_map(&:last)
+              SpecieEntryNodes.sort(bests).first
+            end
+          end
         end
 
       end

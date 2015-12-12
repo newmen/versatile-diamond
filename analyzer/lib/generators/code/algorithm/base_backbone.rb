@@ -67,7 +67,7 @@ module VersatileDiamond
           # are relates to already added nodes
           #
           # @param [Hash] graph the graph which uses for receive next nodes
-          # @param [Set] visited the set of visited nodes
+          # @param [Set] visited nodes
           # @return [Array] the sequence of nodes which was not added under building
           #   main sequence of find algorithm steps
           def build_next_sequence(graph, visited)
@@ -79,7 +79,7 @@ module VersatileDiamond
 
           # Builds the last part of nodes sequence for find algorithm steps
           # @param [Hash] graph the graph which uses for receive next nodes
-          # @param [Set] visited the set of visited nodes
+          # @param [Set] visited nodes
           # @return [Array] the sequence of nodes which haven't any relations and not
           #   added under building the main sequence of find algorithm steps
           def build_unconnected_sequence(graph, visited)
