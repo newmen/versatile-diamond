@@ -173,7 +173,12 @@ module VersatileDiamond
 
             describe 'intermediate specie of migration down process' do
               let(:base_specs) do
-                [dept_methyl_on_bridge_base, dept_methyl_on_dimer_base, subject]
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base,
+                  subject
+                ]
               end
 
               it_behaves_like :check_finite_graph do

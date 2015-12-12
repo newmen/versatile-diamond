@@ -134,38 +134,49 @@ module VersatileDiamond
 
           # Removes reverse relations to passed nodes
           # @param [Hash] graph from which reverse relations will be excepted
-          # @param [Array] nodes of graph to which the reverse relations will be
-          #   excepted
+          # @param [Array] nodes the reverse relations to which will be excepted
+          # @param [Array] neighbours the reverse relations from which will be excepted
           # @return [Hash] the graph without reverse relations
-          def without_reverse(graph, nodes)
-            reject_lambda = -> ns { nodes.include?(ns) }
+          def without_reverse(graph, nodes, neighbours = nil)
+            neighbours ||= graph[nodes].map(&:first)
+            clean_graph = except_multi_reverse_relations(graph, nodes, neighbours)
+            except_single_reverse_relations(clean_graph, nodes, neighbours)
+          end
 
-            # except multi reverse relations
-            other_side_nodes = graph[nodes].map(&:first)
-            without_full_others = except_relations(graph, reject_lambda) do |ns|
-              other_side_nodes.include?(ns)
-            end
+          # Removes multi reverse relations to passed nodes
+          # @param [Hash] graph from which reverse relations will be excepted
+          # @param [Array] nodes the reverse relations to which will be excepted
+          # @param [Array] neighbours the reverse relations from which will be excepted
+          # @return [Hash] the graph without multi reverse relations
+          def except_multi_reverse_relations(graph, nodes, neighbours)
+            except_relations(graph, nodes) { |ns| neighbours.include?(ns) }
+          end
 
-            # except single reverse relations
-            single_other_nodes = other_side_nodes.flatten.uniq
-            except_relations(without_full_others, reject_lambda) do |ns|
-              ns.size == 1 && single_other_nodes.include?(ns.first)
+          # Removes single reverse relations to passed nodes
+          # @param [Hash] graph from which reverse relations will be excepted
+          # @param [Array] nodes the reverse relations to which will be excepted
+          # @param [Array] neighbours the reverse relations from which will be excepted
+          # @return [Hash] the graph without single reverse relations
+          def except_single_reverse_relations(graph, nodes, neighbours)
+            single_neighbours = neighbours.flatten.uniq
+            except_relations(graph, nodes) do |ns|
+              ns.size == 1 && single_neighbours.include?(ns.first)
             end
           end
 
           # Removes relations from passed graph by two conditions
           # @param [Proc] reject_lambda the function which reject neighbours nodes
-          # @yield [Array] by it condition checks that erasing should to be
+          # @yield [Array] it condition checks that erasing should to be
           # @return [Hash] the graph without erased relations
-          def except_relations(graph, reject_lambda, &condition_proc)
+          def except_relations(graph, target_nodes, &block)
             graph.each_with_object({}) do |(nodes, rels), result|
-              if condition_proc[nodes]
-                new_rels = rels.reduce([]) do |acc, (nss, r)|
-                  new_nss = nss.reject(&reject_lambda)
-                  new_nss.empty? ? acc : acc << [new_nss, r]
+              if block[nodes]
+                new_rels = rels.each_with_object([]) do |(nbrs, r), acc|
+                  new_nbrs = nbrs.reject { |ns| target_nodes.include?(ns) }
+                  acc << [new_nbrs, r] unless new_nbrs.empty?
                 end
 
-                result[nodes] = new_rels unless new_rels.empty?
+                result[nodes] = new_rels if !new_rels.empty? || rels.empty?
               else
                 result[nodes] = rels
               end

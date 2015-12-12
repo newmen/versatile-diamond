@@ -37,6 +37,12 @@ module VersatileDiamond
             end
           end
 
+          # Checks that target atom is anchor in parent specie
+          # @return [Boolean] is anchor or not
+          def anchor?
+            !dept_spec.parents_of(atom, anchored: true).empty?
+          end
+
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties

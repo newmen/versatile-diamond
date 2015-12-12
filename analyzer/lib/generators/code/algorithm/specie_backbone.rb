@@ -44,6 +44,13 @@ module VersatileDiamond
 
           def_delegators :@specie, :spec, :sequence
 
+          # Checks that all nodes in passed lists are contained anchor atoms
+          # @param [Array] lists_of_nodes which internal nodes will be checked
+          # @return [Boolean] are all nodes have anchor atoms or not
+          def all_anchored?(lists_of_nodes)
+            lists_of_nodes.flatten.all? { |node| node.anchor? || node.none? }
+          end
+
           # Finds nodes from passed lists by passed atom
           # @param [Array] lists_of_nodes where result nodes will be found or not
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -53,6 +60,22 @@ module VersatileDiamond
             lists_of_nodes.find { |nodes| nodes.any? { |node| node.atom == atom } }
           end
 
+          # Iterates each atom from specie atoms sequence, gets nodes for it and passes
+          # graph, nodes and atom to block
+          #
+          # @param [Hash] graph the new instance of which will be returned after
+          #   iteration done
+          # @param [Array] all_nodes_lists the list of all nodes from original graph
+          # @yield [Hasn, Array, Atom] iterates each described triples and accumulates
+          #   the result as next value of graph
+          # @return [Hash] the graph which was modified under iteration
+          def through_sequence(graph, all_nodes_lists, &block)
+            sequence.short.reduce(graph) do |acc, atom|
+              nodes = find_nodes(all_nodes_lists, atom)
+              block[acc, nodes, atom]
+            end
+          end
+
           # Clears passed graph from reverse relations in order sequenced atom in
           # original specie
           #
@@ -60,9 +83,71 @@ module VersatileDiamond
           # @return [Hash] the graph wihtout excess relations
           def clear_excess_rels(graph)
             all_nodes_lists = collect_nodes(graph)
-            sequence.short.reduce(graph) do |acc, atom|
-              nodes = find_nodes(all_nodes_lists, atom)
-              acc[nodes] ? clear_reverse_rels(acc, nodes, atom) : acc
+
+            unless all_anchored?(all_nodes_lists)
+              graph = setup_anchored_order(graph, all_nodes_lists)
+            end
+
+            through_sequence(graph, all_nodes_lists) do |acc, nodes, atom|
+              acc[nodes] ? full_clear_reverse_rels(acc, nodes, atom) : acc
+            end
+          end
+
+          # Removes from passed graph the links which related from anchored nodes to
+          # nodes which haven't  parent species anchor atoms
+          #
+          # @param [Hash] graph the initial (and final) value of reduce opretation
+          # @param [Array] all_nodes_lists the list of all nodes from original graph
+          # @return [Hash] the graph without excess relations
+          def setup_anchored_order(graph, all_nodes_lists)
+            through_sequence(graph, all_nodes_lists) do |acc, nodes, _|
+              if acc[nodes]
+                keep_anchored_rels(acc, nodes)
+              else
+                acc[nodes] = [] if uniq_anchored?(nodes, all_nodes_lists)
+                acc
+              end
+            end
+          end
+
+          # Does one removing of excess unanchored relation
+          # @param [Hash] graph the initial (and final) value of reduce opretation
+          # @param [Array] nodes which relations will be verified
+          # @return [Hash] the graph without excess unanchored relation
+          def keep_anchored_rels(graph, nodes)
+            clean_relations = anchored_relations(nodes, graph[nodes])
+            clean_relations.reduce(graph) do |acc, (nbrs, _)|
+              without_reverse(acc, nodes, [nbrs])
+            end
+          end
+
+          # Selects relations to nodes which atoms are anchors in parent species
+          # @param [Array] nodes which relations will be filtered
+          # @param [Array] relations from which the anchored relations will be selected
+          # @return [Array] the list of relations to nodes with parent anchors
+          def anchored_relations(nodes, relations)
+            uniq_species = nodes.map(&:uniq_specie).uniq
+            relations.select do |neighbours, _|
+              neighbours.all? do |node|
+                node.anchor? || uniq_species.include?(node.uniq_specie)
+              end
+            end
+          end
+
+          # Checks that another anchored nodes are exists in passed lists of nodes
+          # @param [Array] nodes it is possible that last anchored nodes for correspond
+          #   parent specie
+          # @param [Array] lists_of_nodes where will be cheking another anchored nodes
+          # @return [Boolean] is exists at least one other anchored node for same
+          #   parent specie or not
+          def uniq_anchored?(nodes, lists_of_nodes)
+            return false unless nodes.all?(&:anchor?)
+            other_nodes = lists_of_nodes.flatten.reject { |node| nodes.include?(node) }
+            !nodes.map(&:uniq_specie).uniq.all? do |uniq_specie|
+              other_nodes.any? do |node|
+                node.anchor? && (node.uniq_specie == uniq_specie ||
+                  (node.scope? && node.uniq_specie.species.include?(uniq_specie)))
+              end
             end
           end
 
@@ -81,18 +166,18 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom by which the nodes was selected
           # @return [Hash] the graph wihtout excess reverse relations
-          def clear_reverse_rels(graph, nodes, atom)
+          def full_clear_reverse_rels(graph, nodes, atom)
+            is_latticed = !!atom.lattice
             limits = atom.relations_limits
-            group_again(graph[nodes]).reduce(graph) do |acc, (rp, nbrs)|
-              raise 'Incomplete grouping in on prev step' unless nbrs.size == 1
 
+            group_again(graph[nodes]).reduce(graph) do |acc, (rp, nbrs)|
               all_nbrs = nbrs.flatten
-              num = all_nbrs.size / nodes.size.to_f
+              num = (all_nbrs.size / nodes.size.to_f).round
               max_num = limits[rp]
 
               if max_num < num
                 raise 'Node has too more relations'
-              elsif !atom.lattice || max_num == num || equal_props?(nodes, all_nbrs)
+              elsif !is_latticed || max_num == num || equal_props?(nodes, all_nbrs)
                 without_reverse(acc, nodes)
               else
                 acc
@@ -101,14 +186,14 @@ module VersatileDiamond
           end
 
           # Collects similar relations that available by key of grouped graph
-          # @param [Array] rels the relations which will be grouped
+          # @param [Array] relations which will be grouped
           # @return [Array] the array where each item is array that contains the
           #   following elements: first item is relation parameters, second item is
           #   array of all neighbour nodes groups available by passed key of grouped
           #   graph
-          def group_again(rels)
-            rels.group_by(&:last).map do |rp, group|
-              [rp, group.map(&:first)]
+          def group_again(relations)
+            relations.group_by(&:last).map do |rel_props, group|
+              [rel_props, group.map(&:first)]
             end
           end
 
