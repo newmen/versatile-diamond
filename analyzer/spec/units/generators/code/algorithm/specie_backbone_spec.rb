@@ -279,25 +279,42 @@ module VersatileDiamond
 
             describe 'under up migration through 111 face' do
               subject { dept_lower_methyl_on_half_extended_bridge_base }
-              let(:base_specs) do
-                [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
-              end
 
-              it_behaves_like :check_ordered_graph do
-                let(:entry_node) { backbone.entry_nodes.first }
-                let(:ordered_graph) do
-                  [
-                    [[cbr], [[[cr], param_110_front]]]
-                  ]
+              describe 'just bridge base' do
+                let(:base_specs) { [dept_bridge_base, subject] }
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.first }
+                  let(:ordered_graph) do
+                    [
+                      [[cr], []],
+                      [[cbr], [[[cm], param_amorph]]]
+                    ]
+                  end
                 end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:entry_node) { backbone.entry_nodes.last }
-                let(:ordered_graph) do
-                  [
-                    [[cr], [[[cbr], param_110_cross]]]
-                  ]
+              describe 'many base species' do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.first }
+                  let(:ordered_graph) do
+                    [
+                      [[cbr], [[[cr], param_110_front]]]
+                    ]
+                  end
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.last }
+                  let(:ordered_graph) do
+                    [
+                      [[cr], [[[cbr], param_110_cross]]]
+                    ]
+                  end
                 end
               end
             end
