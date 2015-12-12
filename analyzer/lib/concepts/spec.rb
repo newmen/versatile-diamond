@@ -5,6 +5,7 @@ module VersatileDiamond
     # @abstract
     class Spec < Named
       include Modules::RelationBetweenChecker
+      include AtomsSwapper
       include BondsCounter
       include Linker
 
@@ -113,30 +114,19 @@ module VersatileDiamond
         link_together(*atoms, instance)
       end
 
-      # Returns links container with replaced atoms by passed hash of atoms and
+      # Returns links container with replacing atoms by passed hash of atoms and
       # their keynames
       #
       # @param [Hash] keynames_to_new_atoms the hash which contain keyname
       #   Symbol of atom key and specific atom as value
-      # @return [Hash] links container with replaced atoms
+      # @return [Hash] links container with replacing atoms
       def links_with_replace_by(keynames_to_new_atoms)
         # deep dup @links
-        replaced_links = Hash[@links.map do |atom, links|
-          [atom, links.map.to_a]
-        end]
-
-        keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
-          replaced_atom = @atoms[replaced_atom_keyname]
-          local_links = replaced_links.delete(replaced_atom)
-          local_links.each do |linked_atom, _|
-            replaced_links[linked_atom].map! do |atom, link|
-              [(atom == replaced_atom ? new_atom : atom), link]
-            end
-          end
-          replaced_links[new_atom] = local_links
+        chainging_links = Hash[@links.map { |atom, links| [atom, links.dup] }]
+        keynames_to_new_atoms.each do |keyname, new_atom|
+          swap_atoms_in!(chainging_links, @atoms[keyname], new_atom)
         end
-
-        replaced_links
+        chainging_links
       end
 
       # Summarizes external bonds of all internal atoms
@@ -231,13 +221,7 @@ module VersatileDiamond
             if keyname == ref.keyname
               # exchange old atom (reference) to new atom
               @atoms[original_keyname] = atom
-              links = @links.delete(ref)
-              links.each do |another_atom, link|
-                @links[another_atom].map! do |at, li|
-                  [(at == ref ? atom : at), li]
-                end
-              end
-              @links[atom] = links
+              swap_atoms_in!(@links, ref, atom)
               nil
             else
               generated_keyname

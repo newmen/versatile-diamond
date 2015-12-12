@@ -5,6 +5,7 @@ module VersatileDiamond
     # position)
     class Graph
       include Modules::ExcessPositionChecker
+      include Concepts::AtomsSwapper
       extend Forwardable
 
       # Initialize instance by links hash of original spec graph
@@ -228,20 +229,11 @@ module VersatileDiamond
       # @param [Concepts::Atom] from the old atom
       # @param [Concepts::Atom] to the new atom
       def exchange_atoms!(from, to)
-        links = @edges.delete(from)
-        links.each do |atom, _|
-          @edges[atom].map! do |a, link|
-            [(a == from ? to : a), link]
-          end
-        end
-        @edges[to] = links
+        swap_atoms_in!(@edges, from, to)
 
         @changed_vertices ||= {}
         @changed_vertices[to] = from
-
-        if @atom_alias && @atom_alias[from]
-          @atom_alias[to] = @atom_alias.delete(from)
-        end
+        @atom_alias[to] = @atom_alias.delete(from) if @atom_alias && @atom_alias[from]
       end
 
       # Iterate edges by pass each edge and correspond vertices to block
