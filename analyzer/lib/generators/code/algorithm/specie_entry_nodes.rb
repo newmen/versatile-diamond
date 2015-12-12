@@ -7,6 +7,24 @@ module VersatileDiamond
 
         # Provides logic for selecting entry nodes of find specie algorithm
         class SpecieEntryNodes
+          class << self
+            # Sorts passed nodes lists by next algorithm: the bigger size lists places
+            # to begin, if sizes of ordering lists are equal then list with nodes which
+            # has bigger atom properties then it places to begin
+            #
+            # @param [Array] lists_of_nodes which will be ordered
+            # @return [Array] the specific ordered list of lists
+            def sort(lists_of_nodes)
+              lists_of_nodes.sort do |as, bs|
+                az, bz = as.size, bs.size
+                if az == bz
+                  as.zip(bs).reduce(0) { |acc, (a, b)| acc == 0 ? a <=> b : acc }
+                else
+                  bz <=> az
+                end
+              end
+            end
+          end
 
           # Initializes entry nodes detector by specie
           # @param [Hash] the final grouped (backbone) graph of find algorithm
@@ -54,7 +72,7 @@ module VersatileDiamond
           # @return [Array] the ordered most different or binding nodes
           def most_important_nodes(avail_keys)
             groups = target_groups(avail_keys)
-            sort_by_sizes(groups.uniq { |ns| ns.map(&:properties).to_set })
+            self.class.sort(groups.uniq { |ns| ns.map(&:properties).to_set })
           end
 
           # Gets nodes which grouped by using in parent specie and each group contains
@@ -77,23 +95,6 @@ module VersatileDiamond
               @grouped_nodes.any? do |ns, rels|
                 idx = ns.index(node)
                 idx && rels.any? { |nbrs, _| nbrs[idx].none? }
-              end
-            end
-          end
-
-          # Sorts passed nodes lists by next algorithm: the bigger size lists places to
-          # begin, if sizes of ordering lists are equal then list with nodes which has
-          # bigger atom properties then it places to begin
-          #
-          # @param [Array] nodes_lists the list of lists of nodes which will be ordered
-          # @return [Array] the specific ordered list of lists
-          def sort_by_sizes(nodes_lists)
-            nodes_lists.sort do |as, bs|
-              az, bz = as.size, bs.size
-              if az == bz
-                as.zip(bs).reduce(0) { |acc, (a, b)| acc == 0 ? a <=> b : acc }
-              else
-                bz <=> az
               end
             end
           end

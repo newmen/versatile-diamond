@@ -22,7 +22,7 @@ module VersatileDiamond
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
           def ordered_graph_from(nodes)
-            reorder_by_maximals(build_sequence_from(nodes))
+            reorder_by_maximals(build_sequence_from(final_graph, nodes))
           end
 
         private
@@ -31,46 +31,40 @@ module VersatileDiamond
           def_delegator :grouped_nodes_graph, :final_graph
 
           # Builds sequence of kv pairs from graph for find algorithm walking
-          # @param [Array] nodes from wich reverse relations of final graph will
-          #   be rejected
-          # @param [Hash] directed graph without loops
-          # @option [Hash] :init_graph the graph which uses as initial value for
-          #   internal purging graph
-          # @option [Set] :visited_key_nodes the set of visited nodes of internal
-          #   purging graph
+          # @param [Hash] graph by which the sequence will be combined
+          # @param [Array] nodes from which the sequence will builded
+          # @option [Set] :visited the set of visited nodes
           # @return [Array] the ordered list that contains the ordered relations from
-          #   final graph
-          def build_sequence_from(nodes, init_graph: nil, visited_key_nodes: Set.new)
+          #   passed graph
+          def build_sequence_from(graph, nodes, visited: Set.new)
             result = []
-            directed_graph = init_graph || final_graph
             nodes_queue = nodes.dup
 
             until nodes_queue.empty?
               node = nodes_queue.shift
               node_to_nodes[node].each do |next_nodes|
                 next_nodes_set = next_nodes.to_set
-                next if visited_key_nodes.include?(next_nodes_set)
+                next if visited.include?(next_nodes_set)
 
-                visited_key_nodes << next_nodes_set
-                rels = directed_graph[next_nodes]
+                visited << next_nodes_set
+                rels = graph[next_nodes]
                 next unless rels
 
                 result << [next_nodes, sort_rels_by_limits_of(next_nodes, rels)]
                 next if rels.empty?
 
-                directed_graph = without_reverse(directed_graph, next_nodes)
+                graph = without_reverse(graph, next_nodes)
                 nodes_queue += rels.flat_map(&:first)
               end
             end
 
-            connected_nodes_from(directed_graph).each do |ns|
-              next if visited_key_nodes.include?(ns.to_set)
-              result += build_sequence_from(ns,
-                init_graph: directed_graph, visited_key_nodes: visited_key_nodes)
+            connected_nodes_from(graph).each do |ns|
+              next if visited.include?(ns.to_set)
+              result += build_sequence_from(graph, ns, visited: visited)
             end
 
-            unconnected_nodes_from(directed_graph).each do |ns|
-              result << [ns, []] unless visited_key_nodes.include?(ns.to_set)
+            unconnected_nodes_from(graph).each do |ns|
+              result << [ns, []] unless visited.include?(ns.to_set)
             end
 
             result
@@ -199,14 +193,14 @@ module VersatileDiamond
           # @param [Hash] graph in which connected nodes will be found
           # @return [Array] the list of connected nodes
           def connected_nodes_from(graph)
-            graph.reject { |_, rels| rels.empty? }.map(&:first)
+            SpecieEntryNodes.sort(graph.reject { |_, rels| rels.empty? }.map(&:first))
           end
 
           # Gets the list of unconnected nodes from passed graph
           # @param [Hash] graph in which unconnected nodes will be found
           # @return [Array] the list of unconnected nodes
           def unconnected_nodes_from(graph)
-            graph.select { |_, rels| rels.empty? }.map(&:first)
+            SpecieEntryNodes.sort(graph.select { |_, rels| rels.empty? }.map(&:first))
           end
         end
 
