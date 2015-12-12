@@ -22,7 +22,7 @@ module VersatileDiamond
           # @return [Array] the ordered list that contains the ordered relations from
           #   final graph
           def ordered_graph_from(nodes)
-            reorder_by_maximals(build_sequence_from(final_graph, nodes))
+            reorder_by_maximals(build_sequence_from(final_graph, nodes, Set.new))
           end
 
         private
@@ -33,10 +33,10 @@ module VersatileDiamond
           # Builds sequence of kv pairs from graph for find algorithm walking
           # @param [Hash] graph by which the sequence will be combined
           # @param [Array] nodes from which the sequence will builded
-          # @option [Set] :visited the set of visited nodes
+          # @param [Set] visited nodes
           # @return [Array] the ordered list that contains the ordered relations from
           #   passed graph
-          def build_sequence_from(graph, nodes, visited: Set.new)
+          def build_sequence_from(graph, nodes, visited)
             result = []
             nodes_queue = nodes.dup
 
@@ -58,16 +58,34 @@ module VersatileDiamond
               end
             end
 
-            connected_nodes_from(graph).each do |ns|
-              next if visited.include?(ns.to_set)
-              result += build_sequence_from(graph, ns, visited: visited)
-            end
+            result +
+              build_next_sequence(graph, visited) +
+              build_unconnected_sequence(graph, visited)
+          end
 
-            unconnected_nodes_from(graph).each do |ns|
-              result << [ns, []] unless visited.include?(ns.to_set)
+          # Builds the next part of sequence of find algorithm steps by nodes which
+          # are relates to already added nodes
+          #
+          # @param [Hash] graph the graph which uses for receive next nodes
+          # @param [Set] visited the set of visited nodes
+          # @return [Array] the sequence of nodes which was not added under building
+          #   main sequence of find algorithm steps
+          def build_next_sequence(graph, visited)
+            connected_nodes_from(graph).reduce([]) do |acc, nodes|
+              next acc if visited.include?(nodes.to_set)
+              acc + build_sequence_from(graph, nodes, visited)
             end
+          end
 
-            result
+          # Builds the last part of nodes sequence for find algorithm steps
+          # @param [Hash] graph the graph which uses for receive next nodes
+          # @param [Set] visited the set of visited nodes
+          # @return [Array] the sequence of nodes which haven't any relations and not
+          #   added under building the main sequence of find algorithm steps
+          def build_unconnected_sequence(graph, visited)
+            unconnected_nodes_from(graph).each_with_object([]) do |nodes, acc|
+              acc << [nodes, []] unless visited.include?(nodes.to_set)
+            end
           end
 
           # Reorders passed graph when for some key nodes of it the
