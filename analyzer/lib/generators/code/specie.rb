@@ -20,7 +20,6 @@ module VersatileDiamond
         INTER_SPECIE_NAME = 'specie'.freeze
 
         def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
-        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
         attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator

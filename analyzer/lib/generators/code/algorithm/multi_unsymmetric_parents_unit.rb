@@ -9,12 +9,6 @@ module VersatileDiamond
           include MultiParentSpeciesCppExpressions
           include SymmetricCppExpressions
 
-          # Also defines cache variable...
-          def initialize(*)
-            super
-            @_using_specie_atoms = nil
-          end
-
           # Gets a code with checking all same species from target atom
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
@@ -38,7 +32,7 @@ module VersatileDiamond
           #
           # @return [Array] the list of atoms which used in specie
           def using_specie_atoms
-            @_using_specie_atoms ||= original_specie.using_atoms
+            original_specie.spec.anchors
           end
 
           # Gets list of procs where iterates symmetries of parent species

@@ -7,8 +7,6 @@ module VersatileDiamond
         class SpecieFindBuilder < MainFindAlgorithmBuilder
           extend Forwardable
 
-          def_delegator :backbone, :using_atoms
-
           # Inits builder by target specie and main engine code generator
           # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie the target specie code generator
