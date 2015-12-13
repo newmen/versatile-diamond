@@ -30,8 +30,8 @@ module VersatileDiamond
           private
 
             # Compares passed passed nodes so anchors places to end
-            # @param [Node] a
-            # @param [Node] b
+            # @param [SpecieNode] a
+            # @param [SpecieNode] b
             # @param [Integer] comparation result
             def forward_not_anchors(a, b)
               if a.anchor? == b.anchor?
@@ -69,14 +69,14 @@ module VersatileDiamond
         private
 
           # Checks that scoped node is limited by number of bonds or unique properties
-          # @param [Node] node which will be checked
+          # @param [SpecieNode] node which will be checked
           # @return [Boolean] is limited or not
           def limited_node?(node)
             node.scope? && ((node.anchor? && node.limited?) || !avail_more?(node))
           end
 
           # Checks that avail another node which includes the passed
-          # @param [Node] node which will be checked
+          # @param [SpecieNode] node which will be checked
           # @return [Boolean] is there another node which includes the passed or not
           def avail_more?(node)
             @nodes.any? { |n| n != node && n.properties.include?(node.properties) }
@@ -127,7 +127,7 @@ module VersatileDiamond
           end
 
           # Gets set of original species from node
-          # @param [Node] node from whic species will be gotten
+          # @param [SpecieNode] node from whic species will be gotten
           # @return [Set] the set of original species
           def originals_species_from(node)
             if node.scope?

@@ -1,10 +1,10 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Nodes
 
         # Also contains the different dependent spec
-        class ReactantNode < Node
+        class ReactantNode < BaseNode
           # Checks that target atom is anchor in original specie
           # @return [Boolean] is anchor or not
           def anchor?

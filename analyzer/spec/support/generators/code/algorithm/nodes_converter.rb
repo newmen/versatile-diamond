@@ -44,7 +44,7 @@ module VersatileDiamond
           private
 
             # Provides simple array with two element instead of the node
-            # @param [Node] node which will be converted
+            # @param [BaseNode] node which will be converted
             # @return [Array] the simple checkable array with two values
             def typed_node(node)
               [node.uniq_specie.class, node.atom]

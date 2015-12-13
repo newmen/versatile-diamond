@@ -123,7 +123,7 @@ module VersatileDiamond
           end
 
           # Gets all flatten relations of passed node
-          # @param [Node] node the pair of specie and atom isntances for which
+          # @param [BaseNode] node the pair of specie and atom isntances for which
           #   the flatten relations will be gotten
           # @return [Array] the array of relations where each relation is array of two
           #   items, where first item is neighbour atom and second item is relation
@@ -178,16 +178,16 @@ module VersatileDiamond
           end
 
           # Checks that small links graph has relation between passed nodes
-          # @param [Node] from is the first node
-          # @param [Node] to is the second node
+          # @param [BaseNode] from is the first node
+          # @param [BaseNode] to is the second node
           # @return [Boolean] has relation or not
           def alive_relation?(from, to)
             has_relation_in?(small_graph, from, to)
           end
 
           # Checks that clean specie links graph has relation between passed nodes
-          # @param [Node] from is the first node
-          # @param [Node] to is the second node
+          # @param [BaseNode] from is the first node
+          # @param [BaseNode] to is the second node
           # @return [Boolean] has relation or not
           def has_relation?(from, to)
             has_relation_in?(big_graph, from, to)
@@ -195,15 +195,15 @@ module VersatileDiamond
 
           # Checks that relation is present between passed nodes in also passed links
           # @param [Hash] links where relation will be found or not
-          # @param [Node] from is the first node
-          # @param [Node] to is the second node
+          # @param [BaseNode] from is the first node
+          # @param [BaseNode] to is the second node
           # @return [Boolean] has relation or not
           def has_relation_in?(links, from, to)
             links[from].any? { |n, _| n == to }
           end
 
           # Checks that node has flatten relation
-          # @param [Node] node which relations will be checked
+          # @param [BaseNode] node which relations will be checked
           # @return [Boolean] node has flatten relation or not
           def has_flatten_relation?(node)
             !flatten_relations_of(node).empty?

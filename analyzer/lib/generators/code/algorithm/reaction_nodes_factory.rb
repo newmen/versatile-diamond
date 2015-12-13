@@ -15,12 +15,13 @@ module VersatileDiamond
         private
 
           # Creates node for passed spec with atom
-          # @return [Node] new node which contain the correspond algorithm specie and
-          #   atom
+          # @param [Array] spec_atom by which the new node will be maked
+          # @return [ReactantNode] new node which contain the correspond algorithm
+          #   specie and atom
           def create_node(spec_atom)
             spec, atom = spec_atom
             specie = @unique_species_provider.get_unique_specie(spec)
-            ReactantNode.new(specie.original, specie, atom)
+            Nodes::ReactantNode.new(specie.original, specie, atom)
           end
         end
 

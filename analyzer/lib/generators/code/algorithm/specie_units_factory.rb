@@ -45,7 +45,7 @@ module VersatileDiamond
         private
 
           # Creates single atom unit by one node
-          # @param [Node] node by which the single atom unit will be created
+          # @param [SpecieNode] node by which the single atom unit will be created
           # @return [SimpleUnit] the unit for generation code that depends from
           #   passed node
           def create_single_atom_unit(node)

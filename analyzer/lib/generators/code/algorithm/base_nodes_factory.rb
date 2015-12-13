@@ -14,8 +14,9 @@ module VersatileDiamond
           end
 
           # Makes node for passed vertex
-          # @return [Node] the node which contain the correspond algorithm specie and
-          #   atom
+          # @param [Object] vertex by which the new node will be maked
+          # @return [BaseNode] the node which contain the correspond algorithm specie
+          #   and atom
           def get_node(vertex)
             @vertices_to_nodes[vertex] ||= create_node(vertex)
           end

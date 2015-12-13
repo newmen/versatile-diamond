@@ -1,15 +1,15 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Nodes
 
         # Contains the target species (original and unique) and correspond atom
-        class Node
+        # @abstract
+        class BaseNode
           include Modules::OrderProvider
           extend Forwardable
 
           attr_reader :uniq_specie, :atom
-          def_delegators :uniq_specie, :none?, :scope?
           def_delegators :atom, :lattice, :relations_limits
 
           # Initializes the node object
@@ -27,26 +27,10 @@ module VersatileDiamond
           end
 
           # Compares current node with another node
-          # @param [Node] other comparing node
+          # @param [BaseNode] other comparing node
           # @return [Integer] the comparing result
           def <=> (other)
-            order(other, self, :properties) do
-              typed_order(other, self, :scope?) do
-                typed_order(self, other, :none?)
-              end
-            end
-          end
-
-          # Checks that target atom is anchor in parent specie
-          # @return [Boolean] is anchor or not
-          def anchor?
-            !dept_spec.parents_of(atom, anchored: true).empty?
-          end
-
-          # Checks that target atom have maximal number of possible bonds
-          # @return [Boolean] has atom maximal number of bonds or not
-          def limited?
-            !(properties.incoherent? || properties.has_free_bonds?)
+            order(other, self, :properties) { comparing_core(other) }
           end
 
           # Directly provides atom properties instance for current node
@@ -63,8 +47,11 @@ module VersatileDiamond
 
           attr_reader :original_specie
 
-          def dept_spec
-            original_specie.spec
+          # Provides default comparing core for the case when atom properties are equal
+          # @param [BaseNode] other comparing node
+          # @return [Integer] the comparing result
+          def comparing_core(other)
+            0
           end
         end
 
