@@ -125,6 +125,21 @@ module VersatileDiamond
             end
           end
 
+          describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
+            subject { dept_lower_methyl_on_half_extended_bridge_base }
+            let(:points_list) { [[cbr], [cr]] }
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) { [dept_bridge_base, subject] }
+            end
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+              end
+            end
+          end
+
           describe 'intermediate specie of migration down process' do
             describe 'all atoms are anchored' do
               let(:base_specs) do
@@ -137,7 +152,7 @@ module VersatileDiamond
               end
 
               describe 'many bottom entry points' do
-                let(:points_list) { [[cdl, cdr], [cbl]] } # why this is cool?!
+                let(:points_list) { [[cdr, cdl], [cbl]] } # why this is cool?!
 
                 it_behaves_like :check_entry_nodes do
                   subject { dept_intermed_migr_down_half_base }

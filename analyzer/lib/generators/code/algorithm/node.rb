@@ -43,6 +43,12 @@ module VersatileDiamond
             !dept_spec.parents_of(atom, anchored: true).empty?
           end
 
+          # Checks that target atom have maximal number of possible bonds
+          # @return [Boolean] has atom maximal number of bonds or not
+          def limited?
+            !(properties.incoherent? || properties.has_free_bonds?)
+          end
+
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties

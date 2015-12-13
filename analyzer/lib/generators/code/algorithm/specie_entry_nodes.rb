@@ -19,7 +19,7 @@ module VersatileDiamond
                 az, bz = as.size, bs.size
                 if az == bz
                   as.zip(bs).reduce(0) do |acc, ns|
-                    acc == 0 ? forward_no_anchors(*ns) : acc
+                    acc == 0 ? forward_not_anchors(*ns) : acc
                   end
                 else
                   bz <=> az
@@ -33,7 +33,7 @@ module VersatileDiamond
             # @param [Node] a
             # @param [Node] b
             # @param [Integer] comparation result
-            def forward_no_anchors(a, b)
+            def forward_not_anchors(a, b)
               if a.anchor? == b.anchor?
                 a <=> b
               else
@@ -46,6 +46,7 @@ module VersatileDiamond
           # @param [Hash] the final grouped (backbone) graph of find algorithm
           def initialize(final_graph)
             @grouped_nodes = final_graph
+            @nodes = @grouped_nodes.keys.flatten.uniq.sort
 
             @_list = nil
           end
@@ -55,49 +56,59 @@ module VersatileDiamond
           def list
             return @_list if @_list
 
-            avail_keys = @grouped_nodes.keys.flatten.uniq
-            nodes = avail_keys.sort
             @_list =
-              if nodes.all?(&:none?) || nodes.uniq(&:uniq_specie).size == 1
-                [nodes]
-              elsif nodes.any?(&:scope?)
-                [[nodes.find(&:scope?)]] # finds first because nodes are sorted ^^
+              if @nodes.all?(&:none?) || @nodes.uniq(&:uniq_specie).size == 1
+                [@nodes]
               else
-                most_important_nodes(avail_keys)
+                # finds first because nodes are sorted ^^
+                limited_node = @nodes.find(&method(:limited_node?))
+                limited_node ? [[limited_node]] : most_important_nodes
               end
           end
 
         private
 
+          # Checks that scoped node is limited by number of bonds or unique properties
+          # @param [Node] node which will be checked
+          # @return [Boolean] is limited or not
+          def limited_node?(node)
+            node.scope? && ((node.anchor? && node.limited?) || !avail_more?(node))
+          end
+
+          # Checks that avail another node which includes the passed
+          # @param [Node] node which will be checked
+          # @return [Boolean] is there another node which includes the passed or not
+          def avail_more?(node)
+            @nodes.any? { |n| n != node && n.properties.include?(node.properties) }
+          end
+
           # Selects the nodes which are mostly used as keys of grouped nodes graph
-          # @param [Array] avail_keys from which the most used nodes will be selected
           # @return [Array] the array of most used nodes
-          def most_used_nodes(avail_keys)
-            all_nodes = avail_keys.reject(&:none?).select(&:anchor?)
-            groups = all_nodes.groups { |n| [n.uniq_specie.original, n.properties] }
+          def most_used_nodes
+            anchor_nodes = @nodes.reject(&:none?).select(&:anchor?)
+            groups = anchor_nodes.groups do |node|
+              [originals_species_from(node), node.properties]
+            end
             most_used = groups.reduce([]) do |acc, group|
               # selects the best from each group
-              acc << group.max_by { |n| all_nodes.count(n) }
+              acc << group.max_by { |n| anchor_nodes.count(n) }
             end
             most_used.uniq
           end
 
           # Selects the most important nodes in keys of grouped nodes graph
-          # @param [Array] avail_keys from which the most imporant nodes will be
-          #   selected
           # @return [Array] the ordered most different or binding nodes
-          def most_important_nodes(avail_keys)
-            groups = target_groups(avail_keys)
+          def most_important_nodes
+            groups = target_groups
             self.class.sort(groups.uniq { |ns| ns.map(&:properties).to_set })
           end
 
           # Gets nodes which grouped by using in parent specie and each group contains
           # nodes at the limit of specie or unique set of using atom properties
           #
-          # @param [Array] avail_keys the nodes which will be grouped
           # @return [Array] the nodes grouped by special algorithm
-          def target_groups(avail_keys)
-            most_used_nodes(avail_keys).groups(&:uniq_specie).map do |group|
+          def target_groups
+            most_used_nodes.groups(&:uniq_specie).map do |group|
               border_nodes = select_border(group)
               border_nodes.empty? ? group.uniq(&:properties) : border_nodes
             end
@@ -112,6 +123,17 @@ module VersatileDiamond
                 idx = ns.index(node)
                 idx && rels.any? { |nbrs, _| nbrs[idx].none? }
               end
+            end
+          end
+
+          # Gets set of original species from node
+          # @param [Node] node from whic species will be gotten
+          # @return [Set] the set of original species
+          def originals_species_from(node)
+            if node.scope?
+              node.uniq_specie.species.map(&:original).to_set
+            else
+              Set[node.uniq_specie.original]
             end
           end
         end
