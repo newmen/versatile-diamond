@@ -51,10 +51,9 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
           def symmetric_atom_condition(target_atom, specie, checking_atom, &block)
-            atom_var_name = namer.name_of(target_atom)
             unb_method = SpecieCppExpressions.instance_method(:atom_from_specie_call)
             specie_call = unb_method.bind(self).call(specie, checking_atom)
-            code_condition("#{atom_var_name} == #{specie_call}", &block)
+            code_condition("#{name_of(target_atom)} == #{specie_call}", &block)
           end
         end
 

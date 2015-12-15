@@ -11,8 +11,8 @@ module VersatileDiamond
           # Gets code line with definition of target species atoms
           # @return [String] the code line with defined atoms
           def define_target_atoms_line
-            values = atoms.map do |atom|
-              name_of(atom) || atom_from_specie_call(uniq_specie_for(atom), atom)
+            values = names_or(atoms) do |atom|
+              atom_from_specie_call(uniq_specie_for(atom), atom)
             end
 
             namer.erase(atoms)

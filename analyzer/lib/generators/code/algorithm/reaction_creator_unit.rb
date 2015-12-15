@@ -23,7 +23,7 @@ module VersatileDiamond
           # Gets the cpp code string with creation of target reaction
           # @return [String] the cpp code line with creation target reaction call
           def create_line
-            code_line("create<#{reaction.class_name}>(#{namer.name_of(species)});")
+            code_line("create<#{reaction.class_name}>(#{name_of(species)});")
           end
 
           # Finds previously defined atom
@@ -31,7 +31,7 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which already defined before
           def atom_of(specie)
-            specie.proxy_spec.anchors.find { |a| namer.name_of(a) }
+            find_defined(specie.proxy_spec.anchors)
           end
 
           # Makes code which gets target specie instance from passed atom
@@ -45,7 +45,7 @@ module VersatileDiamond
           # Gets the line with definition of target species array variable
           # @return [String] th ecpp code line with definition of target species var
           def define_target_species_variable_line
-            items = species.map { |s| namer.name_of(s) || spec_by_role_call(s) }
+            items = names_or(species, &method(:spec_by_role_call))
             namer.reassign(SpeciesReaction::ANCHOR_SPECIE_NAME, species)
             define_var_line("#{specie_type} *", species, items)
           end

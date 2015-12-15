@@ -12,7 +12,7 @@ module VersatileDiamond
           # @return [ReactionLookAroundCreatorUnit] the unit for defines lateral chunk
           #   creation code block
           def creator(*args)
-            ReactionLookAroundCreatorUnit.new(namer, *args)
+            ReactionLookAroundCreatorUnit.new(*default_args, *args)
           end
 
           # Gets the other side species checker unit
@@ -23,7 +23,7 @@ module VersatileDiamond
           # @return [LookAroundOthersideSpeciesCheckerUnit] the unit which will check
           #   sidepiece species
           def checker(*args)
-            LookAroundOthersideSpeciesCheckerUnit.new(namer, *args)
+            LookAroundOthersideSpeciesCheckerUnit.new(*default_args, *args)
           end
         end
 

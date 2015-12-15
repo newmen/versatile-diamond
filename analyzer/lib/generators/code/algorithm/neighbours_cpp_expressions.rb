@@ -143,7 +143,7 @@ module VersatileDiamond
             nbrs = other.atoms
             raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
 
-            defined_nbrs_with_names = nbrs.map { |nbr| [nbr, name_of(nbr)] }
+            defined_nbrs_with_names = nbrs.zip(names_for(nbrs))
             defined_nbrs_with_names.select!(&:last)
             namer.erase(nbrs)
 
@@ -196,7 +196,7 @@ module VersatileDiamond
             if atoms.size == 1 || namer.full_array?(atoms)
               ''
             else
-              old_names = atoms.map(&method(:name_of)) # collect before erase
+              old_names = names_for(atoms) # collect before erase
               namer.erase(atoms)
               namer.assign_next('anchor', atoms)
               define_var_line('Atom *', atoms, old_names)
@@ -315,7 +315,7 @@ module VersatileDiamond
           #   be checked
           # @return [String] code with calling check bond function
           def check_bond_call(*atoms)
-            first_var, second_var = atoms.map(&method(:name_of))
+            first_var, second_var = names_for(atoms)
             "#{first_var}->hasBondWith(#{second_var})"
           end
 

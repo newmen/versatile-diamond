@@ -30,13 +30,7 @@ module VersatileDiamond
             if single?
               super
             else
-              define_parent_line =
-                if atoms.all?(&method(:name_of))
-                  ''
-                else
-                  define_target_specie_line
-                end
-
+              define_parent_line = all_defined?(atoms) ? '' : define_target_specie_line
               define_parent_line + define_nbrs_anchors_line
             end
           end
@@ -56,7 +50,7 @@ module VersatileDiamond
           # Collects the names of atom variables or calls them from own specie
           # @return [Array] the list of atom names or specie calls
           def atom_values
-            atoms.map { |a| name_of(a) || atom_from_own_specie_call(a) }
+            names_or(atoms, &method(:atom_from_own_specie_call))
           end
         end
 

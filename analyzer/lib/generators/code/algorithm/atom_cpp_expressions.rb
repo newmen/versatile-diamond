@@ -35,9 +35,8 @@ module VersatileDiamond
               fail "Atom (#{ap}) is not an anchor for using specie (#{specie.spec})"
             end
 
-            atom_var_name = namer.name_of(target_atom)
             role = specie.role(getting_atom)
-            "#{atom_var_name}->specByRole<#{specie.class_name}>(#{role})"
+            "#{name_of(target_atom)}->specByRole<#{specie.class_name}>(#{role})"
           end
         end
 

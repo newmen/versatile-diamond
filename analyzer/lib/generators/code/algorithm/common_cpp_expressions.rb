@@ -125,7 +125,7 @@ module VersatileDiamond
               raise 'Incorrect number of variables for number of values'
             end
 
-            var_name = namer.name_of(vars)
+            var_name = name_of(vars)
             value_str = values.is_a?(Array) ? values.join(', ') : values
 
             if vars_is_array && values_is_array
@@ -150,8 +150,7 @@ module VersatileDiamond
           # @yield [String, Object] the block should returns cpp code method call
           # @return [String] the cpp code string for condition in template
           def combine_condition(items, operator, &block)
-            names = items.map { |item| namer.name_of(item) }
-            names.zip(items).map(&block).join(" #{operator} ")
+            names_for(items).zip(items).map(&block).join(" #{operator} ")
           end
         end
 

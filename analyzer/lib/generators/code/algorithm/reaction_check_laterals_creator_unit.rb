@@ -7,13 +7,12 @@ module VersatileDiamond
 
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for concretize side reaction which was found
-        class ReactionCheckLateralsCreatorUnit
-          include CommonCppExpressions
-          include AtomCppExpressions
+        class ReactionCheckLateralsCreatorUnit < GenerableUnit
 
           FACTORY_VAR_NAME = 'factory'
 
           # Initializes the creator
+          # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
           # @param [LateralChunk] lateral_chunks which provides common links graph
           # @param [LateralReaction] lateral_reaction which will created by current
@@ -21,8 +20,9 @@ module VersatileDiamond
           # @param [UniqSpecie] target specie from which the find algorithm doing
           # @param [Array] sidepieces the list of sidepiece species from which lateral
           #   reactions will be checked
-          def initialize(namer, lateral_chunks, lateral_reaction, target, sidepieces)
-            @namer = namer
+          def initialize(generator, namer,
+                         lateral_chunks, lateral_reaction, target, sidepieces)
+            super(generator, namer)
             @lateral_chunks = lateral_chunks
             @lateral_reaction = lateral_reaction
             @target_specie = target
@@ -37,7 +37,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer, :lateral_chunks, :lateral_reaction
+          attr_reader :lateral_chunks, :lateral_reaction
           attr_reader :target_specie, :sidepiece_species
 
           # Gets typical reaction of current algorithm
@@ -66,7 +66,7 @@ module VersatileDiamond
           # Gets the list of factory constructor arguments
           # @return [Array] the list of species variables names
           def names_arr
-            [target_specie, sidepiece_species].map { |s| namer.name_of(s) }
+            names_for(target_specie, sidepiece_species)
           end
 
           # Gets cpp code with definition of checking lateral reactions factory

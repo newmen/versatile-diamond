@@ -6,23 +6,21 @@ module VersatileDiamond
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create an instance which was found
         # @abstract
-        class BaseReactionCreatorUnit
-          include CommonCppExpressions
-          include AtomCppExpressions
-
+        class BaseReactionCreatorUnit < GenerableUnit
           # Initializes the creator
+          # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
           # @param [BaseReaction] reaction which uses in current building algorithm
           # @param [Array] species the list of all previously defined unique species
-          def initialize(namer, reaction, species)
-            @namer = namer
+          def initialize(generator, namer, reaction, species)
+            super(generator, namer)
             @reaction = reaction
             @species = reaction.order_species(species)
           end
 
         private
 
-          attr_reader :namer, :reaction, :species
+          attr_reader :reaction, :species
 
         end
 

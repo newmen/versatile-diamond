@@ -39,7 +39,7 @@ module VersatileDiamond
           # Gets the specie creator unit
           # @return [SpecieCreatorUnit] the unit for defines specie creation code block
           def creator
-            SpecieCreatorUnit.new(namer, @specie, @used_unique_parents.to_a)
+            SpecieCreatorUnit.new(*default_args, @specie, @used_unique_parents.to_a)
           end
 
         private
@@ -50,7 +50,7 @@ module VersatileDiamond
           #   passed node
           def create_single_atom_unit(node)
             if node.none?
-              SingleAtomUnit.new(*default_args, node.atom)
+              SingleAtomUnit.new(*extended_args, node.atom)
             elsif node.scope?
               create_multi_parents_unit(node.uniq_specie.species, node.atom)
             else
@@ -70,7 +70,7 @@ module VersatileDiamond
             else
               # TODO: because MultiAtomsUnit doesn't include SpecieUnitBehavior
               # then need to create separated unit like a MultiSpeciesAtomsUnit
-              MultiAtomsUnit.new(*default_args, atoms)
+              MultiAtomsUnit.new(*extended_args, atoms)
             end
           end
 
@@ -91,7 +91,7 @@ module VersatileDiamond
           #   dependents from several parent species
           def create_multi_parents_unit(parent_species, atom)
             @used_unique_parents += parent_species
-            args = default_args + [parent_species, atom]
+            args = extended_args + [parent_species, atom]
             if max_unsymmetric_species?(parent_species, atom)
               if totally_unsymmetric_species?(parent_species, atom)
                 MultiSameUnsymmetricParentsUnit.new(*args)
@@ -112,7 +112,7 @@ module VersatileDiamond
           #   algorithm
           def create_single_specie_unit(unique_parent, atoms)
             @used_unique_parents << unique_parent
-            args = default_args + [unique_parent, atoms]
+            args = extended_args + [unique_parent, atoms]
             if @specie.find_root?
               SingleParentRootSpecieUnit.new(*args)
             else
@@ -187,8 +187,8 @@ module VersatileDiamond
 
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
-          def default_args
-            super + [original_spec]
+          def extended_args
+            default_args + [original_spec]
           end
         end
 

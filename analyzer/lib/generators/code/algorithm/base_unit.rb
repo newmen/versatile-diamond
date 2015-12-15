@@ -5,13 +5,10 @@ module VersatileDiamond
 
         # The base class for algorithm builder units
         # @abstract
-        class BaseUnit
-          extend Forwardable
+        class BaseUnit < GenerableUnit
           include SpeciesUser
-          include CommonCppExpressions
           include NeighboursCppExpressions
           include SpecieCppExpressions
-          include AtomCppExpressions
 
           # Initializes the empty unit of code builder algorithm
           # @param [EngineCode] generator the major code generator
@@ -64,9 +61,6 @@ module VersatileDiamond
           end
 
         private
-
-          attr_reader :generator, :namer
-          def_delegator :namer, :name_of
 
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)

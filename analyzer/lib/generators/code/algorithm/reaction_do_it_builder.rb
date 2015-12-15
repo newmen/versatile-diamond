@@ -95,8 +95,7 @@ module VersatileDiamond
           end
 
           def assert_specie_type(specie)
-            var_name = name_of(specie)
-            code_assert("#{var_name}->type() == #{specie.enum_name}")
+            code_assert("#{name_of(specie)}->type() == #{specie.enum_name}")
           end
 
           def changing_species

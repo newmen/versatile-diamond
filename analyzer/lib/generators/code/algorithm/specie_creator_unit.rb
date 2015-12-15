@@ -5,19 +5,18 @@ module VersatileDiamond
 
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create a specie which was found
-        class SpecieCreatorUnit
-          include CommonCppExpressions
+        class SpecieCreatorUnit < GenerableUnit
           include MultiParentSpeciesCppExpressions
-          include AtomCppExpressions
           extend Forwardable
 
           # Initializes the creator
+          # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
           # @param [Specie] original_specie which instance uses in current building
           #   algorithm
           # @param [Array] parent_species all previously defined unique parent species
-          def initialize(namer, original_specie, parent_species)
-            @namer = namer
+          def initialize(generator, namer, original_specie, parent_species)
+            super(generator, namer)
             @original_specie = original_specie
             @parent_species = parent_species.sort
           end
@@ -30,15 +29,15 @@ module VersatileDiamond
 
             if original_spec.source?
               additional_lines << define_atoms_variable_line
-              creation_args << namer.name_of(sequence.short)
+              creation_args << name_of(sequence.short)
             else
               additional_lines << define_additional_atoms_variable_line if delta > 1
-              creation_args << namer.name_of(sequence.addition_atoms) if delta > 0
+              creation_args << name_of(sequence.addition_atoms) if delta > 0
 
               if original_spec.complex?
                 additional_lines << define_parents_variable_line
               end
-              creation_args << namer.name_of(parent_species)
+              creation_args << name_of(parent_species)
             end
 
             args_str = creation_args.join(', ')
@@ -52,7 +51,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer, :parent_species
+          attr_reader :parent_species
           def_delegator :@original_specie, :sequence
           def_delegator :sequence, :delta
 
@@ -65,7 +64,7 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the twin that belongs to passed parent
           def atom_with_twin_of(parent)
-            named_atoms = original_spec.anchors.select(&namer.public_method(:name_of))
+            named_atoms = select_defined(original_spec.anchors)
             twins = named_atoms.map { |a| twin_by(parent, a) }
             named_atoms.zip(twins).select(&:last).first
           end
@@ -94,10 +93,7 @@ module VersatileDiamond
           #
           # @return [String] the string with defined parents variable
           def define_parents_variable_line
-            items = parent_species.map do |parent|
-              namer.name_of(parent) || spec_by_role_call(parent)
-            end
-
+            items = names_or(parent_species, &method(:spec_by_role_call))
             namer.reassign('parent', parent_species)
             define_var_line('ParentSpec *', parent_species, items)
           end
@@ -124,7 +120,7 @@ module VersatileDiamond
           # @return [String] the string with defined variables
           # @override
           def redefine_vars_line(type, single_name, vars)
-            names = vars.map { |a| namer.name_of(a) }
+            names = names_for(vars)
             namer.reassign(single_name, vars)
             define_var_line("#{type} *", vars, names)
           end

@@ -18,15 +18,11 @@ module VersatileDiamond
           # @return [String] the cpp code string
           # @override
           def check_species(&block)
-            if name_of(parent_specie) || atoms.any?(&method(:name_of))
+            if name_of(parent_specie) || any_defined?(atoms)
               block.call
             else
               define_target_specie_lambda do
-                if atoms.all?(&method(:name_of))
-                  block.call
-                else
-                  check_undefined_atom_roles(&block)
-                end
+                all_defined?(atoms) ? block.call : check_undefined_atom_roles(&block)
               end
             end
           end
@@ -56,7 +52,7 @@ module VersatileDiamond
           # @return [String] the cpp code string with defining atoms and checking
           #   condition
           def check_undefined_atom_roles(&block)
-            undefined_atoms = atoms.reject(&method(:name_of))
+            undefined_atoms = select_undefined(atoms)
             define_undefined_atoms_line +
               code_condition(check_atoms_roles_of(undefined_atoms), &block)
           end
@@ -109,14 +105,14 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the available anchor atom
           def avail_anchor
-            atoms.find(&method(:name_of)) || avail_not_own_anchor
+            find_defined(atoms) || avail_not_own_anchor
           end
 
           # Gets anchor atoms which was defined but not belongs to current unit
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the available not own anchor atom
           def avail_not_own_anchor
-            original_spec.anchors.select(&method(:name_of)).find do |atom|
+            select_defined(original_spec.anchors).find do |atom|
               !own_twins(atom).empty?
             end
           end

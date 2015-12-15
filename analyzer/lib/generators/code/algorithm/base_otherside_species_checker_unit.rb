@@ -7,18 +7,16 @@ module VersatileDiamond
 
         # Makes lines of code which describes creation of single lateral reaction
         # @abstract
-        class BaseOthersideSpeciesCheckerUnit
-          include CommonCppExpressions
-          include AtomCppExpressions
-
+        class BaseOthersideSpeciesCheckerUnit < GenerableUnit
           # Initializes the checker
+          # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
           # @param [Array] species_with_atoms the list of absolutely unique species
           #   with them atoms
           # @param [Array] prev_species the list of sidepieces which was used at
           #   previos steps
-          def initialize(namer, species_with_atoms, prev_species)
-            @namer = namer
+          def initialize(generator, namer, species_with_atoms, prev_species)
+            super(generator, namer)
             @species_with_atoms = species_with_atoms
             @defining_species = species_with_atoms.map(&:first)
             @prev_species = prev_species
@@ -33,7 +31,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer, :species_with_atoms, :defining_species, :prev_species
+          attr_reader :species_with_atoms, :defining_species, :prev_species
 
           # Gets the list of all available species
           # @return [Array] the list of available species
@@ -52,7 +50,7 @@ module VersatileDiamond
           # Gets the list of names of defined species
           # @return [Array] the list of names of defined species variables
           def names_arr
-            different_species.map { |s| namer.name_of(s) }
+            names_for(different_species)
           end
 
           # Gets the list of exactly different species
@@ -87,9 +85,7 @@ module VersatileDiamond
           # @param [String] operator for comparison two values
           # @return [Proc] the function which will compares two variable values
           def compare(operator)
-            return -> vars do
-              vars.map { |x| namer.name_of(x) }.join(" #{operator} ")
-            end
+            -> vars { names_for(vars).join(" #{operator} ") }
           end
 
           # Gets the line with definition of target species array variable

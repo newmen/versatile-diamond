@@ -69,7 +69,7 @@ module VersatileDiamond
           def full_relation_call_at(atoms, rel_params)
             atom = atoms.first
             frn_method_name = "#{full_relation_name(atom.lattice, rel_params)}_at"
-            atoms_vars_names_str = atoms.map(&method(:name_of)).join(', ')
+            atoms_vars_names_str = names_for(atoms).join(', ')
             "#{frn_method_name}(#{atoms_vars_names_str})"
           end
 

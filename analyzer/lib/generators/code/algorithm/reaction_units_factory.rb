@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [ReactionCreatorUnit] the unit for defines reaction creation code
           #   block
           def creator
-            ReactionCreatorUnit.new(namer, @reaction, @used_species.to_a)
+            ReactionCreatorUnit.new(*default_args, @reaction, @used_species.to_a)
           end
 
         private
