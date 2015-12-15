@@ -30,8 +30,8 @@ module VersatileDiamond
           #   getting_atom of which will be used for get a role of atom in specie
           # @return [String] the string of cpp code with specByRole call
           def spec_by_role_call(target_atom, specie, getting_atom)
-            unless specie.spec.anchors.include?(getting_atom)
-              ap = atom_properties(specie.spec, getting_atom)
+            unless specie.proxy_spec.anchors.include?(getting_atom)
+              ap = atom_properties(specie.proxy_spec, getting_atom)
               fail "Atom (#{ap}) is not an anchor for using specie (#{specie.spec})"
             end
 

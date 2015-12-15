@@ -18,10 +18,7 @@ module VersatileDiamond
         @links = straighten_graph(spec.links)
 
         @theres, @children, @rest = nil
-
-        @_residual_links, @_main_anchors, @_anchors = nil
-        @_similar_theres, @_root_theres = nil
-        @_pwts_cache = { true => {}, false => {} }
+        reset_caches!
       end
 
       # Clones the current instance but replace internal spec and change all atom
@@ -166,6 +163,7 @@ module VersatileDiamond
           acc[mirror[atom]] = rels.map { |a, r| [mirror[a] || a, r] }
         end
 
+        reset_caches!
         # directly setup the base class variable
         @spec = other_spec
       end
@@ -312,6 +310,13 @@ module VersatileDiamond
       # @return [Hash] the links which will be cleaned
       def cleanable_links
         original_links
+      end
+
+      # Resets the internal caches
+      def reset_caches!
+        @_residual_links, @_main_anchors, @_anchors = nil
+        @_similar_theres, @_root_theres = nil
+        @_pwts_cache = { true => {}, false => {} }
       end
     end
 
