@@ -6,6 +6,8 @@ module VersatileDiamond
         # Contains methods for generate cpp expressions that calls advansed atom
         # methods of engine framework
         module AtomCppExpressions
+          extend Forwardable
+
         protected
 
           # Gets the code line with definition of specie variable
@@ -17,6 +19,8 @@ module VersatileDiamond
           end
 
         private
+
+          def_delegator :generator, :atom_properties
 
           # Makes code string with calling of engine method that names specByRole
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -34,16 +38,6 @@ module VersatileDiamond
             atom_var_name = namer.name_of(target_atom)
             role = specie.role(getting_atom)
             "#{atom_var_name}->specByRole<#{specie.class_name}>(#{role})"
-          end
-
-          # Gets atom properties
-          # @param [Organizers::DependentWrappedSpec] dept_spec the context spec
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which properties will be gotten
-          # @return [Organizers::AtomProperties] the properties of passed atom in
-          #   passed context spec
-          def atom_properties(dept_spec, atom)
-            Organizers::AtomProperties.new(dept_spec, atom)
           end
         end
 

@@ -21,7 +21,7 @@ module VersatileDiamond
           def create_node(spec_atom)
             spec, atom = spec_atom
             specie = @unique_species_provider.get_unique_specie(spec)
-            Nodes::ReactantNode.new(specie.original, specie, atom)
+            Nodes::ReactantNode.new(generator, specie.original, specie, atom)
           end
         end
 

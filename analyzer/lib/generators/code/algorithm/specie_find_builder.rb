@@ -102,9 +102,7 @@ module VersatileDiamond
           # @param [Array] list_of_props which classified analogies will be returned
           # @return [Array] the list of common classified atom properties
           def classified_props(list_of_props)
-            list_of_props.map do |props|
-              generator.classifier.props.find { |x| x == props }
-            end
+            list_of_props.map(&generator.public_method(:atom_properties))
           end
         end
 

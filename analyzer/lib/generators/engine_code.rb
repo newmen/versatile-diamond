@@ -115,6 +115,10 @@ module VersatileDiamond
         dependent_species.values.select { |s| s.gas? && (s.simple? || s.specific?) }
       end
 
+      def inspect
+        '✾'
+      end
+
     private
 
       # Gets the instances of major code elements

@@ -13,12 +13,14 @@ module VersatileDiamond
           def_delegators :atom, :lattice, :relations_limits
 
           # Initializes the node object
+          # @param [EngineCode] generator the main code generator
           # @param [Specie] original_specie the target specie code generator instance
           # @param [NoneSpec | UniqueSpecie | SpeciesScope] uniq_specie which
           #   correspond to using parent species
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which was a vertex of original graph
-          def initialize(original_specie, uniq_specie, atom)
+          def initialize(generator, original_specie, uniq_specie, atom)
+            @generator = generator
             @original_specie = original_specie
             @uniq_specie = uniq_specie
             @atom = atom
@@ -36,7 +38,7 @@ module VersatileDiamond
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties
-            @_atom_properties ||= Organizers::AtomProperties.new(dept_spec, atom)
+            @_atom_properties ||= @generator.atom_properties(dept_spec, atom)
           end
 
           def inspect

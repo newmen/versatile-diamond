@@ -43,7 +43,7 @@ module VersatileDiamond
           def_delegator :namer, :name_of
 
           def make_props(specie, atom)
-            Organizers::AtomProperties.new(specie.proxy_spec, atom)
+            generator.atom_properties(specie.proxy_spec, atom)
           end
 
           def get_unique_specie(spec)

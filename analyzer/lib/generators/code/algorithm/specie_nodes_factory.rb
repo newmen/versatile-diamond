@@ -24,7 +24,7 @@ module VersatileDiamond
           # @return [SpecieNode] new node which contain the correspond algorithm specie
           #   and passed atom
           def create_node(atom)
-            Nodes::SpecieNode.new(@specie, parent_specie(atom), atom)
+            Nodes::SpecieNode.new(generator, @specie, parent_specie(atom), atom)
           end
 
           # Gets list of parent species which can be checked by passed atom

@@ -14,6 +14,21 @@ module VersatileDiamond
         @_spec_reactions, @_classifier, @_surface_specs = nil
       end
 
+      # Gets atom properties for passed entities
+      # @overload atom_properties(dept_spec, atom)
+      #   @param [Organizers::DependentWrappedSpec | Oragnizers::ProxyParentSpec]
+      #     dept_spec in which context the atom properties will be builded
+      #   @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #     atom by which the properties will be gotten
+      # @overload atom_properties(props)
+      #   @param [Organizers::AtomProperties] props which classified analog will be
+      #     returned
+      # @return [Organizers::AtomProperties] the classified atom properties
+      def atom_properties(*args)
+        props = (args.size == 1) ? args.first : Organizers::AtomProperties.new(*args)
+        classified? ? classifier.props.find { |x| x == props } : props
+      end
+
     private
 
       def_delegators :@analysis_result, :base_specs, :specific_specs, :term_specs,
@@ -33,9 +48,15 @@ module VersatileDiamond
         @_spec_reactions ||= [typical_reactions, lateral_reactions].flatten
       end
 
+      # Checks that classfication of available atom properties done
+      # @return [Boolean] is classified and organized atom properties
+      def classified?
+        !!@_classifier
+      end
+
       # Creates atom classifier and analyse each surface spec
       def classifier
-        return @_classifier if @_classifier
+        return @_classifier if classified?
 
         analyzed_specs = Set.new
         specs_with_ions = {}
@@ -51,14 +72,14 @@ module VersatileDiamond
         is_ions_presented =
           !ubiquitous_reactions.empty? || specs_with_ions.values.flatten.any?
 
-        @_classifier = Organizers::AtomClassifier.new(is_ions_presented)
+        raw_classifier = Organizers::AtomClassifier.new(is_ions_presented)
         surface_specs.each do |spec|
           cached_value = specs_with_ions[spec.name]
-          @_classifier.analyze(spec, with_ions: cached_value && cached_value.any?)
+          raw_classifier.analyze(spec, with_ions: cached_value && cached_value.any?)
         end
 
-        @_classifier.organize_properties!
-        @_classifier
+        raw_classifier.organize_properties!
+        @_classifier = raw_classifier
       end
 
       # Is there the exchange of some ions on specie in reaction?
@@ -94,7 +115,7 @@ module VersatileDiamond
       def atom_properties_list(specs_atoms)
         specs_atoms.map do |spec, atom|
           proxy_spec = dept_spec(spec).clone_with_replace(spec)
-          Organizers::AtomProperties.new(proxy_spec, atom)
+          atom_properties(proxy_spec, atom)
         end
       end
 
