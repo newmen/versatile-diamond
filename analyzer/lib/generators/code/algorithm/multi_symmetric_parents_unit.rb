@@ -47,9 +47,6 @@ module VersatileDiamond
               define_symmetric_atom_and_parent_lines(&block)
             else
               combine_find_symmetric_species(&block)
-              # combine_find_symmetric_species do
-              #   combine_find_unsymmetric_species(&block)
-              # end
             end
           end
 
@@ -215,28 +212,6 @@ module VersatileDiamond
               define_var_line('ParentSpec *', undef_parent, atom_call) +
               block.call
           end
-
-          # # Gets the list of unsymmetric parent species
-          # # @return [Array] the list which sorted by desc
-          # def unsmc_parent_species
-          #   (parent_species - smc_parent_species).sort_by { |a, b| b <=> a }
-          # end
-
-          # # Gets the list of lambda functions for get each unsymmetric parent specie
-          # # @return [Array] the list of procedures which will generate code
-          # def unsmc_species_lambdas
-          #   unsmc_parent_species.map do |parent|
-          #     namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
-          #     -> &block { each_spec_by_role_lambda(parent, &block) }
-          #   end
-          # end
-
-          # # Combines checks of unsymmetric parent species and calls it
-          # # @yield should return cpp code string for internal body of checkers
-          # # @return [String] cpp code with check of unsymmetric parent species
-          # def combine_find_unsymmetric_species(&block)
-          #   reduce_procs(unsmc_species_lambdas, &block).call
-          # end
         end
 
       end

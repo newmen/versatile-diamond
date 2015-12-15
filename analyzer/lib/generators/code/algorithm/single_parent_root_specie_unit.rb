@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # Unit for bulding code of root specie that depends from one parent specie
         class SingleParentRootSpecieUnit < SingleSpecieUnit
-          include SpeciesIteratorCppExpressions
           include SpecieUnitBehavior
 
           # Also initiates internal caches
@@ -19,11 +18,8 @@ module VersatileDiamond
           # @return [String] the cpp code string
           # @override
           def check_species(&block)
-            if name_of(parent_specie) || !require_check_symmetries?
+            if name_of(parent_specie) || atoms.any?(&method(:name_of))
               block.call
-            elsif !(defined_symmetric_atoms.empty? || unsymmetric_atoms.empty?)
-              symmetric_atom = defined_symmetric_atoms.first
-              iterate_symmetric_target_species_lambda(symmetric_atom, &block)
             else
               define_target_specie_lambda do
                 if atoms.all?(&method(:name_of))
@@ -42,22 +38,6 @@ module VersatileDiamond
         private
 
           alias :parent_specie :target_specie
-
-          # Iterates all symmetric species which available from parent specie by
-          # passed symmetric atom
-          #
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom by which iterating species will be gotten
-          # @yield should return cpp code string
-          # @return [String] the code with symmetries species iteration
-          def iterate_symmetric_target_species_lambda(atom, &block)
-            namer.assign_next(Specie::TARGET_SPECIE_NAME, parent_specie)
-
-            checking_atom = twin(atom)
-            each_spec_by_role_lambda(checking_atom, parent_specie) do
-              checked_symmetries_lambda(atom, parent_specie, checking_atom, &block)
-            end
-          end
 
           # Defines parent specie and checks it symmetry
           # @yield should return cpp code
@@ -81,38 +61,11 @@ module VersatileDiamond
               code_condition(check_atoms_roles_of(undefined_atoms), &block)
           end
 
-          # Checks the case when checking species are not defined and all avail atoms
-          # are symmetric
-          #
-          # @return [Boolean] is require to check symmetries of parent specie or not
-          def require_check_symmetries?
-            symmetric? && atoms.any?(&method(:name_of)) &&
-              !unsymmetric_atoms.empty? && defined_unsymmetric_atoms.empty?
-          end
-
-          # Gets the list of defined unsymmetric atoms
-          # @return [Array] list of atoms which are not symmetric in parent specie
-          def defined_unsymmetric_atoms
-            unsymmetric_atoms.select(&method(:name_of))
-          end
-
-          # Gets the list of defined symmetric atoms
-          # @return [Array] list of atoms which are symmetric in parent specie
-          def defined_symmetric_atoms
-            symmetric_atoms.select(&method(:name_of))
-          end
-
           # Selects only symmetric atoms of current unit
           # @return [Array] the list of symmetric atoms
           def symmetric_atoms
             @_symmetric_atoms ||=
               atoms.select { |a| target_specie.symmetric_atom?(twin(a)) }
-          end
-
-          # Gets only unsymmetric atoms of current unit
-          # @return [Array] the list of unsymmetric atoms
-          def unsymmetric_atoms
-            atoms - symmetric_atoms
           end
 
           # Checks that internal parent specie is symmetric by target atoms
