@@ -287,6 +287,16 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
+                      [[cbr], [[[cm], param_amorph]]],
+                      [[cr], []]
+                    ]
+                  end
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.last }
+                  let(:ordered_graph) do
+                    [
                       [[cr], []],
                       [[cbr], [[[cm], param_amorph]]]
                     ]
