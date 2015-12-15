@@ -481,6 +481,34 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:find_algorithm) do
                 <<-CODE
+    if (anchor->is(#{role_cbr}))
+    {
+        if (!anchor->hasRole(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cbr}))
+        {
+            anchor->eachSpecByRole<Bridge>(#{role_cbr}, [&](Bridge *target1) {
+                target1->eachSymmetry([&](ParentSpec *specie1) {
+                    if (anchor == specie1->atom(2))
+                    {
+                        Atom *amorph1 = atom2->amorphNeighbour();
+                        if (amorph1->is(#{role_cm}))
+                        {
+                            Atom *atom1 = specie1->atom(0);
+                            Bridge *specie2 = atom1->eachSpecByRole<Bridge>(#{b_ct}, [&](Bridge *target1) {
+                                target1->eachSymmetry([&](ParentSpec *specie3) {
+                                    Atom *atom2 = specie3->atom(2);
+                                    if (atom2 == atom1)
+                                    {
+                                        ParentSpec *parents[2] = { specie3, specie1 };
+                                        create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                });
+            });
+        }
+    }
     if (anchor->is(#{role_cr}))
     {
         if (!anchor->hasRole(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
