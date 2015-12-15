@@ -24,7 +24,7 @@ module VersatileDiamond
           end
 
           def inspect
-            ":#{super}:"
+            "⁝#{super}⁝"
           end
         end
 
