@@ -6,18 +6,18 @@ module VersatileDiamond
     class Matcher
 
       # active bond always defined as star (*)
-      ACTIVE_BOND = /\*/.source
+      ACTIVE_BOND = /\*/.source.freeze
 
       # atom named like as in periodic table plus some number
       # (it may be valence of atom or something else)
-      ATOM_NAME = /[A-Z][a-z]{0,3}[0-9]*/.source
+      ATOM_NAME = /[A-Z][a-z]{0,3}[0-9]*/.source.freeze
 
       # spec name always begins with a lowercase letter and can contain
       # lowercase letters, numbers and "_" symbol
-      SPEC_NAME = /[a-z][a-z0-9_]*/.source
+      SPEC_NAME = /[a-z][a-z0-9_]*/.source.freeze
 
       # options it's all that in brackets
-      OPTIONS = /[^\)]+?/.source
+      OPTIONS = /[^\)]+?/.source.freeze
 
       class << self
         class << self

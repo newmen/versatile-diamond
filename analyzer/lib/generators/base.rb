@@ -34,7 +34,7 @@ module VersatileDiamond
       def_delegators :@analysis_result, :base_specs, :specific_specs, :term_specs,
         :ubiquitous_reactions, :typical_reactions, :lateral_reactions
 
-      ANALYS_SPEC_METHODS = %i(base_spec specific_spec)
+      ANALYS_SPEC_METHODS = %i(base_spec specific_spec).freeze
 
       # Collects all chunks
       # @return [Array] the array of chunks

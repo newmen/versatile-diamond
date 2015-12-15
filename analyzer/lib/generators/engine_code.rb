@@ -46,10 +46,10 @@ module VersatileDiamond
       end
 
       MAIN_CODE_INST_NAMES.each do |name|
+        var_name = :"@_#{name}"
         # Gets #{name} class code generator
         # @return [#{name.classify}] the #{name} class code generator instance
         define_method(name.to_sym) do
-          var_name = :"@_#{name}"
           instance_variable_get(var_name) ||
             instance_variable_set(var_name, Code.const_get(name.classify).new(self))
         end

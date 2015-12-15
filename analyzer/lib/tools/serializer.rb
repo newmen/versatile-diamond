@@ -4,7 +4,7 @@ module VersatileDiamond
     # Provides serialize options for analysis result data and store marshaled
     # object to file. Also provides abilities to restore object from file.
     module Serializer
-      VD_CONFIG_EXT = '.rb'
+      VD_CONFIG_EXT = '.rb'.freeze
 
       class << self
         # Initializes serializer

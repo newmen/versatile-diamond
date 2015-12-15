@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Configuration singleton which contain params about calculaton runtime
     class Config
-      DUMP_PREFIX = 'config'
+      DUMP_PREFIX = 'config'.freeze
 
       # Exception class for cases where setuping value already setuped
       class AlreadyDefined < Errors::Base

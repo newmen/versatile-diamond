@@ -9,7 +9,7 @@ module VersatileDiamond
         include TemplateFile
         include PartialRenderer
 
-        SRC_DIR_NAME = 'src'
+        SRC_DIR_NAME = 'src'.freeze
 
         class << self
           # Extends root dir path to source dir path

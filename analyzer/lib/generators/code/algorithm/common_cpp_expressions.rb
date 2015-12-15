@@ -7,7 +7,7 @@ module VersatileDiamond
         module CommonCppExpressions
 
           TAB_SIZE = 4 # always so for cpp
-          PREFIX_SPACES = ' ' * TAB_SIZE
+          PREFIX_SPACES = (' ' * TAB_SIZE).freeze
 
         private
 

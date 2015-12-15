@@ -9,7 +9,7 @@ module VersatileDiamond
         # engine framework method for concretize side reaction which was found
         class ReactionCheckLateralsCreatorUnit < GenerableUnit
 
-          FACTORY_VAR_NAME = 'factory'
+          FACTORY_VAR_NAME = 'factory'.freeze
 
           # Initializes the creator
           # @param [EngineCode] generator the major code generator

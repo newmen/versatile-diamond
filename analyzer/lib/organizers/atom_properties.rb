@@ -11,12 +11,13 @@ module VersatileDiamond
       include Lattices::BasicRelations
 
       extend Lattices::BasicRelations::Amorph
-      UNDIRECTED_BONDS = [undirected_bond, double_bond, triple_bond]
-      RELATIVE_PROPERTIES = [Concepts::Unfixed, Concepts::Incoherent].map(&:property)
+      UNDIRECTED_BONDS = [undirected_bond, double_bond, triple_bond].freeze
+      RELATIVE_PROPERTIES =
+        [Concepts::Unfixed, Concepts::Incoherent].map(&:property).freeze
 
-      STATIC_STATES = %i(atom_name valence lattice)
-      DYNAMIC_STATES = %i(relations danglings nbr_lattices relevants)
-      ALL_STATES = STATIC_STATES + DYNAMIC_STATES
+      STATIC_STATES = %i(atom_name valence lattice).freeze
+      DYNAMIC_STATES = %i(relations danglings nbr_lattices relevants).freeze
+      ALL_STATES = (STATIC_STATES + DYNAMIC_STATES).freeze
 
       class << self
         # Makes
