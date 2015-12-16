@@ -105,8 +105,12 @@ module VersatileDiamond
         subject do
           stub_generator(base_specs: dept_specs, typical_reactions: dept_reactions)
         end
-        let(:dept_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-        let(:dept_reactions) { [dept_dimer_formation, dept_sierpinski_drop] }
+        let(:dept_specs) do
+          [dept_bridge_base, dept_dimer_base, dept_methyl_on_bridge_base]
+        end
+        let(:dept_reactions) do
+          [dept_dimer_formation, dept_sierpinski_drop, dept_methyl_to_gap]
+        end
 
         shared_examples_for :check_many_times do
           let(:atom) { spec.spec.atom(keyname) }
@@ -138,6 +142,12 @@ module VersatileDiamond
             let(:keyname) { :cm }
             let(:result) { true }
           end
+        end
+
+        it_behaves_like :check_many_times do
+          let(:spec) { dept_dimer_base }
+          let(:keyname) { :cr }
+          let(:result) { false }
         end
       end
     end

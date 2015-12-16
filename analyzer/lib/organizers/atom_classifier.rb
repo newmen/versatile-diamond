@@ -17,6 +17,7 @@ module VersatileDiamond
         @over_relevants_props = Set.new
         @unrelevanted_props = Set.new
 
+        @_default_latticed_atoms = nil
         @_props_with_indexes = nil
         reset_caches!
       end
@@ -53,7 +54,7 @@ module VersatileDiamond
 
       # Organizes dependencies between properties
       def organize_properties!
-        add_default_lattices_atoms
+        add_default_latticed_atoms
         organize_by_inclusion!(props)
         organize_by_relatives!(props)
       end
@@ -150,6 +151,19 @@ module VersatileDiamond
         props.map(&:lattice).uniq
       end
 
+      # Gets the list of default atoms which are presented on lattice
+      # @return [Array] the list of default latticed atoms
+      def default_latticed_atoms
+        @_default_latticed_atoms ||=
+          used_lattices.compact.reduce([]) do |acc, lattice|
+            acc + %w(major surface).map do |name|
+              atom_hash = lattice.instance.send(:"#{name}_crystal_atom")
+              props_hash = atom_hash.merge(lattice: lattice)
+              AtomProperties.new(props_hash)
+            end
+          end
+      end
+
       # Checks that the first atom properties are the second atom properties
       # @param [AtomProperties] bigger
       # @param [AtomProperties] smallest
@@ -191,14 +205,8 @@ module VersatileDiamond
       end
 
       # Adds default atoms of all used lattices
-      def add_default_lattices_atoms
-        used_lattices.compact.each do |lattice|
-          %w(major surface).each do |name|
-            atom_hash = lattice.instance.send(:"#{name}_crystal_atom")
-            props_hash = atom_hash.merge(lattice: lattice)
-            store_prop(@described_props, AtomProperties.new(props_hash))
-          end
-        end
+      def add_default_latticed_atoms
+        default_latticed_atoms.each { |prop| store_prop(@described_props, prop) }
       end
 
       # Organizes dependencies between atom properties by checking inclusion

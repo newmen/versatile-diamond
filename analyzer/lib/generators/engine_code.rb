@@ -127,7 +127,7 @@ module VersatileDiamond
       #   plays in passed specie
       def many_times?(spec, atom)
         slice = all_classifications[spec.name]
-        slice && slice[atom_properties(spec, atom)]
+        !!slice && !!slice[atom_properties(spec, atom)]
       end
 
       def inspect
@@ -260,57 +260,74 @@ module VersatileDiamond
       def all_classifications
         @_all_classifications ||=
           dependent_species.values.reduce({}) do |acc, spec|
-            acc[spec.name] = inject_to_classification(acc, spec) { |_, num| num > 1 }
             classificate_parents(acc, spec)
           end
       end
 
       # Extends passed classification hash for passed spec
-      # @param [Hash] acc the general classification of all species
+      # @param [Hash] all the general classification of all species
       # @param [Organizers::DependentWrappedSpec] spec which anchors will be classified
       # @yield [Integer] should return an unification flag value
       # @return [Hash] the extended classification hash with values for anchors of spec
-      def inject_to_classification(acc, spec, &block)
-        acc[spec.name] ||= {}
-        classification = classifier.classify(spec)
-        classification.each_with_object(acc[spec.name]) do |(_, (ap, num)), result|
-          result[ap] ||= block[ap, num]
+      def inject_classification(all, spec, &block)
+        all.merge(spec.name => classificate_spec(all, spec, &block))
+      end
+
+      # Gets the classification from some initial value for passed specie
+      # @param [Hash] all the general classification of all species
+      # @param [Organizers::DependentWrappedSpec] spec which anchors will be classified
+      # @yield [Integer] should return an unification flag value
+      # @return [Hash] the custom classification for passed specie
+      def classificate_spec(all, spec, &block)
+        inner = all[spec.name] || {}
+        classifier.classify(spec).each_with_object(inner) do |(_, (ap, num)), acc|
+          acc[ap] ||= block[ap, num]
         end
       end
 
       # Extends passed classification hash by parents of passed spec
-      # @param [Hash] acc the general classification of all species
+      # @param [Hash] all the general classification of all species
       # @param [Organizers::DependentWrappedSpec] spec which parents will be classified
       # @return [Hash] the extended classification hash with true values for each
       #   anchor of parent species which are presented in passed spec several times
-      def classificate_parents(acc, spec)
-        spec.anchors.each_with_object(acc) do |anchor, result|
-          same_pwts(spec, anchor).each do |parent, twin|
-            twin_props = atom_properties(parent, twin)
-            result[parent.name] =
-              inject_to_classification(acc, parent) { |ap, _| ap == twin_props }
-          end
+      def classificate_parents(all, spec)
+        same_pwts(spec).reduce(all) do |result, (parent, twin)|
+          twin_props = atom_properties(parent, twin)
+          inject_classification(result, parent) { |ap, _| ap == twin_props }
         end
       end
 
       # Gets same parents with twins for passed spec and atom
-      # @param [Organizers::DependentWrappedSpec] spec parents will be gotten
-      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-      #   anchor for which twins also will be gotten
+      # @param [Organizers::DependentWrappedSpec] spec which parents will be gotten
       # @return [Array] the list of unique parents with twins which several times uses
       #   by passed spec and atom
-      def same_pwts(spec, anchor)
-        anch_pwts = spec.parents_with_twins_for(anchor, anchored: true)
-        groups = anch_pwts.groups { |args| pwt_group_key(*args) }
-        groups.reject(&:one?).map(&:first)
+      def same_pwts(spec)
+        groups = all_pps(spec).groups { |pr, (tw, a)| [pr.original, tw, a] }
+        groups.reject(&:one?).map(&:first).map { |pr, (tw, _)| [pr, tw] }
       end
 
-      # Gets key by which grouping for detect same parents with twins will do
-      # @param [Organizers::DependentWrappedSpec] parent
-      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom] twin
-      # @return [Array] the groupping key
-      def pwt_group_key(parent, twin)
-        [parent.original, twin, parent.atom_by(twin)]
+      # Gets the list of all possible structures where for each this structure the
+      # parent, their twin and corresponding passed spec atom are present
+      #
+      # @param [Organizers::DependentWrappedSpec] spec which parents will be gotten
+      # @return [Array] the list of specific pps structures
+      def all_pps(spec)
+        spec.links.keys.flat_map { |atom| pps_for(spec, atom) }
+      end
+
+      # Gets possible pps structures for passed spec and atom
+      # @param [Organizers::DependentWrappedSpec] spec which parents will be gotten
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom for which the twins also will be gotten
+      # @return [Array] the list with all available pps structures
+      def pps_for(spec, atom)
+        pwts = spec.parents_with_twins_for(atom)
+        pwts.map { |pr, tw| [pr, [tw, pr.atom_by(tw)]] } +
+          pwts.flat_map do |pr, tw|
+            pps_for(pr, tw).map do |sub_pr, (sub_tw, a)|
+              [sub_pr, [sub_tw, pr.atom_by(a)]]
+            end
+          end
       end
     end
 
