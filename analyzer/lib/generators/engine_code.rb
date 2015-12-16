@@ -25,7 +25,8 @@ module VersatileDiamond
         collect_code_reactions
 
         @_atom_builder, @_env, @_finder, @_handbook = nil
-        @_dependent_species = nil
+        @_dependent_species, @_root_species, @_surface_species, @_gas_species = nil
+        @_all_classifications = nil
       end
 
       # provides methods from base generator class
@@ -100,19 +101,20 @@ module VersatileDiamond
       # Gets root species
       # @return [Array] the array of root specie class code generators
       def root_species
-        surface_species.select(&:find_root?)
+        @_root_species ||= surface_species.select(&:find_root?)
       end
 
       # Gets non simple and non gas collected species
       # @return [Array] the array of collected specie class code generators
       def surface_species
-        surface_species_hash.values.to_set
+        @_surface_species ||= surface_species_hash.values.to_set
       end
 
       # Gets the list of specific species which are gas molecules
       # @return [Array] the list of dependent specific gas species
       def specific_gas_species
-        dependent_species.values.select { |s| s.gas? && (s.simple? || s.specific?) }
+        @_gas_species ||=
+          dependent_species.values.select { |s| s.gas? && (s.simple? || s.specific?) }
       end
 
       def inspect

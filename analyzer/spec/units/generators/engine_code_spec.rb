@@ -60,23 +60,35 @@ module VersatileDiamond
         it { expect(specie.class_name).to eq('Bridge') }
       end
 
-      describe '#root_species' do
+      describe 'basic species' do
         subject do
-          stub_generator(
-            base_specs: dept_specs,
-            typical_reactions: dept_reactions)
+          stub_generator(base_specs: dept_specs, typical_reactions: dept_reactions)
         end
         let(:dept_specs) do
           [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
         end
         let(:dept_reactions) do
-          [dept_dimer_formation, dept_methyl_activation, dept_incoherent_dimer_drop]
-        end
-        let(:root_species) do
-          [:bridge, :dimer].map(&subject.public_method(:specie_class))
+          [dept_dimer_formation, dept_methyl_activation, dept_hydrogen_migration]
         end
 
-        it { expect(subject.root_species).to match_array(root_species) }
+        let(:target_species) { names.map(&subject.method(:specie_class)) }
+
+        describe '#root_species' do
+          let(:names) { [:bridge, :dimer, :methyl_on_dimer] }
+          it { expect(subject.root_species).to match_array(target_species) }
+        end
+
+        describe '#surface_species' do
+          let(:names) do
+            [
+              :bridge, :dimer, # basic species
+              :'bridge(ct: *)', :'bridge(ct: *, ct: i)', # dimer formation
+              :methyl_on_bridge, # methyl activation
+              :methyl_on_dimer, :'dimer(cr: *)', # hydrogen migration
+            ]
+          end
+          it { expect(subject.surface_species).to match_array(target_species) }
+        end
       end
 
       describe '#specific_gas_species' do
