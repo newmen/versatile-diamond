@@ -38,6 +38,8 @@ module VersatileDiamond
       # @option [Boolean] :with_ions is flag which identify that there are reactions
       #   with analyzing spec and ions of gase phase
       def analyze(spec, with_ions: true)
+        fail 'Cache of properties already created' if @_props_with_indexes
+
         store_all_ioned = @is_ions_presented || with_ions
         avail_props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
@@ -64,24 +66,20 @@ module VersatileDiamond
       #   passed spec (not using when spec is termination spec)
       # @return [Hash] result of classification
       def classify(spec)
-        fail 'Cache of properties already created' if @_props_with_indexes
-
-        append_to = -> prop, hash, num do
+        append_to = -> acc, prop, num do
           idx = index(prop)
-          hash[idx] ||= [prop.to_s, 0]
-          hash[idx][1] += num
+          acc[idx] ||= [prop, 0]
+          acc[idx][1] += num
         end
 
         if spec.is_a?(DependentTermination)
           current_props = props.select { |prop| spec.terminations_num(prop) > 0 }
-          current_props.each_with_object({}) do |prop, hash|
-            append_to[prop, hash, spec.terminations_num(prop)]
+          current_props.each_with_object({}) do |prop, acc|
+            append_to[acc, prop, spec.terminations_num(prop)]
           end
         else
-          target = spec.target
-          atoms = target.links.keys
-          atoms.each_with_object({}) do |atom, hash|
-            append_to[AtomProperties.new(target, atom), hash, 1]
+          spec.anchors.each_with_object({}) do |atom, acc|
+            append_to[acc, AtomProperties.new(spec, atom), 1]
           end
         end
       end

@@ -180,10 +180,13 @@ module VersatileDiamond
         end
 
         describe '#classify' do
+          def hash_str(spec)
+            Hash[subject.classify(spec).map { |k, v| [k, [v[0].to_s, v[1]]] }]
+          end
+
           describe 'termination spec' do
             shared_examples_for :termination_classify do
-              let(:result) { subject.classify(term) }
-              it { expect(result).to eq(hash) }
+              it { expect(hash_str(term)).to eq(hash) }
             end
 
             it_behaves_like :termination_classify do
@@ -250,7 +253,7 @@ module VersatileDiamond
 
           describe 'not termination spec' do
             shared_examples_for :specific_classify do
-              it { expect(subject.classify(spec)).to eq(hash) }
+              it { expect(hash_str(spec)).to eq(hash) }
             end
 
             it_behaves_like :specific_classify do
@@ -349,9 +352,8 @@ module VersatileDiamond
 
             describe 'organize species dependencies' do
               shared_examples_for :organized_specific_classify do
-                let(:result) { subject.classify(target_spec) }
                 before { organize(all_species) }
-                it { expect(result).to eq(hash) }
+                it { expect(hash_str(target_spec)).to eq(hash) }
               end
 
               it_behaves_like :organized_specific_classify do

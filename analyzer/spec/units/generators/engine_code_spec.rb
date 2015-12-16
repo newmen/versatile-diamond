@@ -100,6 +100,46 @@ module VersatileDiamond
 
         it { expect(gas_specs.map(&:name)).to match_array(gas_names) }
       end
+
+      describe '#many_times?' do
+        subject do
+          stub_generator(base_specs: dept_specs, typical_reactions: dept_reactions)
+        end
+        let(:dept_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+        let(:dept_reactions) { [dept_dimer_formation, dept_sierpinski_drop] }
+
+        shared_examples_for :check_many_times do
+          let(:atom) { spec.spec.atom(keyname) }
+          it { expect(subject.many_times?(spec, atom)).to eq(result) }
+        end
+
+        describe 'bridge atoms' do
+          let(:spec) { dept_bridge_base }
+
+          it_behaves_like :check_many_times do
+            let(:keyname) { :ct }
+            let(:result) { false }
+          end
+
+          it_behaves_like :check_many_times do
+            let(:keyname) { :cr }
+            let(:result) { true }
+          end
+        end
+
+        describe 'methyl on bridge atoms' do
+          let(:spec) { dept_methyl_on_bridge_base }
+          it_behaves_like :check_many_times do
+            let(:keyname) { :cb }
+            let(:result) { false }
+          end
+
+          it_behaves_like :check_many_times do
+            let(:keyname) { :cm }
+            let(:result) { true }
+          end
+        end
+      end
     end
 
   end

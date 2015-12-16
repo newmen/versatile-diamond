@@ -1,4 +1,5 @@
 module VersatileDiamond
+  using Patches::RichArray
   using Patches::RichString
 
   module Generators
@@ -105,7 +106,7 @@ module VersatileDiamond
       end
 
       # Gets non simple and non gas collected species
-      # @return [Array] the array of collected specie class code generators
+      # @return [Set] the array of collected specie class code generators
       def surface_species
         @_surface_species ||= surface_species_hash.values.to_set
       end
@@ -115,6 +116,18 @@ module VersatileDiamond
       def specific_gas_species
         @_gas_species ||=
           dependent_species.values.select { |s| s.gas? && (s.simple? || s.specific?) }
+      end
+
+      # Checks that atom can contain several references to specie under simulation do
+      # @param [Organizers::DependentWrappedSpec] spec the use of which will be checked
+      #   for passed atom
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom which number possible references to correspond specie will be checked
+      # @return [Boolean] is atom can be used in several species by the role which it
+      #   plays in passed specie
+      def many_times?(spec, atom)
+        slice = all_classifications[spec.name]
+        slice && slice[atom_properties(spec, atom)]
       end
 
       def inspect
@@ -226,6 +239,78 @@ module VersatileDiamond
       # @return [Array] the list of reaction code generators
       def reactions
         @reactions.values
+      end
+
+      # Provides general classification of anchors of all species
+      # @return [Hash] the classification hash, where keys are specie names and values
+      #   are hashes, which keys are anchors as atom properties and values are flag,
+      #   that correspond atom can store several instances of specie by appropriate
+      #   role in this specie
+      # @example
+      #   {
+      #     :bridge => {
+      #       (C%d<) => false,
+      #       (^C%d<) => true
+      #     },
+      #     :methyl_on_bridge => {
+      #       (_~C%d<) => false,
+      #       (C~%d) => true
+      #     }
+      #   }
+      def all_classifications
+        @_all_classifications ||=
+          dependent_species.values.reduce({}) do |acc, spec|
+            acc[spec.name] = inject_to_classification(acc, spec) { |_, num| num > 1 }
+            classificate_parents(acc, spec)
+          end
+      end
+
+      # Extends passed classification hash for passed spec
+      # @param [Hash] acc the general classification of all species
+      # @param [Organizers::DependentWrappedSpec] spec which anchors will be classified
+      # @yield [Integer] should return an unification flag value
+      # @return [Hash] the extended classification hash with values for anchors of spec
+      def inject_to_classification(acc, spec, &block)
+        acc[spec.name] ||= {}
+        classification = classifier.classify(spec)
+        classification.each_with_object(acc[spec.name]) do |(_, (ap, num)), result|
+          result[ap] ||= block[ap, num]
+        end
+      end
+
+      # Extends passed classification hash by parents of passed spec
+      # @param [Hash] acc the general classification of all species
+      # @param [Organizers::DependentWrappedSpec] spec which parents will be classified
+      # @return [Hash] the extended classification hash with true values for each
+      #   anchor of parent species which are presented in passed spec several times
+      def classificate_parents(acc, spec)
+        spec.anchors.each_with_object(acc) do |anchor, result|
+          same_pwts(spec, anchor).each do |parent, twin|
+            twin_props = atom_properties(parent, twin)
+            result[parent.name] =
+              inject_to_classification(acc, parent) { |ap, _| ap == twin_props }
+          end
+        end
+      end
+
+      # Gets same parents with twins for passed spec and atom
+      # @param [Organizers::DependentWrappedSpec] spec parents will be gotten
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   anchor for which twins also will be gotten
+      # @return [Array] the list of unique parents with twins which several times uses
+      #   by passed spec and atom
+      def same_pwts(spec, anchor)
+        anch_pwts = spec.parents_with_twins_for(anchor, anchored: true)
+        groups = anch_pwts.groups { |args| pwt_group_key(*args) }
+        groups.reject(&:one?).map(&:first)
+      end
+
+      # Gets key by which grouping for detect same parents with twins will do
+      # @param [Organizers::DependentWrappedSpec] parent
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom] twin
+      # @return [Array] the groupping key
+      def pwt_group_key(parent, twin)
+        [parent.original, twin, parent.atom_by(twin)]
       end
     end
 
