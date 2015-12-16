@@ -27,7 +27,7 @@ module VersatileDiamond
           end
 
           # Finds previously defined atom
-          # @param [UniqueSpecie] specie see at #spec_by_role_call same argument
+          # @param [UniqueSpecie] specie see at #spec_from_atom_call same argument
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which already defined before
           def atom_of(specie)
@@ -37,15 +37,15 @@ module VersatileDiamond
           # Makes code which gets target specie instance from passed atom
           # @param [UniqueSpecie] specie which simulation instance will be gotten
           # @return [String] the string of cpp code with specByRole call
-          def spec_by_role_call(specie)
+          def spec_from_atom_call(specie)
             atom = atom_of(specie)
-            super(atom, specie, atom)
+            spec_by_role_call(atom, specie, atom)
           end
 
           # Gets the line with definition of target species array variable
           # @return [String] th ecpp code line with definition of target species var
           def define_target_species_variable_line
-            items = names_or(species, &method(:spec_by_role_call))
+            items = names_or(species, &method(:spec_from_atom_call))
             namer.reassign(SpeciesReaction::ANCHOR_SPECIE_NAME, species)
             define_var_line("#{specie_type} *", species, items)
           end

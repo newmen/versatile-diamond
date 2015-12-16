@@ -82,10 +82,9 @@ module VersatileDiamond
           # Makes code which gets parent specie instance from passed atom
           # @param [UniqueSpecie] parent which simulation instance will be gotten
           # @return [String] the string of cpp code with specByRole call
-          # @override
-          def spec_by_role_call(parent)
+          def spec_from_atom_call(parent)
             atom, twin = atom_with_twin_of(parent)
-            super(atom, parent, twin)
+            spec_by_role_call(atom, parent, twin)
           end
 
           # Gets a code with defining parents variable for creating complex specie
@@ -93,7 +92,7 @@ module VersatileDiamond
           #
           # @return [String] the string with defined parents variable
           def define_parents_variable_line
-            items = names_or(parent_species, &method(:spec_by_role_call))
+            items = names_or(parent_species, &method(:spec_from_atom_call))
             namer.reassign('parent', parent_species)
             define_var_line('ParentSpec *', parent_species, items)
           end

@@ -81,7 +81,7 @@ module VersatileDiamond
           #   atom for which the relations will be checked
           # @return [Boolean] has relations or not
           def has_relations?(atom)
-            rels = original_spec.links[atom]
+            rels = relations_of(atom)
             rels && !rels.empty?
           end
 

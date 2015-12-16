@@ -31,8 +31,8 @@ module VersatileDiamond
 
         # Gets all used gas species
         # @return [Array] the array of used gas species
-        def gas_species
-          generator.specific_gas_species
+        def gas_specs
+          generator.specific_gas_specs
         end
 
       private

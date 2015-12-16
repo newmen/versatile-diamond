@@ -14,11 +14,18 @@ module VersatileDiamond
             @_symmetric_atoms = nil
           end
 
+          # Checks that passed spec equal to using specie
+          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   spec which will checked
+          # @return [Boolean] is target spec or not
+          def unit_spec?(spec)
+            target_concept_spec == spec
+          end
+
           # Gets unique specie for passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   _ does not used
           # @return [UniqueSpecie] the target specie
-          # @override
           def uniq_specie_for(_)
             target_specie
           end
@@ -29,11 +36,18 @@ module VersatileDiamond
 
         private
 
+          # Gets the internal origin concept spec
+          # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          #   the internal target concept spec
+          def target_concept_spec
+            original_spec.spec
+          end
+
           # Gets the defined anchor atom for target specie
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the available anchor atom
           def avail_anchor
-            original_specie.spec.anchors.find do |a|
+            original_spec.anchors.find do |a|
               name_of(a) && !original_specie.symmetric_atom?(a)
             end
           end
@@ -55,6 +69,14 @@ module VersatileDiamond
               specie = unit.uniq_specie_for(atom)
               result << unit.define_specie_line(specie, atom) unless name_of(specie)
             end
+          end
+
+          # Gets code string with call getting atom from target specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be used for get an index from target specie
+          # @return [String] code where atom getting from target specie
+          def atom_from_own_specie_call(atom)
+            atom_from_specie_call(target_specie, atom)
           end
 
           # Selects only symmetric atoms of current unit

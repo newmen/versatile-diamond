@@ -4,7 +4,6 @@ module VersatileDiamond
       module Algorithm
 
         # The base class for algorithm builder units with one original specie
-        # @abstract
         class SimpleUnit < BaseUnit
 
           # Initializes the simple unit of code builder algorithm
@@ -18,14 +17,6 @@ module VersatileDiamond
             @original_spec = original_spec
           end
 
-          # Gets dependent spec for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
-          def dept_spec_for(_)
-            original_spec
-          end
-
         protected
 
           attr_reader :original_spec
@@ -34,9 +25,16 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the most target atom of original specie
           def target_atom
-            @_target_atom ||= atoms.max_by do |atom|
-              atom_properties(original_spec, atom)
-            end
+            @_target_atom ||=
+              atoms.max_by { |atom| atom_properties(original_spec, atom) }
+          end
+
+          # Gets dependent spec for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   _ does not used
+          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
+          def dept_spec_for(_)
+            original_spec
           end
 
         private
@@ -45,12 +43,6 @@ module VersatileDiamond
           # @return [Specie] the original specie code generator
           def original_specie
             specie_class(original_spec)
-          end
-
-          # Gets the variable name of target atom
-          # @return [String] the variable name of target atom
-          def target_atom_var_name
-            name_of(target_atom)
           end
         end
 

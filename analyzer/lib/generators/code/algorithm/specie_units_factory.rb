@@ -50,7 +50,7 @@ module VersatileDiamond
           #   passed node
           def create_single_atom_unit(node)
             if node.none?
-              SingleAtomUnit.new(*extended_args, node.atom)
+              SimpleUnit.new(*extended_args, [node.atom])
             elsif node.scope?
               create_multi_parents_unit(node.uniq_specie.species, node.atom)
             else
@@ -60,17 +60,17 @@ module VersatileDiamond
 
           # Creates multi atoms unit by list of nodes
           # @param [Array] nodes by which the multi atoms unit will be created
-          # @return [MultiAtomsUnit] the unit for generation code that depends from
+          # @return [SimpleUnit] the unit for generation code that depends from
           #   passed nodes
           def create_multi_atoms_unit(nodes)
             atoms = nodes.map(&:atom)
-            if nodes.uniq(&:uniq_specie).size == 1
+            if nodes.all_equal?(&:uniq_specie)
               unique_parent = nodes.first.uniq_specie
               create_single_specie_unit(unique_parent, atoms)
             else
-              # TODO: because MultiAtomsUnit doesn't include SpecieUnitBehavior
+              # TODO: because SimpleUnit doesn't include SpecieUnitBehavior
               # then need to create separated unit like a MultiSpeciesAtomsUnit
-              MultiAtomsUnit.new(*extended_args, atoms)
+              SimpleUnit.new(*extended_args, atoms)
             end
           end
 

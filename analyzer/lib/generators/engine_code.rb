@@ -21,13 +21,12 @@ module VersatileDiamond
         @sequences_cacher = Code::SequencesCacher.new
         @detectors_cacher = Code::DetectorsCacher.new(self)
 
-        collect_code_lattices
-        collect_code_species
-        collect_code_reactions
+        @lattices = collect_code_lattices
+        @species = collect_code_species
+        @reactions = collect_code_reactions
 
-        @_atom_builder, @_env, @_finder, @_handbook = nil
-        @_dependent_species, @_root_species, @_surface_species, @_gas_species = nil
-        @_all_classifications = nil
+        reset_caches!
+        surface_species.each(&:find_symmetries!)
       end
 
       # provides methods from base generator class
@@ -61,10 +60,8 @@ module VersatileDiamond
       # @return [Array] the array of pure unique atom instances
       def unique_pure_atoms
         pure_atoms = base_specs.reduce([]) do |acc, spec|
-          base_atoms = spec.links.keys.select do |atom|
-            !atom.reference? && !atom.specific?
-          end
-
+          all_atoms = spec.links.keys
+          base_atoms = all_atoms.reject { |atom| atom.reference? || atom.specific? }
           unificate(acc + base_atoms) { |a, b| a.name == b.name }
         end
 
@@ -113,9 +110,9 @@ module VersatileDiamond
 
       # Gets the list of specific species which are gas molecules
       # @return [Array] the list of dependent specific gas species
-      def specific_gas_species
-        @_gas_species ||=
-          dependent_species.values.select { |s| s.gas? && (s.simple? || s.specific?) }
+      def specific_gas_specs
+        @_gas_specs ||=
+          dependent_specs.values.select { |s| s.gas? && (s.simple? || s.specific?) }
       end
 
       # Checks that atom can contain several references to specie under simulation do
@@ -162,79 +159,85 @@ module VersatileDiamond
       # Collects all used lattices and wraps it by source code generator
       # @return [Hash] the mirror of lattices to code generator
       def collect_code_lattices
-        hash = classifier.used_lattices.map do |concept|
-          concept ? [concept, Code::Lattice.new(self, concept)] : [nil, nil]
+        classifier.used_lattices.each_with_object({}) do |concept, acc|
+          acc[concept] = concept && Code::Lattice.new(self, concept)
         end
-        @lattices = Hash[hash]
+      end
+
+      # Gets the list of all available organized dependent species
+      # @return [Array] the list with dependent species from analysis result
+      def all_avail_specs
+        (base_specs || []) + (specific_specs || [])
       end
 
       # Collects all used species from analysis results
       # @return [Hash] the mirror of specs names to dependent species
-      def dependent_species
-        return @_dependent_species if @_dependent_species
-        @_dependent_species = {}
-
-        all_specs = (base_specs || []) + (specific_specs || [])
-        all_specs.each { |spec| @_dependent_species[spec.name] = spec }
-        @_dependent_species
+      def dependent_specs
+        @_dependent_specs ||= Hash[all_avail_specs.map { |spec| [spec.name, spec] }]
       end
 
       # Wraps all collected species from analysis results. Makes the mirror of specie
       # names to specie code generator instances.
       def collect_code_species
-        @species =
-          dependent_species.each_with_object({}) do |(name, spec), acc|
-            acc[name] = Code::Specie.new(self, spec)
-          end
-
-        @species.values.each(&:find_symmetries!)
+        dependent_specs.each_with_object({}) do |(name, spec), acc|
+          acc[name] = Code::Specie.new(self, spec)
+        end
       end
 
-      # Wraps all analyzed reactions. Makes the mirror of reaction names to reaction
-      # code generator instances.
-      def collect_code_reactions
+      # Gets the list of reactions with code generator klass for each reactions list
+      # @return [Array] list of pairs where first item is type of reaction and the
+      #   second is list of reactions of it type
+      def reactions_with_types
         local_reactions = spec_reactions.select(&:local?)
         lateral_reactions = spec_reactions.select(&:lateral?)
         typical_reactions = spec_reactions - local_reactions - lateral_reactions
 
-        @reactions = {}
-        if ubiquitous_reactions.empty?
-          # if ubiquitous reactions are not presented then all local reactions
-          # interpreted as typical reaction
-          (local_reactions + typical_reactions).each do |reaction|
-            wrap_reaction(Code::TypicalReaction, reaction)
-          end
-        else
-          %w(ubiquitous local typical).each do |rtype|
-            eval("#{rtype}_reactions").each do |reaction|
-              wrap_reaction(Code.const_get("#{rtype.classify}Reaction"), reaction)
+        [[Code::LateralReaction, lateral_reactions]] +
+          if ubiquitous_reactions.empty?
+            # if ubiquitous reactions are not presented then all local reactions
+            # interpreted as typical reaction
+            [[Code::TypicalReaction, local_reactions + typical_reactions]]
+          else
+            %w(ubiquitous local typical).map do |rtype|
+              [Code.const_get("#{rtype.classify}Reaction"), eval("#{rtype}_reactions")]
             end
           end
-        end
+      end
 
-        lateral_reactions.each do |reaction|
-          wrap_reaction(Code::LateralReaction, reaction)
+      # Wraps all analyzed reactions
+      # Makes the mirror of reaction names to reaction code generator instances
+      # @return [Hash] the mirror of reactions names to dependent reactions
+      def collect_code_reactions
+        reactions_with_types.reduce({}) do |acc, args|
+          acc.merge(wrap_reactions(*args))
         end
       end
 
       # Wraps one reaction by passed code generator class and store it to interal
       # cache
       #
-      # @param [Class] klass by which will be wrapped the passed reaction
-      # @param [Organizers::DependentReaction] reaction which will be wrapped
-      # @return [Code::Reaction] the wrapped reaction
-      def wrap_reaction(klass, reaction)
-        @reactions[reaction.name] = klass.new(self, reaction)
+      # @param [Class] klass by which the passed reaction will be wrapped
+      # @param [Array] reactions which will be wrapped
+      # @return [Hash] the mirror of reaction names to the wrapped instances
+      def wrap_reactions(klass, reactions)
+        Hash[reactions.map { |reaction| [reaction.name, klass.new(self, reaction)] }]
       end
 
       # Provides the hash of surface specie class generators with significant species
       # @return [Hash] the hash where keys are concept names of species and the values
       #   are specie class generators
       def surface_species_hash
-        @species.reject do |name, _|
-          spec = dependent_species[name]
-          spec.simple? || spec.gas? || spec.termination? || !spec.deep_reactant?
+        @species.select do |name, _|
+          spec = dependent_specs[name]
+          !skipping?(spec) && spec.deep_reactant?
         end
+      end
+
+      # Checks that passed spec is skipping
+      # @param [Organizers::DependentWrappedSpec] spec which state will be checked
+      # @return [Boolean] is interesed spec or not
+      def skipping?(spec)
+        spec.simple? || spec.gas? || spec.termination?
       end
 
       # Gets all reactions which were collected
@@ -263,7 +266,7 @@ module VersatileDiamond
       #   }
       def all_classifications(latticed_too: true)
         @_all_classifications ||=
-          dependent_species.values.reduce({}) do |all, spec|
+          structured_specs.reduce({}) do |all, spec|
             acc = classificate_parents(all, spec)
             !latticed_too ? acc : inject_classification(acc, spec) do |ap, num|
               num > 1 && classifier.default_latticed_atoms.any? do |def_ap|
@@ -271,6 +274,12 @@ module VersatileDiamond
               end
             end
           end
+      end
+
+      # Gets a list of structured dependent species
+      # @return [Array] the list of species which can be classified
+      def structured_specs
+        dependent_specs.values.reject(&method(:skipping?))
       end
 
       # Checks that latticed atom properties contains #{num} times the passed atom
@@ -352,6 +361,13 @@ module VersatileDiamond
               [sub_pr, [sub_tw, pr.atom_by(a)]]
             end
           end
+      end
+
+      # Resets the internal caches
+      def reset_caches!
+        @_atom_builder, @_env, @_finder, @_handbook = nil
+        @_dependent_specs, @_root_species, @_surface_species, @_gas_specs = nil
+        @_all_classifications = nil
       end
     end
 

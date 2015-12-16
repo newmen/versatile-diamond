@@ -7,7 +7,7 @@ module VersatileDiamond
       class EnvYaml < YamlFile
         extend Forwardable
 
-        def_delegators :@env_class, :concentration_name, :gas_species,
+        def_delegators :@env_class, :concentration_name, :gas_specs,
           :file_name, :template_name
 
         def_delegators :'VersatileDiamond::Tools::Config', :concentration_value,

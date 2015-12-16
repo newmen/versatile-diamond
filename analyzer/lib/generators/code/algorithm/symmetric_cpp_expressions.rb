@@ -11,18 +11,26 @@ module VersatileDiamond
           # Gets a code which uses eachSymmetry method of engine framework
           # @param [UniqueSpecie] specie by variable name of which the target method
           #   will be called
-          # @option [Boolean] :closure_on_scope if true then lambda function closes
-          #   to each external varaible of method where it using
+          # @option [Boolean] :closure if true then lambda function closes to the scope
           # @yield should return cpp code string
           # @return [String] the code with symmetries iteration
-          def each_symmetry_lambda(specie, closure_on_scope: true, &block)
+          def each_symmetry_lambda(specie, closure: true, &block)
             method_name = "#{name_of(specie)}->eachSymmetry"
             namer.erase(specie)
             namer.assign_next(Specie::INTER_SPECIE_NAME, specie)
-            closure_args = closure_on_scope ? ['&'] : []
+            closure_args = closure ? ['&'] : []
             lambda_args = ["#{specie_type} *#{name_of(specie)}"]
 
             code_lambda(method_name, [], closure_args, lambda_args, &block)
+          end
+
+          # Verifies that target specie is symmetric and if so then generates the block
+          # with symmetries iteration
+          #
+          # @yield should return cpp code string
+          # @return [String] the cpp code with symmetries iteration if it required
+          def check_symmetries_if_need(**kwargs, &block)
+            symmetric? ? target_symmetries_lambda(**kwargs, &block) : block.call
           end
 
           # Gets cpp code with symmetric species iteration and checking that passed

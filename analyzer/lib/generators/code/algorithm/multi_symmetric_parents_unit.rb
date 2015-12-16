@@ -97,7 +97,7 @@ module VersatileDiamond
           # Gets the list of symmetric parent species and not uniq twin atoms
           # @return [Array] the list of symmetric parent species and twin atoms
           def smc_parents_with_twins
-            parents_with_twins.select { |pr, tw| pr.symmetric_atom?(tw) }
+            parents_with_twins.select(&method(:symmetric_atom?))
           end
 
           # Gets the list of parent species which is symmetric by target atom
@@ -131,7 +131,6 @@ module VersatileDiamond
             comparisons = avail_parent_names.map do |avail_parent_name|
               "#{check_parent_name} != #{avail_parent_name}"
             end
-
             code_condition(comparisons.join(' && '), &block)
           end
 
@@ -178,14 +177,8 @@ module VersatileDiamond
               checked_symmetries_lambda(target_atom, parent, twin, &block)
             end
 
-            internal_block =
-              if check_proc
-                -> { check_proc[&internal_proc] }
-              else
-                internal_proc
-              end
-
-            each_spec_by_role_lambda(parent, &internal_block)
+            internal_proc = -> { check_proc[&internal_proc] } if check_proc
+            each_spec_by_role_lambda(parent, &internal_proc)
           end
 
           # Defines target atom and parent specie variables
@@ -198,15 +191,15 @@ module VersatileDiamond
             symmetric_twins = avail_parent.symmetric_atoms(avail_twin)
 
             prev_pwts = common_smc_hash[avail_parent.original]
-            used_twins = prev_pwts.select { |pr, _| pr == avail_parent }.map(&:last)
+            used_twins = prev_pwts.select(pwt_by(avail_parent)).map(&:last)
             undef_twin = (symmetric_twins - used_twins).first
             undef_parent = find_undefined(parent_species)
 
             namer.assign_next(Specie::INTER_ATOM_NAME, target_atom)
             namer.assign_next(Specie::INTER_SPECIE_NAME, undef_parent)
 
-            parent_call = atom_from_specie_call(avail_parent, undef_twin)
-            atom_call = spec_by_role_call(undef_parent)
+            parent_call = atom_from_parent_call(avail_parent, undef_twin)
+            atom_call = spec_from_parent_call(undef_parent)
 
             define_var_line('Atom *', target_atom, parent_call) +
               define_var_line('ParentSpec *', undef_parent, atom_call) +

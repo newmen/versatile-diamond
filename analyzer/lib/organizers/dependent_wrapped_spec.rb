@@ -69,11 +69,9 @@ module VersatileDiamond
       # Gets the parent specs of passed atom
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom by which parent specs will be found
-      # @option [Boolean] :anchored the flag which says that getting parent species
-      #   should has correspond anchor atom
       # @return [Array] the list of parent specs
-      def parents_of(atom, anchored: false)
-        parents_with_twins_for(atom, anchored: anchored).map(&:first)
+      def parents_of(atom, **kwargs)
+        parents_with_twins_for(atom, **kwargs).map(&:first)
       end
 
       # Gets all twins of passed atom
@@ -82,8 +80,8 @@ module VersatileDiamond
       # @option [Boolean] :anchored the flag which says that each getting twin should
       #   be an anchor in parent specie
       # @return [Array] the list of twin atoms
-      def twins_of(atom, anchored: false)
-        parents_with_twins_for(atom, anchored: anchored).map(&:last)
+      def twins_of(atom, **kwargs)
+        parents_with_twins_for(atom, **kwargs).map(&:last)
       end
 
       # Gets number of all twins of passed atom

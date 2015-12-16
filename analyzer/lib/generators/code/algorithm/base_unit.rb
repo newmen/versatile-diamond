@@ -15,23 +15,13 @@ module VersatileDiamond
           # @param [NameRemember] namer the remember of using names of variables
           # @param [Array] atoms the array of target atoms
           def initialize(generator, namer, atoms)
-            @generator = generator
-            @namer = namer
+            super(generator, namer)
             @atoms = atoms
           end
 
         protected
 
           attr_reader :atoms
-
-          # Gets the original concept spec from current unique dependent spec
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   _ does not used
-          # @return [Concept::Spec | Concept::SpecificSpec | Concept::VeiledSpec]
-          #   the original concept spec
-          def concept_spec(atom)
-            dept_spec_for(atom).spec
-          end
 
           # Atomic specie is always single
           # @return [Boolean] true
@@ -55,9 +45,7 @@ module VersatileDiamond
           # @param [Array] atoms which role will be checked in code
           # @return [String] the string with cpp condition
           def check_atoms_roles_of(atoms)
-            combine_condition(atoms, '&&') do |var, atom|
-              "#{var}->is(#{role(atom)})"
-            end
+            combine_condition(atoms, '&&') { |var, atom| "#{var}->is(#{role(atom)})" }
           end
 
         private

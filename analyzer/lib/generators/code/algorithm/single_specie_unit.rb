@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Unit for bulding code that depends from specie
         # @abstract
-        class SingleSpecieUnit < MultiAtomsUnit
+        class SingleSpecieUnit < SimpleUnit
           include SymmetricCppExpressions
 
           # Also remember the unique parent specie
@@ -15,15 +15,6 @@ module VersatileDiamond
           def initialize(*args, target_specie, atoms)
             super(*args, atoms)
             @target_specie = target_specie
-            @target_concept_spec = target_specie.proxy_spec.spec
-          end
-
-          # Checks that passed spec equal to using specie
-          # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
-          #   spec which will checked
-          # @return [Boolean] is target spec or not
-          def unit_spec?(spec)
-            target_concept_spec == spec
           end
 
         private
@@ -36,26 +27,12 @@ module VersatileDiamond
             "#{tsn}·[#{inspect_atoms_names}]"
           end
 
-          # In order to check the consistency we verifies that target concept spec
-          # equal to concept spec from original dependent spec
-          #
-          # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
-          #   the internal target concept spec
-          def target_concept_spec
-            unless @target_concept_spec == original_spec.spec
-              # TODO: need to refactor units for using unique specie everytime instead
-              # original dependent spec
-              fail 'Different unit target concept specs'
-            end
-            @target_concept_spec
-          end
-
           # Specifies arguments of super method
+          # @option [Boolean] :closure if true then lambda function closes to scope
           # @yield should return cpp code string
           # @return [String] the code with symmetries iteration
-          # @override
-          def each_symmetry_lambda(closure_on_scope: false, &block)
-            super(target_specie, closure_on_scope: closure_on_scope, &block)
+          def target_symmetries_lambda(**kwargs, &block)
+            each_symmetry_lambda(target_specie, **kwargs, &block)
           end
 
           # Gets the code line with definition of parent specie variable
@@ -64,13 +41,36 @@ module VersatileDiamond
             define_specie_line(target_specie, avail_anchor)
           end
 
-          # Gets code string with call getting atom from target specie
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be used for get an index from target specie
-          # @return [String] code where atom getting from target specie
+          # Gets the line with defined anchor atoms for each neighbours operation if
+          # them need
+          #
+          # @return [String] the lines with defined anchor atoms variable
           # @override
-          def atom_from_own_specie_call(atom)
-            atom_from_specie_call(target_specie, atom)
+          def define_nbrs_specie_anchors_lines
+            if single?
+              super
+            else
+              (all_defined?(atoms) ? '' : define_target_specie_line) +
+                define_nbrs_anchors_line
+            end
+          end
+
+          # Gets code line with defined anchors atoms for each neighbours operation
+          # @return [String] the code line with defined achor atoms variable
+          def define_nbrs_anchors_line
+            if (atoms.size == 1 && name_of(atoms.first)) || namer.full_array?(atoms)
+              ''
+            else
+              values = atom_values # collect before reassign
+              namer.reassign(Specie::ANCHOR_ATOM_NAME, atoms)
+              define_var_line('Atom *', atoms, values)
+            end
+          end
+
+          # Collects the names of atom variables or calls them from own specie
+          # @return [Array] the list of atom names or specie calls
+          def atom_values
+            names_or(atoms, &method(:atom_from_own_specie_call))
           end
         end
 

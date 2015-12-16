@@ -12,11 +12,7 @@ module VersatileDiamond
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
           def check_symmetries(**kwargs, &block)
-            if symmetric?
-              each_symmetry_lambda(**kwargs, &block)
-            else
-              block.call
-            end
+            check_symmetries_if_need(**kwargs, &block)
           end
 
         private

@@ -21,11 +21,7 @@ module VersatileDiamond
           #   unit, when simulation do
           # @override
           def check_existence(*)
-            if symmetric?
-              each_symmetry_lambda { super }
-            else
-              super
-            end
+            check_symmetries_if_need { super }
           end
 
           def inspect

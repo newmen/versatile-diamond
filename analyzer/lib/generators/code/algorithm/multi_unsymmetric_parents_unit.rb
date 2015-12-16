@@ -6,8 +6,12 @@ module VersatileDiamond
         # Unit for bulding code that depends from scope of unsymmetric parent species
         # @abstract
         class MultiUnsymmetricParentsUnit < MultiParentSpeciesUnit
-          include MultiParentSpeciesCppExpressions
-          include SymmetricCppExpressions
+
+          # Also initiates internal caches
+          def initialize(*)
+            super
+            @_other_atoms = nil
+          end
 
           # Gets a code with checking all same species from target atom
           # @yield should return cpp code string for condition body
@@ -32,21 +36,23 @@ module VersatileDiamond
           #
           # @return [Array] the list of atoms which used in specie
           def using_specie_atoms
-            original_specie.spec.anchors
+            original_spec.anchors
+          end
+
+          # Gets a list of atoms wihtout target atom
+          # @return [Array] the list of another specie atoms
+          def other_atoms
+            @_other_atoms ||= using_specie_atoms - [target_atom]
           end
 
           # Gets list of procs where iterates symmetries of parent species
           # @return [Array] the list of procs
           def symmetric_procs
-            other_atoms = using_specie_atoms - [target_atom]
-            all_pwts = other_atoms.map { |a| parent_with_twin_for(a) }
-
+            all_pwts = other_atoms.map(&method(:parent_with_twin_for))
             parent_species.each_with_object([]) do |parent, acc|
-              twins = all_pwts.select { |pr, _| pr == parent }.map(&:last)
-              if twins.any? { |a| parent.symmetric_atom?(a) }
-                acc << -> &prc do
-                  each_symmetry_lambda(parent, closure_on_scope: true, &prc)
-                end
+              same_pwts = all_pwts.select(pwt_by(parent))
+              if same_pwts.any?(&method(:symmetric_atom?))
+                acc << -> &prc { each_symmetry_lambda(parent, closure: true, &prc) }
               end
             end
           end
@@ -55,8 +61,7 @@ module VersatileDiamond
           # @param [Array] species from which defining atoms will be gotten
           # @return [String] the string of cpp code
           def define_avail_atoms_line
-            atoms = using_specie_atoms - [target_atom]
-            namer.assign(Specie::INTER_ATOM_NAME, atoms)
+            namer.assign(Specie::INTER_ATOM_NAME, other_atoms)
 
             pwts = using_specie_atoms.each_with_object([]) do |atom, acc|
               next if atom == target_atom
@@ -73,11 +78,11 @@ module VersatileDiamond
             parent_calls =
               parent_species.each_with_object([]) do |parent, acc|
                 parent_to_uniq_twins[parent].each do |twin|
-                  acc << atom_from_specie_call(parent, twin)
+                  acc << atom_from_parent_call(parent, twin)
                 end
               end
 
-            define_var_line('Atom *', atoms, parent_calls)
+            define_var_line('Atom *', other_atoms, parent_calls)
           end
         end
 

@@ -91,11 +91,11 @@ module VersatileDiamond
         end
       end
 
-      describe '#specific_gas_species' do
+      describe '#specific_gas_specs' do
         let(:bases) { [dept_methane_base] }
         let(:specifics) { [dept_hydrogen_ion, dept_methyl, dept_activated_bridge] }
         subject { stub_generator(base_specs: bases, specific_specs: specifics) }
-        let(:gas_specs) { subject.specific_gas_species }
+        let(:gas_specs) { subject.specific_gas_specs }
         let(:gas_names) { [:"methane(c: *)", :"hydrogen(h: *)"] }
 
         it { expect(gas_specs.map(&:name)).to match_array(gas_names) }

@@ -5,9 +5,10 @@ module VersatileDiamond
 
         # Unit for bulding code that depends from scope of species
         # @abstract
-        class MultiParentSpeciesUnit < SingleAtomUnit
+        class MultiParentSpeciesUnit < SimpleUnit
           include Modules::ProcsReducer
-          include SpeciesIteratorCppExpressions
+          include MultiParentSpeciesCppExpressions
+          include SymmetricCppExpressions # uses in each derived classes
 
           # Also remembers parent species scope
           # @param [Array] args of #super method
@@ -35,34 +36,43 @@ module VersatileDiamond
             "[#{parent_names.join('|')}]·#{inspect_target_atom}"
           end
 
+          # Gets the function for filter parents with twins list
+          # @param [UniqueSpecie] parent which analog will be selected by result func
+          # @return [Array] same parent specie as passed with twin atom
+          def pwt_by(parent)
+            -> pr, _ { pr == parent }
+          end
+
+          # The predicate which checks a symmetric atom from passed spec and atom
+          # @param [Array] args with spec and atom
+          # @return [Boolean] is correspond to symmetric atom or not
+          def symmetric_atom?(*args)
+            (:symmetric_atom?).to_proc.call(*args)
+          end
+
           # Gets list of parent species with correspond twin of target atom
-          # @option [Boolean] :anchored the flag which says that each twin atom in
-          #   correspond parent specie should be an anchor
           # @return [Array] the list of pairs where each pair is parent and correspond
           #   twin atom
-          def parents_with_twins(anchored: false)
-            pts = original_spec.parents_with_twins_for(target_atom, anchored: anchored)
-            rlt = pts.map do |pr, tw|
-              [parent_species.find { |s| s.proxy_spec == pr }, tw]
-            end
-            rlt.select(&:first).sort_by(&:first)
+          def parents_with_twins(**kwargs)
+            result = parents_with_twins_of(target_atom, **kwargs)
+            result.select(&:first).sort_by(&:first)
           end
 
           # Gets twin atom of passed specie
+          # @param [UniqueSpecie] parent for which the code will be generated
           # @option [Boolean] :anchor the flag which says that getting twin should be
           #   an anchor in parent specie
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the twin of target atom
           def twin_from(parent, anchor: false)
-            parents_with_twins(anchored: anchor).find { |pr, _| pr == parent }.last
+            parents_with_twins(anchored: anchor).find(pwt_by(parent)).last
           end
 
           # Gets the code with getting the parent specie from target atom
           # @param [UniqueSpecie] parent for which the code will be generated
           # @return [String] the string of cpp code with specByRole call
-          # @override
-          def spec_by_role_call(parent)
-            super(target_atom, parent, twin_from(parent, anchor: true))
+          def spec_from_parent_call(parent)
+            spec_by_role_call(target_atom, parent, twin_from(parent, anchor: true))
           end
 
           # Gets a code which uses eachSpecByRole method of engine framework

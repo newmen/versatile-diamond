@@ -9,6 +9,23 @@ module VersatileDiamond
 
         protected
 
+          # Gets the original concept spec from current unique dependent spec
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which the concept specie will be gotten
+          # @return [Concept::Spec | Concept::SpecificSpec | Concept::VeiledSpec]
+          #   the original concept spec
+          def concept_spec(atom)
+            dept_spec_for(atom).spec
+          end
+
+          # Gets correspond original dependent spec for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom for which the original dependent spec will be returned
+          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
+          def dept_spec_for(atom)
+            uniq_specie_for(atom).proxy_spec
+          end
+
           # Iterates other unit which has an atom which also available by passed
           # relation and if is truthy then returns linked atom
           #
@@ -66,9 +83,8 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom from which the target specie will be gotten
           # @return [String] cpp code string with engine framework method call
-          # @override
-          def spec_by_role_call(atom)
-            super(atom, uniq_specie_for(atom), atom)
+          def spec_by_atom_call(atom)
+            spec_by_role_call(atom, uniq_specie_for(atom), atom)
           end
 
           # Gets relation between spec-atom instances which extracts from passed array
@@ -82,7 +98,6 @@ module VersatileDiamond
             pair_of_specs_atoms = pair_of_units_with_atoms.map do |unit, atom|
               [unit.concept_spec(atom), atom]
             end
-
             relations_checker.relation_between(*pair_of_specs_atoms)
           end
 

@@ -50,7 +50,7 @@ module VersatileDiamond
               define_var_line('auto', parents, atom_call)
             else # parents.size == 1
               parent = parents.first
-              atom_call = spec_by_role_call(parent)
+              atom_call = spec_from_parent_call(parent)
               define_var_line("#{parent.class_name} *", parent, atom_call)
             end
           end
@@ -97,8 +97,8 @@ module VersatileDiamond
             namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
             each_spec_by_role_lambda(parent) do
               *pwt, co_twin = similar_defined_parent_with_both_twins(parent, twin)
-              curr_parent_call = atom_from_specie_call(parent, co_twin)
-              other_parent_call = atom_from_specie_call(*pwt)
+              curr_parent_call = atom_from_parent_call(parent, co_twin)
+              other_parent_call = atom_from_parent_call(*pwt)
               code_condition("#{curr_parent_call} != #{other_parent_call}", &block)
             end
           end
@@ -177,7 +177,7 @@ module VersatileDiamond
             twin = twin_from(parent, anchor: true)
 
             method_name = "specsByRole<#{parent.class_name}, #{species_num}>"
-            "#{target_atom_var_name}->#{method_name}(#{parent.role(twin)})"
+            "#{name_of(target_atom)}->#{method_name}(#{parent.role(twin)})"
           end
         end
 

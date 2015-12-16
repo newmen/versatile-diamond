@@ -33,8 +33,7 @@ module VersatileDiamond
           #   concept_spec which index will be checked in the list of target specs
           # @return [String] the name which will first assigned
           def reactant_specie_var_name(concept_spec)
-            index = lateral_chunks.reaction.target_index(concept_spec)
-            "target(#{index})"
+            "target(#{lateral_chunks.reaction.target_index(concept_spec)})"
           end
         end
 

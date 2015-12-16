@@ -34,14 +34,6 @@ module VersatileDiamond
             @atoms_to_species[atom]
           end
 
-          # Gets correspond original dependent spec for passed atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom for which the original dependent spec will be returned
-          # @return [Organizers::DependentWrappedSpec] the internal dependent spec
-          def dept_spec_for(atom)
-            uniq_specie_for(atom).proxy_spec
-          end
-
           # Checks that passed spec equal to any using specie
           # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
           #   spec which will checked
@@ -80,7 +72,7 @@ module VersatileDiamond
           # Gets a code with for loop
           # @yield is the body of for loop
           # @return [String] the code with symmetric atoms iteration
-          def each_symmetry_lambda(**, &block)
+          def target_symmetries_lambda(**, &block)
             code_for_loop('uint', 'ae', symmetric_atoms.size) do |i|
               if atoms.size == 2 && namer.full_array?(atoms)
                 atoms_var_name = name_of(atoms)
@@ -91,7 +83,6 @@ module VersatileDiamond
                 # statement in the case when atoms are not "full array"
                 fail 'Can not figure out the next names of atoms variables'
               end
-
               block.call
             end
           end

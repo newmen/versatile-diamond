@@ -22,7 +22,7 @@ module VersatileDiamond
           # @return [String] the cpp code string
           def check_compliances(atoms_to_rels, &block)
             define_target_specie_line +
-              check_symmetries(closure_on_scope: true) do
+              check_symmetries(closure: true) do
                 compliances_condition(atoms_to_rels, &block)
               end
           end
@@ -38,23 +38,28 @@ module VersatileDiamond
           attr_reader :dept_reaction
 
           # Gets the checking block for atoms by which the grouped graph was extended
-          # @param [Array] atoms_to_rels the hash of own atoms to using relations
+          # @param [Hash] atoms_to_rels own atoms to using relations
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
           def compliances_condition(atoms_to_rels, &block)
-            comp_atoms =
-              if all_atoms_symmetric?
-                atoms
-              else
-                atoms_to_rels.reject { |_, r| r.exist? }.keys
-              end
+            code_condition(compliances_compares(atoms_to_rels).join(' && '), &block)
+          end
 
-            compares = comp_atoms.map do |atom|
+          # Gets the list of string compares by passed map
+          # @param [Hash] atoms_to_rels own atoms to using relations
+          # @return [Array] the list of string conditions which will be joined
+          def compliances_compares(atoms_to_rels)
+            compliances_atoms(atoms_to_rels).map do |atom|
               op = atoms_to_rels[atom].exist? ? '==' : '!='
               "#{name_of(atom)} #{op} #{atom_from_own_specie_call(atom)}"
             end
+          end
 
-            code_condition(compares.join(' && '), &block)
+          # Gets the list of atoms which compliences should be checked
+          # @param [Hash] atoms_rels own atoms to using relations
+          # @return [Array] the list of atoms which will be complianced
+          def compliances_atoms(atoms_rels)
+            all_atoms_symmetric? ? atoms : atoms_rels.reject { |_, r| r.exist? }.keys
           end
         end
 

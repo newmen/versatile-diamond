@@ -123,7 +123,7 @@ module VersatileDiamond
               code_condition(condition_str, &block)
             else
               namer.assign_next('amorph', nbr)
-              amorph_nbr_call = "#{target_atom_var_name}->amorphNeighbour()"
+              amorph_nbr_call = "#{name_of(target_atom)}->amorphNeighbour()"
               define_nbr_line = define_var_line('Atom *', nbr, amorph_nbr_call)
               condition_str = other.check_role_condition
               define_nbr_line + code_condition(condition_str, &block)
