@@ -102,19 +102,17 @@ module VersatileDiamond
       end
 
       describe '#many_times?' do
+        let(:dept_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+        let(:dept_reactions) { [dept_dimer_formation, dept_sierpinski_drop] }
         subject do
           stub_generator(base_specs: dept_specs, typical_reactions: dept_reactions)
         end
-        let(:dept_specs) do
-          [dept_bridge_base, dept_dimer_base, dept_methyl_on_bridge_base]
-        end
-        let(:dept_reactions) do
-          [dept_dimer_formation, dept_sierpinski_drop, dept_methyl_to_gap]
-        end
 
+        let(:latticed_too) { true }
         shared_examples_for :check_many_times do
           let(:atom) { spec.spec.atom(keyname) }
-          it { expect(subject.many_times?(spec, atom)).to eq(result) }
+          let(:value) { subject.many_times?(spec, atom, latticed_too: latticed_too) }
+          it { expect(value).to eq(result) }
         end
 
         describe 'bridge atoms' do
@@ -125,14 +123,43 @@ module VersatileDiamond
             let(:result) { false }
           end
 
-          it_behaves_like :check_many_times do
+          describe 'with latticed props' do
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cr }
+              let(:result) { true }
+            end
+          end
+
+          describe 'without latticed props' do
+            let(:latticed_too) { false }
             let(:keyname) { :cr }
-            let(:result) { true }
+
+            describe 'with many user specie' do
+              let(:dept_specs) { [dept_bridge_base, dept_three_bridges_base] }
+              let(:dept_reactions) { [dept_dimer_formation] }
+              it_behaves_like :check_many_times do
+                let(:result) { true }
+              end
+            end
+
+            describe 'with formation reaction' do
+              let(:dept_reactions) { [dept_dimer_formation, dept_methyl_to_gap] }
+              it_behaves_like :check_many_times do
+                let(:result) { true }
+              end
+            end
+
+            describe 'without formation reaction' do
+              it_behaves_like :check_many_times do
+                let(:result) { false }
+              end
+            end
           end
         end
 
         describe 'methyl on bridge atoms' do
           let(:spec) { dept_methyl_on_bridge_base }
+
           it_behaves_like :check_many_times do
             let(:keyname) { :cb }
             let(:result) { false }
@@ -144,10 +171,12 @@ module VersatileDiamond
           end
         end
 
-        it_behaves_like :check_many_times do
-          let(:spec) { dept_dimer_base }
-          let(:keyname) { :cr }
-          let(:result) { false }
+        describe 'dimer atoms' do
+          it_behaves_like :check_many_times do
+            let(:spec) { dept_dimer_base }
+            let(:keyname) { :cr }
+            let(:result) { false }
+          end
         end
       end
     end

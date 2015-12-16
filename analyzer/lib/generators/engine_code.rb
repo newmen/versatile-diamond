@@ -123,10 +123,12 @@ module VersatileDiamond
       #   for passed atom
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom which number possible references to correspond specie will be checked
+      # @option [Boolean] :latticed_too if is true then default latticed atoms also
+      #   will be checked of several times usation for source species
       # @return [Boolean] is atom can be used in several species by the role which it
       #   plays in passed specie
-      def many_times?(spec, atom)
-        slice = all_classifications[spec.name]
+      def many_times?(spec, atom, latticed_too: true)
+        slice = all_classifications(latticed_too: latticed_too)[spec.name]
         !!slice && !!slice[atom_properties(spec, atom)]
       end
 
@@ -242,6 +244,8 @@ module VersatileDiamond
       end
 
       # Provides general classification of anchors of all species
+      # @option [Boolean] :latticed_too if is true then default latticed atoms also
+      #   will be checked of several times usation for source species
       # @return [Hash] the classification hash, where keys are specie names and values
       #   are hashes, which keys are anchors as atom properties and values are flag,
       #   that correspond atom can store several instances of specie by appropriate
@@ -257,11 +261,31 @@ module VersatileDiamond
       #       (C~%d) => true
       #     }
       #   }
-      def all_classifications
+      def all_classifications(latticed_too: true)
         @_all_classifications ||=
-          dependent_species.values.reduce({}) do |acc, spec|
-            classificate_parents(acc, spec)
+          dependent_species.values.reduce({}) do |all, spec|
+            acc = classificate_parents(all, spec)
+            !latticed_too ? acc : inject_classification(acc, spec) do |ap, num|
+              num > 1 && classifier.default_latticed_atoms.any? do |def_ap|
+                contain_times?(def_ap, ap, num)
+              end
+            end
           end
+      end
+
+      # Checks that latticed atom properties contains #{num} times the passed atom
+      # properties
+      #
+      # @param [Organizers::AtomProperties] latticed_props which will used as context
+      # @param [Organizers::AtomProperties] props which will combined num times
+      # @param [Integer] num times combination of passed atom properties will do
+      # @return [Boolean] is making combination of atom properties can contains in
+      #   latticed atom properties or not
+      def contain_times?(latticed_props, props, num)
+        diff = latticed_props - props
+        return false unless diff
+        sum = (num - 1).times.reduce(props) { |acc, _| acc && acc + diff }
+        sum && latticed_props.include?(sum)
       end
 
       # Extends passed classification hash for passed spec
