@@ -37,7 +37,8 @@ module VersatileDiamond
             end
 
             describe 'classification' do
-              subject { classifier.classify(target.parents.first.original) }
+              subject { Hash[cln.map { |k, v| [k, [v[0].to_s, v[1]]] }] }
+              let(:cln) { classifier.classify(target.parents.first.original) }
               let(:hash) do
                 {
                   10 => ['-C%d<', 1],

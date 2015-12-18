@@ -6,8 +6,8 @@ module VersatileDiamond
 
       module DependentWrappedSpecExamples
         shared_examples_for :wrapped_spec do
-          describe '#target' do
-            it { expect(subject.target).to eq(subject) }
+          describe '#residual_links' do
+            it { expect(subject.residual_links).to eq(subject.links) }
           end
 
           describe '#parents' do

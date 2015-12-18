@@ -15,18 +15,18 @@ module VersatileDiamond
         @child = child
         @mirror = mirror
 
-        make_invert_mirror
+        make_invert_mirror!
       end
 
       # Clones the current instance and replaces value of internal child variable and
       # also changes the mirror of child spec atoms to original spec atoms
       #
-      # @param [DependentBaseSpec] child the new value of child variable
+      # @param [DependentBaseSpec] other_child the new value of child variable
       # @param [Hash] mirror of old key atoms to new key atoms
       # @return [ProxyParentSpec] the clone of current instance
-      def clone_with_replace_by(child, mirror)
+      def clone_with_replace_by(other_child, mirror)
         result = self.dup
-        result.replace_child(child, mirror)
+        result.replace_child!(other_child, mirror)
         result
       end
 
@@ -62,21 +62,21 @@ module VersatileDiamond
       # Replaces the value of internal child variable and change keys of internal
       # mirror variable
       #
-      # @param [DependentBaseSpec] child see at #clone_with_replace_by same argument
+      # @param [DependentBaseSpec] other_child see at #clone_with_replace_by same arg
       # @param [Hash] mirror see at #clone_with_replace_by same argument
-      def replace_child(child, mirror)
-        @child = child
+      def replace_child!(other_child, mirror)
+        @child = other_child
         @mirror = @mirror.each_with_object({}) do |(f, t), acc|
           acc[mirror[f]] = t
         end
 
-        make_invert_mirror
+        make_invert_mirror!
       end
 
     private
 
       # Makes inverted mirror
-      def make_invert_mirror
+      def make_invert_mirror!
         @invert_mirror = @mirror.invert
       end
 

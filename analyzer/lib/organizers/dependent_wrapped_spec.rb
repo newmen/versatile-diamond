@@ -29,7 +29,7 @@ module VersatileDiamond
       # @return [DependentWrappedSpec] the clone of current instance
       def clone_with_replace(other_spec)
         result = self.dup
-        result.replace_spec(other_spec)
+        result.replace_spec!(other_spec)
         result
       end
 
@@ -152,10 +152,11 @@ module VersatileDiamond
       # variables which are dependent from atoms of old spec
       #
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
-      #   other_spec see at #replace_spec same argument
-      def replace_spec(other_spec)
+      #   other_spec to which the internal reference will be changed
+      def replace_spec!(other_spec)
         mirror = Mcs::SpeciesComparator.make_mirror(spec, other_spec)
 
+        # this #self it is dup which is not same as @child in rest instance!
         @rest = @rest.clone_with_replace_by(self, mirror) if @rest
         @links = @links.each_with_object({}) do |(atom, rels), acc|
           acc[mirror[atom]] = rels.map { |a, r| [mirror[a] || a, r] }
