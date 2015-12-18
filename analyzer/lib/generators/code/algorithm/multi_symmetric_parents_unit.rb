@@ -5,8 +5,6 @@ module VersatileDiamond
 
         # Unit for bulding code that depends from scope of symmetric parent species
         class MultiSymmetricParentsUnit < MultiParentSpeciesUnit
-          include SymmetricCppExpressions
-
           class << self
             # Merges passed symmetric parents with twins hashes
             # @param [Array] smc_hashes the list of merging hashes

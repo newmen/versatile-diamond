@@ -34,8 +34,37 @@ module VersatileDiamond
               fail "Atom (#{ap}) is not an anchor for using specie (#{specie.spec})"
             end
 
+            if generator.many_times?(specie.proxy_spec, getting_atom)
+              ap = atom_properties(specie.proxy_spec, getting_atom)
+              fail "Atom (#{ap}) can contain many species (#{specie.spec})"
+            end
+
             role = specie.role(getting_atom)
             "#{name_of(target_atom)}->specByRole<#{specie.class_name}>(#{role})"
+          end
+
+          # Gets a code which calls eachSpecByRole method of engine framework
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   target_atom which name will be used for method call
+          # @param [UniqueSpecie] specie each instance of which will be iterated in
+          #   passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   getting_atom of which will be used for get a role of atom in specie
+          # @yield should return cpp code string
+          # @return [String] the code with each specie iteration
+          def each_spec_by_role_lambda(target_atom, specie, getting_atom, &block)
+            unless generator.many_times?(specie.proxy_spec, getting_atom)
+              ap = atom_properties(specie.proxy_spec, getting_atom)
+              fail "Atom (#{ap}) cannot contain many species (#{specie.spec})"
+            end
+
+            specie_class = specie.class_name
+            method_name = "#{name_of(target_atom)}->eachSpecByRole<#{specie_class}>"
+            method_args = [specie.role(getting_atom)]
+            closure_args = ['&']
+            lambda_args = ["#{specie_class} *#{name_of(specie)}"]
+
+            code_lambda(method_name, method_args, closure_args, lambda_args, &block)
           end
         end
 

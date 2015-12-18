@@ -44,23 +44,21 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
           def checked_symmetries_lambda(target_atom, specie, checking_atom, &block)
-            unb_method = SymmetricCppExpressions.instance_method(:each_symmetry_lambda)
-            unb_method.bind(self).call(specie) do
-              symmetric_atom_condition(target_atom, specie, checking_atom, &block)
+            each_symmetry_lambda(specie) do
+              same_atom_condition(target_atom, specie, checking_atom, &block)
             end
           end
 
-          # Gets condition with checking that symmetric atom of specie is passed atom
+          # Gets condition with checking that same atom of specie is passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   target_atom which name will be used for method call
-          # @param [UniqueSpecie] specie which symmetric atom will be compared
+          # @param [UniqueSpecie] specie which same atom will be compared
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   checking_atom which will be checked
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
-          def symmetric_atom_condition(target_atom, specie, checking_atom, &block)
-            unb_method = SpecieCppExpressions.instance_method(:atom_from_specie_call)
-            specie_call = unb_method.bind(self).call(specie, checking_atom)
+          def same_atom_condition(target_atom, specie, checking_atom, &block)
+            specie_call = atom_from_specie_call(specie, checking_atom)
             code_condition("#{name_of(target_atom)} == #{specie_call}", &block)
           end
         end
