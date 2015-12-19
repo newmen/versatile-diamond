@@ -1,15 +1,10 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Instances
 
         # Provides specie which means "no specie"
-        class NoneSpecie
-          # Initialize "no specie" by original specie
-          # @param [Specie] specie which will be remembered
-          def initialize(specie)
-            @specie = specie
-          end
+        class NoneSpecie < SpecialCase
 
           # "No specie" is always "no specie"
           # @return [Boolean] true
@@ -24,7 +19,7 @@ module VersatileDiamond
           end
 
           def inspect
-            "none:#{@specie.inspect}"
+            "none:#{original.inspect}"
           end
         end
 

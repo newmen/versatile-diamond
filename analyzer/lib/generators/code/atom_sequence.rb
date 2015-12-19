@@ -77,6 +77,16 @@ module VersatileDiamond
           original.index(atom)
         end
 
+        def to_s
+          concept = spec.spec
+          inner_str = original.map { |atom| ":#{concept.keyname(atom)}" }.join(' ')
+          "(#{inner_str})"
+        end
+
+        def inspect
+          to_s
+        end
+
       protected
 
         attr_reader :spec, :cacher
