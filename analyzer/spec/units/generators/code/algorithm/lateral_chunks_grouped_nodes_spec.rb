@@ -6,21 +6,23 @@ module VersatileDiamond
       module Algorithm
 
         describe LateralChunksGroupedNodes, type: :algorithm, use: :chunks do
+          def node_to_vertex(node)
+            [node.spec.spec, node.atom]
+          end
+
           let(:grouped_nodes) { described_class.new(generator, lateral_chunks) }
           subject { lateral_chunks }
 
           let(:big_links_method) { :links }
-          def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
-
           it_behaves_like :dimer_formation_in_different_envs do
             describe 'just cross neighbours' do
               let(:flatten_face_grouped_atoms) { [[t1, t2], [d1, d2]] }
               let(:nodes_list) do
                 [
-                  [UniqueSpecie, t1],
-                  [UniqueSpecie, t2],
-                  [UniqueSpecie, d1],
-                  [UniqueSpecie, d2]
+                  [Instances::UniqueReactant, t1],
+                  [Instances::UniqueReactant, t2],
+                  [Instances::UniqueReactant, d1],
+                  [Instances::UniqueReactant, d2]
                 ]
               end
 
@@ -52,11 +54,11 @@ module VersatileDiamond
 
               let(:nodes_list) do
                 [
-                  [UniqueSpecie, t1],
-                  [UniqueSpecie, t2],
-                  [UniqueSpecie, d1],
-                  [UniqueSpecie, d2],
-                  [UniqueSpecie, b]
+                  [Instances::UniqueReactant, t1],
+                  [Instances::UniqueReactant, t2],
+                  [Instances::UniqueReactant, d1],
+                  [Instances::UniqueReactant, d2],
+                  [Instances::UniqueReactant, b]
                 ]
               end
 
@@ -115,9 +117,9 @@ module VersatileDiamond
 
             let(:nodes_list) do
               [
-                [UniqueSpecie, t1],
-                [UniqueSpecie, fb],
-                [UniqueSpecie, cb]
+                [Instances::UniqueReactant, t1],
+                [Instances::UniqueReactant, fb],
+                [Instances::UniqueReactant, cb]
               ]
             end
 
@@ -152,10 +154,10 @@ module VersatileDiamond
 
               let(:nodes_list) do
                 [
-                  [UniqueSpecie, tm],
-                  [UniqueSpecie, td],
-                  [UniqueSpecie, dm],
-                  [UniqueSpecie, dd]
+                  [Instances::UniqueReactant, tm],
+                  [Instances::UniqueReactant, td],
+                  [Instances::UniqueReactant, dm],
+                  [Instances::UniqueReactant, dd]
                 ]
               end
 

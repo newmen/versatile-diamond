@@ -60,8 +60,11 @@ module VersatileDiamond
             end
           end
 
+          # Checks that both passed lists contains equal proxy dependent species
+          # @param [Array] nodes_lists with two comparing arguments
+          # @return [Boolean] are dependent species in passed lists identical or not
           def identical_specs?(*nodes_lists)
-            specs_lists = nodes_lists.map { |nodes| nodes.map(&:dept_spec).uniq }
+            specs_lists = nodes_lists.map { |nodes| nodes.map(&:spec).uniq }
             lists_are_identical?(*specs_lists, &:==)
           end
 
@@ -87,7 +90,7 @@ module VersatileDiamond
           def filter_nodes(nodes)
             nodes.select do |node|
               node.uniq_specie.original == @specie &&
-                lateral_chunks.sidepiece_spec?(node.dept_spec.spec)
+                lateral_chunks.sidepiece_spec?(node.spec.spec)
             end
           end
 
@@ -98,11 +101,8 @@ module VersatileDiamond
           # @return [Array] the list of neighbour spec-atoms
           def select_nbrs(nodes)
             lateral_chunks.links.reduce([]) do |acc, (spec_atom, rels)|
-              if nodes.any? { |node| node.spec_atom == spec_atom }
-                acc + rels.map(&:first)
-              else
-                acc
-              end
+              next acc unless nodes.any? { |node| node.spec_atom == spec_atom }
+              acc + rels.map(&:first)
             end
           end
         end

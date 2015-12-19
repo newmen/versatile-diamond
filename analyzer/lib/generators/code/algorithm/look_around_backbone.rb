@@ -22,7 +22,7 @@ module VersatileDiamond
           # @param [Array] nodes which will be checked
           # @return [Boolean] are all nodes contain target spec
           def target_nodes?(nodes)
-            nodes.all? { |node| lateral_chunks.target_spec?(node.dept_spec.spec) }
+            nodes.all? { |node| lateral_chunks.target_spec?(node.spec.spec) }
           end
         end
 
