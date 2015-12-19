@@ -6,10 +6,13 @@ module VersatileDiamond
         # The base class for factories of nodes
         # @abstract
         class BaseNodesFactory
+          extend Forwardable
+
           # Initizalize nodes factory by general code generator
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             @generator = generator
+            @unique_species_cacher = UniqueSpeciesCacher.new(generator, instance_klass)
             @vertices_to_nodes = {}
           end
 
@@ -24,6 +27,7 @@ module VersatileDiamond
         private
 
           attr_reader :generator
+          def_delegator :@unique_species_cacher, :get_unique_specie
 
         end
 

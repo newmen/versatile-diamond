@@ -5,26 +5,24 @@ module VersatileDiamond
 
         # Also contains the different dependent spec
         class ReactantNode < BaseNode
-          # Checks that target atom is anchor in original specie
-          # @return [Boolean] is anchor or not
-          def anchor?
-            dept_spec.anchors.include?(atom)
-          end
-
-          # Gets the dependent spec from unique specie
-          # @return [Organizers::DependentWrappedSpec] the dependent spec
-          def dept_spec
-            uniq_specie.proxy_spec
-          end
 
           # Makes reaction links graph vertex from passed node
           # @return [Array] the reaction links graph vertex
           def spec_atom
-            [dept_spec.spec, atom]
+            [spec.spec, atom]
           end
 
           def inspect
             "⁝#{super}⁝"
+          end
+
+        private
+
+          # Gets dependent specie which is context for aggregation own atom properties
+          # @param [Oraganizers::ProxyParentSpec] the spec where internal atom is
+          #   defined
+          def atom_properties_context
+            spec
           end
         end
 

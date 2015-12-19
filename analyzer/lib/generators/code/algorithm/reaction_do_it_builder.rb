@@ -18,8 +18,9 @@ module VersatileDiamond
           # @param [TypicalReaction] reaction the target reaction code generator
           def initialize(generator, reaction)
             @generator = generator
-            @unique_species_provider = ProxyUniqueSpeciesProvider.new(generator)
             @namer = NameRemember.new
+            @unique_species_cacher =
+              UniqueSpeciesCacher.new(generator, Instances::UniqueReactant)
 
             @reaction = reaction
             @orig_essence_changes = reaction.changes # caches result
@@ -47,7 +48,7 @@ module VersatileDiamond
           end
 
           def get_unique_specie(spec)
-            spec.gas? ? nil : @unique_species_provider.get_unique_specie(spec)
+            spec.gas? ? nil : @unique_species_cacher.get_unique_specie(spec)
           end
 
           def changes
