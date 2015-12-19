@@ -6,16 +6,19 @@ module VersatileDiamond
       module Algorithm
 
         describe ReactionGroupedNodes, type: :algorithm do
+          def node_to_vertex(node)
+            node.spec_atom
+          end
+
           let(:generator) { stub_generator(typical_reactions: [subject]) }
           let(:reaction) { generator.reaction_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, reaction) }
 
           let(:big_links_method) { :links }
-          def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
           describe 'without positions && just one atom' do
             let(:flatten_face_grouped_atoms) { [[atom]] }
-            let(:nodes_list) { [[UniqueSpecie, atom]] }
+            let(:nodes_list) { [[Instances::UniqueReactant, atom]] }
             let(:grouped_graph) { { [atom] => [] } }
 
             it_behaves_like :check_grouped_nodes_graph do
@@ -38,9 +41,9 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[a1, a2, a3]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2],
-                [UniqueSpecie, a3]
+                [Instances::UniqueReactant, a1],
+                [Instances::UniqueReactant, a2],
+                [Instances::UniqueReactant, a3]
               ]
             end
             let(:grouped_graph) do
@@ -58,8 +61,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[a1, a2]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2]
+                [Instances::UniqueReactant, a1],
+                [Instances::UniqueReactant, a2]
               ]
             end
             let(:grouped_graph) do
@@ -78,8 +81,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[a1, a2]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2]
+                [Instances::UniqueReactant, a1],
+                [Instances::UniqueReactant, a2]
               ]
             end
             let(:grouped_graph) do
@@ -100,8 +103,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[ab, ad]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, ab],
-                [UniqueSpecie, ad]
+                [Instances::UniqueReactant, ab],
+                [Instances::UniqueReactant, ad]
               ]
             end
             let(:grouped_graph) do
@@ -124,10 +127,10 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[ad, od], [ab, ob]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, ab],
-                [UniqueSpecie, ob],
-                [UniqueSpecie, ad],
-                [UniqueSpecie, od]
+                [Instances::UniqueReactant, ab],
+                [Instances::UniqueReactant, ob],
+                [Instances::UniqueReactant, ad],
+                [Instances::UniqueReactant, od]
               ]
             end
             let(:grouped_graph) do
@@ -150,10 +153,10 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[am1, am2], [ad1, ad2]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, am1],
-                [UniqueSpecie, am2],
-                [UniqueSpecie, ad1],
-                [UniqueSpecie, ad2]
+                [Instances::UniqueReactant, am1],
+                [Instances::UniqueReactant, am2],
+                [Instances::UniqueReactant, ad1],
+                [Instances::UniqueReactant, ad2]
               ]
             end
             let(:grouped_graph) do
@@ -178,10 +181,10 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[aml, amr], [cr2, cr1]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, amr],
-                [UniqueSpecie, aml],
-                [UniqueSpecie, cr1],
-                [UniqueSpecie, cr2]
+                [Instances::UniqueReactant, amr],
+                [Instances::UniqueReactant, aml],
+                [Instances::UniqueReactant, cr1],
+                [Instances::UniqueReactant, cr2]
               ]
             end
             let(:grouped_graph) do

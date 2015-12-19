@@ -6,6 +6,10 @@ module VersatileDiamond
       module Algorithm
 
         describe SpecieGroupedNodes, type: :algorithm do
+          def node_to_vertex(node)
+            node.atom
+          end
+
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:generator) do
@@ -16,7 +20,6 @@ module VersatileDiamond
           let(:grouped_nodes) { described_class.new(generator, specie) }
 
           let(:big_links_method) { :original_links }
-          def node_to_vertex(node); node.atom end
 
           Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
@@ -28,9 +31,9 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[ct], [cr, cl]] }
             let(:nodes_list) do
               [
-                [NoneSpecie, ct],
-                [NoneSpecie, cr],
-                [NoneSpecie, cl]
+                [Instances::NoneSpecie, ct],
+                [Instances::NoneSpecie, cr],
+                [Instances::NoneSpecie, cl]
               ]
             end
             let(:grouped_graph) do
@@ -46,8 +49,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cb], [cm]] }
             let(:nodes_list) do
               [
-                [NoneSpecie, cm],
-                [UniqueSpecie, cb]
+                [Instances::NoneSpecie, cm],
+                [Instances::UniqueParent, cb]
               ]
             end
             let(:grouped_graph) do
@@ -74,9 +77,9 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cb], [c1], [c2]] }
             let(:nodes_list) do
               [
-                [NoneSpecie, c1],
-                [NoneSpecie, c2],
-                [UniqueSpecie, cb]
+                [Instances::NoneSpecie, c1],
+                [Instances::NoneSpecie, c2],
+                [Instances::UniqueParent, cb]
               ]
             end
             let(:grouped_graph) do
@@ -94,8 +97,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cr, cl]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, cr],
-                [UniqueSpecie, cl]
+                [Instances::UniqueParent, cr],
+                [Instances::UniqueParent, cl]
               ]
             end
             let(:grouped_graph) do
@@ -112,10 +115,10 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cr, cl], [c1], [c2]] }
             let(:nodes_list) do
               [
-                [NoneSpecie, c1],
-                [NoneSpecie, c2],
-                [UniqueSpecie, cr],
-                [UniqueSpecie, cl]
+                [Instances::NoneSpecie, c1],
+                [Instances::NoneSpecie, c2],
+                [Instances::UniqueParent, cr],
+                [Instances::UniqueParent, cl]
               ]
             end
             let(:grouped_graph) do
@@ -135,8 +138,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cb, cm]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, cm],
-                [UniqueSpecie, cb]
+                [Instances::UniqueParent, cm],
+                [Instances::UniqueParent, cb]
               ]
             end
             let(:grouped_graph) do
@@ -154,8 +157,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cr, cl]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, cr],
-                [UniqueSpecie, cl]
+                [Instances::UniqueParent, cr],
+                [Instances::UniqueParent, cl]
               ]
             end
             let(:grouped_graph) do
@@ -172,8 +175,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[ct, cc]] }
             let(:nodes_list) do
               [
-                [SpeciesScope, ct],
-                [SpeciesScope, cc]
+                [Instances::SpeciesScope, ct],
+                [Instances::SpeciesScope, cc]
               ]
             end
             let(:grouped_graph) do
@@ -191,7 +194,7 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cr]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, cr]
+                [Instances::UniqueParent, cr]
               ]
             end
             let(:grouped_graph) do
@@ -209,8 +212,8 @@ module VersatileDiamond
             let(:flatten_face_grouped_atoms) { [[cr], [cbr]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, cr],
-                [UniqueSpecie, cbr]
+                [Instances::UniqueParent, cr],
+                [Instances::UniqueParent, cbr]
               ]
             end
             let(:grouped_graph) do
@@ -229,9 +232,9 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:nodes_list) do
                 [
-                  [NoneSpecie, cm],
-                  [UniqueSpecie, ctr],
-                  [UniqueSpecie, ctl]
+                  [Instances::NoneSpecie, cm],
+                  [Instances::UniqueParent, ctr],
+                  [Instances::UniqueParent, ctl]
                 ]
               end
               let(:grouped_graph) do
@@ -249,9 +252,9 @@ module VersatileDiamond
               end
               let(:nodes_list) do
                 [
-                  [SpeciesScope, cm],
-                  [UniqueSpecie, ctr],
-                  [UniqueSpecie, ctl]
+                  [Instances::SpeciesScope, cm],
+                  [Instances::UniqueParent, ctr],
+                  [Instances::UniqueParent, ctl]
                 ]
               end
               let(:grouped_graph) do
@@ -272,11 +275,11 @@ module VersatileDiamond
               let(:base_specs) { [dept_dimer_base, subject] }
               let(:nodes_list) do
                 [
-                  [NoneSpecie, cm],
-                  [UniqueSpecie, ctr],
-                  [UniqueSpecie, csr],
-                  [UniqueSpecie, ctl],
-                  [UniqueSpecie, csl]
+                  [Instances::NoneSpecie, cm],
+                  [Instances::UniqueParent, ctr],
+                  [Instances::UniqueParent, csr],
+                  [Instances::UniqueParent, ctl],
+                  [Instances::UniqueParent, csl]
                 ]
               end
               let(:grouped_graph) do
@@ -296,11 +299,11 @@ module VersatileDiamond
               end
               let(:nodes_list) do
                 [
-                  [SpeciesScope, cm],
-                  [UniqueSpecie, ctr],
-                  [UniqueSpecie, csr],
-                  [UniqueSpecie, ctl],
-                  [UniqueSpecie, csl]
+                  [Instances::SpeciesScope, cm],
+                  [Instances::UniqueParent, ctr],
+                  [Instances::UniqueParent, csr],
+                  [Instances::UniqueParent, ctl],
+                  [Instances::UniqueParent, csl]
                 ]
               end
               let(:grouped_graph) do
@@ -328,9 +331,9 @@ module VersatileDiamond
               let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
               let(:nodes_list) do
                 [
-                  [UniqueSpecie, cm],
-                  [UniqueSpecie, cbr],
-                  [UniqueSpecie, cdr],
+                  [Instances::UniqueParent, cm],
+                  [Instances::UniqueParent, cbr],
+                  [Instances::UniqueParent, cdr],
                 ]
               end
               let(:grouped_graph) do
@@ -346,11 +349,11 @@ module VersatileDiamond
               let(:flatten_face_grouped_atoms) { [[cm, cbr, cbl], [cdr, cdl]] }
               let(:nodes_list) do
                 [
-                  [UniqueSpecie, cm],
-                  [UniqueSpecie, cbr],
-                  [UniqueSpecie, cbl],
-                  [UniqueSpecie, cdr],
-                  [UniqueSpecie, cdl]
+                  [Instances::UniqueParent, cm],
+                  [Instances::UniqueParent, cbr],
+                  [Instances::UniqueParent, cbl],
+                  [Instances::UniqueParent, cdr],
+                  [Instances::UniqueParent, cdl]
                 ]
               end
               let(:grouped_graph) do
