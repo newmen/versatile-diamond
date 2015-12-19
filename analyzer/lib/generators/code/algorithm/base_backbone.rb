@@ -161,7 +161,7 @@ module VersatileDiamond
           # @param [Array] neighbours the reverse relations from which will be excepted
           # @return [Hash] the graph without multi reverse relations
           def except_multi_reverse_relations(graph, nodes, neighbours)
-            except_relations(graph, nodes) { |ns| neighbours.include?(ns) }
+            except_relations(graph, nodes, &neighbours.public_method(:include?))
           end
 
           # Removes single reverse relations to passed nodes
@@ -184,7 +184,7 @@ module VersatileDiamond
             graph.each_with_object({}) do |(nodes, rels), result|
               if block[nodes]
                 new_rels = rels.each_with_object([]) do |(nbrs, r), acc|
-                  new_nbrs = nbrs.reject { |ns| target_nodes.include?(ns) }
+                  new_nbrs = nbrs.reject(&target_nodes.public_method(:include?))
                   acc << [new_nbrs, r] unless new_nbrs.empty?
                 end
 

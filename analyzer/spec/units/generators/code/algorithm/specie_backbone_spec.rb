@@ -118,6 +118,32 @@ module VersatileDiamond
               end
             end
 
+            describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
+              subject { dept_lower_methyl_on_half_extended_bridge_base }
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) { [dept_bridge_base, subject] }
+                let(:final_graph) do
+                  {
+                    [cr] => [],
+                    [cbr] => [[[cm], param_amorph]]
+                  }
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+                end
+                let(:final_graph) do
+                  {
+                    [cr] => [[[cbr], param_110_cross]],
+                    [cbr] => [[[cr], param_110_front]]
+                  }
+                end
+              end
+            end
+
             describe 'different dept_cross_bridge_on_bridges_base' do
               subject { dept_cross_bridge_on_bridges_base }
 

@@ -252,13 +252,11 @@ module VersatileDiamond
               (uniq_species & ns.map(&:uniq_specie)).size
             end
 
-            if sized_groups.empty?
-              []
-            else
-              max_num = sized_groups.max_by(&:first).first
-              bests = sized_groups.select { |num, _| num == max_num }.flat_map(&:last)
-              SpecieEntryNodes.sort(bests).first
-            end
+            return [] if sized_groups.empty?
+
+            max_num = sized_groups.max_by(&:first).first
+            bests = sized_groups.select { |num, _| num == max_num }.flat_map(&:last)
+            SpecieEntryNodes.sort(bests).first
           end
         end
 

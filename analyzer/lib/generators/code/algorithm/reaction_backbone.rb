@@ -54,7 +54,7 @@ module VersatileDiamond
           # @param [Array] nodes which will be checked
           # @return [Boolean] are all nodes belongs to target specie or not
           def all_of_current_specie?(nodes)
-            nodes.all? { |node| node.dept_spec.spec == @specie.spec.spec }
+            nodes.all? { |node| node.spec.spec == @specie.spec.spec }
           end
 
           # Extends passed graph from passed nodes

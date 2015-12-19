@@ -204,23 +204,45 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_grouped_nodes_graph do
+          describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
             subject { dept_lower_methyl_on_half_extended_bridge_base }
-            let(:base_specs) do
-              [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:base_specs) { [dept_bridge_base, subject] }
+              let(:flatten_face_grouped_atoms) { [[cm], [cbr], [cr]] }
+              let(:nodes_list) do
+                [
+                  [Instances::NoneSpecie, cm],
+                  [Instances::UniqueParent, cbr],
+                  [Instances::SpeciesScope, cr],
+                ]
+              end
+              let(:grouped_graph) do
+                {
+                  [cm] => [[[cbr], param_amorph]],
+                  [cbr] => [[[cm], param_amorph]],
+                  [cr] => []
+                }
+              end
             end
-            let(:flatten_face_grouped_atoms) { [[cr], [cbr]] }
-            let(:nodes_list) do
-              [
-                [Instances::UniqueParent, cr],
-                [Instances::UniqueParent, cbr]
-              ]
-            end
-            let(:grouped_graph) do
-              {
-                [cr] => [[[cbr], param_110_cross]],
-                [cbr] => [[[cr], param_110_front]]
-              }
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
+              end
+              let(:flatten_face_grouped_atoms) { [[cr], [cbr]] }
+              let(:nodes_list) do
+                [
+                  [Instances::UniqueParent, cr],
+                  [Instances::UniqueParent, cbr]
+                ]
+              end
+              let(:grouped_graph) do
+                {
+                  [cr] => [[[cbr], param_110_cross]],
+                  [cbr] => [[[cr], param_110_front]]
+                }
+              end
             end
           end
 
