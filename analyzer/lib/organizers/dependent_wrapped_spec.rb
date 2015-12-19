@@ -42,7 +42,7 @@ module VersatileDiamond
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        @_anchors ||= main_anchors + skipped_anchors
+        @_anchors ||= main_anchors + (complex? ? skipped_anchors : [])
       end
 
       # Gets the parent specs of current instance

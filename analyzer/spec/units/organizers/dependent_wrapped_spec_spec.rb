@@ -63,7 +63,15 @@ module VersatileDiamond
 
       describe '#anchors' do
         shared_examples_for :check_anchors do
-          before { organize_base_specs_dependencies!(base_specs) }
+          before do
+            organize_base_specs_dependencies!(base_specs)
+            unless specific_specs.empty?
+              base_cache = Hash[base_specs.map { |s| [s.name, s] }]
+              organize_specific_specs_dependencies!(base_cache, specific_specs)
+            end
+          end
+
+          let(:specific_specs) { [] }
           let(:anchors) { keynames.map { |kn| target_spec.spec.atom(kn) } }
           it { expect(target_spec.anchors).to match_array(anchors) }
         end
@@ -86,6 +94,13 @@ module VersatileDiamond
           let(:base_specs) { [subject, target_spec] }
           let(:target_spec) { dept_dimer_base }
           let(:keynames) { [:cr, :cl] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_methyl_on_dimer_base] }
+          let(:specific_specs) { [target_spec] }
+          let(:target_spec) { dept_activated_methyl_on_dimer }
+          let(:keynames) { [:cm] }
         end
 
         it_behaves_like :check_anchors do
