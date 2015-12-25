@@ -137,7 +137,10 @@ module VersatileDiamond
         end
 
         describe '#wrapped_base_class_name' do
-          before { generator }
+          before do
+            generator
+            subject.find_symmetries!
+          end
 
           shared_examples_for :parent_bridge_name do
             let(:parent_bridge) { specie_class(bridge_base) }

@@ -25,6 +25,11 @@ module VersatileDiamond
           end
         end
 
+        # Anytime returns a new instance of fake reaction
+        def fake_reaction
+          FakeReaction.new
+        end
+
         define_dependents(DependentTermination, [
           :active_bond,
           :adsorbed_h,
