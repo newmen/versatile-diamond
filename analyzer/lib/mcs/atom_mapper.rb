@@ -45,9 +45,11 @@ module VersatileDiamond
         reject_simple_specs!
 
         mapping_result = MappingResult.new(@source, @products)
-        mapping_result.reaction_type == :exchange ?
-          ManyToManyAlgorithm.map_to(mapping_result, names_and_specs) :
+        if mapping_result.reaction_type == :exchange
+          ManyToManyAlgorithm.map_to(mapping_result, names_and_specs)
+        else
           ManyToOneAlgorithm.map_to(mapping_result)
+        end
 
         mapping_result
       end
@@ -56,9 +58,8 @@ module VersatileDiamond
 
       # Rejects simple specs from each source and products containers
       def reject_simple_specs!
-        context = -> specific_spec { specific_spec.simple? }
-        @source.reject!(&context)
-        @products.reject!(&context)
+        @source.reject!(&:simple?)
+        @products.reject!(&:simple?)
       end
     end
 

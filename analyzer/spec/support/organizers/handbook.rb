@@ -124,7 +124,8 @@ module VersatileDiamond
           :incoherent_dimer_drop,
           :sierpinski_drop,
           :hydrogen_abs_from_gap,
-          :hydrogen_migration
+          :hydrogen_migration,
+          :one_dimer_hydrogen_migration
         ])
         set(:dept_sierpinski_formation) do
           Organizers::DependentTypicalReaction.new(sierpinski_drop.reverse)

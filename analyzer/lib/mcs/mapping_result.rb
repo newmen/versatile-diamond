@@ -41,7 +41,7 @@ module VersatileDiamond
         @result = result
         @reverse = nil
 
-        size_wo_simple = -> specs { specs.reject { |sp| sp.simple? }.size }
+        size_wo_simple = -> specs { specs.reject(&:simple?).size }
         source_size_wo_simple = size_wo_simple[source]
         products_size_wo_simple = size_wo_simple[products]
 
@@ -91,7 +91,7 @@ module VersatileDiamond
       end
 
       # Adds correspond mapping result for :change and :conformity keys. Also
-      # changes reactant for relevant states of ther atoms
+      # changes reactant for relevant states of their atoms
       #
       # @param [Array] specs the associating species
       # @param [Array] full_atoms all atoms for each associating spec
@@ -101,7 +101,7 @@ module VersatileDiamond
         atoms1, atoms2 = full_atoms
         changes1, _ = changed_atoms
 
-        # Changes specifics specs and they atoms if it need. After, the
+        # Changes specific specs and they atoms if it need. After, the
         # relevant states of atoms must be set accordingly.
         changes_zip = []
         full_zip = atoms1.zip(atoms2).map do |atom1, atom2|
@@ -298,7 +298,7 @@ module VersatileDiamond
             raise 'Incorrect atoms of reactants'
           end
 
-          # TODO: checkthe fact that position changes to cross for not diamond lattice
+          # TODO: check the fact that position changes to cross for not diamond lattice
           reaction.position_between(*deep_small_pairs, position.cross,
             check_possible: false)
         end

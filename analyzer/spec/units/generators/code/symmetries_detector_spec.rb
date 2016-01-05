@@ -18,8 +18,6 @@ module VersatileDiamond
 
           before { generator }
 
-          let(:faked_aid) { fake_reaction.apply_to!(dept_activated_incoherent_dimer) }
-
           it '#symmetry_classes' do
             scns = detector.symmetry_classes.map(&:base_class_name)
             expect(scns).to match_array(symmetry_classes)
@@ -114,8 +112,10 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_symmetry do
-            let(:specifics) { [dept_twise_incoherent_dimer, faked_aid] }
-            let(:typical_reactions) { [dept_incoherent_dimer_drop] }
+            let(:specifics) { [] }
+            let(:typical_reactions) do
+              [dept_incoherent_dimer_drop, dept_one_dimer_hydrogen_migration]
+            end
             let(:symmetry_classes) do
               ['ParentsSwapWrapper<EmptyBase<DIMER>, OriginalDimer, 0, 1>']
             end
@@ -147,10 +147,12 @@ module VersatileDiamond
 
         describe 'dimer children' do
           let(:bases) { [dept_bridge_base, dept_dimer_base] }
+          let(:specifics) { [subject] }
 
           describe 'incoherent dimer' do
-            let(:specifics) { [faked_aid, dept_twise_incoherent_dimer] }
-            let(:typical_reactions) { [dept_incoherent_dimer_drop] }
+            let(:typical_reactions) do
+              [dept_incoherent_dimer_drop, dept_one_dimer_hydrogen_migration]
+            end
 
             it_behaves_like :check_symmetry do
               subject { dept_twise_incoherent_dimer }
@@ -161,7 +163,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_symmetry do
-              subject { faked_aid }
+              subject { dept_activated_incoherent_dimer }
               let(:symmetry_classes) { [] }
               let(:symmetric_keynames) { [] }
             end

@@ -8,6 +8,8 @@ module VersatileDiamond
         # Maps structures and pass result to mapping result object
         # @param [MappingResult] mapping_result the object that accumulate
         #   result of structures mapping
+        # @param [Hash] names_and_specs contains names of specs for source and products
+        #   of reaction
         def map_to(mapping_result, names_and_specs)
           pairs = mapping_result.source.map do |source_spec|
             source_name = names_and_specs[:source].find do |_, spec|

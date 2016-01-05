@@ -286,6 +286,9 @@ module VersatileDiamond
         set(:activated_incoherent_dimer) do
           SpecificSpec.new(dimer_base, cr: incoherent_cd, cl: activated_cd)
         end
+        set(:symmetric_activated_incoherent_dimer) do
+          SpecificSpec.new(dimer_base, cl: incoherent_cd, cr: activated_cd)
+        end
         set(:bottom_hydrogenated_activated_dimer) do
           SpecificSpec.new(dimer_base, cr: activated_cd, clb: cd_hydride)
         end
@@ -588,6 +591,20 @@ module VersatileDiamond
           from = [hm_source.first, hm_source.first.atom(:cr)]
           to = [hm_source.last, hm_source.last.atom(:cr)]
           r.position_between(from, to, position_100_front); r
+        end
+
+        set(:odhm_source) { [activated_incoherent_dimer.dup] }
+        set(:odhm_products) { [symmetric_activated_incoherent_dimer.dup] }
+        set(:odhm_names_to_specs) do {
+          source: [[:d, odhm_source.first]],
+          products: [[:d, odhm_products.first]]
+        } end
+        set(:odhm_atom_map) do
+          Mcs::AtomMapper.map(odhm_source, odhm_products, odhm_names_to_specs)
+        end
+        set(:one_dimer_hydrogen_migration) do
+          Reaction.new(:forward, 'one dimer hydrogen migration',
+            odhm_source, odhm_products, odhm_atom_map)
         end
 
         set(:df_source) { [activated_bridge.dup, activated_incoherent_bridge.dup] }
