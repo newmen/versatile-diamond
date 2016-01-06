@@ -26,7 +26,7 @@ module VersatileDiamond
         @reactions = collect_code_reactions
 
         reset_caches!
-        surface_species.each(&:find_symmetries!)
+        surface_reactants.each(&:find_symmetries!)
       end
 
       # provides methods from base generator class
@@ -39,7 +39,7 @@ module VersatileDiamond
           major_code_instances,
           unique_pure_atoms,
           lattices.compact,
-          surface_species,
+          surface_reactants,
           reactions
         ].each do |collection|
           collection.each { |code_class| code_class.generate(@out_path) }
@@ -99,13 +99,13 @@ module VersatileDiamond
       # Gets root species
       # @return [Array] the array of root specie class code generators
       def root_species
-        @_root_species ||= surface_species.select(&:find_root?)
+        @_root_species ||= surface_reactants.select(&:find_root?)
       end
 
       # Gets non simple and non gas collected species
       # @return [Set] the array of collected specie class code generators
-      def surface_species
-        @_surface_species ||= surface_species_hash.values.to_set
+      def surface_reactants
+        @_surface_reactants ||= surface_reactants_hash.values.to_set
       end
 
       # Gets the list of specific species which are gas molecules
@@ -226,7 +226,7 @@ module VersatileDiamond
       # Provides the hash of surface specie class generators with significant species
       # @return [Hash] the hash where keys are concept names of species and the values
       #   are specie class generators
-      def surface_species_hash
+      def surface_reactants_hash
         @species.select do |name, _|
           spec = dependent_specs[name]
           !skipping?(spec) && spec.deep_reactant?
@@ -366,7 +366,7 @@ module VersatileDiamond
       # Resets the internal caches
       def reset_caches!
         @_atom_builder, @_env, @_finder, @_handbook = nil
-        @_dependent_specs, @_root_species, @_surface_species, @_gas_specs = nil
+        @_dependent_specs, @_root_species, @_surface_reactants, @_gas_specs = nil
         @_all_classifications = nil
       end
     end

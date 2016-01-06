@@ -154,22 +154,22 @@ module VersatileDiamond
           end
 
           describe 'empty base specie' do
+            subject { specie_class(bridge_base) }
             let(:base_specs) { [dept_bridge_base] }
 
             it_behaves_like :check_classes_names do
-              subject { specie_class(bridge_base) }
               let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
               let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
             end
           end
 
           describe 'only one child specie' do
+            subject { specie_class(methyl_on_bridge_base) }
             let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
             let(:typical_reactions) { [dept_methyl_activation] }
 
             it_behaves_like :parent_bridge_name
             it_behaves_like :check_classes_names do
-              subject { specie_class(methyl_on_bridge_base) }
               let(:base_class_names) { [name] }
               let(:name) do
                 'Specific<Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, METHYL_ON_BRIDGE, 2>>'
@@ -178,12 +178,12 @@ module VersatileDiamond
           end
 
           describe 'sidepiece and multi child specie' do
+            subject { specie_class(dimer_base) }
             let(:base_specs) { [dept_dimer_base] }
             let(:lateral_reactions) { [dept_middle_lateral_df] }
 
             it_behaves_like :parent_bridge_name
             it_behaves_like :check_classes_names do
-              subject { specie_class(dimer_base) }
               let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
               let(:name) { 'Sidepiece<Base<DependentSpec<BaseSpec, 2>, DIMER, 2>>' }
             end

@@ -115,7 +115,7 @@ module VersatileDiamond
         # @yield [Specie] should return a boolean value
         # @return [Array] the sorted list of code generators
         def species_classes(method_name = :select, &block)
-          sort(generator.surface_species.public_send(method_name, &block))
+          sort(generator.surface_reactants.public_send(method_name, &block))
         end
 
         # Transforms the list of dependent reactions to code generator instances

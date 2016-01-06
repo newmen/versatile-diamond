@@ -78,7 +78,7 @@ module VersatileDiamond
           it { expect(subject.root_species).to match_array(target_species) }
         end
 
-        describe '#surface_species' do
+        describe '#surface_reactants' do
           let(:names) do
             [
               :bridge, :dimer, # basic species
@@ -87,7 +87,7 @@ module VersatileDiamond
               :methyl_on_dimer, :'dimer(cr: *)', # hydrogen migration
             ]
           end
-          it { expect(subject.surface_species).to match_array(target_species) }
+          it { expect(subject.surface_reactants).to match_array(target_species) }
         end
       end
 
