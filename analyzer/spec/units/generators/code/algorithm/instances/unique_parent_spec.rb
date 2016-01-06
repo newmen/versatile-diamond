@@ -39,13 +39,6 @@ module VersatileDiamond
             it { expect(subject.concept).to eq(veiled_bridge) }
           end
 
-          describe '#anchors' do
-            it { expect(subject.anchors).to match_array([ct, cr, cl]) }
-            [:ct, :cr, :cl].each do |keyname|
-              let(keyname) { veiled_bridge.atom(keyname) }
-            end
-          end
-
           describe '#<=>' do
             let(:specific_specs) { [more_complex] }
             let(:more_complex) { dept_activated_methyl_on_bridge }

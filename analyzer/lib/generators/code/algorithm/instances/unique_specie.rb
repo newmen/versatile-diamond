@@ -8,6 +8,7 @@ module VersatileDiamond
         class UniqueSpecie < Tools::TransparentProxy
           include SpeciesUser
           include SpecieInstance
+          include SpecieInstancesOrder
 
           # Initializes unique specie
           # @param [EngineCode] generator the major code generator

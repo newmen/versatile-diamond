@@ -8,7 +8,7 @@ module VersatileDiamond
         describe SpeciesScope, type: :algorithm do
           def make_scope(original, proxy_specs)
             uniqs = proxy_specs.map { |spec| UniqueParent.new(generator, spec) }
-            described_class.new(generator, original, uniqs)
+            described_class.new(original, uniqs)
           end
 
           let(:generator) { stub_generator(base_specs: base_specs) }
@@ -32,10 +32,6 @@ module VersatileDiamond
 
           describe '#spec' do
             it { expect(subject.spec).to eq(original_specie.spec) }
-          end
-
-          describe '#anchors' do
-            it { expect(subject.anchors).to eq(original_specie.spec.anchors) }
           end
 
           describe '#species' do
@@ -63,28 +59,33 @@ module VersatileDiamond
             it { expect([subject, other].shuffle.sort).to eq([subject, other]) }
           end
 
-          describe 'methods dependent from atom of complex specie' do
-            let(:atom) { cross_bridge_on_bridges_base.atom(:cm) }
-
-            describe '#index' do
-              it { expect(subject.index(atom)).to eq(0) }
-            end
-
-            describe 'atom properties users' do
-              let(:props) { Organizers::AtomProperties.new(subject.spec, atom) }
-
-              describe '#role' do
-                let(:classifier) { generator.classifier }
-                it { expect(subject.role(atom)).to eq(classifier.index(props)) }
-              end
-
-              describe '#properties_of' do
-                it { expect(subject.properties_of(atom)).to eq(props) }
+          describe '#anchor?' do
+            shared_examples_for :check_anchors do
+              let(:original_specie) { generator.specie_class(concept_spec.name) }
+              it 'check anchors hash' do
+                anchors.each do |keyname, result|
+                  expect(subject.anchor?(concept_spec.atom(keyname))).to be_truthy
+                end
               end
             end
 
-            describe '#anchor?' do
-              it { expect(subject.anchor?(atom)).to be_truthy }
+            it_behaves_like :check_anchors do
+              let(:concept_spec) { cross_bridge_on_bridges_base }
+              let(:anchors) { [:cm, :ctl, :ctr] }
+            end
+
+            it_behaves_like :check_anchors do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_dimer_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base,
+                  dept_intermed_migr_down_common_base
+                ]
+              end
+              let(:concept_spec) { intermed_migr_down_common_base }
+              let(:anchors) { [:cm, :cbr, :cdr] }
             end
           end
 

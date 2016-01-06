@@ -21,10 +21,6 @@ module VersatileDiamond
             it { expect(subject.spec).to eq(specie.spec) }
           end
 
-          describe '#anchors' do
-            it { expect(subject.anchors).to eq(specie.spec.anchors) }
-          end
-
           describe '<=>' do
             let(:base_specs) { [spec, other_spec] }
             let(:other_spec) { dept_methyl_on_bridge_base }

@@ -11,12 +11,19 @@ module VersatileDiamond
           attr_reader :species
 
           # Initializes scope of species by original species list
-          # @param [EngineCode] generator the major code generator
           # @param [Specie] original specie from which this scope was found
           # @param [Array] species which will be stored as one
-          def initialize(generator, original, species)
-            super(generator, original)
+          def initialize(original, species)
+            super(original)
             @species = species
+          end
+
+          # Checks that passed atom is anchor of any internal specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is anchor or not
+          def anchor?(atom)
+            spec.anchors.include?(atom)
           end
 
           # Scope is not "no specie"
@@ -40,6 +47,7 @@ module VersatileDiamond
           # Compares two scope instances that were initially high and then a small
           # @param [Comparator] other comparable instance
           # @return [Integer] the comparing result
+          # @override
           def comparing_core(other)
             species.sort <=> other.species.sort
           end

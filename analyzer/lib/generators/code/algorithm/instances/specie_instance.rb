@@ -3,23 +3,8 @@ module VersatileDiamond
     module Code
       module Algorithm::Instances
 
-        # The base role for algorithm instances
+        # The base role for algorithm specie instances
         module SpecieInstance
-          include Modules::OrderProvider
-          extend Forwardable
-
-          def_delegator :spec, :anchors
-
-          # Compares two specie instances that were initially high and then a small
-          # @param [SpecieInstance] other comparable specie
-          # @return [Integer] the comparing result
-          def <=> (other)
-            typed_order(other, self, :scope?) do
-              typed_order(self, other, :none?) do
-                comparing_core(other)
-              end
-            end
-          end
 
           # Gets concept specie
           # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
@@ -50,16 +35,7 @@ module VersatileDiamond
           #   atom which will be checked
           # @return [Boolean] is anchor or not
           def anchor?(atom)
-            anchors.include?(reflection_of(atom))
-          end
-
-        private
-
-          # Compares two unique specie that were initially high and then a small
-          # @param [SpecieInstance] other comparable specie
-          # @return [Integer] the comparing result
-          def comparing_core(other)
-            other.spec <=> spec
+            spec.anchors.include?(reflection_of(atom))
           end
         end
 

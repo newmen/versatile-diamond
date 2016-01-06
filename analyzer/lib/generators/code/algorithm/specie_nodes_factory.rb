@@ -31,7 +31,7 @@ module VersatileDiamond
               get_unique_specie(parents.first)
             else
               unique_parents = specie_instances(parents, atom)
-              Instances::SpeciesScope.new(generator, @specie, unique_parents)
+              Instances::SpeciesScope.new(@specie, unique_parents)
             end
           end
 

@@ -15,14 +15,12 @@ module VersatileDiamond
 
           # Initializes the node object
           # @param [EngineCode] generator the major code generator
-          # @param [Specie] orig_specie the target specie code generator instance
           # @param [NoneSpec | UniqueSpecie | SpeciesScope] uniq_specie which
           #   correspond to using parent species
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which was a vertex of original graph
-          def initialize(generator, orig_specie, uniq_specie, atom)
+          def initialize(generator, uniq_specie, atom)
             @generator = generator
-            @orig_specie = orig_specie
             @uniq_specie = uniq_specie
             @atom = atom
 
@@ -47,18 +45,12 @@ module VersatileDiamond
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties
-            @_atom_properties ||=
-              @generator.atom_properties(atom_properties_context, atom)
+            @_atom_properties ||= @generator.atom_properties(context_spec, atom)
           end
 
           def inspect
             "(#{uniq_specie.inspect} | #{properties})"
           end
-
-        attr_reader
-
-          attr_reader :orig_specie
-
         end
 
       end

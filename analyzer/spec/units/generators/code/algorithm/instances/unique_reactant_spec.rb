@@ -38,10 +38,6 @@ module VersatileDiamond
             it { expect(subject.concept).to eq(veiled_spec) }
           end
 
-          describe '#anchors' do
-            it { expect(subject.anchors).to match_array([v_cm, v_cb]) }
-          end
-
           describe '#<=>' do
             let(:specific_specs) { [complex] }
             let(:complex) { dept_activated_methyl_on_bridge }

@@ -21,7 +21,7 @@ module VersatileDiamond
           # Gets dependent specie which is context for aggregation own atom properties
           # @param [Oraganizers::ProxyParentSpec] the spec where internal atom is
           #   defined
-          def atom_properties_context
+          def context_spec
             spec
           end
         end
