@@ -1,7 +1,7 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Provides logic for units which uses lateral species
         module LateralSpecDefiner

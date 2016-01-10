@@ -3,7 +3,7 @@ module VersatileDiamond
 
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Provides common logic check that reactants are symmetrical
         module SymmetricReactantsUnitBehavior

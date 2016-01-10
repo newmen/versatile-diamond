@@ -94,7 +94,8 @@ module VersatileDiamond
           def like_others?(big_props, small_props)
             big_props.size == small_props.size &&
               big_props.zip(small_props).all? do |both|
-                (:like?).to_proc.call(*classified_props(both))
+                a, b = classified_props(both)
+                a.like?(b)
               end
           end
 

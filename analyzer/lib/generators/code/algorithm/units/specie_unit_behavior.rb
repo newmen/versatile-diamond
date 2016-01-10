@@ -1,7 +1,7 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Provides logic for units which uses when specie find algorithm builds
         module SpecieUnitBehavior

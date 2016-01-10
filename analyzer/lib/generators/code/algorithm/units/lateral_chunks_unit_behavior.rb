@@ -1,12 +1,12 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Provides logic for units which uses when look around algorithm builds
         module LateralChunksUnitBehavior
-          include Algorithm::ReactantUnitCommonBehavior
-          include Algorithm::LateralSpecDefiner
+          include Algorithm::Units::ReactantUnitCommonBehavior
+          include Algorithm::Units::LateralSpecDefiner
 
           # Gets code line with definition of target species atoms
           # @return [String] the code line with defined atoms

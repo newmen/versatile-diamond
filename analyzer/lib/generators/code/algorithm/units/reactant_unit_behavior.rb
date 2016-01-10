@@ -1,12 +1,12 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Provides logic for units which uses when reaction find algorithm builds
         module ReactantUnitBehavior
-          include Algorithm::ReactantUnitCommonBehavior
-          include Algorithm::SpecificSpecDefiner
+          include Algorithm::Units::ReactantUnitCommonBehavior
+          include Algorithm::Units::SpecificSpecDefiner
 
         private
 

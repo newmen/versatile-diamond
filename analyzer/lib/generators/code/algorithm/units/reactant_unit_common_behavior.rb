@@ -1,11 +1,11 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Provides common logic for units which uses when reaction algorithm builds
         module ReactantUnitCommonBehavior
-          include Algorithm::SymmetricReactantsUnitBehavior
+          include Algorithm::Units::SymmetricReactantsUnitBehavior
 
         protected
 
