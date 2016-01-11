@@ -182,7 +182,7 @@ module VersatileDiamond
       def wrap_each_used_same(veiled_cache, target_container, target_spec)
         targets = [:source, :products]
         assert = targets.map { |tg| target_container.each(tg).count(target_spec) }
-        fail 'Wrong before swapping' if assert.any? { |num| num > 1 }
+        raise 'Wrong before swapping' if assert.any? { |num| num > 1 }
 
         targets.each do |target|
           target_container.each(target) do |spec|

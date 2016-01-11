@@ -82,7 +82,7 @@ module VersatileDiamond
             checking_rels(nodes).map do |nbrs, rel_params|
               result = split_by_first(reactions_with_species(nbrs))
               if result.size > 1
-                fail "Can't process nodes with different lateral chunks and species"
+                raise "Can't process nodes with different lateral chunks and species"
               end
 
               reaction, species = result.first

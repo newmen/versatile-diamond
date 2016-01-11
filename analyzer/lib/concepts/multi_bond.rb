@@ -19,7 +19,7 @@ module VersatileDiamond
       # Creates a multibond instance by arity
       # @param [Integer] arity of creating bond
       def initialize(arity)
-        fail 'Wrong arity' if arity < 2 || arity > 3
+        raise 'Wrong arity' if arity < 2 || arity > 3
         @arity = arity
       end
 

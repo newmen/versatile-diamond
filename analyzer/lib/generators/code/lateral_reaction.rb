@@ -44,7 +44,8 @@ module VersatileDiamond
         # @param [Array] species which will be checked
         def check_all_source!(specs)
           unless lists_are_identical?(reaction.sidepiece_specs, specs, &:==)
-            fail 'The passed species do not belongs to set of sidepiece species'
+            msg = 'The passed species do not belongs to set of sidepiece species'
+            raise ArgumentError, msg
           end
         end
 

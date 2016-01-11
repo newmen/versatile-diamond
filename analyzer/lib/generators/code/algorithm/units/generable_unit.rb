@@ -90,7 +90,7 @@ module VersatileDiamond
           # @return [Object] depends from using method
           def apply_names_to(method_name, *variables)
             list = variables.size == 1 ? variables.last : variables
-            fail 'Array expected' unless variables.is_a?(Enumerable)
+            raise ArgumentError, 'Array expected' unless variables.is_a?(Enumerable)
             list.public_send(method_name, &method(:name_of))
           end
         end

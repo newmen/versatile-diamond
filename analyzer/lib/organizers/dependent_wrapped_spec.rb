@@ -297,7 +297,7 @@ module VersatileDiamond
       # @param [SpecResidual] rest the residual of difference
       # @raise [RuntimeError] if residual already set
       def store_rest(rest)
-        fail 'Main anchors already collected' if @_main_anchors
+        raise 'Main anchors already collected' if @_main_anchors
 
         @rest.parents.map(&:original).uniq.each { |pr| pr.remove_child(self) } if @rest
 

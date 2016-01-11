@@ -54,7 +54,8 @@ module VersatileDiamond
         # @param [Array] species which will be checked
         def check_all_source!(specs)
           unless lists_are_identical?(concept_source_species, specs, &:==)
-            fail 'The passed species do not belongs to set of source species'
+            msg = 'The passed species do not belongs to set of source species'
+            raise ArgumentError, msg
           end
         end
 

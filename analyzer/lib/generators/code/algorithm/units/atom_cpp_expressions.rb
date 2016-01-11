@@ -27,12 +27,14 @@ module VersatileDiamond
           def spec_by_role_call(target_atom, specie, getting_atom)
             unless specie.proxy_spec.anchors.include?(getting_atom)
               ap = atom_properties(specie.proxy_spec, getting_atom)
-              fail "Atom (#{ap}) is not an anchor for using specie (#{specie.spec})"
+              msg = "Atom (#{ap}) is not an anchor for using specie (#{specie.spec})"
+              raise ArgumentError, msg
             end
 
             if generator.many_times?(specie.proxy_spec, getting_atom)
               ap = atom_properties(specie.proxy_spec, getting_atom)
-              fail "Atom (#{ap}) can contain many species (#{specie.spec})"
+              msg = "Atom (#{ap}) can contain many species (#{specie.spec})"
+              raise ArgumentError, msg
             end
 
             role = specie.role(getting_atom)
@@ -51,7 +53,8 @@ module VersatileDiamond
           def each_spec_by_role_lambda(target_atom, specie, getting_atom, &block)
             unless generator.many_times?(specie.proxy_spec, getting_atom)
               ap = atom_properties(specie.proxy_spec, getting_atom)
-              fail "Atom (#{ap}) cannot contain many species (#{specie.spec})"
+              msg = "Atom (#{ap}) cannot contain many species (#{specie.spec})"
+              raise ArgumentError, msg
             end
 
             specie_class = specie.class_name

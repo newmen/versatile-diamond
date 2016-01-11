@@ -21,7 +21,7 @@ module VersatileDiamond
           elsif method_name_or_class.is_a?(Class)
             x.is_a?(method_name_or_class)
           else
-            fail 'Wrong type of "method_name_or_class" variable'
+            raise ArgumentError, 'Wrong type of "method_name_or_class" variable'
           end
         end
 

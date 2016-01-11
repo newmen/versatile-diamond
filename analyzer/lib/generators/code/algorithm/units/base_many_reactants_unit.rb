@@ -81,7 +81,7 @@ module VersatileDiamond
               else
                 # TODO: maybe need to redefine atoms as separated array before loop
                 # statement in the case when atoms are not "full array"
-                fail 'Can not figure out the next names of atoms variables'
+                raise 'Can not figure out the next names of atoms variables'
               end
               block.call
             end

@@ -337,7 +337,7 @@ module VersatileDiamond
       def has_free_bonds?
         return false if incoherent?
         num = unbonded_actives_num + dangling_hydrogens_num
-        fail 'Wrong valence' if num > valence
+        raise 'Wrong valence' if num > valence
         num < valence
       end
 

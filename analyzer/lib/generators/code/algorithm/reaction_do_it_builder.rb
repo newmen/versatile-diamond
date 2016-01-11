@@ -192,7 +192,7 @@ module VersatileDiamond
           def insert_to_crystal_line(spec, atom)
             nbrs, rel_params = neighbours_with_relation(spec, atom)
             # TODO: logic of neighbours selection depends from diamond crystal lattice!
-            fail 'Wrong number of target neighbour atoms' unless nbrs.size == 2
+            raise 'Wrong number of target neighbour atoms' unless nbrs.size == 2
 
             crystal_func = "#{crystal_call(nbrs.first)}->insert"
             coods_call = full_relation_call_at(nbrs, rel_params)
@@ -236,7 +236,7 @@ module VersatileDiamond
             max_group = groups.max_by { |_, group| group.size }
             max_group_size = max_group.last.size
             if groups.select { |_, group| group.size == max_group_size }.size > 1
-              fail 'Ambigous neighbour atoms groups'
+              raise 'Ambigous neighbour atoms groups'
             end
 
             [max_group.last.map(&:first), max_group.first]
@@ -342,7 +342,7 @@ module VersatileDiamond
           def atom_type_change_lines(atom, transitions)
             num = transitions.size
             if num == 0
-              fail 'Wrong number of atom types transitions'
+              raise 'Wrong number of atom types transitions'
             elsif num == 1
               atom_type_change_bodies(atom, transitions).first
              else

@@ -39,7 +39,7 @@ module VersatileDiamond
       # @option [Boolean] :with_ions is flag which identify that there are reactions
       #   with analyzing spec and ions of gase phase
       def analyze(spec, with_ions: true)
-        fail 'Cache of properties already created' if @_props_with_indexes
+        raise 'Cache of properties already created' if @_props_with_indexes
 
         store_all_ioned = @is_ions_presented || with_ions
         avail_props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }

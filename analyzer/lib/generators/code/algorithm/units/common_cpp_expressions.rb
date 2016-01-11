@@ -60,7 +60,8 @@ module VersatileDiamond
                 "#{pre_expr} (#{condition_str})"
               else
                 unless use_else_prefix
-                  fail 'Incorrect arguments was passed to combine code condition'
+                  msg = 'Incorrect arguments was passed to combine code condition'
+                  raise ArgumentError, msg
                 end
                 'else'
               end
