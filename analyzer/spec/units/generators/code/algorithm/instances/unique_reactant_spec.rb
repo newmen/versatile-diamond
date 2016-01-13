@@ -71,6 +71,11 @@ module VersatileDiamond
               describe '#anchor?' do
                 it { expect(subject.anchor?(atom)).to eq(anchor) }
               end
+
+              describe '#many?' do
+                # no symmetric or no anchor
+                it { expect(subject.many?(atom)).to be_falsey }
+              end
             end
 
             it_behaves_like :check_atom_methods do

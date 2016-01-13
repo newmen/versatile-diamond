@@ -37,6 +37,24 @@ module VersatileDiamond
           def anchor?(atom)
             spec.anchors.include?(reflection_of(atom))
           end
+
+          # Checks that passed atom uses many times in current specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is atom uses many times or not
+          def many?(atom)
+            generator.many_times?(spec, reflection_of(atom))
+          end
+
+        private
+
+          # Checks that passed atom is anchor
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is anchor or not
+          def anchor?(atom)
+            spec.anchors.include?(reflection_of(atom))
+          end
         end
 
       end

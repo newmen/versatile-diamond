@@ -80,6 +80,10 @@ module VersatileDiamond
               it { expect(subject.anchor?(cb)).to be_truthy }
               it { expect(subject.anchor?(cm)).to be_falsey }
             end
+
+            describe '#many?' do
+              it { expect(subject.many?(cb)).to be_falsey }
+            end
           end
 
           describe '#none?' do

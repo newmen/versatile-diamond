@@ -56,6 +56,10 @@ module VersatileDiamond
               describe '#anchor?' do
                 it { expect(subject.anchor?(atom)).to be_truthy }
               end
+
+              describe '#many?' do
+                it { expect(subject.many?(atom)).to eq(many) }
+              end
             end
 
             [:ct, :cr, :cl].each do |keyname|
@@ -65,16 +69,19 @@ module VersatileDiamond
             it_behaves_like :check_atom_methods do
               let(:atom) { ct }
               let(:index) { 0 }
+              let(:many) { false }
             end
 
             it_behaves_like :check_atom_methods do
               let(:atom) { cl }
               let(:index) { 1 }
+              let(:many) { true }
             end
 
             it_behaves_like :check_atom_methods do
               let(:atom) { cr }
               let(:index) { 2 }
+              let(:many) { true }
             end
           end
 
