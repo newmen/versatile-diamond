@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Unit for bulding code of root specie that depends from one parent specie
         class SingleParentRootSpecieUnit < SingleSpecieUnit
-          include SpecieUnitBehavior
+          include SpecieBehavior
 
           # Checks that specie is defined and check it symmetry overwise
           # @yield should return cpp code

@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Provides logic for units which uses when specie find algorithm builds
-        module SpecieUnitBehavior
+        module SpecieBehavior
 
           # By default assigns internal anchor atoms to some names for using its in
           # find algorithm
@@ -83,12 +83,6 @@ module VersatileDiamond
           def has_relations?(atom)
             rels = relations_of(atom)
             rels && !rels.empty?
-          end
-
-          # Gets the default engine framework class for parent specie
-          # @return [String] the engine framework class for parent specie
-          def specie_type
-            'ParentSpec'
           end
         end
 

@@ -9,21 +9,10 @@ module VersatileDiamond
           # Gets the lateral chunk creator unit
           # @param [LateralReaction] lateral_reaction instance of which will allocated
           # @param [Array] sidepiece_species required for creation lateral reaction
-          # @return [ReactionLookAroundCreatorUnit] the unit for defines lateral chunk
-          #   creation code block
+          # @return [Units::ReactionLookAroundCreatorUnit] the unit for defines lateral
+          #   chunk creation code block
           def creator(*args)
-            ReactionLookAroundCreatorUnit.new(*default_args, *args)
-          end
-
-          # Gets the other side species checker unit
-          # @param [Array] otherside_sidepieces_with_atoms the list of absolutely
-          #   unique otherside species with them atoms
-          # @param [Array] prev_sidepieces the list of sidepieces which was used at
-          #   previos steps
-          # @return [LookAroundOthersideSpeciesCheckerUnit] the unit which will check
-          #   sidepiece species
-          def checker(*args)
-            LookAroundOthersideSpeciesCheckerUnit.new(*default_args, *args)
+            Units::ReactionLookAroundCreatorUnit.new(*default_args, *args)
           end
         end
 

@@ -12,48 +12,36 @@ module VersatileDiamond
           def initialize(generator, reaction)
             super(generator)
             @reaction = reaction
-            @used_species = Set.new
+            @used_reactants = Set.new
           end
 
           # Gets the reaction creator unit
-          # @return [ReactionCreatorUnit] the unit for defines reaction creation code
-          #   block
+          # @return [Units::ReactionCreatorUnit] the unit for defines reaction creation
+          #   code block
           def creator
-            ReactionCreatorUnit.new(*default_args, @reaction, @used_species.to_a)
+            creator_args = [@reaction, @used_reactants.to_a]
+            Units::ReactionCreatorUnit.new(*default_args, *creator_args)
           end
 
         private
 
-          # Makes unit which contains one specie
-          # @param [Array] nodes from which the unit will be created
-          # @return [ReactantUnit] which contains one unique specie
-          def make_single_unit(nodes)
-            ReactantUnit.new(*single_unit_args(nodes), @reaction.reaction)
+          # Gets the role of creating mono unit
+          # @return [Module] the scope of methods which defines behavior of unit
+          def behavior_role
+            Units::ReactantBehavior
           end
 
-          # Makes unit which contains many reactant species
-          # @param [Array] nodes from which the unit will be created
-          # @return [ManyReactantsUnit] which contains many unique specie
-          def make_multi_unit(nodes)
-            ManyReactantsUnit.new(*multi_unit_args(nodes), @reaction.reaction)
+          # Gets the object which provides global links
+          # @return [TypicalReaction] reaction which should be found by building
+          #   algorigm
+          def relations_checker
+            @reaction
           end
 
-          # Gets the list of default arguments which uses when new single unit creates
-          # @param [Array] nodes from which the unit will be created
-          # @return [Array] the array of default arguments
-          # @override
-          def single_unit_args(nodes)
-            @used_species << nodes.first.uniq_specie
-            super
-          end
-
-          # Gets the list of default arguments which uses when new multi unit creates
-          # @param [Array] nodes from which the unit will be created
-          # @return [Array] the array of default arguments
-          # @override
-          def multi_unit_args(nodes)
-            @used_species += nodes.map(&:uniq_specie)
-            super
+          # Stores the passed specie to internal collection
+          # @param [Instances::SpecieInstance] uniq_reactant which will be stored
+          def remember_uniq_specie(uniq_reactant)
+            @used_reactants << uniq_reactant
           end
         end
 

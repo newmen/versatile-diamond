@@ -11,7 +11,8 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
           # @param [Object] relations_checker which provides global links
-          # @param [SpecieInstance] specie which uses in current building algorithm
+          # @param [Instances::SpecieInstance] specie which uses in current building
+          #   algorithm
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which will be checked
           def initialize(generator, namer, relations_checker, specie, atom)

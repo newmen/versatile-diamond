@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Provides logic for units which uses when look around algorithm builds
-        module LateralChunksUnitBehavior
+        module LateralBehavior
           include Algorithm::Units::ReactantUnitCommonBehavior
           include Algorithm::Units::LateralSpecDefiner
 
@@ -21,12 +21,6 @@ module VersatileDiamond
           end
 
         private
-
-          # Gets the instance which can check the relation between units
-          # @return [LateralChunks] the target lateral chunks instance
-          def relations_checker
-            lateral_chunks
-          end
 
           # Gets the name of variable for target specie
           # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]

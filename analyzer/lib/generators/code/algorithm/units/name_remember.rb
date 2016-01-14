@@ -3,7 +3,7 @@ module VersatileDiamond
 
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         # Accumulates the names of variables for generation algorithms in cpp code
         class NameRemember

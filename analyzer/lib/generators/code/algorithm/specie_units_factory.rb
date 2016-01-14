@@ -19,47 +19,43 @@ module VersatileDiamond
           # parent species
           def reset!
             create_namer!
-            @used_unique_parents = Set.new
-          end
-
-          # Makes unit that correspond to passed nodes
-          # @param [Array] nodes for which the unit will be maked
-          # @return [BaseCheckerUnit] the unit of code generation
-          def make_unit(nodes)
-            nodes.size == 1 ? from_mono_node(nodes.first) : make_many_units(nodes)
+            @used_parents = Set.new
           end
 
           # Gets the specie creator unit
-          # @return [SpecieCreatorUnit] the unit for defines specie creation code block
+          # @return [Units::SpecieCreatorUnit] the unit for defines specie creation
+          #   code block
           def creator
-            SpecieCreatorUnit.new(*default_args, @specie, @used_unique_parents.to_a)
+            Units::SpecieCreatorUnit.new(*default_args, @specie, @used_parents.to_a)
           end
 
         private
 
-          # Creates mono unit by one node
-          # @param [SpecieNode] node by which the mono unit will be created
-          # @return [MonoUnit] the unit for generation code that depends from passed
-          #   node
-          def make_mono_unit(node)
-            @used_unique_parents << node.uniq_specie
-            MonoUnit.new(*default_args, @specie, node.uniq_specie, node.atom)
+          # Gets the role of creating mono unit
+          # @return [Module] the scope of methods which defines behavior of unit
+          def behavior_role
+            Units::SpecieBehavior
           end
 
-          # Creates many units by list of nodes
-          # @param [Array] nodes by which the many units will be created
-          # @return [ManyUnits] the unit for generation code that depends from
-          #   passed nodes
-          def make_many_units(nodes)
-            ManyUnits.new(*default_args, nodes.map(&method(:from_mono_node)))
+          # Gets the object which provides global links
+          # @return [Specie] specie which should be found by building algorigm
+          def relations_checker
+            @specie
+          end
+
+          # Stores the passed specie to internal collection
+          # @param [Instances::SpecieInstance] uniq_parent which will be stored
+          def remember_uniq_specie(uniq_parent)
+            @used_parents << uniq_parent
           end
 
           # Creates checker unit from one node
-          # @param [SpecieNode] node by which the checker unit will be created
-          # @return [BaseCheckerUnit] the unit for generation code that depends from
-          #   passed node
-          def from_mono_node(node)
-            node.scope? ? make_many_units(node.split) : make_mono_unit(node)
+          # @param [Nodes::SpecieNode] node by which the checker unit will be created
+          # @return [Units::BaseCheckerUnit] the unit for generation code that depends
+          #   from passed node
+          # @override
+          def make_mono_unit(node)
+            node.scope? ? make_many_units(node.split) : super
           end
         end
 

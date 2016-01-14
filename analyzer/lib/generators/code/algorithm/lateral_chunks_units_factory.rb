@@ -17,20 +17,22 @@ module VersatileDiamond
 
         private
 
-          attr_reader :lateral_chunks
-
-          # Makes unit which contains one specie
-          # @param [Array] nodes from which the unit will be created
-          # @return [LateralChunkUnit] which contains one unique specie
-          def make_single_unit(nodes)
-            LateralChunkUnit.new(*single_unit_args(nodes), lateral_chunks)
+          # Gets the role of creating mono unit
+          # @return [Module] the scope of methods which defines behavior of unit
+          def behavior_role
+            Units::LateralBehavior
           end
 
-          # Makes unit which contains many reactant species
-          # @param [Array] nodes from which the unit will be created
-          # @return [ManyLateralChunksUnit] which contains many unique specie
-          def make_multi_unit(nodes)
-            ManyLateralChunksUnit.new(*multi_unit_args(nodes), lateral_chunks)
+          # Gets the object which provides global links
+          # @return [TypicalReaction] reaction which should be found by building
+          #   algorigm
+          def relations_checker
+            @lateral_chunks
+          end
+
+          # Do nothing
+          # @param [Instances::SpecieInstance] _
+          def remember_uniq_specie(_)
           end
         end
 
