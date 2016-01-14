@@ -18,7 +18,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code
           def define_and_check_all_parents(&block)
             parent_species.each do |parent_specie|
-              namer.assign_next(Specie::INTER_SPECIE_NAME, parent_specie)
+              namer.assign_next(parent_specie.var_name, parent_specie)
             end
 
             iterated = []

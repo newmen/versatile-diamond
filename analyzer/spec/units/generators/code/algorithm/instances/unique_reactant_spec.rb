@@ -72,8 +72,13 @@ module VersatileDiamond
                 it { expect(subject.anchor?(atom)).to eq(anchor) }
               end
 
+              describe '#symmetric?' do
+                before { subject.original.find_symmetries! }
+                it { expect(subject.symmetric?(atom)).to be_falsey }
+              end
+
               describe '#many?' do
-                # no symmetric or no anchor
+                # because all checking atoms are no symmetric or no anchor
                 it { expect(subject.many?(atom)).to be_falsey }
               end
             end
@@ -101,6 +106,10 @@ module VersatileDiamond
               let(:index) { 3 }
               let(:anchor) { false }
             end
+          end
+
+          describe '#var_name' do
+            it { expect(subject.var_name).to eq('methylOnBridge') }
           end
         end
 

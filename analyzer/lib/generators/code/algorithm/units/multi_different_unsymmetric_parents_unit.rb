@@ -94,7 +94,7 @@ module VersatileDiamond
             parent = parents.first
             twin = twin_from(parent, anchor: true)
 
-            namer.assign_next(Specie::INTER_SPECIE_NAME, parent)
+            namer.assign_next(parent.var_name, parent)
             each_spec_by_role_lambda(parent) do
               *pwt, co_twin = similar_defined_parent_with_both_twins(parent, twin)
               curr_parent_call = atom_from_parent_call(parent, co_twin)

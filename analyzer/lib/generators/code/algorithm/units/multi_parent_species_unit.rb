@@ -8,7 +8,6 @@ module VersatileDiamond
         class MultiParentSpeciesUnit < SimpleUnit
           include Modules::ProcsReducer
           include MultiParentSpeciesCppExpressions
-          include SymmetricCppExpressions # uses in each derived classes
 
           # Also remembers parent species scope
           # @param [Array] args of #super method

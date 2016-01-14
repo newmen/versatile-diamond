@@ -6,7 +6,6 @@ module VersatileDiamond
         # Unit for bulding code that depends from specie
         # @abstract
         class SingleSpecieUnit < SimpleUnit
-          include SymmetricCppExpressions
 
           # Also remember the unique parent specie
           # @param [Array] args passes to #super method

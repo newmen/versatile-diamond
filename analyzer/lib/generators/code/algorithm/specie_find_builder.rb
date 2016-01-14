@@ -19,8 +19,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find specie algorithm
           def build
             entry_nodes_with_elses.reduce('') do |acc, (nodes, need_else_prefix)|
-              factory.reset!
-              acc + body_for(nodes, need_else_prefix)
+              acc + body_for(nodes, use_else_prefix: need_else_prefix)
             end
           end
 
@@ -52,8 +51,14 @@ module VersatileDiamond
             end
           end
 
-          # @return [String]
-          def body_for(nodes, need_else_prefix)
+          # Generates the body of code from passed nodes
+          # @param [Array] nodes from which the code will be generated
+          # @option [Boolean] :use_else_prefix flag which identifies that the 'else'
+          #   keyword should be placed before 'if' keyword
+          # @return [String] the algorithm of finding current specie from passed nodes
+          def body_for(nodes, use_else_prefix: need_else_prefix)
+            factory.reset!
+
             unit = factory.make_unit(nodes)
             unit.first_assign!
 

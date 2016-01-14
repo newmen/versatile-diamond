@@ -194,7 +194,7 @@ module VersatileDiamond
             undef_parent = find_undefined(parent_species)
 
             namer.assign_next(Specie::INTER_ATOM_NAME, target_atom)
-            namer.assign_next(Specie::INTER_SPECIE_NAME, undef_parent)
+            namer.assign_next(undef_parent.var_name, undef_parent)
 
             parent_call = atom_from_parent_call(avail_parent, undef_twin)
             atom_call = spec_from_parent_call(undef_parent)

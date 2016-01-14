@@ -90,7 +90,7 @@ module VersatileDiamond
           end
 
           def define_specie_line(specie)
-            namer.assign_next(Specie::INTER_SPECIE_NAME, specie)
+            namer.assign_next(specie.var_name, specie)
             index = @reaction.target_index(specie.spec.spec)
             define_var_line("#{specie_type} *", specie, "target(#{index})")
           end

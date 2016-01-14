@@ -81,6 +81,12 @@ module VersatileDiamond
               it { expect(subject.anchor?(cm)).to be_falsey }
             end
 
+            describe '#symmetric?' do
+              before { subject.original.find_symmetries! }
+              it { expect(subject.symmetric?(cb)).to be_falsey }
+              it { expect(subject.symmetric?(cm)).to be_falsey }
+            end
+
             describe '#many?' do
               it { expect(subject.many?(cb)).to be_falsey }
             end
@@ -92,6 +98,10 @@ module VersatileDiamond
 
           describe '#scope?' do
             it { expect(subject.scope?).to be_falsey }
+          end
+
+          describe '#var_name' do
+            it { expect(subject.var_name).to eq('bridge') }
           end
         end
 
