@@ -20,12 +20,6 @@ module VersatileDiamond
 
           attr_reader :target_specie
 
-          # JUST FOR DEBUG INSPECTATIONS
-          def inspect_specie_atoms_names
-            tsn = "#{inspect_name_of(target_specie)}:#{target_specie.original.inspect}"
-            "#{tsn}·[#{inspect_atoms_names}]"
-          end
-
           # Specifies arguments of super method
           # @option [Boolean] :closure if true then lambda function closes to scope
           # @yield should return cpp code string
@@ -57,7 +51,7 @@ module VersatileDiamond
           # Gets code line with defined anchors atoms for each neighbours operation
           # @return [String] the code line with defined achor atoms variable
           def define_nbrs_anchors_line
-            if (atoms.size == 1 && name_of(atoms.first)) || namer.full_array?(atoms)
+            if (single? && name_of(atoms.first)) || namer.full_array?(atoms)
               ''
             else
               values = atom_values # collect before reassign

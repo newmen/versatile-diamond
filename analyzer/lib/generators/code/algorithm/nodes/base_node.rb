@@ -45,12 +45,17 @@ module VersatileDiamond
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties
-            @_atom_properties ||= @generator.atom_properties(context_spec, atom)
+            @_atom_properties ||= generator.atom_properties(context_spec, atom)
           end
 
           def inspect
             "(#{uniq_specie.inspect} | #{properties})"
           end
+
+        attr_reader
+
+          attr_reader :generator
+
         end
 
       end

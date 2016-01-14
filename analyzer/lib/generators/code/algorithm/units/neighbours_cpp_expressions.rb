@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -31,11 +33,11 @@ module VersatileDiamond
           # @return [String] the cpp code with expressions of walking through crystal
           #   lattice
           def check_crystal_relations(other, rev_rel_params, &block)
-            if single? == other.single?
+            if mono? == other.mono?
               each_nbrs_lambda(other, rev_rel_params, &block)
-            elsif single?
+            elsif mono?
               one_to_many_condition(other, rev_rel_params, &block)
-            else # other.single?
+            else # other.mono?
               many_to_one_condition(other, rev_rel_params, &block)
             end
           end
@@ -47,8 +49,8 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the cpp code whith checking current amorphous atom
           def check_amorph_relations(other, &block)
-            if single?
-              raise 'Wrong initial backbone of algorithm' if !other.single?
+            if mono?
+              raise 'Wrong initial backbone of algorithm' unless other.mono?
               amorph_nbr_condition(other, &block)
             else
               raise 'No algorithm implementation for next many amorph atoms case'
@@ -66,22 +68,22 @@ module VersatileDiamond
           #   be achived
           # @return [String] the cpp algorithm code
           def many_to_one_condition(other, rel_params, &block)
-            unless target_atom.relations_limits[rel_params] == atoms.size
-              raise 'Incorrect getting one atom from many'
+            if target_atom.relations_limits[rel_params] == uniq_atoms.size
+              nbr = other.target_atom
+              namer.assign_next('neighbour', nbr)
+              crystal_call_str = crystal_atom_call(uniq_atoms, rel_params)
+              define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
+
+              condition_str = "#{name_of(nbr)} && #{other.check_roles_condition}"
+              with_bond = atoms_with_bond_to(other)
+              unless with_bond.empty?
+                condition_str = append_check_bond_conditions(condition_str, with_bond)
+              end
+
+              define_nbr_line + code_condition(condition_str, &block)
+            else
+              raise AgrumentError, 'Incorrect getting one atom from many'
             end
-
-            nbr = other.target_atom
-            namer.assign_next('neighbour', nbr)
-            crystal_call_str = crystal_atom_call(atoms, rel_params)
-            define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
-
-            condition_str = "#{name_of(nbr)} && #{other.check_role_condition}"
-            with_bond = atoms_with_bond_to(other)
-            unless with_bond.empty?
-              condition_str = append_check_bond_conditions(condition_str, with_bond)
-            end
-
-            define_nbr_line + code_condition(condition_str, &block)
           end
 
           # Gets a code with checking all crystal neighbours of target atom along
@@ -93,22 +95,22 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
           def one_to_many_condition(other, rel_params, &block)
-            nbrs = other.atoms
-            unless target_atom.relations_limits[rel_params] == nbrs.size
-              raise 'Incorrect getting many atoms from one'
+            nbrs = other.uniq_atoms
+            if target_atom.relations_limits[rel_params] == nbrs.size
+              namer.assign_next('neighbour', nbrs)
+              crystal_call_str = crystal_nbrs_call(target_atom, rel_params)
+              define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
+
+              condition_str = "#{name_of(nbrs)}.all() && #{other.check_roles_condition}"
+              with_bond = target_atom_with_bond_to(other)
+              unless with_bond.empty?
+                condition_str = append_check_bond_conditions(condition_str, with_bond)
+              end
+
+              define_nbrs_line + code_condition(condition_str, &block)
+            else
+              raise AgrumentError, 'Incorrect getting many atoms from one'
             end
-
-            namer.assign_next('neighbour', nbrs)
-            crystal_call_str = crystal_nbrs_call(target_atom, rel_params)
-            define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
-
-            condition_str = "#{name_of(nbrs)}.all() && #{other.check_role_condition}"
-            with_bond = target_atom_with_bond_to(other)
-            unless with_bond.empty?
-              condition_str = append_check_bond_conditions(condition_str, with_bond)
-            end
-
-            define_nbrs_line + code_condition(condition_str, &block)
           end
 
           # Gets a code with checking amorph neighbour of target atom
@@ -125,7 +127,7 @@ module VersatileDiamond
               namer.assign_next('amorph', nbr)
               amorph_nbr_call = "#{name_of(target_atom)}->amorphNeighbour()"
               define_nbr_line = define_var_line('Atom *', nbr, amorph_nbr_call)
-              condition_str = other.check_role_condition
+              condition_str = other.check_roles_condition
               define_nbr_line + code_condition(condition_str, &block)
             end
           end
@@ -140,23 +142,25 @@ module VersatileDiamond
           # @yield should return cpp code string of lambda body
           # @return [String] the string with cpp code
           def each_nbrs_lambda(other, rel_params, &block)
-            nbrs = other.atoms
-            raise 'Incorrect number of neighbour atoms' unless nbrs.size == atoms.size
+            nbrs = other.uniq_atoms
+            if nbrs.size == uniq_atoms.size
+              defined_nbrs_with_names = nbrs.zip(names_for(nbrs))
+              defined_nbrs_with_names.select!(&:last)
+              namer.erase(nbrs)
 
-            defined_nbrs_with_names = nbrs.zip(names_for(nbrs))
-            defined_nbrs_with_names.select!(&:last)
-            namer.erase(nbrs)
+              each_nbrs_lambda_call(nbrs, rel_params) do
+                condition_str =
+                  if defined_nbrs_with_names.empty?
+                    cheking_atoms = append_other(other).map(&:last).map(&:last)
+                    other.check_atoms_roles_of(cheking_atoms)
+                  else
+                    check_new_names(other, Hash[defined_nbrs_with_names])
+                  end
 
-            each_nbrs_lambda_call(nbrs, rel_params) do
-              condition_str =
-                if defined_nbrs_with_names.empty?
-                  cheking_atoms = append_other(other).map(&:last).map(&:last)
-                  other.check_atoms_roles_of(cheking_atoms)
-                else
-                  check_new_names(other, Hash[defined_nbrs_with_names])
-                end
-
-              each_nbrs_condition(condition_str, other, &block)
+                each_nbrs_condition(condition_str, other, &block)
+              end
+            else
+              raise AgrumentError, 'Incorrect number of neighbour atoms'
             end
           end
 
@@ -169,6 +173,31 @@ module VersatileDiamond
             relations_of(atom).select { |_, r| r.it?(rel_params) }
           end
 
+          # Gets cpp code string that contains the call of method for check roled atom
+          # @return [String] the string with cpp condition
+          def check_roles_condition
+            check_atoms_roles_of(uniq_atoms)
+          end
+
+          # Gets a cpp code string that contains the call of method for check atom role
+          # @param [Array] undefined_atoms which role will be checked in code
+          # @return [String] the string with cpp condition
+          def check_atoms_roles_of(undefined_atoms)
+            undefined_atoms.map(&method(:check_role_call)).join(' && ')
+          end
+
+          # Atomic specie is always mono
+          # @return [Boolean] true
+          def mono?
+            uniq_atoms.all_equal?
+          end
+
+          # Are all atoms has lattice
+          # @return [Boolean] are all atoms or not
+          def latticed?
+            uniq_atoms.all?(&:lattice)
+          end
+
         private
 
           # Defines anchor atoms for get neighbour atoms and call eachNeighbour method
@@ -178,28 +207,31 @@ module VersatileDiamond
           # @yield should return cpp code string of lambda body
           # @return [String] the string with cpp code
           def each_nbrs_lambda_call(nbrs, rel_params, &block)
-            define_nbrs_specie_anchors_lines + define_anchors_array_line +
-              code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
+            define_nbr_anchors_lines do
+              define_own_anchors_array_line +
+                code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
+            end
           end
 
           # By default doesn't need to define anchor atoms for each crystal neighbours
           # operation
           #
+          # @yield [String] should return a code which uses neighbour anchors
           # @return [String] the empty string
-          def define_nbrs_specie_anchors_lines
-            ''
+          def define_nbr_anchors_lines(&block)
+            block.call
           end
 
           # Defines atoms array variable for iterating from them on crystall lattice
           # @return [String] the line with defined atoms array variable it it need
-          def define_anchors_array_line
-            if atoms.size == 1 || namer.full_array?(atoms)
+          def define_own_anchors_array_line
+            if mono? || namer.full_array?(uniq_atoms)
               ''
             else
-              old_names = names_for(atoms) # collect before erase
-              namer.erase(atoms)
-              namer.assign_next('anchor', atoms)
-              define_var_line('Atom *', atoms, old_names)
+              old_names = names_for(uniq_atoms) # collect before erase
+              namer.erase(uniq_atoms)
+              namer.assign_next('anchor', uniq_atoms)
+              define_var_line('Atom *', uniq_atoms, old_names)
             end
           end
 
@@ -212,15 +244,15 @@ module VersatileDiamond
             namer.assign_next('neighbour', nbrs)
 
             relation_name = full_relation_name_ref(target_atom.lattice, rel_params)
-            method_args = [name_of(atoms), relation_name]
+            method_args = [name_of(uniq_atoms), relation_name]
             closure_args = ['&']
 
             nbrs_var_name = name_of(nbrs)
             method_name = 'eachNeighbour'
-            if single?
+            if mono?
               lambda_arg = "Atom *#{nbrs_var_name}"
             else
-              method_name = "#{method_name}s<#{atoms.size}>"
+              method_name = "#{method_name}s<#{uniq_atoms.size}>"
               lambda_arg = "Atom **#{nbrs_var_name}"
             end
 
@@ -235,9 +267,9 @@ module VersatileDiamond
           #   names
           # @return [String] the code string which could be used in condition expr
           def check_new_names(other, nbrs_with_old_names)
-            nbrs = other.atoms
+            nbrs = other.uniq_atoms
             zipped_names = nbrs.map { |a| [nbrs_with_old_names[a], name_of(a)] }
-            comp_strs = atoms.zip(nbrs).zip(zipped_names).map do |ats, nms|
+            comp_strs = uniq_atoms.zip(nbrs).zip(zipped_names).map do |ats, nms|
               uwas = append_units(other, [ats])
               op = relation_between(*uwas.first).exist? ? '==' : '!='
               nms.join(" #{op} ")
@@ -262,14 +294,14 @@ module VersatileDiamond
           #   each internal atom will be checked
           # @return [Array] the list of pairs of bonded atoms with units
           def atoms_with_bond_to(other)
-            select_bonded(other, atoms.zip([other.target_atom] * atoms.size))
+            select_bonded(other, uniq_atoms.zip([other.target_atom] * uniq_atoms.size))
           end
 
           # Selects neighbour atoms which have bond with target atom
           # @param [BaseUnit] other unit with the cheking neighbour atoms
           # @return [Array] the list of pairs where bond has between each pair
           def target_atom_with_bond_to(other)
-            nbrs = other.atoms
+            nbrs = other.uniq_atoms
             select_bonded(other, ([target_atom] * nbrs.size).zip(nbrs))
           end
 
@@ -305,17 +337,17 @@ module VersatileDiamond
           # @param [BaseUnit] other unit which will be appended
           # @return [Array] the appending reault
           def append_other(other)
-            append_units(other, atoms.zip(other.atoms)).select do |pair|
+            append_units(other, uniq_atoms.zip(other.uniq_atoms)).select do |pair|
               relation_between(*pair).exist?
             end
           end
 
           # Makes code string with checking bond between passed atoms
-          # @param [Array] atoms the array with two atoms between which the bond will
-          #   be checked
+          # @param [Array] between_atoms the array with two atoms between which the
+          #   bond will be checked
           # @return [String] code with calling check bond function
-          def check_bond_call(*atoms)
-            first_var, second_var = names_for(atoms)
+          def check_bond_call(*between_atoms)
+            first_var, second_var = names_for(between_atoms)
             "#{first_var}->hasBondWith(#{second_var})"
           end
 

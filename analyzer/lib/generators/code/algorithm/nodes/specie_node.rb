@@ -20,6 +20,14 @@ module VersatileDiamond
             @orig_specie = orig_specie
           end
 
+          # Splits the scope node to independent nodes
+          # @return [Array] the list of independent nodes
+          def split
+            uniq_specie.species.map do |uniq_parent|
+              self.class.new(generator, @orig_specie, uniq_parent, atom)
+            end
+          end
+
           # Checks that target atom have maximal number of possible bonds
           # @return [Boolean] has atom maximal number of bonds or not
           def limited?

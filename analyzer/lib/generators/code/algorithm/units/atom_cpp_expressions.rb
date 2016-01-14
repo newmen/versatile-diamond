@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [String] the definition of specie variable code
           def define_specie_code(atom, specie, &block)
             namer.assign_next(specie.var_name, specie)
-            if specie.many?(atom) || specie.symmetric?(atom)
+            if specie.many?(atom) || symmetric_context?
               combine_specie_block(atom, specie, &block)
             else
               define_specie_line(atom, specie, &block)
@@ -27,6 +27,22 @@ module VersatileDiamond
           end
 
         private
+
+          # Checks that passed atom is symmetrical in passed specie
+          # @param [SpecieInstance] specie which atoms will be checked
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is symmetric atom or not
+          def symmetric_atom_of?(specie, atom)
+            specie.symmetric?(atom)
+          end
+
+          # Gets the code which checks the role of atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which role will be checked
+          def check_role_call(atom)
+            "#{name_of(atom)}->is(#{detect_role(atom)})"
+          end
 
           # Gets the code line with definition of specie variable
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -55,8 +71,8 @@ module VersatileDiamond
               specie.many?(atom) ? :each_spec_by_role_lambda : :define_specie_line
 
             add_proc[atom_call, atom, specie]
-            if specie.symmetric?(atom)
-              add_proc[:each_symmetry_lambda, specie]
+            add_proc[:each_symmetry_lambda, specie] if symmetric_context?
+            if symmetric_atom_of?(specie, atom)
               add_proc[:same_atom_condition, specie, atom]
             end
 

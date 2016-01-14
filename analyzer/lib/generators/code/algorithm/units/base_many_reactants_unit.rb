@@ -120,7 +120,14 @@ module VersatileDiamond
           def best_intersection
             cmp_proc = Proc.new { |v, w| v != w && atoms.include?(v.last) }
             best = self_intersections.max_by { |insec| insec.count(&cmp_proc) }
-            best.select(&cmp_proc)
+            best.select(&cmp_proc) # drops unsignificant atoms compliance
+          end
+
+          # Checks that all atoms are symmetrical
+          # @return [Boolean] are all atoms symmetrical or not
+          # @override
+          def all_atoms_symmetric?
+            super || !main_atoms_asymmetric?
           end
 
           # Checks that atoms of reactants are equal
@@ -129,17 +136,19 @@ module VersatileDiamond
             symmetric_atoms.any? do |atom|
               spec_atom = spec_atom_key(atom)
               symmetric_atoms.any? do |a|
-                next false if atom == a
-                next true unless same_sa?(spec_atom, spec_atom_key(a))
-
-                relations =
-                  [atom, a].map(&method(:clean_relations_of)).map do |rels|
-                    rels.map(&:last)
-                  end
-
-                !lists_are_identical?(*relations, &:==)
+                !(atom == a ||
+                  (same_sa?(spec_atom, spec_atom_key(a)) &&
+                    equal_relations?(atom, a)))
               end
             end
+          end
+
+          # Checks that passed atoms have equal relations
+          # @param [Array] atoms which clean relations will be compared
+          # @return [Boolean] are atoms have equal relations or not
+          def equal_relations?(*atoms)
+            rels = atoms.map(&method(:clean_relations_of)).map { |rs| rs.map(&:last) }
+            lists_are_identical?(*rels, &:==)
           end
 
           # Gets the correct key of relations checker links for passed atom

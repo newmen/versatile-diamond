@@ -13,12 +13,7 @@ module VersatileDiamond
           #   atom of which will be used for get an index of it from specie
           # @return [String] code where atom getting from specie
           def atom_from_specie_call(specie, atom)
-            index = specie.index(atom)
-            if index
-              "#{name_of(specie)}->atom(#{index})"
-            else
-              raise ArgumentError, "Undefined atom #{atom} for #{specie.spec}"
-            end
+            "#{name_of(specie)}->atom(#{specie.index(atom)})"
           end
 
           # Gets a code which uses eachSymmetry method of engine framework

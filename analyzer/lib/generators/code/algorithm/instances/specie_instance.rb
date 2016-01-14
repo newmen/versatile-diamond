@@ -20,7 +20,12 @@ module VersatileDiamond
             #   atom the #{name} for which will be gotten
             # @return [Integer] the #{name} of atom
             define_method(name) do |atom|
-              original.public_send(name, original_atom(atom))
+              orig_atom = original_atom(atom)
+              if original.spec.links.keys.include?(orig_atom)
+                original.public_send(name, orig_atom)
+              else
+                raise ArgumentError, "Undefined atom #{atom} for #{spec}"
+              end
             end
           end
 
@@ -68,16 +73,6 @@ module VersatileDiamond
             else
               var_name
             end
-          end
-
-        private
-
-          # Checks that passed atom is anchor
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be checked
-          # @return [Boolean] is anchor or not
-          def anchor?(atom)
-            spec.anchors.include?(reflection_of(atom))
           end
         end
 

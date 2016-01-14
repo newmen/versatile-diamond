@@ -21,7 +21,13 @@ module VersatileDiamond
           # @return [Boolean] is symmetric or not
           def symmetric?
             !symmetric_atoms.empty? &&
-              (main_atoms_asymmetric? || asymmetric_reactants?)
+              (!all_atoms_symmetric? || asymmetric_reactants?)
+          end
+
+          # Checks that all atoms are symmetrical
+          # @return [Boolean] are all atoms symmetrical or not
+          def all_atoms_symmetric?
+            symmetric_atoms.size != 1 && atoms == symmetric_atoms
           end
 
           # Checks that internal reactants are unsymmetric by relations with reactants
@@ -60,7 +66,8 @@ module VersatileDiamond
           end
 
           # If other side atoms are symmetric too then current symmetric isn't
-          # significant
+          # significant: any spec_atom in group haven't symmetric atoms or each group
+          # has the symmetric atoms which are not presented in any other group
           #
           # @param [Array] many_other the list of grouped spec_atom with relation
           #   instances, by wich will be checked that symmetry is significant
@@ -68,7 +75,7 @@ module VersatileDiamond
           def significant_nbrs?(many_others)
             many_others.any? do |group|
               syms = group.map { |(s, a), _| specie_class(s).symmetric_atoms(a) }
-              syms.any?(&:empty?) || syms.map { |as| Set.new(as) }.reduce(&:&).empty?
+              syms.any?(&:empty?) || syms.map(&:to_set).reduce(&:&).empty?
             end
           end
 
@@ -79,7 +86,7 @@ module VersatileDiamond
           #   instances, by wich will be checked that symmetry is significant
           # @return [Boolean] is significant symmetry or not
           def significant_rels?(many_others)
-            many_others.any? { |group| group.map(&:last).uniq.size > 1 }
+            many_others.any? { |group| !group.map(&:last).all_equal? }
           end
 
           # Combines atom properties for passed concepts

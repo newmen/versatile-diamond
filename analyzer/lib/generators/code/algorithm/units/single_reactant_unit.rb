@@ -85,19 +85,6 @@ module VersatileDiamond
             @_symmetric_atoms ||= atoms.select { |a| target_specie.symmetric_atom?(a) }
           end
 
-          # Checks that all atoms are symmetrical
-          # @return [Boolean] are all atoms symmetrical or not
-          def all_atoms_symmetric?
-            atoms == symmetric_atoms
-          end
-
-          # Checks that main atoms of reactant are symmetric
-          # @return [Boolean] is symmetric or not
-          def main_atoms_asymmetric?
-            !all_atoms_symmetric? ||
-              (symmetric_atoms.size == 1 && all_atoms_symmetric?)
-          end
-
           # Gets the correct key of relations checker links for passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom for which the key will be returned
