@@ -158,14 +158,13 @@ module VersatileDiamond
           #   reaction
           def coupling_conditions
             coupled.flat_map do |num, reactions|
-              num_condition = [check_num_condition(num)]
+              num_condition = check_num_condition(num)
               if num == 1
                 conds = reactions.flat_map(&method(:reactions_conditions))
-                conds_str = ["(#{conds.join(' || ')})"]
-                [(num_condition + conds_str).join(' && ')]
+                [chain('&&', num_condition, "(#{chain('||', *conds)})")]
               else
                 reactions.map do |reaction|
-                  (num_condition + reactions_conditions(reaction)).join(' && ')
+                  chain('&&', num_condition, *reactions_conditions(reaction))
                 end
               end
             end

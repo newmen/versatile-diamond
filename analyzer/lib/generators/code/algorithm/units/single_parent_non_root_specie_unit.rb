@@ -27,17 +27,6 @@ module VersatileDiamond
           def inspect
             "SPNRSU:(#{inspect_specie_atoms_names}])"
           end
-
-        private
-
-          # Gets the code line with definition of anchor atom variables
-          # @return [String] the definition anchor atom variables code
-          # @override
-          def define_anchor_atoms_line
-            assign_anchor_atoms_name!
-            values = atoms.map(&method(:atom_from_own_specie_call))
-            define_var_line('Atom *', atoms, values)
-          end
         end
 
       end

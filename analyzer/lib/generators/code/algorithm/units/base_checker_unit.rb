@@ -8,6 +8,7 @@ module VersatileDiamond
         class BaseCheckerUnit < GenerableUnit
           include Mcs::SpecsAtomsComparator
           include Modules::ListsComparer
+          include Modules::ProcsReducer
           include NeighboursCppExpressions
 
           # Also stores the cheking context and creates the cache variables
@@ -19,7 +20,7 @@ module VersatileDiamond
             super(generator, namer)
             @context = context
 
-            @_uniq_species, @_uniq_atoms = nil
+            @_uniq_species, @_uniq_atoms, @_symmetric_atoms = nil
           end
 
         protected
@@ -69,6 +70,12 @@ module VersatileDiamond
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             name_of(obj) || 'undef'
+          end
+
+          # Gets just symmetric atoms
+          # @param [Array] the list of symmetric atoms
+          def symmetric_atoms
+            @_symmetric_atoms ||= symmetric_species_with_atoms.map(&:last)
           end
 
           # Checks that state of passed unit is same as current state

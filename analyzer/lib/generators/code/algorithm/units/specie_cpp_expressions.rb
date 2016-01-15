@@ -35,16 +35,23 @@ module VersatileDiamond
             end
           end
 
-
-          # Gets condition with checking that same atom of specie is passed atom
-          # @param [UniqueSpecie] specie which same atom will be compared
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be checked
+          # Gets condition checking that atoms of specie are equal to passed atom
+          # @param [UniqueSpecie] specie which atoms will be compared
+          # @param [Array] checking_atoms which will be checked in specie
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
-          def same_atom_condition(specie, atom, &block)
-            specie_call = atom_from_specie_call(specie, atom)
-            code_condition("#{name_of(atom)} == #{specie_call}", &block)
+          def same_atoms_condition(specie, *checking_atoms, &block)
+            code_condition(compare_same_atoms(specie, checking_atoms), &block)
+          end
+
+          # Checks all passed atoms in passed specie
+          # @param [UniqueSpecie] specie which same atoms will be compared
+          # @param [Array] checking_atoms which will be compared with atoms of specie
+          # @return [String] the string with cpp code
+          def compare_same_atoms(specie, checking_atoms)
+            combine_condition(checking_atoms, '&&') do |var, atom|
+              "#{var} == #{atom_from_specie_call(specie, atom)}"
+            end
           end
         end
 

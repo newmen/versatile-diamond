@@ -22,21 +22,21 @@ module VersatileDiamond
             end
 
             iterated = []
-            procs = parent_species.each_with_object([]) do |parent, acc|
-              acc << -> &prc { each_spec_by_role_lambda(parent, &prc) }
+            inlay_procs(block) do |nest|
+              parent_species.each do |parent|
+                nest[:each_spec_by_role_lambda, parent]
 
-              prev_prs_num = iterated.size
-              iterated << parent
-              next if prev_prs_num == 0
+                prev_prs_num = iterated.size
+                iterated << parent
+                next if prev_prs_num == 0
 
-              opr = [parent]
-              pairs = (iterated - opr).zip(opr * prev_prs_num)
-              names = pairs.map(&method(:names_for))
-              conds_str = names.map { |pair| pair.join(' != ') }.join(' && ')
-              acc << -> &prc { code_condition(conds_str, &prc) }
+                opr = [parent]
+                pairs = (iterated - opr).zip(opr.cycle)
+                names = pairs.map(&method(:names_for))
+                conds_str = chain('&&', *names.map { |pair| pair.join(' != ') })
+                nest[:code_condition, conds_str]
+              end
             end
-
-            reduce_procs(procs, &block).call
           end
         end
 

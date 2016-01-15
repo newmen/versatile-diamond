@@ -18,11 +18,17 @@ module VersatileDiamond
           # @return [String] the string with cpp code
           # @override
           def check_species(&block)
-            procs = []
-            procs << -> &prc { define_and_check_all_parents(&prc) }
-            procs += symmetric_procs
-
-            reduce_procs(procs) { define_avail_atoms_line + block.call }.call
+            deepest_block = -> { define_avail_atoms_line + block.call }
+            inlay_procs(deepest_block) do |nest|
+              nest[:define_and_check_all_parents]
+              all_pwts = other_atoms.map(&method(:parent_with_twin_for))
+              parent_species.each do |parent|
+                same_pwts = all_pwts.select(pwt_by(parent))
+                if same_pwts.any?(&method(:symmetric_atom?))
+                  nest[:each_symmetry_lambda, parent, closure: true]
+                end
+              end
+            end
           end
 
           def inspect
@@ -43,18 +49,6 @@ module VersatileDiamond
           # @return [Array] the list of another specie atoms
           def other_atoms
             @_other_atoms ||= using_specie_atoms - [target_atom]
-          end
-
-          # Gets list of procs where iterates symmetries of parent species
-          # @return [Array] the list of procs
-          def symmetric_procs
-            all_pwts = other_atoms.map(&method(:parent_with_twin_for))
-            parent_species.each_with_object([]) do |parent, acc|
-              same_pwts = all_pwts.select(pwt_by(parent))
-              if same_pwts.any?(&method(:symmetric_atom?))
-                acc << -> &prc { each_symmetry_lambda(parent, closure: true, &prc) }
-              end
-            end
           end
 
           # Gets a cpp code that defines all anchors available from passed species

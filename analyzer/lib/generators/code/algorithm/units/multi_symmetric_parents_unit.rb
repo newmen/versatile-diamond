@@ -129,39 +129,35 @@ module VersatileDiamond
             comparisons = avail_parent_names.map do |avail_parent_name|
               "#{check_parent_name} != #{avail_parent_name}"
             end
-            code_condition(comparisons.join(' && '), &block)
+            code_condition(chain('&&', *comparisons), &block)
           end
 
           # Gets the code with algorithm which finds symmetric species
           # @yield should return cpp code string which will be nested in lambda call
           # @return [String] the code with find symmetric species algorithm
           def combine_find_symmetric_species(&block)
-            collecting_procs = []
-            visited_parents_to_names = {}
+            inlay_procs(block) do |nest|
+              visited_parents_to_names = {}
+              uniq_smc_parents_with_twins.each do |parent, twin|
+                namer.assign_next(Specie::TARGET_SPECIE_NAME, parent)
+                parent_name = name_of(parent)
 
-            uniq_smc_parents_with_twins.each do |parent, twin|
-              namer.assign_next(Specie::TARGET_SPECIE_NAME, parent)
-              parent_name = name_of(parent)
-
-              sames = visited_parents_to_names.select do |pr, _|
-                pr.original == parent.original
-              end
-
-              check_proc = nil
-              unless sames.empty?
-                avail_parent_names = sames.map(&:last)
-                check_proc = -> &prc do
-                  another_parents_condition(parent_name, avail_parent_names, &prc)
+                sames = visited_parents_to_names.select do |pr, _|
+                  pr.original == parent.original
                 end
-              end
 
-              visited_parents_to_names[parent] = parent_name
-              collecting_procs << -> &prc do
-                find_symmetric_spec_lambda(parent, twin, check_proc, &prc)
+                check_proc = nil
+                unless sames.empty?
+                  avail_parent_names = sames.map(&:last)
+                  check_proc = -> &prc do
+                    another_parents_condition(parent_name, avail_parent_names, &prc)
+                  end
+                end
+
+                visited_parents_to_names[parent] = parent_name
+                nest[:find_symmetric_spec_lambda, parent, twin, check_proc]
               end
             end
-
-            reduce_procs(collecting_procs, &block).call
           end
 
           # Gets a combined code for finding symmetric specie when simulation do

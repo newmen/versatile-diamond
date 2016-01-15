@@ -147,11 +147,19 @@ module VersatileDiamond
 
           # Makes a condition which will be placed to cpp code template
           # @param [Array] items which zipped with variable names and iterates by block
-          # @param [String] operator which use for combine condition
+          # @param [String] operator which using for combine condition
           # @yield [String, Object] the block should returns cpp code method call
           # @return [String] the cpp code string for condition in template
           def combine_condition(items, operator, &block)
-            names_for(items).zip(items).map(&block).join(" #{operator} ")
+            chain(operator, *names_for(items).zip(items).map(&block))
+          end
+
+          # Joins the passed conditions by passed monade binary operator
+          # @param [String] operator which using for combine condition
+          # @param [Array] conditions which will be joined
+          # @return [String] the cpp code string with conditions check chain
+          def chain(operator, *conditions)
+            conditions.join(" #{operator} ")
           end
         end
 

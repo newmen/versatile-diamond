@@ -74,7 +74,13 @@ module VersatileDiamond
           # Checks that symmetries of internal specie should be also checked
           # @return [Boolean] are symmetries should be checked or not
           def symmetric_unit?
-            symmetric_atom_of?(@specie, @atom)
+            @specie.symmetric?(@atom)
+          end
+
+          # Gets the array with just one pair if it is symmetric or empty otherwise
+          # @return [Array] the list of pairs of symmetric species with symmetric atoms
+          def symmetric_species_with_atoms
+            symmetric_unit? ? [[@specie, @atom]] : []
           end
         end
 

@@ -43,8 +43,7 @@ module VersatileDiamond
           # @yield should return creation line of lateral reaction
           # @return [String] checking condition block
           def check_nbr_species(&block)
-            condition_str = (names_arr + species_condition_arr).join(' && ')
-            code_condition(condition_str, &block)
+            code_condition(chain('&&', *names_arr, *species_condition_arr), &block)
           end
 
           # Gets the list of names of defined species

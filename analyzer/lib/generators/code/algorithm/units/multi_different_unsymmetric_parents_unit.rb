@@ -28,15 +28,15 @@ module VersatileDiamond
           # @yield should return cpp code string for final condition body
           # @return [String] the string with cpp code
           def define_and_check_all_parents(&block)
-            procs = grouped_independent_parents.map do |parents|
-              -> &prc { define_and_check_same_parents(parents, &prc) }
-            end
+            inlay_procs(block) do |nest|
+              grouped_independent_parents.each do |parents|
+                nest[:define_and_check_same_parents, parents]
+              end
 
-            procs += grouped_dependent_parents.map do |parents|
-              -> &prc { define_and_check_dependent_parent(parents, &prc) }
+              grouped_dependent_parents.each do |parents|
+                nest[:define_and_check_dependent_parent, parents]
+              end
             end
-
-            reduce_procs(procs, &block).call
           end
 
           # Defines parents which could be gotten directly from target atom

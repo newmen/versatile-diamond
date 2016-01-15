@@ -235,7 +235,7 @@ module VersatileDiamond
             groups = nbr_atoms.zip(rel_params).select(&:last).group_by(&:last)
             max_group = groups.max_by { |_, group| group.size }
             max_group_size = max_group.last.size
-            if groups.select { |_, group| group.size == max_group_size }.size > 1
+            if groups.count { |_, group| group.size == max_group_size } > 1
               raise 'Ambigous neighbour atoms groups'
             end
 
@@ -362,7 +362,7 @@ module VersatileDiamond
               ''
             else
               conditions = wrong_props.map { |props| props_is_not_call(atom, props) }
-              code_assert(conditions.join(' && '))
+              code_assert(chain('&&', *conditions))
             end
           end
 

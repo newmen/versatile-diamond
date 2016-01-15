@@ -98,12 +98,11 @@ module VersatileDiamond
       #   also used for ordering
       # @return [Integer] the result of comparation
       def compare_with(other, strong_types_order: true)
-        procs = []
-        procs << -> &block { order(self, other, :links, :size, &block) }
-        procs << -> &block { order_classes(other, &block) } if strong_types_order
-        procs << -> &block { order_relations(other, &block) }
-
-        reduce_procs(procs, &comparing_core(other)).call
+        inlay_procs(comparing_core(other)) do |nest|
+          nest[:order, self, other, :links, :size]
+          nest[:order_classes, other] if strong_types_order
+          nest[:order_relations, other]
+        end
       end
 
       # Provides comparison by number of relations

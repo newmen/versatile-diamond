@@ -42,7 +42,7 @@ module VersatileDiamond
           # @yield should get cpp code string which is body of checking
           # @return [String] the cpp code string
           def compliances_condition(atoms_to_rels, &block)
-            code_condition(compliances_compares(atoms_to_rels).join(' && '), &block)
+            code_condition(chain('&&', compliances_compares(atoms_to_rels)), &block)
           end
 
           # Gets the list of string compares by passed map

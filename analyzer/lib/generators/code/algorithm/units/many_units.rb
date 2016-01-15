@@ -6,6 +6,25 @@ module VersatileDiamond
         # Unit for bulding code from many node
         # @abstract
         class ManyUnits < BaseCheckerUnit
+          class << self
+            # Defines the methods which collects and caches the data by method name
+            # from internal units
+            #
+            # @param [Array] method_names by each of which the data will be aggregated
+            def aggregate(*method_names)
+              method_names.each do |method_name|
+                cache_var = :"@_#{method_name}"
+                # Gets the current #{method_name}
+                # @return [Array] the array of #{method_name} from internal units
+                define_method(method_name)
+                  instance_variable_get(cache_var) ||
+                    instance_variable_set(cache_var, @units.flat_map(&method_name))
+                end
+              end
+            end
+          end
+
+          aggregate :species :atoms :specs_atoms :all_using_relations
 
           # Initializes the many checking units of code builder algorithm
           # @param [Array] default_args which will be passed to super class
@@ -16,16 +35,7 @@ module VersatileDiamond
             @atoms_to_units = map_atoms_to_units(units)
 
             @_species, @_atoms, @_specs_atoms, @_all_using_relations = nil
-          end
-
-          %i(species atoms specs_atoms all_using_relations).each do |method_name|
-            cache_var = :"@_#{method_name}"
-            # Gets the current #{method_name}
-            # @return [Array] the array of #{method_name} from internal units
-            define_method(method_name)
-              instance_variable_get(cache_var) ||
-                instance_variable_set(cache_var, @units.flat_map(&method_name))
-            end
+            @_symmetric_species_with_atoms = nil
           end
 
           # Selects internal units which uses passed atom
@@ -47,6 +57,8 @@ module VersatileDiamond
           end
 
         private
+
+          aggregate :symmetric_species_with_atoms
 
           # Maps the atoms from internal units to it units
           # @param [Array] inner_units which will be mapped to atoms

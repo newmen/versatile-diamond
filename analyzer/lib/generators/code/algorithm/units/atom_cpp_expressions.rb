@@ -6,7 +6,6 @@ module VersatileDiamond
         # Contains methods for generate cpp expressions that calls advansed atom
         # methods of engine framework
         module AtomCppExpressions
-          include Modules::ProcsReducer
           include Algorithm::Units::SpecieCppExpressions
 
         protected
@@ -15,7 +14,7 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom from which the specie will be gotten
           # @param [UniqueSpecie] specie which will be defined
-          # @yield [String] appends after definition line or into definition block
+          # @yield appends after definition line or into definition block
           # @return [String] the definition of specie variable code
           def define_specie_code(atom, specie, &block)
             namer.assign_next(specie.var_name, specie)
@@ -28,15 +27,6 @@ module VersatileDiamond
 
         private
 
-          # Checks that passed atom is symmetrical in passed specie
-          # @param [SpecieInstance] specie which atoms will be checked
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be checked
-          # @return [Boolean] is symmetric atom or not
-          def symmetric_atom_of?(specie, atom)
-            specie.symmetric?(atom)
-          end
-
           # Gets the code which checks the role of atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which role will be checked
@@ -44,20 +34,11 @@ module VersatileDiamond
             "#{name_of(atom)}->is(#{detect_role(atom)})"
           end
 
-          # Gets the code which checks that specie already defined in atom
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which role will be checked
-          # TODO: should be called only in specie context
-          def check_specie_call(atom)
-            full_method_name = "#{name_of(atom)}->#{context.check_specie_method}"
-            "#{full_method_name}(#{context.specie_enum_name}, #{detect_role(atom)})"
-          end
-
           # Gets the code line with definition of specie variable
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom from which the specie will be gotten
           # @param [UniqueSpecie] specie which will be defined
-          # @yield [String] appends after definition line
+          # @yield appends after definition line
           # @return [String] the definition of specie variable code
           def define_specie_line(atom, specie, &block)
             atom_call = spec_by_role_call(atom, specie)
@@ -68,24 +49,17 @@ module VersatileDiamond
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom from which the specie will be gotten
           # @param [UniqueSpecie] specie which will be defined
-          # @yield [String] inserts into definition block
+          # @yield inserts into definition block
           # @return [String] the definition of specie variable block
           def combine_specie_block(atom, specie, &block)
-            procs = []
-            add_proc = -> method_name, *args do
-              procs << -> &prc { send(method_name, *args, &prc) }
+            inlay_procs(block) do |nest|
+              atom_call =
+                specie.many?(atom) ? :each_spec_by_role_lambda : :define_specie_line
+
+              nest[atom_call, atom, specie]
+              nest[:each_symmetry_lambda, specie] if symmetric_unit?
+              nest[:same_atoms_condition, specie, atom] if specie.symmetric?(atom)
             end
-
-            atom_call =
-              specie.many?(atom) ? :each_spec_by_role_lambda : :define_specie_line
-
-            add_proc[atom_call, atom, specie]
-            add_proc[:each_symmetry_lambda, specie] if symmetric_unit?
-            if symmetric_atom_of?(specie, atom)
-              add_proc[:same_atom_condition, specie, atom]
-            end
-
-            reduce_procs(procs, &block)
           end
 
           # Makes code string with calling of engine method that names specByRole
@@ -124,11 +98,11 @@ module VersatileDiamond
             end
           end
 
+          # Throws the atom properties error
           # @raise [ArgumentError]
           def raise_ap_error(atom, specie, msg)
             ap = specie.properties_of(atom)
-            msg = "Atom (#{ap}) #{msg} (#{specie.spec})"
-            raise ArgumentError, msg
+            raise ArgumentError, "Atom (#{ap}) #{msg} (#{specie.spec})"
           end
         end
 

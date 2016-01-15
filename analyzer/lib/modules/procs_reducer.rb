@@ -15,6 +15,20 @@ module VersatileDiamond
         end
       end
 
+      # Collects procs which nests each other, after than calls combined procedure
+      # @param [Proc] deepest_block the block for the deepest call
+      # @yield [Symbol, Array, Hash] nests the some method call
+      # @return [Object] the result of deepest block call
+      def inlay_procs(deepest_block, &block)
+        procs = []
+        nest = -> method_name, *args, **kwargs do
+          procs << -> &prc { send(method_name, *args, **kwargs, &prc) }
+        end
+
+        block[nest]
+        reduce_procs(procs, &deepest_block)
+      end
     end
+
   end
 end
