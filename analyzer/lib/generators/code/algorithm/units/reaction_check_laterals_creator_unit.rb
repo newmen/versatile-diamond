@@ -89,7 +89,7 @@ module VersatileDiamond
           # @param [Array] template_args the list of template arguments
           # @return [String] cpp code with template call
           def template_call(aim, template_args)
-            if template_args.size == 1
+            if template_args.one?
               "#{aim}<#{template_args.first}>"
             else
               args_str = template_args.join(",\n")

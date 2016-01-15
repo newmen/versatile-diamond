@@ -113,7 +113,7 @@ module VersatileDiamond
       #   select properties with maximal dangling hydogen atoms number
       # @return [Integer] the best index
       def select_best_index(prop, indexes, check_hydros: true)
-        if indexes.size == 1
+        if indexes.one?
           indexes.first
         elsif check_hydros
           maximal_hydro_indexes = select_by_max_hydros(indexes)

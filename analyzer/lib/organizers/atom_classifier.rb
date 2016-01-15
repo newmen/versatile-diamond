@@ -96,7 +96,7 @@ module VersatileDiamond
       # @return [Integer] the index of properties or nil
       def index(*args)
         prop =
-          if args.size == 1
+          if args.one?
             args.first
           elsif args.size == 2
             AtomProperties.new(*args)

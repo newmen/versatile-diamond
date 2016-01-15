@@ -28,7 +28,7 @@ module VersatileDiamond
           # @param [Array] nodes for which the unit will be maked
           # @return [Units::BaseCheckerUnit] the unit of code generation
           def make_unit(nodes)
-            nodes.size == 1 ? make_mono_unit(nodes.first) : make_many_units(nodes)
+            nodes.one? ? make_mono_unit(nodes.first) : make_many_units(nodes)
           end
 
         private

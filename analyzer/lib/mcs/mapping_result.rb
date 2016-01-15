@@ -233,9 +233,9 @@ module VersatileDiamond
       #
       # @param [Reaction] reaction the reaction for which position finds
       def find_positions_for(reaction)
-        return if @source.size == 1 || @source.size == @products.size
+        return if @source.one? || @source.size == @products.size
 
-        main_spec, idx = @source.size == 1 ? [@source.first, 0] : [@products.first, 1]
+        main_spec, idx = @source.one? ? [@source.first, 0] : [@products.first, 1]
 
         all_zipped_spec_atoms.combination(2).each do |quads|
           main_pairs, small_pairs = quads.transpose.rotate(idx)

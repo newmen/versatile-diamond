@@ -58,7 +58,7 @@ module VersatileDiamond
       def describe_atom(atom_keyname, atom)
         @atoms[atom_keyname] = atom
         @links[atom] = []
-        @is_simple = (@atoms.size == 1 && atom_instances.first.valence == 1)
+        @is_simple = (@atoms.one? && atom_instances.first.valence == 1)
       end
 
       # Renames the atom from some keyname to some new keyname (used only in

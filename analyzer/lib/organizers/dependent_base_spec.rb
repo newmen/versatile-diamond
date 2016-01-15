@@ -23,7 +23,7 @@ module VersatileDiamond
       # @return [Boolean] is excess spec or not
       def excess?
         !source? && !complex? &&
-          children.size == 1 && children.first.specific? && !reactant?
+          children.one? && children.first.specific? && !reactant?
       end
 
       # Excludes current spec. Instead of the current spec replaces the parent to the

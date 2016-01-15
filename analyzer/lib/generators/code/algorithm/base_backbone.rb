@@ -172,7 +172,7 @@ module VersatileDiamond
           def except_single_reverse_relations(graph, nodes, neighbours)
             single_neighbours = neighbours.flatten.uniq
             except_relations(graph, nodes) do |ns|
-              ns.size == 1 && single_neighbours.include?(ns.first)
+              ns.one? && single_neighbours.include?(ns.first)
             end
           end
 

@@ -82,7 +82,7 @@ module VersatileDiamond
             end
 
             dps =
-              overlap.size == 1 && !spec.source? && !spec.complex? &&
+              overlap.one? && !spec.source? && !spec.complex? &&
               deep_parents_swapper(overlap.to_a.first)
 
             if dps

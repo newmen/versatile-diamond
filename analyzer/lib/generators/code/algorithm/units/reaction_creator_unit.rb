@@ -11,7 +11,7 @@ module VersatileDiamond
           # Gets the code lines for reaction creation
           # @return [String] the lines by which the reaction will be created
           def lines
-            if species.size == 1
+            if species.one?
               create_line
             else
               define_target_species_variable_line + create_line

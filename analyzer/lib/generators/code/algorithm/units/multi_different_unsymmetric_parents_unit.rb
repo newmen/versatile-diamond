@@ -48,7 +48,7 @@ module VersatileDiamond
             if parents.size > 1
               atom_call = specs_by_role_call(parents)
               define_var_line('auto', parents, atom_call)
-            else # parents.size == 1
+            else # parents.one?
               parent = parents.first
               atom_call = spec_from_parent_call(parent)
               define_var_line("#{parent.class_name} *", parent, atom_call)
@@ -63,7 +63,7 @@ module VersatileDiamond
             condition_str =
               if parents.size > 1
                 "#{name_of(parents)}.all()"
-              else # parents.size == 1
+              else # parents.one?
                 name_of(parents.first)
               end
 

@@ -89,7 +89,7 @@ module VersatileDiamond
           # @param [Array] variables list which will be reduced
           # @return [Object] depends from using method
           def apply_names_to(method_name, *variables)
-            list = variables.size == 1 ? variables.last : variables
+            list = variables.one? ? variables.last : variables
             raise ArgumentError, 'Array expected' unless variables.is_a?(Enumerable)
             list.public_send(method_name, &method(:name_of))
           end

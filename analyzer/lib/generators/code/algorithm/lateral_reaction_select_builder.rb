@@ -46,13 +46,13 @@ module VersatileDiamond
           # Checks that limited reactions are presented
           # @return [Boolean] are exist limited reactions or not
           def has_limited?
-            limited.size > 0
+            !limited.empty?
           end
 
           # Checks that coupled reactions are presented
           # @return [Boolean] are exist coupled reactions or not
           def has_coupled?
-            coupled.size > 0
+            !coupled.empty?
           end
 
           # Makes the conditions code by passed sequence
@@ -299,7 +299,7 @@ module VersatileDiamond
           #   be done
           # @return [Array] the list of selected groups
           def apply_splitter_to(affixes_groups, filter_name)
-            affixes_groups.public_send(filter_name) { |_, rs| rs.size == 1 }
+            affixes_groups.public_send(filter_name) { |_, rs| rs.one? }
           end
         end
 

@@ -36,7 +36,7 @@ module VersatileDiamond
         # @return [Integer] the index of passed specie or nil if reaction have just one
         #   reactant
         def target_index(spec)
-          concept_source_species.size == 1 ? nil : concept_source_species.index(spec)
+          concept_source_species.one? ? nil : concept_source_species.index(spec)
         end
 
         # Gets builder of check lateral algorighm from passed specie

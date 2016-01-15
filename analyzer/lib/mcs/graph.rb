@@ -188,7 +188,7 @@ module VersatileDiamond
         relations = list.select(&relations_detector)
         groups = relations.group_by { |atom, _| atom }
         pairs = groups.map do |atom, group|
-          if group.size == 1
+          if group.one?
             group.first
           else
             bonds = group.map(&:last)

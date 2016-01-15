@@ -99,7 +99,7 @@ module VersatileDiamond
               nodes, rels = shrink_graph.shift
 
               uniq_specie_nodes = nodes.uniq(&:uniq_specie)
-              if uniq_specie_nodes.size == 1 && rels.empty?
+              if uniq_specie_nodes.one? && rels.empty?
                 uniq_specie = uniq_specie_nodes.first.uniq_specie
                 similar_nodes = nodes
                 shrink_graph.each do |ns, rs|
@@ -266,9 +266,9 @@ module VersatileDiamond
           # @return [Array] the array of groups wich bulded from non complete groups
           def non_complete_groups
             flatten_face_grouped_nodes.each_with_object([]) do |group, acc|
-              next unless group.size == 1
+              next unless group.one?
               rels = small_graph[group.first]
-              next unless rels.size == 1
+              next unless rels.one?
               singular_rel = rels.first
               relation = singular_rel.last
               next unless relation.belongs_to_crystal?

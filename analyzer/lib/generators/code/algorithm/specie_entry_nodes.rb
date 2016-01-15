@@ -57,7 +57,7 @@ module VersatileDiamond
             return @_list if @_list
 
             @_list =
-              if @nodes.all?(&:none?) || @nodes.uniq(&:uniq_specie).size == 1
+              if @nodes.all?(&:none?) || @nodes.uniq(&:uniq_specie).one?
                 [@nodes]
               else
                 # finds first because nodes are sorted ^^

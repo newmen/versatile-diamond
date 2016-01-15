@@ -43,7 +43,7 @@ module VersatileDiamond
       #   @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #     atom the atom for which properties will be stored
       def initialize(*args)
-        if args.size == 1
+        if args.one?
           arg = args.first
           if arg.is_a?(Array)
             check_relevants(arg.last)

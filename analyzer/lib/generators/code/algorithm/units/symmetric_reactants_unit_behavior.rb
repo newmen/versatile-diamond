@@ -61,7 +61,7 @@ module VersatileDiamond
           # @param [Array] sas specs-atoms which will be checked
           # @return [Boolean] are same passed pairs or not
           def same_atom_properties?(sas)
-            sas.groups { |s, _| s.name }.size == 1 &&
+            sas.groups { |s, _| s.name }.one? &&
               sas.map { |s, a| atom_properties_from_concepts(s, a) }.all_equal?
           end
 

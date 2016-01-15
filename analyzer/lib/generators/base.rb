@@ -25,7 +25,7 @@ module VersatileDiamond
       #     returned
       # @return [Organizers::AtomProperties] the classified atom properties
       def atom_properties(*args)
-        props = (args.size == 1) ? args.first : Organizers::AtomProperties.new(*args)
+        props = args.one? ? args.first : Organizers::AtomProperties.new(*args)
         classified? ? classifier.props.find { |x| x == props } : props
       end
 

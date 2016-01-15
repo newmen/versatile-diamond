@@ -220,7 +220,7 @@ module VersatileDiamond
       # @return [Array] the lists of common targets
       def common_targets(chunks)
         uniq_chunks = chunks.uniq
-        if uniq_chunks.size == 1
+        if uniq_chunks.one?
           chunks.first.targets.to_a
         else
           targets = uniq_chunks.map(&:targets)

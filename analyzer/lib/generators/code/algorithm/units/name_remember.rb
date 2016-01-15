@@ -131,7 +131,7 @@ module VersatileDiamond
           # @param [Array | Object] vars the checkable variable
           # @return [Boolean] is single or not
           def single?(vars)
-            !vars.is_a?(Array) || vars.size == 1
+            !vars.is_a?(Array) || vars.one?
           end
 
           # Gets the value of single variable
