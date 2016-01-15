@@ -22,7 +22,7 @@ module VersatileDiamond
           # @return [String] the cpp code string
           def check_existence(use_else_prefix: false, &block)
             define_anchor_atoms_line +
-              code_condition(check_role_condition, use_else_prefix: use_else_prefix) do
+              code_condition(check_roles_condition, use_else_prefix: use_else_prefix) do
                 code_condition(check_specie_condition, &block)
               end
           end

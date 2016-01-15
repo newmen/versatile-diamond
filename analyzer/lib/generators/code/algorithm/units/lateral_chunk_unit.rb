@@ -32,7 +32,7 @@ module VersatileDiamond
             if lateral_chunks.target_spec?(target_concept_spec)
               reactant_specie_var_name(target_concept_spec)
             else
-              "#{SpeciesReaction::ANCHOR_SPECIE_NAME}()"
+              SpeciesReaction::ANCHOR_SPECIE_NAME
             end
           end
         end

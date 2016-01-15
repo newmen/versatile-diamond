@@ -14,6 +14,8 @@ module VersatileDiamond
             super(generator)
             @specie = specie
             @parents_to_factories = {}
+
+            @_none_specie = nil
           end
 
         protected
@@ -26,16 +28,30 @@ module VersatileDiamond
           def parent_specie(atom)
             parents = collect_parents(atom)
             if parents.empty?
-              Instances::NoneSpecie.new(generator, @specie)
-            elsif parents.size == 1
+              get_none_specie
+            elsif parents.one?
               get_unique_specie(parents.first)
             else
-              unique_parents = specie_instances(parents, atom)
-              Instances::SpeciesScope.new(@specie, unique_parents)
+              get_species_scope(atom)
             end
           end
 
         private
+
+          # Gets the instance of none specie
+          # @return [Instances::NoneSpecie] the specie instance without parents
+          def get_none_specie
+            @_none_specie ||= Instances::NoneSpecie.new(generator, @specie)
+          end
+
+          # Gets the scope of species for passed atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom by which the species scope will be got
+          # @return [Instances::SpeciesScope] the scope of species
+          def get_species_scope(atom)
+            unique_parents = specie_instances(parents, atom)
+            Instances::SpeciesScope.new(@specie, unique_parents)
+          end
 
           # Gets the cached specie nodes factories for passed parent species
           # @param [Array] parents for each of which the factory will be created and
@@ -60,8 +76,8 @@ module VersatileDiamond
           end
 
           # Gets the class of creating unique instance
-          # @return [Instances::UniqueParent] the class of unique parent specie which
-          #   instnace will be stored in new node
+          # @return [Class] the class of unique parent specie which instnace will be
+          #   stored in new node
           def instance_klass
             Instances::UniqueParent
           end

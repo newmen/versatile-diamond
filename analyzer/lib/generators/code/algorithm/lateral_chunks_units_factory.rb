@@ -17,16 +17,9 @@ module VersatileDiamond
 
         private
 
-          # Gets the role of creating mono unit
-          # @return [Module] the scope of methods which defines behavior of unit
-          def behavior_role
-            Units::LateralBehavior
-          end
-
-          # Gets the object which provides global links
-          # @return [TypicalReaction] reaction which should be found by building
-          #   algorigm
-          def relations_checker
+          # Gets the checking context which will be passed to each creating unit
+          # @return [LateralChunks] the context which targeted to inner specie
+          def context
             @lateral_chunks
           end
 

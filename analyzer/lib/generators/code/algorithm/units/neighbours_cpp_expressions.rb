@@ -70,7 +70,7 @@ module VersatileDiamond
           def many_to_one_condition(other, rel_params, &block)
             if target_atom.relations_limits[rel_params] == uniq_atoms.size
               nbr = other.target_atom
-              namer.assign_next('neighbour', nbr)
+              namer.assign_next(Specie::NBR_ATOM_NAME, nbr)
               crystal_call_str = crystal_atom_call(uniq_atoms, rel_params)
               define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
 
@@ -97,7 +97,7 @@ module VersatileDiamond
           def one_to_many_condition(other, rel_params, &block)
             nbrs = other.uniq_atoms
             if target_atom.relations_limits[rel_params] == nbrs.size
-              namer.assign_next('neighbour', nbrs)
+              namer.assign_next(Specie::NBR_ATOM_NAME, nbrs)
               crystal_call_str = crystal_nbrs_call(target_atom, rel_params)
               define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
 
@@ -124,7 +124,7 @@ module VersatileDiamond
               condition_str = check_bond_call(target_atom, nbr)
               code_condition(condition_str, &block)
             else
-              namer.assign_next('amorph', nbr)
+              namer.assign_next(Specie::AMORPH_ATOM_NAME, nbr)
               amorph_nbr_call = "#{name_of(target_atom)}->amorphNeighbour()"
               define_nbr_line = define_var_line('Atom *', nbr, amorph_nbr_call)
               condition_str = other.check_roles_condition
@@ -152,7 +152,7 @@ module VersatileDiamond
                 condition_str =
                   if defined_nbrs_with_names.empty?
                     cheking_atoms = append_other(other).map(&:last).map(&:last)
-                    other.check_atoms_roles_of(cheking_atoms)
+                    other.check_roles_of(cheking_atoms)
                   else
                     check_new_names(other, Hash[defined_nbrs_with_names])
                   end
@@ -176,20 +176,14 @@ module VersatileDiamond
           # Gets cpp code string that contains the call of method for check roled atom
           # @return [String] the string with cpp condition
           def check_roles_condition
-            check_atoms_roles_of(uniq_atoms)
+            check_roles_of(uniq_atoms)
           end
 
           # Gets a cpp code string that contains the call of method for check atom role
           # @param [Array] undefined_atoms which role will be checked in code
           # @return [String] the string with cpp condition
-          def check_atoms_roles_of(undefined_atoms)
+          def check_roles_of(undefined_atoms)
             undefined_atoms.map(&method(:check_role_call)).join(' && ')
-          end
-
-          # Atomic specie is always mono
-          # @return [Boolean] true
-          def mono?
-            uniq_atoms.all_equal?
           end
 
           # Are all atoms has lattice
@@ -230,7 +224,7 @@ module VersatileDiamond
             else
               old_names = names_for(uniq_atoms) # collect before erase
               namer.erase(uniq_atoms)
-              namer.assign_next('anchor', uniq_atoms)
+              namer.assign_next(Specie::ANCHOR_ATOM_NAME, uniq_atoms)
               define_var_line('Atom *', uniq_atoms, old_names)
             end
           end
@@ -241,7 +235,7 @@ module VersatileDiamond
           #   was gotten
           # @return [Array] the array of arguments for each neighbours operation
           def each_nbrs_args(nbrs, rel_params)
-            namer.assign_next('neighbour', nbrs)
+            namer.assign_next(Specie::NBR_ATOM_NAME, nbrs)
 
             relation_name = full_relation_name_ref(target_atom.lattice, rel_params)
             method_args = [name_of(uniq_atoms), relation_name]

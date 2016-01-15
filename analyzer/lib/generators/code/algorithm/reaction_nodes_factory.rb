@@ -8,8 +8,8 @@ module VersatileDiamond
         private
 
           # Gets the class of creating unique instance
-          # @return [Instances::UniqueReactant] the class of unique reactant specie
-          #   which instnace will be stored in new node
+          # @return [Class] the class of unique reactant specie which instnace will be
+          #   stored in new node
           def instance_klass
             Instances::UniqueReactant
           end

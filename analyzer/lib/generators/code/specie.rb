@@ -12,7 +12,9 @@ module VersatileDiamond
         extend Forwardable
 
         ANCHOR_ATOM_NAME = 'anchor'.freeze
+        AMORPH_ATOM_NAME = 'amorph'.freeze
         INTER_ATOM_NAME = 'atom'.freeze
+        NBR_ATOM_NAME = 'neighbour'.freeze
         ADD_ATOM_NAME = 'additionalAtom'.freeze
 
         ANCHOR_SPECIE_NAME = 'parent'.freeze

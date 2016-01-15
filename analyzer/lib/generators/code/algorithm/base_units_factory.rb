@@ -47,10 +47,7 @@ module VersatileDiamond
           #   passed node
           def make_mono_unit(node)
             remember_uniq_specie(node.uniq_specie)
-            mono_args = [relations_checker, node.uniq_specie, node.atom]
-            result = Units::MonoUnit.new(*default_args, *mono_args)
-            result.extend(behavior_role)
-            result
+            Units::MonoUnit.new(*default_args, node.uniq_specie, node.atom)
           end
 
           # Creates many units by list of nodes
@@ -58,13 +55,14 @@ module VersatileDiamond
           # @return [Units::ManyUnits] the unit for generation code that depends from
           #   passed nodes
           def make_many_units(nodes)
-            Units::ManyUnits.new(*default_args, nodes.map(&method(:make_mono_unit)))
+            units = nodes.map(&method(:make_mono_unit))
+            Units::ManyUnits.new(*default_args, units)
           end
 
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
           def default_args
-            [generator, namer]
+            [generator, namer, context]
           end
         end
 

@@ -10,18 +10,42 @@ module VersatileDiamond
           include Modules::ListsComparer
           include NeighboursCppExpressions
 
-          # Also creates the cache variables
-          def initialize(*)
-            super
-            @_uniq_atoms = nil
+          # Also stores the cheking context and creates the cache variables
+          # @param [EngineCode] generator the major code generator
+          # @param [NameRemember] namer the remember of using names of variables
+          # @param [Specie | TypicalReaction LateralChunks] context in which the
+          #   algorithm builds
+          def initialize(generator, namer, context)
+            super(generator, namer)
+            @context = context
+
+            @_uniq_species, @_uniq_atoms = nil
           end
 
         protected
+
+          # Gets the list of unique species
+          # @return [Array] the list of unique species
+          def uniq_species
+            @_uniq_species ||= species.uniq
+          end
 
           # Gets the list of unique atoms
           # @return [Array] the list of unique atoms
           def uniq_atoms
             @_uniq_atoms ||= atoms.uniq
+          end
+
+          # Checks that just one unique specie uses in current unit
+          # @return [Boolean] is whole unit or not
+          def whole?
+            uniq_species.all_equal?
+          end
+
+          # Checks that just one unique atom uses in current unit
+          # @return [Boolean] is mono unit or not
+          def mono?
+            uniq_atoms.all_equal?
           end
 
           # Checks that state of passed unit is same as current state
@@ -40,9 +64,18 @@ module VersatileDiamond
 
         private
 
+          attr_reader :context
+
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             name_of(obj) || 'undef'
+          end
+
+          # Checks that state of passed unit is same as current state
+          # @param [MonoUnit] other comparing unit
+          # @return [Boolean] are equal states of units or not
+          def same_inner_state?(other)
+            lists_are_identical?(specs_atoms, other.specs_atoms, &:same_sa?)
           end
 
           # Checks that passed unit uses same relations as current

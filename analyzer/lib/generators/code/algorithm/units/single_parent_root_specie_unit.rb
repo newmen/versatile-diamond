@@ -43,7 +43,7 @@ module VersatileDiamond
           def check_undefined_atom_roles(&block)
             undefined_atoms = select_undefined(atoms)
             define_undefined_atoms_line +
-              code_condition(check_atoms_roles_of(undefined_atoms), &block)
+              code_condition(check_roles_of(undefined_atoms), &block)
           end
 
           # Defines atoms variable line and reassing names to all internal atoms

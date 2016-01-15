@@ -8,16 +8,12 @@ module VersatileDiamond
         class MonoUnit < BaseCheckerUnit
 
           # Initializes the mono checking unit of code builder algorithm
-          # @param [EngineCode] generator the major code generator
-          # @param [NameRemember] namer the remember of using names of variables
-          # @param [Object] relations_checker which provides global links
-          # @param [Instances::SpecieInstance] specie which uses in current building
-          #   algorithm
+          # @param [Array] default_args which will be passed to super class
+          # @param [Instances::SpecieInstance] specie which will be checked
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which will be checked
-          def initialize(generator, namer, relations_checker, specie, atom)
-            super(generator, namer)
-            @relations_checker = relations_checker
+          def initialize(*default_args, specie, atom)
+            super(*default_args)
             @specie = specie
             @atom = atom
           end
@@ -61,7 +57,7 @@ module VersatileDiamond
           end
 
           def inspect
-            sn = "#{inspect_name_of(@specie)}:#{@specie.original.inspect}"
+            sn = "#{inspect_name_of(@specie)}:#{@specie.inspect}"
             "[#{sn}·#{inspect_name_of(@atom)}:#{@specie.properties_of(@atom)}]"
           end
 
@@ -75,18 +71,9 @@ module VersatileDiamond
 
         private
 
-          attr_reader :relations_checker
-
-          # Checks that state of passed unit is same as current state
-          # @param [MonoUnit] other comparing unit
-          # @return [Boolean] are equal states of units or not
-          def same_inner_state?(other)
-            same_sa?(spec_atom, other.spec_atom)
-          end
-
           # Checks that symmetries of internal specie should be also checked
           # @return [Boolean] are symmetries should be checked or not
-          def symmetric_context?
+          def symmetric_unit?
             symmetric_atom_of?(@specie, @atom)
           end
         end

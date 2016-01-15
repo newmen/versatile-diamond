@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [String] the definition of specie variable code
           def define_specie_code(atom, specie, &block)
             namer.assign_next(specie.var_name, specie)
-            if specie.many?(atom) || symmetric_context?
+            if specie.many?(atom) || symmetric_unit?
               combine_specie_block(atom, specie, &block)
             else
               define_specie_line(atom, specie, &block)
@@ -42,6 +42,15 @@ module VersatileDiamond
           #   atom which role will be checked
           def check_role_call(atom)
             "#{name_of(atom)}->is(#{detect_role(atom)})"
+          end
+
+          # Gets the code which checks that specie already defined in atom
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which role will be checked
+          # TODO: should be called only in specie context
+          def check_specie_call(atom)
+            full_method_name = "#{name_of(atom)}->#{context.check_specie_method}"
+            "#{full_method_name}(#{context.specie_enum_name}, #{detect_role(atom)})"
           end
 
           # Gets the code line with definition of specie variable
@@ -71,7 +80,7 @@ module VersatileDiamond
               specie.many?(atom) ? :each_spec_by_role_lambda : :define_specie_line
 
             add_proc[atom_call, atom, specie]
-            add_proc[:each_symmetry_lambda, specie] if symmetric_context?
+            add_proc[:each_symmetry_lambda, specie] if symmetric_unit?
             if symmetric_atom_of?(specie, atom)
               add_proc[:same_atom_condition, specie, atom]
             end

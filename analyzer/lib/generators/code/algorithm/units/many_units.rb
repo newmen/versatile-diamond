@@ -8,20 +8,12 @@ module VersatileDiamond
         class ManyUnits < BaseCheckerUnit
 
           # Initializes the many checking units of code builder algorithm
-          # @param [EngineCode] generator the major code generator
-          # @param [NameRemember] namer the remember of using names of variables
+          # @param [Array] default_args which will be passed to super class
           # @param [Array] units which should be checked at one time
-          def initialize(generator, namer, units)
-            super(generator, namer)
+          def initialize(*default_args, units)
+            super(*default_args)
             @units = units
-
-            @atoms_to_units = {}
-            @units.each do |unit|
-              unit.atoms.each do |atom|
-                @atoms_to_units[atom] ||= []
-                @atoms_to_units[atom] += [unit]
-              end
-            end
+            @atoms_to_units = map_atoms_to_units(units)
 
             @_species, @_atoms, @_specs_atoms, @_all_using_relations = nil
           end
@@ -56,6 +48,18 @@ module VersatileDiamond
 
         private
 
+          # Maps the atoms from internal units to it units
+          # @param [Array] inner_units which will be mapped to atoms
+          # @return [Hash] the pseudo multimap structure
+          def map_atoms_to_units(inner_units)
+            inner_units.each_with_object({}) do |unit, result|
+              unit.atoms.each do |atom|
+                result[atom] ||= []
+                result[atom] += [unit]
+              end
+            end
+          end
+
           # Gets internal unit which uses passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom by which the unit will be found
@@ -65,32 +69,32 @@ module VersatileDiamond
             if similar_units?(units_with_atom)
               return units_with_atom.sort_by { |un| un.species.size }.first
             else
-              raise 'Too many different mono units uses passed atom'
+              raise 'Too many different internal units are used the passed atom'
             end
           end
 
           # Checks that all passed units are equal
           # @param [Symbol] method_name by which the comparation will be done
-          # @param [Array] units which will be checked
+          # @param [Array] checking_units which will be checked
           # @return [Boolean] are all passed units similar or not
-          def similar?(method_name, units)
-            checking_units = units.dup
-            first_unit = checking_units.shift
-            checking_units.all? { |un| first_unit.send(method_name, un) }
+          def similar?(method_name, checking_units)
+            comparing_units = checking_units.dup
+            first_unit = comparing_units.shift
+            comparing_units.all? { |un| first_unit.send(method_name, un) }
           end
 
           # Checks that states of all passed units are equal
-          # @param [Array] units which will be checked
+          # @param [Array] checking_units which will be checked
           # @return [Boolean] are all states passed units similar or not
-          def similar_units?(units)
-            similar?(:same_state?, units)
+          def similar_units?(checking_units)
+            similar?(:same_state?, checking_units)
           end
 
           # Compares using relations of passed units
-          # @param [Array] units which relations will be checked
+          # @param [Array] checking_units which relations will be checked
           # @return [Boolean] are all relations of passed units similar or not
-          def similar_relations?(units)
-            similar?(:same_relations?, units)
+          def similar_relations?(checking_units)
+            similar?(:same_relations?, checking_units)
           end
 
           # Checks that all inner units are equal
@@ -99,18 +103,11 @@ module VersatileDiamond
             similar_units?(@units) && similar_relations?(@units)
           end
 
-          # Checks that state of passed unit is same as current state
-          # @param [MonoUnit] other comparing unit
-          # @return [Boolean] are equal states of units or not
-          def same_inner_state?(other)
-            lists_are_identical?(specs_atoms, other.specs_atoms, &:same_sa?)
-          end
-
           # Checks that symmetries of internal specie should be also checked
           # @return [Boolean] are symmetries should be checked or not
-          def symmetric_context?
-            results = @units.map(&:symmetric_context?)
-            results.any? && !(results.all? && equal_inner_units?)
+          def symmetric_unit?
+            contexts = @units.map(&:symmetric_unit?)
+            contexts.any? && (mono? || !(contexts.all? && equal_inner_units?))
           end
         end
 

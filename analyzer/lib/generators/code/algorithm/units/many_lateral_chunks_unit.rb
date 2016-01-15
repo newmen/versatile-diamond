@@ -30,7 +30,7 @@ module VersatileDiamond
                 namer.assign(reactant_call, uniq_specie)
               end
             else
-              namer.assign("#{SpeciesReaction::ANCHOR_SPECIE_NAME}()", target_species)
+              namer.assign(SpeciesReaction::ANCHOR_SPECIE_NAME, target_species)
             end
           end
 
