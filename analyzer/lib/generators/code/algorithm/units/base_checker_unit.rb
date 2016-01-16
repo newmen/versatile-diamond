@@ -11,15 +11,11 @@ module VersatileDiamond
           include Modules::ProcsReducer
           include NeighboursCppExpressions
 
-          # Also stores the cheking context and creates the cache variables
+          # Also stores creates the cache variables
           # @param [EngineCode] generator the major code generator
           # @param [NameRemember] namer the remember of using names of variables
-          # @param [Specie | TypicalReaction LateralChunks] context in which the
-          #   algorithm builds
-          def initialize(generator, namer, context)
-            super(generator, namer)
-            @context = context
-
+          def initialize(*)
+            super
             @_uniq_species, @_uniq_atoms, @_symmetric_atoms = nil
           end
 
@@ -31,22 +27,34 @@ module VersatileDiamond
             @_uniq_species ||= species.uniq
           end
 
-          # Gets the list of unique atoms
-          # @return [Array] the list of unique atoms
-          def uniq_atoms
-            @_uniq_atoms ||= atoms.uniq
-          end
-
           # Checks that just one unique specie uses in current unit
           # @return [Boolean] is whole unit or not
           def whole?
             uniq_species.all_equal?
           end
 
+          # Checks that unit is whole and the specie is defined
+          # @return [Boolean] is defined specie of whole unit
+          def whole_defined?
+            whole? && name_of(anchor_specie)
+          end
+
+          # Gets the list of unique atoms
+          # @return [Array] the list of unique atoms
+          def uniq_atoms
+            @_uniq_atoms ||= atoms.uniq
+          end
+
           # Checks that just one unique atom uses in current unit
           # @return [Boolean] is mono unit or not
           def mono?
             uniq_atoms.all_equal?
+          end
+
+          # Checks that unit is mono and the atom is defined
+          # @return [Boolean] is defined atom of mono unit
+          def mono_defined?
+            mono? && name_of(anchor_atom)
           end
 
           # Checks that state of passed unit is same as current state
@@ -65,8 +73,6 @@ module VersatileDiamond
 
         private
 
-          attr_reader :context
-
           # JUST FOR DEBUG INSPECTATIONS
           def inspect_name_of(obj)
             name_of(obj) || 'undef'
@@ -76,6 +82,18 @@ module VersatileDiamond
           # @param [Array] the list of symmetric atoms
           def symmetric_atoms
             @_symmetric_atoms ||= symmetric_species_with_atoms.map(&:last)
+          end
+
+          # Gets the list of another defined species which are same as passed specie
+          # Calls in safe context when some internal atom is an anchor of passed specie
+          #
+          # @param [UniqueSpecie] specie which will be compared with defined species
+          # @return [Array] the list of already defined similar species
+          def same_defined_species(specie)
+            defined_species.select do |avail_specie|
+              avail_specie != specie && avail_specie.original == specie.original &&
+                !uniq_atoms.any?(&avail_specie.method(:anchor?))
+            end
           end
 
           # Checks that state of passed unit is same as current state

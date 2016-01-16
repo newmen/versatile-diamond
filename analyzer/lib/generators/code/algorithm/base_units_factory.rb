@@ -12,16 +12,24 @@ module VersatileDiamond
           def initialize(generator)
             @generator = generator
             @namer = nil
+            @processing_species = nil
+          end
+
+          # Resets the internal variables which accumulates data when algorithm code
+          # builds
+          def reset!
+            @namer = Units::NameRemember.new
+            @processing_species = Set.new
           end
 
           # Provokes namer to save next checkpoint
           def remember_names!
-            namer.checkpoint!
+            @namer.checkpoint!
           end
 
           # Provokes namer to rollback names from last checkpoint
           def restore_names!
-            namer.rollback!
+            @namer.rollback!
           end
 
           # Makes unit that correspond to passed nodes
@@ -33,21 +41,16 @@ module VersatileDiamond
 
         private
 
-          attr_reader :generator, :namer
-
-          # Resets the internal variables which accumulates data when algorithm code
-          # builds
-          def create_namer!
-            @namer = Units::NameRemember.new
-          end
+          attr_reader :generator
 
           # Creates mono unit by one node
           # @param [Nodes::BaseNode] node by which the mono unit will be created
           # @return [Units::MonoUnit] the unit for generation code that depends from
           #   passed node
           def make_mono_unit(node)
-            remember_uniq_specie(node.uniq_specie)
-            Units::MonoUnit.new(*default_args, node.uniq_specie, node.atom)
+            result = Units::MonoUnit.new(*default_args, node.uniq_specie, node.atom)
+            @processing_species << node.uniq_specie
+            result
           end
 
           # Creates many units by list of nodes
@@ -55,14 +58,13 @@ module VersatileDiamond
           # @return [Units::ManyUnits] the unit for generation code that depends from
           #   passed nodes
           def make_many_units(nodes)
-            units = nodes.map(&method(:make_mono_unit))
-            Units::ManyUnits.new(*default_args, units)
+            Units::ManyUnits.new(*default_args, nodes.map(&method(:make_mono_unit)))
           end
 
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
           def default_args
-            [generator, namer, context]
+            [generator, context, @namer, @processing_species]
           end
         end
 

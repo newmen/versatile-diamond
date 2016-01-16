@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # Creates specie find algorithm units
         class SpecieUnitsFactory < BaseUnitsFactory
-          include Modules::ListsComparer
 
           # Initializes specie find algorithm units factory
           # @param [EngineCode] generator the major code generator
@@ -15,18 +14,11 @@ module VersatileDiamond
             @specie = specie
           end
 
-          # Resets the internal namer variable and clear set of collected unique
-          # parent species
-          def reset!
-            create_namer!
-            @used_parents = Set.new
-          end
-
           # Gets the specie creator unit
           # @return [Units::SpecieCreatorUnit] the unit for defines specie creation
           #   code block
           def creator
-            Units::SpecieCreatorUnit.new(*default_args, @specie, @used_parents.to_a)
+            Units::SpecieCreatorUnit.new(*default_args)
           end
 
         private
@@ -35,12 +27,6 @@ module VersatileDiamond
           # @return [Specie] the context which targeted to inner specie
           def context
             @specie
-          end
-
-          # Stores the passed specie to internal collection
-          # @param [Instances::SpecieInstance] uniq_parent which will be stored
-          def remember_uniq_specie(uniq_parent)
-            @used_parents << uniq_parent
           end
 
           # Creates checker unit from one node

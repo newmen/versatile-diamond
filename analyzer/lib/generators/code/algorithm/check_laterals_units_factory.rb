@@ -14,8 +14,7 @@ module VersatileDiamond
           # @return [Units::ReactionCheckLateralsCreatorUnit] the unit for defines
           #   lateral chunk creation code block
           def creator(*args)
-            creator_args = [lateral_chunks] + args
-            Units::ReactionCheckLateralsCreatorUnit.new(*default_args, *creator_args)
+            Units::ReactionCheckLateralsCreatorUnit.new(*default_args, *args)
           end
         end
 

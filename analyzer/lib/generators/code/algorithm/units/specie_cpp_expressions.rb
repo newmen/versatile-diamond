@@ -16,6 +16,15 @@ module VersatileDiamond
             "#{name_of(specie)}->atom(#{specie.index(atom)})"
           end
 
+          # Gets the list of defined atom names with undefined atoms calls from passed
+          # specie
+          #
+          # @param [UniqueSpecie] specie from which the undefined atom will be gotten
+          # @return [Array] the list of access to atoms
+          def atom_accesses_from(specie)
+            names_or(uniq_atoms) { |atom| atom_from_specie_call(specie, atom) }
+          end
+
           # Gets a code which uses eachSymmetry method of engine framework
           # @param [UniqueSpecie] specie by variable name of which the target method
           #   will be called
@@ -41,7 +50,7 @@ module VersatileDiamond
           # @yield should return cpp code string for condition body
           # @return [String] the string with cpp code
           def same_atoms_condition(specie, *checking_atoms, &block)
-            code_condition(compare_same_atoms(specie, checking_atoms), &block)
+            instances_condition(:compare_same_atoms, specie, checking_atoms, &block)
           end
 
           # Checks all passed atoms in passed specie
@@ -51,6 +60,38 @@ module VersatileDiamond
           def compare_same_atoms(specie, checking_atoms)
             combine_condition(checking_atoms, '&&') do |var, atom|
               "#{var} == #{atom_from_specie_call(specie, atom)}"
+            end
+          end
+
+          # Gets the code with check that passed specie is not another defined specie
+          # @param [UniqueSpecie] specie which will be compared with defined species
+          # @yield should return cpp code string which will do if specie is a new
+          # @return [String] the code with condition block
+          def check_defined_species_condition(specie, &block)
+            similar_species = same_defined_species(specie)
+            if similar_species.empty?(specie)
+              block.call
+            else
+              diff_species_condition(specie, similar_species, &block)
+            end
+          end
+
+          # Gets condition checking that similar defined species are not same as passed
+          # @param [UniqueSpecie] specie which will be compared with each defined
+          # @param [Array] similar_species with which will be compared the specie
+          # @yield should return cpp code string for condition body
+          # @return [String] the string with cpp code
+          def diff_species_condition(specie, similar_species, &block)
+            instances_condition(:compare_diff_species, specie, similar_species, &block)
+          end
+
+          # Checks all passed atoms in passed specie
+          # @param [UniqueSpecie] specie which will be compared with each defined
+          # @param [Array] similar_species with which will be compared the specie
+          # @return [String] the string with cpp code
+          def compare_diff_species(specie, similar_species)
+            combine_condition(similar_species, '&&') do |var, defined_specie|
+              "#{var} != #{name_of(defined_specie)}"
             end
           end
         end

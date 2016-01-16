@@ -12,15 +12,13 @@ module VersatileDiamond
           def initialize(generator, reaction)
             super(generator)
             @reaction = reaction
-            @used_reactants = Set.new
           end
 
           # Gets the reaction creator unit
           # @return [Units::ReactionCreatorUnit] the unit for defines reaction creation
           #   code block
           def creator
-            creator_args = [@reaction, @used_reactants.to_a]
-            Units::ReactionCreatorUnit.new(*default_args, *creator_args)
+            Units::ReactionCreatorUnit.new(*default_args)
           end
 
         private
@@ -29,12 +27,6 @@ module VersatileDiamond
           # @return [TypicalReaction] the context which targeted to inner specie
           def context
             @reaction
-          end
-
-          # Stores the passed specie to internal collection
-          # @param [Instances::SpecieInstance] uniq_reactant which will be stored
-          def remember_uniq_specie(uniq_reactant)
-            @used_reactants << uniq_reactant
           end
         end
 

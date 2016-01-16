@@ -66,7 +66,8 @@ module VersatileDiamond
           # Gets pair of current specie with atom
           # @return [Array] the current state
           def spec_atom
-            [@specie.spec, @atom]
+binding.pry # !!!!!!!!!!!!!!!!!!!!!
+            [@specie.concept, @atom]
           end
 
         private

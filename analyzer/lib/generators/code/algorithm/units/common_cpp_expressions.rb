@@ -145,13 +145,23 @@ module VersatileDiamond
             last_char == '*' || last_char == ' ' ? type : "#{type} "
           end
 
+          # Gets condition checking instances are same or different
+          # @param [Symbol] method_name by which the comparation will be done
+          # @param [Object] target which will be used for comparation
+          # @param [Array] instances which will be compared
+          # @yield should return cpp code string for condition body
+          # @return [String] the string with cpp code
+          def instances_condition(method_name, target, instances, &block)
+            code_condition(send(method_name, target, instances), &block)
+          end
+
           # Makes a condition which will be placed to cpp code template
           # @param [Array] items which zipped with variable names and iterates by block
           # @param [String] operator which using for combine condition
           # @yield [String, Object] the block should returns cpp code method call
           # @return [String] the cpp code string for condition in template
           def combine_condition(items, operator, &block)
-            chain(operator, *names_for(items).zip(items).map(&block))
+            chain(operator, names_for(items).zip(items).map(&block))
           end
 
           # Joins the passed conditions by passed monade binary operator
@@ -159,7 +169,7 @@ module VersatileDiamond
           # @param [Array] conditions which will be joined
           # @return [String] the cpp code string with conditions check chain
           def chain(operator, *conditions)
-            conditions.join(" #{operator} ")
+            star_to_array(conditions).join(" #{operator} ")
           end
         end
 

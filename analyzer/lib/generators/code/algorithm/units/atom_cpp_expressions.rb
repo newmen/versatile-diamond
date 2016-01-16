@@ -17,15 +17,24 @@ module VersatileDiamond
           # @yield appends after definition line or into definition block
           # @return [String] the definition of specie variable code
           def define_specie_code(atom, specie, &block)
-            namer.assign_next(specie.var_name, specie)
+            namer.assign_next(specie.var_name, specie) unless name_of(specie)
             if specie.many?(atom) || symmetric_unit?
-              combine_specie_block(atom, specie, &block)
-            else
+              combine_specie_code(atom, specie, &block)
+            elsif !name_of(specie)
               define_specie_line(atom, specie, &block)
+            else
+              block.call
             end
           end
 
         private
+
+          # Gets a cpp code string that contains the call of method for check atom role
+          # @param [Array] unchecked_atoms which role will be checked in code
+          # @return [String] the string with cpp condition
+          def check_roles_of(unchecked_atoms)
+            chain('&&', unchecked_atoms.map(&method(:check_role_call)))
+          end
 
           # Gets the code which checks the role of atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -51,14 +60,27 @@ module VersatileDiamond
           # @param [UniqueSpecie] specie which will be defined
           # @yield inserts into definition block
           # @return [String] the definition of specie variable block
-          def combine_specie_block(atom, specie, &block)
+          def combine_specie_code(atom, specie, &block)
             inlay_procs(block) do |nest|
-              atom_call =
-                specie.many?(atom) ? :each_spec_by_role_lambda : :define_specie_line
+              initial_define_specie_code(atom, specie, &nest) unless name_of(specie)
+              if specie.symmetric?(atom)
+                nest[:each_symmetry_lambda, specie]
+                nest[:same_atoms_condition, specie, atom] if name_of(atom)
+              end
+            end
+          end
 
-              nest[atom_call, atom, specie]
-              nest[:each_symmetry_lambda, specie] if symmetric_unit?
-              nest[:same_atoms_condition, specie, atom] if specie.symmetric?(atom)
+          # Nests the code which defines and possible checks the specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom from which the specie will be gotten
+          # @param [UniqueSpecie] specie which will be defined
+          # @yield [Symbol, Array, Hash] nests the some method call
+          def initial_define_specie_code(atom, specie, &nest)
+            if specie.many?(atom)
+              nest[:each_spec_by_role_lambda, specie, atom]
+              nest[:check_defined_species_condition, specie]
+            else
+              nest[:define_specie_line, specie, atom]
             end
           end
 

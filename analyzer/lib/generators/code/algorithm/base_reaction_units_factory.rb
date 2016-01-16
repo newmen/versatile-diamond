@@ -13,7 +13,7 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             super(generator)
-            create_namer! # just create internal names accumulator
+            reset!
           end
         end
 

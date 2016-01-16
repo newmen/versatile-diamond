@@ -22,11 +22,6 @@ module VersatileDiamond
           def context
             @lateral_chunks
           end
-
-          # Do nothing
-          # @param [Instances::SpecieInstance] _
-          def remember_uniq_specie(_)
-          end
         end
 
       end

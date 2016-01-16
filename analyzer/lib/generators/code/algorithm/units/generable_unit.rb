@@ -12,16 +12,27 @@ module VersatileDiamond
 
           # Initializes the creator
           # @param [EngineCode] generator the major code generator
+          # @param [Specie | TypicalReaction | LateralChunks] context in which the
+          #   algorithm builds
           # @param [NameRemember] namer the remember of using names of variables
-          def initialize(generator, namer)
+          # @param [Set] processing_species under previous units
+          def initialize(generator, context, namer, processing_species)
             @generator = generator
+            @context = context
             @namer = namer
+            @processing_species = processing_species
           end
 
         private
 
-          attr_reader :generator, :namer
+          attr_reader :generator, :namer, :context,
           def_delegator :namer, :name_of
+
+          # Gets the species which instances already have defined names
+          # @return [Array] the list of realy defined species
+          def defined_species
+            select_defined?(@processing_species)
+          end
 
           # Gets the list of names or result of block call for each variable from
           # passed list
@@ -89,9 +100,17 @@ module VersatileDiamond
           # @param [Array] variables list which will be reduced
           # @return [Object] depends from using method
           def apply_names_to(method_name, *variables)
-            list = variables.one? ? variables.last : variables
-            raise ArgumentError, 'Array expected' unless variables.is_a?(Enumerable)
-            list.public_send(method_name, &method(:name_of))
+            star_to_array(*variables).public_send(method_name, &method(:name_of))
+          end
+
+          # Safe converts passed variadic list of arguments to array instead the case
+          # when argument just one and it is list already
+          #
+          # @param [Array] args which will be safe converted
+          # @return [Array] the list of arguments as one array
+          def star_to_array(*args)
+            list = args.one? ? args.first : args
+            list.is_a?(Enumerable) ? list : raise(ArgumentError, 'Array expected')
           end
         end
 

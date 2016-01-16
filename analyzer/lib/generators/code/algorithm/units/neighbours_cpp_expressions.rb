@@ -29,7 +29,14 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the atom from which several methods combines checking algorithm
           def anchor_atom
-            mono? ? anchor_atom : raise("The current unit isn't mono")
+            mono? ? uniq_atoms.first : raise("The current unit isn't mono")
+          end
+
+          # Gets the current sole specie
+          # @return [SpecieInstance] the specie from which several methods combines
+          #   checking algorithm
+          def anchor_specie
+            whole? ? uniq_specie.first : raise("The current unit isn't whole")
           end
 
           # Generates code if anchor atom is latticed
@@ -184,13 +191,6 @@ module VersatileDiamond
             check_roles_of(uniq_atoms)
           end
 
-          # Gets a cpp code string that contains the call of method for check atom role
-          # @param [Array] unchecked_atoms which role will be checked in code
-          # @return [String] the string with cpp condition
-          def check_roles_of(unchecked_atoms)
-            chain('&&', *unchecked_atoms.map(&method(:check_role_call)))
-          end
-
           # Are all atoms has lattice
           # @return [Boolean] are all atoms or not
           def latticed?
@@ -206,32 +206,76 @@ module VersatileDiamond
           # @yield should return cpp code string of lambda body
           # @return [String] the string with cpp code
           def each_nbrs_lambda_call(nbrs, rel_params, &block)
-            define_nbr_anchors_lines do
-              define_own_anchors_array_line +
+            observe_nbrs_specie_anchors_lines do
+              define_own_atoms_array_line do
                 code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
+              end
             end
           end
 
-          # By default doesn't need to define anchor_atom atoms for each crystal neighbours
-          # operation
-          #
-          # @yield should return a code which uses neighbour anchors
-          # @return [String] the empty string
-          def define_nbr_anchors_lines(&block)
-            block.call
+          # Gets the line with defined atoms to get each neighbour atoms if it requires
+          # @yield should return a code which uses neighbour specie atoms
+          # @return [String] the lines with defined neighbour specie atoms variable
+          def observe_nbrs_specie_anchors_lines(&block)
+            mono? ? block.call : define_nbrs_specie_anchors_lines(&block)
+          end
+
+          # Gets the line with defined atoms to get each neighbour atoms
+          # @yield should return a code which uses neighbour specie atoms
+          # @return [String] the lines with defined neighbour specie atoms variable
+          def define_nbrs_specie_anchors_lines(&block)
+            inlay_procs(block) do |nest|
+              if whole? && !all_defined?(uniq_atoms)
+                # TODO: it is possible to extend to not whole unit if define
+                # #species_with_atoms method in mono|many unit
+                select_undefined(uniq_atoms).each do |atom|
+                  nest[:define_specie_code, atom, anchor_specie]
+                end
+              end
+              nest[:define_nbr_atoms_line]
+            end
+          end
+
+          # Gets code line with defined atoms atoms for each neighbours operation
+          # @yield should return a code which uses neighbour atoms
+          # @return [String] the code line with defined neighbour atoms variable
+          def define_nbr_atoms_line(&block)
+            if mono_defined? || namer.full_array?(uniq_atoms)
+              block.call
+            elsif whole?
+              redefine_specie_accessed_atoms(anchor_specie)
+            else
+              raise 'Specie for getting neighbour atoms cannot be resolved'
+            end
           end
 
           # Defines atoms array variable for iterating from them on crystall lattice
+          # @yield should return a code which uses own atoms
           # @return [String] the line with defined atoms array variable it it need
-          def define_own_anchors_array_line
+          def define_own_atoms_array_line(&block)
             if mono? || namer.full_array?(uniq_atoms)
-              ''
+              block.call
+            elsif all_defined?(uniq_atoms)
+              define_renamed_atoms_line(names_for(uniq_atoms))
             else
-              old_names = names_for(uniq_atoms) # collect before erase
-              namer.erase(uniq_atoms)
-              namer.assign_next(Specie::ANCHOR_ATOM_NAME, uniq_atoms)
-              define_var_line('Atom *', uniq_atoms, old_names)
+              raise 'Not all atoms are defined'
             end
+          end
+
+          # Renames and defines the internal atoms of passed specie
+          # @param [SpecieInstance] specie which atoms will be redefined
+          # @return [String] the code line with definition renamed atoms
+          def redefine_specie_accessed_atoms(specie)
+            define_renamed_atoms_line(atom_accesses_from(specie))
+          end
+
+          # Renames and defines the internal atoms with next atom(s) variable name
+          # @param [Array] old_accesses which was avail for internal atoms
+          # @return [String] the code line with definition renamed atoms
+          def define_renamed_atoms_line(old_accesses)
+            namer.erase(uniq_atoms)
+            namer.assign_next(Specie::ANCHOR_ATOM_NAME, uniq_atoms)
+            define_var_line('Atom *', uniq_atoms, old_accesses)
           end
 
           # Gets the arguments for #each_nbrs_lambda internal call
@@ -242,17 +286,15 @@ module VersatileDiamond
           def each_nbrs_args(nbrs, rel_params)
             namer.assign_next(Specie::NBR_ATOM_NAME, nbrs)
 
+            method_name = 'eachNeighbour'
             relation_name = full_relation_name_ref(anchor_atom.lattice, rel_params)
             method_args = [name_of(uniq_atoms), relation_name]
             closure_args = ['&']
-
-            nbrs_var_name = name_of(nbrs)
-            method_name = 'eachNeighbour'
             if mono?
-              lambda_arg = "Atom *#{nbrs_var_name}"
+              lambda_arg = "Atom *#{name_of(nbrs)}"
             else
-              method_name = "#{method_name}s<#{uniq_atoms.size}>"
-              lambda_arg = "Atom **#{nbrs_var_name}"
+              method_name = "#{method_name}s<#{nbrs.size}>"
+              lambda_arg = "Atom **#{name_of(nbrs)}"
             end
 
             [method_name, method_args, closure_args, [lambda_arg]]
@@ -274,7 +316,7 @@ module VersatileDiamond
               op = relation_between(*uwas.first).exist? ? '==' : '!='
               nms.join(" #{op} ")
             end
-            chain('&&', *comp_strs)
+            chain('&&', comp_strs)
           end
 
           # Makes conditions block which will be placed into eachNeighbour lambda call

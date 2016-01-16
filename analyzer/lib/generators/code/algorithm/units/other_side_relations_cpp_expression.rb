@@ -62,7 +62,7 @@ module VersatileDiamond
                 u.not_own_atom_condition(u.uniq_specie_for(t), l, n)
               end
 
-              define_str + code_condition(chain('&&', *conditions), &block)
+              define_str + code_condition(chain('&&', conditions), &block)
             end
           end
         end
