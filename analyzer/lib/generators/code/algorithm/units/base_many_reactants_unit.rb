@@ -69,22 +69,7 @@ module VersatileDiamond
             @_target_atom = pair.first
           end
 
-          # Gets a code with for loop
-          # @yield is the body of for loop
-          # @return [String] the code with symmetric atoms iteration
           def target_symmetries_lambda(**, &block)
-            code_for_loop('uint', 'ae', symmetric_atoms.size) do |i|
-              if atoms.size == 2 && namer.full_array?(atoms)
-                atoms_var_name = name_of(atoms)
-                namer.reassign("#{atoms_var_name}[#{i}]", atoms.first)
-                namer.reassign("#{atoms_var_name}[#{i}-1]", atoms.last)
-              else
-                # TODO: maybe need to redefine atoms as separated array before loop
-                # statement in the case when atoms are not "full array"
-                raise 'Can not figure out the next names of atoms variables'
-              end
-              block.call
-            end
           end
 
           # Gets list of possible symmetric atoms

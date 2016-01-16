@@ -24,7 +24,7 @@ module VersatileDiamond
             end
           end
 
-          aggregate :species :atoms :specs_atoms :all_using_relations
+          aggregate :units, :species, :atoms, :all_using_relations
 
           # Initializes the many checking units of code builder algorithm
           # @param [Array] default_args which will be passed to super class
@@ -34,8 +34,7 @@ module VersatileDiamond
             @units = units
             @atoms_to_units = map_atoms_to_units(units)
 
-            @_species, @_atoms, @_specs_atoms, @_all_using_relations = nil
-            @_symmetric_species_with_atoms = nil
+            @_units, @_species, @_atoms, @_all_using_relations = nil
           end
 
           # Selects internal units which uses passed atom
@@ -57,8 +56,6 @@ module VersatileDiamond
           end
 
         private
-
-          aggregate :symmetric_species_with_atoms
 
           # Maps the atoms from internal units to it units
           # @param [Array] inner_units which will be mapped to atoms

@@ -18,6 +18,12 @@ module VersatileDiamond
             @atom = atom
           end
 
+          # Gets the current unit instance
+          # @return [Array] the array with just one item
+          def units
+            [self]
+          end
+
           # Gets the current checking species instance
           # @return [Array] the array with just one item
           def species
@@ -28,12 +34,6 @@ module VersatileDiamond
           # @return [Array] the array with just one item
           def atoms
             [@atom]
-          end
-
-          # Gets the list of checking states
-          # @return [Array] the array with just one intem
-          def specs_atoms
-            [spec_atom]
           end
 
           # Gets the list of all using relations
@@ -70,18 +70,10 @@ binding.pry # !!!!!!!!!!!!!!!!!!!!!
             [@specie.concept, @atom]
           end
 
-        private
-
           # Checks that symmetries of internal specie should be also checked
           # @return [Boolean] are symmetries should be checked or not
           def symmetric_unit?
             @specie.symmetric?(@atom)
-          end
-
-          # Gets the array with just one pair if it is symmetric or empty otherwise
-          # @return [Array] the list of pairs of symmetric species with symmetric atoms
-          def symmetric_species_with_atoms
-            symmetric_unit? ? [[@specie, @atom]] : []
           end
         end
 

@@ -21,75 +21,55 @@ module VersatileDiamond
           # Gets the code which checks that containing in unit instance is presented
           # or not
           #
-          # @option [Boolean] :use_else_prefix flag which identifies that current
-          #   instance has a several anchor atoms
+          # @option [Array] epx passes to next block
           # @yield should return cpp code which will be used if unit instance is
           #   presented
           # @return [String] the cpp code string
-          def check_existence(use_else_prefix: false, &block)
-            define_anchor_atoms_code do
-              code_condition(check_roles_condition, use_else_prefix: use_else_prefix) do
-                code_condition(check_specie_condition, &block)
-              end
+          def check_existence(**epx, &block)
+            define_anchor_atoms_code(**epx) do
+              code_condition(check_specie_condition, &block)
             end
           end
 
           # Gets the code with checking internal species
+          # @option [Array] epx passes to next block
           # @yield should return cpp code
           # @return [String] the cpp code string
-          def check_species(&block)
-            if whole_defined? || any_defined?(uniq_atoms)
-              block.call
-            elsif whole?
-              check_specie_code(anchor_specie, &block)
-            else
-              raise 'Cannot check specie of not whole unit'
-            end
+          def check_species(**epx, &block)
+            define_all_atoms_code(**epx, &block)
           end
 
         private
 
+          # Nests the definition of the passed specie
+          # @param [SpecieInstance] specie which which will be defined
+          # @yield [Symbol, Array, Hash] nests the some method call
+          def nest_specie_checking(specie, &nest)
+            unless name_of(specie)
+              avail_anchor_atom = avail_anchor_atom_of(specie))
+              nest[:define_specie_code, avail_anchor_atom, specie] if avail_anchor_atom
+            end
+            nest[:define_specie_atoms_code, specie]
+          end
+
           # Gets the anchor atom which was defined before
+          # @param [SpecieInstance] specie which which will be checked
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the available anchor atom
-          def avail_anchor_atom
-            find_defined(uniq_atoms) || find_defined(context.spec.anchors)
-          end
-
-          # Assigns the name of anchor atoms variable
-          def assign_anchor_atoms_name!
-            namer.assign(Specie::ANCHOR_ATOM_NAME, uniq_atoms)
-          end
-
-          # Assigns the name of anchor specie variable
-          def assign_anchor_specie_name!
-            namer.assign(Specie::ANCHOR_SPECIE_NAME, uniq_species)
+          # @override
+          def avail_anchor_atom_of(specie)
+            find_defined(select_anchors_of(specie, context.spec.anchors))
           end
 
           # Gets the code line or block with definition of atoms variable
+          # @option [Array] epx passes to next block
           # @yield appends after definition line or into definition block
           # @return [String] the empty string
-          def define_anchor_atoms_code(&block)
-            if context.find_root? || all_defined?(uniq_atoms)
-              block.call
-            elsif whole?
-              define_specie_atoms_code(anchor_specie, &block)
+          def define_anchor_atoms_code(**epx, &block)
+            if context.find_root?
+              check_roles_condition(select_defined(uniq_atoms), **epx, &block)
             else
-              raise 'Incorrect unit to define the anchor atoms'
-            end
-          end
-
-          # Defines atoms of passed specie
-          # @param [SpecieInstance] specie which atoms will be defined
-          # @yield should return cpp code
-          # @return [String] the definition of anchor atoms variable block
-          def define_specie_atoms_code(specie, &block)
-            if symmetric_atoms.empty?
-              redefine_specie_accessed_atoms(specie) + block.call
-            else
-              each_symmetry_lambda(specie) do
-                same_atoms_condition(specie, *symmetric_atoms, &block)
-              end
+              check_species(**epx, &block)
             end
           end
 
@@ -115,24 +95,9 @@ module VersatileDiamond
           # @yield should return cpp code
           # @return [String] the cpp code string
           def check_specie_code(specie, &block)
-            define_specie_code(avail_anchor_atom, specie) do
-              if all_defined?(uniq_atoms)
-                block.call
-              else
-                check_roles_of_undefined_atoms_condition(specie, &block)
-              end
+            define_specie_code(avail_anchor_atom_of(specie), specie) do
+              define_specie_atoms_code(specie, &block)
             end
-          end
-
-          # Defines and checks unnamed atoms and checks them roles
-          # @param [SpecieInstance] specie which undefined atom roles will be checked
-          # @yield should return cpp code for condition body
-          # @return [String] the cpp code string with defining atoms and checking
-          #   condition
-          def check_roles_of_undefined_atoms_condition(specie, &block)
-            undefined_atoms = select_undefined(uniq_atoms)
-            redefine_specie_accessed_atoms(specie) +
-              code_condition(check_roles_of(undefined_atoms), &block)
           end
 
           # Finds relation between passed atoms

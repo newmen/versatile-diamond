@@ -12,8 +12,9 @@ module VersatileDiamond
           # @param [BaseUnit] other unit which will be appended
           # @return [Array] the appending reault
           def append_self_other(other)
-            units_with_atoms = append_other(other)
-            units_with_atoms + units_with_atoms.map(&:last).combination(2).to_a
+            pairs_of_units_with_atoms = append_other(other)
+            pairs_of_units_with_atoms +
+              pairs_of_units_with_atoms.map(&:last).combination(2).to_a
           end
 
           # Makes conditions block which will be placed into eachNeighbour lambda call
@@ -27,7 +28,7 @@ module VersatileDiamond
             units_with_atoms = append_self_other(other)
             acnd_str = append_check_bond_conditions(condition_str, units_with_atoms)
             code_condition(acnd_str) do
-              same_atoms_condition(units_with_atoms, &block)
+              same_nbr_atoms_condition(units_with_atoms, &block)
             end
           end
 
@@ -38,11 +39,11 @@ module VersatileDiamond
           #   bond existatnce will be checked
           # @yield should returns the internal code for body of condition
           # @return [String] cpp code string with condition if it need
-          def same_atoms_condition(units_with_atoms, &block)
-            quads = reduce_if_relation(units_with_atoms) do |acc, usp, asp, rel|
-              cur, oth = usp
-              cur.same_linked_atoms(oth, *asp, rel) do |linked_atom|
-                acc << [cur, linked_atom, *asp]
+          def same_nbr_atoms_condition(units_with_atoms, &block)
+            quads = reduce_if_relation(units_with_atoms) do |acc, us, as, rel|
+              cur, oth = us
+              cur.same_linked_atoms(oth, *as, rel) do |linked_atom|
+                acc << [cur, linked_atom, *as]
               end
             end
 

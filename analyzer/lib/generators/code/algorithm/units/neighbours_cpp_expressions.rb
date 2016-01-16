@@ -25,20 +25,6 @@ module VersatileDiamond
 
         protected
 
-          # Gets the current sole atom
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the atom from which several methods combines checking algorithm
-          def anchor_atom
-            mono? ? uniq_atoms.first : raise("The current unit isn't mono")
-          end
-
-          # Gets the current sole specie
-          # @return [SpecieInstance] the specie from which several methods combines
-          #   checking algorithm
-          def anchor_specie
-            whole? ? uniq_specie.first : raise("The current unit isn't whole")
-          end
-
           # Generates code if anchor atom is latticed
           # @param [BaseUnit] other from which the relations will be checked
           # @param [Hash] rev_rel_params the parameters of relations from self unit to
@@ -88,7 +74,7 @@ module VersatileDiamond
               crystal_call_str = crystal_atom_call(uniq_atoms, rel_params)
               define_nbr_line = define_var_line('Atom *', nbr, crystal_call_str)
 
-              condition_str = "#{name_of(nbr)} && #{other.check_roles_condition}"
+              condition_str = "#{name_of(nbr)} && #{other.check_roles}"
               with_bond = atoms_with_bond_to(other)
               unless with_bond.empty?
                 condition_str = append_check_bond_conditions(condition_str, with_bond)
@@ -115,7 +101,7 @@ module VersatileDiamond
               crystal_call_str = crystal_nbrs_call(anchor_atom, rel_params)
               define_nbrs_line = define_var_line('auto', nbrs, crystal_call_str)
 
-              condition_str = "#{name_of(nbrs)}.all() && #{other.check_roles_condition}"
+              condition_str = "#{name_of(nbrs)}.all() && #{other.check_roles}"
               with_bond = anchor_atom_with_bond_to(other)
               unless with_bond.empty?
                 condition_str = append_check_bond_conditions(condition_str, with_bond)
@@ -140,7 +126,7 @@ module VersatileDiamond
               namer.assign_next(Specie::AMORPH_ATOM_NAME, nbr)
               amorph_nbr_call = "#{name_of(anchor_atom)}->amorphNeighbour()"
               define_nbr_line = define_var_line('Atom *', nbr, amorph_nbr_call)
-              define_nbr_line + code_condition(other.check_roles_condition, &block)
+              define_nbr_line + code_condition(other.check_roles, &block)
             end
           end
 
@@ -187,14 +173,8 @@ module VersatileDiamond
 
           # Gets cpp code string that contains the call of method for check roled atom
           # @return [String] the string with cpp condition
-          def check_roles_condition
+          def check_roles
             check_roles_of(uniq_atoms)
-          end
-
-          # Are all atoms has lattice
-          # @return [Boolean] are all atoms or not
-          def latticed?
-            uniq_atoms.all?(&:lattice)
           end
 
         private
@@ -206,46 +186,24 @@ module VersatileDiamond
           # @yield should return cpp code string of lambda body
           # @return [String] the string with cpp code
           def each_nbrs_lambda_call(nbrs, rel_params, &block)
-            observe_nbrs_specie_anchors_lines do
-              define_own_atoms_array_line do
-                code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
-              end
-            end
-          end
-
-          # Gets the line with defined atoms to get each neighbour atoms if it requires
-          # @yield should return a code which uses neighbour specie atoms
-          # @return [String] the lines with defined neighbour specie atoms variable
-          def observe_nbrs_specie_anchors_lines(&block)
-            mono? ? block.call : define_nbrs_specie_anchors_lines(&block)
-          end
-
-          # Gets the line with defined atoms to get each neighbour atoms
-          # @yield should return a code which uses neighbour specie atoms
-          # @return [String] the lines with defined neighbour specie atoms variable
-          def define_nbrs_specie_anchors_lines(&block)
-            inlay_procs(block) do |nest|
-              if whole? && !all_defined?(uniq_atoms)
-                # TODO: it is possible to extend to not whole unit if define
-                # #species_with_atoms method in mono|many unit
-                select_undefined(uniq_atoms).each do |atom|
-                  nest[:define_specie_code, atom, anchor_specie]
+            define_all_atoms_code do
+              define_nbr_atoms_line(nbrs) do
+                define_own_atoms_array_line do
+                  code_lambda(*each_nbrs_args(nbrs, rel_params), &block)
                 end
               end
-              nest[:define_nbr_atoms_line]
             end
           end
 
           # Gets code line with defined atoms atoms for each neighbours operation
+          # @param [Array] nbrs the neighbour atoms from which the iteration will do
           # @yield should return a code which uses neighbour atoms
           # @return [String] the code line with defined neighbour atoms variable
-          def define_nbr_atoms_line(&block)
-            if mono_defined? || namer.full_array?(uniq_atoms)
+          def define_nbr_atoms_line(nbrs, &block)
+            if mono_defined? || namer.full_array?(nbrs)
               block.call
-            elsif whole?
-              redefine_specie_accessed_atoms(anchor_specie)
             else
-              raise 'Specie for getting neighbour atoms cannot be resolved'
+              define_renamed_atoms_line(atom_accesses_to(nbrs))
             end
           end
 
@@ -260,22 +218,6 @@ module VersatileDiamond
             else
               raise 'Not all atoms are defined'
             end
-          end
-
-          # Renames and defines the internal atoms of passed specie
-          # @param [SpecieInstance] specie which atoms will be redefined
-          # @return [String] the code line with definition renamed atoms
-          def redefine_specie_accessed_atoms(specie)
-            define_renamed_atoms_line(atom_accesses_from(specie))
-          end
-
-          # Renames and defines the internal atoms with next atom(s) variable name
-          # @param [Array] old_accesses which was avail for internal atoms
-          # @return [String] the code line with definition renamed atoms
-          def define_renamed_atoms_line(old_accesses)
-            namer.erase(uniq_atoms)
-            namer.assign_next(Specie::ANCHOR_ATOM_NAME, uniq_atoms)
-            define_var_line('Atom *', uniq_atoms, old_accesses)
           end
 
           # Gets the arguments for #each_nbrs_lambda internal call

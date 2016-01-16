@@ -6,8 +6,6 @@ module VersatileDiamond
         # Contains methods for generate cpp expressions that calls advansed atom
         # methods of engine framework
         module AtomCppExpressions
-          include Algorithm::Units::SpecieCppExpressions
-
         protected
 
           # Gets the code line or block with definition of specie variable
@@ -28,6 +26,24 @@ module VersatileDiamond
           end
 
         private
+
+          # Assigns the name of anchor atoms variable
+          def assign_anchor_atoms_name!
+            namer.assign(Specie::ANCHOR_ATOM_NAME, uniq_atoms)
+          end
+
+          # Defines and checks unnamed atoms and checks them roles
+          # @param [Array] unchecked_atoms which role will be checked in condition
+          # @option [Boolean] :use_else_prefix flag which identifies that before `if`
+          #   keyword the `else ` prefix should be used
+          # @yield should return cpp code for condition body
+          # @return [String] the cpp code string with defining atoms and checking
+          #   condition
+          def check_roles_condition(checking_atoms, use_else_prefix: false, &block)
+            use_eps = !symmetric_unit? && use_else_prefix
+            calls = check_roles_of(checking_atoms)
+            code_condition(calls, use_else_prefix: use_eps, &block)
+          end
 
           # Gets a cpp code string that contains the call of method for check atom role
           # @param [Array] unchecked_atoms which role will be checked in code
@@ -63,10 +79,7 @@ module VersatileDiamond
           def combine_specie_code(atom, specie, &block)
             inlay_procs(block) do |nest|
               initial_define_specie_code(atom, specie, &nest) unless name_of(specie)
-              if specie.symmetric?(atom)
-                nest[:each_symmetry_lambda, specie]
-                nest[:same_atoms_condition, specie, atom] if name_of(atom)
-              end
+              nest[:each_symmetry_lambda, specie] if specie.symmetric?(atom)
             end
           end
 

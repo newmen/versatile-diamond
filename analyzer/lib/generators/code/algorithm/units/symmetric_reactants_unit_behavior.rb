@@ -8,13 +8,6 @@ module VersatileDiamond
         # Provides common logic check that reactants are symmetrical
         module SymmetricReactantsUnitBehavior
 
-          # Prepares reactant instance for creation
-          # @yield should get cpp code string which is body of checking
-          # @return [String] the cpp code string
-          def check_symmetries(**kwargs, &block)
-            check_symmetries_if_need(**kwargs, &block)
-          end
-
         private
 
           # Checks that internal target specie is symmetric by target atoms
