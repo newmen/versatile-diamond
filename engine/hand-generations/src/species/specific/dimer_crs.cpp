@@ -21,8 +21,7 @@ void DimerCRs::find(Dimer *parent)
 {
     parent->eachSymmetry([](ParentSpec *specie) {
         Atom *anchor = specie->atom(0);
-
-        if (!anchor->isVisited() && anchor->is(21))
+        if (anchor->is(21))
         {
             if (!anchor->hasRole(DIMER_CRs, 21))
             {
