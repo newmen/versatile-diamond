@@ -22,7 +22,7 @@ void TwoBridgesCTRiCBRs::find(TwoBridges *parent)
 
     if (anchors[0]->is(5) && anchors[1]->is(0))
     {
-        if (!anchors[0]->hasRole(TWO_BRIDGES_CTRi_CBRs, 5) && !anchors[1]->hasRole(TWO_BRIDGES_CTRi_CBRs, 0))
+        if (!anchors[0]->hasRole(TWO_BRIDGES_CTRi_CBRs, 5) || !anchors[1]->hasRole(TWO_BRIDGES_CTRi_CBRs, 0))
         {
             create<TwoBridgesCTRiCBRs>(parent);
         }

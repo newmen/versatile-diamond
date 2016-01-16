@@ -22,7 +22,7 @@ void MethylOnDimerCLsCMhiu::find(MethylOnDimerCMiu *parent)
 
     if (anchors[0]->is(21) && anchors[1]->is(35))
     {
-        if (!anchors[0]->hasRole(METHYL_ON_DIMER_CLs_CMhiu, 21) && !anchors[1]->hasRole(METHYL_ON_DIMER_CLs_CMhiu, 35))
+        if (!anchors[0]->hasRole(METHYL_ON_DIMER_CLs_CMhiu, 21) || !anchors[1]->hasRole(METHYL_ON_DIMER_CLs_CMhiu, 35))
         {
             create<MethylOnDimerCLsCMhiu>(parent);
         }
