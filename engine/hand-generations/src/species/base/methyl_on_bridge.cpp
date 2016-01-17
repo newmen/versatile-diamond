@@ -20,11 +20,12 @@ void MethylOnBridge::find(Bridge *target)
     {
         if (!anchor->checkAndFind(METHYL_ON_BRIDGE, 9))
         {
-            Atom *amorph = anchor->amorphNeighbour();
-            if (amorph->is(14))
-            {
-                create<MethylOnBridge>(amorph, target);
-            }
+            anchor->eachAmorphNeighbour([&](Atom *amorph) {
+                if (amorph->is(14))
+                {
+                    create<MethylOnBridge>(amorph, target);
+                }
+            });
         }
     }
 }

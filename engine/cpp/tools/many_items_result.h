@@ -19,12 +19,11 @@ public:
 
     bool all()
     {
-        bool result = true;
         for (int i = 0; i < NUM; ++i)
         {
-            result = result && (_items[i] != nullptr);
+            if (_items[i] == nullptr) return false;
         }
-        return result;
+        return true;
     }
 
 protected:

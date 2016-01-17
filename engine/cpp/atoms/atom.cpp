@@ -67,32 +67,6 @@ bool Atom::hasBondWith(Atom *neighbour) const
     return _relatives.find(neighbour) != _relatives.cend();
 }
 
-Atom *Atom::amorphNeighbour() const
-{
-    Atom *neighbour = nullptr;
-    for (Atom *relative : _relatives)
-    {
-        if (!relative->lattice())
-        {
-            neighbour = relative;
-            break;
-        }
-    }
-
-    assert(neighbour);
-#ifndef NDEBUG
-    for (Atom *relative : _relatives)
-    {
-        if (!relative->lattice() && relative != neighbour)
-        {
-            assert(false); // if has many unlatticed atoms
-        }
-    }
-#endif // NDEBUG
-
-    return neighbour;
-}
-
 Atom *Atom::firstCrystalNeighbour() const
 {
     for (Atom *nbr : _relatives)

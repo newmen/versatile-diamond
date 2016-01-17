@@ -135,8 +135,9 @@ int main()
 
     auto assert_amorph_atom = [diamond](int x, int y, int z, ushort bonds, ushort actives) {
         Atom *crystalAtom = diamond->atom(int3(x, y, z));
-        Atom *atom = crystalAtom->amorphNeighbour();
-        assert_atom_state(atom, bonds, actives);
+        crystalAtom->eachAmorphNeighbour([bonds, actives](Atom *amorph) {
+            assert_atom_state(amorph, bonds, actives);
+        });
     };
 
     // 1
