@@ -22,7 +22,7 @@ module VersatileDiamond
           # @param [UniqueReactant] other comparable specie
           # @return [Integer] the comparing result
           # @override
-          def <=> (other)
+          def <=>(other)
             comparing_core(other)
           end
 

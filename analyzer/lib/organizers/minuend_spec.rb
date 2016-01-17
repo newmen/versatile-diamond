@@ -11,21 +11,21 @@ module VersatileDiamond
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance
       # @return [Integer] the result of comparation
-      def <=> (other)
+      def <=>(other)
         compare_with(other)
       end
 
       # Checks that current instance is less than other
       # @param [Minuend] other the comparable minuend instance
       # @return [Boolean] is less or not
-      def < (other)
+      def <(other)
         compare_with(other, strong_types_order: false) < 0
       end
 
       # Checks that current instance is less than other or equal
       # @param [Minuend] other the comparable minuend instance
       # @return [Boolean] is less or equal or not
-      def <= (other)
+      def <=(other)
         self == other || self < other
       end
 

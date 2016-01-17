@@ -45,7 +45,7 @@ module VersatileDiamond
       # Compares two instances
       # @param [Bond] other relation instance with which comparing will be
       # @return [Boolean] equal or not
-      def == (other)
+      def ==(other)
         self.class == other.class && other.it?(params)
       end
 

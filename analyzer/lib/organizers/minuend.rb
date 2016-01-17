@@ -9,7 +9,7 @@ module VersatileDiamond
       # @param [Object] other the subtrahend entity
       # @return [SpecResidual | ChunkResidual] the residual of diference between
       #   arguments or nil if it doesn't exist
-      def - (other)
+      def -(other)
         mirror = mirror_to(other)
         other.links.size == mirror.size ? subtract(other, mirror) : nil
       end

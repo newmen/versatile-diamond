@@ -24,7 +24,7 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] other object with which comparation
       #   will be complete
       # @return [Boolean] is other a instance of same class or not
-      def == (other)
+      def ==(other)
         self.class == other.class
       end
     end

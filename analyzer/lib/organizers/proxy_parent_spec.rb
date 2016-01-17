@@ -35,7 +35,7 @@ module VersatileDiamond
       # Compares current instance with other
       # @param [ProxyParentSpec] other instance with which comparison will do
       # @return [Integer] the comparison result
-      def <=> (other)
+      def <=>(other)
         order(other, self, :clean_relations_num) do
           order(other, self, :relations_num)
         end

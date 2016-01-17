@@ -9,7 +9,7 @@ module VersatileDiamond
       # Provides the order for termination specs
       # @param [TerminationSpec] other comparing instance
       # @return [Integer] the comparing result
-      def <=> (other)
+      def <=>(other)
         typed_order(self, other, AtomicSpec) do
           typed_order(self, other, ActiveBond) do
             comparing_core(other)

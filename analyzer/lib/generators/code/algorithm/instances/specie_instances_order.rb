@@ -10,7 +10,7 @@ module VersatileDiamond
           # Compares two specie instances that were initially high and then a small
           # @param [SpecieInstance] other comparable specie
           # @return [Integer] the comparing result
-          def <=> (other)
+          def <=>(other)
             typed_order(other, self, :scope?) do
               typed_order(self, other, :none?) do
                 comparing_core(other)

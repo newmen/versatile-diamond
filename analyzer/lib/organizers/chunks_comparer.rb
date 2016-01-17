@@ -10,7 +10,7 @@ module VersatileDiamond
       # Compares two chunk between each other
       # @param [ChunkComparer] other comparing chunk
       # @return [Integer] comparison result
-      def <=> (other)
+      def <=>(other)
         typed_order(other, self, ChunkResidual) do # always at begin of ordered seq
           comparing_core(other) do
             typed_order(self, other, MergedChunk) do

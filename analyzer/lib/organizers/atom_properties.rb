@@ -83,7 +83,7 @@ module VersatileDiamond
       # Deep compares two properties by all properties
       # @param [AtomProperties] other an other atom properties
       # @return [Boolean] equal or not
-      def == (other)
+      def ==(other)
         same_basic_values?(other) && DYNAMIC_STATES.all? { |name| eq_by?(other, name) }
       end
       alias :eql? :==
@@ -91,7 +91,7 @@ module VersatileDiamond
       # Compares two atom properties
       # @param [AtomProperties] other comparing atom properties
       # @return [Integer] the comparing result
-      def <=> (other)
+      def <=>(other)
         if include?(other)
           1
         elsif other.include?(self)
@@ -118,7 +118,7 @@ module VersatileDiamond
       # Gets new atom properties instance from two instances
       # @param [AtomProperties] other adding atom properties
       # @return [AtomProperties] the extended instance of atom properties or nil
-      def + (other)
+      def +(other)
         result = nil
         total_props = merge_props(other, :+)
         if total_props
@@ -136,7 +136,7 @@ module VersatileDiamond
       # Gets the difference between two atom properties
       # @param [AtomProperties] other atom properties which will be erased from current
       # @return [AtomProperties] the difference result or nil
-      def - (other)
+      def -(other)
         diff_props = merge_props(other, :accurate_diff)
         diff_props ? self.class.new(state_values(diff_props)) : nil
       end

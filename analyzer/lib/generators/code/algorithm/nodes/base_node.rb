@@ -30,7 +30,7 @@ module VersatileDiamond
           # Compares current node with another node
           # @param [BaseNode] other comparing node
           # @return [Integer] the comparing result
-          def <=> (other)
+          def <=>(other)
             order(other, self, :properties) do
               order(self, other, :uniq_specie)
             end

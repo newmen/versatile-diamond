@@ -37,7 +37,7 @@ module VersatileDiamond
       # Gets item of matrix by passed properties
       # @param [Array] props_pair by which crossing the cell will be gotten
       # @return [Boolean] the value of crossing cell
-      def [] (*props_pair)
+      def [](*props_pair)
         @matrix[*indexes(props_pair)]
       end
 

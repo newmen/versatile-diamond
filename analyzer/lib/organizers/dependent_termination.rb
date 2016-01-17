@@ -10,7 +10,7 @@ module VersatileDiamond
       # Compares two terminations
       # @param [DependentTermination] other comparing termination
       # @return [Integer] the comparing result
-      def <=> (other)
+      def <=>(other)
         spec <=> other.spec
       end
 

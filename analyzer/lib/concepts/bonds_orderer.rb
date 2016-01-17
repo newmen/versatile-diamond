@@ -8,7 +8,7 @@ module VersatileDiamond
       # Provides the order for bond instances
       # @param [BondsOrderer] other comparing instance
       # @return [Integer] the comparing result
-      def <=> (other)
+      def <=>(other)
         typed_order(self, other, Position) do
           typed_order(self, other, MultiBond) do
             typed_order(self, other, Bond) do
