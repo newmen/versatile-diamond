@@ -42,8 +42,10 @@ module VersatileDiamond
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
           # @param [String] single_name the singular name of one variable
+          # @return [String] the assigned name
           def reassign(vars, single_name)
             store_variables(:replace, vars, single_name)
+            name_of(vars)
           end
 
           # Assign unique names for each variables with duplicate error checking
@@ -52,9 +54,10 @@ module VersatileDiamond
           # @param [String] single_name the singular name of one variable
           # @option [Boolean] :pluralize is a flag which if set then passed name
           #   should be pluralized
+          # @return [String] the assigned name
           def assign(vars, single_name, pluralize: true)
-            args = [:check_and_store, vars, single_name]
-            store_variables(*args, pluralize: pluralize)
+            store_variables(:check_and_store, vars, single_name, pluralize: pluralize)
+            name_of(vars)
           end
 
           # Assign next unique name for variable
@@ -99,8 +102,10 @@ module VersatileDiamond
           # Removes records about passed variables
           # @param [Array | Object] vars the variables or single variable which will be
           #   removed from internal cache
+          # @return [Array | String] the erased names
           def erase(vars)
-            as_arr(vars).each(&method(:delete))
+            result = as_arr(vars).map(&method(:delete))
+            single?(vars) ? result.first : result
           end
 
           # Checks that passed vars have same array variable name
@@ -214,8 +219,9 @@ module VersatileDiamond
           # @param [Object] var the storing variable
           # @param [String] name the name of storing variable
           def remember(var, name)
-            @used_names << name
-            names[var] = name
+            freezed_name = name.freeze
+            @used_names << freezed_name
+            names[var] = freezed_name
           end
         end
 

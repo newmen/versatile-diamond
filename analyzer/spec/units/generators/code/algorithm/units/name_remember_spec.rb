@@ -54,6 +54,10 @@ module VersatileDiamond
               it { expect { subject.assign(['value'], 'var') }.not_to raise_error }
             end
 
+            describe 'get the name' do
+              it { expect(subject.assign(:yo, 'nm')).to eq('nm') }
+            end
+
             describe 'duplicate variable' do
               shared_examples_for :check_var_duplicate do
                 before { subject.assign(vars, 'var') }
@@ -87,8 +91,7 @@ module VersatileDiamond
           describe '#assign_next' do
             describe 'with number one' do
               let(:var) { 'value' }
-              before { subject.assign_next(var, 'var') }
-              it { expect(subject.name_of(var)).to eq('var1') }
+              it { expect(subject.assign_next(var, 'var')).to eq('var1') }
             end
 
             describe 'remember index and get next' do
@@ -140,6 +143,7 @@ module VersatileDiamond
 
               it { expect(subject.name_of(1)).to be_nil }
               it { expect(subject.name_of(2)).to eq('var') }
+              it { expect(subject.reassign(var1, 'meow')).to eq('meow') }
             end
 
             [1, [1]].product([2, [2]]) do |var1, var2|
@@ -240,11 +244,17 @@ module VersatileDiamond
               before do
                 subject.assign(other, 'other')
                 subject.assign(vars, 'var')
-                subject.erase(vars)
               end
 
-              it { expect(subject.name_of(vars)).to be_nil }
-              it { expect(subject.name_of(other)).not_to be_nil }
+              let(:result) { subject.erase(vars) }
+              let(:many) { false }
+              it { expect(result).to eq(many ? ["vars[0]", "vars[1]"] : 'var') }
+
+              describe 'check next time' do
+                before { result }
+                it { expect(subject.name_of(vars)).to be_nil }
+                it { expect(subject.name_of(other)).not_to be_nil }
+              end
             end
 
             it_behaves_like :check_erase do
@@ -256,6 +266,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_erase do
+              let(:many) { true }
               let(:vars) { [1, 2] }
             end
           end
