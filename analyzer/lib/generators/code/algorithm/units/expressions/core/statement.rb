@@ -37,7 +37,7 @@ module VersatileDiamond
           # @param [String] str to which the semicolon will be added
           # @return [String] the string with code which ends with semicolon
           def wrap(str)
-            "TAB_SPACES#{str};"
+            "#{TAB_SPACES}#{str};"
           end
         end
 

@@ -15,9 +15,9 @@ module VersatileDiamond
           # @param [Statement] value
           def initialize(namer, instance, type, name = nil, value = nil, **next_name)
             @namer = namer
-            @instance = instance
-            @type = type
-            @rvalue = value
+            @instance = instance.freeze
+            @type = type.freeze
+            @rvalue = value && value.freeze
 
             assign_name!(instance, name, **next_name) unless used_name
           end
