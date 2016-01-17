@@ -56,11 +56,16 @@ module VersatileDiamond
               end
 
               describe 'atom properties users' do
+                let(:classifier) { generator.classifier }
+                let(:role) { classifier.index(props) }
                 let(:props) { Organizers::AtomProperties.new(subject.spec, atom) }
 
-                describe '#role' do
-                  let(:classifier) { generator.classifier }
-                  it { expect(subject.role(atom)).to eq(classifier.index(props)) }
+                describe '#source_role' do
+                  it { expect(subject.source_role(atom)).to eq(role) }
+                end
+
+                describe '#actual_role' do
+                  it { expect(subject.actual_role(atom)).to eq(role) }
                 end
 
                 describe '#properties_of' do

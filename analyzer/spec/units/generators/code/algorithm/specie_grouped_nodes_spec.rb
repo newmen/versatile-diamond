@@ -28,7 +28,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[ct], [cr, cl]] }
+            let(:flatten_face_grouped_atoms) { [[ct, cr, cl]] }
             let(:nodes_list) do
               [
                 [Instances::NoneSpecie, ct],
@@ -74,7 +74,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_vinyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[cb], [c1], [c2]] }
+            let(:flatten_face_grouped_atoms) { [[cb], [c1, c2]] }
             let(:nodes_list) do
               [
                 [Instances::NoneSpecie, c1],
@@ -112,7 +112,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_two_methyls_on_dimer_base }
             let(:base_specs) { [dept_dimer_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[cr, cl], [c1], [c2]] }
+            let(:flatten_face_grouped_atoms) { [[cr, cl], [c1, c2]] }
             let(:nodes_list) do
               [
                 [Instances::NoneSpecie, c1],

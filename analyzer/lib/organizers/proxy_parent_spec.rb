@@ -5,6 +5,8 @@ module VersatileDiamond
     class ProxyParentSpec < Tools::TransparentProxy
       include Modules::OrderProvider
 
+      attr_reader :child
+
       # Initializes proxy instance
       # @param [DependentBaseSpec] original spec for which proxy provides
       # @param [DependentBaseSpec] child is the dependent spec which creates proxy
@@ -85,7 +87,7 @@ module VersatileDiamond
         # @return [Integer] the number of atom references
         define_method(:"#{prefix}relations_num") do
           child_atoms = @mirror.keys
-          @child.send("#{prefix}links").reduce(0) do |acc, (a, rs)|
+          child.send("#{prefix}links").reduce(0) do |acc, (a, rs)|
             child_atoms.include?(a) ? (acc + rs.size) : acc
           end
         end

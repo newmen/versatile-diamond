@@ -32,7 +32,7 @@ module VersatileDiamond
             elsif parents.one?
               get_unique_specie(parents.first)
             else
-              get_species_scope(atom)
+              get_species_scope(parents, atom)
             end
           end
 
@@ -45,10 +45,11 @@ module VersatileDiamond
           end
 
           # Gets the scope of species for passed atom
+          # @param [Array] parents which available in context specie from passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom by which the species scope will be got
           # @return [Instances::SpeciesScope] the scope of species
-          def get_species_scope(atom)
+          def get_species_scope(parents, atom)
             unique_parents = specie_instances(parents, atom)
             Instances::SpeciesScope.new(@specie, unique_parents)
           end

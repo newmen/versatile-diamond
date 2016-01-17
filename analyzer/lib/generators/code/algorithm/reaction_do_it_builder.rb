@@ -7,10 +7,10 @@ module VersatileDiamond
 
         # Contain logic for building algorithm of reaction applying
         class ReactionDoItBuilder
-          include CommonCppExpressions
-          include CrystalCppExpressions
-          include SpecieCppExpressions
-          include SpecificSpecDefiner
+          include Units::CommonCppExpressions
+          include Units::CrystalCppExpressions
+          include Units::SpecieCppExpressions
+          include Units::SpecificSpecDefiner
           extend Forwardable
 
           # Initializes algorithm builder
@@ -43,11 +43,7 @@ module VersatileDiamond
           attr_reader :generator, :namer
           def_delegator :namer, :name_of
 
-          def make_props(specie, atom)
-            generator.atom_properties(specie.proxy_spec, atom)
-          end
-
-          def get_unique_specie(spec)
+          def unique_specie(spec)
             spec.gas? ? nil : @unique_species_cacher.get_unique_specie(spec)
           end
 
@@ -55,16 +51,14 @@ module VersatileDiamond
             return @_changes if @_changes
             result = @orig_essence_changes.map do |src_to_prd|
               concept_specs, atoms = src_to_prd.transpose
-              uniq_species = concept_specs.map(&method(:get_unique_specie))
-              uniq_species.zip(atoms).map do |uniq_specie, atom|
-                [uniq_specie, atom]
-              end
+              uniq_species = concept_specs.map(&method(:unique_specie))
+              uniq_species.zip(atoms)
             end
             @_changes = sort_changes(result)
           end
 
           def sort_changes(changes)
-            changes.sort_by { |src, _| make_props(*src) }
+            changes.sort_by { |(specie, atom), _| specie.properties_of(atom) }
           end
 
           def source_changes
@@ -433,7 +427,7 @@ module VersatileDiamond
             changes.each_with_object([]) do |src_to_prd, acc|
               if src_to_prd.map(&:first).all?
                 atom = src_to_prd.first.last
-                acc << src_to_prd.map { |sa| [atom, make_props(*sa)] }
+                acc << src_to_prd.map { |(s, a)| [atom, s.properties_of(a)] }
               end
             end
           end

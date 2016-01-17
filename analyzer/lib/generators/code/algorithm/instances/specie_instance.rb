@@ -14,19 +14,28 @@ module VersatileDiamond
             spec.spec
           end
 
-          %i(index role).each do |name|
-            # Gets correct #{name} of atom in original atoms sequence
-            # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-            #   atom the #{name} for which will be gotten
-            # @return [Integer] the #{name} of atom
-            define_method(name) do |atom|
-              orig_atom = original_atom(atom)
-              if original.spec.links.keys.include?(orig_atom)
-                original.public_send(name, orig_atom)
-              else
-                raise ArgumentError, "Undefined atom #{atom} for #{spec}"
-              end
-            end
+          # Gets correct index of atom in original specie atoms sequence
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom the index for which will be gotten
+          # @return [Integer] the index of atom
+          def index(atom)
+            check_and_get(:index, original, original_atom(atom))
+          end
+
+          # Gets correct role of atom in original atoms sequence
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom the role for which will be gotten
+          # @return [Integer] the role of atom
+          def source_role(atom)
+            check_and_get(:role, original, original_atom(atom))
+          end
+
+          # Gets correct role of atom in actual atoms sequence
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom the role for which will be gotten
+          # @return [Integer] the role of atom
+          def actual_role(atom)
+            check_and_get(:role, actual, actual_atom(atom))
           end
 
           # Gets atom properties of passed atom
@@ -34,7 +43,7 @@ module VersatileDiamond
           #   atom which properties will be returned
           # @return [Organizers::AtomProperties] the properties of passed atom
           def properties_of(atom)
-            generator.atom_properties(spec, reflection_of(atom))
+            generator.atom_properties(actual.spec, actual_atom(atom))
           end
 
           # Checks that passed atom is anchor
@@ -72,6 +81,36 @@ module VersatileDiamond
               "#{Specie::INTER_SPECIE_NAME}#{abrv.join}"
             else
               var_name
+            end
+          end
+
+        private
+
+          # By defailt the actual specie is original
+          # @return [Specie] original specie
+          def actual
+            original
+          end
+
+          # By defailt the actual atom is original
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   original atom
+          def actual_atom(atom)
+            original_atom(atom)
+          end
+
+          # Checks that atom belongs to passed specie and calls the passed method name
+          # @param [Symbol] method_name which will be called
+          # @param [Specie] specie which method will be called
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom the for which the value be gotten
+          # @return [Integer] the value for passed atom
+          def check_and_get(method_name, specie, atom)
+            if specie.spec.links.keys.include?(atom)
+              specie.public_send(method_name, atom)
+            else
+              msg = "Undefined #{method_name} of #{atom.inspect} in #{spec.inspect}"
+              raise ArgumentError, msg
             end
           end
         end

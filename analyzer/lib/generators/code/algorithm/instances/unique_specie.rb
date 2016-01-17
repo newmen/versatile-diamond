@@ -18,7 +18,7 @@ module VersatileDiamond
             @generator = generator
             super(specie_class(concept_spec))
 
-            @_mirror = nil
+            @_original_mirror = nil
           end
 
         private
@@ -31,13 +31,14 @@ module VersatileDiamond
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the atom from original specie
           def original_atom(atom)
-            mirror[reflection_of(atom)]
+            original_mirror[reflection_of(atom)]
           end
 
           # Gets the mirror from proxy spec to original spec
           # @return [Hash] the mirror from current spec to original spec
-          def mirror
-            @_mirror ||= Mcs::SpeciesComparator.make_mirror(spec, original.spec)
+          def original_mirror
+            @_original_mirror ||=
+              Mcs::SpeciesComparator.make_mirror(spec, original.spec)
           end
         end
 

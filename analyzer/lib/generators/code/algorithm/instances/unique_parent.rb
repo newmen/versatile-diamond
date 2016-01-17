@@ -16,6 +16,7 @@ module VersatileDiamond
           def initialize(generator, proxy_parent)
             super(generator, proxy_parent.spec)
             @spec = proxy_parent
+            @actual = specie_class(proxy_parent.child.spec)
           end
 
           # Unique parent specie is not "no specie"
@@ -31,6 +32,19 @@ module VersatileDiamond
           end
 
         private
+
+          # @override
+          attr_reader :actual
+
+          # Gets the instance of atom which uses in actual specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which corresponding instance from actual specie will be gotten
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the atom from actual specie
+          # @override
+          def actual_atom(atom)
+            atom
+          end
 
           # Gets the atom which reflects passed atom of original specie
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]

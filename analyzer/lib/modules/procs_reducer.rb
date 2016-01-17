@@ -22,11 +22,16 @@ module VersatileDiamond
       def inlay_procs(deepest_block, &block)
         procs = []
         nest = -> method_name, *args, **kwargs do
-          procs << -> &prc { send(method_name, *args, **kwargs, &prc) }
+          procs <<
+            if kwargs.empty?
+              -> &prc { send(method_name, *args, &prc) }
+            else
+              -> &prc { send(method_name, *args, **kwargs, &prc) }
+            end
         end
 
         block[nest]
-        reduce_procs(procs, &deepest_block)
+        reduce_procs(procs, &deepest_block).call
       end
     end
 

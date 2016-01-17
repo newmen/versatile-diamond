@@ -57,22 +57,31 @@ module VersatileDiamond
 
             describe '#index' do
               it { expect(subject.index(cb)).to eq(0) }
-              it { expect(subject.index(cm)).to be_nil }
+              it { expect { subject.index(cm) }.to raise_error }
             end
 
             describe 'atom properties users' do
-              let(:vb_ct) { veiled_bridge.atom(:ct) }
-              let(:props) { Organizers::AtomProperties.new(parent, vb_ct) }
+              let(:classifier) { generator.classifier }
 
-              describe '#role' do
-                let(:classifier) { generator.classifier }
-                it { expect(subject.role(cb)).to eq(classifier.index(props)) }
-                it { expect { subject.role(cm) }.to raise_error }
+              describe '#source_role' do
+                let(:vb_ct) { veiled_bridge.atom(:ct) }
+                let(:props) { Organizers::AtomProperties.new(parent, vb_ct) }
+                it { expect(subject.source_role(cb)).to eq(classifier.index(props)) }
+                it { expect { subject.original_role(cm) }.to raise_error }
               end
 
-              describe '#properties_of' do
-                it { expect(subject.properties_of(cb)).to eq(props) }
-                it { expect { subject.properties_of(cm) }.to raise_error }
+              describe 'from actual specie' do
+                let(:props) { Organizers::AtomProperties.new(complex, cb) }
+
+                describe '#actual_role' do
+                  it { expect(subject.actual_role(cb)).to eq(classifier.index(props)) }
+                  it { expect { subject.actual_role(cm) }.not_to raise_error }
+                end
+
+                describe '#properties_of' do
+                  it { expect(subject.properties_of(cb)).to eq(props) }
+                  it { expect { subject.properties_of(cm) }.not_to raise_error }
+                end
               end
             end
 
