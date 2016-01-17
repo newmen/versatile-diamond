@@ -1,4 +1,5 @@
 module VersatileDiamond
+  using Patches::RichArray
   using Patches::RichString
 
   module Generators
@@ -99,6 +100,11 @@ module VersatileDiamond
             end
           end
 
+          # @return [Array] the list of defined variables
+          def defined_vars
+            names.keys
+          end
+
           # Removes records about passed variables
           # @param [Array | Object] vars the variables or single variable which will be
           #   removed from internal cache
@@ -159,14 +165,23 @@ module VersatileDiamond
           # @param [Array] vars the variables for which array name will be gotten
           # @return [String] the name of array that respond to passed variables
           def array_name_for(vars)
-            stored_names = vars.map { |var| names[var] }
-            array_name = stored_names.first.scan(/^\w+/).first
+            using_names = match_arrays(vars.map(&names.method(:[])))
+            return nil unless using_names.size == vars.size && using_names.all_equal?
 
-            match_lambda = -> name { name.match(/^#{array_name}\[\d+\]$/) }
-            is_array = stored_names.all?(&match_lambda) &&
-              @used_names.select(&match_lambda).size == vars.size
+            any_name = using_names.first
+            all_names = match_arrays(names.values).select { |n| n == any_name }
+            is_array = all_names.size == using_names.size && all_names.all_equal?
+            is_array ? all_names.first : nil
+          end
 
-            is_array ? array_name : nil
+          # Collects array names in passed variable names list
+          # @param [Array] checking_names which will be checked
+          # @return [Array] the list of arrays variables
+          def match_arrays(checking_names)
+            checking_names.each_with_object([]) do |name, acc|
+              m = name.match(/^(?<array_name>\w+)\[\d+\]$/)
+              acc << m[:array_name] if m
+            end
           end
 
           # Assign unique names for each variables

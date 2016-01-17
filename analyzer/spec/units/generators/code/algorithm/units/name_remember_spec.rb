@@ -238,6 +238,32 @@ module VersatileDiamond
             end
           end
 
+          describe '#defined_vars' do
+            it { expect(subject.defined_vars).to be_empty }
+
+            describe 'not empty' do
+              let(:var) { Object.new }
+              before { subject.assign(var, 'x') }
+              it { expect(subject.defined_vars).to eq([var]) }
+
+              describe 'many' do
+                let(:other) { :other }
+                before { subject.assign(other, 'foo') }
+                it { expect(subject.defined_vars).to match_array([var, other]) }
+
+                describe 'rename' do
+                  before { subject.reassign(var, 'hi') }
+                  it { expect(subject.defined_vars).to match_array([var, other]) }
+                end
+
+                describe 'erase' do
+                  before { subject.erase(var) }
+                  it { expect(subject.defined_vars).to eq([other]) }
+                end
+              end
+            end
+          end
+
           describe '#erase' do
             shared_examples_for :check_erase do
               let(:other) { :other }
