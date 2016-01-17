@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # Unit for bulding code that depends from lateral specie
         class LateralChunkUnit < SingleReactantUnit
-          include LateralChunksUnitBehavior
 
           # Initializes the lateral chunk unit
           # @param [Array] args the arguments of #super method

@@ -3,7 +3,7 @@ require 'spec_helper'
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm
+      module Algorithm::Units
 
         describe NameRemember do
           subject { described_class.new }
@@ -146,6 +146,39 @@ module VersatileDiamond
               it_behaves_like :check_reassign do
                 let(:var1) { var1 }
                 let(:var2) { var2 }
+              end
+            end
+          end
+
+          describe '#prev_names_of' do
+            it { expect(subject.prev_names_of(123)).to be_nil }
+
+            describe 'with name' do
+              let(:xx) { Object.new }
+              let(:yy) { Object.new }
+
+              before do
+                subject.assign('xx', xx)
+                subject.assign('yy', yy)
+              end
+
+              it { expect(subject.prev_names_of(xx)).to be_nil }
+
+              describe 'rename' do
+                before { subject.reassign('yy', xx) }
+                it { expect(subject.prev_names_of(xx)).to eq(['xx']) }
+                it { expect(subject.prev_names_of(yy)).to eq(['yy']) }
+
+                describe 'one more time' do
+                  before { subject.reassign('zz', xx) }
+                  it { expect(subject.prev_names_of(xx)).to eq(['xx', 'yy']) }
+                  it { expect(subject.prev_names_of(yy)).to eq(['yy']) }
+
+                  describe 'erase' do
+                    before { subject.erase(xx) }
+                    it { expect(subject.prev_names_of(xx)).to eq(['xx', 'yy', 'zz']) }
+                  end
+                end
               end
             end
           end

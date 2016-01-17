@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # The class for look around algorithm builder units with many species
         class ManyLateralChunksUnit < BaseManyReactantsUnit
-          include LateralChunksUnitBehavior
           include OtherSideRelationsCppExpression
 
           # Initializes the unit of code builder algorithm

@@ -67,7 +67,7 @@ module VersatileDiamond
           # @yield [Symbol, Array, Hash] nests the some method call
           def nest_specie_checking(specie, **epx, &nest)
             unless name_of(specie)
-              avail_anchor_atom = avail_anchor_atom_of(specie))
+              avail_anchor_atom = avail_anchor_atom_of(specie)
               nest[:define_specie_code, avail_anchor_atom, specie] if avail_anchor_atom
             end
             nest[:define_specie_atoms_code, specie, **epx]

@@ -16,9 +16,10 @@ module VersatileDiamond
                 cache_var = :"@_#{method_name}"
                 # Gets the current #{method_name}
                 # @return [Array] the array of #{method_name} from internal units
-                define_method(method_name)
+                define_method(method_name) do
                   instance_variable_get(cache_var) ||
-                    instance_variable_set(cache_var, @units.flat_map(&method_name))
+                    instance_variable_set(cache_var,
+                      instance_variable_get(:@units).flat_map(&method_name))
                 end
               end
             end

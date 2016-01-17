@@ -18,7 +18,8 @@ module VersatileDiamond
             @checkpoints << {
               names: @names.dup,
               next_names: @next_names.dup,
-              used_names: @used_names.dup
+              used_names: @used_names.dup,
+              prev_names: Marshal.load(Marshal.dump(@prev_names))
             }
           end
 
@@ -31,6 +32,7 @@ module VersatileDiamond
               @names = state[:names].dup
               @next_names = state[:next_names].dup
               @used_names = state[:used_names].dup
+              @prev_names = Marshal.load(Marshal.dump(state[:prev_names]))
             else
               init!
             end
@@ -48,11 +50,11 @@ module VersatileDiamond
           # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
-          # @option [Boolean] :plur_if_need is a flag which if set then passed name
+          # @option [Boolean] :pluralize is a flag which if set then passed name
           #   should be pluralized
-          def assign(single_name, vars, plur_if_need: true)
+          def assign(single_name, vars, pluralize: true)
             args = [:check_and_store, single_name, vars]
-            store_variables(*args, plur_if_need: plur_if_need)
+            store_variables(*args, pluralize: pluralize)
           end
 
           # Assign next unique name for variable
@@ -65,7 +67,14 @@ module VersatileDiamond
             max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
             next_name = "#{correct_name}#{max_index.next}"
             @next_names.unshift(next_name)
-            assign(next_name, var, plur_if_need: false)
+            assign(next_name, var, pluralize: false)
+          end
+
+          # Gets a previous names of variable
+          # @param [Object] var the variable for which previous names will be gotten
+          # @return [Array] the list of previous names of passed variable or nil
+          def prev_names_of(var)
+            @prev_names[var]
           end
 
           # Gets a name of variable
@@ -93,7 +102,7 @@ module VersatileDiamond
           # @param [Array | Object] vars the variables or single variable which will be
           #   removed from internal cache
           def erase(vars)
-            as_arr(vars).each { |var| names.delete(var) }
+            as_arr(vars).each(&method(:delete))
           end
 
           # Checks that passed vars have same array variable name
@@ -112,6 +121,7 @@ module VersatileDiamond
             @names = {}
             @next_names = []
             @used_names = Set.new
+            @prev_names = {}
           end
 
           # Gets a hash where keys are names and values are variables
@@ -162,12 +172,12 @@ module VersatileDiamond
           # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
-          # @option [Boolean] :plur_if_need see at #assign same option
-          def store_variables(method_name, single_name, vars, plur_if_need: true)
+          # @option [Boolean] :pluralize see at #assign same option
+          def store_variables(method_name, single_name, vars, pluralize: true)
             if single?(vars)
               send(method_name, single_name, single_value(vars))
             else
-              plur_name = plur_if_need ? single_name.pluralize : single_name
+              plur_name = pluralize ? single_name.pluralize : single_name
               vars.each_with_index do |var, i|
                 send(method_name, "#{plur_name}[#{i}]", var)
               end
@@ -187,9 +197,19 @@ module VersatileDiamond
           # @param [String] name the name of storing variable
           # @param [Object] var the storing variable
           def replace(name, var)
-            replasing_var = variables[name]
-            names.delete(replasing_var)
+            delete(var)
+            delete(variables[name])
             remember(name, var)
+          end
+
+          # Delete variable name from avail names list
+          # @param [Object] var for which the name will be forgotten
+          def delete(var)
+            if names[var]
+              @prev_names[var] ||= []
+              @prev_names[var] << names[var]
+            end
+            names.delete(var)
           end
 
           # Remembers the name of variable

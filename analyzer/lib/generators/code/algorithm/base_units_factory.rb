@@ -64,7 +64,7 @@ module VersatileDiamond
           # Gets the list of default arguments which uses when each new unit creates
           # @return [Array] the array of default arguments
           def default_args
-            [generator, context, @namer, @processing_species]
+            [generator, context, @namer, @processing_species.dup]
           end
         end
 

@@ -8,7 +8,7 @@ module VersatileDiamond
         # The base class for reaction algorithm builder units with many original
         # species
         # @abstract
-        class BaseManyReactantsUnit < BaseUnit
+        class BaseManyReactantsUnit #< BaseUnit
           include Modules::ListsComparer
           include Mcs::SpecsAtomsComparator
 

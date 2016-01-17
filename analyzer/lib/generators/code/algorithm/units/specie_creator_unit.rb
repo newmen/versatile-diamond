@@ -6,7 +6,6 @@ module VersatileDiamond
         # The instance of class could defines all neccessary variables and calls
         # engine framework method for create a specie which was found
         class SpecieCreatorUnit < GenerableUnit
-          include MultiParentSpeciesCppExpressions
           extend Forwardable
 
           # Initializes the creator

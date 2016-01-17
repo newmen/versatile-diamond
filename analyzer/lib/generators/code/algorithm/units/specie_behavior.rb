@@ -41,17 +41,6 @@ module VersatileDiamond
 
         private
 
-          # Nests the definition of the passed specie
-          # @param [SpecieInstance] specie which which will be defined
-          # @yield [Symbol, Array, Hash] nests the some method call
-          def nest_specie_checking(specie, &nest)
-            unless name_of(specie)
-              avail_anchor_atom = avail_anchor_atom_of(specie))
-              nest[:define_specie_code, avail_anchor_atom, specie] if avail_anchor_atom
-            end
-            nest[:define_specie_atoms_code, specie]
-          end
-
           # Gets the anchor atom which was defined before
           # @param [SpecieInstance] specie which which will be checked
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]

@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Unit for bulding code that depends from reactant specie
         # @abstract
-        class SingleReactantUnit < SingleSpecieUnit
+        class SingleReactantUnit #< SingleSpecieUnit
           include OtherSideRelationsCppExpression
 
           # Also initiates internal caches

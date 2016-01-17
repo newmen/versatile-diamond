@@ -25,7 +25,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :generator, :namer, :context,
+          attr_reader :generator, :namer, :context
           def_delegator :namer, :name_of
 
           # Gets the species which instances already have defined names
