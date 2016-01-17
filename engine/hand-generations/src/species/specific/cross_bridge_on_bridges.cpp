@@ -8,9 +8,7 @@ void CrossBridgeOnBridges::find(Atom *anchor)
     {
         if (!anchor->checkAndFind(CROSS_BRIDGE_ON_BRIDGES, 10))
         {
-            auto species = anchor->specsByRole<MethylOnBridge, 2>(14);
-            if (species.all())
-            {
+            anchor->eachSpecsPortionByRole<MethylOnBridge>(14, 2, [&](MethylOnBridge **species) {
                 Atom *atoms[2] = { species[0]->atom(1), species[1]->atom(1) };
                 eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour) {
                     if (atoms[1] == neighbour)
@@ -19,7 +17,7 @@ void CrossBridgeOnBridges::find(Atom *anchor)
                         create<CrossBridgeOnBridges>(parents);
                     }
                 });
-            }
+            });
         }
     }
 }

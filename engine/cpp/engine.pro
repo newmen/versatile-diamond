@@ -259,7 +259,6 @@ HEADERS += \
     ../hand-generations/src/species/specific/original_dimer_cri_cli.h \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.h \
     atoms/atom.h \
-    atoms/contained_species.h \
     atoms/lattice.h \
     atoms/neighbours.h \
     mc/base_events_container.h \

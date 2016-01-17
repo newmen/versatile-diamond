@@ -7,7 +7,6 @@
 #include "../species/base_spec.h"
 #include "../tools/common.h"
 #include "lattice.h"
-#include "contained_species.h"
 
 namespace vd
 {
@@ -50,8 +49,8 @@ public:
     bool hasBondWith(Atom *neighbour) const;
 
     template <class L> void eachNeighbour(const L &lambda) const;
+    template <class L> void eachAmorphNeighbour(const L &lambda);
 
-    Atom *amorphNeighbour() const;
     Atom *firstCrystalNeighbour() const;
     ushort crystalNeighboursNum() const;
 
@@ -66,8 +65,8 @@ public:
     bool hasRole(ushort sid, ushort role) const;
     bool checkAndFind(ushort sid, ushort role);
     template <class S> S *specByRole(ushort role);
-    template <class S, ushort NUM> ContainedSpecies<S, NUM> specsByRole(ushort role);
     template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
+    template <class S, class L> void eachSpecsPortionByRole(ushort role, ushort portion, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -103,6 +102,9 @@ private:
     float3 correctAmorphPos() const;
     std::vector<const Atom *> goodCrystalRelatives() const;
 
+    template <class S, class L>
+    void combinations(ushort total, ushort n, S *specs, S *cache, const L &lambda);
+
     uint hash(ushort first, ushort second) const
     {
         uint at = first;
@@ -118,30 +120,38 @@ void Atom::eachNeighbour(const L &lambda) const
     std::for_each(_relatives.cbegin(), _relatives.cend(), lambda);
 }
 
+template <class L>
+void Atom::eachAmorphNeighbour(const L &lambda)
+{
+    Atom **visited = new Atom *[_relatives.size()];
+    ushort n = 0;
+    for (Atom *neighbour : _relatives)
+    {
+        // Skip multibonds
+        bool hasSame = false;
+        for (ushort i = 0; i < n; ++i)
+        {
+            if (visited[i] == neighbour)
+            {
+                hasSame = true;
+                break;
+            }
+        }
+
+        if (!hasSame && !neighbour->lattice())
+        {
+            lambda(neighbour);
+            visited[n++] = neighbour;
+        }
+    }
+    delete [] visited;
+}
+
 template <class S>
 S *Atom::specByRole(ushort role)
 {
     BaseSpec *result = specByRole(S::ID, role);
     return static_cast<S *>(result);
-}
-
-template <class S, ushort NUM>
-ContainedSpecies<S, NUM> Atom::specsByRole(ushort role)
-{
-    const uint key = hash(role, S::ID);
-    auto range = _specs.equal_range(key);
-    uint distance = std::distance(range.first, range.second);
-
-    // there could be permutaion if assert failed,
-    // and method should iterate "typles" of specs
-    assert(distance <= NUM);
-
-    S *specs[NUM] = { nullptr, nullptr };
-    for (int i = 0; range.first != range.second; ++range.first, ++i)
-    {
-        specs[i] = static_cast<S *>(range.first->second);
-    }
-    return ContainedSpecies<S, NUM>(specs);
 }
 
 template <class S, class L>
@@ -182,6 +192,53 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
     }
 
     delete [] specsDup;
+}
+
+template <class S, class L>
+void Atom::eachSpecsPortionByRole(ushort role, ushort portion, const L &lambda)
+{
+    const uint key = hash(role, S::ID);
+    auto range = _specs.equal_range(key);
+    uint num = std::distance(range.first, range.second);
+    if (num < portion) return; // go out from iterator!
+
+    S **specsDup = new S *[num];
+    for (uint i = 0; range.first != range.second; ++range.first, ++i)
+    {
+        BaseSpec *spec = range.first->second;
+        assert(spec->type() == S::ID);
+        specsDup[i] = static_cast<S *>(spec);
+    }
+
+    if (num == portion)
+    {
+        lambda(specsDup);
+    }
+    else
+    {
+        S **cache = new S *[portion];
+        combinations(num, portion, specsDup, cache, lambda);
+        delete [] cache;
+    }
+
+    delete [] specsDup;
+}
+
+template <class S, class L>
+void Atom::combinations(ushort total, ushort n, S *specs, S *cache, const L &lambda)
+{
+    for (ushort i = total; i >= n; --i)
+    {
+        cache[n - 1] = specs[i];
+        if (n > 1)
+        {
+            combinations(i - 1, n - 1, specs, cache, lambda);
+        }
+        else
+        {
+            lambda(cache);
+        }
+    }
 }
 
 }
