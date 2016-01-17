@@ -20,7 +20,7 @@ module VersatileDiamond
           # @return [Statement] string with function call expression
           def call(*arg_exprs, template_arg_exprs: [])
             if arg_exprs.size == @arity
-              full_name + OpRoundBks[OpSequence[*arg_exprs]]
+              full_name + OpRoundBks[OpSequence[*arg_exprs.map(&:name)]]
             else
               raise ArgumentError, "Wrong number of arguments to call #{self} method"
             end
@@ -35,7 +35,7 @@ module VersatileDiamond
               msg = "Wrong number of template arguments to call #{self} method"
               raise ArgumentError, msg
             elsif @template_arity > 0
-              name + OpAngleBks[OpSequence[*template_arg_exprs]]
+              name + OpAngleBks[OpSequence[*template_arg_exprs.map(&:name)]]
             else
               name
             end
