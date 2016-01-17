@@ -15,20 +15,20 @@ module VersatileDiamond
             let(:temp) { :temp }
 
             it 'expect names' do
-              subject.assign('name', object)
-              subject.assign_next('arr', array)
+              subject.assign(object, 'name')
+              subject.assign_next(array, 'arr')
               subject.checkpoint! # 1
-              subject.reassign('other_name', object)
-              subject.assign_next('arr', [4, 2, 1])
-              subject.assign('temp', temp)
+              subject.reassign(object, 'other_name')
+              subject.assign_next([4, 2, 1], 'arr')
+              subject.assign(temp, 'temp')
               subject.rollback! # <- 1
-              subject.assign_next('arr', other)
+              subject.assign_next(other, 'arr')
               expect(subject.name_of(object)).to eq('name')
               expect(subject.name_of(array)).to eq('arrs1')
               expect(subject.name_of(other)).to eq('arrs2')
               expect(subject.name_of(temp)).to be_nil
               subject.checkpoint! # 2
-              subject.reassign('lalas', other)
+              subject.reassign(other, 'lalas')
               expect(subject.name_of(other)).to eq('lalas')
               subject.rollback! # <- 2
               expect(subject.name_of(other)).to eq('arrs2')
@@ -50,14 +50,14 @@ module VersatileDiamond
 
           describe '#assign' do
             describe 'no raise error' do
-              it { expect { subject.assign('var', 'value') }.not_to raise_error }
-              it { expect { subject.assign('var', ['value']) }.not_to raise_error }
+              it { expect { subject.assign('value', 'var') }.not_to raise_error }
+              it { expect { subject.assign(['value'], 'var') }.not_to raise_error }
             end
 
             describe 'duplicate variable' do
               shared_examples_for :check_var_duplicate do
-                before { subject.assign('var', vars) }
-                it { expect { subject.assign('other', vars) }.to raise_error }
+                before { subject.assign(vars, 'var') }
+                it { expect { subject.assign(vars, 'other') }.to raise_error }
               end
 
               it_behaves_like :check_var_duplicate do
@@ -71,8 +71,8 @@ module VersatileDiamond
 
             describe 'duplicate name' do
               shared_examples_for :check_name_duplicate do
-                before { subject.assign('var', var1) }
-                it { expect { subject.assign('var', var2) }.to raise_error }
+                before { subject.assign(var1, 'var') }
+                it { expect { subject.assign(var2, 'var') }.to raise_error }
               end
 
               ['a', ['b']].product(['c', ['d']]).each do |var1, var2|
@@ -87,16 +87,16 @@ module VersatileDiamond
           describe '#assign_next' do
             describe 'with number one' do
               let(:var) { 'value' }
-              before { subject.assign_next('var', var) }
+              before { subject.assign_next(var, 'var') }
               it { expect(subject.name_of(var)).to eq('var1') }
             end
 
             describe 'remember index and get next' do
               let(:var) { 'value' }
               before do
-                subject.assign_next('var', var)
+                subject.assign_next(var, 'var')
                 subject.erase(var)
-                subject.assign_next('var', var)
+                subject.assign_next(var, 'var')
               end
               it { expect(subject.name_of(var)).to eq('var2') }
             end
@@ -105,28 +105,28 @@ module VersatileDiamond
               let(:var1) { 'value' }
               let(:var2) { 'other' }
               before do
-                subject.assign_next('var', var1)
-                subject.assign_next('var', var2)
+                subject.assign_next(var1, 'var')
+                subject.assign_next(var2, 'var')
               end
               it { expect(subject.name_of(var2)).to eq('var2') }
             end
 
             describe 'collection' do
               let(:vars) { [1, 2] }
-              before { subject.assign_next('var', vars) }
+              before { subject.assign_next(vars, 'var') }
               it { expect(subject.name_of(vars)).to eq('vars1') }
             end
 
             describe 'duplicate variable' do
               let(:var) { 'value' }
-              before { subject.assign_next('var', var) }
+              before { subject.assign_next(var, 'var') }
 
               it 'with same var name' do
-                expect { subject.assign_next('var', var) }.to raise_error
+                expect { subject.assign_next(var, 'var') }.to raise_error
               end
 
               it 'with another var name' do
-                expect { subject.assign_next('other', var) }.to raise_error
+                expect { subject.assign_next(var, 'other') }.to raise_error
               end
             end
           end
@@ -134,8 +134,8 @@ module VersatileDiamond
           describe '#reassign' do
             shared_examples_for :check_reassign do
               before do
-                subject.assign('var', var1)
-                subject.reassign('var', var2)
+                subject.assign(var1, 'var')
+                subject.reassign(var2, 'var')
               end
 
               it { expect(subject.name_of(1)).to be_nil }
@@ -158,19 +158,19 @@ module VersatileDiamond
               let(:yy) { Object.new }
 
               before do
-                subject.assign('xx', xx)
-                subject.assign('yy', yy)
+                subject.assign(xx, 'xx')
+                subject.assign(yy, 'yy')
               end
 
               it { expect(subject.prev_names_of(xx)).to be_nil }
 
               describe 'rename' do
-                before { subject.reassign('yy', xx) }
+                before { subject.reassign(xx, 'yy') }
                 it { expect(subject.prev_names_of(xx)).to eq(['xx']) }
                 it { expect(subject.prev_names_of(yy)).to eq(['yy']) }
 
                 describe 'one more time' do
-                  before { subject.reassign('zz', xx) }
+                  before { subject.reassign(xx, 'zz') }
                   it { expect(subject.prev_names_of(xx)).to eq(['xx', 'yy']) }
                   it { expect(subject.prev_names_of(yy)).to eq(['yy']) }
 
@@ -187,13 +187,13 @@ module VersatileDiamond
             describe 'argument is object' do
               describe 'single variable' do
                 let(:var) { 123 }
-                before { subject.assign('var', var) }
+                before { subject.assign(var, 'var') }
                 it { expect(subject.name_of(var)).to eq('var') }
               end
 
               describe 'many variables' do
                 let(:vars) { [1, 2, 3] }
-                before { subject.assign('var', vars) }
+                before { subject.assign(vars, 'var') }
                 it { expect(subject.name_of(2)).to eq('vars[1]') }
               end
 
@@ -205,7 +205,7 @@ module VersatileDiamond
             describe 'argument is array' do
               describe 'all is correct' do
                 let(:vars) { ['a', 'b', 'c'] }
-                before { subject.assign('var', vars) }
+                before { subject.assign(vars, 'var') }
                 it { expect(subject.name_of(vars)).to eq('vars') }
               end
 
@@ -214,12 +214,12 @@ module VersatileDiamond
                 let(:excess_var) { 'c' }
 
                 shared_examples_for :check_error_raising do
-                  before { subject.assign('var', vars) }
+                  before { subject.assign(vars, 'var') }
                   it { expect { subject.name_of(vars + [excess_var]) }.to raise_error }
                 end
 
                 describe 'excess vars' do
-                  before { subject.assign('other', excess_var) }
+                  before { subject.assign(excess_var, 'other') }
                   it_behaves_like :check_error_raising
                 end
 
@@ -238,8 +238,8 @@ module VersatileDiamond
             shared_examples_for :check_erase do
               let(:other) { :other }
               before do
-                subject.assign('other', other)
-                subject.assign('var', vars)
+                subject.assign(other, 'other')
+                subject.assign(vars, 'var')
                 subject.erase(vars)
               end
 
@@ -263,13 +263,13 @@ module VersatileDiamond
           describe '#full_array?' do
             describe 'single variable' do
               let(:var) { :var }
-              before { subject.assign('var', var) }
+              before { subject.assign(var, 'var') }
               it { expect(subject.full_array?([var])).to be_falsey }
             end
 
             describe 'many variables' do
               let(:vars) { [1, 2] }
-              before { subject.assign('var', vars) }
+              before { subject.assign(vars, 'var') }
 
               describe 'same array varaible name' do
                 it { expect(subject.full_array?(vars)).to be_truthy }
@@ -278,14 +278,14 @@ module VersatileDiamond
               describe 'different array varaible name' do
                 let(:others) { [3, 4] }
                 let(:array) { [vars.first, others.first] }
-                before { subject.assign('other', others) }
+                before { subject.assign(others, 'other') }
                 it { expect(subject.full_array?(array)).to be_falsey }
               end
 
               describe 'one var is not an array' do
                 let(:other) { :other }
                 let(:array) { [vars.first, other] }
-                before { subject.assign('other', other) }
+                before { subject.assign(other, 'other') }
                 it { expect(subject.full_array?(array)).to be_falsey }
               end
             end
@@ -293,7 +293,7 @@ module VersatileDiamond
             describe 'too many items of array' do
               let(:vars) { [1, 2] }
               let(:all) { vars + [3, 4] }
-              before { subject.assign('var', all) }
+              before { subject.assign(all, 'var') }
               it { expect(subject.full_array?(vars)).to be_falsey }
             end
           end

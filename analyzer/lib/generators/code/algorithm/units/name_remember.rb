@@ -39,35 +39,35 @@ module VersatileDiamond
           end
 
           # Assign unique names for each variables with duplicate error checking
-          # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
-          def reassign(single_name, vars)
-            store_variables(:replace, single_name, vars)
+          # @param [String] single_name the singular name of one variable
+          def reassign(vars, single_name)
+            store_variables(:replace, vars, single_name)
           end
 
           # Assign unique names for each variables with duplicate error checking
-          # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
+          # @param [String] single_name the singular name of one variable
           # @option [Boolean] :pluralize is a flag which if set then passed name
           #   should be pluralized
-          def assign(single_name, vars, pluralize: true)
-            args = [:check_and_store, single_name, vars]
+          def assign(vars, single_name, pluralize: true)
+            args = [:check_and_store, vars, single_name]
             store_variables(*args, pluralize: pluralize)
           end
 
           # Assign next unique name for variable
-          # @param [String] single_name without additional index what will using for
           #   make a new next name of variable
           # @param [Object] var the variable for which name will assigned
-          def assign_next(single_name, var)
+          # @param [String] single_name without additional index what will using for
+          def assign_next(var, single_name)
             correct_name = single?(var) ? single_name : single_name.pluralize
             last_name = @next_names.find { |n| n =~ /^#{correct_name}\d+$/ }
             max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
             next_name = "#{correct_name}#{max_index.next}"
             @next_names.unshift(next_name)
-            assign(next_name, var, pluralize: false)
+            assign(var, next_name, pluralize: false)
           end
 
           # Gets a previous names of variable
@@ -85,12 +85,10 @@ module VersatileDiamond
             if single?(vars)
               names[single_value(vars)]
             else
-              check_lambda = -> var { names[var] }
-              if vars.all?(&check_lambda)
+              if vars.all?(&names.method(:[]))
                 name = array_name_for(vars)
-                raise 'Not all vars belongs to array' unless name
-                name
-              elsif vars.any?(&check_lambda)
+                name ? name : raise('Not all vars belongs to array')
+              elsif vars.any?(&names.method(:[]))
                 raise 'Not for all variables in passed set the name is presented'
               else
                 nil
@@ -169,37 +167,37 @@ module VersatileDiamond
           # Assign unique names for each variables
           # @param [Symbol] method_name the method of name which will used for assign
           #   name for each variable
-          # @param [String] single_name the singular name of one variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
+          # @param [String] single_name the singular name of one variable
           # @option [Boolean] :pluralize see at #assign same option
-          def store_variables(method_name, single_name, vars, pluralize: true)
+          def store_variables(method_name, vars, single_name, pluralize: true)
             if single?(vars)
-              send(method_name, single_name, single_value(vars))
+              send(method_name, single_value(vars), single_name)
             else
               plur_name = pluralize ? single_name.pluralize : single_name
               vars.each_with_index do |var, i|
-                send(method_name, "#{plur_name}[#{i}]", var)
+                send(method_name, var, "#{plur_name}[#{i}]")
               end
             end
           end
 
           # Stores a variable with some name with duplicate error checking
-          # @param [String] name the name of storing variable
           # @param [Object] var the storing variable
-          def check_and_store(name, var)
+          # @param [String] name the name of storing variable
+          def check_and_store(var, name)
             raise %(Variable "#{name}" already has name "#{names[var]}") if names[var]
             raise %(Name "#{name}" already used) if variables[name]
-            remember(name, var)
+            remember(var, name)
           end
 
           # Replases a variable with some name without error checking
-          # @param [String] name the name of storing variable
           # @param [Object] var the storing variable
-          def replace(name, var)
+          # @param [String] name the name of storing variable
+          def replace(var, name)
             delete(var)
             delete(variables[name])
-            remember(name, var)
+            remember(var, name)
           end
 
           # Delete variable name from avail names list
@@ -213,9 +211,9 @@ module VersatileDiamond
           end
 
           # Remembers the name of variable
-          # @param [String] name the name of storing variable
           # @param [Object] var the storing variable
-          def remember(name, var)
+          # @param [String] name the name of storing variable
+          def remember(var, name)
             @used_names << name
             names[var] = name
           end
