@@ -38,12 +38,13 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(BRIDGE, #{role_ct}))
         {
-            auto neighbours1 = crystalBy(anchor)->cross_110(anchor);
-            if (neighbours1.all() && neighbours1[0]->is(#{role_cr}) && neighbours1[1]->is(#{role_cr}) && anchor->hasBondWith(neighbours1[0]) && anchor->hasBondWith(neighbours1[1]))
-            {
-                Atom *atoms[3] = { anchor, neighbours1[0], neighbours1[1] };
-                create<Bridge>(atoms);
-            }
+            allNeighbours(anchor, &Diamond::cross_110, [&](Atom **neighbours1) {
+                if (neighbours1[0]->is(#{role_cr}) && neighbours1[1]->is(#{role_cr}) && anchor->hasBondWith(neighbours1[0]) && anchor->hasBondWith(neighbours1[1]))
+                {
+                    Atom *atoms[3] = { anchor, neighbours1[0], neighbours1[1] };
+                    create<Bridge>(atoms);
+                }
+            });
         }
     }
                 CODE
@@ -81,11 +82,12 @@ module VersatileDiamond
     {
         if (!anchor->checkAndFind(METHYL_ON_BRIDGE, #{role_cb}))
         {
-            Atom *amorph1 = anchor->amorphNeighbour();
-            if (amorph1->is(#{role_cm}))
-            {
-                create<MethylOnBridge>(amorph1, parent);
-            }
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{role_cm}))
+                {
+                    create<MethylOnBridge>(amorph1, parent);
+                }
+            });
         }
     }
                 CODE
@@ -120,11 +122,12 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(HIGH_BRIDGE, #{role_cb}))
         {
-            Atom *amorph1 = anchor->amorphNeighbour();
-            if (amorph1->is(#{role_cm}))
-            {
-                create<HighBridge>(amorph1, parent);
-            }
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{role_cm}))
+                {
+                    create<HighBridge>(amorph1, parent);
+                }
+            });
         }
     }
                 CODE
@@ -141,16 +144,18 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(VINYL_ON_BRIDGE, #{role_cb}))
         {
-            Atom *amorph1 = anchor->amorphNeighbour();
-            if (amorph1->is(#{role_c1}))
-            {
-                Atom *amorph2 = amorph1->amorphNeighbour();
-                if (amorph2->is(#{role_c2}))
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{role_c1}))
                 {
-                    Atom *additionalAtoms[2] = { amorph1, amorph2 };
-                    create<VinylOnBridge>(additionalAtoms, parent);
+                    amorph1->eachAmorphNeighbour([&](Atom *amorph2) {
+                        if (amorph2->is(#{role_c2}))
+                        {
+                            Atom *additionalAtoms[2] = { amorph1, amorph2 };
+                            create<VinylOnBridge>(additionalAtoms, parent);
+                        }
+                    });
                 }
-            }
+            });
         }
     }
                 CODE
@@ -232,16 +237,18 @@ module VersatileDiamond
     {
         if (!anchors[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}) || !anchors[1]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cl}))
         {
-            Atom *amorph1 = anchors[0]->amorphNeighbour();
-            if (amorph1->is(#{role_c1}))
-            {
-                Atom *amorph2 = anchors[1]->amorphNeighbour();
-                if (amorph2->is(#{role_c2}))
+            anchors[0]->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{role_c1}))
                 {
-                    Atom *additionalAtoms[2] = { amorph1, amorph2 };
-                    create<TwoMethylsOnDimer>(additionalAtoms, parent);
+                    anchors[1]->eachAmorphNeighbour([&](Atom *amorph2) {
+                        if (amorph2->is(#{role_c2}))
+                        {
+                            Atom *additionalAtoms[2] = { amorph1, amorph2 };
+                            create<TwoMethylsOnDimer>(additionalAtoms, parent);
+                        }
+                    });
                 }
-            }
+            });
         }
     }
                 CODE
@@ -257,21 +264,22 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_ctr}))
         {
-            Atom *amorph1 = anchor->amorphNeighbour();
-            if (amorph1->is(#{role_cm}))
-            {
-                eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
-                    if (neighbour1->is(#{role_ctr}))
-                    {
-                        if (neighbour1->hasBondWith(amorph1))
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{role_cm}))
+                {
+                    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+                        if (neighbour1->is(#{role_ctr}))
                         {
-                            Bridge *specie1 = anchor->specByRole<Bridge>(#{b_ct});
-                            Bridge *specie2 = neighbour1->specByRole<Bridge>(#{b_ct});
-                            ParentSpec *parents[2] = { specie1, specie2 };
-                            create<CrossBridgeOnBridges>(amorph1, parents);
+                            if (neighbour1->hasBondWith(amorph1))
+                            {
+                                Bridge *specie1 = anchor->specByRole<Bridge>(#{b_ct});
+                                Bridge *specie2 = neighbour1->specByRole<Bridge>(#{b_ct});
+                                ParentSpec *parents[2] = { specie1, specie2 };
+                                create<CrossBridgeOnBridges>(amorph1, parents);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
@@ -291,9 +299,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_cm}))
         {
-            auto species1 = anchor->specsByRole<MethylOnBridge, 2>(#{mob_cm});
-            if (species1.all())
-            {
+            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mob_cm}, 2, [&](MethylOnBridge **species1) {
                 Atom *atoms[2] = { species1[0]->atom(1), species1[1]->atom(1) };
                 eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour1) {
                     if (atoms[1] == neighbour1)
@@ -302,7 +308,7 @@ module VersatileDiamond
                         create<CrossBridgeOnBridges>(parents);
                     }
                 });
-            }
+            });
         }
     }
                 CODE
@@ -322,23 +328,24 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_ctl}))
         {
-            Atom *amorph1 = anchor->amorphNeighbour();
-            if (amorph1->is(#{role_cm}))
-            {
-                Dimer *specie1 = anchor->specByRole<Dimer>(#{d_cr});
-                Atom *anchors[2] = { anchor, specie1->atom(0) };
-                eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-                    if (neighbours1[0]->is(#{role_ctr}) && neighbours1[1]->is(#{role_csr}))
-                    {
-                        if (neighbours1[0]->hasBondWith(amorph1))
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{role_cm}))
+                {
+                    Dimer *specie1 = anchor->specByRole<Dimer>(#{d_cr});
+                    Atom *anchors[2] = { anchor, specie1->atom(0) };
+                    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+                        if (neighbours1[0]->is(#{role_ctr}) && neighbours1[1]->is(#{role_csr}))
                         {
-                            Dimer *specie2 = neighbours1[1]->specByRole<Dimer>(#{d_cr});
-                            ParentSpec *parents[2] = { specie1, specie2 };
-                            create<CrossBridgeOnDimers>(amorph1, parents);
+                            if (neighbours1[0]->hasBondWith(amorph1))
+                            {
+                                Dimer *specie2 = neighbours1[1]->specByRole<Dimer>(#{d_cr});
+                                ParentSpec *parents[2] = { specie1, specie2 };
+                                create<CrossBridgeOnDimers>(amorph1, parents);
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
         }
     }
                 CODE
@@ -358,9 +365,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
-            auto species1 = anchor->specsByRole<MethylOnDimer, 2>(#{mod_cm});
-            if (species1.all())
-            {
+            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mod_cm}, 2, [&](MethylOnDimer **species1) {
                 Atom *atoms[4] = { species1[0]->atom(4), species1[0]->atom(1), species1[1]->atom(4), species1[1]->atom(1) };
                 Atom *anchors[2] = { atoms[3], atoms[2] };
                 eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
@@ -502,21 +507,22 @@ module VersatileDiamond
                 target1->eachSymmetry([&](ParentSpec *specie1) {
                     if (anchor == specie1->atom(2))
                     {
-                        Atom *amorph1 = atom2->amorphNeighbour();
-                        if (amorph1->is(#{role_cm}))
-                        {
-                            Atom *atom1 = specie1->atom(0);
-                            Bridge *specie2 = atom1->eachSpecByRole<Bridge>(#{b_ct}, [&](Bridge *target1) {
-                                target1->eachSymmetry([&](ParentSpec *specie3) {
-                                    Atom *atom2 = specie3->atom(2);
-                                    if (atom2 == atom1)
-                                    {
-                                        ParentSpec *parents[2] = { specie3, specie1 };
-                                        create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
-                                    }
+                        anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                            if (amorph1->is(#{role_cm}))
+                            {
+                                Atom *atom1 = specie1->atom(0);
+                                Bridge *specie2 = atom1->eachSpecByRole<Bridge>(#{b_ct}, [&](Bridge *target1) {
+                                    target1->eachSymmetry([&](ParentSpec *specie3) {
+                                        Atom *atom2 = specie3->atom(2);
+                                        if (atom2 == atom1)
+                                        {
+                                            ParentSpec *parents[2] = { specie3, specie1 };
+                                            create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
+                                        }
+                                    });
                                 });
-                            });
-                        }
+                            }
+                        });
                     }
                 });
             });
@@ -535,12 +541,13 @@ module VersatileDiamond
                             Atom *atom1 = specie3->atom(1);
                             if (atom1->is(#{role_cbr}))
                             {
-                                Atom *amorph1 = atom1->amorphNeighbour();
-                                if (amorph1->is(#{role_cm}))
-                                {
-                                    ParentSpec *parents[2] = { specie3, specie1 };
-                                    create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
-                                }
+                                atom1->eachAmorphNeighbour([&](Atom *amorph1) {
+                                    if (amorph1->is(#{role_cm}))
+                                    {
+                                        ParentSpec *parents[2] = { specie3, specie1 };
+                                        create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
+                                    }
+                                });
                             }
                         });
                     }
@@ -658,10 +665,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_COMMON, #{role_cm}))
         {
-            // TODO: there can be two MethylOnDimers, need replace to eachSpecByRole
-            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
-            if (specie1)
-            {
+            anchor->eachSpecByRole<MethylOnDimer>(#{mod_cm}, [&](MethylOnDimer *specie1) {
                 anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
                     if (specie2->atom(1) != specie1->atom(1))
                     {
@@ -692,10 +696,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_HALF, #{role_cm}))
         {
-            // TODO: there can be two MethylOnDimers, need replace to eachSpecByRole
-            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
-            if (specie1)
-            {
+            anchor->eachSpecByRole<MethylOnDimer>(#{mod_cm}, [&](MethylOnDimer *specie1) {
                 anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
                     if (specie2->atom(1) != specie1->atom(1))
                     {
@@ -727,10 +728,7 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cm}))
         {
-            // TODO: there can be two MethylOnDimers, need replace to eachSpecByRole
-            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{mod_cm});
-            if (specie1)
-            {
+            anchor->eachSpecByRole<MethylOnDimer>(#{mod_cm}, [&](MethylOnDimer *specie1) {
                 anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
                     if (specie2->atom(1) != specie1->atom(1))
                     {
