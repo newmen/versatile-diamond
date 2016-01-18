@@ -23,7 +23,7 @@ module VersatileDiamond
             # @param [String] value
             # @return [Boolean]
             def side_spaces?(value)
-              !!value.match(/^\s+|\s+$/)
+              value =~ /^\s+|\s+$/
             end
 
             # @param [Object] value

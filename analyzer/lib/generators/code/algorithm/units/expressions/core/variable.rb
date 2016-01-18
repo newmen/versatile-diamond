@@ -16,7 +16,7 @@ module VersatileDiamond
           def initialize(namer, instance, type, name = nil, value = nil, **next_name)
             @namer = namer
             @instance = instance.freeze
-            @type = type.freeze
+            @type = type.ptr.freeze
             @rvalue = value && value.freeze
 
             assign_name!(instance, name, **next_name) unless used_name
@@ -26,12 +26,12 @@ module VersatileDiamond
 
           # @return [Statement] the string with variable definition
           def define_var
-            Assign.new(full_name, type: type.def_type, value: rvalue)
+            Assign[full_name, type: type, value: rvalue]
           end
 
           # @return [Statement] the string with argument definition
           def define_arg
-            Assign.new(name, type: type.arg_type)
+            Assign[name, type: type]
           end
 
           # @return [Statement] the name of variable

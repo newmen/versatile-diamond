@@ -45,7 +45,7 @@ module VersatileDiamond
             fixed_values = values || [nil].cycle
             triples = instances.zip(names, fixed_values)
 
-            [arr_name, triples.map { |i, n, v| Variable.new(namer, i, type, n, v) }]
+            [arr_name, triples.map { |i, n, v| Variable[namer, i, type, n, v] }]
           end
 
           # @return [Statement]

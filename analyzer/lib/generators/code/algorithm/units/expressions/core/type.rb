@@ -3,38 +3,43 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Provides base operations for C++ expressions of types
+        # Provides base operations for C++ expressions of class types
         class Type < Constant
+          class << self
+            # @param [Object] name
+            # @return [Statement]
+            def [](name)
+              if !name.is_a?(String)
+                raise %(Wrong type name "#{name}")
+              elsif name.empty? || side_spaces?(name)
+                raise 'Type cannot contain side spaces'
+              elsif !class?(name)
+                raise 'Class type should be classified'
+              else
+                new(name)
+              end
+            end
 
-          # @return [Constant]
-          def def_type
-            class? ? append_star(value) : value
-          end
+          private
 
-          # @return [Constant]
-          def arg_type
-            append_star(def_type)
-          end
-
-          # @param [Expression] expr
-          # @return [Statement] the name of type with reference to member
-          def member_ref(expr)
-            if class?
-              OpRef[OpNs[self, expr]]
-            else
-              raise 'Cannot get the class member not from class type'
+            # @param [String] name
+            # @return [Boolean] class type names any time are classified
+            def class?(name)
+              name =~ /^[A-Z]/
             end
           end
 
-        private
-
-          # @return [Boolean] class type names any time are classified
-          def class?
-            !!value.match(/^[A-Z]/)
+          # @return [Type]
+          def ptr
+            correct_value = code
+            correct_value += ' ' unless correct_value =~ /(\*)$/
+            self.class["#{correct_value}*"]
           end
 
-          def append_star(expr)
-            Constant["#{expr.code} *"]
+          # @param [Constant] expr
+          # @return [OpRef] the name of type with reference to member
+          def member_ref(expr)
+            OpRef[OpNs[self, expr]]
           end
         end
 

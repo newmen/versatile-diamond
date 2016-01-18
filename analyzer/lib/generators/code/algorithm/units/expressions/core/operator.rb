@@ -6,13 +6,6 @@ module VersatileDiamond
         # Defines C++ operator statements
         # @abstract
         class Operator < Statement
-          class << self
-            # @param [Array] exprs to which the operation will be applied
-            # @return [Statement]
-            def [](*exprs, **kwargs)
-              kwargs.empty? ? self.new(*exprs) : self.new(*exprs, **kwargs)
-            end
-          end
 
           # @param [Symbol] mark the symbolic name of operation
           # @param [Integer] arity of operation
@@ -36,6 +29,12 @@ module VersatileDiamond
 
           # @override
           attr_reader :exprs
+
+          # @return [Boolean] true
+          # @override
+          def operator?
+            true
+          end
 
         private
 
