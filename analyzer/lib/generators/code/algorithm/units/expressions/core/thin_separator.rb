@@ -10,7 +10,7 @@ module VersatileDiamond
           # @return [String]
           # @override
           def separator
-            mark
+            mark.to_s
           end
         end
 

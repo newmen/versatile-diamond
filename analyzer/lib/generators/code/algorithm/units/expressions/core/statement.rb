@@ -18,12 +18,12 @@ module VersatileDiamond
           end
 
           def to_s
-            "␂#{code}␃"
+            "\n#{code}\n"
           end
 
           def inspect
             # More detailed info about total expression
-            "\n#{code}\n"
+            "␂#{code}␃"
           end
 
         private

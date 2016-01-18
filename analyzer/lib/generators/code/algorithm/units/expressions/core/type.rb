@@ -8,7 +8,7 @@ module VersatileDiamond
 
           # @return [Constant]
           def def_type
-            class? ? append_star(name) : name
+            class? ? append_star(value) : value
           end
 
           # @return [Constant]
@@ -17,7 +17,7 @@ module VersatileDiamond
           end
 
           # @param [Expression] expr
-          # @return [Statement] the name with reference to member
+          # @return [Statement] the name of type with reference to member
           def member_ref(expr)
             if class?
               OpRef[OpNs[self, expr]]
@@ -30,7 +30,7 @@ module VersatileDiamond
 
           # @return [Boolean] class type names any time are classified
           def class?
-            !!name.match(/^[A-Z]/)
+            !!value.match(/^[A-Z]/)
           end
 
           def append_star(expr)

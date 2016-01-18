@@ -20,7 +20,7 @@ module VersatileDiamond
         protected
 
           # @return [Statement]
-          def name
+          def value
             Constant[@value]
           end
         end

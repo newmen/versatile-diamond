@@ -29,7 +29,7 @@ module VersatileDiamond
             # @param [Object] value
             # @return [Boolean]
             def valid?(value)
-              allowed_types.any? { |klass| klass.is_a?(name) }
+              allowed_types.any? { |klass| value.is_a?(klass) }
             end
 
             # @return [Array]
@@ -39,12 +39,12 @@ module VersatileDiamond
           end
 
           # @override
-          attr_reader :name
+          attr_reader :value
 
           # @return [String]
           # @override
           def code
-            name.to_s
+            value.to_s
           end
 
         private

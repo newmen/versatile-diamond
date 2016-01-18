@@ -10,7 +10,7 @@ module VersatileDiamond
             # @param [Array] exprs to which the operation will be applied
             # @return [Statement]
             def [](*exprs, **kwargs)
-              self.new(*exprs, **kwargs)
+              kwargs.empty? ? self.new(*exprs) : self.new(*exprs, **kwargs)
             end
           end
 

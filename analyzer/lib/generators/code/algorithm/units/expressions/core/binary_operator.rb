@@ -51,7 +51,7 @@ module VersatileDiamond
           def rectify(combining_exprs)
             exprs_dup = combining_exprs.dup
             result = []
-            until exprs.empty?
+            until exprs_dup.empty?
               expr = exprs_dup.shift
               if expr.class == self.class
                 expr.exprs.reverse.each(&exprs_dup.method(:unshift))
