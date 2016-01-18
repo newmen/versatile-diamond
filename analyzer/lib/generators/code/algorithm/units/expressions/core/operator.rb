@@ -41,6 +41,11 @@ module VersatileDiamond
 
           attr_reader :mark, :exprs
 
+          # @param [Array] vars
+          # @return [Array] list of using variables
+          def using(vars)
+            exprs.flat_map { |expr| expr.using(vars) }
+          end
         end
 
       end

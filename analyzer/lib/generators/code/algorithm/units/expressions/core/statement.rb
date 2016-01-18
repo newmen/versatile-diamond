@@ -28,12 +28,6 @@ module VersatileDiamond
 
         private
 
-          # @param [Array] vars
-          # @return [Array] list of using variables
-          def using(vars)
-            exprs.flat_map { |expr| expr.using(vars) }
-          end
-
           # @param [String] str to which the semicolon will be added
           # @return [String] the string with code which ends with semicolon
           def wrap(str)

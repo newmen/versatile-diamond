@@ -30,10 +30,12 @@ module VersatileDiamond
 
         private
 
+          def_delegator :@body, :using
+
           # @return [Array]
           def closure_vars
             all_defined_vars = @namer.defined_vars
-            vars = @body.using(all_defined_vars).map { |var| OpRef[var.name] }
+            vars = using(all_defined_vars).map { |var| OpRef[var.name] }
             if lists_are_identical?(vars, all_defined_vars, &:==)
               vars = [OpRel[Constant['']]]
             end
