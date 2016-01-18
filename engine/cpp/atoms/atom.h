@@ -127,21 +127,24 @@ void Atom::eachAmorphNeighbour(const L &lambda)
     ushort n = 0;
     for (Atom *neighbour : _relatives)
     {
-        // Skip multibonds
-        bool hasSame = false;
-        for (ushort i = 0; i < n; ++i)
+        if (!neighbour->lattice())
         {
-            if (visited[i] == neighbour)
+            // Skip multibonds
+            bool hasSame = false;
+            for (ushort i = 0; i < n; ++i)
             {
-                hasSame = true;
-                break;
+                if (visited[i] == neighbour)
+                {
+                    hasSame = true;
+                    break;
+                }
             }
-        }
 
-        if (!hasSame && !neighbour->lattice())
-        {
-            lambda(neighbour);
-            visited[n++] = neighbour;
+            if (!hasSame)
+            {
+                lambda(neighbour);
+                visited[n++] = neighbour;
+            }
         }
     }
     delete [] visited;
