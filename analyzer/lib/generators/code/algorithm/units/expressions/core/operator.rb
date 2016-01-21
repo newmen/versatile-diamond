@@ -25,16 +25,17 @@ module VersatileDiamond
             end
           end
 
+          # Checks that current statement is operator
+          # @return [Boolean] true
+          # @override
+          def op?
+            true
+          end
+
         protected
 
           # @override
           attr_reader :exprs
-
-          # @return [Boolean] true
-          # @override
-          def operator?
-            true
-          end
 
         private
 

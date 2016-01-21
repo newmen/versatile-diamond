@@ -29,6 +29,20 @@ module VersatileDiamond
             end
           end
 
+          # Checks that current statement is expression
+          # @return [Boolean] false
+          # @override
+          def expr?
+            false
+          end
+
+          # Checks that current statement is type
+          # @return [Boolean] true
+          # @override
+          def type?
+            true
+          end
+
           # @return [Type]
           def ptr
             correct_value = code

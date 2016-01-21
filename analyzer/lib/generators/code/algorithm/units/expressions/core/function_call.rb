@@ -18,7 +18,13 @@ module VersatileDiamond
                 raise "Wrong type of function name #{name.inspect}"
               elsif empty?(name)
                 raise 'Calling function name cannot be empty'
-              elsif kwargs[:target] && !kwargs[:target].is_a?(Variable)
+              elsif !args.all?(&:expr?)
+                invalid_args = args.reject(&:expr?)
+                raise "Invalid arguemnts #{invalid_args} for #{name} function call"
+              elsif kwargs[:template_args] && !kwargs[:template_args].all?(&:const?)
+                invalid_args = kwargs[:template_args].reject(&:const?)
+                raise "Invalid template arguments #{invalid_args} for #{name} function"
+              elsif kwargs[:target] && !kwargs[:target].var?
                 raise "Invalid target #{kwargs[:target].inspect} to call the function"
               else
                 super
@@ -61,6 +67,14 @@ module VersatileDiamond
           # @return [Statement]
           def value
             full_name + OpRoundBks[OpSequence[*@args]]
+          end
+
+          # @param [Array] vars
+          # @return [Array] constant does not use any variable
+          # @override
+          def using(vars)
+            result = @args.flat_map { |arg| arg.using(vars) }
+            @target && vars.include?(@target) ? (result << @target) : result
           end
         end
 

@@ -23,6 +23,12 @@ module VersatileDiamond
             assign_name!(instance, name, **next_name) unless used_name
           end
 
+          # Checks that current statement is variable
+          # @return [Boolean] true
+          def var?
+            true
+          end
+
         protected
 
           # @return [Statement] the string with variable definition

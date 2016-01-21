@@ -37,6 +37,26 @@ module VersatileDiamond
             it { expect { subject + described_class['other'] }.to raise_error }
           end
 
+          describe '#expr?' do
+            it { expect(subject.expr?).to be_truthy }
+          end
+
+          describe '#var?' do
+            it { expect(subject.var?).to be_falsey }
+          end
+
+          describe '#const?' do
+            it { expect(subject.const?).to be_truthy }
+          end
+
+          describe '#type?' do
+            it { expect(subject.type?).to be_falsey }
+          end
+
+          describe '#op?' do
+            it { expect(subject.op?).to be_falsey }
+          end
+
           describe '#code' do
             it { expect(subject.code).to eq('val') }
             it { expect(described_class[1].code).to eq('1') }

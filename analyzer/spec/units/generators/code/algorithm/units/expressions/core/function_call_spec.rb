@@ -44,6 +44,32 @@ module VersatileDiamond
               it { expect { described_class[mono] }.to raise_error }
               it { expect { described_class[x] }.to raise_error }
             end
+
+            describe 'invalid arguments' do
+              it { expect { described_class[type] }.to raise_error }
+              it { expect { described_class[template_args: [x]] }.to raise_error }
+              it { expect { described_class[target: x] }.to raise_error }
+            end
+          end
+
+          describe '#expr?' do
+            it { expect(simple.expr?).to be_truthy }
+          end
+
+          describe '#var?' do
+            it { expect(simple.var?).to be_falsey }
+          end
+
+          describe '#const?' do
+            it { expect(simple.const?).to be_falsey }
+          end
+
+          describe '#type?' do
+            it { expect(simple.type?).to be_falsey }
+          end
+
+          describe '#op?' do
+            it { expect(simple.op?).to be_falsey }
           end
 
           describe '#code' do

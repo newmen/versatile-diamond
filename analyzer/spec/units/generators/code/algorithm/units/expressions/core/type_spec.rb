@@ -29,6 +29,26 @@ module VersatileDiamond
             end
           end
 
+          describe '#expr?' do
+            it { expect(subject.expr?).to be_falsey }
+          end
+
+          describe '#var?' do
+            it { expect(subject.var?).to be_falsey }
+          end
+
+          describe '#const?' do
+            it { expect(subject.const?).to be_truthy }
+          end
+
+          describe '#type?' do
+            it { expect(subject.type?).to be_truthy }
+          end
+
+          describe '#op?' do
+            it { expect(subject.op?).to be_falsey }
+          end
+
           describe '#ptr' do
             it { expect(subject.ptr.code).to eq('ClassName *') }
           end

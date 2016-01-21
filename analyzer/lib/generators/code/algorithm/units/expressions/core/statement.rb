@@ -23,11 +23,41 @@ module VersatileDiamond
           # @param [Statement]
           # @return [Statement]
           def +(other)
-            if operator? || other.send(:operator?)
+            if op? || other.op?
               OpCombine[self, other]
             else
               raise ArgumentError, "Cannot concate #{self} with #{other}"
             end
+          end
+
+          # Checks that current statement is expression
+          # @return [Boolean] false by default
+          def expr?
+            false
+          end
+
+          # Checks that current statement is variable
+          # @return [Boolean] false by default
+          def var?
+            false
+          end
+
+          # Checks that current statement is constant
+          # @return [Boolean] false by default
+          def const?
+            false
+          end
+
+          # Checks that current statement is type
+          # @return [Boolean] false by default
+          def type?
+            false
+          end
+
+          # Checks that current statement is operator
+          # @return [Boolean] false by default
+          def op?
+            false
           end
 
           def to_s
@@ -37,13 +67,6 @@ module VersatileDiamond
           def inspect
             # More detailed info about total expression
             "␂#{code}␃"
-          end
-
-        protected
-
-          # @return [Boolean] false by default
-          def operator?
-            false
           end
 
         private

@@ -46,6 +46,13 @@ module VersatileDiamond
             @value.to_s
           end
 
+          # Checks that current statement is constant
+          # @return [Boolean] true
+          # @override
+          def const?
+            true
+          end
+
         private
 
           # @param [Array] vars
