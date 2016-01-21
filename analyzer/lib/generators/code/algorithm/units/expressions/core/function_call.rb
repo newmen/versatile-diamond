@@ -48,25 +48,30 @@ module VersatileDiamond
             value.code
           end
 
+          # @return [Statement]
+          def name
+            Constant[@name]
+          end
+
         private
 
           # @return [Statement]
-          def name
-            @target ? OpCall[@target, Constant[@name]] : Constant[@name]
+          def value
+            full_name + OpRoundBks[OpSequence[*@args]]
           end
 
           # @return [Statement] name with template arguments if them are presented
           def full_name
             if @template_args.empty?
-              name
+              name_with_target
             else
-              name + OpAngleBks[OpSequence[*@template_args]]
+              name_with_target + OpAngleBks[OpSequence[*@template_args]]
             end
           end
 
           # @return [Statement]
-          def value
-            full_name + OpRoundBks[OpSequence[*@args]]
+          def name_with_target
+            @target ? OpCall[@target, name] : name
           end
 
           # @param [Array] vars

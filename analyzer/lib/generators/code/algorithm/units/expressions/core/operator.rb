@@ -21,7 +21,7 @@ module VersatileDiamond
             if @arity == 0 || @arity == exprs.size
               apply
             else
-              raise %(Wrong number of arguments of operation "#{mark}")
+              raise "Wrong number of arguments of operation ␂#{mark}␃"
             end
           end
 

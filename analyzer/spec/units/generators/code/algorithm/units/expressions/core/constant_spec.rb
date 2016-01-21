@@ -6,60 +6,51 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         describe Constant do
-          subject { described_class['val'] }
+          include_context :predefined_exprs
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
+            it { expect(x).to be_a(described_class) }
+
+            it_behaves_like :check_const_init
 
             describe 'side spaces' do
               it { expect { described_class[''] }.not_to raise_error }
-
-              it { expect { described_class[' '] }.to raise_error }
-              it { expect { described_class[' hello'] }.to raise_error }
-              it { expect { described_class['world '] }.to raise_error }
-              it { expect { described_class["\t"] }.to raise_error }
-              it { expect { described_class["\n"] }.to raise_error }
             end
 
             describe 'wrong type' do
               it { expect { described_class[123] }.not_to raise_error }
               it { expect { described_class[2.71] }.not_to raise_error }
-
-              it { expect { described_class[Object.new] }.to raise_error }
-              it { expect { described_class[Array.new] }.to raise_error }
-              it { expect { described_class[Hash.new] }.to raise_error }
-              it { expect { described_class[Set.new] }.to raise_error }
-              it { expect { described_class[subject] }.to raise_error }
+              it { expect { described_class[x] }.to raise_error }
             end
           end
 
           describe '#+' do
-            it { expect { subject + described_class['other'] }.to raise_error }
+            it { expect { x + described_class['other'] }.to raise_error }
           end
 
           describe '#expr?' do
-            it { expect(subject.expr?).to be_truthy }
+            it { expect(x.expr?).to be_truthy }
           end
 
           describe '#var?' do
-            it { expect(subject.var?).to be_falsey }
+            it { expect(x.var?).to be_falsey }
           end
 
           describe '#const?' do
-            it { expect(subject.const?).to be_truthy }
+            it { expect(x.const?).to be_truthy }
           end
 
           describe '#type?' do
-            it { expect(subject.type?).to be_falsey }
+            it { expect(x.type?).to be_falsey }
           end
 
           describe '#op?' do
-            it { expect(subject.op?).to be_falsey }
+            it { expect(x.op?).to be_falsey }
           end
 
           describe '#code' do
-            it { expect(subject.code).to eq('val') }
-            it { expect(described_class[1].code).to eq('1') }
+            it { expect(x.code).to eq('x') }
+            it { expect(num.code).to eq('5') }
           end
         end
 

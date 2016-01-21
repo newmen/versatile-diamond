@@ -16,7 +16,7 @@ module VersatileDiamond
               elsif !class?(name)
                 raise 'Class type should be classified'
               else
-                new(name)
+                super
               end
             end
 

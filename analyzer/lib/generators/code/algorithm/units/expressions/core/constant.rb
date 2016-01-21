@@ -17,7 +17,7 @@ module VersatileDiamond
               elsif !valid?(value)
                 raise "Wrong type of constant value #{value.inspect}"
               else
-                new(value)
+                super
               end
             end
 
