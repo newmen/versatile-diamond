@@ -38,7 +38,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :mark, :exprs
+          attr_reader :mark
 
           # @param [Array] vars
           # @return [Array] list of using variables

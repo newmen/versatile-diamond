@@ -7,12 +7,12 @@ module VersatileDiamond
         class Type < Constant
           class << self
             # @param [Object] name
-            # @return [Statement]
+            # @return [Type]
             def [](name)
-              if !name.is_a?(String)
-                raise %(Wrong type name "#{name}")
-              elsif name.empty? || side_spaces?(name)
-                raise 'Type cannot contain side spaces'
+              if !str?(name)
+                raise "Wrong type name #{name.inspect}"
+              elsif empty?(name)
+                raise 'Type cannot contain be empty'
               elsif !class?(name)
                 raise 'Class type should be classified'
               else

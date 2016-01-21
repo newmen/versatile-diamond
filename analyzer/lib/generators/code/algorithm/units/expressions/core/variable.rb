@@ -7,6 +7,7 @@ module VersatileDiamond
         class Variable < Statement
 
           attr_reader :type, :instance
+          def_delegator :name, :code
 
           # @param [NameRemember] namer
           # @param [Object] instance
@@ -44,12 +45,13 @@ module VersatileDiamond
             end
           end
 
-          # @param [Function] method
-          # @param [Array] arg_exprs
-          # @option [Array] :template_arg_exprs
+          # @param [String] method_name
+          # @param [Array] args
+          # @param [Array] kwargs
           # @return [Statement] the string with method call
-          def call(method, *arg_exprs, **termplate_arg_exprs)
-            OpCall[self, method.call(*arg_exprs, **termplate_arg_exprs)]
+          def call(method_name, *args, **kwargs)
+            kwargs[:target] = self
+            FunctionCall(method_name, *args, **kwargs)
           end
 
         private

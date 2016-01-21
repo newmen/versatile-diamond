@@ -4,27 +4,24 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         # Provides base operations for C++ expressions of constants
-        class Constant < Expression
+        class Constant < Statement
+          extend InitValuesChecker
+          include Expression
+
           class << self
             # @param [Object] value
-            # @return [Statement]
+            # @return [Constant]
             def [](value)
-              if value.is_a?(String) && side_spaces?(value)
+              if side_spaces?(value)
                 raise 'Constant cannot contain side space charachters'
               elsif !valid?(value)
-                raise %(Wrong type of constant value "#{value}")
+                raise "Wrong type of constant value #{value.inspect}"
               else
                 new(value)
               end
             end
 
           private
-
-            # @param [String] value
-            # @return [Boolean]
-            def side_spaces?(value)
-              value =~ /^\s+|\s+$/
-            end
 
             # @param [Object] value
             # @return [Boolean]
@@ -38,13 +35,15 @@ module VersatileDiamond
             end
           end
 
-          # @override
-          attr_reader :value
+          # @param [String] value
+          def initialize(value)
+            @value = value.freeze
+          end
 
           # @return [String]
           # @override
           def code
-            value.to_s
+            @value.to_s
           end
 
         private

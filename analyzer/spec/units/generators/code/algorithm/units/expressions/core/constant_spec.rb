@@ -34,12 +34,12 @@ module VersatileDiamond
           end
 
           describe '#+' do
-            it { expect { subject + Constant['other'] }.to raise_error }
+            it { expect { subject + described_class['other'] }.to raise_error }
           end
 
           describe '#code' do
             it { expect(subject.code).to eq('val') }
-            it { expect(Constant[1].code).to eq('1') }
+            it { expect(described_class[1].code).to eq('1') }
           end
         end
 

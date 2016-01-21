@@ -54,7 +54,7 @@ module VersatileDiamond
             until exprs_dup.empty?
               expr = exprs_dup.shift
               if expr.class == self.class
-                expr.exprs.reverse.each(&exprs_dup.method(:unshift))
+                expr.exprs.reverse_each(&exprs_dup.method(:unshift))
               else
                 result << expr
               end

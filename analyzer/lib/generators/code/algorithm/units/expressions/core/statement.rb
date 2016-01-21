@@ -12,7 +12,8 @@ module VersatileDiamond
           TAB_SPACES = (' ' * TAB_SIZE).freeze
 
           class << self
-            # @param [Array] exprs to which the operation will be applied
+            # @param [Array] exprs
+            # @param [Array] kwargs
             # @return [Statement]
             def [](*exprs, **kwargs)
               kwargs.empty? ? new(*exprs) : new(*exprs, **kwargs)
@@ -22,10 +23,10 @@ module VersatileDiamond
           # @param [Statement]
           # @return [Statement]
           def +(other)
-            if mergeable?(a, b)
+            if operator? || other.send(:operator?)
               OpCombine[self, other]
             else
-              raise ArgumentError, "Cannot concate #{code} with #{other.code}"
+              raise ArgumentError, "Cannot concate #{self} with #{other}"
             end
           end
 
@@ -46,13 +47,6 @@ module VersatileDiamond
           end
 
         private
-
-          # @param [Statement] a
-          # @param [Statement] b
-          # @return [Boolean]
-          def mergeable?(a, b)
-            a.operator? || b.operator?
-          end
 
           # @param [String] str to which the semicolon will be added
           # @return [String] the string with code which ends with semicolon
