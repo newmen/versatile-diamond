@@ -30,9 +30,8 @@ module VersatileDiamond
               let(:func1) { FunctionCall['mono', x] }
               let(:func2) { FunctionCall['many', x, y] }
               let(:tfunc0) { FunctionCall['templ', template_args: [type, num]] }
-              let(:method) { FunctionCall['method', num, target: var] }
 
-              let(:member) { OpNs[type, func0.name] }
+              let(:member) { OpNs[type, func0] }
 
               let(:func_args_seq) { OpSequence[var, x, num] }
               let(:tmpl_args_seq) { OpSequence[type, num] }

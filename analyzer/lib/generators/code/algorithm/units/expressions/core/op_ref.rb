@@ -17,8 +17,10 @@ module VersatileDiamond
             # @param [Expression] expr
             # @return [Boolean]
             def valid?(expr)
-              expr.expr? && (expr.var? ||
-                [:op?, :type?, :scalar?, :const?].all? { |pn| expr.public_send(pn) })
+              expr.var? ||
+                [:expr?, :const?, :scalar?, :type?, :op?].all? do |predicate_name|
+                  !expr.public_send(predicate_name)
+                end
             end
           end
 

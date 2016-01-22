@@ -21,8 +21,6 @@ module VersatileDiamond
               elsif !args.all?(&:expr?)
                 insp_args = args.reject(&:expr?).inspect
                 raise "Invalid arguemnts #{insp_args} for #{name} function call"
-              elsif kwargs[:target] && !kwargs[:target].var?
-                raise "Invalid target #{kwargs[:target].inspect} to call the function"
               else
                 is_tmpl = -> arg { arg.scalar? || arg.type? }
                 if kwargs[:template_args] && !kwargs[:template_args].all?(&is_tmpl)
@@ -38,9 +36,7 @@ module VersatileDiamond
           # @param [String] name
           # @param [Array] args the list of expressions
           # @option [Array] :template_args the list of expressions
-          # @option [Variable] :target to which the call will be applied
-          def initialize(name, *args, template_args: [], target: nil)
-            @target = target
+          def initialize(name, *args, template_args: [])
             @name = name.freeze
             @args = args.freeze
             @template_args = template_args.freeze
@@ -66,23 +62,17 @@ module VersatileDiamond
           # @return [Statement] name with template arguments if them are presented
           def full_name
             if @template_args.empty?
-              name_with_target
+              name
             else
-              name_with_target + OpAngleBks[OpSequence[*@template_args]]
+              name + OpAngleBks[OpSequence[*@template_args]]
             end
-          end
-
-          # @return [Statement]
-          def name_with_target
-            @target ? OpCall[@target, name] : name
           end
 
           # @param [Array] vars
           # @return [Array] constant does not use any variable
           # @override
           def using(vars)
-            result = @args.flat_map { |arg| arg.using(vars) }
-            @target && vars.include?(@target) ? (result << @target) : result
+            @args.flat_map { |arg| arg.using(vars) }
           end
         end
 

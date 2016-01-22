@@ -41,8 +41,8 @@ module VersatileDiamond
                 end
 
                 describe 'many' do
-                  let(:code) { "x #{mark} y #{mark} simple() #{mark} obj->method(5)" }
-                  it { expect(op_class[x, y, func0, method].code).to eq(code) }
+                  let(:code) { "x #{mark} y #{mark} simple()" }
+                  it { expect(op_class[x, y, func0].code).to eq(code) }
                 end
               end
             end
@@ -79,14 +79,14 @@ module VersatileDiamond
             it { expect { OpCall[var, type] }.to raise_error }
             it { expect { OpCall[var, OpAnd[x, y]] }.to raise_error }
 
-            subject { OpCall[var, method] }
+            subject { OpCall[var, OpCall[var, func2]] }
             let(:is_expr) { true }
             let(:is_op) { false }
 
             it_behaves_like :check_predicates
 
             describe '#code' do
-              it { expect(subject.code).to eq('obj->obj->method(5)') }
+              it { expect(subject.code).to eq('obj->obj->many(x, y)') }
               it { expect(OpCall[var, x].code).to eq('obj->x') }
               it { expect(OpCall[var, var].code).to eq('obj->obj') }
               it { expect(OpCall[var, tfunc0].code).to eq('obj->templ<Yo, 5>()') }
@@ -100,11 +100,9 @@ module VersatileDiamond
             it { expect { OpNs[num, y] }.to raise_error }
             it { expect { OpNs[var, x] }.to raise_error }
             it { expect { OpNs[type, num] }.to raise_error }
-            it { expect { OpNs[type, func0] }.to raise_error }
             it { expect { OpNs[type, OpOr[x, y]] }.to raise_error }
 
             subject { OpNs[type, func1] }
-            let(:is_const) { true }
             let(:is_op) { false }
 
             it_behaves_like :check_predicates

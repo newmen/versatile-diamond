@@ -25,17 +25,16 @@ module VersatileDiamond
               describe '#code' do
                 it { expect(subject.code).to eq('!x') }
                 it { expect(OpNot[func0].code).to eq('!simple()') }
-                it { expect(OpNot[method].code).to eq('!obj->method(5)') }
               end
             end
 
             describe 'OpRef' do
               describe '#self.[]' do
                 it { expect { OpRef[x, y] }.to raise_error }
+                it { expect { OpRef[x] }.to raise_error }
                 it { expect { OpRef[type] }.to raise_error }
                 it { expect { OpRef[num] }.to raise_error }
                 it { expect { OpRef[func0] }.to raise_error }
-                it { expect { OpRef[method] }.to raise_error }
                 it { expect { OpRef[func_args_seq] }.to raise_error }
               end
 
@@ -55,7 +54,6 @@ module VersatileDiamond
                 it { expect { OpAngleBks[type, num] }.to raise_error }
                 it { expect { OpAngleBks[x] }.to raise_error }
                 it { expect { OpAngleBks[func0] }.to raise_error }
-                it { expect { OpAngleBks[method] }.to raise_error }
                 it { expect { OpAngleBks[func_args_seq] }.to raise_error }
                 it { expect { OpAngleBks[wrong_seq] }.to raise_error }
               end
@@ -85,7 +83,6 @@ module VersatileDiamond
               describe '#code' do
                 it { expect(subject.code).to eq('(x)') }
                 it { expect(OpRoundBks[func0].code).to eq('(simple())') }
-                it { expect(OpRoundBks[method].code).to eq('(obj->method(5))') }
                 it { expect(OpRoundBks[func_args_seq].code).to eq('(obj, x, 5)') }
               end
             end
@@ -105,7 +102,6 @@ module VersatileDiamond
               describe '#code' do
                 it { expect(subject.code).to eq('[x]') }
                 it { expect(OpSquireBks[func0].code).to eq('[simple()]') }
-                it { expect(OpSquireBks[method].code).to eq('[obj->method(5)]') }
               end
             end
 

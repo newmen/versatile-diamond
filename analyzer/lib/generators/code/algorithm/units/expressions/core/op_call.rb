@@ -30,15 +30,25 @@ module VersatileDiamond
             # @return [Boolean]
             def valid?(*exprs)
               exprs.all? do |expr|
-                expr.expr? && ((expr.op? && self == expr.class) ||
-                                  !(expr.op? || expr.type? || expr.scalar?))
+                # expr.expr? && ((expr.op? && self == expr.class) ||
+                #                   !(expr.op? || expr.type? || expr.scalar?))
+                expr.expr? && (self == expr.class ||
+                                !(expr.op? || expr.type? || expr.scalar?))
               end
             end
           end
 
+          def_delegators :'inner_exprs.last', :expr?, :var?
+
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)
             super(:'->', *exprs)
+          end
+
+          # @return [Boolean] false
+          # @override
+          def op?
+            false
           end
         end
 

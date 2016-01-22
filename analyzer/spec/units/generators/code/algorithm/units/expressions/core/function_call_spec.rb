@@ -13,7 +13,6 @@ module VersatileDiamond
             it { expect(func0).to be_a(described_class) }
             it { expect(func1).to be_a(described_class) }
             it { expect(tfunc0).to be_a(described_class) }
-            it { expect(method).to be_a(described_class) }
 
             it_behaves_like :check_expr_init
 
@@ -26,7 +25,6 @@ module VersatileDiamond
             describe 'invalid arguments' do
               it { expect { described_class[type] }.to raise_error }
               it { expect { described_class[template_args: [x]] }.to raise_error }
-              it { expect { described_class[target: x] }.to raise_error }
             end
           end
 
@@ -39,7 +37,6 @@ module VersatileDiamond
             it { expect(func1.code).to eq('mono(x)') }
             it { expect(func2.code).to eq('many(x, y)') }
             it { expect(tfunc0.code).to eq('templ<Yo, 5>()') }
-            it { expect(method.code).to eq('obj->method(5)') }
           end
 
           describe '#name' do
@@ -47,7 +44,6 @@ module VersatileDiamond
             it { expect(func1.name.code).to eq('mono') }
             it { expect(func2.name.code).to eq('many') }
             it { expect(tfunc0.name.code).to eq('templ') }
-            it { expect(method.name.code).to eq('method') }
           end
         end
 

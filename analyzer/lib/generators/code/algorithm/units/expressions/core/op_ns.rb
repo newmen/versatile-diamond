@@ -30,31 +30,43 @@ module VersatileDiamond
             # @return [Boolean]
             def valid?(*exprs)
               exprs.all? do |expr|
-                (expr.op? && self == expr.class) ||
-                  (!expr.op? && (expr.var? || (expr.expr? && !expr.const?)))
+                self == expr.class ||
+                  (!expr.op? && (expr.var? || expr.type? ||
+                    (expr.expr? && !expr.const?)))
               end
             end
           end
 
-          def_delegators :'super_inner_exprs.last', :expr?, :var?, :type?
+          def_delegators :'inner_exprs.last', :var?, :type?
 
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)
             super(:'::', *exprs)
           end
 
-          alias_method :super_inner_exprs, :inner_exprs
-
-          # @return [Array]
+          # @return [String] joins the argument by operation
           # @override
-          def inner_exprs
-            super.map { |expr| expr.expr? && !expr.var? ? expr.name : expr }
+          def code
+            fixed_exprs.map(&:code).join(separator)
+          end
+
+          # @return [Boolean] false
+          # @override
+          def expr?
+            var?
           end
 
           # @return [Boolean] false
           # @override
           def op?
             false
+          end
+
+        private
+
+          # @return [Array]
+          def fixed_exprs
+            inner_exprs.map { |expr| expr.expr? && !expr.var? ? expr.name : expr }
           end
         end
 

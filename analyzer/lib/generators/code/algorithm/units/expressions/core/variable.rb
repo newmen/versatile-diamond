@@ -58,8 +58,7 @@ module VersatileDiamond
           # @param [Hash] kwargs
           # @return [Statement] the string with method call
           def call(method_name, *args, **kwargs)
-            kwargs[:target] = self
-            FunctionCall(method_name, *args, **kwargs)
+            OpCall[self, FunctionCall[method_name, *args, **kwargs]]
           end
 
         private
