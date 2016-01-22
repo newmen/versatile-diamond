@@ -31,13 +31,13 @@ module VersatileDiamond
             end
           end
 
-        private
-
           # @return [String] joins the argument by operation
           # @override
-          def apply
+          def code
             "#{bra}#{inner_code}#{ket}"
           end
+
+        private
 
           # @return [String]
           def bra

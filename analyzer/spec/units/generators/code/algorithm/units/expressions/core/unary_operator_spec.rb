@@ -15,6 +15,7 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpNot[x, y] }.to raise_error }
                 it { expect { OpNot[type] }.to raise_error }
+                it { expect { OpNot[func_args_seq] }.to raise_error }
               end
 
               subject { OpNot[x] }
@@ -32,16 +33,18 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpRef[x, y] }.to raise_error }
                 it { expect { OpRef[type] }.to raise_error }
+                it { expect { OpRef[num] }.to raise_error }
                 it { expect { OpRef[func0] }.to raise_error }
                 it { expect { OpRef[method] }.to raise_error }
+                it { expect { OpRef[func_args_seq] }.to raise_error }
               end
 
-              subject { OpRef[x] }
+              subject { OpRef[var] }
 
               it_behaves_like :check_predicates
 
               describe '#code' do
-                it { expect(subject.code).to eq('&x') }
+                it { expect(subject.code).to eq('&obj') }
               end
             end
           end
@@ -53,8 +56,8 @@ module VersatileDiamond
                 it { expect { OpAngleBks[x] }.to raise_error }
                 it { expect { OpAngleBks[func0] }.to raise_error }
                 it { expect { OpAngleBks[method] }.to raise_error }
-                it { expect { OpAngleBks[OpCombine[type, num]] }.to raise_error }
-                it { expect { OpAngleBks[OpSequence[type, y]] }.to raise_error }
+                it { expect { OpAngleBks[func_args_seq] }.to raise_error }
+                it { expect { OpAngleBks[wrong_seq] }.to raise_error }
               end
 
               subject { OpAngleBks[type] }
@@ -63,7 +66,7 @@ module VersatileDiamond
 
               describe '#code' do
                 it { expect(subject.code).to eq('<Yo>') }
-                it { expect(OpAngleBks[OpSequence[type, num]].code).to eq('<Yo, 5>') }
+                it { expect(OpAngleBks[tmpl_args_seq].code).to eq('<Yo, 5>') }
               end
             end
 
@@ -71,7 +74,7 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpRoundBks[x, y] }.to raise_error }
                 it { expect { OpRoundBks[type] }.to raise_error }
-                it { expect { OpRoundBks[OpSequence[x, type]] }.to raise_error }
+                it { expect { OpRoundBks[wrong_seq] }.to raise_error }
               end
 
               subject { OpRoundBks[x] }
@@ -83,7 +86,7 @@ module VersatileDiamond
                 it { expect(subject.code).to eq('(x)') }
                 it { expect(OpRoundBks[func0].code).to eq('(simple())') }
                 it { expect(OpRoundBks[method].code).to eq('(obj->method(5))') }
-                it { expect(OpRoundBks[OpSequence[x, y]].code).to eq('(x, y)') }
+                it { expect(OpRoundBks[func_args_seq].code).to eq('(obj, x, 5)') }
               end
             end
 
@@ -91,7 +94,8 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpSquireBks[x, y] }.to raise_error }
                 it { expect { OpSquireBks[type] }.to raise_error }
-                it { expect { OpSquireBks[OpSequence[x, type]] }.to raise_error }
+                it { expect { OpSquireBks[func_args_seq] }.to raise_error }
+                it { expect { OpSquireBks[wrong_seq] }.to raise_error }
               end
 
               subject { OpSquireBks[x] }
@@ -102,7 +106,6 @@ module VersatileDiamond
                 it { expect(subject.code).to eq('[x]') }
                 it { expect(OpSquireBks[func0].code).to eq('[simple()]') }
                 it { expect(OpSquireBks[method].code).to eq('[obj->method(5)]') }
-                it { expect(OpSquireBks[OpSequence[x, y]].code).to eq('[x, y]') }
               end
             end
 

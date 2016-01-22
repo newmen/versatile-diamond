@@ -7,7 +7,7 @@ module VersatileDiamond
         class OpRoundBks < OpBrakets
           class << self
             # @param [Expression] expr
-            # @return [OpAngleBks]
+            # @return [OpRoundBks]
             def [](expr)
               if valid?(expr)
                 super

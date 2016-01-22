@@ -10,16 +10,15 @@ module VersatileDiamond
           # @param [Symbol] mark the symbolic name of operation
           # @param [Array] exprs to which the operation will be applied
           def initialize(mark, *exprs)
-            # when arity is 0, then the number of expressions will no check
-            super(mark, 0, *rectify(exprs))
+            super(mark, *rectify(exprs))
+          end
+
+          # @return [String] joins the argument by operation
+          def code
+            inner_exprs.map(&:code).join(separator)
           end
 
         private
-
-          # @return [String] joins the argument by operation
-          def apply
-            inner_exprs.map(&:code).join(separator)
-          end
 
           # @return [String] by which expressions will be joined
           def separator
@@ -54,7 +53,7 @@ module VersatileDiamond
             until exprs_dup.empty?
               expr = exprs_dup.shift
               if expr.class == self.class
-                expr.exprs.reverse_each(&exprs_dup.method(:unshift))
+                expr.inner_exprs.reverse_each(&exprs_dup.method(:unshift))
               else
                 result << expr
               end

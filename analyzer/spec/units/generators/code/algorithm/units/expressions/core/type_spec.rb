@@ -32,7 +32,7 @@ module VersatileDiamond
           end
 
           describe '#member_ref' do
-            it { expect(type.member_ref(func0.name).code).to eq('&Yo::simple') }
+            it { expect(type.member_ref(func0).code).to eq('&Yo::simple') }
           end
         end
 

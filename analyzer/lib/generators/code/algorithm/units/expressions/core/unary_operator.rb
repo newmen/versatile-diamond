@@ -10,15 +10,15 @@ module VersatileDiamond
           # @param [Symbol] mark the symbolic name of operation
           # @param [Array] exprs to which the operation will be applied
           def initialize(mark, *exprs)
-            super(mark, 1, *exprs)
+            super(mark, *exprs)
+          end
+
+          # @return [String] joins the argument by operation
+          def code
+            "#{mark}#{argument.code}"
           end
 
         private
-
-          # @return [String] joins the argument by operation
-          def apply
-            "#{mark}#{argument.code}"
-          end
 
           # @return [Statement]
           def argument

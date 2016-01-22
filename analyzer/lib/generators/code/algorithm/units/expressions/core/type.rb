@@ -50,7 +50,7 @@ module VersatileDiamond
             self.class["#{correct_value}*"]
           end
 
-          # @param [Constant] expr
+          # @param [FunctionCall] expr
           # @return [OpRef] the name of type with reference to member
           def member_ref(expr)
             OpRef[OpNs[self, expr]]

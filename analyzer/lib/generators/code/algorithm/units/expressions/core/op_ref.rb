@@ -9,11 +9,16 @@ module VersatileDiamond
             # @param [Expression] expr
             # @return [OpRef]
             def [](expr)
-              if !expr.type? && (expr.var? || expr.const?)
-                super
-              else
-                raise "Cannot get reference of #{expr.inspect}"
-              end
+              valid?(expr) ? super : raise("Cannot get reference of #{expr.inspect}")
+            end
+
+          private
+
+            # @param [Expression] expr
+            # @return [Boolean]
+            def valid?(expr)
+              expr.expr? && (expr.var? ||
+                [:op?, :type?, :scalar?, :const?].all? { |pn| expr.public_send(pn) })
             end
           end
 

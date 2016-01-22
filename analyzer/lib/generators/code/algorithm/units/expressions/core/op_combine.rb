@@ -7,6 +7,19 @@ module VersatileDiamond
         class OpCombine < BinaryOperator
           include ThinSeparator
 
+          class << self
+            # @param [Statement] first
+            # @param [Array] others
+            # @return [OpAnd]
+            def [](first, *others)
+              if others.empty?
+                raise 'Combination operator requires at least two arguments'
+              else
+                super
+              end
+            end
+          end
+
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)
             super(:'', *exprs)

@@ -7,13 +7,21 @@ module VersatileDiamond
         class OpSquireBks < OpBrakets
           class << self
             # @param [Expression] expr
-            # @return [OpAngleBks]
+            # @return [OpSquireBks]
             def [](expr)
               if valid?(expr)
                 super
               else
                 raise "Wrong argument of squire brakets #{expr.inspect}"
               end
+            end
+
+          private
+
+            # @return [Boolean]
+            # @override
+            def valid_op?(expr)
+              !expr.op?
             end
           end
 

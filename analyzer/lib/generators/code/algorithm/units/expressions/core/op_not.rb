@@ -5,15 +5,13 @@ module VersatileDiamond
 
         # Boolean not operator statement
         class OpNot < PrefixOperator
+          extend LogicOperator
+
           class << self
             # @param [Expression] expr
             # @return [OpNot]
             def [](expr)
-              if expr.expr?
-                super
-              else
-                raise "Cannot negate #{expr.inspect}"
-              end
+              valid?(expr) ? super : raise("Cannot negate #{expr.inspect}")
             end
           end
 

@@ -5,6 +5,7 @@ module VersatileDiamond
 
         # Provides base operations for C++ expressions of variables
         class Variable < Statement
+          include Expression
 
           attr_reader :type, :instance
           def_delegator :name, :code

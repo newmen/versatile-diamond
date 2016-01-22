@@ -9,7 +9,7 @@ module VersatileDiamond
             # @param [Expression] expr
             # @option [Boolean] :multilines
             # @option [Boolean] :ext_new_lines
-            # @return [OpAngleBks]
+            # @return [OpBraces]
             def [](expr, multilines: true, ext_new_lines: false)
               if expr.type?
                 raise "Type cannot be argument of bracers #{expr.inspect}"

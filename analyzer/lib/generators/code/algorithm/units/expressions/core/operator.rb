@@ -7,24 +7,13 @@ module VersatileDiamond
         # @abstract
         class Operator < Statement
 
-          attr_reader :inner_exprs
+          attr_reader :inner_exprs # must be protected
 
           # @param [Symbol] mark the symbolic name of operation
-          # @param [Integer] arity of operation
           # @param [Array] exprs to which the operation will be applied
-          def initialize(mark, arity, *exprs)
+          def initialize(mark, *exprs)
             @mark = mark
-            @arity = arity
             @inner_exprs = exprs
-          end
-
-          # @return [String] the string with applying operation
-          def code
-            if @arity == 0 || @arity == inner_exprs.size
-              apply
-            else
-              raise "Wrong number of arguments of operation ␂#{mark}␃"
-            end
           end
 
           # Checks that current statement is operator
