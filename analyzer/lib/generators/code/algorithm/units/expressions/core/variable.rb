@@ -14,13 +14,14 @@ module VersatileDiamond
           # @param [Type] type
           # @param [String] name
           # @param [Statement] value
-          def initialize(namer, instance, type, name = nil, value = nil, **next_name)
+          # @param [Hash] kwargs
+          def initialize(namer, instance, type, name = nil, value = nil, **kwargs)
             @namer = namer
             @instance = instance.freeze
             @type = type.ptr.freeze
             @rvalue = value && value.freeze
 
-            assign_name!(instance, name, **next_name) unless used_name
+            assign_name!(instance, name, **kwargs) unless used_name
           end
 
           # Checks that current statement is variable
@@ -53,7 +54,7 @@ module VersatileDiamond
 
           # @param [String] method_name
           # @param [Array] args
-          # @param [Array] kwargs
+          # @param [Hash] kwargs
           # @return [Statement] the string with method call
           def call(method_name, *args, **kwargs)
             kwargs[:target] = self

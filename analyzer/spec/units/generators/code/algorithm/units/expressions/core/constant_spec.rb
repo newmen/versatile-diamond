@@ -7,6 +7,8 @@ module VersatileDiamond
 
         describe Constant do
           include_context :predefined_exprs
+          let(:is_expr) { true }
+          let(:is_const) { true }
 
           describe '#self.[]' do
             it { expect(x).to be_a(described_class) }
@@ -28,24 +30,13 @@ module VersatileDiamond
             it { expect { x + described_class['other'] }.to raise_error }
           end
 
-          describe '#expr?' do
-            it { expect(x.expr?).to be_truthy }
+          it_behaves_like :check_predicates do
+            subject { x }
           end
 
-          describe '#var?' do
-            it { expect(x.var?).to be_falsey }
-          end
-
-          describe '#const?' do
-            it { expect(x.const?).to be_truthy }
-          end
-
-          describe '#type?' do
-            it { expect(x.type?).to be_falsey }
-          end
-
-          describe '#op?' do
-            it { expect(x.op?).to be_falsey }
+          it_behaves_like :check_predicates do
+            subject { num }
+            let(:is_scalar) { true }
           end
 
           describe '#code' do

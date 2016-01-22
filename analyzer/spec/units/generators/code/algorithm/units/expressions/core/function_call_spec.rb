@@ -7,6 +7,7 @@ module VersatileDiamond
 
         describe FunctionCall do
           include_context :predefined_exprs
+          let(:is_expr) { true }
 
           describe '#self.[]' do
             it { expect(func0).to be_a(described_class) }
@@ -29,24 +30,8 @@ module VersatileDiamond
             end
           end
 
-          describe '#expr?' do
-            it { expect(func0.expr?).to be_truthy }
-          end
-
-          describe '#var?' do
-            it { expect(func0.var?).to be_falsey }
-          end
-
-          describe '#const?' do
-            it { expect(func0.const?).to be_falsey }
-          end
-
-          describe '#type?' do
-            it { expect(func0.type?).to be_falsey }
-          end
-
-          describe '#op?' do
-            it { expect(func0.op?).to be_falsey }
+          it_behaves_like :check_predicates do
+            subject { func0 }
           end
 
           describe '#code' do

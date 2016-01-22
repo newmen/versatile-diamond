@@ -18,15 +18,10 @@ module VersatileDiamond
           # @return [String]
           def code
             if @type || @value
-              @value ? wrap("#{left_side} = #{@value.code}") : left_side
+              @value ? "#{left_side} = #{@value.code}" : left_side
             else
-              raise %(Cannot assign variable "#{@var.code}" without type and value)
+              raise "Cannot assign variable #{@var} without type and value"
             end
-          end
-
-          # @return [Array]
-          def exprs
-            [@type, @var, @value].compact
           end
 
         private

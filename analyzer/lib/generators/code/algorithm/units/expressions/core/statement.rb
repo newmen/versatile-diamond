@@ -13,7 +13,7 @@ module VersatileDiamond
 
           class << self
             # @param [Array] exprs
-            # @param [Array] kwargs
+            # @param [Hash] kwargs
             # @return [Statement]
             def [](*exprs, **kwargs)
               kwargs.empty? ? new(*exprs) : new(*exprs, **kwargs)
@@ -48,6 +48,12 @@ module VersatileDiamond
             false
           end
 
+          # Checks that current statement is scalar value
+          # @return [Boolean] false by default
+          def scalar?
+            false
+          end
+
           # Checks that current statement is type
           # @return [Boolean] false by default
           def type?
@@ -57,6 +63,12 @@ module VersatileDiamond
           # Checks that current statement is operator
           # @return [Boolean] false by default
           def op?
+            false
+          end
+
+          # Checks that current statement is unreal tin operator
+          # @return [Boolean] false by default
+          def tin?
             false
           end
 
@@ -71,10 +83,29 @@ module VersatileDiamond
 
         private
 
+          # @param [String] str to which the prefix spaces (offset) will be added
+          # @return [String]
+          def shift(str)
+            map_lines(str, &method(:prepend_offset))
+          end
+
           # @param [String] str to which the semicolon will be added
-          # @return [String] the string with code which ends with semicolon
+          # @return [String]
           def wrap(str)
-            "#{TAB_SPACES}#{str};"
+            map_lines(str) { |line| "#{prepend_offset(line)};" }
+          end
+
+          # @param [String] str
+          # @yield [String]
+          # @return [Array]
+          def map_lines(str, &block)
+            str.split("\n").map(&block).join("\n")
+          end
+
+          # @param [String] str
+          # @return [String]
+          def prepend_offset(str)
+            "#{TAB_SPACES}#{str}"
           end
         end
 

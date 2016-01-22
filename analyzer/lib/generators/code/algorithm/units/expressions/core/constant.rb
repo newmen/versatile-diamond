@@ -9,7 +9,7 @@ module VersatileDiamond
           include Expression
 
           class << self
-            # @param [Object] value
+            # @param [String | Integer | Float] value
             # @return [Constant]
             def [](value)
               if side_spaces?(value)
@@ -35,7 +35,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [String] value
+          # @param [String | Integer | Float] value
           def initialize(value)
             @value = value.freeze
           end
@@ -51,6 +51,12 @@ module VersatileDiamond
           # @override
           def const?
             true
+          end
+
+          # Checks that current statement is scalar value
+          # @return [Boolean]
+          def scalar?
+            [Integer, Float].any? { |klass| @value.is_a?(klass) }
           end
 
         private

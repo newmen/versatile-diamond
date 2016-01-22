@@ -18,7 +18,7 @@ module VersatileDiamond
 
           # @return [String] joins the argument by operation
           def apply
-            exprs.map(&:code).join(separator)
+            inner_exprs.map(&:code).join(separator)
           end
 
           # @return [String] by which expressions will be joined

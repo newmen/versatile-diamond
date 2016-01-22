@@ -55,7 +55,7 @@ module VersatileDiamond
 
           # @return [Statement] initial value of array or nil
           def rvalue
-            super && OpBraces[OpSequence[*super], multiline: false]
+            super && OpBraces[OpSequence[*super], multilines: false]
           end
         end
 

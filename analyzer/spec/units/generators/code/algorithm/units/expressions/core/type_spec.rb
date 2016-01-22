@@ -7,6 +7,8 @@ module VersatileDiamond
 
         describe Type do
           include_context :predefined_exprs
+          let(:is_const) { true }
+          let(:is_type) { true }
 
           describe '#self.[]' do
             it { expect(type).to be_a(described_class) }
@@ -18,28 +20,15 @@ module VersatileDiamond
             end
           end
 
-          describe '#expr?' do
-            it { expect(type.expr?).to be_falsey }
-          end
-
-          describe '#var?' do
-            it { expect(type.var?).to be_falsey }
-          end
-
-          describe '#const?' do
-            it { expect(type.const?).to be_truthy }
-          end
-
-          describe '#type?' do
-            it { expect(type.type?).to be_truthy }
-          end
-
-          describe '#op?' do
-            it { expect(type.op?).to be_falsey }
+          it_behaves_like :check_predicates do
+            subject { type }
           end
 
           describe '#ptr' do
             it { expect(type.ptr.code).to eq('Yo *') }
+            it_behaves_like :check_predicates do
+              subject { type.ptr }
+            end
           end
 
           describe '#member_ref' do

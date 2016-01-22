@@ -11,7 +11,7 @@ module VersatileDiamond
           class << self
             # @param [String] name
             # @param [Array] args
-            # @param [Array] kwargs
+            # @param [Hash] kwargs
             # @return [FunctionCall]
             def [](name, *args, **kwargs)
               if !str?(name)
@@ -19,15 +19,18 @@ module VersatileDiamond
               elsif empty?(name)
                 raise 'Calling function name cannot be empty'
               elsif !args.all?(&:expr?)
-                invalid_args = args.reject(&:expr?)
-                raise "Invalid arguemnts #{invalid_args} for #{name} function call"
-              elsif kwargs[:template_args] && !kwargs[:template_args].all?(&:const?)
-                invalid_args = kwargs[:template_args].reject(&:const?)
-                raise "Invalid template arguments #{invalid_args} for #{name} function"
+                insp_args = args.reject(&:expr?).inspect
+                raise "Invalid arguemnts #{insp_args} for #{name} function call"
               elsif kwargs[:target] && !kwargs[:target].var?
                 raise "Invalid target #{kwargs[:target].inspect} to call the function"
               else
-                super
+                is_tmpl = -> arg { arg.scalar? || arg.type? }
+                if kwargs[:template_args] && !kwargs[:template_args].all?(&is_tmpl)
+                  insp_args = kwargs[:template_args].reject(&is_tmpl).inspect
+                  raise "Invalid template arguments #{insp_args} for #{name} function"
+                else
+                  super
+                end
               end
             end
           end

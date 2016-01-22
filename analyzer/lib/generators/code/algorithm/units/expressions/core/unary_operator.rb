@@ -22,7 +22,7 @@ module VersatileDiamond
 
           # @return [Statement]
           def argument
-            exprs.first
+            inner_exprs.first
           end
         end
 

@@ -19,7 +19,7 @@ module VersatileDiamond
 
           # @return [String]
           def code
-            "#{wrap(head + tail).chop.chop}\n"
+            head + tail
           end
 
         protected

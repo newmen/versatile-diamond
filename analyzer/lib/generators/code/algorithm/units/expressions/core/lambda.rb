@@ -21,13 +21,6 @@ module VersatileDiamond
             "#{closure_vars.code}#{@arg_vars.code} #{@body.code}"
           end
 
-        protected
-
-          # @return [Array]
-          def exprs
-            [closure_vars, @arg_vars, @body]
-          end
-
         private
 
           def_delegator :@body, :using

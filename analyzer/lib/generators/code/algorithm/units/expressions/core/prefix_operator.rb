@@ -3,11 +3,10 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Makes assert statement
-        class Assert < FunctionCall
-          def initialize
-            super('assert', 1)
-          end
+        # Prefix operator statement
+        # @abstract
+        class PrefixOperator < UnaryOperator
+          include Expression
         end
 
       end

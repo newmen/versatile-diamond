@@ -11,6 +11,13 @@ module VersatileDiamond
           def initialize(*exprs)
             super(:'', *exprs)
           end
+
+          # Checks that current statement is unreal tin operator
+          # @return [Boolean] true
+          # @override
+          def tin?
+            true
+          end
         end
 
       end
