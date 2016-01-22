@@ -45,7 +45,7 @@ module VersatileDiamond
               it_behaves_like :check_predicates
 
               describe '#code' do
-                it { expect(subject.code).to eq('&obj') }
+                it { expect(subject.code).to eq('&obj1') }
               end
             end
           end
@@ -87,7 +87,7 @@ module VersatileDiamond
               describe '#code' do
                 it { expect(subject.code).to eq('(x)') }
                 it { expect(OpRoundBks[func0].code).to eq('(simple())') }
-                it { expect(OpRoundBks[func_args_seq].code).to eq('(obj, x, 5)') }
+                it { expect(OpRoundBks[func_args_seq].code).to eq('(obj1, x, 5)') }
               end
             end
 
@@ -96,7 +96,6 @@ module VersatileDiamond
                 it { expect { OpSquireBks[x, y] }.to raise_error }
                 it { expect { OpSquireBks[type] }.to raise_error }
                 it { expect { OpSquireBks[small_cond] }.to raise_error }
-                it { expect { OpSquireBks[func_args_seq] }.to raise_error }
                 it { expect { OpSquireBks[wrong_seq] }.to raise_error }
               end
 
@@ -107,6 +106,7 @@ module VersatileDiamond
               describe '#code' do
                 it { expect(subject.code).to eq('[x]') }
                 it { expect(OpSquireBks[func0].code).to eq('[simple()]') }
+                it { expect(OpSquireBks[func_args_seq].code).to eq('[obj1, x, 5]') }
               end
             end
 

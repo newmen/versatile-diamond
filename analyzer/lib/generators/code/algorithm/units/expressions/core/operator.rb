@@ -23,15 +23,16 @@ module VersatileDiamond
             true
           end
 
-        private
-
-          attr_reader :mark
-
           # @param [Array] vars
           # @return [Array] list of using variables
           def using(vars)
             inner_exprs.flat_map { |expr| expr.using(vars) }
           end
+
+        private
+
+          attr_reader :mark
+
         end
 
       end

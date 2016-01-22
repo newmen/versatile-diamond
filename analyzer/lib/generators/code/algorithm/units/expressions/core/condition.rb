@@ -22,7 +22,7 @@ module VersatileDiamond
           # @param [Expression] truth
           # @param [Expression] otherwise
           def initialize(checking_expr, truth, otherwise = nil)
-            @checking_expr = OpRoundBks[checking_expr]
+            @checking_expr = OpRoundBks[checking_expr].freeze
             @truth = OpBraces[truth, ext_new_lines: true]
             @otherwise = otherwise && OpBraces[otherwise, ext_new_lines: true]
           end
@@ -38,6 +38,15 @@ module VersatileDiamond
             true
           end
 
+          # @param [Array] vars
+          # @return [Array]
+          # @override
+          def using(vars)
+            inner_exprs = [@checking_expr, @truth]
+            inner_exprs << @otherwise if @otherwise
+            inner_exprs.flat_map { |expr| expr.using(vars) }
+          end
+
         private
 
           # @return [String]
@@ -48,15 +57,6 @@ module VersatileDiamond
           # @return [String]
           def tail
             @otherwise ? "else#{@otherwise.code}" : ''
-          end
-
-          # @param [Array] vars
-          # @return [Array]
-          # @override
-          def using(vars)
-            inner_exprs = [@checking_expr, @truth]
-            inner_exprs << @otherwise if @otherwise
-            inner_exprs.flat_map { |expr| expr.using(vars) }
           end
         end
 

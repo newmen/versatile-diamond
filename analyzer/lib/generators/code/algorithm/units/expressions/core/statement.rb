@@ -23,10 +23,11 @@ module VersatileDiamond
           # @param [Statement]
           # @return [Statement]
           def +(other)
-            if op? || other.op?
+            if concatable?(other)
               OpCombine[self, other]
             else
-              raise ArgumentError, "Cannot concate #{self} with #{other}"
+              msg = "Cannot concate #{self.inspect} with #{other.inspect}"
+              raise ArgumentError, msg
             end
           end
 
@@ -78,6 +79,12 @@ module VersatileDiamond
             false
           end
 
+          # Checks that current statement is variable definition or assign
+          # @return [Boolean] false by default
+          def assign?
+            false
+          end
+
           def to_s
             "\n#{code}\n"
           end
@@ -87,7 +94,20 @@ module VersatileDiamond
             "␂#{code}␃"
           end
 
+        protected
+
+          # @return [Boolean]
+          def separated?
+            (expr? && !const?) || cond? || assign?
+          end
+
         private
+
+          # @param [Statement] other
+          # @return [Boolean]
+          def concatable?(other)
+            other.op? || (separated? && other.separated?)
+          end
 
           # @param [String] str to which the prefix spaces (offset) will be added
           # @return [String]

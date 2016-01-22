@@ -6,13 +6,15 @@ module VersatileDiamond
         # Assign operator statements
         class Assign < Statement
 
+          def_delegator :@var, :using
+
           # @param [Variable] var
           # @option [Type] :type
           # @option [Expression] :value
           def initialize(var, type: nil, value: nil)
-            @var = var
-            @type = type
-            @value = value
+            @var = var.freeze
+            @type = type.freeze
+            @value = value.freeze
           end
 
           # @return [String]
@@ -24,9 +26,14 @@ module VersatileDiamond
             end
           end
 
-        private
+          # Checks that current statement is variable definition or assign
+          # @return [Boolean] true
+          # @override
+          def assign?
+            true
+          end
 
-          def_delegator :@var, :using
+        private
 
           # @return [String]
           def left_side

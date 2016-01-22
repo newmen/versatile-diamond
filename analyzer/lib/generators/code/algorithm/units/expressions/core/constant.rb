@@ -59,8 +59,6 @@ module VersatileDiamond
             [Integer, Float].any? { |klass| @value.is_a?(klass) }
           end
 
-        private
-
           # @param [Array] vars
           # @return [Array] constant does not use any variable
           # @override

@@ -67,13 +67,24 @@ module VersatileDiamond
           # @return [String]
           # @override
           def inner_code
-            if expr?
-              super
-            else
-              deep_exprs = argument.tin? ? argument.inner_exprs : [argument]
-              pairs = deep_exprs.map { |expr| [(expr.expr? ? :wrap : :shift), expr] }
-              pairs.map { |method_name, expr| send(method_name, expr.code) }.join("\n")
+            expr? ? super : inner_lines.join("\n")
+          end
+
+          # @return [Array]
+          def inner_lines
+            exprs_with_methods.map { |method_name, expr| send(method_name, expr.code) }
+          end
+
+          # @return [Array]
+          def exprs_with_methods
+            deep_exprs.map do |expr|
+              [(expr.expr? || expr.assign? ? :wrap : :shift), expr]
             end
+          end
+
+          # @return [Array]
+          def deep_exprs
+            argument.tin? ? argument.inner_exprs : [argument]
           end
         end
 

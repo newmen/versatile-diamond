@@ -69,7 +69,7 @@ module VersatileDiamond
             it_behaves_like :check_predicates
 
             describe '#code' do
-              it { expect(subject.code).to eq('obj, x, 5') }
+              it { expect(subject.code).to eq('obj1, x, 5') }
               it { expect(tmpl_args_seq.code).to eq('Yo, 5') }
               it { expect(wrong_seq.code).to eq('x, Yo') }
             end
@@ -93,10 +93,10 @@ module VersatileDiamond
             it_behaves_like :check_predicates
 
             describe '#code' do
-              it { expect(subject.code).to eq('obj->obj->many(x, y)') }
-              it { expect(OpCall[var, x].code).to eq('obj->x') }
-              it { expect(OpCall[var, var].code).to eq('obj->obj') }
-              it { expect(OpCall[var, tfunc0].code).to eq('obj->templ<Yo, 5>()') }
+              it { expect(subject.code).to eq('obj1->obj1->many(x, y)') }
+              it { expect(OpCall[var, x].code).to eq('obj1->x') }
+              it { expect(OpCall[var, var].code).to eq('obj1->obj1') }
+              it { expect(OpCall[var, tfunc0].code).to eq('obj1->templ<Yo, 5>()') }
             end
           end
 
@@ -122,7 +122,7 @@ module VersatileDiamond
             describe '#code' do
               it { expect(subject.code).to eq('Yo::mono') }
               it { expect(member.code).to eq('Yo::simple') }
-              it { expect(OpNs[type, var].code).to eq('Yo::obj') }
+              it { expect(OpNs[type, var].code).to eq('Yo::obj1') }
               it { expect(OpNs[type, member].code).to eq('Yo::Yo::simple') }
               it { expect(OpNs[type, type, type].code).to eq('Yo::Yo::Yo') }
             end

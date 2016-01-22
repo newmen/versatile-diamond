@@ -33,23 +33,23 @@ module VersatileDiamond
             end
           end
 
+          attr_reader :name
+          def_delegator :value, :code
+
           # @param [String] name
           # @param [Array] args the list of expressions
           # @option [Array] :template_args the list of expressions
           def initialize(name, *args, template_args: [])
-            @name = name.freeze
+            @name = Constant[name].freeze
             @args = args.freeze
             @template_args = template_args.freeze
           end
 
-          # @return [String] string with function call expression
-          def code
-            value.code
-          end
-
-          # @return [Statement]
-          def name
-            Constant[@name]
+          # @param [Array] vars
+          # @return [Array] constant does not use any variable
+          # @override
+          def using(vars)
+            @args.flat_map { |arg| arg.using(vars) }
           end
 
         private
@@ -66,13 +66,6 @@ module VersatileDiamond
             else
               name + OpAngleBks[OpSequence[*@template_args]]
             end
-          end
-
-          # @param [Array] vars
-          # @return [Array] constant does not use any variable
-          # @override
-          def using(vars)
-            @args.flat_map { |arg| arg.using(vars) }
           end
         end
 

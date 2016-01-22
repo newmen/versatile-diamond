@@ -14,6 +14,7 @@ module VersatileDiamond
               let(:is_op) { false }
               let(:is_tin) { false }
               let(:is_cond) { false }
+              let(:is_assign) { false }
             end
 
             shared_context :predefined_exprs do
@@ -26,6 +27,8 @@ module VersatileDiamond
               let(:type) { Type['Yo'] }
               let(:num) { Constant[5] }
               let(:var) { Variable[namer, Object.new, type, 'obj'] }
+
+              let(:lda) { Lambda[namer, var, func0 + func1] }
 
               let(:func0) { FunctionCall['simple'] }
               let(:func1) { FunctionCall['mono', x] }
@@ -88,6 +91,7 @@ module VersatileDiamond
               it { expect(subject.op?).to eq(is_op) }
               it { expect(subject.tin?).to eq(is_tin) }
               it { expect(subject.cond?).to eq(is_cond) }
+              it { expect(subject.assign?).to eq(is_assign) }
             end
           end
 
