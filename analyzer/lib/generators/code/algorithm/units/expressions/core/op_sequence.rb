@@ -5,6 +5,13 @@ module VersatileDiamond
 
         # Sequence of values peration statement
         class OpSequence < BinaryOperator
+          class << self
+            # @param [Array] exprs
+            # @return [OpCall]
+            def [](*exprs)
+              exprs.any?(&:cond?) ? raise('Conditions cannot be sequenced') : super
+            end
+          end
 
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)

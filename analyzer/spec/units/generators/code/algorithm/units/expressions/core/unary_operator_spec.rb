@@ -15,6 +15,7 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpNot[x, y] }.to raise_error }
                 it { expect { OpNot[type] }.to raise_error }
+                it { expect { OpNot[small_cond] }.to raise_error }
                 it { expect { OpNot[func_args_seq] }.to raise_error }
               end
 
@@ -35,6 +36,7 @@ module VersatileDiamond
                 it { expect { OpRef[type] }.to raise_error }
                 it { expect { OpRef[num] }.to raise_error }
                 it { expect { OpRef[func0] }.to raise_error }
+                it { expect { OpRef[small_cond] }.to raise_error }
                 it { expect { OpRef[func_args_seq] }.to raise_error }
               end
 
@@ -54,6 +56,7 @@ module VersatileDiamond
                 it { expect { OpAngleBks[type, num] }.to raise_error }
                 it { expect { OpAngleBks[x] }.to raise_error }
                 it { expect { OpAngleBks[func0] }.to raise_error }
+                it { expect { OpAngleBks[small_cond] }.to raise_error }
                 it { expect { OpAngleBks[func_args_seq] }.to raise_error }
                 it { expect { OpAngleBks[wrong_seq] }.to raise_error }
               end
@@ -72,6 +75,7 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpRoundBks[x, y] }.to raise_error }
                 it { expect { OpRoundBks[type] }.to raise_error }
+                it { expect { OpRoundBks[small_cond] }.to raise_error }
                 it { expect { OpRoundBks[wrong_seq] }.to raise_error }
               end
 
@@ -91,6 +95,7 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { OpSquireBks[x, y] }.to raise_error }
                 it { expect { OpSquireBks[type] }.to raise_error }
+                it { expect { OpSquireBks[small_cond] }.to raise_error }
                 it { expect { OpSquireBks[func_args_seq] }.to raise_error }
                 it { expect { OpSquireBks[wrong_seq] }.to raise_error }
               end

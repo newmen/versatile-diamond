@@ -28,6 +28,7 @@ module VersatileDiamond
               describe '#self.[]' do
                 it { expect { op_class[type] }.to raise_error }
                 it { expect { op_class[x, type] }.to raise_error }
+                it { expect { op_class[y, small_cond] }.to raise_error }
               end
 
               subject { op_class[x] }
@@ -59,6 +60,10 @@ module VersatileDiamond
           end
 
           describe 'OpSequence' do
+            describe '#self.[]' do
+              it { expect { OpSequence[small_cond] }.to raise_error }
+            end
+
             subject { func_args_seq }
 
             it_behaves_like :check_predicates
@@ -74,9 +79,11 @@ module VersatileDiamond
             it { expect { OpCall[x] }.to raise_error }
             it { expect { OpCall[type] }.to raise_error }
             it { expect { OpCall[x, y] }.to raise_error }
-            it { expect { OpCall[type, num] }.to raise_error }
+            it { expect { OpCall[type, func0] }.to raise_error }
+            it { expect { OpCall[small_cond, x] }.to raise_error }
             it { expect { OpCall[var, num] }.to raise_error }
             it { expect { OpCall[var, type] }.to raise_error }
+            it { expect { OpCall[var, small_cond] }.to raise_error }
             it { expect { OpCall[var, OpAnd[x, y]] }.to raise_error }
 
             subject { OpCall[var, OpCall[var, func2]] }
@@ -100,6 +107,7 @@ module VersatileDiamond
             it { expect { OpNs[num, y] }.to raise_error }
             it { expect { OpNs[var, x] }.to raise_error }
             it { expect { OpNs[type, num] }.to raise_error }
+            it { expect { OpNs[type, small_cond] }.to raise_error }
             it { expect { OpNs[type, OpOr[x, y]] }.to raise_error }
 
             subject { OpNs[type, func1] }

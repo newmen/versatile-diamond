@@ -72,6 +72,12 @@ module VersatileDiamond
             false
           end
 
+          # Checks that current statement is condition
+          # @return [Boolean] false by default
+          def cond?
+            false
+          end
+
           def to_s
             "\n#{code}\n"
           end

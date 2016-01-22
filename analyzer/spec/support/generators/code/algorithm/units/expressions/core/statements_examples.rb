@@ -13,6 +13,7 @@ module VersatileDiamond
               let(:is_type) { false }
               let(:is_op) { false }
               let(:is_tin) { false }
+              let(:is_cond) { false }
             end
 
             shared_context :predefined_exprs do
@@ -32,6 +33,9 @@ module VersatileDiamond
               let(:tfunc0) { FunctionCall['templ', template_args: [type, num]] }
 
               let(:member) { OpNs[type, func0] }
+
+              let(:small_cond) { Condition[OpOr[x, y], func2] }
+              let(:big_cond) { Condition[OpAnd[x, y], func2, func0] }
 
               let(:func_args_seq) { OpSequence[var, x, num] }
               let(:tmpl_args_seq) { OpSequence[type, num] }
@@ -81,6 +85,7 @@ module VersatileDiamond
               it { expect(subject.type?).to eq(is_type) }
               it { expect(subject.op?).to eq(is_op) }
               it { expect(subject.tin?).to eq(is_tin) }
+              it { expect(subject.cond?).to eq(is_cond) }
             end
           end
 
