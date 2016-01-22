@@ -5,8 +5,21 @@ module VersatileDiamond
 
         # Makes assert statement
         class Assert < FunctionCall
-          def initialize
-            super('assert', 1)
+          class << self
+          # @param [Expression] expr
+            # @return [Assert]
+            def [](expr)
+              if expr.expr?
+                new(expr)
+              else
+                raise("Not condition #{expr.inspect} cannot be asserted")
+              end
+            end
+          end
+
+          # @param [Expression] expr
+          def initialize(expr)
+            super('assert', expr)
           end
         end
 

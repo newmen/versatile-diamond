@@ -7,7 +7,7 @@ module VersatileDiamond
         class OpSequence < BinaryOperator
           class << self
             # @param [Array] exprs
-            # @return [OpCall]
+            # @return [OpSequence]
             def [](*exprs)
               exprs.any?(&:cond?) ? raise('Conditions cannot be sequenced') : super
             end

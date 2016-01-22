@@ -32,6 +32,8 @@ module VersatileDiamond
               let(:func2) { FunctionCall['many', x, y] }
               let(:tfunc0) { FunctionCall['templ', template_args: [type, num]] }
 
+              let(:assert) { Assert[func0] }
+
               let(:member) { OpNs[type, func0] }
 
               let(:small_cond) { Condition[OpOr[x, y], func2] }
