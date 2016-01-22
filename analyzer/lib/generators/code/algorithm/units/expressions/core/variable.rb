@@ -54,6 +54,7 @@ module VersatileDiamond
 
           # Checks that current statement is variable
           # @return [Boolean] true
+          # @override
           def var?
             true
           end

@@ -45,16 +45,19 @@ module VersatileDiamond
           end
 
           # @return [OpCombine]
+          # @override
           def full_name
             super + OpSquireBks[Constant[instances.size]]
           end
 
           # @return [OpBraces] initial value of array or nil
+          # @override
           def rvalue
             super && OpBraces[OpSequence[*super], multilines: false]
           end
 
           # @return [Type]
+          # @override
           def arg_type
             super.ptr
           end

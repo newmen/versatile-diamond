@@ -20,7 +20,7 @@ module VersatileDiamond
             it { expect { described_class[namer, :v, x] }.to raise_error }
             it { expect { described_class[namer, :v, type, ''] }.to raise_error }
             it { expect { described_class[namer, :v, type, 123] }.to raise_error }
-            it { expect { described_class[namer, :v, type, 'a', type] }.to raise_error }
+            it { expect { described_class[namer, :v, type, 'a', 'v'] }.to raise_error }
           end
 
           it_behaves_like :check_predicates
