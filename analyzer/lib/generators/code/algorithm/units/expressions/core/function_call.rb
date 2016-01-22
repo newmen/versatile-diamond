@@ -54,7 +54,7 @@ module VersatileDiamond
 
         private
 
-          # @return [Statement]
+          # @return [OpCombine]
           def value
             full_name + OpRoundBks[OpSequence[*@args]]
           end

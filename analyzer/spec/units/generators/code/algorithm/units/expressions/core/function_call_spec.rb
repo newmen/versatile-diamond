@@ -6,11 +6,13 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         describe FunctionCall do
+          subject { func0 }
+
           include_context :predefined_exprs
           let(:is_expr) { true }
 
           describe '#self.[]' do
-            it { expect(func0).to be_a(described_class) }
+            it { expect(subject).to be_a(described_class) }
             it { expect(func1).to be_a(described_class) }
             it { expect(tfunc0).to be_a(described_class) }
 
@@ -28,19 +30,17 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_predicates do
-            subject { func0 }
-          end
+          it_behaves_like :check_predicates
 
           describe '#code' do
-            it { expect(func0.code).to eq('simple()') }
+            it { expect(subject.code).to eq('simple()') }
             it { expect(func1.code).to eq('mono(x)') }
             it { expect(func2.code).to eq('many(x, y)') }
             it { expect(tfunc0.code).to eq('templ<Yo, 5>()') }
           end
 
           describe '#name' do
-            it { expect(func0.name.code).to eq('simple') }
+            it { expect(subject.name.code).to eq('simple') }
             it { expect(func1.name.code).to eq('mono') }
             it { expect(func2.name.code).to eq('many') }
             it { expect(tfunc0.name.code).to eq('templ') }

@@ -9,12 +9,14 @@ module VersatileDiamond
           include Expression
 
           class << self
-          # @param [NameRemember] namer
-          # @param [Array] arg_vars
-          # @param [Expression] body
+            # @param [NameRemember] namer
+            # @param [Array] arg_vars
+            # @param [Expression] body
             # @return [Lambda]
-            def [](_, *arg_vars, body)
-              if !arg_vars.all?(&:var?)
+            def [](namer, *arg_vars, body)
+              if !namer
+                raise 'Name remember is not set'
+              elsif !arg_vars.all?(&:var?)
                 raise "Wrong type of lambda argument variable #{arg_vars.inspect}"
               elsif !body.expr? && !body.cond? && !body.tin?
                 raise "Lambda body #{body.inspect} must by expression or condition"
@@ -56,7 +58,7 @@ module VersatileDiamond
 
         private
 
-          # @return [Array]
+          # @return [OpSquireBks]
           def closure_vars
             all_defined_vars = @namer.defined_vars
             vars = using(all_defined_vars).map(&OpRef.public_method(:[]))

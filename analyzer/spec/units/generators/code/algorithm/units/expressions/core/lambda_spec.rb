@@ -19,6 +19,7 @@ module VersatileDiamond
             describe 'wrong vars' do
               it { expect { described_class[namer, func0] }.not_to raise_error }
 
+              it { expect { described_class[nil, func0] }.to raise_error }
               it { expect { described_class[namer, type, func1] }.to raise_error }
               it { expect { described_class[namer, x, func2] }.to raise_error }
             end

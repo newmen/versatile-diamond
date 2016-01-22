@@ -24,9 +24,12 @@ module VersatileDiamond
 
               let(:x) { Constant['x'] }
               let(:y) { Constant['y'] }
-              let(:type) { Type['Yo'] }
               let(:num) { Constant[5] }
+
+              let(:type) { Type['Yo'] }
+
               let(:var) { Variable[namer, Object.new, type, 'obj'] }
+              let(:vvl) { Variable[namer, Object.new, type, 'val', func0] }
 
               let(:lda) { Lambda[namer, var, func0 + func1] }
 
@@ -34,10 +37,11 @@ module VersatileDiamond
               let(:func1) { FunctionCall['mono', x] }
               let(:func2) { FunctionCall['many', x, y] }
               let(:tfunc0) { FunctionCall['templ', template_args: [type, num]] }
-
-              let(:assert) { Assert[func0] }
+              let(:method) { var.call('foo', x, x) }
 
               let(:member) { OpNs[type, func0] }
+
+              let(:assert) { Assert[func0] }
 
               let(:small_cond) { Condition[OpOr[x, y], func2] }
               let(:big_cond) { Condition[OpAnd[x, y], func2, func0] }
