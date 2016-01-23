@@ -9,8 +9,9 @@ ENGINE_OBJECTS	:= $(wildcard $(addsuffix /*.o, $(ENGINE_OBJECT_DIRS)))
 ARKSFLAGS	:= -DNDEBUG
 STANDART	:= -std=c++11
 
-GCC_PATH	:= /usr
-CXX		:= $(GCC_PATH)/bin/g++
+GCC_PATH	:= /usr/local/Cellar/gcc/5.3.0
+CC_BIN		:= g++-5
+CXX		:= $(GCC_PATH)/bin/$(CC_BIN)
 DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR)
 CFLAGS		:= $(DFLAGS) -O2 -I$(GCC_PATH)/include
 LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -lyaml-cpp

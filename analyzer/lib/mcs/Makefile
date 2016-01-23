@@ -1,7 +1,8 @@
 NAME		:= libhanser
 
-GCC_PATH	:= /usr
-CXX		:= $(GCC_PATH)/bin/g++
+GCC_PATH	:= /usr/local/Cellar/gcc/5.3.0
+CC_BIN		:= g++-5
+CXX		:= $(GCC_PATH)/bin/$(CC_BIN)
 CXXFLAGS	:= -Wall -fPIC -std=c++0x -O3 -DNDEBUG
 
 SRC_DIR		:= cpp
@@ -25,7 +26,7 @@ dirs:
 
 $(OBJS_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
- 
+
 clean:
 	rm -rf $(OBJS_DIR)
 	rm -rf $(LIB_DIR)
