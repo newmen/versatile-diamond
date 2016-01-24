@@ -14,7 +14,8 @@ module VersatileDiamond
               if valid?(*exprs)
                 super
               else
-                raise "Cannot make chain with AND operator for #{exprs.inspect}"
+                msg = "Cannot make chain with AND operator for #{exprs.inspect}"
+                raise ArgumentError, msg
               end
             end
           end

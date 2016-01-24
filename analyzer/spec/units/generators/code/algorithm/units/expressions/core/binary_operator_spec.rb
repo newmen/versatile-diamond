@@ -24,38 +24,71 @@ module VersatileDiamond
           end
 
           describe 'LogicOperator' do
-            shared_examples_for :check_chain_op do
+            shared_examples_for :check_logical do
               describe '#self.[]' do
                 it { expect { op_class[type] }.to raise_error }
                 it { expect { op_class[x, type] }.to raise_error }
                 it { expect { op_class[y, small_cond] }.to raise_error }
               end
 
-              subject { op_class[x] }
-              let(:is_expr) { true }
-
               it_behaves_like :check_predicates
+              let(:is_expr) { true }
+            end
 
-              describe '#code' do
-                describe 'one' do
-                  it { expect(op_class[x].code).to eq('x') }
-                end
+            describe 'chain possible' do
+              shared_examples_for :check_chain_op do
+                subject { op_class[x] }
 
-                describe 'many' do
-                  let(:code) { "x #{mark} y #{mark} simple()" }
-                  it { expect(op_class[x, y, func0].code).to eq(code) }
+                it_behaves_like :check_logical
+
+                describe '#code' do
+                  describe 'one' do
+                    it { expect(op_class[x].code).to eq('x') }
+                  end
+
+                  describe 'many' do
+                    let(:code) { "x #{mark} y #{mark} simple()" }
+                    it { expect(op_class[x, y, func0].code).to eq(code) }
+                  end
                 end
+              end
+
+              it_behaves_like :check_chain_op do
+                let(:op_class) { OpAnd }
+                let(:mark) { '&&' }
+              end
+
+              it_behaves_like :check_chain_op do
+                let(:op_class) { OpOr }
+                let(:mark) { '||' }
               end
             end
 
-            it_behaves_like :check_chain_op do
-              let(:op_class) { OpAnd }
-              let(:mark) { '&&' }
-            end
+            describe 'comparation' do
+              shared_examples_for :check_comp_op do
+                subject { op_class[y, func1] }
 
-            it_behaves_like :check_chain_op do
-              let(:op_class) { OpOr }
-              let(:mark) { '||' }
+                it_behaves_like :check_logical
+
+                describe '#self.[]' do
+                  it { expect { op_class[x] }.to raise_error }
+                  it { expect { op_class[x, x, x] }.to raise_error }
+                end
+
+                describe '#code' do
+                  it { expect(subject.code).to eq("y #{mark} mono(x)") }
+                end
+              end
+
+              it_behaves_like :check_comp_op do
+                let(:op_class) { OpEq }
+                let(:mark) { '==' }
+              end
+
+              it_behaves_like :check_comp_op do
+                let(:op_class) { OpNotEq }
+                let(:mark) { '!=' }
+              end
             end
           end
 
