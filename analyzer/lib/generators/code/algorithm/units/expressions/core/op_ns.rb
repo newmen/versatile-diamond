@@ -13,12 +13,13 @@ module VersatileDiamond
             # @return [OpNs]
             def [](first, *others)
               if others.empty?
-                raise 'Namespace operator requires at least two arguments'
+                arg_err!('Namespace operator requires at least two arguments')
               elsif !first.type?
                 insp_fst = first.inspect
-                raise "First argument #{insp_fst} of namespace operator must be a type"
+                msg = "First argument #{insp_fst} of namespace operator must be a type"
+                arg_err!(msg)
               elsif !valid?(*others)
-                raise "Wrong type of members #{others.inspect}"
+                arg_err!("Wrong type of members #{others.inspect}")
               else
                 super
               end

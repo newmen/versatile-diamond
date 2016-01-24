@@ -13,12 +13,13 @@ module VersatileDiamond
             # @return [OpCall]
             def [](first, *others)
               if others.empty?
-                raise 'Call operator requires at least two arguments'
+                arg_err!('Call operator requires at least two arguments')
               elsif !first.var?
                 insp_fst = first.inspect
-                raise "First argument #{insp_fst} of call operator must be a variable"
+                msg = "First argument #{insp_fst} of call operator must be a variable"
+                arg_err!(msg)
               elsif !valid?(*others)
-                raise "Wrong type of calling expressions #{others.inspect}"
+                arg_err!("Wrong type of calling expressions #{others.inspect}")
               else
                 super
               end

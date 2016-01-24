@@ -15,7 +15,7 @@ module VersatileDiamond
             # @return [Collection]
             def [](namer, instances, type, name, values = nil, **nopts)
               if diff_sizes?(instances, values)
-                raise 'Number of instances is not equal to number of values'
+                arg_err!('Number of instances is not equal to number of values')
               elsif arr?(instances)
                 name, vars = to_vars(namer, instances, type, name, values, **nopts)
               else
@@ -64,9 +64,9 @@ module VersatileDiamond
           # @return [Variable]
           def [](index)
             if one?
-              raise NoMethodError, "Current variable isn't collection"
+              mtd_err!("Current variable isn't collection")
             else
-              @vars[index] || raise(ArgumentError, "Wrong passing index #{index}")
+              @vars[index] || arg_err!("Wrong passing index #{index}")
             end
           end
 
@@ -95,8 +95,7 @@ module VersatileDiamond
             if one?
               first.call(method_name, *args, **kwargs)
             else
-              msg = "Method #{method_name.inspect} cannot be called for collection"
-              raise NoMethodError, msg
+              mtd_err!("Method #{method_name.inspect} cannot be called for collection")
             end
           end
 
@@ -120,6 +119,11 @@ module VersatileDiamond
           # @override
           def arg_type
             super.ptr
+          end
+
+          # @raise [NoMethodError]
+          def mtd_err!(msg)
+            raise NoMethodError, msg
           end
         end
 

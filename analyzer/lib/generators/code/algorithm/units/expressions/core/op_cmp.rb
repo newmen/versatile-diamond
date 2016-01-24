@@ -15,7 +15,7 @@ module VersatileDiamond
               if exprs.size == 2 && valid?(*exprs)
                 super
               else
-                raise ArgumentError, 'Passed not two or not expressions'
+                arg_err!('Passed not two or not expressions')
               end
             end
           end

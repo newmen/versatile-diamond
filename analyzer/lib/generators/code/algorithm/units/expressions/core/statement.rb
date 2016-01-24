@@ -22,6 +22,11 @@ module VersatileDiamond
             def [](*exprs, **kwargs)
               kwargs.empty? ? new(*exprs) : new(*exprs, **kwargs)
             end
+
+            # @raise [ArgumentError]
+            def arg_err!(msg)
+              raise ArgumentError, msg
+            end
           end
 
           # @param [Statement]
@@ -30,8 +35,7 @@ module VersatileDiamond
             if concatable?(other)
               OpCombine[self, other]
             else
-              msg = "Cannot concate #{self.inspect} with #{other.inspect}"
-              raise ArgumentError, msg
+              arg_err!("Cannot concate #{self.inspect} with #{other.inspect}")
             end
           end
 
@@ -58,6 +62,8 @@ module VersatileDiamond
           end
 
         private
+
+          def_delegator Statement, :arg_err!
 
           # @param [Statement] other
           # @return [Boolean]

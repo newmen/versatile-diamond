@@ -12,7 +12,7 @@ module VersatileDiamond
               if expr.expr?
                 new(expr)
               else
-                raise("Not condition #{expr.inspect} cannot be asserted")
+                arg_err!("Not condition #{expr.inspect} cannot be asserted")
               end
             end
           end

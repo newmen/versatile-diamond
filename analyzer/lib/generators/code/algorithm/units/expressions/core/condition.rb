@@ -13,7 +13,7 @@ module VersatileDiamond
               if checking_expr.expr? && exprs.all? { |expr| expr.expr? || expr.cond? }
                 super
               else
-                raise "Wrong type of condition expression #{exprs.inspect}"
+                arg_err!("Wrong type of condition expression #{exprs.inspect}")
               end
             end
           end

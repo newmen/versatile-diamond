@@ -15,17 +15,18 @@ module VersatileDiamond
             # @return [FunctionCall]
             def [](name, *args, **kwargs)
               if !str?(name)
-                raise "Wrong type of function name #{name.inspect}"
+                arg_err!("Wrong type of function name #{name.inspect}")
               elsif empty?(name)
-                raise 'Calling function name cannot be empty'
+                arg_err!('Calling function name cannot be empty')
               elsif !args.all?(&:expr?)
                 insp_args = args.reject(&:expr?).inspect
-                raise "Invalid arguemnts #{insp_args} for #{name} function call"
+                arg_err!("Invalid arguemnts #{insp_args} for #{name} function call")
               else
                 is_tmpl = -> arg { arg.scalar? || arg.type? }
                 if kwargs[:template_args] && !kwargs[:template_args].all?(&is_tmpl)
                   insp_args = kwargs[:template_args].reject(&is_tmpl).inspect
-                  raise "Invalid template arguments #{insp_args} for #{name} function"
+                  msg = "Invalid template arguments #{insp_args} for #{name} function"
+                  arg_err!(msg)
                 else
                   super
                 end

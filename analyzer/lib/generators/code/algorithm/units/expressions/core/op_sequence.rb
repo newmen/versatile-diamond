@@ -9,7 +9,11 @@ module VersatileDiamond
             # @param [Array] exprs
             # @return [OpSequence]
             def [](*exprs)
-              exprs.any?(&:cond?) ? raise('Conditions cannot be sequenced') : super
+              if exprs.any?(&:cond?)
+                arg_err!('Conditions cannot be sequenced')
+              else
+                super
+              end
             end
           end
 

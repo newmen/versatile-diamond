@@ -12,7 +12,7 @@ module VersatileDiamond
               if valid?(expr)
                 super
               else
-                raise "Wrong argument of round brakets #{expr.inspect}"
+                arg_err!("Wrong argument of round brakets #{expr.inspect}")
               end
             end
 

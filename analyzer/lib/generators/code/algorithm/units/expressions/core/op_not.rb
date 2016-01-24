@@ -11,7 +11,7 @@ module VersatileDiamond
             # @param [Expression] expr
             # @return [OpNot]
             def [](expr)
-              valid?(expr) ? super : raise("Cannot negate #{expr.inspect}")
+              valid?(expr) ? super : arg_err!("Cannot negate #{expr.inspect}")
             end
           end
 

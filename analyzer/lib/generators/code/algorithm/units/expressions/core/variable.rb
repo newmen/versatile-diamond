@@ -18,17 +18,17 @@ module VersatileDiamond
             # @return [Variable]
             def [](namer, instance, type, name = nil, value = nil, **nopts)
               if !namer
-                raise 'Name remember is not set'
+                arg_err!('Name remember is not set')
               elsif !instance || (arr?(instance) && instance.empty?)
-                raise 'Instance of variable is not set'
+                arg_err!('Instance of variable is not set')
               elsif !type.type?
-                raise "Wrong variable type #{type.inspect}"
+                arg_err!("Wrong variable type #{type.inspect}")
               elsif value && !valid?(instance, value)
-                raise "Wrong type of variable value #{value.inspect}"
+                arg_err!("Wrong type of variable value #{value.inspect}")
               elsif name && !str?(name)
-                raise "Wrong type of variable name #{name.inspect}"
+                arg_err!("Wrong type of variable name #{name.inspect}")
               elsif name && empty?(name)
-                raise 'Name of variable cannot be empty'
+                arg_err!('Name of variable cannot be empty')
               else
                 super
               end

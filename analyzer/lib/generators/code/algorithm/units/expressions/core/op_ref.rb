@@ -11,7 +11,11 @@ module VersatileDiamond
             # @param [Expression] expr
             # @return [OpRef]
             def [](expr)
-              valid?(expr) ? super : raise("Cannot get reference of #{expr.inspect}")
+              if valid?(expr)
+                super
+              else
+                arg_err!("Cannot get reference of #{expr.inspect}")
+              end
             end
 
           private

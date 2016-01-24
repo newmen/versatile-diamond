@@ -12,9 +12,10 @@ module VersatileDiamond
             # @return [OpBraces]
             def [](expr, multilines: true, ext_new_lines: false)
               if expr.type?
-                raise "Type cannot be argument of bracers #{expr.inspect}"
+                arg_err!("Type cannot be argument of bracers #{expr.inspect}")
               elsif !multilines && ext_new_lines
-                raise "Cannot have external new line when statement is not multilines"
+                msg = "Cannot have external new line when statement is not multilines"
+                arg_err!(msg)
               else
                 super
               end

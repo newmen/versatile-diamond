@@ -10,11 +10,11 @@ module VersatileDiamond
             # @return [Type]
             def [](name)
               if !str?(name)
-                raise "Wrong type name #{name.inspect}"
+                arg_err!("Wrong type name #{name.inspect}")
               elsif empty?(name)
-                raise 'Type cannot contain be empty'
+                arg_err!('Type cannot contain be empty')
               elsif !class?(name)
-                raise 'Class type should be classified'
+                arg_err!('Class type should be classified')
               else
                 super
               end

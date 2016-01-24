@@ -15,11 +15,13 @@ module VersatileDiamond
             # @return [Lambda]
             def [](namer, *arg_vars, body)
               if !namer
-                raise 'Name remember is not set'
+                arg_err!('Name remember is not set')
               elsif !arg_vars.all?(&:var?)
-                raise "Wrong type of lambda argument variable #{arg_vars.inspect}"
+                msg = "Wrong type of lambda argument variable #{arg_vars.inspect}"
+                arg_err!(msg)
               elsif !body.expr? && !body.cond? && !body.tin?
-                raise "Lambda body #{body.inspect} must by expression or condition"
+                msg = "Lambda body #{body.inspect} must by expression or condition"
+                arg_err!(msg)
               else
                 super
               end

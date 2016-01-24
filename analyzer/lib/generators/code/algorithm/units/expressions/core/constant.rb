@@ -13,9 +13,9 @@ module VersatileDiamond
             # @return [Constant]
             def [](value)
               if side_spaces?(value)
-                raise 'Constant cannot contain side space charachters'
+                arg_err!('Constant cannot contain side space charachters')
               elsif !valid?(value)
-                raise "Wrong type of constant value #{value.inspect}"
+                arg_err!("Wrong type of constant value #{value.inspect}")
               else
                 super
               end

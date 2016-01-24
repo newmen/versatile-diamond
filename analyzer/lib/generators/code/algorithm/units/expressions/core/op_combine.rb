@@ -13,7 +13,7 @@ module VersatileDiamond
             # @return [OpAnd]
             def [](first, *others)
               if others.empty?
-                raise 'Combination operator requires at least two arguments'
+                arg_err!('Combination operator requires at least two arguments')
               else
                 super
               end
