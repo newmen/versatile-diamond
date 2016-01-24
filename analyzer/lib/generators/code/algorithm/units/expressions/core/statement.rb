@@ -11,6 +11,10 @@ module VersatileDiamond
           TAB_SIZE = 4.freeze # always so for cpp
           TAB_SPACES = (' ' * TAB_SIZE).freeze
 
+          PREDICATES = [
+            :expr?, :var?, :const?, :scalar?, :type?, :op?, :tin?, :cond?, :assign?
+          ].freeze
+
           class << self
             # @param [Array] exprs
             # @param [Hash] kwargs
@@ -31,58 +35,10 @@ module VersatileDiamond
             end
           end
 
-          # Checks that current statement is expression
-          # @return [Boolean] false by default
-          def expr?
-            false
-          end
-
-          # Checks that current statement is variable
-          # @return [Boolean] false by default
-          def var?
-            false
-          end
-
-          # Checks that current statement is constant
-          # @return [Boolean] false by default
-          def const?
-            false
-          end
-
-          # Checks that current statement is scalar value
-          # @return [Boolean] false by default
-          def scalar?
-            false
-          end
-
-          # Checks that current statement is type
-          # @return [Boolean] false by default
-          def type?
-            false
-          end
-
-          # Checks that current statement is operator
-          # @return [Boolean] false by default
-          def op?
-            false
-          end
-
-          # Checks that current statement is unreal tin operator
-          # @return [Boolean] false by default
-          def tin?
-            false
-          end
-
-          # Checks that current statement is condition
-          # @return [Boolean] false by default
-          def cond?
-            false
-          end
-
-          # Checks that current statement is variable definition or assign
-          # @return [Boolean] false by default
-          def assign?
-            false
+          PREDICATES.each do |name|
+            # Checks that current statement is #{name}
+            # @return [Boolean] false by default
+            define_method(name) { false }
           end
 
           def to_s

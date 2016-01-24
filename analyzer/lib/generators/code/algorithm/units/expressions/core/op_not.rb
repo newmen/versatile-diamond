@@ -4,8 +4,8 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         # Boolean not operator statement
-        class OpNot < PrefixOperator
-          extend LogicOperator
+        class OpNot < UnaryOperator
+          include LogicOperator
 
           class << self
             # @param [Expression] expr

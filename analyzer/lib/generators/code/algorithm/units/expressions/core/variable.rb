@@ -19,7 +19,7 @@ module VersatileDiamond
             def [](namer, instance, type, name = nil, value = nil, **nopts)
               if !namer
                 raise 'Name remember is not set'
-              elsif !instance
+              elsif !instance || (arr?(instance) && instance.empty?)
                 raise 'Instance of variable is not set'
               elsif !type.type?
                 raise "Wrong variable type #{type.inspect}"

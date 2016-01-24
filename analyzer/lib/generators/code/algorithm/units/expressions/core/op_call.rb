@@ -30,8 +30,6 @@ module VersatileDiamond
             # @return [Boolean]
             def valid?(*exprs)
               exprs.all? do |expr|
-                # expr.expr? && ((expr.op? && self == expr.class) ||
-                #                   !(expr.op? || expr.type? || expr.scalar?))
                 expr.expr? && (self == expr.class ||
                                 !(expr.op? || expr.type? || expr.scalar?))
               end

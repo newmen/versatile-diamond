@@ -5,8 +5,7 @@ module VersatileDiamond
 
         # Boolean AND operator statement
         class OpAnd < BinaryOperator
-          extend LogicOperator
-          include Expression
+          include LogicOperator
 
           class << self
             # @param [Array] exprs

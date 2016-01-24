@@ -94,7 +94,7 @@ module VersatileDiamond
         splitted_text = ['']
         until words.empty?
           splitted_text << '' if splitted_text.last.size > limit
-          splitted_text.last << ' ' if splitted_text.last.size > 0
+          splitted_text.last << ' ' if !splitted_text.last.empty?
           splitted_text.last << words.shift
         end
         splitted_text.join("\n")

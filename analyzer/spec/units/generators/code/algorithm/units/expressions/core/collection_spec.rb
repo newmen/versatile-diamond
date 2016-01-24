@@ -16,6 +16,8 @@ module VersatileDiamond
             it { expect(subject).to be_a(described_class) }
             it { expect(mono_arr).to be_a(described_class) }
 
+            it { expect { described_class[namer, [], type, 'xx'] }.to raise_error }
+
             describe 'wrong number of values' do
               let(:wrong_arr) { described_class[namer, [:a, :b], type, 'nm', ['v']] }
               it { expect { wrong_arr }.to raise_error }
@@ -28,6 +30,7 @@ module VersatileDiamond
             it { expect(subject[0]).to be_a(Variable) }
             it { expect(subject[1]).to be_a(Variable) }
             it { expect { subject[2] }.to raise_error }
+            it { expect { mono_arr[0] }.to raise_error }
           end
 
           describe '#code' do

@@ -55,7 +55,7 @@ module VersatileDiamond
           # @param [String] name which will be pluralized
           # @param [Array] values
           # @option [Array] :vars
-          def initialize(namer, insts, type, name, values = nil, vars: vars)
+          def initialize(namer, insts, type, name, values = nil, vars: [])
             super(namer, insts, type, name, values)
             @vars = vars
           end
@@ -63,7 +63,11 @@ module VersatileDiamond
           # @param [Integer] index
           # @return [Variable]
           def [](index)
-            @vars[index] || raise(ArgumentError, "Wrong passing index #{index}")
+            if one?
+              raise NoMethodError, "Current variable isn't collection"
+            else
+              @vars[index] || raise(ArgumentError, "Wrong passing index #{index}")
+            end
           end
 
           %i(define_var define_arg).each do |method_name|
@@ -91,7 +95,8 @@ module VersatileDiamond
             if one?
               first.call(method_name, *args, **kwargs)
             else
-              raise "Method #{method_name.inspect} cannot be called for collection"
+              msg = "Method #{method_name.inspect} cannot be called for collection"
+              raise NoMethodError, msg
             end
           end
 

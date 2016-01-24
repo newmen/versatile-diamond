@@ -4,7 +4,9 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         # Get reference operator statement
-        class OpRef < PrefixOperator
+        class OpRef < UnaryOperator
+          include Expression
+
           class << self
             # @param [Expression] expr
             # @return [OpRef]
@@ -18,10 +20,7 @@ module VersatileDiamond
             # @return [Boolean]
             def valid?(expr)
               # if var or funciton name
-              expr.var? ||
-                [:expr?, :const?, :scalar?, :type?, :op?, :cond?].all? do |pn|
-                  !expr.public_send(pn)
-                end
+              expr.var? || !Statement::PREDICATES.any? { |pn| expr.public_send(pn) }
             end
           end
 
