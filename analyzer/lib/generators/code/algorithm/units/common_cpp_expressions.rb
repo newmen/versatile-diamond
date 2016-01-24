@@ -5,9 +5,7 @@ module VersatileDiamond
 
         # Contains common methods for generate cpp expressions
         module CommonCppExpressions
-
-          TAB_SIZE = 4 # always so for cpp
-          PREFIX_SPACES = (' ' * TAB_SIZE).freeze
+          include Expressions::Cap
 
         private
 

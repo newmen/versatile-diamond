@@ -13,7 +13,7 @@ module VersatileDiamond
         return false unless spec1.equal?(spec2) || spec1.links.size == spec2.links.size
 
         insecs = SpeciesComparator.intersec(spec1, spec2, collaps_multi_bond: true)
-        insecs.size > 0 && insecs.first.size == spec1.links.size &&
+        !insecs.empty? && insecs.first.size == spec1.links.size &&
           insecs.any? { |ic| ic.include?([atom1, atom2]) }
       end
     end

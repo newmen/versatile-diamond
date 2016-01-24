@@ -67,7 +67,7 @@ module VersatileDiamond
           # @return [Array] the list of nodes pairs with relations or nil
           def not_compiences(ordered_graph)
             result = nil
-            ordered_graph.reverse.each do |ns, rels|
+            ordered_graph.reverse_each do |ns, rels|
               rels.each do |nbrs, _|
                 next unless ns.size == nbrs.size # TODO: why reject?
                 pswrs = ns.zip(nbrs).map do |pair|
