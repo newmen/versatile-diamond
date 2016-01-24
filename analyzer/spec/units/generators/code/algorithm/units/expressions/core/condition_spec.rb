@@ -12,8 +12,6 @@ module VersatileDiamond
           let(:is_cond) { true }
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
-
             it { expect { described_class[x] }.to raise_error }
             it { expect { described_class[type] }.to raise_error }
             it { expect { described_class[type, x] }.to raise_error }

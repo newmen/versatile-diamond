@@ -43,7 +43,7 @@ module VersatileDiamond
           # @return [String]
           # @override
           def code
-            @value.to_s
+            value
           end
 
           # Checks that current statement is constant
@@ -64,6 +64,13 @@ module VersatileDiamond
           # @override
           def using(vars)
             []
+          end
+
+        private
+
+          # @return [String]
+          def value
+            @value.to_s
           end
         end
       end

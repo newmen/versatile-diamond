@@ -14,8 +14,6 @@ module VersatileDiamond
           let(:is_scalar) { true }
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
-
             describe 'wrong vars' do
               it { expect { described_class[namer, func0] }.not_to raise_error }
 

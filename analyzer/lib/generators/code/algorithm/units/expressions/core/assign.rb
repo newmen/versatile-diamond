@@ -5,6 +5,28 @@ module VersatileDiamond
 
         # Assign operator statements
         class Assign < Statement
+          class << self
+            # @param [Variable] var
+            # @option [Type] :type
+            # @option [Expression] :value
+            # @return [Assign]
+            def [](var, type: nil, value: nil)
+              if !var.tin? && (!var.const? || var.type?)
+                arg_err!("Cannot define not variable #{var.inspect}")
+              elsif type && !type.type?
+                arg_err!("Wrong type #{type.inspect} of defining variable")
+              elsif value && !value.expr?
+                arg_err!("Cannot assign not value #{value.inspect}")
+              elsif !type && !value
+                msg = "Cannot assign variable #{var.inspect} without type and value"
+                arg_err!(msg)
+              elsif type && value && type.scalar? && value.scalar?
+                arg_err!("Cannot assign #{value.inspect} to pointer #{type.inspect}")
+              else
+                super
+              end
+            end
+          end
 
           def_delegator :@var, :using
 
@@ -19,11 +41,7 @@ module VersatileDiamond
 
           # @return [String]
           def code
-            if @type || @value
-              @value ? "#{left_side} = #{@value.code}" : left_side
-            else
-              raise "Cannot assign variable #{@var} without type and value"
-            end
+            @value ? "#{left_side} = #{@value.code}" : left_side
           end
 
           # Checks that current statement is variable definition or assign
@@ -37,7 +55,13 @@ module VersatileDiamond
 
           # @return [String]
           def left_side
-            @type ? @type.code + @var.code : @var.code
+            if !@type
+              @var.code
+            elsif @type.scalar?
+              @type.code + @var.code
+            else
+              "#{@type.code} #{@var.code}"
+            end
           end
         end
 

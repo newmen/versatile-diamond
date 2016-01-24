@@ -45,6 +45,8 @@ module VersatileDiamond
               let(:member) { OpNs[type, func0] }
 
               let(:assert) { Assert[func0] }
+              let(:assign) { Assign[x, type: type.ptr, value: y] }
+              let(:ret) { Return[method] }
 
               let(:small_cond) { Condition[OpOr[x, y], func2] }
               let(:big_cond) { Condition[OpAnd[x, y], func2, func0] }
@@ -60,6 +62,8 @@ module VersatileDiamond
             end
 
             shared_examples_for :check_const_init do
+              it { expect(subject).to be_a(described_class) }
+
               describe 'side spaces' do
                 it { expect { described_class[' '] }.to raise_error }
                 it { expect { described_class[' hello'] }.to raise_error }
@@ -73,11 +77,15 @@ module VersatileDiamond
                 it { expect { described_class[Array.new] }.to raise_error }
                 it { expect { described_class[Hash.new] }.to raise_error }
                 it { expect { described_class[Set.new] }.to raise_error }
+                it { expect { described_class[nil] }.to raise_error }
+                it { expect { described_class[subject] }.to raise_error }
               end
             end
 
             shared_examples_for :check_expr_init do
               it_behaves_like :check_const_init
+
+              it { expect { described_class[] }.to raise_error }
 
               describe 'side spaces' do
                 it { expect { described_class[''] }.to raise_error }

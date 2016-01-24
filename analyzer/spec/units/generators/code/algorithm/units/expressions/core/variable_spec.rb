@@ -13,8 +13,6 @@ module VersatileDiamond
           let(:is_var) { true }
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
-
             it { expect { described_class[nil, :v, type] }.to raise_error }
             it { expect { described_class[namer, nil, type] }.to raise_error }
             it { expect { described_class[namer, :v, x] }.to raise_error }

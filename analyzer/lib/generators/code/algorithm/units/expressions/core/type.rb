@@ -43,11 +43,16 @@ module VersatileDiamond
             true
           end
 
+          # Checks that current type is scalar pointer
+          # @return [Boolean]
+          def scalar?
+            !!value.match(/\*$/)
+          end
+
           # @return [Type]
           def ptr
-            correct_value = code
-            correct_value += ' ' unless correct_value =~ /(\*)$/
-            self.class["#{correct_value}*"]
+            space = scalar? ? '' : ' '
+            self.class["#{value}#{space}*"]
           end
 
           # @param [FunctionCall] expr

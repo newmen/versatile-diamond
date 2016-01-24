@@ -5,14 +5,14 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        describe Assert do
-          subject { assert }
+        describe Return do
+          subject { ret }
 
           include_context :predefined_exprs
-          let(:is_expr) { true }
           let(:is_assign) { true }
 
           describe '#self.[]' do
+            it { expect { described_class[x, y] }.to raise_error }
             it { expect { described_class[type] }.to raise_error }
             it { expect { described_class[small_cond] }.to raise_error }
             it { expect { described_class[func_args_seq] }.to raise_error }
@@ -21,11 +21,7 @@ module VersatileDiamond
           it_behaves_like :check_predicates
 
           describe '#code' do
-            it { expect(assert.code).to eq('assert(simple())') }
-          end
-
-          describe '#name' do
-            it { expect(assert.name.code).to eq('assert') }
+            it { expect(subject.code).to eq('return obj1->foo(x, x)') }
           end
         end
 

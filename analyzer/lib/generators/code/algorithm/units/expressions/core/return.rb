@@ -3,23 +3,30 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Makes assert statement
-        class Assert < FunctionCall
+        # Return operator statements
+        class Return < Statement
           class << self
-          # @param [Expression] expr
-            # @return [Assert]
+            # @param [Expression] expr
+            # @return [Return]
             def [](expr)
               if expr.expr?
-                new(expr)
+                super
               else
-                arg_err!("Not condition #{expr.inspect} cannot be asserted")
+                arg_err!("Cannot return not expression #{expr.inspect}")
               end
             end
           end
 
+          def_delegator :@expr, :using
+
           # @param [Expression] expr
           def initialize(expr)
-            super('assert', expr)
+            @expr = expr.freeze
+          end
+
+          # @return [String]
+          def code
+            "return #{@expr.code}"
           end
 
           # Checks that current statement is variable definition or assign

@@ -12,7 +12,6 @@ module VersatileDiamond
           let(:is_expr) { true }
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
             it { expect(func1).to be_a(described_class) }
             it { expect(tfunc0).to be_a(described_class) }
 

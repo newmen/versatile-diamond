@@ -13,19 +13,14 @@ module VersatileDiamond
           let(:is_type) { true }
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
-
             it_behaves_like :check_expr_init
-
-            describe 'wrong type' do
-              it { expect { described_class[subject] }.to raise_error }
-            end
           end
 
           it_behaves_like :check_predicates
 
           describe '#ptr' do
             subject { type.ptr }
+            let(:is_scalar) { true }
             it { expect(subject.code).to eq('Yo *') }
             it_behaves_like :check_predicates
           end

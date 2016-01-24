@@ -13,8 +13,6 @@ module VersatileDiamond
           let(:is_const) { true }
 
           describe '#self.[]' do
-            it { expect(subject).to be_a(described_class) }
-
             it_behaves_like :check_const_init
 
             describe 'side spaces' do
@@ -24,7 +22,6 @@ module VersatileDiamond
             describe 'wrong type' do
               it { expect { described_class[123] }.not_to raise_error }
               it { expect { described_class[2.71] }.not_to raise_error }
-              it { expect { described_class[subject] }.to raise_error }
             end
           end
 
