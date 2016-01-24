@@ -14,16 +14,16 @@ module VersatileDiamond
             # @param [Type] type
             # @param [String] name
             # @param [Expression] value
-            # @param [Hash] kwargs
+            # @param [Hash] nopts
             # @return [Variable]
-            def [](namer, instance, type, name = nil, value = nil, **kwargs)
+            def [](namer, instance, type, name = nil, value = nil, **nopts)
               if !namer
                 raise 'Name remember is not set'
               elsif !instance
                 raise 'Instance of variable is not set'
               elsif !type.type?
                 raise "Wrong variable type #{type.inspect}"
-              elsif value && !value.expr?
+              elsif value && !valid?(instance, value)
                 raise "Wrong type of variable value #{value.inspect}"
               elsif name && !str?(name)
                 raise "Wrong type of variable name #{name.inspect}"
@@ -32,6 +32,23 @@ module VersatileDiamond
               else
                 super
               end
+            end
+
+            # Assigns the name of variable to instance
+            # @return [String] the assigned name of variable
+            def assign_name(namer, definig_instance, assigning_name, next_name: true)
+              namer_method_name = next_name ? :assign_next : :assign
+              namer.public_send(namer_method_name, definig_instance, assigning_name)
+            end
+
+          private
+
+            # @param [Object | Array] instance
+            # @param [Expression | Array] value
+            # @return [Boolean]
+            def valid?(instance, value)
+              (arr?(instance) && arr?(value) && value.all?(&:expr?)) ||
+                (!arr?(instance) && value.expr?)
             end
           end
 
@@ -42,14 +59,16 @@ module VersatileDiamond
           # @param [Type] type
           # @param [String] name
           # @param [Expression] value
-          # @param [Hash] kwargs
-          def initialize(namer, instance, type, name = nil, value = nil, **kwargs)
+          # @param [Hash] nopts
+          def initialize(namer, instance, type, name = nil, value = nil, **nopts)
             @namer = namer
             @instance = instance.freeze
             @type = type.ptr.freeze
-            @rvalue = value && value.freeze
+            @value = value && value.freeze
 
-            assign_name!(instance, name, **kwargs) unless used_name
+            if name && !used_name
+              self.class.assign_name(namer, instance, name, **nopts)
+            end
           end
 
           # Checks that current statement is variable
@@ -63,13 +82,13 @@ module VersatileDiamond
           # @return [Array] list of using variables
           # @override
           def using(vars)
-            current = (vars.include?(self) ? [self] : [])
-            current + (rvalue ? rvalue.using(vars - current) : [])
+            current, next_vars = self_using(vars)
+            current + (value ? value.using(next_vars) : [])
           end
 
           # @return [Assign] the string with variable definition
           def define_var
-            Assign[full_name, type: @type, value: rvalue]
+            Assign[full_name, type: @type, value: value]
           end
 
           # @return [Assign] the string with argument definition
@@ -87,15 +106,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :rvalue
-
-          # Assigns the name of variable to instance
-          # @return [String] the assigned name of variable
-          def assign_name!(definig_instance, assigning_name, next_name: true)
-            return nil unless assigning_name
-            namer_method_name = next_name ? :assign_next : :assign
-            @namer.public_send(namer_method_name, definig_instance, assigning_name)
-          end
+          attr_reader :value
 
           # @return [Constant] the name of variable
           # @override
@@ -120,6 +131,12 @@ module VersatileDiamond
           # @return [Type]
           def arg_type
             @type
+          end
+
+          # @param [Array] vars
+          # @return [Array]
+          def self_using(vars)
+            vars.include?(self) ? [[self], vars - [self]] : [[], vars]
           end
         end
 

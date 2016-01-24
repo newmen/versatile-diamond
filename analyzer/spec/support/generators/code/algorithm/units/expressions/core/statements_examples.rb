@@ -31,6 +31,9 @@ module VersatileDiamond
               let(:var) { Variable[namer, Object.new, type, 'obj'] }
               let(:vvl) { Variable[namer, Object.new, type, 'val', func0] }
 
+              let(:many_arr) { Collection[namer, [:p, :q], type, 'many', [x, y]] }
+              let(:mono_arr) { Collection[namer, :mono, type, 'mono', func1] }
+
               let(:lda) { Lambda[namer, var, func0 + func1] }
 
               let(:func0) { FunctionCall['simple'] }

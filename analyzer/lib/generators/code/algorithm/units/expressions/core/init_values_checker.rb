@@ -7,6 +7,12 @@ module VersatileDiamond
         module InitValuesChecker
         private
 
+          # @param [Array] value
+          # @return [Boolean]
+          def arr?(value)
+            value.is_a?(Array)
+          end
+
           # @param [String] value
           # @return [Boolean]
           def str?(value)
