@@ -19,14 +19,12 @@ void assertIs(C *c, std::initializer_list<uint> types)
     }
 }
 
-int main(int argc, char const *argv[])
+int main()
 {
     Crystal *diamond = new OpenDiamond(dim3(10, 10, 5));
-    Lattice *lattice = new Lattice(diamond, int3(1, 1, 1));
 
-    C c8(8, 1, lattice);
+    C c8(8, 1, new Lattice(diamond, int3(1, 1, 1)));
     c8.specifyType();
-    assert(c8.lattice() == lattice);
     assert(c8.lattice()->coords().x == 1);
     assert(c8.lattice()->coords().y == 1);
     assert(c8.lattice()->coords().z == 1);
@@ -72,7 +70,6 @@ int main(int argc, char const *argv[])
     C c38(38, 2, (Lattice *)nullptr);
     assertIs(&c38, { 10, 11, 12, 14, 37, 38 });
 
-    delete lattice;
     delete diamond;
 
     return 0;

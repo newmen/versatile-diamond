@@ -50,7 +50,7 @@ module VersatileDiamond
           end
 
           def inspect
-            # More detailed info about total expression
+            # TODO: Add more detailed info about total expression
             "␂#{code}␃"
           end
 

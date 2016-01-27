@@ -6,7 +6,7 @@ STANDART	:= -std=c++11
 GCC_PATH	:= /usr/local/Cellar/gcc/5.3.0
 CC_BIN		:= g++-5
 CXX		:= $(GCC_PATH)/bin/$(CC_BIN)
-CFLAGS		:= $(STANDART) $(ARKSFLAGS) -O2 -I$(GCC_PATH)/include
+CFLAGS		:= $(STANDART) $(ARKSFLAGS) -Wall -O2 -I$(GCC_PATH)/include/c++/5.3.0
 
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj

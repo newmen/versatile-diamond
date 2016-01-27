@@ -110,11 +110,6 @@ void Atom::unsetLattice()
     assert(_lattice);
     assert(_cacheLattice);
 
-    if (_lattice != _cacheLattice)
-    {
-        delete _cacheLattice;
-    }
-
     _cacheLattice = _lattice;
     _lattice = nullptr;
 }

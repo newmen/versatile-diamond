@@ -13,7 +13,7 @@ GCC_PATH	:= /usr/local/Cellar/gcc/5.3.0
 CC_BIN		:= g++-5
 CXX		:= $(GCC_PATH)/bin/$(CC_BIN)
 DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR)
-CFLAGS		:= $(DFLAGS) -O2 -I$(GCC_PATH)/include
+CFLAGS		:= $(DFLAGS) -Wall -O2 -I$(GCC_PATH)/include/c++/5.3.0
 LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -lyaml-cpp
 
 HGEN_SRC_DIR	:= src

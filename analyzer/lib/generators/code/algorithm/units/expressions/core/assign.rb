@@ -57,7 +57,7 @@ module VersatileDiamond
           def left_side
             if !@type
               @var.code
-            elsif @type.scalar?
+            elsif @type.scalar? # if the type is pointer
               @type.code + @var.code
             else
               "#{@type.code} #{@var.code}"
