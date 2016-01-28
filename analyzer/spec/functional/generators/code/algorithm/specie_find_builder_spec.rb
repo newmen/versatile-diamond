@@ -397,7 +397,7 @@ module VersatileDiamond
                     if (anchor == specie1->atom(1))
                     {
                         anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
-                            if (target2 != target1)
+                            if (target2 != target1 && target2 != specie1)
                             {
                                 target2->eachSymmetry([&](ParentSpec *specie2) {
                                     if (anchor == specie2->atom(2))
@@ -423,25 +423,16 @@ module VersatileDiamond
                 target1->eachSymmetry([&](ParentSpec *specie1) {
                     if (anchor == specie1->atom(2))
                     {
-                        Atom *atom1 = specie1->atom(1);
+                        Bridge *specie1 = anchor->specByRole<Bridge>(#{role_ct});
+                        Atom *atom1 = specie2->atom(1);
                         atom1->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
-                            if (target2 != target1)
+                            if (target2 != target1 && target2 != specie1)
                             {
-                                target2->eachSymmetry([&](ParentSpec *specie2) {
-                                    if (atom1 == specie2->atom(1))
+                                target2->eachSymmetry([&](ParentSpec *specie3) {
+                                    if (atom1 == specie3->atom(1))
                                     {
-                                        atom1->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target3) {
-                                            if (target3 != target3)
-                                            {
-                                                target3->eachSymmetry([&](ParentSpec *specie3) {
-                                                    if (atom1 == specie3->atom(2))
-                                                    {
-                                                        ParentSpec *parents[3] = { specie1, specie2, specie3 };
-                                                        create<ThreeBridges>(parents);
-                                                    }
-                                                });
-                                            }
-                                        });
+                                        ParentSpec *parents[3] = { specie1, specie3, specie1 };
+                                        create<ThreeBridges>(parents);
                                     }
                                 });
                             }

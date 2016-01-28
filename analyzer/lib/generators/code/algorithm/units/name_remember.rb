@@ -78,7 +78,11 @@ module VersatileDiamond
           # @param [Object] var the variable for which previous names will be gotten
           # @return [Array] the list of previous names of passed variable or nil
           def prev_names_of(var)
-            @prev_names[var]
+            if single?(var)
+              @prev_names[var]
+            else
+              raise ArgumentError, 'Previos names of array cannot be resolved'
+            end
           end
 
           # Gets a name of variable
@@ -91,9 +95,10 @@ module VersatileDiamond
             else
               if vars.all?(&names.method(:[]))
                 name = array_name_for(vars)
-                name ? name : raise('Not all vars belongs to array')
+                name ? name : raise(ArgumentError, 'Not all vars belongs to array')
               elsif vars.any?(&names.method(:[]))
-                raise 'Not for all variables in passed set the name is presented'
+                msg = 'Not for all variables in passed set the name is presented'
+                raise ArgumentError, msg
               else
                 nil
               end
@@ -220,14 +225,18 @@ module VersatileDiamond
             remember(var, name)
           end
 
-          # Delete variable name from avail names list
+          # Deletes variable name from avail names list
           # @param [Object] var for which the name will be forgotten
           def delete(var)
-            if names[var]
-              @prev_names[var] ||= []
-              @prev_names[var] << names[var]
-            end
+            store_prev_name(var) if names[var]
             names.delete(var)
+          end
+
+          # Stores previous name of variable
+          # @param [Object] var which name will be remembered as previous
+          def store_prev_name(var)
+            @prev_names[var] ||= []
+            @prev_names[var] << names[var]
           end
 
           # Remembers the name of variable
