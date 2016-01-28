@@ -64,8 +64,7 @@ void HighBridgeStandToDimer::doIt()
     assert(c->is(21));
 
     Handbook::amorph().erase(a);
-    assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at({ b, c }));
 
     a->unbondFrom(b);
     a->bondWith(c);

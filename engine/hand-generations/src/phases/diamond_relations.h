@@ -17,7 +17,7 @@ public:
     TN front_100(const Atom *atom);
     TN cross_100(const Atom *atom);
 
-    static int3 front_110_at(const Atom *first, const Atom *second);
+    static int3 front_110_at(TN &&neighbours);
 
 protected:
     template <class... Args> DiamondRelations(Args... args) : B(args...) {}
@@ -107,13 +107,14 @@ typename DiamondRelations<B>::TN DiamondRelations<B>::cross_100(const Atom *atom
 }
 
 template <class B>
-int3 DiamondRelations<B>::front_110_at(const Atom *first, const Atom *second)
+int3 DiamondRelations<B>::front_110_at(TN &&neighbours)
 {
-    assert(first->lattice());
-    assert(second->lattice());
+    assert(neighbours[0]->lattice());
+    assert(neighbours[1]->lattice());
+    assert(neighbours[0]->lattice()->crystal() == neighbours[1]->lattice()->crystal());
 
-    const int3 &a = first->lattice()->coords();
-    const int3 &b = second->lattice()->coords();
+    const int3 &a = neighbours[0]->lattice()->coords();
+    const int3 &b = neighbours[1]->lattice()->coords();
     assert(a.z == b.z);
 
     if (a.z % 2 == 0)

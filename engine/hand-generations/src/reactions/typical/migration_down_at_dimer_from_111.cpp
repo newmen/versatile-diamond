@@ -54,8 +54,7 @@ void MigrationDownAtDimerFrom111::doIt()
     }
 
     Handbook::amorph().erase(a);
-    assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at({ b, c }));
 
     b->unbondFrom(c);
     a->bondWith(b);

@@ -18,11 +18,7 @@ void NearMethylOnBridge::look(ushort bridgeAtomType, Atom **atoms, const L &lamb
     eachNeighbours<2>(atoms, &Diamond::cross_100, [bridgeAtomType, lambda](Atom **neighbours) {
         if (neighbours[0]->is(6) && neighbours[1]->is(6))
         {
-            assert(neighbours[0]->lattice());
-            assert(neighbours[0]->lattice()->crystal() == neighbours[1]->lattice()->crystal());
-
-            auto crystal = neighbours[0]->lattice()->crystal();
-            Atom *bridgeCT = crystal->atom(Diamond::front_110_at(neighbours[0], neighbours[1]));
+            Atom *bridgeCT = neighbourFrom(neighbours, &Diamond::front_110_at);
             if (bridgeCT && bridgeCT->is(bridgeAtomType))
             {
                 auto semiSpec = bridgeCT->specByRole<S>(bridgeAtomType);

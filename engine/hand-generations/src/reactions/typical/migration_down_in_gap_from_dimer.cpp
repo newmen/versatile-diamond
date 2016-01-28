@@ -55,8 +55,7 @@ void MigrationDownInGapFromDimer::doIt()
     assert(c->is(5));
 
     Handbook::amorph().erase(a);
-    assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
+    crystalBy(b)->insert(a, Diamond::front_110_at({ b, c }));
 
     x->unbondFrom(z);
     a->bondWith(b);

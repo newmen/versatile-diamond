@@ -283,7 +283,7 @@ module VersatileDiamond
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            Atom *neighbour1 = crystalBy(neighbours1[0])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+            Atom *neighbour1 = neighbourFrom(neighbours1, &Diamond::front_110_at);
             if (neighbour1 && neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
             {
                 SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
@@ -327,7 +327,7 @@ module VersatileDiamond
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            Atom *neighbour1 = crystalBy(neighbours1[0])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+            Atom *neighbour1 = neighbourFrom(neighbours1, &Diamond::front_110_at);
             if (neighbour1 && neighbour1->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
             {
                 Atom *amorph1 = neighbour1->amorphNeighbour();
@@ -383,7 +383,7 @@ module VersatileDiamond
                 eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                     if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
                     {
-                        Atom *neighbour2 = crystalBy(neighbours1[0])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                        Atom *neighbour2 = neighbourFrom(neighbours1, &Diamond::front_110_at);
                         if (neighbour2 && neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                         {
                             Atom *amorph1 = neighbour2->amorphNeighbour();
@@ -426,7 +426,7 @@ module VersatileDiamond
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                 if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
                 {
-                    Atom *neighbour2 = crystalBy(neighbours1[0])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                    Atom *neighbour2 = neighbourFrom(neighbours1, &Diamond::front_110_at);
                     if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                     {
                         Atom *amorph1 = neighbour2->amorphNeighbour();
@@ -458,7 +458,7 @@ module VersatileDiamond
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                 if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
                 {
-                    Atom *neighbour2 = crystalBy(neighbours1[0])->atom(Diamond::front_110_at(neighbours1[0], neighbours1[1]));
+                    Atom *neighbour2 = neighbourFrom(neighbours1, Diamond::front_110_at);
                     if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                     {
                         Atom *amorph1 = neighbour2->amorphNeighbour();
