@@ -4,14 +4,14 @@ module VersatileDiamond
       module Algorithm
 
         # Cleans the specie grouped nodes graph from not significant relations and
-        # gets the ordered graph by which the find specie algorithm will be builded
+        # gets the ordered graph by which the find specie algorithm will be built
         class SpecieBackbone < BaseBackbone
           include Modules::ListsComparer
           extend Forwardable
 
           # Initializes backbone by specie and grouped nodes of it
           # @param [EngineCode] generator the major engine code generator
-          # @param [Specie] specie for which algorithm will builded
+          # @param [Specie] specie for which algorithm will built
           def initialize(generator, specie)
             super(SpecieGroupedNodes.new(generator, specie))
             @specie = specie

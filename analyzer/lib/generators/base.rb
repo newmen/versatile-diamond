@@ -17,7 +17,7 @@ module VersatileDiamond
       # Gets atom properties for passed entities
       # @overload atom_properties(dept_spec, atom)
       #   @param [Organizers::DependentWrappedSpec | Oragnizers::ProxyParentSpec]
-      #     dept_spec in which context the atom properties will be builded
+      #     dept_spec in which context the atom properties will be built
       #   @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #     atom by which the properties will be gotten
       # @overload atom_properties(props)

@@ -66,7 +66,7 @@ module VersatileDiamond
     private
 
       # Makes mirror with other chunk or chunk resudual
-      # @param [ChunksComparer] other chunk to which the mirror will be builded
+      # @param [ChunksComparer] other chunk to which the mirror will be built
       # @return [Hash] the mirror from self chunk to other chunk
       def mirror_to(other)
         make_mirror(other) do |ts, sa1, sa2|
@@ -75,7 +75,7 @@ module VersatileDiamond
       end
 
       # Makes accurate mirror with other chunk
-      # @param [ChunksComparer] other chunk to which the mirror will be builded
+      # @param [ChunksComparer] other chunk to which the mirror will be built
       # @return [Hash] the accurate mirror from self chunk to other chunk
       def accurate_mirror_to(other)
         make_mirror(other) do |ts, sa1, sa2|
@@ -90,7 +90,7 @@ module VersatileDiamond
       end
 
       # Makes mirror with other chunk
-      # @param [ChunksComparer] other chunk to which the mirror will be builded
+      # @param [ChunksComparer] other chunk to which the mirror will be built
       # @yield [Array, Array, Array] iterates target checking and targets from both
       #   chunks
       # @return [Hash] the mirror from self chunk to other chunk

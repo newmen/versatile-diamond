@@ -2,7 +2,7 @@ module VersatileDiamond
   module Organizers
 
     # Describes the chunk which constructs from another chunks and can builds lateral
-    # reaction for which it was builded
+    # reaction for which it was built
     class MergedChunk < CombinedChunk
 
       attr_reader :parents

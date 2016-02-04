@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Cleans the chunks grouped nodes graph from not significant relations and
-        # gets the ordered graph by which the look around algorithm will be builded
+        # gets the ordered graph by which the look around algorithm will be built
         class LookAroundBackbone < LateralChunksBackbone
           extend Forwardable
 

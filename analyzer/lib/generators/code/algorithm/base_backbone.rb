@@ -32,7 +32,7 @@ module VersatileDiamond
 
           # Builds sequence of kv pairs from graph for find algorithm walking
           # @param [Hash] graph by which the sequence will be combined
-          # @param [Array] nodes from which the sequence will builded
+          # @param [Array] nodes from which the sequence will built
           # @param [Set] visited nodes
           # @return [Array] the ordered list that contains the ordered relations from
           #   passed directed graph

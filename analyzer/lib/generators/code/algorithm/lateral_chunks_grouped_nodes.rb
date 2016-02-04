@@ -12,7 +12,7 @@ module VersatileDiamond
           #
           # @param [EngineCode] generator the major code generator
           # @param [LateralChunks] lateral_chunks for which the grouped graph will be
-          #   builded
+          #   built
           def initialize(generator, lateral_chunks)
             super(ReactionNodesFactory.new(generator))
             @lateral_chunks = lateral_chunks

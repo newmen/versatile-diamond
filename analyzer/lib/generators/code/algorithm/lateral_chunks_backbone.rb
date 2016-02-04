@@ -10,7 +10,7 @@ module VersatileDiamond
           # Initializes backbone by lateral chunks object
           # @param [EngineCode] generator the major engine code generator
           # @param [LateralChunks] lateral_chunks the target object for which the graph
-          #   will be builded
+          #   will be built
           def initialize(generator, lateral_chunks)
             @lateral_chunks = lateral_chunks
             @grouped_nodes_graph =

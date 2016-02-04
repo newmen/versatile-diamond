@@ -64,7 +64,7 @@ module VersatileDiamond
         end
       end
 
-      # Selects only source properties from transitive closure matrix builded
+      # Selects only source properties from transitive closure matrix built
       # for :smallests dependencies
       def source_props
         return @_source_props if @_source_props

@@ -248,7 +248,7 @@ module VersatileDiamond
       attr_reader :mapping
 
       # Makes the mirror of current specs to specs of child
-      # @param [Reaction] child to which specs the map will builded
+      # @param [Reaction] child to which specs the map will built
       # @param [Symbol] method for get a list of specs
       # @return [Array] the map of specs
       def map_to_specs_of(child, method)

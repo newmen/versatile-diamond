@@ -17,7 +17,7 @@ module VersatileDiamond
         reaction.theres.flat_map(&:env_specs)
       end
 
-      # Gets the chunk which builded for current lateral reaction
+      # Gets the chunk which built for current lateral reaction
       # @return [Chunk] the chunk which fully describes lateral environment
       def chunk
         @_chunk ||= Chunk.new(self, theres)

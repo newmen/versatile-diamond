@@ -4,15 +4,15 @@ module VersatileDiamond
       module Algorithm
 
         # Cleans the chunks grouped nodes graph from not significant relations and
-        # gets the ordered graph by which the check laterals algorithm will be builded
+        # gets the ordered graph by which the check laterals algorithm will be built
         class CheckLateralsBackbone < LateralChunksBackbone
           include Modules::ListsComparer
           include Mcs::SpecsAtomsComparator
 
           # Initializes backbone by lateral chunks object and target sidepiece specie
           # @param [EngineCode] generator the major engine code generator
-          # @param [LateralChunks] lateral_chunks by which graph will be builded
-          # @param [Specie] specie from which graph will be builded
+          # @param [LateralChunks] lateral_chunks by which graph will be built
+          # @param [Specie] specie from which graph will be built
           def initialize(generator, lateral_chunks, specie)
             super(generator, lateral_chunks)
             @specie = specie

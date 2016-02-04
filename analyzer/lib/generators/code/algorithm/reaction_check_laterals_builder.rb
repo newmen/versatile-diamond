@@ -10,7 +10,7 @@ module VersatileDiamond
           # @param [EngineCode] generator the major engine code generator
           # @param [LateralChunks] lateral_chunks the target object by which the
           #   algorithm will be generated
-          # @param [Specie] target_specie from which the algorithm will be builded
+          # @param [Specie] target_specie from which the algorithm will be built
           def initialize(generator, lateral_chunks, target_specie)
             @target_specie = target_specie
             super(generator, lateral_chunks)

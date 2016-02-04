@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Cleans the reaction grouped nodes graph from not significant relations and
-        # gets the ordered graph by which the find reaction algorithm will be builded
+        # gets the ordered graph by which the find reaction algorithm will be built
         class ReactionBackbone < BaseBackbone
 
           # Initializes backbone by reaction and reactant specie
