@@ -28,9 +28,7 @@ module VersatileDiamond
           # @param [Array] rels the iterable relations
           # @return [Array] the array of collected relations procs
           def accumulate_relations(nodes, rels)
-            rels.reduce([]) do |acc, (nbrs, rel_params)|
-              acc << relations_proc(nodes, nbrs, rel_params)
-            end
+            rels.map { |nbrs, rel_params| relations_proc(nodes, nbrs, rel_params) }
           end
         end
 

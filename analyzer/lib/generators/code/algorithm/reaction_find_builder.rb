@@ -11,7 +11,7 @@ module VersatileDiamond
           #
           # @param [EngineCode] generator the major engine code generator
           # @param [TypicalReaction] reaction the target reaction code generator
-          # @param [Specie] specie the reactant which will be found by algorithm
+          # @param [Specie] specie the reactant from which the algorithm will be built
           def initialize(generator, reaction, specie)
             @reaction = reaction
             @specie = specie
@@ -49,37 +49,83 @@ module VersatileDiamond
           # @return [Array] the array of procs which will combined later
           def collect_procs(nodes)
             ordered_graph = backbone.ordered_graph_from(nodes)
-            result = ordered_graph.reduce([]) do |acc, (ns, rels)|
-              acc + accumulate_relations(ns, rels)
-            end
+            relations_checks(ordered_graph) + compliences_checks(ordered_graph)
+          end
 
-            pswrs = not_compiences(ordered_graph)
-            if pswrs
-              atoms_to_rels = Hash[pswrs.map { |pair, rel| [pair.last.atom, rel] }]
-              unit = factory.make_unit(pswrs.map(&:first).transpose.last)
-              result << -> &prc { unit.check_compliances(atoms_to_rels, &prc) }
+          # Collects all checks of relations
+          # @param [Array] ordered_graph from which the relations will be checked
+          # @return [Array] the array of procs which will check the relations
+          def relations_checks(ordered_graph)
+            ordered_graph.flat_map { |ns, rels| accumulate_relations(ns, rels) }
+          end
+
+          # Collects compliences checks
+          # @param [Array] ordered_graph which atoms compliences will be checked
+          # @return [Array] the list of procs which will check the compliences
+          def compliences_checks(ordered_graph)
+            not_compiences(ordered_graph).map do |nodes_with_rels|
+              unit = factory.make_unit(nodes_with_rels.map(&:first))
+              atoms_to_rels = atoms_to_rels_from(nodes_with_rels)
+              -> &prc { unit.check_compliances(atoms_to_rels, &prc) }
             end
-            result
+          end
+
+          # Makes mirror of nodes atoms to relations
+          # @param [Array] nodes_with_rels which will be transformed to atoms-rels hash
+          # @return [Hash] the mirror of atoms to relations
+          def atoms_to_rels_from(nodes_with_rels)
+            Hash[nodes_with_rels.map { |node, rel| [node.atom, rel] }]
           end
 
           # Finds non complianced nodes
           # @param [Array] ordered_graph by which the nodes will be found
-          # @return [Array] the list of nodes pairs with relations or nil
+          # @return [Array] the list of lists of nodes pairs with relations or nil
           def not_compiences(ordered_graph)
-            result = nil
-            ordered_graph.reverse_each do |ns, rels|
-              rels.each do |nbrs, _|
-                next unless ns.size == nbrs.size # TODO: why reject?
-                pswrs = ns.zip(nbrs).map do |pair|
-                  rel = @reaction.relation_between(*pair.map(&method(:spec_atom_from)))
-                  [pair, rel]
-                end
+            ordered_graph.flat_map(&method(:collect_not_compliences)).uniq
+          end
 
-                result = pswrs if pswrs.any? { |_, rel| !rel.exist? }
-              end
-              break if result
+          # Collects all neighbour nodes with non existing relations
+          # @param [Array] nodes from which the relations will be checked
+          # @param [Array] rels list the relations from which will be checked
+          # @return [Array] the list of nodes which relations which must be checked
+          def collect_not_compliences(nodes, rels)
+            rels.map { |nbrs, _| nbrs_with_rels(nodes, nbrs) }.compact
+          end
+
+          # Gets list of pairs of node which relation where one of relation must not be
+          # exists
+          #
+          # @param [Array] nodes from which the relations will be checked
+          # @param [Array] nbrs to which the relations will be checked
+          # @return [Array] the list of triples or false
+          def nbrs_with_rels(nodes, nbrs)
+            relations = relations_between(merge_nodes(nodes, nbrs))
+            !relations.all?(&:exist?) && nbrs.zip(relations)
+          end
+
+          # Merges the passed nodes
+          # @param [Array] nodes which will be a first item of each pair
+          # @param [Array] nbrs which will be a second item of each pair
+          # @return [Array] the list of nodes pairs
+          def merge_nodes(nodes, nbrs)
+            if nodes.size == nbrs.size
+              nodes.zip(nbrs)
+            elsif nodes.size == 1
+              nodes.cycle.zip(nbrs)
+            elsif nbrs.size == 1
+              nodes.zip(nbrs.cycle)
+            else
+              raise ArgumentError, 'Cannot merge nodes with so different sizes'
             end
-            result
+          end
+
+          # Collects relations between each pair of nodes
+          # @param [Array] pairs the list of nodes
+          # @return [Array] the list of relations between
+          def relations_between(pairs)
+            pairs.map do |pair|
+              @reaction.relation_between(*pair.map(&method(:spec_atom_from)))
+            end
           end
 
           # Makes reaction links graph vertex from passed node
