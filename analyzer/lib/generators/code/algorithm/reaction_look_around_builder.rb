@@ -43,7 +43,7 @@ module VersatileDiamond
           #   builds
           # @return [Array] the list of grouped arguments for #check_reaction method
           def slices(entry_nodes)
-            split_by_first(entry_nodes.flat_map(&method(:reaction_with_rl_sidepieces)))
+            group_by_reaction(entry_nodes.flat_map(&method(:reaction_rl_sidepieces)))
           end
 
           # Builds body of algorithm
@@ -63,12 +63,10 @@ module VersatileDiamond
             check_sidepieces(nbrs_with_species) { creator_unit.lines }
           end
 
-          # Splits the list of pairs to hash where keys are identical first items and
-          # the values are lists of grouped second items
-          #
+          # Groups the list of pairs to list of similar collections
           # @param [Array] pairs which will be splited
           # @return [Array] the grouping result
-          def split_by_first(pairs)
+          def group_by_reaction(pairs)
             pairs.group_by(&:first).map { |first, pairs| [first, pairs.map(&:last)] }
           end
 
@@ -78,11 +76,12 @@ module VersatileDiamond
           # @param [Array] the pair where first is lateral reaction and the second is
           #   the list of two items where the first is relation proc arguments and the
           #   second is sidepiece species which are additional reactants
-          def reaction_with_rl_sidepieces(nodes)
+          def reaction_rl_sidepieces(nodes)
             checking_rels(nodes).map do |nbrs, rel_params|
-              result = split_by_first(reactions_with_species(nbrs))
+              result = group_by_reaction(reactions_with_species(nbrs))
               if result.size > 1
-                raise "Can't process nodes with different lateral chunks and species"
+                msg = "Can't process nodes with different lateral chunks"
+                raise ArgumentError, msg
               end
 
               reaction, species = result.first

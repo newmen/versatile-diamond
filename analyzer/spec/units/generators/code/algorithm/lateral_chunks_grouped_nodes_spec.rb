@@ -66,45 +66,32 @@ module VersatileDiamond
                 [[t1, t2], [d1, d2], [b]]
               end
 
-              describe 'first case' do
-                let(:grouped_graph) do
-                  {
-                    [t1, t2] => [[[d1, d2], param_100_cross]],
-                    [d1, d2] => [[[t1, t2], param_100_cross]],
-                    [t1] => [[[b], param_100_front]],
-                    [b] => [[[t1], param_100_front]]
-                  }
-                end
+              let(:grouped_graph) do
+                {
+                  [t1, t2] => [[[d1, d2], param_100_cross]],
+                  [d1, d2] => [[[t1, t2], param_100_cross]],
+                  [t1] => [[[b], param_100_front]],
+                  [b] => [[[t1], param_100_front]]
+                }
+              end
 
-                it_behaves_like :check_grouped_nodes_graph do
-                  let(:lateral_reactions) { [dept_ewb_lateral_df] }
-                end
+              it_behaves_like :check_grouped_nodes_graph do
+                let(:lateral_reactions) { [dept_ewb_lateral_df] }
+              end
 
-                it_behaves_like :check_grouped_nodes_graph do
-                  let(:lateral_reactions) { [dept_mwb_lateral_df] }
-                end
+              it_behaves_like :check_grouped_nodes_graph do
+                let(:lateral_reactions) { [dept_mwb_lateral_df] }
+              end
 
-                it_behaves_like :check_grouped_nodes_graph do
-                  let(:lateral_reactions) do
-                    [dept_mwb_lateral_df, dept_middle_lateral_df]
-                  end
+              it_behaves_like :check_grouped_nodes_graph do
+                let(:lateral_reactions) do
+                  [dept_mwb_lateral_df, dept_middle_lateral_df]
                 end
               end
 
-              describe 'second case' do
-                let(:grouped_graph) do
-                  {
-                    [t1, t2] => [[[d1, d2], param_100_cross]],
-                    [d1, d2] => [[[t1, t2], param_100_cross]],
-                    [t1] => [[[b], param_100_front]],
-                    [b] => [[[t1], param_100_front]]
-                  }
-                end
-
-                it_behaves_like :check_grouped_nodes_graph do
-                  let(:lateral_reactions) do
-                    [dept_ewb_lateral_df, dept_mwb_lateral_df]
-                  end
+              it_behaves_like :check_grouped_nodes_graph do
+                let(:lateral_reactions) do
+                  [dept_ewb_lateral_df, dept_mwb_lateral_df]
                 end
               end
             end
