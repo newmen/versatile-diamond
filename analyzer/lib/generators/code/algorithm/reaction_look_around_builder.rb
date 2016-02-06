@@ -103,7 +103,7 @@ module VersatileDiamond
           def make_reaction_specie_pair(node)
             [
               lateral_chunks.select_reaction(node.spec_atom),
-              OtherSideSpecie.new(node.uniq_specie)
+              Instances::OtherSideSpecie.new(node.uniq_specie)
             ]
           end
         end
