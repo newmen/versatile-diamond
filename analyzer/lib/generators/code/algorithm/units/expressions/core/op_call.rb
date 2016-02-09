@@ -14,7 +14,7 @@ module VersatileDiamond
             def [](first, *others)
               if others.empty?
                 arg_err!('Call operator requires at least two arguments')
-              elsif !first.var?
+              elsif !first.obj?
                 insp_fst = first.inspect
                 msg = "First argument #{insp_fst} of call operator must be a variable"
                 arg_err!(msg)
@@ -32,7 +32,7 @@ module VersatileDiamond
             def valid?(*exprs)
               exprs.all? do |expr|
                 expr.expr? && (self == expr.class ||
-                                !(expr.op? || expr.type? || expr.scalar?))
+                              !(expr.op? || expr.const? || expr.type? || expr.scalar?))
               end
             end
           end

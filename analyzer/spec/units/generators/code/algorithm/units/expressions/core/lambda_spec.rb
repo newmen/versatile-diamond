@@ -11,7 +11,6 @@ module VersatileDiamond
           include_context :predefined_exprs
           let(:is_expr) { true }
           let(:is_const) { true }
-          let(:is_scalar) { true }
 
           describe '#self.[]' do
             describe 'wrong vars' do

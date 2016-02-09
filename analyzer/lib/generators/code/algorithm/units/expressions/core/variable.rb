@@ -78,6 +78,13 @@ module VersatileDiamond
             true
           end
 
+          # Checks that current statement is object
+          # @return [Boolean]
+          # @override
+          def obj?
+            !@type.scalar? || @type.ptr?
+          end
+
           # @param [Array] vars
           # @return [Array] list of using variables
           # @override

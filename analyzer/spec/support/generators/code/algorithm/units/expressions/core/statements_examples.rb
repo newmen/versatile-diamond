@@ -8,6 +8,7 @@ module VersatileDiamond
             shared_context :predicate_values do
               let(:is_expr) { false }
               let(:is_var) { false }
+              let(:is_obj) { false }
               let(:is_const) { false }
               let(:is_scalar) { false }
               let(:is_type) { false }
@@ -25,9 +26,13 @@ module VersatileDiamond
               let(:x) { Constant['x'] }
               let(:y) { Constant['y'] }
               let(:num) { Constant[5] }
+              let(:enum) { Constant['VALUE_3'] }
+              let(:empty_cn) { Constant[''] }
 
-              let(:type) { Type['Yo'] }
+              let(:type) { ObjectType['Yo'] }
+              let(:scalar) { ScalarType['int'] }
 
+              let(:scv) { Variable[namer, 1, scalar, 'i', Constant[0]]}
               let(:var) { Variable[namer, Object.new, type, 'obj'] }
               let(:vvl) { Variable[namer, Object.new, type, 'val', func0] }
 

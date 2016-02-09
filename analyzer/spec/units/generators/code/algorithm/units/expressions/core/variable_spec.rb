@@ -11,6 +11,7 @@ module VersatileDiamond
           include_context :predefined_exprs
           let(:is_expr) { true }
           let(:is_var) { true }
+          let(:is_obj) { true }
 
           describe '#self.[]' do
             it { expect { described_class[nil, :v, type] }.to raise_error }
@@ -22,6 +23,10 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_predicates
+          it_behaves_like :check_predicates do
+            subject { scv }
+            let(:is_obj) { false }
+          end
 
           describe '#code' do
             it { expect(subject.code).to eq('obj1') }

@@ -12,7 +12,9 @@ module VersatileDiamond
           TAB_SPACES = (' ' * TAB_SIZE).freeze
 
           PREDICATES = [
-            :expr?, :var?, :const?, :scalar?, :type?, :op?, :tin?, :cond?, :assign?
+            :expr?, :const?, :var?, :obj?,
+            :scalar?, :type?,
+            :op?, :tin?, :cond?, :assign?
           ].freeze
 
           class << self

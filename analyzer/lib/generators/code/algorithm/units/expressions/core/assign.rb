@@ -11,7 +11,7 @@ module VersatileDiamond
             # @option [Expression] :value
             # @return [Assign]
             def [](var, type: nil, value: nil)
-              if !var.tin? && (!var.const? || var.type?)
+              if !var.tin? && (var.const? || var.type? || var.assign?)
                 arg_err!("Cannot define not variable #{var.inspect}")
               elsif type && !type.type?
                 arg_err!("Wrong type #{type.inspect} of defining variable")

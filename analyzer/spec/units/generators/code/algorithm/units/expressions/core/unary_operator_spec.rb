@@ -8,7 +8,7 @@ module VersatileDiamond
         describe UnaryOperator do
           include_context :predefined_exprs_for_ops
 
-          describe 'PrefixOperator' do
+          describe 'ExpressionOperator' do
             let(:is_expr) { true }
 
             describe 'OpNot' do
@@ -46,6 +46,34 @@ module VersatileDiamond
 
               describe '#code' do
                 it { expect(subject.code).to eq('&obj1') }
+              end
+            end
+
+            describe 'OpRInc' do
+              describe '#self.[]' do
+                it { expect { OpRInc[x, y] }.to raise_error }
+                it { expect { OpRInc[x] }.to raise_error }
+                it { expect { OpRInc[type] }.to raise_error }
+                it { expect { OpRInc[num] }.to raise_error }
+                it { expect { OpRInc[func0] }.to raise_error }
+                it { expect { OpRInc[small_cond] }.to raise_error }
+                it { expect { OpRInc[func_args_seq] }.to raise_error }
+              end
+
+              subject { OpRInc[scv] }
+              it_behaves_like :check_predicates
+
+              describe '#code' do
+                it { expect(subject.code).to eq('++i1') }
+              end
+            end
+
+            describe 'OpLInc' do
+              subject { OpLInc[scv] }
+              it_behaves_like :check_predicates
+
+              describe '#code' do
+                it { expect(subject.code).to eq('i1++') }
               end
             end
           end

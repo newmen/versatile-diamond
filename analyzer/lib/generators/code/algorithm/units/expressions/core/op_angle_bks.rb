@@ -21,7 +21,7 @@ module VersatileDiamond
             # @return [Boolean]
             # @override
             def valid_expr?(expr)
-              expr.scalar? || expr.type?
+              expr.const? || expr.type?
             end
 
             # @return [Boolean]

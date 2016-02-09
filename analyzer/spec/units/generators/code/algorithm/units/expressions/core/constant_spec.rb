@@ -6,7 +6,7 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         describe Constant do
-          subject { x }
+          subject { enum }
 
           include_context :predefined_exprs
           let(:is_expr) { true }
@@ -14,10 +14,6 @@ module VersatileDiamond
 
           describe '#self.[]' do
             it_behaves_like :check_const_init
-
-            describe 'side spaces' do
-              it { expect { described_class[''] }.not_to raise_error }
-            end
 
             describe 'wrong type' do
               it { expect { described_class[123] }.not_to raise_error }
@@ -32,11 +28,22 @@ module VersatileDiamond
           it_behaves_like :check_predicates
           it_behaves_like :check_predicates do
             subject { num }
-            let(:is_scalar) { true }
+          end
+
+          describe 'not realy consts' do
+            let(:is_const) { false }
+
+            it_behaves_like :check_predicates do
+              subject { x }
+            end
+
+            it_behaves_like :check_predicates do
+              subject { empty_cn }
+            end
           end
 
           describe '#code' do
-            it { expect(subject.code).to eq('x') }
+            it { expect(subject.code).to eq('VALUE_3') }
             it { expect(num.code).to eq('5') }
           end
         end

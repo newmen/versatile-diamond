@@ -19,7 +19,7 @@ module VersatileDiamond
             it { expect { described_class[x, value: subject] }.to raise_error }
             it { expect { described_class[ret, value: x] }.to raise_error }
 
-            let(:wrong_assert) { described_class[x, type: type.ptr, value: num] }
+            let(:wrong_assert) { described_class[enum, type: scalar, value: num] }
             it { expect { wrong_assert }.to raise_error }
           end
 

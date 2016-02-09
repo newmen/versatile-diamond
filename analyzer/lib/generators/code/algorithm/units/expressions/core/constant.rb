@@ -8,6 +8,8 @@ module VersatileDiamond
           extend InitValuesChecker
           include Expression
 
+          ALLOWED_TYPES = [Integer, Float, String].freeze
+
           class << self
             # @param [String | Integer | Float] value
             # @return [Constant]
@@ -26,12 +28,7 @@ module VersatileDiamond
             # @param [Object] value
             # @return [Boolean]
             def valid?(value)
-              allowed_types.any? { |klass| value.is_a?(klass) }
-            end
-
-            # @return [Array]
-            def allowed_types
-              [String, Integer, Float]
+              ALLOWED_TYPES.any? { |klass| value.is_a?(klass) }
             end
           end
 
@@ -50,13 +47,7 @@ module VersatileDiamond
           # @return [Boolean] true
           # @override
           def const?
-            true
-          end
-
-          # Checks that current statement is scalar value
-          # @return [Boolean]
-          def scalar?
-            [Integer, Float].any? { |klass| @value.is_a?(klass) }
+            !!(value =~ /^[0-9]+|[A-Z][0-9A-Z_]*$/)
           end
 
           # @param [Array] vars

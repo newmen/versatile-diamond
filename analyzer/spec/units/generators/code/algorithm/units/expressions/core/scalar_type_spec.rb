@@ -5,12 +5,12 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        describe Type do
-          subject { type }
+        describe ScalarType do
+          subject { scalar }
 
           include_context :predefined_exprs
-          let(:is_const) { true }
           let(:is_type) { true }
+          let(:is_scalar) { true }
 
           describe '#self.[]' do
             it_behaves_like :check_expr_init
@@ -19,14 +19,9 @@ module VersatileDiamond
           it_behaves_like :check_predicates
 
           describe '#ptr' do
-            subject { type.ptr }
-            let(:is_scalar) { true }
-            it { expect(subject.code).to eq('Yo *') }
+            subject { scalar.ptr }
+            it { expect(subject.code).to eq('int *') }
             it_behaves_like :check_predicates
-          end
-
-          describe '#member_ref' do
-            it { expect(subject.member_ref(func0).code).to eq('&Yo::simple') }
           end
         end
 

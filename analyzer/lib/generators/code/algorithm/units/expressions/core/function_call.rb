@@ -22,7 +22,7 @@ module VersatileDiamond
                 insp_args = args.reject(&:expr?).inspect
                 arg_err!("Invalid arguemnts #{insp_args} for #{name} function call")
               else
-                is_tmpl = -> arg { arg.scalar? || arg.type? }
+                is_tmpl = -> arg { arg.const? || arg.type? }
                 if kwargs[:template_args] && !kwargs[:template_args].all?(&is_tmpl)
                   insp_args = kwargs[:template_args].reject(&is_tmpl).inspect
                   msg = "Invalid template arguments #{insp_args} for #{name} function"

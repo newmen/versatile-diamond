@@ -51,13 +51,6 @@ module VersatileDiamond
             true
           end
 
-          # Checks that current statement is scalar value
-          # @return [Boolean] true
-          # @override
-          def scalar?
-            true
-          end
-
         private
 
           # @return [OpSquireBks]
