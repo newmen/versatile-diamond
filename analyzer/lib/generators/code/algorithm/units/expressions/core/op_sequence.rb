@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Sequence of values peration statement
+        # Sequence of values operator statement
         class OpSequence < BinaryOperator
           class << self
             # @param [Array] exprs
@@ -18,8 +18,8 @@ module VersatileDiamond
           end
 
           # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:',', *exprs)
+          def initialize(*exprs, mark: :',')
+            super(mark, *exprs)
           end
 
         private

@@ -63,7 +63,7 @@ module VersatileDiamond
           def initialize(namer, instance, type, name = nil, value = nil, **nopts)
             @namer = namer
             @instance = instance.freeze
-            @type = type.ptr.freeze
+            @type = type.freeze
             @value = value && value.freeze
 
             if name && !used_name

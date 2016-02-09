@@ -35,13 +35,17 @@ module VersatileDiamond
           # @param [Expression] body
           def initialize(namer, *arg_vars, body)
             @namer = namer
-            @arg_vars = OpRoundBks[OpSequence[*arg_vars.map(&:define_arg)]].freeze
-            @body = OpBraces[body]
+            @arg_vars = arg_vars.freeze
+            @body = body
           end
 
           # @return [String]
           def code
-            [closure_vars, @arg_vars, @body].map(&:code).join
+            [
+              closure_vars,
+              OpRoundBks[OpSequence[*@arg_vars.map(&:define_arg)]],
+              OpBraces[@body]
+            ].map(&:code).join
           end
 
           # Checks that current statement is constant

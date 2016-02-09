@@ -98,7 +98,6 @@ module VersatileDiamond
             end
 
             subject { func_args_seq }
-
             it_behaves_like :check_predicates
 
             describe '#code' do
@@ -108,10 +107,18 @@ module VersatileDiamond
             end
           end
 
+          describe 'OpSeparate' do
+            subject { OpSeparate[x, y] }
+            it_behaves_like :check_predicates
+
+            describe '#code' do
+              it { expect(subject.code).to eq('x; y') }
+            end
+          end
+
           describe 'OpCall' do
             it { expect { OpCall[x] }.to raise_error }
             it { expect { OpCall[type] }.to raise_error }
-            it { expect { OpCall[x, y] }.to raise_error }
             it { expect { OpCall[type, func0] }.to raise_error }
             it { expect { OpCall[small_cond, x] }.to raise_error }
             it { expect { OpCall[var, num] }.to raise_error }
@@ -158,6 +165,20 @@ module VersatileDiamond
               it { expect(OpNs[type, var].code).to eq('Yo::obj1') }
               it { expect(OpNs[type, member].code).to eq('Yo::Yo::simple') }
               it { expect(OpNs[type, type, type].code).to eq('Yo::Yo::Yo') }
+            end
+          end
+
+          describe 'OpLess' do
+            it { expect { OpLess[x] }.to raise_error }
+            it { expect { OpLess[x, y, y] }.to raise_error }
+            it { expect { OpLess[type, num] }.to raise_error }
+            it { expect { OpLess[num, type] }.to raise_error }
+
+            subject { OpLess[x, num] }
+            it_behaves_like :check_predicates
+
+            describe '#code' do
+              it { expect(subject.code).to eq('x < 5') }
             end
           end
         end

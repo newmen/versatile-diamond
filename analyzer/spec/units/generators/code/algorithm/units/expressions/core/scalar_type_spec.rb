@@ -18,6 +18,11 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          describe '#ptr?' do
+            it { expect(subject.ptr?).to be_falsey }
+            it { expect(scalar.ptr.ptr?).to be_truthy }
+          end
+
           describe '#ptr' do
             subject { scalar.ptr }
             it { expect(subject.code).to eq('int *') }

@@ -14,11 +14,11 @@ module VersatileDiamond
             def [](first, *others)
               if others.empty?
                 arg_err!('Call operator requires at least two arguments')
-              elsif !first.obj?
+              elsif first.var? && !first.obj?
                 insp_fst = first.inspect
                 msg = "First argument #{insp_fst} of call operator must be a variable"
                 arg_err!(msg)
-              elsif !valid?(*others)
+              elsif !valid?(first, *others)
                 arg_err!("Wrong type of calling expressions #{others.inspect}")
               else
                 super

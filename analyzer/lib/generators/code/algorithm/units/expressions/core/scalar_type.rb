@@ -57,13 +57,13 @@ module VersatileDiamond
           # Checks that current type is pointer
           # @return [Boolean]
           def ptr?
-            value =~ /\*$/
+            !!(value =~ /\*$/)
           end
 
           # @return [Type]
           def ptr
-            space = ptr? ? '' : ' '
-            ScalarType["#{value}#{space}*"]
+            before = ptr? ? value : "#{value} "
+            ScalarType["#{before}*"]
           end
         end
 

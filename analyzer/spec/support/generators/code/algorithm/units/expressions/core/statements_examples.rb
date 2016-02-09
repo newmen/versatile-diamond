@@ -8,7 +8,6 @@ module VersatileDiamond
             shared_context :predicate_values do
               let(:is_expr) { false }
               let(:is_var) { false }
-              let(:is_obj) { false }
               let(:is_const) { false }
               let(:is_scalar) { false }
               let(:is_type) { false }
@@ -33,13 +32,17 @@ module VersatileDiamond
               let(:scalar) { ScalarType['int'] }
 
               let(:scv) { Variable[namer, 1, scalar, 'i', Constant[0]]}
-              let(:var) { Variable[namer, Object.new, type, 'obj'] }
-              let(:vvl) { Variable[namer, Object.new, type, 'val', func0] }
+              let(:var) { Variable[namer, Object.new, type.ptr, 'obj'] }
+              let(:vvl) { Variable[namer, Object.new, type.ptr, 'val', func0] }
 
-              let(:many_arr) { Collection[namer, [:p, :q], type, 'many', [x, y]] }
-              let(:mono_arr) { Collection[namer, :mono, type, 'mono', func1] }
+              let(:many_arr) { Collection[namer, [:p, :q], type.ptr, 'many', [x, y]] }
+              let(:mono_arr) { Collection[namer, :mono, type.ptr, 'mono', func1] }
 
               let(:lda) { Lambda[namer, var, func0 + func1] }
+              let(:for_loop) do
+                ang = scv.define_var
+                For[ang, OpLess[scv, Constant[3]], OpRInc[scv], func0 + func1]
+              end
 
               let(:func0) { FunctionCall['simple'] }
               let(:func1) { FunctionCall['mono', x] }
