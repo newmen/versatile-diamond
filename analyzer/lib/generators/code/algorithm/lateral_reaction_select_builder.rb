@@ -136,9 +136,8 @@ module VersatileDiamond
           # Gets the code line with defined counter container variable
           # @return [String] the cpp code with variable definition
           def define_counter
-            type = 'std::unordered_map<ushort, ushort>'
             counter_func_call = "countReactions(#{CHUNKS_VAR_NAME}, #{NUM_VAR_NAME})"
-            code_line("#{type} #{COUNTER_VAR_NAME} = #{counter_func_call};")
+            code_line("auto #{COUNTER_VAR_NAME} = #{counter_func_call};")
           end
 
           # Gets the body for checking the coupled reactions
@@ -189,9 +188,7 @@ module VersatileDiamond
           #
           # @return [Array] the list of using else prefix flags
           def coupling_else_prefixes
-            observing_nums = coupled.reduce(0) do |acc, (num, reactions)|
-              acc + (num == 1 ? 1 : reactions.size)
-            end
+            observing_nums = coupled.map { |n, rs| n == 1 ? 1 : rs.size }.reduce(:+)
             make_else_prefixes(observing_nums - 1)
           end
 
