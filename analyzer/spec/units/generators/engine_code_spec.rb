@@ -62,9 +62,9 @@ module VersatileDiamond
 
       describe 'basic species' do
         subject do
-          stub_generator(base_specs: dept_specs, typical_reactions: dept_reactions)
+          stub_generator(base_specs: base_specs, typical_reactions: dept_reactions)
         end
-        let(:dept_specs) do
+        let(:base_specs) do
           [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
         end
         let(:dept_reactions) do
@@ -101,81 +101,142 @@ module VersatileDiamond
         it { expect(gas_specs.map(&:name)).to match_array(gas_names) }
       end
 
-      describe '#many_times?' do
-        let(:dept_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-        let(:dept_reactions) { [dept_dimer_formation, dept_sierpinski_drop] }
+      describe '#usages_num && #many_times?' do
         subject do
-          stub_generator(base_specs: dept_specs, typical_reactions: dept_reactions)
+          stub_generator(base_specs: base_specs, typical_reactions: dept_reactions)
         end
 
         let(:latticed_too) { true }
         shared_examples_for :check_many_times do
           let(:atom) { spec.spec.atom(keyname) }
-          let(:value) { subject.many_times?(spec, atom, latticed_too: latticed_too) }
-          it { expect(value).to eq(result) }
-        end
 
-        describe 'bridge atoms' do
-          let(:spec) { dept_bridge_base }
-
-          it_behaves_like :check_many_times do
-            let(:keyname) { :ct }
-            let(:result) { false }
+          describe '#usages_num' do
+            let(:value) { subject.usages_num(spec, atom, latticed_too: latticed_too) }
+            it { expect(value).to eq(num) }
           end
 
-          describe 'with latticed props' do
+          describe '#many_times?' do
+            let(:value) { subject.many_times?(spec, atom, latticed_too: latticed_too) }
+            it { expect(value).to eq(result) }
+          end
+        end
+
+        describe 'much common case' do
+          let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:dept_reactions) { [dept_dimer_formation, dept_sierpinski_drop] }
+
+          describe 'bridge atoms' do
+            let(:spec) { dept_bridge_base }
+
             it_behaves_like :check_many_times do
+              let(:keyname) { :ct }
+              let(:result) { false }
+              let(:num) { 1 }
+            end
+
+            describe 'with latticed props' do
+              it_behaves_like :check_many_times do
+                let(:keyname) { :cr }
+                let(:result) { true }
+                let(:num) { 2 }
+              end
+            end
+
+            describe 'without latticed props' do
+              let(:latticed_too) { false }
               let(:keyname) { :cr }
               let(:result) { true }
+              let(:num) { 2 }
+
+              describe 'with many user specie' do
+                let(:base_specs) { [dept_bridge_base, dept_three_bridges_base] }
+                let(:dept_reactions) { [dept_dimer_formation] }
+                it_behaves_like :check_many_times
+              end
+
+              describe 'with formation reaction' do
+                let(:dept_reactions) { [dept_dimer_formation, dept_methyl_to_gap] }
+                it_behaves_like :check_many_times
+              end
+
+              describe 'without formation reaction' do
+                it_behaves_like :check_many_times do
+                  let(:result) { false }
+                  let(:num) { 1 }
+                end
+              end
             end
           end
 
-          describe 'without latticed props' do
-            let(:latticed_too) { false }
-            let(:keyname) { :cr }
+          describe 'methyl on bridge atoms' do
+            let(:spec) { dept_methyl_on_bridge_base }
 
-            describe 'with many user specie' do
-              let(:dept_specs) { [dept_bridge_base, dept_three_bridges_base] }
-              let(:dept_reactions) { [dept_dimer_formation] }
-              it_behaves_like :check_many_times do
-                let(:result) { true }
-              end
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cb }
+              let(:result) { false }
+              let(:num) { 1 }
             end
 
-            describe 'with formation reaction' do
-              let(:dept_reactions) { [dept_dimer_formation, dept_methyl_to_gap] }
-              it_behaves_like :check_many_times do
-                let(:result) { true }
-              end
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cm }
+              let(:result) { true }
+              let(:num) { 2 }
             end
+          end
 
-            describe 'without formation reaction' do
-              it_behaves_like :check_many_times do
-                let(:result) { false }
-              end
+          describe 'dimer atoms' do
+            it_behaves_like :check_many_times do
+              let(:spec) { dept_dimer_base }
+              let(:keyname) { :cr }
+              let(:result) { false }
+              let(:num) { 1 }
             end
           end
         end
 
-        describe 'methyl on bridge atoms' do
-          let(:spec) { dept_methyl_on_bridge_base }
+        describe 'intermediate migration down species' do
+          let(:base_specs) do
+            [
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base,
+              dept_intermed_migr_down_common_base
+            ]
+          end
+          let(:dept_reactions) { [dept_intermed_migr_dc_formation] }
 
-          it_behaves_like :check_many_times do
-            let(:keyname) { :cb }
-            let(:result) { false }
+          let(:result) { false }
+          let(:num) { 1 }
+
+          describe 'methyl on bridge atoms' do
+            let(:spec) { dept_methyl_on_bridge_base }
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cb }
+            end
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cm }
+              let(:result) { true }
+              let(:num) { 2 }
+            end
+          end
+
+          describe 'methyl on bridge atoms' do
+            let(:spec) { dept_methyl_on_dimer_base }
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cr }
+            end
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cm }
+            end
           end
 
           it_behaves_like :check_many_times do
+            let(:spec) { dept_intermed_migr_down_common_base }
             let(:keyname) { :cm }
-            let(:result) { true }
-          end
-        end
-
-        describe 'dimer atoms' do
-          it_behaves_like :check_many_times do
-            let(:spec) { dept_dimer_base }
-            let(:keyname) { :cr }
-            let(:result) { false }
           end
         end
       end

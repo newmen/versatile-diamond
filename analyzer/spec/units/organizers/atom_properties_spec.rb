@@ -113,6 +113,9 @@ module VersatileDiamond
         it { expect(hb_cr).not_to eq(ib_cr) }
         it { expect(ib_cr).not_to eq(hb_cr) }
 
+        it { expect(bod).to eq(mob_cb) }
+        it { expect(mob_cb).to eq(bod) }
+
         it { expect(bob).not_to eq(eob) }
         it { expect(eob).not_to eq(bob) }
         it { expect(eob).not_to eq(vob) }
@@ -147,6 +150,30 @@ module VersatileDiamond
         it { expect(subject.send(:danglings)).to eq([active_bond]) }
         it { expect(subject.send(:nbr_lattices)).to be_empty }
         it { expect(subject.send(:relevants)).to be_empty }
+      end
+
+      describe '#zero' do
+        describe 'same basic values' do
+          let(:zero) { ab_cr.zero }
+          it { expect(zero).to eq(bridge_ct.zero) }
+          it { expect(bridge_ct + zero).to eq(bridge_ct) }
+          it { expect(bridge_ct - zero).to eq(bridge_ct) }
+          it { expect(bridge_ct.include?(zero)).to be_truthy }
+          it { expect(bridge_ct.contained_in?(zero)).to be_falsey }
+          it { expect(zero.contained_in?(bridge_ct)).to be_truthy }
+          it { expect(zero.include?(bridge_ct)).to be_falsey }
+        end
+
+        describe 'different basic values' do
+          let(:zero) { ucm.zero }
+          it { expect(zero).not_to eq(bridge_ct.zero) }
+          it { expect(bridge_ct + zero).to be_nil }
+          it { expect(bridge_ct - zero).to be_nil }
+          it { expect(bridge_ct.include?(zero)).to be_falsey }
+          it { expect(bridge_ct.contained_in?(zero)).to be_falsey }
+          it { expect(zero.contained_in?(bridge_ct)).to be_falsey }
+          it { expect(zero.include?(bridge_ct)).to be_falsey }
+        end
       end
 
       describe '#include?' do
@@ -269,8 +296,6 @@ module VersatileDiamond
 
         it { expect(find(cm).like?(find(imob))).to be_truthy }
         it { expect(find(imob).like?(find(cm))).to be_truthy }
-        it { expect(find(cm).like?(find(bridge_ct))).to be_falsey }
-        it { expect(find(bridge_ct).like?(find(cm))).to be_falsey }
         it { expect(find(cm).like?(find(bridge_ct))).to be_falsey }
         it { expect(find(bridge_ct).like?(find(cm))).to be_falsey }
         it { expect(find(cm).like?(find(mob_cb))).to be_falsey }

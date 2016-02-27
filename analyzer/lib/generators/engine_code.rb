@@ -115,6 +115,19 @@ module VersatileDiamond
           dependent_specs.values.select { |s| s.gas? && (s.simple? || s.specific?) }
       end
 
+      # Gets number of usages of passed atom in all major species
+      # @param [Organizers::DependentWrappedSpec] spec which atom props will be checked
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom which number of usages will be counted
+      # @option [Boolean] :latticed_too if is true then default latticed atoms also
+      #   will be checked of several times usation for source species
+      # @return [Integer] how many times passed atoms uses in all major species
+      def usages_num(spec, atom, **kwargs)
+        slice = all_classifications(**kwargs)[spec.name]
+        (slice && slice[atom_properties(spec, atom)]) ||
+          (spec.links.keys.include?(atom) ? 1 : 0)
+      end
+
       # Checks that atom can contain several references to specie under simulation do
       # @param [Organizers::DependentWrappedSpec] spec the use of which will be checked
       #   for passed atom
@@ -124,9 +137,8 @@ module VersatileDiamond
       #   will be checked of several times usation for source species
       # @return [Boolean] is atom can be used in several species by the role which it
       #   plays in passed specie
-      def many_times?(spec, atom, latticed_too: true)
-        slice = all_classifications(latticed_too: latticed_too)[spec.name]
-        !!slice && !!slice[atom_properties(spec, atom)]
+      def many_times?(spec, atom, **kwargs)
+        usages_num(spec, atom, **kwargs) > 1
       end
 
       def inspect
@@ -250,84 +262,117 @@ module VersatileDiamond
       # @option [Boolean] :latticed_too if is true then default latticed atoms also
       #   will be checked of several times usation for source species
       # @return [Hash] the classification hash, where keys are specie names and values
-      #   are hashes, which keys are anchors as atom properties and values are flag,
-      #   that correspond atom can store several instances of specie by appropriate
-      #   role in this specie
+      #   are hashes, which keys are anchors as atom properties and values are numbers,
+      #   of usage this properties in all another major species
       # @example
       #   {
       #     :bridge => {
-      #       (C%d<) => false,
-      #       (^C%d<) => true
+      #       (C%d<) => 1,
+      #       (^C%d<) => 2
       #     },
       #     :methyl_on_bridge => {
-      #       (_~C%d<) => false,
-      #       (C~%d) => true
+      #       (_~C%d<) => 1,
+      #       (C~%d) => 2 # if there is cross_bridge_on_bridges
       #     }
       #   }
       def all_classifications(latticed_too: true)
         @_all_classifications ||=
-          structured_specs.reduce({}) do |all, spec|
+          major_dept_specs.reduce({}) do |all, spec|
             acc = classificate_parents(all, spec)
-            !latticed_too ? acc : inject_classification(acc, spec) do |ap, num|
-              num > 1 && classifier.default_latticed_atoms.any? do |def_ap|
-                contain_times?(def_ap, ap, num)
-              end
-            end
+            latticed_too ? inject_latticed_props(acc, spec) : acc
           end
       end
 
       # Gets a list of structured dependent species
       # @return [Array] the list of species which can be classified
-      def structured_specs
+      def major_dept_specs
         dependent_specs.values.reject(&method(:skipping?))
       end
 
-      # Checks that latticed atom properties contains #{num} times the passed atom
-      # properties
-      #
+      # Counts how many times latticed atom props contains the passed atom props
       # @param [Organizers::AtomProperties] latticed_props which will used as context
       # @param [Organizers::AtomProperties] props which will combined num times
-      # @param [Integer] num times combination of passed atom properties will do
-      # @return [Boolean] is making combination of atom properties can contains in
-      #   latticed atom properties or not
-      def contain_times?(latticed_props, props, num)
+      # @return [Integer] how many times making combination of atom properties can
+      #   contains in latticed atom properties
+      def contain_times(latticed_props, props)
         diff = latticed_props - props
-        return false unless diff
-        sum = (num - 1).times.reduce(props) { |acc, _| acc && acc + diff }
-        sum && latticed_props.include?(sum)
+        if diff
+          num = 1
+          if props.include?(diff)
+            loop do
+              sum = props + diff
+              break unless sum && latticed_props.include?(sum)
+              num += 1
+              break if sum == latticed_props
+            end
+          end
+          num
+        else
+          0
+        end
+      end
+
+      # Counts number of usages pf passed atom props in each latticed atom props
+      # @param [Organizers::AtomProperties] props which will combination will check
+      # @return [Array] numbers of usages of making atom properties combination in
+      #   latticed atom properties
+      def latticed_contains_times(props)
+        classifier.default_latticed_atoms.map { |def_ap| contain_times(def_ap, props) }
+      end
+
+      # Gets maximal number of usages pf passed atom props in latticed atom props
+      # @param [Organizers::AtomProperties] props which will combination will check
+      # @return [Integer] maximal number of usages of making atom properties
+      #   combination in latticed atom properties
+      def max_latticed_contains_times(props)
+        @_max_latticed_contains_times[props] ||= latticed_contains_times(props).max
+      end
+
+      # Extend passed classification hash when atoms of passed spec like latticed atoms
+      # @param [Hash] all the general classification of all species
+      # @param [Organizers::DependentWrappedSpec] spec which anchors will be classified
+      # @yield [Organizers::AtomProperties] counts a number of usages
+      # @return [Hash] the extended classification hash with values for latticed atoms
+      def inject_latticed_props(all, spec)
+        inject_classification(all, spec, &method(:max_latticed_contains_times))
       end
 
       # Extends passed classification hash for passed spec
       # @param [Hash] all the general classification of all species
       # @param [Organizers::DependentWrappedSpec] spec which anchors will be classified
-      # @yield [Integer] should return an unification flag value
+      # @yield [Organizers::AtomProperties] counts a number of usages
       # @return [Hash] the extended classification hash with values for anchors of spec
       def inject_classification(all, spec, &block)
-        all.merge(spec.name => classificate_spec(all, spec, &block))
-      end
-
-      # Gets the classification from some initial value for passed specie
-      # @param [Hash] all the general classification of all species
-      # @param [Organizers::DependentWrappedSpec] spec which anchors will be classified
-      # @yield [Integer] should return an unification flag value
-      # @return [Hash] the custom classification for passed specie
-      def classificate_spec(all, spec, &block)
-        inner = all[spec.name] || {}
-        classifier.classify(spec).each_with_object(inner) do |(_, (ap, num)), acc|
-          acc[ap] ||= block[ap, num]
+        all[spec.name] ||= {}
+        avail_props = classifier.classify(spec).values.map(&:first)
+        avail_props.each_with_object(all) do |ap, acc|
+          inner = acc[spec.name]
+          stored_value = inner[ap]
+          usage_times = block[ap]
+          inner[ap] = usage_times if !stored_value || usage_times > stored_value
         end
       end
 
       # Extends passed classification hash by parents of passed spec
       # @param [Hash] all the general classification of all species
       # @param [Organizers::DependentWrappedSpec] spec which parents will be classified
-      # @return [Hash] the extended classification hash with true values for each
+      # @return [Hash] the extended classification hash with usages number for each
       #   anchor of parent species which are presented in passed spec several times
       def classificate_parents(all, spec)
-        same_pwts(spec).reduce(all) do |result, (parent, twin)|
-          twin_props = atom_properties(parent, twin)
-          inject_classification(result, parent) { |ap, _| ap == twin_props }
+        ppns = same_pwts(spec).map { |pr, tw, n| [pr, atom_properties(pr, tw), n] }
+        pr_with_ap_num = ppns.uniq { |pr, ap, n| [pr.original, ap, n] }
+        triples = pr_with_ap_num + self_swapns(spec)
+        triples.each_with_object(all) do |(parent, twin_props, num), acc|
+          inject_classification(acc, parent) { |ap| twin_props == ap ? num : 1 }
         end
+      end
+
+      # Getsh list of triples just for passed specie
+      # @param [Organizers::DependentWrappedSpec] spec which will be pseudo classified
+      # @return [Array] the list of self triples for passed specie
+      def self_swapns(spec)
+        pss = spec.links.keys.map { |atom| atom_properties(spec, atom) }.uniq
+        pss.map { |ap| [spec, ap, 1] }
       end
 
       # Gets same parents with twins for passed spec and atom
@@ -336,7 +381,10 @@ module VersatileDiamond
       #   by passed spec and atom
       def same_pwts(spec)
         groups = all_pps(spec).groups { |pr, (tw, a)| [pr.original, tw, a] }
-        groups.reject(&:one?).map(&:first).map { |pr, (tw, _)| [pr, tw] }
+        groups.reject(&:one?).map do |group|
+          pr, (tw, _) = group.first
+          [pr, tw, group.map(&:first).uniq.size]
+        end
       end
 
       # Gets the list of all possible structures where for each this structure the
@@ -348,11 +396,14 @@ module VersatileDiamond
         spec.links.keys.flat_map { |atom| pps_for(spec, atom) }
       end
 
-      # Gets possible pps structures for passed spec and atom
+      # Gets all possible parents with twin and correspond atom of spec for passed spec
+      # and atom
+      #
       # @param [Organizers::DependentWrappedSpec] spec which parents will be gotten
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom for which the twins also will be gotten
-      # @return [Array] the list with all available pps structures
+      # @return [Array] the list with all available parents with twin and correspond
+      #   atom of spec
       def pps_for(spec, atom)
         pwts = spec.parents_with_twins_for(atom)
         pwts.map { |pr, tw| [pr, [tw, pr.atom_by(tw)]] } +
@@ -368,6 +419,7 @@ module VersatileDiamond
         @_atom_builder, @_env, @_finder, @_handbook = nil
         @_dependent_specs, @_root_species, @_surface_reactants, @_gas_specs = nil
         @_all_classifications = nil
+        @_max_latticed_contains_times = {}
       end
     end
 

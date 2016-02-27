@@ -147,6 +147,13 @@ module VersatileDiamond
         @props.hash
       end
 
+      # Gets zero atom properties
+      # @return [AtomProperties] zero
+      # @deprecated ? (possible useful)
+      def zero
+        self - self
+      end
+
       # Checks that current properties includes another properties
       # @param [AtomProperties] other probably child atom properties
       # @return [Boolean] includes or not
@@ -181,7 +188,7 @@ module VersatileDiamond
         rests_sum = diffs.reduce(:+)
         return false unless rests_sum
 
-        max_root + rests_sum
+        !!(max_root + rests_sum)
       end
 
       # Checks that both properties have same states by hydrogen atoms
