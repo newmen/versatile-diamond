@@ -97,6 +97,8 @@ module VersatileDiamond
           :right_hydrogenated_bridge,
           :right_activated_bridge,
           :twise_incoherent_dimer,
+          :top_activated_methyl_on_activated_half_extended_bridge,
+          :lower_activated_methyl_on_activated_half_extended_bridge,
           :unfixed_methyl_on_bridge,
           :unfixed_activated_methyl_on_incoherent_bridge
         ])
@@ -123,6 +125,7 @@ module VersatileDiamond
           :symmetric_dimer_formation,
           :incoherent_dimer_drop,
           :sierpinski_drop,
+          :migration_over_111,
           :hydrogen_abs_from_gap,
           :hydrogen_migration,
           :one_dimer_hydrogen_migration

@@ -128,7 +128,7 @@ module VersatileDiamond
         eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour1) {
             if (neighbour1->is(#{ab_ct}))
             {
-                if (neighbour1 != atoms1[ae1-1])
+                if (neighbour1 != atoms1[1 - ae1])
                 {
                     LateralSpec *specie1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
                     if (specie1)

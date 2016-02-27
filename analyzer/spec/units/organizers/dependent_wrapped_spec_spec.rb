@@ -133,6 +133,12 @@ module VersatileDiamond
           let(:keynames) { [:cr, :cbr] }
         end
 
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_methyl_on_bridge_base, target_spec] }
+          let(:target_spec) { dept_intermed_migr_down_bridge_base }
+          let(:keynames) { [:cm, :cbt, :cbr] }
+        end
+
         describe 'undependent from parents species set' do
           let(:target_spec) { dept_intermed_migr_down_common_base }
           let(:keynames) { [:cm, :cdr, :cbr] }

@@ -80,6 +80,12 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_entry_nodes do
+            subject { dept_bridge_with_dimer_base }
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+            let(:points_list) { [[cr]] }
+          end
+
+          it_behaves_like :check_entry_nodes do
             subject { dept_activated_methyl_on_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
@@ -138,6 +144,14 @@ module VersatileDiamond
                 [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
               end
             end
+          end
+
+          it_behaves_like :check_entry_nodes do
+            subject { dept_intermed_migr_down_bridge_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+            end
+            let(:points_list) { [[cm]] }
           end
 
           describe 'intermediate specie of migration down process' do

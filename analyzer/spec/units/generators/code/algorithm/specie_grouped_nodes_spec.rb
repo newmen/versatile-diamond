@@ -188,6 +188,24 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_bridge_with_dimer_base }
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+            let(:flatten_face_grouped_atoms) { [[ct, cr]] }
+            let(:nodes_list) do
+              [
+                [Instances::SpeciesScope, ct],
+                [Instances::SpeciesScope, cr]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [ct] => [],
+                [cr] => []
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
             subject { dept_right_hydrogenated_bridge }
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [subject] }
@@ -335,6 +353,28 @@ module VersatileDiamond
                   [csl, ctl] => [[[csr, ctr], param_100_cross]]
                 }
               end
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_intermed_migr_down_bridge_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+            end
+            let(:flatten_face_grouped_atoms) { [[cbr, cbt], [cm]] }
+            let(:nodes_list) do
+              [
+                [Instances::SpeciesScope, cm],
+                [Instances::UniqueParent, cbr],
+                [Instances::UniqueParent, cbt]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [cm] => [],
+                [cbr] => [[[cbt], param_100_cross]],
+                [cbt] => [[[cbr], param_100_cross]]
+              }
             end
           end
 

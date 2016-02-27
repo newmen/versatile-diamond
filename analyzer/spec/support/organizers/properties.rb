@@ -112,6 +112,7 @@ module VersatileDiamond
         prop(:iamob, :incoherent_activated_methyl_on_bridge, :cm)
         prop(:ihmob, :incoherent_hydrogenated_methyl_on_bridge, :cm)
         prop(:bob, :cross_bridge_on_bridges_base, :cm)
+        prop(:bod, :cross_bridge_on_bridges_base, :ctl)
         prop(:eob, :ethane_on_bridge_base, :c1)
         prop(:vob, :vinyl_on_bridge_base, :c1)
       end

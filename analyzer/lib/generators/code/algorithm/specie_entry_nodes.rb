@@ -61,8 +61,12 @@ module VersatileDiamond
                 [@nodes]
               else
                 # finds first because nodes are sorted ^^
-                limited_node = @nodes.find(&method(:limited_node?))
-                limited_node ? [[limited_node]] : most_important_nodes
+                limited_nodes = @nodes.select(&method(:limited_node?))
+                if limited_nodes.empty?
+                  most_important_nodes
+                else
+                  limited_nodes.map { |node| [node] }
+                end
               end
           end
 

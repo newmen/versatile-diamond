@@ -222,6 +222,24 @@ module VersatileDiamond
           it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
           it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
         end
+
+        it_behaves_like :check_symmetry do
+          subject { dept_top_methyl_on_half_extended_bridge_base }
+          let(:bases) { [subject, dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:specifics) do
+            [dept_top_activated_methyl_on_activated_half_extended_bridge]
+          end
+          let(:typical_reactions) { [dept_migration_over_111] }
+          let(:symmetry_classes) do
+            ['AtomsSwapWrapper<EmptyBase<TOP_METHYL_ON_HALF_EXTENDED_BRIDGE>, 1, 2>']
+          end
+
+          let(:symmetric_keynames) { [:cbl, :cbr] }
+          let(:cbl) { top_methyl_on_half_extended_bridge_base.atom(:cbl) }
+          let(:cbr) { top_methyl_on_half_extended_bridge_base.atom(:cbr) }
+          it { expect(detector.symmetric_atoms(cbr)).to match_array([cbr, cbl]) }
+          it { expect(detector.symmetric_atoms(cbl)).to match_array([cbr, cbl]) }
+        end
       end
 
     end

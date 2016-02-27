@@ -228,10 +228,20 @@ module VersatileDiamond
           s.adsorb(half_extended_bridge_base)
           s.link(s.atom(:ct), s.atom(:cm), free_bond); s
         end
+        set(:top_activated_methyl_on_activated_half_extended_bridge) do
+          tmohebb = top_methyl_on_half_extended_bridge_base
+          a = SpecificAtom.new(tmohebb.atom(:cbr), options: [active_bond])
+          SpecificSpec.new(tmohebb, cbr: a, cm: activated_c)
+        end
+
         set(:lower_methyl_on_half_extended_bridge_base) do
           s = SurfaceSpec.new(:lower_methyl_on_half_extended_bridge, cm: c.dup)
           s.adsorb(half_extended_bridge_base)
           s.link(s.atom(:cbr), s.atom(:cm), free_bond); s
+        end
+        set(:lower_activated_methyl_on_activated_half_extended_bridge) do
+          SpecificSpec.new(lower_methyl_on_half_extended_bridge_base,
+            ct: activated_cd, cm: activated_c)
         end
 
         set(:methyl_on_right_bridge_base) do
@@ -688,6 +698,22 @@ module VersatileDiamond
           from = [ah_source.first, ah_source.first.atom(:cr)]
           to = [ah_source.last, ah_source.last.atom(:cr)]
           r.position_between(from, to, position_100_front); r
+        end
+
+        set(:m111_source) { [top_activated_methyl_on_activated_half_extended_bridge] }
+        set(:m111_products) do
+          [lower_activated_methyl_on_activated_half_extended_bridge]
+        end
+        set(:m111_names_to_specs) do {
+          source: [[:tm, m111_source.first]],
+          products: [[:lm, m111_products.first]]
+        } end
+        set(:m111_atom_map) do
+          Mcs::AtomMapper.map(m111_source, m111_products, m111_names_to_specs)
+        end
+        set(:migration_over_111) do
+          Reaction.new(:forward, 'migration over 111',
+            m111_source, m111_products, m111_atom_map)
         end
 
         set(:imdcf_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
