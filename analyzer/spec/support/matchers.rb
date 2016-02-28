@@ -144,7 +144,7 @@ module VersatileDiamond
         def rels_cmpr_provider(act_k, exp_k)
           -> rel1, rel2 do
             rel1.last == rel2.last &&
-              if rel1.size == act_k.size
+              if rel1.first.size == act_k.size
                 rel1.first == indexes_seq(act_k, exp_k).map { |i| rel2.first[i] }
               else
                 identical_multidim_keys?(rel1.first, rel2.first)

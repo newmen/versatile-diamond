@@ -1,5 +1,7 @@
-require 'coveralls'
-Coveralls.wear!
+if ENV['TRAVIS']
+  require 'coveralls'
+  Coveralls.wear!
+end
 
 require_relative '../load_helper'
 require_relative '../versatile_diamond'
