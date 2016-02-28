@@ -77,6 +77,30 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_sierpinski_formation }
+              let(:target_spec) { dept_activated_bridge }
+              let(:other_spec) { dept_activated_methyl_on_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *anchor = target->atom(0);
+    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_cb}))
+        {
+            neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{other_role_cm}))
+                {
+                    MethylOnBridgeCMs *specie1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
+                    SpecificSpec *targets[2] = { specie1, target };
+                    create<ReverseSierpinskiDrop>(targets);
+                }
+            });
+        }
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_sierpinski_formation }
               let(:target_spec) { dept_activated_methyl_on_bridge }
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
@@ -85,7 +109,8 @@ module VersatileDiamond
     eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_ct}))
         {
-            SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
+            BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+            SpecificSpec *targets[2] = { target, specie1 };
             create<ReverseSierpinskiDrop>(targets);
         }
     });
@@ -113,7 +138,8 @@ module VersatileDiamond
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_ct}))
         {
-            SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
+            BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+            SpecificSpec *targets[2] = { target, specie1 };
             create<ForwardDimerFormation>(targets);
         }
     });
@@ -131,7 +157,8 @@ module VersatileDiamond
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_ct}))
         {
-            SpecificSpec *targets[2] = { neighbour1->specByRole<BridgeCTsi>(#{other_role_ct}), target };
+            BridgeCTsi *specie1 = neighbour1->specByRole<BridgeCTsi>(#{other_role_ct});
+            SpecificSpec *targets[2] = { specie1, target };
             create<ForwardDimerFormation>(targets);
         }
     });
@@ -151,12 +178,14 @@ module VersatileDiamond
         eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
             if (neighbour1->is(#{other_role_cr}))
             {
-                Atom *amorph1 = neighbour1->amorphNeighbour();
-                if (amorph1->is(#{other_role_cm}))
-                {
-                    SpecificSpec *targets[2] = { amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm}), specie1 };
-                    create<ForwardIntermedMigrDcFormation>(targets);
-                }
+                neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
+                    if (amorph1->is(#{other_role_cm}))
+                    {
+                        MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
+                        SpecificSpec *targets[2] = { specie2, specie1 };
+                        create<ForwardIntermedMigrDcFormation>(targets);
+                    }
+                });
             }
         });
     });
@@ -178,8 +207,14 @@ module VersatileDiamond
             eachNeighbour(neighbour1, &Diamond::front_110, [&](Atom *neighbour2) {
                 if (neighbour2->is(#{other_role_ct}) && neighbour1->hasBondWith(neighbour2))
                 {
-                    SpecificSpec *targets[2] = { target, neighbour2->specByRole<BridgeCTs>(#{other_role_ct}) };
-                    create<ForwardIntermedMigrDcFormation>(targets);
+                    BridgeCTs *specie1 = neighbour2->specByRole<BridgeCTs>(#{other_role_ct});
+                    specie1->eachSymmetry([&](SpecificSpec *specie2) {
+                        if (specie2->atom(2) == neighbour1)
+                        {
+                            SpecificSpec *targets[2] = { target, specie2 };
+                            create<ForwardIntermedMigrDcFormation>(targets);
+                        }
+                    }
                 }
             });
         }
@@ -196,20 +231,23 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
+        Atom *atom1 = specie1->atom(2);
+        Atom *atom2 = specie1->atom(1);
+        Atom *anchors[2] = { atom1, atom2 };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cr}))
             {
-                Atom *amorph1 = neighbours1[0]->amorphNeighbour();
-                if (amorph1->is(#{other_role_cm}))
-                {
-                    MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
-                    if (neighbours1[1] != specie2->atom(4))
+                neighbours1[0]->eachAmorphNeighbour([&](Atom *amorph1) {
+                    if (amorph1->is(#{other_role_cm}))
                     {
-                        SpecificSpec *targets[2] = { specie2, specie1 };
-                        create<ForwardIntermedMigrDhFormation>(targets);
+                        MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
+                        if (specie2->atom(4) != neighbours1[1])
+                        {
+                            SpecificSpec *targets[2] = { specie2, specie1 };
+                            create<ForwardIntermedMigrDhFormation>(targets);
+                        }
                     }
-                }
+                });
             }
         });
     });
@@ -224,7 +262,9 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(1), target->atom(4) };
+    Atom *atom1 = target->atom(1);
+    Atom *atom2 = target->atom(4);
+    Atom *anchors[2] = { atom1, atom2 };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}))
         {
@@ -233,7 +273,7 @@ module VersatileDiamond
                 {
                     BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
                     specie1->eachSymmetry([&](SpecificSpec *specie2) {
-                        if (neighbours1[0] == specie2->atom(2) && neighbours1[1] != specie2->atom(1))
+                        if (specie2->atom(2) == neighbours1[0] && specie2->atom(1) != neighbours1[1])
                         {
                             SpecificSpec *targets[2] = { target, specie2 };
                             create<ForwardIntermedMigrDhFormation>(targets);
@@ -255,16 +295,20 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
+        Atom *atom1 = specie1->atom(2);
+        Atom *atom2 = specie1->atom(1);
+        Atom *anchors[2] = { atom1, atom2 };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                Atom *amorph1 = neighbours1[0]->amorphNeighbour();
-                if (amorph1->is(#{other_role_cm}))
-                {
-                    SpecificSpec *targets[2] = { amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm}), specie1 };
-                    create<ForwardIntermedMigrDfFormation>(targets);
-                }
+                neighbours1[0]->eachAmorphNeighbour([&](Atom *amorph1) {
+                    if (amorph1->is(#{other_role_cm}))
+                    {
+                        MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
+                        SpecificSpec *targets[2] = { specie2, specie1 };
+                        create<ForwardIntermedMigrDfFormation>(targets);
+                    }
+                });
             }
         });
     });
@@ -279,15 +323,23 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(1), target->atom(4) };
+    Atom *atom1 = target->atom(1);
+    Atom *atom2 = target->atom(4);
+    Atom *anchors[2] = { atom1, atom2 };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
             Atom *neighbour1 = neighbourFrom(neighbours1, &Diamond::front_110_at);
             if (neighbour1 && neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
             {
-                SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCTs>(#{other_role_ct}) };
-                create<ForwardIntermedMigrDfFormation>(targets);
+                BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+                specie1->eachSymmetry([&](SpecificSpec *specie2) {
+                    if (specie2->atom(2) == neighbours1[0] && specie2->atom(1) == neighbours1[1])
+                    {
+                        SpecificSpec *targets[2] = { target, specie2 };
+                        create<ForwardIntermedMigrDfFormation>(targets);
+                    }
+                });
             }
         }
     });
@@ -303,11 +355,14 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(3), specie1->atom(2) };
+        Atom *atom1 = specie1->atom(3);
+        Atom *atom2 = specie1->atom(2);
+        Atom *anchors[2] = { atom1, atom2 };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                SpecificSpec *targets[2] = { neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr}), specie1 };
+                DimerCRs *specie2 = neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr});
+                SpecificSpec *targets[2] = { specie2, specie1 };
                 create<ForwardMethylIncorporation>(targets);
             }
         });
@@ -323,19 +378,28 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(3), target->atom(0) };
+    Atom *atom1 = target->atom(3);
+    Atom *atom2 = target->atom(0);
+    Atom *anchors[2] = { atom1, atom2 };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
             Atom *neighbour1 = neighbourFrom(neighbours1, &Diamond::front_110_at);
             if (neighbour1 && neighbour1->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
             {
-                Atom *amorph1 = neighbour1->amorphNeighbour();
-                if (amorph1->is(#{other_role_cm}))
-                {
-                    SpecificSpec *targets[2] = { target, amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm}) };
-                    create<ForwardMethylIncorporation>(targets);
-                }
+                neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
+                    if (amorph1->is(#{other_role_cm}))
+                    {
+                        MethylOnBridgeCMs *specie1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
+                        specie1->eachSymmetry([](SpecificSpec *specie2) {
+                            if (specie2->atom(2) == neighbours1[1] && specie2->atom(3) == neighbours1[0])
+                            {
+                                SpecificSpec *targets[2] = { target, specie2 };
+                                create<ForwardMethylIncorporation>(targets);
+                            }
+                        });
+                    }
+                });
             }
         }
     });
@@ -350,15 +414,21 @@ module VersatileDiamond
               let(:other_spec) { dept_right_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(2), target->atom(3) };
+    Atom *atom1 = target->atom(2);
+    Atom *atom2 = target->atom(3);
+    Atom *anchors[2] = { atom1, atom2 };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
             BridgeCRs *specie1 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
-            if (neighbours1[1] != specie1->atom(1))
+            if (specie1->atom(1) != neighbours1[1])
             {
-                SpecificSpec *targets[3] = { target, specie1, neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr}) };
-                create<ForwardMethylToGap>(targets);
+                BridgeCRs *specie2 = neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr});
+                if (specie2->atom(1) != neighbours1[0])
+                {
+                    SpecificSpec *targets[3] = { target, specie1, specie2 };
+                    create<ForwardMethylToGap>(targets);
+                }
             }
         }
     });
@@ -375,9 +445,10 @@ module VersatileDiamond
                 <<-CODE
     Atom *anchor = target->atom(2);
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{role_cr}))
+        if (target->atom(1) != neighbour1 && neighbour1->is(#{role_cr}))
         {
-            if (neighbour1 != target->atom(1))
+            BridgeCRs *specie1 = neighbour1->specByRole<BridgeCRs>(#{role_cr});
+            if (specie1->atom(1) != anchor)
             {
                 Atom *anchors1[2] = { neighbour1, anchor };
                 eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
@@ -386,12 +457,14 @@ module VersatileDiamond
                         Atom *neighbour2 = neighbourFrom(neighbours1, &Diamond::front_110_at);
                         if (neighbour2 && neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                         {
-                            Atom *amorph1 = neighbour2->amorphNeighbour();
-                            if (amorph1->is(#{other_role_cm}))
-                            {
-                                SpecificSpec *targets[3] = { amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm}), anchors1[0]->specByRole<BridgeCRs>(#{role_cr}), target };
-                                create<ForwardMethylToGap>(targets);
-                            }
+                            neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
+                                if (amorph1->is(#{other_role_cm}))
+                                {
+                                    MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm});
+                                    SpecificSpec *targets[3] = { specie2, specie1, target };
+                                    create<ForwardMethylToGap>(targets);
+                                }
+                            });
                         }
                     }
                 });
@@ -422,6 +495,7 @@ module VersatileDiamond
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_cl}))
         {
+            DimerCLsCRi *specie1 = neighbour1->specByRole<DimerCLsCRi>(#{other_role_cl});
             Atom *anchors1[2] = { neighbour1, anchor };
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                 if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
@@ -429,12 +503,18 @@ module VersatileDiamond
                     Atom *neighbour2 = neighbourFrom(neighbours1, &Diamond::front_110_at);
                     if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                     {
-                        Atom *amorph1 = neighbour2->amorphNeighbour();
-                        if (amorph1->is(#{thrid_role_cm}))
-                        {
-                            SpecificSpec *targets[3] = { anchors1[0]->specByRole<DimerCLsCRi>(#{other_role_cl}), amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm}), target };
-                            create<ForwardTwoDimersForm>(targets);
-                        }
+                        neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
+                            if (amorph1->is(#{thrid_role_cm}))
+                            {
+                                MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm});
+                                specie2->eachSymmetry([](SpecificSpec *specie3) {
+                                if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
+                                {
+                                    SpecificSpec *targets[3] = { specie1, specie3, target };
+                                    create<ForwardTwoDimersForm>(targets);
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -454,6 +534,7 @@ module VersatileDiamond
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_cr}))
         {
+            BridgeCRs *specie1 = neighbour1->specByRole<BridgeCRs>(#{other_role_cr});
             Atom *anchors1[2] = { anchor, neighbour1 };
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                 if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
@@ -461,12 +542,18 @@ module VersatileDiamond
                     Atom *neighbour2 = neighbourFrom(neighbours1, Diamond::front_110_at);
                     if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                     {
-                        Atom *amorph1 = neighbour2->amorphNeighbour();
-                        if (amorph1->is(#{thrid_role_cm}))
-                        {
-                            SpecificSpec *targets[3] = { target, amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm}), anchors1[1]->specByRole<BridgeCRs>(#{other_role_cr}) };
-                            create<ForwardTwoDimersForm>(targets);
-                        }
+                        neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
+                            if (amorph1->is(#{thrid_role_cm}))
+                            {
+                                MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm});
+                                specie2->eachSymmetry([](SpecificSpec *specie3) {
+                                if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
+                                {
+                                    SpecificSpec *targets[3] = { target, specie3, specie1 };
+                                    create<ForwardTwoDimersForm>(targets);
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -483,11 +570,15 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(2), specie1->atom(3) };
+        Atom *atom1 = specie1->atom(2);
+        Atom *atom2 = specie1->atom(3);
+        Atom *anchors[2] = { atom1, atom2 };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{thrid_role_cr}))
             {
-                SpecificSpec *targets[3] = { neighbours1[0]->specByRole<DimerCLsCRi>(#{other_role_cl}), specie1, neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr}) };
+                DimerCLsCRi *specie2 = neighbours1[0]->specByRole<DimerCLsCRi>(#{other_role_cl});
+                BridgeCRs *specie3 = neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr});
+                SpecificSpec *targets[3] = { specie2, specie1, specie3 };
                 create<ForwardTwoDimersForm>(targets);
             }
         });
@@ -505,11 +596,12 @@ module VersatileDiamond
                 <<-CODE
     Atom *anchor = target->atom(2);
     eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{role_cr}))
+        if (target->atom(1) != neighbour1 && neighbour1->is(#{role_cr}))
         {
-            if (neighbour1 != target->atom(1))
+            BridgeCRH *specie1 = neighbour1->specByRole<BridgeCRH>(#{role_cr});
+            if (specie1->atom(1) != anchor)
             {
-                SpecificSpec *targets[2] = { target, neighbour1->specByRole<BridgeCRH>(#{role_cr}) };
+                SpecificSpec *targets[2] = { target, specie1 };
                 create<ForwardHydrogenAbsFromGap>(targets);
             }
         }

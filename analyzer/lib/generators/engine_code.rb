@@ -344,7 +344,7 @@ module VersatileDiamond
       # @return [Hash] the extended classification hash with values for anchors of spec
       def inject_classification(all, spec, &block)
         all[spec.name] ||= {}
-        avail_props = classifier.classify(spec).values.map(&:first)
+        avail_props = spec.anchors.map { |atom| atom_properties(spec, atom) }
         avail_props.each_with_object(all) do |ap, acc|
           inner = acc[spec.name]
           stored_value = inner[ap]

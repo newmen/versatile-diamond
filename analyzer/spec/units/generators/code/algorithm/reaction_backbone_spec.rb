@@ -15,9 +15,12 @@ module VersatileDiamond
               typical_reactions: [subject])
           end
 
+          let(:source) { subject.source.reject(&:gas?).reject(&:simple?) }
           let(:reaction) { generator.reaction_class(subject.name) }
           let(:specie) { generator.specie_class(target_spec.name) }
           let(:backbone) { described_class.new(generator, reaction, specie) }
+
+          let(:target_spec) { source.first }
 
           describe '#final_graph' do
             describe 'without positions' do
@@ -27,25 +30,31 @@ module VersatileDiamond
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_activation }
-                let(:target_spec) { methyl_on_bridge_base }
                 let(:atoms) { [target_spec.atom(:cm)] }
               end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_desorption }
-                let(:target_spec) { incoherent_methyl_on_bridge }
                 let(:atoms) { [target_spec.atom(:cb)] }
               end
 
               it_behaves_like :check_finite_graph do
                 subject { dept_methyl_adsorption }
-                let(:target_spec) { subject.source.last }
                 let(:atoms) { [target_spec.atom(:ct)] }
               end
 
               it_behaves_like :check_finite_graph do
+                subject { dept_incoherent_dimer_drop }
+                let(:atoms) do
+                  [
+                    target_spec.atom(:cr),
+                    target_spec.atom(:cl)
+                  ]
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
                 subject { dept_sierpinski_drop }
-                let(:target_spec) { cross_bridge_on_bridges_base }
                 let(:atoms) do
                   [
                     target_spec.atom(:ctl),
@@ -56,10 +65,38 @@ module VersatileDiamond
               end
             end
 
+            describe 'both directions sierpinski formation' do
+              subject { dept_sierpinski_formation }
+              let(:ab) { source.last }
+              let(:amob) { source.first }
+              let(:ct) { ab.atom(:ct) }
+              let(:cb) { amob.atom(:cb) }
+              let(:cm) { amob.atom(:cm) }
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { ab }
+                let(:final_graph) do
+                  {
+                    [ct] => [[[cb], param_100_cross]],
+                    [cb] => [[[cm], param_amorph]]
+                  }
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { amob }
+                let(:final_graph) do
+                  {
+                    [cb] => [[[ct], param_100_cross]]
+                  }
+                end
+              end
+            end
+
             describe 'in both directions with one relation' do
               subject { dept_dimer_formation }
-              let(:ab) { subject.source.first }
-              let(:aib) { subject.source.last }
+              let(:ab) { source.first }
+              let(:aib) { source.last }
               let(:a1) { ab.atom(:ct) }
               let(:a2) { aib.atom(:ct) }
 
@@ -85,9 +122,8 @@ module VersatileDiamond
             describe 'in both directions without explicit relation' do
               subject { dept_intermed_migr_dc_formation }
               let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-              let(:ab) { imdcf_source.first }
-              let(:amod) { imdcf_source.last }
-
+              let(:ab) { source.first }
+              let(:amod) { source.last }
               let(:br) { ab.atom(:cr) }
               let(:dr) { amod.atom(:cr) }
 
@@ -117,9 +153,8 @@ module VersatileDiamond
             describe 'in both directions with non position relation' do
               subject { dept_intermed_migr_dh_formation }
               let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-              let(:ab) { imdhf_source.first }
-              let(:amod) { imdhf_source.last }
-
+              let(:ab) { source.first }
+              let(:amod) { source.last }
               let(:br) { ab.atom(:cr) }
               let(:bl) { ab.atom(:cl) }
               let(:dr) { amod.atom(:cr) }
@@ -150,8 +185,8 @@ module VersatileDiamond
 
             describe 'in both directions with many relation' do
               subject { dept_methyl_incorporation }
-              let(:amob) { subject.source.first }
-              let(:ad) { subject.source.last }
+              let(:amob) { source.first }
+              let(:ad) { source.last }
               let(:am1) { amob.atom(:cr) }
               let(:am2) { amob.atom(:cl) }
               let(:ad1) { ad.atom(:cr) }
@@ -168,7 +203,7 @@ module VersatileDiamond
 
               it_behaves_like :check_finite_graph do
                 let(:base_specs) { [dept_bridge_base] }
-                let(:specific_specs) { [dept_activated_methyl_on_bridge] }
+                let(:specific_specs) { [dept_extra_activated_methyl_on_bridge] }
                 let(:target_spec) { ad }
                 let(:amb) { amob.atom(:cb) }
                 let(:amm) { amob.atom(:cm) }
@@ -181,6 +216,58 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'two level dimers in all directions' do
+              subject { dept_two_dimers_form }
+              let(:eamob) { source.first }
+              let(:rab) { source[1] }
+              let(:aid) { source[2] }
+              let(:mr) { eamob.atom(:cr) }
+              let(:ml) { eamob.atom(:cl) }
+              let(:ba) { rab.atom(:cr) }
+              let(:da) { aid.atom(:cl) }
+
+              it_behaves_like :check_finite_graph do
+                let(:target_spec) { eamob }
+                let(:final_graph) do
+                  {
+                    [mr, ml] => [[[ba, da], param_100_cross]]
+                  }
+                end
+              end
+
+              describe 'from activated gap' do
+                let(:specific_specs) { [dept_extra_activated_methyl_on_bridge] }
+                let(:mb) { eamob.atom(:cb) }
+                let(:mm) { eamob.atom(:cm) }
+
+                it_behaves_like :check_finite_graph do
+                  let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+                  let(:target_spec) { rab }
+                  let(:final_graph) do
+                    {
+                      [ba] => [[[da], param_100_front]],
+                      [da, ba] => [[[ml, mr], param_100_cross]],
+                      [ml, mr] => [[[mb], param_110_front]],
+                      [mb] => [[[mm], param_amorph]]
+                    }
+                  end
+                end
+
+                it_behaves_like :check_finite_graph do
+                  let(:base_specs) { [dept_dimer_base, dept_methyl_on_bridge_base] }
+                  let(:target_spec) { aid }
+                  let(:final_graph) do
+                    {
+                      [da] => [[[ba], param_100_front]],
+                      [da, ba] => [[[ml, mr], param_100_cross]],
+                      [ml, mr] => [[[mb], param_110_front]],
+                      [mb] => [[[mm], param_amorph]]
+                    }
+                  end
+                end
+              end
+            end
           end
 
           describe '#entry_nodes' do
@@ -188,15 +275,53 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               subject { dept_methyl_activation }
-              let(:target_spec) { methyl_on_bridge_base }
               let(:points_list) { [[target_spec.atom(:cm)]] }
             end
 
             it_behaves_like :check_entry_nodes do
               subject { dept_dimer_formation }
-              let(:ab) { subject.source.first }
+              let(:ab) { source.first }
               let(:target_spec) { ab }
               let(:points_list) { [[ab.atom(:ct)]] }
+            end
+
+            it_behaves_like :check_entry_nodes do
+              subject { dept_incoherent_dimer_drop }
+              let(:id) { source.first }
+              let(:target_spec) { id }
+              let(:points_list) do
+                [[
+                  id.atom(:cr), id.atom(:cl)
+                ]]
+              end
+            end
+
+            it_behaves_like :check_entry_nodes do
+              subject { dept_sierpinski_drop }
+              let(:target_spec) { source.first }
+              let(:points_list) do
+                [[
+                  target_spec.atom(:ctl),
+                  target_spec.atom(:cm),
+                  target_spec.atom(:ctr)
+                ]]
+              end
+            end
+
+            describe 'both directions sierpinski formation' do
+              subject { dept_sierpinski_formation }
+              let(:ab) { source.last }
+              let(:amob) { source.first }
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { ab }
+                let(:points_list) { [[ab.atom(:ct)]] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { amob }
+                let(:points_list) { [[amob.atom(:cb)]] }
+              end
             end
 
             describe 'in both directions without explicit relation' do
@@ -227,8 +352,8 @@ module VersatileDiamond
 
             describe 'in both directions with many relation' do
               subject { dept_methyl_incorporation }
-              let(:amob) { subject.source.first }
-              let(:ad) { subject.source.last }
+              let(:amob) { source.first }
+              let(:ad) { source.last }
 
               it_behaves_like :check_entry_nodes do
                 let(:target_spec) { amob }
@@ -241,12 +366,33 @@ module VersatileDiamond
                 let(:points_list) { [[ad.atom(:cl), ad.atom(:cr)]] }
               end
             end
+
+            describe 'two level dimers in all directions' do
+              subject { dept_two_dimers_form }
+              let(:eamob) { source.first }
+              let(:rab) { source[1] }
+              let(:aid) { source[2] }
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { eamob }
+                let(:points_list) { [[eamob.atom(:cl), eamob.atom(:cr)]] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { rab }
+                let(:points_list) { [[rab.atom(:cr)]] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:target_spec) { aid }
+                let(:points_list) { [[aid.atom(:cl)]] }
+              end
+            end
           end
 
           describe '#ordered_graph_from' do
             it_behaves_like :check_ordered_graph do
               subject { dept_methyl_activation }
-              let(:target_spec) { methyl_on_bridge_base }
               let(:ordered_graph) do
                 [
                   [[target_spec.atom(:cm)], []]
@@ -255,9 +401,62 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_ordered_graph do
+              subject { dept_sierpinski_drop }
+              let(:atoms) do
+                [
+                  target_spec.atom(:ctl),
+                  target_spec.atom(:cm),
+                  target_spec.atom(:ctr)
+                ]
+              end
+              let(:ordered_graph) do
+                [
+                  [atoms, []]
+                ]
+              end
+            end
+
+            describe 'both directions sierpinski formation' do
+              subject { dept_sierpinski_formation }
+              let(:ab) { source.last }
+              let(:amob) { source.first }
+              let(:ct) { ab.atom(:ct) }
+              let(:cb) { amob.atom(:cb) }
+              let(:cm) { amob.atom(:cm) }
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { ab }
+                let(:ordered_graph) do
+                  [
+                    [[ct], [[[cb], param_100_cross]]],
+                    [[cb], [[[cm], param_amorph]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { amob }
+                let(:ordered_graph) do
+                  [
+                    [[cb], [[[ct], param_100_cross]]]
+                  ]
+                end
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
+              subject { dept_incoherent_dimer_drop }
+              let(:ordered_graph) do
+                [
+                  [[target_spec.atom(:cr), target_spec.atom(:cl)], []]
+                ]
+              end
+            end
+
+            it_behaves_like :check_ordered_graph do
               subject { dept_dimer_formation }
-              let(:ab) { subject.source.first }
-              let(:aib) { subject.source.last }
+              let(:ab) { source.first }
+              let(:aib) { source.last }
               let(:target_spec) { ab }
               let(:ordered_graph) do
                 [
@@ -268,9 +467,8 @@ module VersatileDiamond
 
             describe 'in both directions without explicit relation' do
               subject { dept_intermed_migr_dc_formation }
-              let(:ab) { subject.source.first }
-              let(:amod) { subject.source.last }
-
+              let(:ab) { source.first }
+              let(:amod) { source.last }
               let(:br) { ab.atom(:cr) }
               let(:dr) { amod.atom(:cr) }
 
@@ -303,9 +501,8 @@ module VersatileDiamond
 
             describe 'in both directions with non position relation' do
               subject { dept_intermed_migr_dh_formation }
-              let(:ab) { subject.source.first }
-              let(:amod) { subject.source.last }
-
+              let(:ab) { source.first }
+              let(:amod) { source.last }
               let(:br) { ab.atom(:cr) }
               let(:bl) { ab.atom(:cl) }
               let(:dr) { amod.atom(:cr) }
@@ -340,8 +537,8 @@ module VersatileDiamond
 
             describe 'in both directions with many relation' do
               subject { dept_methyl_incorporation }
-              let(:amob) { subject.source.first }
-              let(:ad) { subject.source.last }
+              let(:amob) { source.first }
+              let(:ad) { source.last }
               let(:am1) { amob.atom(:cr) }
               let(:am2) { amob.atom(:cl) }
               let(:ad1) { ad.atom(:cr) }
@@ -379,10 +576,11 @@ module VersatileDiamond
               subject { dept_methyl_to_gap }
               let(:specific_specs) { [amob, br1] }
 
+              # There should be directed getting from subject because veiled species
+              # will replace original source species after preudo results organization
               let(:amob) { subject.source.first }
               let(:br1) { subject.source[1] }
               let(:br2) { subject.source[2] }
-
               let(:amr) { amob.atom(:cr) }
               let(:aml) { amob.atom(:cl) }
               let(:cr1) { br1.atom(:cr) }
@@ -414,6 +612,58 @@ module VersatileDiamond
               end
             end
 
+            describe 'two level dimers in all directions' do
+              subject { dept_two_dimers_form }
+              let(:eamob) { source.first }
+              let(:rab) { source[1] }
+              let(:aid) { source[2] }
+              let(:mr) { eamob.atom(:cr) }
+              let(:ml) { eamob.atom(:cl) }
+              let(:ba) { rab.atom(:cr) }
+              let(:da) { aid.atom(:cl) }
+
+              it_behaves_like :check_ordered_graph do
+                let(:target_spec) { eamob }
+                let(:ordered_graph) do
+                  [
+                    [[ml, mr], [[[da, ba], param_100_cross]]]
+                  ]
+                end
+              end
+
+              describe 'from activated gap' do
+                let(:specific_specs) { [dept_extra_activated_methyl_on_bridge] }
+                let(:mb) { eamob.atom(:cb) }
+                let(:mm) { eamob.atom(:cm) }
+
+                it_behaves_like :check_ordered_graph do
+                  let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+                  let(:target_spec) { rab }
+                  let(:ordered_graph) do
+                    [
+                      [[ba], [[[da], param_100_front]]],
+                      [[da, ba], [[[ml, mr], param_100_cross]]],
+                      [[ml, mr], [[[mb], param_110_front]]],
+                      [[mb], [[[mm], param_amorph]]]
+                    ]
+                  end
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:base_specs) { [dept_dimer_base, dept_methyl_on_bridge_base] }
+                  let(:target_spec) { aid }
+                  let(:ordered_graph) do
+                    [
+                      [[da], [[[ba], param_100_front]]],
+                      [[da, ba], [[[ml, mr], param_100_cross]]],
+                      [[ml, mr], [[[mb], param_110_front]]],
+                      [[mb], [[[mm], param_amorph]]]
+                    ]
+                  end
+                end
+              end
+            end
+
             describe 'in both directions with addit. and without explicit relation' do
               subject { dept_intermed_migr_dmod_formation }
               let(:base_specs) do
@@ -425,9 +675,8 @@ module VersatileDiamond
                 ]
               end
               let(:specific_specs) { [amob, adimod, dept_activated_dimer] }
-              let(:amob) { subject.source.first }
-              let(:adimod) { subject.source.last }
-
+              let(:amob) { source.first }
+              let(:adimod) { source.last }
               let(:br) { amob.atom(:cr) }
               let(:bl) { amob.atom(:cl) }
               let(:dr) { adimod.atom(:cr) }

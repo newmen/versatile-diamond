@@ -77,6 +77,7 @@ module VersatileDiamond
           # Gets a previous names of variable
           # @param [Object] var the variable for which previous names will be gotten
           # @return [Array] the list of previous names of passed variable or nil
+          # @deprecated
           def prev_names_of(var)
             if single?(var)
               @prev_names[var]

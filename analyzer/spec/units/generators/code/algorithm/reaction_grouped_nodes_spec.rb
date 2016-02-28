@@ -10,6 +10,7 @@ module VersatileDiamond
             node.spec_atom
           end
 
+          let(:source) { subject.source.reject(&:gas?).reject(&:simple?) }
           let(:generator) { stub_generator(typical_reactions: [subject]) }
           let(:reaction) { generator.reaction_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, reaction) }
@@ -34,9 +35,9 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_drop }
-            let(:a1) { cross_bridge_on_bridges_base.atom(:ctl) }
-            let(:a2) { cross_bridge_on_bridges_base.atom(:cm) }
-            let(:a3) { cross_bridge_on_bridges_base.atom(:ctr) }
+            let(:a1) { source.first.atom(:ctl) }
+            let(:a2) { source.first.atom(:cm) }
+            let(:a3) { source.first.atom(:ctr) }
 
             let(:flatten_face_grouped_atoms) { [[a1, a2, a3]] }
             let(:nodes_list) do
@@ -55,8 +56,8 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_dimer_formation }
-            let(:a1) { df_source.first.atom(:ct) }
-            let(:a2) { df_source.last.atom(:ct) }
+            let(:a1) { source.first.atom(:ct) }
+            let(:a2) { source.last.atom(:ct) }
 
             let(:flatten_face_grouped_atoms) { [[a1, a2]] }
             let(:nodes_list) do
@@ -74,9 +75,29 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_incoherent_dimer_drop }
+            let(:id) { source.first }
+            let(:cr) { id.atom(:cr) }
+            let(:cl) { id.atom(:cl) }
+
+            let(:flatten_face_grouped_atoms) { [[cr, cl]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueReactant, cr],
+                [Instances::UniqueReactant, cl]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [cr, cl] => []
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_formation }
-            let(:a1) { crm_products.last.atom(:ct) }
-            let(:a2) { crm_products.first.atom(:cb) }
+            let(:a1) { source.last.atom(:ct) }
+            let(:a2) { source.first.atom(:cb) }
 
             let(:flatten_face_grouped_atoms) { [[a1, a2]] }
             let(:nodes_list) do
@@ -95,8 +116,8 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_intermed_migr_dc_formation }
-            let(:abr) { imdcf_source.first }
-            let(:amod) { imdcf_source.last }
+            let(:abr) { source.first }
+            let(:amod) { source.last }
             let(:ab) { abr.atom(:cr) }
             let(:ad) { amod.atom(:cr) }
 
@@ -117,8 +138,8 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_intermed_migr_dh_formation }
-            let(:abr) { imdhf_source.first }
-            let(:amod) { imdhf_source.last }
+            let(:abr) { source.first }
+            let(:amod) { source.last }
             let(:ab) { abr.atom(:cr) }
             let(:ob) { abr.atom(:cl) }
             let(:ad) { amod.atom(:cr) }
@@ -143,8 +164,8 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_methyl_incorporation }
-            let(:amob) { subject.source.first }
-            let(:ad) { subject.source.last }
+            let(:amob) { source.first }
+            let(:ad) { source.last }
             let(:am1) { amob.atom(:cr) }
             let(:am2) { amob.atom(:cl) }
             let(:ad1) { ad.atom(:cr) }
@@ -169,10 +190,9 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_methyl_to_gap }
-            let(:amob) { subject.source.first }
-            let(:br1) { subject.source[1] }
-            let(:br2) { subject.source[2] }
-
+            let(:amob) { source.first }
+            let(:br1) { source[1] }
+            let(:br2) { source[2] }
             let(:amr) { amob.atom(:cr) }
             let(:aml) { amob.atom(:cl) }
             let(:cr1) { br1.atom(:cr) }
@@ -193,6 +213,35 @@ module VersatileDiamond
                 [cr2] => [[[cr1], param_100_front]],
                 [aml, amr] => [[[cr2, cr1], param_100_cross]],
                 [cr2, cr1] => [[[aml, amr], param_100_cross]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_two_dimers_form }
+            let(:eamob) { source.first }
+            let(:rab) { source[1] }
+            let(:aid) { source[2] }
+            let(:mr) { eamob.atom(:cr) }
+            let(:ml) { eamob.atom(:cl) }
+            let(:ba) { rab.atom(:cr) }
+            let(:da) { aid.atom(:cl) }
+
+            let(:flatten_face_grouped_atoms) { [[mr, ml], [ba, da]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueReactant, mr],
+                [Instances::UniqueReactant, ml],
+                [Instances::UniqueReactant, ba],
+                [Instances::UniqueReactant, da]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [ba] => [[[da], param_100_front]],
+                [da] => [[[ba], param_100_front]],
+                [mr, ml] => [[[ba, da], param_100_cross]],
+                [ba, da] => [[[mr, ml], param_100_cross]]
               }
             end
           end

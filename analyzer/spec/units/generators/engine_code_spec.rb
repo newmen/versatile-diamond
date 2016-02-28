@@ -103,10 +103,17 @@ module VersatileDiamond
 
       describe '#usages_num && #many_times?' do
         subject do
-          stub_generator(base_specs: base_specs, typical_reactions: dept_reactions)
+          stub_generator(
+            base_specs: base_specs,
+            specific_specs: specific_specs,
+            typical_reactions: dept_reactions)
         end
+        let(:specific_specs) { [] }
 
         let(:latticed_too) { true }
+        let(:result) { num > 1 }
+        let(:num) { 1 }
+
         shared_examples_for :check_many_times do
           let(:atom) { spec.spec.atom(keyname) }
 
@@ -130,14 +137,11 @@ module VersatileDiamond
 
             it_behaves_like :check_many_times do
               let(:keyname) { :ct }
-              let(:result) { false }
-              let(:num) { 1 }
             end
 
             describe 'with latticed props' do
               it_behaves_like :check_many_times do
                 let(:keyname) { :cr }
-                let(:result) { true }
                 let(:num) { 2 }
               end
             end
@@ -145,7 +149,6 @@ module VersatileDiamond
             describe 'without latticed props' do
               let(:latticed_too) { false }
               let(:keyname) { :cr }
-              let(:result) { true }
               let(:num) { 2 }
 
               describe 'with many user specie' do
@@ -161,7 +164,6 @@ module VersatileDiamond
 
               describe 'without formation reaction' do
                 it_behaves_like :check_many_times do
-                  let(:result) { false }
                   let(:num) { 1 }
                 end
               end
@@ -173,13 +175,10 @@ module VersatileDiamond
 
             it_behaves_like :check_many_times do
               let(:keyname) { :cb }
-              let(:result) { false }
-              let(:num) { 1 }
             end
 
             it_behaves_like :check_many_times do
               let(:keyname) { :cm }
-              let(:result) { true }
               let(:num) { 2 }
             end
           end
@@ -188,8 +187,6 @@ module VersatileDiamond
             it_behaves_like :check_many_times do
               let(:spec) { dept_dimer_base }
               let(:keyname) { :cr }
-              let(:result) { false }
-              let(:num) { 1 }
             end
           end
         end
@@ -205,9 +202,6 @@ module VersatileDiamond
           end
           let(:dept_reactions) { [dept_intermed_migr_dc_formation] }
 
-          let(:result) { false }
-          let(:num) { 1 }
-
           describe 'methyl on bridge atoms' do
             let(:spec) { dept_methyl_on_bridge_base }
 
@@ -217,12 +211,11 @@ module VersatileDiamond
 
             it_behaves_like :check_many_times do
               let(:keyname) { :cm }
-              let(:result) { true }
               let(:num) { 2 }
             end
           end
 
-          describe 'methyl on bridge atoms' do
+          describe 'methyl on dimer atoms' do
             let(:spec) { dept_methyl_on_dimer_base }
 
             it_behaves_like :check_many_times do
@@ -237,6 +230,44 @@ module VersatileDiamond
           it_behaves_like :check_many_times do
             let(:spec) { dept_intermed_migr_down_common_base }
             let(:keyname) { :cm }
+          end
+        end
+
+        describe 'methyl incorporation species' do
+          let(:base_specs) do
+            [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+          end
+          let(:specific_specs) do
+            [dept_activated_methyl_on_bridge, dept_activated_dimer]
+          end
+          let(:dept_reactions) { [dept_methyl_incorporation] }
+
+          describe 'activated methyl on bridge atoms' do
+            let(:spec) { dept_activated_methyl_on_bridge }
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cr }
+            end
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cb }
+            end
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cm }
+            end
+          end
+
+          describe 'activated dimer atoms' do
+            let(:spec) { dept_activated_dimer }
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cr }
+            end
+
+            it_behaves_like :check_many_times do
+              let(:keyname) { :cl }
+            end
           end
         end
       end
