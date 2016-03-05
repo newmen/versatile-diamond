@@ -49,9 +49,6 @@ module VersatileDiamond
             end
 
             describe 'not only cross neighbours' do
-              let(:lateral_bridge) { (sidepiece_specs - [lateral_dimer]).first }
-              let(:b) { lateral_bridge.atom(:ct) }
-
               let(:nodes_list) do
                 [
                   [Instances::UniqueReactant, t1],

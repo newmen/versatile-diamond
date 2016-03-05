@@ -45,10 +45,11 @@ module VersatileDiamond
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
-            LateralSpec *species1[2] = { neighbours1[0]->specByRole<Dimer>(#{dimer_cr}), neighbours1[1]->specByRole<Dimer>(#{dimer_cr}) };
-            if (species1[0] && species1[0] == species1[1])
+            Dimer *specie1 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
+            Dimer *specie2 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
+            if (specie1 && specie1 == specie2)
             {
-                chunks[index++] = new #{class_name}(this, species1[0]);
+                chunks[index++] = new #{class_name}(this, specie1);
             }
         }
     });
@@ -75,23 +76,21 @@ module VersatileDiamond
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
-            LateralSpec *species1[2] = { neighbours1[0]->specByRole<Dimer>(#{dimer_cr}), neighbours1[1]->specByRole<Dimer>(#{dimer_cr}) };
-            if (species1[0] && species1[0] == species1[1])
+            Dimer *specie1 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
+            Dimer *specie2 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
+            if (specie1 && specie1 == specie2)
             {
-                chunks[index++] = new ForwardDimerFormationEndLateral(this, species1[0]);
+                chunks[index++] = new ForwardDimerFormationEndLateral(this, specie1);
             }
         }
     });
     eachNeighbour(atoms1[0], &Diamond::front_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{bridge_ct}))
+        if (neighbour1 != atoms1[1] && neighbour1->is(#{bridge_ct}))
         {
-            if (neighbour1 != atoms1[1])
+            LateralSpec *specie1 = neighbour1->specByRole<Bridge>(#{bridge_ct});
+            if (specie1)
             {
-                LateralSpec *specie1 = neighbour1->specByRole<Bridge>(#{bridge_ct});
-                if (specie1)
-                {
-                    chunks[index++] = new #{generating_class_name}(this, specie1);
-                }
+                chunks[index++] = new #{generating_class_name}(this, specie1);
             }
         }
     });
@@ -126,15 +125,12 @@ module VersatileDiamond
             }
         });
         eachNeighbour(atoms1[ae1], &Diamond::front_100, [&](Atom *neighbour1) {
-            if (neighbour1->is(#{ab_ct}))
+            if (neighbour1 != atoms1[1-ae1] && neighbour1->is(#{ab_ct}))
             {
-                if (neighbour1 != atoms1[1 - ae1])
+                LateralSpec *specie1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
+                if (specie1)
                 {
-                    LateralSpec *specie1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
-                    if (specie1)
-                    {
-                        chunks[index++] = new #{front_cmb_name}(this, specie1);
-                    }
+                    chunks[index++] = new #{front_cmb_name}(this, specie1);
                 }
             }
         });

@@ -231,9 +231,7 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *atom1 = specie1->atom(2);
-        Atom *atom2 = specie1->atom(1);
-        Atom *anchors[2] = { atom1, atom2 };
+        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cr}))
             {
@@ -262,9 +260,7 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = target->atom(1);
-    Atom *atom2 = target->atom(4);
-    Atom *anchors[2] = { atom1, atom2 };
+    Atom *anchors[2] = { target->atom(1), target->atom(4) };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}))
         {
@@ -295,9 +291,7 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *atom1 = specie1->atom(2);
-        Atom *atom2 = specie1->atom(1);
-        Atom *anchors[2] = { atom1, atom2 };
+        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
             {
@@ -323,9 +317,7 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = target->atom(1);
-    Atom *atom2 = target->atom(4);
-    Atom *anchors[2] = { atom1, atom2 };
+    Atom *anchors[2] = { target->atom(1), target->atom(4) };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
@@ -355,9 +347,7 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *atom1 = specie1->atom(3);
-        Atom *atom2 = specie1->atom(2);
-        Atom *anchors[2] = { atom1, atom2 };
+        Atom *anchors[2] = { specie1->atom(3), specie1->atom(2) };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
             {
@@ -378,9 +368,7 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = target->atom(3);
-    Atom *atom2 = target->atom(0);
-    Atom *anchors[2] = { atom1, atom2 };
+    Atom *anchors[2] = { target->atom(3), target->atom(0) };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
@@ -414,9 +402,7 @@ module VersatileDiamond
               let(:other_spec) { dept_right_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = target->atom(2);
-    Atom *atom2 = target->atom(3);
-    Atom *anchors[2] = { atom1, atom2 };
+    Atom *anchors[2] = { target->atom(2), target->atom(3) };
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
@@ -570,9 +556,7 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *atom1 = specie1->atom(2);
-        Atom *atom2 = specie1->atom(3);
-        Atom *anchors[2] = { atom1, atom2 };
+        Atom *anchors[2] = { specie1->atom(2), specie1->atom(3) };
         eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{thrid_role_cr}))
             {

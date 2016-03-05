@@ -38,7 +38,7 @@ module VersatileDiamond
               if target_atoms.size == 2 && namer.full_array?(target_atoms)
                 atoms_var_name = name_of(target_atoms)
                 namer.reassign("#{atoms_var_name}[#{i}]", target_atoms.first)
-                namer.reassign("#{atoms_var_name}[1 - #{i}]", target_atoms.last)
+                namer.reassign("#{atoms_var_name}[1-#{i}]", target_atoms.last)
               else
                 # TODO: maybe need to redefine atoms as separated array before loop
                 # statement in the case when atoms are not "full array"

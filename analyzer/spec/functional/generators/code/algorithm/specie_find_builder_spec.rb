@@ -396,7 +396,7 @@ module VersatileDiamond
                 {
                     Atom *atom1 = species1[se]->atom(2);
                     ParentSpec *specie1 = atom1->specByRole<Bridge>(#{b_ct});
-                    ParentSpec *parents[3] = { species1[se], species1[1 - se], specie1 };
+                    ParentSpec *parents[3] = { species1[se], species1[1-se], specie1 };
                     create<ThreeBridges>(parents);
                 }
             });
