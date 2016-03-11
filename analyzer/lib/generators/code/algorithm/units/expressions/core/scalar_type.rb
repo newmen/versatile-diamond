@@ -7,7 +7,7 @@ module VersatileDiamond
         class ScalarType < Constant
           class << self
             # @param [Object] name
-            # @return [Type]
+            # @return [ScalarType]
             def [](name)
               if_validated(name) { super }
             end
@@ -20,7 +20,7 @@ module VersatileDiamond
               if !str?(name)
                 arg_err!("Wrong type name #{name.inspect}")
               elsif empty?(name)
-                arg_err!('Type cannot be empty')
+                arg_err!('ScalarType cannot be empty')
               else
                 block.call
               end
@@ -60,7 +60,7 @@ module VersatileDiamond
             !!(value =~ /\*$/)
           end
 
-          # @return [Type]
+          # @return [ScalarType]
           def ptr
             before = ptr? ? value : "#{value} "
             ScalarType["#{before}*"]

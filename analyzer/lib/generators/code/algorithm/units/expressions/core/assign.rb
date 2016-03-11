@@ -7,7 +7,7 @@ module VersatileDiamond
         class Assign < Statement
           class << self
             # @param [Variable] var
-            # @option [Type] :type
+            # @option [ScalarType] :type
             # @option [Expression] :value
             # @return [Assign]
             def [](var, type: nil, value: nil)
@@ -31,7 +31,7 @@ module VersatileDiamond
           def_delegator :@var, :using
 
           # @param [Variable] var
-          # @option [Type] :type
+          # @option [ScalarType] :type
           # @option [Expression] :value
           def initialize(var, type: nil, value: nil)
             @var = var.freeze
