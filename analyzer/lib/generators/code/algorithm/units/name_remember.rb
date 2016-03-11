@@ -44,7 +44,7 @@ module VersatileDiamond
           #   variable
           # @param [String] single_name the singular name of one variable
           # @return [String] the assigned name
-          def reassign(vars, single_name)
+          def reassign!(vars, single_name)
             store_variables(:replace, vars, single_name)
             name_of(vars)
           end
@@ -56,7 +56,7 @@ module VersatileDiamond
           # @option [Boolean] :pluralize is a flag which if set then passed name
           #   should be pluralized
           # @return [String] the assigned name
-          def assign(vars, single_name, pluralize: true)
+          def assign!(vars, single_name, pluralize: true)
             store_variables(:check_and_store, vars, single_name, pluralize: pluralize)
             name_of(vars)
           end
@@ -65,13 +65,13 @@ module VersatileDiamond
           #   make a new next name of variable
           # @param [Object] var the variable for which name will assigned
           # @param [String] single_name without additional index what will using for
-          def assign_next(var, single_name)
+          def assign_next!(var, single_name)
             correct_name = single?(var) ? single_name : single_name.pluralize
             last_name = @next_names.find { |n| n =~ /^#{correct_name}\d+$/ }
             max_index = (last_name && last_name.scan(/\d+$/).first.to_i) || 0
             next_name = "#{correct_name}#{max_index.next}"
             @next_names.unshift(next_name)
-            assign(var, next_name, pluralize: false)
+            assign!(var, next_name, pluralize: false)
           end
 
           # Gets a previous names of variable
@@ -191,12 +191,12 @@ module VersatileDiamond
           end
 
           # Assign unique names for each variables
-          # @param [Symbol] method_name the method of name which will used for assign
+          # @param [Symbol] method_name the method of name which will used for assign!
           #   name for each variable
           # @param [Array | Object] vars the list of remembing variables or single
           #   variable
           # @param [String] single_name the singular name of one variable
-          # @option [Boolean] :pluralize see at #assign same option
+          # @option [Boolean] :pluralize see at #assign! same option
           def store_variables(method_name, vars, single_name, pluralize: true)
             if single?(vars)
               send(method_name, single_value(vars), single_name)

@@ -11,7 +11,7 @@ module VersatileDiamond
           class << self
             # @param [NameRemember] namer
             # @param [Object] instance
-            # @param [Type] type
+            # @param [ScalarType] type
             # @param [String] name
             # @param [Expression] value
             # @param [Hash] nopts
@@ -36,8 +36,8 @@ module VersatileDiamond
 
             # Assigns the name of variable to instance
             # @return [String] the assigned name of variable
-            def assign_name(namer, definig_instance, assigning_name, next_name: true)
-              namer_method_name = next_name ? :assign_next : :assign
+            def assign_name!(namer, definig_instance, assigning_name, next_name: true)
+              namer_method_name = next_name ? :assign_next! : :assign!
               namer.public_send(namer_method_name, definig_instance, assigning_name)
             end
 
@@ -56,7 +56,7 @@ module VersatileDiamond
 
           # @param [NameRemember] namer
           # @param [Object] instance
-          # @param [Type] type
+          # @param [ScalarType] type
           # @param [String] name
           # @param [Expression] value
           # @param [Hash] nopts
@@ -67,7 +67,7 @@ module VersatileDiamond
             @value = value && value.freeze
 
             if name && !used_name
-              self.class.assign_name(namer, instance, name, **nopts)
+              self.class.assign_name!(namer, instance, name, **nopts)
             end
           end
 
@@ -135,7 +135,7 @@ module VersatileDiamond
             @namer.name_of(@instance)
           end
 
-          # @return [Type]
+          # @return [ScalarType]
           def arg_type
             @type
           end
