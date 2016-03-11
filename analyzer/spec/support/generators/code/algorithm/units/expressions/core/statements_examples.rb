@@ -36,7 +36,6 @@ module VersatileDiamond
               let(:vvl) { Variable[namer, Object.new, type.ptr, 'val', func0] }
 
               let(:many_arr) { Collection[namer, [:p, :q], type.ptr, 'many', [x, y]] }
-              let(:mono_arr) { Collection[namer, :mono, type.ptr, 'mono', func1] }
 
               let(:lda) { Lambda[namer, var, func0 + func1] }
               let(:for_loop) do

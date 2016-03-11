@@ -8,7 +8,7 @@ module VersatileDiamond
           class << self
             # @param [NameRemember] namer
             # @param [Array] instances
-            # @param [Type] type of collection item
+            # @param [ScalarType] type of collection item
             # @param [String] name which will be pluralized
             # @param [Array] values
             # @param [Hash] nopts
@@ -16,12 +16,13 @@ module VersatileDiamond
             def [](namer, instances, type, name, values = nil, **nopts)
               if diff_sizes?(instances, values)
                 arg_err!('Number of instances is not equal to number of values')
-              elsif arr?(instances)
-                name, vars = to_vars(namer, instances, type, name, values, **nopts)
+              elsif !arr?(instances) || instances.size < 2
+                arg_err!('Collection must contain more than one item')
               else
-                vars = [Variable[namer, instances, type, name, values, **nopts]]
+                name, items = to_vars(namer, instances, type, name, values, **nopts)
+                # items as option cause super #[] method does not get items
+                super(namer, instances, type, name, values, items: items)
               end
-              super(namer, instances, type, name, values, vars: vars)
             end
 
           private
@@ -36,11 +37,11 @@ module VersatileDiamond
 
             # @param [NameRemember] namer
             # @param [Array] instances
-            # @param [Type] type
+            # @param [ScalarType] type
             # @param [String] name which will be pluralized
             # @param [Array] values
             # @param [Hash] nopts
-            # @return [Array] first is assigned name of array, second is list of vars
+            # @return [Array] first is assigned name of array, second is list of items
             def to_vars(namer, instances, type, name, values = nil, **nopts)
               arr_name = assign_name(namer, instances, name, **nopts)
               names = instances.map(&namer.public_method(:name_of))
@@ -49,41 +50,37 @@ module VersatileDiamond
             end
           end
 
+          attr_reader :items
+
           # @param [NameRemember] namer
-          # @param [Array] insts
-          # @param [Type] type
+          # @param [Array] instances
+          # @param [ScalarType] type
           # @param [String] name which will be pluralized
           # @param [Array] values
-          # @option [Array] :vars
-          def initialize(namer, insts, type, name, values = nil, vars: [])
-            super(namer, insts, type, name, values)
-            @vars = vars
+          # @option [Array] :items (cause super #class.[] method does not get items)
+          def initialize(namer, instances, type, name, values = nil, items: [])
+            super(namer, instances, type, name, values)
+            @items = items
           end
 
           # @param [Integer] index
           # @return [Variable]
           def [](index)
-            if one?
-              mtd_err!("Current variable isn't collection")
-            else
-              @vars[index] || arg_err!("Wrong passing index #{index}")
-            end
+            @items[index] || arg_err!("Wrong passing index #{index}")
           end
 
           %i(define_var define_arg).each do |method_name|
             # @return [Assign]
             # @override
-            define_method(method_name) do
-              one? ? first.public_send(method_name) : super()
-            end
+            define_method(method_name) { super() }
           end
 
-          # @param [Array] vars
+          # @param [Array] items
           # @return [Array] list of using variables
           # @override
-          def using(vars)
-            current, next_vars = self_using(vars)
-            current + (value ? @vars.flat_map { |v| v.using(next_vars) } : [])
+          def using(items)
+            current, next_vars = self_using(items)
+            current + (value ? @items.flat_map { |v| v.using(next_vars) } : [])
           end
 
           # @param [String] method_name
@@ -92,21 +89,15 @@ module VersatileDiamond
           # @raise [Exception]
           # @override
           def call(method_name, *args, **kwargs)
-            if one?
-              first.call(method_name, *args, **kwargs)
-            else
-              mtd_err!("Method #{method_name.inspect} cannot be called for collection")
-            end
+            mtd_err!("Method #{method_name.inspect} cannot be called for collection")
           end
 
         private
 
-          def_delegators :@vars, :one?, :first
-
           # @return [OpCombine]
           # @override
           def full_name
-            super + OpSquireBks[Constant[@vars.size]]
+            super + OpSquireBks[Constant[@items.size]]
           end
 
           # @return [OpBraces] initial value of array or nil
@@ -115,7 +106,7 @@ module VersatileDiamond
             super && OpBraces[OpSequence[*super], multilines: false]
           end
 
-          # @return [Type]
+          # @return [ScalarType]
           # @override
           def arg_type
             super.ptr

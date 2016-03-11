@@ -16,6 +16,8 @@ module VersatileDiamond
             it { expect(mono_arr).to be_a(described_class) }
 
             it { expect { described_class[namer, [], type, 'xx'] }.to raise_error }
+            it { expect { described_class[namer, :one, type, 'one'] }.to raise_error }
+            it { expect { described_class[namer, [:o], type, 'o'] }.to raise_error }
 
             describe 'wrong number of values' do
               let(:wrong_arr) { described_class[namer, [:a, :b], type, 'nm', ['v']] }
@@ -30,26 +32,29 @@ module VersatileDiamond
             it { expect(subject[1]).to be_a(Variable) }
             it { expect { subject[2] }.to raise_error }
             it { expect { mono_arr[0] }.to raise_error }
+
+            it { expect(subject[0].code).to eq('manies1[0]') }
+          end
+
+          describe '#items' do
+            it { expect(subject.items).to be_a(Array) }
+            it { expect(subject.items[0]).to eq(subject[0]) }
           end
 
           describe '#code' do
             it { expect(subject.code).to eq('manies1') }
-            it { expect(mono_arr.code).to eq('mono1') }
           end
 
           describe '#define_var' do
             it { expect(subject.define_var.code).to eq('Yo *manies1[2] = { x, y }') }
-            it { expect(mono_arr.define_var.code).to eq('Yo *mono1 = mono(x)') }
           end
 
           describe '#define_arg' do
             it { expect(subject.define_arg.code).to eq('Yo **manies1') }
-            it { expect(mono_arr.define_arg.code).to eq('Yo *mono1') }
           end
 
           describe '#call' do
             it { expect { subject.call('some') }.to raise_error }
-            it { expect(mono_arr.call('some').code).to eq('mono1->some()') }
           end
         end
 
