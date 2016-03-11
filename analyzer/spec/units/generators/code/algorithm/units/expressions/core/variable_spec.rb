@@ -23,6 +23,10 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          describe '#instance' do
+            it { expect(subject.instance).to eq(:var) }
+          end
+
           describe '#code' do
             it { expect(subject.code).to eq('obj1') }
             it { expect { described_class[namer, :v, type].code }.to raise_error }

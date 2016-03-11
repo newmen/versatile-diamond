@@ -13,8 +13,6 @@ module VersatileDiamond
           let(:is_var) { true }
 
           describe '#self.[]' do
-            it { expect(mono_arr).to be_a(described_class) }
-
             it { expect { described_class[namer, [], type, 'xx'] }.to raise_error }
             it { expect { described_class[namer, :one, type, 'one'] }.to raise_error }
             it { expect { described_class[namer, [:o], type, 'o'] }.to raise_error }

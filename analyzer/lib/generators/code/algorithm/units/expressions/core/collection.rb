@@ -12,16 +12,19 @@ module VersatileDiamond
             # @param [String] name which will be pluralized
             # @param [Array] values
             # @param [Hash] nopts
+            # @yield [Object, String, Expression] gets an instance of item
             # @return [Collection]
-            def [](namer, instances, type, name, values = nil, **nopts)
+            def [](namer, instances, type, name, values = nil, **nopts, &block)
               if diff_sizes?(instances, values)
                 arg_err!('Number of instances is not equal to number of values')
               elsif !arr?(instances) || instances.size < 2
                 arg_err!('Collection must contain more than one item')
               else
-                name, items = to_vars(namer, instances, type, name, values, **nopts)
+                arr_name = assign_name!(namer, instances, name, **nopts)
+                proc = block_given? ? block : default_item_proc(namer, type)
+                items = to_vars(namer, instances, values, &proc)
                 # items as option cause super #[] method does not get items
-                super(namer, instances, type, name, values, items: items)
+                super(namer, instances, type, arr_name, values, items: items)
               end
             end
 
@@ -36,17 +39,20 @@ module VersatileDiamond
             end
 
             # @param [NameRemember] namer
-            # @param [Array] instances
             # @param [ScalarType] type
-            # @param [String] name which will be pluralized
+            # @return [Proc]
+            def default_item_proc(namer, type)
+              -> instance, name, value { Variable[namer, instance, type, name, value] }
+            end
+
+            # @param [NameRemember] namer
+            # @param [Array] instances
             # @param [Array] values
-            # @param [Hash] nopts
-            # @return [Array] first is assigned name of array, second is list of items
-            def to_vars(namer, instances, type, name, values = nil, **nopts)
-              arr_name = assign_name(namer, instances, name, **nopts)
+            # @yield [Object, String, Expression] gets an instance of item
+            # @return [Array] list of items
+            def to_vars(namer, instances, values = nil, &block)
               names = instances.map(&namer.public_method(:name_of))
-              triples = instances.zip(names, values || [nil].cycle)
-              [arr_name, triples.map { |i, n, v| Variable[namer, i, type, n, v] }]
+              instances.zip(names, values || [nil].cycle).map(&block)
             end
           end
 

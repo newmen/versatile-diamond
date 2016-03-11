@@ -53,6 +53,7 @@ module VersatileDiamond
           end
 
           def_delegator :name, :code
+          attr_reader :instance
 
           # @param [NameRemember] namer
           # @param [Object] instance
