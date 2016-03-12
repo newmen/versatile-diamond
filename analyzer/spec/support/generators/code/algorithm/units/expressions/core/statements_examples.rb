@@ -32,7 +32,7 @@ module VersatileDiamond
               let(:scalar) { ScalarType['int'] }
 
               let(:scv) { Variable[namer, 1, scalar, 'i', Constant[0]]}
-              let(:var) { Variable[namer, Object.new, type.ptr, 'obj'] }
+              let(:var) { Variable[namer, :var, type.ptr, 'obj'] }
               let(:vvl) { Variable[namer, Object.new, type.ptr, 'val', func0] }
 
               let(:many_arr) { Collection[namer, [:p, :q], type.ptr, 'many', [x, y]] }

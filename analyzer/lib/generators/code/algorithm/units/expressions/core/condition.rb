@@ -10,11 +10,21 @@ module VersatileDiamond
             # @param [Array] exprs
             # @return [Condition]
             def [](checking_expr, *exprs)
-              if checking_expr.expr? && exprs.all? { |expr| expr.expr? || expr.cond? }
+              if valid?(checking_expr, exprs)
                 super
               else
                 arg_err!("Wrong type of condition expression #{exprs.inspect}")
               end
+            end
+
+          private
+
+            # @param [Expression] checking_expr
+            # @param [Array] exprs
+            # @return [Boolean]
+            def valid?(checking_expr, exprs)
+              checking_expr.expr? &&
+                exprs.all? { |expr| expr.expr? || expr.assign? || expr.cond? }
             end
           end
 

@@ -6,36 +6,20 @@ module VersatileDiamond
       module Algorithm::Instances
 
         describe UniqueReactant, type: :algorithm do
-          subject { described_class.new(generator, veiled_spec) }
-
-          let(:base_specs) { [dept_bridge_base, original] }
-          let(:specific_specs) { [] }
-          let(:generator) do
-            stub_generator(base_specs: base_specs, specific_specs: specific_specs)
-          end
-
-          let(:original) { dept_methyl_on_bridge_base }
-          let(:concept_spec) { original.spec }
-          let(:veiled_spec) { Concepts::VeiledSpec.new(concept_spec) }
-
-          USING_KEYNAMES = [:cm, :cb, :cr, :cl].freeze
-          let(:atoms) { USING_KEYNAMES.map { |keyname| veiled_spec.atom(keyname) } }
-          USING_KEYNAMES.each_with_index do |keyname, i|
-            let(:"v_#{keyname}") { atoms[i] }
-          end
+          include_context :unique_reactant_context
 
           describe '#original' do
             it { expect(subject.original).to be_a(Code::Specie) }
-            it { expect(subject.original.spec).to eq(original) }
+            it { expect(subject.original.spec).to eq(dept_unique_reactant) }
           end
 
           describe '#spec' do
-            it { expect(subject.spec.name).to eq(original.name) }
-            it { expect(subject.spec).not_to eq(original) }
+            it { expect(subject.spec.name).to eq(dept_unique_reactant.name) }
+            it { expect(subject.spec).not_to eq(dept_unique_reactant) }
           end
 
           describe '#concept' do
-            it { expect(subject.concept).to eq(veiled_spec) }
+            it { expect(subject.concept).to eq(vl_unique_reactant) }
           end
 
           describe '#<=>' do
@@ -89,25 +73,25 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_atom_methods do
-              let(:atom) { v_cm }
+              let(:atom) { cm }
               let(:index) { 0 }
               let(:anchor) { true }
             end
 
             it_behaves_like :check_atom_methods do
-              let(:atom) { v_cb }
+              let(:atom) { cb }
               let(:index) { 1 }
               let(:anchor) { true }
             end
 
             it_behaves_like :check_atom_methods do
-              let(:atom) { v_cl }
+              let(:atom) { cl }
               let(:index) { 2 }
               let(:anchor) { false }
             end
 
             it_behaves_like :check_atom_methods do
-              let(:atom) { v_cr }
+              let(:atom) { cr }
               let(:index) { 3 }
               let(:anchor) { false }
             end

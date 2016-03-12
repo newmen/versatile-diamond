@@ -6,29 +6,18 @@ module VersatileDiamond
       module Algorithm::Instances
 
         describe NoneSpecie, type: :algorithm do
-          subject { described_class.new(generator, specie) }
-          let(:specie) { generator.specie_class(spec.name) }
-          let(:spec) { dept_bridge_base }
-
-          let(:base_specs) { [spec] }
-          let(:specific_specs) { [] }
-          let(:typical_reactions) { [] }
-          let(:generator) do
-            stub_generator(base_specs: base_specs,
-                           specific_specs: specific_specs,
-                           typical_reactions: typical_reactions)
-          end
+          include_context :none_specie_context
 
           describe '#original' do
-            it { expect(subject.original).to eq(specie) }
+            it { expect(subject.original).to eq(orig_none_specie) }
           end
 
           describe '#spec' do
-            it { expect(subject.spec).to eq(specie.spec) }
+            it { expect(subject.spec).to eq(orig_none_specie.spec) }
           end
 
           describe '<=>' do
-            let(:base_specs) { [spec, other_spec] }
+            let(:base_specs) { [dept_none_specie, other_spec] }
             let(:other_spec) { dept_methyl_on_bridge_base }
             let(:other_specie) { generator.specie_class(other_spec.name) }
             let(:other_instance) { described_class.new(generator, other_specie) }
@@ -78,10 +67,6 @@ module VersatileDiamond
               describe '#many?' do
                 it { expect(subject.many?(atom)).to eq(many) }
               end
-            end
-
-            [:ct, :cr, :cl].each do |keyname|
-              let(keyname) { specie.spec.spec.atom(keyname) }
             end
 
             it_behaves_like :check_atom_methods do
