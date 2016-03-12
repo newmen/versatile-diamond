@@ -7,12 +7,10 @@ module VersatileDiamond
         class PureManyUnits < BaseUnit
 
           # All different anchor atoms should have names
-          # @param [VarsDictionary] context
-          def entry_point!(context)
+          def entry_point!
             if atoms.one?
               anchor = atoms.first
-              var = one_atom_variable(anchor, name: Code::Specie::ANCHOR_ATOM_NAME)
-              context.retain_var!(anchor, var)
+              dict.make_atom_s(anchor, name: Code::Specie::ANCHOR_ATOM_NAME)
             else
               raise 'Incorrect number of entry atoms'
             end

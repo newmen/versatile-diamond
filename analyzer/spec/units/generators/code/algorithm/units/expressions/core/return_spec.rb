@@ -21,7 +21,7 @@ module VersatileDiamond
           it_behaves_like :check_predicates
 
           describe '#code' do
-            it { expect(subject.code).to eq('return obj1->foo(x, x)') }
+            it { expect(subject.code).to eq('return obj->foo(x, x)') }
           end
         end
 

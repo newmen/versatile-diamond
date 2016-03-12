@@ -9,13 +9,13 @@ module VersatileDiamond
           include Expression
 
           class << self
-            # @param [NameRemember] namer
+            # @param [Array] defined_vars
             # @param [Array] arg_vars
             # @param [Expression] body
             # @return [Lambda]
-            def [](namer, *arg_vars, body)
-              if !namer
-                arg_err!('Name remember is not set')
+            def [](defined_vars, *arg_vars, body)
+              if !defined_vars
+                arg_err!('Variables dictionary is not set')
               elsif !arg_vars.all?(&:var?)
                 msg = "Wrong type of lambda argument variable #{arg_vars.inspect}"
                 arg_err!(msg)
@@ -30,11 +30,11 @@ module VersatileDiamond
 
           def_delegator :@body, :using
 
-          # @param [NameRemember] namer
+          # @param [Array] defined_vars
           # @param [Array] arg_vars
           # @param [Expression] body
-          def initialize(namer, *arg_vars, body)
-            @namer = namer
+          def initialize(defined_vars, *arg_vars, body)
+            @defined_vars = defined_vars
             @arg_vars = arg_vars.freeze
             @body = body
           end
@@ -42,7 +42,7 @@ module VersatileDiamond
           # @return [String]
           def code
             [
-              closure_vars,
+              OpSquireBks[closure_vars],
               OpRoundBks[OpSequence[*@arg_vars.map(&:define_arg)]],
               OpBraces[@body]
             ].map(&:code).join
@@ -57,18 +57,16 @@ module VersatileDiamond
 
         private
 
-          # @return [OpSquireBks]
+          # @return [Statement]
           def closure_vars
-            all_defined_vars = @namer.defined_vars
-            vars = using(all_defined_vars).map(&OpRef.public_method(:[]))
+            vars = using(@defined_vars).map(&OpRef.public_method(:[]))
             if vars.empty?
-              expr = Constant['']
-            elsif lists_are_identical?(vars, all_defined_vars, &:==)
-              expr = OpRef[Constant['']]
+              Constant['']
+            elsif lists_are_identical?(vars, @defined_vars, &:==)
+              OpRef[Constant['']]
             else
-              expr = OpSequence[*vars.sort(&:code)]
+              OpSequence[*vars.sort(&:code)]
             end
-            OpSquireBks[expr]
           end
         end
 

@@ -9,12 +9,10 @@ module VersatileDiamond
           include Modules::ListsComparer
           extend Forwardable
 
-          def_delegators :@vars_dict, :retain_var!, :var_of
-
-          # @param [VarsDictionary] vars_dict
+          # @param [Units::Expressions::VarsDictionary] dict
           # @param [Array] ordered_backbone
-          def initialize(vars_dict, ordered_backbone)
-            @vars_dict = vars_dict
+          def initialize(dict, ordered_backbone)
+            @dict = dict
             @backbone_graph = Hash[ordered_backbone]
           end
 
@@ -91,7 +89,7 @@ module VersatileDiamond
           # @return [Array]
           def nodes_with_undefined_atoms_of(uniq_species)
             backbone_graph.keys.reject do |nodes|
-              nodes.map(&:atom).any? { |atom| @vars_dict.var_of(atom) }
+              nodes.map(&:atom).any? { |atom| @dict.var_of(atom) }
             end
           end
         end

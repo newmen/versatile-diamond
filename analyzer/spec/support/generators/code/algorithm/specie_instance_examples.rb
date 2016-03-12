@@ -76,6 +76,10 @@ module VersatileDiamond
               let(:uniq_reactant_inst) do
                 Instances::UniqueReactant.new(generator, vl_unique_reactant)
               end
+
+              [:cm, :cb, :cr, :cl].each do |keyname|
+                let(keyname) { vl_unique_reactant.atom(keyname) }
+              end
             end
 
             shared_context :unique_reactant_context do
@@ -86,10 +90,6 @@ module VersatileDiamond
 
               let(:base_specs) { [dept_bridge_base, dept_unique_reactant] }
               let(:dept_unique_reactant) { dept_methyl_on_bridge_base }
-
-              [:cm, :cb, :cr, :cl].each do |keyname|
-                let(keyname) { vl_unique_reactant.atom(keyname) }
-              end
             end
           end
 

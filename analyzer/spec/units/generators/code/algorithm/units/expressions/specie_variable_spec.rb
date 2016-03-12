@@ -6,24 +6,20 @@ module VersatileDiamond
       module Algorithm::Units::Expressions
 
         describe SpecieVariable, type: :algorithm do
-          let(:namer) { Algorithm::Units::NameRemember.new }
+          let(:dict) { VarsDictionary.new }
+          let(:var) { dict.make_specie_s(subject) }
 
           describe '#define_arg' do
             include_context :unique_parent_context
-            let(:var) { described_class[namer, subject] }
             it { expect(var.define_arg.code).to eq('Bridge *bridge1') }
           end
 
           describe '#iterate_symmetries' do
             shared_examples_for :check_symmetries_iteration do
-              let(:var) { described_class[namer, subject] }
               let(:body) { Core::FunctionCall['hello'] }
-              let(:result) { var.iterate_symmetries(type, body) }
-
-              it { expect(result.first).to be_a(described_class) }
-              it { expect(result.first.instance).to eq(subject) }
-
-              it { expect(result.last.code).to eq(code) }
+              let(:inner_var) { dict.make_specie_s(subject, type: type) }
+              let(:result) { var.iterate_symmetries([], inner_var, body) }
+              it { expect(result.code).to eq(code.rstrip) }
             end
 
             describe 'unique parent' do

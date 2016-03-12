@@ -9,17 +9,13 @@ module VersatileDiamond
           include Expression
 
           class << self
-            # @param [NameRemember] namer
             # @param [Object] instance
             # @param [ScalarType] type
             # @param [String] name
             # @param [Expression] value
-            # @param [Hash] nopts
             # @return [Variable]
-            def [](namer, instance, type, name = nil, value = nil, **nopts)
-              if !namer
-                arg_err!('Name remember is not set')
-              elsif !instance || (arr?(instance) && instance.empty?)
+            def [](instance, type, name, value = nil)
+              if !instance || (arr?(instance) && instance.empty?)
                 arg_err!('Instance of variable is not set')
               elsif !type.type?
                 arg_err!("Wrong variable type #{type.inspect}")
@@ -34,13 +30,6 @@ module VersatileDiamond
               end
             end
 
-            # Assigns the name of variable to instance
-            # @return [String] the assigned name of variable
-            def assign_name!(namer, definig_instance, assigning_name, next_name: true)
-              namer_method_name = next_name ? :assign_next! : :assign!
-              namer.public_send(namer_method_name, definig_instance, assigning_name)
-            end
-
           private
 
             # @param [Object | Array] instance
@@ -52,24 +41,18 @@ module VersatileDiamond
             end
           end
 
-          def_delegator :name, :code
+          def_delegator :@name, :code
           attr_reader :instance
 
-          # @param [NameRemember] namer
           # @param [Object] instance
           # @param [ScalarType] type
           # @param [String] name
           # @param [Expression] value
-          # @param [Hash] nopts
-          def initialize(namer, instance, type, name = nil, value = nil, **nopts)
-            @namer = namer
+          def initialize(instance, type, name, value = nil)
             @instance = instance.freeze
             @type = type.freeze
+            @name = Constant[name].freeze
             @value = value && value.freeze
-
-            if name && !used_name
-              self.class.assign_name!(namer, instance, name, **nopts)
-            end
           end
 
           # Checks that current statement is variable
@@ -101,7 +84,7 @@ module VersatileDiamond
 
           # @return [Assign] the string with argument definition
           def define_arg
-            Assign[name, type: arg_type]
+            Assign[@name, type: arg_type]
           end
 
           # @param [String] method_name
@@ -114,26 +97,11 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer, :type, :value
-
-          # @return [Constant] the name of variable
-          # @override
-          def name
-            if used_name
-              Constant[used_name]
-            else
-              raise "Name was not assigned to #{@instance.inspect}"
-            end
-          end
+          attr_reader :type, :value
 
           # @return [Constant] the same name by default
           def full_name
-            name
-          end
-
-          # @return [String] the defined name of variable
-          def used_name
-            namer.name_of(instance)
+            @name
           end
 
           # @return [ScalarType]

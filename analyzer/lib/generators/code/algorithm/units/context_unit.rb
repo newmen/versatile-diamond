@@ -5,12 +5,13 @@ module VersatileDiamond
 
         # Decorates unit for bulding code on context
         class ContextUnit < GenerableUnit
+          extend Forwardable
 
-          # @param [NameRemember] namer
+          # @param [Expressions::VarsDictionary] dict
           # @param [BaseContext] context
           # @param [BaseUnit] unit
-          def initialize(namer, context, unit)
-            super(namer)
+          def initialize(dict, context, unit)
+            super(dict)
             @context = context
             @unit = unit
           end
@@ -33,7 +34,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Statement]
           def check_atom_roles(&block)
-            @context.var_of(atoms).check_roles_in(species, block.call)
+            dict.var_of(atoms).check_roles_in(species, block.call)
           end
 
           # @yield incorporating statement
@@ -57,7 +58,7 @@ module VersatileDiamond
           def iterate_specie_symmetries(&block)
             defined_species = select_defined(species)
             if defined_species.one?
-              iterate_redefined_specie_symmetries!(defined_species.first, &block)
+              iterate_redefined_specie_symmetries(defined_species.first, &block)
             elsif defined_species.empty?
               raise 'Symmetric specie is not defined'
             else
@@ -68,11 +69,11 @@ module VersatileDiamond
           # @param [Instances::SpecieInstance] specie
           # @yield incorporating statement
           # @return [Statement]
-          def iterate_redefined_specie_symmetries!(specie, &block)
-            var = @context.var_of(specie)
-            inner_var, func_call = var.iterate_symmetries(block.call)
-            @context.retain_var!(specie, inner_var)
-            func_call
+          def iterate_redefined_specie_symmetries(specie, &block)
+            defined_vars = dict.defined_vars # get before make inner specie var
+            ext_var = dict.var_of(specie)
+            inner_var = dict.make_specie_s(specie, type: abst_specie_type)
+            ext_var.iterate_symmetries(defined_vars, inner_var, block.call)
           end
 
           # @yield incorporating statement
@@ -108,6 +109,11 @@ module VersatileDiamond
             symmetric_atoms = atoms.flat_map(&method).to_set
             !symmetric_atoms.empty? && symmetric_atoms < atoms.to_set &&
               @context.symmetric_relations?(@unit.nodes_with(symmetric_atoms))
+          end
+
+          # @return [Expressions::Core::ObjectType]
+          def abst_specie_type
+            Expressions::ParentSpecieType[]
           end
         end
 

@@ -6,23 +6,23 @@ module VersatileDiamond
       module Algorithm::Units::Expressions
 
         describe AtomVariable, type: :algorithm do
-          let(:namer) { Algorithm::Units::NameRemember.new }
+          let(:atom_type) { AtomType[].ptr }
 
           describe '#define_arg' do
             include_context :unique_parent_context
-            let(:var) { described_class[namer, cb] }
-            it { expect(var.define_arg.code).to eq('Atom *atom1') }
+            let(:var) { described_class[cb, atom_type, 'a'] }
+            it { expect(var.define_arg.code).to eq('Atom *a') }
           end
 
           describe '#check_roles_in' do
             shared_examples_for :check_roles_code do
-              let(:var) { described_class[namer, atom] }
+              let(:var) { described_class[atom, atom_type, 'atom'] }
               let(:body) { Core::Return[var] }
               let(:code) do
                 <<-CODE
-if (atom1->is(#{role}))
+if (atom->is(#{role}))
 {
-    return atom1;
+    return atom;
 }
                 CODE
               end

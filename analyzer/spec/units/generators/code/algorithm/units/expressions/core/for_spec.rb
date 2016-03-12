@@ -13,7 +13,13 @@ module VersatileDiamond
 
           describe '#code' do
             let(:code) do
-              "for (int i1 = 0; i1 < 3; ++i1)\n{\n    simple();\n    mono(x);\n}\n"
+              <<-CODE
+for (int i = 0; i < 3; ++i)
+{
+    simple();
+    mono(x);
+}
+              CODE
             end
             it { expect(subject.code).to eq(code) }
           end

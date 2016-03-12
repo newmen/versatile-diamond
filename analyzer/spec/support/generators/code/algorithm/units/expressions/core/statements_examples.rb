@@ -20,8 +20,6 @@ module VersatileDiamond
             shared_context :predefined_exprs do
               include_context :predicate_values
 
-              let(:namer) { Algorithm::Units::NameRemember.new }
-
               let(:x) { Constant['x'] }
               let(:y) { Constant['y'] }
               let(:num) { Constant[5] }
@@ -31,13 +29,13 @@ module VersatileDiamond
               let(:type) { ObjectType['Yo'] }
               let(:scalar) { ScalarType['int'] }
 
-              let(:scv) { Variable[namer, 1, scalar, 'i', Constant[0]]}
-              let(:var) { Variable[namer, :var, type.ptr, 'obj'] }
-              let(:vvl) { Variable[namer, Object.new, type.ptr, 'val', func0] }
+              let(:scv) { Variable[1, scalar, 'i', Constant[0]]}
+              let(:var) { Variable[:var, type.ptr, 'obj'] }
+              let(:vvl) { Variable[Object.new, type.ptr, 'val', func0] }
 
-              let(:many_arr) { Collection[namer, [:p, :q], type.ptr, 'many', [x, y]] }
+              let(:many_arr) { Collection[[var, vvl], type.ptr, 'many', [x, y]] }
 
-              let(:lda) { Lambda[namer, var, func0 + func1] }
+              let(:lda) { Lambda[[], var, func0 + func1] }
               let(:for_loop) do
                 ang = scv.define_var
                 For[ang, OpLess[scv, Constant[3]], OpRInc[scv], func0 + func1]

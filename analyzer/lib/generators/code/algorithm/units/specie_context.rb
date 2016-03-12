@@ -6,11 +6,11 @@ module VersatileDiamond
         # The context for units of specie find algoritnm builder
         class SpecieContext < BaseContext
 
-          # @param [VarsDictionary] vars_dict
+          # @param [Units::Expressions::VarsDictionary] dict
           # @param [Specie] specie
           # @param [Array] ordered_backbone
-          def initialize(vars_dict, specie, ordered_backbone)
-            super(vars_dict, ordered_backbone)
+          def initialize(dict, specie, ordered_backbone)
+            super(dict, ordered_backbone)
             @specie = specie
 
             @_atoms_to_nodes = nil

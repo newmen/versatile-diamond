@@ -9,10 +9,10 @@ module VersatileDiamond
 
           attr_reader :nodes
 
-          # @param [NameRemember] namer
+          # @param [Expressions::VarsDictionary] dict
           # @param [Array] nodes
-          def initialize(namer, nodes)
-            super(namer)
+          def initialize(dict, nodes)
+            super(dict)
             @nodes = nodes
 
             @_species, @_atoms = nil
@@ -40,47 +40,6 @@ module VersatileDiamond
           # @return [Array]
           def uniq_from_nodes(method_name)
             nodes.map(&method_name).uniq
-          end
-
-          # @param [Expressions::Core::ObjectType] type
-          # @param [Object] value_s
-          # @param [Hash] nopts
-          # @return [Expressions::Core::Variable]
-          def species_array(type, value_s = nil, **nopts)
-            if species.one?
-              one_specie_variable(value_s, **nopts)
-            else
-              Expressions::SpeciesArray[namer, species, type, name, value_s, **nopts]
-            end
-          end
-
-          # @param [Specie] specie variable of which will be maked
-          # @param [Expressions::Core::ObjectType] type
-          # @param [Object] value
-          # @option [String] :name
-          # @return [Expressions::SpecieVariable]
-          def one_specie_variable(specie, type, value = nil, **nopts)
-            Expressions::SpecieVariable[namer, specie, type, value, **nopts]
-          end
-
-          # @param [Object] value_s
-          # @param [Hash] nopts
-          # @return [Expressions::Core::Variable]
-          def atoms_array(value_s = nil, **nopts)
-            if atoms.one?
-              one_atom_variable(value_s, **nopts)
-            else
-              Expressions::AtomsArray[namer, atoms, name, value_s, **nopts]
-            end
-          end
-
-          # @param [Concepts::Atom | Concepts::SpecificAtom | Concepts::AtomReference]
-          #   atom variable of which will be maked
-          # @param [Object] value
-          # @option [String] :name
-          # @return [Expressions::AtomVariable]
-          def one_atom_variable(atom, value = nil, **nopts)
-            Expressions::AtomVariable[namer, atom, value, **nopts]
           end
         end
 

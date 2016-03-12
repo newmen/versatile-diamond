@@ -6,17 +6,17 @@ module VersatileDiamond
       module Algorithm::Units::Expressions
 
         describe AtomsArray, type: :algorithm do
-          let(:namer) { Algorithm::Units::NameRemember.new }
+          let(:dict) { VarsDictionary.new }
 
           describe '#define_arg' do
             include_context :unique_parent_context
-            let(:var) { described_class[namer, [cb, cm]] }
-            it { expect(var.define_arg.code).to eq('Atom **atoms1') }
+            let(:var) { dict.make_atom_s([cb, cm], name: 'as') }
+            it { expect(var.define_arg.code).to eq('Atom **as1') }
           end
 
           describe '#check_roles_in' do
             shared_examples_for :check_roles_code do
-              let(:var) { described_class[namer, atoms] }
+              let(:var) { dict.make_atom_s(atoms, name: 'atoms') }
               let(:body) { Core::Return[Core::Constant[5]] }
               let(:code) do
                 <<-CODE

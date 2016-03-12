@@ -6,19 +6,17 @@ module VersatileDiamond
         # Unit for bulding code from one node
         class PureMonoUnit < BaseUnit
 
-          # @param [NameRemember] namer
+          # @param [Expressions::VarsDictionary] dict
           # @param [Nodes::SpecieNode] node
-          def initialize(namer, node)
-            super(namer, [node])
+          def initialize(dict, node)
+            super(dict, [node])
           end
 
           # Anytime is a previous found specie
-          # @param [VarsDictionary] context
-          def entry_point!(context)
+          def entry_point!
             if species.one?
               parent = species.first
-              var = one_specie_variable(parent, name: Code::Specie::ANCHOR_SPECIE_NAME)
-              context.retain_var!(parent, var)
+              dict.make_specie_s(parent, name: Code::Specie::ANCHOR_SPECIE_NAME)
             else
               raise 'Incorrect number of entry species'
             end

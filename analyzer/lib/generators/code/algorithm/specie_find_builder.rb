@@ -12,37 +12,33 @@ module VersatileDiamond
           def initialize(generator, specie)
             @specie = specie
             @backbone = SpecieBackbone.new(generator, specie)
-            @namer = Units::NameRemember.new
-            @vars_dict = Units::VarsDictionary.new
+            @dict = Units::Expressions::VarsDictionary.new
 
-            @pure_factory = SpeciePureUnitsFactory.new(@namer)
+            @pure_factory = SpeciePureUnitsFactory.new(@dict)
           end
 
           # Generates find algorithm cpp code for target specie
           # @return [String] the string with cpp code of find specie algorithm
           def build
-            @namer.checkpoint!
+            @dict.checkpoint!
             @backbone.entry_nodes.map(&method(:body_for)).join
           end
 
         private
 
-          attr_reader :pure_factory
-
           # @param [Array] ordered_graph
           # @return [SpecieContextUnitsFactory]
           def context_factory(ordered_graph)
-            context = Units::SpecieContext.new(@vars_dict, @specie, ordered_graph)
-            SpecieContextUnitsFactory.new(@namer, context)
+            context = Units::SpecieContext.new(@dict, @specie, ordered_graph)
+            SpecieContextUnitsFactory.new(@dict, context)
           end
 
           # Generates the body of code from passed nodes
           # @param [Array] nodes from which the code will be generated
           # @return [String] the algorithm of finding current specie from passed nodes
           def body_for(nodes)
-            @namer.rollback!
-            @vars_dict.clear!
-            pure_factory.unit(nodes).entry_point!(@vars_dict)
+            @dict.rollback!
+            @pure_factory.unit(nodes).entry_point!
             combine_algorithm(nodes)
           end
 

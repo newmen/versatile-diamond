@@ -8,9 +8,9 @@ module VersatileDiamond
         class BaseUnitsFactory
 
           # Initializes find algorithm units factory
-          # @param [Units::NameRemember] namer
-          def initialize(namer)
-            @namer = namer
+          # @param [Units::Expressions::VarsDictionary] dict
+          def initialize(dict)
+            @dict = dict
           end
 
           # Makes unit that correspond to passed nodes
@@ -22,20 +22,20 @@ module VersatileDiamond
 
         private
 
-          attr_reader :namer
+          attr_reader :dict
 
           # Creates checker unit from one node
           # @param [Nodes::BaseNode] node by which the checker unit will be created
           # @return [Units::BaseUnit]
           def mono_unit(node)
-            node.scope? ? many_units(node.split) : make_mono_unit(namer, node)
+            node.scope? ? many_units(node.split) : make_mono_unit(dict, node)
           end
 
           # Creates many units by list of nodes
           # @param [Array] nodes by which the many units will be created
           # @return [Units::PureManyUnits]
           def many_units(nodes)
-            make_many_units(namer, nodes.map(&method(:mono_unit)))
+            make_many_units(dict, nodes.map(&method(:mono_unit)))
           end
         end
 
