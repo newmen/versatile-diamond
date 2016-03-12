@@ -172,6 +172,7 @@ module VersatileDiamond
       # Checks that some atom can have both properties: self and other
       # @param [AtomProperties] other checking atom properties
       # @return [Boolean] are self properties like other or not
+      # @deprecated
       def like?(other)
         return true if include?(other) || other.include?(self)
 

@@ -9,7 +9,6 @@ module VersatileDiamond
         # lateral reaction from passed set of available chunks
         class LateralReactionSelectBuilder
           include ReactionsUser
-          include CommonCppExpressions
           extend Forwardable
 
           CHUNKS_VAR_NAME = 'chunks'.freeze

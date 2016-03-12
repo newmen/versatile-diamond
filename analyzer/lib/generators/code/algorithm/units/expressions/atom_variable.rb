@@ -25,7 +25,7 @@ module VersatileDiamond
             Core::Condition[role_in(species.first), body]
           end
 
-          # @param [SpecieInstance] specie
+          # @param [Instances::SpecieInstance] specie
           # @return [Core::OpCall]
           def role_in(specie)
             if specie.anchor?(instance)

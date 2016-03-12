@@ -7,10 +7,6 @@ module VersatileDiamond
 
         # Contain logic for building algorithm of reaction applying
         class ReactionDoItBuilder
-          include Units::CommonCppExpressions
-          include Units::CrystalCppExpressions
-          include Units::SpecieCppExpressions
-          include Units::SpecificSpecDefiner
           extend Forwardable
 
           # Initializes algorithm builder
@@ -84,7 +80,7 @@ module VersatileDiamond
           end
 
           def define_specie_line(specie)
-            namer.assign_next(specie.var_name, specie)
+            namer.assign_next!(specie.var_name, specie)
             index = @reaction.target_index(specie.spec.spec)
             define_var_line("#{specie_type} *", specie, "target(#{index})")
           end
@@ -110,7 +106,7 @@ module VersatileDiamond
           ### --------------------------------------------------------------------- ###
 
           def define_atoms_lines
-            namer.assign(Specie::INTER_ATOM_NAME, changing_atoms)
+            namer.assign!(Specie::INTER_ATOM_NAME, changing_atoms)
             define_var_line('Atom *', changing_atoms, atoms_from_species_calls) +
               assert_atom_types
           end

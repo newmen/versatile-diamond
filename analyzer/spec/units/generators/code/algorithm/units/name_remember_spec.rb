@@ -154,6 +154,31 @@ module VersatileDiamond
             end
           end
 
+          describe '#reassign_next!' do
+            shared_examples_for :check_reassign_next do
+              before do
+                subject.assign!(var1, 'var')
+                subject.reassign_next!(var2, 'var')
+              end
+
+              it { expect(subject.name_of(1)).to eq('var') }
+              it { expect(subject.name_of(2)).to eq('var1') }
+              it { expect(subject.reassign_next!(var1, 'meow')).to eq('meow1') }
+
+              describe 'many times' do
+                before { subject.reassign_next!(var1, 'meow') }
+                it { expect(subject.reassign_next!(var1, 'meow')).to eq('meow2') }
+              end
+            end
+
+            [1, [1]].product([2, [2]]) do |var1, var2|
+              it_behaves_like :check_reassign_next do
+                let(:var1) { var1 }
+                let(:var2) { var2 }
+              end
+            end
+          end
+
           describe '#prev_names_of' do
             it { expect(subject.prev_names_of(123)).to be_nil }
 

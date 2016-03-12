@@ -56,7 +56,7 @@ module VersatileDiamond
             end
 
             factory.restore_names! # do not necessary (it possible just for tests)
-            reduce_procs(checks_species_procs, &block).call
+            call_procs(checks_species_procs, &block)
           end
 
           # Gets the proc which checks neighbour sidepiece, it relations and species

@@ -15,6 +15,14 @@ module VersatileDiamond
         end
       end
 
+      # Calls combined procs as one function
+      # @param [Array] procs which will be combined
+      # @yield returns heart of combination result
+      # @return [Object]
+      def call_procs(procs, &block)
+        reduce_procs(procs, &block).call
+      end
+
       # Collects procs which nests each other, after than calls combined procedure
       # @param [Proc] deepest_block the block for the deepest call
       # @yield [Symbol, Array, Hash] nests the some method call
@@ -31,7 +39,7 @@ module VersatileDiamond
         end
 
         block[nest]
-        reduce_procs(procs, &deepest_block).call
+        call_procs(procs, &deepest_block)
       end
     end
 

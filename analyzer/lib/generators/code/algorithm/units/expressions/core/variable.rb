@@ -83,7 +83,7 @@ module VersatileDiamond
           # @return [Boolean]
           # @override
           def obj?
-            !@type.scalar? || @type.ptr?
+            !type.scalar? || type.ptr?
           end
 
           # @param [Array] vars
@@ -96,7 +96,7 @@ module VersatileDiamond
 
           # @return [Assign] the string with variable definition
           def define_var
-            Assign[full_name, type: @type, value: value]
+            Assign[full_name, type: type, value: value]
           end
 
           # @return [Assign] the string with argument definition
@@ -114,7 +114,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :value
+          attr_reader :namer, :type, :value
 
           # @return [Constant] the name of variable
           # @override
@@ -133,12 +133,12 @@ module VersatileDiamond
 
           # @return [String] the defined name of variable
           def used_name
-            @namer.name_of(@instance)
+            namer.name_of(instance)
           end
 
           # @return [ScalarType]
           def arg_type
-            @type
+            type
           end
 
           # @param [Array] vars

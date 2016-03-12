@@ -10,7 +10,7 @@ module VersatileDiamond
             # Grubs atoms from nodes
             # @param [Array] nodes from which the atoms will be gotten
             # @return [Array] the array of atoms
-            def grub_atoms(nodes)
+            def grep_atoms(nodes)
               nodes.map(&:atom)
             end
 
@@ -28,7 +28,7 @@ module VersatileDiamond
             # @return [Array] translated atomic list of relations
             def translate_to_atomic_list(nodes_list)
               nodes_list.each_with_object([]) do |(nodes, rels), acc|
-                acc << [grub_atoms(nodes), rels.map { |ns, r| [grub_atoms(ns), r] }]
+                acc << [grep_atoms(nodes), rels.map { |ns, r| [grep_atoms(ns), r] }]
               end
             end
 

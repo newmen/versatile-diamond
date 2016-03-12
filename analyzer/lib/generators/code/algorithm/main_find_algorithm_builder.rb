@@ -8,27 +8,24 @@ module VersatileDiamond
         class MainFindAlgorithmBuilder < BaseFindAlgorithmBuilder
         private
 
-          # Gets the lines by which the finding instance will be created in algorithm
-          # @return [String] the cpp code string with finding instance creation
-          def creation_lines
-            factory.creator.lines
-          end
-
           # Build find algorithm by combining procs that occured by walking on backbone
           # ordered graph from nodes
           #
           # @param [Array] nodes from which walking will occure
           # @return [String] the cpp code find algorithm
           def combine_algorithm(nodes)
-            reduce_procs(collect_procs(nodes)) { creation_lines }.call
+            call_procs(collect_procs(nodes)) { creation_lines }
           end
 
-          # Accumulates relations procs from passed nodes
-          # @param [Array] nodes from which the relations will be collected
+          # Accumulates relations procs from passed unit
+          # @param [BaseUnitsFactory] factory for neighbour units
+          # @param [Units::BaseUnit] unit from which the relations will be collected
           # @param [Array] rels the iterable relations
           # @return [Array] the array of collected relations procs
-          def accumulate_relations(nodes, rels)
-            rels.map { |nbrs, rel_params| relations_proc(nodes, nbrs, rel_params) }
+          def accumulate_relations(factory, unit, rels)
+            rels.map do |nbr_nodes, rel_params|
+              relations_proc(factory, unit, nbr_nodes, rel_params)
+            end
           end
         end
 

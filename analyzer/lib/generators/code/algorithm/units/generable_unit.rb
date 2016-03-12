@@ -6,33 +6,17 @@ module VersatileDiamond
         # Providers base methods for units which calls engine framework
         # @abstract
         class GenerableUnit
-          include CommonCppExpressions
-          include AtomCppExpressions
           extend Forwardable
 
-          # Initializes the creator
-          # @param [EngineCode] generator the major code generator
-          # @param [Specie | TypicalReaction | LateralChunks] context in which the
-          #   algorithm builds
           # @param [NameRemember] namer the remember of using names of variables
-          # @param [Set] processing_species under previous units
-          def initialize(generator, context, namer, processing_species)
-            @generator = generator
-            @context = context
+          def initialize(namer)
             @namer = namer
-            @processing_species = processing_species
           end
 
         private
 
-          attr_reader :generator, :namer, :context
+          attr_reader :namer
           def_delegator :namer, :name_of
-
-          # Gets the species which instances already have defined names
-          # @return [Array] the list of realy defined species
-          def defined_species
-            select_defined?(@processing_species)
-          end
 
           # Gets the list of names or result of block call for each variable from
           # passed list
