@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Boolean not operator statement
         class OpNot < UnaryOperator
-          include LogicOperator
+          include AlgebraicOperator
 
           class << self
             # @param [Expression] expr

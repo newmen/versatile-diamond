@@ -19,7 +19,8 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def symmetric_close_nodes(species)
-            key_nodes_with(species).select(&method(:all_symmetric_atoms?))
+            nodes = key_nodes_with(species).uniq(&:to_set)
+            nodes.select(&method(:all_symmetric_atoms?))
           end
 
           # @param [Array] nodes
@@ -33,6 +34,23 @@ module VersatileDiamond
         private
 
           attr_reader :backbone_graph
+
+          # @param [Array] uniq_species
+          # @return [Array]
+          def key_nodes_with(uniq_species)
+            nodes_with_undefined_atoms_of(uniq_species).select do |nodes|
+              !nodes.one? &&
+                nodes.all? { |node| uniq_species.include?(node.uniq_specie) }
+            end
+          end
+
+          # @param [Array] uniq_species
+          # @return [Array]
+          def nodes_with_undefined_atoms_of(uniq_species)
+            backbone_graph.keys.reject do |nodes|
+              nodes.map(&:atom).any? { |atom| @dict.var_of(atom) }
+            end
+          end
 
           # @param [Array] rels_lists
           # @return [Boolean]
@@ -64,32 +82,47 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Boolean]
           def all_symmetric_atoms?(nodes)
-            uniq_species = nodes.map(&:uniq_specie)
-            if uniq_species.uniq.one?
-              nodes_atoms = nodes.map(&:atom)
-              symmetries_lists = nodes_atoms.map(&method(:symmetries_of))
-              !symmetries_lists.first.empty? &&
-                lists_are_identical?(*(nodes_atoms + symmetries_lists), &:==)
+            if same_specie_nodes?(nodes)
+              one_specie_symmetric_atoms?(nodes)
             else
-              uniq_species.uniq(&:original).one? &&
-                nodes.map(&:properties).uniq.one?
+              many_species_symmetric_atoms?(nodes)
             end
           end
 
-          # @param [Array] uniq_species
-          # @return [Array]
-          def key_nodes_with(uniq_species)
-            nodes_with_undefined_atoms_of(uniq_species).select do |nodes|
-              !nodes.one? &&
-                nodes.all? { |node| uniq_species.include?(node.uniq_specie) }
-            end
+          # @param [Array] nodes
+          # @return [Boolean]
+          def same_specie_nodes?(nodes)
+            nodes.map(&:uniq_specie).uniq.one?
           end
 
-          # @param [Array] uniq_species
-          # @return [Array]
-          def nodes_with_undefined_atoms_of(uniq_species)
-            backbone_graph.keys.reject do |nodes|
-              nodes.map(&:atom).any? { |atom| @dict.var_of(atom) }
+          # @param [Array] nodes
+          # @return [Boolean]
+          def one_specie_symmetric_atoms?(nodes)
+            nodes_atoms = nodes.map(&:atom)
+            symmetries_lists = nodes_atoms.map(&method(:symmetries_of))
+            !symmetries_lists.first.empty? &&
+              lists_are_identical?(*(nodes_atoms + symmetries_lists), &:==)
+          end
+
+          # @param [Array] nodes
+          # @return [Boolean]
+          def many_species_symmetric_atoms?(nodes)
+            nodes.map(&:uniq_specie).uniq(&:original).one? &&
+              nodes.map(&:properties).uniq.one? &&
+              symmetric_relation_between?(*nodes)
+          end
+
+          # @param [Nodes::BaseNode] a
+          # @param [Nodes::BaseNode] b
+          # @return [Boolean]
+          def symmetric_relation_between?(a, b)
+            to_b = relations_of([a]).find { |node, _| node == b }
+            if to_b
+              ab_relation = to_b.last
+              ba_relation = b.lattice.opposite_relation(a.lattice, ab_relation)
+              ab_relation == ba_relation
+            else
+              false
             end
           end
         end

@@ -49,10 +49,21 @@ module VersatileDiamond
           # @param [String] name
           # @param [Expression] value
           def initialize(instance, type, name, value = nil)
-            @instance = instance.freeze
+            @instance = instance
             @type = type.freeze
             @name = Constant[name].freeze
             @value = value && value.freeze
+          end
+
+          # @param [Expression] new_index
+          def update_index!(new_index)
+            index_rx = /\[.+?\]$/
+            if code =~ index_rx
+              new_name = code.sub(index_rx, "[#{new_index.code}]")
+              @name = Constant[new_name].freeze
+            else
+              raise 'Cannot update index of variable which not belongs to any array'
+            end
           end
 
           # Checks that current statement is variable

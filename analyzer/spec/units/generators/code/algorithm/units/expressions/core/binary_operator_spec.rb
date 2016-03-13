@@ -23,8 +23,8 @@ module VersatileDiamond
             end
           end
 
-          describe 'LogicOperator' do
-            shared_examples_for :check_logical do
+          describe 'AlgebraicOperator' do
+            shared_examples_for :check_algebraic do
               describe '#self.[]' do
                 it { expect { op_class[type] }.to raise_error }
                 it { expect { op_class[x, type] }.to raise_error }
@@ -39,7 +39,7 @@ module VersatileDiamond
               shared_examples_for :check_chain_op do
                 subject { op_class[x] }
 
-                it_behaves_like :check_logical
+                it_behaves_like :check_algebraic
 
                 describe '#code' do
                   describe 'one' do
@@ -62,13 +62,18 @@ module VersatileDiamond
                 let(:op_class) { OpOr }
                 let(:mark) { '||' }
               end
+
+              it_behaves_like :check_chain_op do
+                let(:op_class) { OpMinus }
+                let(:mark) { '-' }
+              end
             end
 
             describe 'comparation' do
               shared_examples_for :check_comp_op do
                 subject { op_class[y, func1] }
 
-                it_behaves_like :check_logical
+                it_behaves_like :check_algebraic
 
                 describe '#self.[]' do
                   it { expect { op_class[x] }.to raise_error }

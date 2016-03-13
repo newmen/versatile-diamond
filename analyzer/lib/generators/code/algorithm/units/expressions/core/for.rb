@@ -10,7 +10,7 @@ module VersatileDiamond
             # @param [BinaryOperator] cond
             # @param [UnaryOperator] op
             # @param [Expression] body
-            # @return [Lambda]
+            # @return [For]
             def [](assign, cond, op, body)
               if !assign.assign?
                 arg_err!("First argument of for loop should to be assing operation")

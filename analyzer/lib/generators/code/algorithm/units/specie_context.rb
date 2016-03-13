@@ -28,24 +28,18 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Array]
           def relations_of(nodes)
-            relations_over_specie(nodes).map(&:last)
+            specie_relations_of(nodes).map(&method(:major_relations))
           end
 
           # @param [Array] nodes
           # @return [Array]
-          def relations_over_specie(nodes)
-            all_relations_of(nodes).map do |node, spec_rels|
-              [node, major_relations(spec_rels)]
-            end
-          end
-
-          # @param [Array] nodes
-          # @return [Array]
-          def all_relations_of(nodes)
+          def specie_relations_of(nodes)
             spec_graph = @specie.spec.clean_links
-            nodes.map { |node| [node, spec_graph[node.atom]] }
+            nodes.map { |node| spec_graph[node.atom] }
           end
 
+          # @param [Array] rels
+          # @return [Array]
           def major_relations(rels)
             rels.each_with_object([]) do |(a, r), acc|
               node = atoms_to_nodes[a]

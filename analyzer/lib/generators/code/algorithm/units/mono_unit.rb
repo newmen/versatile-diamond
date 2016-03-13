@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Unit for bulding code from one node
-        class PureMonoUnit < BaseUnit
+        class MonoUnit < BaseUnit
 
           # @param [Expressions::VarsDictionary] dict
           # @param [Nodes::SpecieNode] node

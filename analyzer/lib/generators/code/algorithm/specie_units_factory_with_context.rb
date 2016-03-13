@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Creates pure units for specie find algorithm
-        class SpecieContextUnitsFactory < SpeciePureUnitsFactory
+        class SpecieUnitsFactoryWithContext < SpeciePureUnitsFactory
 
           # @param [Units::Expressions::VarsDictionary] dict
           def initialize(dict, context)

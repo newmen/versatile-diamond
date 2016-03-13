@@ -16,6 +16,14 @@ module VersatileDiamond
 
           attr_reader :dict
 
+          # Gets the list of variables for each instance from passed list
+          # @param [Array] instances for which items the variables will be gotten
+          # @return [Array] the list of defined variables (some name can be nil if was not
+          #   defined for correspond instance)
+          def vars_for(*instances)
+            apply_var_to(:map, *instances)
+          end
+
           # Selects the variables which were defined
           # @param [Array] instances for which the defined variables will be selected
           # @return [Array] the list of defined instances
@@ -74,9 +82,9 @@ module VersatileDiamond
           # @param [Array] args which will be safe converted
           # @return [Array] the list of arguments as one array
           def star_to_array(*args)
-            list = args.one? ? args.first : args
-            if list.is_a?(Enumerable)
-              list
+            result = args.one? ? args.first : args
+            if result.is_a?(Enumerable)
+              result
             else
               raise ArgumentError, 'Array expected'
             end

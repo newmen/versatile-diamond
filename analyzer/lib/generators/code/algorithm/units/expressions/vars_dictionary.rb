@@ -69,7 +69,6 @@ module VersatileDiamond
         private
 
           ATOM_TYPE = AtomType[].ptr.freeze
-          DEFAULT_ATOM_NAME = Code::Specie::INTER_ATOM_NAME
           DEFAULT_SPECIE_NAME = Code::Specie::INTER_SPECIE_NAME
 
           def reset!
@@ -135,12 +134,11 @@ module VersatileDiamond
           end
 
           # @param [String] name
-          # @param [String] default
           # @option [Boolean] :plur
           # @option [Boolean] :next_name
           # @return [String]
-          def fix_name(name, default, plur: false, next_name: true)
-            result = name || default
+          def fix_name(name, plur: false, next_name: true)
+            result = name
             result = result.pluralize if plur
             if next_name
               inc_name(result)
@@ -163,6 +161,16 @@ module VersatileDiamond
             next_name
           end
 
+          # @param [Array] atoms
+          # @return [String]
+          def select_atom_name(*atoms)
+            if atoms.any?(&:lattice)
+              Code::Specie::INTER_ATOM_NAME
+            else
+              Code::Specie::AMORPH_ATOM_NAME
+            end
+          end
+
           # @param [Concepts::Atom | Concepts::SpecificAtom | Concepts::AtomReference]
           #   atom variable of which will be maked
           # @param [Core::ScalarType] type
@@ -171,7 +179,7 @@ module VersatileDiamond
           # @param [Hash] nopts
           # @return [AtomVariable]
           def atom_variable(atom, type, name = nil, value = nil, **nopts)
-            name = fix_name(name, DEFAULT_ATOM_NAME, **nopts)
+            name = fix_name(name || select_atom_name(atom), **nopts)
             store!(AtomVariable[atom, type, name, value])
           end
 
@@ -181,7 +189,7 @@ module VersatileDiamond
           # @param [Array] values
           # @return [Core::Variable]
           def atoms_array(atoms, type, name = nil, values = nil, **nopts)
-            name = fix_name(name, DEFAULT_ATOM_NAME, plur: true, **nopts)
+            name = fix_name(name || select_atom_name(*atoms), plur: true, **nopts)
             items = array_items(:atom_variable, atoms, type, name, values)
             store!(AtomsArray[items, type, name, values])
           end
@@ -194,7 +202,7 @@ module VersatileDiamond
           # @return [SpecieVariable]
           def specie_variable(specie, type = nil, name = nil, value = nil, **nopts)
             type ||= specie_type(specie)
-            name = fix_name(name, specie.var_name, **nopts)
+            name = fix_name(name || specie.var_name, **nopts)
             store!(SpecieVariable[specie, type.ptr, name, value])
           end
 
@@ -206,7 +214,7 @@ module VersatileDiamond
           def species_array(species, type = nil, name = nil, values = nil, **nopts)
             if type || species.map(&:original).uniq.one?
               ptr_type = (type || specie_type(species.first)).ptr
-              name = fix_name(name, DEFAULT_SPECIE_NAME, plur: true, **nopts)
+              name = fix_name(name || DEFAULT_SPECIE_NAME, plur: true, **nopts)
               items = array_items(:specie_variable, species, ptr_type, name, values)
               store!(SpeciesArray[items, ptr_type, name, values])
             else

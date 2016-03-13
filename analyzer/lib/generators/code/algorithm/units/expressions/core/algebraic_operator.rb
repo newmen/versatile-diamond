@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units::Expressions::Core
 
         # Provides method for validate arguments of logic operators
-        module LogicOperator
+        module AlgebraicOperator
           include Algorithm::Units::Expressions::Core::Expression
 
           def self.included(base)

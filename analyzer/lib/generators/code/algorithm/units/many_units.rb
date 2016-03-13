@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Unit for bulding code from many nodes
-        class PureManyUnits < BaseUnit
+        class ManyUnits < BaseUnit
 
           # All different anchor atoms should have names
           def entry_point!

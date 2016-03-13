@@ -6,7 +6,6 @@ module VersatileDiamond
         # Creates units for find algorithm
         # @abstract
         class BaseUnitsFactory
-
           # Initializes find algorithm units factory
           # @param [Units::Expressions::VarsDictionary] dict
           def initialize(dict)

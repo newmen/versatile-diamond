@@ -23,6 +23,14 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          describe '#update_index!' do
+            let(:new_index) { Constant[22] }
+            let(:item) { described_class[:item, type, 'items[5]'] }
+            before { item.update_index!(new_index) }
+            it { expect(item.code).to eq('items[22]') }
+            it { expect { subject.update_index!(new_index) }.to raise_error }
+          end
+
           describe '#instance' do
             it { expect(subject.instance).to eq(:var) }
           end

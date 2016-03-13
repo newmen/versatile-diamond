@@ -6,7 +6,7 @@ module VersatileDiamond
         # Equal operator statement
         # @abstract
         class OpCmp < BinaryOperator
-          include LogicOperator
+          include AlgebraicOperator
 
           class << self
             # @param [Array] exprs

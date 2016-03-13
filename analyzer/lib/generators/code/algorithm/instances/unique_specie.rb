@@ -38,7 +38,7 @@ module VersatileDiamond
           # @return [Hash] the mirror from current spec to original spec
           def original_mirror
             @_original_mirror ||=
-              Mcs::SpeciesComparator.make_mirror(spec, original.spec)
+              Mcs::SpeciesComparator.make_mirror(spec, original.spec).freeze
           end
         end
 

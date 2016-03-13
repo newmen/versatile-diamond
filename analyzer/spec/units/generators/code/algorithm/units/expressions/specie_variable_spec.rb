@@ -50,6 +50,27 @@ methylOnBridge1->eachSymmetry([](SpecificSpec *methylOnBridge2) {
               end
             end
           end
+
+          describe '#atom_value' do
+            shared_examples_for :check_atom_call do
+              let(:result) { var.atom_value(cb) }
+              it { expect(result.code).to eq(code) }
+            end
+
+            describe 'unique parent' do
+              include_context :unique_parent_context
+              it_behaves_like :check_atom_call do
+                let(:code) { "bridge1->atom(0)" }
+              end
+            end
+
+            describe 'unique reactant' do
+              include_context :unique_reactant_context
+              it_behaves_like :check_atom_call do
+                let(:code) { "methylOnBridge1->atom(1)" }
+              end
+            end
+          end
         end
 
       end

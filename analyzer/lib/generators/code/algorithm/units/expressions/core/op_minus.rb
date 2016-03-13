@@ -3,25 +3,25 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Boolean AND operator statement
-        class OpAnd < BinaryOperator
+        # Algebraic MINUS operator statement
+        class OpMinus < BinaryOperator
           include AlgebraicOperator
 
           class << self
             # @param [Array] exprs
-            # @return [OpAnd]
+            # @return [OpMinus]
             def [](*exprs)
               if valid?(*exprs)
                 super
               else
-                arg_err!("Cannot make chain with AND operator for #{exprs.inspect}")
+                arg_err!("Cannot make chain with MINUS operator for #{exprs.inspect}")
               end
             end
           end
 
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)
-            super(:'&&', *exprs)
+            super(:-, *exprs)
           end
         end
 
