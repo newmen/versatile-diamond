@@ -34,6 +34,11 @@ module VersatileDiamond
             !(properties.incoherent? || properties.has_free_bonds?)
           end
 
+          # @return [Boolean]
+          def different_atom_role?
+            uniq_specie.source_role(atom) != uniq_specie.actual_role(atom)
+          end
+
           def inspect
             ":#{super}:"
           end

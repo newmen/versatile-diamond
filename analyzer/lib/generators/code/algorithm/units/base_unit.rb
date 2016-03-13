@@ -6,6 +6,7 @@ module VersatileDiamond
         # The basic unit for each other
         # @abstract
         class BaseUnit < GenerableUnit
+          include Modules::ProcsReducer
 
           # @param [Expressions::VarsDictionary] dict
           # @param [Array] nodes
@@ -33,10 +34,29 @@ module VersatileDiamond
           end
 
           # Checks that atoms have specific types
+          # @param [Array] checking_atoms
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_atom_roles(&block)
-            dict.var_of(atoms).check_roles_in(species, block.call)
+          def check_atoms_roles(checking_atoms, &block)
+            var = dict.var_of(checking_atoms)
+            if var # checking atoms belongs to same array variable
+              var.check_roles_in(species, block.call)
+            else
+              nest_checking_atoms_roles(checking_atoms, &block)
+            end
+          end
+
+          # @param [Array] nodes
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          # TODO: just specie
+          def check_different_atoms_roles(nodes, &block)
+            checking_nodes = nodes.select(&:different_atom_role?)
+            if checking_nodes.empty?
+              block.call
+            else
+              check_atoms_roles(checking_nodes.map(&:atom), &block)
+            end
           end
 
           # @yield incorporating statement
@@ -49,12 +69,33 @@ module VersatileDiamond
             end
           end
 
+          # @param [Array] undefined_atoms
+          # @return [Expressions::Core::Assign]
+          def define_undefined_atoms(undefined_atoms)
+            make_atoms_from_species(undefined_atoms).define_var
+          end
+
         private
 
           # @param [Symbol] method_name
           # @return [Array]
           def uniq_from_nodes(method_name)
             @nodes.map(&method_name).uniq
+          end
+
+          # @param [Array] checking_atoms
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def nest_checking_atoms_roles(checking_atoms, &block)
+            call_procs(checking_atoms_roles_procs(checking_atoms), &block)
+          end
+
+          # @param [Array] checking_atoms
+          # @return [Array]
+          def checking_atoms_roles_procs(checking_atoms)
+            vars_for(checking_atoms).map do |atom_var|
+              -> &block { atom_var.check_roles_in(species, &block) }
+            end
           end
 
           # @yield incorporating statement
@@ -93,21 +134,23 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def define_required_atoms(&block)
-            undef_atoms = select_undefined(atoms)
-            if undef_atoms.empty?
+            undefined_atoms = select_undefined(atoms)
+            if undefined_atoms.empty?
               block.call
             else
-              make_atoms_from_species(undef_atoms).define_var + block.call
+              define_undefined_atoms(undefined_atoms) + block.call
             end
           end
 
-          # @param [Array] undef_atoms
+          # @param [Array] undefined_atoms
           # @return [Array]
-          def make_atoms_from_species(undef_atoms)
-            nodes = @unit.nodes_with(undef_atoms)
+          def make_atoms_from_species(undefined_atoms)
+            nodes = @unit.nodes_with(undefined_atoms)
             species_vars = vars_for(nodes.map(&:uniq_specie))
-            atoms_calls = species_vars.zip(undef_atoms).map { |v, a| v.atom_value(a) }
-            dict.make_atoms_s(undef_atoms, value: atoms_calls)
+            atoms_calls =
+              species_vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }
+
+            dict.make_atoms_s(undefined_atoms, value: atoms_calls)
           end
 
           # @yield incorporating statement

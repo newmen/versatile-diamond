@@ -21,9 +21,9 @@ module VersatileDiamond
           # TODO: just specie
           def check_avail_atoms(&block)
             if any_defined?(species)
-              check_symmetries { check_required_atoms(&block) }
+              check_symmetries { check_close_atoms(&block) }
             else
-              @unit.check_atom_roles(&block)
+              @unit.check_atoms_roles(atoms, &block)
             end
           end
 
@@ -39,7 +39,15 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_required_atoms(&block)
+          # TODO: specie specific
+          def check_close_atoms(&block)
+            nodes = @context.reachable_nodes_with(select_defined(species))
+            if nodes.empty?
+              block.call
+            else
+              @unit.define_undefined_atoms(nodes.map(&:atom)) +
+                @unit.check_different_atoms_roles(nodes, &block)
+            end
           end
 
           # @return [Boolean]
@@ -51,7 +59,7 @@ module VersatileDiamond
           # @return [Boolean] gets false if close nodes are not symmetric and true
           #   in the case when neighbour nodes are not similar
           def asymmetric_related_atoms?
-            nodes = symmetric_close_nodes(species)
+            nodes = @context.symmetric_close_nodes(species)
             !(nodes.empty? || @context.symmetric_relations?(nodes))
           end
 

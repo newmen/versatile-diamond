@@ -18,9 +18,15 @@ module VersatileDiamond
 
           # @param [Array] species
           # @return [Array]
+          def reachable_nodes_with(species)
+            nodes = all_nodes_lists.flatten
+            nodes.select { |node| undefined_atom_in?(node, species) }.uniq
+          end
+
+          # @param [Array] species
+          # @return [Array]
           def symmetric_close_nodes(species)
-            nodes = key_nodes_with(species).uniq(&:to_set)
-            nodes.select(&method(:all_symmetric_atoms?))
+            bulk_key_nodes_with(species).select(&method(:all_symmetric_atoms?))
           end
 
           # @param [Array] nodes
@@ -35,21 +41,34 @@ module VersatileDiamond
 
           attr_reader :backbone_graph
 
-          # @param [Array] uniq_species
           # @return [Array]
-          def key_nodes_with(uniq_species)
-            nodes_with_undefined_atoms_of(uniq_species).select do |nodes|
-              !nodes.one? &&
-                nodes.all? { |node| uniq_species.include?(node.uniq_specie) }
-            end
+          def all_nodes_lists
+            backbone_graph.keys +
+              backbone_graph.values.flat_map { |rels| rels.map(&:first) }
           end
 
           # @param [Array] uniq_species
           # @return [Array]
-          def nodes_with_undefined_atoms_of(uniq_species)
-            backbone_graph.keys.reject do |nodes|
-              nodes.map(&:atom).any? { |atom| @dict.var_of(atom) }
+          def bulk_key_nodes_with(uniq_species)
+            nodes_lists = backbone_graph.keys
+            result = undefined_atoms_nodes(nodes_lists, uniq_species).reject(&:one?)
+            result.uniq(&:to_set)
+          end
+
+          # @param [Array] nodes_lists
+          # @param [Array] uniq_species
+          # @return [Array]
+          def undefined_atoms_nodes(nodes_lists, uniq_species)
+            nodes_lists.select do |nodes|
+              nodes.all? { |node| undefined_atom_in?(node, uniq_species) }
             end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] uniq_species
+          # @return [Boolean]
+          def undefined_atom_in?(node, uniq_species)
+            uniq_species.include?(node.uniq_specie) && !@dict.var_of(node.atom)
           end
 
           # @param [Array] rels_lists
