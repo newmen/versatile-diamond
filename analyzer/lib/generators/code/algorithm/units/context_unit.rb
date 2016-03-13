@@ -27,6 +27,13 @@ module VersatileDiamond
             end
           end
 
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          # TODO: just specie
+          def check_that_context_specie_not_found(&block)
+            dict.var_of(atoms).check_context(species, block.call)
+          end
+
         private
 
           def_delegators :@unit, :species, :atoms

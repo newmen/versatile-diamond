@@ -7,7 +7,6 @@ module VersatileDiamond
         # @abstract
         class BaseContext
           include Modules::ListsComparer
-          extend Forwardable
 
           # @param [Units::Expressions::VarsDictionary] dict
           # @param [Array] ordered_backbone

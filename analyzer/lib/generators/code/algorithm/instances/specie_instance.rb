@@ -8,6 +8,12 @@ module VersatileDiamond
 
           VAR_NAME_MAX_LENGTH = 21.freeze
 
+          # By defailt the actual specie is original
+          # @return [Specie] original specie
+          def actual
+            original
+          end
+
           # Gets concept specie
           # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
           def concept
@@ -85,12 +91,6 @@ module VersatileDiamond
           end
 
         private
-
-          # By defailt the actual specie is original
-          # @return [Specie] original specie
-          def actual
-            original
-          end
 
           # By defailt the actual atom is original
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]

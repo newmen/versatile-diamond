@@ -13,6 +13,11 @@ module VersatileDiamond
             it { expect(subject.original.spec).to eq(dept_unique_reactant) }
           end
 
+          describe '#actual' do
+            it { expect(subject.actual).to eq(subject.original) }
+            it { expect(subject.actual.spec).to eq(subject.original.spec) }
+          end
+
           describe '#spec' do
             it { expect(subject.spec.name).to eq(dept_unique_reactant.name) }
             it { expect(subject.spec).not_to eq(dept_unique_reactant) }

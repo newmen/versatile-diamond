@@ -13,6 +13,11 @@ module VersatileDiamond
             it { expect(subject.original.spec).to eq(dept_bridge_base) }
           end
 
+          describe '#actual' do
+            it { expect(subject.actual).to be_a(Code::Specie) }
+            it { expect(subject.actual.spec.spec).to eq(methyl_on_bridge_base) }
+          end
+
           describe '#spec' do
             it { expect(subject.spec.name).to eq(dept_uniq_parent.name) }
             it { expect(subject.spec).not_to eq(dept_uniq_parent) }

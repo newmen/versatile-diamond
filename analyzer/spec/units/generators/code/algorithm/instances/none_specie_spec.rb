@@ -12,6 +12,10 @@ module VersatileDiamond
             it { expect(subject.original).to eq(orig_none_specie) }
           end
 
+          describe '#actual' do
+            it { expect(subject.actual).to eq(orig_none_specie) }
+          end
+
           describe '#spec' do
             it { expect(subject.spec).to eq(orig_none_specie.spec) }
           end

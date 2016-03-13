@@ -59,7 +59,11 @@ module VersatileDiamond
           # @param [Units::BaseUnit] unit the roles of which atoms will be checked
           # @return [Proc]
           def check_atoms_proc(unit)
-            -> &block { unit.check_avail_atoms(&block) }
+            -> &block do
+              unit.check_avail_atoms do
+                unit.check_that_context_specie_not_found(&block)
+              end
+            end
           end
 
           # @param [Units::BaseUnit] unit

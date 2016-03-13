@@ -7,6 +7,7 @@ module VersatileDiamond
         # builds, and parent atoms substitute instead passed atoms of original specie
         class UniqueParent < UniqueSpecie
 
+          attr_reader :actual # @override
           attr_reader :spec
 
           # Initializes unique parent specie
@@ -32,9 +33,6 @@ module VersatileDiamond
           end
 
         private
-
-          # @override
-          attr_reader :actual
 
           # Gets the instance of atom which uses in actual specie
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]

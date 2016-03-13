@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # The context for units of specie find algoritnm builder
         class SpecieContext < BaseContext
-
           # @param [Units::Expressions::VarsDictionary] dict
           # @param [Specie] specie
           # @param [Array] ordered_backbone
