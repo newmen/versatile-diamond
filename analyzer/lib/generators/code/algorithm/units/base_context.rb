@@ -19,14 +19,20 @@ module VersatileDiamond
 
           # @param [Array] atoms
           # @return [Array]
-          def all_nodes_with(atoms)
-            all_nodes.select { |node| atoms.include?(node.atom) }.uniq
+          def atom_nodes(atoms)
+            all_nodes.select { |node| atoms.include?(node.atom) }
+          end
+
+          # @param [Instance::SpecieInstance] specie
+          # @return [Array]
+          def specie_nodes(specie)
+            all_nodes.select { |node| node.uniq_specie == specie }
           end
 
           # @param [Array] species
           # @return [Array]
           def reachable_nodes_with(species)
-            all_nodes.select { |node| undefined_atom_in?(node, species) }.uniq
+            all_nodes.select { |node| undefined_atom_in?(node, species) }
           end
 
           # @param [Array] species
@@ -49,7 +55,7 @@ module VersatileDiamond
 
           # @return [Array]
           def all_nodes
-            @_all_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten
+            @_all_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten.uniq
           end
 
           # @return [Array]

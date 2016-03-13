@@ -16,7 +16,7 @@ module VersatileDiamond
             @context = context
             @unit = unit
 
-            @_all_popular_atoms_nodes = nil
+            @_all_nodes_with_atoms, @_all_popular_atoms_nodes = nil
           end
 
           # @yield incorporating statement
@@ -129,14 +129,19 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def iterate_undefined_species(&block)
             @unit.iterate_species_by_role do
-              check_similar_defined_species do
+              check_defined_context_parts do
               end
             end
           end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_similar_defined_species(&block)
+          def check_defined_context_parts(&block)
+            nodes_pairs = similar_nodes_pairs
+            if nodes_pairs.empty?
+              block.call
+            else
+            end
           end
 
           # @yield incorporating statement
@@ -157,15 +162,60 @@ module VersatileDiamond
             end
           end
 
-          # @return [Integer]
-          def count_possible_atom_usages
-            all_popular_atoms_nodes.map(&:usages_num).reduce(:+)
+          # @return [Array]
+          def similar_nodes_pairs
+            # unit contains just one specie (resolved above)
+            self_specie = species.first
+            different_defined_species_nodes.reduce([]) do |acc, node|
+              other_specie = node.unit_specie
+              all_pairs = self_specie.common_atoms_with(other_specie)
+              target_pairs = all_pairs.reject { |as| as.uniq.one? }
+              if target_pairs.empty?
+                acc
+              else
+                acc + atoms_pairs_to_nodes(target_pairs, self_specie, other_specie)
+              end
+            end
+          end
+
+          # @return [Array]
+          def different_defined_species_nodes
+            # unit contains just one specie (resolved above)
+            self_specie = species.first
+            (all_nodes_with_atoms - @unit.nodes).select do |node|
+              other_specie = node.unit_specie
+              self_specie != other_specie && dict.var_of(other_specie)
+            end
+          end
+
+          # @param [Array] pairs
+          # @param [Instance::SpecieInstance] self_specie
+          # @param [Instance::SpecieInstance] other_specie
+          # @return [Array]
+          def atoms_pairs_to_nodes(pairs, self_specie, other_specie)
+            self_nodes = @context.specie_nodes(self_specie)
+            other_nodes = @context.specie_nodes(other_specie)
+            pairs.each_with_object([]) do |(self_atom, other_atom), acc|
+              self_node = self_nodes.find { |n| n.atom == self_atom }
+              other_node = other_nodes.find { |n| n.atom == other_atom }
+              acc << [self_node, other_node] if self_node && other_node
+            end
+          end
+
+          # @return [Array]
+          def all_nodes_with_atoms
+            @_all_nodes_with_atoms ||= @context.atoms_nodes(atoms)
           end
 
           # @return [Array]
           def all_popular_atoms_nodes
             @_all_popular_atoms_nodes ||=
-              @context.all_nodes_with(atoms).select(&:used_many_times?)
+              all_nodes_with_atoms.select(&:used_many_times?)
+          end
+
+          # @return [Integer]
+          def count_possible_atom_usages
+            all_popular_atoms_nodes.map(&:usages_num).reduce(:+)
           end
 
           # @return [Boolean]

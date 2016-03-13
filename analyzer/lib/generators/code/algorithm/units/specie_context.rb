@@ -22,18 +22,13 @@ module VersatileDiamond
             @specie.symmetric_atoms(atom)
           end
 
-          # @param [Array] atoms
-          # @return [Array]
-          # @override
-          def all_nodes_with(atoms)
-            replace_scopes(super).uniq
-          end
-
-          # @param [Array] species
-          # @return [Array]
-          # @override
-          def reachable_nodes_with(species)
-            replace_scopes(super).uniq
+          %i(atoms_nodes specie_nodes reachable_nodes_with).each do |method_name|
+            # @param [Array] instances
+            # @return [Array]
+            # @override
+            define_method(method_name) do |instances|
+              replace_scopes(super(instances)).uniq
+            end
           end
 
         private

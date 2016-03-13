@@ -8,6 +8,8 @@ module VersatileDiamond
         class BaseUnit < GenerableUnit
           include Modules::ProcsReducer
 
+          attr_reader :nodes
+
           # @param [Expressions::VarsDictionary] dict
           # @param [Array] nodes
           def initialize(dict, nodes)
@@ -90,10 +92,6 @@ module VersatileDiamond
             !species.any?(&:none?) &&
               !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
           end
-
-        protected
-
-          attr_reader :nodes
 
         private
 

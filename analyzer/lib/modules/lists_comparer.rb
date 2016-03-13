@@ -3,14 +3,12 @@ module VersatileDiamond
 
     # Provides methods for lists comparing
     module ListsComparer
-    private
-
       # Compares all lists by passed block
       # @param [Array] list_of_lists
       # @yield [Object, Object] compares two elements from each list
       # @return [Boolean] lists are identical or not
       def lists_are_identical?(*list_of_lists, &block)
-        list_of_lists.each_cons(2).all? { |lists| similar_items?(*lists, &:==) }
+        list_of_lists.each_cons(2).all? { |lists| similar_items?(*lists, &block) }
       end
 
       # Compares two lists by passed block
