@@ -5,6 +5,7 @@ module VersatileDiamond
 
         # Decorates unit for bulding code on context
         class ContextUnit < GenerableUnit
+          include Modules::ProcsReducer
           extend Forwardable
 
           # @param [Expressions::VarsDictionary] dict
@@ -15,6 +16,34 @@ module VersatileDiamond
             @context = context
             @unit = unit
           end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          # TODO: specie specific
+          def check_existence(&block)
+            check_avail_atoms do
+              check_that_context_specie_not_found(&block)
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_avail_species(&block)
+            combine_avail_species_checks do
+              check_new_atoms(&block)
+            end
+          end
+
+        protected
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def select_specie_definition(&block)
+          end
+
+        private
+
+          def_delegators :@unit, :species, :atoms
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -34,14 +63,40 @@ module VersatileDiamond
             dict.var_of(atoms).check_context(species, block.call)
           end
 
-        private
-
-          def_delegators :@unit, :species, :atoms
-
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_symmetries(&block)
             symmetric? ? @unit.iterate_symmetries(&block) : block.call
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def combine_avail_species_checks(&block)
+            call_procs(avail_species_check_procs, &block)
+          end
+
+          # @return [Array]
+          def avail_species_check_procs
+            @unit.filled_inner_units.map do |inner_unit|
+              -> &block { check_undefined_species_of(inner_unit, &block) }
+            end
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_undefined_species_of(inner_unit, &block)
+            if inner_unit.checkable?
+              context_unit = self.class.new(dict, @context, inner_unit)
+              context_unit.select_specie_definition(&block)
+            else
+              block.call
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_new_atoms(&block)
           end
 
           # @yield incorporating statement

@@ -52,24 +52,21 @@ module VersatileDiamond
             init = [check_atoms_proc(factory.unit(nodes))]
             graph.reduce(init) do |acc, (ns, rels)|
               unit = factory.unit(ns)
-              acc + [species_proc(unit)] + accumulate_relations(factory, unit, rels)
+              acc + [check_species_proc(unit)] +
+                accumulate_relations(factory, unit, rels)
             end
           end
 
           # @param [Units::BaseUnit] unit the roles of which atoms will be checked
           # @return [Proc]
           def check_atoms_proc(unit)
-            -> &block do
-              unit.check_avail_atoms do
-                unit.check_that_context_specie_not_found(&block)
-              end
-            end
+            -> &block { unit.check_existence(&block) }
           end
 
           # @param [Units::BaseUnit] unit
           # @return [Proc] lazy calling for check species unit method
-          def species_proc(unit)
-            -> &block { unit.check_species(&block) }
+          def check_species_proc(unit)
+            -> &block { unit.check_avail_species(&block) }
           end
         end
 

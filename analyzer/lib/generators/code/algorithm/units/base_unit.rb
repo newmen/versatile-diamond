@@ -75,12 +75,23 @@ module VersatileDiamond
             make_atoms_from_species(undefined_atoms).define_var
           end
 
+          # @return [Boolean]
+          # TODO: specie specific (checking none?)
+          def checkable?
+            !species.any?(&:none?) &&
+              !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
+          end
+
+        protected
+
+          attr_reader :nodes
+
         private
 
           # @param [Symbol] method_name
           # @return [Array]
           def uniq_from_nodes(method_name)
-            @nodes.map(&method_name).uniq
+            nodes.map(&method_name).uniq
           end
 
           # @param [Array] checking_atoms
@@ -103,7 +114,7 @@ module VersatileDiamond
           def iterate_specie_symmetries(&block)
             defined_species = select_defined(species)
             if defined_species.one?
-              iterate_redefined_specie_symmetries(defined_species.first, &block)
+              iterate_defined_specie_symmetries(defined_species.first, &block)
             elsif defined_species.empty?
               raise 'Symmetric specie is not defined'
             else
@@ -114,7 +125,7 @@ module VersatileDiamond
           # @param [Instances::SpecieInstance] specie
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def iterate_redefined_specie_symmetries(specie, &block)
+          def iterate_defined_specie_symmetries(specie, &block)
             defined_vars = dict.defined_vars # get before make inner specie var
             ext_var = dict.var_of(specie)
             inner_var = dict.make_specie_s(specie, type: abst_specie_type)
@@ -169,7 +180,7 @@ module VersatileDiamond
           end
 
           # @return [Expressions::Core::ObjectType]
-          # TODO: just specie
+          # TODO: specie specific
           def abst_specie_type
             Expressions::ParentSpecieType[]
           end
