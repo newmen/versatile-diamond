@@ -69,6 +69,15 @@ module VersatileDiamond
             end
           end
 
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_species_by_role(&block)
+            # unit contains just one atom (resolved above)
+            specie_var = dict.make_specie_s(select_undefined(species))
+            atom_var = dict.var_of(atoms)
+            atom_var.each_specie_by_role(dict.defined_vars, specie_var, block.call)
+          end
+
           # @param [Array] undefined_atoms
           # @return [Expressions::Core::Assign]
           def define_undefined_atoms(undefined_atoms)

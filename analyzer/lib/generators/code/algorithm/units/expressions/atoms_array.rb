@@ -16,7 +16,7 @@ module VersatileDiamond
           # @param [Core::Expression] body
           # @return [Core::Condition]
           def check_context(species, body)
-            Core::Condition[founds_in(species), body]
+            Core::Condition[not_found(species), body]
           end
 
         private
@@ -29,8 +29,8 @@ module VersatileDiamond
 
           # @param [Array] species
           # @return [Core::OpAnd]
-          def founds_in(species)
-            Core::OpOr[*pack_each_with(species).map { |i, s| i.found_in(s) }]
+          def not_found(species)
+            Core::OpOr[*pack_each_with(species).map { |i, s| i.not_found(s) }]
           end
 
           # @param [Array] species

@@ -43,8 +43,11 @@ module VersatileDiamond
           # TODO: specie specific
           def select_specie_definition(&block)
             if symmetric? || over_used_atom?
+              check_many_undefined_species(&block)
             elsif atom_usages_like_in_context?
+              check_similar_undefined_species(&block)
             else
+              define_undefined_species(&block)
             end
           end
 
@@ -103,6 +106,41 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
+          # TODO: specie specific
+          def check_many_undefined_species(&block)
+            if over_used_atom? || atom_usages_like_in_context?
+              iterate_undefined_species(&block)
+            else
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          # TODO: just specie (do not move it to #define_undefined_species)
+          def check_similar_undefined_species(&block)
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def define_undefined_species(&block)
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_undefined_species(&block)
+            @unit.iterate_species_by_role do
+              check_similar_defined_species do
+              end
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_similar_defined_species(&block)
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
           end
 
@@ -143,11 +181,14 @@ module VersatileDiamond
           # @return [Boolean]
           # TODO: just specie
           def atom_usages_like_in_context?
-            context_prop = all_popular_atoms_nodes.first.properties
-            parent_props =
-              all_popular_atoms_nodes.map { |n| n.uniq_specie.properties_of(n.atom) }
-
-            parent_props.reduce(:accurate_plus) == context_prop
+            if atom_used_many_times?
+              context_prop = all_popular_atoms_nodes.first.properties
+              parent_props =
+                all_popular_atoms_nodes.map { |n| n.uniq_specie.properties_of(n.atom) }
+              parent_props.reduce(:accurate_plus) == context_prop
+            else
+              false
+            end
           end
 
           # @return [Boolean]

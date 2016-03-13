@@ -19,8 +19,8 @@ module VersatileDiamond
               elsif !arg_vars.all?(&:var?)
                 msg = "Wrong type of lambda argument variable #{arg_vars.inspect}"
                 arg_err!(msg)
-              elsif !body.expr? && !body.cond? && !body.tin?
-                msg = "Lambda body #{body.inspect} must by expression or condition"
+              elsif !body.expr? && !body.cond? && !body.assign? && !body.tin?
+                msg = "Body #{body.inspect} must be assign or expression or condition"
                 arg_err!(msg)
               else
                 super
