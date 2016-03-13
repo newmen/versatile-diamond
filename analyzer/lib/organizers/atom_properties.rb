@@ -30,7 +30,7 @@ module VersatileDiamond
         end
       end
 
-      # Fills under AtomClassifier#organize_properties!
+      # Fills under AtomClassifier#organize_properties
       attr_reader :smallests, :sames
 
       # Stores all properties of atom
@@ -75,6 +75,8 @@ module VersatileDiamond
         else
           raise ArgumentError, 'Wrong number of arguments'
         end
+
+        @smallests, @sames = nil
 
         @_is_incoherent, @_is_unfixed, @_is_unfixed_from_nbrs = nil
         @_estab_bond_num, @_actives_num, @_dangling_hydrogens_num = nil
@@ -125,8 +127,9 @@ module VersatileDiamond
           num =
             estab_bonds_num_in(total_props[:relations]) + total_props[:danglings].size
           are_correct_props =
-            (num < valence && valid_relevants?(total_props[:relevants])) ||
-            (num == valence && total_props[:relevants].empty?)
+            valid_relations?(total_props[:relations]) &&
+              ((num < valence && valid_relevants?(total_props[:relevants])) ||
+                (num == valence && total_props[:relevants].empty?))
 
           result = self.class.new(state_values(total_props)) if are_correct_props
         end
@@ -141,6 +144,26 @@ module VersatileDiamond
         diff_props ? self.class.new(state_values(diff_props)) : nil
       end
 
+      # Accurate combines two atom properties
+      # @param [AtomProperties] other atom properties which will be accurate added
+      # @return [AtomProperties] the sum or nil
+      def accurate_plus(other)
+        both = [self, other]
+        smallests_of_both = both.map { |props| props.smallests || Set[props] }
+        max_root = smallests_of_both.reduce(:&).max
+        return nil unless max_root
+
+        diffs = both.map { |x| x - max_root }
+        return nil unless diffs.all?
+
+        is_zero_diffs = diffs.all?(&:zero?)
+        right_diffs = is_zero_diffs ? both : diffs
+        rests_sum = right_diffs.reduce(:+)
+        return nil unless rests_sum
+
+        is_zero_diffs ? rests_sum : max_root + rests_sum
+      end
+
       # Calculates the hash of current instance for using it as key values in Hashes
       # @return [Integer] the hash of current instance
       def hash
@@ -149,9 +172,13 @@ module VersatileDiamond
 
       # Gets zero atom properties
       # @return [AtomProperties] zero
-      # @deprecated ? (possible useful)
       def zero
         self - self
+      end
+
+      # @return [Boolean]
+      def zero?
+        self == zero
       end
 
       # Checks that current properties includes another properties
@@ -174,22 +201,7 @@ module VersatileDiamond
       # @return [Boolean] are self properties like other or not
       # @deprecated
       def like?(other)
-        return true if include?(other) || other.include?(self)
-
-        both = [self, other]
-        smallests_of_both = both.map(&:smallests)
-        return false unless smallests_of_both.all?
-
-        max_root = smallests_of_both.reduce(:&).max
-        return false unless max_root
-
-        diffs = both.map { |x| x - max_root }
-        return false unless diffs.all?
-
-        rests_sum = diffs.reduce(:+)
-        return false unless rests_sum
-
-        !!(max_root + rests_sum)
+        include?(other) || other.include?(self) || !!accurate_plus(other)
       end
 
       # Checks that both properties have same states by hydrogen atoms
@@ -622,6 +634,18 @@ module VersatileDiamond
         possible_vals = [undirected_bond, double_bond, triple_bond]
         relations_with_atoms.each_with_object([]) do |(atom, relation), acc|
           acc << [relation, atom.lattice] if possible_vals.include?(relation)
+        end
+      end
+
+      # Checks that numbers of passed relations is correct
+      # @param [Array] rels the array of relation states
+      # @return [Boolean] is valid or not
+      def valid_relations?(rels)
+        if lattice
+          limits = lattice.instance.relations_limit
+          rels.group_by(&:params).all? { |pr, rs| limits[pr] >= rs.size }
+        else
+          rels.all? { |r| r == undirected_bond }
         end
       end
 
