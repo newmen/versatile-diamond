@@ -136,11 +136,26 @@ module VersatileDiamond
         end
       end
 
+      # @param [DependentWrappedSpec] other
+      # @return [Array]
+      # TODO: must be protected!
+      def deep_common_atoms_with(other)
+        if self == other
+          atoms.zip(other.atoms)
+        else
+          parents.uniq(&:original).flat_map do |parent|
+            multi_replace(parent.original.deep_common_atoms_with(other))
+          end
+        end
+      end
+
       # @param [Array]
       # TODO: must be protected!
       def all_deep_parents
+        return @_all_deep_parents if @_all_deep_parents
         uniq_parents = parents.uniq(&:original)
-        (uniq_parents + uniq_parents.flat_map(&:all_deep_parents)).uniq(&:original)
+        @_all_deep_parents =
+          (uniq_parents + uniq_parents.flat_map(&:all_deep_parents)).uniq(&:original)
       end
 
       # Provides links of original spec
@@ -171,18 +186,6 @@ module VersatileDiamond
       def direct_common_atoms_with(other)
         deep_common_atoms_with(other) +
           (self == other ? [] : other.deep_common_atoms_with(self).map(&:rotate))
-      end
-
-      # @param [DependentWrappedSpec] other
-      # @return [Array]
-      def deep_common_atoms_with(other)
-        if self == other
-          atoms.zip(other.atoms)
-        else
-          parents.uniq(&:original).flat_map do |parent|
-            multi_replace(parent.original.deep_common_atoms_with(other))
-          end
-        end
       end
 
       # Removes child from set of children specs
@@ -401,7 +404,7 @@ module VersatileDiamond
         @_residual_links, @_main_anchors, @_anchors = nil
         @_similar_theres, @_root_theres = nil
         @_pwts_cache = { true => {}, false => {} }
-        @_self_atoms_to_twins = nil
+        @_self_atoms_to_twins, @_all_deep_parents = nil
       end
     end
 

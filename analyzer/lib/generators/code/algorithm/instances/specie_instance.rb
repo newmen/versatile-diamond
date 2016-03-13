@@ -16,6 +16,7 @@ module VersatileDiamond
 
           # Gets concept specie
           # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
+          # @deprecated
           def concept
             spec.spec
           end
@@ -49,7 +50,7 @@ module VersatileDiamond
           #   atom which properties will be returned
           # @return [Organizers::AtomProperties] the properties of passed atom
           def properties_of(atom)
-            generator.atom_properties(actual.spec, actual_atom(atom))
+            generator.atom_properties(original.spec, original_atom(atom))
           end
 
           # Checks that passed atom is anchor

@@ -49,25 +49,25 @@ module VersatileDiamond
             describe 'atom properties users' do
               let(:classifier) { generator.classifier }
 
-              describe '#source_role' do
+              describe 'from original specie' do
                 let(:vb_ct) { vl_bridge.atom(:ct) }
                 let(:props) { Organizers::AtomProperties.new(dept_uniq_parent, vb_ct) }
-                it { expect(subject.source_role(cb)).to eq(classifier.index(props)) }
-                it { expect { subject.original_role(cm) }.to raise_error }
-              end
 
-              describe 'from actual specie' do
-                let(:props) { Organizers::AtomProperties.new(dept_uniq_specie, cb) }
-
-                describe '#actual_role' do
-                  it { expect(subject.actual_role(cb)).to eq(classifier.index(props)) }
-                  it { expect { subject.actual_role(cm) }.not_to raise_error }
+                describe '#source_role' do
+                  it { expect(subject.source_role(cb)).to eq(classifier.index(props)) }
+                  it { expect { subject.original_role(cm) }.to raise_error }
                 end
 
                 describe '#properties_of' do
                   it { expect(subject.properties_of(cb)).to eq(props) }
-                  it { expect { subject.properties_of(cm) }.not_to raise_error }
+                  it { expect { subject.properties_of(cm) }.to raise_error }
                 end
+              end
+
+              describe '#actual_role' do
+                let(:props) { Organizers::AtomProperties.new(dept_uniq_specie, cb) }
+                it { expect(subject.actual_role(cb)).to eq(classifier.index(props)) }
+                it { expect { subject.actual_role(cm) }.not_to raise_error }
               end
             end
 
