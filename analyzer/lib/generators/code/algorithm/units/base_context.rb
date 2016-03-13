@@ -13,13 +13,20 @@ module VersatileDiamond
           def initialize(dict, ordered_backbone)
             @dict = dict
             @backbone_graph = Hash[ordered_backbone]
+
+            @_all_nodes = nil
+          end
+
+          # @param [Array] atoms
+          # @return [Array]
+          def all_nodes_with(atoms)
+            all_nodes.select { |node| atoms.include?(node.atom) }.uniq
           end
 
           # @param [Array] species
           # @return [Array]
           def reachable_nodes_with(species)
-            nodes = all_nodes_lists.flatten
-            nodes.select { |node| undefined_atom_in?(node, species) }.uniq
+            all_nodes.select { |node| undefined_atom_in?(node, species) }.uniq
           end
 
           # @param [Array] species
@@ -41,9 +48,13 @@ module VersatileDiamond
           attr_reader :backbone_graph
 
           # @return [Array]
-          def all_nodes_lists
-            backbone_graph.keys +
-              backbone_graph.values.flat_map { |rels| rels.map(&:first) }
+          def all_nodes
+            @_all_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten
+          end
+
+          # @return [Array]
+          def side_nodes_lists
+            backbone_graph.values.flat_map { |rels| rels.map(&:first) }
           end
 
           # @param [Array] uniq_species

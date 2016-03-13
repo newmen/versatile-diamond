@@ -85,6 +85,10 @@ module VersatileDiamond
             describe '#many?' do
               it { expect(subject.many?(cb)).to be_falsey }
             end
+
+            describe 'usages_num' do
+              it { expect(subject.usages_num(cb)).to eq(1) }
+            end
           end
 
           describe '#none?' do

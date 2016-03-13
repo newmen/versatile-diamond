@@ -62,9 +62,22 @@ module VersatileDiamond
 
           describe '#anchor?' do
             it { expect(node_cm.anchor?).to be_truthy }
-            it { expect(node_cb.anchor?).to be_truthy }
             it { expect(node_cb.anchor?).to be_truthy } # because for bridge
             it { expect(node_cc.anchor?).to be_truthy }
+          end
+
+          describe '#used_many_times?' do
+            it { expect(node_cm.used_many_times?).to be_falsey }
+            it { expect(node_cb.used_many_times?).to be_falsey }
+            it { expect(node_cc.used_many_times?).to be_falsey }
+            it { expect(node_cr.used_many_times?).to be_truthy }
+          end
+
+          describe '#usages_num' do
+            it { expect(node_cm.usages_num).to eq(1) }
+            it { expect(node_cb.usages_num).to eq(1) }
+            it { expect(node_cc.usages_num).to eq(1) }
+            it { expect(node_cr.usages_num).to eq(2) }
           end
 
           describe '#lattice' do

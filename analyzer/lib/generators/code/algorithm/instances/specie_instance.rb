@@ -76,6 +76,14 @@ module VersatileDiamond
             generator.many_times?(spec, reflection_of(atom))
           end
 
+          # Gets number of usages of passed atom in specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which number of usages will be counted
+          # @return [Integer] how many times passed atoms uses in specie
+          def usages_num(atom)
+            generator.usages_num(spec, reflection_of(atom))
+          end
+
           # Gets the name of defining specie variable
           # @return [String] the specie variable name
           def var_name

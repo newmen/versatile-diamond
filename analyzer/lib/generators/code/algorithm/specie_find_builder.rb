@@ -27,10 +27,15 @@ module VersatileDiamond
         private
 
           # @param [Array] ordered_graph
+          # @return [Units::SpecieContext]
+          def specie_context(ordered_graph)
+            Units::SpecieContext.new(@dict, @specie, ordered_graph)
+          end
+
+          # @param [Array] ordered_graph
           # @return [SpecieUnitsFactoryWithContext]
           def context_factory(ordered_graph)
-            context = Units::SpecieContext.new(@dict, @specie, ordered_graph)
-            SpecieUnitsFactoryWithContext.new(@dict, context)
+            SpecieUnitsFactoryWithContext.new(@dict, specie_context(ordered_graph))
           end
 
           # Generates the body of code from passed nodes

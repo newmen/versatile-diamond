@@ -75,6 +75,10 @@ module VersatileDiamond
                 # because all checking atoms are no symmetric or no anchor
                 it { expect(subject.many?(atom)).to be_falsey }
               end
+
+              describe 'usages_num' do
+                it { expect(subject.usages_num(atom)).to eq(1) }
+              end
             end
 
             it_behaves_like :check_atom_methods do

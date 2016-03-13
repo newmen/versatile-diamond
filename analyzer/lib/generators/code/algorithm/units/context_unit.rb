@@ -15,6 +15,8 @@ module VersatileDiamond
             super(dict)
             @context = context
             @unit = unit
+
+            @_all_popular_atoms_nodes = nil
           end
 
           # @yield incorporating statement
@@ -38,7 +40,12 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
+          # TODO: specie specific
           def select_specie_definition(&block)
+            if symmetric? || over_used_atom?
+            elsif atom_usages_like_in_context?
+            else
+            end
           end
 
         private
@@ -110,6 +117,37 @@ module VersatileDiamond
               @unit.define_undefined_atoms(nodes.map(&:atom)) +
                 @unit.check_different_atoms_roles(nodes, &block)
             end
+          end
+
+          # @return [Integer]
+          def count_possible_atom_usages
+            all_popular_atoms_nodes.map(&:usages_num).reduce(:+)
+          end
+
+          # @return [Array]
+          def all_popular_atoms_nodes
+            @_all_popular_atoms_nodes ||=
+              @context.all_nodes_with(atoms).select(&:used_many_times?)
+          end
+
+          # @return [Boolean]
+          def atom_used_many_times?
+            atoms.one? && !all_popular_atoms_nodes.empty?
+          end
+
+          # @return [Boolean]
+          def over_used_atom?
+            atom_used_many_times? && count_possible_atom_usages != species.size
+          end
+
+          # @return [Boolean]
+          # TODO: just specie
+          def atom_usages_like_in_context?
+            context_prop = all_popular_atoms_nodes.first.properties
+            parent_props =
+              all_popular_atoms_nodes.map { |n| n.uniq_specie.properties_of(n.atom) }
+
+            parent_props.reduce(:accurate_plus) == context_prop
           end
 
           # @return [Boolean]

@@ -39,6 +39,18 @@ module VersatileDiamond
             uniq_specie.source_role(atom) != uniq_specie.actual_role(atom)
           end
 
+          # @return [Boolean]
+          # @override
+          def used_many_times?
+            scope? ? @generator.many_times?(spec, atom) : super
+          end
+
+          # @return [Boolean]
+          # @override
+          def usages_num
+            scope? ? @generator.usages_num(spec, atom) : super
+          end
+
           def inspect
             ":#{super}:"
           end

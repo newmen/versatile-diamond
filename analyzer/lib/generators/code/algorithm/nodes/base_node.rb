@@ -42,6 +42,18 @@ module VersatileDiamond
             uniq_specie.anchor?(atom)
           end
 
+          # Checks that target atom is used many times in unique specie
+          # @return [Boolean]
+          def used_many_times?
+            uniq_specie.many?(atom)
+          end
+
+          # Count usages of target atom in unique specie
+          # @return [Integer]
+          def usages_num
+            uniq_specie.usages_num(atom)
+          end
+
           # Directly provides atom properties instance for current node
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties

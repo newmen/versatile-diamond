@@ -71,6 +71,10 @@ module VersatileDiamond
               describe '#many?' do
                 it { expect(subject.many?(atom)).to eq(many) }
               end
+
+              describe 'usages_num' do
+                it { expect(subject.usages_num(atom)).to eq(used_times) }
+              end
             end
 
             it_behaves_like :check_atom_methods do
@@ -78,6 +82,7 @@ module VersatileDiamond
               let(:index) { 0 }
               let(:symmetric) { false }
               let(:many) { symmetric }
+              let(:used_times) { 1 }
             end
 
             it_behaves_like :check_atom_methods do
@@ -85,6 +90,7 @@ module VersatileDiamond
               let(:index) { 1 }
               let(:symmetric) { true }
               let(:many) { symmetric }
+              let(:used_times) { 2 }
             end
 
             it_behaves_like :check_atom_methods do
@@ -92,6 +98,7 @@ module VersatileDiamond
               let(:index) { 2 }
               let(:symmetric) { true }
               let(:many) { symmetric }
+              let(:used_times) { 2 }
             end
           end
 

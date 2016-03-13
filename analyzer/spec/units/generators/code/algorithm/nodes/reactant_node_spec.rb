@@ -51,6 +51,16 @@ module VersatileDiamond
             it { expect(node_ab.anchor?).to be_truthy }
           end
 
+          describe '#used_many_times?' do
+            it { expect(node_aib.used_many_times?).to be_falsey }
+            it { expect(node_ab.used_many_times?).to be_falsey }
+          end
+
+          describe '#usages_num' do
+            it { expect(node_aib.usages_num).to eq(1) }
+            it { expect(node_ab.usages_num).to eq(1) }
+          end
+
           describe '#lattice' do
             it { expect(node_aib.lattice).not_to be_nil }
             it { expect(node_aib.lattice).to eq(node_ab.lattice) }

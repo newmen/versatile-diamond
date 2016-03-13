@@ -276,7 +276,7 @@ module VersatileDiamond
       #     }
       #   }
       def all_classifications(latticed_too: true)
-        @_all_classifications ||=
+        @_all_classifications[latticed_too] ||=
           major_dept_specs.reduce({}) do |all, spec|
             acc = classificate_parents(all, spec)
             latticed_too ? inject_latticed_props(acc, spec) : acc
@@ -298,7 +298,7 @@ module VersatileDiamond
         diff = latticed_props - props
         if diff
           num = 1
-          if props.include?(diff)
+          if !diff.zero? && props.include?(diff)
             loop do
               sum = props + diff
               break unless sum && latticed_props.include?(sum)
@@ -418,7 +418,7 @@ module VersatileDiamond
       def reset_caches!
         @_atom_builder, @_env, @_finder, @_handbook = nil
         @_dependent_specs, @_root_species, @_surface_reactants, @_gas_specs = nil
-        @_all_classifications = nil
+        @_all_classifications = {}
         @_max_latticed_contains_times = {}
       end
     end
