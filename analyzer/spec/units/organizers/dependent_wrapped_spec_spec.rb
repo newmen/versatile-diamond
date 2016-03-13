@@ -208,6 +208,68 @@ module VersatileDiamond
           end
         end
       end
+
+      describe '#common_atoms_with' do
+        before do
+          organize_base_specs_dependencies!(base_specs)
+          organize_specific_specs_dependencies!(make_cache(base_specs), specific_specs)
+        end
+
+        describe 'direct dependence' do
+          let(:base_specs) { [parent, dept_methyl_on_bridge_base] }
+          let(:specific_specs) { [child] }
+
+          let(:parent) { dept_bridge_base }
+          let(:child) { dept_activated_methyl_on_bridge }
+          let(:ps) { parent.spec }
+          let(:cs) { child.spec }
+          let(:cs_to_ps) do
+            [
+              [cs.atom(:cb), ps.atom(:ct)],
+              [cs.atom(:cl), ps.atom(:cl)],
+              [cs.atom(:cr), ps.atom(:cr)]
+            ]
+          end
+
+          describe 'parent as argument' do
+            it { expect(child.common_atoms_with(parent)).to match_array(cs_to_ps) }
+          end
+
+          describe 'child as argument' do
+            let(:ps_to_cs) { cs_to_ps.map(&:rotate) }
+            it { expect(parent.common_atoms_with(child)).to match_array(ps_to_cs) }
+          end
+        end
+
+        describe 'cross dependencies' do
+          let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base, d1] }
+          let(:specific_specs) { [d2] }
+
+          let(:d1) { dept_dimer_base }
+          let(:d2) { dept_activated_methyl_on_bridge }
+          let(:c1) { d1.spec }
+          let(:c2) { d2.spec }
+          let(:d1_to_d2) do
+            [
+              [c1.atom(:cr), c2.atom(:cb)],
+              [c1.atom(:crb), c2.atom(:cl)],
+              [c1.atom(:_cr0), c2.atom(:cr)],
+              [c1.atom(:cl), c2.atom(:cb)],
+              [c1.atom(:clb), c2.atom(:cr)],
+              [c1.atom(:_cr1), c2.atom(:cl)],
+            ]
+          end
+
+          describe 'd2 as argument' do
+            it { expect(d1.common_atoms_with(d2)).to match_array(d1_to_d2) }
+          end
+
+          describe 'd1 as argument' do
+            let(:d2_to_d1) { d1_to_d2.map(&:rotate) }
+            it { expect(d2.common_atoms_with(d1)).to match_array(d2_to_d1) }
+          end
+        end
+      end
     end
 
   end

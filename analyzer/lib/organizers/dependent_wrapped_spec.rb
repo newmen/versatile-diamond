@@ -125,6 +125,24 @@ module VersatileDiamond
         parents.size > 1
       end
 
+      # @param [DependentWrappedSpec] other
+      # @return [Array]
+      def common_atoms_with(other)
+        direct_pairs = direct_common_atoms_with(other)
+        if direct_pairs.empty?
+          cross_common_atoms_with(other)
+        else
+          direct_pairs
+        end
+      end
+
+      # @param [Array]
+      # TODO: must be protected!
+      def all_deep_parents
+        uniq_parents = parents.uniq(&:original)
+        (uniq_parents + uniq_parents.flat_map(&:all_deep_parents)).uniq(&:original)
+      end
+
       # Provides links of original spec
       # @return [Hash] the links between atoms of spec
       def original_links
@@ -141,6 +159,31 @@ module VersatileDiamond
       end
 
     protected
+
+      # @return [Array]
+      def atoms
+        links.keys
+      end
+
+      # Gets common atoms in case when other is direct parent of self or vice versa
+      # @param [DependentWrappedSpec] other
+      # @return [Array]
+      def direct_common_atoms_with(other)
+        deep_common_atoms_with(other) +
+          (self == other ? [] : other.deep_common_atoms_with(self).map(&:rotate))
+      end
+
+      # @param [DependentWrappedSpec] other
+      # @return [Array]
+      def deep_common_atoms_with(other)
+        if self == other
+          atoms.zip(other.atoms)
+        else
+          parents.uniq(&:original).flat_map do |parent|
+            multi_replace(parent.original.deep_common_atoms_with(other))
+          end
+        end
+      end
 
       # Removes child from set of children specs
       # @param [DependentWrappedSpec] child which will be deleted
@@ -181,10 +224,52 @@ module VersatileDiamond
         @rest || self
       end
 
+      # @return [Array]
+      def self_atoms_to_twins
+        @_self_atoms_to_twins ||= atoms.flat_map do |atom|
+          twins_of(atom).map { |twin| [atom, twin] }
+        end
+      end
+
+      # Replaces parent atoms in pairs to own atoms. If parent atom uses many times by
+      # self spec then all correspondance will be multi replaced
+      #
+      # @param [Array] pairs where each first atom is atom of parent spec
+      def multi_replace(pairs)
+        pairs.empty? ? [] : merge_pairs(self_atoms_to_twins, pairs)
+      end
+
+      # Gets common atoms in case when self and other have same parents
+      # @param [DependentWrappedSpec] other
+      # @return [Array]
+      def cross_common_atoms_with(other)
+        cross_parents = common_parents_with(other)
+        sl_to_pr = cross_parents.flat_map { |pr| direct_common_atoms_with(pr) }
+        pr_to_oh = cross_parents.flat_map { |pr| pr.direct_common_atoms_with(other) }
+        merge_pairs(sl_to_pr, pr_to_oh).uniq
+      end
+
+      # @param [DependentWrappedSpec] other
+      # @return [Array]
+      def common_parents_with(other)
+        all_deep_parents.map(&:original) & other.all_deep_parents.map(&:original)
+      end
+
+      # @param [Array] sl_to_pr
+      # @param [Array] pr_to_oh
+      # @return [Array]
+      def merge_pairs(sl_to_pr, pr_to_oh)
+        sl_to_pr.each_with_object([]) do |(self_atom, tw1), acc|
+          pr_to_oh.each do |tw2, other_atom| # not Hash cause tw2 can repeats
+            acc << [self_atom, other_atom] if tw1 == tw2
+          end
+        end
+      end
+
       # Gets lists of parent atoms to own atoms for each parent
       # @return [Hash] the lists of all parent atoms to own atoms separated by parent
       def parents_atoms_zip
-        links.keys.reduce({}) do |acc, atom|
+        atoms.reduce({}) do |acc, atom|
           parents_with_twins_for(atom).each_with_object(acc) do |(parent, twin), lists|
             lists[parent] ||= []
             lists[parent] << [twin, atom]
@@ -316,6 +401,7 @@ module VersatileDiamond
         @_residual_links, @_main_anchors, @_anchors = nil
         @_similar_theres, @_root_theres = nil
         @_pwts_cache = { true => {}, false => {} }
+        @_self_atoms_to_twins = nil
       end
     end
 
