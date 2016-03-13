@@ -8,6 +8,13 @@ module VersatileDiamond
         describe NoneSpecie, type: :algorithm do
           include_context :none_specie_context
 
+          shared_context :with_other_proxy do
+            let(:base_specs) { [dept_none_specie, other_spec] }
+            let(:other_spec) { dept_methyl_on_bridge_base }
+            let(:other_specie) { generator.specie_class(other_spec.name) }
+            let(:other) { described_class.new(generator, other_specie) }
+          end
+
           describe '#original' do
             it { expect(subject.original).to eq(orig_none_specie) }
           end
@@ -21,16 +28,12 @@ module VersatileDiamond
           end
 
           describe '<=>' do
-            let(:base_specs) { [dept_none_specie, other_spec] }
-            let(:other_spec) { dept_methyl_on_bridge_base }
-            let(:other_specie) { generator.specie_class(other_spec.name) }
-            let(:other_instance) { described_class.new(generator, other_specie) }
+            include_context :with_other_proxy
 
-            it { expect(subject <=> other_instance).to eq(1) }
-            it { expect(other_instance <=> subject).to eq(-1) }
+            it { expect(subject <=> other).to eq(1) }
+            it { expect(other <=> subject).to eq(-1) }
 
-            it { expect([subject, other_instance].shuffle.sort).
-              to eq([other_instance, subject]) }
+            it { expect([subject, other].shuffle.sort).to eq([other, subject]) }
           end
 
           describe 'methods dependent from atom of complex specie' do
@@ -72,7 +75,7 @@ module VersatileDiamond
                 it { expect(subject.many?(atom)).to eq(many) }
               end
 
-              describe 'usages_num' do
+              describe '#usages_num' do
                 it { expect(subject.usages_num(atom)).to eq(used_times) }
               end
             end
@@ -99,6 +102,19 @@ module VersatileDiamond
               let(:symmetric) { true }
               let(:many) { symmetric }
               let(:used_times) { 2 }
+            end
+
+            describe '#common_atoms_with' do
+              include_context :with_other_proxy
+              let(:pairs) do
+                [
+                  [ct, other.concept.atom(:cb)],
+                  [cr, other.concept.atom(:cr)],
+                  [cl, other.concept.atom(:cl)]
+                ]
+              end
+
+              it { expect(subject.common_atoms_with(other)).to match_array(pairs) }
             end
           end
 

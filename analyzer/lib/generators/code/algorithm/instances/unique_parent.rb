@@ -20,6 +20,15 @@ module VersatileDiamond
             @actual = specie_class(proxy_parent.child.spec)
           end
 
+          # Gets the atom which uses in child specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   twin of proxy specie which reflection will be returned
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the context atom
+          def context_atom(twin)
+            spec.atom_by(twin)
+          end
+
           # Unique parent specie is not "no specie"
           # @return [Boolean] false
           def none?

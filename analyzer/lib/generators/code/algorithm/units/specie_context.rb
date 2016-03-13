@@ -22,7 +22,29 @@ module VersatileDiamond
             @specie.symmetric_atoms(atom)
           end
 
+          # @param [Array] atoms
+          # @return [Array]
+          # @override
+          def all_nodes_with(atoms)
+            replace_scopes(super).uniq
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          # @override
+          def reachable_nodes_with(species)
+            replace_scopes(super).uniq
+          end
+
         private
+
+          # @param [Array] nodes
+          # @return [Array]
+          def replace_scopes(nodes)
+            nodes.reduce([]) do |acc, node|
+              node.scope? ? (acc + node.split) : (acc << node)
+            end
+          end
 
           # @param [Array] nodes
           # @return [Array]

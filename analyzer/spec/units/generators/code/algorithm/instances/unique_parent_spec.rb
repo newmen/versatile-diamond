@@ -8,6 +8,13 @@ module VersatileDiamond
         describe UniqueParent, type: :algorithm do
           include_context :unique_parent_context
 
+          shared_context :with_other_proxy do
+            let(:specific_specs) { [more_complex] }
+            let(:more_complex) { dept_activated_methyl_on_bridge }
+            let(:other_proxy) { make_proxy(more_complex, dept_uniq_specie) }
+            let(:other) { described_class.new(generator, other_proxy) }
+          end
+
           describe '#original' do
             it { expect(subject.original).to be_a(Code::Specie) }
             it { expect(subject.original.spec).to eq(dept_bridge_base) }
@@ -29,10 +36,7 @@ module VersatileDiamond
           end
 
           describe '#<=>' do
-            let(:specific_specs) { [more_complex] }
-            let(:more_complex) { dept_activated_methyl_on_bridge }
-            let(:other_proxy) { make_proxy(more_complex, dept_uniq_specie) }
-            let(:other) { described_class.new(generator, other_proxy) }
+            include_context :with_other_proxy
 
             it { expect(subject <=> other).to eq(1) }
             it { expect(other <=> subject).to eq(-1) }
@@ -86,8 +90,21 @@ module VersatileDiamond
               it { expect(subject.many?(cb)).to be_falsey }
             end
 
-            describe 'usages_num' do
+            describe '#usages_num' do
               it { expect(subject.usages_num(cb)).to eq(1) }
+            end
+
+            describe '#common_atoms_with' do
+              include_context :with_other_proxy
+              let(:pairs) do
+                [
+                  [cb, other.concept.atom(:cb)],
+                  [cr, other.concept.atom(:cr)],
+                  [cl, other.concept.atom(:cl)]
+                ]
+              end
+
+              it { expect(subject.common_atoms_with(other)).to match_array(pairs) }
             end
           end
 

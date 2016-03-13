@@ -8,6 +8,12 @@ module VersatileDiamond
         describe UniqueReactant, type: :algorithm do
           include_context :unique_reactant_context
 
+          shared_context :with_other_proxy do
+            let(:specific_specs) { [complex] }
+            let(:complex) { dept_activated_methyl_on_bridge }
+            let(:other) { described_class.new(generator, complex.spec) }
+          end
+
           describe '#original' do
             it { expect(subject.original).to be_a(Code::Specie) }
             it { expect(subject.original.spec).to eq(dept_unique_reactant) }
@@ -28,9 +34,7 @@ module VersatileDiamond
           end
 
           describe '#<=>' do
-            let(:specific_specs) { [complex] }
-            let(:complex) { dept_activated_methyl_on_bridge }
-            let(:other) { described_class.new(generator, complex.spec) }
+            include_context :with_other_proxy
 
             it { expect(subject <=> other).to eq(1) }
             it { expect(other <=> subject).to eq(-1) }
@@ -76,7 +80,7 @@ module VersatileDiamond
                 it { expect(subject.many?(atom)).to be_falsey }
               end
 
-              describe 'usages_num' do
+              describe '#usages_num' do
                 it { expect(subject.usages_num(atom)).to eq(1) }
               end
             end
@@ -103,6 +107,20 @@ module VersatileDiamond
               let(:atom) { cr }
               let(:index) { 3 }
               let(:anchor) { false }
+            end
+
+            describe '#common_atoms_with' do
+              include_context :with_other_proxy
+              let(:pairs) do
+                [
+                  [cm, other.concept.atom(:cm)],
+                  [cb, other.concept.atom(:cb)],
+                  [cr, other.concept.atom(:cr)],
+                  [cl, other.concept.atom(:cl)]
+                ]
+              end
+
+              it { expect(subject.common_atoms_with(other)).to match_array(pairs) }
             end
           end
 

@@ -140,7 +140,7 @@ module VersatileDiamond
       # @return [Array]
       # TODO: must be protected!
       def deep_common_atoms_with(other)
-        if self == other
+        if same?(other)
           atoms.zip(other.atoms)
         else
           parents.uniq(&:original).flat_map do |parent|

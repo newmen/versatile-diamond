@@ -50,7 +50,7 @@ module VersatileDiamond
                 Instances::UniqueParent.new(generator, dept_proxy_parent)
               end
 
-              [:cb, :cm].each do |keyname|
+              [:cm, :cb, :cr, :cl].each do |keyname|
                 let(keyname) { dept_uniq_specie.spec.atom(keyname) }
               end
             end

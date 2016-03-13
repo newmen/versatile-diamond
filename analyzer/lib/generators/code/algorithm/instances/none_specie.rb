@@ -7,6 +7,8 @@ module VersatileDiamond
         class NoneSpecie < SpecialCase
           include SpecieInstance
 
+          def_same_atom_method :context_atom
+
           # Intializes the none specie
           # @param [EngineCode] generator the major code generator
           # @param [Specie] original which is original and will be remembered
@@ -35,14 +37,8 @@ module VersatileDiamond
 
           attr_reader :generator
 
-          # Gets the atom which was passed
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which will be returned
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the passed atom
-          %i(original_atom reflection_of).each do |method_name|
-            define_method(method_name) { |atom| atom }
-          end
+          def_same_atom_method :original_atom, :reflection_of
+
         end
 
       end

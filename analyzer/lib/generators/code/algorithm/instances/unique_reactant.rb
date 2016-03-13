@@ -9,6 +9,8 @@ module VersatileDiamond
 
           attr_reader :spec
 
+          def_same_atom_method :context_atom
+
           # Initializes unique reactant specie
           # @param [EngineCode] generator the major code generator
           # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
@@ -28,14 +30,8 @@ module VersatileDiamond
 
         private
 
-          # Gets the same atom as was passed
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom of current specie which will be returned
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the passed atom
-          def reflection_of(atom)
-            atom
-          end
+          def_same_atom_method :reflection_of
+
         end
 
       end

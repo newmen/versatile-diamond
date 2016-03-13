@@ -8,6 +8,22 @@ module VersatileDiamond
 
           VAR_NAME_MAX_LENGTH = 21.freeze
 
+          def self.included(base)
+            base.extend(ClassMethods)
+          end
+
+          module ClassMethods
+            # @param [Symbol] method_name
+            def def_same_atom_method(*method_names)
+              method_names.each do |method_name|
+                # Gets the atom which was passed
+                # @param [Atom] atom which will be returned
+                # @return [Atom] the passed atom
+                define_method(method_name) { |atom| atom }
+              end
+            end
+          end
+
           # By defailt the actual specie is original
           # @return [Specie] original specie
           def actual
@@ -83,6 +99,15 @@ module VersatileDiamond
           # @return [Integer] how many times passed atoms uses in specie
           def usages_num(atom)
             generator.usages_num(spec, reflection_of(atom))
+          end
+
+          # Gets all common atoms pairs between self and other specie
+          # @param [SpecieInstance]
+          # @return [Array]
+          def common_atoms_with(other)
+            spec.common_atoms_with(other.spec).map do |self_atom, other_atom|
+              [context_atom(self_atom), other.context_atom(other_atom)]
+            end
           end
 
           # Gets the name of defining specie variable
