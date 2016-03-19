@@ -48,6 +48,41 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_symmetry do
+          subject { dept_activated_bridge }
+          let(:bases) do
+            [
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base
+            ]
+          end
+          let(:specifics) { [subject] }
+          let(:typical_reactions) { [dept_intermed_migr_dc_formation] }
+          let(:symmetry_classes) do
+            ['AtomsSwapWrapper<EmptySpecific<BRIDGE_CTs>, 1, 2>']
+          end
+          let(:symmetric_keynames) { [:cr, :cl] }
+        end
+
+        it_behaves_like :check_symmetry do
+          subject { dept_methyl_on_bridge_base }
+          let(:bases) do
+            [
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base,
+              dept_intermed_migr_down_common_base
+            ]
+          end
+          let(:specifics) { [] }
+          let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+          let(:symmetry_classes) do
+            ['AtomsSwapWrapper<EmptyBase<METHYL_ON_BRIDGE>, 2, 3>']
+          end
+          let(:symmetric_keynames) { [:cr, :cl] }
+        end
+
+        it_behaves_like :check_symmetry do
           subject { dept_methyl_on_bridge_base }
           let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }

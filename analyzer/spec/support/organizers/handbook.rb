@@ -133,6 +133,9 @@ module VersatileDiamond
         set(:dept_sierpinski_formation) do
           Organizers::DependentTypicalReaction.new(sierpinski_drop.reverse)
         end
+        set(:dept_intermed_migr_dc_drop) do
+          Organizers::DependentTypicalReaction.new(intermed_migr_dc_formation.reverse)
+        end
 
         define_dependents(DependentLateralReaction, [
           :end_lateral_idd,

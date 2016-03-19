@@ -24,11 +24,11 @@ module VersatileDiamond
         end
 
         # Collects symmetric atoms by children of internal specie
-        def collect_symmetries
+        def collect_symmetries!
           return if @_children_collected
           @_children_collected = true
 
-          spec.reactant_children.each { |child| get(child).collect_symmetries }
+          spec.reactant_children.each { |child| get(child).collect_symmetries! }
 
           distrib_twins_to_parents(spec.anchors).each do |parent, twins|
             get(parent).add_symmetries_for(twins)
@@ -283,14 +283,15 @@ module VersatileDiamond
 
         # Finds parent index and atom index in it
         # @param [Integer] index of atom in original sequence
-        # @return [Array] two values where the first is parent index and second is
-        #   atom index in it
+        # @return [Array] two values where the first is index of parent specie and
+        #   second is atom index in it
         def parent_atom_index(index)
           pi = nil
-          ai = index - @specie.sequence.delta
+          ai = index
+          delta = @specie.sequence.delta
           spec.parents.sort.each_with_index do |parent, i|
             panum = parent.links.size
-            if ai < panum
+            if ai < panum + delta
               pi = i
               break
             else
