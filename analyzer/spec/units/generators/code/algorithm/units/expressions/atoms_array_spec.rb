@@ -27,11 +27,10 @@ module VersatileDiamond
             include_context :raw_none_specie_context
             include_context :raw_unique_parent_context
 
-            let(:base_specs) { [dept_uniq_parent, dept_none_specie] }
+            let(:base_specs) { [dept_bridge_base, dept_none_specie] }
 
             let(:dept_none_specie) { dept_methyl_on_bridge_base }
             let(:dept_uniq_specie) { dept_methyl_on_bridge_base }
-            let(:dept_uniq_parent) { dept_bridge_base }
 
             let(:species) { [uniq_parent_inst, none_specie_inst] }
             let(:atoms) { [cb, cm] }

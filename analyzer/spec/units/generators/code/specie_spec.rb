@@ -25,6 +25,18 @@ module VersatileDiamond
           it { expect(code_bridge_base.original).to be_a(OriginalSpecie) }
         end
 
+        describe 'default symmetric atoms' do
+          let(:ct) { bridge_base.atom(:ct) }
+
+          describe '#symmetric_atom?' do
+            it { expect(code_bridge_base.symmetric_atom?(ct)).to be_falsey }
+          end
+
+          describe '#symmetric_atoms' do
+            it { expect(code_bridge_base.symmetric_atoms(ct)).to be_empty }
+          end
+        end
+
         describe '#template_name' do
           it { expect(code_bridge_base.template_name).to eq('specie') }
         end

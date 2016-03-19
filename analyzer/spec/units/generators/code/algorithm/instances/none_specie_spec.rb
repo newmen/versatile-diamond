@@ -27,6 +27,16 @@ module VersatileDiamond
             it { expect(subject.spec).to eq(orig_none_specie.spec) }
           end
 
+          describe '#symmetric_atoms' do
+            let(:base_specs) { [dept_bridge_base] }
+            let(:specific_specs) { [dept_right_hydrogenated_bridge] }
+            let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+
+            it { expect(subject.symmetric_atoms(ct)).to be_empty }
+            it { expect(subject.symmetric_atoms(cr)).to match_array([cr, cl]) }
+            it { expect(subject.symmetric_atoms(cl)).to match_array([cr, cl]) }
+          end
+
           describe '<=>' do
             include_context :with_other_proxy
 

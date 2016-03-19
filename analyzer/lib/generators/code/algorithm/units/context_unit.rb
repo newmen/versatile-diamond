@@ -17,6 +17,7 @@ module VersatileDiamond
             @unit = unit
 
             @_all_nodes_with_atoms, @_all_popular_atoms_nodes = nil
+            @_symmetric_atoms = nil
           end
 
           # @yield incorporating statement
@@ -255,7 +256,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def mono_self_symmetric?
-            atoms.one? && @context.symmetries_of(atoms.first).size > species.size
+            atoms.one? && symmetric_atoms.size > species.size
           end
 
           # @return [Boolean]
@@ -265,10 +266,14 @@ module VersatileDiamond
 
           # @return [Boolean]
           def subset_symmetric_atoms?
-            method = @context.public_method(:symmetries_of)
-            symmetric_atoms = atoms.flat_map(&method).to_set
             !symmetric_atoms.empty? && symmetric_atoms < atoms.to_set &&
               @context.symmetric_relations?(@unit.nodes_with(symmetric_atoms))
+          end
+
+          # @return [Array]
+          def symmetric_atoms
+            @_symmetric_atoms ||=
+              @unit.nodes_with(atoms).flat_map(&:symmetric_atoms).uniq
           end
         end
 

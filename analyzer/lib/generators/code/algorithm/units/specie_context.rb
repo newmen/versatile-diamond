@@ -15,13 +15,6 @@ module VersatileDiamond
             @_atoms_to_nodes = nil
           end
 
-          # @param [Concepts::Atom | Concepts::SpecificAtom | Concepts::AtomReference]
-          #   atom which symmetric analogies will be gotten
-          # @return [Array]
-          def symmetries_of(atom)
-            @specie.symmetric_atoms(atom)
-          end
-
           %i(atoms_nodes specie_nodes reachable_nodes_with).each do |method_name|
             # @param [Array] instances
             # @return [Array]

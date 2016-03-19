@@ -37,6 +37,14 @@ module VersatileDiamond
             spec.spec
           end
 
+          # Gets symmetric atoms in original specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom the for which the symmetries will be gotten
+          # @return [Array]
+          def symmetric_atoms(atom)
+            original.symmetric_atoms(original_atom(atom)).map(&method(:context_atom))
+          end
+
           # Gets correct index of atom in original specie atoms sequence
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the index for which will be gotten

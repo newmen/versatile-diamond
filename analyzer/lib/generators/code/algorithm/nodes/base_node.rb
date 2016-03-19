@@ -24,7 +24,8 @@ module VersatileDiamond
             @uniq_specie = uniq_specie
             @atom = atom
 
-            @_atom_properties, @_sub_properties = nil
+            @_is_anchor, @_is_many_used, @_usages_num = nil
+            @_atom_properties, @_sub_properties, @_symmetric_atoms = nil
           end
 
           # Compares current node with another node
@@ -39,19 +40,19 @@ module VersatileDiamond
           # Checks that target atom is anchor in unique specie
           # @return [Boolean] is anchor or not
           def anchor?
-            uniq_specie.anchor?(atom)
+            @_is_anchor ||= uniq_specie.anchor?(atom)
           end
 
           # Checks that target atom is used many times in unique specie
           # @return [Boolean]
           def used_many_times?
-            uniq_specie.many?(atom)
+            @_is_many_used ||= uniq_specie.many?(atom)
           end
 
           # Count usages of target atom in unique specie
           # @return [Integer]
           def usages_num
-            uniq_specie.usages_num(atom)
+            @_usages_num ||= uniq_specie.usages_num(atom)
           end
 
           # Directly provides atom properties instance for current node
@@ -64,6 +65,11 @@ module VersatileDiamond
           # @return [Organizers::AtomProperties] for instances that stored in node
           def sub_properties
             @_sub_properties ||= uniq_specie.properties_of(atom)
+          end
+
+          # @return [Array]
+          def symmetric_atoms
+            @_symmetric_atoms ||= uniq_specie.symmetric_atoms(atom)
           end
 
           def inspect

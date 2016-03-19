@@ -6,9 +6,14 @@ module VersatileDiamond
       module Algorithm::Nodes
 
         describe SpecieNode, type: :algorithm do
-          let(:generator) { stub_generator(base_specs: base_specs) }
           let(:base_specs) { [dept_bridge_base, dept_mob, dept_three_bridges_base] }
-
+          let(:specific_specs) { [] }
+          let(:typical_reactions) { [] }
+          let(:generator) do
+            stub_generator(base_specs: base_specs,
+                           specific_specs: specific_specs,
+                           typical_reactions: typical_reactions)
+          end
           let(:bridge) { generator.specie_class(bridge_base.name) }
 
           let(:factory_mob) { Algorithm::SpecieNodesFactory.new(generator, code_mob) }
@@ -119,6 +124,18 @@ module VersatileDiamond
             let(:ct) { dept_bridge_base.spec.atom(:ct) }
             let(:props_ct) { Organizers::AtomProperties.new(dept_bridge_base, ct) }
             it { expect(node_cb.sub_properties).to eq(props_ct) }
+          end
+
+          describe '#symmetric_atoms' do
+            it { expect(node_cm.symmetric_atoms).to be_empty }
+            it { expect(node_cb.symmetric_atoms).to be_empty }
+            it { expect(node_cr.symmetric_atoms).to be_empty }
+
+            describe 'in symmetric specie' do
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_right_hydrogenated_bridge] }
+              let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+            end
           end
 
           describe '#limited?' do

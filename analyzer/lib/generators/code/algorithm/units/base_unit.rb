@@ -75,9 +75,10 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def iterate_species_by_role(&block)
             # unit contains just one atom (resolved above)
+            predefined_vars = dict.defined_vars
             specie_var = dict.make_specie_s(select_undefined(species))
             atom_var = dict.var_of(atoms)
-            atom_var.each_specie_by_role(dict.defined_vars, specie_var, block.call)
+            atom_var.each_specie_by_role(predefined_vars, specie_var, block.call)
           end
 
           # @param [Array] undefined_atoms
@@ -133,10 +134,10 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_defined_specie_symmetries(specie, &block)
-            defined_vars = dict.defined_vars # get before make inner specie var
+            predefined_vars = dict.defined_vars # get before make inner specie var
             ext_var = dict.var_of(specie)
             inner_var = dict.make_specie_s(specie, type: abst_specie_type)
-            ext_var.iterate_symmetries(defined_vars, inner_var, block.call)
+            ext_var.iterate_symmetries(predefined_vars, inner_var, block.call)
           end
 
           # @yield incorporating statement
@@ -163,7 +164,7 @@ module VersatileDiamond
           # @param [Array] undefined_atoms
           # @return [Array]
           def make_atoms_from_species(undefined_atoms)
-            nodes = @unit.nodes_with(undefined_atoms)
+            nodes = nodes_with(undefined_atoms)
             species_vars = vars_for(nodes.map(&:uniq_specie))
             atoms_calls =
               species_vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }

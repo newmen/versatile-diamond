@@ -11,7 +11,7 @@ module VersatileDiamond
           shared_context :with_other_proxy do
             let(:specific_specs) { [more_complex] }
             let(:more_complex) { dept_activated_methyl_on_bridge }
-            let(:other_proxy) { make_proxy(more_complex, dept_uniq_specie) }
+            let(:other_proxy) { more_complex.parents.first }
             let(:other) { described_class.new(generator, other_proxy) }
           end
 
@@ -26,13 +26,25 @@ module VersatileDiamond
           end
 
           describe '#spec' do
-            it { expect(subject.spec.name).to eq(dept_uniq_parent.name) }
-            it { expect(subject.spec).not_to eq(dept_uniq_parent) }
+            it { expect(subject.spec).to eq(dept_uniq_parent) }
             it { expect(subject.spec).not_to eq(dept_uniq_specie) }
           end
 
           describe '#concept' do
-            it { expect(subject.concept).to eq(vl_bridge) }
+            it { expect(subject.concept).to eq(bridge_base) }
+          end
+
+          describe '#symmetric_atoms' do
+            it { expect(subject.symmetric_atoms(cb)).to be_empty }
+
+            describe 'realy symmetric' do
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_uniq_specie] }
+              let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+              let(:dept_uniq_specie) { dept_right_hydrogenated_bridge }
+              it { expect(subject.symmetric_atoms(cr)).to match_array([cr, cl]) }
+              it { expect(subject.symmetric_atoms(cl)).to match_array([cr, cl]) }
+            end
           end
 
           describe '#<=>' do
@@ -54,8 +66,8 @@ module VersatileDiamond
               let(:classifier) { generator.classifier }
 
               describe 'from original specie' do
-                let(:vb_ct) { vl_bridge.atom(:ct) }
-                let(:props) { Organizers::AtomProperties.new(dept_uniq_parent, vb_ct) }
+                let(:ct) { bridge_base.atom(:ct) }
+                let(:props) { Organizers::AtomProperties.new(dept_bridge_base, ct) }
 
                 describe '#source_role' do
                   it { expect(subject.source_role(cb)).to eq(classifier.index(props)) }

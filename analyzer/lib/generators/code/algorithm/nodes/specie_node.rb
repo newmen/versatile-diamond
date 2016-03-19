@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Nodes
@@ -23,8 +25,9 @@ module VersatileDiamond
           # Splits the scope node to independent nodes
           # @return [Array] the list of independent nodes
           def split
-            uniq_specie.species.map do |uniq_parent|
-              self.class.new(generator, @orig_specie, uniq_parent, atom)
+            uniq_specie.species.groups.flat_map do |parents|
+              node = self.class.new(generator, @orig_specie, parents.first, atom)
+              [node] * parents.size
             end
           end
 

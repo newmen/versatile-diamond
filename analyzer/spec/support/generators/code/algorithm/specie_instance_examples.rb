@@ -37,20 +37,15 @@ module VersatileDiamond
             end
 
             shared_context :raw_unique_parent_context do
-              def make_proxy(parent, complex)
-                mirror = Mcs::SpeciesComparator.make_mirror(complex, parent)
-                Organizers::ProxyParentSpec.new(parent, complex, mirror)
-              end
-
-              let(:dept_proxy_parent) do
-                make_proxy(dept_uniq_parent, dept_uniq_specie)
+              let(:dept_uniq_parent) do
+                dept_uniq_specie.parents.first
               end
 
               let(:uniq_parent_inst) do
-                Instances::UniqueParent.new(generator, dept_proxy_parent)
+                Instances::UniqueParent.new(generator, dept_uniq_parent)
               end
 
-              [:cm, :cb, :cr, :cl].each do |keyname|
+              [:cm, :cb, :cr, :cl, :ct, :ctr, :ctl].each do |keyname|
                 let(keyname) { dept_uniq_specie.spec.atom(keyname) }
               end
             end
@@ -62,9 +57,6 @@ module VersatileDiamond
               subject { uniq_parent_inst }
 
               let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
-
-              let(:vl_bridge) { Concepts::VeiledSpec.new(bridge_base) }
-              let(:dept_uniq_parent) { dept_bridge_base.clone_with_replace(vl_bridge) }
               let(:dept_uniq_specie) { dept_methyl_on_bridge_base }
             end
 
@@ -77,7 +69,7 @@ module VersatileDiamond
                 Instances::UniqueReactant.new(generator, vl_unique_reactant)
               end
 
-              [:cm, :cb, :cr, :cl].each do |keyname|
+              [:cm, :cb, :cr, :cl, :ct].each do |keyname|
                 let(keyname) { vl_unique_reactant.atom(keyname) }
               end
             end

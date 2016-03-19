@@ -60,8 +60,9 @@ module VersatileDiamond
           # @return [Array] the list of itself class factories
           def factories_for(parents)
             parents.map do |parent|
-              @parents_to_factories[parent] ||=
-                self.class.new(generator, specie_class(parent))
+              original_parent = specie_class(parent)
+              @parents_to_factories[original_parent] ||=
+                self.class.new(generator, original_parent)
             end
           end
 

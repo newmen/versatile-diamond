@@ -33,6 +33,17 @@ module VersatileDiamond
             it { expect(subject.concept).to eq(vl_unique_reactant) }
           end
 
+          describe '#symmetric_atoms' do
+            let(:base_specs) { [dept_bridge_base] }
+            let(:specific_specs) { [dept_unique_reactant] }
+            let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+            let(:dept_unique_reactant) { dept_right_hydrogenated_bridge }
+
+            it { expect(subject.symmetric_atoms(ct)).to be_empty }
+            it { expect(subject.symmetric_atoms(cr)).to be_empty }
+            it { expect(subject.symmetric_atoms(cl)).to be_empty }
+          end
+
           describe '#<=>' do
             include_context :with_other_proxy
 

@@ -21,7 +21,6 @@ module VersatileDiamond
         TARGET_SPECIE_NAME = 'target'.freeze
         INTER_SPECIE_NAME = 'specie'.freeze
 
-        def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
         attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator
@@ -81,6 +80,22 @@ module VersatileDiamond
         # @return [Boolean] is symmetric specie or not
         def symmetric?
           !@symmetrics.empty?
+        end
+
+        # Delegates call to detector if it exists
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be checked
+        # @return [Boolean]
+        def symmetric_atom?(atom)
+          @detector && @detector.symmetric_atom?(atom)
+        end
+
+        # Delegates call to detector if it exists
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which symmetries will be gotten
+        # @return [Array]
+        def symmetric_atoms(atom)
+          @detector ? @detector.symmetric_atoms(atom) : []
         end
 
         PREF_METD_SEPS.each do |prefix, method, separator|
