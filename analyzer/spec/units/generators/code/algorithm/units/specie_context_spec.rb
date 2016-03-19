@@ -27,7 +27,6 @@ module VersatileDiamond
 
           shared_context :two_mobs_context do
             let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
-            let(:specific_specs) { [] }
             let(:typical_reactions) { [dept_sierpinski_drop] }
 
             let(:dept_uniq_specie) { dept_cross_bridge_on_bridges_base }
@@ -37,6 +36,24 @@ module VersatileDiamond
 
             let(:scope_inst) { entry_nodes.first.uniq_specie }
             let(:none_mob) { scope_inst.species.first }
+          end
+
+          shared_context :intermed_context do
+            let(:base_specs) do
+              [
+                dept_bridge_base,
+                dept_methyl_on_bridge_base,
+                dept_methyl_on_dimer_base,
+                dept_uniq_specie
+              ]
+            end
+            let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+
+            let(:entry_nodes) do
+              backbone.entry_nodes.reject { |ns| ns.first.atom.lattice }.first
+            end
+            let(:dept_uniq_specie) { dept_intermed_migr_down_common_base }
+            let(:node_specie) { entry_nodes.first.uniq_specie }
           end
 
           describe '#atom_nodes' do
@@ -100,9 +117,15 @@ module VersatileDiamond
               it { expect(nodes.map(&:uniq_specie)).to be_empty }
             end
 
-            describe 'many nodes' do
+            describe 'just self nodes' do
               include_context :two_mobs_context
               it { expect(nodes.map(&:uniq_specie)).to be_empty }
+            end
+
+            describe 'close symmetric nodes' do
+              include_context :intermed_context
+              it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
+              it { expect(nodes.map(&:atom)).to eq([cbr]) }
             end
           end
 

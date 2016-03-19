@@ -38,7 +38,7 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def symmetric_close_nodes(species)
-            bulk_key_nodes_with(species).select(&method(:all_symmetric_atoms?))
+            undefined_related_nodes(species).uniq(&:to_set)
           end
 
           # @param [Array] nodes
@@ -70,32 +70,10 @@ module VersatileDiamond
           end
 
           # @param [Array] uniq_species
-          # @return [Array]
-          def bulk_key_nodes_with(uniq_species)
-            undefined_related_nodes(uniq_species).uniq(&:to_set)
-          end
-
-          # @param [Array] uniq_species
           # @return [Array] lists of related nodes with undefined atoms
           def undefined_related_nodes(uniq_species)
-            key_nodes = backbone_graph.keys
-            undefined_atoms_nodes(key_nodes, uniq_species).flat_map do |nodes|
-              same_related_nodes(nodes).map { |ns| nodes + ns }
-            end
-          end
-
-          # @param [array] nodes
-          # @return [array]
-          def same_related_nodes(nodes)
-            node_species = nodes.flat_map(&:uniq_specie).uniq
-            original_species = node_species.map(&:original)
-            nbrs_lists = backbone_graph[nodes].map(&:first)
-            same_nbrs = nbrs_lists.select do |ns|
-              ns.all? do |node|
-                !@dict.var_of(node.atom) &&
-                  original_species.include?(node.uniq_specie.original)
-              end
-            end
+            nodes_lists = undefined_atoms_nodes(backbone_graph.keys, uniq_species)
+            nodes_lists.select(&method(:undefined_symmetric_atoms?))
           end
 
           # @param [Array] nodes_lists
@@ -112,6 +90,14 @@ module VersatileDiamond
           # @return [Boolean]
           def undefined_atom_in?(node, uniq_species)
             uniq_species.include?(node.uniq_specie) && !@dict.var_of(node.atom)
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def undefined_symmetric_atoms?(nodes)
+            atoms_lists = nodes.map(&:symmetric_atoms)
+            !atoms_lists.any?(&:empty?) &&
+              atoms_lists.all? { |atoms| !atoms.any?(&@dict.public_method(:var_of)) }
           end
 
           # @param [Array] rels_lists
@@ -141,38 +127,6 @@ module VersatileDiamond
           # @return [Boolean]
           def same_rels_when?(rels_lists, &block)
             lists_are_identical?(*rels_lists.map(&block), &:==)
-          end
-
-          # @param [Array] nodes
-          # @return [Boolean]
-          def all_symmetric_atoms?(nodes)
-            if same_specie_nodes?(nodes)
-              one_specie_symmetric_atoms?(nodes)
-            else
-              many_species_symmetric_atoms?(nodes)
-            end
-          end
-
-          # @param [Array] nodes
-          # @return [Boolean]
-          def same_specie_nodes?(nodes)
-            nodes.map(&:uniq_specie).map(&:original).uniq.one?
-          end
-
-          # @param [Array] nodes
-          # @return [Boolean]
-          def one_specie_symmetric_atoms?(nodes)
-            symmetries_lists = nodes.map(&:symmetric_atoms)
-            !symmetries_lists.any?(&:empty?) &&
-              lists_are_identical?(*([nodes.map(&:atom)] + symmetries_lists), &:==)
-          end
-
-          # @param [Array] nodes
-          # @return [Boolean]
-          def many_species_symmetric_atoms?(nodes)
-            nodes.map(&:uniq_specie).uniq(&:original).one? &&
-              nodes.map(&:properties).uniq.one? &&
-              symmetric_relation_between?(*nodes)
           end
 
           # @param [Nodes::BaseNode] a

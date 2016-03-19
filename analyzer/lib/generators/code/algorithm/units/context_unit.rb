@@ -251,7 +251,7 @@ module VersatileDiamond
           #   in the case when neighbour nodes are not similar
           def asymmetric_related_atoms?
             nodes = @context.symmetric_close_nodes(species)
-            !(nodes.empty? || @context.symmetric_relations?(nodes))
+            !nodes.empty? && (nodes.one? || !@context.symmetric_relations?(nodes))
           end
 
           # @return [Boolean]
