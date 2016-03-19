@@ -87,6 +87,12 @@ module VersatileDiamond
             it { expect(node_ab.properties).to eq(props_ab) }
           end
 
+          describe '#sub_properties' do
+            let(:atom_ab) { dept_ab.spec.atom(:ct) }
+            let(:props_ab) { Organizers::AtomProperties.new(dept_ab, atom_ab) }
+            it { expect(node_ab.sub_properties).to eq(props_ab) }
+          end
+
           describe '#spec_atom' do
             let(:atom_aib) { concept_aib.atom(:ct) }
             it { expect(node_aib.spec_atom).to eq([concept_aib, atom_aib]) }

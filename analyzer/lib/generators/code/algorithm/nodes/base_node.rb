@@ -24,7 +24,7 @@ module VersatileDiamond
             @uniq_specie = uniq_specie
             @atom = atom
 
-            @_atom_properties = nil
+            @_atom_properties, @_sub_properties = nil
           end
 
           # Compares current node with another node
@@ -58,6 +58,12 @@ module VersatileDiamond
           # @return [Organizers::AtomProperties] for instances that stored in node
           def properties
             @_atom_properties ||= generator.atom_properties(context_spec, atom)
+          end
+
+          # Gets properties of atom in inner unique specie instance
+          # @return [Organizers::AtomProperties] for instances that stored in node
+          def sub_properties
+            @_sub_properties ||= uniq_specie.properties_of(atom)
           end
 
           def inspect

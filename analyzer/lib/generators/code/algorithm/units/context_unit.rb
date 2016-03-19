@@ -233,8 +233,7 @@ module VersatileDiamond
           def atom_usages_like_in_context?
             if atom_used_many_times?
               context_prop = all_popular_atoms_nodes.first.properties
-              parent_props =
-                all_popular_atoms_nodes.map { |n| n.uniq_specie.properties_of(n.atom) }
+              parent_props = all_popular_atoms_nodes.map(&:sub_properties)
               parent_props.reduce(:accurate_plus) == context_prop
             else
               false

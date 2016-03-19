@@ -115,6 +115,12 @@ module VersatileDiamond
             it { expect(node_cc.properties).to eq(props_cc) }
           end
 
+          describe '#sub_properties' do
+            let(:ct) { dept_bridge_base.spec.atom(:ct) }
+            let(:props_ct) { Organizers::AtomProperties.new(dept_bridge_base, ct) }
+            it { expect(node_cb.sub_properties).to eq(props_ct) }
+          end
+
           describe '#limited?' do
             it { expect(node_cm.limited?).to be_falsey }
             it { expect(node_cb.limited?).to be_falsey }
