@@ -66,10 +66,8 @@ module VersatileDiamond
           def iterate_symmetries(&block)
             if species.one? || atoms.one?
               iterate_specie_symmetries(&block)
-            elsif asymmetric_related_atoms?
+            else # if ContextUnit#asymmetric_related_atoms?
               iterate_for_loop_symmetries(&block)
-            else
-              raise 'Incorrect unit configuration'
             end
           end
 

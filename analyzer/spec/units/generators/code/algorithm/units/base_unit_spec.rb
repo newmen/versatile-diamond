@@ -30,22 +30,60 @@ module VersatileDiamond
           end
 
           describe '#check_atoms_roles' do
-            include_context :two_mobs_context
+            [:cm, :ctr].each do |keyname|
+              let("role_#{keyname}") { node_specie.actual_role(send(keyname)) }
+            end
             let(:prc) do
               -> { Expressions::Core::Return[Expressions::Core::Constant[0]] }
             end
 
-            describe 'one atom' do
-              before { dict.make_atom_s(cm) }
-              let(:code) do
-                <<-CODE
-if (amorph1->is(#{node_specie.actual_role(cm)}))
+            shared_examples_for :check_atoms_roles_cond do
+              before { dict.make_atom_s(atoms) }
+              it { expect(subject.check_atoms_roles(atoms, &prc).code).to eq(code) }
+            end
+
+            describe 'specie with additional atom' do
+              include_context :mob_context
+
+              it_behaves_like :check_atoms_roles_cond do
+                let(:atoms) { [cm] }
+                let(:code) do
+                  <<-CODE
+if (amorph1->is(#{role_cm}))
 {
     return 0;
 }
-                CODE
+                  CODE
+                end
               end
-              it { expect(subject.check_atoms_roles([cm], &prc).code).to eq(code) }
+            end
+
+            describe 'two similar species' do
+              include_context :two_mobs_context
+
+              it_behaves_like :check_atoms_roles_cond do
+                let(:atoms) { [cm] }
+                let(:code) do
+                  <<-CODE
+if (amorph1->is(#{role_cm}))
+{
+    return 0;
+}
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_atoms_roles_cond do
+                let(:atoms) { [ctl, ctr] }
+                let(:code) do
+                  <<-CODE
+if (atoms1[0]->is(#{role_ctr}) && atoms1[1]->is(#{role_ctr}))
+{
+    return 0;
+}
+                  CODE
+                end
+              end
             end
           end
         end

@@ -93,7 +93,7 @@ module VersatileDiamond
             if array?(instance)
               send(:"#{prefix}s_array", instance, *args, **nopts)
             else
-              send(:"#{prefix}_variable", instance, *args, **nopts)
+              send(:"#{prefix}_variable", fix_instance(instance), *args, **nopts)
             end
           end
 
