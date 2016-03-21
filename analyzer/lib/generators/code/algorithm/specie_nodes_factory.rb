@@ -13,12 +13,11 @@ module VersatileDiamond
           def initialize(generator, specie)
             super(generator)
             @specie = specie
-            @parents_to_factories = {}
 
             @_none_specie = nil
           end
 
-        protected
+        private
 
           # Detects correct unique parent specie by passed atom
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
@@ -36,8 +35,6 @@ module VersatileDiamond
             end
           end
 
-        private
-
           # Gets the instance of none specie
           # @return [Instances::NoneSpecie] the specie instance without parents
           def get_none_specie
@@ -50,37 +47,14 @@ module VersatileDiamond
           #   atom by which the species scope will be got
           # @return [Instances::SpeciesScope] the scope of species
           def get_species_scope(parents, atom)
-            unique_parents = specie_instances(parents, atom)
+            unique_parents = parents.map(&method(:get_unique_specie))
             Instances::SpeciesScope.new(@specie, unique_parents)
-          end
-
-          # Gets the cached specie nodes factories for passed parent species
-          # @param [Array] parents for each of which the factory will be created and
-          #   cached
-          # @return [Array] the list of itself class factories
-          def factories_for(parents)
-            parents.map do |parent|
-              original_parent = specie_class(parent)
-              @parents_to_factories[original_parent] ||=
-                self.class.new(generator, original_parent)
-            end
-          end
-
-          # Gets the specie instances for passed parents and central atom
-          # @param [Array] parents for which the instances will be created
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom by which the unique parent specie will be got
-          # @return [Array] the list of created parent specie instances
-          def specie_instances(parents, atom)
-            factories_for(parents).zip(parents).map do |factory, parent|
-              factory.parent_specie(parent.twin_of(atom))
-            end
           end
 
           # Gets the class of creating unique instance
           # @return [Class] the class of unique parent specie which instnace will be
           #   stored in new node
-          def instance_klass
+          def instance_class
             Instances::UniqueParent
           end
 

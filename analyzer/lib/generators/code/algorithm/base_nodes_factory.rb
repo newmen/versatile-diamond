@@ -12,7 +12,7 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             @generator = generator
-            @unique_species_cacher = UniqueSpeciesCacher.new(generator, instance_klass)
+            @unique_species_cacher = UniqueSpeciesCacher.new(generator, instance_class)
             @vertices_to_nodes = {}
           end
 

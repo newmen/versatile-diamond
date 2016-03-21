@@ -15,7 +15,7 @@ module VersatileDiamond
           end
 
           # All different anchor atoms should have names
-          def entry_point!
+          def define!
             if atoms.one?
               anchor = atoms.first
               dict.make_atom_s(anchor, name: Code::Specie::ANCHOR_ATOM_NAME)

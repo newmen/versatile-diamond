@@ -12,7 +12,7 @@ module VersatileDiamond
           end
 
           # Anytime is a previous found specie
-          def entry_point!
+          def define!
             if species.one?
               parent = species.first
               dict.make_specie_s(parent, name: Code::Specie::ANCHOR_SPECIE_NAME)

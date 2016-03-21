@@ -43,7 +43,7 @@ module VersatileDiamond
           # @return [String] the algorithm of finding current specie from passed nodes
           def body_for(nodes)
             @dict.rollback!
-            @pure_factory.unit(nodes).entry_point!
+            @pure_factory.unit(nodes).define!
             combine_algorithm(nodes)
           end
 

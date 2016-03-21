@@ -15,9 +15,7 @@ module VersatileDiamond
           # @param [Instances::SpecieInstance] specie
           # @return [Core::OpCall]
           def role_in(specie)
-            verify_anchor_of(specie) do
-              call('is', actual_role_value(specie))
-            end
+            call('is', actual_role_value(specie))
           end
 
           # @param [Array] species
@@ -67,7 +65,7 @@ module VersatileDiamond
             if specie.anchor?(instance)
               block.call
             else
-              raise ArgumentError, "#{code} is not anchor of #{specie}"
+              raise ArgumentError, "#{code} is not anchor of #{specie.inspect}"
             end
           end
         end

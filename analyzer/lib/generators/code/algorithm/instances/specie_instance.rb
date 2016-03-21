@@ -24,7 +24,7 @@ module VersatileDiamond
             end
           end
 
-          # By defailt the actual specie is original
+          # By defailt the actual specie is same as original
           # @return [Specie] original specie
           def actual
             original
@@ -122,12 +122,12 @@ module VersatileDiamond
           # @return [String] the specie variable name
           def var_name
             class_name = original.class_name
-            var_name = class_name.dup
-            var_name[0] = var_name[0].downcase
-            if var_name.size > VAR_NAME_MAX_LENGTH
+            if class_name.size > VAR_NAME_MAX_LENGTH
               abrv = class_name.scan(/[A-Z][^A-Z]*/).map { |part| part[0] }
               "#{Specie::INTER_SPECIE_NAME}#{abrv.join}"
             else
+              var_name = class_name.dup
+              var_name[0] = var_name[0].downcase
               var_name
             end
           end

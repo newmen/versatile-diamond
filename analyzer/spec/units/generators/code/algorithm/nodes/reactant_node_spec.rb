@@ -27,15 +27,15 @@ module VersatileDiamond
           let(:concept_ab) { source.first }
 
           describe '#uniq_specie' do
-            let(:specie_instance_klass) { Algorithm::Instances::UniqueReactant }
+            let(:specie_instance_class) { Algorithm::Instances::UniqueReactant }
 
             let(:code_aib) { generator.specie_class(concept_aib.name) }
             it { expect(node_aib.uniq_specie.original).to eq(code_aib) }
-            it { expect(node_aib.uniq_specie).to be_a(specie_instance_klass) }
+            it { expect(node_aib.uniq_specie).to be_a(specie_instance_class) }
 
             let(:code_ab) { generator.specie_class(concept_ab.name) }
             it { expect(node_ab.uniq_specie.original).to eq(code_ab) }
-            it { expect(node_ab.uniq_specie).to be_a(specie_instance_klass) }
+            it { expect(node_ab.uniq_specie).to be_a(specie_instance_class) }
           end
 
           describe '#spec' do

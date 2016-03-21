@@ -15,7 +15,7 @@ module VersatileDiamond
             @_atoms_to_nodes = nil
           end
 
-          %i(atoms_nodes specie_nodes reachable_nodes_with).each do |method_name|
+          %i(specie_nodes reachable_nodes_with).each do |method_name|
             # @param [Array] instances
             # @return [Array]
             # @override
@@ -25,6 +25,11 @@ module VersatileDiamond
           end
 
         private
+
+          # @override
+          def all_nodes
+            replace_scopes(super)
+          end
 
           # @param [Array] nodes
           # @return [Array]
