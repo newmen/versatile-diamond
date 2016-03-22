@@ -48,11 +48,10 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] nodes
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           # TODO: just specie (rspec required)
-          def check_different_atoms_roles(nodes, &block)
+          def check_different_atoms_roles(&block)
             checking_nodes = nodes.select(&:different_atom_role?)
             if checking_nodes.empty?
               block.call
@@ -77,7 +76,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_for_loop_symmetries(&block)
-            define_required_atoms do
+            define_undefined_atoms do
               redefine_atoms_as_array do
                 Expressions::SymmetricAtomsForLoop[vars_for(atoms), block.call]
               end
@@ -94,10 +93,14 @@ module VersatileDiamond
             atom_var.each_specie_by_role(predefined_vars, specie_var, block.call)
           end
 
-          # @param [Array] undefined_atoms
-          # @return [Expressions::Core::Assign]
-          def define_undefined_atoms(undefined_atoms)
-            make_atoms_from_species(undefined_atoms).define_var
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def define_undefined_atoms(&block)
+            if all_defined?(atoms)
+              block.call
+            else
+              make_undefined_atoms_from_species.define_var + block.call
+            end
           end
 
           # @return [Boolean]
@@ -140,22 +143,10 @@ module VersatileDiamond
             ext_var.iterate_symmetries(predefined_vars, inner_var, block.call)
           end
 
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def define_required_atoms(&block)
-            undefined_atoms = select_undefined(atoms)
-            if undefined_atoms.empty?
-              block.call
-            else
-              define_undefined_atoms(undefined_atoms) + block.call
-            end
-          end
-
-          # @param [Array] undefined_atoms
           # @return [Expressions::Core::Variable]
-          def make_atoms_from_species(undefined_atoms)
-            nodes = nodes_with(undefined_atoms)
-            species_vars = vars_for(nodes.map(&:uniq_specie))
+          def make_undefined_atoms_from_species
+            undefined_atoms = select_undefined(atoms)
+            species_vars = vars_for(nodes_with(undefined_atoms).map(&:uniq_specie))
             atoms_calls =
               species_vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }
 

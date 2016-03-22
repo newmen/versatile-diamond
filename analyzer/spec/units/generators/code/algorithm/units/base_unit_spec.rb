@@ -177,6 +177,7 @@ for (uint a = 0; a < 2; ++a)
           describe '#iterate_species_by_role' do
             include_context :two_mobs_context
             before { dict.make_atom_s(cm) }
+
             let(:role_cm) { node_specie.source_role(cm) }
             let(:unit_nodes) { [entry_nodes.first.split.first] } # override
             let(:code) do
@@ -188,6 +189,40 @@ amorph1->eachSpecByRole<MethylOnBridge>(#{role_cm}, [](MethylOnBridge *methylOnB
             end
             let(:expr) { subject.iterate_species_by_role(&return0) }
             it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#define_undefined_atoms' do
+            include_context :two_mobs_context
+            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+
+            let(:unit_nodes) do # override
+              [
+                cbs_relation.first.first,
+                cbs_relation.last.first.first.first
+              ]
+            end
+            let(:expr) { subject.define_undefined_atoms(&return0) }
+
+            describe 'one atom is defined' do
+              before { dict.make_atom_s(ctr) }
+              let(:code) do
+                <<-CODE
+Atom *atom2 = species1[0]->atom(1);
+return 0;
+                CODE
+              end
+              it { expect(expr.code).to eq(code) }
+            end
+
+            describe 'both atoms are undefined' do
+              let(:code) do
+                <<-CODE
+Atom *atoms1[2] = { species1[0]->atom(1), species1[1]->atom(1) };
+return 0;
+                CODE
+              end
+              it { expect(expr.code).to eq(code) }
+            end
           end
         end
 
