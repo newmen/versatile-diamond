@@ -28,7 +28,7 @@ module VersatileDiamond
           # @return [String]
           # @override
           def code
-            oneline? ? super : multilines.join
+            oneline? ? super : multilines.join("\n")
           end
 
           # Checks that current statement is unreal tin operator
@@ -49,7 +49,7 @@ module VersatileDiamond
           def multilines
             inner_exprs.map do |expr|
               inner_code = expr.code
-              expr.expr? || expr.assign? ? "#{inner_code};\n" : inner_code
+              expr.expr? || expr.assign? ? "#{inner_code};" : inner_code
             end
           end
         end

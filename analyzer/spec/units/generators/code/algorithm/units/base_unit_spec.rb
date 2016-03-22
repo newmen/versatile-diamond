@@ -198,6 +198,11 @@ amorph1->eachSpecByRole<MethylOnBridge>(#{role_cm}, [](MethylOnBridge *methylOnB
             include_context :predefined_two_mobs_context
             let(:expr) { subject.define_undefined_atoms(&return0) }
 
+            describe 'all atoms are defined' do
+              before { dict.make_atom_s([ctl, ctr]) }
+              it { expect(expr.code).to eq('return 0') }
+            end
+
             describe 'one atom is defined' do
               before { dict.make_atom_s(ctr) }
               let(:code) do
@@ -206,7 +211,7 @@ Atom *atom2 = species1[0]->atom(1);
 return 0;
                 CODE
               end
-              it { expect(expr.code).to eq(code) }
+              it { expect(expr.code).to eq(code.rstrip) }
             end
 
             describe 'both atoms are undefined' do
@@ -216,7 +221,7 @@ Atom *atoms1[2] = { species1[0]->atom(1), species1[1]->atom(1) };
 return 0;
                 CODE
               end
-              it { expect(expr.code).to eq(code) }
+              it { expect(expr.code).to eq(code.rstrip) }
             end
           end
         end
