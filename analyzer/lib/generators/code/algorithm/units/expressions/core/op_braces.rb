@@ -73,13 +73,13 @@ module VersatileDiamond
 
           # @return [Array]
           def inner_lines
-            exprs_with_methods.map { |method_name, expr| send(method_name, expr.code) }
+            exprs_with_methods.map { |expr, method_name| send(method_name, expr.code) }
           end
 
           # @return [Array]
           def exprs_with_methods
             deep_exprs.map do |expr|
-              [(expr.expr? || expr.assign? ? :wrap : :shift), expr]
+              [expr, (expr.expr? || expr.assign? ? :wrap : :shift)]
             end
           end
 

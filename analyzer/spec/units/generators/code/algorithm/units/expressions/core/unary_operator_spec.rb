@@ -161,7 +161,16 @@ module VersatileDiamond
                 end
 
                 describe 'multilines' do
-                  let(:many_lines) { "{\n    x;\n    y;\n    many(x, y);\n}" }
+                  let(:code) do
+                    <<-CODE
+{
+    x;
+    y;
+    many(x, y);
+}
+                    CODE
+                  end
+                  let(:many_lines) { code.rstrip }
 
                   describe 'not external new lines' do
                     subject { OpBraces[OpCombine[x, y, func2]] }

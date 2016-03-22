@@ -13,13 +13,34 @@ module VersatileDiamond
               it { expect { OpCombine[x] }.to raise_error }
             end
 
-            subject { OpCombine[x, num] }
             let(:is_tin) { true }
 
-            it_behaves_like :check_predicates
+            describe 'one line' do
+              it_behaves_like :check_predicates
+              subject { OpCombine[x, num] }
 
-            describe '#code' do
-              it { expect(subject.code).to eq('x5') }
+              describe '#code' do
+                it { expect(subject.code).to eq('x5') }
+              end
+            end
+
+            describe 'multi lines' do
+              it_behaves_like :check_predicates
+              subject { OpCombine[assign, for_loop] }
+
+              describe '#code' do
+                let(:code) do
+                  <<-CODE
+Yo *x = y;
+for (int i = 0; i < 3; ++i)
+{
+    simple();
+    mono(x);
+}
+                  CODE
+                end
+                it { expect(subject.code).to eq(code) }
+              end
             end
           end
 

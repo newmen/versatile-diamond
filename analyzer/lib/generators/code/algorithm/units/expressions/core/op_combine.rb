@@ -25,11 +25,32 @@ module VersatileDiamond
             super(:'', *exprs)
           end
 
+          # @return [String]
+          # @override
+          def code
+            oneline? ? super : inner_lines.join("\n")
+          end
+
           # Checks that current statement is unreal tin operator
           # @return [Boolean] true
           # @override
           def tin?
             true
+          end
+
+        private
+
+          # @return [Boolean]
+          def oneline?
+            inner_exprs.any?(&:op?) || inner_exprs.all?(&:expr?)
+          end
+
+          # @return [String]
+          def inner_lines
+            inner_exprs.map do |expr|
+              inner_code = expr.code
+              expr.expr? || expr.assign? ? "#{inner_code};" : inner_code
+            end
           end
         end
 

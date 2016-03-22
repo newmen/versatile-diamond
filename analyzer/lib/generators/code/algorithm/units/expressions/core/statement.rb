@@ -34,11 +34,7 @@ module VersatileDiamond
           # @param [Statement]
           # @return [Statement]
           def +(other)
-            if concatable?(other)
-              OpCombine[self, other]
-            else
-              arg_err!("Cannot concate #{self.inspect} with #{other.inspect}")
-            end
+            OpCombine[self, other]
           end
 
           PREDICATES.each do |name|
@@ -56,22 +52,9 @@ module VersatileDiamond
             "␂#{code}␃"
           end
 
-        protected
-
-          # @return [Boolean]
-          def separated?
-            (expr? && !const?) || cond? || assign?
-          end
-
         private
 
           def_delegator Statement, :arg_err!
-
-          # @param [Statement] other
-          # @return [Boolean]
-          def concatable?(other)
-            other.op? || (separated? && other.separated?)
-          end
 
           # @param [String] str to which the prefix spaces (offset) will be added
           # @return [String]
@@ -82,7 +65,7 @@ module VersatileDiamond
           # @param [String] str to which the semicolon will be added
           # @return [String]
           def wrap(str)
-            map_lines(str) { |line| "#{prepend_offset(line)};" }
+            map_lines(str, &method(:terminated_offset))
           end
 
           # @param [String] str
@@ -96,6 +79,12 @@ module VersatileDiamond
           # @return [String]
           def prepend_offset(str)
             "#{TAB_SPACES}#{str}"
+          end
+
+          # @param [String] str
+          # @return [String]
+          def terminated_offset(str)
+            "#{prepend_offset(str)};"
           end
         end
 

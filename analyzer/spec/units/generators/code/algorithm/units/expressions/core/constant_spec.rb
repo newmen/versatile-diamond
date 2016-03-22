@@ -21,10 +21,6 @@ module VersatileDiamond
             end
           end
 
-          describe '#+' do
-            it { expect { subject + y }.to raise_error }
-          end
-
           it_behaves_like :check_predicates
           it_behaves_like :check_predicates do
             subject { num }
