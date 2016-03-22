@@ -51,7 +51,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          # TODO: just specie
+          # TODO: just specie (rspec required)
           def check_different_atoms_roles(nodes, &block)
             checking_nodes = nodes.select(&:different_atom_role?)
             if checking_nodes.empty?
@@ -63,11 +63,24 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def iterate_symmetries(&block)
-            if species.one? || atoms.one?
-              iterate_specie_symmetries(&block)
-            else # if ContextUnit#asymmetric_related_atoms?
-              iterate_for_loop_symmetries(&block)
+          def iterate_specie_symmetries(&block)
+            defined_species = select_defined(species)
+            if defined_species.one?
+              iterate_defined_specie_symmetries(defined_species.first, &block)
+            elsif defined_species.empty?
+              raise 'Symmetric specie is not defined'
+            else
+              raise 'Too many defined symmetric species'
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_for_loop_symmetries(&block)
+            define_required_atoms do
+              redefine_atoms_as_array do
+                Expressions::SymmetricAtomsForLoop[vars_for(atoms), block.call]
+              end
             end
           end
 
@@ -88,7 +101,7 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          # TODO: specie specific (checking none?)
+          # TODO: specie specific (checking none?) (rspec required)
           def checkable?
             !species.any?(&:none?) &&
               !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
@@ -117,19 +130,6 @@ module VersatileDiamond
             end
           end
 
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def iterate_specie_symmetries(&block)
-            defined_species = select_defined(species)
-            if defined_species.one?
-              iterate_defined_specie_symmetries(defined_species.first, &block)
-            elsif defined_species.empty?
-              raise 'Symmetric specie is not defined'
-            else
-              raise 'Too many defined symmetric species'
-            end
-          end
-
           # @param [Instances::SpecieInstance] specie
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -138,16 +138,6 @@ module VersatileDiamond
             ext_var = dict.var_of(specie)
             inner_var = dict.make_specie_s(specie, type: abst_specie_type)
             ext_var.iterate_symmetries(predefined_vars, inner_var, block.call)
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def iterate_for_loop_symmetries(&block)
-            define_required_atoms do
-              redefine_atoms_as_array do
-                Expressions::SymmetricAtomsForLoop[vars_for(atoms), block.call]
-              end
-            end
           end
 
           # @yield incorporating statement
@@ -162,14 +152,14 @@ module VersatileDiamond
           end
 
           # @param [Array] undefined_atoms
-          # @return [Array]
+          # @return [Expressions::Core::Variable]
           def make_atoms_from_species(undefined_atoms)
             nodes = nodes_with(undefined_atoms)
             species_vars = vars_for(nodes.map(&:uniq_specie))
             atoms_calls =
               species_vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }
 
-            dict.make_atoms_s(undefined_atoms, value: atoms_calls)
+            dict.make_atom_s(undefined_atoms, value: atoms_calls)
           end
 
           # @yield incorporating statement
@@ -178,13 +168,14 @@ module VersatileDiamond
             if atoms.one? || dict.var_of(atoms)
               block.call # all atoms already belongs to same array
             else
-              remake_atoms_as_array + block.call
+              remake_atoms_as_array.define_var + block.call
             end
           end
 
-          # @return [Array]
+          # @return [Expressions::Core::Collection]
           def remake_atoms_as_array
-            dict.make_atoms_s(atoms, value: atoms)
+            vars = atoms.map(&dict.public_method(:var_of))
+            dict.make_atom_s(atoms, value: vars)
           end
 
           # @return [Expressions::Core::ObjectType]

@@ -89,11 +89,14 @@ module VersatileDiamond
           # @param [Array] args
           # @param [Hash] nopts
           # @return [Core::Variable]
-          def make_var_s(prefix, instance, *args, **nopts)
+          def make_var_s(prefix, instance, type, name, value, **nopts)
             if array?(instance)
-              send(:"#{prefix}s_array", instance, *args, **nopts)
+              send(:"#{prefix}s_array", instance, type, name, value, **nopts)
             else
-              send(:"#{prefix}_variable", fix_instance(instance), *args, **nopts)
+              method_name = :"#{prefix}_variable"
+              fixed_instance = fix_instance(instance)
+              fixed_value = fix_instance(value)
+              send(method_name, fixed_instance, type, name, fixed_value, **nopts)
             end
           end
 

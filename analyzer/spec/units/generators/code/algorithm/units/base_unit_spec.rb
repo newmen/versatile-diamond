@@ -8,6 +8,10 @@ module VersatileDiamond
         describe BaseUnit, type: :algorithm do
           subject { described_class.new(dict, unit_nodes) }
 
+          let(:return0) do
+            -> { Expressions::Core::Return[Expressions::Core::Constant[0]] }
+          end
+
           describe '#nodes' do
             include_context :two_mobs_context
             it { expect(subject.nodes).to eq(unit_nodes) }
@@ -33,13 +37,11 @@ module VersatileDiamond
             [:cm, :ctr].each do |keyname|
               let("role_#{keyname}") { node_specie.actual_role(send(keyname)) }
             end
-            let(:prc) do
-              -> { Expressions::Core::Return[Expressions::Core::Constant[0]] }
-            end
 
             shared_examples_for :check_atoms_roles_cond do
               before { dict.make_atom_s(atoms) }
-              it { expect(subject.check_atoms_roles(atoms, &prc).code).to eq(code) }
+              let(:expr) { subject.check_atoms_roles(atoms, &return0) }
+              it { expect(expr.code).to eq(code) }
             end
 
             describe 'specie with additional atom' do
@@ -84,6 +86,91 @@ if (atoms1[0]->is(#{role_ctr}) && atoms1[1]->is(#{role_ctr}))
                   CODE
                 end
               end
+            end
+          end
+
+          describe '#iterate_specie_symmetries' do
+            include_context :rab_context
+            before { dict.make_specie_s(node_specie) }
+            let(:code) do
+              <<-CODE
+bridge1->eachSymmetry([](ParentSpec *bridge2) {
+    return 0;
+})
+              CODE
+            end
+            let(:expr) { subject.iterate_specie_symmetries(&return0) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#iterate_for_loop_symmetries' do
+            include_context :two_mobs_context
+            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+
+            let(:unit_nodes) do # override
+              [
+                cbs_relation.first.first,
+                cbs_relation.last.first.first.first
+              ]
+            end
+            let(:expr) { subject.iterate_for_loop_symmetries(&return0) }
+
+            describe 'no defined atoms' do
+              let(:code) do
+                <<-CODE
+Atom *atoms1[2] = { species1[0]->atom(1), species1[1]->atom(1) };
+for (uint a = 0; a < 2; ++a)
+{
+    return 0;
+}
+                CODE
+              end
+              it { expect(expr.code).to eq(code) }
+            end
+
+            describe 'just one atom is defined' do
+              before { dict.make_atom_s(unit_nodes.first.atom) }
+              let(:code) do
+                <<-CODE
+Atom *atom2 = species1[1]->atom(1);
+Atom *atoms1[2] = { atom1, atom2 };
+for (uint a = 0; a < 2; ++a)
+{
+    return 0;
+}
+                CODE
+              end
+              it { expect(expr.code).to eq(code) }
+            end
+
+            describe 'both atoms are separate defined' do
+              before do
+                dict.make_atom_s(unit_nodes.last.atom)
+                dict.make_atom_s(unit_nodes.first.atom)
+              end
+              let(:code) do
+                <<-CODE
+Atom *atoms1[2] = { atom2, atom1 };
+for (uint a = 0; a < 2; ++a)
+{
+    return 0;
+}
+                CODE
+              end
+              it { expect(expr.code).to eq(code) }
+            end
+
+            describe 'both atoms are defined as array' do
+              before { dict.make_atom_s(unit_nodes.map(&:atom)) }
+              let(:code) do
+                <<-CODE
+for (uint a = 0; a < 2; ++a)
+{
+    return 0;
+}
+                CODE
+              end
+              it { expect(expr.code).to eq(code) }
             end
           end
         end

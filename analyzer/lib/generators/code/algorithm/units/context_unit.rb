@@ -77,7 +77,19 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_symmetries(&block)
-            symmetric? ? @unit.iterate_symmetries(&block) : block.call
+            symmetric? ? iterate_symmetries(&block) : block.call
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_symmetries(&block)
+            if species.one? || atoms.one?
+              @unit.iterate_specie_symmetries(&block)
+            elsif asymmetric_related_atoms?
+              @unit.iterate_for_loop_symmetries(&block)
+            else
+              raise 'Incorrect unit configuration'
+            end
           end
 
           # @yield incorporating statement

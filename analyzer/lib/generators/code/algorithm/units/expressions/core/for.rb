@@ -18,8 +18,8 @@ module VersatileDiamond
                 arg_err!("Second argument of for loop should to be condition")
               elsif !op.op?
                 arg_err!("Last argument of for loop should to be operation")
-              elsif !body.expr? && !body.cond? && !body.tin?
-                arg_err!("Loop body #{body.inspect} must by expression or condition")
+              elsif !body.expr? && !body.assign? && !body.cond? && !body.tin?
+                arg_err!("Incorrect expression #{body.inspect} for loop body")
               else
                 super
               end
