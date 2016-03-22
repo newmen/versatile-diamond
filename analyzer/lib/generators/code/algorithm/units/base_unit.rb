@@ -165,8 +165,7 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Collection]
           def remake_atoms_as_array
-            vars = atoms.map(&dict.public_method(:var_of))
-            dict.make_atom_s(atoms, value: vars)
+            dict.make_atom_s(atoms, value: vars_for(atoms))
           end
 
           # @return [Expressions::Core::ObjectType]

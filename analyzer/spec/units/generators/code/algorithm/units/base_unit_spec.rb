@@ -12,6 +12,17 @@ module VersatileDiamond
             -> { Expressions::Core::Return[Expressions::Core::Constant[0]] }
           end
 
+          shared_context :predefined_two_mobs_context do
+            include_context :two_mobs_context
+            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+            let(:unit_nodes) do # override
+              [
+                cbs_relation.first.first,
+                cbs_relation.last.first.first.first
+              ]
+            end
+          end
+
           describe '#nodes' do
             include_context :two_mobs_context
             it { expect(subject.nodes).to eq(unit_nodes) }
@@ -104,15 +115,7 @@ bridge1->eachSymmetry([](ParentSpec *bridge2) {
           end
 
           describe '#iterate_for_loop_symmetries' do
-            include_context :two_mobs_context
-            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
-
-            let(:unit_nodes) do # override
-              [
-                cbs_relation.first.first,
-                cbs_relation.last.first.first.first
-              ]
-            end
+            include_context :predefined_two_mobs_context
             let(:expr) { subject.iterate_for_loop_symmetries(&return0) }
 
             describe 'no defined atoms' do
@@ -192,15 +195,7 @@ amorph1->eachSpecByRole<MethylOnBridge>(#{role_cm}, [](MethylOnBridge *methylOnB
           end
 
           describe '#define_undefined_atoms' do
-            include_context :two_mobs_context
-            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
-
-            let(:unit_nodes) do # override
-              [
-                cbs_relation.first.first,
-                cbs_relation.last.first.first.first
-              ]
-            end
+            include_context :predefined_two_mobs_context
             let(:expr) { subject.define_undefined_atoms(&return0) }
 
             describe 'one atom is defined' do
