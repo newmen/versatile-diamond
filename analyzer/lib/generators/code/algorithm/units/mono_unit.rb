@@ -12,13 +12,11 @@ module VersatileDiamond
           end
 
           # Anytime is a previous found specie
+          # TODO: specie specific (rspec already have)
           def define!
-            if species.one?
-              parent = species.first
-              dict.make_specie_s(parent, name: Code::Specie::ANCHOR_SPECIE_NAME)
-            else
-              raise 'Incorrect number of entry species'
-            end
+            parent = species.first
+            kwargs = { name: Code::Specie::ANCHOR_SPECIE_NAME, next_name: false }
+            dict.make_specie_s(parent, **kwargs)
           end
 
           # @return [Array]
