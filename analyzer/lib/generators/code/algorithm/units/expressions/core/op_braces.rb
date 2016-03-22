@@ -79,7 +79,7 @@ module VersatileDiamond
           # @return [Array]
           def exprs_with_methods
             deep_exprs.map do |expr|
-              [expr, (expr.expr? || expr.assign? ? :wrap : :shift)]
+              [expr, (expr.terminating? ? :wrap : :shift)]
             end
           end
 

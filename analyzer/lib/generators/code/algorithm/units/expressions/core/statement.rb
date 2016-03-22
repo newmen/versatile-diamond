@@ -52,6 +52,13 @@ module VersatileDiamond
             "␂#{code}␃"
           end
 
+        protected
+
+          # @return [Boolean]
+          def terminating?
+            expr? || assign?
+          end
+
         private
 
           def_delegator Statement, :arg_err!
