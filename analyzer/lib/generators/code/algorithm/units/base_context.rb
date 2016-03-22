@@ -17,6 +17,12 @@ module VersatileDiamond
             @_uniq_nodes = nil
           end
 
+          # @param [Array] atoms
+          # @return [Array]
+          def atoms_nodes(atoms)
+            uniq_nodes.select { |node| atoms.include?(node.atom) }
+          end
+
           # @param [Instance::SpecieInstance] specie
           # @return [Array]
           def specie_nodes(specie)

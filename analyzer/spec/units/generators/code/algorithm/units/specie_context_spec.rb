@@ -8,6 +8,21 @@ module VersatileDiamond
         describe SpecieContext, type: :algorithm do
           subject { described_class.new(dict, original_specie, ordered_graph) }
 
+          describe '#atoms_nodes' do
+            describe 'without scope species' do
+              include_context :rab_context
+              it { expect(subject.atoms_nodes([ct]).map(&:atom)).to be_empty }
+              it { expect(subject.atoms_nodes([cr]).map(&:atom)).to eq([cr]) }
+            end
+
+            describe 'with scope species' do
+              include_context :two_mobs_context
+              it { expect(subject.atoms_nodes([cm]).map(&:atom)).to eq([cm, cm]) }
+              it { expect(subject.atoms_nodes([ctl]).map(&:atom)).to eq([ctl]) }
+              it { expect(subject.atoms_nodes([ctr]).map(&:atom)).to eq([ctr]) }
+            end
+          end
+
           describe '#specie_nodes' do
             describe 'without scope species' do
               include_context :rab_context
