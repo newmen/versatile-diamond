@@ -170,9 +170,9 @@ module VersatileDiamond
             if nodes.empty?
               block.call
             else
-              temp_unit = BaseUnit.new(dict, nodes.map(&:atom))
-              temp_unit.define_undefined_atoms do
-                temp_unit.check_different_atoms_roles(&block)
+              pure_unit = SpeciePureUnitsFactory.new(dict).unit(nodes)
+              pure_unit.define_undefined_atoms do
+                pure_unit.check_different_atoms_roles(&block)
               end
             end
           end
