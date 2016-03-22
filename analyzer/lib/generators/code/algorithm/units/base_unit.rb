@@ -85,7 +85,7 @@ module VersatileDiamond
           end
 
           # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
+          # @return [Expressions::Core::OpCall]
           def iterate_species_by_role(&block)
             # unit contains just one atom (resolved above)
             predefined_vars = dict.defined_vars

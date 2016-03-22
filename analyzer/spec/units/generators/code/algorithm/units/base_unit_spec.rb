@@ -173,6 +173,22 @@ for (uint a = 0; a < 2; ++a)
               it { expect(expr.code).to eq(code) }
             end
           end
+
+          describe '#iterate_species_by_role' do
+            include_context :two_mobs_context
+            before { dict.make_atom_s(cm) }
+            let(:role_cm) { node_specie.source_role(cm) }
+            let(:unit_nodes) { [entry_nodes.first.split.first] } # override
+            let(:code) do
+              <<-CODE
+amorph1->eachSpecByRole<MethylOnBridge>(#{role_cm}, [](MethylOnBridge *methylOnBridge1) {
+    return 0;
+})
+              CODE
+            end
+            let(:expr) { subject.iterate_species_by_role(&return0) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
         end
 
       end
