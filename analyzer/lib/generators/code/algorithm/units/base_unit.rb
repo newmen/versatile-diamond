@@ -36,8 +36,15 @@ module VersatileDiamond
 
           # @param [Array] atoms
           # @return [Array]
-          def nodes_with(atoms)
+          def nodes_with_atoms(atoms)
             nodes.select { |node| atoms.include?(node.atom) }
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          # TODO: must be private (just as #nodes_with_atoms)
+          def nodes_with_species(species)
+            nodes.select { |node| species.include?(node.uniq_specie) }
           end
 
           # Checks that atoms have specific types
@@ -114,6 +121,11 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def define_undefined_species(&block)
+            if all_defined?(species)
+              block.call
+            else
+              make_undefined_species_from_atoms.define_var + block.call
+            end
           end
 
           # @return [Boolean]
@@ -170,11 +182,17 @@ module VersatileDiamond
           # @return [Expressions::Core::Variable]
           def make_undefined_atoms_from_species
             undefined_atoms = select_undefined(atoms)
-            species_vars = vars_for(nodes_with(undefined_atoms).map(&:uniq_specie))
-            atoms_calls =
-              species_vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }
+            vars = vars_for(nodes_with_atoms(undefined_atoms).map(&:uniq_specie))
+            calls = vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }
+            dict.make_atom_s(undefined_atoms, value: calls)
+          end
 
-            dict.make_atom_s(undefined_atoms, value: atoms_calls)
+          # @return [Expressions::Core::Variable]
+          def make_undefined_species_from_atoms
+            undefined_species = select_undefined(species)
+            vars = vars_for(nodes_with_species(undefined_species).map(&:atom))
+            calls = vars.zip(undefined_species).map { |v, s| v.specie_by_role(s) }
+            dict.make_specie_s(undefined_species, value: calls)
           end
 
           # @yield incorporating statement

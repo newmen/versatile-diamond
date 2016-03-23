@@ -123,12 +123,15 @@ module VersatileDiamond
             if over_used_atom? || atom_usages_like_in_context?
               iterate_undefined_species(&block)
             else
+              @unit.define_undefined_species do
+                check_symmetries(&block)
+              end
             end
           end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          # TODO: just specie (do not move it to #define_undefined_species)
+          # TODO: just specie (do not move it to #@unit.define_undefined_species)
           def check_similar_undefined_species(&block)
           end
 
@@ -327,7 +330,7 @@ module VersatileDiamond
           # @return [Boolean]
           def partially_symmetric?
             @unit.partially_symmetric? &&
-              @context.symmetric_relations?(@unit.nodes_with(symmetric_atoms))
+              @context.symmetric_relations?(@unit.nodes_with_atoms(symmetric_atoms))
           end
 
           # @return [Boolean] gets false if close nodes are not symmetric and true

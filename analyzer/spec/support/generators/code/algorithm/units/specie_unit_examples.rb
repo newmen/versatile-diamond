@@ -54,6 +54,16 @@ module VersatileDiamond
               let(:uniq_parents) { unit_nodes.map(&:uniq_specie) }
             end
 
+            shared_context :alt_two_mobs_context do
+              include_context :two_mobs_context
+              let(:unit_nodes) do # override
+                [
+                  cbs_relation.first.first,
+                  cbs_relation.last.first.first.first
+                ]
+              end
+            end
+
             shared_context :intermed_context do
               include_context :specie_unit_context
               let(:base_specs) do

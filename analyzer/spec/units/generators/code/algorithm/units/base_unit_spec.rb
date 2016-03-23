@@ -13,14 +13,8 @@ module VersatileDiamond
           end
 
           shared_context :predefined_two_mobs_context do
-            include_context :two_mobs_context
+            include_context :alt_two_mobs_context
             before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
-            let(:unit_nodes) do # override
-              [
-                cbs_relation.first.first,
-                cbs_relation.last.first.first.first
-              ]
-            end
           end
 
           describe '#nodes' do
@@ -43,10 +37,16 @@ module VersatileDiamond
             it { expect(subject.symmetric_atoms).to match_array([cl, cr]) }
           end
 
-          describe '#nodes_with' do
+          describe '#nodes_with_atoms' do
             include_context :two_mobs_context
-            it { expect(subject.nodes_with([cm])).to eq(unit_nodes) }
-            it { expect(subject.nodes_with([ctr])).to be_empty } # fake
+            it { expect(subject.nodes_with_atoms([cm])).to eq(unit_nodes) }
+            it { expect(subject.nodes_with_atoms([ctr])).to be_empty } # fake
+          end
+
+          describe '#nodes_with_species' do
+            include_context :two_mobs_context
+            let(:nodes) { subject.nodes_with_species([node_specie]) }
+            it { expect(nodes).to eq([unit_nodes.first]) }
           end
 
           describe '#check_atoms_roles' do
@@ -230,6 +230,27 @@ return 0;
             end
           end
 
+          describe '#define_undefined_species' do
+            include_context :rab_context
+            let(:expr) { subject.define_undefined_species(&return0) }
+
+            describe 'specie is not defined' do
+              before { dict.make_atom_s(cr) }
+              let(:code) do
+                <<-CODE
+Bridge *bridge1 = atom1->specByRole<Bridge>(#{node_specie.source_role(cr)});
+return 0;
+                CODE
+              end
+              it { expect(expr.code).to eq(code.rstrip) }
+            end
+
+            describe 'specie already defined' do
+              before { dict.make_specie_s(node_specie) }
+              it { expect(expr.code).to eq('return 0') }
+            end
+          end
+
           describe '#fully_symmetric?' do
             describe 'realy symmetric' do
               include_context :rab_context
@@ -249,13 +270,7 @@ return 0;
             end
 
             describe 'too less atoms' do
-              include_context :two_mobs_context
-              let(:unit_nodes) do # override
-                [
-                  cbs_relation.first.first,
-                  cbs_relation.last.first.first.first
-                ]
-              end
+              include_context :alt_two_mobs_context
               it { expect(subject.partially_symmetric?).to be_falsey }
             end
 
