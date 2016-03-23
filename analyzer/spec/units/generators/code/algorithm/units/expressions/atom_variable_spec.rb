@@ -9,6 +9,9 @@ module VersatileDiamond
           let(:dict) { VarsDictionary.new }
           let(:var) { dict.make_atom_s(atom, name: 'atom') }
 
+          let(:actual_role) { subject.actual_role(atom) }
+          let(:source_role) { subject.source_role(atom) }
+
           describe '#define_arg' do
             include_context :unique_parent_context
             let(:atom) { cb }
@@ -20,7 +23,7 @@ module VersatileDiamond
               let(:body) { Core::Return[var] }
               let(:code) do
                 <<-CODE
-if (atom1->is(#{role}))
+if (atom1->is(#{actual_role}))
 {
     return atom1;
 }
@@ -34,7 +37,6 @@ if (atom1->is(#{role}))
               include_context :none_specie_context
               it_behaves_like :check_roles_code do
                 let(:atom) { ct }
-                let(:role) { 0 }
               end
             end
 
@@ -42,7 +44,6 @@ if (atom1->is(#{role}))
               include_context :unique_parent_context
               it_behaves_like :check_roles_code do
                 let(:atom) { cb }
-                let(:role) { 8 }
               end
             end
 
@@ -50,7 +51,6 @@ if (atom1->is(#{role}))
               include_context :unique_reactant_context
               it_behaves_like :check_roles_code do
                 let(:atom) { cb }
-                let(:role) { 8 }
               end
             end
           end
@@ -60,7 +60,7 @@ if (atom1->is(#{role}))
               let(:body) { Core::Return[Core::FunctionCall['yo', var]] }
               let(:code) do
                 <<-CODE
-if (!atom1->hasRole(#{enum_name}, #{role}))
+if (!atom1->hasRole(#{enum_name}, #{actual_role}))
 {
     return yo(atom1);
 }
@@ -75,7 +75,6 @@ if (!atom1->hasRole(#{enum_name}, #{role}))
               it_behaves_like :check_roles_code do
                 let(:atom) { ct }
                 let(:enum_name) { 'BRIDGE' }
-                let(:role) { 0 }
               end
             end
 
@@ -84,7 +83,6 @@ if (!atom1->hasRole(#{enum_name}, #{role}))
               it_behaves_like :check_roles_code do
                 let(:atom) { cb }
                 let(:enum_name) { 'METHYL_ON_BRIDGE' }
-                let(:role) { 8 }
               end
             end
 
@@ -93,8 +91,24 @@ if (!atom1->hasRole(#{enum_name}, #{role}))
               it_behaves_like :check_roles_code do
                 let(:atom) { cb }
                 let(:enum_name) { 'METHYL_ON_BRIDGE' }
-                let(:role) { 8 }
               end
+            end
+          end
+
+          describe '#specie_by_role' do
+            let(:atom) { cb }
+            let(:expr) { var.specie_by_role(subject) }
+
+            describe 'unique parent' do
+              include_context :unique_parent_context
+              let(:code) { "atom1->specByRole<Bridge>(#{source_role})" }
+              it { expect(expr.code).to eq(code) }
+            end
+
+            describe 'unique reactant' do
+              include_context :unique_reactant_context
+              let(:code) { "atom1->specByRole<MethylOnBridge>(#{source_role})" }
+              it { expect(expr.code).to eq(code) }
             end
           end
 
@@ -112,7 +126,7 @@ if (!atom1->hasRole(#{enum_name}, #{role}))
                 let(:atom) { ct }
                 let(:code) do
                   <<-CODE
-atom1->eachSpecByRole<Bridge>(0, [](Bridge *bridge1) {
+atom1->eachSpecByRole<Bridge>(#{source_role}, [](Bridge *bridge1) {
     return bridge1;
 })
                   CODE
@@ -126,7 +140,7 @@ atom1->eachSpecByRole<Bridge>(0, [](Bridge *bridge1) {
                 let(:atom) { cb }
                 let(:code) do
                   <<-CODE
-atom1->eachSpecByRole<Bridge>(2, [](Bridge *bridge1) {
+atom1->eachSpecByRole<Bridge>(#{source_role}, [](Bridge *bridge1) {
     return bridge1;
 })
                   CODE
@@ -140,7 +154,7 @@ atom1->eachSpecByRole<Bridge>(2, [](Bridge *bridge1) {
                 let(:atom) { cb }
                 let(:code) do
                   <<-CODE
-atom1->eachSpecByRole<MethylOnBridge>(8, [](MethylOnBridge *methylOnBridge1) {
+atom1->eachSpecByRole<MethylOnBridge>(#{source_role}, [](MethylOnBridge *methylOnBridge1) {
     return methylOnBridge1;
 })
                   CODE

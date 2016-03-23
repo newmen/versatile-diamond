@@ -15,7 +15,7 @@ module VersatileDiamond
           # @param [Instances::SpecieInstance] specie
           # @return [Core::OpCall]
           def role_in(specie)
-            call('is', actual_role_value(specie))
+            call('is', actual_role_in(specie))
           end
 
           # @param [Array] species
@@ -32,8 +32,18 @@ module VersatileDiamond
               actual = specie.actual
               method_name = actual.find_endpoint? ? 'hasRole' : 'checkAndFind'
               enum_name = Core::Constant[actual.enum_name]
-              role = actual_role_value(specie)
+              role = actual_role_in(specie)
               Core::OpNot[call(method_name, enum_name, role)]
+            end
+          end
+
+          # @param [Instances::SpecieInstance] specie
+          # @return [Core::OpCall]
+          def specie_by_role(specie)
+            verify_anchor_of(specie) do
+              role = source_role_in(specie)
+              type = specie_type_of(specie)
+              call('specByRole', role, template_args: [type])
             end
           end
 
@@ -43,10 +53,10 @@ module VersatileDiamond
           def each_specie_by_role(defined_vars, specie_var, body)
             specie_inst = specie_var.instance
             verify_anchor_of(specie_inst) do
-              role = Core::Constant[specie_inst.source_role(instance)]
+              role = source_role_in(specie_inst)
+              type = specie_type_of(specie_inst)
               iter_lambda = Core::Lambda[defined_vars, specie_var, body]
-              specie_type = Core::ObjectType[specie_inst.original.class_name]
-              call('eachSpecByRole', role, iter_lambda, template_args: [specie_type])
+              call('eachSpecByRole', role, iter_lambda, template_args: [type])
             end
           end
 
@@ -54,8 +64,20 @@ module VersatileDiamond
 
           # @param [Instances::SpecieInstance] specie
           # @return [Core::Constant]
-          def actual_role_value(specie)
+          def actual_role_in(specie)
             Core::Constant[specie.actual_role(instance)]
+          end
+
+          # @param [Instances::SpecieInstance] specie
+          # @return [Core::Constant]
+          def source_role_in(specie)
+            Core::Constant[specie.source_role(instance)]
+          end
+
+          # @param [Instances::SpecieInstance] specie
+          # @return [Core::ObjectType]
+          def specie_type_of(specie)
+            Core::ObjectType[specie.original.class_name]
           end
 
           # @param [Instances::SpecieInstance] specie
