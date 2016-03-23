@@ -151,6 +151,7 @@ module VersatileDiamond
             @unit.iterate_species_by_role do
               check_similar_defined_species do
                 check_defined_context_parts do
+                  check_symmetries(&block)
                 end
               end
             end
@@ -163,6 +164,8 @@ module VersatileDiamond
             if nodes_pairs.empty?
               block.call
             else
+              exprs_pairs = nodes_pairs_to_atoms_exprs(nodes_pairs)
+              Expressions::NotEqualsCondition[exprs_pairs, block.call]
             end
           end
 
@@ -250,14 +253,28 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] pairs
+          # @param [Nodes::BaseNode] node
+          # @return [Expressions::Core::Expression]
+          # TODO: move to MonoUnit?
+          def atom_var_or_specie_call(node)
+            dict.var_of(node.atom) ||
+              dict.var_of(node.uniq_specie).atom_value(node.atom)
+          end
+
+          # @param [Array] atoms_pairs
+          # @return [Array]
+          def nodes_pairs_to_atoms_exprs(nodes_pairs)
+            nodes_pairs.map { |nodes| nodes.map(&method(:atom_var_or_specie_call)) }
+          end
+
+          # @param [Array] atoms_pairs
           # @param [Instance::SpecieInstance] self_specie
           # @param [Instance::SpecieInstance] other_specie
           # @return [Array]
-          def atoms_pairs_to_nodes(pairs, self_specie, other_specie)
+          def atoms_pairs_to_nodes(atoms_pairs, self_specie, other_specie)
             self_nodes = @context.specie_nodes(self_specie)
             other_nodes = @context.specie_nodes(other_specie)
-            pairs.each_with_object([]) do |(self_atom, other_atom), acc|
+            atoms_pairs.each_with_object([]) do |(self_atom, other_atom), acc|
               self_node = self_nodes.find { |n| n.atom == self_atom }
               other_node = other_nodes.find { |n| n.atom == other_atom }
               acc << [self_node, other_node] if self_node && other_node
