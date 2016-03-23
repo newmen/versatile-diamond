@@ -16,7 +16,7 @@ module VersatileDiamond
             super(dict)
             @nodes = nodes
 
-            @_species, @_atoms = nil
+            @_species, @_atoms, @_symmetric_atoms = nil
           end
 
           # @return [Array]
@@ -27,6 +27,11 @@ module VersatileDiamond
           # @return [Array]
           def atoms
             @_atoms ||= uniq_from_nodes(:atom)
+          end
+
+          # @return [Array]
+          def symmetric_atoms
+            @_symmetric_atoms ||= nodes.flat_map(&:symmetric_atoms).uniq
           end
 
           # @param [Array] atoms
@@ -116,6 +121,17 @@ module VersatileDiamond
           def checkable?
             !species.any?(&:none?) &&
               !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
+          end
+
+          # @return [Boolean]
+          def fully_symmetric?
+            atoms.one? && symmetric_atoms.size > species.size
+          end
+
+          # @return [Boolean]
+          def partially_symmetric?
+            !atoms.one? && !symmetric_atoms.empty? &&
+              symmetric_atoms.to_set < atoms.to_set
           end
 
         private

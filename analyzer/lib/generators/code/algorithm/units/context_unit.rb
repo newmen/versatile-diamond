@@ -17,7 +17,6 @@ module VersatileDiamond
             @unit = unit
 
             @_all_nodes_with_atoms, @_all_popular_atoms_nodes = nil
-            @_symmetric_atoms = nil
           end
 
           # @yield incorporating statement
@@ -54,7 +53,7 @@ module VersatileDiamond
 
         private
 
-          def_delegators :@unit, :species, :atoms
+          def_delegators :@unit, :species, :atoms, :symmetric_atoms
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -305,8 +304,13 @@ module VersatileDiamond
 
           # @return [Boolean]
           def symmetric?
-            mono_self_symmetric? || partially_self_symmetric? ||
-              asymmetric_related_atoms?
+            @unit.fully_symmetric? || partially_symmetric? || asymmetric_related_atoms?
+          end
+
+          # @return [Boolean]
+          def partially_symmetric?
+            @unit.partially_symmetric? &&
+              @context.symmetric_relations?(@unit.nodes_with(symmetric_atoms))
           end
 
           # @return [Boolean] gets false if close nodes are not symmetric and true
@@ -314,27 +318,6 @@ module VersatileDiamond
           def asymmetric_related_atoms?
             nodes = @context.symmetric_close_nodes(species)
             !nodes.empty? && (nodes.one? || !@context.symmetric_relations?(nodes))
-          end
-
-          # @return [Boolean]
-          def mono_self_symmetric?
-            atoms.one? && symmetric_atoms.size > species.size
-          end
-
-          # @return [Boolean]
-          def partially_self_symmetric?
-            !atoms.one? && subset_symmetric_atoms?
-          end
-
-          # @return [Boolean]
-          def subset_symmetric_atoms?
-            !symmetric_atoms.empty? && symmetric_atoms < atoms.to_set &&
-              @context.symmetric_relations?(@unit.nodes_with(symmetric_atoms))
-          end
-
-          # @return [Array]
-          def symmetric_atoms
-            @_symmetric_atoms ||= @unit.nodes.flat_map(&:symmetric_atoms).uniq
           end
         end
 

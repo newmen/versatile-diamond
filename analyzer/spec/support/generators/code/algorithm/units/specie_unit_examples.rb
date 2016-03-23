@@ -27,6 +27,7 @@ module VersatileDiamond
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [dept_uniq_specie] }
+              let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
 
               let(:dept_uniq_specie) { dept_right_hydrogenated_bridge }
             end

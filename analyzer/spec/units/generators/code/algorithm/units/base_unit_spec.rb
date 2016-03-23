@@ -38,6 +38,11 @@ module VersatileDiamond
             it { expect(subject.atoms).to eq([cm]) }
           end
 
+          describe '#symmetric_atoms' do
+            include_context :rab_context
+            it { expect(subject.symmetric_atoms).to match_array([cl, cr]) }
+          end
+
           describe '#nodes_with' do
             include_context :two_mobs_context
             it { expect(subject.nodes_with([cm])).to eq(unit_nodes) }
@@ -222,6 +227,40 @@ return 0;
                 CODE
               end
               it { expect(expr.code).to eq(code.rstrip) }
+            end
+          end
+
+          describe '#fully_symmetric?' do
+            describe 'realy symmetric' do
+              include_context :rab_context
+              it { expect(subject.fully_symmetric?).to be_truthy }
+            end
+
+            describe 'not symmetric' do
+              include_context :mob_context
+              it { expect(subject.fully_symmetric?).to be_falsey }
+            end
+          end
+
+          describe '#partially_symmetric?' do
+            describe 'just one atom' do
+              include_context :rab_context
+              it { expect(subject.partially_symmetric?).to be_falsey }
+            end
+
+            describe 'too less atoms' do
+              include_context :two_mobs_context
+              let(:unit_nodes) do # override
+                [
+                  cbs_relation.first.first,
+                  cbs_relation.last.first.first.first
+                ]
+              end
+              it { expect(subject.partially_symmetric?).to be_falsey }
+            end
+
+            describe 'much more atoms' do
+              pending 'add test with reactant nodes'
             end
           end
         end

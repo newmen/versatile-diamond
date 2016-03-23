@@ -135,6 +135,17 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [dept_right_hydrogenated_bridge] }
               let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+
+              let(:factory_rab) do
+                Algorithm::SpecieNodesFactory.new(generator, code_rab)
+              end
+              let(:code_rab) { generator.specie_class(right_hydrogenated_bridge.name) }
+
+              let(:cr) { right_hydrogenated_bridge.atom(:cr) }
+              let(:cl) { right_hydrogenated_bridge.atom(:cl) }
+              let(:node_cr) { factory_rab.get_node(cr) }
+
+              it { expect(node_cr.symmetric_atoms).to match_array([cl, cr]) }
             end
           end
 
