@@ -191,7 +191,7 @@ module VersatileDiamond
           def make_undefined_species_from_atoms
             undefined_species = select_undefined(species)
             vars = vars_for(nodes_with_species(undefined_species).map(&:atom))
-            calls = vars.zip(undefined_species).map { |v, s| v.specie_by_role(s) }
+            calls = vars.zip(undefined_species).map { |v, s| v.one_specie_by_role(s) }
             dict.make_specie_s(undefined_species, value: calls)
           end
 

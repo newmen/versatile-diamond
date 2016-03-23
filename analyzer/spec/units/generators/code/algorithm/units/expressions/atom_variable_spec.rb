@@ -95,9 +95,9 @@ if (!atom1->hasRole(#{enum_name}, #{actual_role}))
             end
           end
 
-          describe '#specie_by_role' do
+          describe '#one_specie_by_role' do
             let(:atom) { cb }
-            let(:expr) { var.specie_by_role(subject) }
+            let(:expr) { var.one_specie_by_role(subject) }
 
             describe 'unique parent' do
               include_context :unique_parent_context
@@ -112,11 +112,11 @@ if (!atom1->hasRole(#{enum_name}, #{actual_role}))
             end
           end
 
-          describe '#each_specie_by_role' do
+          describe '#all_species_by_role' do
             shared_examples_for :check_roles_code do
               let(:specie_var) { dict.make_specie_s(subject) }
               let(:body) { Core::Return[specie_var] }
-              let(:result) { var.each_specie_by_role([], specie_var, body) }
+              let(:result) { var.all_species_by_role([], specie_var, body) }
               it { expect(result.code).to eq(code.rstrip) }
             end
 
@@ -161,6 +161,24 @@ atom1->eachSpecByRole<MethylOnBridge>(#{source_role}, [](MethylOnBridge *methylO
                 end
               end
             end
+          end
+
+          describe '#species_portion_by_role' do
+            include_context :two_mobs_context
+            subject { node_specie }
+            let(:species_arr) { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+            let(:body) { Core::Return[species_arr] }
+            let(:expr) { var.species_portion_by_role([], species_arr, body) }
+
+            let(:atom) { cm }
+            let(:code) do
+              <<-CODE
+atom1->eachSpecsPortionByRole<MethylOnBridge>(#{source_role}, 2, [](MethylOnBridge **species1) {
+    return species1;
+})
+              CODE
+            end
+            it { expect(expr.code).to eq(code.rstrip) }
           end
         end
 
