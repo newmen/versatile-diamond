@@ -48,7 +48,7 @@ module VersatileDiamond
             elsif atom_usages_like_in_context?
               check_similar_undefined_species(&block)
             else
-              define_undefined_species(&block)
+              @unit.define_undefined_species(&block)
             end
           end
 
@@ -135,14 +135,24 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def define_undefined_species(&block)
+          def check_similar_defined_species(&block)
+            similar_nodes = original_different_defined_species_nodes
+            if similar_nodes.empty?
+              block.call
+            else
+              species_pairs = similar_species_with(similar_nodes)
+              vars_pairs = species_pairs.map(&method(:vars_for))
+              Expressions::NotEqualsCondition[vars_pairs, block.call]
+            end
           end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_undefined_species(&block)
             @unit.iterate_species_by_role do
-              check_defined_context_parts do
+              check_similar_defined_species do
+                check_defined_context_parts do
+                end
               end
             end
           end
@@ -177,29 +187,67 @@ module VersatileDiamond
             end
           end
 
+          # @param [Array] nodes
+          # @return [Array]
+          def similar_species_with(nodes)
+            similar_species = similar_nodes.map(&:uniq_specie)
+            species_pairs = species.flat_map do |specie|
+              scmps = similar_species.select { |s| s.original == specie.original }
+              scmp.zip([specie].cycle)
+            end
+          end
+
+          # Gets list of pairs of nodes which atoms are similar but belongs to
+          # different species
+          #
           # @return [Array]
           def similar_nodes_pairs
-            # unit contains just one specie (resolved above)
-            self_specie = species.first
-            different_defined_species_nodes.reduce([]) do |acc, node|
-              other_specie = node.unit_specie
-              all_pairs = self_specie.common_atoms_with(other_specie)
-              target_pairs = all_pairs.reject { |as| as.uniq.one? }
-              if target_pairs.empty?
-                acc
-              else
-                acc + atoms_pairs_to_nodes(target_pairs, self_specie, other_specie)
-              end
+            totaly_different_defined_species_nodes.flat_map do |node|
+              nodes_pairs_with(node.unit_specie)
             end
           end
 
           # @return [Array]
+          def totaly_different_defined_species_nodes
+            filter_original_different_defined_species_nodes(:reject)
+          end
+
+          # @return [Array]
+          def original_different_defined_species_nodes
+            filter_original_different_defined_species_nodes(:select)
+          end
+
+          # @param [Symbol] method_name
+          # @return [Array]
+          def filter_original_different_defined_species_nodes(method_name)
+            originals = species.map(&:original).uniq
+            different_defined_species_nodes.public_send(method_name) do |node|
+              origianls.include?(node.uniq_specie.original)
+            end
+          end
+
+          # Gets nodes which uses the atoms like inner unit, but contains defined
+          # specie which is not same as any specie of inner unit
+          #
+          # @return [Array]
           def different_defined_species_nodes
-            # unit contains just one specie (resolved above)
-            self_specie = species.first
             (all_nodes_with_atoms - @unit.nodes).select do |node|
               other_specie = node.unit_specie
-              self_specie != other_specie && dict.var_of(other_specie)
+              !species.include?(other_specie) && dict.var_of(other_specie)
+            end
+          end
+
+          # @param [Instance::SpecieInstance] other_specie
+          # @return [Array]
+          def nodes_pairs_with(other_specie)
+            species.flat_map do |self_specie|
+              all_atoms_pairs = self_specie.common_atoms_with(other_specie)
+              different_atoms_pairs = all_atoms_pairs.reject { |as| as.uniq.one? }
+              if different_atoms_pairs.empty?
+                []
+              else
+                atoms_pairs_to_nodes(different_atoms_pairs, self_specie, other_specie)
+              end
             end
           end
 
@@ -286,8 +334,7 @@ module VersatileDiamond
 
           # @return [Array]
           def symmetric_atoms
-            @_symmetric_atoms ||=
-              @unit.nodes_with(atoms).flat_map(&:symmetric_atoms).uniq
+            @_symmetric_atoms ||= @unit.nodes.flat_map(&:symmetric_atoms).uniq
           end
         end
 

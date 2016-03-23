@@ -14,7 +14,7 @@ module VersatileDiamond
 
           INDEXES = [
             ITERABLE_VAR,
-            Core::OpMinus[Core::Constant[1], ITERABLE_VAR]
+            Core::OpMinus[Core::Constant[1].freeze, ITERABLE_VAR].freeze
           ].freeze
 
         public

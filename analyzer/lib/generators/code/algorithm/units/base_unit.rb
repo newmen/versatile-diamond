@@ -86,11 +86,14 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::OpCall]
           def iterate_species_by_role(&block)
-            # unit contains just one atom (resolved above)
-            predefined_vars = dict.defined_vars
-            specie_var = dict.make_specie_s(select_undefined(species))
-            atom_var = dict.var_of(atoms)
-            atom_var.each_specie_by_role(predefined_vars, specie_var, block.call)
+            if atoms.one?
+              predefined_vars = dict.defined_vars
+              specie_var = dict.make_specie_s(select_undefined(species))
+              atom_var = dict.var_of(atoms)
+              atom_var.each_specie_by_role(predefined_vars, specie_var, block.call)
+            else
+              raise 'Species iteration by role can occur from just one atom'
+            end
           end
 
           # @yield incorporating statement
@@ -101,6 +104,11 @@ module VersatileDiamond
             else
               make_undefined_atoms_from_species.define_var + block.call
             end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def define_undefined_species(&block)
           end
 
           # @return [Boolean]
