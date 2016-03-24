@@ -69,6 +69,9 @@ module VersatileDiamond
 
         private
 
+          ITERATOR_TYPE = ScalarType['uint'].freeze
+          ITERATOR_INIT_VALUE = Constant[0].freeze
+
           # @return [OpCombine]
           # @override
           def full_name
@@ -85,6 +88,39 @@ module VersatileDiamond
           # @override
           def arg_type
             super.ptr
+          end
+
+          # @param [Symbol] iterable_var_name
+          # @param [Statement] body
+          # @return [For]
+          def iterate(iterable_var_name, body)
+            iterable_var = Variable[
+              iterable_var_name,
+              ITERATOR_TYPE,
+              iterable_var_name.to_s,
+              ITERATOR_INIT_VALUE
+            ].freeze
+
+            indexes = [
+              iterable_var,
+              OpMinus[Constant[1].freeze, iterable_var].freeze
+            ].freeze
+
+            update_indexes!(indexes)
+
+            assign = iterable_var.define_var
+            cond = OpLess[iterable_var, Constant[items.size]]
+            op = OpRInc[iterable_var]
+            For[assign, cond, op, body]
+          end
+
+          # @param [Array]
+          def update_indexes!(indexes)
+            if items.size == indexes.size
+              items.zip(indexes).each { |v, i| v.update_index!(i) }
+            else
+              raise ArgumentError, 'Incorrect number of updating indexes'
+            end
           end
         end
 

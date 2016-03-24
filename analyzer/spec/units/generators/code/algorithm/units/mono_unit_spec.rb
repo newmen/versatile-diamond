@@ -17,6 +17,10 @@ module VersatileDiamond
             it { expect(var.code).to eq('parent') }
           end
 
+          describe '#units' do
+            it { expect(subject.units).to eq([subject]) }
+          end
+
           describe '#filled_inner_units' do
             describe 'predefined specie' do
               before { subject.define! }

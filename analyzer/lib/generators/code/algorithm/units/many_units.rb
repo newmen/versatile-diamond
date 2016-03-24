@@ -27,6 +27,11 @@ module VersatileDiamond
           end
 
           # @return [Array]
+          def units
+            @units.flat_map(&:units)
+          end
+
+          # @return [Array]
           def filled_inner_units
             selected_units = @units.flat_map(&:filled_inner_units)
             singular_same?(selected_units.map(&:nodes)) ? [self] : selected_units

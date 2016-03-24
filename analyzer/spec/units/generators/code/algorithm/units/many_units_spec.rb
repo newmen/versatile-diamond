@@ -19,6 +19,10 @@ module VersatileDiamond
             it { expect(var.code).to eq('anchor') }
           end
 
+          describe '#units' do
+            it { expect(subject.units).to eq(units) }
+          end
+
           describe '#filled_inner_units' do
             describe 'predefined atom' do
               before { subject.define! }

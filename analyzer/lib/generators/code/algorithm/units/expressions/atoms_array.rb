@@ -19,6 +19,12 @@ module VersatileDiamond
             Core::Condition[not_found(species), body]
           end
 
+          # @param [Statement] body
+          # @return [For]
+          def each(body)
+            iterate(:a, body)
+          end
+
         private
 
           # @param [Array] species

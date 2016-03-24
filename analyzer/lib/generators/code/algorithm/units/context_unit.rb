@@ -6,6 +6,7 @@ module VersatileDiamond
         # Decorates unit for bulding code on context
         class ContextUnit < GenerableUnit
           include Modules::ProcsReducer
+          include Modules::ListsComparer
           extend Forwardable
 
           # @param [Expressions::VarsDictionary] dict
@@ -54,16 +55,54 @@ module VersatileDiamond
             end
           end
 
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_symmetries(&block)
+            if species.one? || atoms.one?
+              @unit.iterate_specie_symmetries(&block)
+            elsif asymmetric_related_atoms?
+              @unit.iterate_for_loop_symmetries(&block)
+            else
+              raise 'Incorrect unit configuration'
+            end
+          end
+
+          # @return [Boolean] gets false if close nodes are not symmetric and true
+          #   in the case when neighbour nodes are not similar
+          def asymmetric_related_atoms?
+            nodes = @context.symmetric_close_nodes(species)
+            !nodes.empty? && (nodes.one? || !@context.symmetric_relations?(nodes))
+          end
+
         private
 
           def_delegators :@unit, :species, :atoms, :symmetric_atoms
+
+          # @return [ContextUnit]
+          def context_unit(inner_unit)
+            self.class.new(dict, @context, inner_unit)
+          end
+
+          # @return [Array]
+          def units
+            @unit.units.map(&method(:context_unit))
+          end
+
+          # @return [Array]
+          def check_asymmetric_inner_units_procs
+            units.select(&:asymmetric_related_atoms?).map do |inner_unit|
+              -> &block { inner_unit.iterate_symmetries(&block) }
+            end
+          end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           # TODO: just specie
           def check_avail_atoms(&block)
             if any_defined?(species)
-              check_symmetries { check_close_atoms(&block) }
+              check_symmetries do
+                check_close_atoms(&block)
+              end
             else
               @unit.check_atoms_roles(atoms, &block)
             end
@@ -84,18 +123,6 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def iterate_symmetries(&block)
-            if species.one? || atoms.one?
-              @unit.iterate_specie_symmetries(&block)
-            elsif asymmetric_related_atoms?
-              @unit.iterate_for_loop_symmetries(&block)
-            else
-              raise 'Incorrect unit configuration'
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
           def combine_avail_species_checks(&block)
             call_procs(avail_species_check_procs, &block)
           end
@@ -112,8 +139,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_undefined_species_of(inner_unit, &block)
             if inner_unit.checkable?
-              context_unit = self.class.new(dict, @context, inner_unit)
-              context_unit.select_specie_definition(&block)
+              context_unit(inner_unit).select_specie_definition(&block)
             else
               block.call
             end
@@ -134,12 +160,32 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
+          def iterate_portioned_species
+            nodes = context_nodes_with_undefined_atoms
+            if seems_different?(nodes)
+              @unit.iterate_species_by_loop(&block)
+            else
+              block.call
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_each_asymmetric_inner_unit(&block)
+            call_procs(check_asymmetric_inner_units_procs, &block)
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
           # TODO: just specie (do not move it to #@unit.define_undefined_species)
           def check_similar_undefined_species(&block)
             if select_undefined(species).one?
               check_many_undefined_species(&block)
             else
               @unit.iterate_portions_of_similar_species do
+                iterate_portioned_species do
+                  check_each_asymmetric_inner_unit(&block)
+                end
               end
             end
           end
@@ -190,7 +236,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: specie specific
           def check_close_atoms(&block)
-            nodes = @context.reachable_nodes_with(select_defined(species))
+            nodes = context_nodes_with_undefined_atoms
             if nodes.empty?
               block.call
             else
@@ -294,6 +340,11 @@ module VersatileDiamond
           end
 
           # @return [Array]
+          def context_nodes_with_undefined_atoms
+            @context.reachable_nodes_with(select_defined(species))
+          end
+
+          # @return [Array]
           def all_nodes_with_atoms
             @_all_nodes_with_atoms ||= @context.atoms_nodes(atoms)
           end
@@ -344,11 +395,14 @@ module VersatileDiamond
               @context.symmetric_relations?(@unit.nodes_with_atoms(symmetric_atoms))
           end
 
-          # @return [Boolean] gets false if close nodes are not symmetric and true
-          #   in the case when neighbour nodes are not similar
-          def asymmetric_related_atoms?
-            nodes = @context.symmetric_close_nodes(species)
-            !nodes.empty? && (nodes.one? || !@context.symmetric_relations?(nodes))
+          # @param [Array] nodes
+          # @return [Boolean]
+          def seems_different?(nodes)
+            other_atoms = nodes.map(&:atom).uniq
+            !(lists_are_identical?(atoms, other_atoms, &:==) ||
+              (other_atoms.size == species.size &&
+                nodes.map(&:sub_properties).uniq.one? &&
+                lists_are_identical?(species, nodes.map(&:unit_specie).uniq, &:==)))
           end
         end
 

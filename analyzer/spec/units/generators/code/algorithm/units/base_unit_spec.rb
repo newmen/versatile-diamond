@@ -182,6 +182,20 @@ for (uint a = 0; a < 2; ++a)
             end
           end
 
+          describe '#iterate_species_by_loop' do
+            include_context :two_mobs_context
+            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+            let(:code) do
+              <<-CODE
+for (uint s = 0; s < 2; ++s)
+{
+    return 0;
+}
+              CODE
+            end
+            it { expect(subject.iterate_species_by_loop(&return0).code).to eq(code) }
+          end
+
           describe '#iterate_species_by_role' do
             include_context :two_mobs_context
             before { dict.make_atom_s(cm) }

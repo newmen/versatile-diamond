@@ -20,6 +20,11 @@ module VersatileDiamond
           end
 
           # @return [Array]
+          def units
+            [self]
+          end
+
+          # @return [Array]
           def filled_inner_units
             specie_var = dict.var_of(species)
             atom_var = dict.var_of(atoms)

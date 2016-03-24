@@ -90,9 +90,15 @@ module VersatileDiamond
           def iterate_for_loop_symmetries(&block)
             define_undefined_atoms do
               redefine_atoms_as_array do
-                Expressions::SymmetricAtomsForLoop[vars_for(atoms), block.call]
+                dict.var_of(atoms).each(block.call)
               end
             end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_species_by_loop(&block)
+            dict.var_of(species).each(block.call)
           end
 
           # @yield incorporating statement

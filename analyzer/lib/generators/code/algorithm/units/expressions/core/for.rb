@@ -33,7 +33,7 @@ module VersatileDiamond
           # @param [UnaryOperator] op
           # @param [Expression] body
           def initialize(assign, cond, op, body)
-            @args = [assign, cond, op].freeze
+            @args = [assign, cond, op].map(&:freeze).freeze
             @body = body
           end
 

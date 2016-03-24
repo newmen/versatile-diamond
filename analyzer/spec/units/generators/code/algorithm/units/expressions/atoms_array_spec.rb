@@ -108,6 +108,21 @@ if (!atoms1[0]->hasRole(#{enum_name}, #{roles[0]}) || !atoms1[1]->hasRole(#{enum
               let(:enum_name) { 'METHYL_ON_BRIDGE' }
             end
           end
+
+          describe '#each' do
+            include_context :unique_parent_context
+            let(:arr) { dict.make_atom_s([cb, cm]) }
+            let(:body) { Core::FunctionCall['hello', *arr.items] }
+            let(:code) do
+              <<-CODE
+for (uint a = 0; a < 2; ++a)
+{
+    hello(atoms1[a], atoms1[1 - a]);
+}
+              CODE
+            end
+            it { expect(arr.each(body).code).to eq(code) }
+          end
         end
 
       end
