@@ -99,12 +99,25 @@ module VersatileDiamond
           # @return [Expressions::Core::OpCall]
           def iterate_species_by_role(&block)
             if atoms.one?
-              predefined_vars = dict.defined_vars
+              predefn_vars = dict.defined_vars
               specie_var = dict.make_specie_s(select_undefined(species))
               atom_var = dict.var_of(atoms)
-              atom_var.each_specie_by_role(predefined_vars, specie_var, block.call)
+              atom_var.all_species_by_role(predefn_vars, specie_var, block.call)
             else
               raise 'Species iteration by role can occur from just one atom'
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_portions_of_similar_species(&block)
+            if atoms.one?
+              predefn_vars = dict.defined_vars
+              species_var = dict.make_specie_s(select_undefined(species))
+              atom_var = dict.var_of(atoms)
+              atom_var.species_portion_by_role(predefn_vars, species_var, block.call)
+            else
+              raise 'Species portion iteration can occur from just one atom'
             end
           end
 
@@ -173,10 +186,10 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_defined_specie_symmetries(specie, &block)
-            predefined_vars = dict.defined_vars # get before make inner specie var
+            predefn_vars = dict.defined_vars # get before make inner specie var
             ext_var = dict.var_of(specie)
             inner_var = dict.make_specie_s(specie, type: abst_specie_type)
-            ext_var.iterate_symmetries(predefined_vars, inner_var, block.call)
+            ext_var.iterate_symmetries(predefn_vars, inner_var, block.call)
           end
 
           # @return [Expressions::Core::Variable]

@@ -230,6 +230,22 @@ return 0;
             end
           end
 
+          describe '#iterate_portions_of_similar_species' do
+            include_context :two_mobs_context
+            before { dict.make_atom_s(cm) }
+
+            let(:role_cm) { node_specie.source_role(cm) }
+            let(:code) do
+              <<-CODE
+amorph1->eachSpecsPortionByRole<MethylOnBridge>(#{role_cm}, 2, [](MethylOnBridge **species1) {
+    return 0;
+})
+              CODE
+            end
+            let(:expr) { subject.iterate_portions_of_similar_species(&return0) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
           describe '#define_undefined_species' do
             include_context :rab_context
             let(:expr) { subject.define_undefined_species(&return0) }

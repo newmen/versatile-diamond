@@ -17,6 +17,9 @@ module VersatileDiamond
             @unit = unit
 
             @_all_nodes_with_atoms, @_all_popular_atoms_nodes = nil
+
+            @_is_partially_symmetric = nil
+            @_is_over_used_atom, @_is_atom_many_usages_like_in_context = nil
           end
 
           # @yield incorporating statement
@@ -44,7 +47,7 @@ module VersatileDiamond
           def select_specie_definition(&block)
             if symmetric? || over_used_atom?
               check_many_undefined_species(&block)
-            elsif atom_usages_like_in_context?
+            elsif atom_many_usages_like_in_context?
               check_similar_undefined_species(&block)
             else
               @unit.define_undefined_species(&block)
@@ -120,7 +123,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: specie specific
           def check_many_undefined_species(&block)
-            if over_used_atom? || atom_usages_like_in_context?
+            if over_used_atom? || atom_many_usages_like_in_context?
               iterate_undefined_species(&block)
             else
               @unit.define_undefined_species do
@@ -133,6 +136,12 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: just specie (do not move it to #@unit.define_undefined_species)
           def check_similar_undefined_species(&block)
+            if select_undefined(species).one?
+              check_many_undefined_species(&block)
+            else
+              @unit.iterate_portions_of_similar_species do
+              end
+            end
           end
 
           # @yield incorporating statement
@@ -307,19 +316,21 @@ module VersatileDiamond
 
           # @return [Boolean]
           def over_used_atom?
-            atom_used_many_times? && count_possible_atom_usages != species.size
+            @_is_over_used_atom ||=
+              atom_used_many_times? && count_possible_atom_usages != species.size
           end
 
           # @return [Boolean]
           # TODO: just specie
-          def atom_usages_like_in_context?
-            if atom_used_many_times?
-              context_prop = all_popular_atoms_nodes.first.properties
-              parent_props = all_popular_atoms_nodes.map(&:sub_properties)
-              parent_props.reduce(:accurate_plus) == context_prop
-            else
-              false
-            end
+          def atom_many_usages_like_in_context?
+            @_is_atom_many_usages_like_in_context ||=
+              if atom_used_many_times?
+                context_prop = all_popular_atoms_nodes.first.properties
+                parent_props = all_popular_atoms_nodes.map(&:sub_properties)
+                parent_props.reduce(:accurate_plus) == context_prop
+              else
+                false
+              end
           end
 
           # @return [Boolean]
@@ -329,7 +340,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def partially_symmetric?
-            @unit.partially_symmetric? &&
+            @_is_partially_symmetric ||= @unit.partially_symmetric? &&
               @context.symmetric_relations?(@unit.nodes_with_atoms(symmetric_atoms))
           end
 
