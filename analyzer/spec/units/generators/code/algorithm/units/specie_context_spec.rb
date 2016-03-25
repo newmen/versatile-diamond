@@ -23,23 +23,23 @@ module VersatileDiamond
             end
           end
 
-          describe '#specie_nodes' do
+          describe '#species_nodes' do
             describe 'without scope species' do
               include_context :rab_context
-              let(:nodes) { subject.specie_nodes(node_specie) }
+              let(:nodes) { subject.species_nodes([node_specie]) }
               it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
-              it { expect(subject.specie_nodes(uniq_parent_inst)).to be_empty } # fake
+              it { expect(subject.species_nodes([uniq_parent_inst])).to eq([]) } # fake
             end
 
             describe 'with scope species' do
               include_context :two_mobs_context
-              let(:nodes) { subject.specie_nodes(scope_specie) }
+              let(:nodes) { subject.species_nodes([scope_specie]) }
               it { expect(nodes.map(&:uniq_specie)).to be_empty }
             end
 
             describe 'with one specie of scope' do
               include_context :two_mobs_context
-              let(:nodes) { subject.specie_nodes(node_specie) }
+              let(:nodes) { subject.species_nodes([node_specie]) }
               it { expect(nodes.map(&:uniq_specie)).to eq([node_specie, node_specie]) }
             end
           end
@@ -55,14 +55,13 @@ module VersatileDiamond
 
               describe 'defined atom' do
                 before { dict.make_atom_s(cr) }
-                it { expect(nodes.map(&:uniq_specie)).to be_empty }
+                it { expect(nodes).to be_empty }
               end
             end
 
             describe 'with scope species' do
               include_context :two_mobs_context
-              let(:nodes) { subject.reachable_nodes_with([scope_specie]) }
-              it { expect(nodes.map(&:uniq_specie)).to be_empty }
+              it { expect(subject.reachable_nodes_with([scope_specie])).to be_empty }
             end
 
             describe 'with one specie of scope' do
@@ -81,17 +80,53 @@ module VersatileDiamond
             end
           end
 
+          describe '#reached_nodes_with' do
+            describe 'without scope species' do
+              include_context :rab_context
+              let(:nodes) { subject.reached_nodes_with([node_specie]) }
+
+              describe 'undefined atom' do
+                it { expect(nodes).to be_empty }
+              end
+
+              describe 'defined atom' do
+                before { dict.make_atom_s(cr) }
+                it { expect(nodes.map(&:atom)).to eq([cr]) }
+              end
+            end
+
+            describe 'with scope species' do
+              include_context :two_mobs_context
+              it { expect(subject.reached_nodes_with([scope_specie])).to be_empty }
+            end
+
+            describe 'with one specie of scope' do
+              include_context :two_mobs_context
+              let(:nodes) { subject.reached_nodes_with([node_specie]) }
+
+              describe 'undefined atom' do
+                it { expect(nodes).to be_empty }
+              end
+
+              describe 'defined atom' do
+                before { dict.make_atom_s(cm) }
+                it { expect(nodes.map(&:atom)).to eq([cm]) }
+              end
+            end
+          end
+
           describe '#symmetric_close_nodes' do
             let(:nodes) { subject.symmetric_close_nodes([node_specie]).flatten }
 
             describe 'just one node' do
               include_context :rab_context
-              it { expect(nodes.map(&:uniq_specie)).to be_empty }
+              it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
+              it { expect(nodes.map(&:atom)).to eq([cr]) }
             end
 
             describe 'just self nodes' do
               include_context :two_mobs_context
-              it { expect(nodes.map(&:uniq_specie)).to be_empty }
+              it { expect(nodes).to be_empty }
             end
 
             describe 'close symmetric nodes' do

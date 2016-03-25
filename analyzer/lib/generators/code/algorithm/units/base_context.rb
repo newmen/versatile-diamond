@@ -23,16 +23,22 @@ module VersatileDiamond
             uniq_nodes.select { |node| atoms.include?(node.atom) }
           end
 
-          # @param [Instance::SpecieInstance] specie
+          # @param [Array] species
           # @return [Array]
-          def specie_nodes(specie)
-            uniq_nodes.select { |node| node.uniq_specie == specie }
+          def species_nodes(species)
+            uniq_nodes.select { |node| species.include?(node.uniq_specie) }
           end
 
           # @param [Array] species
           # @return [Array]
           def reachable_nodes_with(species)
-            uniq_nodes.select { |node| undefined_atom_in?(node, species) }
+            species_nodes(species).reject { |node| @dict.var_of(node.atom) }
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          def reached_nodes_with(species)
+            species_nodes(species).select { |node| @dict.var_of(node.atom) }
           end
 
           # @param [Array] species
@@ -86,15 +92,10 @@ module VersatileDiamond
           # @return [Array]
           def undefined_atoms_nodes(nodes_lists, uniq_species)
             nodes_lists.select do |nodes|
-              nodes.all? { |node| undefined_atom_in?(node, uniq_species) }
+              nodes.all? do |node|
+                uniq_species.include?(node.uniq_specie) && !@dict.var_of(node.atom)
+              end
             end
-          end
-
-          # @param [Nodes::BaseNode] node
-          # @param [Array] uniq_species
-          # @return [Boolean]
-          def undefined_atom_in?(node, uniq_species)
-            uniq_species.include?(node.uniq_specie) && !@dict.var_of(node.atom)
           end
 
           # @param [Array] nodes
