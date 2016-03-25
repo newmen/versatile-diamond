@@ -71,7 +71,7 @@ module VersatileDiamond
           #   in the case when neighbour nodes are not similar
           def asymmetric_related_atoms?
             nodes = @context.symmetric_close_nodes(species)
-            !nodes.empty? && (nodes.one? || !@context.symmetric_relations?(nodes))
+            nodes.one? || !(nodes.empty? || @context.symmetric_relations?(nodes))
           end
 
         private
@@ -330,8 +330,8 @@ module VersatileDiamond
           # @param [Instance::SpecieInstance] other_specie
           # @return [Array]
           def atoms_pairs_to_nodes(atoms_pairs, self_specie, other_specie)
-            self_nodes = @context.specie_nodes(self_specie)
-            other_nodes = @context.specie_nodes(other_specie)
+            self_nodes = @context.specie_nodes([self_specie])
+            other_nodes = @context.specie_nodes([other_specie])
             atoms_pairs.each_with_object([]) do |(self_atom, other_atom), acc|
               self_node = self_nodes.find { |n| n.atom == self_atom }
               other_node = other_nodes.find { |n| n.atom == other_atom }

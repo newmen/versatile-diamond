@@ -149,6 +149,32 @@ module VersatileDiamond
               it { expect(subject.symmetric_relations?(nodes)).to be_truthy }
             end
           end
+
+          describe '#related_from_other_defined?' do
+            let(:result) { subject.related_from_other_defined?(unit_nodes) }
+
+            describe 'key nodes are not related' do
+              include_context :two_mobs_context
+              it { expect(result).to be_falsey }
+            end
+
+            describe 'side nodes with same specie are not related' do
+              include_context :alt_two_mobs_context
+              it { expect(result).to be_falsey }
+            end
+
+            describe 'side nodes with another specie are not related' do
+              include_context :alt_intermed_context
+              it { expect(result).to be_falsey }
+            end
+
+            describe 'side nodes with another specie are related' do
+              include_context :alt_intermed_context
+              before { dict.make_atom_s(cbr) }
+              let(:cbr) { dept_uniq_specie.spec.atom(:cbr) }
+              it { expect(result).to be_truthy }
+            end
+          end
         end
 
       end

@@ -81,6 +81,13 @@ module VersatileDiamond
               end
               let(:dept_uniq_specie) { dept_intermed_migr_down_common_base }
             end
+
+            shared_context :alt_intermed_context do
+              include_context :intermed_context
+              let(:entry_nodes) do # override
+                backbone.entry_nodes.select { |ns| ns.first.atom.lattice }.first
+              end
+            end
           end
 
         end

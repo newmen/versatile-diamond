@@ -14,6 +14,7 @@ module VersatileDiamond
             @dict = dict
             @backbone_graph = Hash[ordered_backbone]
 
+            @_key_nodes_lists, @_side_nodes_lists = nil
             @_uniq_nodes = nil
           end
 
@@ -61,29 +62,42 @@ module VersatileDiamond
             end
           end
 
+          # @param [Array] nodes
+          # @return [Boolean]
+          def related_from_other_defined?(nodes)
+            species = nodes.map(&:uniq_specie)
+            backbone_graph.any? do |key, rels|
+              defined_atom_and_not_in?(key, species) &&
+                rels.any? do |ns, _|
+                  ns.any? { |node| nodes.include?(node) }
+                end
+            end
+          end
+
         private
 
           attr_reader :backbone_graph
 
           # @return [Array]
           def uniq_nodes
-            @_uniq_nodes ||= all_nodes.uniq
+            @_uniq_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten.uniq
           end
 
           # @return [Array]
-          def all_nodes
-            (backbone_graph.keys + side_nodes_lists).flatten
+          def key_nodes_lists
+            @_key_nodes_lists ||= backbone_graph.keys
           end
 
           # @return [Array]
           def side_nodes_lists
-            backbone_graph.values.flat_map { |rels| rels.map(&:first) }
+            @_side_nodes_lists ||=
+              backbone_graph.values.flat_map { |rels| rels.map(&:first) }
           end
 
           # @param [Array] uniq_species
           # @return [Array] lists of related nodes with undefined atoms
           def undefined_related_nodes(uniq_species)
-            nodes_lists = undefined_atoms_nodes(backbone_graph.keys, uniq_species)
+            nodes_lists = undefined_atoms_nodes(key_nodes_lists, uniq_species)
             nodes_lists.select(&method(:undefined_symmetric_atoms?))
           end
 
@@ -93,8 +107,17 @@ module VersatileDiamond
           def undefined_atoms_nodes(nodes_lists, uniq_species)
             nodes_lists.select do |nodes|
               nodes.all? do |node|
-                uniq_species.include?(node.uniq_specie) && !@dict.var_of(node.atom)
+                !@dict.var_of(node.atom) && uniq_species.include?(node.uniq_specie)
               end
+            end
+          end
+
+          # @param [Array] nodes
+          # @param [Array] uniq_species
+          # @return [Boolean]
+          def defined_atom_and_not_in?(nodes, uniq_species)
+            nodes.any? do |node|
+              @dict.var_of(node.atom) && !uniq_species.include?(node.uniq_specie)
             end
           end
 

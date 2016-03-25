@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # The context for units of specie find algoritnm builder
         class SpecieContext < BaseContext
+          include Modules::GraphDupper
+
           # @param [Units::Expressions::VarsDictionary] dict
           # @param [Specie] specie
           # @param [Array] ordered_backbone
@@ -12,28 +14,16 @@ module VersatileDiamond
             super(dict, ordered_backbone)
             @specie = specie
 
+            @_converted_backbone_graph = nil
             @_atoms_to_nodes = nil
-          end
-
-          %i(
-            atoms_nodes
-            specie_nodes
-            reachable_nodes_with
-            reached_nodes_with
-          ).each do |method_name|
-            # @param [Array] instances
-            # @return [Array]
-            # @override
-            define_method(method_name) do |instances|
-              replace_scopes(super(instances)).uniq
-            end
           end
 
         private
 
+          # @return [Hash]
           # @override
-          def all_nodes
-            replace_scopes(super)
+          def backbone_graph
+            @_converted_backbone_graph ||= dup_graph(super, &method(:replace_scopes))
           end
 
           # @param [Array] nodes
