@@ -136,6 +136,9 @@ module VersatileDiamond
         set(:dept_intermed_migr_dc_drop) do
           Organizers::DependentTypicalReaction.new(intermed_migr_dc_formation.reverse)
         end
+        set(:dept_intermed_migr_dh_drop) do
+          Organizers::DependentTypicalReaction.new(intermed_migr_dh_formation.reverse)
+        end
 
         define_dependents(DependentLateralReaction, [
           :end_lateral_idd,

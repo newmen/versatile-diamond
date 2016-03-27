@@ -80,6 +80,10 @@ module VersatileDiamond
                 backbone.entry_nodes.reject { |ns| ns.first.atom.lattice }.first
               end
               let(:dept_uniq_specie) { dept_intermed_migr_down_common_base }
+
+              [:cbl, :cbr, :cdl, :cdr].each do |keyname|
+                let(keyname) { dept_uniq_specie.spec.atom(keyname) }
+              end
             end
 
             shared_context :alt_intermed_context do
@@ -87,6 +91,13 @@ module VersatileDiamond
               let(:entry_nodes) do # override
                 backbone.entry_nodes.select { |ns| ns.first.atom.lattice }.first
               end
+            end
+
+            shared_context :half_intermed_context do
+              include_context :alt_intermed_context
+              let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+              let(:unit_nodes) { ordered_graph.last.last.first.first }
+              let(:dept_uniq_specie) { dept_intermed_migr_down_half_base }
             end
           end
 

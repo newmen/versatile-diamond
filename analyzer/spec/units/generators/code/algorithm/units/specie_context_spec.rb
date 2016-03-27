@@ -8,6 +8,25 @@ module VersatileDiamond
         describe SpecieContext, type: :algorithm do
           subject { described_class.new(dict, original_specie, ordered_graph) }
 
+          shared_examples_for :empty_existed_relations do
+            describe 'key nodes are not related' do
+              include_context :two_mobs_context
+              before { dict.make_atom_s([ctl, ctr]) }
+              it { expect(result).to be_empty }
+            end
+
+            describe 'side nodes with same specie are not related' do
+              include_context :alt_two_mobs_context
+              before { dict.make_atom_s([ctl, ctr]) }
+              it { expect(result).to be_empty }
+            end
+
+            describe 'side nodes with another specie are not related' do
+              include_context :alt_intermed_context
+              it { expect(result).to be_empty }
+            end
+          end
+
           describe '#atoms_nodes' do
             describe 'without scope species' do
               include_context :rab_context
@@ -115,6 +134,42 @@ module VersatileDiamond
             end
           end
 
+          describe '#existed_relations_to' do
+            let(:result) { subject.existed_relations_to(unit_nodes) }
+
+            it_behaves_like :empty_existed_relations
+
+            describe 'side nodes with another specie are related' do
+              include_context :alt_intermed_context
+              before { dict.make_atom_s([cbr, cdr]) }
+              it { expect(result).to eq(unit_nodes) }
+            end
+
+            describe 'side nodes with not existed relation' do
+              include_context :half_intermed_context
+              before { dict.make_atom_s([cbl, cdl]) }
+              it { expect(result).to be_empty }
+            end
+          end
+
+          describe '#not_existed_relations_to' do
+            let(:result) { subject.not_existed_relations_to(unit_nodes) }
+
+            it_behaves_like :empty_existed_relations
+
+            describe 'side nodes with another specie are related' do
+              include_context :alt_intermed_context
+              before { dict.make_atom_s([cbr, cdr]) }
+              it { expect(result).to be_empty }
+            end
+
+            describe 'side nodes with not existed relation' do
+              include_context :half_intermed_context
+              before { dict.make_atom_s([cbl, cdl]) }
+              it { expect(result).to eq([unit_nodes.max]) }
+            end
+          end
+
           describe '#symmetric_close_nodes' do
             let(:nodes) { subject.symmetric_close_nodes([node_specie]).flatten }
 
@@ -155,11 +210,13 @@ module VersatileDiamond
 
             describe 'key nodes are not related' do
               include_context :two_mobs_context
+              before { dict.make_atom_s([ctl, ctr]) }
               it { expect(result).to be_falsey }
             end
 
             describe 'side nodes with same specie are not related' do
               include_context :alt_two_mobs_context
+              before { dict.make_atom_s([ctl, ctr]) }
               it { expect(result).to be_falsey }
             end
 
@@ -171,7 +228,12 @@ module VersatileDiamond
             describe 'side nodes with another specie are related' do
               include_context :alt_intermed_context
               before { dict.make_atom_s(cbr) }
-              let(:cbr) { dept_uniq_specie.spec.atom(:cbr) }
+              it { expect(result).to be_truthy }
+            end
+
+            describe 'side nodes with not existed relation' do
+              include_context :half_intermed_context
+              before { dict.make_atom_s(cbl) }
               it { expect(result).to be_truthy }
             end
           end

@@ -33,13 +33,31 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def reachable_nodes_with(species)
-            species_nodes(species).reject { |node| @dict.var_of(node.atom) }
+            fileter_nodes_with(:reject, species)
           end
 
           # @param [Array] species
           # @return [Array]
           def reached_nodes_with(species)
-            species_nodes(species).select { |node| @dict.var_of(node.atom) }
+            fileter_nodes_with(:select, species)
+          end
+
+          # Gets nodes which belongs to passed nodes but have existed relations from
+          # nodes which are not same as passed
+          #
+          # @param [Array] nodes
+          # @return [Array]
+          def existed_relations_to(nodes)
+            filter_relations_to(nodes, &:exist?)
+          end
+
+          # Gets nodes which belongs to passed nodes but have not existed relations
+          # from nodes which are not same as passed
+          #
+          # @param [Array] nodes
+          # @return [Array]
+          def not_existed_relations_to(nodes)
+            filter_relations_to(nodes) { |rel| !rel.exist? }
           end
 
           # @param [Array] species
@@ -92,6 +110,41 @@ module VersatileDiamond
           def side_nodes_lists
             @_side_nodes_lists ||=
               backbone_graph.values.flat_map { |rels| rels.map(&:first) }
+          end
+
+          # @param [Symbol] method_name
+          # @param [Array] uniq_species
+          def fileter_nodes_with(method_name, uniq_species)
+            species_nodes(uniq_species).send(method_name) do |node|
+              @dict.var_of(node.atom)
+            end
+          end
+
+          # @param [Array] nodes
+          # @yield [Concepts::Bond] filter relation to selected nodes
+          # @return [Array] nodes with filtered relations
+          def filter_relations_to(nodes, &block)
+            species = nodes.map(&:uniq_specie)
+            key_nodes_lists.each_with_object([]) do |key, acc|
+              if defined_atom_and_not_in?(key, species)
+                each_defined_relation(key) do |node, rel|
+                  acc << node if nodes.include?(node) && block[rel]
+                end
+              end
+            end
+          end
+
+          # @param [Array] nodes
+          # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
+          def each_defined_relation(nodes, &block)
+            rels = relations_of(nodes).reduce(:+)
+            backbone_graph[nodes].each do |ns, _|
+              rels.each do |ans_set, r|
+                if @dict.var_of(ans_set.first.atom) && ans_set <= ns.to_set
+                  ans_set.each { |n| block[n, r] }
+                end
+              end
+            end
           end
 
           # @param [Array] uniq_species
