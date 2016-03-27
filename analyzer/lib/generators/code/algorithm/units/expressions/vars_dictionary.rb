@@ -55,10 +55,16 @@ module VersatileDiamond
           end
 
           # @param [Object] instance
-          # @return [String]
+          # @return [Core::Variable] or nil
           def var_of(instance)
             used_vars = @vars[key_of(instance)]
             used_vars && used_vars.last
+          end
+
+          # @param [Object] instance
+          # @return [Core::Variable] or nil
+          def prev_var_of(instance)
+            (@vars[key_of(instance)] || [])[0..-2].last
           end
 
           # @return [Array]
@@ -90,14 +96,16 @@ module VersatileDiamond
           # @param [Hash] nopts
           # @return [Core::Variable]
           def make_var_s(prefix, instance, type, name, value, **nopts)
-            if array?(instance)
-              send(:"#{prefix}s_array", instance, type, name, value, **nopts)
-            else
-              method_name = :"#{prefix}_variable"
-              fixed_instance = fix_instance(instance)
-              fixed_value = fix_instance(value)
-              send(method_name, fixed_instance, type, name, fixed_value, **nopts)
-            end
+            var =
+              if array?(instance)
+                send(:"#{prefix}s_array", instance, type, name, value, **nopts)
+              else
+                method_name = :"#{prefix}_variable"
+                fixed_instance = fix_instance(instance)
+                fixed_value = fix_instance(value)
+                send(method_name, fixed_instance, type, name, fixed_value, **nopts)
+              end
+            store!(var)
           end
 
           # @param [Object] instance
@@ -183,7 +191,7 @@ module VersatileDiamond
           # @return [AtomVariable]
           def atom_variable(atom, type, name = nil, value = nil, **nopts)
             name = fix_name(name || select_atom_name(atom), **nopts)
-            store!(AtomVariable[atom, type, name, value])
+            AtomVariable[atom, type, name, value]
           end
 
           # @param [Array] atoms
@@ -194,7 +202,7 @@ module VersatileDiamond
           def atoms_array(atoms, type, name = nil, values = nil, **nopts)
             name = fix_name(name || select_atom_name(*atoms), plur: true, **nopts)
             items = array_items(:atom_variable, atoms, type, name, values)
-            store!(AtomsArray[items, type, name, values])
+            AtomsArray[items, type, name, values]
           end
 
           # @param [Instances::SpecieInstance] specie variable of which will be maked
@@ -206,7 +214,7 @@ module VersatileDiamond
           def specie_variable(specie, type = nil, name = nil, value = nil, **nopts)
             type ||= specie_type(specie)
             name = fix_name(name || specie.var_name, **nopts)
-            store!(SpecieVariable[specie, type.ptr, name, value])
+            SpecieVariable[specie, type.ptr, name, value]
           end
 
           # @param [Array] species
@@ -219,7 +227,7 @@ module VersatileDiamond
               ptr_type = (type || specie_type(species.first)).ptr
               name = fix_name(name || DEFAULT_SPECIE_NAME, plur: true, **nopts)
               items = array_items(:specie_variable, species, ptr_type, name, values)
-              store!(SpeciesArray[items, ptr_type, name, values])
+              SpeciesArray[items, ptr_type, name, values]
             else
               raise ArgumentError, 'Ambiguous array variable type for species'
             end

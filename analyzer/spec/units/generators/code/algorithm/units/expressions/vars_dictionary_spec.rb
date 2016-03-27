@@ -79,6 +79,26 @@ module VersatileDiamond
             end
           end
 
+          describe '#prev_var_of' do
+            describe 'undefined variable' do
+              it { expect(subject.prev_var_of(cm)).to be_nil }
+            end
+
+            describe 'single stored variable' do
+              before { subject.make_atom_s(cb, name: 'cb') }
+              it { expect(subject.prev_var_of(cb)).to be_nil }
+            end
+
+            describe 'many stored variable' do
+              before do
+                subject.make_atom_s(cb, name: 'first_cb')
+                subject.make_atom_s(cb, name: 'second_cb')
+                subject.make_atom_s(cb, name: 'last_cb')
+              end
+              it { expect(subject.prev_var_of(cb).code).to eq('second_cb1') }
+            end
+          end
+
           describe '#defined_vars' do
             it { expect(subject.defined_vars).to be_empty }
 
