@@ -230,6 +230,16 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
+            check_close_atoms do
+              nodes = @context.reached_nodes_with(species)
+              if !nodes.empty? && atoms_comparison_required?(nodes)
+                check_not_existed_previos_atoms(nodes) do
+                  check_existed_previos_atoms(nodes, &block)
+                end
+              else
+                block.call
+              end
+            end
           end
 
           # @yield incorporating statement
@@ -244,6 +254,43 @@ module VersatileDiamond
               pure_unit.define_undefined_atoms do
                 pure_unit.check_different_atoms_roles(&block)
               end
+            end
+          end
+
+          # @param [Array] nodes
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_existed_previos_atoms(nodes, &block)
+            same_nodes = @context.existed_relations_to(nodes)
+            check_previos_atoms(Expressions::EqualsCondition, same_nodes, &block)
+          end
+
+          # @param [Array] nodes
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_not_existed_previos_atoms(nodes, &block)
+            not_nodes = @context.not_existed_relations_to(nodes)
+            check_previos_atoms(Expressions::NotEqualsCondition, not_nodes, &block)
+          end
+
+          # @param [Class] cond_expr_class
+          # @param [Array] nodes
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_previos_atoms(cond_expr_class, nodes, &block)
+            vars_pairs = zip_vars_with_previos(nodes.map(&:atom))
+            if vars_pairs.empty?
+              block.call
+            else
+              cond_expr_class[vars_pairs, block.call]
+            end
+          end
+
+          # @param [Array] atoms
+          # @return [Array]
+          def zip_vars_with_previos(atoms)
+            atoms.select(&dict.public_method(:prev_var_of)).map do |atom|
+              [dict.var_of(atom), dict.prev_var_of(atom)]
             end
           end
 
@@ -403,6 +450,12 @@ module VersatileDiamond
               (other_atoms.size == species.size &&
                 nodes.map(&:sub_properties).uniq.one? &&
                 lists_are_identical?(species, nodes.map(&:unit_specie).uniq, &:==)))
+          end
+
+          # @param [Array] nodes
+          # @return [Boolean]
+          def atoms_comparison_required?(nodes)
+            symmetric? || @context.related_from_other_defined(nodes)
           end
         end
 

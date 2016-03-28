@@ -23,7 +23,6 @@ if (atoms1[0] == atoms1[1])
 }
               CODE
             end
-
             it { expect(subject.code).to eq(code) }
           end
 
@@ -40,7 +39,6 @@ if (bridge1->atom(0) == atoms1[0] && atoms1[0] == atoms1[1])
 }
               CODE
             end
-
             it { expect(subject.code).to eq(code) }
           end
         end
