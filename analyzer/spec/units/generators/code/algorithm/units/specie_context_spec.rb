@@ -170,6 +170,32 @@ module VersatileDiamond
             end
           end
 
+          describe '#relation_between' do
+            let(:relation) { subject.relation_between(unit_nodes.first, nbr_node) }
+
+            describe 'no relation' do
+              include_context :intermed_context
+              let(:dimer_node) { (backbone.entry_nodes - entry_nodes).first.first }
+              let(:nbr_node) do
+                (ordered_graph.map(&:first) - backbone.entry_nodes).first.first
+              end
+              it { expect(nbr_node).to be_a(Algorithm::Nodes::BaseNode) }
+              it { expect(relation).to be_nil }
+            end
+
+            describe 'bond' do
+              include_context :intermed_context
+              let(:nbr_node) { (backbone.entry_nodes - entry_nodes).first.first }
+              it { expect(relation).to eq(free_bond) }
+            end
+
+            describe 'position' do
+              include_context :alt_two_mobs_context
+              let(:nbr_node) { unit_nodes.last }
+              it { expect(relation).to eq(position_100_cross) }
+            end
+          end
+
           describe '#symmetric_close_nodes' do
             let(:nodes) { subject.symmetric_close_nodes([node_specie]).flatten }
 

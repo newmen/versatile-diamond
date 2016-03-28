@@ -60,6 +60,14 @@ module VersatileDiamond
             filter_relations_to(nodes) { |rel| !rel.exist? }
           end
 
+          # @param [Nodes::BaseNode] a
+          # @param [Nodes::BaseNode] b
+          # @return [Concepts::Bond]
+          def relation_between(a, b)
+            to_b = relations_of([a]).first.find { |nodes, _| nodes.include?(b) }
+            to_b && to_b.last
+          end
+
           # @param [Array] species
           # @return [Array]
           def symmetric_close_nodes(species)
@@ -215,9 +223,8 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] b
           # @return [Boolean]
           def symmetric_relation_between?(a, b)
-            to_b = relations_of([a]).find { |node, _| node == b }
-            if to_b
-              ab_relation = to_b.last
+            ab_relation = relation_between(a, b)
+            if ab_relation
               ba_relation = b.lattice.opposite_relation(a.lattice, ab_relation)
               ab_relation == ba_relation
             else

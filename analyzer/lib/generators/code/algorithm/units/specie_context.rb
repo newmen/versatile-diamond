@@ -51,8 +51,8 @@ module VersatileDiamond
           # @return [Array]
           def major_relations(rels)
             rels.each_with_object([]) do |(a, r), acc|
-              node = atoms_to_nodes[a]
-              acc << [node, r] if node
+              nodes = atoms_to_nodes[a]
+              acc << [nodes, r] if nodes
             end
           end
 

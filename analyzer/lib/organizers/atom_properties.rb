@@ -170,7 +170,7 @@ module VersatileDiamond
         @props.hash
       end
 
-      # Gets zero atom properties
+      # Gets idempotent value of atom properties group
       # @return [AtomProperties] zero
       def zero
         self - self
