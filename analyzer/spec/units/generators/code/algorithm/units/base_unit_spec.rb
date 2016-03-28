@@ -14,7 +14,7 @@ module VersatileDiamond
 
           shared_context :predefined_two_mobs_context do
             include_context :alt_two_mobs_context
-            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+            before { dict.make_specie_s(uniq_parents) }
           end
 
           describe '#nodes' do
@@ -278,6 +278,27 @@ return 0;
             describe 'specie already defined' do
               before { dict.make_specie_s(node_specie) }
               it { expect(expr.code).to eq('return 0') }
+            end
+          end
+
+          describe '#neighbour?' do
+            let(:nbr_unit) { described_class.new(dict, nbr_nodes) }
+
+            describe 'same specie' do
+              include_context :alt_two_mobs_context
+              let(:nbr_nodes) { entry_nodes.first.split }
+              it { expect(subject.neighbour?(nbr_unit)).to be_falsey }
+            end
+
+            describe 'same specie' do
+              include_context :alt_intermed_context
+              let(:nbr_nodes) { not_anchored_latticed_nodes.first }
+              let(:not_anchored_latticed_nodes) do
+                ordered_graph.map(&:first).select do |nodes|
+                  nodes.first.atom.lattice && !nodes.any?(&:anchor?)
+                end
+              end
+              it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
             end
           end
 

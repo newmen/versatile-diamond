@@ -44,6 +44,10 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_relations_with(nbr, &block)
+            if @unit.neighbour?(nbr)
+            else
+              block.call
+            end
           end
 
         protected

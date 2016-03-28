@@ -148,10 +148,15 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          # TODO: specie specific (checking none?) (rspec required)
+          # TODO: required specie specific rspec
           def checkable?
-            !species.any?(&:none?) &&
-              !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
+            relayable? && !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
+          end
+
+          # @return [Boolean]
+          # TODO: specie specific rspec already exist
+          def neighbour?(unit)
+            relayable? && !unit.species.all? { |specie| species.include?(specie) }
           end
 
           # @return [Boolean]
@@ -166,6 +171,12 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [Boolean]
+          # TODO: specie specific
+          def relayable?
+            !species.all?(&:none?)
+          end
 
           # @param [Symbol] method_name
           # @return [Array]

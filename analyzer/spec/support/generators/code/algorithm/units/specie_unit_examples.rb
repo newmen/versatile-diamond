@@ -88,8 +88,11 @@ module VersatileDiamond
 
             shared_context :alt_intermed_context do
               include_context :intermed_context
-              let(:entry_nodes) do # override
-                backbone.entry_nodes.select { |ns| ns.first.atom.lattice }.first
+              let(:entry_nodes) { anchored_latticed_nodes.first } # override
+              let(:anchored_latticed_nodes) do
+                backbone.entry_nodes.select do |nodes|
+                  nodes.first.atom.lattice && nodes.all?(&:anchor?)
+                end
               end
             end
 
