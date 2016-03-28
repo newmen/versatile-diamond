@@ -165,7 +165,7 @@ module VersatileDiamond
         it { expect(subject.send(:relevants)).to be_empty }
       end
 
-      describe '#accurate_plus' do
+      describe '#safe_plus' do
         include_context :classified_properties
 
         let(:dependent_specs) do
@@ -179,22 +179,22 @@ module VersatileDiamond
           ]
         end
 
-        it { expect(fd(cm).accurate_plus(fd(cm))).to eq(bob) }
-        it { expect(fd(bridge_cr).accurate_plus(fd(bridge_cr))).to eq(tb_cc) }
+        it { expect(fd(cm).safe_plus(fd(cm))).to eq(bob) }
+        it { expect(fd(bridge_cr).safe_plus(fd(bridge_cr))).to eq(tb_cc) }
 
-        it { expect(fd(bridge_cr).accurate_plus(fd(ab_ct))).to eq(ab_cr) }
-        it { expect(fd(ab_ct).accurate_plus(fd(bridge_cr))).to eq(ab_cr) }
-        it { expect(fd(dimer_cr).accurate_plus(fd(ab_ct))).to eq(ad_cr) }
-        it { expect(fd(ab_ct).accurate_plus(fd(dimer_cr))).to eq(ad_cr) }
-        it { expect(fd(dimer_cr).accurate_plus(fd(mob_cb))).to eq(mod_cr) }
-        it { expect(fd(mob_cb).accurate_plus(fd(dimer_cr))).to eq(mod_cr) }
+        it { expect(fd(bridge_cr).safe_plus(fd(ab_ct))).to eq(ab_cr) }
+        it { expect(fd(ab_ct).safe_plus(fd(bridge_cr))).to eq(ab_cr) }
+        it { expect(fd(dimer_cr).safe_plus(fd(ab_ct))).to eq(ad_cr) }
+        it { expect(fd(ab_ct).safe_plus(fd(dimer_cr))).to eq(ad_cr) }
+        it { expect(fd(dimer_cr).safe_plus(fd(mob_cb))).to eq(mod_cr) }
+        it { expect(fd(mob_cb).safe_plus(fd(dimer_cr))).to eq(mod_cr) }
 
-        it { expect(fd(bridge_ct).accurate_plus(fd(ab_ct))).to eq(ab_ct) }
-        it { expect(fd(ab_ct).accurate_plus(fd(bridge_ct))).to eq(ab_ct) }
+        it { expect(fd(bridge_ct).safe_plus(fd(ab_ct))).to eq(ab_ct) }
+        it { expect(fd(ab_ct).safe_plus(fd(bridge_ct))).to eq(ab_ct) }
 
-        it { expect(fd(bridge_ct).accurate_plus(fd(bridge_ct))).to be_nil }
-        it { expect(fd(bridge_ct).accurate_plus(fd(cm))).to be_nil }
-        it { expect(fd(cm).accurate_plus(fd(bridge_ct))).to be_nil }
+        it { expect(fd(bridge_ct).safe_plus(fd(bridge_ct))).to be_nil }
+        it { expect(fd(bridge_ct).safe_plus(fd(cm))).to be_nil }
+        it { expect(fd(cm).safe_plus(fd(bridge_ct))).to be_nil }
       end
 
       describe '#zero' do

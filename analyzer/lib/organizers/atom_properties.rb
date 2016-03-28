@@ -147,7 +147,7 @@ module VersatileDiamond
       # Accurate combines two atom properties
       # @param [AtomProperties] other atom properties which will be accurate added
       # @return [AtomProperties] the sum or nil
-      def accurate_plus(other)
+      def safe_plus(other)
         both = [self, other]
         smallests_of_both = both.map { |props| props.smallests || Set[props] }
         max_root = smallests_of_both.reduce(:&).max
@@ -201,7 +201,7 @@ module VersatileDiamond
       # @return [Boolean] are self properties like other or not
       # @deprecated
       def like?(other)
-        include?(other) || other.include?(self) || !!accurate_plus(other)
+        include?(other) || other.include?(self) || !!safe_plus(other)
       end
 
       # Checks that both properties have same states by hydrogen atoms

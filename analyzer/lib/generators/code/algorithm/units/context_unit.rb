@@ -378,7 +378,7 @@ module VersatileDiamond
               if atom_used_many_times?
                 context_prop = all_popular_atoms_nodes.first.properties
                 parent_props = all_popular_atoms_nodes.map(&:sub_properties)
-                parent_props.reduce(:accurate_plus) == context_prop
+                parent_props.reduce(:safe_plus) == context_prop
               else
                 false
               end
