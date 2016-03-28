@@ -85,7 +85,7 @@ module VersatileDiamond
           def related_from_other_defined?(nodes)
             species = nodes.map(&:uniq_specie)
             backbone_graph.any? do |key, rels|
-              defined_atom_and_not_in?(key, species) &&
+              atom_defined_and_not_in?(key, species) &&
                 rels.any? do |ns, _|
                   ns.any? { |node| nodes.include?(node) }
                 end
@@ -126,7 +126,7 @@ module VersatileDiamond
           def filter_relations_to(nodes, &block)
             species = nodes.map(&:uniq_specie)
             key_nodes_lists.each_with_object([]) do |key, acc|
-              if defined_atom_and_not_in?(key, species)
+              if atom_defined_and_not_in?(key, species)
                 each_defined_relation(key) do |node, rel|
                   acc << node if nodes.include?(node) && block[rel]
                 end
@@ -168,7 +168,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @param [Array] uniq_species
           # @return [Boolean]
-          def defined_atom_and_not_in?(nodes, uniq_species)
+          def atom_defined_and_not_in?(nodes, uniq_species)
             nodes.any? do |node|
               @dict.var_of(node.atom) && !uniq_species.include?(node.uniq_specie)
             end

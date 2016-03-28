@@ -24,7 +24,8 @@ module VersatileDiamond
           # @return [Array] the array of collected relations procs
           def accumulate_relations(factory, unit, rels)
             rels.map do |nbr_nodes, rel_params|
-              relations_proc(factory, unit, nbr_nodes, rel_params)
+              nbrs_unit = factory.make_unit(nbr_nodes)
+              relations_proc(unit, nbrs_unit, rel_params)
             end
           end
         end

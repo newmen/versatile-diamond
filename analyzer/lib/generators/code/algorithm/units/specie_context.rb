@@ -37,12 +37,12 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Array]
           def relations_of(nodes)
-            specie_relations_of(nodes).map(&method(:major_relations))
+            relations_in_specie_of(nodes).map(&method(:major_relations))
           end
 
           # @param [Array] nodes
           # @return [Array]
-          def specie_relations_of(nodes)
+          def relations_in_specie_of(nodes)
             spec_graph = @specie.spec.clean_links
             nodes.map { |node| spec_graph[node.atom] }
           end

@@ -40,6 +40,12 @@ module VersatileDiamond
             end
           end
 
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_relations_with(nbr, &block)
+          end
+
         protected
 
           # @yield incorporating statement
@@ -250,6 +256,7 @@ module VersatileDiamond
             if nodes.empty?
               block.call
             else
+              # TODO: cache the factory
               pure_unit = SpeciePureUnitsFactory.new(dict).unit(nodes)
               pure_unit.define_undefined_atoms do
                 pure_unit.check_different_atoms_roles(&block)
