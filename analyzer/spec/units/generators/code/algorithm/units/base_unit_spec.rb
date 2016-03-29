@@ -49,8 +49,16 @@ module VersatileDiamond
             it { expect(nodes).to eq([unit_nodes.first]) }
           end
 
+          describe '#atom_with_specie_calls' do
+            include_context :alt_two_mobs_context
+            before { dict.make_atom_s(ctl) }
+            let("role_ctl") { node_specie.actual_role(ctl) }
+            let(:expr) { subject.atom_with_specie_calls(:role_in, [ctl]) }
+            it { expect(expr.map(&:code)).to eq(["atom1->is(#{role_ctl})"]) }
+          end
+
           describe '#check_atoms_roles' do
-            [:cm, :ctr].each do |keyname|
+            [:cm, :cb, :ctr].each do |keyname|
               let("role_#{keyname}") { node_specie.actual_role(send(keyname)) }
             end
 
@@ -62,12 +70,11 @@ module VersatileDiamond
 
             describe 'specie with additional atom' do
               include_context :mob_context
-
               it_behaves_like :check_atoms_roles_cond do
-                let(:atoms) { [cm] }
+                let(:atoms) { [cb] }
                 let(:code) do
                   <<-CODE
-if (amorph1->is(#{role_cm}))
+if (atom1->is(#{role_cb}))
 {
     return 0;
 }

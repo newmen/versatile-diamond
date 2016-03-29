@@ -18,80 +18,50 @@ module VersatileDiamond
             it { expect(var.define_arg.code).to eq('Atom *atom1') }
           end
 
-          describe '#check_roles_in' do
-            shared_examples_for :check_roles_code do
-              let(:body) { Core::Return[var] }
-              let(:code) do
-                <<-CODE
-if (atom1->is(#{actual_role}))
-{
-    return atom1;
-}
-                CODE
-              end
-
-              it { expect(var.check_roles_in([subject], body).code).to eq(code) }
-            end
+          describe '#role_in' do
+            let(:code) { "atom1->is(#{actual_role})" }
 
             describe 'none specie' do
               include_context :none_specie_context
-              it_behaves_like :check_roles_code do
-                let(:atom) { ct }
-              end
+              let(:atom) { ct }
+              it { expect(var.role_in(subject).code).to eq(code) }
             end
 
             describe 'unique parent' do
               include_context :unique_parent_context
-              it_behaves_like :check_roles_code do
-                let(:atom) { cb }
-              end
+              let(:atom) { cb }
+              it { expect(var.role_in(subject).code).to eq(code) }
             end
 
             describe 'unique reactant' do
               include_context :unique_reactant_context
-              it_behaves_like :check_roles_code do
-                let(:atom) { cb }
-              end
+              let(:atom) { cb }
+              it { expect(var.role_in(subject).code).to eq(code) }
             end
           end
 
-          describe '#check_context' do
-            shared_examples_for :check_roles_code do
-              let(:body) { Core::Return[Core::FunctionCall['yo', var]] }
-              let(:code) do
-                <<-CODE
-if (!atom1->hasRole(#{enum_name}, #{actual_role}))
-{
-    return yo(atom1);
-}
-                CODE
-              end
-
-              it { expect(var.check_context([subject], body).code).to eq(code) }
-            end
+          describe '#not_found' do
+            let(:code) { "!atom1->hasRole(#{enum_name}, #{actual_role})" }
 
             describe 'none specie' do
               include_context :none_specie_context
-              it_behaves_like :check_roles_code do
-                let(:atom) { ct }
-                let(:enum_name) { 'BRIDGE' }
-              end
+              let(:atom) { ct }
+              let(:enum_name) { 'BRIDGE' }
+              it { expect(var.not_found(subject).code).to eq(code) }
             end
 
             describe 'unique parent' do
               include_context :unique_parent_context
-              it_behaves_like :check_roles_code do
-                let(:atom) { cb }
-                let(:enum_name) { 'METHYL_ON_BRIDGE' }
-              end
+              let(:atom) { cb }
+              let(:enum_name) { 'METHYL_ON_BRIDGE' }
+              it { expect(var.not_found(subject).code).to eq(code) }
             end
 
             describe 'unique reactant' do
               include_context :unique_reactant_context
-              it_behaves_like :check_roles_code do
-                let(:atom) { cb }
-                let(:enum_name) { 'METHYL_ON_BRIDGE' }
-              end
+              let(:atom) { cb }
+              let(:enum_name) { 'METHYL_ON_BRIDGE' }
+              it { expect(var.not_found(subject).code).to eq(code) }
             end
           end
 

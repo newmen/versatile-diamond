@@ -6,7 +6,6 @@ module VersatileDiamond
         # The basic unit for each other
         # @abstract
         class BaseUnit < GenerableUnit
-          include Modules::ProcsReducer
 
           attr_reader :nodes
 
@@ -47,17 +46,22 @@ module VersatileDiamond
             nodes.select { |node| species.include?(node.uniq_specie) }
           end
 
+          # @param [Symbol] method_name
+          # @param [Array] calling_atoms
+          # @return [Array]
+          def atom_with_specie_calls(method_name, calling_atoms)
+            pack_with_species(calling_atoms).map do |atom, specie|
+              dict.var_of(atom).public_send(method_name, specie)
+            end
+          end
+
           # Checks that atoms have specific types
           # @param [Array] checking_atoms
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_atoms_roles(checking_atoms, &block)
-            var = dict.var_of(checking_atoms)
-            if var # checking atoms belongs to same array variable
-              var.check_roles_in(species, block.call)
-            else
-              nest_checking_atoms_roles(checking_atoms, &block)
-            end
+            checks = atom_with_specie_calls(:role_in, checking_atoms)
+            Expressions::AndCondition[checks, block.call]
           end
 
           # @yield incorporating statement
@@ -184,21 +188,6 @@ module VersatileDiamond
             nodes.map(&method_name).uniq
           end
 
-          # @param [Array] checking_atoms
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def nest_checking_atoms_roles(checking_atoms, &block)
-            call_procs(checking_atoms_roles_procs(checking_atoms), &block)
-          end
-
-          # @param [Array] checking_atoms
-          # @return [Array]
-          def checking_atoms_roles_procs(checking_atoms)
-            vars_for(checking_atoms).map do |atom_var|
-              -> &block { atom_var.check_roles_in(species, &block) }
-            end
-          end
-
           # @param [Instances::SpecieInstance] specie
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -238,6 +227,14 @@ module VersatileDiamond
           # @return [Expressions::Core::Collection]
           def remake_atoms_as_array
             dict.make_atom_s(atoms, value: vars_for(atoms))
+          end
+
+          # @param [Array] packing_atoms
+          # @return [Array]
+          def pack_with_species(packing_atoms)
+            packing_atoms.map do |atom|
+              [atom, species.find { |specie| specie.anchor?(atom) }]
+            end
           end
 
           # @return [Expressions::Core::ObjectType]

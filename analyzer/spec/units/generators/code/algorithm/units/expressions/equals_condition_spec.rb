@@ -9,12 +9,12 @@ module VersatileDiamond
           include_context :unique_parent_context
 
           let(:dict) { VarsDictionary.new }
-          let(:body) { Core::FunctionCall['hello', *vars.items] }
-          let(:vars) { dict.make_atom_s([cb, cm], name: 'atoms') }
+          let(:body) { Core::FunctionCall['hello', *arr.items] }
+          let(:arr) { dict.make_atom_s([cb, cm], name: 'atoms') }
           subject { described_class[exprs_pairs, body] }
 
           describe 'just one pair' do
-            let(:exprs_pairs) { [vars.items] }
+            let(:exprs_pairs) { [arr.items] }
             let(:code) do
               <<-CODE
 if (atoms1[0] == atoms1[1])
@@ -29,7 +29,7 @@ if (atoms1[0] == atoms1[1])
           describe 'two pairs' do
             let(:specie_var) { dict.make_specie_s(uniq_parent_inst) }
             let(:exprs_pairs) do
-              [[specie_var.atom_value(cb), vars.items.first], vars.items]
+              [[specie_var.atom_value(cb), arr.items.first], arr.items]
             end
             let(:code) do
               <<-CODE

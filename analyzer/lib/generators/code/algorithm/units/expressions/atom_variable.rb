@@ -5,24 +5,10 @@ module VersatileDiamond
 
         # Represents atom variable statement
         class AtomVariable < Core::Variable
-          # @param [Array] species
-          # @param [Core::Expression] body
-          # @return [Core::Condition]
-          def check_roles_in(species, body)
-            Core::Condition[role_in(species.first), body]
-          end
-
           # @param [Instances::SpecieInstance] specie
           # @return [Core::OpCall]
           def role_in(specie)
             call('is', actual_role_in(specie))
-          end
-
-          # @param [Array] species
-          # @param [Core::Expression] body
-          # @return [Core::Condition]
-          def check_context(species, body)
-            Core::Condition[not_found(species.first), body]
           end
 
           # @param [Instances::SpecieInstance] specie

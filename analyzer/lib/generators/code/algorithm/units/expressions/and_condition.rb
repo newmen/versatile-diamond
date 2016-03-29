@@ -3,22 +3,22 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions
 
-        # Compares that all pairs of expressions are equal
-        class EqualsCondition < AndCondition
+        # Joins all checking expressions by && operation
+        class AndCondition < Core::Condition
           class << self
-            # @param [Array] exprs_pairs
+            # @param [Array] exprs
             # @param [Core::Expression] body
             # @return [EqualsCondition]
-            def [](exprs_pairs, body)
-              super(exprs_pairs.map(&method(:op)), body)
+            def [](exprs, body)
+              super(join(exprs), body)
             end
 
           private
 
             # @param [Array] exprs
-            # @return [Core::OpEq]
-            def op(exprs)
-              Core::OpEq[*exprs]
+            # @return [Core::OpAnd]
+            def join(exprs)
+              Core::OpAnd[*exprs]
             end
           end
         end

@@ -125,7 +125,8 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: just specie
           def check_that_context_specie_not_found(&block)
-            dict.var_of(atoms).check_context(species, block.call)
+            checks = @unit.atom_with_specie_calls(:not_found, atoms)
+            Expressions::OrCondition[checks, block.call]
           end
 
           # @yield incorporating statement
