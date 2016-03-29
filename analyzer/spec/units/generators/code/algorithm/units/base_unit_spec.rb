@@ -112,6 +112,80 @@ if (atoms1[0]->is(#{role_ctr}) && atoms1[1]->is(#{role_ctr}))
             end
           end
 
+          describe '#check_amorph_bonds_if_have' do
+            shared_examples_for :check_amorph_bonds_block do
+              let(:expr) { subject.check_amorph_bonds_if_have(nbr, &return0) }
+              it { expect(expr.code).to eq(code.rstrip) }
+            end
+
+            describe 'amprph bonds' do
+              let(:amorph_nodes) { ordered_graph.first.last.first.first }
+
+              it_behaves_like :check_amorph_bonds_block do
+                include_context :mob_context
+                before { dict.make_atom_s(cb) }
+                let(:nbr) { described_class.new(dict, amorph_nodes) }
+                let(:code) do
+                  <<-CODE
+atom1->eachAmorphNeighbour([](Atom *amorph1) {
+    return 0;
+})
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_amorph_bonds_block do
+                include_context :mob_context
+                before { dict.make_atom_s(cm) }
+                subject { described_class.new(dict, amorph_nodes) } # override
+                let(:nbr) { described_class.new(dict, unit_nodes) }
+                let(:code) do
+                  <<-CODE
+amorph1->eachCrystalNeighbour([](Atom *atom1) {
+    return 0;
+})
+                  CODE
+                end
+              end
+            end
+
+            describe 'crystal bonds' do
+              let(:nbr) { described_class.new(dict, other_side_nodes) }
+
+              it_behaves_like :check_amorph_bonds_block do
+                include_context :alt_intermed_context
+                let(:other_side_nodes) do
+                  ordered_graph.select { |k, _| k == unit_nodes }.last.first
+                end
+                let(:code) { 'return 0' }
+              end
+
+              describe 'from two atoms' do
+                include_context :half_intermed_context
+                let(:other_side_nodes) { ordered_graph.last.first }
+
+                it_behaves_like :check_amorph_bonds_block do
+                  before { dict.make_atom_s([cdl, cdr]) }
+                  let(:code) { 'return 0' }
+                end
+
+                it_behaves_like :check_amorph_bonds_block do
+                  include_context :half_intermed_context
+                  before do
+                    dict.make_atom_s(cdr)
+                    dict.make_atom_s(cdl)
+                  end
+                  let(:code) do
+                    <<-CODE
+Atom *atoms1[2] = { atom2, atom1 };
+return 0;
+                    CODE
+                  end
+                end
+              end
+            end
+          end
+
           describe '#iterate_specie_symmetries' do
             include_context :rab_context
             before { dict.make_specie_s(node_specie) }

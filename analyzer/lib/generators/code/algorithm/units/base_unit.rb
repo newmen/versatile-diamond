@@ -76,6 +76,19 @@ module VersatileDiamond
             end
           end
 
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_amorph_bonds_if_have(nbr, &block)
+            if (atoms + nbr.atoms).all?(&:lattice)
+              redefine_atoms_as_array(&block)
+            elsif atoms.one? && nbr.atoms.one?
+              iterate_amorph_bonds(nbr, &block)
+            else
+              raise ArgumentError, 'Cannot itearte relations between units'
+            end
+          end
+
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_specie_symmetries(&block)
@@ -186,6 +199,20 @@ module VersatileDiamond
           # @return [Array]
           def uniq_from_nodes(method_name)
             nodes.map(&method_name).uniq
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_amorph_bonds(nbr, &block)
+            defined_vars = dict.defined_vars
+            atom_var = dict.var_of(atoms)
+            nbr_var = dict.make_atom_s(nbr.atoms)
+            if nbr.atoms.any?(&:lattice)
+              atom_var.iterate_crystal_nbrs(defined_vars, nbr_var, block.call)
+            else
+              atom_var.iterate_amorph_nbrs(defined_vars, nbr_var, block.call)
+            end
           end
 
           # @param [Instances::SpecieInstance] specie
