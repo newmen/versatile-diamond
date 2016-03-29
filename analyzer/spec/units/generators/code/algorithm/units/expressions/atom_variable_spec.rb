@@ -157,6 +157,38 @@ atom1->eachSpecsPortionByRole<MethylOnBridge>(#{source_role}, 2, [](MethylOnBrid
             let(:expr) { atoms.first.has_bond_with(atoms.last) }
             it { expect(expr.code).to eq('atoms1[0]->hasBondWith(atoms1[1])') }
           end
+
+          describe '#iterate_amorph_nbrs' do
+            include_context :mob_context
+            let(:atom_var) { dict.make_atom_s(cb) }
+            let(:nbr_var) { dict.make_atom_s(cm) }
+            let(:body) { Core::Return[nbr_var] }
+            let(:code) do
+              <<-CODE
+atom1->eachAmorphNeighbour([](Atom *amorph1) {
+    return amorph1;
+})
+              CODE
+            end
+            let(:expr) { atom_var.iterate_amorph_nbrs([], nbr_var, body) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#iterate_crystal_nbrs' do
+            include_context :mob_context
+            let(:atom_var) { dict.make_atom_s(cm) }
+            let(:nbr_var) { dict.make_atom_s(cb) }
+            let(:body) { Core::Return[nbr_var] }
+            let(:code) do
+              <<-CODE
+amorph1->eachCrystalNeighbour([](Atom *atom1) {
+    return atom1;
+})
+              CODE
+            end
+            let(:expr) { atom_var.iterate_crystal_nbrs([], nbr_var, body) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
         end
 
       end

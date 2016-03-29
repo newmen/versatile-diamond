@@ -67,6 +67,22 @@ module VersatileDiamond
             call('hasBondWith', atom_var)
           end
 
+          # @param [Array] defined_vars
+          # @param [AtomVariable] nbr_var
+          # @return [Core::OpCall]
+          def iterate_amorph_nbrs(defined_vars, nbr_var, body)
+            iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
+            call('eachAmorphNeighbour', iter_lambda)
+          end
+
+          # @param [Array] defined_vars
+          # @param [AtomVariable] nbr_var
+          # @return [Core::OpCall]
+          def iterate_crystal_nbrs(defined_vars, nbr_var, body)
+            iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
+            call('eachCrystalNeighbour', iter_lambda)
+          end
+
         private
 
           # @param [Instances::SpecieInstance] specie
