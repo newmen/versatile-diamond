@@ -76,12 +76,12 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_amorph_bonds_if_have(nbr, &block)
             if (atoms + nbr.atoms).all?(&:lattice)
-              redefine_atoms_as_array(&block)
+              redefine_self_and_nbr_atoms_if_need(nbr, &block)
             elsif atoms.one? && nbr.atoms.one?
               iterate_amorph_bonds(nbr, &block)
             else
@@ -187,6 +187,18 @@ module VersatileDiamond
               symmetric_atoms.to_set < atoms.to_set
           end
 
+        protected
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def redefine_atoms_as_array(&block)
+            if atoms.one? || dict.var_of(atoms)
+              block.call # all atoms already belongs to same array
+            else
+              remake_atoms_as_array.define_var + block.call
+            end
+          end
+
         private
 
           # @return [Boolean]
@@ -201,7 +213,7 @@ module VersatileDiamond
             nodes.map(&method_name).uniq
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_amorph_bonds(nbr, &block)
@@ -241,13 +253,16 @@ module VersatileDiamond
             dict.make_specie_s(undefined_species, value: calls)
           end
 
+          # @param [BaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def redefine_atoms_as_array(&block)
-            if atoms.one? || dict.var_of(atoms)
-              block.call # all atoms already belongs to same array
-            else
-              remake_atoms_as_array.define_var + block.call
+          def redefine_self_and_nbr_atoms_if_need(nbr, &block)
+            redefine_atoms_as_array do
+              if all_defined?(nbr.atoms)
+                nbr.redefine_atoms_as_array(&block)
+              else
+                block.call
+              end
             end
           end
 

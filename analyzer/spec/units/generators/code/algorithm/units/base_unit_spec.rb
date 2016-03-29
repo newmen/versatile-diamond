@@ -170,6 +170,14 @@ amorph1->eachCrystalNeighbour([](Atom *atom1) {
                 end
 
                 it_behaves_like :check_amorph_bonds_block do
+                  before do
+                    dict.make_atom_s([cdl, cdr])
+                    dict.make_atom_s([cbl, cbr])
+                  end
+                  let(:code) { 'return 0' }
+                end
+
+                it_behaves_like :check_amorph_bonds_block do
                   include_context :half_intermed_context
                   before do
                     dict.make_atom_s(cdr)
@@ -178,6 +186,21 @@ amorph1->eachCrystalNeighbour([](Atom *atom1) {
                   let(:code) do
                     <<-CODE
 Atom *atoms1[2] = { atom2, atom1 };
+return 0;
+                    CODE
+                  end
+                end
+
+                it_behaves_like :check_amorph_bonds_block do
+                  include_context :half_intermed_context
+                  before do
+                    dict.make_atom_s([cdl, cdr])
+                    dict.make_atom_s(cbl)
+                    dict.make_atom_s(cbr)
+                  end
+                  let(:code) do
+                    <<-CODE
+Atom *atoms2[2] = { atom1, atom2 };
 return 0;
                     CODE
                   end
