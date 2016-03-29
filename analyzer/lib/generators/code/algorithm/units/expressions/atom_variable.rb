@@ -61,6 +61,12 @@ module VersatileDiamond
             end
           end
 
+          # @param [AtomVariable] atom_var
+          # @return [Core::OpCall]
+          def has_bond_with(atom_var)
+            call('hasBondWith', atom_var)
+          end
+
         private
 
           # @param [Instances::SpecieInstance] specie

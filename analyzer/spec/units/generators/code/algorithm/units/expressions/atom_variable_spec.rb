@@ -150,6 +150,13 @@ atom1->eachSpecsPortionByRole<MethylOnBridge>(#{source_role}, 2, [](MethylOnBrid
             end
             it { expect(expr.code).to eq(code.rstrip) }
           end
+
+          describe '#has_bond_with' do
+            include_context :alt_two_mobs_context
+            let(:atoms) { dict.make_atom_s(unit_nodes.map(&:atom)).items }
+            let(:expr) { atoms.first.has_bond_with(atoms.last) }
+            it { expect(expr.code).to eq('atoms1[0]->hasBondWith(atoms1[1])') }
+          end
         end
 
       end
